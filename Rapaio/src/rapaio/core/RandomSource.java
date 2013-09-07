@@ -16,14 +16,28 @@
 
 package rapaio.core;
 
+import java.util.Random;
+
 /**
+ * /**
+ * Random number producer which, for now, is the standard Java {@link Random}.
+ *
  * @author Aurelian Tutuianu
  */
-public interface RandomSource {
+public final class RandomSource {
 
-    void setSeed(long seed);
+    private static final Random rand = new Random();
 
-    double nextDouble();
+    public static void setSeed(long seed) {
+        rand.setSeed(seed);
+    }
 
-    int nextInt(int n);
+
+    public static double nextDouble() {
+        return rand.nextDouble();
+    }
+
+    public static int nextInt(int n) {
+        return rand.nextInt(n);
+    }
 }

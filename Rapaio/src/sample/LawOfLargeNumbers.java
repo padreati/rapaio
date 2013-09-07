@@ -17,6 +17,7 @@
 package sample;
 
 import rapaio.core.OnlineCoreStat;
+import rapaio.core.RandomSource;
 import rapaio.data.IndexOneVector;
 import rapaio.data.IndexVector;
 import rapaio.data.NumericVector;
@@ -27,7 +28,6 @@ import rapaio.graphics.plot.ABLine;
 import rapaio.graphics.plot.Lines;
 import rapaio.printer.HTMLPrinter;
 
-import static rapaio.core.BaseMath.getRandomSource;
 import static rapaio.explore.Workspace.*;
 
 /**
@@ -39,7 +39,7 @@ public class LawOfLargeNumbers {
         setPrinter(new HTMLPrinter("LawOfLargeNumbers.html", "Law of Large Numbers Study"));
 
         preparePrinter();
-        getRandomSource().setSeed(1);
+        RandomSource.setSeed(1);
 
         heading(2, "Small study of the Weak Law of Large Numbers");
 

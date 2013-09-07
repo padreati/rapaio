@@ -16,6 +16,7 @@
 
 package rapaio.supervised.rule;
 
+import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.data.Vector;
 import rapaio.supervised.AbstractClassifier;
@@ -24,7 +25,6 @@ import rapaio.supervised.ClassifierResult;
 import java.io.Serializable;
 import java.util.*;
 
-import static rapaio.core.BaseMath.getRandomSource;
 import static rapaio.explore.Workspace.code;
 
 /**
@@ -169,7 +169,7 @@ public class OneRule extends AbstractClassifier {
             if (count == 0) {
                 continue;
             }
-            int next = getRandomSource().nextInt(count);
+            int next = RandomSource.nextInt(count);
             String[] colValues = sourceCol.dictionary();
             String[] classValues = classCol.dictionary();
             for (int j = 0; j < hist.length; j++) {
@@ -221,7 +221,7 @@ public class OneRule extends AbstractClassifier {
                     count++;
                 }
             }
-            int next = getRandomSource().nextInt(count);
+            int next = RandomSource.nextInt(count);
             String[] classLabels = classCol.dictionary();
             for (int j = 0; j < hist.length; j++) {
                 if (hist[j] == max && next > 0) {
@@ -257,7 +257,7 @@ public class OneRule extends AbstractClassifier {
                         count++;
                     }
                 }
-                int next = getRandomSource().nextInt(count);
+                int next = RandomSource.nextInt(count);
                 for (int j = 0; j < hist.length; j++) {
                     if (hist[j] == max && next > 0) {
                         next--;
@@ -295,7 +295,7 @@ public class OneRule extends AbstractClassifier {
                         count++;
                     }
                 }
-                int next = getRandomSource().nextInt(count);
+                int next = RandomSource.nextInt(count);
                 for (int j = 0; j < hist.length; j++) {
                     if (hist[j] == max && next > 0) {
                         next--;

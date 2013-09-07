@@ -16,7 +16,10 @@
 
 package sample;
 
-import rapaio.core.stat.*;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Quantiles;
+import rapaio.core.stat.Variance;
+import rapaio.correlation.PearsonRhoCorrelation;
 import rapaio.data.Frame;
 import rapaio.data.IndexOneVector;
 import rapaio.datasets.Datasets;
@@ -34,7 +37,6 @@ import rapaio.printer.HTMLPrinter;
 import java.io.IOException;
 
 import static rapaio.core.BaseMath.sqrt;
-import static rapaio.core.Correlation.pearsonRho;
 import static rapaio.explore.Summary.summary;
 import static rapaio.explore.Workspace.*;
 
@@ -104,7 +106,7 @@ public class PearsonHeight {
         summary(new Mean(df.getCol("Son")));
         summary(new Variance(df.getCol("Son")));
 
-        summary(pearsonRho(df.getCol("Father"), df.getCol("Son")));
+        summary(new PearsonRhoCorrelation(df.getCol("Father"), df.getCol("Son")));
 
         double[] perc = new double[11];
         for (int i = 0; i < perc.length; i++) {

@@ -16,6 +16,7 @@
 
 package titanic;
 
+import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.NominalVector;
 import rapaio.data.SolidFrame;
@@ -50,7 +51,7 @@ public class Explore {
     public static void main(String[] args) throws IOException {
         setPrinter(new HTMLPrinter("kaggle-titanic.html", "kaggle titanic"));
 
-        getRandomSource().setSeed(1);
+        RandomSource.setSeed(1);
 
         preparePrinter();
 

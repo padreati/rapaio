@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static rapaio.core.BaseMath.getRandomSource;
-
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
@@ -66,7 +64,7 @@ public final class BaseFilters {
     public static Vector jitter(Vector v, double sd) {
         Normal d = new Normal(0, sd);
         Vector result = new NumericVector(v.getName(), v.getRowCount());
-        Vector jitter = d.sample(result.getRowCount(), getRandomSource());
+        Vector jitter = d.sample(result.getRowCount());
         for (int i = 0; i < result.getRowCount(); i++) {
             if (v.isMissing(i)) {
                 continue;
@@ -77,7 +75,7 @@ public final class BaseFilters {
     }
 
     /**
-     * Shuffle the order of size from specified frame.
+     * Shuffle the order of rows from specified frame.
      *
      * @param df source frame
      * @return shuffled frame
@@ -88,7 +86,7 @@ public final class BaseFilters {
             mapping.add(i);
         }
         for (int i = mapping.size(); i > 1; i--) {
-            mapping.set(i - 1, mapping.set(getRandomSource().nextInt(i), mapping.get(i - 1)));
+            mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
         }
         return new MappedFrame(df, mapping);
     }

@@ -41,34 +41,6 @@ public class BaseMath {
      */
     public static final double E = Math.E;
 
-    private static final RandomSource randomSource = new RandomSource() {
-        private final Random random = new Random();
-
-        @Override
-        public void setSeed(long seed) {
-            random.setSeed(seed);
-        }
-
-        @Override
-        public double nextDouble() {
-            return random.nextDouble();
-        }
-
-        @Override
-        public int nextInt(int n) {
-            return random.nextInt(n);
-        }
-    };
-
-    /**
-     * Random number producer.
-     *
-     * @return an implementation of {@link RandomSource}
-     */
-    public static RandomSource getRandomSource() {
-        return randomSource;
-    }
-
     /**
      * Returns the absolute getValue of a {@code double} getValue.
      * If the argument is not negative, the argument is returned.

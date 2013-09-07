@@ -33,13 +33,6 @@ public abstract class Distribution {
     public abstract String getName();
 
     /**
-     * @return full description of the distributions; contains parameters
-     */
-    public String getDescription() {
-        return "Not yet implemented.";
-    }
-
-    /**
      * @param x getValue for which it calculates log of probability
      * @return log of probability of x
      */
@@ -90,13 +83,9 @@ public abstract class Distribution {
     abstract public double max();
 
     public NumericVector sample(int n) {
-        return sample(n, getRandomSource());
-    }
-
-    public NumericVector sample(int n, RandomSource rand) {
         NumericVector samples = new NumericVector("sample", n);
         for (int i = 0; i < samples.getRowCount(); i++) {
-            samples.setValue(i, quantile(rand.nextDouble()));
+            samples.setValue(i, quantile(RandomSource.nextDouble()));
         }
         return samples;
     }

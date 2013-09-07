@@ -14,8 +14,9 @@
  *    limitations under the License.
  */
 
-package rapaio.core;
+package rapaio.correlation;
 
+import rapaio.core.Summarizable;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Vector;
@@ -24,21 +25,26 @@ import static rapaio.core.BaseMath.max;
 import static rapaio.core.BaseMath.sqrt;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * /**
+ * Sample Pearson product-moment correlation coefficient.
+ * <p/>
+ * See
+ * http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient
+ * <p/>
+ * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public final class Correlation {
+public class PearsonRhoCorrelation implements Summarizable {
+    private final Vector x;
+    private final Vector y;
+    private final double rho;
 
-    /**
-     * Sample Pearson product-moment correlation coefficient.
-     * <p/>
-     * See
-     * http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient
-     *
-     * @param x first set of values
-     * @param y second set of values
-     * @return Pearson Rho coefficient
-     */
-    public static PearsonRhoResult pearsonRho(Vector x, Vector y) {
+    public PearsonRhoCorrelation(Vector x, Vector y) {
+        this.x = x;
+        this.y = y;
+        this.rho = compute();
+    }
+
+    private double compute() {
         double xMean = new Mean(x).getValue();
         double yMean = new Mean(y).getValue();
         double sum = 0;
@@ -52,29 +58,18 @@ public final class Correlation {
             sum += ((x.getValue(i) - xMean) * (y.getValue(i) - yMean));
             count++;
         }
-        return new PearsonRhoResult(x, y, sum / (sdp * (count - 1)));
+        return sum / (sdp * (count - 1));
     }
 
-    public static final class PearsonRhoResult implements Summarizable {
-        private final Vector x;
-        private final Vector y;
-        private final double rho;
-
-        public PearsonRhoResult(Vector x, Vector y, double rho) {
-            this.x = x;
-            this.y = y;
-            this.rho = rho;
-        }
-
-        public double value() {
-            return rho;
-        }
-
-        @Override
-        public String summary() {
-            return String.format(
-                    "pearson[\"%s\",\"%s\"] - Pearson product-moment correlation coefficient\n%.10f",
-                    x.getName(), y.getName(), rho);
-        }
+    public double value() {
+        return rho;
     }
+
+    @Override
+    public String summary() {
+        return String.format(
+                "pearson[\"%s\",\"%s\"] - Pearson product-moment correlation coefficient\n%.10f",
+                x.getName(), y.getName(), rho);
+    }
+
 }

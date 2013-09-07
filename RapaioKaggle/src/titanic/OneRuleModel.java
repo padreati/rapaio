@@ -16,6 +16,7 @@
 
 package titanic;
 
+import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
@@ -31,7 +32,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static rapaio.core.BaseFilters.rename;
-import static rapaio.core.BaseMath.getRandomSource;
 import static rapaio.explore.Workspace.closePrinter;
 
 /**
@@ -40,7 +40,7 @@ import static rapaio.explore.Workspace.closePrinter;
 public class OneRuleModel {
 
     public static void main(String[] args) throws IOException {
-        getRandomSource().setSeed(1);
+        RandomSource.setSeed(1);
 
         Frame train = Explore.read("train.csv");
         Frame test = Explore.read("test.csv");
