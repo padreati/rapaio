@@ -16,10 +16,9 @@
 
 package rapaio.ml.supervised.tree;
 
-import rapaio.data.Frame;
-import rapaio.filters.FilterGroupByNominal;
-
 import static rapaio.core.BaseMath.log;
+import rapaio.data.Frame;
+import rapaio.filters.NominalFilters;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -42,7 +41,7 @@ public class TreeMetrics {
     }
 
     public double infoGain(Frame df, int ClassIndex, int splitIndex) {
-        Frame[] split = new FilterGroupByNominal().groupByNominal(df, splitIndex);
+        Frame[] split = NominalFilters.groupByNominal(df, splitIndex);
         double infoGain = entropy(df, ClassIndex);
         for (Frame f : split) {
             if (f == null) {

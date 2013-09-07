@@ -20,8 +20,11 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
-import rapaio.data.util.NominalConsolidator;
-import rapaio.filters.FilterRemoveColumns;
+import static rapaio.filters.NominalFilters.*;
+import rapaio.explore.Summary;
+import static rapaio.explore.Workspace.closePrinter;
+import static rapaio.filters.BaseFilters.renameVector;
+import static rapaio.filters.ColFilters.removeCols;
 import rapaio.io.CsvPersistence;
 import rapaio.ml.supervised.ClassifierResult;
 import rapaio.ml.supervised.CrossValidation;
@@ -30,9 +33,6 @@ import rapaio.ml.supervised.rule.OneRule;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
-import static rapaio.filters.BaseFilters.rename;
-import static rapaio.explore.Workspace.closePrinter;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -44,13 +44,13 @@ public class OneRuleModel {
 
         Frame train = Utils.read("train.csv");
         Frame test = Utils.read("test.csv");
-        List<Frame> frames = NominalConsolidator.consolidate(Arrays.asList(train, test));
+        List<Frame> frames = consolidate(Arrays.asList(train, test));
         train = frames.get(0);
         test = frames.get(1);
 
-        Frame tr = new FilterRemoveColumns("PassengerId,Name,Ticket,Cabin").filter(train);
-//        Frame tr = new FilterRetainColumns("Survived,Sex").filter(train);
-//        Summary.summary(tr);
+        Frame tr = removeCols(train, "PassengerId,Name,Ticket,Cabin");
+//        Frame tr = retainCols(train, "Survived,Sex");
+        Summary.summary(tr);
         CrossValidation cv = new CrossValidation();
         cv.cv(tr, tr.getColIndex("Survived"), new OneRule(4), 10);
 
@@ -59,7 +59,7 @@ public class OneRuleModel {
         ClassifierResult cr = oneRule.predict(test);
 //        oneRule.printModelSummary();
 
-        Frame submit = new SolidFrame("submit", test.getRowCount(), new Vector[]{test.getCol("PassengerId"), rename(cr.getClassification(), "Survived")});
+        Frame submit = new SolidFrame("submit", test.getRowCount(), new Vector[]{test.getCol("PassengerId"), renameVector(cr.getClassification(), "Survived")});
         CsvPersistence persist = new CsvPersistence();
         persist.setColSeparator(',');
         persist.setHasQuotas(false);

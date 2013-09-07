@@ -24,7 +24,7 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static rapaio.filters.BaseFilters.toValue;
+import static rapaio.filters.BaseFilters.toNumeric;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -39,7 +39,7 @@ public class NormalTest {
         persistence.setHeader(false);
         persistence.setColSeparator(' ');
         df = persistence.read("stdnorm", this.getClass().getResourceAsStream("standard_normal.csv"));
-        df = toValue(df);
+        df = toNumeric(df);
     }
 
     @Test

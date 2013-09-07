@@ -18,15 +18,13 @@ package titanic;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
-import rapaio.data.util.NominalConsolidator;
+import static rapaio.explore.Workspace.draw;
+import static rapaio.filters.NominalFilters.consolidate;
 import rapaio.graphics.BarChart;
-import rapaio.graphics.Histogram;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
-import static rapaio.explore.Workspace.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -38,7 +36,7 @@ public class ConsoleExplore {
 
         Frame train = Utils.read("train.csv");
         Frame test = Utils.read("test.csv");
-        List<Frame> frames = NominalConsolidator.consolidate(Arrays.asList(train, test));
+        List<Frame> frames = consolidate(Arrays.asList(train, test));
         train = frames.get(0);
         test = frames.get(1);
 

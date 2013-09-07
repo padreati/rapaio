@@ -18,31 +18,19 @@ package titanic;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
-import rapaio.data.NominalVector;
-import rapaio.data.SolidFrame;
-import rapaio.data.Vector;
-import rapaio.data.util.NominalConsolidator;
 import rapaio.explore.Summary;
-import rapaio.filters.FilterMissingNominal;
-import rapaio.core.UnivariateFunction;
+import static rapaio.explore.Workspace.*;
+import static rapaio.filters.NominalFilters.consolidate;
+import static rapaio.filters.NumericFilters.jitter;
 import rapaio.graphics.BarChart;
 import rapaio.graphics.BoxPlot;
 import rapaio.graphics.Histogram;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;
-import rapaio.io.CsvPersistence;
-import rapaio.printer.HTMLPrinter;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-
-import static rapaio.filters.BaseFilters.*;
-import static rapaio.filters.NumericFilters.*;
-import static rapaio.core.BaseMath.*;
-import static rapaio.explore.Workspace.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -60,7 +48,7 @@ public class Explore {
 
         Frame train = Utils.read("train.csv");
         Frame test = Utils.read("test.csv");
-        List<Frame> frames = NominalConsolidator.consolidate(Arrays.asList(train, test));
+        List<Frame> frames = consolidate(Arrays.asList(train, test));
         train = frames.get(0);
         test = frames.get(1);
 

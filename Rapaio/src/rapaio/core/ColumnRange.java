@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package rapaio.data.util;
+package rapaio.core;
 
 import rapaio.data.Frame;
 

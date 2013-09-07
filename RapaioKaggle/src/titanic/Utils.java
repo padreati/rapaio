@@ -16,22 +16,21 @@
 
 package titanic;
 
+import static rapaio.core.BaseMath.E;
+import static rapaio.core.BaseMath.log;
 import rapaio.core.UnivariateFunction;
 import rapaio.data.Frame;
 import rapaio.data.NominalVector;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
-import rapaio.filters.FilterMissingNominal;
+import rapaio.filters.BaseFilters;
+import static rapaio.filters.NominalFilters.fillMissingValues;
+import static rapaio.filters.NumericFilters.applyFunction;
 import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
-
-import static rapaio.core.BaseMath.E;
-import static rapaio.core.BaseMath.log;
-import static rapaio.filters.BaseFilters.toValue;
-import static rapaio.filters.NumericFilters.applyFunction;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -54,14 +53,14 @@ public class Utils {
             vectors[i] = df.getCol(i);
             // fill spaces as missing vaues
             if (vectors[i].isNominal()) {
-                vectors[i] = new FilterMissingNominal().filter(vectors[i], new String[]{"", " "});
+                vectors[i] = fillMissingValues(vectors[i], new String[]{"", " "});
             }
             // transform to isNumeric on Age
             if (numericColumns.contains(df.getColNames()[i])) {
-                vectors[i] = toValue(vectors[i]);
+                vectors[i] = BaseFilters.toNumeric(vectors[i].getName(), vectors[i]);
             }
         }
-        vectors[vectors.length - 2] = applyFunction(toValue("LogFare", df.getCol("Fare")), new UnivariateFunction() {
+        vectors[vectors.length - 2] = applyFunction(BaseFilters.toNumeric("LogFare", df.getCol("Fare")), new UnivariateFunction() {
             @Override
             public double eval(double value) {
                 return log(E + value);

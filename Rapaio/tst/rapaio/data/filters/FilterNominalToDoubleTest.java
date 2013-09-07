@@ -23,7 +23,7 @@ import static rapaio.core.BaseMath.pow;
 import rapaio.data.IndexOneVector;
 import rapaio.data.NominalVector;
 import rapaio.data.Vector;
-import static rapaio.filters.BaseFilters.toValue;
+import rapaio.filters.BaseFilters;
 import static rapaio.filters.RowFilters.sort;
 
 import java.util.Arrays;
@@ -46,7 +46,7 @@ public class FilterNominalToDoubleTest {
             String value = String.valueOf(pow(i, 1.5));
             v.setLabel(i, value);
         }
-        Vector filtered = toValue(v);
+        Vector filtered = BaseFilters.toNumeric(v.getName(), v);
         for (int i = 0; i < v.getRowCount(); i++) {
             double value = pow(i, 1.5);
             assertEquals(value, filtered.getValue(i), 1e-10);
@@ -66,7 +66,7 @@ public class FilterNominalToDoubleTest {
     public void testNFE() {
         Vector filtered = new NominalVector("test", 1, Arrays.asList(new String[]{"abc"}));
         filtered.setLabel(0, "abc");
-        Vector numeric = toValue(filtered);
+        Vector numeric = BaseFilters.toNumeric(filtered.getName(), filtered);
         assertEquals(numeric.getValue(0), numeric.getValue(0), 1e-10);
         assertTrue(numeric.isMissing(0));
     }
@@ -75,7 +75,7 @@ public class FilterNominalToDoubleTest {
     public void testNotNominal() {
         Vector filtered = new IndexOneVector(0);
         try {
-            toValue(filtered);
+            BaseFilters.toNumeric(filtered.getName(), filtered);
         } catch (IllegalArgumentException ex) {
             assertTrue(true);
             return;

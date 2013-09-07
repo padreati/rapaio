@@ -19,11 +19,10 @@ package rapaio.datasets;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
+import rapaio.filters.BaseFilters;
 import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
-
-import static rapaio.filters.BaseFilters.toValue;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -35,7 +34,7 @@ public class Datasets {
         Vector[] vectors = new Vector[df.getColCount()];
         vectors[vectors.length - 1] = df.getCol(vectors.length - 1);
         for (int i = 0; i < vectors.length - 1; i++) {
-            vectors[i] = toValue(df.getCol(i));
+            vectors[i] = BaseFilters.toNumeric(df.getCol(i).getName(), df.getCol(i));
         }
         return new SolidFrame(df.getName(), df.getRowCount(), vectors);
     }
@@ -44,7 +43,7 @@ public class Datasets {
         Frame df = new CsvPersistence().read("pearson", Datasets.class.getResourceAsStream("pearsonheight.csv"));
         Vector[] vectors = new Vector[df.getColCount()];
         for (int i = 0; i < df.getColCount(); i++) {
-            vectors[i] = toValue(df.getCol(i));
+            vectors[i] = BaseFilters.toNumeric(df.getCol(i).getName(), df.getCol(i));
         }
         return new SolidFrame(df.getName(), df.getRowCount(), vectors);
     }

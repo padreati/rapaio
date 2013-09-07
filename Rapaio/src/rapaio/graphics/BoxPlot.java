@@ -21,7 +21,7 @@ import rapaio.data.Frame;
 import rapaio.data.IndexOneVector;
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
-import rapaio.data.util.ColumnRange;
+import rapaio.core.ColumnRange;
 import rapaio.graphics.base.BaseFigure;
 import rapaio.graphics.base.Range;
 

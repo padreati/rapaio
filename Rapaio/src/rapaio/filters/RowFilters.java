@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Provides filters which manipulates rows from a frame.
+ * <p/>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public final class RowFilters {
@@ -76,5 +78,6 @@ public final class RowFilters {
         Collections.sort(mapping, vector.getComparator(asc));
         return new SortedVector(vector, mapping);
     }
+
 
 }
