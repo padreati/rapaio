@@ -48,6 +48,8 @@ public class HistogramBars extends PlotComponent {
         this.bins = bins;
         this.prob = prob;
         this.rebuild = true;
+        this.minvalue = minvalue;
+        this.maxvalue = maxvalue;
 
         plot.setLeftLabel(prob ? "density" : "frequency");
         plot.setLeftThicker(true);
@@ -107,22 +109,14 @@ public class HistogramBars extends PlotComponent {
                 if (v.isMissing(i)) {
                     continue;
                 }
+                total++;
                 if (v.getValue(i) < minvalue || v.getValue(i) > maxvalue) {
-                    total++;
                     continue;
                 }
-                int index = (int) (Math.ceil((v.getValue(i) - minvalue) / step) - 1);
-                if (index < 0) {
-                    index = 0;
-                }
-                if (index >= bins) {
-                    index = bins - 1;
-                }
-                freqtable[index]++;
-                total++;
+                freqtable[(int) ((v.getValue(i) - minvalue) / step)]++;
             }
 
-            if (prob && total != 0) {
+            if (prob && (total != 0)) {
                 for (int i = 0; i < freqtable.length; i++) {
                     freqtable[i] /= total;
                 }

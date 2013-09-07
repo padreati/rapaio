@@ -21,7 +21,7 @@ import rapaio.data.NumericVector;
 import rapaio.core.UnivariateFunction;
 
 /**
- * @author tutuianu
+ * @author Aurelian Tutuianu
  */
 public abstract class Distribution {
 
@@ -81,7 +81,7 @@ public abstract class Distribution {
     abstract public double max();
 
     public NumericVector sample(int n) {
-        NumericVector samples = new NumericVector("sample", n);
+        NumericVector samples = new NumericVector("tutorial", n);
         for (int i = 0; i < samples.getRowCount(); i++) {
             samples.setValue(i, quantile(RandomSource.nextDouble()));
         }

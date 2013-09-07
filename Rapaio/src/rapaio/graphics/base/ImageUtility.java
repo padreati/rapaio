@@ -25,7 +25,8 @@ import java.awt.image.BufferedImage;
 public class ImageUtility {
 
     public static BufferedImage buildImage(Figure figure, int width, int height) {
-        return buildImage(figure, width, height, BufferedImage.TYPE_BYTE_INDEXED);
+//        return buildImage(figure, width, height, BufferedImage.TYPE_BYTE_INDEXED);
+        return buildImage(figure, width, height, BufferedImage.TYPE_3BYTE_BGR);
     }
 
     public static BufferedImage buildImage(Figure figure, int width, int height, int type) {

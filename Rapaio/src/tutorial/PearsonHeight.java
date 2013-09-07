@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package sample;
+package tutorial;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
@@ -26,6 +26,9 @@ import rapaio.datasets.Datasets;
 import rapaio.distributions.Distribution;
 import rapaio.distributions.Normal;
 import rapaio.explore.Summary;
+import static rapaio.explore.Summary.summary;
+import static rapaio.core.BaseMath.*;
+import static rapaio.explore.Workspace.*;
 import rapaio.graphics.Histogram;
 import rapaio.graphics.Plot;
 import rapaio.graphics.QQPlot;
@@ -35,10 +38,6 @@ import rapaio.graphics.plot.Points;
 import rapaio.printer.HTMLPrinter;
 
 import java.io.IOException;
-
-import static rapaio.core.BaseMath.sqrt;
-import static rapaio.explore.Summary.summary;
-import static rapaio.explore.Workspace.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -61,11 +60,12 @@ public class PearsonHeight {
         p("First we take a look at the histograms for the two dimensions");
 
         for (int i = 0; i < df.getColCount(); i++) {
-            Histogram hist = new Histogram(df.getCol(i), 50, true);
+            Histogram hist = new Histogram(df.getCol(i), 23, true, 57, 80);
             hist.setBottomLabel(df.getColNames()[i]);
             hist.getOp().setXRange(57, 80);
-            hist.getOp().setYRange(0, 0.15);
+            hist.getOp().setYRange(0, 0.20);
 
+//            Normal normal = new Normal(new Mean(df.getCol(i)).getValue(), 1.3);
             Normal normal = new Normal(new Mean(df.getCol(i)).getValue(), sqrt(new Variance(df.getCol(i)).getValue()));
             FunctionLine nline = new FunctionLine(hist, normal.getPdfFunction());
             nline.opt().setColorIndex(new OneIndexVector(2));

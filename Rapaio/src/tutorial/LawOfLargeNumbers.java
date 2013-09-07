@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package sample;
+package tutorial;
 
 import rapaio.core.stat.OnlineCoreStat;
 import rapaio.core.RandomSource;

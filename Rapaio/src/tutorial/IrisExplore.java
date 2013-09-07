@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package sample;
+package tutorial;
 
 import rapaio.data.Frame;
 import rapaio.data.OneIndexVector;

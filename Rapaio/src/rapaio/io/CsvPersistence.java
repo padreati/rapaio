@@ -174,26 +174,29 @@ public class CsvPersistence {
 
     private Frame buildFrame(String name, List<String> names, List<String> rows) {
         int cols = names.size();
-        List<List<String>> splitted = new ArrayList<>();
-        for (String row1 : rows) {
-            List<String> row = readData(row1);
+        List<List<String>> split = new ArrayList<>();
+        for (String line : rows) {
+            List<String> row = readData(line);
             cols = Math.max(cols, row.size());
-            splitted.add(row);
+            split.add(row);
+        }
+        for (int i = names.size(); i < cols; i++) {
+            names.add("V" + (i + 1));
         }
         Vector[] vectors = new Vector[cols];
         // process data, one column at a time
         for (int i = 0; i < cols; i++) {
-            // TODO complete
+            // TODO complete with building other than nominal
             HashSet<String> dict = new HashSet<>();
             for (int j = 0; j < rows.size(); j++) {
-                if (splitted.get(j).size() > i) {
-                    dict.add(splitted.get(j).get(i));
+                if (split.get(j).size() > i) {
+                    dict.add(split.get(j).get(i));
                 }
             }
             vectors[i] = new NominalVector(names.get(i), rows.size(), dict);
             for (int j = 0; j < rows.size(); j++) {
-                if (splitted.get(j).size() > i) {
-                    vectors[i].setLabel(j, splitted.get(j).get(i));
+                if (split.get(j).size() > i) {
+                    vectors[i].setLabel(j, split.get(j).get(i));
                 }
             }
         }
