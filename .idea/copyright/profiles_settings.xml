@@ -1,0 +1,8 @@
+<component name="CopyrightManager">
+  <settings default="rapaio">
+    <module2copyright>
+      <element module="All" copyright="rapaio" />
+    </module2copyright>
+    <LanguageOptions name="__TEMPLATE__" />
+  </settings>
+</component>
