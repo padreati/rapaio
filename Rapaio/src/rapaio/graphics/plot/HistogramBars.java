@@ -16,7 +16,7 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.data.IndexOneVector;
+import rapaio.data.OneIndexVector;
 import rapaio.data.Vector;
 import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
@@ -130,7 +130,7 @@ public class HistogramBars extends PlotComponent {
 
             // defaults
             if (opt().getColorIndex().getRowCount() == 1 && opt().getColorIndex().getIndex(0) == 0) {
-                opt().setColorIndex(new IndexOneVector(7));
+                opt().setColorIndex(new OneIndexVector(7));
             }
 
         }

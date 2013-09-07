@@ -18,7 +18,7 @@ package sample;
 
 import rapaio.core.stat.OnlineCoreStat;
 import rapaio.core.RandomSource;
-import rapaio.data.IndexOneVector;
+import rapaio.data.OneIndexVector;
 import rapaio.data.IndexVector;
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
@@ -69,12 +69,12 @@ public class LawOfLargeNumbers {
 
         ABLine abline = new ABLine(plot, 0, 3.5);
         abline.opt().setLwd(2);
-        abline.opt().setColorIndex(new IndexOneVector(1));
+        abline.opt().setColorIndex(new OneIndexVector(1));
         plot.add(abline);
 
         Lines lines = new Lines(plot, x, mean);
         lines.opt().setLwd(2);
-        lines.opt().setColorIndex(new IndexOneVector(2));
+        lines.opt().setColorIndex(new OneIndexVector(2));
         plot.add(lines);
 
         plot.getOp().setYRange(2.5, 4.5);

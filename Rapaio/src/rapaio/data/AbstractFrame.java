@@ -17,6 +17,10 @@
 package rapaio.data;
 
 /**
+ * Base class for a vector which enforces to read-only name given at construction time.
+ * <p/>
+ * It also provides behavior for the utility access methods based on row and column indexes.
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public abstract class AbstractFrame implements Frame {

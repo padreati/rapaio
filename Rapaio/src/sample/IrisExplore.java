@@ -17,7 +17,7 @@
 package sample;
 
 import rapaio.data.Frame;
-import rapaio.data.IndexOneVector;
+import rapaio.data.OneIndexVector;
 import rapaio.datasets.Datasets;
 import rapaio.explore.Summary;
 import rapaio.graphics.Histogram;
@@ -73,7 +73,7 @@ public class IrisExplore {
         Plot plot = new Plot();
         Points points = new Points(plot, df.getCol(2), df.getCol(3));
         points.opt().setColorIndex(df.getCol("class"));
-        points.opt().setPchIndex(new IndexOneVector(1));
+        points.opt().setPchIndex(new OneIndexVector(1));
         plot.setBottomLabel(df.getColNames()[2]);
         plot.setLeftLabel(df.getColNames()[3]);
         plot.setTitle("Iris datapoints colored by species");

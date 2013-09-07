@@ -17,16 +17,17 @@
 package rapaio.data;
 
 /**
+ * Numeric vector with a single row and the value specified in constructor.
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class IndexOneVector extends IndexVector {
+public class OneNumericVector extends NumericVector {
 
-    public IndexOneVector(int index) {
-        this("", index);
+    public OneNumericVector(double value) {
+        this("", value);
     }
 
-    public IndexOneVector(String name, int index) {
-        super(name, 1);
-        setIndex(0, index);
+    public OneNumericVector(String name, double value) {
+        super(name, new double[]{value});
     }
 }

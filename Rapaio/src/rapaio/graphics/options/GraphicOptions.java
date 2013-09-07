@@ -16,8 +16,8 @@
 
 package rapaio.graphics.options;
 
-import rapaio.data.IndexOneVector;
-import rapaio.data.NumericOneVector;
+import rapaio.data.OneIndexVector;
+import rapaio.data.OneNumericVector;
 import rapaio.data.Vector;
 import rapaio.graphics.colors.ColorPalette;
 
@@ -32,9 +32,9 @@ public class GraphicOptions {
     private final GraphicOptions parent;
     private int lwd = 1;
     private ColorPalette colorPalette = ColorPalette.STANDARD;
-    private Vector sizeIndex = new NumericOneVector(2.5);
-    private Vector colorIndex = new IndexOneVector(0);
-    private Vector pchIndex = new IndexOneVector(0);
+    private Vector sizeIndex = new OneNumericVector(2.5);
+    private Vector colorIndex = new OneIndexVector(0);
+    private Vector pchIndex = new OneIndexVector(0);
     private double x1 = Double.NaN;
     private double x2 = Double.NaN;
     private double y1 = Double.NaN;

@@ -175,8 +175,8 @@ public class CsvPersistence {
     private Frame buildFrame(String name, List<String> names, List<String> rows) {
         int cols = names.size();
         List<List<String>> splitted = new ArrayList<>();
-        for (int i = 0; i < rows.size(); i++) {
-            List<String> row = readData(rows.get(i));
+        for (String row1 : rows) {
+            List<String> row = readData(row1);
             cols = Math.max(cols, row.size());
             splitted.add(row);
         }

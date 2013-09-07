@@ -19,6 +19,9 @@ package rapaio.data;
 import java.util.Comparator;
 
 /**
+ * Index vector contains numeric integer values.
+ * Its primary use is to specify various integer coded values for given rows.
+ *
  * @author Aurelian Tutuianu
  */
 public class IndexVector extends AbstractVector {

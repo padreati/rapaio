@@ -22,6 +22,8 @@ package rapaio.data;
 import java.util.HashMap;
 
 /**
+ * A frame which is not mapped, its values are contained in vectors.
+ *
  * @author Aurelian Tutuianu
  */
 public class SolidFrame extends AbstractFrame {

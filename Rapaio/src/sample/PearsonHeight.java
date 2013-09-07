@@ -21,7 +21,7 @@ import rapaio.core.stat.Quantiles;
 import rapaio.core.stat.Variance;
 import rapaio.correlation.PearsonRhoCorrelation;
 import rapaio.data.Frame;
-import rapaio.data.IndexOneVector;
+import rapaio.data.OneIndexVector;
 import rapaio.datasets.Datasets;
 import rapaio.distributions.Distribution;
 import rapaio.distributions.Normal;
@@ -68,7 +68,7 @@ public class PearsonHeight {
 
             Normal normal = new Normal(new Mean(df.getCol(i)).getValue(), sqrt(new Variance(df.getCol(i)).getValue()));
             FunctionLine nline = new FunctionLine(hist, normal.getPdfFunction());
-            nline.opt().setColorIndex(new IndexOneVector(2));
+            nline.opt().setColorIndex(new OneIndexVector(2));
             hist.add(nline);
 
             draw(hist, 700, 300);
@@ -124,13 +124,13 @@ public class PearsonHeight {
 
         for (int i = 0; i < fatherQuantiles.getValues().length; i++) {
             ABLine line = new ABLine(plot, fatherQuantiles.getValues()[i], false);
-            line.opt().setColorIndex(new IndexOneVector(30));
+            line.opt().setColorIndex(new OneIndexVector(30));
             plot.add(line);
         }
 
         for (int i = 0; i < sonQuantiles.getValues().length; i++) {
             ABLine line = new ABLine(plot, sonQuantiles.getValues()[i], true);
-            line.opt().setColorIndex(new IndexOneVector(30));
+            line.opt().setColorIndex(new OneIndexVector(30));
             plot.add(line);
         }
         draw(plot, 600, 600);

@@ -56,10 +56,7 @@ public class RemotePrinter extends AbstractPrinter {
             int graphicHeight = in.readInt();
 
             return textWidth;
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(RemotePrinter.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(RemotePrinter.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
         }
         return 120;
     }

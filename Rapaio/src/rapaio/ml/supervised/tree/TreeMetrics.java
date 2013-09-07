@@ -31,9 +31,9 @@ public class TreeMetrics {
             hits[df.getCol(classIndex).getIndex(i)]++;
         }
         double entropy = 0.;
-        for (int i = 0; i < hits.length; i++) {
-            if (hits[i] != 0) {
-                double p = hits[i] / (1. * df.getRowCount());
+        for (int hit : hits) {
+            if (hit != 0) {
+                double p = hit / (1. * df.getRowCount());
                 entropy += -p * log(p) / log(2);
             }
         }

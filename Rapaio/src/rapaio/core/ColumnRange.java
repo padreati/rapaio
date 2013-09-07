@@ -24,6 +24,15 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
+ * Builds a list of column indexes from column ranges in string
+ * format when applied to a data frame. Used as utility tool to easy
+ * the specification of column indexes.
+ * <p/>
+ * Column ranges can be specified directly as a list of column indexes.
+ * <p/>
+ * Column ranges syntax uses as range separator "-", and as column
+ * range delimiter the comma ",".
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class ColumnRange {
@@ -32,6 +41,11 @@ public class ColumnRange {
     private static final String COL_RANGE = "-";
     private final String rawColumnRange;
 
+    /**
+     * Builds a column range directly from a list of column indexes.
+     *
+     * @param colIndexes list of column indexes
+     */
     public ColumnRange(int... colIndexes) {
         if (colIndexes.length == 0) {
             throw new IllegalArgumentException("No column indexes specified.");
@@ -46,10 +60,23 @@ public class ColumnRange {
         this.rawColumnRange = sb.toString();
     }
 
+    /**
+     * Builds a column range from column ranges formatted as string
+     * with required syntax.
+     *
+     * @param rawColumnRange column ranges specified in string format
+     */
     public ColumnRange(String rawColumnRange) {
         this.rawColumnRange = rawColumnRange;
     }
 
+    /**
+     * Apply a column range over a frame, obtaining the list of
+     * column indexes for that frame.
+     *
+     * @param df target frame
+     * @return a list of column indexes which corresponds to column range
+     */
     public List<Integer> parseColumnIndexes(Frame df) {
         String[] ranges = rawColumnRange.split(COL_DELIMITER);
         List<Integer> colIndexes = new ArrayList<>();
@@ -59,8 +86,7 @@ public class ColumnRange {
             colNames.add(df.getColNames()[i]);
         }
 
-        for (int i = 0; i < ranges.length; i++) {
-            String range = ranges[i];
+        for (String range : ranges) {
             int start, end;
 
             if (range.contains(COL_RANGE)) {

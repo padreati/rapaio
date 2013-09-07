@@ -31,10 +31,6 @@ public class Workspace {
     private static DataContainer session = new DataContainer();
     private static Printer printer = new StandardPrinter();
 
-    public static DataContainer getSession() {
-        return session;
-    }
-
     public static void setPrinter(Printer printer) {
         Workspace.printer = printer;
     }

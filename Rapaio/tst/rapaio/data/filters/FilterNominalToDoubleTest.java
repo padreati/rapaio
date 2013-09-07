@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import static rapaio.core.BaseMath.pow;
-import rapaio.data.IndexOneVector;
+import rapaio.data.OneIndexVector;
 import rapaio.data.NominalVector;
 import rapaio.data.Vector;
 import rapaio.filters.BaseFilters;
@@ -73,7 +73,7 @@ public class FilterNominalToDoubleTest {
 
     @Test
     public void testNotNominal() {
-        Vector filtered = new IndexOneVector(0);
+        Vector filtered = new OneIndexVector(0);
         try {
             BaseFilters.toNumeric(filtered.getName(), filtered);
         } catch (IllegalArgumentException ex) {

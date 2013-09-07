@@ -19,13 +19,12 @@ package rapaio.ml.supervised.rule;
 import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.data.Vector;
+import static rapaio.explore.Workspace.code;
 import rapaio.ml.supervised.AbstractClassifier;
 import rapaio.ml.supervised.ClassifierResult;
 
 import java.io.Serializable;
 import java.util.*;
-
-import static rapaio.explore.Workspace.code;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -155,14 +154,14 @@ public class OneRule extends AbstractClassifier {
             int totalSubset = 0;
             int max = -1;
             int count = 0;
-            for (int j = 0; j < hist.length; j++) {
-                totalSubset += hist[j];
-                if (hist[j] > max) {
-                    max = hist[j];
+            for (int aHist : hist) {
+                totalSubset += aHist;
+                if (aHist > max) {
+                    max = aHist;
                     count = 1;
                     continue;
                 }
-                if (hist[j] == max && hist[j] != 0) {
+                if (aHist == max && aHist != 0) {
                     count++;
                 }
             }
@@ -210,14 +209,14 @@ public class OneRule extends AbstractClassifier {
             int totalSubset = 0;
             int max = -1;
             int count = 0;
-            for (int i = 0; i < hist.length; i++) {
-                totalSubset += hist[i];
-                if (max < hist[i]) {
-                    max = hist[i];
+            for (int aHist : hist) {
+                totalSubset += aHist;
+                if (max < aHist) {
+                    max = aHist;
                     count = 1;
                     continue;
                 }
-                if (max == hist[i]) {
+                if (max == aHist) {
                     count++;
                 }
             }

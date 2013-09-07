@@ -16,7 +16,7 @@
 
 package rapaio.data;
 
-import rapaio.data.util.AggregateComparator;
+import rapaio.data.util.AggregateRowComparator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +24,9 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
+ * A vector which is build based on another vector with row in
+ * the order specified by given criteria.
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class SortedVector extends AbstractVector {
@@ -42,7 +45,7 @@ public class SortedVector extends AbstractVector {
         for (int i = 0; i < source.getRowCount(); i++) {
             mapping.add(i);
         }
-        Collections.sort(mapping, new AggregateComparator(comparators));
+        Collections.sort(mapping, new AggregateRowComparator(comparators));
     }
 
     public SortedVector(Vector source, List<Integer> mapping) {

@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 /**
- * Numeric vector holds continuous or dicrete random variables.
+ * Numeric vector holds continuous or discrete random variables.
  *
  * @author Aurelian Tutuianu
  */

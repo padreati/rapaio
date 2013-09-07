@@ -19,6 +19,14 @@ package rapaio.data;
 import java.util.List;
 
 /**
+ * A frame which is build on the base of another frame with
+ * the row order and row selection specified by a
+ * mapping give at construction time.
+ * <p/>
+ * This frame does not hold actual values, it delegate the behavior
+ * to the wrapped frame, thus the wrapping affects only the rows
+ * selected anf the order of these rows.
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class MappedFrame extends AbstractFrame {

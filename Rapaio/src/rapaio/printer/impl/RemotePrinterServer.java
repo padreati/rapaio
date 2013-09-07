@@ -32,12 +32,11 @@ import java.util.logging.Logger;
  */
 public abstract class RemotePrinterServer {
 
-    private int port = 2341;
     private ServerSocket server;
     private WaitingThread wait;
 
     public void start() throws IOException {
-        server = new ServerSocket(port);
+        server = new ServerSocket(2341);
         wait = new WaitingThread(server, this);
         wait.start();
     }

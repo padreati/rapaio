@@ -18,7 +18,7 @@ package rapaio.graphics;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
-import rapaio.data.IndexOneVector;
+import rapaio.data.OneIndexVector;
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
 import rapaio.core.ColumnRange;
@@ -114,7 +114,7 @@ public class BoxPlot extends BaseFigure {
         setLeftThicker(true);
         setBottomMarkers(true);
         setBottomThicker(true);
-        getOp().setColorIndex(new IndexOneVector(0));
+        getOp().setColorIndex(new OneIndexVector(0));
     }
 
     @Override

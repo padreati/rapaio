@@ -16,13 +16,15 @@
 
 package rapaio.data;
 
-import rapaio.data.util.AggregateComparator;
+import rapaio.data.util.AggregateRowComparator;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
 /**
+ * A frame which is build based on another frame but with rows sorted by given criteria.
+ *
  * @author Aurelian Tutuianu
  */
 public class SortedFrame extends AbstractFrame {
@@ -41,7 +43,7 @@ public class SortedFrame extends AbstractFrame {
         for (int i = 0; i < df.getRowCount(); i++) {
             mapping.add(i);
         }
-        Collections.sort(mapping, new AggregateComparator(comparators));
+        Collections.sort(mapping, new AggregateRowComparator(comparators));
     }
 
     @Override

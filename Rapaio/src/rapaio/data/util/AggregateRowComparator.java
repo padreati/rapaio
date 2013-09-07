@@ -22,11 +22,11 @@ import java.util.Comparator;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class AggregateComparator implements Comparator<Integer>, Serializable {
+public class AggregateRowComparator implements Comparator<Integer>, Serializable {
 
     private final Comparator<Integer>[] comparators;
 
-    public AggregateComparator(Comparator<Integer>[] comparators) {
+    public AggregateRowComparator(Comparator<Integer>[] comparators) {
         this.comparators = comparators;
     }
 

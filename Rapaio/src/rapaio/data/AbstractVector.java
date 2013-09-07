@@ -17,6 +17,8 @@
 package rapaio.data;
 
 /**
+ * Base class for a vector which enforces to read-only name given at construction time.
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public abstract class AbstractVector implements Vector {

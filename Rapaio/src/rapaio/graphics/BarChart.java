@@ -17,7 +17,7 @@
 package rapaio.graphics;
 
 import rapaio.core.stat.Sum;
-import rapaio.data.IndexOneVector;
+import rapaio.data.OneIndexVector;
 import rapaio.data.IndexVector;
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
@@ -59,7 +59,7 @@ public class BarChart extends BaseFigure {
         bottomThicker = true;
         bottomMarkers = true;
 
-        getOp().setColorIndex(new IndexOneVector(7));
+        getOp().setColorIndex(new OneIndexVector(7));
 
         this.setLeftLabel(numeric.getName());
         this.setBottomLabel(nominal.getName());

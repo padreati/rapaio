@@ -20,6 +20,14 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
+ * A vector which is build on the base of another vector and
+ * the row order and which rows are selected is specified by a
+ * mapping give at construction time.
+ * <p/>
+ * This vector does not hold actual values, it delegate the behavior
+ * to the wrapped vector, thus the wrapping affects only the rows
+ * selected anf the order of these rows.
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class MappedVector extends AbstractVector {

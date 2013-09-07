@@ -16,7 +16,7 @@
 
 package sample;
 
-import rapaio.data.IndexOneVector;
+import rapaio.data.OneIndexVector;
 import rapaio.distributions.Normal;
 import rapaio.distributions.StudentT;
 import rapaio.graphics.Plot;
@@ -43,7 +43,7 @@ public class NormalDistribution {
         p.getOp().setYRange(0, 0.5);
 
         FunctionLine normalpdf = new FunctionLine(p, new Normal().getPdfFunction());
-        normalpdf.opt().setColorIndex(new IndexOneVector(1));
+        normalpdf.opt().setColorIndex(new OneIndexVector(1));
         p.add(normalpdf);
 
         draw(p);

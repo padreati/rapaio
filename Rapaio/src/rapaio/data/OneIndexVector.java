@@ -17,15 +17,18 @@
 package rapaio.data;
 
 /**
+ * Index vector with one row and with the index value specified at construction time.
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class NumericOneVector extends NumericVector {
+public class OneIndexVector extends IndexVector {
 
-    public NumericOneVector(double value) {
-        this("", value);
+    public OneIndexVector(int index) {
+        this("", index);
     }
 
-    public NumericOneVector(String name, double value) {
-        super(name, new double[]{value});
+    public OneIndexVector(String name, int index) {
+        super(name, 1);
+        setIndex(0, index);
     }
 }

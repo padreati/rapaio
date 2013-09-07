@@ -16,7 +16,7 @@
 
 package rapaio.graphics;
 
-import rapaio.data.IndexOneVector;
+import rapaio.data.OneIndexVector;
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
 import rapaio.distributions.Distribution;
@@ -43,7 +43,7 @@ public class QQPlot extends Plot {
         }
 
         Points pts = new Points(this, y, x);
-        pts.opt().setColorIndex(new IndexOneVector(0));
+        pts.opt().setColorIndex(new OneIndexVector(0));
         this.add(pts);
     }
 
