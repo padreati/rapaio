@@ -1,0 +1,8 @@
+<component name="libraryTable">
+  <library name="junit:junit-dep:4.10" type="repository">
+    <properties maven-id="junit:junit-dep:4.10" />
+    <CLASSES />
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
