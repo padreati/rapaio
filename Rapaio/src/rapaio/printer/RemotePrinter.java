@@ -91,11 +91,9 @@ public class RemotePrinter extends AbstractPrinter {
              DataInputStream in = new DataInputStream(clientSocket.getInputStream())) {
             out.writeUTF("info");
 
-            int textWidth = in.readInt();
-            int graphicWidth = in.readInt();
-            int graphicHeight = in.readInt();
-
-            return graphicHeight;
+            in.readInt();
+            in.readInt();
+            return in.readInt();
         } catch (UnknownHostException ex) {
             Logger.getLogger(RemotePrinter.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -142,7 +140,7 @@ public class RemotePrinter extends AbstractPrinter {
 
         BufferedImage newImage = ImageUtility.buildImage(figure, width, height, BufferedImage.TYPE_3BYTE_BGR);
         try (Socket clientSocket = new Socket("localhost", port);
-             DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());) {
+             DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream())) {
             out.writeUTF("image");
             ImageIO.write(newImage, "JPG", out);
             out.flush();

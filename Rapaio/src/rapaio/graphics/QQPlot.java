@@ -31,7 +31,7 @@ public class QQPlot extends Plot {
 
     public QQPlot() {
         setLeftLabel("Sample Quantiles");
-        setBottomLabel("Theorethical Quantiles");
+        setBottomLabel("Theoretical Quantiles");
     }
 
     public void add(Vector points, Distribution distribution) {

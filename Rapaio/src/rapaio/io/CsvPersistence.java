@@ -197,8 +197,7 @@ public class CsvPersistence {
                 }
             }
         }
-        Frame df = new SolidFrame(name, rows.size(), vectors);
-        return df;
+        return new SolidFrame(name, rows.size(), vectors);
     }
 
     public void write(Frame df, String fileName) throws IOException {

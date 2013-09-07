@@ -34,7 +34,6 @@ public class HistogramBars extends PlotComponent {
     int maxBins = 0;
     boolean prob = false;
     boolean rebuild = true;
-    ;
     double[] freqtable;
     double minvalue = Double.NaN;
     double maxvalue = Double.NaN;

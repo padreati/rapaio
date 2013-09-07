@@ -16,6 +16,7 @@
 
 package rapaio.graphics;
 
+import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.IndexOneVector;
 import rapaio.data.NumericVector;
@@ -29,7 +30,6 @@ import java.util.List;
 
 import static rapaio.core.BaseMath.max;
 import static rapaio.core.BaseMath.min;
-import static rapaio.core.BaseStat.quantiles;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -159,7 +159,7 @@ public class BoxPlot extends BaseFigure {
                 continue;
             }
             double[] p = new double[]{0.25, 0.5, 0.75};
-            double[] q = quantiles(v, p).value();
+            double[] q = new Quantiles(v, p).getValues();
             double iqr = q[2] - q[0];
             double innerfence = 1.5 * iqr;
             double outerfence = 3 * iqr;

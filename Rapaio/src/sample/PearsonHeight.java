@@ -16,6 +16,7 @@
 
 package sample;
 
+import rapaio.core.stat.*;
 import rapaio.data.Frame;
 import rapaio.data.IndexOneVector;
 import rapaio.datasets.Datasets;
@@ -33,7 +34,6 @@ import rapaio.printer.HTMLPrinter;
 import java.io.IOException;
 
 import static rapaio.core.BaseMath.sqrt;
-import static rapaio.core.BaseStat.*;
 import static rapaio.core.Correlation.pearsonRho;
 import static rapaio.explore.Summary.summary;
 import static rapaio.explore.Workspace.*;
@@ -64,7 +64,7 @@ public class PearsonHeight {
             hist.getOp().setXRange(57, 80);
             hist.getOp().setYRange(0, 0.15);
 
-            Normal normal = new Normal(mean(df.getCol(i)).value(), sqrt(variance(df.getCol(i)).value()));
+            Normal normal = new Normal(new Mean(df.getCol(i)).getValue(), sqrt(new Variance(df.getCol(i)).getValue()));
             FunctionLine nline = new FunctionLine(hist, normal.getPdfFunction());
             nline.opt().setColorIndex(new IndexOneVector(2));
             hist.add(nline);
@@ -86,7 +86,7 @@ public class PearsonHeight {
 
             QQPlot qqplot = new QQPlot();
 
-            double mu = mean(df.getCol(i)).value();
+            double mu = new Mean(df.getCol(i)).getValue();
 
             Distribution normal = new Normal();
             qqplot.add(df.getCol(i), normal);
@@ -98,11 +98,11 @@ public class PearsonHeight {
             draw(qqplot, 500, 300);
         }
 
-        summary(mean(df.getCol("Father")));
-        summary(variance(df.getCol("Father")));
+        summary(new Mean(df.getCol("Father")));
+        summary(new Variance(df.getCol("Father")));
 
-        summary(mean(df.getCol("Son")));
-        summary(variance(df.getCol("Son")));
+        summary(new Mean(df.getCol("Son")));
+        summary(new Variance(df.getCol("Son")));
 
         summary(pearsonRho(df.getCol("Father"), df.getCol("Son")));
 
@@ -110,8 +110,8 @@ public class PearsonHeight {
         for (int i = 0; i < perc.length; i++) {
             perc[i] = i / (10.);
         }
-        QuantilesResult fatherQuantiles = quantiles(df.getCol("Father"), perc);
-        QuantilesResult sonQuantiles = quantiles(df.getCol("Son"), perc);
+        Quantiles fatherQuantiles = new Quantiles(df.getCol("Father"), perc);
+        Quantiles sonQuantiles = new Quantiles(df.getCol("Son"), perc);
         summary(fatherQuantiles);
         summary(sonQuantiles);
 
@@ -120,14 +120,14 @@ public class PearsonHeight {
         plot.getOp().setXRange(55, 80);
         plot.getOp().setYRange(55, 80);
 
-        for (int i = 0; i < fatherQuantiles.value().length; i++) {
-            ABLine line = new ABLine(plot, fatherQuantiles.value()[i], false);
+        for (int i = 0; i < fatherQuantiles.getValues().length; i++) {
+            ABLine line = new ABLine(plot, fatherQuantiles.getValues()[i], false);
             line.opt().setColorIndex(new IndexOneVector(30));
             plot.add(line);
         }
 
-        for (int i = 0; i < sonQuantiles.value().length; i++) {
-            ABLine line = new ABLine(plot, sonQuantiles.value()[i], true);
+        for (int i = 0; i < sonQuantiles.getValues().length; i++) {
+            ABLine line = new ABLine(plot, sonQuantiles.getValues()[i], true);
             line.opt().setColorIndex(new IndexOneVector(30));
             plot.add(line);
         }

@@ -28,7 +28,6 @@ import java.util.ArrayList;
 public abstract class BaseFigure implements Figure {
 
     protected final GraphicOptions options = new GraphicOptions();
-    ;
     protected static final Font titleFont = new Font("Verdana", Font.BOLD, 18);
     protected static final Font markersFont = new Font("Verdana", Font.PLAIN, 12);
     protected static final Font labelsFont = new Font("Verdana", Font.BOLD, 14);
@@ -38,24 +37,19 @@ public abstract class BaseFigure implements Figure {
     protected static final int LABEL_PAD = 30;
     protected static final int TITLE_PAD = 40;
     protected static final int MINIMUM_PAD = 20;
-    ;
     protected Rectangle viewport;
     protected boolean leftThicker;
     protected boolean bottomThicker;
     protected boolean leftMarkers;
     protected boolean bottomMarkers;
     private Range range;
-    ;
     protected ArrayList<String> bottomMarkersMsg = new ArrayList<>();
     protected ArrayList<Double> bottomMarkersPos = new ArrayList<>();
     protected ArrayList<String> leftMarkersMsg = new ArrayList<>();
     protected ArrayList<Double> leftMarkersPos = new ArrayList<>();
-    ;
     protected String title;
     protected String leftLabel;
     protected String bottomLabel;
-
-    ;
 
     @Override
     public GraphicOptions getOp() {

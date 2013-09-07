@@ -34,7 +34,6 @@ public class OneRule extends AbstractClassifier {
 
     private int minCount = 6;
     private final List<OneRuleSet> learnedRules = new ArrayList<>();
-    ;
     private String[] classDictionary;
 
     public OneRule() {

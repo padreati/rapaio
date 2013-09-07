@@ -16,6 +16,7 @@
 
 package rapaio.graphics;
 
+import rapaio.core.stat.Sum;
 import rapaio.data.IndexOneVector;
 import rapaio.data.IndexVector;
 import rapaio.data.NumericVector;
@@ -28,8 +29,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static rapaio.core.BaseStat.sum;
-
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
@@ -37,8 +36,6 @@ public class BarChart extends BaseFigure {
 
     private final Vector numeric;
     private final Vector nominal;
-    ;
-    private int bins;
     private double[] values;
     private Range range;
 
@@ -73,7 +70,7 @@ public class BarChart extends BaseFigure {
         if (range == null) {
 
             // build preliminaries
-            bins = nominal.dictionary().length;
+            int bins = nominal.dictionary().length;
             values = new double[bins];
             HashMap<String, ArrayList<Double>> map = new HashMap<>();
             for (String label : nominal.dictionary()) {
@@ -87,7 +84,7 @@ public class BarChart extends BaseFigure {
                 for (int j = 0; j < v.getRowCount(); j++) {
                     v.setValue(j, map.get(nominal.dictionary()[i]).get(j));
                 }
-                values[i] = sum(v).value();
+                values[i] = new Sum(v).getValue();
             }
 
             // now build range

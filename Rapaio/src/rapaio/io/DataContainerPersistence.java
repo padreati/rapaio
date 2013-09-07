@@ -28,8 +28,7 @@ public class DataContainerPersistence {
     public DataContainer restoreFromFile(String file) throws IOException, ClassNotFoundException {
         FileInputStream fileIn = new FileInputStream(file);
         ObjectInputStream in = new ObjectInputStream(fileIn);
-        DataContainer s = (DataContainer) in.readObject();
-        return s;
+        return (DataContainer) in.readObject();
     }
 
     public void storeToFile(DataContainer session, String file) throws FileNotFoundException, IOException {

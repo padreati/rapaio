@@ -44,7 +44,7 @@ public class OneRuleModel {
 
         Frame train = Explore.read("train.csv");
         Frame test = Explore.read("test.csv");
-        List<Frame> frames = NominalConsolidator.consolidate(Arrays.asList(new Frame[]{train, test}));
+        List<Frame> frames = NominalConsolidator.consolidate(Arrays.asList(train, test));
         train = frames.get(0);
         test = frames.get(1);
 

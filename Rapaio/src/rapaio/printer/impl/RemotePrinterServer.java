@@ -73,7 +73,7 @@ class WaitingThread extends Thread {
             try {
                 Socket socket = server.accept();
                 try (DataInputStream in = new DataInputStream(socket.getInputStream());
-                     DataOutputStream out = new DataOutputStream(socket.getOutputStream());) {
+                     DataOutputStream out = new DataOutputStream(socket.getOutputStream())) {
 
                     String cmd = in.readUTF();
                     if (cmd.equals("image")) {

@@ -16,12 +16,12 @@
 
 package rapaio.core;
 
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
 import rapaio.data.Vector;
 
 import static rapaio.core.BaseMath.max;
 import static rapaio.core.BaseMath.sqrt;
-import static rapaio.core.BaseStat.mean;
-import static rapaio.core.BaseStat.variance;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -39,17 +39,17 @@ public final class Correlation {
      * @return Pearson Rho coefficient
      */
     public static PearsonRhoResult pearsonRho(Vector x, Vector y) {
-        double xmean = mean(x).value();
-        double ymean = mean(y).value();
+        double xMean = new Mean(x).getValue();
+        double yMean = new Mean(y).getValue();
         double sum = 0;
         int len = max(x.getRowCount(), y.getRowCount());
-        double sdp = sqrt(variance(x).value()) * sqrt(variance(y).value());
+        double sdp = sqrt(new Variance(x).getValue()) * sqrt(new Variance(y).getValue());
         double count = 0;
         for (int i = 0; i < len; i++) {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
-            sum += ((x.getValue(i) - xmean) * (y.getValue(i) - ymean));
+            sum += ((x.getValue(i) - xMean) * (y.getValue(i) - yMean));
             count++;
         }
         return new PearsonRhoResult(x, y, sum / (sdp * (count - 1)));

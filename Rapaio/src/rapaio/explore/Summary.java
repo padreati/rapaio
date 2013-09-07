@@ -17,6 +17,8 @@
 package rapaio.explore;
 
 import rapaio.core.Summarizable;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.NominalVector;
 import rapaio.data.Vector;
@@ -24,8 +26,6 @@ import rapaio.data.Vector;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import static rapaio.core.BaseStat.mean;
-import static rapaio.core.BaseStat.quantiles;
 import static rapaio.explore.Workspace.code;
 import static rapaio.explore.Workspace.getPrinter;
 
@@ -62,8 +62,8 @@ public class Summary {
             Vector v = df.getCol(i);
             if (v.isNumeric()) {
                 double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
-                double[] perc = quantiles(v, p).value();
-                double mean = mean(v).value();
+                double[] perc = new Quantiles(v, p).getValues();
+                double mean = new Mean(v).getValue();
 
                 int nas = 0;
                 for (int j = 0; j < df.getRowCount(); j++) {
@@ -239,8 +239,8 @@ public class Summary {
 
         if (v.isNumeric()) {
             double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
-            double[] perc = quantiles(v, p).value();
-            double mean = mean(v).value();
+            double[] perc = new Quantiles(v, p).getValues();
+            double mean = new Mean(v).getValue();
 
             int nas = 0;
             for (int j = 0; j < v.getRowCount(); j++) {
