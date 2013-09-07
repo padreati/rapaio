@@ -1,36 +1,37 @@
+/*
+ * Copyright 2013 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package jama;
 
 /**
  * Singular Value Decomposition.
- * <P>
+ * <p/>
  * For an m-by-n matrix A with m >= n, the singular getValue decomposition is an
  * m-by-n orthogonal matrix U, an n-by-n diagonal matrix S, and an n-by-n
  * orthogonal matrix V so that A = U*S*V'.
- * <P>
+ * <p/>
  * The singular values, sigma[k] = S[k][k], are ordered so that sigma[0] >=
  * sigma[1] >= ... >= sigma[n-1].
- * <P>
+ * <p/>
  * The singular getValue decompostion always exists, so the constructor will never
  * fail. The matrix condition number and the effective numerical rank can be
  * computed from this decomposition.
  */
 
-/**
- * Copyright Notice
- * <p/>
- * This software is a cooperative product of The MathWorks and the National
- * Institute of Standards and Technology (NIST) which has been released to the
- * public domain. Neither The MathWorks nor NIST assumes any responsibility
- * whatsoever for its use by other parties, and makes no guarantees, expressed
- * or implied, about its quality, reliability, or any other characteristic.
- * <p/>
- * As Jama is in the public domain other developers are free to adopt and adapt
- * this code to other styles of programming or to extend or modernize the API.
- * You might find one of these libraries to be more suitable to your purposes.
- * Make note, however, that NIST makes no endorsement of these projects.
- * <p/>
- * http://math.nist.gov/javanumerics/jama/
- */
+
 public class SingularValueDecomposition implements java.io.Serializable {
 
     /*

@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package rapaio.supervised.tree;
+package rapaio.ml.supervised.tree;
 
 import rapaio.data.Frame;
 import rapaio.filters.FilterGroupByNominal;

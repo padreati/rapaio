@@ -14,19 +14,20 @@
  *    limitations under the License.
  */
 
-package rapaio.supervised;
+package rapaio.ml.supervised;
 
 import rapaio.data.Frame;
-import rapaio.data.Vector;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface ClassifierResult {
+public interface Classifier {
 
-    Frame getTestFrame();
+    void learn(Frame df, int classIndex);
 
-    Vector getClassification();
+    void learn(Frame df, String className);
 
-    Frame getProbabilities();
+    void printModelSummary();
+
+    ClassifierResult predict(Frame df);
 }

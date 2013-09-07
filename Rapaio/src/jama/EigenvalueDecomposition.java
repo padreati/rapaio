@@ -1,38 +1,38 @@
+/*
+ * Copyright 2013 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package jama;
 
 /**
  * Eigenvalues and eigenvectors of a real matrix.
- * <P>
+ * <p/>
  * If A is symmetric, then A = V*D*V' where the eigenvalue matrix D is diagonal
  * and the eigenvector matrix V is orthogonal. I.e. A =
  * V.times(D.times(V.transpose())) and V.times(V.transpose()) equals the
  * identity matrix.
- * <P>
+ * <p/>
  * If A is not symmetric, then the eigenvalue matrix D is block diagonal with
  * the real eigenvalues in 1-by-1 blocks and any complex eigenvalues, lambda +
  * i*mu, in 2-by-2 blocks, [lambda, mu; -mu, lambda]. The columns of V represent
  * the eigenvectors in the sense that A*V = V*D, i.e. A.times(V) equals
  * V.times(D). The matrix V may be badly conditioned, or even singular, so the
  * validity of the equation A = V*D*inverse(V) depends upon V.cond().
- *
  */
 
-/**
- * Copyright Notice
- * <p/>
- * This software is a cooperative product of The MathWorks and the National
- * Institute of Standards and Technology (NIST) which has been released to the
- * public domain. Neither The MathWorks nor NIST assumes any responsibility
- * whatsoever for its use by other parties, and makes no guarantees, expressed
- * or implied, about its quality, reliability, or any other characteristic.
- * <p/>
- * As Jama is in the public domain other developers are free to adopt and adapt
- * this code to other styles of programming or to extend or modernize the API.
- * You might find one of these libraries to be more suitable to your purposes.
- * Make note, however, that NIST makes no endorsement of these projects.
- * <p/>
- * http://math.nist.gov/javanumerics/jama/
- */
+
 public class EigenvalueDecomposition implements java.io.Serializable {
 
     /*

@@ -16,15 +16,14 @@
 
 package rapaio.distributions.empirical;
 
+import static rapaio.core.BaseMath.pow;
+import static rapaio.core.BaseMath.sqrt;
 import rapaio.data.Vector;
 import rapaio.distributions.Distribution;
+import static rapaio.filters.RowFilters.sort;
 
 import java.util.Arrays;
 import java.util.Comparator;
-
-import static rapaio.core.BaseFilters.sort;
-import static rapaio.core.BaseMath.pow;
-import static rapaio.core.BaseMath.sqrt;
 
 /**
  * Discrete empirical distribution obtained from data.

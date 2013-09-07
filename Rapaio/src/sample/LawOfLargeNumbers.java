@@ -16,7 +16,7 @@
 
 package sample;
 
-import rapaio.core.OnlineCoreStat;
+import rapaio.core.stat.OnlineCoreStat;
 import rapaio.core.RandomSource;
 import rapaio.data.IndexOneVector;
 import rapaio.data.IndexVector;

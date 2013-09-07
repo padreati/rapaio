@@ -17,8 +17,8 @@
 package rapaio.ml.instance;
 
 import rapaio.data.Frame;
-import rapaio.supervised.AbstractClassifier;
-import rapaio.supervised.ClassifierResult;
+import rapaio.ml.supervised.AbstractClassifier;
+import rapaio.ml.supervised.ClassifierResult;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

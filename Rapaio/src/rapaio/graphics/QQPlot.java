@@ -20,9 +20,8 @@ import rapaio.data.IndexOneVector;
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
 import rapaio.distributions.Distribution;
+import static rapaio.filters.RowFilters.*;
 import rapaio.graphics.plot.Points;
-
-import static rapaio.core.BaseFilters.sort;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

@@ -14,16 +14,15 @@
  *    limitations under the License.
  */
 
-package rapaio.supervised;
+package rapaio.ml.supervised;
 
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
+import static rapaio.explore.Workspace.code;
+import static rapaio.filters.RowFilters.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static rapaio.core.BaseFilters.shuffle;
-import static rapaio.explore.Workspace.code;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

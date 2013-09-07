@@ -16,19 +16,18 @@
 
 package rapaio.data.filters;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+import static rapaio.core.BaseMath.pow;
 import rapaio.data.IndexOneVector;
 import rapaio.data.NominalVector;
 import rapaio.data.Vector;
+import static rapaio.filters.BaseFilters.toValue;
+import static rapaio.filters.RowFilters.sort;
 
 import java.util.Arrays;
 import java.util.HashSet;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static rapaio.core.BaseFilters.sort;
-import static rapaio.core.BaseFilters.toValue;
-import static rapaio.core.BaseMath.pow;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

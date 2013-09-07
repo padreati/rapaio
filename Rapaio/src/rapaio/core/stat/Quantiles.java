@@ -16,11 +16,10 @@
 
 package rapaio.core.stat;
 
+import static rapaio.core.BaseMath.floor;
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
-
-import static rapaio.core.BaseFilters.sort;
-import static rapaio.core.BaseMath.floor;
+import static rapaio.filters.RowFilters.sort;
 
 /**
  * Estimates quantiles from a numerical {@link rapaio.data.Vector} of values.

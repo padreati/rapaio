@@ -23,7 +23,7 @@ import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
 
-import static rapaio.core.BaseFilters.toValue;
+import static rapaio.filters.BaseFilters.toValue;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

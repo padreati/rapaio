@@ -18,9 +18,7 @@ package rapaio.distributions;
 
 import rapaio.core.RandomSource;
 import rapaio.data.NumericVector;
-import rapaio.functions.UnivariateFunction;
-
-import static rapaio.core.BaseMath.*;
+import rapaio.core.UnivariateFunction;
 
 /**
  * @author tutuianu

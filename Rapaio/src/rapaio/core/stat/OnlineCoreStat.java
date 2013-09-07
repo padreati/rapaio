@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package rapaio.core;
+package rapaio.core.stat;
 
 import static rapaio.core.BaseMath.max;
 import static rapaio.core.BaseMath.min;

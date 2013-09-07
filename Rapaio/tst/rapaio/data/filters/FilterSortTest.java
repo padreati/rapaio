@@ -16,16 +16,15 @@
 
 package rapaio.data.filters;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import rapaio.data.NominalVector;
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
+import static rapaio.filters.RowFilters.sort;
 
 import java.util.Arrays;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static rapaio.core.BaseFilters.sort;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

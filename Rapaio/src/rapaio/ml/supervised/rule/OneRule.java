@@ -14,13 +14,13 @@
  *    limitations under the License.
  */
 
-package rapaio.supervised.rule;
+package rapaio.ml.supervised.rule;
 
 import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.data.Vector;
-import rapaio.supervised.AbstractClassifier;
-import rapaio.supervised.ClassifierResult;
+import rapaio.ml.supervised.AbstractClassifier;
+import rapaio.ml.supervised.ClassifierResult;
 
 import java.io.Serializable;
 import java.util.*;

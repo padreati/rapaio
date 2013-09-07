@@ -24,7 +24,7 @@ import rapaio.data.Vector;
 import rapaio.data.util.NominalConsolidator;
 import rapaio.explore.Summary;
 import rapaio.filters.FilterMissingNominal;
-import rapaio.functions.UnivariateFunction;
+import rapaio.core.UnivariateFunction;
 import rapaio.graphics.BarChart;
 import rapaio.graphics.BoxPlot;
 import rapaio.graphics.Histogram;
@@ -39,7 +39,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import static rapaio.core.BaseFilters.*;
+import static rapaio.filters.BaseFilters.*;
+import static rapaio.filters.NumericFilters.*;
 import static rapaio.core.BaseMath.*;
 import static rapaio.explore.Workspace.*;
 
@@ -49,7 +50,7 @@ import static rapaio.explore.Workspace.*;
 public class Explore {
 
     public static void main(String[] args) throws IOException {
-        setPrinter(new HTMLPrinter("kaggle-titanic.html", "kaggle titanic"));
+//        setPrinter(new HTMLPrinter("kaggle-titanic.html", "kaggle titanic"));
 
         RandomSource.setSeed(1);
 
@@ -57,8 +58,8 @@ public class Explore {
 
         heading(1, "Kaggle Titanic descriptive analysis");
 
-        Frame train = read("train.csv");
-        Frame test = read("test.csv");
+        Frame train = Utils.read("train.csv");
+        Frame test = Utils.read("test.csv");
         List<Frame> frames = NominalConsolidator.consolidate(Arrays.asList(train, test));
         train = frames.get(0);
         test = frames.get(1);
@@ -101,68 +102,4 @@ public class Explore {
         closePrinter();
     }
 
-    public static Frame read(String name) throws IOException {
-        CsvPersistence csv = new CsvPersistence();
-        csv.setHeader(true);
-        csv.setColSeparator(',');
-        Frame df = csv.read(name, Explore.class.getResourceAsStream(name));
-
-        HashSet<String> numericColumns = new HashSet<>();
-        numericColumns.add("Age");
-        numericColumns.add("Fare");
-        numericColumns.add("SibSp");
-        numericColumns.add("Parch");
-        Vector[] vectors = new Vector[df.getColCount() + 2];
-        for (int i = 0; i < df.getColCount(); i++) {
-            // default do nothing
-            vectors[i] = df.getCol(i);
-            // fill spaces as missing vaues
-            if (vectors[i].isNominal()) {
-                vectors[i] = new FilterMissingNominal().filter(vectors[i], new String[]{"", " "});
-            }
-            // transform to isNumeric on Age
-            if (numericColumns.contains(df.getColNames()[i])) {
-                vectors[i] = toValue(vectors[i]);
-            }
-        }
-        vectors[vectors.length - 2] = applyFunction(toValue("LogFare", df.getCol("Fare")), new UnivariateFunction() {
-            @Override
-            public double eval(double value) {
-                return log(E + value);
-            }
-        });
-        HashMap<String, String> titleDict = new HashMap<>();
-        titleDict.put("Mrs.", "Mrs");
-        titleDict.put("Mr.", "Mr");
-        titleDict.put("Master.", "Master");
-        titleDict.put("Miss.", "Miss");
-        titleDict.put("Ms.", "Miss");
-        titleDict.put("Mlle.", "Miss");
-        titleDict.put("Dr.", "Dr");
-        titleDict.put("Rev.", "Rev");
-        titleDict.put("Sir.", "Sir");
-        titleDict.put("Major.", "Sir");
-        titleDict.put("Don.", "Sir");
-        titleDict.put("Mme.", "Mrs");
-        titleDict.put("Col.", "Col");
-        titleDict.put("Capt.", "Col");
-        titleDict.put("Jonkheer.", "Col");
-        titleDict.put("Countess.", "Lady");
-        titleDict.put("Lady.", "Lady");
-        titleDict.put("Dona.", "Lady");
-        vectors[vectors.length - 1] = new NominalVector("Title", df.getRowCount(), titleDict.values());
-        for (int i = 0; i < df.getRowCount(); i++) {
-            for (String term : titleDict.keySet()) {
-                if (df.getCol("Name").getLabel(i).contains(term)) {
-                    vectors[vectors.length - 1].setLabel(i, titleDict.get(term));
-                    break;
-                }
-            }
-            if (vectors[vectors.length - 1].isMissing(i)) {
-                System.out.println(df.getCol("Name").getLabel(i));
-            }
-        }
-        df = new SolidFrame(df.getName(), df.getRowCount(), vectors);
-        return df;
-    }
 }

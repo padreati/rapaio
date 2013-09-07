@@ -18,7 +18,7 @@ package rapaio.graphics.plot;
 
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
-import rapaio.functions.UnivariateFunction;
+import rapaio.core.UnivariateFunction;
 import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
 

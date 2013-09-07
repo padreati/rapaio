@@ -14,30 +14,38 @@
  *    limitations under the License.
  */
 
-package rapaio.filters;
+package rapaio.ml.supervised.rule;
 
-import rapaio.data.NumericVector;
+import rapaio.data.Frame;
 import rapaio.data.Vector;
-
-import static rapaio.core.BaseMath.pow;
+import rapaio.ml.supervised.ClassifierResult;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class FilterNumericPow implements Filter {
+public class OneRuleClassifierResult implements ClassifierResult {
 
-    public Vector filter(Vector source, double pow) {
-        return filter(source, pow, 0);
+    private final Frame test;
+    private final Vector pred;
+
+    public OneRuleClassifierResult(Frame test, Vector pred) {
+        this.test = test;
+        this.pred = pred;
     }
 
-    public Vector filter(Vector source, double pow, double offset) {
-        if (!source.isNumeric()) {
-            throw new IllegalArgumentException("Source vector must be isNumeric");
-        }
-        Vector dest = new NumericVector(source.getName(), source.getRowCount());
-        for (int i = 0; i < source.getRowCount(); i++) {
-            dest.setValue(i, pow(offset + source.getValue(i), pow));
-        }
-        return dest;
+    @Override
+    public Frame getTestFrame() {
+        return test;
     }
+
+    @Override
+    public Vector getClassification() {
+        return pred;
+    }
+
+    @Override
+    public Frame getProbabilities() {
+        return null;
+    }
+
 }

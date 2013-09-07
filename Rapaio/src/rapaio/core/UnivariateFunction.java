@@ -14,17 +14,14 @@
  *    limitations under the License.
  */
 
-package rapaio.supervised;
+package rapaio.core;
 
-import rapaio.data.Frame;
+import rapaio.data.Vector;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public abstract class AbstractClassifier implements Classifier {
+public interface UnivariateFunction {
 
-    @Override
-    public void learn(Frame df, String className) {
-        learn(df, df.getColIndex(className));
-    }
+    double eval(double value);
 }

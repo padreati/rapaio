@@ -23,15 +23,15 @@ import rapaio.data.Vector;
 import rapaio.data.util.NominalConsolidator;
 import rapaio.filters.FilterRemoveColumns;
 import rapaio.io.CsvPersistence;
-import rapaio.supervised.ClassifierResult;
-import rapaio.supervised.CrossValidation;
-import rapaio.supervised.rule.OneRule;
+import rapaio.ml.supervised.ClassifierResult;
+import rapaio.ml.supervised.CrossValidation;
+import rapaio.ml.supervised.rule.OneRule;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static rapaio.core.BaseFilters.rename;
+import static rapaio.filters.BaseFilters.rename;
 import static rapaio.explore.Workspace.closePrinter;
 
 /**
@@ -42,8 +42,8 @@ public class OneRuleModel {
     public static void main(String[] args) throws IOException {
         RandomSource.setSeed(1);
 
-        Frame train = Explore.read("train.csv");
-        Frame test = Explore.read("test.csv");
+        Frame train = Utils.read("train.csv");
+        Frame test = Utils.read("test.csv");
         List<Frame> frames = NominalConsolidator.consolidate(Arrays.asList(train, test));
         train = frames.get(0);
         test = frames.get(1);
