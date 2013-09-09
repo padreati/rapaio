@@ -35,17 +35,22 @@ import static rapaio.explore.Workspace.*;
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class PearsonRhoCorrelation implements Summarizable {
-    private final Vector x;
-    private final Vector y;
-    private final double rho;
+    private final Vector[] vectors;
+    private final double[][] rho;
 
-    public PearsonRhoCorrelation(Vector x, Vector y) {
-        this.x = x;
-        this.y = y;
-        this.rho = compute();
+    public PearsonRhoCorrelation(Vector... vectors) {
+        this.vectors = vectors;
+        this.rho = new double[vectors.length][vectors.length];
+        for (int i = 0; i < vectors.length; i++) {
+            rho[i][i] = 1;
+            for (int j = i + 1; j < vectors.length; j++) {
+                rho[i][j] = compute(vectors[i], vectors[j]);
+                rho[j][i] = rho[i][j];
+            }
+        }
     }
 
-    private double compute() {
+    private double compute(Vector x, Vector y) {
         double xMean = new Mean(x).getValue();
         double yMean = new Mean(y).getValue();
         double sum = 0;
@@ -62,15 +67,15 @@ public class PearsonRhoCorrelation implements Summarizable {
         return sum / (sdp * (count - 1));
     }
 
-    public double value() {
+    public double[][] value() {
         return rho;
     }
 
     @Override
     public void summary() {
-
-        printfln("pearson[\"%s\",\"%s\"] - Pearson product-moment correlation coefficient", x.getName(), y.getName());
-        printfln("\n%.10f", rho);
+        printfln("TODO implementation");
+//        printfln("pearson[\"%s\",\"%s\"] - Pearson product-moment correlation coefficient", x.getName(), y.getName());
+//        printfln("\n%.10f", rho);
     }
 
 }

@@ -19,8 +19,12 @@ package rapaio.core;
 import java.util.Random;
 
 /**
- * /**
- * Random number producer which, for now, is the standard Java {@link Random}.
+ * Random number producer used by Rapaio facilities.
+ * <p/>
+ * For now the implementation uses the standard Java {@link Random}.
+ * <p/>
+ * In order to have a reproductible analysis you can use
+ * same seed in code ({@link #setSeed(long)}).
  *
  * @author Aurelian Tutuianu
  */

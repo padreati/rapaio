@@ -16,9 +16,19 @@
 
 package rapaio.core;
 
-import rapaio.data.Vector;
-
 /**
+ * Interface for univariate functions.
+ * <p/>
+ * An univariate function is a function which takes one
+ * real numeric argument and returns one real numeric value.
+ * <p/>
+ * It is mostly used as contract for various facilities which
+ * needs a univariate function as input argument.
+ * <p/>
+ * Distributions exposes its probability functions
+ * like probability density function or cumulative probability
+ * function through this interface for late use.
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public interface UnivariateFunction {
