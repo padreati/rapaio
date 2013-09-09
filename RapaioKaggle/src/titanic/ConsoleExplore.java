@@ -40,11 +40,9 @@ public class ConsoleExplore {
         train = frames.get(0);
         test = frames.get(1);
 
-        BarChart fig = new BarChart(train.getCol("Sex"));
-        draw(fig);
-
-        fig = new BarChart(test.getCol("Sex"));
-        draw(fig);
+        for (int i = 0; i < train.getRowCount(); i++) {
+            System.out.println(train.getLabel(i, train.getColIndex("Name")));
+        }
 
     }
 }

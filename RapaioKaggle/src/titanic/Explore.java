@@ -27,6 +27,7 @@ import rapaio.graphics.BoxPlot;
 import rapaio.graphics.Histogram;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;
+import rapaio.printer.HTMLPrinter;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -38,13 +39,13 @@ import java.util.List;
 public class Explore {
 
     public static void main(String[] args) throws IOException {
-//        setPrinter(new HTMLPrinter("kaggle-titanic.html", "kaggle titanic"));
+        setPrinter(new HTMLPrinter("kaggle-titanic.html", "kaggle titanic"));
 
         RandomSource.setSeed(1);
 
         preparePrinter();
 
-        heading(1, "Kaggle Titanic descriptive analysis");
+        heading(1, "Kaggle Titanic analysis");
 
         Frame train = Utils.read("train.csv");
         Frame test = Utils.read("test.csv");

@@ -23,6 +23,7 @@ import rapaio.data.Frame;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -44,6 +45,8 @@ public class CsvPersistenceTest {
     @Before
     public void setUp() {
         persistence = new CsvPersistence();
+        persistence.setTrimSpaces(true);
+        persistence.setEscapeQuotas('\"');
     }
 
     @After
@@ -57,16 +60,93 @@ public class CsvPersistenceTest {
             assertNotNull(f);
             assertEquals(5, f.getColCount());
             assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, f.getColNames());
-//            Summary.summary(f);
 
             f = persistence.read("header", new ByteArrayInputStream(strings[1].getBytes()));
             assertNotNull(f);
             assertEquals(4, f.getColCount());
-            assertArrayEquals(new String[]{"Year", "Make, Model", "Description\"\"", "Price"}, f.getColNames());
+            assertArrayEquals(new String[]{"Year", "Make, Model", "Description\"", "Price"}, f.getColNames());
 
         } catch (IOException ex) {
             assertTrue("this shoud not happen.", false);
         }
+    }
 
+    @Test
+    public void testLineWithoutQuotas() {
+        CsvPersistence csv = new CsvPersistence();
+
+        csv.setColSeparator(',');
+        csv.setHasQuotas(false);
+        csv.setTrimSpaces(false);
+        checkLine(csv, "  , ,,,", new String[]{"  ", " ", "", ""});
+
+        csv.setColSeparator(',');
+        csv.setHasQuotas(false);
+        csv.setTrimSpaces(true);
+        checkLine(csv, "  , ,,,", new String[]{"", "", "", ""});
+
+        csv.setColSeparator(',');
+        csv.setHasQuotas(false);
+        csv.setTrimSpaces(true);
+        checkLine(csv, " ana , are , mere ", new String[]{"ana", "are", "mere"});
+
+        csv.setColSeparator(',');
+        csv.setHasQuotas(false);
+        csv.setTrimSpaces(false);
+        checkLine(csv, " ana , are , mere ", new String[]{" ana ", " are ", " mere "});
+
+        csv.setColSeparator(',');
+        csv.setHasQuotas(false);
+        csv.setTrimSpaces(false);
+        checkLine(csv, "ana,are,mere", new String[]{"ana", "are", "mere"});
+    }
+
+    @Test
+    public void testLineWithQuotas() {
+        CsvPersistence csv = new CsvPersistence();
+
+        csv.setColSeparator(',');
+        csv.setHasQuotas(true);
+        csv.setTrimSpaces(true);
+        csv.setEscapeQuotas('\\');
+        checkLine(csv, " \"ana", new String[]{"ana"});
+
+        csv.setColSeparator(',');
+        csv.setHasQuotas(true);
+        csv.setTrimSpaces(true);
+        csv.setEscapeQuotas('\\');
+        checkLine(csv, " \"ana\", \"ana again\"", new String[]{"ana", "ana again"});
+
+        csv.setColSeparator(',');
+        csv.setHasQuotas(true);
+        csv.setTrimSpaces(true);
+        csv.setEscapeQuotas('\\');
+        checkLine(csv, " \"ana\", \"ana,again\"", new String[]{"ana", "ana,again"});
+
+        csv.setColSeparator(',');
+        csv.setHasQuotas(true);
+        csv.setTrimSpaces(true);
+        csv.setEscapeQuotas('\\');
+        checkLine(csv, " \"ana\", \"ana\\\"again\"", new String[]{"ana", "ana\"again"});
+
+        csv.setColSeparator(',');
+        csv.setHasQuotas(true);
+        csv.setTrimSpaces(true);
+        csv.setEscapeQuotas('\"');
+        checkLine(csv, " \"ana\", \"ana\"\"again\"", new String[]{"ana", "ana\"again"});
+    }
+
+
+    private void checkLine(CsvPersistence csv, String line, String[] matches) {
+        List<String> tokens = csv.parseLine(line);
+        assertEqualTokens(tokens, matches);
+    }
+
+    private void assertEqualTokens(List<String> tokens, String[] matches) {
+        assertEquals(tokens.size(), matches.length);
+
+        for (int i = 0; i < tokens.size(); i++) {
+            assertEquals(matches[i], tokens.get(i));
+        }
     }
 }

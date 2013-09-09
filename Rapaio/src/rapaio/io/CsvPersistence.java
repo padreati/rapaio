@@ -33,23 +33,19 @@ import java.util.regex.Pattern;
 public class CsvPersistence {
 
     private static final String NOMINAL_MISSING_VALUE = "?";
-    //
-    private Pattern pattern;
-    //
-    private boolean header = true;
-    private char colSeparator = ',';
-    private char headerSeparator = ',';
     private boolean trimSpaces = true;
+    private boolean hasHeader = true;
     private boolean hasQuotas = true;
-    private String doubleQuotas = "\"\"";
+    private char colSeparator = ',';
+    private char escapeQuotas = '\"';
     private char decimalPoint = '.';
 
-    public boolean isHeader() {
-        return header;
+    public boolean hasHeader() {
+        return hasHeader;
     }
 
-    public void setHeader(boolean header) {
-        this.header = header;
+    public void setHasHeader(boolean hasHeader) {
+        this.hasHeader = hasHeader;
     }
 
     public char getColSeparator() {
@@ -60,14 +56,6 @@ public class CsvPersistence {
         this.colSeparator = colSeparator;
     }
 
-    public char getHeaderSeparator() {
-        return headerSeparator;
-    }
-
-    public void setHeaderSeparator(char headerSeparator) {
-        this.headerSeparator = headerSeparator;
-    }
-
     public boolean getHasQuotas() {
         return hasQuotas;
     }
@@ -76,15 +64,15 @@ public class CsvPersistence {
         this.hasQuotas = hasQuotas;
     }
 
-    public String getDoubleQuotas() {
-        return doubleQuotas;
+    public char getEscapeQuotas() {
+        return escapeQuotas;
     }
 
-    public void setDoubleQuotas(String doubleQuotas) {
-        this.doubleQuotas = doubleQuotas;
+    public void setEscapeQuotas(char escapeQuotas) {
+        this.escapeQuotas = escapeQuotas;
     }
 
-    public boolean isTrimSpaces() {
+    public boolean trimSpaces() {
         return trimSpaces;
     }
 
@@ -105,18 +93,20 @@ public class CsvPersistence {
     }
 
     public Frame read(String name, File file) throws IOException {
-        return read(name, new FileInputStream(file));
+        try (FileInputStream is = new FileInputStream(file)) {
+            return read(name, is);
+        }
     }
 
     public Frame read(String name, InputStream is) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
             List<String> names = new ArrayList<>();
-            if (header) {
+            if (hasHeader) {
                 String line = reader.readLine();
                 if (line == null) {
                     return null;
                 }
-                names = readHeader(line);
+                names = parseLine(line);
             }
             List<String> rows = new ArrayList<>();
             while (true) {
@@ -130,28 +120,65 @@ public class CsvPersistence {
         }
     }
 
-    private List<String> readHeader(String line) {
-        pattern = buildPattern(getHeaderSeparator());
+    /**
+     * Parses a line from csv file according with the configured setting for the parse.
+     * E.g. separates columns by col separator, but not by the cols separators inside quotas,
+     * if quota is  configured.
+     *
+     * @param line
+     * @return
+     */
+    public List<String> parseLine(String line) {
         List<String> data = new ArrayList<>();
-        String[] tokens = pattern.split(line, -1);
-        for (String token : tokens) {
-            data.add(clean(token));
+        int start = 0;
+        int end;
+        while (start < line.length()) {
+            end = start;
+            boolean inQuotas = false;
+            while (end < line.length()) {
+                char ch = line.charAt(end++);
+                if (!inQuotas && ch == '"') {
+                    inQuotas = true;
+                    continue;
+                }
+                if (inQuotas && ch == getEscapeQuotas()) {
+                    if (end < line.length() && line.charAt(end) == '\"') {
+                        end++;
+                        continue;
+                    }
+                }
+                if (inQuotas && ch == '"') {
+                    if (getEscapeQuotas() == '\"') {
+                        if (end < line.length() && line.charAt(end) == '\"') {
+                            end++;
+                            continue;
+                        }
+                    }
+                    inQuotas = false;
+                    continue;
+                }
+                if (!inQuotas && (ch == getColSeparator())) {
+                    end--;
+                    break;
+                }
+            }
+            data.add(clean(line.substring(start, end)));
+            start = end + 1;
         }
         return data;
     }
 
-    private List<String> readData(String line) {
-        pattern = buildPattern(getColSeparator());
-        List<String> data = new ArrayList<>();
-        String[] tokens = pattern.split(line, -1);
-        for (String token : tokens) {
-            data.add(clean(token));
-        }
-        return data;
-    }
-
+    /**
+     * Clean the string token.
+     * - remove trailing and leading spaces, before and after removing quotas
+     * - remove leading and trailing quotas
+     * - remove escape quota character
+     *
+     * @param tok
+     * @return
+     */
     private String clean(String tok) {
-        if (isTrimSpaces()) {
+        if (trimSpaces()) {
             tok = tok.trim();
         }
         if (getHasQuotas() && !tok.isEmpty()) {
@@ -162,21 +189,28 @@ public class CsvPersistence {
                 tok = tok.substring(0, tok.length() - 1);
             }
         }
-        if (isTrimSpaces()) {
+        char[] line = new char[tok.length()];
+        int len = 0;
+        for (int i = 0; i < tok.length(); i++) {
+            if (len < tok.length() - 1 && tok.charAt(i) == getEscapeQuotas() && tok.charAt(i + 1) == '\"') {
+                line[len++] = '\"';
+                i++;
+                continue;
+            }
+            line[len++] = tok.charAt(i);
+        }
+        tok = String.valueOf(line, 0, len);
+        if (trimSpaces()) {
             tok = tok.trim();
         }
         return tok;
-    }
-
-    private Pattern buildPattern(char separator) {
-        return Pattern.compile(separator + "(?=([^\"]*\"[^\"]*\")*(?![^\"]*\"))");
     }
 
     private Frame buildFrame(String name, List<String> names, List<String> rows) {
         int cols = names.size();
         List<List<String>> split = new ArrayList<>();
         for (String line : rows) {
-            List<String> row = readData(line);
+            List<String> row = parseLine(line);
             cols = Math.max(cols, row.size());
             split.add(row);
         }
@@ -205,21 +239,22 @@ public class CsvPersistence {
 
     public void write(Frame df, String fileName) throws IOException {
         try (PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(fileName)))) {
-            if (isHeader()) {
-                writer.append(df.getColNames()[0]);
-                for (int i = 1; i < df.getColNames().length; i++) {
-                    writer.append(getHeaderSeparator()).append(df.getColNames()[i]);
+            if (hasHeader()) {
+                for (int i = 0; i < df.getColNames().length; i++) {
+                    if (i != 0) {
+                        writer.append(getColSeparator());
+                    }
+                    writer.append(df.getColNames()[i]);
                 }
                 writer.append("\n");
             }
             for (int i = 0; i < df.getRowCount(); i++) {
-                // TODO
                 for (int j = 0; j < df.getColCount(); j++) {
                     if (j != 0) {
                         writer.append(getColSeparator());
                     }
                     if (df.getCol(j).isNominal()) {
-                        writer.append(df.getLabel(i, j));
+                        writer.append(unclean(df.getLabel(i, j)));
                     } else {
                         writer.append(String.format("%.20f", df.getValue(i, j)));
                     }
@@ -228,5 +263,21 @@ public class CsvPersistence {
             }
             writer.flush();
         }
+    }
+
+    private String unclean(String label) {
+        char[] line = new char[label.length() * 2];
+        int len = 0;
+        for (int i = 0; i < label.length(); i++) {
+            if (label.charAt(i) == '\"') {
+                line[len++] = getEscapeQuotas();
+            }
+            line[len++] = label.charAt(i);
+        }
+        label = String.valueOf(line, 0, len);
+        if (getHasQuotas()) {
+            label = "\"" + label + "\"";
+        }
+        return label;
     }
 }

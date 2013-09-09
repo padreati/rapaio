@@ -24,7 +24,7 @@ import static rapaio.filters.NominalFilters.*;
 import rapaio.explore.Summary;
 import static rapaio.explore.Workspace.closePrinter;
 import static rapaio.filters.BaseFilters.renameVector;
-import static rapaio.filters.ColFilters.removeCols;
+import static rapaio.filters.ColFilters.*;
 import rapaio.io.CsvPersistence;
 import rapaio.ml.supervised.ClassifierResult;
 import rapaio.ml.supervised.CrossValidation;
@@ -49,7 +49,6 @@ public class OneRuleModel {
         test = frames.get(1);
 
         Frame tr = removeCols(train, "PassengerId,Name,Ticket,Cabin");
-//        Frame tr = retainCols(train, "Survived,Sex");
         Summary.summary(tr);
         CrossValidation cv = new CrossValidation();
         cv.cv(tr, tr.getColIndex("Survived"), new OneRule(4), 10);
@@ -59,12 +58,16 @@ public class OneRuleModel {
         ClassifierResult cr = oneRule.predict(test);
 //        oneRule.printModelSummary();
 
-        Frame submit = new SolidFrame("submit", test.getRowCount(), new Vector[]{test.getCol("PassengerId"), renameVector(cr.getClassification(), "Survived")});
+        Frame submit = new SolidFrame("submit", test.getRowCount(), new Vector[]{
+                test.getCol("PassengerId"),
+                renameVector(cr.getClassification(), "Survived"),
+                test.getCol("Name")
+        });
         CsvPersistence persist = new CsvPersistence();
         persist.setColSeparator(',');
-        persist.setHasQuotas(false);
-        persist.setHeader(true);
-        persist.write(submit, "/home/ati/work/incubator.rapaio/RapaioKaggle/src/titanic/submit.csv");
+        persist.setHasQuotas(true);
+        persist.setHasHeader(true);
+        persist.write(submit, "/home/ati/work/rapaio/RapaioKaggle/src/titanic/submit.csv");
 
         closePrinter();
     }

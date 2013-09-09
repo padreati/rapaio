@@ -38,7 +38,7 @@ import java.util.HashSet;
 public class Utils {
     public static Frame read(String name) throws IOException {
         CsvPersistence csv = new CsvPersistence();
-        csv.setHeader(true);
+        csv.setHasHeader(true);
         csv.setColSeparator(',');
         Frame df = csv.read(name, Explore.class.getResourceAsStream(name));
 

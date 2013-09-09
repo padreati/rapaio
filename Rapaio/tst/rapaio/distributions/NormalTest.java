@@ -36,7 +36,7 @@ public class NormalTest {
 
     public NormalTest() throws IOException {
         CsvPersistence persistence = new CsvPersistence();
-        persistence.setHeader(false);
+        persistence.setHasHeader(false);
         persistence.setColSeparator(' ');
         df = persistence.read("stdnorm", this.getClass().getResourceAsStream("standard_normal.csv"));
         df = toNumeric(df);

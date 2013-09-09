@@ -33,7 +33,7 @@ public abstract class CoreStatTestUtil {
 
     public CoreStatTestUtil() throws IOException {
         CsvPersistence p = new CsvPersistence();
-        p.setHeader(false);
+        p.setHasHeader(false);
         df = p.read("core_stat", CoreStatTestUtil.class.getResourceAsStream("core_stat.csv"));
         Vector[] vectors = new Vector[df.getColCount()];
         for (int i = 0; i < vectors.length; i++) {
