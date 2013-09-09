@@ -20,6 +20,8 @@ import static rapaio.core.BaseMath.floor;
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
 import static rapaio.filters.RowFilters.sort;
+import static rapaio.explore.Workspace.*;
+
 
 /**
  * Estimates quantiles from a numerical {@link rapaio.data.Vector} of values.
@@ -80,12 +82,10 @@ public class Quantiles implements Summarizable {
     }
 
     @Override
-    public String summary() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("quantiles[\"").append(vector.getName()).append("\", ...] - estimated quantiles").append("\n");
+    public void summary() {
+        printfln("quantiles[\"%s\", ...] - estimated quantiles", vector.getName());
         for (int i = 0; i < quantiles.length; i++) {
-            sb.append(String.format("quantile[\"%s\",%f = %f\n", vector.getName(), percentiles[i], quantiles[i]));
+            printfln("quantile[\"%s\",%f = %f\n", vector.getName(), percentiles[i], quantiles[i]);
         }
-        return sb.toString();
     }
 }

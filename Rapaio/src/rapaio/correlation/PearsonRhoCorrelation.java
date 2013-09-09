@@ -23,6 +23,7 @@ import rapaio.data.Vector;
 
 import static rapaio.core.BaseMath.max;
 import static rapaio.core.BaseMath.sqrt;
+import static rapaio.explore.Workspace.*;
 
 /**
  * /**
@@ -66,10 +67,10 @@ public class PearsonRhoCorrelation implements Summarizable {
     }
 
     @Override
-    public String summary() {
-        return String.format(
-                "pearson[\"%s\",\"%s\"] - Pearson product-moment correlation coefficient\n%.10f",
-                x.getName(), y.getName(), rho);
+    public void summary() {
+
+        printfln("pearson[\"%s\",\"%s\"] - Pearson product-moment correlation coefficient", x.getName(), y.getName());
+        printfln("\n%.10f", rho);
     }
 
 }

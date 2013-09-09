@@ -18,6 +18,7 @@ package rapaio.core.stat;
 
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
+import static rapaio.explore.Workspace.*;
 
 /**
  * Compensated version of arithmetic mean of values from a {@code Vector}.
@@ -67,7 +68,7 @@ public final class Mean implements Summarizable {
     }
 
     @Override
-    public String summary() {
-        return String.format("mean[\"%s\"]\n%.10f", vector.getName(), value);
+    public void summary() {
+        code(String.format("> mean[\"%s\"]\n%.10f", vector.getName(), value));
     }
 }

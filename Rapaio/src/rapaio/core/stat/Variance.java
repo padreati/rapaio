@@ -20,6 +20,7 @@ import rapaio.core.Summarizable;
 import rapaio.data.Vector;
 
 import static rapaio.core.BaseMath.pow;
+import static rapaio.explore.Workspace.*;
 
 /**
  * Compensated version of the algorithm for calculation of
@@ -70,8 +71,8 @@ public class Variance implements Summarizable {
     }
 
     @Override
-    public String summary() {
-        return String.format("variance[\"%s\"]\n%.10f", vector.getName(), value);
+    public void summary() {
+        code(String.format("variance[\"%s\"]\n%.10f", vector.getName(), value));
     }
 
 }

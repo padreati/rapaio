@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Aurelian Tutuianu
+ * Copyright 2013 Aurelian Tutuianu <padreati@yahoo.com>
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -86,12 +86,26 @@ public class Workspace {
         printer.print(message);
     }
 
-    public static void heading(int h, String lines) {
-        printer.heading(h, lines);
+    public static void println() {
+        printer.println();
+    }
+
+    public static void println(String message) {
+        printer.print(message);
+        printer.println();
     }
 
     public static void printf(String message, Object... args) {
         printer.print(String.format(message, args));
+    }
+
+    public static void printfln(String message, Object... args) {
+        printer.print(String.format(message, args));
+        printer.println();
+    }
+
+    public static void heading(int h, String lines) {
+        printer.heading(h, lines);
     }
 
     public static void error(String message, Throwable ex) {

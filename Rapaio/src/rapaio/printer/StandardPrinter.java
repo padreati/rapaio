@@ -72,7 +72,12 @@ public final class StandardPrinter extends AbstractPrinter {
 
     @Override
     public void print(String message) {
-        System.out.println(message);
+        System.out.print(message);
+    }
+
+    @Override
+    public void println() {
+        System.out.println();
     }
 
     @Override

@@ -37,6 +37,8 @@ public interface Printer {
 
     void print(String message);
 
+    void println();
+
     void error(String message, Throwable throwable);
 
     void preparePrinter();

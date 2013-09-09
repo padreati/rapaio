@@ -21,6 +21,7 @@ import rapaio.core.Summarizable;
 import rapaio.data.Vector;
 
 import static rapaio.core.BaseMath.validNumber;
+import static rapaio.explore.Workspace.*;
 
 /**
  * Computes the sum of elements for a {@link Vector} of values.
@@ -54,7 +55,8 @@ public class Sum implements Summarizable {
     }
 
     @Override
-    public String summary() {
-        return String.format("sum[%s]\n%.10f", vector.getName(), value);
+    public void summary() {
+        printfln("sum[%s]", vector.getName());
+        printfln("%.10f", value);
     }
 }

@@ -97,7 +97,12 @@ public class HTMLPrinter extends AbstractPrinter {
 
     @Override
     public void print(String message) {
-        writer.append(message + "</br>\n");
+        writer.append(message);
+    }
+
+    @Override
+    public void println() {
+        writer.append("</br>\n");
     }
 
     @SuppressWarnings("deprecation")

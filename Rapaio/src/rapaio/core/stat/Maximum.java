@@ -19,6 +19,7 @@ package rapaio.core.stat;
 import rapaio.core.BaseMath;
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
+import static rapaio.explore.Workspace.*;
 
 /**
  * Finds the maximum value from a {@link Vector} of values.
@@ -57,7 +58,7 @@ public class Maximum implements Summarizable {
     }
 
     @Override
-    public String summary() {
-        return String.format("maximum[%s]\n%.10f", vector.getName(), value);
+    public void summary() {
+        code(String.format("maximum[%s]\n%.10", vector.getName(), value));
     }
 }

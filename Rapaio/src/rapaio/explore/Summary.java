@@ -26,8 +26,7 @@ import rapaio.data.Vector;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import static rapaio.explore.Workspace.code;
-import static rapaio.explore.Workspace.getPrinter;
+import static rapaio.explore.Workspace.*;
 
 /**
  * @author tutuianu
@@ -39,13 +38,13 @@ public class Summary {
     }
 
     public static void summary(Frame df, String... names) {
-        StringBuilder buffer = new StringBuilder();
-        buffer.append(">>summary(frame, ").append(Arrays.deepToString(names)).append(")\n");
+        print("<pre><code>");
+        printf(">>summary(frame, %s)\n", Arrays.deepToString(names));
         if (df == null) {
-            buffer.append("null instance of frame.\n");
+            print("null instance of frame.\n");
             return;
         }
-        buffer.append(String.format("rows: %d, cols: %d%n", df.getRowCount(), df.getColCount()));
+        printf("rows: %d, cols: %d%n", df.getRowCount(), df.getColCount());
 
         String[][] first = new String[names.length][7];
         String[][] second = new String[names.length][7];
@@ -200,7 +199,7 @@ public class Summary {
                 sb.append(String.format("%" + width[i] + "s", colName));
                 sb.append(" ");
             }
-            buffer.append(sb.toString()).append("\n");
+            print(sb.toString() + "\n");
             for (int j = 0; j < 7; j++) {
                 sb = new StringBuilder();
                 for (int i = pos; i < last; i++) {
@@ -216,13 +215,15 @@ public class Summary {
                     sb.append(String.format("%" + wsecond[i] + "s", second[i][j]));
                     sb.append(" ");
                 }
-                buffer.append(sb.toString()).append("\n");
+                print(sb.toString());
+                if (last != names.length || j != 6) {
+                    print("\n");
+                }
             }
 
             pos = last;
         }
-
-        code(buffer.toString());
+        print("</code></pre>");
     }
 
     public static void summary(Vector v) {
@@ -386,6 +387,6 @@ public class Summary {
     }
 
     public static void summary(Summarizable result) {
-        code(result.summary());
+        result.summary();
     }
 }

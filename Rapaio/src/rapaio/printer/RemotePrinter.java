@@ -121,6 +121,15 @@ public class RemotePrinter extends AbstractPrinter {
     }
 
     @Override
+    public void println() {
+        try {
+            sendText("\n");
+        } catch (IOException ex) {
+            Logger.getLogger(RemotePrinter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
     public void error(String message, Throwable throwable) {
         try {
             if (message != null) {
