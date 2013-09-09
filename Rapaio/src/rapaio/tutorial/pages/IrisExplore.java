@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Aurelian Tutuianu
+ * Copyright 2013 Aurelian Tutuianu <padreati@yahoo.com>
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package tutorial;
+package rapaio.tutorial.pages;
 
 import rapaio.data.Frame;
 import rapaio.data.OneIndexVector;
@@ -28,17 +28,41 @@ import rapaio.printer.HTMLPrinter;
 import java.io.IOException;
 
 import static rapaio.explore.Workspace.*;
+import rapaio.printer.Printer;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class IrisExplore {
+public class IrisExplore implements TutorialPage {
 
     public static void main(String[] args) throws IOException {
 
-        setPrinter(new HTMLPrinter("IrisExplore.html", "Iris Exploring done with Rapaio library"));
+        Printer out = new HTMLPrinter("IrisExplore.html", "Iris Exploring done with Rapaio library");
+        setPrinter(out);
         preparePrinter();
 
+        new IrisExplore().render();
+
+        closePrinter();
+    }
+
+    @Override
+    public String getCategory() {
+        return "ExplorationSample";
+    }
+
+    @Override
+    public String getPageName() {
+        return "IrisExploration";
+    }
+
+    @Override
+    public String getPageTitle() {
+        return "Iris Exploration Sample";
+    }
+
+    @Override
+    public void render() throws IOException {
         Frame df = Datasets.loadIrisDataset();
 
         heading(1, "Iris sample exploratory analysis");
@@ -93,13 +117,5 @@ public class IrisExplore {
                 + "We will plot now a qqplot to see how those values are distributed on a normal curve."
                 + "We estimate first the mean and the variance sepal-width sample values:");
 
-        p("\\( \\bar{X}_n = \\frac{1}{n}\\sum_{i=1}^{n}X_i \\), "
-                + "where \\(\\bar{X}_n\\) is the estimator used for mean \\( \\mu \\)");
-
-        p("\\( S_n = \\frac{1}{n-1}\\sum_{i=1}^{n}(X_i - \\bar{X}_n)^2 \\), "
-                + "where \\(S_n\\) is the estimator used for population variance \\(\\sigma^2\\).");
-
-
-        closePrinter();
     }
 }

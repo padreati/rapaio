@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Aurelian Tutuianu
+ * Copyright 2013 Aurelian Tutuianu <padreati@yahoo.com>
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package tutorial;
+package rapaio.tutorial;
 
 import rapaio.core.BaseMath;
 import rapaio.core.stat.Variance;

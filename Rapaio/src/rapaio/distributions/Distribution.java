@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Aurelian Tutuianu
+ * Copyright 2013 Aurelian Tutuianu <padreati@yahoo.com>
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public abstract class Distribution {
     abstract public double max();
 
     public NumericVector sample(int n) {
-        NumericVector samples = new NumericVector("tutorial", n);
+        NumericVector samples = new NumericVector("rapaio/tutorial", n);
         for (int i = 0; i < samples.getRowCount(); i++) {
             samples.setValue(i, quantile(RandomSource.nextDouble()));
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Aurelian Tutuianu
+ * Copyright 2013 Aurelian Tutuianu <padreati@yahoo.com>
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package tutorial;
+package rapaio.tutorial.pages;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
@@ -42,18 +42,38 @@ import java.io.IOException;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class PearsonHeight {
+public class PearsonHeight implements TutorialPage {
 
     public static void main(String[] args) throws IOException {
         setPrinter(new HTMLPrinter("pearsonheight.html", "Pearson's Height Dataset Analysis"));
         preparePrinter();
+        new PearsonHeight().render();
+        closePrinter();
+    }
 
+    @Override
+    public String getCategory() {
+        return "ExplorationSample";
+    }
+
+    @Override
+    public String getPageName() {
+        return "ExplorePearsonFatherSon";
+    }
+
+    @Override
+    public String getPageTitle() {
+        return "Explore Pearson Father Son Data";
+    }
+
+    @Override
+    public void render() throws IOException {
         heading(1, "Analysis of Pearson's Height dataset");
 
         Frame df = Datasets.loadPearsonHeightDataset();
 
         p("This exploratory analysis is provided as a sample of analysis produced with Rapaio system.");
-        p("The studied dataset contains " + df.getRowCount() + " observations and has " + df.getColCount() + " columns.");
+        p("The studied data set contains " + df.getRowCount() + " observations and has " + df.getColCount() + " columns.");
 
         Summary.summary(df);
 
@@ -134,7 +154,5 @@ public class PearsonHeight {
             plot.add(line);
         }
         draw(plot, 600, 600);
-
-        closePrinter();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Aurelian Tutuianu
+ * Copyright 2013 Aurelian Tutuianu <padreati@yahoo.com>
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package tutorial;
+package rapaio.tutorial.pages;
 
 import rapaio.core.stat.OnlineCoreStat;
 import rapaio.core.RandomSource;
@@ -30,15 +30,37 @@ import rapaio.printer.HTMLPrinter;
 
 import static rapaio.explore.Workspace.*;
 
+import java.io.IOException;
+
 /**
  * @author Aurelian Tutuianu
  */
-public class LawOfLargeNumbers {
+public class LawOfLargeNumbers implements TutorialPage {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         setPrinter(new HTMLPrinter("LawOfLargeNumbers.html", "Law of Large Numbers Study"));
-
         preparePrinter();
+        new LawOfLargeNumbers().render();
+        closePrinter();
+    }
+
+    @Override
+    public String getCategory() {
+        return "ExplorationSample";
+    }
+
+    @Override
+    public String getPageName() {
+        return "LawOfLargeNumbers";
+    }
+
+    @Override
+    public String getPageTitle() {
+        return "Explore Law of Large Numbers";
+    }
+
+    @Override
+    public void render() throws IOException {
         RandomSource.setSeed(1);
 
         heading(2, "Small study of the Weak Law of Large Numbers");
@@ -79,7 +101,5 @@ public class LawOfLargeNumbers {
 
         plot.getOp().setYRange(2.5, 4.5);
         draw(plot, 800, 400);
-
-        closePrinter();
     }
 }

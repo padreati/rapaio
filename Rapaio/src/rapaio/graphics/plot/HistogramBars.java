@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Aurelian Tutuianu
+ * Copyright 2013 Aurelian Tutuianu <padreati@yahoo.com>
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -113,7 +113,10 @@ public class HistogramBars extends PlotComponent {
                 if (v.getValue(i) < minvalue || v.getValue(i) > maxvalue) {
                     continue;
                 }
-                freqtable[(int) ((v.getValue(i) - minvalue) / step)]++;
+                int index = (int) ((v.getValue(i) - minvalue) / step);
+                if (index == freqtable.length)
+                    index--;
+                freqtable[index]++;
             }
 
             if (prob && (total != 0)) {

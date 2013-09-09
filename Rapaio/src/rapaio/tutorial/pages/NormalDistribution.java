@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Aurelian Tutuianu
+ * Copyright 2013 Aurelian Tutuianu <padreati@yahoo.com>
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package tutorial;
+package rapaio.tutorial.pages;
 
 import rapaio.data.OneIndexVector;
 import rapaio.distributions.Normal;
@@ -26,15 +26,34 @@ import rapaio.printer.RemotePrinter;
 import static rapaio.explore.Workspace.draw;
 import static rapaio.explore.Workspace.setPrinter;
 
+import java.io.IOException;
+
 /**
  * @author Aurelian Tutuianu
  */
-public class NormalDistribution {
+public class NormalDistribution implements TutorialPage {
 
     public static void main(String[] args) {
-
         setPrinter(new RemotePrinter());
+    }
 
+    @Override
+    public String getCategory() {
+        return "ExplorationSample";
+    }
+
+    @Override
+    public String getPageName() {
+        return "NormalDistribution";
+    }
+
+    @Override
+    public String getPageTitle() {
+        return "Normal Distribution";
+    }
+
+    @Override
+    public void render() throws IOException {
         Plot p = new Plot();
 
         FunctionLine fline = new FunctionLine(p, new StudentT(3).getPdfFunction());

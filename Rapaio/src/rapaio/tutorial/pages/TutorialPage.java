@@ -14,20 +14,22 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.supervised;
+package rapaio.tutorial.pages;
 
-import rapaio.data.Frame;
+import rapaio.printer.Printer;
+
+import java.io.IOException;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface Classifier {
+public interface TutorialPage {
 
-    void learn(Frame df, int classIndex);
+    String getCategory();
 
-    void learn(Frame df, String className);
+    String getPageName();
 
-    void printModelSummary();
+    String getPageTitle();
 
-    ClassifierResult predict(Frame df);
+    void render() throws IOException;
 }

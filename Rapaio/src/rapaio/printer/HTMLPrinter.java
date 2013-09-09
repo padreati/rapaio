@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Aurelian Tutuianu
+ * Copyright 2013 Aurelian Tutuianu <padreati@yahoo.com>
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -30,13 +30,19 @@ import java.io.*;
 public class HTMLPrinter extends AbstractPrinter {
 
     private final String title;
+    private final String backLink;
     private final PrintWriter writer;
     private int textWidth = 80;
     private int graphicWidth = 500;
     private int graphicHeight = 250;
 
     public HTMLPrinter(String fileName, String title) {
+        this(fileName, title, "");
+    }
+
+    public HTMLPrinter(String fileName, String title, String backLink) {
         this.title = title;
+        this.backLink = backLink;
         try {
             this.writer = new PrintWriter(new BufferedWriter(new FileWriter(new File(fileName))));
         } catch (IOException ex) {
@@ -76,7 +82,10 @@ public class HTMLPrinter extends AbstractPrinter {
 
     @Override
     public void preparePrinter() {
-        writer.append(Template.header.replace(Template.KEY_TITLE, title));
+        String header = Template.header;
+        header = header.replace(Template.KEY_TITLE, title);
+        header = header.replace(Template.BACKLINK, backLink);
+        writer.append(header);
     }
 
     @Override
@@ -148,6 +157,7 @@ public class HTMLPrinter extends AbstractPrinter {
 class Template {
 
     static final String KEY_TITLE = "#TITLE#";
+    static final String BACKLINK = "#BACKLINK#";
     static final String header = "<!DOCTYPE html>\n"
             + "<html><head>\n"
             + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n"
@@ -280,62 +290,8 @@ class Template {
             + "<script type=\"text/javascript\" src=\"https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML\">\n"
             + "</script>\n"
             + "</head>\n"
-            + "<body>\n";
-    static final String tmp = ""
-            + "<h1>Explore buldozers</h1>\n"
-            + "\n"
-            + "<h2>Data sets and other files</h2>\n"
-            + "\n"
-            + "<p>There are three data sets involved:</p>\n"
-            + "\n"
-            + "<ol>\n"
-            + "<li>train data set, used for learning (Train.csv)</li>\n"
-            + "<li>validation data set used for submit and evaluation until final contest week (Valid.csv)</li>\n"
-            + "<li>test data set, will be published 1 week befor contest end</li>\n"
-            + "</ol>\n"
-            + "\n"
-            + "<p>Other files involved contains:</p>\n"
-            + "\n"
-            + "<ol>\n"
-            + "<li>machine data appendix contains information about the type of model machine (Machine-Appendix.csv)</li>\n"
-            + "</ol>\n"
-            + "\n"
-            + "<h2>Submission</h2>\n"
-            + "\n"
-            + "<p>The submission data will contain two fields: SalesID and SalePrice.</p>\n"
-            + "\n"
-            + "<p>The evaluation function is root mean log squared error. As far as I understood that means:\n"
-            + "\\[  RMLSE = \\sum_{i=1}^n{(log(y_i)-log(\\hat{y_i}))^2}  \\]\n"
-            + "That cand be easily solved by transforming the SalePrince in log(SalePrice) and getting RMSE as usual.\n"
-            + "\\[  RMSE = \\sum_{i=1}^n{(y_i-\\hat{y_i})^2}  \\]</p>\n"
-            + "\n"
-            + "<h1>Exploratory data analysis</h1>\n"
-            + "\n"
-            + "<h2>SalePrice</h2>\n"
-            + "\n"
-            + "<p>Taking into account how the error is evaluated, I will need to transform SalePrice with log.</p>\n"
-            + "\n"
-            + "<pre><code class=\"r\">par(mfrow = c(1, 2))\n"
-            + "hist(t$SalePrice, breaks = 30, col = &quot;pink&quot;)\n"
-            + "hist(log(t$SalePrice), breaks = 30, col = &quot;pink&quot;)\n"
-            + "</code></pre>\n"
-            + "\n"
-            + "<p><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAtAAAAEgCAMAAACq87QqAAAAk1BMVEX9/v0AAAAAADkAAGUAOTkAOWUAOY8AZo8AZrU5AAA5ADk5AGU5OWU5OY85ZrU5j485j7U5j9plAABlADllAGVlOQBlOTllZjlltdpltf2POQCPOTmPOWWPZo+PtY+P27WP29qP2/21ZgC1jzm124+1/rW1/v3ajzna/rXa/tra/v39tWX924/9/rX9/tr9/v3/wMt/me0/AAAAMXRSTlP//////////////////////////////////////////////////////////////wD/obxc3gAAAAlwSFlzAAALEgAACxIB0t1+/AAAEVJJREFUeJztnWuDo7YVhsNMMplJumntTdram213nHS8Gd/2//+6ogs3W5I56AjE4X0+LLNGHODwWAgZxHcXAATx3dQbAAAnEBqIAkIDUUBoIAoIDUQBoYEoIDQQBYQGooDQQBQQGogCQgNRQGggCggNRAGhgSggNBAFhAaigNBAFBAaiAJCA1FAaCAKCA1EAaGBKCA0EAWEBqKQJ/R+NfUWLI6cUj6q0Kf149vlct4+vpm/KnabiKDHl+LhtQ5zWhfF0/ul9Ud71fV/CsXGNW+OJM2rLzt7NZc15ccXhi/GREJ3Pt4VMYmvl1Z/mLw9X5o/Oquu/6Oza78H8ydpXj1Cn9bP7CnfMVQsU9bQZR1QPL6dtyYN+3KivqHl/x//t356P28f/lUm4GDScCh+LD9/2zdfclNeL62qBRPmUDz98XcT++ldr8Qub1a9N5XEaa2W2BUrs47/qnlqeZ3PfasimQkp89rKXDtK+cGGPeWHIr6KnlBo86V9+sskfleY77fO0vcvKvFq7ldT6P1QVNhvsS1/JXSZ1D90UsqDujGrNMvrVZtlVu3smnXYw1+0ysyJlHm9tDLXifLwyp5yUyiOkYWucqd2Vn2j9cfqxHV80d/ph9fjS7mL+0In/rla7PHtUKgFio0qoj6ry3ebHDo5tiapj5E5ynaF5rDb859Zh5mnM7upy4yZl1iS5tWEvI5SCcqaco68Tyi0/p/aA5WWg85yeR47mP01dUC1kEr8s85C9Wld/kponVZ9QHc2ulneHDybVLMdZSATzcwzlXJdZsy8xJI0ryY711HMt4Y55dVGxDB1G7qwdYEv8bpM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\" alt=\"plot of chunk unnamed-chunk-1\"/> </p>\n"
-            + "\n"
-            + "<p>We can see in previous histograms that price will have an approximate normal distribution after taking the log. It is an expected behavior due to the fact that usual the high prices are fewer than prices below mean. We can see the skewness of the data also in summary of the SalePrice and on log(SalePrice).</p>\n"
-            + "\n"
-            + "<pre><code class=\"r\">summary(t$SalePrice)\n"
-            + "</code></pre>\n"
-            + "\n"
-            + "<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n"
-            + "##    4750   14500   24000   31100   40000  142000\n"
-            + "</code></pre>\n"
-            + "\n"
-            + "<pre><code class=\"r\">summary(log(t$SalePrice))\n"
-            + "</code></pre>\n"
-            + "\n"
-            + "<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n"
-            + "##    8.47    9.58   10.10   10.10   10.60   11.90\n"
-            + "</code></pre>";
+            + "<body>\n"
+            + "<p>#BACKLINK#</p>";
+
     static final String footer = "</body></html>";
 }
