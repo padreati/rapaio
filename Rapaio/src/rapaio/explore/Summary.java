@@ -38,13 +38,14 @@ public class Summary {
     }
 
     public static void summary(Frame df, String... names) {
-        print("<pre><code>");
-        printf(">>summary(frame, %s)\n", Arrays.deepToString(names));
+        StringBuilder buffer = new StringBuilder();
+        buffer.append(String.format(">>summary(frame, %s)\n", Arrays.deepToString(names)));
         if (df == null) {
-            print("null instance of frame.\n");
+            buffer.append("null instance of frame.\n");
+            code(buffer.toString());
             return;
         }
-        printf("rows: %d, cols: %d%n", df.getRowCount(), df.getColCount());
+        buffer.append(String.format("rows: %d, cols: %d%n", df.getRowCount(), df.getColCount()));
 
         String[][] first = new String[names.length][7];
         String[][] second = new String[names.length][7];
@@ -196,10 +197,9 @@ public class Summary {
                 if (sb.length() != 0) {
                     sb.append(" ");
                 }
-                sb.append(String.format("%" + width[i] + "s", colName));
-                sb.append(" ");
+                sb.append(String.format("%" + width[i] + "s ", colName));
             }
-            print(sb.toString() + "\n");
+            buffer.append(sb.toString()).append("\n");
             for (int j = 0; j < 7; j++) {
                 sb = new StringBuilder();
                 for (int i = pos; i < last; i++) {
@@ -215,15 +215,15 @@ public class Summary {
                     sb.append(String.format("%" + wsecond[i] + "s", second[i][j]));
                     sb.append(" ");
                 }
-                print(sb.toString());
+                buffer.append(sb.toString());
                 if (last != names.length || j != 6) {
-                    print("\n");
+                    buffer.append("\n");
                 }
             }
 
             pos = last;
         }
-        print("</code></pre>");
+        code(buffer.toString());
     }
 
     public static void summary(Vector v) {

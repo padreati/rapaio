@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import rapaio.explore.Summary;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -67,7 +68,7 @@ public class CsvPersistenceTest {
             assertArrayEquals(new String[]{"Year", "Make, Model", "Description\"", "Price"}, f.getColNames());
 
         } catch (IOException ex) {
-            assertTrue("this shoud not happen.", false);
+            assertTrue("this should not happen.", false);
         }
     }
 
@@ -134,6 +135,24 @@ public class CsvPersistenceTest {
         csv.setTrimSpaces(true);
         csv.setEscapeQuotas('\"');
         checkLine(csv, " \"ana\", \"ana\"\"again\"", new String[]{"ana", "ana\"again"});
+    }
+
+
+    @Test
+    public void testFullFrame() {
+        try {
+            persistence.setHasQuotas(true);
+            Frame df = persistence.read("header", new ByteArrayInputStream(strings[0].getBytes()));
+            assertNotNull(df);
+            assertEquals(5, df.getColCount());
+            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, df.getColNames());
+
+            Summary.summary(df);
+
+        } catch (IOException ex) {
+            assertTrue("this should not happen.", false);
+        }
+
     }
 
 

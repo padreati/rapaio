@@ -90,7 +90,9 @@ public class HTMLPrinter extends AbstractPrinter {
 
     @Override
     public void closePrinter() {
-        writer.append(Template.footer);
+        String footer = Template.footer;
+        footer = footer.replaceAll(Template.BACKLINK, backLink);
+        writer.append(footer);
         writer.flush();
         writer.close();
     }
@@ -298,5 +300,5 @@ class Template {
             + "<body>\n"
             + "<p>#BACKLINK#</p>";
 
-    static final String footer = "</body></html>";
+    static final String footer = "<br/><p>#BACKLINK#</p></body></html>";
 }
