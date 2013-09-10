@@ -138,7 +138,6 @@ public class PearsonHeight implements TutorialPage {
         summary(sonQuantiles);
 
         Plot plot = new Plot();
-        plot.add(new Points(plot, df.getCol("Father"), df.getCol("Son")));
         plot.getOp().setXRange(55, 80);
         plot.getOp().setYRange(55, 80);
 
@@ -153,6 +152,7 @@ public class PearsonHeight implements TutorialPage {
             line.opt().setColorIndex(new OneIndexVector(30));
             plot.add(line);
         }
+        plot.add(new Points(plot, df.getCol("Father"), df.getCol("Son")));
         draw(plot, 600, 600);
     }
 }
