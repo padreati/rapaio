@@ -35,22 +35,6 @@ import rapaio.printer.Printer;
  */
 public class IrisExplore implements TutorialPage {
 
-    public static void main(String[] args) throws IOException {
-
-        Printer out = new HTMLPrinter("IrisExplore.html", "Iris Exploring done with Rapaio library");
-        setPrinter(out);
-        preparePrinter();
-
-        new IrisExplore().render();
-
-        closePrinter();
-    }
-
-    @Override
-    public String getCategory() {
-        return "ExplorationSample";
-    }
-
     @Override
     public String getPageName() {
         return "IrisExploration";

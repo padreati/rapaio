@@ -25,8 +25,6 @@ import java.io.IOException;
  */
 public interface TutorialPage {
 
-    String getCategory();
-
     String getPageName();
 
     String getPageTitle();

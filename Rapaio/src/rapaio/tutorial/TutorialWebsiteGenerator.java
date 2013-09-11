@@ -41,29 +41,36 @@ public class TutorialWebsiteGenerator {
         webRoot.mkdir();
         pageRoot.mkdir();
 
-        List<TutorialPage> pages = new ArrayList<TutorialPage>();
-        pages.add(new HistogramTutorial());
-        pages.add(new IrisExplore());
-        pages.add(new LawOfLargeNumbers());
-        pages.add(new NormalDistribution());
-        pages.add(new PearsonHeight());
+        TreeMap<String, List<TutorialPage>> pages = new TreeMap<>();
+        List<TutorialPage> list = new ArrayList<>();
+        list.add(new HistogramTutorial());
+        pages.put("Graphics", list);
+        list = new ArrayList<>();
+        list.add(new IrisExplore());
+        list.add(new LawOfLargeNumbers());
+        list.add(new NormalDistribution());
+        list.add(new PearsonHeight());
+        list.add(new CorrelationsPage());
+        pages.put("SampleAnalysis", list);
 
         makeIndexPage(webRoot, pages);
 
-        for (TutorialPage page : pages) {
-            File categoryRoot = new File(pageRoot, page.getCategory());
+        for (String category : pages.keySet()) {
+            File categoryRoot = new File(pageRoot, category);
             if (!categoryRoot.exists()) {
                 categoryRoot.mkdir();
             }
-            File pageFile = new File(categoryRoot, page.getPageName() + ".html");
-            setPrinter(new HTMLPrinter(pageFile.getAbsolutePath(), page.getPageTitle(), "<a href=\"../../index.html\">Back</a>"));
-            preparePrinter();
-            page.render();
-            closePrinter();
+            for (TutorialPage page : pages.get(category)) {
+                File pageFile = new File(categoryRoot, page.getPageName() + ".html");
+                setPrinter(new HTMLPrinter(pageFile.getAbsolutePath(), page.getPageTitle(), "<a href=\"../../index.html\">Back</a>"));
+                preparePrinter();
+                page.render();
+                closePrinter();
+            }
         }
     }
 
-    private static void makeIndexPage(File webRoot, List<TutorialPage> pages) {
+    private static void makeIndexPage(File webRoot, TreeMap<String, List<TutorialPage>> pages) {
         File indexPage = new File(webRoot, "index.html");
         setPrinter(new HTMLPrinter(indexPage.getAbsolutePath(), "Rapaio Tutorials"));
         preparePrinter();
@@ -103,19 +110,9 @@ public class TutorialWebsiteGenerator {
 
         heading(2, "Rapaio Tutorial Gallery");
 
-
-        TreeMap<String, List<TutorialPage>> categories = new TreeMap<>();
-        for (TutorialPage page : pages) {
-            if (!categories.containsKey(page.getCategory())) {
-                categories.put(page.getCategory(), new ArrayList<TutorialPage>());
-            }
-            categories.get(page.getCategory()).add(page);
-        }
-
-        for (String category : categories.keySet()) {
+        for (String category : pages.keySet()) {
             heading(3, category);
-
-            for (TutorialPage page : categories.get(category)) {
+            for (TutorialPage page : pages.get(category)) {
                 print("<a href=\"pages/" + category + "/" + page.getPageName() + ".html\">" + page.getPageTitle() + "</a></br>");
             }
         }

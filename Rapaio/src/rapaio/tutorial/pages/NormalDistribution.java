@@ -33,15 +33,6 @@ import java.io.IOException;
  */
 public class NormalDistribution implements TutorialPage {
 
-    public static void main(String[] args) {
-        setPrinter(new RemotePrinter());
-    }
-
-    @Override
-    public String getCategory() {
-        return "ExplorationSample";
-    }
-
     @Override
     public String getPageName() {
         return "NormalDistribution";

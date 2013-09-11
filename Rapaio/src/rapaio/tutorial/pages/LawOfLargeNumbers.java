@@ -37,18 +37,6 @@ import java.io.IOException;
  */
 public class LawOfLargeNumbers implements TutorialPage {
 
-    public static void main(String[] args) throws IOException {
-        setPrinter(new HTMLPrinter("LawOfLargeNumbers.html", "Law of Large Numbers Study"));
-        preparePrinter();
-        new LawOfLargeNumbers().render();
-        closePrinter();
-    }
-
-    @Override
-    public String getCategory() {
-        return "ExplorationSample";
-    }
-
     @Override
     public String getPageName() {
         return "LawOfLargeNumbers";

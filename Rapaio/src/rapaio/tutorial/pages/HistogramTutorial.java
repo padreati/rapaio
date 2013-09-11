@@ -30,18 +30,6 @@ import java.io.IOException;
  */
 public class HistogramTutorial implements TutorialPage {
 
-    public static void main(String[] args) throws IOException {
-        setPrinter(new HTMLPrinter("HistogramTutorial.html", "Histogram Tutorial"));
-        preparePrinter();
-        new HistogramTutorial().render();
-        closePrinter();
-    }
-
-    @Override
-    public String getCategory() {
-        return "Graphics";
-    }
-
     @Override
     public String getPageName() {
         return "HistogramTutorial";

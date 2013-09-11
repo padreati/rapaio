@@ -19,7 +19,7 @@ package rapaio.tutorial.pages;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
 import rapaio.core.stat.Variance;
-import rapaio.correlation.PearsonRhoCorrelation;
+import rapaio.correlation.PearsonRCorrelation;
 import rapaio.data.Frame;
 import rapaio.data.OneIndexVector;
 import rapaio.datasets.Datasets;
@@ -35,7 +35,6 @@ import rapaio.graphics.QQPlot;
 import rapaio.graphics.plot.ABLine;
 import rapaio.graphics.plot.FunctionLine;
 import rapaio.graphics.plot.Points;
-import rapaio.printer.HTMLPrinter;
 
 import java.io.IOException;
 
@@ -43,18 +42,6 @@ import java.io.IOException;
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class PearsonHeight implements TutorialPage {
-
-    public static void main(String[] args) throws IOException {
-        setPrinter(new HTMLPrinter("pearsonheight.html", "Pearson's Height Dataset Analysis"));
-        preparePrinter();
-        new PearsonHeight().render();
-        closePrinter();
-    }
-
-    @Override
-    public String getCategory() {
-        return "ExplorationSample";
-    }
 
     @Override
     public String getPageName() {
@@ -126,7 +113,7 @@ public class PearsonHeight implements TutorialPage {
         summary(new Mean(df.getCol("Son")));
         summary(new Variance(df.getCol("Son")));
 
-        summary(new PearsonRhoCorrelation(df.getCol("Father"), df.getCol("Son")));
+        summary(new PearsonRCorrelation(df.getCol("Father"), df.getCol("Son")));
 
         double[] perc = new double[11];
         for (int i = 0; i < perc.length; i++) {

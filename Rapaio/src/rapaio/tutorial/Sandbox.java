@@ -18,7 +18,7 @@ package rapaio.tutorial;
 
 import rapaio.core.BaseMath;
 import rapaio.core.stat.Variance;
-import rapaio.correlation.PearsonRhoCorrelation;
+import rapaio.correlation.PearsonRCorrelation;
 import rapaio.data.IndexVector;
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
@@ -58,7 +58,7 @@ public class Sandbox {
         Variance v = new Variance(y);
         y = NumericFilters.jitter(y, BaseMath.sqrt(v.getValue()));
 
-        Summary.summary(new PearsonRhoCorrelation(x, y));
+        Summary.summary(new PearsonRCorrelation(x, y));
 
 //        Plot p = new Plot();
 //        p.add(new Points(p, x, y));
