@@ -64,7 +64,7 @@ public class CorrelationsPage implements TutorialPage {
                 "type of correlation measures, the Pearson product-moment " +
                 "detects only linear correlations. ");
 
-        heading(4, "Definition:");
+        heading(4, "Definition");
 
         p("Pearson product-moment coefficient measures the linear correlation " +
                 "between two random variables \\(X\\) and \\(Y\\), " +
@@ -121,7 +121,56 @@ public class CorrelationsPage implements TutorialPage {
         Points points = new Points(plot, jitter(df.getCol("petal-length"), 0.01), jitter(df.getCol("sepal-length"), 0.01));
         points.opt().setPchIndex(new OneIndexVector(1));
         plot.add(points);
-        draw(plot, 600, 400);
+        plot.setTitle("p correlation = " +
+                corr.getValues()[df.getColIndex("petal-length")][df.getColIndex("sepal-length")]);
+        draw(plot, 400, 300);
+
+        p("Another r coefficient which have a value close to 1 is between " +
+                "sepal-length and petal-length. Let's check that with a plot, also: ");
+
+        plot = new Plot();
+        points = new Points(plot, jitter(df.getCol("petal-length"), 0.01), jitter(df.getCol("petal-width"), 0.01));
+        plot.add(points);
+        points.opt().setPchIndex(new OneIndexVector(1));
+        plot.setTitle("p correlation = " +
+                corr.getValues()[df.getColIndex("petal-length")][df.getColIndex("petal-width")]);
+        draw(plot, 400, 300);
+
+        p("Finally, we plot again, but this time using a coefficient which is closer to 0, " +
+                "which could mean that the variables are not linearly correlated. " +
+                "Such a value for correlation we have between sepal-length and sepal-width. ");
+
+        plot = new Plot();
+        points = new Points(plot, jitter(df.getCol("sepal-length"), 0.01), jitter(df.getCol("sepal-width"), 0.01));
+        plot.add(points);
+        points.opt().setPchIndex(new OneIndexVector(1));
+        plot.setTitle("p correlation = " +
+                corr.getValues()[df.getColIndex("sepal-length")][df.getColIndex("sepal-width")]);
+        draw(plot, 400, 300);
+
+
+        heading(2, "Spearman's rank correlation coefficient");
+
+        p("often denoted by the Greek letter \\(\\rho\\) (rho) " +
+                "or as \\(r_s\\), is a nonparametric measure of " +
+                "statistical dependence between two variables. " +
+                "It assesses how well the relationship between two variables " +
+                "can be described using a monotonic function. If there are " +
+                "no repeated data values, a perfect Spearman correlation of " +
+                "\\(+1\\) or \\(−1\\) occurs when each of the variables is a " +
+                "perfect monotone function of the other.");
+
+        heading(4, "Definition");
+        p("The Spearman correlation coefficient is defined as the Pearson correlation " +
+                "coefficient between the ranked variables. For a sample of size \\(n\\), " +
+                "the \\(n\\) raw scores \\(X_i\\), \\(Y_i\\) are converted to ranks " +
+                "\\(x_i\\), \\(y_i\\), and \\(\\rho\\) is computed from these:");
+        eqn("\\rho = \\frac{\\sum_i(x_i-\\bar{x})(y_i-\\bar{y})}{\\sqrt{\\sum_i (x_i-\\bar{x})^2 \\sum_i(y_i-\\bar{y})^2}}");
+        p("Identical values (rank ties or value duplicates) are assigned a " +
+                "rank equal to the average of their positions in the ascending " +
+                "order of the values.");
+
+        heading(2, "Use Rapaio to compute Separman's rank correlation");
 
 
     }

@@ -16,7 +16,6 @@
 
 package rapaio.correlation;
 
-import static rapaio.core.BaseMath.min;
 import rapaio.core.Summarizable;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
@@ -40,31 +39,31 @@ import java.util.Arrays;
  */
 public class PearsonRCorrelation implements Summarizable {
     private final Vector[] vectors;
-    private final double[][] rho;
+    private final double[][] pearson;
 
     public PearsonRCorrelation(Frame df) {
         this.vectors = new Vector[df.getColCount()];
         for (int i = 0; i < df.getColCount(); i++) {
             vectors[i] = df.getCol(i);
         }
-        this.rho = new double[vectors.length][vectors.length];
+        this.pearson = new double[vectors.length][vectors.length];
         for (int i = 0; i < vectors.length; i++) {
-            rho[i][i] = 1;
+            pearson[i][i] = 1;
             for (int j = i + 1; j < vectors.length; j++) {
-                rho[i][j] = compute(vectors[i], vectors[j]);
-                rho[j][i] = rho[i][j];
+                pearson[i][j] = compute(vectors[i], vectors[j]);
+                pearson[j][i] = pearson[i][j];
             }
         }
     }
 
     public PearsonRCorrelation(Vector... vectors) {
         this.vectors = vectors;
-        this.rho = new double[vectors.length][vectors.length];
+        this.pearson = new double[vectors.length][vectors.length];
         for (int i = 0; i < vectors.length; i++) {
-            rho[i][i] = 1;
+            pearson[i][i] = 1;
             for (int j = i + 1; j < vectors.length; j++) {
-                rho[i][j] = compute(vectors[i], vectors[j]);
-                rho[j][i] = rho[i][j];
+                pearson[i][j] = compute(vectors[i], vectors[j]);
+                pearson[j][i] = pearson[i][j];
             }
         }
     }
@@ -86,8 +85,8 @@ public class PearsonRCorrelation implements Summarizable {
         return sum / (sdp * (count - 1));
     }
 
-    public double[][] value() {
-        return rho;
+    public double[][] getValues() {
+        return pearson;
     }
 
     @Override
@@ -116,7 +115,7 @@ public class PearsonRCorrelation implements Summarizable {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("pearson[%s, %s] - Pearson product-moment correlation coefficient\n",
                 vectors[0].getName(), vectors[1].getName()));
-        sb.append(String.format("%.6f", rho[0][1]));
+        sb.append(String.format("%.6f", pearson[0][1]));
         code(sb.toString());
     }
 
@@ -135,7 +134,7 @@ public class PearsonRCorrelation implements Summarizable {
             table[0][i] = i + ".";
             table[i][0] = i + "." + vectors[i - 1].getName();
             for (int j = 1; j < vectors.length + 1; j++) {
-                table[i][j] = String.format("%.6f", rho[i - 1][j - 1]);
+                table[i][j] = String.format("%.6f", pearson[i - 1][j - 1]);
             }
         }
 
