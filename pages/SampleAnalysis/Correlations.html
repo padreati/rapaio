@@ -146,10 +146,10 @@ petal-width
 </code></pre>
 <pre><code class="Java">pearson[[sepal-length, sepal-width, petal-length, petal-width]] - Pearson product-moment correlation coefficient
    1.sepal-length 2.sepal-width 3.petal-length 4.petal-width 
-1.       1.000000     -0.109369       0.871754      0.817954 
-2.      -0.109369      1.000000      -0.420516     -0.356544 
-3.       0.871754     -0.420516       1.000000      0.962757 
-4.       0.817954     -0.356544       0.962757      1.000000 
+1.              x     -0.109369       0.871754      0.817954 
+2.      -0.109369             x      -0.420516     -0.356544 
+3.       0.871754     -0.420516              x      0.962757 
+4.       0.817954     -0.356544       0.962757             x 
 </code></pre>
 <p>We can spot with eas that many of the attributes are linearly correlated. As a sample we find from the correlation summary that petal-length and petal-width have a very strong linear correlation. Let's check this intuition with a plot:</p><p><center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAEsCAYAAADtt+XCAAAnmElEQVR42u2dD4RW2/rHz7mdqdvt
 jsScud2MZDhGuul2u7ebkWREkoyMSJIkkXTO7XQ7XUmSJJIcR45IkiMjkiQ5IklGEkkykshINxlz
@@ -330,7 +330,7 @@ mrCWLVtWM80ICCAg0BIC4o5m8o+YctHooufPnxuTkUYbxeHjx4/md/75JVmTJo4uHz58mPJ9fHy8
 MudDPSkABAQQEGZLB3LlyhUzakxioZ6HNbvJjCUfCQACAi2NTC8yp+zbt4/M8PHw4UMzX0OCIbOY
 TG8SEsQDEBAAAEBAAAAAEBAAAEBAAAAAAQEAAAQEAAAQEAAAAAQEAAAQEAAAQEAAAAABAQAABAQA
 AAABAQAABAQAABAQAABAQAAAAAEBAACIxP8BmZjPQeaW/LQAAAAASUVORK5CYII=" alt="graphics"/></center></p>
-<p>Another r coefficient which have a value close to 1 is between sepal-length and petal-length. Let's check that with a plot, also: </p><p><center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAEsCAYAAADtt+XCAAAnO0lEQVR42u2dD6RW2f7/Z6ZpmqY5
+<p>Another \(r\) coefficient which have a value close to \(1\) is between sepal-length and petal-length. Let's check that with a plot, also: </p><p><center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAEsCAYAAADtt+XCAAAnO0lEQVR42u2dD6RW2f7/Z6ZpmqY5
 EmmaHDniSrrd49xu3STHcUSSJIkcOZJEutVUd2okSTKGkTFGRiTJSCJJxkgkSTJyk+PcI4nkSLpp
 JEcysn+/9/Jd2zr77P08a+/9/Nn7eV4vljr72c/ea61n7897rc9n/fkgAAAAyMAHVAEAACAgAACA
 gAAAAAICAAAICAAAAAICAAAICAAAICAAAICAAAAAAgIAAICAAAAAAgIAAAgIAAAgIAAAgIAAAAAg
@@ -693,5 +693,19 @@ AABAQAAAAAEBAAAEBAAAEBAAAEBAAAAAEBAAAEBAAAAAAQEAAAQEAAAQEAAAgEj8F3OoxaLZ7ntz
 AAAAAElFTkSuQmCC" alt="graphics"/></center></p>
 <h2>Spearman's rank correlation coefficient</h2>
 <p>often denoted by the Greek letter \(\rho\) (rho) or as \(r_s\), is a nonparametric measure of statistical dependence between two variables. It assesses how well the relationship between two variables can be described using a monotonic function. If there are no repeated data values, a perfect Spearman correlation of \(+1\) or \(−1\) occurs when each of the variables is a perfect monotone function of the other.</p><h4>Definition</h4>
-<p>The Spearman correlation coefficient is defined as the Pearson correlation coefficient between the ranked variables. For a sample of size \(n\), the \(n\) raw scores \(X_i\), \(Y_i\) are converted to ranks \(x_i\), \(y_i\), and \(\rho\) is computed from these:</p>$$ \rho = \frac{\sum_i(x_i-\bar{x})(y_i-\bar{y})}{\sqrt{\sum_i (x_i-\bar{x})^2 \sum_i(y_i-\bar{y})^2}} $$<p>Identical values (rank ties or value duplicates) are assigned a rank equal to the average of their positions in the ascending order of the values.</p><h2>Use Rapaio to compute Separman's rank correlation</h2>
+<p>The Spearman correlation coefficient is defined as the Pearson correlation coefficient between the ranked variables. For a sample of size \(n\), the \(n\) raw scores \(X_i\), \(Y_i\) are converted to ranks \(x_i\), \(y_i\), and \(\rho\) is computed from these:</p>$$ \rho = \frac{\sum_i(x_i-\bar{x})(y_i-\bar{y})}{\sqrt{\sum_i (x_i-\bar{x})^2 \sum_i(y_i-\bar{y})^2}} $$<p>Identical values (rank ties or value duplicates) are assigned a rank equal to the average of their positions in the ascending order of the values.</p><h2>Use Rapaio to compute Spearman's rank correlation</h2>
+<p>Rapaio library allows one to compute Spearman \(\rho\) for more then one vector at a time. Thus the result will be a matrix with computed \(\rho\) values between vectors,using vectors index position as indexes in resulted matrix. </p><pre><code class="Java">spearman[[sepal-length, sepal-width, petal-length, petal-width]] - Spearman's rank correlation coefficient
+   1.sepal-length 2.sepal-width 3.petal-length 4.petal-width 
+1.              x     -0.159457       0.881386      0.834421 
+2.      -0.159457             x      -0.303421     -0.277511 
+3.       0.881386     -0.303421              x      0.936003 
+4.       0.834421     -0.277511       0.936003             x 
+</code></pre>
+<pre><code class="Java">pearson[[sepal-length, sepal-width, petal-length, petal-width]] - Pearson product-moment correlation coefficient
+   1.sepal-length 2.sepal-width 3.petal-length 4.petal-width 
+1.              x     -0.109369       0.871754      0.817954 
+2.      -0.109369             x      -0.420516     -0.356544 
+3.       0.871754     -0.420516              x      0.962757 
+4.       0.817954     -0.356544       0.962757             x 
+</code></pre>
 <br/><p><a href="../../index.html">Back</a></p></body></html>
