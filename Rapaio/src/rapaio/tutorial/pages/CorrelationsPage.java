@@ -53,9 +53,11 @@ public class CorrelationsPage implements TutorialPage {
 
         p("We will use the classical iris data set. The numerical columns of this dataset are:");
 
+        code("Frame df = Datasets.loadIrisDataset();\n" +
+                "df = ColFilters.retainNumeric(df);\n" +
+                "names(df);");
         Frame df = Datasets.loadIrisDataset();
         df = ColFilters.retainNumeric(df);
-
         names(df);
 
         heading(2, "Pearson product-moment correlation");

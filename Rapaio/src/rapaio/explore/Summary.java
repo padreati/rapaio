@@ -39,7 +39,7 @@ public class Summary {
 
     public static void summary(Frame df, String... names) {
         StringBuilder buffer = new StringBuilder();
-        buffer.append(String.format(">>summary(frame, %s)\n", Arrays.deepToString(names)));
+        buffer.append(String.format(">>summary(\"%s\", %s)\n", df.getName(), Arrays.deepToString(names)));
         if (df == null) {
             buffer.append("null instance of frame.\n");
             code(buffer.toString());
@@ -358,7 +358,7 @@ public class Summary {
 
     public static void names(Frame df) {
         StringBuilder buffer = new StringBuilder();
-        buffer.append(">>names(frame)\n");
+        buffer.append(String.format(">>names(\"%s\")\n", df.getName()));
         for (int i = 0; i < df.getColCount(); i++) {
             buffer.append(df.getColNames()[i]).append("\n");
         }
