@@ -133,14 +133,14 @@ hljs.initHighlightingOnLoad();
 <body>
 <p><a href="../../index.html">Back</a></p><h1>Iris sample exploratory analysis</h1>
 <p>This is a sample just to hold analysis of Iris dataset and is used to demonstrate Rapaio capabilities.</p><h2>Data used</h2>
-<p>Data used in this exploratory study is a well-known data set made by Sir Ronald Fisher containing measurements about three Iris species. The names of the measuremens are:</p><pre><code class="Java">>>names(frame)
+<p>Data used in this exploratory study is a well-known data set made by Sir Ronald Fisher containing measurements about three Iris species. The names of the measuremens are:</p><pre><code class="Java">>>names("iris")
 sepal-length
 sepal-width
 petal-length
 petal-width
 class
 </code></pre>
-<p>Measurements include length and width of sepal and petal species. Below is a summary of the dataset in question.</p><pre><code class="Java">>>summary(frame, [sepal-length, sepal-width, petal-length, petal-width, class])
+<p>Measurements include length and width of sepal and petal species. Below is a summary of the dataset in question.</p><pre><code class="Java">>>summary("iris", [sepal-length, sepal-width, petal-length, petal-width, class])
 rows: 150, cols: 5
    sepal-length      sepal-width     petal-length      petal-width                 class 
    Min. : 4.300     Min. : 2.000     Min. : 1.000     Min. : 0.100      Iris-setosa : 50 
