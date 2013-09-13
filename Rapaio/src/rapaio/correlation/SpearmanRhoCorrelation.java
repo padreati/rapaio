@@ -16,11 +16,16 @@
 
 package rapaio.correlation;
 
+import static rapaio.core.BaseMath.max;
 import rapaio.core.Summarizable;
 import rapaio.data.Frame;
 import rapaio.data.NumericVector;
 import rapaio.data.SortedVector;
 import rapaio.data.Vector;
+import static rapaio.explore.Workspace.code;
+import static rapaio.explore.Workspace.getPrinter;
+
+import java.util.Arrays;
 
 /**
  * Spearman's rank correlation coefficient.
@@ -36,10 +41,9 @@ public class SpearmanRhoCorrelation implements Summarizable {
     private final Vector[] vectors;
     private final double[][] rho;
 
-    public SpearmanRhoCorrelation(Vector[] vectors) {
+    public SpearmanRhoCorrelation(Vector... vectors) {
         this.vectors = vectors;
-        this.rho = new double[vectors.length][vectors.length];
-        compute();
+        this.rho = compute();
     }
 
     public SpearmanRhoCorrelation(Frame df) {
@@ -47,30 +51,116 @@ public class SpearmanRhoCorrelation implements Summarizable {
         for (int i = 0; i < df.getColCount(); i++) {
             vectors[i] = df.getCol(i);
         }
-        this.rho = new double[vectors.length][vectors.length];
-        compute();
+        this.rho = compute();
     }
 
-    private void compute() {
+    private double[][] compute() {
         Vector[] sorted = new Vector[vectors.length];
-        Vector[] indexes = new Vector[vectors.length];
+        Vector[] ranks = new Vector[vectors.length];
         for (int i = 0; i < sorted.length; i++) {
-            sorted[i] = new SortedVector(vectors[i]);
-            indexes[i] = new NumericVector(vectors[i].getName(), vectors[i].getRowCount());
+            sorted[i] = new SortedVector(vectors[i], vectors[i].getComparator(true));
+            ranks[i] = new NumericVector(vectors[i].getName(), vectors[i].getRowCount());
         }
 
+        // compute ranks
         for (int i = 0; i < sorted.length; i++) {
-            Vector sort = sorted[i];
             int start = 0;
-            int end = 0;
-            while (end < sort.getRowCount()) {
-
+            while (start < sorted[i].getRowCount()) {
+                int end = start;
+                while (end < sorted[i].getRowCount() - 1 && sorted[i].getValue(end) == sorted[i].getValue(end + 1)) {
+                    end++;
+                }
+                double value = 1 + (start + end) / 2.;
+                for (int j = start; j <= end; j++) {
+                    ranks[i].setValue(sorted[i].getRowId(j), value);
+                }
+                start = end + 1;
             }
         }
 
+        // compute Pearson on ranks
+        return new PearsonRCorrelation(ranks).getValues();
+    }
+
+    public double[][] getValues() {
+        return rho;
     }
 
     @Override
     public void summary() {
+        if (vectors.length == 1) {
+            summaryOne();
+            return;
+        }
+        if (vectors.length == 2) {
+            summaryTwo();
+            return;
+        }
+        summaryMore();
+    }
+
+    private void summaryOne() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("spearman[%s] - Spearman's rank correlation coefficient\n",
+                vectors[0].getName()));
+        sb.append("1\n");
+        sb.append("spearman's rank correlation is 1 for identical vectors");
+        code(sb.toString());
+    }
+
+    private void summaryTwo() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("spearman[%s, %s] - Spearman's rank correlation coefficient\n",
+                vectors[0].getName(), vectors[1].getName()));
+        sb.append(String.format("%.6f", rho[0][1]));
+        code(sb.toString());
+    }
+
+    private void summaryMore() {
+        StringBuilder sb = new StringBuilder();
+        String[] names = new String[vectors.length];
+        for (int i = 0; i < names.length; i++) {
+            names[i] = vectors[i].getName();
+        }
+        sb.append(String.format("spearman[%s] - Spearman's rank correlation coefficient\n",
+                Arrays.deepToString(names)));
+
+        String[][] table = new String[vectors.length + 1][vectors.length + 1];
+        table[0][0] = "";
+        for (int i = 1; i < vectors.length + 1; i++) {
+            table[0][i] = i + ".";
+            table[i][0] = i + "." + vectors[i - 1].getName();
+            for (int j = 1; j < vectors.length + 1; j++) {
+                table[i][j] = String.format("%.6f", rho[i - 1][j - 1]);
+                if (i == j) {
+                    table[i][j] = "x";
+                }
+            }
+        }
+
+        int width = getPrinter().getTextWidth();
+        int start = 0;
+        int end = start;
+        int[] ws = new int[table[0].length];
+        for (int i = 0; i < table.length; i++) {
+            for (int j = 0; j < table[0].length; j++) {
+                ws[i] = max(ws[i], table[i][j].length());
+            }
+        }
+        while (start < vectors.length + 1) {
+            int w = 0;
+            while ((end < (table[0].length - 1)) && ws[end + 1] + w + 1 < width) {
+                w += ws[end + 1] + 1;
+                end++;
+            }
+            for (int j = 0; j < table.length; j++) {
+                for (int i = start; i <= end; i++) {
+                    sb.append(String.format("%" + ws[i] + "s", table[i][j])).append(" ");
+                }
+                sb.append("\n");
+            }
+            start = end + 1;
+        }
+        code(sb.toString());
     }
 }

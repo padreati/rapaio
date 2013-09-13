@@ -19,6 +19,7 @@ package rapaio.tutorial.pages;
 import java.io.IOException;
 
 import rapaio.correlation.PearsonRCorrelation;
+import rapaio.correlation.SpearmanRhoCorrelation;
 import rapaio.data.Frame;
 import rapaio.data.OneIndexVector;
 import rapaio.datasets.Datasets;
@@ -108,8 +109,8 @@ public class CorrelationsPage implements TutorialPage {
 
         code("        PearsonRCorrelation corr = new PearsonRCorrelation(df);\n" +
                 "        summary(corr);\n");
-        PearsonRCorrelation corr = new PearsonRCorrelation(df);
-        summary(corr);
+        PearsonRCorrelation r = new PearsonRCorrelation(df);
+        summary(r);
 
         p("We can spot with eas that many of the attributes are " +
                 "linearly correlated. As a sample we find from the " +
@@ -122,10 +123,10 @@ public class CorrelationsPage implements TutorialPage {
         points.opt().setPchIndex(new OneIndexVector(1));
         plot.add(points);
         plot.setTitle("p correlation = " +
-                corr.getValues()[df.getColIndex("petal-length")][df.getColIndex("sepal-length")]);
+                r.getValues()[df.getColIndex("petal-length")][df.getColIndex("sepal-length")]);
         draw(plot, 400, 300);
 
-        p("Another r coefficient which have a value close to 1 is between " +
+        p("Another \\(r\\) coefficient which have a value close to \\(1\\) is between " +
                 "sepal-length and petal-length. Let's check that with a plot, also: ");
 
         plot = new Plot();
@@ -133,7 +134,7 @@ public class CorrelationsPage implements TutorialPage {
         plot.add(points);
         points.opt().setPchIndex(new OneIndexVector(1));
         plot.setTitle("p correlation = " +
-                corr.getValues()[df.getColIndex("petal-length")][df.getColIndex("petal-width")]);
+                r.getValues()[df.getColIndex("petal-length")][df.getColIndex("petal-width")]);
         draw(plot, 400, 300);
 
         p("Finally, we plot again, but this time using a coefficient which is closer to 0, " +
@@ -145,7 +146,7 @@ public class CorrelationsPage implements TutorialPage {
         plot.add(points);
         points.opt().setPchIndex(new OneIndexVector(1));
         plot.setTitle("p correlation = " +
-                corr.getValues()[df.getColIndex("sepal-length")][df.getColIndex("sepal-width")]);
+                r.getValues()[df.getColIndex("sepal-length")][df.getColIndex("sepal-width")]);
         draw(plot, 400, 300);
 
 
@@ -170,8 +171,14 @@ public class CorrelationsPage implements TutorialPage {
                 "rank equal to the average of their positions in the ascending " +
                 "order of the values.");
 
-        heading(2, "Use Rapaio to compute Separman's rank correlation");
+        heading(2, "Use Rapaio to compute Spearman's rank correlation");
 
+        p("Rapaio library allows one to compute Spearman \\(\\rho\\) for more then one vector at a time. " +
+                "Thus the result will be a matrix with computed \\(\\rho\\) values between vectors," +
+                "using vectors index position as indexes in resulted matrix. ");
 
+        SpearmanRhoCorrelation rho = new SpearmanRhoCorrelation(df);
+        summary(rho);
+        summary(r);
     }
 }

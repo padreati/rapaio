@@ -16,14 +16,13 @@
 
 package rapaio.correlation;
 
+import static rapaio.core.BaseMath.*;
 import rapaio.core.Summarizable;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.Vector;
 
-import static rapaio.core.BaseMath.max;
-import static rapaio.core.BaseMath.sqrt;
 import static rapaio.explore.Workspace.*;
 
 import java.util.Arrays;
@@ -107,7 +106,7 @@ public class PearsonRCorrelation implements Summarizable {
         sb.append(String.format("pearson[%s] - Pearson product-moment correlation coefficient\n",
                 vectors[0].getName()));
         sb.append("1\n");
-        sb.append("pearson correlation is for identical vectors");
+        sb.append("pearson correlation is 1 for identical vectors");
         code(sb.toString());
     }
 
@@ -135,6 +134,9 @@ public class PearsonRCorrelation implements Summarizable {
             table[i][0] = i + "." + vectors[i - 1].getName();
             for (int j = 1; j < vectors.length + 1; j++) {
                 table[i][j] = String.format("%.6f", pearson[i - 1][j - 1]);
+                if (i == j) {
+                    table[i][j] = "x";
+                }
             }
         }
 
