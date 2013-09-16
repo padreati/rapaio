@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class CrossValidation {
 
-    public void cv(Frame df, int classIndex, Classifier c, int folds) {
+    public void cv(Frame df, String classColName, Classifier c, int folds) {
         StringBuilder sb = new StringBuilder();
         sb.append("CrossValidation with ").append(folds).append(" folds\n");
         Frame f = shuffle(df);
@@ -48,7 +48,7 @@ public class CrossValidation {
             Frame train = new MappedFrame(f, trainMapping);
             Frame test = new MappedFrame(f, testMapping);
 
-            c.learn(train, classIndex);
+            c.learn(train, classColName);
             results[i] = c.predict(test);
         }
 
@@ -57,7 +57,7 @@ public class CrossValidation {
             ClassifierResult cr = results[i];
             double acc = 0;
             for (int j = 0; j < cr.getClassification().getRowCount(); j++) {
-                if (cr.getClassification().getIndex(j) == cr.getTestFrame().getCol(classIndex).getIndex(j)) {
+                if (cr.getClassification().getIndex(j) == cr.getTestFrame().getCol(classColName).getIndex(j)) {
                     acc++;
                 }
             }

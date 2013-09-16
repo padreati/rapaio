@@ -51,18 +51,23 @@ public class ID3Model {
         test = frames.get(1);
 
         Frame tr = null;
-        tr = removeCols(train, "PassengerId,Name,Ticket,Cabin,Embarked");//0.789 - kaggle 0.784
-        tr = removeCols(train, "PassengerId,Name,Ticket,Cabin");//0.823 - kaggle 0.784
-        tr = removeCols(train, "PassengerId,Name");//0.802 - kaggle 0.746
+        tr = removeCols(train, "PassengerId,Name,Ticket,Cabin");//0.789 - kaggle 0.784
+//        tr = removeCols(train, "PassengerId,Name,Ticket,Cabin,Embarked");//0.789 - kaggle 0.784
+//        tr = removeCols(train, "PassengerId,Name,Ticket,Cabin");//0.823 - kaggle 0.784
+//        tr = removeCols(train, "PassengerId,Name");//0.802 - kaggle 0.746
         tr = ColFilters.retainNominal(tr);
         Summary.summary(tr);
 
-        CrossValidation cv = new CrossValidation();
-        cv.cv(tr, tr.getColIndex("Survived"), new ID3(), 10);
-
         ID3 id3 = new ID3();
-        id3.learn(tr, tr.getColIndex("Survived"));
+        id3.setMetricType(new ID3.InfoGainMetricType());
+        id3.setMetricType(new ID3.EntropyMetricType());
+        CrossValidation cv = new CrossValidation();
+        cv.cv(tr, "Survived", id3, 10);
+
+        id3.learn(tr, "Survived");
+//        Summary.summary(id3);
         ClassifierResult cr = id3.predict(test);
+
 
         Frame submit = new SolidFrame("submit", test.getRowCount(), new Vector[]{
                 test.getCol("PassengerId"),

@@ -52,11 +52,12 @@ public class OneRule extends AbstractClassifier {
     }
 
     @Override
-    public void learn(Frame df, int classIndex) {
-        classDictionary = df.getCol(classIndex).getDictionary();
+    public void learn(Frame df, String classColName) {
+        classDictionary = df.getCol(classColName).getDictionary();
 
-        validate(df, classIndex);
+        validate(df, classColName);
         learnedRules.clear();
+        int classIndex = df.getColIndex(classColName);
         for (int i = 0; i < df.getColCount(); i++) {
             if (i == classIndex) {
                 continue;
@@ -114,7 +115,7 @@ public class OneRule extends AbstractClassifier {
     }
 
     @Override
-    public void printModelSummary() {
+    public void summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("Classification: OneRule\n");
         sb.append("Parameters:{minCount:").append(minCount).append("}\n");
@@ -128,7 +129,8 @@ public class OneRule extends AbstractClassifier {
         code(sb.toString());
     }
 
-    private void validate(Frame df, int classIndex) {
+    private void validate(Frame df, String classColName) {
+        int classIndex = df.getColIndex(classColName);
         if (classIndex >= df.getColCount()) {
             throw new IllegalArgumentException("classIndex is invalid");
         }

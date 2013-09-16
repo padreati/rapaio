@@ -16,16 +16,15 @@
 
 package rapaio.ml.supervised;
 
+import rapaio.core.Summarizable;
 import rapaio.data.Frame;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface Classifier {
+public interface Classifier extends Summarizable {
 
-    void learn(Frame df, int classIndex);
-
-    void printModelSummary();
+    void learn(Frame df, String classColName);
 
     ClassifierResult predict(Frame df);
 }

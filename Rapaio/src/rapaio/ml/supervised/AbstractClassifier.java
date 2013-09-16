@@ -16,6 +16,7 @@
 
 package rapaio.ml.supervised;
 
+import rapaio.core.Summarizable;
 import rapaio.data.Frame;
 
 /**

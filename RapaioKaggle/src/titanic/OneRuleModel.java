@@ -51,10 +51,10 @@ public class OneRuleModel {
         Frame tr = removeCols(train, "PassengerId,Name,Ticket,Cabin");
         Summary.summary(tr);
         CrossValidation cv = new CrossValidation();
-        cv.cv(tr, tr.getColIndex("Survived"), new OneRule(4), 10);
+        cv.cv(tr, "Survived", new OneRule(4), 10);
 
         OneRule oneRule = new OneRule(4);
-        oneRule.learn(tr, tr.getColIndex("Survived"));
+        oneRule.learn(tr, "Survived");
         ClassifierResult cr = oneRule.predict(test);
 //        oneRule.printModelSummary();
 

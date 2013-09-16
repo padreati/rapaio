@@ -25,7 +25,8 @@ import rapaio.filters.NominalFilters;
  */
 public class TreeMetrics {
 
-    public double entropy(Frame df, int classIndex) {
+    public double entropy(Frame df, String classColName) {
+        int classIndex = df.getColIndex(classColName);
         int[] hits = new int[df.getCol(classIndex).getDictionary().length];
         for (int i = 0; i < df.getRowCount(); i++) {
             hits[df.getCol(classIndex).getIndex(i)]++;
@@ -40,14 +41,28 @@ public class TreeMetrics {
         return entropy;
     }
 
-    public double infoGain(Frame df, int classIndex, int splitIndex) {
+    public double entropy(Frame df, String classColName, String splitColName) {
+        int splitIndex = df.getColIndex(splitColName);
         Frame[] split = NominalFilters.groupByNominal(df, splitIndex);
-        double infoGain = entropy(df, classIndex);
+        double entropy = 0.;
         for (Frame f : split) {
             if (f == null) {
                 continue;
             }
-            infoGain -= (f.getRowCount() / (1. * df.getRowCount())) * entropy(f, classIndex);
+            entropy += (1. * f.getRowCount() * entropy(f, classColName)) / (1. * df.getRowCount());
+        }
+        return entropy;
+    }
+
+    public double infoGain(Frame df, String classColName, String splitColName) {
+        int splitIndex = df.getColIndex(splitColName);
+        Frame[] split = NominalFilters.groupByNominal(df, splitIndex);
+        double infoGain = entropy(df, classColName);
+        for (Frame f : split) {
+            if (f == null) {
+                continue;
+            }
+            infoGain -= (f.getRowCount() / (1. * df.getRowCount())) * entropy(f, classColName);
         }
         return infoGain;
     }

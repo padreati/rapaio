@@ -79,7 +79,7 @@ public class MappedFrame extends AbstractFrame {
 
     @Override
     public Vector getCol(String name) {
-        return df.getCol(name);
+        return getCol(getColIndex(name));
     }
 
     @Override
@@ -89,31 +89,31 @@ public class MappedFrame extends AbstractFrame {
 
     @Override
     public double getValue(int row, int col) {
-        return df.getValue(mapping.get(row), col);
+        return getCol(col).getValue(row);
     }
 
     @Override
     public void setValue(int row, int col, double value) {
-        df.setValue(mapping.get(row), col, value);
+        getCol(col).setValue(row, value);
     }
 
     @Override
     public int getIndex(int row, int col) {
-        return df.getIndex(mapping.get(row), col);
+        return getCol(col).getIndex(row);
     }
 
     @Override
     public void setIndex(int row, int col, int value) {
-        df.setIndex(mapping.get(row), col, value);
+        getCol(col).setIndex(row, value);
     }
 
     @Override
     public String getLabel(int row, int col) {
-        return df.getLabel(mapping.get(row), col);
+        return getCol(col).getLabel(row);
     }
 
     @Override
     public void setLabel(int row, int col, String value) {
-        df.setLabel(mapping.get(row), col, value);
+        getCol(col).setLabel(row, value);
     }
 }
