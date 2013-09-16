@@ -23,6 +23,7 @@ import rapaio.filters.BaseFilters;
 import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -30,7 +31,10 @@ import java.io.IOException;
 public class Datasets {
 
     public static Frame loadIrisDataset() throws IOException {
-        Frame df = new CsvPersistence().read("iris", Datasets.class.getResourceAsStream("iris.csv"));
+        Frame df;
+        try (InputStream is = Datasets.class.getResourceAsStream("iris.csv")) {
+            df = new CsvPersistence().read("iris", is);
+        }
         Vector[] vectors = new Vector[df.getColCount()];
         vectors[vectors.length - 1] = df.getCol(vectors.length - 1);
         for (int i = 0; i < vectors.length - 1; i++) {

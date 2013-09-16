@@ -60,12 +60,14 @@ public class TutorialWebsiteGenerator {
             if (!categoryRoot.exists()) {
                 categoryRoot.mkdir();
             }
-            for (TutorialPage page : pages.get(category)) {
-                File pageFile = new File(categoryRoot, page.getPageName() + ".html");
-                setPrinter(new HTMLPrinter(pageFile.getAbsolutePath(), page.getPageTitle(), "<a href=\"../../index.html\">Back</a>"));
-                preparePrinter();
-                page.render();
-                closePrinter();
+            for (Map.Entry<String, List<TutorialPage>> entry : pages.entrySet()) {
+                for (TutorialPage page : entry.getValue()) {
+                    File pageFile = new File(categoryRoot, page.getPageName() + ".html");
+                    setPrinter(new HTMLPrinter(pageFile.getAbsolutePath(), page.getPageTitle(), "<a href=\"../../index.html\">Back</a>"));
+                    preparePrinter();
+                    page.render();
+                    closePrinter();
+                }
             }
         }
     }

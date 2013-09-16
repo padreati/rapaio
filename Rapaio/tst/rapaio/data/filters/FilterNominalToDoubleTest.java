@@ -70,16 +70,4 @@ public class FilterNominalToDoubleTest {
         assertEquals(numeric.getValue(0), numeric.getValue(0), 1e-10);
         assertTrue(numeric.isMissing(0));
     }
-
-    @Test
-    public void testNotNominal() {
-        Vector filtered = new OneIndexVector(0);
-        try {
-            BaseFilters.toNumeric(filtered.getName(), filtered);
-        } catch (IllegalArgumentException ex) {
-            assertTrue(true);
-            return;
-        }
-        assertTrue(false);
-    }
 }

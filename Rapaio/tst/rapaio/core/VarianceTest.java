@@ -42,6 +42,6 @@ public class VarianceTest extends CoreStatTestUtil {
     @Test
     public void testPearsonDSVariance() throws IOException {
         Frame df = Datasets.loadPearsonHeightDataset();
-        assertEquals(Double.valueOf("1").doubleValue(), new Variance(df.getCol("Son")).getValue(), 1e-12);
+        assertEquals(Double.valueOf("7.93094884953222").doubleValue(), new Variance(df.getCol("Son")).getValue(), 1e-12);
     }
 }

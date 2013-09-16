@@ -1,27 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="true">
-    <exclude-output />
-    <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/tst" isTestSource="true" />
-    </content>
-    <orderEntry type="inheritedJdk" />
-    <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/junit-dep-4.10.jar!/" />
-          <root url="jar://$MODULE_DIR$/../lib/hamcrest-core-1.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../lib/hamcrest-core-1.1.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-  </component>
+<project version="4">
   <component name="org.twodividedbyzero.idea.findbugs">
+    <option name="annotationTypeSettings">
+      <map>
+        <entry key="ExpPriority" value="-4473925;-12828863;-8355712;WAVE_UNDERSCORE;0;" />
+        <entry key="HighPriority" value="-39836;-12828863;-39836;WAVE_UNDERSCORE;1;" />
+        <entry key="IgnorePriority" value="-4473925;-12828863;-11978414;WAVE_UNDERSCORE;0;" />
+        <entry key="LowPriority" value="-4473925;-12828863;-10316203;BOXED;0;" />
+        <entry key="NormalPriority" value="-4473925;-12828863;-10461184;WAVE_UNDERSCORE;2;" />
+      </map>
+    </option>
     <option name="_basePreferences">
       <map>
         <entry key="property.analysisEffortLevel" value="default" />
@@ -37,6 +25,7 @@
         <entry key="property.minPriorityToReport" value="Medium" />
         <entry key="property.runAnalysisInBackground" value="false" />
         <entry key="property.showHiddenDetectors" value="false" />
+        <entry key="property.toolWindowGroupBy" value="BugCategory" />
         <entry key="property.toolWindowToFront" value="true" />
       </map>
     </option>
@@ -212,6 +201,15 @@
         <entry key="STYLE" value="true" />
       </map>
     </option>
+    <option name="_annotationTypeSettings">
+      <map>
+        <entry key="ExpPriority" value="-4473925;-12828863;-8355712;WAVE_UNDERSCORE;0;" />
+        <entry key="HighPriority" value="-39836;-12828863;-39836;WAVE_UNDERSCORE;1;" />
+        <entry key="IgnorePriority" value="-4473925;-12828863;-11978414;WAVE_UNDERSCORE;0;" />
+        <entry key="LowPriority" value="-4473925;-12828863;-10316203;BOXED;0;" />
+        <entry key="NormalPriority" value="-4473925;-12828863;-10461184;WAVE_UNDERSCORE;2;" />
+      </map>
+    </option>
   </component>
-</module>
+</project>
 

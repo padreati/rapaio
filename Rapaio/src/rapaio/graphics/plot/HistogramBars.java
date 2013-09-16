@@ -31,7 +31,6 @@ public class HistogramBars extends PlotComponent {
 
     private final Vector v;
     int bins = 20;
-    int maxBins = 0;
     boolean prob = false;
     boolean rebuild = true;
     double[] freqtable;
