@@ -90,7 +90,7 @@ public class NumericVector extends AbstractVector {
     }
 
     @Override
-    public String[] dictionary() {
+    public String[] getDictionary() {
         return new String[0];
     }
 

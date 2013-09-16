@@ -118,7 +118,7 @@ public class NominalVector extends AbstractVector {
     }
 
     @Override
-    public String[] dictionary() {
+    public String[] getDictionary() {
         return Arrays.copyOf(terms, terms.length);
     }
 

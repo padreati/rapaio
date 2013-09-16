@@ -90,8 +90,28 @@ public final class ColFilters {
         }
         Vector[] vectors = new Vector[len];
         int pos = 0;
-        for (int i = 0; i < vectors.length; i++) {
+        for (int i = 0; i < df.getColCount(); i++) {
             if (df.getCol(i).isNumeric()) {
+                vectors[pos++] = df.getCol(i);
+            }
+        }
+        return new SolidFrame(df.getName(), df.getRowCount(), vectors);
+    }
+
+    /**
+     * Retain only nominal columns from a frame.
+     */
+    public static Frame retainNominal(Frame df) {
+        int len = 0;
+        for (int i = 0; i < df.getColCount(); i++) {
+            if (df.getCol(i).isNominal()) {
+                len++;
+            }
+        }
+        Vector[] vectors = new Vector[len];
+        int pos = 0;
+        for (int i = 0; i < df.getColCount(); i++) {
+            if (df.getCol(i).isNominal()) {
                 vectors[pos++] = df.getCol(i);
             }
         }

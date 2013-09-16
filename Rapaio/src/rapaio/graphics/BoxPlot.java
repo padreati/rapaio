@@ -52,7 +52,7 @@ public class BoxPlot extends BaseFigure {
     }
 
     public BoxPlot(Vector numeric, Vector nominal) {
-        labels = nominal.dictionary();
+        labels = nominal.getDictionary();
         vectors = new Vector[labels.length];
         int[] count = new int[labels.length];
         for (int i = 0; i < numeric.getRowCount(); i++) {

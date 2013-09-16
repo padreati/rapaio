@@ -103,7 +103,7 @@ public class IndexVector extends AbstractVector {
     }
 
     @Override
-    public String[] dictionary() {
+    public String[] getDictionary() {
         return new String[0];
     }
 

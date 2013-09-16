@@ -53,7 +53,7 @@ public class OneRule extends AbstractClassifier {
 
     @Override
     public void learn(Frame df, int classIndex) {
-        classDictionary = df.getCol(classIndex).dictionary();
+        classDictionary = df.getCol(classIndex).getDictionary();
 
         validate(df, classIndex);
         learnedRules.clear();
@@ -145,7 +145,7 @@ public class OneRule extends AbstractClassifier {
 
     private OneRuleSet buildNominal(String string, Vector sourceCol, Vector classCol) {
         NominalOneRuleSet set = new NominalOneRuleSet(string);
-        int[][] freq = new int[sourceCol.dictionary().length][classCol.dictionary().length];
+        int[][] freq = new int[sourceCol.getDictionary().length][classCol.getDictionary().length];
         for (int i = 0; i < sourceCol.getRowCount(); i++) {
             freq[sourceCol.getIndex(i)][classCol.getIndex(i)]++;
         }
@@ -169,8 +169,8 @@ public class OneRule extends AbstractClassifier {
                 continue;
             }
             int next = RandomSource.nextInt(count);
-            String[] colValues = sourceCol.dictionary();
-            String[] classValues = classCol.dictionary();
+            String[] colValues = sourceCol.getDictionary();
+            String[] classValues = classCol.getDictionary();
             for (int j = 0; j < hist.length; j++) {
                 if (hist[j] == max && next > 0) {
                     next--;
@@ -198,7 +198,7 @@ public class OneRule extends AbstractClassifier {
             break;
         }
 
-        int[] hist = new int[classCol.dictionary().length];
+        int[] hist = new int[classCol.getDictionary().length];
 
         // first process missing values
         if (pos != -1) {
@@ -221,7 +221,7 @@ public class OneRule extends AbstractClassifier {
                 }
             }
             int next = RandomSource.nextInt(count);
-            String[] classLabels = classCol.dictionary();
+            String[] classLabels = classCol.getDictionary();
             for (int j = 0; j < hist.length; j++) {
                 if (hist[j] == max && next > 0) {
                     next--;
@@ -269,7 +269,7 @@ public class OneRule extends AbstractClassifier {
                         }
                         double maxValue = Double.POSITIVE_INFINITY;
                         candidates.add(new NumericOneRule(minValue, maxValue, false,
-                                df.getCol(1).dictionary()[j],
+                                df.getCol(1).getDictionary()[j],
                                 i - minIndex + 1,
                                 i - minIndex + 1 - max));
                     }
@@ -310,7 +310,7 @@ public class OneRule extends AbstractClassifier {
                             maxValue = (df.getValue(i, 0) + df.getValue(i + 1, 0)) / 2;
                         }
                         candidates.add(new NumericOneRule(minValue, maxValue, false,
-                                df.getCol(1).dictionary()[j],
+                                df.getCol(1).getDictionary()[j],
                                 i - minIndex + 1,
                                 i - minIndex + 1 - max));
                     }

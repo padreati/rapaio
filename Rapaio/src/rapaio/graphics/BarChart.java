@@ -70,19 +70,19 @@ public class BarChart extends BaseFigure {
         if (range == null) {
 
             // build preliminaries
-            int bins = nominal.dictionary().length;
+            int bins = nominal.getDictionary().length;
             values = new double[bins];
             HashMap<String, ArrayList<Double>> map = new HashMap<>();
-            for (String label : nominal.dictionary()) {
+            for (String label : nominal.getDictionary()) {
                 map.put(label, new ArrayList<Double>());
             }
             for (int i = 0; i < numeric.getRowCount(); i++) {
                 map.get(nominal.getLabel(i)).add(numeric.getValue(i));
             }
             for (int i = 0; i < values.length; i++) {
-                Vector v = new NumericVector("", map.get(nominal.dictionary()[i]).size());
+                Vector v = new NumericVector("", map.get(nominal.getDictionary()[i]).size());
                 for (int j = 0; j < v.getRowCount(); j++) {
-                    v.setValue(j, map.get(nominal.dictionary()[i]).get(j));
+                    v.setValue(j, map.get(nominal.getDictionary()[i]).get(j));
                 }
                 values[i] = new Sum(v).getValue();
             }
@@ -108,12 +108,12 @@ public class BarChart extends BaseFigure {
         bottomMarkersPos.clear();
         bottomMarkersMsg.clear();
 
-        int xspots = nominal.dictionary().length;
+        int xspots = nominal.getDictionary().length;
         double xspotwidth = viewport.width / xspots;
 
         for (int i = 0; i < xspots; i++) {
             bottomMarkersPos.add(xspotwidth / 2 + i * xspotwidth);
-            bottomMarkersMsg.add(nominal.dictionary()[i]);
+            bottomMarkersMsg.add(nominal.getDictionary()[i]);
         }
     }
 

@@ -93,8 +93,8 @@ public class Summary {
             }
 
             if (v.isNominal()) {
-                int[] hits = new int[v.dictionary().length];
-                int[] indexes = new int[v.dictionary().length];
+                int[] hits = new int[v.getDictionary().length];
+                int[] indexes = new int[v.getDictionary().length];
                 for (int j = 0; j < df.getRowCount(); j++) {
                     hits[v.getIndex(j)]++;
                     indexes[v.getIndex(j)] = j;
@@ -376,8 +376,8 @@ public class Summary {
         }
         labels.add("Totals");
         vectors[0] = new NominalVector("Table", a.getRowCount() + 1, labels);
-        for (int i = 0; i < a.dictionary().length; i++) {
-            vectors[0].setLabel(i, a.dictionary()[i]);
+        for (int i = 0; i < a.getDictionary().length; i++) {
+            vectors[0].setLabel(i, a.getDictionary()[i]);
         }
         vectors[0].setLabel(a.getRowCount(), "Totals");
 

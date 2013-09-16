@@ -95,8 +95,8 @@ public final class BaseFilters {
             }
 
             @Override
-            public String[] dictionary() {
-                return vector.dictionary();
+            public String[] getDictionary() {
+                return vector.getDictionary();
             }
 
             @Override

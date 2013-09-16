@@ -67,7 +67,7 @@ public final class NominalFilters {
         if (!df.getCol(nominalIndex).isNominal()) {
             throw new IllegalArgumentException("Index does not specify a isNominal attribute");
         }
-        int len = df.getCol(nominalIndex).dictionary().length;
+        int len = df.getCol(nominalIndex).getDictionary().length;
         ArrayList<Integer>[] mappings = new ArrayList[len];
         for (int i = 0; i < len; i++) {
             mappings[i] = new ArrayList<>();
@@ -104,7 +104,7 @@ public final class NominalFilters {
                     if (!dicts.containsKey(colName)) {
                         dicts.put(colName, new HashSet<String>());
                     }
-                    dicts.get(colName).addAll(Arrays.asList(frame.getCol(colName).dictionary()));
+                    dicts.get(colName).addAll(Arrays.asList(frame.getCol(colName).getDictionary()));
                 }
             }
         }

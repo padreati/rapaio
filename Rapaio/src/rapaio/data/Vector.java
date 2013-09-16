@@ -139,7 +139,7 @@ public interface Vector extends Serializable {
      *
      * @return term dictionary defined by the nominal vector.
      */
-    String[] dictionary();
+    String[] getDictionary();
 
     /**
      * Returns true if the setValue for the observation specified by {@param row} is missing, not available.

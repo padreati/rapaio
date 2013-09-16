@@ -96,8 +96,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public String[] dictionary() {
-        return v.dictionary();
+    public String[] getDictionary() {
+        return v.getDictionary();
     }
 
     @Override

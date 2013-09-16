@@ -109,8 +109,8 @@ public class SortedVector extends AbstractVector {
     }
 
     @Override
-    public String[] dictionary() {
-        return source.dictionary();
+    public String[] getDictionary() {
+        return source.getDictionary();
     }
 
     @Override
