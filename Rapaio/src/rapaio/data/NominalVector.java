@@ -97,6 +97,7 @@ public class NominalVector extends AbstractVector {
 
     @Override
     public void setValue(int row, double value) {
+        setIndex(row, (int) Math.rint(value));
     }
 
     @Override

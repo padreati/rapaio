@@ -90,7 +90,7 @@ public class IndexVector extends AbstractVector {
 
     @Override
     public void setValue(int row, double value) {
-        setIndex(row, (int) value);
+        setIndex(row, (int) Math.rint(value));
     }
 
     @Override
@@ -100,6 +100,7 @@ public class IndexVector extends AbstractVector {
 
     @Override
     public void setLabel(int row, String value) {
+        throw new RuntimeException("Operation not available for index vectors.");
     }
 
     @Override

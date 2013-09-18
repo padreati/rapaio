@@ -18,9 +18,7 @@ package titanic;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
-import static rapaio.explore.Workspace.draw;
 import static rapaio.filters.NominalFilters.consolidate;
-import rapaio.graphics.BarChart;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -38,7 +36,6 @@ public class ConsoleExplore {
         Frame test = Utils.read("test.csv");
         List<Frame> frames = consolidate(Arrays.asList(train, test));
         train = frames.get(0);
-        test = frames.get(1);
 
         for (int i = 0; i < train.getRowCount(); i++) {
             System.out.println(train.getLabel(i, train.getColIndex("Name")));

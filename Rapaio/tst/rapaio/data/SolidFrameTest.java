@@ -71,7 +71,16 @@ public class SolidFrameTest {
         }
         assertEquals(true, exceptional);
 
+        exceptional = false;
+        try {
+            df.getCol(-1);
+        } catch (IllegalArgumentException ex) {
+            exceptional = true;
+        }
+        assertEquals(true, exceptional);
+
         assertEquals("x", df.getCol(0).getName());
+        assertEquals("y", df.getCol(1).getName());
         assertEquals("z", df.getCol(2).getName());
 
         assertEquals("x", df.getCol("x").getName());

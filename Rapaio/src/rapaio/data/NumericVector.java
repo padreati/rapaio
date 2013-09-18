@@ -87,6 +87,7 @@ public class NumericVector extends AbstractVector {
 
     @Override
     public void setLabel(int row, String value) {
+        throw new RuntimeException("Operation not available for index vectors.");
     }
 
     @Override

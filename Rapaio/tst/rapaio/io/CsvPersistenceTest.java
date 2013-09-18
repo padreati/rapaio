@@ -146,9 +146,6 @@ public class CsvPersistenceTest {
             assertNotNull(df);
             assertEquals(5, df.getColCount());
             assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, df.getColNames());
-
-            Summary.summary(df);
-
         } catch (IOException ex) {
             assertTrue("this should not happen.", false);
         }
