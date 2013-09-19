@@ -161,4 +161,25 @@ public final class BaseFilters {
         }
         return result;
     }
+
+    public static Vector toIndex(String name, Vector v) {
+        Vector result = new IndexVector(name, v.getRowCount());
+        for (int i = 0; i < v.getRowCount(); i++) {
+            if (v.isMissing(i)) {
+                continue;
+            }
+            try {
+                if (v.isNominal()) {
+                    int value = Integer.parseInt(v.getLabel(i));
+                    result.setIndex(i, value);
+                }
+                if (v.isNumeric()) {
+                    result.setIndex(i, result.getIndex(i));
+                }
+            } catch (NumberFormatException nfe) {
+                result.setMissing(i);
+            }
+        }
+        return result;
+    }
 }
