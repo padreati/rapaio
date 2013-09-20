@@ -134,7 +134,7 @@ public class SortedFrameTest {
     public void testMultipleSortedLayers() {
         Frame sorted = df;
 
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 10_000; i++) {
             int col = RandomSource.nextInt(sorted.getColCount());
             boolean asc = RandomSource.nextDouble() >= .5;
             Comparator<Integer> comp = sorted.getCol(col).isNominal() ?

@@ -19,7 +19,6 @@ package rapaio.filters;
 import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.data.Vector;
-import rapaio.data.util.AggregateRowComparator;
 
 import java.util.*;
 
@@ -70,7 +69,7 @@ public final class RowFilters {
         for (int i = 0; i < vector.getRowCount(); i++) {
             mapping.add(i);
         }
-        Collections.sort(mapping, new AggregateRowComparator(comparators));
+        Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
         return new MappedVector(name, vector, mapping);
     }
 
@@ -83,7 +82,7 @@ public final class RowFilters {
         for (int i = 0; i < df.getRowCount(); i++) {
             mapping.add(i);
         }
-        Collections.sort(mapping, new AggregateRowComparator(comparators));
+        Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
         return new MappedFrame(name, df, mapping);
     }
 }

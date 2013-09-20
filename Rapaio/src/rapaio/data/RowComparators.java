@@ -23,6 +23,21 @@ import java.util.Comparator;
  */
 public class RowComparators {
 
+    public static Comparator<Integer> aggregateComparator(final Comparator<Integer>... comparators) {
+        return new Comparator<Integer>() {
+            @Override
+            public int compare(Integer row1, Integer row2) {
+                for (Comparator<Integer> comparator : comparators) {
+                    int comp = comparator.compare(row1, row2);
+                    if (comp != 0) {
+                        return comp;
+                    }
+                }
+                return 0;
+            }
+        };
+    }
+
     public static Comparator<Integer> nominalComparator(final Vector vector, final boolean asc) {
         final int sign = asc ? 1 : -1;
 
