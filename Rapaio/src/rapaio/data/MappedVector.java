@@ -16,12 +16,13 @@
 
 package rapaio.data;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 /**
  * A vector which is build on the base of another vector and
- * the row order and which rows are selected is specified by a
+ * the row selection and order is specified by a
  * mapping give at construction time.
  * <p/>
  * This vector does not hold actual values, it delegate the behavior
@@ -32,17 +33,25 @@ import java.util.List;
  */
 public class MappedVector extends AbstractVector {
 
-    private final Vector v;
+    private final Vector source;
     private final List<Integer> mapping;
 
-    public MappedVector(Vector v, List<Integer> mapping) {
-        this(v.getName(), v, mapping);
+    public MappedVector(Vector source, List<Integer> mapping) {
+        this(source.getName(), source, mapping);
     }
 
-    public MappedVector(String name, Vector v, List<Integer> mapping) {
+    public MappedVector(String name, Vector vector, List<Integer> sourceMapping) {
         super(name);
-        this.v = v;
-        this.mapping = mapping;
+        if (!vector.isMappedVector()) {
+            this.source = vector;
+            this.mapping = new ArrayList<>(sourceMapping);
+        } else {
+            this.source = vector.getSourceVector();
+            this.mapping = new ArrayList<>();
+            for (int i = 0; i < sourceMapping.size(); i++) {
+                this.mapping.add(vector.getRowId(sourceMapping.get(i)));
+            }
+        }
     }
 
     @Override
@@ -52,66 +61,76 @@ public class MappedVector extends AbstractVector {
 
     @Override
     public boolean isNumeric() {
-        return v.isNumeric();
+        return source.isNumeric();
     }
 
     @Override
     public boolean isNominal() {
-        return v.isNominal();
+        return source.isNominal();
+    }
+
+    @Override
+    public boolean isMappedVector() {
+        return true;
+    }
+
+    @Override
+    public Vector getSourceVector() {
+        return source;
+    }
+
+    @Override
+    public List<Integer> getMapping() {
+        return mapping;
     }
 
     @Override
     public int getRowId(int row) {
-        return v.getRowId(mapping.get(row));
+        return source.getRowId(mapping.get(row));
     }
 
     @Override
     public double getValue(int row) {
-        return v.getValue(mapping.get(row));
+        return source.getValue(mapping.get(row));
     }
 
     @Override
     public void setValue(int row, double value) {
-        v.setValue(mapping.get(row), value);
+        source.setValue(mapping.get(row), value);
     }
 
     @Override
     public int getIndex(int row) {
-        return v.getIndex(mapping.get(row));
+        return source.getIndex(mapping.get(row));
     }
 
     @Override
     public void setIndex(int row, int value) {
-        v.setIndex(mapping.get(row), value);
+        source.setIndex(mapping.get(row), value);
     }
 
     @Override
     public String getLabel(int row) {
-        return v.getLabel(mapping.get(row));
+        return source.getLabel(mapping.get(row));
     }
 
     @Override
     public void setLabel(int row, String value) {
-        v.setLabel(mapping.get(row), value);
+        source.setLabel(mapping.get(row), value);
     }
 
     @Override
     public String[] getDictionary() {
-        return v.getDictionary();
+        return source.getDictionary();
     }
 
     @Override
     public boolean isMissing(int row) {
-        return v.isMissing(mapping.get(row));
+        return source.isMissing(mapping.get(row));
     }
 
     @Override
     public void setMissing(int row) {
-        v.setMissing(mapping.get(row));
-    }
-
-    @Override
-    public Comparator<Integer> getComparator(boolean asc) {
-        return v.getComparator(asc);
+        source.setMissing(mapping.get(row));
     }
 }

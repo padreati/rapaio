@@ -20,6 +20,7 @@ import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.data.Vector;
 import static rapaio.explore.Workspace.code;
+import rapaio.filters.RowFilters;
 import rapaio.ml.supervised.AbstractClassifier;
 import rapaio.ml.supervised.ClassifierResult;
 
@@ -190,7 +191,7 @@ public class OneRule extends AbstractClassifier {
     private OneRuleSet buildNumeric(String string, Vector sourceCol, Vector classCol) {
         NumericOneRuleSet set = new NumericOneRuleSet(string);
         Frame df = new SolidFrame("", sourceCol.getRowCount(), new Vector[]{sourceCol, classCol});
-        df = new SortedFrame(df, sourceCol.getComparator(true));
+        df = RowFilters.sort(df.getName(), df, RowComparators.numericComparator(sourceCol, true));
         int pos = -1;
         while (pos < df.getRowCount()) {
             if (df.getCol(0).isMissing(pos + 1)) {

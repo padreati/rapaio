@@ -20,10 +20,10 @@ import static rapaio.core.BaseMath.max;
 import rapaio.core.Summarizable;
 import rapaio.data.Frame;
 import rapaio.data.NumericVector;
-import rapaio.data.SortedVector;
 import rapaio.data.Vector;
 import static rapaio.explore.Workspace.code;
 import static rapaio.explore.Workspace.getPrinter;
+import static rapaio.filters.RowFilters.*;
 
 import java.util.Arrays;
 
@@ -58,7 +58,7 @@ public class SpearmanRhoCorrelation implements Summarizable {
         Vector[] sorted = new Vector[vectors.length];
         Vector[] ranks = new Vector[vectors.length];
         for (int i = 0; i < sorted.length; i++) {
-            sorted[i] = new SortedVector(vectors[i], vectors[i].getComparator(true));
+            sorted[i] = sort(vectors[i]);
             ranks[i] = new NumericVector(vectors[i].getName(), vectors[i].getRowCount());
         }
 

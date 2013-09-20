@@ -18,6 +18,7 @@ package rapaio.data;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Random access list of observed values (observations) for a specific variable.
@@ -41,6 +42,12 @@ public interface Vector extends Serializable {
      * @return true is the vector is nominal, false otherwise
      */
     boolean isNominal();
+
+    boolean isMappedVector();
+
+    Vector getSourceVector();
+
+    List<Integer> getMapping();
 
     /**
      * The name of the vector. Name is mostly used by various user-interaction facilities.
@@ -159,17 +166,4 @@ public interface Vector extends Serializable {
      * @param row position of the observation.
      */
     void setMissing(int row);
-
-    /**
-     * Returns the default comparator for the values of the observation
-     * in ascending or descending order, specified by {@param asc}.
-     * <p/>
-     * The defaul comparator depends on the implementation of the vector.
-     * For numerical vectors the ordering is the natural numeric ordering,
-     * for nominal values the ordering is the case-sensitive lexicographical ordering.
-     *
-     * @param asc
-     * @return default observation comparator
-     */
-    Comparator<Integer> getComparator(boolean asc);
 }

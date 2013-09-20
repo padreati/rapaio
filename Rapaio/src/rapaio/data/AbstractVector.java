@@ -16,6 +16,8 @@
 
 package rapaio.data;
 
+import java.util.List;
+
 /**
  * Base class for a vector which enforces to read-only name given at construction time.
  *

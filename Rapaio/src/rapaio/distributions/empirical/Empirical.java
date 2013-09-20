@@ -18,6 +18,7 @@ package rapaio.distributions.empirical;
 
 import static rapaio.core.BaseMath.pow;
 import static rapaio.core.BaseMath.sqrt;
+import rapaio.data.RowComparators;
 import rapaio.data.Vector;
 import rapaio.distributions.Distribution;
 import static rapaio.filters.RowFilters.sort;
@@ -47,7 +48,7 @@ public class Empirical extends Distribution {
             throw new IllegalArgumentException("Input vector can't be empty.");
         }
         Vector sort = sort(vector, true);
-        Comparator<Integer> comp = sort.getComparator(true);
+        Comparator<Integer> comp = RowComparators.numericComparator(sort, true);
         int len = 1;
         for (int i = 1; i < sort.getRowCount(); i++) {
             if (comp.compare(i, i - 1) != 0) {

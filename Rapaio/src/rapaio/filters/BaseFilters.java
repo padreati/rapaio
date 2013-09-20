@@ -19,6 +19,7 @@ package rapaio.filters;
 import rapaio.data.*;
 
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Provides filters for type conversion, metadata changing.
@@ -47,6 +48,21 @@ public final class BaseFilters {
             @Override
             public boolean isNominal() {
                 return vector.isNominal();
+            }
+
+            @Override
+            public boolean isMappedVector() {
+                return false;
+            }
+
+            @Override
+            public Vector getSourceVector() {
+                return null;
+            }
+
+            @Override
+            public List<Integer> getMapping() {
+                return null;
             }
 
             @Override
@@ -107,11 +123,6 @@ public final class BaseFilters {
             @Override
             public void setMissing(int row) {
                 vector.setMissing(row);
-            }
-
-            @Override
-            public Comparator<Integer> getComparator(boolean asc) {
-                return vector.getComparator(asc);
             }
         };
     }

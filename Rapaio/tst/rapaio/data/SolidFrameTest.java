@@ -36,7 +36,7 @@ public class SolidFrameTest {
     public void testRowId() {
         Frame df = new SolidFrame("df", 10, new Vector[]{new NumericVector("x", 10)});
         for (int i = 0; i < df.getRowCount(); i++) {
-            assertEquals(i, df.rowId(i));
+            assertEquals(i, df.getRowId(i, 0));
         }
     }
 

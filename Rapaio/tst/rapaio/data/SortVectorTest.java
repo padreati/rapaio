@@ -18,10 +18,12 @@ package rapaio.data;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static rapaio.data.RowComparators.*;
 import org.junit.Test;
 import rapaio.core.BaseMath;
 import rapaio.filters.BaseFilters;
 import rapaio.io.CsvPersistence;
+import static rapaio.filters.RowFilters.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -35,17 +37,17 @@ public class SortVectorTest {
     @Test
     public void smokeTest() {
         Vector v = new IndexVector("test", 0);
-        Vector sorted = new SortedVector(v, v.getComparator(true));
+        Vector sorted = sort(v, indexComparator(v, true));
         assertTrue(sorted.isNumeric());
         assertFalse(sorted.isNominal());
 
         v = new NumericVector("test", 0);
-        sorted = new SortedVector(v, v.getComparator(true));
+        sorted = sort(v, numericComparator(v, true));
         assertTrue(sorted.isNumeric());
         assertFalse(sorted.isNominal());
 
         v = new NominalVector("test", 0, new String[]{});
-        sorted = new SortedVector(v, v.getComparator(true));
+        sorted = sort(v, nominalComparator(v, true));
         assertFalse(sorted.isNumeric());
         assertTrue(sorted.isNominal());
     }
@@ -58,17 +60,17 @@ public class SortVectorTest {
         index.setIndex(0, 1);
 
         assertEquals(10, index.getRowCount());
-        Vector sort = new SortedVector(index, index.getComparator(true));
+        Vector sort = sort(index, indexComparator(index, true));
         for (int i = 1; i < sort.getRowCount(); i++) {
             assertTrue(sort.getIndex(i - 1) <= sort.getIndex(i));
         }
 
-        sort = new SortedVector(index, index.getComparator(false));
+        sort = sort(index, indexComparator(index, false));
         for (int i = 1; i < sort.getRowCount(); i++) {
             assertTrue(sort.getIndex(i - 1) >= sort.getIndex(i));
         }
 
-        Vector second = new SortedVector(sort, sort.getComparator(true));
+        Vector second = sort(sort, indexComparator(sort, true));
         for (int i = 1; i < second.getRowCount(); i++) {
             assertTrue(second.getIndex(i - 1) <= second.getIndex(i));
         }
@@ -79,17 +81,17 @@ public class SortVectorTest {
         Vector numeric = new NumericVector("x", new double[]{2., 4., 1.2, 1.3, 1.2, 0., 100.});
 
         assertEquals(7, numeric.getRowCount());
-        Vector sort = new SortedVector(numeric, numeric.getComparator(true));
+        Vector sort = sort(numeric, numericComparator(numeric, true));
         for (int i = 1; i < sort.getRowCount(); i++) {
             assertTrue(sort.getValue(i - 1) <= sort.getValue(i));
         }
 
-        sort = new SortedVector(numeric, numeric.getComparator(false));
+        sort = sort(numeric, numericComparator(numeric, false));
         for (int i = 1; i < sort.getRowCount(); i++) {
             assertTrue(sort.getValue(i - 1) >= sort.getValue(i));
         }
 
-        Vector second = new SortedVector(sort, sort.getComparator(true));
+        Vector second = sort(sort, numericComparator(sort, true));
         for (int i = 1; i < second.getRowCount(); i++) {
             assertTrue(second.getIndex(i - 1) <= second.getIndex(i));
         }
@@ -108,17 +110,17 @@ public class SortVectorTest {
         nominal.setMissing(4);
         nominal.setMissing(5);
 
-        Vector sort = new SortedVector(nominal, nominal.getComparator(true));
+        Vector sort = sort(nominal, nominalComparator(nominal, true));
         for (int i = 1; i < sort.getRowCount(); i++) {
             assertTrue(sort.getLabel(i - 1).compareTo(sort.getLabel(i)) <= 0);
         }
 
-        sort = new SortedVector(nominal, nominal.getComparator(false));
+        sort = sort(nominal, nominalComparator(nominal, false));
         for (int i = 1; i < sort.getRowCount(); i++) {
             assertTrue(sort.getLabel(i - 1).compareTo(sort.getLabel(i)) >= 0);
         }
 
-        Vector second = new SortedVector(sort, sort.getComparator(true));
+        Vector second = sort(sort, nominalComparator(sort, true));
         for (int i = 1; i < second.getRowCount(); i++) {
             assertTrue(second.getIndex(i - 1) <= second.getIndex(i));
         }
@@ -150,7 +152,7 @@ public class SortVectorTest {
         transform.put("b", "a");
         transform.put("c", "b");
         transform.put("d", "d");
-        Vector sort = new SortedVector(nominal);
+        Vector sort = sort(nominal);
         for (int i = 0; i < sort.getRowCount(); i++) {
             sort.setLabel(i, transform.get(sort.getLabel(i)));
         }
@@ -173,7 +175,7 @@ public class SortVectorTest {
 
         // numeric
 
-        sort = new SortedVector("x", numeric, numeric.getComparator(true));
+        sort = sort("x", numeric, numericComparator(numeric, true));
         for (int i = 0; i < sort.getRowCount(); i++) {
             sort.setValue(i, sort.getValue(i) + BaseMath.E);
         }
@@ -185,7 +187,7 @@ public class SortVectorTest {
 
         // index
 
-        sort = new SortedVector("x", index, index.getComparator(true));
+        sort = sort("x", index, indexComparator(index, true));
         for (int i = 0; i < sort.getRowCount(); i++) {
             sort.setValue(i, sort.getIndex(i) + 10);
         }
@@ -198,7 +200,7 @@ public class SortVectorTest {
     @Test
     public void testMissing() {
         Vector v = new IndexVector("x", 1, 10, 1);
-        v = new SortedVector(v, v.getComparator(true));
+        v = sort(v, indexComparator(v, true));
         for (int i = 0; i < 10; i += 3) {
             v.setMissing(i);
         }

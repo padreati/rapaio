@@ -16,6 +16,8 @@
 
 package rapaio.data;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -31,27 +33,33 @@ import java.util.List;
  */
 public class MappedFrame extends AbstractFrame {
 
-    private final Frame df;
-    private final List<Integer> mapping;
+    private final int rows;
     private final Vector[] vectors;
+    private final HashMap<String, Integer> colIndex;
+    private final String[] colNames;
 
     public MappedFrame(Frame df, List<Integer> mapping) {
-        this("", df, mapping);
+        this(df.getName(), df, mapping);
     }
 
     public MappedFrame(String name, Frame df, List<Integer> mapping) {
         super(name);
-        this.df = df;
-        this.mapping = mapping;
+        this.rows = mapping.size();
+        this.colIndex = new HashMap<>();
+        this.colNames = new String[df.getColCount()];
+        for (int i = 0; i < df.getColCount(); i++) {
+            colIndex.put(df.getColNames()[i], i);
+            colNames[i] = df.getColNames()[i];
+        }
         vectors = new Vector[df.getColCount()];
-        for (int i = 0; i < vectors.length; i++) {
+        for (int i = 0; i < df.getColCount(); i++) {
             vectors[i] = new MappedVector(df.getCol(i), mapping);
         }
     }
 
     @Override
     public int getRowCount() {
-        return mapping.size();
+        return rows;
     }
 
     @Override
@@ -60,13 +68,18 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
+    public int getRowId(int row, int col) {
+        return getCol(col).getRowId(row);
+    }
+
+    @Override
     public String[] getColNames() {
-        return df.getColNames();
+        return colNames;
     }
 
     @Override
     public int getColIndex(String name) {
-        return df.getColIndex(name);
+        return colIndex.get(name);
     }
 
     @Override
@@ -82,38 +95,33 @@ public class MappedFrame extends AbstractFrame {
         return getCol(getColIndex(name));
     }
 
-    @Override
-    public int rowId(int row) {
-        return df.rowId(mapping.get(row));
-    }
-
-    @Override
-    public double getValue(int row, int col) {
-        return getCol(col).getValue(row);
-    }
-
-    @Override
-    public void setValue(int row, int col, double value) {
-        getCol(col).setValue(row, value);
-    }
-
-    @Override
-    public int getIndex(int row, int col) {
-        return getCol(col).getIndex(row);
-    }
-
-    @Override
-    public void setIndex(int row, int col, int value) {
-        getCol(col).setIndex(row, value);
-    }
-
-    @Override
-    public String getLabel(int row, int col) {
-        return getCol(col).getLabel(row);
-    }
-
-    @Override
-    public void setLabel(int row, int col, String value) {
-        getCol(col).setLabel(row, value);
-    }
+//    @Override
+//    public double getValue(int row, int col) {
+//        return getCol(col).getValue(row);
+//    }
+//
+//    @Override
+//    public void setValue(int row, int col, double value) {
+//        getCol(col).setValue(row, value);
+//    }
+//
+//    @Override
+//    public int getIndex(int row, int col) {
+//        return getCol(col).getIndex(row);
+//    }
+//
+//    @Override
+//    public void setIndex(int row, int col, int value) {
+//        getCol(col).setIndex(row, value);
+//    }
+//
+//    @Override
+//    public String getLabel(int row, int col) {
+//        return getCol(col).getLabel(row);
+//    }
+//
+//    @Override
+//    public void setLabel(int row, int col, String value) {
+//        getCol(col).setLabel(row, value);
+//    }
 }

@@ -71,6 +71,21 @@ public class NominalVector extends AbstractVector {
     }
 
     @Override
+    public boolean isMappedVector() {
+        return false;
+    }
+
+    @Override
+    public Vector getSourceVector() {
+        return null;
+    }
+
+    @Override
+    public List<Integer> getMapping() {
+        return null;
+    }
+
+    @Override
     public int getRowCount() {
         return indexes.length;
     }
@@ -131,29 +146,5 @@ public class NominalVector extends AbstractVector {
     @Override
     public void setMissing(int row) {
         setIndex(row, missingIndex);
-    }
-
-    @Override
-    public Comparator<Integer> getComparator(final boolean asc) {
-        final int sign = asc ? 1 : -1;
-
-        return new Comparator<Integer>() {
-            @Override
-            public int compare(Integer row1, Integer row2) {
-                if (isMissing(row1) && isMissing(row2)) {
-                    return 0;
-                }
-                if (isMissing(row1)) {
-                    return -sign;
-                }
-                if (isMissing(row2)) {
-                    return sign;
-                }
-                if (getIndex(row1) == getIndex(row2)) {
-                    return 0;
-                }
-                return sign * (getIndex(row1) < getIndex(row2) ? -1 : 1);
-            }
-        };
     }
 }

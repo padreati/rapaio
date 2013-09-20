@@ -18,6 +18,7 @@ package rapaio.data;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Numeric vector holds continuous or discrete random variables.
@@ -48,6 +49,21 @@ public class NumericVector extends AbstractVector {
     @Override
     public boolean isNominal() {
         return false;
+    }
+
+    @Override
+    public boolean isMappedVector() {
+        return false;
+    }
+
+    @Override
+    public Vector getSourceVector() {
+        return null;
+    }
+
+    @Override
+    public List<Integer> getMapping() {
+        return null;
     }
 
     @Override
@@ -103,28 +119,5 @@ public class NumericVector extends AbstractVector {
     @Override
     public void setMissing(int row) {
         setValue(row, missingValue);
-    }
-
-    @Override
-    public Comparator<Integer> getComparator(final boolean asc) {
-        final int sign = asc ? 1 : -1;
-        return new Comparator<Integer>() {
-            @Override
-            public int compare(Integer row1, Integer row2) {
-                if (isMissing(row1) && isMissing(row2)) {
-                    return 0;
-                }
-                if (isMissing(row1)) {
-                    return -sign;
-                }
-                if (isMissing(row2)) {
-                    return sign;
-                }
-                if (getValue(row1) == getValue(row2)) {
-                    return 0;
-                }
-                return sign * (getValue(row1) < getValue(row2) ? -1 : 1);
-            }
-        };
     }
 }

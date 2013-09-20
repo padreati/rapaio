@@ -38,11 +38,20 @@ public class CrossValidation {
         for (int i = 0; i < folds; i++) {
             List<Integer> trainMapping = new ArrayList<>();
             List<Integer> testMapping = new ArrayList<>();
-            for (int j = 0; j < f.getRowCount(); j++) {
-                if (j % folds == i) {
-                    testMapping.add(j);
-                } else {
-                    trainMapping.add(j);
+            if (folds >= df.getRowCount() - 1) {
+                testMapping.add(i);
+                for (int j = 0; j < f.getRowCount(); j++) {
+                    if (j != i) {
+                        trainMapping.add(j);
+                    }
+                }
+            } else {
+                for (int j = 0; j < f.getRowCount(); j++) {
+                    if (j % folds == i) {
+                        testMapping.add(j);
+                    } else {
+                        trainMapping.add(j);
+                    }
                 }
             }
             Frame train = new MappedFrame(f, trainMapping);

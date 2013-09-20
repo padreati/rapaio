@@ -17,14 +17,11 @@
 package rapaio.filters;
 
 import rapaio.core.RandomSource;
-import rapaio.data.Frame;
-import rapaio.data.MappedFrame;
-import rapaio.data.SortedVector;
+import rapaio.data.*;
 import rapaio.data.Vector;
+import rapaio.data.util.AggregateRowComparator;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Provides filters which manipulates rows from a frame.
@@ -53,31 +50,40 @@ public final class RowFilters {
         return new MappedFrame(df, mapping);
     }
 
-    /**
-     * Sort ascending the values according to the type comparator
-     *
-     * @param v input values
-     * @return sorted values
-     */
     public static Vector sort(Vector v) {
         return sort(v, true);
     }
 
-    /**
-     * Sort the values according to the type comparator
-     *
-     * @param vector input vector
-     * @param asc    true if ascending, false if descending
-     * @return sorted values
-     */
-    public static Vector sort(Vector vector, boolean asc) {
+    public static Vector sort(Vector v, boolean asc) {
+        if (v.isNumeric()) {
+            return sort(v.getName(), v, RowComparators.numericComparator(v, asc));
+        }
+        return sort(v.getName(), v, RowComparators.nominalComparator(v, asc));
+    }
+
+    public static Vector sort(Vector vector, Comparator<Integer>... comparators) {
+        return sort(vector.getName(), vector, comparators);
+    }
+
+    public static Vector sort(String name, Vector vector, Comparator<Integer>... comparators) {
         List<Integer> mapping = new ArrayList<>();
         for (int i = 0; i < vector.getRowCount(); i++) {
             mapping.add(i);
         }
-        Collections.sort(mapping, vector.getComparator(asc));
-        return new SortedVector(vector, mapping);
+        Collections.sort(mapping, new AggregateRowComparator(comparators));
+        return new MappedVector(name, vector, mapping);
     }
 
+    public static Frame sort(Frame df, Comparator<Integer>... comparators) {
+        return sort(df.getName(), df, comparators);
+    }
 
+    public static Frame sort(String name, Frame df, Comparator<Integer>... comparators) {
+        List<Integer> mapping = new ArrayList();
+        for (int i = 0; i < df.getRowCount(); i++) {
+            mapping.add(i);
+        }
+        Collections.sort(mapping, new AggregateRowComparator(comparators));
+        return new MappedFrame(name, df, mapping);
+    }
 }

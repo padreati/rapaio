@@ -19,7 +19,9 @@
  */
 package rapaio.data;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * A frame which is not mapped, its values are contained in vectors.
@@ -30,19 +32,19 @@ public class SolidFrame extends AbstractFrame {
 
     private final int rows;
     private final Vector[] vectors;
-    private final HashMap<String, Integer> mapping;
+    private final HashMap<String, Integer> colIndex;
     private final String[] names;
 
     public SolidFrame(String name, int rows, Vector[] vectors) {
         super(name);
         this.rows = rows;
         this.vectors = new Vector[vectors.length];
-        this.mapping = new HashMap<>();
+        this.colIndex = new HashMap<>();
         this.names = new String[vectors.length];
 
         for (int i = 0; i < vectors.length; i++) {
             this.vectors[i] = vectors[i];
-            this.mapping.put(vectors[i].getName(), i);
+            this.colIndex.put(vectors[i].getName(), i);
             names[i] = vectors[i].getName();
         }
     }
@@ -58,8 +60,8 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public int rowId(int row) {
-        return row;
+    public int getRowId(int row, int col) {
+        return getCol(col).getRowId(row);
     }
 
     @Override
@@ -69,10 +71,10 @@ public class SolidFrame extends AbstractFrame {
 
     @Override
     public int getColIndex(String name) {
-        if (!mapping.containsKey(name)) {
+        if (!colIndex.containsKey(name)) {
             throw new IllegalArgumentException("Column name is invalid");
         }
-        return mapping.get(name);
+        return colIndex.get(name);
     }
 
     @Override

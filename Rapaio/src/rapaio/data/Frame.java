@@ -17,6 +17,7 @@
 package rapaio.data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Random access list of observed values for multiple variables.
@@ -86,12 +87,13 @@ public interface Frame extends Serializable {
     Vector getCol(String name);
 
     /**
-     * Returns row identifier. See {@link Vector#getRowId(int)} for further reference.
+     * Returns row identifier for a specific column. See {@link Vector#getRowId(int)} for further reference.
      *
      * @param row row for which row identifier is returned
+     * @param col column from which row id is draw
      * @return row identifier
      */
-    int rowId(int row);
+    int getRowId(int row, int col);
 
     /**
      * Convenient shortcut to call {@link Vector#getValue(int)} for a given column.
@@ -131,7 +133,7 @@ public interface Frame extends Serializable {
     void setIndex(int row, int col, int value);
 
     /**
-     * Conveninet shortcut method for calling {@link Vector#getLabel(int)} for given column.
+     * Convenient shortcut method for calling {@link Vector#getLabel(int)} for given column.
      *
      * @param row row number
      * @param col column number
