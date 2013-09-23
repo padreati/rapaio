@@ -42,16 +42,15 @@ public class TutorialWebsiteGenerator {
         pageRoot.mkdir();
 
         TreeMap<String, List<TutorialPage>> pages = new TreeMap<>();
-        List<TutorialPage> list = new ArrayList<>();
-        list.add(new HistogramTutorial());
-        pages.put("Graphics", list);
-        list = new ArrayList<>();
-        list.add(new IrisExplore());
-        list.add(new LawOfLargeNumbers());
-        list.add(new NormalDistribution());
-        list.add(new PearsonHeight());
-        list.add(new CorrelationsPage());
-        pages.put("SampleAnalysis", list);
+        pages.put("Graphics", new ArrayList<TutorialPage>());
+        pages.get("Graphics").add(new HistogramTutorial());
+
+        pages.put("SampleAnalysis", new ArrayList<TutorialPage>());
+        pages.get("SampleAnalysis").add(new IrisExplore());
+        pages.get("SampleAnalysis").add(new LawOfLargeNumbers());
+        pages.get("SampleAnalysis").add(new NormalDistribution());
+        pages.get("SampleAnalysis").add(new PearsonHeight());
+        pages.get("SampleAnalysis").add(new CorrelationsPage());
 
         makeIndexPage(webRoot, pages);
 
@@ -60,14 +59,12 @@ public class TutorialWebsiteGenerator {
             if (!categoryRoot.exists()) {
                 categoryRoot.mkdir();
             }
-            for (Map.Entry<String, List<TutorialPage>> entry : pages.entrySet()) {
-                for (TutorialPage page : entry.getValue()) {
-                    File pageFile = new File(categoryRoot, page.getPageName() + ".html");
-                    setPrinter(new HTMLPrinter(pageFile.getAbsolutePath(), page.getPageTitle(), "<a href=\"../../index.html\">Back</a>"));
-                    preparePrinter();
-                    page.render();
-                    closePrinter();
-                }
+            for (TutorialPage page : pages.get(category)) {
+                File pageFile = new File(categoryRoot, page.getPageName() + ".html");
+                setPrinter(new HTMLPrinter(pageFile.getAbsolutePath(), page.getPageTitle(), "<a href=\"../../index.html\">Back</a>"));
+                preparePrinter();
+                page.render();
+                closePrinter();
             }
         }
     }
