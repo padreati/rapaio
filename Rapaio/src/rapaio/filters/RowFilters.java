@@ -46,7 +46,7 @@ public final class RowFilters {
         for (int i = mapping.size(); i > 1; i--) {
             mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
         }
-        return new MappedFrame(df, mapping);
+        return new MappedFrame(df, new Mapping(mapping));
     }
 
     public static Vector sort(Vector v) {
@@ -83,6 +83,6 @@ public final class RowFilters {
             mapping.add(i);
         }
         Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
-        return new MappedFrame(name, df, mapping);
+        return new MappedFrame(name, df, new Mapping(mapping));
     }
 }

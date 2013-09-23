@@ -18,6 +18,7 @@ package rapaio.ml.supervised;
 
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
+import rapaio.data.Mapping;
 import static rapaio.explore.Workspace.code;
 import static rapaio.filters.RowFilters.*;
 
@@ -54,8 +55,8 @@ public class CrossValidation {
                     }
                 }
             }
-            Frame train = new MappedFrame(f, trainMapping);
-            Frame test = new MappedFrame(f, testMapping);
+            Frame train = new MappedFrame(f, new Mapping(trainMapping));
+            Frame test = new MappedFrame(f, new Mapping(testMapping));
 
             c.learn(train, classColName);
             results[i] = c.predict(test);

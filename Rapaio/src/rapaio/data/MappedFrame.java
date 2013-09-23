@@ -38,13 +38,12 @@ public class MappedFrame extends AbstractFrame {
     private final Vector[] vectors;
     private final HashMap<String, Integer> colIndex;
     private final String[] colNames;
-    private final HashSet<Mapping> mappings = new HashSet<>();
 
-    public MappedFrame(Frame df, List<Integer> mapping) {
+    public MappedFrame(Frame df, Mapping mapping) {
         this(df.getName(), df, mapping);
     }
 
-    public MappedFrame(String name, Frame df, List<Integer> mapping) {
+    public MappedFrame(String name, Frame df, Mapping mapping) {
         super(name);
         this.rows = mapping.size();
         this.colIndex = new HashMap<>();
@@ -54,8 +53,23 @@ public class MappedFrame extends AbstractFrame {
             colNames[i] = df.getColNames()[i];
         }
         vectors = new Vector[df.getColCount()];
+
+        Mapping cachedSolidMapping = mapping;
+        HashMap<Mapping, Mapping> cachedMappedMappings = new HashMap<>();
+
         for (int i = 0; i < df.getColCount(); i++) {
-            vectors[i] = new MappedVector(df.getCol(i), new Mapping(mapping));
+            Vector old = df.getCol(i);
+            if (!old.isMappedVector()) {
+                vectors[i] = new MappedVector(old, cachedSolidMapping);
+            } else {
+                Mapping oldMapping = old.getMapping();
+                if (!cachedMappedMappings.containsKey(oldMapping)) {
+                    vectors[i] = new MappedVector(old, mapping);
+                    cachedMappedMappings.put(oldMapping, vectors[i].getMapping());
+                    continue;
+                }
+                vectors[i] = new MappedVector(old.getSourceVector(), cachedMappedMappings.get(oldMapping));
+            }
         }
     }
 

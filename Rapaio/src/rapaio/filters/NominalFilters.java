@@ -77,7 +77,7 @@ public final class NominalFilters {
         }
         Frame[] frames = new Frame[len];
         for (int i = 0; i < frames.length; i++) {
-            frames[i] = new MappedFrame(df, mappings[i]);
+            frames[i] = new MappedFrame(df, new Mapping(mappings[i]));
         }
         return frames;
     }

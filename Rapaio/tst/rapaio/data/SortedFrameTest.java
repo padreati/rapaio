@@ -58,6 +58,32 @@ public class SortedFrameTest {
         df = new SolidFrame("df", df.getRowCount(), vectors);
     }
 
+
+    @Test
+    public void testMultipleStressSortedLayers() {
+        RandomSource.setSeed(1);
+        Vector[] vectors = new Vector[1_000];
+        for (int i = 0; i < 1_000; i++) {
+            vectors[i] = new NumericVector("v" + i, 10_000);
+            for (int j = 0; j < 10_000; j++) {
+                vectors[i].setValue(j, RandomSource.nextDouble());
+            }
+        }
+        Frame sorted = new SolidFrame("test", 10_000, vectors);
+
+        for (int i = 0; i < 100; i++) {
+            int col = RandomSource.nextInt(sorted.getColCount());
+            boolean asc = RandomSource.nextDouble() >= .5;
+            sorted = sort(sorted, numericComparator(sorted.getCol(col), asc));
+        }
+
+        sorted = sort(sorted, numericComparator(sorted.getCol(0), true));
+        for (int i = 1; i < sorted.getRowCount(); i++) {
+            assertTrue(sorted.getValue(i - 1, 0) <= sorted.getValue(i, 0));
+        }
+
+    }
+
     @Test
     public void smokeTest() {
         assertEquals(3, df.getColCount());
@@ -138,8 +164,8 @@ public class SortedFrameTest {
             int col = RandomSource.nextInt(sorted.getColCount());
             boolean asc = RandomSource.nextDouble() >= .5;
             Comparator<Integer> comp = sorted.getCol(col).isNominal() ?
-                    nominalComparator(df.getCol(0), asc) :
-                    numericComparator(df.getCol(0), asc);
+                    nominalComparator(sorted.getCol(0), asc) :
+                    numericComparator(sorted.getCol(0), asc);
             sorted = sort(sorted, comp);
         }
 

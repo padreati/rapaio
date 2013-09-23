@@ -62,7 +62,7 @@ public class ID3Model {
         id3.setMetricType(new ID3.InfoGainMetricType());
         id3.setMetricType(new ID3.EntropyMetricType());
         CrossValidation cv = new CrossValidation();
-        cv.cv(tr, "Survived", id3, tr.getRowCount() - 1);
+        cv.cv(tr, "Survived", id3, 10);
 
         id3.learn(tr, "Survived");
 //        Summary.summary(id3);

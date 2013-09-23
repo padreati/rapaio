@@ -43,7 +43,7 @@ public class MappedVector extends AbstractVector {
         super(name);
         if (!vector.isMappedVector()) {
             this.source = vector;
-            this.mapping = new Mapping(sourceMapping);
+            this.mapping = sourceMapping;
         } else {
             this.source = vector.getSourceVector();
             ArrayList<Integer> indexes = new ArrayList<>();
