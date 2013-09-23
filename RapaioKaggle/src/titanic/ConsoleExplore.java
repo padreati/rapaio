@@ -18,7 +18,15 @@ package titanic;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
+import rapaio.datasets.Datasets;
+import rapaio.distributions.empirical.KernelDensityEstimator;
+import rapaio.explore.Summary;
+import static rapaio.explore.Workspace.*;
 import static rapaio.filters.NominalFilters.consolidate;
+import rapaio.graphics.Histogram;
+import rapaio.graphics.Plot;
+import rapaio.graphics.plot.FunctionLine;
+import rapaio.graphics.plot.HistogramBars;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -37,9 +45,17 @@ public class ConsoleExplore {
         List<Frame> frames = consolidate(Arrays.asList(train, test));
         train = frames.get(0);
 
-        for (int i = 0; i < train.getRowCount(); i++) {
-            System.out.println(train.getLabel(i, train.getColIndex("Name")));
+
+        Plot plot = new Plot();
+        plot.getOp().setXRange(-10, 100);
+        plot.getOp().setYRange(0, 0.04);
+        plot.add(new HistogramBars(plot, train.getCol("Age"), 40, true));
+        for (double i = 1; i < 10; i += 2) {
+            KernelDensityEstimator kde = new KernelDensityEstimator(train.getCol("Age"), 9 / i);
+            plot.add(new FunctionLine(plot, kde.getPdfFunction(), 256));
         }
 
+
+        draw(plot, 1024, 1024);
     }
 }

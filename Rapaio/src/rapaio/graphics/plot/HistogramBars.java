@@ -38,7 +38,11 @@ public class HistogramBars extends PlotComponent {
     double maxvalue = Double.NaN;
 
     public HistogramBars(Plot parent, Vector v) {
-        this(parent, v, 10, false, Double.NaN, Double.NaN);
+        this(parent, v, 30, false);
+    }
+
+    public HistogramBars(Plot parent, Vector v, int bins, boolean prob) {
+        this(parent, v, bins, prob, Double.NaN, Double.NaN);
     }
 
     public HistogramBars(Plot parent, Vector v, int bins, boolean prob, double minvalue, double maxvalue) {
@@ -120,7 +124,7 @@ public class HistogramBars extends PlotComponent {
 
             if (prob && (total != 0)) {
                 for (int i = 0; i < freqtable.length; i++) {
-                    freqtable[i] /= total;
+                    freqtable[i] /= (total * step);
                 }
             }
 

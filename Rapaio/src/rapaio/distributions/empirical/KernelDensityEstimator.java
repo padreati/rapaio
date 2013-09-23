@@ -16,65 +16,49 @@
 
 package rapaio.distributions.empirical;
 
-import rapaio.distributions.Distribution;
+import rapaio.core.UnivariateFunction;
+import rapaio.data.Vector;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class KernelDensityEstimator extends Distribution {
+public class KernelDensityEstimator {
 
-    @Override
-    public String getName() {
-        return "Kernel Density Estimator Distribution";
+    private final Vector values;
+    private final KernelFunction kernel;
+    private final double bandwidth;
+
+    public KernelDensityEstimator(Vector values, double bandwidth) {
+        this(values, new NormalKernelFunction(), bandwidth);
     }
 
-    @Override
+    public KernelDensityEstimator(Vector values, KernelFunction kernel, double bandwidth) {
+        this.values = values;
+        this.kernel = kernel;
+        this.bandwidth = bandwidth;
+    }
+
     public double pdf(double x) {
-        return 0;
+        double sum = 0;
+        double count = 0;
+        for (int i = 0; i < values.getRowCount(); i++) {
+            if (values.isMissing(i)) {
+                continue;
+            }
+            count++;
+            sum += kernel.pdf(x, values.getValue(i), bandwidth);
+        }
+        return sum / (count * bandwidth);
     }
 
-    @Override
-    public double cdf(double x) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public UnivariateFunction getPdfFunction() {
+        return new UnivariateFunction() {
+
+            @Override
+            public double eval(double value) {
+                return pdf(value);
+            }
+        };
     }
 
-    @Override
-    public double quantile(double p) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public double min() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public double max() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public double mean() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public double mode() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public double variance() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public double skewness() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public double kurtosis() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }
