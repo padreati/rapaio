@@ -62,7 +62,7 @@ public class NumericVector extends AbstractVector {
     }
 
     @Override
-    public List<Integer> getMapping() {
+    public Mapping getMapping() {
         return null;
     }
 

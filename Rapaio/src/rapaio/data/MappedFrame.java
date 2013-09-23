@@ -18,6 +18,7 @@ package rapaio.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -37,6 +38,7 @@ public class MappedFrame extends AbstractFrame {
     private final Vector[] vectors;
     private final HashMap<String, Integer> colIndex;
     private final String[] colNames;
+    private final HashSet<Mapping> mappings = new HashSet<>();
 
     public MappedFrame(Frame df, List<Integer> mapping) {
         this(df.getName(), df, mapping);
@@ -53,7 +55,7 @@ public class MappedFrame extends AbstractFrame {
         }
         vectors = new Vector[df.getColCount()];
         for (int i = 0; i < df.getColCount(); i++) {
-            vectors[i] = new MappedVector(df.getCol(i), mapping);
+            vectors[i] = new MappedVector(df.getCol(i), new Mapping(mapping));
         }
     }
 

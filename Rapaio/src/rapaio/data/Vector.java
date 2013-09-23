@@ -47,7 +47,7 @@ public interface Vector extends Serializable {
 
     Vector getSourceVector();
 
-    List<Integer> getMapping();
+    Mapping getMapping();
 
     /**
      * The name of the vector. Name is mostly used by various user-interaction facilities.

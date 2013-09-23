@@ -75,7 +75,7 @@ public class IndexVector extends AbstractVector {
     }
 
     @Override
-    public List<Integer> getMapping() {
+    public Mapping getMapping() {
         return null;
     }
 

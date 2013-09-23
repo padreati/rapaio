@@ -61,7 +61,7 @@ public final class BaseFilters {
             }
 
             @Override
-            public List<Integer> getMapping() {
+            public Mapping getMapping() {
                 return null;
             }
 

@@ -17,7 +17,6 @@
 package rapaio.data;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -34,23 +33,24 @@ import java.util.List;
 public class MappedVector extends AbstractVector {
 
     private final Vector source;
-    private final List<Integer> mapping;
+    private final Mapping mapping;
 
-    public MappedVector(Vector source, List<Integer> mapping) {
+    public MappedVector(Vector source, Mapping mapping) {
         this(source.getName(), source, mapping);
     }
 
-    public MappedVector(String name, Vector vector, List<Integer> sourceMapping) {
+    public MappedVector(String name, Vector vector, Mapping sourceMapping) {
         super(name);
         if (!vector.isMappedVector()) {
             this.source = vector;
-            this.mapping = new ArrayList<>(sourceMapping);
+            this.mapping = new Mapping(sourceMapping);
         } else {
             this.source = vector.getSourceVector();
-            this.mapping = new ArrayList<>();
+            ArrayList<Integer> indexes = new ArrayList<>();
             for (int i = 0; i < sourceMapping.size(); i++) {
-                this.mapping.add(vector.getRowId(sourceMapping.get(i)));
+                indexes.add(vector.getRowId(sourceMapping.get(i)));
             }
+            this.mapping = new Mapping(indexes);
         }
     }
 
@@ -80,7 +80,7 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public List<Integer> getMapping() {
+    public Mapping getMapping() {
         return mapping;
     }
 

@@ -70,7 +70,7 @@ public final class RowFilters {
             mapping.add(i);
         }
         Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
-        return new MappedVector(name, vector, mapping);
+        return new MappedVector(name, vector, new Mapping(mapping));
     }
 
     public static Frame sort(Frame df, Comparator<Integer>... comparators) {

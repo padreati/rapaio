@@ -81,7 +81,7 @@ public class NominalVector extends AbstractVector {
     }
 
     @Override
-    public List<Integer> getMapping() {
+    public Mapping getMapping() {
         return null;
     }
 
