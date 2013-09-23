@@ -29,7 +29,7 @@ public class KernelDensityEstimator {
     private final double bandwidth;
 
     public KernelDensityEstimator(Vector values, double bandwidth) {
-        this(values, new NormalKernelFunction(), bandwidth);
+        this(values, new KernelFunctionGaussian(), bandwidth);
     }
 
     public KernelDensityEstimator(Vector values, KernelFunction kernel, double bandwidth) {
@@ -60,5 +60,4 @@ public class KernelDensityEstimator {
             }
         };
     }
-
 }

@@ -1,0 +1,15 @@
+package rapaio.distributions.empirical;
+
+import rapaio.core.BaseMath;
+
+/**
+ * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ */
+public class KernelFunctionBiweight implements KernelFunction {
+
+    @Override
+    public double pdf(double x, double x0, double bandwidth) {
+        double value = BaseMath.abs(x - x0) / bandwidth;
+        return value <= 1 ? 15 * (1 - value * value) * (1 - value * value) / 16. : 0;
+    }
+}
