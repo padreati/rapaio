@@ -22,4 +22,8 @@ package rapaio.distributions.empirical;
 public interface KernelFunction {
 
     double pdf(double x, double x0, double bandwidth);
+
+    double getMinValue(double x0, double bandwidth);
+
+    double getMaxValue(double x0, double bandwidth);
 }

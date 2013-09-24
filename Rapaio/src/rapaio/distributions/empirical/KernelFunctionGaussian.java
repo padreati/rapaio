@@ -14,4 +14,14 @@ public class KernelFunctionGaussian implements KernelFunction {
     public double pdf(double x, double x0, double bandwidth) {
         return normal.pdf((x - x0) / bandwidth);
     }
+
+    @Override
+    public double getMinValue(double x0, double bandwidth) {
+        return x0 - 4 * bandwidth;
+    }
+
+    @Override
+    public double getMaxValue(double x0, double bandwidth) {
+        return x0 + 4 * bandwidth;
+    }
 }

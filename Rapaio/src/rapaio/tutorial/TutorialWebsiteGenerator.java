@@ -42,24 +42,32 @@ public class TutorialWebsiteGenerator {
         pageRoot.mkdir();
 
         TreeMap<String, List<TutorialPage>> pages = new TreeMap<>();
-        pages.put("Graphics", new ArrayList<TutorialPage>());
-        pages.get("Graphics").add(new HistogramTutorial());
+        String category = "";
 
-        pages.put("SampleAnalysis", new ArrayList<TutorialPage>());
-        pages.get("SampleAnalysis").add(new IrisExplore());
-        pages.get("SampleAnalysis").add(new LawOfLargeNumbers());
-        pages.get("SampleAnalysis").add(new NormalDistribution());
-        pages.get("SampleAnalysis").add(new PearsonHeight());
-        pages.get("SampleAnalysis").add(new CorrelationsPage());
+        category = "Graphics";
+        pages.put(category, new ArrayList<TutorialPage>());
+        pages.get(category).add(new HistogramTutorial());
+
+        category = "SampleAnalysis";
+        pages.put(category, new ArrayList<TutorialPage>());
+        pages.get(category).add(new CorrelationsPage());
+
+        category = "WorkInProgress";
+        pages.put(category, new ArrayList<TutorialPage>());
+        pages.get(category).add(new IrisExplore());
+        pages.get(category).add(new LawOfLargeNumbers());
+        pages.get(category).add(new NormalDistribution());
+        pages.get(category).add(new PearsonHeight());
+
 
         makeIndexPage(webRoot, pages);
 
-        for (String category : pages.keySet()) {
-            File categoryRoot = new File(pageRoot, category);
+        for (String categ : pages.keySet()) {
+            File categoryRoot = new File(pageRoot, categ);
             if (!categoryRoot.exists()) {
                 categoryRoot.mkdir();
             }
-            for (TutorialPage page : pages.get(category)) {
+            for (TutorialPage page : pages.get(categ)) {
                 File pageFile = new File(categoryRoot, page.getPageName() + ".html");
                 setPrinter(new HTMLPrinter(pageFile.getAbsolutePath(), page.getPageTitle(), "<a href=\"../../index.html\">Back</a>"));
                 preparePrinter();

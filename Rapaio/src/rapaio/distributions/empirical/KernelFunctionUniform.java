@@ -13,4 +13,14 @@ public class KernelFunctionUniform implements KernelFunction {
         if (value <= 1) return 0.5;
         return 0;
     }
+
+    @Override
+    public double getMinValue(double x0, double bandwidth) {
+        return x0 - bandwidth;
+    }
+
+    @Override
+    public double getMaxValue(double x0, double bandwidth) {
+        return x0 + bandwidth;
+    }
 }

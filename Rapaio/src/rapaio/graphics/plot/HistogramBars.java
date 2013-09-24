@@ -38,7 +38,7 @@ public class HistogramBars extends PlotComponent {
     double maxvalue = Double.NaN;
 
     public HistogramBars(Plot parent, Vector v) {
-        this(parent, v, 30, false);
+        this(parent, v, 30, true);
     }
 
     public HistogramBars(Plot parent, Vector v, int bins, boolean prob) {

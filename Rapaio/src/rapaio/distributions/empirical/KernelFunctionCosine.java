@@ -17,4 +17,14 @@ public class KernelFunctionCosine implements KernelFunction {
         }
         return 0;
     }
+
+    @Override
+    public double getMinValue(double x0, double bandwidth) {
+        return x0 - bandwidth;
+    }
+
+    @Override
+    public double getMaxValue(double x0, double bandwidth) {
+        return x0 + bandwidth;
+    }
 }

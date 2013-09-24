@@ -27,15 +27,15 @@ public class Histogram extends Plot {
     private HistogramBars hist;
 
     public Histogram(Vector v) {
-        this(v, 20, false);
+        this(v, 30, true);
     }
 
-    public Histogram(Vector v, int bins, boolean prob) {
-        this(v, bins, prob, Double.NaN, Double.NaN);
+    public Histogram(Vector v, int bins, boolean density) {
+        this(v, bins, density, Double.NaN, Double.NaN);
     }
 
-    public Histogram(Vector v, int bins, boolean prob, double from, double to) {
-        hist = new HistogramBars(this, v, bins, prob, from, to);
+    public Histogram(Vector v, int bins, boolean density, double from, double to) {
+        hist = new HistogramBars(this, v, bins, density, from, to);
         add(hist);
         this.setBottomLabel(v.getName());
     }

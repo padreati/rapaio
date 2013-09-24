@@ -19,11 +19,13 @@ package titanic;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.distributions.empirical.*;
+import rapaio.explore.Summary;
 import static rapaio.explore.Workspace.*;
 import static rapaio.filters.NominalFilters.consolidate;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.FunctionLine;
 import rapaio.graphics.plot.HistogramBars;
+import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -51,9 +53,9 @@ public class ConsoleExplore {
 //            KernelDensityEstimator kde = new KernelDensityEstimator(train.getCol("Age"), new KernelFunctionUniform(), 9 / i);
 //            plot.add(new FunctionLine(plot, kde.getPdfFunction(), 1024));
 //        }
+
         for (double i = 1; i < 10; i += 2) {
-            KernelDensityEstimator kde = new KernelDensityEstimator(
-                    train.getCol("Age"), new KernelFunctionCosine(), 4);
+            KernelDensityEstimator kde = new KernelDensityEstimator(train.getCol("Age"), new KernelFunctionEpanechnikov());
             plot.add(new FunctionLine(plot, kde.getPdfFunction(), 256));
         }
 

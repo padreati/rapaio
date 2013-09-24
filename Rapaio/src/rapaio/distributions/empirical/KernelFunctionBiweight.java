@@ -12,4 +12,14 @@ public class KernelFunctionBiweight implements KernelFunction {
         double value = BaseMath.abs(x - x0) / bandwidth;
         return value <= 1 ? 15 * (1 - value * value) * (1 - value * value) / 16. : 0;
     }
+
+    @Override
+    public double getMinValue(double x0, double bandwidth) {
+        return x0 - bandwidth;
+    }
+
+    @Override
+    public double getMaxValue(double x0, double bandwidth) {
+        return x0 + bandwidth;
+    }
 }

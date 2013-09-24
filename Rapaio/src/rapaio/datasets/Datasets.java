@@ -51,4 +51,27 @@ public class Datasets {
         }
         return new SolidFrame(df.getName(), df.getRowCount(), vectors);
     }
+
+    public static Frame loadChestDataset() throws IOException {
+        CsvPersistence persistence = new CsvPersistence();
+        persistence.setColSeparator(',');
+        persistence.setHasQuotas(false);
+        Frame df = persistence.read("chest", Datasets.class.getResourceAsStream("chest.csv"));
+        return BaseFilters.toNumeric(df);
+    }
+
+    public static Frame loadCarMpgDataset() throws IOException {
+        CsvPersistence persistence = new CsvPersistence();
+        persistence.setColSeparator(',');
+        persistence.setHasHeader(true);
+        persistence.setHasQuotas(false);
+        Frame df = persistence.read("carmpg", Datasets.class.getResourceAsStream("carmpgdat.csv"));
+        Vector[] vectors = new Vector[df.getColCount()];
+        vectors[0] = df.getCol(0);
+        vectors[1] = df.getCol(1);
+        for (int i = 2; i < df.getColCount(); i++) {
+            vectors[i] = BaseFilters.toNumeric(df.getCol(i).getName(), df.getCol(i));
+        }
+        return new SolidFrame(df.getName(), df.getRowCount(), vectors);
+    }
 }
