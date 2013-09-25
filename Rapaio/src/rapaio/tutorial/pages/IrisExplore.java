@@ -101,5 +101,7 @@ public class IrisExplore implements TutorialPage {
                 + "We will plot now a qqplot to see how those values are distributed on a normal curve."
                 + "We estimate first the mean and the variance sepal-width sample values:");
 
+        p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");
+
     }
 }

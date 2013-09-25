@@ -30,7 +30,7 @@ public class GraphicOptions {
 
     public static double SIZE_SCALE = 2;
     private final GraphicOptions parent;
-    private int lwd = 1;
+    private float lwd = 1.2f;
     private ColorPalette colorPalette = ColorPalette.STANDARD;
     private Vector sizeIndex = new OneNumericVector(2.5);
     private Vector colorIndex = new OneIndexVector(0);
@@ -49,17 +49,17 @@ public class GraphicOptions {
     }
 
     private boolean isDefaultLwd() {
-        return lwd == 1;
+        return lwd == 1.2;
     }
 
-    public int getLwd() {
+    public float getLwd() {
         if (parent != null && isDefaultLwd()) {
             return parent.getLwd();
         }
         return lwd;
     }
 
-    public void setLwd(int lwd) {
+    public void setLwd(float lwd) {
         this.lwd = lwd;
     }
 

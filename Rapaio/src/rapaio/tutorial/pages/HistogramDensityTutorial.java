@@ -29,6 +29,7 @@ import static rapaio.explore.Workspace.*;
 import rapaio.filters.NumericFilters;
 import rapaio.graphics.Histogram;
 import rapaio.graphics.Plot;
+import rapaio.graphics.plot.DensityLine;
 import rapaio.graphics.plot.FunctionLine;
 import rapaio.graphics.plot.HistogramBars;
 
@@ -37,7 +38,7 @@ import java.io.IOException;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class HistogramTutorial implements TutorialPage {
+public class HistogramDensityTutorial implements TutorialPage {
 
     @Override
     public String getPageName() {
@@ -46,12 +47,12 @@ public class HistogramTutorial implements TutorialPage {
 
     @Override
     public String getPageTitle() {
-        return "Histogram and Density Tutorial";
+        return "Histogram and Kernel Density Estimation Tutorial";
     }
 
     @Override
     public void render() throws IOException {
-        heading(1, "Histograms and densities tutorial");
+        heading(1, "Histogram and Kernel Density Estimation Tutorial");
 
         heading(3, "Data set used");
 
@@ -135,19 +136,20 @@ public class HistogramTutorial implements TutorialPage {
         p("One can draw also the kernel density approximation, over " +
                 "a histogram or as a separate plot.");
 
-        code("        Vector col = NumericFilters.jitter(df.getCol(\"Father\"));\n" +
-                "        Histogram h = new Histogram(col);\n" +
-                "        h.add(new FunctionLine(h, new KernelDensityEstimator(col).getPdfFunction()));\n" +
-                "        draw(h);\n");
+        code("        Vector col = df.getCol(\"Father\");\n" +
+                "        Plot plot = new Plot();\n" +
+                "        HistogramBars hb = new HistogramBars(plot, col);\n" +
+                "        hb.opt().setColorIndex(new IndexVector(\"rainbow\", 1, 255, 1));\n" +
+                "        plot.add(hb);\n" +
+                "        plot.add(new DensityLine(plot, col));\n" +
+                "        draw(plot);\n");
 
-        Vector col = NumericFilters.jitter(df.getCol("Father"));
+        Vector col = df.getCol("Father");
         Plot plot = new Plot();
         HistogramBars hb = new HistogramBars(plot, col);
         hb.opt().setColorIndex(new IndexVector("rainbow", 1, 255, 1));
         plot.add(hb);
-        FunctionLine fl = new FunctionLine(plot, new KernelDensityEstimator(col).getPdfFunction());
-        fl.opt().setLwd(2);
-        plot.add(fl);
+        plot.add(new DensityLine(plot, col));
         draw(plot);
 
         p("In statistics, kernel density estimation (KDE) is a non-parametric way to " +
@@ -168,22 +170,19 @@ public class HistogramTutorial implements TutorialPage {
                 "a smooth or less smooth approximation of the density function.");
 
 
-        col = NumericFilters.jitter(df.getCol("Father"));
+        col = df.getCol("Father");
         Histogram h = new Histogram(col);
 
-        fl = new FunctionLine(h, new KernelDensityEstimator(col, 0.1).getPdfFunction());
+        FunctionLine fl = new FunctionLine(h, new KernelDensityEstimator(col, 0.1).getPdfFunction());
         fl.opt().setColorIndex(new OneIndexVector(1));
-        fl.opt().setLwd(2);
         h.add(fl);
 
         fl = new FunctionLine(h, new KernelDensityEstimator(col, 0.5).getPdfFunction());
         fl.opt().setColorIndex(new OneIndexVector(2));
-        fl.opt().setLwd(2);
         h.add(fl);
 
         fl = new FunctionLine(h, new KernelDensityEstimator(col, 2).getPdfFunction());
         fl.opt().setColorIndex(new OneIndexVector(3));
-        fl.opt().setLwd(2);
         h.add(fl);
 
         h.getOp().setYRange(0, 0.18);
@@ -201,9 +200,8 @@ public class HistogramTutorial implements TutorialPage {
         plot = new Plot();
         FunctionLine kde = new FunctionLine(plot, new KernelDensityEstimator(col).getPdfFunction());
         kde.opt().setColorIndex(new OneIndexVector(1));
-        kde.opt().setLwd(1);
         plot.add(kde);
-        plot.add(new FunctionLine(plot, new KernelDensityEstimator(col, new KernelFunction() {
+        plot.add(new DensityLine(plot, col, new KernelFunction() {
             @Override
             public double pdf(double x, double x0, double bandwidth) {
                 double value = BaseMath.abs(x - x0) / bandwidth;
@@ -220,11 +218,10 @@ public class HistogramTutorial implements TutorialPage {
             public double getMaxValue(double x0, double bandwidth) {
                 return x0 - bandwidth;
             }
-        }, 0.5).getPdfFunction()));
+        }, 0.5, 256));
 
         plot.getOp().setYRange(0, 0.18);
         plot.getOp().setXRange(55, 80);
-        plot.getOp().setLwd(2);
         draw(plot);
 
         p("We could agree that my implementation of kernel function is ugly " +
@@ -233,7 +230,27 @@ public class HistogramTutorial implements TutorialPage {
                 "precise standard tools and, in the same time, the opportunity " +
                 "to experiment with your owns.");
 
+        p("One final graph will show the kernel approximation " +
+                "of density functions for both numerical variables " +
+                "that we have: father's heights and son's heights.");
+
+        p("Blue line represents density approximation of father's heights, " +
+                "red line represents density approximation of son's heights.");
+
+        plot = new Plot();
+        plot.getOp().setYRange(0, 0.18);
+        plot.getOp().setXRange(55, 80);
+        DensityLine dl = new DensityLine(plot, df.getCol("Father"));
+        dl.opt().setColorIndex(new OneIndexVector(6));
+        plot.add(dl);
+        dl = new DensityLine(plot, df.getCol("Son"));
+        dl.opt().setColorIndex(new OneIndexVector(9));
+        plot.add(dl);
+        draw(plot);
+
         p("Note: the sole purpose of this tutorial is to show what and how it can " +
                 "be done with Rapaio toolbox library. ");
+
+        p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");
     }
 }

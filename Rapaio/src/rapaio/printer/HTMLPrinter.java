@@ -120,7 +120,7 @@ public class HTMLPrinter extends AbstractPrinter {
         g2d.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         figure.paint(g2d, new Rectangle(newImage.getWidth(), newImage.getHeight()));
-        String imageString = null;
+        String imageString;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
         try {

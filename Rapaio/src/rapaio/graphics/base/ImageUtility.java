@@ -17,6 +17,7 @@
 package rapaio.graphics.base;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 /**
@@ -26,7 +27,7 @@ public class ImageUtility {
 
     public static BufferedImage buildImage(Figure figure, int width, int height) {
 //        return buildImage(figure, width, height, BufferedImage.TYPE_BYTE_INDEXED);
-        return buildImage(figure, width, height, BufferedImage.TYPE_3BYTE_BGR);
+        return buildImage(figure, width, height, BufferedImage.TYPE_4BYTE_ABGR_PRE);
     }
 
     public static BufferedImage buildImage(Figure figure, int width, int height, int type) {

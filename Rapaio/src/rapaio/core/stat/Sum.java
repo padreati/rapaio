@@ -56,6 +56,6 @@ public class Sum implements Summarizable {
 
     @Override
     public void summary() {
-        code(String.format("sum[%s]\n%.10f", vector.getName(), value));
+        code(String.format("sum[%s]\n%.10f\n", vector.getName(), value));
     }
 }

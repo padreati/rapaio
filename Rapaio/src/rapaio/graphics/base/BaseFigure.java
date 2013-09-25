@@ -29,8 +29,8 @@ public abstract class BaseFigure implements Figure {
 
     protected final GraphicOptions options = new GraphicOptions();
     protected static final Font titleFont = new Font("Verdana", Font.BOLD, 18);
-    protected static final Font markersFont = new Font("Verdana", Font.PLAIN, 12);
-    protected static final Font labelsFont = new Font("Verdana", Font.BOLD, 14);
+    protected static final Font markersFont = new Font("Verdana", Font.PLAIN, 13);
+    protected static final Font labelsFont = new Font("Verdana", Font.BOLD, 16);
     protected static final double THICKER_MIN_SPACE = 50.;
     protected static final int THICKER_PAD = 7;
     protected static final int MARKER_PAD = 15;

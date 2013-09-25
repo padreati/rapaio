@@ -46,18 +46,21 @@ public class TutorialWebsiteGenerator {
 
         category = "Graphics";
         pages.put(category, new ArrayList<TutorialPage>());
-        pages.get(category).add(new HistogramTutorial());
+        pages.get(category).add(new HistogramDensityTutorial());
+
+        category = "StatisticalProcedures";
+        pages.put(category, new ArrayList<TutorialPage>());
+        pages.get(category).add(new CorrelationsPage());
 
         category = "SampleAnalysis";
         pages.put(category, new ArrayList<TutorialPage>());
-        pages.get(category).add(new CorrelationsPage());
+        pages.get(category).add(new PearsonHeight());
+        pages.get(category).add(new LawOfLargeNumbers());
 
         category = "WorkInProgress";
         pages.put(category, new ArrayList<TutorialPage>());
         pages.get(category).add(new IrisExplore());
-        pages.get(category).add(new LawOfLargeNumbers());
         pages.get(category).add(new NormalDistribution());
-        pages.get(category).add(new PearsonHeight());
 
 
         makeIndexPage(webRoot, pages);

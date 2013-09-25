@@ -182,5 +182,7 @@ public class CorrelationsPage implements TutorialPage {
         SpearmanRhoCorrelation rho = new SpearmanRhoCorrelation(df);
         summary(rho);
         summary(r);
+
+        p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");
     }
 }

@@ -141,5 +141,7 @@ public class PearsonHeight implements TutorialPage {
         }
         plot.add(new Points(plot, df.getCol("Father"), df.getCol("Son")));
         draw(plot, 600, 600);
+
+        p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");
     }
 }

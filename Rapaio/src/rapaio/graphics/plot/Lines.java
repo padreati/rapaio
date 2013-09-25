@@ -55,7 +55,7 @@ public class Lines extends PlotComponent {
     @Override
     public void paint(Graphics2D g2d) {
 
-        int lwd = opt().getLwd();
+        float lwd = opt().getLwd();
         g2d.setStroke(new BasicStroke(lwd));
         g2d.setBackground(ColorPalette.STANDARD.getColor(255));
 

@@ -100,12 +100,12 @@ public class LawOfLargeNumbers implements TutorialPage {
         Plot plot = new Plot();
 
         ABLine abline = new ABLine(plot, 0, 3.5);
-        abline.opt().setLwd(2);
+        abline.opt().setLwd(1.5f);
         abline.opt().setColorIndex(new OneIndexVector(1));
         plot.add(abline);
 
         Lines lines = new Lines(plot, new IndexVector("x", 1, N, 1), mean);
-        lines.opt().setLwd(2);
+        lines.opt().setLwd(1.5f);
         lines.opt().setColorIndex(new OneIndexVector(2));
         plot.add(lines);
 

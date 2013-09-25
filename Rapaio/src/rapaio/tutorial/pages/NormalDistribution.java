@@ -19,6 +19,7 @@ package rapaio.tutorial.pages;
 import rapaio.data.OneIndexVector;
 import rapaio.distributions.Normal;
 import rapaio.distributions.StudentT;
+import static rapaio.explore.Workspace.p;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.FunctionLine;
 import rapaio.printer.RemotePrinter;
@@ -57,5 +58,7 @@ public class NormalDistribution implements TutorialPage {
         p.add(normalpdf);
 
         draw(p);
+
+        p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");
     }
 }
