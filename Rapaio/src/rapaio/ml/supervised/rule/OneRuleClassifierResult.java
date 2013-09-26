@@ -18,12 +18,12 @@ package rapaio.ml.supervised.rule;
 
 import rapaio.data.Frame;
 import rapaio.data.Vector;
-import rapaio.ml.supervised.ClassifierResult;
+import rapaio.ml.supervised.ClassifierModel;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class OneRuleClassifierResult implements ClassifierResult {
+public class OneRuleClassifierResult implements ClassifierModel {
 
     private final Frame test;
     private final Vector pred;

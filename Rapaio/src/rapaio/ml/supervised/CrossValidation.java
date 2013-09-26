@@ -34,7 +34,7 @@ public class CrossValidation {
         StringBuilder sb = new StringBuilder();
         sb.append("CrossValidation with ").append(folds).append(" folds\n");
         Frame f = shuffle(df);
-        ClassifierResult[] results = new ClassifierResult[folds];
+        ClassifierModel[] results = new ClassifierModel[folds];
 
         for (int i = 0; i < folds; i++) {
             List<Integer> trainMapping = new ArrayList<>();
@@ -64,7 +64,7 @@ public class CrossValidation {
 
         double tacc = 0;
         for (int i = 0; i < folds; i++) {
-            ClassifierResult cr = results[i];
+            ClassifierModel cr = results[i];
             double acc = 0;
             for (int j = 0; j < cr.getClassification().getRowCount(); j++) {
                 if (cr.getClassification().getIndex(j) == cr.getTestFrame().getCol(classColName).getIndex(j)) {

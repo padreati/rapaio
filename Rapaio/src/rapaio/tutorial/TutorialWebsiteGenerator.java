@@ -60,7 +60,7 @@ public class TutorialWebsiteGenerator {
         category = "WorkInProgress";
         pages.put(category, new ArrayList<TutorialPage>());
         pages.get(category).add(new IrisExplore());
-        pages.get(category).add(new NormalDistribution());
+        pages.get(category).add(new StudentTDistribution());
 
 
         makeIndexPage(webRoot, pages);

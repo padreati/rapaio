@@ -85,4 +85,17 @@ public final class RowFilters {
         Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
         return new MappedFrame(name, df, new Mapping(mapping));
     }
+
+
+    public static Frame bootstrap(Frame frame) {
+        return bootstrap(frame, frame.getRowCount());
+    }
+
+    public static Frame bootstrap(Frame frame, int size) {
+        List<Integer> mapping = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            mapping.add(RandomSource.nextInt(frame.getRowCount()));
+        }
+        return new MappedFrame(frame, new Mapping(mapping));
+    }
 }

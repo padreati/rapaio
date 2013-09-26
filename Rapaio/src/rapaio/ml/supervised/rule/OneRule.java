@@ -22,7 +22,7 @@ import rapaio.data.Vector;
 import static rapaio.explore.Workspace.code;
 import rapaio.filters.RowFilters;
 import rapaio.ml.supervised.AbstractClassifier;
-import rapaio.ml.supervised.ClassifierResult;
+import rapaio.ml.supervised.ClassifierModel;
 
 import java.io.Serializable;
 import java.util.*;
@@ -75,7 +75,7 @@ public class OneRule extends AbstractClassifier {
     }
 
     @Override
-    public ClassifierResult predict(Frame test) {
+    public ClassifierModel predict(Frame test) {
         Vector predict = new NominalVector("predict", test.getRowCount(), classDictionary);
         for (int i = 0; i < test.getRowCount(); i++) {
             predict.setLabel(i, predict(test, i));

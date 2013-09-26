@@ -26,7 +26,7 @@ import static rapaio.explore.Workspace.closePrinter;
 import static rapaio.filters.BaseFilters.renameVector;
 import static rapaio.filters.ColFilters.*;
 import rapaio.io.CsvPersistence;
-import rapaio.ml.supervised.ClassifierResult;
+import rapaio.ml.supervised.ClassifierModel;
 import rapaio.ml.supervised.CrossValidation;
 import rapaio.ml.supervised.rule.OneRule;
 
@@ -55,7 +55,7 @@ public class OneRuleModel {
 
         OneRule oneRule = new OneRule(4);
         oneRule.learn(tr, "Survived");
-        ClassifierResult cr = oneRule.predict(test);
+        ClassifierModel cr = oneRule.predict(test);
 //        oneRule.printModelSummary();
 
         Frame submit = new SolidFrame("submit", test.getRowCount(), new Vector[]{

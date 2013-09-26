@@ -22,11 +22,9 @@ import rapaio.data.Frame;
 import rapaio.data.NominalVector;
 import rapaio.data.Vector;
 import rapaio.explore.Workspace;
-import rapaio.filters.ColFilters;
 import rapaio.filters.NominalFilters;
-import rapaio.filters.RowFilters;
 import rapaio.ml.supervised.AbstractClassifier;
-import rapaio.ml.supervised.ClassifierResult;
+import rapaio.ml.supervised.ClassifierModel;
 
 import java.util.*;
 
@@ -149,13 +147,13 @@ public class ID3 extends AbstractClassifier {
     }
 
     @Override
-    public ClassifierResult predict(final Frame df) {
+    public ClassifierModel predict(final Frame df) {
         final Vector classification = new NominalVector("classification", df.getRowCount(), dict);
         for (int i = 0; i < df.getRowCount(); i++) {
             String prediction = predict(df, i, root);
             classification.setLabel(i, prediction);
         }
-        return new ClassifierResult() {
+        return new ClassifierModel() {
             @Override
             public Frame getTestFrame() {
                 return df;
