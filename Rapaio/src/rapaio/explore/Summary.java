@@ -223,6 +223,7 @@ public class Summary {
 
             pos = last;
         }
+        buffer.append("\n");
         code(buffer.toString());
     }
 

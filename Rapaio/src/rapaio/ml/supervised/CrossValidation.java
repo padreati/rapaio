@@ -20,6 +20,7 @@ import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import static rapaio.explore.Workspace.code;
+import static rapaio.explore.Workspace.print;
 import static rapaio.filters.RowFilters.*;
 
 import java.util.ArrayList;
@@ -31,10 +32,12 @@ import java.util.List;
 public class CrossValidation {
 
     public void cv(Frame df, String classColName, Classifier c, int folds) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("CrossValidation with ").append(folds).append(" folds\n");
+        print("\n<pre><code>\n");
+        print("CrossValidation with " + folds + " folds\n");
         Frame f = shuffle(df);
         ClassifierModel[] results = new ClassifierModel[folds];
+
+        double tacc = 0;
 
         for (int i = 0; i < folds; i++) {
             List<Integer> trainMapping = new ArrayList<>();
@@ -60,10 +63,6 @@ public class CrossValidation {
 
             c.learn(train, classColName);
             results[i] = c.predict(test);
-        }
-
-        double tacc = 0;
-        for (int i = 0; i < folds; i++) {
             ClassifierModel cr = results[i];
             double acc = 0;
             for (int j = 0; j < cr.getClassification().getRowCount(); j++) {
@@ -73,10 +72,12 @@ public class CrossValidation {
             }
             acc /= (1. * cr.getClassification().getRowCount());
             tacc += acc;
-            sb.append(String.format("CV %d, accuracy:%.6f\n", i + 1, acc));
+            print(String.format("CV %d, accuracy:%.6f\n", i + 1, acc));
+
         }
+
         tacc /= (1. * folds);
-        sb.append(String.format("Mean accuracy:%.6f\n", tacc));
-        code(sb.toString());
+        print(String.format("Mean accuracy:%.6f\n", tacc));
+        print("</code></pre>\n");
     }
 }

@@ -29,8 +29,10 @@ import static rapaio.filters.NumericFilters.applyFunction;
 import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -47,25 +49,22 @@ public class Utils {
         numericColumns.add("Fare");
         numericColumns.add("SibSp");
         numericColumns.add("Parch");
-        Vector[] vectors = new Vector[df.getColCount() + 2];
+        List<Vector> vectors = new ArrayList<>();
+
         for (int i = 0; i < df.getColCount(); i++) {
-            // default do nothing
-            vectors[i] = df.getCol(i);
-            // fill spaces as missing vaues
-            if (vectors[i].isNominal()) {
-                vectors[i] = fillMissingValues(vectors[i], new String[]{"", " "});
-            }
-            // transform to isNumeric on Age
-            if (numericColumns.contains(df.getColNames()[i])) {
-                vectors[i] = BaseFilters.toNumeric(vectors[i].getName(), vectors[i]);
+            if (!numericColumns.contains(df.getCol(i).getName())) {
+                vectors.add(fillMissingValues(df.getCol(i), new String[]{"", " "}));
+            } else {
+                vectors.add(BaseFilters.toNumeric(df.getCol(i).getName(), df.getCol(i)));
             }
         }
-        vectors[vectors.length - 2] = applyFunction(BaseFilters.toNumeric("LogFare", df.getCol("Fare")), new UnivariateFunction() {
+        vectors.add(applyFunction(BaseFilters.toNumeric("LogFare", df.getCol("Fare")), new UnivariateFunction() {
             @Override
             public double eval(double value) {
                 return log(E + value);
             }
-        });
+        }));
+
         HashMap<String, String> titleDict = new HashMap<>();
         titleDict.put("Mrs.", "Mrs");
         titleDict.put("Mr.", "Mr");
@@ -85,18 +84,30 @@ public class Utils {
         titleDict.put("Countess.", "Lady");
         titleDict.put("Lady.", "Lady");
         titleDict.put("Dona.", "Lady");
-        vectors[vectors.length - 1] = new NominalVector("Title", df.getRowCount(), titleDict.values());
+        Vector title = new NominalVector("Title", df.getRowCount(), titleDict.values());
         for (int i = 0; i < df.getRowCount(); i++) {
             for (String term : titleDict.keySet()) {
                 if (df.getCol("Name").getLabel(i).contains(term)) {
-                    vectors[vectors.length - 1].setLabel(i, titleDict.get(term));
+                    title.setLabel(i, titleDict.get(term));
                     break;
                 }
             }
-            if (vectors[vectors.length - 1].isMissing(i)) {
+            if (title.isMissing(i)) {
                 System.out.println(df.getCol("Name").getLabel(i));
             }
         }
+        vectors.add(title);
+
+        HashSet<String> nameDict = new HashSet<>();
+        for (int i = 0; i < df.getRowCount(); i++) {
+            nameDict.add(df.getLabel(i, df.getColIndex("Name")).split(",")[0]);
+        }
+        Vector family = new NominalVector("Family", df.getRowCount(), nameDict);
+        for (int i = 0; i < df.getRowCount(); i++) {
+            family.setLabel(i, df.getLabel(i, df.getColIndex("Name")).split(",")[0]);
+        }
+        vectors.add(family);
+
         df = new SolidFrame(df.getName(), df.getRowCount(), vectors);
         return df;
     }

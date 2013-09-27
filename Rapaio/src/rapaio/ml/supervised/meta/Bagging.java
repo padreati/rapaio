@@ -20,6 +20,7 @@ import rapaio.data.*;
 import rapaio.filters.RowFilters;
 import rapaio.ml.supervised.Classifier;
 import rapaio.ml.supervised.ClassifierModel;
+import rapaio.ml.supervised.ClassifierProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ public class Bagging implements Classifier {
     private final ClassifierProvider provider;
     private List<Classifier> classifiers = new ArrayList<>();
     private String[] dict;
+    private String classColName;
 
     public Bagging(double p, int bags, ClassifierProvider provider) {
         this.p = p;
@@ -43,6 +45,7 @@ public class Bagging implements Classifier {
 
     @Override
     public void learn(Frame df, String classColName) {
+        this.classColName = classColName;
         this.dict = df.getCol(classColName).getDictionary();
         classifiers.clear();
         for (int i = 0; i < bags; i++) {
@@ -57,7 +60,7 @@ public class Bagging implements Classifier {
     public ClassifierModel predict(final Frame df) {
         // voting
 
-        final Vector predict = new NominalVector("predict", df.getRowCount(), dict);
+        final Vector predict = new NominalVector(classColName, df.getRowCount(), dict);
         final Vector[] probs = new Vector[dict.length - 1];
         for (int i = 0; i < dict.length - 1; i++) {
             probs[i] = new NumericVector(dict[i + 1], new double[df.getRowCount()]);

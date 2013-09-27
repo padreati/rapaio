@@ -33,6 +33,23 @@ public final class RowFilters {
     }
 
     /**
+     * Shuffle the order of rows from specified vector.
+     *
+     * @param v source frame
+     * @return shuffled frame
+     */
+    public static Vector shuffle(Vector v) {
+        ArrayList<Integer> mapping = new ArrayList<>();
+        for (int i = 0; i < v.getRowCount(); i++) {
+            mapping.add(i);
+        }
+        for (int i = mapping.size(); i > 1; i--) {
+            mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
+        }
+        return new MappedVector(v, new Mapping(mapping));
+    }
+
+    /**
      * Shuffle the order of rows from specified frame.
      *
      * @param df source frame

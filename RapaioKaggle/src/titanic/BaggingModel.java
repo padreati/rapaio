@@ -28,9 +28,8 @@ import static rapaio.filters.NominalFilters.consolidate;
 import rapaio.io.CsvPersistence;
 import rapaio.ml.supervised.Classifier;
 import rapaio.ml.supervised.ClassifierModel;
-import rapaio.ml.supervised.CrossValidation;
 import rapaio.ml.supervised.meta.Bagging;
-import rapaio.ml.supervised.meta.ClassifierProvider;
+import rapaio.ml.supervised.ClassifierProvider;
 import rapaio.ml.supervised.tree.ID3;
 
 import java.io.IOException;

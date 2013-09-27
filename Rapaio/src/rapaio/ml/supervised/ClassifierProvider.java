@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.supervised.meta;
+package rapaio.ml.supervised;
 
 import rapaio.ml.supervised.Classifier;
 

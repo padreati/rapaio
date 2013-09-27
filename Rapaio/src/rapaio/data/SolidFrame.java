@@ -35,6 +35,20 @@ public class SolidFrame extends AbstractFrame {
     private final HashMap<String, Integer> colIndex;
     private final String[] names;
 
+    public SolidFrame(String name, int rows, List<Vector> vectors) {
+        super(name);
+        this.rows = rows;
+        this.vectors = new Vector[vectors.size()];
+        this.colIndex = new HashMap<>();
+        this.names = new String[vectors.size()];
+
+        for (int i = 0; i < vectors.size(); i++) {
+            this.vectors[i] = vectors.get(i);
+            this.colIndex.put(vectors.get(i).getName(), i);
+            names[i] = vectors.get(i).getName();
+        }
+    }
+
     public SolidFrame(String name, int rows, Vector[] vectors) {
         super(name);
         this.rows = rows;

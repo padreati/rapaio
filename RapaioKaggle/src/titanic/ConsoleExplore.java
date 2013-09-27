@@ -18,14 +18,26 @@ package titanic;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Vector;
 import rapaio.distributions.empirical.*;
 import rapaio.explore.Summary;
 import static rapaio.explore.Workspace.*;
+import static rapaio.filters.BaseFilters.renameVector;
+import rapaio.filters.ColFilters;
+import static rapaio.filters.ColFilters.removeCols;
 import static rapaio.filters.NominalFilters.consolidate;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.FunctionLine;
 import rapaio.graphics.plot.HistogramBars;
 import rapaio.io.CsvPersistence;
+import rapaio.ml.supervised.Classifier;
+import rapaio.ml.supervised.ClassifierModel;
+import rapaio.ml.supervised.ClassifierProvider;
+import rapaio.ml.supervised.CrossValidation;
+import rapaio.ml.supervised.meta.Bagging;
+import rapaio.ml.supervised.tree.ID3;
+import rapaio.ml.supervised.tree.RandomForest;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -37,29 +49,47 @@ import java.util.List;
 public class ConsoleExplore {
 
     public static void main(String[] args) throws IOException {
-        RandomSource.setSeed(1);
-
         Frame train = Utils.read("train.csv");
         Frame test = Utils.read("test.csv");
         List<Frame> frames = consolidate(Arrays.asList(train, test));
         train = frames.get(0);
+        test = frames.get(1);
+
+        Frame tr = train;
+
+        tr = removeCols(tr, "PassengerId");
+//        tr = removeCols(tr, "Name");
+//        tr = removeCols(tr, "Ticket");
+//        tr = removeCols(tr, "Cabin");
+//        tr = removeCols(tr, "Pclass");
+//        tr = removeCols(tr, "Title");
+//        tr = removeCols(tr, "Sex");
+//        tr = removeCols(tr, "Embarked");
+//        tr = removeCols(tr, "Family");
+
+//        tr = ColFilters.retainNominal(tr);
+        Summary.summary(tr);
+
+        RandomForest rf = new RandomForest(30, 3);
+//        rf.setDebug(true);
+        CrossValidation cv = new CrossValidation();
+        cv.cv(tr, "Survived", rf, 10);
+
+        rf.learn(tr, "Survived");
+//        Summary.summary(id3);
+        ClassifierModel cr = rf.predict(test);
 
 
-        Plot plot = new Plot();
-        plot.getOp().setXRange(-10, 100);
-        plot.getOp().setYRange(0, 0.04);
-        plot.add(new HistogramBars(plot, train.getCol("Age"), 40, true));
-//        for (double i = 1; i < 10; i += 2) {
-//            KernelDensityEstimator kde = new KernelDensityEstimator(train.getCol("Age"), new KernelFunctionUniform(), 9 / i);
-//            plot.add(new FunctionLine(plot, kde.getPdfFunction(), 1024));
-//        }
+        Frame submit = new SolidFrame("submit", test.getRowCount(), new Vector[]{
+                test.getCol("PassengerId"),
+                renameVector(cr.getClassification(), "Survived")
+        });
+        CsvPersistence persist = new CsvPersistence();
+        persist.setColSeparator(',');
+        persist.setHasQuotas(true);
+        persist.setHasHeader(true);
+        persist.write(submit, "/home/ati/work/rapaio/RapaioKaggle/src/titanic/submit.csv");
 
-        for (double i = 1; i < 10; i += 2) {
-            KernelDensityEstimator kde = new KernelDensityEstimator(train.getCol("Age"), new KernelFunctionEpanechnikov());
-            plot.add(new FunctionLine(plot, kde.getPdfFunction(), 256));
-        }
-
-
-        draw(plot, 1024, 1024);
+        closePrinter();
     }
 }
