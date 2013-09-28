@@ -46,20 +46,20 @@ public class CrossValidation {
                 testMapping.add(i);
                 for (int j = 0; j < f.getRowCount(); j++) {
                     if (j != i) {
-                        trainMapping.add(j);
+                        trainMapping.add(f.getRowId(j));
                     }
                 }
             } else {
                 for (int j = 0; j < f.getRowCount(); j++) {
                     if (j % folds == i) {
-                        testMapping.add(j);
+                        testMapping.add(f.getRowId(j));
                     } else {
-                        trainMapping.add(j);
+                        trainMapping.add(f.getRowId(j));
                     }
                 }
             }
-            Frame train = new MappedFrame(f, new Mapping(trainMapping));
-            Frame test = new MappedFrame(f, new Mapping(testMapping));
+            Frame train = new MappedFrame(f.getSourceFrame(), new Mapping(trainMapping));
+            Frame test = new MappedFrame(f.getSourceFrame(), new Mapping(testMapping));
 
             c.learn(train, classColName);
             results[i] = c.predict(test);

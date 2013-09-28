@@ -58,24 +58,33 @@ public class ConsoleExplore {
         Frame tr = train;
 
         tr = removeCols(tr, "PassengerId");
-//        tr = removeCols(tr, "Name");
-//        tr = removeCols(tr, "Ticket");
-//        tr = removeCols(tr, "Cabin");
+        tr = removeCols(tr, "Name");
+        tr = removeCols(tr, "Ticket");
+        tr = removeCols(tr, "Cabin");
+//        tr = removeCols(tr, "SibSp");
+//        tr = removeCols(tr, "Parch");
 //        tr = removeCols(tr, "Pclass");
 //        tr = removeCols(tr, "Title");
 //        tr = removeCols(tr, "Sex");
 //        tr = removeCols(tr, "Embarked");
 //        tr = removeCols(tr, "Family");
 
-//        tr = ColFilters.retainNominal(tr);
+        tr = ColFilters.retainNominal(tr);
         Summary.summary(tr);
 
-        RandomForest rf = new RandomForest(30, 3);
+        RandomForest rf = new RandomForest(1000, 7, 0);
 //        rf.setDebug(true);
-        CrossValidation cv = new CrossValidation();
-        cv.cv(tr, "Survived", rf, 10);
+//        long start = System.currentTimeMillis();
+//        CrossValidation cv = new CrossValidation();
+//        cv.cv(tr, "Survived", rf, 10);
+//        long end = System.currentTimeMillis();
+//        System.out.println("CV took " + (end-start) + " millis");
 
+        long start2 = System.currentTimeMillis();
         rf.learn(tr, "Survived");
+        long end2 = System.currentTimeMillis();
+        System.out.println("CV took " + (end2 - start2) + " millis");
+
 //        Summary.summary(id3);
         ClassifierModel cr = rf.predict(test);
 

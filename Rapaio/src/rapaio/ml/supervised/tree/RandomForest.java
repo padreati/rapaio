@@ -21,13 +21,12 @@ import rapaio.core.RandomSource;
 import rapaio.core.stat.Mode;
 import rapaio.data.*;
 import rapaio.data.Vector;
-import rapaio.filters.NominalFilters;
 import rapaio.filters.RowFilters;
 import rapaio.ml.supervised.Classifier;
 import rapaio.ml.supervised.ClassifierModel;
-import rapaio.ml.supervised.ClassifierProvider;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -35,33 +34,45 @@ import java.util.*;
 public class RandomForest implements Classifier {
     private final int mtrees;
     private final int mcols;
-    private List<Tree> trees = new ArrayList<>();
+    private final int mincount;
+    private final List<Tree> trees = new ArrayList<>();
     private String classColName;
     private String[] dict;
     private boolean debug = false;
 
-    public RandomForest(int mtrees, int mcols) {
+    public RandomForest(int mtrees, int mcols, int mincount) {
         this.mtrees = mtrees;
         this.mcols = mcols;
+        this.mincount = mincount;
     }
 
     @Override
-    public void learn(Frame df, String classColName) {
+    public void learn(final Frame df, final String classColName) {
         this.classColName = classColName;
         this.dict = df.getCol(classColName).getDictionary();
         trees.clear();
         if (debug)
             System.out.println("learning rf.. ");
+        ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        LinkedList<Callable<Object>> tasks = new LinkedList<>();
         for (int i = 0; i < mtrees; i++) {
-            if (debug) {
-                System.out.print(".");
-                if ((i + 1) % 100 == 0) System.out.println();
-            }
-            Tree tree = new Tree(mcols);
-            Frame bootstrap = RowFilters.bootstrap(df);
-            tree.learn(bootstrap, classColName);
+            final Tree tree = new Tree(mcols, mincount, debug);
             trees.add(tree);
+
+            tasks.add(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    Frame bootstrap = RowFilters.bootstrap(df);
+                    tree.learn(bootstrap, classColName);
+                    return null;
+                }
+            });
         }
+        try {
+            pool.invokeAll(tasks);
+        } catch (InterruptedException e) {
+        }
+        pool.shutdown();
         if (debug)
             System.out.println();
     }
@@ -130,15 +141,32 @@ public class RandomForest implements Classifier {
 
 class Tree implements Classifier {
     private final int mcols;
+    private final int mincount;
+    private final boolean debug;
     private TreeNode root;
     private String[] dict;
 
-    Tree(int mcols) {
+    Tree(int mcols, int mincount, boolean debug) {
         this.mcols = mcols;
+        this.mincount = mincount;
+        this.debug = debug;
     }
 
     @Override
     public void learn(Frame df, String classColName) {
+        if (debug) {
+            System.out.print(".");
+            if (RandomSource.nextDouble() > .97) System.out.println();
+        }
+
+        int[] indexes = new int[df.getColCount() - 1];
+        int pos = 0;
+        for (int i = 0; i < df.getColCount(); i++) {
+            if (i != df.getColIndex(classColName)) {
+                indexes[pos++] = i;
+            }
+        }
+
         this.dict = df.getCol(classColName).getDictionary();
         this.root = new TreeNode();
 
@@ -152,7 +180,7 @@ class Tree implements Classifier {
             TreeNode currentNode = nodes.pollFirst();
             Frame currentFrame = frames.pollFirst();
 
-            currentNode.learn(currentFrame, classColName, mcols);
+            currentNode.learn(currentFrame, classColName, mcols, mincount, indexes);
             if (currentNode.leaf) {
                 continue;
             }
@@ -229,7 +257,20 @@ class TreeNode {
     public Frame leftFrame;
     public Frame rightFrame;
 
-    public void learn(final Frame df, String classColName, int mcols) {
+    public void learn(final Frame df, String classColName, int mcols, int mincount, int[] indexes) {
+
+        if (df.getRowCount() <= mincount) {
+            String[] modes = new Mode(df.getCol(classColName)).getModes();
+            if (modes.length == 0) {
+                throw new IllegalArgumentException("Can't train from an empty frame");
+            }
+            predicted = modes[0];
+            if (modes.length > 1) {
+                predicted = modes[RandomSource.nextInt(modes.length)];
+            }
+            leaf = true;
+            return;
+        }
 
         // leaf on all classes of same value
         boolean same = true;
@@ -245,19 +286,24 @@ class TreeNode {
             return;
         }
 
-        if (df.getRowCount() == 1) {
-            predicted = df.getLabel(0, df.getColIndex(classColName));
-            leaf = true;
-            return;
-        }
-
         // find best split
 
-        Vector cols = new IndexVector("", 0, df.getColCount() - 1, 1);
-        cols = RowFilters.shuffle(cols);
+        int[] pall = new int[df.getCol(classColName).getDictionary().length];
+        for (int i = 0; i < df.getRowCount(); i++) {
+            pall[df.getIndex(i, df.getColIndex(classColName))]++;
+        }
+
         int count = 0;
-        for (int i = 0; i < cols.getRowCount(); i++) {
-            int colIndex = cols.getIndex(i);
+        int indexmax = indexes.length;
+        while (count < mcols) {
+
+            int next = RandomSource.nextInt(indexmax);
+            int colIndex = indexes[next];
+            indexes[next] = indexes[indexmax - 1];
+            indexes[indexmax - 1] = colIndex;
+            indexmax--;
+            count++;
+
 
             if (df.getColIndex(classColName) == colIndex) continue;
             if (count == mcols) break;
@@ -265,9 +311,9 @@ class TreeNode {
 
             Vector col = df.getCol(colIndex);
             if (col.isNumeric()) {
-                evaluateNumericCol(df, classColName, colIndex, col);
+                evaluateNumericCol(df, classColName, colIndex, col, pall);
             } else {
-                evaluateNominalCol(df, classColName, colIndex, col);
+                evaluateNominalCol(df, classColName, colIndex, col, pall);
             }
         }
         if (!leaf && ((leftNode == null) || (rightNode == null))) {
@@ -283,30 +329,18 @@ class TreeNode {
         }
     }
 
-    private void evaluateNumericCol(Frame df, String classColName, int colIndex, Vector col) {
+    private void evaluateNumericCol(Frame df, String classColName, int colIndex, Vector col, int[] pall) {
     }
 
-    private void evaluateNominalCol(Frame df, String classColName, int selColIndex, Vector selCol) {
+    private void evaluateNominalCol(Frame df, String classColName, int selColIndex, Vector selCol, int[] pall) {
 
         Vector classCol = df.getCol(classColName);
         int classColIndex = df.getColIndex(classColName);
 
         int[][] p = new int[selCol.getDictionary().length][classCol.getDictionary().length];
-        int[] pall = new int[classCol.getDictionary().length];
 
         for (int i = 0; i < df.getRowCount(); i++) {
             p[df.getIndex(i, selColIndex)][df.getIndex(i, classColIndex)]++;
-            pall[df.getIndex(i, classColIndex)]++;
-        }
-
-
-        double countAll = 0;
-        double sEntropy = 0;
-        for (int i = 0; i < pall.length; i++) {
-            countAll += pall[i];
-        }
-        for (int i = 0; i < pall.length; i++) {
-            sEntropy += entropy(pall[i] / countAll);
         }
 
         for (int j = 0; j < selCol.getDictionary().length; j++) {
@@ -320,55 +354,34 @@ class TreeNode {
 
             if (countCol == 0 || countOther == 0) continue;
 
-            double metric = sEntropy;
+            double metric = 0;
             for (int i = 0; i < pall.length; i++) {
-                metric -= entropy(p[j][i] / (countCol * 1.));
-                metric -= entropy((pall[i] - p[j][i]) / (1. * countOther));
+                double pleft = p[j][i] / (countCol * 1.);
+                metric += pleft * (1 - pleft);
+                double pright = (pall[i] - p[j][i]) / (1. * countOther);
+                metric += pright * (1 - pright);
             }
 
-
-            if (metricValue != metricValue) {
+            if ((metricValue != metricValue) || metric < metricValue) {
                 metricValue = metric;
                 splitCol = df.getColNames()[selColIndex];
                 splitLabel = selCol.getDictionary()[j];
                 splitValue = Double.NaN;
                 leftNode = new TreeNode();
                 rightNode = new TreeNode();
-                leftFrame = new MappedFrame(df, buildMapping(selCol, selCol.getDictionary()[j], true));
-                rightFrame = new MappedFrame(df, buildMapping(selCol, selCol.getDictionary()[j], false));
-            } else {
-                if (metric > metricValue) {
-                    metricValue = metric;
-                    splitCol = df.getColNames()[selColIndex];
-                    splitLabel = selCol.getDictionary()[j];
-                    splitValue = Double.NaN;
-                    leftNode = new TreeNode();
-                    rightNode = new TreeNode();
-                    leftFrame = new MappedFrame(df, buildMapping(selCol, selCol.getDictionary()[j], true));
-                    rightFrame = new MappedFrame(df, buildMapping(selCol, selCol.getDictionary()[j], false));
+                List<Integer> leftMap = new ArrayList<>();
+                List<Integer> rightMap = new ArrayList<>();
+                for (int i = 0; i < df.getRowCount(); i++) {
+                    if (selCol.getIndex(i) == j)
+                        leftMap.add(classCol.getRowId(i));
+                    else
+                        rightMap.add(classCol.getRowId(i));
+
                 }
+                leftFrame = new MappedFrame(df.getSourceFrame(), new Mapping(leftMap));
+                rightFrame = new MappedFrame(df.getSourceFrame(), new Mapping(rightMap));
             }
         }
     }
-
-    private Mapping buildMapping(Vector col, String label, boolean include) {
-        List<Integer> mapping = new ArrayList<>();
-        for (int i = 0; i < col.getRowCount(); i++) {
-            if (col.getLabel(i).equals(label) && include) {
-                mapping.add(i);
-                continue;
-            }
-            if (!col.getLabel(i).equals(label) && !include) {
-                mapping.add(i);
-            }
-        }
-        return new Mapping(mapping);
-    }
-
-    private double entropy(double value) {
-        if (value == 0) return 0;
-        return -1. * value * log(value) / log(2);
-    }
-
 }
 

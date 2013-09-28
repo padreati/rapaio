@@ -73,11 +73,11 @@ public final class NominalFilters {
             mappings[i] = new ArrayList<>();
         }
         for (int i = 0; i < df.getRowCount(); i++) {
-            mappings[df.getIndex(i, nominalIndex)].add(i);
+            mappings[df.getIndex(i, nominalIndex)].add(df.getRowId(i));
         }
         Frame[] frames = new Frame[len];
         for (int i = 0; i < frames.length; i++) {
-            frames[i] = new MappedFrame(df, new Mapping(mappings[i]));
+            frames[i] = new MappedFrame(df.getSourceFrame(), new Mapping(mappings[i]));
         }
         return frames;
     }

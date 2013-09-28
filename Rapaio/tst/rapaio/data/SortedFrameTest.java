@@ -93,10 +93,10 @@ public class SortedFrameTest {
         assertEquals(3, sort.getColCount());
         assertEquals(4, sort.getRowCount());
 
-        assertEquals(2, sort.getRowId(0, 0));
-        assertEquals(1, sort.getRowId(1, 0));
-        assertEquals(0, sort.getRowId(2, 0));
-        assertEquals(3, sort.getRowId(3, 0));
+        assertEquals(2, sort.getRowId(0));
+        assertEquals(1, sort.getRowId(1));
+        assertEquals(0, sort.getRowId(2));
+        assertEquals(3, sort.getRowId(3));
 
         boolean exceptional = false;
         try {
@@ -171,10 +171,10 @@ public class SortedFrameTest {
 
         sorted = sort(sorted, nominalComparator(sorted.getCol("x"), true));
 
-        assertEquals(2, sorted.getRowId(0, 0));
-        assertEquals(1, sorted.getRowId(1, 0));
-        assertEquals(0, sorted.getRowId(2, 0));
-        assertEquals(3, sorted.getRowId(3, 0));
+        assertEquals(2, sorted.getRowId(0));
+        assertEquals(1, sorted.getRowId(1));
+        assertEquals(0, sorted.getRowId(2));
+        assertEquals(3, sorted.getRowId(3));
 
     }
 }

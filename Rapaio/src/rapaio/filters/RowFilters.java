@@ -41,12 +41,12 @@ public final class RowFilters {
     public static Vector shuffle(Vector v) {
         ArrayList<Integer> mapping = new ArrayList<>();
         for (int i = 0; i < v.getRowCount(); i++) {
-            mapping.add(i);
+            mapping.add(v.getRowId(i));
         }
         for (int i = mapping.size(); i > 1; i--) {
             mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
         }
-        return new MappedVector(v, new Mapping(mapping));
+        return new MappedVector(v.getSourceVector(), new Mapping(mapping));
     }
 
     /**
@@ -58,12 +58,12 @@ public final class RowFilters {
     public static Frame shuffle(Frame df) {
         ArrayList<Integer> mapping = new ArrayList<>();
         for (int i = 0; i < df.getRowCount(); i++) {
-            mapping.add(i);
+            mapping.add(df.getRowId(i));
         }
         for (int i = mapping.size(); i > 1; i--) {
             mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
         }
-        return new MappedFrame(df, new Mapping(mapping));
+        return new MappedFrame(df.getSourceFrame(), new Mapping(mapping));
     }
 
     public static Vector sort(Vector v) {
@@ -87,7 +87,11 @@ public final class RowFilters {
             mapping.add(i);
         }
         Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
-        return new MappedVector(name, vector, new Mapping(mapping));
+        List<Integer> ids = new ArrayList<>();
+        for (int i = 0; i < mapping.size(); i++) {
+            ids.add(vector.getRowId(mapping.get(i)));
+        }
+        return new MappedVector(name, vector.getSourceVector(), new Mapping(ids));
     }
 
     public static Frame sort(Frame df, Comparator<Integer>... comparators) {
@@ -100,7 +104,11 @@ public final class RowFilters {
             mapping.add(i);
         }
         Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
-        return new MappedFrame(name, df, new Mapping(mapping));
+        List<Integer> ids = new ArrayList<>();
+        for (int i = 0; i < mapping.size(); i++) {
+            ids.add(df.getRowId(mapping.get(i)));
+        }
+        return new MappedFrame(name, df.getSourceFrame(), new Mapping(ids));
     }
 
 
@@ -111,8 +119,8 @@ public final class RowFilters {
     public static Frame bootstrap(Frame frame, int size) {
         List<Integer> mapping = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            mapping.add(RandomSource.nextInt(frame.getRowCount()));
+            mapping.add(frame.getRowId(RandomSource.nextInt(frame.getRowCount())));
         }
-        return new MappedFrame(frame, new Mapping(mapping));
+        return new MappedFrame(frame.getSourceFrame(), new Mapping(mapping));
     }
 }

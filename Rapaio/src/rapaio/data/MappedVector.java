@@ -41,17 +41,11 @@ public class MappedVector extends AbstractVector {
 
     public MappedVector(String name, Vector vector, Mapping sourceMapping) {
         super(name);
-        if (!vector.isMappedVector()) {
-            this.source = vector;
-            this.mapping = sourceMapping;
-        } else {
-            this.source = vector.getSourceVector();
-            ArrayList<Integer> indexes = new ArrayList<>();
-            for (int i = 0; i < sourceMapping.size(); i++) {
-                indexes.add(vector.getRowId(sourceMapping.get(i)));
-            }
-            this.mapping = new Mapping(indexes);
+        if (vector.isMappedVector()) {
+            throw new IllegalArgumentException("Now allowed mapped vector as source");
         }
+        this.source = vector;
+        this.mapping = sourceMapping;
     }
 
     @Override

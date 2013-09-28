@@ -90,10 +90,19 @@ public interface Frame extends Serializable {
      * Returns row identifier for a specific column. See {@link Vector#getRowId(int)} for further reference.
      *
      * @param row row for which row identifier is returned
-     * @param col column from which row id is draw
      * @return row identifier
      */
-    int getRowId(int row, int col);
+    int getRowId(int row);
+
+    public boolean isMappedFrame();
+
+    /**
+     * Returns the solid frame which contains the data. Solid frames return themselves,
+     * mapped frames returns the solid frame which contains the data.
+     *
+     * @return
+     */
+    public Frame getSourceFrame();
 
     /**
      * Convenient shortcut to call {@link Vector#getValue(int)} for a given column.

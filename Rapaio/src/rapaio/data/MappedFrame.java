@@ -35,9 +35,12 @@ import java.util.List;
 public class MappedFrame extends AbstractFrame {
 
     private final int rows;
-    private final Vector[] vectors;
-    private final HashMap<String, Integer> colIndex;
-    private final String[] colNames;
+    //    private final Vector[] vectors;
+//    private final HashMap<String, Integer> colIndex;
+//    private final String[] colNames;
+    private final Mapping mapping;
+    private final Frame source;
+    private final HashMap<Integer, Vector> vectors = new HashMap<>();
 
     public MappedFrame(Frame df, Mapping mapping) {
         this(df.getName(), df, mapping);
@@ -45,32 +48,24 @@ public class MappedFrame extends AbstractFrame {
 
     public MappedFrame(String name, Frame df, Mapping mapping) {
         super(name);
+        if (df.isMappedFrame()) {
+            throw new IllegalArgumentException("Not allowed mapped frames as source");
+        }
+
         this.rows = mapping.size();
-        this.colIndex = new HashMap<>();
-        this.colNames = new String[df.getColCount()];
-        for (int i = 0; i < df.getColCount(); i++) {
-            colIndex.put(df.getColNames()[i], i);
-            colNames[i] = df.getColNames()[i];
-        }
-        vectors = new Vector[df.getColCount()];
+//        this.colIndex = new HashMap<>();
+//        this.colNames = new String[df.getColCount()];
+//        for (int i = 0; i < df.getColCount(); i++) {
+//            colIndex.put(df.getColNames()[i], i);
+//            colNames[i] = df.getColNames()[i];
+//        }
+//        vectors = new Vector[df.getColCount()];
+//        for (int i = 0; i < df.getColCount(); i++) {
+//            vectors[i] = new MappedVector(df.getCol(i), mapping);
+//        }
 
-        Mapping cachedSolidMapping = mapping;
-        HashMap<Mapping, Mapping> cachedMappedMappings = new HashMap<>();
-
-        for (int i = 0; i < df.getColCount(); i++) {
-            Vector old = df.getCol(i);
-            if (!old.isMappedVector()) {
-                vectors[i] = new MappedVector(old, cachedSolidMapping);
-            } else {
-                Mapping oldMapping = old.getMapping();
-                if (!cachedMappedMappings.containsKey(oldMapping)) {
-                    vectors[i] = new MappedVector(old, mapping);
-                    cachedMappedMappings.put(oldMapping, vectors[i].getMapping());
-                    continue;
-                }
-                vectors[i] = new MappedVector(old.getSourceVector(), cachedMappedMappings.get(oldMapping));
-            }
-        }
+        this.mapping = mapping;
+        this.source = df;
     }
 
     @Override
@@ -80,30 +75,40 @@ public class MappedFrame extends AbstractFrame {
 
     @Override
     public int getColCount() {
-        return vectors.length;
+        return source.getColCount();
     }
 
     @Override
-    public int getRowId(int row, int col) {
-        return getCol(col).getRowId(row);
+    public int getRowId(int row) {
+        return mapping.get(row);
+    }
+
+    @Override
+    public boolean isMappedFrame() {
+        return true;
+    }
+
+    @Override
+    public Frame getSourceFrame() {
+        return source;
     }
 
     @Override
     public String[] getColNames() {
-        return colNames;
+        return source.getColNames();
     }
 
     @Override
     public int getColIndex(String name) {
-        return colIndex.get(name);
+        return source.getColIndex(name);
     }
 
     @Override
     public Vector getCol(int col) {
-        if (col < vectors.length) {
-            return vectors[col];
+        if (!vectors.containsKey(col)) {
+            vectors.put(col, new MappedVector(source.getCol(col), mapping));
         }
-        return null;
+        return vectors.get(col);
     }
 
     @Override

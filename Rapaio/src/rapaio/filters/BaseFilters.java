@@ -52,17 +52,17 @@ public final class BaseFilters {
 
             @Override
             public boolean isMappedVector() {
-                return false;
+                return vector.isMappedVector();
             }
 
             @Override
             public Vector getSourceVector() {
-                return null;
+                return vector.getSourceVector();
             }
 
             @Override
             public Mapping getMapping() {
-                return null;
+                return vector.getMapping();
             }
 
             @Override

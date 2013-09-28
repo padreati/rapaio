@@ -37,6 +37,10 @@ public class SolidFrame extends AbstractFrame {
 
     public SolidFrame(String name, int rows, List<Vector> vectors) {
         super(name);
+        for (int i = 0; i < vectors.size(); i++) {
+            if (vectors.get(i).isMappedVector())
+                throw new IllegalArgumentException("Not allowed mapped vectors in solid frame");
+        }
         this.rows = rows;
         this.vectors = new Vector[vectors.size()];
         this.colIndex = new HashMap<>();
@@ -51,6 +55,10 @@ public class SolidFrame extends AbstractFrame {
 
     public SolidFrame(String name, int rows, Vector[] vectors) {
         super(name);
+        for (int i = 0; i < vectors.length; i++) {
+            if (vectors[i].isMappedVector())
+                throw new IllegalArgumentException("Not allowed mapped vectors in solid frame");
+        }
         this.rows = rows;
         this.vectors = new Vector[vectors.length];
         this.colIndex = new HashMap<>();
@@ -74,8 +82,18 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public int getRowId(int row, int col) {
-        return getCol(col).getRowId(row);
+    public int getRowId(int row) {
+        return row;
+    }
+
+    @Override
+    public boolean isMappedFrame() {
+        return false;
+    }
+
+    @Override
+    public Frame getSourceFrame() {
+        return this;
     }
 
     @Override

@@ -71,7 +71,7 @@ public class IndexVector extends AbstractVector {
 
     @Override
     public Vector getSourceVector() {
-        return null;
+        return this;
     }
 
     @Override
