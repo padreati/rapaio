@@ -44,6 +44,9 @@ public class RandomForest implements Classifier {
         this.mtrees = mtrees;
         this.mcols = mcols;
         this.mincount = mincount;
+        if (mincount < 1) {
+            throw new IllegalArgumentException("mincount must be >= 1");
+        }
     }
 
     @Override
@@ -56,7 +59,7 @@ public class RandomForest implements Classifier {
         ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         LinkedList<Callable<Object>> tasks = new LinkedList<>();
         for (int i = 0; i < mtrees; i++) {
-            final Tree tree = new Tree(mcols, mincount, debug);
+            final Tree tree = new Tree(max(mcols, df.getColCount() - 1), mincount, debug);
             trees.add(tree);
 
             tasks.add(new Callable<Object>() {
@@ -80,9 +83,9 @@ public class RandomForest implements Classifier {
     @Override
     public ClassifierModel predict(final Frame df) {
         final Vector predict = new NominalVector(classColName, df.getRowCount(), dict);
-        Vector[] vectors = new Vector[dict.length - 1];
-        for (int i = 0; i < dict.length - 1; i++) {
-            vectors[i] = new NumericVector(dict[i + 1], new double[df.getRowCount()]);
+        Vector[] vectors = new Vector[dict.length];
+        for (int i = 0; i < dict.length; i++) {
+            vectors[i] = new NumericVector(dict[i], new double[df.getRowCount()]);
         }
         final Frame prob = new SolidFrame("prob", df.getRowCount(), vectors);
 
@@ -109,7 +112,7 @@ public class RandomForest implements Classifier {
                     col = j;
                 }
             }
-            predict.setLabel(i, dict[col + 1]);
+            predict.setLabel(i, dict[col]);
         }
 
         return new ClassifierModel() {
@@ -197,7 +200,25 @@ class Tree implements Classifier {
     public ClassifierModel predict(final Frame df) {
         final Vector classification = new NominalVector("classification", df.getRowCount(), dict);
         for (int i = 0; i < df.getRowCount(); i++) {
-            String prediction = predict(df, i, root);
+            int[] distribution = predict(df, i, root);
+            int[] indexes = new int[distribution.length];
+            int len = 1;
+            for (int j = 1; j < distribution.length; j++) {
+                if (distribution[j] == distribution[indexes[0]]) {
+                    indexes[len++] = j;
+                    continue;
+                }
+                if (distribution[j] > distribution[indexes[0]]) {
+                    len = 1;
+                    indexes[0] = j;
+                    continue;
+                }
+            }
+            int next = 0;
+            if (len > 0) {
+                next = RandomSource.nextInt(len);
+            }
+            String prediction = dict[indexes[next]];
             classification.setLabel(i, prediction);
         }
         return new ClassifierModel() {
@@ -218,23 +239,25 @@ class Tree implements Classifier {
         };
     }
 
-    private String predict(Frame df, int row, TreeNode root) {
-        while (true) {
-            if (root.leaf) {
-                return root.predicted;
+    private int[] predict(Frame df, int row, TreeNode root) {
+        if (root.leaf) {
+            return root.distribution;
+        }
+        int col = df.getColIndex(root.splitCol);
+        if (df.getCol(col).isMissing(row)) {
+            int[] left = predict(df, row, root.leftNode);
+            int[] right = predict(df, row, root.rightNode);
+            for (int i = 0; i < left.length; i++) {
+                left[i] += right[i];
+                return left;
             }
-            int col = df.getColIndex(root.splitCol);
-            if (df.getCol(col).isNumeric()) {
-                double value = df.getValue(row, col);
-                if (root.splitValue != root.splitValue) {
-                    root = (value != value) ? root.leftNode : root.rightNode;
-                } else {
-                    root = ((value != value) || (value < root.splitValue)) ? root.leftNode : root.rightNode;
-                }
-            } else {
-                String label = df.getLabel(row, col);
-                root = root.splitLabel.equals(label) ? root.leftNode : root.rightNode;
-            }
+        }
+        if (df.getCol(col).isNumeric()) {
+            double value = df.getValue(row, col);
+            return predict(df, row, value < root.splitValue ? root.leftNode : root.rightNode);
+        } else {
+            String label = df.getLabel(row, col);
+            return predict(df, row, root.splitLabel.equals(label) ? root.leftNode : root.rightNode);
         }
     }
 
@@ -249,6 +272,7 @@ class TreeNode {
     public String splitLabel;
     public double splitValue;
     public double metricValue = Double.NaN;
+    public int[] distribution;
 
     public String predicted;
 
@@ -258,6 +282,13 @@ class TreeNode {
     public Frame rightFrame;
 
     public void learn(final Frame df, String classColName, int mcols, int mincount, int[] indexes) {
+
+        // compute distribution of classes
+
+        int[] pall = new int[df.getCol(classColName).getDictionary().length];
+        for (int i = 0; i < df.getRowCount(); i++) {
+            pall[df.getIndex(i, df.getColIndex(classColName))]++;
+        }
 
         if (df.getRowCount() <= mincount) {
             String[] modes = new Mode(df.getCol(classColName)).getModes();
@@ -269,29 +300,24 @@ class TreeNode {
                 predicted = modes[RandomSource.nextInt(modes.length)];
             }
             leaf = true;
+            distribution = pall;
             return;
         }
 
         // leaf on all classes of same value
-        boolean same = true;
-        for (int i = 1; i < df.getRowCount(); i++) {
-            if (df.getIndex(i - 1, df.getColIndex(classColName)) != df.getIndex(i, df.getColIndex(classColName))) {
-                same = false;
+        for (int i = 0; i < pall.length; i++) {
+            if (pall[i] == df.getRowCount()) {
+                predicted = df.getLabel(0, df.getColIndex(classColName));
+                leaf = true;
+                distribution = pall;
+                return;
+            }
+            if (pall[i] != 0) {
                 break;
             }
         }
-        if (same) {
-            predicted = df.getLabel(0, df.getColIndex(classColName));
-            leaf = true;
-            return;
-        }
 
         // find best split
-
-        int[] pall = new int[df.getCol(classColName).getDictionary().length];
-        for (int i = 0; i < df.getRowCount(); i++) {
-            pall[df.getIndex(i, df.getColIndex(classColName))]++;
-        }
 
         int count = 0;
         int indexmax = indexes.length;
@@ -326,10 +352,14 @@ class TreeNode {
                 predicted = modes[RandomSource.nextInt(modes.length)];
             }
             leaf = true;
+            distribution = pall;
         }
     }
 
     private void evaluateNumericCol(Frame df, String classColName, int colIndex, Vector col, int[] pall) {
+
+        int[] pleft = new int[pall.length];
+
     }
 
     private void evaluateNominalCol(Frame df, String classColName, int selColIndex, Vector selCol, int[] pall) {

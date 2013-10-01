@@ -19,6 +19,7 @@
  */
 package rapaio.data;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -54,21 +55,7 @@ public class SolidFrame extends AbstractFrame {
     }
 
     public SolidFrame(String name, int rows, Vector[] vectors) {
-        super(name);
-        for (int i = 0; i < vectors.length; i++) {
-            if (vectors[i].isMappedVector())
-                throw new IllegalArgumentException("Not allowed mapped vectors in solid frame");
-        }
-        this.rows = rows;
-        this.vectors = new Vector[vectors.length];
-        this.colIndex = new HashMap<>();
-        this.names = new String[vectors.length];
-
-        for (int i = 0; i < vectors.length; i++) {
-            this.vectors[i] = vectors[i];
-            this.colIndex.put(vectors[i].getName(), i);
-            names[i] = vectors[i].getName();
-        }
+        this(name, rows, Arrays.asList(vectors));
     }
 
     @Override
