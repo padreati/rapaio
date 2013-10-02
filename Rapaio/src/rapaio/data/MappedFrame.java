@@ -34,7 +34,6 @@ import java.util.List;
  */
 public class MappedFrame extends AbstractFrame {
 
-    private final int rows;
     //    private final Vector[] vectors;
 //    private final HashMap<String, Integer> colIndex;
 //    private final String[] colNames;
@@ -52,7 +51,6 @@ public class MappedFrame extends AbstractFrame {
             throw new IllegalArgumentException("Not allowed mapped frames as source");
         }
 
-        this.rows = mapping.size();
 //        this.colIndex = new HashMap<>();
 //        this.colNames = new String[df.getColCount()];
 //        for (int i = 0; i < df.getColCount(); i++) {
@@ -70,7 +68,7 @@ public class MappedFrame extends AbstractFrame {
 
     @Override
     public int getRowCount() {
-        return rows;
+        return mapping.size();
     }
 
     @Override
@@ -115,34 +113,4 @@ public class MappedFrame extends AbstractFrame {
     public Vector getCol(String name) {
         return getCol(getColIndex(name));
     }
-
-//    @Override
-//    public double getValue(int row, int col) {
-//        return getCol(col).getValue(row);
-//    }
-//
-//    @Override
-//    public void setValue(int row, int col, double value) {
-//        getCol(col).setValue(row, value);
-//    }
-//
-//    @Override
-//    public int getIndex(int row, int col) {
-//        return getCol(col).getIndex(row);
-//    }
-//
-//    @Override
-//    public void setIndex(int row, int col, int value) {
-//        getCol(col).setIndex(row, value);
-//    }
-//
-//    @Override
-//    public String getLabel(int row, int col) {
-//        return getCol(col).getLabel(row);
-//    }
-//
-//    @Override
-//    public void setLabel(int row, int col, String value) {
-//        getCol(col).setLabel(row, value);
-//    }
 }

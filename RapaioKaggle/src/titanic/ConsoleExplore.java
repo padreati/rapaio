@@ -61,22 +61,22 @@ public class ConsoleExplore {
         tr = removeCols(tr, "Name");
         tr = removeCols(tr, "Ticket");
         tr = removeCols(tr, "Cabin");
-        tr = removeCols(tr, "SibSp");
-        tr = removeCols(tr, "Parch");
+//        tr = removeCols(tr, "SibSp");
+//        tr = removeCols(tr, "Parch");
 //        tr = removeCols(tr, "Pclass");
 //        tr = removeCols(tr, "Title");
 //        tr = removeCols(tr, "Sex");
-        tr = removeCols(tr, "Embarked");
+//        tr = removeCols(tr, "Embarked");
 //        tr = removeCols(tr, "Family");
 
         tr = ColFilters.retainNominal(tr);
         Summary.summary(tr);
 
-        RandomForest rf = new RandomForest(300, 3, 1);
+        RandomForest rf = new RandomForest(1000, 3);
 //        rf.setDebug(true);
         long start = System.currentTimeMillis();
         CrossValidation cv = new CrossValidation();
-        cv.cv(tr, "Survived", rf, 5);
+        cv.cv(tr, "Survived", rf, 3);
         long end = System.currentTimeMillis();
         System.out.println("CV took " + (end - start) + " millis");
 
@@ -84,6 +84,7 @@ public class ConsoleExplore {
         rf.learn(tr, "Survived");
         long end2 = System.currentTimeMillis();
         System.out.println("submit train took " + (end2 - start2) + " millis");
+        System.out.flush();
 
 //        Summary.summary(id3);
         ClassifierModel cr = rf.predict(test);

@@ -34,19 +34,14 @@ import java.util.concurrent.*;
 public class RandomForest implements Classifier {
     private final int mtrees;
     private final int mcols;
-    private final int mincount;
     private final List<Tree> trees = new ArrayList<>();
     private String classColName;
     private String[] dict;
     private boolean debug = false;
 
-    public RandomForest(int mtrees, int mcols, int mincount) {
+    public RandomForest(int mtrees, int mcols) {
         this.mtrees = mtrees;
         this.mcols = mcols;
-        this.mincount = mincount;
-        if (mincount < 1) {
-            throw new IllegalArgumentException("mincount must be >= 1");
-        }
     }
 
     @Override
@@ -59,7 +54,7 @@ public class RandomForest implements Classifier {
         ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         LinkedList<Callable<Object>> tasks = new LinkedList<>();
         for (int i = 0; i < mtrees; i++) {
-            final Tree tree = new Tree(max(mcols, df.getColCount() - 1), mincount, debug);
+            final Tree tree = new Tree(max(mcols, df.getColCount() - 1), debug);
             trees.add(tree);
 
             tasks.add(new Callable<Object>() {
@@ -144,24 +139,17 @@ public class RandomForest implements Classifier {
 
 class Tree implements Classifier {
     private final int mcols;
-    private final int mincount;
     private final boolean debug;
     private TreeNode root;
     private String[] dict;
 
-    Tree(int mcols, int mincount, boolean debug) {
+    Tree(int mcols, boolean debug) {
         this.mcols = mcols;
-        this.mincount = mincount;
         this.debug = debug;
     }
 
     @Override
     public void learn(Frame df, String classColName) {
-        if (debug) {
-            System.out.print(".");
-            if (RandomSource.nextDouble() > .97) System.out.println();
-        }
-
         int[] indexes = new int[df.getColCount() - 1];
         int pos = 0;
         for (int i = 0; i < df.getColCount(); i++) {
@@ -179,11 +167,14 @@ class Tree implements Classifier {
         nodes.addLast(root);
         frames.addLast(df);
 
+        int len = 0;
+
         while (!nodes.isEmpty()) {
+            len++;
             TreeNode currentNode = nodes.pollFirst();
             Frame currentFrame = frames.pollFirst();
 
-            currentNode.learn(currentFrame, classColName, mcols, mincount, indexes);
+            currentNode.learn(currentFrame, classColName, mcols, indexes);
             if (currentNode.leaf) {
                 continue;
             }
@@ -194,6 +185,10 @@ class Tree implements Classifier {
             currentNode.leftFrame = null;
             currentNode.rightFrame = null;
         }
+        if (debug) {
+            System.out.println("learned rf tree size: " + len);
+        }
+
     }
 
     @Override
@@ -281,7 +276,7 @@ class TreeNode {
     public Frame leftFrame;
     public Frame rightFrame;
 
-    public void learn(final Frame df, String classColName, int mcols, int mincount, int[] indexes) {
+    public void learn(final Frame df, String classColName, int mcols, int[] indexes) {
 
         // compute distribution of classes
 
@@ -290,22 +285,15 @@ class TreeNode {
             pall[df.getIndex(i, df.getColIndex(classColName))]++;
         }
 
-        if (df.getRowCount() <= mincount) {
-            String[] modes = new Mode(df.getCol(classColName)).getModes();
-            if (modes.length == 0) {
-                throw new IllegalArgumentException("Can't train from an empty frame");
-            }
-            predicted = modes[0];
-            if (modes.length > 1) {
-                predicted = modes[RandomSource.nextInt(modes.length)];
-            }
+        if (df.getRowCount() == 1) {
+            predicted = df.getLabel(0, df.getColIndex(classColName));
             leaf = true;
             distribution = pall;
             return;
         }
 
         // leaf on all classes of same value
-        for (int i = 0; i < pall.length; i++) {
+        for (int i = 1; i < pall.length; i++) {
             if (pall[i] == df.getRowCount()) {
                 predicted = df.getLabel(0, df.getColIndex(classColName));
                 leaf = true;
@@ -320,96 +308,91 @@ class TreeNode {
         // find best split
 
         int count = 0;
-        int indexmax = indexes.length;
+        int indexLen = indexes.length;
+        Vector classCol = df.getCol(classColName);
+        int classColIndex = df.getColIndex(classColName);
         while (count < mcols) {
 
-            int next = RandomSource.nextInt(indexmax);
-            int colIndex = indexes[next];
-            indexes[next] = indexes[indexmax - 1];
-            indexes[indexmax - 1] = colIndex;
-            indexmax--;
-            count++;
-
-
-            if (df.getColIndex(classColName) == colIndex) continue;
             if (count == mcols) break;
+
+            int next = RandomSource.nextInt(indexLen);
+            int colIndex = indexes[next];
+            indexes[next] = indexes[indexLen - 1];
+            indexes[indexLen - 1] = colIndex;
+            indexLen--;
             count++;
 
             Vector col = df.getCol(colIndex);
             if (col.isNumeric()) {
-                evaluateNumericCol(df, classColName, colIndex, col, pall);
+                evaluateNumericCol(df, classColIndex, classCol, colIndex, col, pall);
             } else {
-                evaluateNominalCol(df, classColName, colIndex, col, pall);
+                evaluateNominalCol(df, classColIndex, classCol, colIndex, col, pall);
             }
         }
-        if (!leaf && ((leftNode == null) || (rightNode == null))) {
+        if (leftNode != null && rightNode != null) {
+            List<Integer> leftMap = new ArrayList<>();
+            List<Integer> rightMap = new ArrayList<>();
+
+            for (int i = 0; i < df.getRowCount(); i++) {
+                if (splitValue != splitValue) {
+                    // nominal
+                    if (splitLabel == df.getLabel(i, df.getColIndex(splitCol))) {
+                        leftMap.add(classCol.getRowId(i));
+                    } else {
+                        rightMap.add(classCol.getRowId(i));
+                    }
+                } else {
+                    // numeric
+                }
+
+            }
+            leftFrame = new MappedFrame(df.getSourceFrame(), new Mapping(leftMap));
+            rightFrame = new MappedFrame(df.getSourceFrame(), new Mapping(rightMap));
+        } else {
             String[] modes = new Mode(df.getCol(classColName)).getModes();
-            if (modes.length == 0) {
-                throw new IllegalArgumentException("Can't train from an empty frame");
-            }
-            predicted = modes[0];
-            if (modes.length > 1) {
-                predicted = modes[RandomSource.nextInt(modes.length)];
-            }
+            predicted = modes[RandomSource.nextInt(modes.length)];
             leaf = true;
             distribution = pall;
         }
     }
 
-    private void evaluateNumericCol(Frame df, String classColName, int colIndex, Vector col, int[] pall) {
+    private void evaluateNumericCol(Frame df, int classColIndex, Vector classCol, int colIndex, Vector col, int[] pall) {
 
         int[] pleft = new int[pall.length];
 
     }
 
-    private void evaluateNominalCol(Frame df, String classColName, int selColIndex, Vector selCol, int[] pall) {
-
-        Vector classCol = df.getCol(classColName);
-        int classColIndex = df.getColIndex(classColName);
-
+    private void evaluateNominalCol(Frame df, int classColIndex, Vector classCol, int selColIndex, Vector selCol, int[] pall) {
         int[][] p = new int[selCol.getDictionary().length][classCol.getDictionary().length];
 
         for (int i = 0; i < df.getRowCount(); i++) {
             p[df.getIndex(i, selColIndex)][df.getIndex(i, classColIndex)]++;
         }
 
-        for (int j = 0; j < selCol.getDictionary().length; j++) {
+        for (int j = 1; j < selCol.getDictionary().length; j++) {
 
-            int countCol = 0;
-            int countOther = 0;
-            for (int i = 0; i < pall.length; i++) {
-                countCol += p[j][i];
-                countOther += pall[i] - p[j][i];
+            int totalLeft = 0;
+            int totalRight = 0;
+            int upLeft = 0;
+            int upRight = 0;
+            for (int i = 1; i < pall.length; i++) {
+                upLeft += p[j][i] * p[j][i];
+                totalLeft += p[j][i];
+                upRight += (pall[i] - p[j][i]) * (pall[i] - p[j][i]);
+                totalRight += pall[i] - p[j][i];
             }
 
-            if (countCol == 0 || countOther == 0) continue;
+            if (totalLeft == 0 || totalRight == 0) continue;
 
-            double metric = 0;
-            for (int i = 0; i < pall.length; i++) {
-                double pleft = p[j][i] / (countCol * 1.);
-                metric += pleft * (1 - pleft);
-                double pright = (pall[i] - p[j][i]) / (1. * countOther);
-                metric += pright * (1 - pright);
-            }
+            double metric = upLeft / (1. * totalLeft) + upRight / (1. * totalRight);
 
-            if ((metricValue != metricValue) || metric < metricValue) {
+            if ((metricValue != metricValue) || metric > metricValue) {
                 metricValue = metric;
                 splitCol = df.getColNames()[selColIndex];
                 splitLabel = selCol.getDictionary()[j];
                 splitValue = Double.NaN;
                 leftNode = new TreeNode();
                 rightNode = new TreeNode();
-                List<Integer> leftMap = new ArrayList<>();
-                List<Integer> rightMap = new ArrayList<>();
-                for (int i = 0; i < df.getRowCount(); i++) {
-                    if (selCol.getIndex(i) == j)
-                        leftMap.add(classCol.getRowId(i));
-                    else
-                        rightMap.add(classCol.getRowId(i));
-
-                }
-                leftFrame = new MappedFrame(df.getSourceFrame(), new Mapping(leftMap));
-                rightFrame = new MappedFrame(df.getSourceFrame(), new Mapping(rightMap));
             }
         }
     }
