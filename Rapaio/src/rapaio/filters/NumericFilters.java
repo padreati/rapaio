@@ -17,11 +17,16 @@
 package rapaio.filters;
 
 import rapaio.core.UnivariateFunction;
+import rapaio.core.stat.Mean;
+import rapaio.data.Frame;
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
 import rapaio.distributions.Normal;
 
 import static rapaio.core.BaseMath.pow;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Provides filter operations on numeric vectors.
@@ -85,6 +90,49 @@ public final class NumericFilters {
             result.setValue(i, vector.getValue(i) + jitter.getValue(i));
         }
         return result;
+    }
+
+    public static void imputeMissing(Frame df, String imputedName, String method, Vector... groupBy) {
+
+        for (int i = 0; i < groupBy.length; i++) {
+            if (!groupBy[i].isNominal()) {
+                throw new IllegalArgumentException("impute works only with nominal groups");
+            }
+        }
+        Vector imputed = df.getCol(imputedName);
+        if (groupBy.length == 0) {
+            double mean = new Mean(imputed).getValue();
+            for (int i = 0; i < imputed.getRowCount(); i++) {
+                if (imputed.isMissing(i)) {
+                    imputed.setValue(i, mean);
+                }
+            }
+        } else {
+            List<Frame> frames = new ArrayList<>();
+            frames.add(df);
+
+            for (int i = 0; i < groupBy.length; i++) {
+                List<Frame> splitted = new ArrayList<>();
+                for (Frame frame : frames) {
+                    Frame[] results = NominalFilters.groupByNominal(frame, df.getColIndex(groupBy[i].getName()));
+                    for (int j = 0; j < results.length; j++) {
+                        splitted.add(results[j]);
+                    }
+                }
+                frames = splitted;
+            }
+
+            for (Frame frame : frames) {
+                double mean = new Mean(frame.getCol(imputed.getName())).getValue();
+                for (int i = 0; i < frame.getRowCount(); i++) {
+                    if (frame.getCol(imputedName).isMissing(i)) {
+                        frame.setValue(i, frame.getColIndex(imputedName), mean);
+                    }
+                }
+            }
+        }
+
+
     }
 
 }

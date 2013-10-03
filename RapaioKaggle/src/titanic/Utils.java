@@ -26,6 +26,7 @@ import rapaio.data.Vector;
 import rapaio.filters.BaseFilters;
 import static rapaio.filters.NominalFilters.fillMissingValues;
 import static rapaio.filters.NumericFilters.applyFunction;
+import static rapaio.filters.NumericFilters.imputeMissing;
 import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
@@ -47,8 +48,8 @@ public class Utils {
         HashSet<String> numericColumns = new HashSet<>();
         numericColumns.add("Age");
         numericColumns.add("Fare");
-//        numericColumns.add("SibSp");
-//        numericColumns.add("Parch");
+        numericColumns.add("SibSp");
+        numericColumns.add("Parch");
         List<Vector> vectors = new ArrayList<>();
 
         for (int i = 0; i < df.getColCount(); i++) {
@@ -109,6 +110,9 @@ public class Utils {
         vectors.add(family);
 
         df = new SolidFrame(df.getName(), df.getRowCount(), vectors);
+
+//        imputeMissing(df, "Age", "mean");
+        imputeMissing(df, "Age", "mean", df.getCol("Title"), df.getCol("Sex"), df.getCol("Pclass"));
         return df;
     }
 }
