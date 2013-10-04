@@ -21,6 +21,7 @@ import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import static rapaio.explore.Workspace.code;
 import static rapaio.explore.Workspace.print;
+import rapaio.filters.NominalFilters;
 import static rapaio.filters.RowFilters.*;
 
 import java.util.ArrayList;
@@ -34,7 +35,10 @@ public class CrossValidation {
     public void cv(Frame df, String classColName, Classifier c, int folds) {
         print("\n<pre><code>\n");
         print("CrossValidation with " + folds + " folds\n");
-        Frame f = shuffle(df);
+        Frame[] strata = NominalFilters.groupByNominal(df, df.getColIndex(classColName));
+        for (int i = 0; i < strata.length; i++) {
+            strata[i] = shuffle(strata[i]);
+        }
         ClassifierModel[] results = new ClassifierModel[folds];
 
         double tacc = 0;
@@ -42,24 +46,27 @@ public class CrossValidation {
         for (int i = 0; i < folds; i++) {
             List<Integer> trainMapping = new ArrayList<>();
             List<Integer> testMapping = new ArrayList<>();
-            if (folds >= df.getRowCount() - 1) {
-                testMapping.add(i);
-                for (int j = 0; j < f.getRowCount(); j++) {
-                    if (j != i) {
-                        trainMapping.add(f.getRowId(j));
+            for (Frame f : strata) {
+                if (folds >= f.getRowCount() - 1) {
+                    testMapping.add(i);
+                    for (int j = 0; j < f.getRowCount(); j++) {
+                        if (j != i) {
+                            trainMapping.add(f.getRowId(j));
+                        }
                     }
-                }
-            } else {
-                for (int j = 0; j < f.getRowCount(); j++) {
-                    if (j % folds == i) {
-                        testMapping.add(f.getRowId(j));
-                    } else {
-                        trainMapping.add(f.getRowId(j));
+
+                } else {
+                    for (int j = 0; j < f.getRowCount(); j++) {
+                        if (j % folds == i) {
+                            testMapping.add(f.getRowId(j));
+                        } else {
+                            trainMapping.add(f.getRowId(j));
+                        }
                     }
                 }
             }
-            Frame train = new MappedFrame(f.getSourceFrame(), new Mapping(trainMapping));
-            Frame test = new MappedFrame(f.getSourceFrame(), new Mapping(testMapping));
+            Frame train = new MappedFrame(df.getSourceFrame(), new Mapping(trainMapping));
+            Frame test = new MappedFrame(df.getSourceFrame(), new Mapping(testMapping));
 
             c.learn(train, classColName);
             results[i] = c.predict(test);

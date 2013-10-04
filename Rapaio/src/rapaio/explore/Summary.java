@@ -390,4 +390,72 @@ public class Summary {
     public static void summary(Summarizable result) {
         result.summary();
     }
+
+    public static void head(int lines, Frame df) {
+        Vector[] vectors = new Vector[df.getColCount()];
+        for (int i = 0; i < vectors.length; i++) {
+            vectors[i] = df.getCol(i);
+        }
+        head(lines, vectors);
+    }
+
+    public static void head(int lines, Vector... vectors) {
+        if (lines == -1) {
+            lines = vectors[0].getRowCount();
+        }
+
+        int[] max = new int[vectors.length];
+        for (int i = 0; i < vectors.length; i++) {
+            max[i] = vectors[i].getName().length() + 1;
+            for (int j = 0; j < vectors[i].getRowCount(); j++) {
+                if (vectors[i].isNominal() && max[i] < vectors[i].getLabel(j).length()) {
+                    max[i] = vectors[i].getLabel(j).length();
+                }
+                if (vectors[i].isNumeric()) {
+                    String value = String.format("%s", String.format("%.10f", vectors[i].getValue(j)));
+                    if (max[i] < value.length()) {
+                        max[i] = value.length();
+                    }
+                }
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("\n");
+
+        int pos = 0;
+        while (pos < vectors.length) {
+            int maxWidth = getPrinter().getTextWidth();
+            int width = 0;
+            int start = pos;
+            while ((pos < vectors.length - 1) && (width + max[pos + 1] + 1 < maxWidth)) {
+                width += max[pos + 1] + 1;
+                pos++;
+            }
+
+            for (int j = start; j <= pos; j++) {
+                String value = String.format("%" + max[j] + "s", vectors[j].getName());
+                sb.append(value).append(" ");
+            }
+            sb.append("\n");
+
+            for (int i = 0; i < lines; i++) {
+                for (int j = start; j <= pos; j++) {
+                    String value;
+                    if (vectors[j].isNominal()) {
+                        value = String.format("%" + max[j] + "s", vectors[j].getLabel(i));
+                    } else {
+                        value = String.format("%" + max[j] + "s", String.format("%.10f", vectors[j].getValue(i)));
+                    }
+                    sb.append(value).append(" ");
+                }
+                sb.append("\n");
+            }
+            pos++;
+            sb.append("\n");
+        }
+
+        code(sb.toString());
+    }
 }

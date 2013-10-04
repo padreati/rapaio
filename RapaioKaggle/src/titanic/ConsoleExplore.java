@@ -18,6 +18,7 @@ package titanic;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
+import rapaio.data.NominalVector;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
 import rapaio.distributions.empirical.*;
@@ -40,7 +41,9 @@ import rapaio.ml.supervised.tree.ID3;
 import rapaio.ml.supervised.tree.RandomForest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -52,16 +55,23 @@ public class ConsoleExplore {
         Frame train = Utils.read("train.csv");
         Frame test = Utils.read("test.csv");
         List<Frame> frames = consolidate(Arrays.asList(train, test));
+        frames = relate(frames, "Family", "Cabin");
         train = frames.get(0);
         test = frames.get(1);
 
+
         Frame tr = train;
+
+        Summary.head(10, tr);
+
 
         tr = removeCols(tr, "PassengerId");
         tr = removeCols(tr, "Name");
         tr = removeCols(tr, "Ticket");
         tr = removeCols(tr, "Cabin");
-        tr = removeCols(tr, "Fare");
+        tr = removeCols(tr, "LogFare");
+//        tr = removeCols(tr, "Age");
+//        tr = removeCols(tr, "Fare");
 //        tr = removeCols(tr, "SibSp");
 //        tr = removeCols(tr, "Parch");
 //        tr = removeCols(tr, "Pclass");
@@ -69,17 +79,19 @@ public class ConsoleExplore {
 //        tr = removeCols(tr, "Sex");
 //        tr = removeCols(tr, "Embarked");
 //        tr = removeCols(tr, "Family");
+//        tr = removeCols(tr, "Group");
 
-//        tr = ColFilters.retainNominal(tr);
         Summary.summary(tr);
 
-        final int mtree = 800;
-        final int mcols = 4;
+        final int mtree = 1000;
+        final int mcols = 3;
         RandomForest rf = new RandomForest(mtree, mcols);
 //        rf.setDebug(true);
         long start = System.currentTimeMillis();
         CrossValidation cv = new CrossValidation();
-        cv.cv(tr, "Survived", rf, 10);
+        for (int i = 0; i < 1; i++) {
+            cv.cv(tr, "Survived", rf, 5);
+        }
         long end = System.currentTimeMillis();
         System.out.println("CV took " + (end - start) + " millis");
 
@@ -105,5 +117,103 @@ public class ConsoleExplore {
         persist.write(submit, "/home/ati/work/rapaio/RapaioKaggle/src/titanic/submit.csv");
 
         closePrinter();
+    }
+
+    private static List<Frame> relate(List<Frame> frames, String... colNames) {
+
+        List<Frame> result = new ArrayList<>();
+
+        int len = 0;
+        for (Frame f : frames) {
+            len += f.getRowCount();
+        }
+        int[] groups = new int[len];
+        for (int i = 0; i < len; i++) {
+            groups[i] = i;
+        }
+
+        for (int i = 0; i < len; i++) {
+            for (int j = i; j < len; j++) {
+                if (getParent(groups, i) == getParent(groups, j)) continue;
+                if (isLinked(frames, colNames, groups, i, j)) {
+                    setParent(groups, j, i);
+                }
+            }
+        }
+        HashSet<String> dict = new HashSet<>();
+        for (int i = 0; i < groups.length; i++) {
+            dict.add(String.valueOf(groups[i]));
+        }
+        int pos = 0;
+        for (Frame f : frames) {
+            Vector nom = new NominalVector("Group", f.getRowCount(), dict);
+            for (int i = 0; i < f.getRowCount(); i++) {
+                nom.setLabel(i, String.valueOf(groups[pos++]));
+            }
+            List<Vector> vectors = new ArrayList<>();
+            for (int i = 0; i < f.getColCount(); i++) {
+                vectors.add(f.getCol(i));
+            }
+            vectors.add(nom);
+            Frame ff = new SolidFrame(f.getName(), f.getRowCount(), vectors);
+            result.add(ff);
+        }
+
+        return result;
+    }
+
+    private static boolean isLinked(List<Frame> frames, String[] colNames, int[] groups, int i, int j) {
+        int indexi = 0;
+        for (int l = 0; l < frames.size(); l++) {
+            if (i < frames.get(l).getRowCount()) {
+                indexi = l;
+                break;
+            }
+            i -= frames.get(l).getRowCount();
+        }
+        int indexj = 0;
+        for (int l = 0; l < frames.size(); l++) {
+            if (j < frames.get(l).getRowCount()) {
+                indexj = l;
+                break;
+            }
+            j -= frames.get(l).getRowCount();
+        }
+        for (int k = 0; k < colNames.length; k++) {
+            String colName = colNames[k];
+            Vector vi = frames.get(indexi).getCol(colName);
+            Vector vj = frames.get(indexj).getCol(colName);
+
+            if (vi.isNominal() && !vi.isMissing(i)) {
+                String[] left = vi.getLabel(i).split(" ");
+                String[] right = vj.getLabel(j).split(" ");
+                for (int l = 0; l < left.length; l++) {
+                    for (int m = 0; m < right.length; m++) {
+                        if (left[l].equals(right[m])) return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private static void setParent(int[] groups, int to, int parent) {
+        while (true) {
+            if (to == parent) return;
+            if (groups[to] == to) {
+                groups[to] = parent;
+                return;
+            }
+            int next = groups[to];
+            groups[to] = parent;
+            to = next;
+        }
+    }
+
+    private static int getParent(int[] groups, int i) {
+        while (groups[i] != i) {
+            i = groups[i];
+        }
+        return i;
     }
 }

@@ -30,10 +30,7 @@ import static rapaio.filters.NumericFilters.imputeMissing;
 import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -109,10 +106,16 @@ public class Utils {
         }
         vectors.add(family);
 
+        Set<String> cabinCodeDict = new HashSet<>();
+        for (int i = 0; i < df.getRowCount(); i++) {
+            if (df.getCol("Cabin").isMissing(i)) continue;
+            cabinCodeDict.add(df.getLabel(i, df.getColIndex("Cabin")).substring(0, 1));
+        }
+
         df = new SolidFrame(df.getName(), df.getRowCount(), vectors);
 
 //        imputeMissing(df, "Age", "mean");
-        imputeMissing(df, "Age", "mean", df.getCol("Title"), df.getCol("Sex"), df.getCol("Pclass"));
+        imputeMissing(df, "Age", "mean", df.getCol("Title"), df.getCol("Pclass"));
         return df;
     }
 }
