@@ -27,7 +27,9 @@ import static rapaio.explore.Workspace.*;
 import static rapaio.filters.BaseFilters.renameVector;
 import rapaio.filters.ColFilters;
 import static rapaio.filters.ColFilters.removeCols;
+import static rapaio.filters.NominalFilters.combine;
 import static rapaio.filters.NominalFilters.consolidate;
+import static rapaio.filters.NumericFilters.imputeMissing;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.FunctionLine;
 import rapaio.graphics.plot.HistogramBars;
@@ -55,47 +57,73 @@ public class ConsoleExplore {
         Frame train = Utils.read("train.csv");
         Frame test = Utils.read("test.csv");
         List<Frame> frames = consolidate(Arrays.asList(train, test));
-        frames = relate(frames, "Family", "Cabin");
+        for (Frame df : frames) {
+            imputeMissing(df, "Age", "mean",
+                    df.getCol("Title"),
+                    df.getCol("Pclass"),
+                    df.getCol("Sex")//,
+//                    df.getCol("Embarked"),
+//                    df.getCol("Parch"),
+//                    df.getCol("SibSp")
+            );
+        }
+//        frames = relate("TicketGroup", frames, "Ticket");
+        frames = relate("Group", frames, "Cabin", "Family");
+
+//        List<String> combinations = new ArrayList<>();
+//        combinations.add("Sex");
+//        combinations.add("Pclass");
+//        combinations.add("SibSp");
+//        combinations.add("Parch");
+//        combinations.add("Title");
+//        combinations.add("Embarked");
+////        combinations.add("Family");
+//
+//        for (int i = 0; i < combinations.size(); i++) {
+//            for (int j = i+1; j < combinations.size(); j++) {
+//                frames = combine(combinations.get(i)+combinations.get(j), frames, combinations.get(i), combinations.get(j));
+//            }
+//        }
+
         train = frames.get(0);
         test = frames.get(1);
 
-
         Frame tr = train;
-
-        Summary.head(10, tr);
-
 
         tr = removeCols(tr, "PassengerId");
         tr = removeCols(tr, "Name");
         tr = removeCols(tr, "Ticket");
         tr = removeCols(tr, "Cabin");
-        tr = removeCols(tr, "LogFare");
-//        tr = removeCols(tr, "Age");
-//        tr = removeCols(tr, "Fare");
-//        tr = removeCols(tr, "SibSp");
-//        tr = removeCols(tr, "Parch");
+        tr = removeCols(tr, "Age");
+        tr = removeCols(tr, "Fare");
+        tr = removeCols(tr, "SibSp");
+        tr = removeCols(tr, "Parch");// thi is bad
 //        tr = removeCols(tr, "Pclass");
 //        tr = removeCols(tr, "Title");
 //        tr = removeCols(tr, "Sex");
 //        tr = removeCols(tr, "Embarked");
-//        tr = removeCols(tr, "Family");
-//        tr = removeCols(tr, "Group");
+        tr = removeCols(tr, "Family");
+        tr = removeCols(tr, "Group");
 
         Summary.summary(tr);
 
         final int mtree = 1000;
         final int mcols = 3;
-        RandomForest rf = new RandomForest(mtree, mcols);
-//        rf.setDebug(true);
         long start = System.currentTimeMillis();
         CrossValidation cv = new CrossValidation();
-        for (int i = 0; i < 1; i++) {
-            cv.cv(tr, "Survived", rf, 5);
-        }
+        List<Classifier> classifiers = new ArrayList<>();
+//        classifiers.add(new RandomForest(mtree, 1));
+//        classifiers.add(new RandomForest(mtree, 2));
+//        classifiers.add(new RandomForest(mtree, 3));
+//        classifiers.add(new RandomForest(mtree, 4));
+//        classifiers.add(new RandomForest(mtree, 5));
+//        cv.multiCv(tr, "Survived", classifiers, 10);
+        cv.cv(tr, "Survived", new RandomForest(mtree, mcols), 10);
+
         long end = System.currentTimeMillis();
         System.out.println("CV took " + (end - start) + " millis");
 
-        rf = new RandomForest(mtree, mcols);
+        RandomForest rf = new RandomForest(mtree, mcols);
         long start2 = System.currentTimeMillis();
         rf.learn(tr, "Survived");
         long end2 = System.currentTimeMillis();
@@ -119,7 +147,7 @@ public class ConsoleExplore {
         closePrinter();
     }
 
-    private static List<Frame> relate(List<Frame> frames, String... colNames) {
+    private static List<Frame> relate(String relationName, List<Frame> frames, String... colNames) {
 
         List<Frame> result = new ArrayList<>();
 
@@ -146,7 +174,7 @@ public class ConsoleExplore {
         }
         int pos = 0;
         for (Frame f : frames) {
-            Vector nom = new NominalVector("Group", f.getRowCount(), dict);
+            Vector nom = new NominalVector(relationName, f.getRowCount(), dict);
             for (int i = 0; i < f.getRowCount(); i++) {
                 nom.setLabel(i, String.valueOf(groups[pos++]));
             }

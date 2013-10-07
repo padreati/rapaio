@@ -117,5 +117,4 @@ public final class ColFilters {
         }
         return new SolidFrame(df.getName(), df.getRowCount(), vectors);
     }
-
 }

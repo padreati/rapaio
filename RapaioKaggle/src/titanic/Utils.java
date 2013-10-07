@@ -45,8 +45,8 @@ public class Utils {
         HashSet<String> numericColumns = new HashSet<>();
         numericColumns.add("Age");
         numericColumns.add("Fare");
-        numericColumns.add("SibSp");
-        numericColumns.add("Parch");
+//        numericColumns.add("SibSp");
+//        numericColumns.add("Parch");
         List<Vector> vectors = new ArrayList<>();
 
         for (int i = 0; i < df.getColCount(); i++) {
@@ -56,12 +56,6 @@ public class Utils {
                 vectors.add(BaseFilters.toNumeric(df.getCol(i).getName(), df.getCol(i)));
             }
         }
-        vectors.add(applyFunction(BaseFilters.toNumeric("LogFare", df.getCol("Fare")), new UnivariateFunction() {
-            @Override
-            public double eval(double value) {
-                return log(E + value);
-            }
-        }));
 
         HashMap<String, String> titleDict = new HashMap<>();
         titleDict.put("Mrs.", "Mrs");
@@ -114,8 +108,6 @@ public class Utils {
 
         df = new SolidFrame(df.getName(), df.getRowCount(), vectors);
 
-//        imputeMissing(df, "Age", "mean");
-        imputeMissing(df, "Age", "mean", df.getCol("Title"), df.getCol("Pclass"));
         return df;
     }
 }

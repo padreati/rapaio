@@ -6,7 +6,6 @@
       <module fileurl="file://$PROJECT_DIR$/Rapaio/Rapaio.iml" filepath="$PROJECT_DIR$/Rapaio/Rapaio.iml" />
       <module fileurl="file://$PROJECT_DIR$/RapaioKaggle/RapaioKaggle.iml" filepath="$PROJECT_DIR$/RapaioKaggle/RapaioKaggle.iml" />
       <module fileurl="file://$PROJECT_DIR$/../amzn/amzn.iml" filepath="$PROJECT_DIR$/../amzn/amzn.iml" />
-      <module fileurl="file://$PROJECT_DIR$/weka-3-9/weka-3-9.iml" filepath="$PROJECT_DIR$/weka-3-9/weka-3-9.iml" />
     </modules>
   </component>
 </project>

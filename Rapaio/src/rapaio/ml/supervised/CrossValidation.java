@@ -35,10 +35,7 @@ public class CrossValidation {
     public void cv(Frame df, String classColName, Classifier c, int folds) {
         print("\n<pre><code>\n");
         print("CrossValidation with " + folds + " folds\n");
-        Frame[] strata = NominalFilters.groupByNominal(df, df.getColIndex(classColName));
-        for (int i = 0; i < strata.length; i++) {
-            strata[i] = shuffle(strata[i]);
-        }
+        df = shuffle(df);
         ClassifierModel[] results = new ClassifierModel[folds];
 
         double tacc = 0;
@@ -46,22 +43,20 @@ public class CrossValidation {
         for (int i = 0; i < folds; i++) {
             List<Integer> trainMapping = new ArrayList<>();
             List<Integer> testMapping = new ArrayList<>();
-            for (Frame f : strata) {
-                if (folds >= f.getRowCount() - 1) {
-                    testMapping.add(i);
-                    for (int j = 0; j < f.getRowCount(); j++) {
-                        if (j != i) {
-                            trainMapping.add(f.getRowId(j));
-                        }
+            if (folds >= df.getRowCount() - 1) {
+                testMapping.add(i);
+                for (int j = 0; j < df.getRowCount(); j++) {
+                    if (j != i) {
+                        trainMapping.add(df.getRowId(j));
                     }
+                }
 
-                } else {
-                    for (int j = 0; j < f.getRowCount(); j++) {
-                        if (j % folds == i) {
-                            testMapping.add(f.getRowId(j));
-                        } else {
-                            trainMapping.add(f.getRowId(j));
-                        }
+            } else {
+                for (int j = 0; j < df.getRowCount(); j++) {
+                    if (j % folds == i) {
+                        testMapping.add(df.getRowId(j));
+                    } else {
+                        trainMapping.add(df.getRowId(j));
                     }
                 }
             }
@@ -84,7 +79,70 @@ public class CrossValidation {
         }
 
         tacc /= (1. * folds);
-        print(String.format("Mean accuracy:%.6f\n", tacc));
+
+        print(String.format("Mean accuracy:%.6f\n", tacc)
+
+        );
+
+        print("</code></pre>\n");
+    }
+
+    public void multiCv(Frame df, String classColName, List<Classifier> classifiers, int folds) {
+        print("\n<pre><code>\n");
+        print("CrossValidation with " + folds + " folds\n");
+        df = shuffle(df);
+        ClassifierModel[] results = new ClassifierModel[folds];
+
+        double[] tacc = new double[classifiers.size()];
+
+        for (int i = 0; i < folds; i++) {
+            List<Integer> trainMapping = new ArrayList<>();
+            List<Integer> testMapping = new ArrayList<>();
+            if (folds >= df.getRowCount() - 1) {
+                testMapping.add(i);
+                for (int j = 0; j < df.getRowCount(); j++) {
+                    if (j != i) {
+                        trainMapping.add(df.getRowId(j));
+                    }
+                }
+
+            } else {
+                for (int j = 0; j < df.getRowCount(); j++) {
+                    if (j % folds == i) {
+                        testMapping.add(df.getRowId(j));
+                    } else {
+                        trainMapping.add(df.getRowId(j));
+                    }
+                }
+            }
+            Frame train = new MappedFrame(df.getSourceFrame(), new Mapping(trainMapping));
+            Frame test = new MappedFrame(df.getSourceFrame(), new Mapping(testMapping));
+
+            for (int k = 0; k < classifiers.size(); k++) {
+                Classifier c = classifiers.get(k);
+                c.learn(train, classColName);
+                results[i] = c.predict(test);
+                ClassifierModel cr = results[i];
+                double acc = 0;
+                for (int j = 0; j < cr.getClassification().getRowCount(); j++) {
+                    if (cr.getClassification().getIndex(j) == cr.getTestFrame().getCol(classColName).getIndex(j)) {
+                        acc++;
+                    }
+                }
+                acc /= (1. * cr.getClassification().getRowCount());
+                tacc[k] += acc;
+                print(String.format("CV %d, classifier[%d] - accuracy:%.6f\n", i + 1, k + 1, acc));
+            }
+            print("-----------\n");
+
+        }
+
+        for (int k = 0; k < classifiers.size(); k++) {
+            tacc[k] /= (1. * folds);
+            print(String.format("Mean accuracy for classifier[%d] :%.6f\n", k + 1, tacc[k]));
+        }
+
+
         print("</code></pre>\n");
     }
 }

@@ -123,4 +123,19 @@ public final class RowFilters {
         }
         return new MappedFrame(frame.getSourceFrame(), new Mapping(mapping));
     }
+
+    public static Frame delta(Frame source, Frame remove) {
+        HashSet<Integer> removed = new HashSet<>();
+        for (int i = 0; i < remove.getRowCount(); i++) {
+            removed.add(remove.getRowId(i));
+        }
+        List<Integer> mapping = new ArrayList<>();
+        for (int i = 0; i < source.getRowCount(); i++) {
+            int rowId = source.getRowId(i);
+            if (!removed.contains(rowId)) {
+                mapping.add(i);
+            }
+        }
+        return new MappedFrame(source.getSourceFrame(), new Mapping(mapping));
+    }
 }
