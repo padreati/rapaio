@@ -61,20 +61,20 @@ public class ConsoleExplore {
             imputeMissing(df, "Age", "mean",
                     df.getCol("Title"),
                     df.getCol("Pclass"),
-                    df.getCol("Sex")//,
-//                    df.getCol("Embarked"),
+                    df.getCol("Sex"),
+                    df.getCol("Embarked")//,
 //                    df.getCol("Parch"),
 //                    df.getCol("SibSp")
             );
         }
 //        frames = relate("TicketGroup", frames, "Ticket");
-        frames = relate("Group", frames, "Cabin", "Family");
+//        frames = relate("Group", frames, "Cabin", "Family", "Ticket", "SibSp");
 
 //        List<String> combinations = new ArrayList<>();
 //        combinations.add("Sex");
 //        combinations.add("Pclass");
-//        combinations.add("SibSp");
-//        combinations.add("Parch");
+////        combinations.add("SibSp");
+////        combinations.add("Parch");
 //        combinations.add("Title");
 //        combinations.add("Embarked");
 ////        combinations.add("Family");
@@ -94,43 +94,31 @@ public class ConsoleExplore {
         tr = removeCols(tr, "Name");
         tr = removeCols(tr, "Ticket");
         tr = removeCols(tr, "Cabin");
-        tr = removeCols(tr, "Age");
-        tr = removeCols(tr, "Fare");
-        tr = removeCols(tr, "SibSp");
-        tr = removeCols(tr, "Parch");// thi is bad
+//        tr = removeCols(tr, "Age");
+//        tr = removeCols(tr, "Fare");
+//        tr = removeCols(tr, "SibSp");
+        tr = removeCols(tr, "Parch");
 //        tr = removeCols(tr, "Pclass");
 //        tr = removeCols(tr, "Title");
 //        tr = removeCols(tr, "Sex");
 //        tr = removeCols(tr, "Embarked");
+        tr = removeCols(tr, "ParchSib");
         tr = removeCols(tr, "Family");
-        tr = removeCols(tr, "Group");
 
         Summary.summary(tr);
 
-        final int mtree = 1000;
+        final int mtree = 500;
         final int mcols = 3;
-        long start = System.currentTimeMillis();
-        CrossValidation cv = new CrossValidation();
-        List<Classifier> classifiers = new ArrayList<>();
-//        classifiers.add(new RandomForest(mtree, 1));
-//        classifiers.add(new RandomForest(mtree, 2));
-//        classifiers.add(new RandomForest(mtree, 3));
-//        classifiers.add(new RandomForest(mtree, 4));
-//        classifiers.add(new RandomForest(mtree, 5));
-//        cv.multiCv(tr, "Survived", classifiers, 10);
-        cv.cv(tr, "Survived", new RandomForest(mtree, mcols), 10);
 
-        long end = System.currentTimeMillis();
-        System.out.println("CV took " + (end - start) + " millis");
+        RandomForest rf = new RandomForest(mtree, mcols, RandomForest.IMPURITY_GINI, true);
+        rf.setDebug(true);
 
-        RandomForest rf = new RandomForest(mtree, mcols);
         long start2 = System.currentTimeMillis();
         rf.learn(tr, "Survived");
         long end2 = System.currentTimeMillis();
         System.out.println("submit train took " + (end2 - start2) + " millis");
         System.out.flush();
 
-//        Summary.summary(id3);
         ClassifierModel cr = rf.predict(test);
 
 

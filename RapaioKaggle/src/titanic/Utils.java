@@ -19,9 +19,7 @@ package titanic;
 import static rapaio.core.BaseMath.E;
 import static rapaio.core.BaseMath.log;
 import rapaio.core.UnivariateFunction;
-import rapaio.data.Frame;
-import rapaio.data.NominalVector;
-import rapaio.data.SolidFrame;
+import rapaio.data.*;
 import rapaio.data.Vector;
 import rapaio.filters.BaseFilters;
 import static rapaio.filters.NominalFilters.fillMissingValues;
@@ -105,6 +103,13 @@ public class Utils {
             if (df.getCol("Cabin").isMissing(i)) continue;
             cabinCodeDict.add(df.getLabel(i, df.getColIndex("Cabin")).substring(0, 1));
         }
+
+        Vector parchsib = new NumericVector("ParchSib", df.getRowCount());
+        for (int i = 0; i < df.getRowCount(); i++) {
+            if (df.getCol("Parch").isMissing(i) || df.getCol("SibSp").isMissing(i)) continue;
+            parchsib.setValue(i, Integer.parseInt(df.getCol("Parch").getLabel(i)) + Integer.parseInt(df.getCol("SibSp").getLabel(i)));
+        }
+        vectors.add(parchsib);
 
         df = new SolidFrame(df.getName(), df.getRowCount(), vectors);
 

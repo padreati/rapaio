@@ -38,52 +38,92 @@ public class RandomForest implements Classifier {
     final int impurity;
     final int mtrees;
     final int mcols;
+    final boolean computeOob;
     private final List<Tree> trees = new ArrayList<>();
     String classColName;
     String[] dict;
     boolean debug = false;
+    double oobError = 0;
+    int[][] oobFreq;
 
     public RandomForest(int mtrees, int mcols) {
-        this(mtrees, mcols, IMPURITY_GINI);
+        this(mtrees, mcols, IMPURITY_GINI, false);
     }
 
-    public RandomForest(int mtrees, int mcols, int impurity) {
+    public RandomForest(int mtrees, int mcols, int impurity, boolean computeOob) {
         this.mtrees = mtrees;
         this.mcols = mcols;
         this.impurity = impurity;
+        this.computeOob = computeOob;
+
     }
 
     @Override
     public void learn(final Frame df, final String classColName) {
         if (mcols > df.getColCount() - 1) {
-            throw new IllegalArgumentException("mcols have a value grater than frame dimensions.");
+            throw new IllegalArgumentException("mcols have a value greater than frame dimensions.");
         }
         this.classColName = classColName;
         this.dict = df.getCol(classColName).getDictionary();
         trees.clear();
-        if (debug)
-            System.out.println("learning rf.. ");
-        ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        LinkedList<Callable<Object>> tasks = new LinkedList<>();
+
+        oobError = computeOob ? 0 : Double.NaN;
+
+        if (computeOob) {
+            setupOobContainer(df);
+        }
+
         for (int i = 0; i < mtrees; i++) {
-            final Tree tree = new Tree(this);
+            Tree tree = new Tree(this);
             trees.add(tree);
-            tasks.add(new Callable<Object>() {
-                @Override
-                public Object call() throws Exception {
-                    Frame bootstrap = RowFilters.bootstrap(df);
-                    tree.learn(bootstrap);
-                    return null;
+            Frame bootstrap = RowFilters.bootstrap(df);
+            tree.learn(bootstrap);
+            Frame delta = RowFilters.delta(df, bootstrap);
+            if (computeOob) {
+                ClassifierModel model = tree.predict(delta);
+                Vector predict = model.getClassification();
+                for (int j = 0; j < predict.getRowCount(); j++) {
+                    oobFreq[delta.getRowId(j)][predict.getIndex(j)]++;
                 }
-            });
+            }
         }
-        try {
-            pool.invokeAll(tasks);
-        } catch (InterruptedException e) {
+        if (computeOob) {
+            oobError = computeOob(df);
         }
-        pool.shutdown();
-        if (debug)
-            System.out.println();
+        if (debug) {
+            System.out.println(String.format("avg oob error: %.4f", oobError));
+        }
+    }
+
+    private void setupOobContainer(Frame df) {
+        int max = 0;
+        for (int i = 0; i < df.getRowCount(); i++) {
+            if (max < df.getRowId(i)) {
+                max = df.getRowId(i);
+            }
+        }
+        oobFreq = new int[max + 1][dict.length];
+    }
+
+    private double computeOob(Frame df) {
+        double total = 0;
+        double count = 0;
+        for (int i = 0; i < df.getRowCount(); i++) {
+            int rowId = df.getRowId(i);
+            int max = -1;
+            int index = -1;
+            for (int j = 1; j < dict.length; j++) {
+                if (oobFreq[rowId][j] > max) {
+                    max = oobFreq[rowId][j];
+                    index = j;
+                }
+            }
+            if (max > 0) count += 1.;
+            if ((max > 0) && (index != df.getCol(classColName).getIndex(i))) {
+                total += 1.;
+            }
+        }
+        return total / count;
     }
 
     @Override
@@ -171,17 +211,11 @@ class Tree {
 
         LinkedList<TreeNode> nodes = new LinkedList<>();
         LinkedList<Frame> frames = new LinkedList<>();
-
         nodes.addLast(root);
         frames.addLast(df);
-
-        int len = 0;
-
         while (!nodes.isEmpty()) {
-            len++;
             TreeNode currentNode = nodes.pollFirst();
             Frame currentFrame = frames.pollFirst();
-
             currentNode.learn(currentFrame, indexes, rf);
             if (currentNode.leaf) {
                 continue;
@@ -193,10 +227,6 @@ class Tree {
             currentNode.leftFrame = null;
             currentNode.rightFrame = null;
         }
-        if (rf.debug) {
-            System.out.println("learned rf tree size: " + len);
-        }
-
     }
 
     public ClassifierModel predict(final Frame df) {
@@ -442,7 +472,7 @@ class TreeNode {
         if (totalLeft == 0 || totalRight == 0) return Double.NaN;
         for (int i = 1; i < pall.length; i++) {
             left += pa[i] * log2(pa[i] / (1. * totalLeft) / (1. * totalLeft));
-            right += (pall[i] - pa[i]) * log2((pall[i] - pa[i]) / (1. * totalRight) / (1. * totalRight));
+            right += (pall[i] - pa[i]) * log2((pall[i] - pa[i]) / (1. * totalRight)) / (1. * totalRight);
         }
         return left + right;
     }
