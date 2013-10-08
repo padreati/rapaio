@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../java/java-statistical-analysis-tool/JSAT/JSAT.iml" filepath="$PROJECT_DIR$/../java/java-statistical-analysis-tool/JSAT/JSAT.iml" />
       <module fileurl="file://$PROJECT_DIR$/Rapaio/Rapaio.iml" filepath="$PROJECT_DIR$/Rapaio/Rapaio.iml" />
-      <module fileurl="file://$PROJECT_DIR$/RapaioKaggle/RapaioKaggle.iml" filepath="$PROJECT_DIR$/RapaioKaggle/RapaioKaggle.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../amzn/amzn.iml" filepath="$PROJECT_DIR$/../amzn/amzn.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../rapaio-kaggle/rapaio-kaggle.iml" filepath="$PROJECT_DIR$/../rapaio-kaggle/rapaio-kaggle.iml" />
     </modules>
   </component>
 </project>

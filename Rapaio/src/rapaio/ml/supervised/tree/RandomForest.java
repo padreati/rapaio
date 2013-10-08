@@ -110,6 +110,7 @@ public class RandomForest implements Classifier {
             int len = 1;
             indexes[0] = 0;
             for (int j = 1; j < dict.length; j++) {
+                if (oobFreq[i][j] == 0) continue;
                 if (oobFreq[i][j] > oobFreq[i][indexes[len - 1]]) {
                     indexes[0] = j;
                     len = 1;
@@ -123,7 +124,7 @@ public class RandomForest implements Classifier {
             int next = indexes[RandomSource.nextInt(len)];
             if (oobFreq[i][next] > 0) {
                 count += 1.;
-                if (next != df.getCol(classColName).getIndex(i)) {
+                if (next != df.getSourceFrame().getCol(classColName).getIndex(i)) {
                     total += 1.;
                 }
             }

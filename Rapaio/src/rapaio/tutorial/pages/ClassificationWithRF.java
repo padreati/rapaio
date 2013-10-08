@@ -16,13 +16,17 @@
 
 package rapaio.tutorial.pages;
 
+import rapaio.core.BaseMath;
 import rapaio.data.*;
 import rapaio.datasets.Datasets;
 import rapaio.explore.Summary;
 import static rapaio.explore.Workspace.*;
+import rapaio.filters.ColFilters;
+import static rapaio.filters.NumericFilters.*;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
 import rapaio.graphics.plot.Points;
+import rapaio.ml.supervised.ClassifierModel;
 import rapaio.ml.supervised.CrossValidation;
 import rapaio.ml.supervised.tree.ID3;
 import rapaio.ml.supervised.tree.RandomForest;
@@ -56,40 +60,85 @@ public class ClassificationWithRF implements TutorialPage {
         p("Classification is a type of supervised learning which " +
                 "involves the prediction of a nominal variable.");
 
-        Frame all = Datasets.loadIrisDataset();
+        Frame all = Datasets.loadSpamBase();
+        all = ColFilters.retainCols(all, "1-20,spam");
 
-        List<Frame> frames = Sample.randomSample(all, new int[]{all.getRowCount() * 60 / 100});
-        Frame train = frames.get(0);
-        Frame test = frames.get(1);
 
         Summary.summary(all);
 
-        Vector index = new IndexVector("N", 1, train.getRowCount(), 1);
+        List<Frame> frames = Sample.randomSample(all, new int[]{all.getRowCount() * 15 / 100});
 
-        Vector onlineSample = new NumericVector("rf.oob", index.getRowCount());
-
-        RandomForest rftest = new RandomForest(1000, 1);
-        rftest.setDebug(true);
-        rftest.learn(all, "class");
-
-        onlineSample.setValue(0, 1);
-        RandomForest rf = new RandomForest(1000, 1);
-        List<Integer> mapping = new ArrayList<>();
-        for (int i = 0; i < index.getRowCount(); i++) {
-            mapping.add(index.getIndex(i));
-            Frame sel = new MappedFrame(all.getSourceFrame(), new Mapping(mapping));
-            rf.learn(sel, "class");
-            onlineSample.setValue(i, 1 - rf.getOobError());
-        }
+        Frame train = frames.get(0);
+        Frame test = frames.get(1);
 
         Plot p = new Plot();
-        Lines lines = new Lines(p, index, onlineSample);
-        p.add(lines);
-        Points pts = new Points(p, index, onlineSample);
-        p.add(pts);
-        draw(p, 600, 500);
 
+        int pos = 0;
+        Vector index = new IndexVector("number of trees", 1000);
+        Vector accuracy = new NumericVector("test error", 1000);
+        Vector oob = new NumericVector("oob error", 1000);
+        for (int mtree = 1; mtree < 60; mtree += 3) {
+
+            RandomForest rf = new RandomForest(mtree, 3, true);
+            rf.learn(train, "spam");
+            ClassifierModel model = rf.predict(test);
+
+            index.setIndex(pos, mtree);
+            accuracy.setValue(pos, 1 - computeAccuracy(model, test));
+            oob.setValue(pos, rf.getOobError());
+
+            pos++;
+        }
+        Lines lines = new Lines(p, index, accuracy);
+        lines.opt().setColorIndex(new OneIndexVector(2));
+        p.add(lines);
+        Points pts = new Points(p, index, accuracy);
+        pts.opt().setColorIndex(new OneIndexVector(2));
+        p.add(pts);
+        p.add(new Lines(p, index, oob));
+        p.add(new Points(p, index, oob));
+        draw(p, 600, 300);
+
+
+        pos = 0;
+        index = new IndexVector("mtree", 1000);
+        accuracy = new NumericVector("test error", 1000);
+        oob = new NumericVector("oob error", 1000);
+        for (int mtree = 1; mtree < 20; mtree += 1) {
+
+            RandomForest rf = new RandomForest(10, mtree, true);
+            rf.learn(train, "spam");
+            ClassifierModel model = rf.predict(test);
+
+            index.setIndex(pos, mtree);
+            accuracy.setValue(pos, 1 - computeAccuracy(model, test));
+            oob.setValue(pos, rf.getOobError());
+
+            pos++;
+        }
+        p = new Plot();
+        lines = new Lines(p, index, accuracy);
+        lines.opt().setColorIndex(new OneIndexVector(2));
+        p.add(lines);
+        pts = new Points(p, index, accuracy);
+        pts.opt().setColorIndex(new OneIndexVector(2));
+        p.add(pts);
+        p.add(new Lines(p, index, oob));
+        p.add(new Points(p, index, oob));
+        draw(p, 600, 300);
 
         closePrinter();
+    }
+
+    private double computeAccuracy(ClassifierModel model, Frame test) {
+        Vector predict = model.getClassification();
+        double accuracy = 0;
+        double total = predict.getRowCount();
+        for (int i = 0; i < predict.getRowCount(); i++) {
+            if (test.getCol("spam").getIndex(i) == predict.getIndex(i)) {
+                accuracy += 1.;
+            }
+        }
+        return accuracy / total;
     }
 }

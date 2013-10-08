@@ -24,6 +24,8 @@ import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -72,6 +74,20 @@ public class Datasets {
         for (int i = 2; i < df.getColCount(); i++) {
             vectors[i] = BaseFilters.toNumeric(df.getCol(i).getName(), df.getCol(i));
         }
+        return new SolidFrame(df.getName(), df.getRowCount(), vectors);
+    }
+
+    public static Frame loadSpamBase() throws IOException {
+        CsvPersistence persistence = new CsvPersistence();
+        persistence.setColSeparator(',');
+        persistence.setHasHeader(true);
+        persistence.setDecimalPoint('.');
+        Frame df = persistence.read("spam-base", Datasets.class.getResourceAsStream("spam-base.csv"));
+        List<Vector> vectors = new ArrayList<>();
+        for (int i = 0; i < df.getColCount() - 1; i++) {
+            vectors.add(BaseFilters.toNumeric(df.getCol(i).getName(), df.getCol(i)));
+        }
+        vectors.add(df.getCol(df.getColCount() - 1));
         return new SolidFrame(df.getName(), df.getRowCount(), vectors);
     }
 }
