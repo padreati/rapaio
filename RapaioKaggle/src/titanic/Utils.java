@@ -44,6 +44,7 @@ public class Utils {
         numericColumns.add("Age");
         numericColumns.add("Fare");
 //        numericColumns.add("SibSp");
+//        numericColumns.add("Pclass");
 //        numericColumns.add("Parch");
         List<Vector> vectors = new ArrayList<>();
 
@@ -65,7 +66,7 @@ public class Utils {
         titleDict.put("Dr.", "Dr");
         titleDict.put("Rev.", "Rev");
         titleDict.put("Sir.", "Sir");
-        titleDict.put("Major.", "Sir");
+        titleDict.put("Major.", "Mr");
         titleDict.put("Don.", "Sir");
         titleDict.put("Mme.", "Mrs");
         titleDict.put("Col.", "Col");

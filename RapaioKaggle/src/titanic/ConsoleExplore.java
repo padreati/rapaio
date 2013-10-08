@@ -58,14 +58,9 @@ public class ConsoleExplore {
         Frame test = Utils.read("test.csv");
         List<Frame> frames = consolidate(Arrays.asList(train, test));
         for (Frame df : frames) {
-            imputeMissing(df, "Age", "mean",
-                    df.getCol("Title"),
-                    df.getCol("Pclass"),
-                    df.getCol("Sex"),
-                    df.getCol("Embarked")//,
-//                    df.getCol("Parch"),
-//                    df.getCol("SibSp")
-            );
+            imputeMissing(df, "Age", "mean", df.getCol("Title"), df.getCol("Pclass"), df.getCol("Sex"));
+//            imputeMissing(df, "Age", "mean", df.getCol("Title"),df.getCol("Pclass"));
+//            imputeMissing(df, "Age", "mean");
         }
 //        frames = relate("TicketGroup", frames, "Ticket");
 //        frames = relate("Group", frames, "Cabin", "Family", "Ticket", "SibSp");
@@ -107,17 +102,42 @@ public class ConsoleExplore {
 
         Summary.summary(tr);
 
-        final int mtree = 500;
-        final int mcols = 3;
+        long start = System.currentTimeMillis();
 
-        RandomForest rf = new RandomForest(mtree, mcols, RandomForest.IMPURITY_GINI, true);
+        final int mtree = 1000;
+        final int mcols = 4;
+        RandomForest rf = new RandomForest(mtree, mcols);
         rf.setDebug(true);
-
-        long start2 = System.currentTimeMillis();
         rf.learn(tr, "Survived");
-        long end2 = System.currentTimeMillis();
-        System.out.println("submit train took " + (end2 - start2) + " millis");
+
+        long end = System.currentTimeMillis();
+        System.out.println(String.format("submit train took %.1f secs", (end - start) / 1000.));
         System.out.flush();
+
+
+        ClassifierModel rfsame = rf.predict(tr);
+        int tp = 0;
+        int fp = 0;
+        int tn = 0;
+        int fn = 0;
+        for (int i = 0; i < rfsame.getClassification().getRowCount(); i++) {
+            if (tr.getCol("Survived").getIndex(i) == 1) {
+                if (rfsame.getClassification().getIndex(i) == 1) {
+                    tp++;
+                } else {
+                    fp++;
+                }
+            } else {
+                if (rfsame.getClassification().getIndex(i) == 1) {
+                    fn++;
+                } else {
+                    tn++;
+                }
+            }
+        }
+        System.out.println(String.format("%10d %10d", tp, fp));
+        System.out.println(String.format("%10s %10s", fn, tn));
+        System.out.println(String.format("correctly classified: %10d  %.3f", tp + tn, (tp + tn) / (1. + tp + tn + fp + fn)));
 
         ClassifierModel cr = rf.predict(test);
 

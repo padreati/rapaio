@@ -16,6 +16,7 @@
 
 package rapaio.sample;
 
+import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
@@ -65,4 +66,18 @@ public class Sample {
         }
         return result;
     }
+
+    public static Frame bootstrap(Frame frame) {
+        return bootstrap(frame, frame.getRowCount());
+    }
+
+    public static Frame bootstrap(Frame frame, int size) {
+        List<Integer> mapping = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            int next = RandomSource.nextInt(frame.getRowCount());
+            mapping.add(frame.getRowId(next));
+        }
+        return new MappedFrame(frame.getSourceFrame(), new Mapping(mapping));
+    }
+
 }

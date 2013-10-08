@@ -16,26 +16,22 @@
 
 package rapaio.ml.supervised.tree;
 
-import static rapaio.core.BaseMath.*;
+import static rapaio.core.BaseMath.validNumber;
 import rapaio.core.RandomSource;
-import rapaio.core.stat.Mode;
 import rapaio.data.*;
-import rapaio.data.Vector;
 import rapaio.filters.RowFilters;
 import rapaio.ml.supervised.Classifier;
 import rapaio.ml.supervised.ClassifierModel;
+import rapaio.sample.Sample;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class RandomForest implements Classifier {
-    public static final int IMPURITY_GINI = 0;
-    public static final int IMPURITY_INFOGAIN = 1;
-    ;
-    final int impurity;
     final int mtrees;
     final int mcols;
     final boolean computeOob;
@@ -47,15 +43,13 @@ public class RandomForest implements Classifier {
     int[][] oobFreq;
 
     public RandomForest(int mtrees, int mcols) {
-        this(mtrees, mcols, IMPURITY_GINI, false);
+        this(mtrees, mcols, true);
     }
 
-    public RandomForest(int mtrees, int mcols, int impurity, boolean computeOob) {
+    public RandomForest(int mtrees, int mcols, boolean computeOob) {
         this.mtrees = mtrees;
         this.mcols = mcols;
-        this.impurity = impurity;
         this.computeOob = computeOob;
-
     }
 
     @Override
@@ -76,15 +70,10 @@ public class RandomForest implements Classifier {
         for (int i = 0; i < mtrees; i++) {
             Tree tree = new Tree(this);
             trees.add(tree);
-            Frame bootstrap = RowFilters.bootstrap(df);
+            Frame bootstrap = Sample.bootstrap(df);
             tree.learn(bootstrap);
-            Frame delta = RowFilters.delta(df, bootstrap);
             if (computeOob) {
-                ClassifierModel model = tree.predict(delta);
-                Vector predict = model.getClassification();
-                for (int j = 0; j < predict.getRowCount(); j++) {
-                    oobFreq[delta.getRowId(j)][predict.getIndex(j)]++;
-                }
+                addOob(df, bootstrap, tree);
             }
         }
         if (computeOob) {
@@ -96,31 +85,43 @@ public class RandomForest implements Classifier {
     }
 
     private void setupOobContainer(Frame df) {
-        int max = 0;
-        for (int i = 0; i < df.getRowCount(); i++) {
-            if (max < df.getRowId(i)) {
-                max = df.getRowId(i);
-            }
+        oobFreq = new int[df.getSourceFrame().getRowCount()][dict.length];
+    }
+
+    private void addOob(Frame source, Frame bootstrap, Tree tree) {
+        Frame delta = RowFilters.delta(source, bootstrap);
+        ClassifierModel model = tree.predict(delta);
+        Vector predict = model.getClassification();
+        for (int i = 0; i < delta.getRowCount(); i++) {
+            int rowId = delta.getRowId(i);
+            oobFreq[rowId][predict.getIndex(i)]++;
         }
-        oobFreq = new int[max + 1][dict.length];
     }
 
     private double computeOob(Frame df) {
         double total = 0;
         double count = 0;
+        int[] indexes = new int[dict.length];
         for (int i = 0; i < df.getRowCount(); i++) {
-            int rowId = df.getRowId(i);
-            int max = -1;
-            int index = -1;
+            int len = 1;
+            indexes[0] = 0;
             for (int j = 1; j < dict.length; j++) {
-                if (oobFreq[rowId][j] > max) {
-                    max = oobFreq[rowId][j];
-                    index = j;
+                if (oobFreq[i][j] > oobFreq[i][indexes[len - 1]]) {
+                    indexes[0] = j;
+                    len = 1;
+                    continue;
+                }
+                if (oobFreq[i][j] == oobFreq[i][indexes[len - 1]]) {
+                    indexes[len] = j;
+                    len++;
                 }
             }
-            if (max > 0) count += 1.;
-            if ((max > 0) && (index != df.getCol(classColName).getIndex(i))) {
-                total += 1.;
+            int next = indexes[RandomSource.nextInt(len)];
+            if (oobFreq[i][next] > 0) {
+                count += 1.;
+                if (next != df.getCol(classColName).getIndex(i)) {
+                    total += 1.;
+                }
             }
         }
         return total / count;
@@ -356,9 +357,9 @@ class TreeNode {
 
             Vector col = df.getCol(colIndex);
             if (col.isNumeric()) {
-                evaluateNumericCol(df, classColIndex, classCol, colIndex, col, pall, rf.impurity);
+                evaluateNumericCol(df, classColIndex, classCol, colIndex, col, pall);
             } else {
-                evaluateNominalCol(df, classColIndex, classCol, colIndex, col, pall, rf.impurity);
+                evaluateNominalCol(df, classColIndex, classCol, colIndex, col, pall);
             }
         }
         if (leftNode != null && rightNode != null) {
@@ -408,7 +409,7 @@ class TreeNode {
 
     }
 
-    private void evaluateNumericCol(Frame df, int classColIndex, Vector classCol, int colIndex, Vector col, int[] pall, int impurity) {
+    private void evaluateNumericCol(Frame df, int classColIndex, Vector classCol, int colIndex, Vector col, int[] pall) {
 
         int[] pleft = new int[pall.length];
         Frame sort = RowFilters.sort(df, RowComparators.numericComparator(col, true));
@@ -417,7 +418,7 @@ class TreeNode {
             pleft[index]++;
             if (col.isMissing(i)) continue;
             if (col.getValue(i) != col.getValue(i + 1)) {
-                double metric = computeMetric(pleft, pall, impurity);
+                double metric = computeGini(pleft, pall);
                 if (!validNumber(metric)) continue;
 
                 if ((metricValue != metricValue) || metric > metricValue) {
@@ -433,7 +434,7 @@ class TreeNode {
 
     }
 
-    private void evaluateNominalCol(Frame df, int classColIndex, Vector classCol, int selColIndex, Vector selCol, int[] pall, int impurity) {
+    private void evaluateNominalCol(Frame df, int classColIndex, Vector classCol, int selColIndex, Vector selCol, int[] pall) {
         int[][] p = new int[selCol.getDictionary().length][classCol.getDictionary().length];
 
         for (int i = 0; i < df.getRowCount(); i++) {
@@ -441,7 +442,7 @@ class TreeNode {
         }
 
         for (int j = 1; j < selCol.getDictionary().length; j++) {
-            double metric = computeMetric(p[j], pall, impurity);
+            double metric = computeGini(p[j], pall);
             if (!validNumber(metric)) continue;
 
             if ((metricValue != metricValue) || metric > metricValue) {
@@ -453,28 +454,6 @@ class TreeNode {
                 rightNode = new TreeNode();
             }
         }
-    }
-
-    private double computeMetric(int[] pa, int[] pall, int impurity) {
-        if (impurity == RandomForest.IMPURITY_INFOGAIN) return computeInfoGain(pa, pall);
-        return computeGini(pa, pall);
-    }
-
-    private double computeInfoGain(int[] pa, int[] pall) {
-        int totalLeft = 0;
-        int totalRight = 0;
-        double left = 0;
-        double right = 0;
-        for (int i = 1; i < pall.length; i++) {
-            totalLeft += pa[i];
-            totalRight += pall[i] - pa[i];
-        }
-        if (totalLeft == 0 || totalRight == 0) return Double.NaN;
-        for (int i = 1; i < pall.length; i++) {
-            left += pa[i] * log2(pa[i] / (1. * totalLeft) / (1. * totalLeft));
-            right += (pall[i] - pa[i]) * log2((pall[i] - pa[i]) / (1. * totalRight)) / (1. * totalRight);
-        }
-        return left + right;
     }
 
     private double computeGini(int[] pa, int[] pall) {

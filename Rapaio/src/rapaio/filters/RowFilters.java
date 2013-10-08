@@ -112,27 +112,15 @@ public final class RowFilters {
     }
 
 
-    public static Frame bootstrap(Frame frame) {
-        return bootstrap(frame, frame.getRowCount());
-    }
-
-    public static Frame bootstrap(Frame frame, int size) {
-        List<Integer> mapping = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            mapping.add(frame.getRowId(RandomSource.nextInt(frame.getRowCount())));
-        }
-        return new MappedFrame(frame.getSourceFrame(), new Mapping(mapping));
-    }
-
     public static Frame delta(Frame source, Frame remove) {
-        HashSet<Integer> removed = new HashSet<>();
+        HashSet<Integer> existing = new HashSet<>();
         for (int i = 0; i < remove.getRowCount(); i++) {
-            removed.add(remove.getRowId(i));
+            existing.add(remove.getRowId(i));
         }
         List<Integer> mapping = new ArrayList<>();
         for (int i = 0; i < source.getRowCount(); i++) {
             int rowId = source.getRowId(i);
-            if (!removed.contains(rowId)) {
+            if (!existing.contains(rowId)) {
                 mapping.add(i);
             }
         }
