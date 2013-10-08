@@ -17,12 +17,14 @@
 package rapaio.tutorial.pages;
 
 import rapaio.core.BaseMath;
+import rapaio.correlation.PearsonRCorrelation;
 import rapaio.data.*;
 import rapaio.datasets.Datasets;
 import rapaio.explore.Summary;
 import static rapaio.explore.Workspace.*;
 import rapaio.filters.ColFilters;
 import static rapaio.filters.NumericFilters.*;
+import rapaio.graphics.Histogram;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
 import rapaio.graphics.plot.Points;
@@ -57,14 +59,21 @@ public class ClassificationWithRF implements TutorialPage {
         heading(1, "Classification with Random Forests");
 
 
-        p("Classification is a type of supervised learning which " +
-                "involves the prediction of a nominal variable.");
+        p("Random Forests ");
 
         Frame all = Datasets.loadSpamBase();
         all = ColFilters.retainCols(all, "1-20,spam");
 
 
-        Summary.summary(all);
+        Summary.names(all);
+
+//        for (int i = 0; i < all.getColCount(); i++) {
+//            int index = all.getColIndex("spam");
+//            if(index==i) continue;
+//            new PearsonRCorrelation(all.getCol("spam"), all.getCol(i)).summary();
+//        }
+
+        draw(new Histogram(all.getCol(1)));
 
         List<Frame> frames = Sample.randomSample(all, new int[]{all.getRowCount() * 15 / 100});
 

@@ -133,7 +133,7 @@ public class PearsonRCorrelation implements Summarizable {
             table[0][i] = i + ".";
             table[i][0] = i + "." + vectors[i - 1].getName();
             for (int j = 1; j < vectors.length + 1; j++) {
-                table[i][j] = String.format("%.6f", pearson[i - 1][j - 1]);
+                table[i][j] = String.format("%.2f", pearson[i - 1][j - 1]);
                 if (i == j) {
                     table[i][j] = "x";
                 }
