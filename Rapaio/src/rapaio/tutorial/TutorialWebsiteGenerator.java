@@ -57,6 +57,10 @@ public class TutorialWebsiteGenerator {
         pages.get(category).add(new PearsonHeight());
         pages.get(category).add(new LawOfLargeNumbers());
 
+        category = "SupervisedClassification";
+        pages.put(category, new ArrayList<TutorialPage>());
+        pages.get(category).add(new ClassificationWithRF());
+
         category = "WorkInProgress";
         pages.put(category, new ArrayList<TutorialPage>());
         pages.get(category).add(new IrisExplore());

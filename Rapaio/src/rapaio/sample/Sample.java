@@ -57,9 +57,9 @@ public class Sample {
             result.add(new MappedFrame(shuffle.getSourceFrame().getName(), shuffle.getSourceFrame(), new Mapping(mapping)));
             len += rowCounts[i];
         }
-        if (len < frame.getRowCount()) {
+        if (len < shuffle.getRowCount()) {
             List<Integer> mapping = new ArrayList<>();
-            for (int j = len; j <= shuffle.getRowCount(); j++) {
+            for (int j = len; j < shuffle.getRowCount(); j++) {
                 mapping.add(shuffle.getRowId(j));
             }
             result.add(new MappedFrame(shuffle.getSourceFrame().getName(), shuffle.getSourceFrame(), new Mapping(mapping)));

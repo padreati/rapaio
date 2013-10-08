@@ -52,6 +52,10 @@ public class RandomForest implements Classifier {
         this.computeOob = computeOob;
     }
 
+    public double getOobError() {
+        return oobError;
+    }
+
     @Override
     public void learn(final Frame df, final String classColName) {
         if (mcols > df.getColCount() - 1) {
@@ -379,7 +383,7 @@ class TreeNode {
             } else {
                 // numeric
                 for (int i = 0; i < df.getRowCount(); i++) {
-                    if (df.getCol(splitCol).isMissing(i) || df.getCol(splitCol).getValue(i) < splitValue) {
+                    if (df.getCol(splitCol).getValue(i) < splitValue) {
                         leftMap.add(classCol.getRowId(i));
                     } else {
                         rightMap.add(classCol.getRowId(i));
@@ -416,8 +420,7 @@ class TreeNode {
         for (int i = 0; i < df.getRowCount() - 1; i++) {
             int index = sort.getCol(classColIndex).getIndex(i);
             pleft[index]++;
-            if (col.isMissing(i)) continue;
-            if (col.getValue(i) != col.getValue(i + 1)) {
+            if (sort.getValue(i, colIndex) < sort.getValue(i + 1, colIndex)) {
                 double metric = computeGini(pleft, pall);
                 if (!validNumber(metric)) continue;
 
@@ -425,7 +428,7 @@ class TreeNode {
                     metricValue = metric;
                     splitCol = df.getColNames()[colIndex];
                     splitLabel = "";
-                    splitValue = (col.getValue(i) + col.getValue(i + 1)) / 2;
+                    splitValue = (sort.getCol(colIndex).getValue(i) + sort.getCol(colIndex).getValue(i + 1)) / 2;
                     leftNode = new TreeNode();
                     rightNode = new TreeNode();
                 }

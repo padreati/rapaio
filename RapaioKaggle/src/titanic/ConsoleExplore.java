@@ -58,9 +58,9 @@ public class ConsoleExplore {
         Frame test = Utils.read("test.csv");
         List<Frame> frames = consolidate(Arrays.asList(train, test));
         for (Frame df : frames) {
-            imputeMissing(df, "Age", "mean", df.getCol("Title"), df.getCol("Pclass"), df.getCol("Sex"));
+//            imputeMissing(df, "Age", "mean", df.getCol("Title"), df.getCol("Pclass"), df.getCol("Sex"));
 //            imputeMissing(df, "Age", "mean", df.getCol("Title"),df.getCol("Pclass"));
-//            imputeMissing(df, "Age", "mean");
+            imputeMissing(df, "Age", "mean");
         }
 //        frames = relate("TicketGroup", frames, "Ticket");
 //        frames = relate("Group", frames, "Cabin", "Family", "Ticket", "SibSp");
@@ -98,13 +98,13 @@ public class ConsoleExplore {
 //        tr = removeCols(tr, "Sex");
 //        tr = removeCols(tr, "Embarked");
         tr = removeCols(tr, "ParchSib");
-        tr = removeCols(tr, "Family");
+//        tr = removeCols(tr, "Family");
 
         Summary.summary(tr);
 
         long start = System.currentTimeMillis();
 
-        final int mtree = 1000;
+        final int mtree = 2000;
         final int mcols = 4;
         RandomForest rf = new RandomForest(mtree, mcols);
         rf.setDebug(true);

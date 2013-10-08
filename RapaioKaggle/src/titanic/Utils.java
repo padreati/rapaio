@@ -43,9 +43,9 @@ public class Utils {
         HashSet<String> numericColumns = new HashSet<>();
         numericColumns.add("Age");
         numericColumns.add("Fare");
-//        numericColumns.add("SibSp");
-//        numericColumns.add("Pclass");
-//        numericColumns.add("Parch");
+        numericColumns.add("SibSp");
+        numericColumns.add("Pclass");
+        numericColumns.add("Parch");
         List<Vector> vectors = new ArrayList<>();
 
         for (int i = 0; i < df.getColCount(); i++) {
