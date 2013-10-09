@@ -142,7 +142,8 @@ rows: 1078, cols: 2
    Mean : 67.687     Mean : 68.684 
 2nd Qu. : 69.600  2nd Qu. : 70.500 
    Max. : 75.400     Max. : 78.400 
-                                   </code></pre>
+                                   
+</code></pre>
 <p>We have two continuous random variables which observes height of pairs of father and sons. </p><p>The 5-number summaries gives us some hints on how the distribution of the values for the 2 random variables looks like. We note that the mean and median are very close which leads us to think that the distribution of the values are somehow symmetric. </p><h3>Histograms</h3>
 <p>One of the most important and usual tools to obtain information about the distribution of a random variable is histogram. </p><p>In statistics, a histogram is a graphical representation of the distribution of data. It is an estimate of the probability distribution of a continuous variable and was first introduced by Karl Pearson. A histogram is a representation of tabulated frequencies, shown as adjacent rectangles, erected over discrete intervals (bins), with an area equal to the frequency of the observations in the interval. </p><p>We draw histograms with Rapaio toolbox in the following way:</p><pre><code class="Java">        draw(new Histogram(df.getCol("Father")));
 </code></pre>
