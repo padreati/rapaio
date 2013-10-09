@@ -471,7 +471,6 @@ class TreeNode {
             upRight += (pall[i] - pa[i]) * (pall[i] - pa[i]);
             totalRight += pall[i] - pa[i];
         }
-
         if (totalLeft == 0 || totalRight == 0) return Double.NaN;
         return upLeft / (1. * totalLeft) + upRight / (1. * totalRight);
     }

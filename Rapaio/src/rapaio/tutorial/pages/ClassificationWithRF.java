@@ -16,26 +16,19 @@
 
 package rapaio.tutorial.pages;
 
-import rapaio.core.BaseMath;
-import rapaio.correlation.PearsonRCorrelation;
 import rapaio.data.*;
 import rapaio.datasets.Datasets;
 import rapaio.explore.Summary;
 import static rapaio.explore.Workspace.*;
 import rapaio.filters.ColFilters;
-import static rapaio.filters.NumericFilters.*;
-import rapaio.graphics.Histogram;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
 import rapaio.graphics.plot.Points;
 import rapaio.ml.supervised.ClassifierModel;
-import rapaio.ml.supervised.CrossValidation;
-import rapaio.ml.supervised.tree.ID3;
 import rapaio.ml.supervised.tree.RandomForest;
 import rapaio.sample.Sample;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,7 +42,7 @@ public class ClassificationWithRF implements TutorialPage {
 
     @Override
     public String getPageTitle() {
-        return "Classifcation with Random Forests";
+        return "Classification with Random Forests";
     }
 
     @Override
