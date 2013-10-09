@@ -54,10 +54,7 @@ public class ClassificationWithRF implements TutorialPage {
 
     @Override
     public void render() throws IOException {
-        preparePrinter();
-
         heading(1, "Classification with Random Forests");
-
 
         p("Random forests are an ensemble learning method for " +
                 "classification (and regression) that operate by constructing " +
@@ -297,7 +294,6 @@ public class ClassificationWithRF implements TutorialPage {
                 "be done with Rapaio toolbox library. ");
 
         p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");
-        closePrinter();
     }
 
     private double computeAccuracy(ClassifierModel model, Frame test) {
