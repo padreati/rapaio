@@ -18,10 +18,7 @@ package rapaio.io;
 
 import rapaio.data.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,8 +47,12 @@ public class ArffPersistence {
      * @throws java.io.IOException
      */
     public final Frame read(String name, File file) throws IOException {
+        return read(name, new FileInputStream(file));
+    }
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+    public final Frame read(String name, InputStream stream) throws IOException {
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(stream))) {
             String line;
 
             ArrayList<Vector> vectors = new ArrayList<>();
@@ -93,7 +94,7 @@ public class ArffPersistence {
 
 
                         String[] tmp = line.split("\\s+", 2);
-                        if (tmp[1].trim().equals("real") || tmp[1].trim().equals("isNumeric") || tmp[1].trim().startsWith("integer")) {
+                        if (tmp[1].trim().equalsIgnoreCase("real") || tmp[1].trim().equals("isNumeric") || tmp[1].trim().startsWith("integer")) {
                             vectors.add(new NumericVector(variableName, 0));
                         } else//Not correct, but we arent supporting anything other than real and categorical right now
                         {

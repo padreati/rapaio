@@ -35,4 +35,12 @@ public abstract class AbstractVector implements Vector {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return "Vector{" +
+                "name='" + name + '\'' +
+                ",size='" + getRowCount() + '\'' +
+                '}';
+    }
 }

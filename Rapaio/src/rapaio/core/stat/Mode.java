@@ -29,10 +29,12 @@ import java.util.Arrays;
 public class Mode implements Summarizable {
 
     private final Vector vector;
+    private final boolean includeMissing;
     private final String[] modes;
 
-    public Mode(Vector vector) {
+    public Mode(Vector vector, boolean includeMissing) {
         this.vector = vector;
+        this.includeMissing = includeMissing;
         this.modes = compute();
     }
 
@@ -48,18 +50,19 @@ public class Mode implements Summarizable {
             freq[vector.getIndex(i)]++;
         }
         int max = 0;
-        for (int i = 0; i < freq.length; i++) {
+        int start = includeMissing ? 0 : 1;
+        for (int i = start; i < freq.length; i++) {
             max = BaseMath.max(max, freq[i]);
         }
         int count = 0;
-        for (int i = 0; i < freq.length; i++) {
+        for (int i = start; i < freq.length; i++) {
             if (freq[i] == max) {
                 count++;
             }
         }
         int pos = 0;
         String[] modes = new String[count];
-        for (int i = 0; i < freq.length; i++) {
+        for (int i = start; i < freq.length; i++) {
             if (freq[i] == max) {
                 modes[pos++] = vector.getDictionary()[i];
             }

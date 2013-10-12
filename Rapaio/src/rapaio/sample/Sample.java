@@ -20,6 +20,7 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
+import rapaio.filters.NominalFilters;
 import static rapaio.filters.RowFilters.*;
 
 import java.util.ArrayList;
@@ -67,15 +68,40 @@ public class Sample {
         return result;
     }
 
-    public static Frame bootstrap(Frame frame) {
-        return bootstrap(frame, frame.getRowCount());
+    public static Frame randomBootstrap(Frame frame) {
+        return randomBootstrap(frame, frame.getRowCount());
     }
 
-    public static Frame bootstrap(Frame frame, int size) {
+    public static Frame randomBootstrap(Frame frame, int size) {
         List<Integer> mapping = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             int next = RandomSource.nextInt(frame.getRowCount());
             mapping.add(frame.getRowId(next));
+        }
+        return new MappedFrame(frame.getSourceFrame(), new Mapping(mapping));
+    }
+
+    public static Frame stratifiedBootstrap(Frame frame, String... strataCols) {
+        List<Frame> frames = new ArrayList<>();
+        frames.add(frame);
+        for (int i = 0; i < strataCols.length; i++) {
+            String col = strataCols[i];
+            List<Frame> split = new ArrayList<>();
+            for (Frame f : frames) {
+                Frame[] groups = NominalFilters.groupByNominal(f, f.getColIndex(col));
+                for (Frame group : groups) {
+                    if (group != null && group.getRowCount() > 0) {
+                        split.add(group);
+                    }
+                }
+            }
+            frames = split;
+        }
+        List<Integer> mapping = new ArrayList<>();
+        for (Frame f : frames) {
+            for (int i = 0; i < f.getRowCount(); i++) {
+                mapping.add(f.getRowId(RandomSource.nextInt(f.getRowCount())));
+            }
         }
         return new MappedFrame(frame.getSourceFrame(), new Mapping(mapping));
     }

@@ -16,12 +16,12 @@
 
 package rapaio.filters;
 
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.Vector;
+import rapaio.core.stat.Quantiles;
+import rapaio.data.*;
 import rapaio.core.ColumnRange;
+import rapaio.data.Vector;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * Provides filters which manipulate columns from a frame.
@@ -102,18 +102,70 @@ public final class ColFilters {
      * Retain only nominal columns from a frame.
      */
     public static Frame retainNominal(Frame df) {
-        int len = 0;
+        List<Vector> vectors = new ArrayList<>();
         for (int i = 0; i < df.getColCount(); i++) {
             if (df.getCol(i).isNominal()) {
-                len++;
+                vectors.add(df.getCol(i));
             }
         }
-        Vector[] vectors = new Vector[len];
-        int pos = 0;
-        for (int i = 0; i < df.getColCount(); i++) {
-            if (df.getCol(i).isNominal()) {
-                vectors[pos++] = df.getCol(i);
+        return new SolidFrame(df.getName(), df.getRowCount(), vectors);
+    }
+
+    public static Frame discretizeNumericToNominal(Frame df, ColumnRange colRange, int bins, boolean useQuantiles) {
+        if (df.isMappedFrame()) {
+            throw new IllegalArgumentException("Not allowed for mapped frame");
+        }
+        if (df.getRowCount() < bins) {
+            throw new IllegalArgumentException("Number of bins greater than number of rows");
+        }
+        Set<Integer> colSet = new HashSet<>(colRange.parseColumnIndexes(df));
+        for (int col : colSet) {
+            if (!df.getCol(col).isNumeric()) {
+                throw new IllegalArgumentException("Non-numeric column found in column range");
             }
+        }
+        Set<String> dict = new HashSet<>();
+        for (int i = 0; i < bins; i++) {
+            dict.add(String.valueOf(i + 1));
+        }
+        List<Vector> vectors = new ArrayList<>();
+        for (int i = 0; i < df.getColCount(); i++) {
+            if (!colSet.contains(i)) {
+                vectors.add(df.getCol(i));
+                continue;
+            }
+            Vector origin = df.getCol(i);
+            Vector discrete = new NominalVector(origin.getName(), origin.getRowCount(), dict);
+            if (!useQuantiles) {
+                Vector sorted = RowFilters.sort(df.getCol(i));
+                int width = (int) Math.ceil(df.getRowCount() / (1. * bins));
+                for (int j = 0; j < bins; j++) {
+                    for (int k = 0; k < width; k++) {
+                        if (j * width + k >= df.getRowCount()) break;
+                        if (sorted.isMissing(j * width + k)) continue;
+                        int rowId = sorted.getRowId(j * width + k);
+                        discrete.setLabel(rowId, String.valueOf(j + 1));
+                    }
+                }
+            } else {
+                double[] p = new double[bins];
+                for (int j = 0; j < p.length; j++) {
+                    p[j] = j / (1. * bins);
+                }
+                double[] q = new Quantiles(origin, p).getValues();
+                for (int j = 0; j < origin.getRowCount(); j++) {
+                    if (origin.isMissing(j)) continue;
+                    double value = origin.getValue(j);
+                    int index = Arrays.binarySearch(q, value);
+                    if (index < 0) {
+                        index = -index - 1;
+                    } else {
+                        index++;
+                    }
+                    discrete.setLabel(j, String.valueOf(index));
+                }
+            }
+            vectors.add(discrete);
         }
         return new SolidFrame(df.getName(), df.getRowCount(), vectors);
     }

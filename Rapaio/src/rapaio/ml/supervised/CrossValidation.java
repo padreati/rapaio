@@ -25,6 +25,7 @@ import rapaio.filters.NominalFilters;
 import static rapaio.filters.RowFilters.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,10 +33,11 @@ import java.util.List;
  */
 public class CrossValidation {
 
-    public void cv(Frame df, String classColName, Classifier c, int folds) {
+    public double cv(Frame df, String classColName, Classifier c, int folds) {
         print("\n<pre><code>\n");
         print("CrossValidation with " + folds + " folds\n");
-        df = shuffle(df);
+
+        List<Integer>[] strata = buildStrata(df, folds, classColName);
         ClassifierModel[] results = new ClassifierModel[folds];
 
         double tacc = 0;
@@ -43,21 +45,11 @@ public class CrossValidation {
         for (int i = 0; i < folds; i++) {
             List<Integer> trainMapping = new ArrayList<>();
             List<Integer> testMapping = new ArrayList<>();
-            if (folds >= df.getRowCount() - 1) {
-                testMapping.add(i);
-                for (int j = 0; j < df.getRowCount(); j++) {
-                    if (j != i) {
-                        trainMapping.add(df.getRowId(j));
-                    }
-                }
-
-            } else {
-                for (int j = 0; j < df.getRowCount(); j++) {
-                    if (j % folds == i) {
-                        testMapping.add(df.getRowId(j));
-                    } else {
-                        trainMapping.add(df.getRowId(j));
-                    }
+            for (int j = 0; j < folds; j++) {
+                if (j == i) {
+                    testMapping.addAll(strata[j]);
+                } else {
+                    trainMapping.addAll(strata[j]);
                 }
             }
             Frame train = new MappedFrame(df.getSourceFrame(), new Mapping(trainMapping));
@@ -85,6 +77,36 @@ public class CrossValidation {
         );
 
         print("</code></pre>\n");
+        return tacc;
+    }
+
+    private List<Integer>[] buildStrata(Frame df, int folds, String classColName) {
+        String[] dict = df.getCol(classColName).getDictionary();
+        List<Integer>[] rowIds = new List[dict.length];
+        for (int i = 0; i < dict.length; i++) {
+            rowIds[i] = new ArrayList<>();
+        }
+        for (int i = 0; i < df.getRowCount(); i++) {
+            rowIds[df.getIndex(i, df.getColIndex(classColName))].add(df.getRowId(i));
+        }
+        List<Integer> shuffle = new ArrayList<>();
+        for (int i = 0; i < dict.length; i++) {
+            Collections.shuffle(rowIds[i]);
+            shuffle.addAll(rowIds[i]);
+        }
+        List<Integer>[] strata = new List[folds];
+        for (int i = 0; i < strata.length; i++) {
+            strata[i] = new ArrayList<>();
+        }
+        int fold = 0;
+        for (int next : shuffle) {
+            strata[fold].add(next);
+            fold++;
+            if (fold == folds) {
+                fold = 0;
+            }
+        }
+        return strata;
     }
 
     public void multiCv(Frame df, String classColName, List<Classifier> classifiers, int folds) {

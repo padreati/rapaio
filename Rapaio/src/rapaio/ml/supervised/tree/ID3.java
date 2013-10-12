@@ -251,7 +251,7 @@ class ID3Node {
             if (parent == null) {
                 throw new IllegalArgumentException("Can't train from an empty frame");
             }
-            String[] modes = new Mode(parent.df.getCol(classColName)).getModes();
+            String[] modes = new Mode(parent.df.getCol(classColName), false).getModes();
             if (modes.length == 0) {
                 throw new IllegalArgumentException("Can't train from an empty frame");
             }
@@ -302,7 +302,7 @@ class ID3Node {
         // if none were selected then there are no columns to select
 
         if (colName.isEmpty()) {
-            String[] modes = new Mode(df.getCol(classColName)).getModes();
+            String[] modes = new Mode(df.getCol(classColName), false).getModes();
             if (modes.length == 0) {
                 throw new IllegalArgumentException("Can't train from an empty frame");
             }

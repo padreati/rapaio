@@ -20,6 +20,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
 import rapaio.filters.BaseFilters;
+import rapaio.io.ArffPersistence;
 import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
