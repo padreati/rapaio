@@ -547,7 +547,6 @@ class TreeNode {
         for (int j = 1; j < selCol.getDictionary().length; j++) {
             double metric = compute(p[0], p[j]);
             if (!validNumber(metric)) continue;
-
             if ((metricValue != metricValue) || metric - metricValue > 0) {
                 metricValue = metric;
                 splitCol = df.getColNames()[selColIndex];
