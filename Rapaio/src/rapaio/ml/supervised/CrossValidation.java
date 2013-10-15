@@ -16,6 +16,7 @@
 
 package rapaio.ml.supervised;
 
+import static rapaio.core.BaseMath.*;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
@@ -38,9 +39,9 @@ public class CrossValidation {
         print("CrossValidation with " + folds + " folds\n");
 
         List<Integer>[] strata = buildStrata(df, folds, classColName);
-        ClassifierModel[] results = new ClassifierModel[folds];
+        String[] dict = df.getCol(classColName).getDictionary();
 
-        double tacc = 0;
+        double correct = 0;
 
         for (int i = 0; i < folds; i++) {
             List<Integer> trainMapping = new ArrayList<>();
@@ -56,28 +57,21 @@ public class CrossValidation {
             Frame test = new MappedFrame(df.getSourceFrame(), new Mapping(testMapping));
 
             c.learn(train, classColName);
-            results[i] = c.predict(test);
-            ClassifierModel cr = results[i];
-            double acc = 0;
-            for (int j = 0; j < cr.getClassification().getRowCount(); j++) {
-                if (cr.getClassification().getIndex(j) == cr.getTestFrame().getCol(classColName).getIndex(j)) {
-                    acc++;
+            ClassifierModel cr = c.predict(test);
+            double fcorrect = 0;
+            for (int j = 0; j < test.getRowCount(); j++) {
+                if (test.getCol(classColName).getIndex(j) == cr.getClassification().getIndex(j)) {
+                    fcorrect++;
                 }
             }
-            acc /= (1. * cr.getClassification().getRowCount());
-            tacc += acc;
-            print(String.format("CV %d, accuracy:%.6f\n", i + 1, acc));
-
+            print(String.format("CV %d, accuracy:%.6f\n", i + 1, fcorrect / (1. * test.getRowCount())));
+            correct += fcorrect;
         }
-
-        tacc /= (1. * folds);
-
-        print(String.format("Mean accuracy:%.6f\n", tacc)
-
-        );
+        correct /= (1. * df.getRowCount());
+        print(String.format("Mean accuracy:%.6f\n", correct));
 
         print("</code></pre>\n");
-        return tacc;
+        return correct;
     }
 
     private List<Integer>[] buildStrata(Frame df, int folds, String classColName) {

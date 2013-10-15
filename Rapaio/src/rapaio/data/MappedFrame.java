@@ -50,18 +50,6 @@ public class MappedFrame extends AbstractFrame {
         if (df.isMappedFrame()) {
             throw new IllegalArgumentException("Not allowed mapped frames as source");
         }
-
-//        this.colIndex = new HashMap<>();
-//        this.colNames = new String[df.getColCount()];
-//        for (int i = 0; i < df.getColCount(); i++) {
-//            colIndex.put(df.getColNames()[i], i);
-//            colNames[i] = df.getColNames()[i];
-//        }
-//        vectors = new Vector[df.getColCount()];
-//        for (int i = 0; i < df.getColCount(); i++) {
-//            vectors[i] = new MappedVector(df.getCol(i), mapping);
-//        }
-
         this.mapping = mapping;
         this.source = df;
     }
