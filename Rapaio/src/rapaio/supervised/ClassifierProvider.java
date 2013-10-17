@@ -14,19 +14,11 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.supervised;
-
-import rapaio.data.Frame;
-import rapaio.data.Vector;
+package rapaio.supervised;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface ClassifierModel {
-
-    Frame getTestFrame();
-
-    Vector getClassification();
-
-    Frame getProbabilities();
+public interface ClassifierProvider {
+    Classifier newInstance();
 }

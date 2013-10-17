@@ -14,20 +14,21 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.supervised.tree;
+package rapaio.supervised.tree;
 
 import static rapaio.core.BaseMath.*;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Mode;
 import rapaio.data.*;
+import rapaio.data.Vector;
+import rapaio.explore.Workspace;
 import rapaio.filters.RowFilters;
-import rapaio.ml.supervised.Classifier;
-import rapaio.ml.supervised.ClassifierModel;
+import rapaio.supervised.Classifier;
+import rapaio.supervised.ClassifierModel;
 import rapaio.sample.Sample;
+import rapaio.supervised.stat.ConfusionMatrix;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -40,6 +41,9 @@ public class RandomForest implements Classifier {
     private final List<Tree> trees = new ArrayList<>();
     String classColName;
     String[] dict;
+    String[] giniImportanceNames;
+    double[] giniImportanceValue;
+    double[] giniImportanceCount;
     boolean debug = false;
     double oobError = 0;
     int[][] oobFreq;
@@ -80,6 +84,9 @@ public class RandomForest implements Classifier {
 
         this.classColName = classColName;
         this.dict = df.getCol(classColName).getDictionary();
+        this.giniImportanceNames = df.getColNames();
+        this.giniImportanceValue = new double[df.getColNames().length];
+        this.giniImportanceCount = new double[df.getColNames().length];
         trees.clear();
 
         oobError = computeOob ? 0 : Double.NaN;
@@ -208,6 +215,34 @@ public class RandomForest implements Classifier {
 
     @Override
     public void summary() {
+        StringBuilder sb = new StringBuilder();
+        summaryVariableImportance(sb);
+        Workspace.code(sb.toString());
+    }
+
+    private void summaryVariableImportance(StringBuilder sb) {
+        sb.append("Gini variable importance: \n");
+        Vector[] vectors = new Vector[2];
+        vectors[0] = new NominalVector("varName", giniImportanceNames.length, giniImportanceNames);
+        vectors[1] = new NumericVector("meanDecrease", new double[giniImportanceNames.length]);
+        Frame f = new SolidFrame("gini", giniImportanceNames.length, vectors);
+        int width = 0;
+        for (int i = 0; i < giniImportanceNames.length; i++) {
+            String colName = giniImportanceNames[i];
+            if (colName.equals(classColName)) continue;
+            width = max(width, classColName.length() + 1);
+            double decrease = 0;
+            if (giniImportanceCount[i] != 0) {
+                decrease = giniImportanceValue[i] / giniImportanceCount[i];
+            }
+            f.setLabel(i, 0, colName);
+            f.setValue(i, 1, decrease);
+        }
+        f = RowFilters.sort(f, RowComparators.numericComparator(f.getCol(1), false));
+
+        for (int i = 0; i < f.getRowCount(); i++) {
+            sb.append(String.format("%" + width + "s : %10.4f\n", f.getLabel(i, 0), f.getValue(i, 1)));
+        }
     }
 
     public void setDebug(boolean debug) {
@@ -345,6 +380,7 @@ class TreeNode {
     public double[] pd;
     public double[] fd;
     public double totalFd;
+    public double giniOrig;
 
     public String predicted;
     public TreeNode leftNode;
@@ -365,8 +401,10 @@ class TreeNode {
             totalFd += weights.get(i);
         }
         pd = new double[fd.length];
+        giniOrig = 1;
         for (int i = 0; i < pd.length; i++) {
             pd[i] = fd[i] / totalFd;
+            giniOrig -= pd[i] * pd[i];
         }
 
         if (df.getRowCount() == 1) {
@@ -382,13 +420,10 @@ class TreeNode {
                 leaf = true;
                 return;
             }
-            if (fd[i] != 0) {
-                break;
-            }
+            if (fd[i] != 0) break;
         }
 
         // find best split
-
         int count = 0;
         int len = indexes.length - 1;
         while (count < rf.mcols2) {
@@ -407,12 +442,14 @@ class TreeNode {
             }
         }
         if (leftNode != null && rightNode != null) {
+            // build data for left and right nodes
             List<Integer> missing = new ArrayList<>();
             List<Integer> leftMap = new ArrayList<>();
             List<Integer> rightMap = new ArrayList<>();
             leftWeight = new ArrayList<>();
             rightWeight = new ArrayList<>();
             Vector col = df.getCol(splitCol);
+            double missingWeight = 0;
 
             if (col.isNominal()) {
                 // nominal
@@ -422,10 +459,10 @@ class TreeNode {
                         continue;
                     }
                     if (splitLabel.equals(col.getLabel(i))) {
-                        leftMap.add(col.getRowId(i));
+                        leftMap.add(df.getRowId(i));
                         leftWeight.add(weights.get(i));
                     } else {
-                        rightMap.add(classCol.getRowId(i));
+                        rightMap.add(df.getRowId(i));
                         rightWeight.add(weights.get(i));
                     }
                 }
@@ -437,27 +474,31 @@ class TreeNode {
                         continue;
                     }
                     if (col.getValue(i) <= splitValue) {
-                        leftMap.add(col.getRowId(i));
+                        leftMap.add(df.getRowId(i));
                         leftWeight.add(weights.get(i));
                     } else {
-                        rightMap.add(col.getRowId(i));
+                        rightMap.add(df.getRowId(i));
                         rightWeight.add(weights.get(i));
                     }
                 }
             }
             if (!missing.isEmpty()) {
-                double pleft = leftMap.size() / (0. + leftMap.size() + rightMap.size());
-                double pright = rightMap.size() / (0. + leftMap.size() + rightMap.size());
+                double p = leftMap.size() / (0. + leftMap.size() + rightMap.size());
                 for (int i : missing) {
-                    leftMap.add(classCol.getRowId(i));
-                    leftWeight.add(weights.get(i) * pleft);
-                    rightMap.add(classCol.getRowId(i));
-                    rightWeight.add(weights.get(i) * pright);
+                    leftMap.add(df.getRowId(i));
+                    leftWeight.add(weights.get(i) * (p + 1e-20));
+                    rightMap.add(df.getRowId(i));
+                    rightWeight.add(weights.get(i) * (1. - p + 1e-20));
+                    missingWeight += weights.get(i);
                 }
             }
             if (!leftMap.isEmpty() && !rightMap.isEmpty()) {
                 leftFrame = new MappedFrame(df.getSourceFrame(), new Mapping(leftMap));
                 rightFrame = new MappedFrame(df.getSourceFrame(), new Mapping(rightMap));
+                // sum to variable importance
+                rf.giniImportanceValue[df.getColIndex(splitCol)] += metricValue * (1 - missingWeight / totalFd);
+//                rf.giniImportanceValue[df.getColIndex(splitCol)] += metricValue;
+                rf.giniImportanceCount[df.getColIndex(splitCol)]++;
                 return;
             } else {
                 System.out.println("Something went really wrong");
@@ -469,13 +510,18 @@ class TreeNode {
     }
 
     private void evaluateNumericCol(Frame df, int classColIndex, Vector classCol, int colIndex, Vector col, List<Double> weights) {
-        double[][] pleft = new double[2][fd.length];
+        double[][] p = new double[2][fd.length];
         int[] rowCounts = new int[2];
+        //TODO this is awkward - IT MUST BE IMPROVED
+        HashMap<Integer, Double> weightMap = new HashMap<>();
+        for (int i = 0; i < df.getRowCount(); i++) {
+            weightMap.put(df.getRowId(i), weights.get(i));
+        }
         Frame sort = RowFilters.sort(df, RowComparators.numericComparator(col, true));
         for (int i = 0; i < df.getRowCount() - 1; i++) {
             int row = sort.getCol(colIndex).isMissing(i) ? 0 : 1;
             int index = sort.getIndex(i, classColIndex);
-            pleft[row][index] += weights.get(i);
+            p[row][index] += weightMap.get(sort.getRowId(i));
             rowCounts[row]++;
             if (row == 0) {
                 continue;
@@ -483,7 +529,7 @@ class TreeNode {
             if (rowCounts[1] == 0) continue;
             if (df.getRowCount() - rowCounts[1] - rowCounts[0] == 0) continue;
             if (sort.getValue(i, colIndex) < sort.getValue(i + 1, colIndex)) {
-                double metric = compute(pleft[0], pleft[1]);
+                double metric = compute(p[0], p[1]);
                 if (!validNumber(metric)) continue;
 
                 if ((metricValue != metricValue) || metric > metricValue) {
@@ -500,6 +546,9 @@ class TreeNode {
     }
 
     private void evaluateNominalCol(Frame df, int classColIndex, Vector classCol, int selColIndex, Vector selCol, List<Double> weights) {
+        if (selCol.getDictionary().length == 2) {
+            return;
+        }
         double[][] p = new double[selCol.getDictionary().length][classCol.getDictionary().length];
         int[] rowCounts = new int[selCol.getDictionary().length];
         for (int i = 0; i < df.getRowCount(); i++) {
@@ -510,6 +559,9 @@ class TreeNode {
         for (int j = 1; j < selCol.getDictionary().length; j++) {
             if (rowCounts[j] == 0) continue;
             if (df.getRowCount() - rowCounts[j] - rowCounts[0] == 0) continue;
+            if (selCol.getDictionary().length == 3 && j == 2) {
+                continue;
+            }
             double metric = compute(p[0], p[j]);
             if (!validNumber(metric)) continue;
             if ((metricValue != metricValue) || metric - metricValue > 0) {

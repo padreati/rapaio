@@ -24,8 +24,8 @@ import rapaio.filters.ColFilters;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
 import rapaio.graphics.plot.Points;
-import rapaio.ml.supervised.ClassifierModel;
-import rapaio.ml.supervised.tree.RandomForest;
+import rapaio.supervised.ClassifierModel;
+import rapaio.supervised.tree.RandomForest;
 import rapaio.sample.Sample;
 
 import java.io.IOException;

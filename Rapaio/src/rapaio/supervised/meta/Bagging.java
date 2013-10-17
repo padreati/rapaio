@@ -14,12 +14,12 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.supervised.meta;
+package rapaio.supervised.meta;
 
 import rapaio.data.*;
-import rapaio.ml.supervised.Classifier;
-import rapaio.ml.supervised.ClassifierModel;
-import rapaio.ml.supervised.ClassifierProvider;
+import rapaio.supervised.Classifier;
+import rapaio.supervised.ClassifierModel;
+import rapaio.supervised.ClassifierProvider;
 import rapaio.sample.Sample;
 
 import java.util.ArrayList;

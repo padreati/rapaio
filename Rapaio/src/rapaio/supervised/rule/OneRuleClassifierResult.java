@@ -14,13 +14,38 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.supervised;
+package rapaio.supervised.rule;
 
-import rapaio.core.Summarizable;
 import rapaio.data.Frame;
+import rapaio.data.Vector;
+import rapaio.supervised.ClassifierModel;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public abstract class AbstractClassifier implements Classifier {
+public class OneRuleClassifierResult implements ClassifierModel {
+
+    private final Frame test;
+    private final Vector pred;
+
+    public OneRuleClassifierResult(Frame test, Vector pred) {
+        this.test = test;
+        this.pred = pred;
+    }
+
+    @Override
+    public Frame getTestFrame() {
+        return test;
+    }
+
+    @Override
+    public Vector getClassification() {
+        return pred;
+    }
+
+    @Override
+    public Frame getProbabilities() {
+        return null;
+    }
+
 }

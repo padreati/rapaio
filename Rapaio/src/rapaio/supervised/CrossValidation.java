@@ -14,15 +14,12 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.supervised;
+package rapaio.supervised;
 
-import static rapaio.core.BaseMath.*;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
-import static rapaio.explore.Workspace.code;
 import static rapaio.explore.Workspace.print;
-import rapaio.filters.NominalFilters;
 import static rapaio.filters.RowFilters.*;
 
 import java.util.ArrayList;

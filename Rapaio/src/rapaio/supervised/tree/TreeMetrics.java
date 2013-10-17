@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.supervised.tree;
+package rapaio.supervised.tree;
 
 import static rapaio.core.BaseMath.log;
 import rapaio.data.Frame;

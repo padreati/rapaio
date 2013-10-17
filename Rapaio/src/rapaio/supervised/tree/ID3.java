@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.supervised.tree;
+package rapaio.supervised.tree;
 
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Mode;
@@ -23,8 +23,8 @@ import rapaio.data.NominalVector;
 import rapaio.data.Vector;
 import rapaio.explore.Workspace;
 import rapaio.filters.NominalFilters;
-import rapaio.ml.supervised.AbstractClassifier;
-import rapaio.ml.supervised.ClassifierModel;
+import rapaio.supervised.AbstractClassifier;
+import rapaio.supervised.ClassifierModel;
 
 import java.util.*;
 

@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.supervised.tree;
+package rapaio.supervised.tree;
 
 import org.junit.Test;
 import rapaio.data.Frame;
@@ -22,11 +22,9 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
 import rapaio.explore.Summary;
 import rapaio.filters.BaseFilters;
-import rapaio.filters.ColFilters;
 import rapaio.io.ArffPersistence;
 import rapaio.io.CsvPersistence;
-import rapaio.ml.supervised.ClassifierModel;
-import rapaio.ml.supervised.CrossValidation;
+import rapaio.supervised.CrossValidation;
 
 import java.io.IOException;
 import java.util.ArrayList;

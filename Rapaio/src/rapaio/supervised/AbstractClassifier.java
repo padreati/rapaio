@@ -14,17 +14,10 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.supervised;
-
-import rapaio.core.Summarizable;
-import rapaio.data.Frame;
+package rapaio.supervised;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface Classifier extends Summarizable {
-
-    void learn(Frame df, String classColName);
-
-    ClassifierModel predict(Frame df);
+public abstract class AbstractClassifier implements Classifier {
 }
