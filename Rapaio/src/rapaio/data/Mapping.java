@@ -35,6 +35,8 @@ public class Mapping {
     }
 
     public int get(int pos) {
-        return mapping.get(pos);
+        if (mapping.size() > pos)
+            return mapping.get(pos);
+        throw new IllegalArgumentException("Value at pos " + pos + " does not exists");
     }
 }
