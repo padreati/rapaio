@@ -99,37 +99,18 @@ public class RandomForest implements Classifier {
             setupOobContainer(df);
         }
 
-        ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        Collection<Callable<Object>> tasks = new ArrayList<>();
         final List<Frame> bootstraps = new ArrayList<>();
         for (int i = 0; i < mtrees; i++) {
             final Tree tree = new Tree(this);
             trees.add(tree);
             final Frame bootstrap = Sample.randomBootstrap(df);
             bootstraps.add(bootstrap);
-            tasks.add(new Callable<Object>() {
-                @Override
-                public Object call() throws Exception {
-                    Map<Integer, Double> weights = new HashMap<>();
-                    for (int j = 0; j < bootstrap.getRowCount(); j++) {
-                        weights.put(bootstrap.getRowId(j), 1.);
-                    }
-                    tree.learn(bootstrap, weights);
-                    return null;
-                }
-            });
-
-        }
-        try {
-            es.invokeAll(tasks);
-            es.shutdown();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if (computeOob) {
-            for (int i = 0; i < mtrees; i++) {
-                addOob(df, bootstraps.get(i), trees.get(i));
+            Map<Integer, Double> weights = new HashMap<>();
+            for (int j = 0; j < bootstrap.getRowCount(); j++) {
+                weights.put(bootstrap.getRowId(j), 1.);
             }
+            tree.learn(bootstrap, weights);
+            addOob(df, bootstraps.get(i), tree);
         }
         if (computeOob) {
             oobError = computeOob(df);
@@ -290,35 +271,9 @@ class Tree {
                 indexes[pos++] = i;
             }
         }
-
         this.dict = df.getCol(rf.classColName).getDictionary();
         this.root = new TreeNode();
-
-        LinkedList<TreeNode> nodes = new LinkedList<>();
-        LinkedList<Frame> frames = new LinkedList<>();
-        LinkedList<Map<Integer, Double>> weights = new LinkedList<>();
-        nodes.addLast(root);
-        frames.addLast(df);
-        weights.add(weight);
-        while (!nodes.isEmpty()) {
-            TreeNode cn = nodes.pollFirst();
-            Frame currentFrame = frames.pollFirst();
-            Map<Integer, Double> currentWeight = weights.pollFirst();
-            cn.learn(currentFrame, currentWeight, indexes, rf);
-            if (cn.leaf) {
-                continue;
-            }
-            nodes.addLast(cn.leftNode);
-            nodes.addLast(cn.rightNode);
-            frames.addLast(cn.leftFrame);
-            frames.addLast(cn.rightFrame);
-            weights.add(cn.leftWeight);
-            weights.add(cn.rightWeight);
-            cn.leftFrame = null;
-            cn.rightFrame = null;
-            cn.leftWeight = null;
-            cn.rightWeight = null;
-        }
+        this.root.learn(df, weight, indexes, rf);
     }
 
     public ClassifierModel predict(final Frame df) {
@@ -520,17 +475,15 @@ class TreeNode {
                     missingWeight += weights.get(id);
                 }
             }
-            if (!leftMap.isEmpty() && !rightMap.isEmpty()) {
-                leftFrame = new MappedFrame(df.getSourceFrame(), new Mapping(leftMap));
-                rightFrame = new MappedFrame(df.getSourceFrame(), new Mapping(rightMap));
-                // sum to variable importance
-                rf.giniImportanceValue[df.getColIndex(splitCol)] += metricValue * (1 - missingWeight / totalFd);
-//                rf.giniImportanceValue[df.getColIndex(splitCol)] += metricValue;
-                rf.giniImportanceCount[df.getColIndex(splitCol)]++;
-                return;
-            } else {
-                System.out.println("Something went really wrong");
-            }
+            leftFrame = new MappedFrame(df.getSourceFrame(), new Mapping(leftMap));
+            rightFrame = new MappedFrame(df.getSourceFrame(), new Mapping(rightMap));
+            // sum to variable importance
+            rf.giniImportanceValue[df.getColIndex(splitCol)] += metricValue * (1 - missingWeight / totalFd);
+            rf.giniImportanceCount[df.getColIndex(splitCol)]++;
+            // train children
+            leftNode.learn(leftFrame, leftWeight, indexes, rf);
+            rightNode.learn(rightFrame, rightWeight, indexes, rf);
+            return;
         }
         String[] modes = new Mode(classCol, false).getModes();
         predicted = modes[RandomSource.nextInt(modes.length)];
