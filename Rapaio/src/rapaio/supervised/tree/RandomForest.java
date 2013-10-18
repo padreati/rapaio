@@ -21,6 +21,7 @@ import rapaio.core.RandomSource;
 import rapaio.core.stat.Mode;
 import rapaio.data.*;
 import rapaio.data.Vector;
+import rapaio.explore.Summary;
 import rapaio.explore.Workspace;
 import rapaio.filters.RowFilters;
 import rapaio.supervised.Classifier;
@@ -38,6 +39,7 @@ import java.util.concurrent.TimeUnit;
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class RandomForest implements Classifier {
+    private static String WEIGHT_COL_NAME = "rf.weight";
     final int mtrees;
     final int mcols;
     int mcols2;
@@ -71,7 +73,7 @@ public class RandomForest implements Classifier {
     }
 
     @Override
-    public void learn(final Frame df, final String classColName) {
+    public void learn(Frame df, final String classColName) {
         mcols2 = mcols;
         if (mcols2 > df.getColCount() - 1) {
             mcols2 = df.getColCount() - 1;
@@ -85,6 +87,8 @@ public class RandomForest implements Classifier {
                 throw new IllegalArgumentException("Not allowed missing classes");
             }
         }
+
+        df = addWeights(df);
 
         this.classColName = classColName;
         this.dict = df.getCol(classColName).getDictionary();
@@ -104,12 +108,12 @@ public class RandomForest implements Classifier {
             final Tree tree = new Tree(this);
             trees.add(tree);
             final Frame bootstrap = Sample.randomBootstrap(df);
-            bootstraps.add(bootstrap);
-            Map<Integer, Double> weights = new HashMap<>();
             for (int j = 0; j < bootstrap.getRowCount(); j++) {
-                weights.put(bootstrap.getRowId(j), 1.);
+                bootstrap.setValue(j, bootstrap.getColCount() - 1, 1.);
             }
-            tree.learn(bootstrap, weights);
+
+            bootstraps.add(bootstrap);
+            tree.learn(bootstrap);
             addOob(df, bootstraps.get(i), tree);
         }
         if (computeOob) {
@@ -118,6 +122,28 @@ public class RandomForest implements Classifier {
         if (debug) {
             System.out.println(String.format("avg oob error: %.4f", oobError));
         }
+    }
+
+    private Frame addWeights(Frame df) {
+        String[] colNames = df.getColNames();
+        Vector weight;
+        if (Arrays.binarySearch(colNames, WEIGHT_COL_NAME) >= 0) {
+            weight = df.getCol(WEIGHT_COL_NAME).getSourceVector();
+        } else {
+            weight = new NumericVector(WEIGHT_COL_NAME, new double[df.getSourceFrame().getRowCount()]);
+        }
+        List<Vector> vectors = new ArrayList<>();
+        for (String colName : colNames) {
+            if (colName.equals(WEIGHT_COL_NAME)) continue;
+            vectors.add(df.getCol(colName).getSourceVector());
+        }
+        vectors.add(weight);
+        List<Integer> mapping = new ArrayList<>();
+        for (int i = 0; i < df.getRowCount(); i++) {
+            mapping.add(df.getRowId(i));
+        }
+        Frame solid = new SolidFrame(df.getName(), df.getSourceFrame().getRowCount(), vectors);
+        return new MappedFrame(solid, new Mapping(mapping));
     }
 
     private void setupOobContainer(Frame df) {
@@ -263,17 +289,17 @@ class Tree {
         this.rf = rf;
     }
 
-    public void learn(Frame df, Map<Integer, Double> weight) {
-        int[] indexes = new int[df.getColCount() - 1];
+    public void learn(Frame df) {
+        int[] indexes = new int[df.getColCount() - 2];
         int pos = 0;
-        for (int i = 0; i < df.getColCount(); i++) {
+        for (int i = 0; i < df.getColCount() - 1; i++) {
             if (i != df.getColIndex(rf.classColName)) {
                 indexes[pos++] = i;
             }
         }
         this.dict = df.getCol(rf.classColName).getDictionary();
         this.root = new TreeNode();
-        this.root.learn(df, weight, indexes, rf);
+        this.root.learn(df, indexes, rf);
     }
 
     public ClassifierModel predict(final Frame df) {
@@ -365,21 +391,16 @@ class TreeNode {
     public TreeNode rightNode;
     public Frame leftFrame;
     public Frame rightFrame;
-    public Map<Integer, Double> leftWeight;
-    public Map<Integer, Double> rightWeight;
 
-    public void learn(final Frame df, Map<Integer, Double> weights, int[] indexes, RandomForest rf) {
+    public void learn(final Frame df, int[] indexes, RandomForest rf) {
         Vector classCol = df.getCol(rf.classColName);
         int classColIndex = df.getColIndex(rf.classColName);
 
         // compute distribution of classes
         fd = new double[rf.dict.length];
         for (int i = 0; i < df.getRowCount(); i++) {
-            if (weights.get(df.getRowId(i)) == null) {
-                System.out.println("nasol");
-            }
-            fd[classCol.getIndex(i)] += weights.get(df.getRowId(i));
-            totalFd += weights.get(df.getRowId(i));
+            fd[classCol.getIndex(i)] += df.getValue(i, df.getColCount() - 1);
+            totalFd += df.getValue(i, df.getColCount() - 1);
         }
         pd = new double[fd.length];
         giniOrig = 1;
@@ -417,72 +438,86 @@ class TreeNode {
 
             Vector col = df.getCol(colIndex);
             if (col.isNumeric()) {
-                evaluateNumericCol(df, classColIndex, classCol, colIndex, col, weights);
+                evaluateNumericCol(df, classColIndex, classCol, colIndex, col);
             } else {
-                evaluateNominalCol(df, classColIndex, classCol, colIndex, col, weights);
+                evaluateNominalCol(df, classColIndex, classCol, colIndex, col);
             }
         }
         if (leftNode != null && rightNode != null) {
             // build data for left and right nodes
-            List<Integer> missing = new ArrayList<>();
-            List<Integer> leftMap = new ArrayList<>();
-            List<Integer> rightMap = new ArrayList<>();
-            leftWeight = new HashMap<>();
-            rightWeight = new HashMap<>();
+            List<Integer> leftMap = new ArrayList<>(df.getRowCount());
+            List<Integer> rightMap = new ArrayList<>(df.getRowCount());
+            double[] weight = new double[df.getSourceFrame().getRowCount()];
             Vector col = df.getCol(splitCol);
             double missingWeight = 0;
-
+            double leftSize = 0;
+            double rightSize = 0;
             if (col.isNominal()) {
                 // nominal
                 for (int i = 0; i < df.getRowCount(); i++) {
                     int id = df.getRowId(i);
+                    weight[id] = df.getValue(i, df.getColCount() - 1);
                     if (col.isMissing(i)) {
-                        missing.add(id);
+                        missingWeight += df.getValue(i, df.getColCount() - 1);
+                        leftMap.add(id);
+                        rightMap.add(id);
                         continue;
                     }
                     if (splitLabel.equals(col.getLabel(i))) {
                         leftMap.add(id);
-                        leftWeight.put(id, weights.get(id));
+                        leftSize++;
                     } else {
                         rightMap.add(id);
-                        rightWeight.put(id, weights.get(id));
+                        rightSize++;
                     }
                 }
             } else {
                 // numeric
                 for (int i = 0; i < df.getRowCount(); i++) {
                     int id = df.getRowId(i);
+                    weight[id] = df.getValue(i, df.getColCount() - 1);
                     if (col.isMissing(i)) {
-                        missing.add(id);
+                        missingWeight += df.getValue(i, df.getColCount() - 1);
+                        leftMap.add(id);
+                        rightMap.add(id);
                         continue;
                     }
                     if (col.getValue(i) <= splitValue) {
                         leftMap.add(id);
-                        leftWeight.put(id, weights.get(id));
+                        leftSize++;
                     } else {
                         rightMap.add(df.getRowId(i));
-                        rightWeight.put(id, weights.get(id));
+                        rightSize++;
                     }
                 }
             }
-            if (!missing.isEmpty()) {
-                double p = leftMap.size() / (0. + leftMap.size() + rightMap.size());
-                for (int id : missing) {
-                    leftMap.add(id);
-                    leftWeight.put(id, weights.get(id) * p);
-                    rightMap.add(id);
-                    rightWeight.put(id, weights.get(id) * (1. - p));
-                    missingWeight += weights.get(id);
-                }
-            }
-            leftFrame = new MappedFrame(df.getSourceFrame(), new Mapping(leftMap));
-            rightFrame = new MappedFrame(df.getSourceFrame(), new Mapping(rightMap));
             // sum to variable importance
             rf.giniImportanceValue[df.getColIndex(splitCol)] += metricValue * (1 - missingWeight / totalFd);
             rf.giniImportanceCount[df.getColIndex(splitCol)]++;
-            // train children
-            leftNode.learn(leftFrame, leftWeight, indexes, rf);
-            rightNode.learn(rightFrame, rightWeight, indexes, rf);
+
+            double p = leftSize / (leftSize + rightSize);
+            leftFrame = new MappedFrame(df.getSourceFrame(), new Mapping(leftMap));
+            for (int i = 0; i < leftFrame.getRowCount(); i++) {
+                int id = leftFrame.getRowId(i);
+                if (leftFrame.getCol(splitCol).isMissing(i)) {
+                    leftFrame.setValue(i, leftFrame.getColCount() - 1, weight[id] * p);
+                } else {
+                    leftFrame.setValue(i, leftFrame.getColCount() - 1, weight[id]);
+                }
+            }
+            leftNode.learn(leftFrame, indexes, rf);
+
+            rightFrame = new MappedFrame(df.getSourceFrame(), new Mapping(rightMap));
+            for (int i = 0; i < rightFrame.getRowCount(); i++) {
+                int id = rightFrame.getRowId(i);
+                if (rightFrame.getCol(splitCol).isMissing(i)) {
+                    rightFrame.setValue(i, rightFrame.getColCount() - 1, weight[id] * (1. - p));
+                } else {
+                    rightFrame.setValue(i, rightFrame.getColCount() - 1, weight[id]);
+                }
+            }
+            rightNode.learn(rightFrame, indexes, rf);
+
             return;
         }
         String[] modes = new Mode(classCol, false).getModes();
@@ -490,14 +525,14 @@ class TreeNode {
         leaf = true;
     }
 
-    private void evaluateNumericCol(Frame df, int classColIndex, Vector classCol, int colIndex, Vector col, Map<Integer, Double> weights) {
+    private void evaluateNumericCol(Frame df, int classColIndex, Vector classCol, int colIndex, Vector col) {
         double[][] p = new double[2][fd.length];
         int[] rowCounts = new int[2];
         Frame sort = RowFilters.sort(df, RowComparators.numericComparator(col, true));
         for (int i = 0; i < df.getRowCount() - 1; i++) {
             int row = sort.getCol(colIndex).isMissing(i) ? 0 : 1;
             int index = sort.getIndex(i, classColIndex);
-            p[row][index] += weights.get(sort.getRowId(i));
+            p[row][index] += sort.getValue(i, sort.getColCount() - 1);
             rowCounts[row]++;
             if (row == 0) {
                 continue;
@@ -518,17 +553,16 @@ class TreeNode {
                 }
             }
         }
-
     }
 
-    private void evaluateNominalCol(Frame df, int classColIndex, Vector classCol, int selColIndex, Vector selCol, Map<Integer, Double> weights) {
+    private void evaluateNominalCol(Frame df, int classColIndex, Vector classCol, int selColIndex, Vector selCol) {
         if (selCol.getDictionary().length == 2) {
             return;
         }
         double[][] p = new double[selCol.getDictionary().length][classCol.getDictionary().length];
         int[] rowCounts = new int[selCol.getDictionary().length];
         for (int i = 0; i < df.getRowCount(); i++) {
-            p[selCol.getIndex(i)][classCol.getIndex(i)] += weights.get(df.getRowId(i));
+            p[selCol.getIndex(i)][classCol.getIndex(i)] += df.getValue(i, df.getColCount() - 1);
             rowCounts[selCol.getIndex(i)]++;
         }
 
