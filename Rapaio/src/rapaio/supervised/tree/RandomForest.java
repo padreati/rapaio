@@ -103,20 +103,35 @@ public class RandomForest implements Classifier {
             setupOobContainer(df);
         }
 
+        ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        Collection<Callable<Object>> tasks = new ArrayList<>();
         final List<Frame> bootstraps = new ArrayList<>();
         for (int i = 0; i < mtrees; i++) {
             final Tree tree = new Tree(this);
             trees.add(tree);
             final Frame bootstrap = Sample.randomBootstrap(df);
-            for (int j = 0; j < bootstrap.getRowCount(); j++) {
-                bootstrap.setValue(j, bootstrap.getColCount() - 1, 1.);
-            }
-
             bootstraps.add(bootstrap);
-            tree.learn(bootstrap);
-            addOob(df, bootstraps.get(i), tree);
+            tasks.add(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    for (int j = 0; j < bootstrap.getRowCount(); j++) {
+                        bootstrap.setValue(j, bootstrap.getColCount() - 1, 1.);
+                    }
+                    tree.learn(bootstrap);
+                    return null;
+                }
+            });
+
+        }
+        try {
+            es.invokeAll(tasks);
+            es.shutdown();
+        } catch (InterruptedException e) {
         }
         if (computeOob) {
+            for (int i = 0; i < mtrees; i++) {
+                addOob(df, bootstraps.get(i), trees.get(i));
+            }
             oobError = computeOob(df);
         }
         if (debug) {
@@ -384,13 +399,10 @@ class TreeNode {
     public double[] pd;
     public double[] fd;
     public double totalFd;
-    public double giniOrig;
 
     public String predicted;
     public TreeNode leftNode;
     public TreeNode rightNode;
-    public Frame leftFrame;
-    public Frame rightFrame;
 
     public void learn(final Frame df, int[] indexes, RandomForest rf) {
         Vector classCol = df.getCol(rf.classColName);
@@ -400,13 +412,13 @@ class TreeNode {
         fd = new double[rf.dict.length];
         for (int i = 0; i < df.getRowCount(); i++) {
             fd[classCol.getIndex(i)] += df.getValue(i, df.getColCount() - 1);
-            totalFd += df.getValue(i, df.getColCount() - 1);
+        }
+        for (int i = 0; i < fd.length; i++) {
+            totalFd += fd[i];
         }
         pd = new double[fd.length];
-        giniOrig = 1;
         for (int i = 0; i < pd.length; i++) {
             pd[i] = fd[i] / totalFd;
-            giniOrig -= pd[i] * pd[i];
         }
 
         if (df.getRowCount() == 1) {
@@ -445,49 +457,34 @@ class TreeNode {
         }
         if (leftNode != null && rightNode != null) {
             // build data for left and right nodes
-            List<Integer> leftMap = new ArrayList<>(df.getRowCount());
-            List<Integer> rightMap = new ArrayList<>(df.getRowCount());
-            double[] weight = new double[df.getSourceFrame().getRowCount()];
+            List<Integer> leftMap = new ArrayList<>();
+            List<Integer> rightMap = new ArrayList<>();
             Vector col = df.getCol(splitCol);
             double missingWeight = 0;
-            double leftSize = 0;
-            double rightSize = 0;
-            if (col.isNominal()) {
-                // nominal
-                for (int i = 0; i < df.getRowCount(); i++) {
-                    int id = df.getRowId(i);
-                    weight[id] = df.getValue(i, df.getColCount() - 1);
-                    if (col.isMissing(i)) {
-                        missingWeight += df.getValue(i, df.getColCount() - 1);
+            // nominal
+            for (int i = 0; i < df.getRowCount(); i++) {
+                int id = df.getRowId(i);
+                if (col.isMissing(i)) {
+                    missingWeight += df.getValue(i, df.getColCount() - 1);
+                    if (RandomSource.nextDouble() > .5) {
                         leftMap.add(id);
+                    } else {
                         rightMap.add(id);
-                        continue;
                     }
+                    continue;
+                }
+                if (col.isNominal()) {
                     if (splitLabel.equals(col.getLabel(i))) {
                         leftMap.add(id);
-                        leftSize++;
                     } else {
                         rightMap.add(id);
-                        rightSize++;
                     }
-                }
-            } else {
-                // numeric
-                for (int i = 0; i < df.getRowCount(); i++) {
-                    int id = df.getRowId(i);
-                    weight[id] = df.getValue(i, df.getColCount() - 1);
-                    if (col.isMissing(i)) {
-                        missingWeight += df.getValue(i, df.getColCount() - 1);
-                        leftMap.add(id);
-                        rightMap.add(id);
-                        continue;
-                    }
+                } else {
+                    // numeric
                     if (col.getValue(i) <= splitValue) {
                         leftMap.add(id);
-                        leftSize++;
                     } else {
                         rightMap.add(df.getRowId(i));
-                        rightSize++;
                     }
                 }
             }
@@ -495,31 +492,26 @@ class TreeNode {
             rf.giniImportanceValue[df.getColIndex(splitCol)] += metricValue * (1 - missingWeight / totalFd);
             rf.giniImportanceCount[df.getColIndex(splitCol)]++;
 
-            double p = leftSize / (leftSize + rightSize);
-            leftFrame = new MappedFrame(df.getSourceFrame(), new Mapping(leftMap));
+            Frame leftFrame = new MappedFrame(df.getSourceFrame(), new Mapping(leftMap));
             for (int i = 0; i < leftFrame.getRowCount(); i++) {
-                int id = leftFrame.getRowId(i);
                 if (leftFrame.getCol(splitCol).isMissing(i)) {
-                    leftFrame.setValue(i, leftFrame.getColCount() - 1, weight[id] * p);
-                } else {
-                    leftFrame.setValue(i, leftFrame.getColCount() - 1, weight[id]);
+                    double prev = leftFrame.getValue(i, leftFrame.getColCount() - 1);
+                    leftFrame.setValue(i, leftFrame.getColCount() - 1, prev * 0.5);
                 }
             }
             leftNode.learn(leftFrame, indexes, rf);
 
-            rightFrame = new MappedFrame(df.getSourceFrame(), new Mapping(rightMap));
+            Frame rightFrame = new MappedFrame(df.getSourceFrame(), new Mapping(rightMap));
             for (int i = 0; i < rightFrame.getRowCount(); i++) {
-                int id = rightFrame.getRowId(i);
                 if (rightFrame.getCol(splitCol).isMissing(i)) {
-                    rightFrame.setValue(i, rightFrame.getColCount() - 1, weight[id] * (1. - p));
-                } else {
-                    rightFrame.setValue(i, rightFrame.getColCount() - 1, weight[id]);
+                    double prev = rightFrame.getValue(i, rightFrame.getColCount() - 1);
+                    rightFrame.setValue(i, rightFrame.getColCount() - 1, prev * 0.5);
                 }
             }
             rightNode.learn(rightFrame, indexes, rf);
-
             return;
         }
+
         String[] modes = new Mode(classCol, false).getModes();
         predicted = modes[RandomSource.nextInt(modes.length)];
         leaf = true;
@@ -539,8 +531,8 @@ class TreeNode {
             }
             if (rowCounts[1] == 0) continue;
             if (df.getRowCount() - rowCounts[1] - rowCounts[0] == 0) continue;
-            if (sort.getValue(i, colIndex) < sort.getValue(i + 1, colIndex)) {
-                double metric = compute(p[0], p[1]);
+            if (sort.getValue(i, colIndex) + 1e-10 < sort.getValue(i + 1, colIndex)) {
+                double metric = computeGini(p[0], p[1]);
                 if (!validNumber(metric)) continue;
 
                 if ((metricValue != metricValue) || metric > metricValue) {
@@ -572,7 +564,7 @@ class TreeNode {
             if (selCol.getDictionary().length == 3 && j == 2) {
                 continue;
             }
-            double metric = compute(p[0], p[j]);
+            double metric = computeGini(p[0], p[j]);
             if (!validNumber(metric)) continue;
             if ((metricValue != metricValue) || metric - metricValue > 0) {
                 metricValue = metric;
@@ -583,10 +575,6 @@ class TreeNode {
                 rightNode = new TreeNode();
             }
         }
-    }
-
-    private double compute(double[] missing, double[] pa) {
-        return computeGini(missing, pa);
     }
 
     private double computeGini(double[] missing, double[] pa) {
@@ -614,7 +602,7 @@ class TreeNode {
             giniLeft -= pleft * pleft;
             giniRight -= pright * pright;
         }
-        return giniOrig - totalLeft * giniLeft / totalOrig - totalRight * giniRight / totalOrig;
+        return giniOrig - (totalLeft * giniLeft + totalRight * giniRight) / (totalLeft + totalRight);
     }
 }
 

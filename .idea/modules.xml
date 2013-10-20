@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Rapaio/Rapaio.iml" filepath="$PROJECT_DIR$/Rapaio/Rapaio.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../rapaio-data/rapaio-data.iml" filepath="$PROJECT_DIR$/../rapaio-data/rapaio-data.iml" />
       <module fileurl="file://$PROJECT_DIR$/../rapaio-kaggle/rapaio-kaggle.iml" filepath="$PROJECT_DIR$/../rapaio-kaggle/rapaio-kaggle.iml" />
     </modules>
   </component>
