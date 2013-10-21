@@ -22,7 +22,6 @@ import rapaio.data.Vector;
 import static rapaio.explore.Workspace.code;
 import rapaio.filters.RowFilters;
 import rapaio.supervised.AbstractClassifier;
-import rapaio.supervised.ClassifierModel;
 
 import java.io.Serializable;
 import java.util.*;
@@ -35,6 +34,7 @@ public class OneRule extends AbstractClassifier {
     private int minCount = 6;
     private final List<OneRuleSet> learnedRules = new ArrayList<>();
     private String[] classDictionary;
+    private NominalVector predict;
 
     public OneRule() {
         this(6);
@@ -50,6 +50,12 @@ public class OneRule extends AbstractClassifier {
 
     public void setMinCount(int minCount) {
         this.minCount = minCount;
+    }
+
+    @Override
+    public OneRule newInstance() {
+        OneRule oneRule = new OneRule(minCount);
+        return oneRule;
     }
 
     @Override
@@ -75,12 +81,21 @@ public class OneRule extends AbstractClassifier {
     }
 
     @Override
-    public ClassifierModel predict(Frame test) {
-        Vector predict = new NominalVector("predict", test.getRowCount(), classDictionary);
+    public void predict(Frame test) {
+        predict = new NominalVector("predict", test.getRowCount(), classDictionary);
         for (int i = 0; i < test.getRowCount(); i++) {
             predict.setLabel(i, predict(test, i));
         }
-        return new OneRuleClassifierResult(test, predict);
+    }
+
+    @Override
+    public NominalVector getPrediction() {
+        return predict;
+    }
+
+    @Override
+    public Frame getDistribution() {
+        return null;
     }
 
     private String predict(Frame test, int row) {

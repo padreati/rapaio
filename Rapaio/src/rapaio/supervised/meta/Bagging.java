@@ -18,8 +18,6 @@ package rapaio.supervised.meta;
 
 import rapaio.data.*;
 import rapaio.supervised.Classifier;
-import rapaio.supervised.ClassifierModel;
-import rapaio.supervised.ClassifierProvider;
 import rapaio.sample.Sample;
 
 import java.util.ArrayList;
@@ -32,15 +30,22 @@ public class Bagging implements Classifier {
 
     private final double p;
     private final int bags;
-    private final ClassifierProvider provider;
+    private final Classifier provider;
     private List<Classifier> classifiers = new ArrayList<>();
     private String[] dict;
     private String classColName;
+    private NominalVector pred;
+    private Frame dist;
 
-    public Bagging(double p, int bags, ClassifierProvider provider) {
+    public Bagging(double p, int bags, Classifier provider) {
         this.p = p;
         this.bags = bags;
         this.provider = provider;
+    }
+
+    public Bagging newInstance() {
+        Bagging bag = new Bagging(p, bags, provider);
+        return bag;
     }
 
     @Override
@@ -57,58 +62,51 @@ public class Bagging implements Classifier {
     }
 
     @Override
-    public ClassifierModel predict(final Frame df) {
+    public void predict(final Frame df) {
         // voting
 
-        final Vector predict = new NominalVector(classColName, df.getRowCount(), dict);
+        pred = new NominalVector(classColName, df.getRowCount(), dict);
         final Vector[] probs = new Vector[dict.length - 1];
         for (int i = 0; i < dict.length - 1; i++) {
             probs[i] = new NumericVector(dict[i + 1], new double[df.getRowCount()]);
         }
-        final Frame prob = new SolidFrame("probs", df.getRowCount(), probs);
+        dist = new SolidFrame("probs", df.getRowCount(), probs);
 
         // collect results from each classifier
-        for (int i = 0; i < classifiers.size(); i++) {
-            ClassifierModel model = classifiers.get(i).predict(df);
+        for (Classifier c : classifiers) {
+            c.predict(df);
             for (int j = 0; j < df.getRowCount(); j++) {
-                String prediction = model.getClassification().getLabel(j);
-                double prev = prob.getValue(j, prob.getColIndex(prediction));
+                String prediction = c.getPrediction().getLabel(j);
+                double prev = dist.getValue(j, dist.getColIndex(prediction));
                 if (prev != prev) {
                     prev = 0;
                 }
-                prob.setValue(j, prob.getColIndex(prediction), prev + 1);
+                dist.setValue(j, dist.getColIndex(prediction), prev + 1);
             }
         }
-        for (int i = 0; i < prob.getRowCount(); i++) {
+        for (int i = 0; i < dist.getRowCount(); i++) {
             int index = -1;
             double max = -1;
-            for (int j = 0; j < prob.getColCount(); j++) {
-                double freq = prob.getValue(i, j);
-                prob.setValue(i, j, freq / (1. * classifiers.size()));
+            for (int j = 0; j < dist.getColCount(); j++) {
+                double freq = dist.getValue(i, j);
+                dist.setValue(i, j, freq / (1. * classifiers.size()));
                 if (max < freq) {
                     max = freq;
                     index = j;
                 }
             }
-            predict.setLabel(i, predict.getDictionary()[index + 1]);
+            pred.setLabel(i, pred.getDictionary()[index + 1]);
         }
+    }
 
-        return new ClassifierModel() {
-            @Override
-            public Frame getTestFrame() {
-                return df;
-            }
+    @Override
+    public NominalVector getPrediction() {
+        return pred;
+    }
 
-            @Override
-            public Vector getClassification() {
-                return predict;
-            }
-
-            @Override
-            public Frame getProbabilities() {
-                return prob;
-            }
-        };
+    @Override
+    public Frame getDistribution() {
+        return dist;
     }
 
     @Override

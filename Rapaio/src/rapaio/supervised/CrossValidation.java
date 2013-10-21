@@ -54,10 +54,10 @@ public class CrossValidation {
             Frame test = new MappedFrame(df.getSourceFrame(), new Mapping(testMapping));
 
             c.learn(train, classColName);
-            ClassifierModel cr = c.predict(test);
+            c.predict(test);
             double fcorrect = 0;
             for (int j = 0; j < test.getRowCount(); j++) {
-                if (test.getCol(classColName).getIndex(j) == cr.getClassification().getIndex(j)) {
+                if (test.getCol(classColName).getIndex(j) == c.getPrediction().getIndex(j)) {
                     fcorrect++;
                 }
             }
@@ -104,8 +104,6 @@ public class CrossValidation {
         print("\n<pre><code>\n");
         print("CrossValidation with " + folds + " folds\n");
         df = shuffle(df);
-        ClassifierModel[] results = new ClassifierModel[folds];
-
         double[] tacc = new double[classifiers.size()];
 
         for (int i = 0; i < folds; i++) {
@@ -133,16 +131,16 @@ public class CrossValidation {
 
             for (int k = 0; k < classifiers.size(); k++) {
                 Classifier c = classifiers.get(k);
+//                c = c.newInstance();
                 c.learn(train, classColName);
-                results[i] = c.predict(test);
-                ClassifierModel cr = results[i];
+                c.predict(test);
                 double acc = 0;
-                for (int j = 0; j < cr.getClassification().getRowCount(); j++) {
-                    if (cr.getClassification().getIndex(j) == cr.getTestFrame().getCol(classColName).getIndex(j)) {
+                for (int j = 0; j < c.getPrediction().getRowCount(); j++) {
+                    if (c.getPrediction().getIndex(j) == test.getCol(classColName).getIndex(j)) {
                         acc++;
                     }
                 }
-                acc /= (1. * cr.getClassification().getRowCount());
+                acc /= (1. * c.getPrediction().getRowCount());
                 tacc[k] += acc;
                 print(String.format("CV %d, classifier[%d] - accuracy:%.6f\n", i + 1, k + 1, acc));
             }

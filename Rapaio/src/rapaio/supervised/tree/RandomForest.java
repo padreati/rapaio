@@ -25,7 +25,6 @@ import rapaio.explore.Summary;
 import rapaio.explore.Workspace;
 import rapaio.filters.RowFilters;
 import rapaio.supervised.Classifier;
-import rapaio.supervised.ClassifierModel;
 import rapaio.sample.Sample;
 import rapaio.supervised.stat.ConfusionMatrix;
 
@@ -53,6 +52,8 @@ public class RandomForest implements Classifier {
     boolean debug = false;
     double oobError = 0;
     int[][] oobFreq;
+    private NominalVector predict;
+    private Frame dist;
 
     public RandomForest(int mtrees) {
         this(mtrees, 0, true);
@@ -66,6 +67,12 @@ public class RandomForest implements Classifier {
         this.mtrees = mtrees;
         this.mcols = mcols;
         this.computeOob = computeOob;
+    }
+
+    public RandomForest newInstance() {
+        RandomForest rf = new RandomForest(mtrees, mcols, computeOob);
+        rf.setDebug(debug);
+        return rf;
     }
 
     public double getOobError() {
@@ -103,31 +110,31 @@ public class RandomForest implements Classifier {
             setupOobContainer(df);
         }
 
-        ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        Collection<Callable<Object>> tasks = new ArrayList<>();
+//        ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+//        Collection<Callable<Object>> tasks = new ArrayList<>();
         final List<Frame> bootstraps = new ArrayList<>();
         for (int i = 0; i < mtrees; i++) {
             final Tree tree = new Tree(this);
             trees.add(tree);
             final Frame bootstrap = Sample.randomBootstrap(df);
             bootstraps.add(bootstrap);
-            tasks.add(new Callable<Object>() {
-                @Override
-                public Object call() throws Exception {
-                    for (int j = 0; j < bootstrap.getRowCount(); j++) {
-                        bootstrap.setValue(j, bootstrap.getColCount() - 1, 1.);
-                    }
-                    tree.learn(bootstrap);
-                    return null;
-                }
-            });
+//            tasks.add(new Callable<Object>() {
+//                @Override
+//                public Object call() throws Exception {
+            for (int j = 0; j < bootstrap.getRowCount(); j++) {
+                bootstrap.setValue(j, bootstrap.getColCount() - 1, 1.);
+            }
+            tree.learn(bootstrap);
+//                    return null;
+//                }
+//            });
 
         }
-        try {
-            es.invokeAll(tasks);
-            es.shutdown();
-        } catch (InterruptedException e) {
-        }
+//        try {
+//            es.invokeAll(tasks);
+//            es.shutdown();
+//        } catch (InterruptedException e) {
+//        }
         if (computeOob) {
             for (int i = 0; i < mtrees; i++) {
                 addOob(df, bootstraps.get(i), trees.get(i));
@@ -167,8 +174,8 @@ public class RandomForest implements Classifier {
 
     private void addOob(Frame source, Frame bootstrap, Tree tree) {
         Frame delta = RowFilters.delta(source, bootstrap);
-        ClassifierModel model = tree.predict(delta);
-        Vector predict = model.getClassification();
+        tree.predict(delta);
+        Vector predict = tree.getPrediction();
         for (int i = 0; i < delta.getRowCount(); i++) {
             int rowId = delta.getRowId(i);
             oobFreq[rowId][predict.getIndex(i)]++;
@@ -206,32 +213,32 @@ public class RandomForest implements Classifier {
     }
 
     @Override
-    public ClassifierModel predict(final Frame df) {
-        final Vector predict = new NominalVector(classColName, df.getRowCount(), dict);
+    public void predict(final Frame df) {
+        predict = new NominalVector(classColName, df.getRowCount(), dict);
         List<Vector> vectors = new ArrayList<>();
         for (int i = 0; i < dict.length; i++) {
             vectors.add(new NumericVector(dict[i], new double[df.getRowCount()]));
         }
-        final Frame prob = new SolidFrame("prob", df.getRowCount(), vectors);
+        dist = new SolidFrame("prob", df.getRowCount(), vectors);
 
         for (int m = 0; m < mtrees; m++) {
             Tree tree = trees.get(m);
-            ClassifierModel model = tree.predict(df);
+            tree.predict(df);
             for (int i = 0; i < df.getRowCount(); i++) {
-                for (int j = 0; j < model.getProbabilities().getColCount(); j++) {
-                    prob.setValue(i, j, prob.getValue(i, j) + model.getProbabilities().getValue(i, j));
+                for (int j = 0; j < tree.getDistribution().getColCount(); j++) {
+                    dist.setValue(i, j, dist.getValue(i, j) + tree.getDistribution().getValue(i, j));
                 }
             }
         }
 
         // from freq to prob
 
-        for (int i = 0; i < prob.getRowCount(); i++) {
+        for (int i = 0; i < dist.getRowCount(); i++) {
             double max = 0;
             int col = 0;
-            for (int j = 0; j < prob.getColCount(); j++) {
-                double freq = prob.getValue(i, j);
-                prob.setValue(i, j, freq / (1. * mtrees));
+            for (int j = 0; j < dist.getColCount(); j++) {
+                double freq = dist.getValue(i, j);
+                dist.setValue(i, j, freq / (1. * mtrees));
                 if (max < freq) {
                     max = freq;
                     col = j;
@@ -239,23 +246,16 @@ public class RandomForest implements Classifier {
             }
             predict.setLabel(i, dict[col]);
         }
+    }
 
-        return new ClassifierModel() {
-            @Override
-            public Frame getTestFrame() {
-                return df;
-            }
+    @Override
+    public NominalVector getPrediction() {
+        return predict;
+    }
 
-            @Override
-            public Vector getClassification() {
-                return predict;
-            }
-
-            @Override
-            public Frame getProbabilities() {
-                return prob;
-            }
-        };
+    @Override
+    public Frame getDistribution() {
+        return dist;
     }
 
     @Override
@@ -299,6 +299,8 @@ class Tree {
     private final RandomForest rf;
     private TreeNode root;
     private String[] dict;
+    private NominalVector prediction;
+    private Frame d;
 
     Tree(RandomForest rf) {
         this.rf = rf;
@@ -317,13 +319,13 @@ class Tree {
         this.root.learn(df, indexes, rf);
     }
 
-    public ClassifierModel predict(final Frame df) {
-        final Vector classification = new NominalVector("classification", df.getRowCount(), dict);
+    public void predict(final Frame df) {
+        prediction = new NominalVector("classification", df.getRowCount(), dict);
         List<Vector> dvectors = new ArrayList<>();
         for (int i = 0; i < dict.length; i++) {
             dvectors.add(new NumericVector(dict[i], new double[df.getRowCount()]));
         }
-        final Frame d = new SolidFrame("distribution", df.getRowCount(), dvectors);
+        d = new SolidFrame("distribution", df.getRowCount(), dvectors);
         for (int i = 0; i < df.getRowCount(); i++) {
             double[] distribution = predict(df, i, root);
             for (int j = 0; j < distribution.length; j++) {
@@ -343,24 +345,16 @@ class Tree {
                     continue;
                 }
             }
-            classification.setLabel(i, dict[indexes[RandomSource.nextInt(len)]]);
+            prediction.setLabel(i, dict[indexes[RandomSource.nextInt(len)]]);
         }
-        return new ClassifierModel() {
-            @Override
-            public Frame getTestFrame() {
-                return df;
-            }
+    }
 
-            @Override
-            public Vector getClassification() {
-                return classification;
-            }
+    public NominalVector getPrediction() {
+        return prediction;
+    }
 
-            @Override
-            public Frame getProbabilities() {
-                return d;
-            }
-        };
+    public Frame getDistribution() {
+        return d;
     }
 
     private double[] predict(Frame df, int row, TreeNode node) {

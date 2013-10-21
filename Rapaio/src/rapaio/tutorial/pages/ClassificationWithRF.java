@@ -24,7 +24,7 @@ import rapaio.filters.ColFilters;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
 import rapaio.graphics.plot.Points;
-import rapaio.supervised.ClassifierModel;
+import rapaio.supervised.Classifier;
 import rapaio.supervised.tree.RandomForest;
 import rapaio.sample.Sample;
 
@@ -147,15 +147,15 @@ public class ClassificationWithRF implements TutorialPage {
 
 
         int pos = 0;
-        Vector index = new IndexVector("number of trees", 1000);
-        Vector accuracy = new NumericVector("test error", 1000);
-        Vector oob = new NumericVector("oob error", 1000);
-        for (int mtree = 1; mtree < 100; mtree += 5) {
-            RandomForest rf = new RandomForest(mtree, 3, true);
+        Vector index = new IndexVector("number of trees", 400);
+        Vector accuracy = new NumericVector("test error", 400);
+        Vector oob = new NumericVector("oob error", 400);
+        for (int mtree = 1; mtree < 200; mtree += 10) {
+            RandomForest rf = new RandomForest(mtree, 2, true);
             rf.learn(train, "spam");
-            ClassifierModel model = rf.predict(test);
+            rf.predict(test);
             index.setIndex(pos, mtree);
-            accuracy.setValue(pos, 1 - computeAccuracy(model, test));
+            accuracy.setValue(pos, 1 - computeAccuracy(rf, test));
             oob.setValue(pos, rf.getOobError());
             pos++;
         }
@@ -220,14 +220,13 @@ public class ClassificationWithRF implements TutorialPage {
         index = new IndexVector("mtree", 1000);
         accuracy = new NumericVector("test error", 1000);
         oob = new NumericVector("oob error", 1000);
-        for (int mtree = 1; mtree < 20; mtree += 1) {
+        for (int mcol = 1; mcol < 20; mcol += 1) {
 
-            RandomForest rf = new RandomForest(10, mtree, true);
+            RandomForest rf = new RandomForest(30, mcol, true);
             rf.learn(train, "spam");
-            ClassifierModel model = rf.predict(test);
-
-            index.setIndex(pos, mtree);
-            accuracy.setValue(pos, 1 - computeAccuracy(model, test));
+            rf.predict(test);
+            index.setIndex(pos, mcol);
+            accuracy.setValue(pos, 1 - computeAccuracy(rf, test));
             oob.setValue(pos, rf.getOobError());
 
             pos++;
@@ -289,8 +288,8 @@ public class ClassificationWithRF implements TutorialPage {
         p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");
     }
 
-    private double computeAccuracy(ClassifierModel model, Frame test) {
-        Vector predict = model.getClassification();
+    private double computeAccuracy(Classifier model, Frame test) {
+        Vector predict = model.getPrediction();
         double accuracy = 0;
         double total = predict.getRowCount();
         for (int i = 0; i < predict.getRowCount(); i++) {

@@ -24,7 +24,6 @@ import rapaio.data.Vector;
 import rapaio.explore.Workspace;
 import rapaio.filters.NominalFilters;
 import rapaio.supervised.AbstractClassifier;
-import rapaio.supervised.ClassifierModel;
 
 import java.util.*;
 
@@ -35,7 +34,7 @@ public class ID3 extends AbstractClassifier {
     private ID3Node root;
     private MetricType metricType = new EntropyMetricType();
     private String[] dict;
-    private Frame learn;
+    private NominalVector prediction;
 
     /**
      * Metric type used as criterion for splitting nodes.
@@ -106,10 +105,15 @@ public class ID3 extends AbstractClassifier {
         this.metricType = metricType;
     }
 
+    public ID3 newInstance() {
+        ID3 id3 = new ID3();
+        id3.setMetricType(this.getMetricType());
+        return id3;
+    }
+
     @Override
     public void learn(Frame df, String classColName) {
         validate(df, df.getColIndex(classColName));
-        this.learn = df;
         this.dict = df.getCol(classColName).getDictionary();
         this.root = new ID3Node(null, df, classColName, new HashSet<String>(), metricType);
     }
@@ -118,7 +122,7 @@ public class ID3 extends AbstractClassifier {
     public void summary() {
 
         StringBuilder sb = new StringBuilder();
-        sb.append("\nID3 model on frame \"").append(learn.getName()).append("\"\n");
+        sb.append("\nID3 model\n");
         sb.append("Use ").append(getMetricType().getMetricTypeName()).append(" as split criteria\n");
         summary(root, sb, 0);
         Workspace.code(sb.toString());
@@ -147,28 +151,22 @@ public class ID3 extends AbstractClassifier {
     }
 
     @Override
-    public ClassifierModel predict(final Frame df) {
-        final Vector classification = new NominalVector("classification", df.getRowCount(), dict);
+    public void predict(final Frame df) {
+        prediction = new NominalVector("classification", df.getRowCount(), dict);
         for (int i = 0; i < df.getRowCount(); i++) {
-            String prediction = predict(df, i, root);
-            classification.setLabel(i, prediction);
+            String label = predict(df, i, root);
+            prediction.setLabel(i, label);
         }
-        return new ClassifierModel() {
-            @Override
-            public Frame getTestFrame() {
-                return df;
-            }
+    }
 
-            @Override
-            public Vector getClassification() {
-                return classification;
-            }
+    @Override
+    public NominalVector getPrediction() {
+        return prediction;
+    }
 
-            @Override
-            public Frame getProbabilities() {
-                return null;
-            }
-        };
+    @Override
+    public Frame getDistribution() {
+        return null;
     }
 
     private String predict(Frame df, int row, ID3Node root) {

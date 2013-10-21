@@ -18,13 +18,22 @@ package rapaio.supervised;
 
 import rapaio.core.Summarizable;
 import rapaio.data.Frame;
+import rapaio.data.NominalVector;
+import rapaio.data.Vector;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public interface Classifier extends Summarizable {
 
+    Classifier newInstance();
+
     void learn(Frame df, String classColName);
 
-    ClassifierModel predict(Frame df);
+    void predict(Frame df);
+
+    NominalVector getPrediction();
+
+    Frame getDistribution();
+
 }
