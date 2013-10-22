@@ -29,7 +29,7 @@ import rapaio.graphics.plot.Points;
 public class QQPlot extends Plot {
 
     public QQPlot() {
-        setLeftLabel("Sample Quantiles");
+        setLeftLabel("StatSampling Quantiles");
         setBottomLabel("Theoretical Quantiles");
     }
 

@@ -21,18 +21,12 @@ import rapaio.core.RandomSource;
 import rapaio.core.stat.Mode;
 import rapaio.data.*;
 import rapaio.data.Vector;
-import rapaio.explore.Summary;
 import rapaio.explore.Workspace;
 import rapaio.filters.RowFilters;
 import rapaio.supervised.Classifier;
-import rapaio.sample.Sample;
-import rapaio.supervised.stat.ConfusionMatrix;
+import rapaio.sample.StatSampling;
 
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -116,7 +110,7 @@ public class RandomForest implements Classifier {
         for (int i = 0; i < mtrees; i++) {
             final Tree tree = new Tree(this);
             trees.add(tree);
-            final Frame bootstrap = Sample.randomBootstrap(df);
+            final Frame bootstrap = StatSampling.randomBootstrap(df);
             bootstraps.add(bootstrap);
 //            tasks.add(new Callable<Object>() {
 //                @Override

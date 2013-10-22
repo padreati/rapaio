@@ -17,8 +17,8 @@
 package rapaio.supervised.meta;
 
 import rapaio.data.*;
+import rapaio.sample.StatSampling;
 import rapaio.supervised.Classifier;
-import rapaio.sample.Sample;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +54,7 @@ public class Bagging implements Classifier {
         this.dict = df.getCol(classColName).getDictionary();
         classifiers.clear();
         for (int i = 0; i < bags; i++) {
-            Frame bootstrap = Sample.randomBootstrap(df, (int) Math.rint(df.getRowCount() * p));
+            Frame bootstrap = StatSampling.randomBootstrap(df, (int) Math.rint(df.getRowCount() * p));
             Classifier c = provider.newInstance();
             c.learn(bootstrap, classColName);
             classifiers.add(c);

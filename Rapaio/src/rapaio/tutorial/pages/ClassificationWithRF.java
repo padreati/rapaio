@@ -24,9 +24,9 @@ import rapaio.filters.ColFilters;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
 import rapaio.graphics.plot.Points;
+import rapaio.sample.StatSampling;
 import rapaio.supervised.Classifier;
 import rapaio.supervised.tree.RandomForest;
-import rapaio.sample.Sample;
 
 import java.io.IOException;
 import java.util.List;
@@ -131,10 +131,10 @@ public class ClassificationWithRF implements TutorialPage {
                 "training the random forest and another one will be used " +
                 "for testing its prediction accuracy. ");
 
-        code("        List<Frame> frames = Sample.randomSample(all, new int[]{all.getRowCount() * 15 / 100});\n" +
+        code("        List<Frame> frames = StatSampling.randomSample(all, new int[]{all.getRowCount() * 15 / 100});\n" +
                 "        Frame train = frames.get(0);\n" +
                 "        Frame test = frames.get(1);\n");
-        List<Frame> frames = Sample.randomSample(all, new int[]{all.getRowCount() * 15 / 100});
+        List<Frame> frames = StatSampling.randomSample(all, new int[]{all.getRowCount() * 15 / 100});
         Frame train = frames.get(0);
         Frame test = frames.get(1);
 

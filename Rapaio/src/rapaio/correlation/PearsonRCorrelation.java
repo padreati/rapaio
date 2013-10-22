@@ -29,7 +29,7 @@ import java.util.Arrays;
 
 /**
  * /**
- * Sample Pearson product-moment correlation coefficient.
+ * StatSampling Pearson product-moment correlation coefficient.
  * <p/>
  * See
  * http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient

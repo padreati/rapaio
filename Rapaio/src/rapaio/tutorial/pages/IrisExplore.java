@@ -42,7 +42,7 @@ public class IrisExplore implements TutorialPage {
 
     @Override
     public String getPageTitle() {
-        return "Iris Exploration Sample";
+        return "Iris Exploration StatSampling";
     }
 
     @Override

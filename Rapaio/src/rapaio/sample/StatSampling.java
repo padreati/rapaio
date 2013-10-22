@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Sample {
+public class StatSampling {
 
     public static List<Frame> randomSample(Frame frame, int splits) {
         int[] rowCounts = new int[splits - 1];
