@@ -143,8 +143,8 @@ public class DiscreteWeightedSamplingWOR {
         }
         double total = 0;
         for (int i = 0; i < p.length; i++) {
-            if (p[i] <= 0 || p[i] > 1) {
-                throw new IllegalArgumentException("weights must be positive and less than or equal to 1");
+            if (p[i] <= 0) {
+                throw new IllegalArgumentException("weights must be strict positive.");
             }
             total += p[i];
         }

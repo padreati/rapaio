@@ -22,7 +22,7 @@ import org.junit.Test;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class DiscreteWeightedSamplingTest {
+public class DiscreteSamplingTest {
 
     //    @Test
     public void worTest() {
@@ -49,7 +49,7 @@ public class DiscreteWeightedSamplingTest {
         System.out.println();
     }
 
-    @Test
+    //    @Test
     public void wrTest() {
         double[] w = null;
 //        w = new double[]{0.5, 0.5};
@@ -60,6 +60,23 @@ public class DiscreteWeightedSamplingTest {
         final int SAMPLES = 100;
         for (int i = 0; i < TRIALS; i++) {
             for (int next : new DiscreteWeightedSamplingWR(w).sample(SAMPLES)) {
+                freq[next]++;
+            }
+        }
+        for (int i = 0; i < freq.length; i++) {
+            System.out.print(String.format("%.6f, ", freq[i] / (1. * TRIALS * SAMPLES)));
+        }
+        System.out.println();
+    }
+
+    @Test
+    public void worUnifTest() {
+
+        double[] freq = new double[10];
+        final int TRIALS = 100_000;
+        final int SAMPLES = 3;
+        for (int i = 0; i < TRIALS; i++) {
+            for (int next : new DiscreteSamplingWOR(10).sample(SAMPLES)) {
                 freq[next]++;
             }
         }

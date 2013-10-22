@@ -41,6 +41,14 @@ public class NumericVector extends AbstractVector {
         this.values = Arrays.copyOf(values, values.length);
     }
 
+    public NumericVector(String name, int[] values) {
+        super(name);
+        this.values = new double[values.length];
+        for (int i = 0; i < values.length; i++) {
+            this.values[i] = values[i];
+        }
+    }
+
     @Override
     public boolean isNumeric() {
         return true;

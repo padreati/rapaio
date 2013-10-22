@@ -50,6 +50,7 @@ public class TutorialWebsiteGenerator {
 
         category = "StatisticalProcedures";
         pages.put(category, new ArrayList<TutorialPage>());
+        pages.get(category).add(new DiscreteSampling());
         pages.get(category).add(new CorrelationsPage());
 
         category = "SampleAnalysis";
