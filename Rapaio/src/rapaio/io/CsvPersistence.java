@@ -16,10 +16,7 @@
 
 package rapaio.io;
 
-import rapaio.data.Frame;
-import rapaio.data.NominalVector;
-import rapaio.data.SolidFrame;
-import rapaio.data.Vector;
+import rapaio.data.*;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -32,13 +29,14 @@ import java.util.regex.Pattern;
  */
 public class CsvPersistence {
 
-    private static final String NOMINAL_MISSING_VALUE = "?";
     private boolean trimSpaces = true;
     private boolean hasHeader = true;
     private boolean hasQuotas = true;
     private char colSeparator = ',';
     private char escapeQuotas = '\"';
-    private char decimalPoint = '.';
+    private final HashSet<String> numericFieldHints = new HashSet<>();
+    private final HashSet<String> indexFieldHints = new HashSet<>();
+    private final HashSet<String> nominalFieldHints = new HashSet<>();
 
     public boolean hasHeader() {
         return hasHeader;
@@ -80,12 +78,16 @@ public class CsvPersistence {
         this.trimSpaces = trimSpaces;
     }
 
-    public char getDecimalPoint() {
-        return decimalPoint;
+    public HashSet<String> getNumericFieldHints() {
+        return numericFieldHints;
     }
 
-    public void setDecimalPoint(char decimalPoint) {
-        this.decimalPoint = decimalPoint;
+    public HashSet<String> getIndexFieldHints() {
+        return indexFieldHints;
+    }
+
+    public HashSet<String> getNominalFieldHints() {
+        return nominalFieldHints;
     }
 
     public Frame read(String name, String fileName) throws IOException {
@@ -218,23 +220,104 @@ public class CsvPersistence {
             names.add("V" + (i + 1));
         }
         Vector[] vectors = new Vector[cols];
+
         // process data, one column at a time
         for (int i = 0; i < cols; i++) {
-            // TODO complete with building other than nominal
-            HashSet<String> dict = new HashSet<>();
-            for (int j = 0; j < rows.size(); j++) {
-                if (split.get(j).size() > i) {
-                    dict.add(split.get(j).get(i));
-                }
+            // check first for hints
+
+            if (indexFieldHints.contains(names.get(i)) || indexFieldHints.contains(String.valueOf(i))) {
+                vectors[i] = buildIndexVector(names, split, i);
+                continue;
             }
-            vectors[i] = new NominalVector(names.get(i), rows.size(), dict);
-            for (int j = 0; j < rows.size(); j++) {
-                if (split.get(j).size() > i) {
-                    vectors[i].setLabel(j, split.get(j).get(i));
-                }
+            if (numericFieldHints.contains(names.get(i)) || numericFieldHints.contains(String.valueOf(i))) {
+                vectors[i] = buildNumericVector(names, split, i);
+                continue;
             }
+            if (nominalFieldHints.contains(names.get(i)) || nominalFieldHints.contains(String.valueOf(i))) {
+                vectors[i] = buildNominalVector(names, split, i);
+                continue;
+            }
+
+            // no hints, determine automatically
+            if (isIndex(split, i)) {
+                vectors[i] = buildIndexVector(names, split, i);
+                continue;
+            }
+            if (isNumeric(split, i)) {
+                vectors[i] = buildNumericVector(names, split, i);
+                continue;
+            }
+            vectors[i] = buildNominalVector(names, split, i);
+
         }
         return new SolidFrame(name, rows.size(), vectors);
+    }
+
+    private boolean isIndex(List<List<String>> split, int i) {
+        for (int j = 0; j < split.size(); j++) {
+            String token = split.get(j).get(i);
+            if (token.isEmpty()) continue;
+            for (char ch : token.toCharArray()) {
+                if (Character.isDigit(ch)) continue;
+                if (ch == '?') continue;
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public IndexVector buildIndexVector(List<String> names, List<List<String>> split, int i) {
+        IndexVector vector = new IndexVector(names.get(i), split.size(), Integer.MIN_VALUE);
+        for (int j = 0; j < split.size(); j++) {
+            try {
+                vector.setIndex(j, Integer.parseInt(split.get(j).get(i)));
+            } catch (Throwable th) {
+            }
+        }
+        return vector;
+    }
+
+    private boolean isNumeric(List<List<String>> split, int i) {
+        for (int j = 0; j < split.size(); j++) {
+            String token = split.get(j).get(i);
+            if (token.isEmpty()) continue;
+            for (char ch : token.toCharArray()) {
+                if (Character.isDigit(ch)) continue;
+                if (ch == ',') continue;
+                if (ch == '-') continue;
+                if (ch == '.') continue;
+                if (ch == '?') continue;
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public NumericVector buildNumericVector(List<String> names, List<List<String>> split, int i) {
+        NumericVector vector = new NumericVector(names.get(i), split.size());
+        for (int j = 0; j < split.size(); j++) {
+            try {
+                vector.setValue(j, Double.parseDouble(split.get(j).get(i)));
+            } catch (Throwable ex) {
+            }
+        }
+        return vector;
+    }
+
+    public NominalVector buildNominalVector(List<String> names, List<List<String>> split, int i) {
+        HashSet<String> dict = new HashSet<>();
+        for (int j = 0; j < split.size(); j++) {
+            if (split.get(j).size() > i && !split.get(j).get(i).isEmpty()) {
+                dict.add(split.get(j).get(i));
+            }
+        }
+        NominalVector vector = new NominalVector(names.get(i), split.size(), dict);
+        for (int j = 0; j < split.size(); j++) {
+            if (split.get(j).size() > i && !split.get(j).get(i).isEmpty()) {
+                vector.setLabel(j, split.get(j).get(i));
+            }
+        }
+        return vector;
     }
 
     public void write(Frame df, String fileName) throws IOException {

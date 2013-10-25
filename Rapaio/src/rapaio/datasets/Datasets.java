@@ -82,7 +82,6 @@ public class Datasets {
         CsvPersistence persistence = new CsvPersistence();
         persistence.setColSeparator(',');
         persistence.setHasHeader(true);
-        persistence.setDecimalPoint('.');
         Frame df = persistence.read("spam-base", Datasets.class.getResourceAsStream("spam-base.csv"));
         List<Vector> vectors = new ArrayList<>();
         for (int i = 0; i < df.getColCount() - 1; i++) {

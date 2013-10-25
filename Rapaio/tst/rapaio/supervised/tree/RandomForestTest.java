@@ -50,11 +50,10 @@ public class RandomForestTest {
         return cv.cv(df, className, rf, 10);
     }
 
-    @Test
+    //    @Test
     public void allCompareTest() throws IOException {
         CsvPersistence csv = new CsvPersistence();
         csv.setHasHeader(true);
-        csv.setDecimalPoint('.');
         Frame tests = csv.read("test", getClass().getResourceAsStream("tests.csv"));
         List<Vector> vectors = new ArrayList<>();
         vectors.add(tests.getCol(0));

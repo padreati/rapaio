@@ -142,8 +142,8 @@ public class SortVectorTest {
         Frame df = persistence.read("df", new ByteArrayInputStream(csv.getBytes()));
 
         Vector nominal = df.getCol(0);
-        Vector index = BaseFilters.toIndex("x", df.getCol(1));
-        Vector numeric = BaseFilters.toNumeric("x", df.getCol(2));
+        Vector index = df.getCol(1);
+        Vector numeric = df.getCol(2);
 
         // nominal
 

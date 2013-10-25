@@ -27,6 +27,9 @@ import rapaio.supervised.Classifier;
 import rapaio.sample.StatSampling;
 
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -104,31 +107,30 @@ public class RandomForest implements Classifier {
             setupOobContainer(df);
         }
 
-//        ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-//        Collection<Callable<Object>> tasks = new ArrayList<>();
+        ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        Collection<Callable<Object>> tasks = new ArrayList<>();
         final List<Frame> bootstraps = new ArrayList<>();
         for (int i = 0; i < mtrees; i++) {
             final Tree tree = new Tree(this);
             trees.add(tree);
             final Frame bootstrap = StatSampling.randomBootstrap(df);
             bootstraps.add(bootstrap);
-//            tasks.add(new Callable<Object>() {
-//                @Override
-//                public Object call() throws Exception {
-            for (int j = 0; j < bootstrap.getRowCount(); j++) {
-                bootstrap.setValue(j, bootstrap.getColCount() - 1, 1.);
-            }
-            tree.learn(bootstrap);
-//                    return null;
-//                }
-//            });
-
+            tasks.add(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    for (int j = 0; j < bootstrap.getRowCount(); j++) {
+                        bootstrap.setValue(j, bootstrap.getColCount() - 1, 1.);
+                    }
+                    tree.learn(bootstrap);
+                    return null;
+                }
+            });
         }
-//        try {
-//            es.invokeAll(tasks);
-//            es.shutdown();
-//        } catch (InterruptedException e) {
-//        }
+        try {
+            es.invokeAll(tasks);
+            es.shutdown();
+        } catch (InterruptedException e) {
+        }
         if (computeOob) {
             for (int i = 0; i < mtrees; i++) {
                 addOob(df, bootstraps.get(i), trees.get(i));
@@ -262,20 +264,22 @@ public class RandomForest implements Classifier {
     private void summaryVariableImportance(StringBuilder sb) {
         sb.append("Gini variable importance: \n");
         Vector[] vectors = new Vector[2];
-        vectors[0] = new NominalVector("varName", giniImportanceNames.length, giniImportanceNames);
-        vectors[1] = new NumericVector("meanDecrease", new double[giniImportanceNames.length]);
-        Frame f = new SolidFrame("gini", giniImportanceNames.length, vectors);
+        vectors[0] = new NominalVector("varName", giniImportanceNames.length - 2, giniImportanceNames);
+        vectors[1] = new NumericVector("meanDecrease", new double[giniImportanceNames.length - 2]);
+        Frame f = new SolidFrame("gini", giniImportanceNames.length - 2, vectors);
         int width = 0;
+        int pos = 0;
         for (int i = 0; i < giniImportanceNames.length; i++) {
             String colName = giniImportanceNames[i];
-            if (colName.equals(classColName)) continue;
+            if (colName.equals(classColName) || colName.equals(WEIGHT_COL_NAME)) continue;
             width = max(width, classColName.length() + 1);
             double decrease = 0;
             if (giniImportanceCount[i] != 0) {
                 decrease = giniImportanceValue[i] / giniImportanceCount[i];
             }
-            f.setLabel(i, 0, colName);
-            f.setValue(i, 1, decrease);
+            f.setLabel(pos, 0, colName);
+            f.setValue(pos, 1, decrease);
+            pos++;
         }
         f = RowFilters.sort(f, RowComparators.numericComparator(f.getCol(1), false));
 
