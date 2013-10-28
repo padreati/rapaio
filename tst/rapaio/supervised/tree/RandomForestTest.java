@@ -53,23 +53,13 @@ public class RandomForestTest {
         CsvPersistence csv = new CsvPersistence();
         csv.setHasHeader(true);
         Frame tests = csv.read("test", getClass().getResourceAsStream("tests.csv"));
-        List<Vector> vectors = new ArrayList<>();
-        vectors.add(tests.getCol(0));
-        for (int i = 1; i <= 3; i++) {
-            vectors.add(BaseFilters.toNumeric(tests.getCol(i).getName(), tests.getCol(i)));
-        }
-        tests = new SolidFrame("tests", tests.getRowCount(), vectors);
-
         for (int i = 0; i < tests.getRowCount(); i++) {
+            if (tests.getLabel(i, 0).startsWith("#")) {
+                continue;
+            }
             System.out.println("test for " + tests.getLabel(i, 0));
             tests.setValue(i, 3, test(tests.getLabel(i, 0)));
         }
-
         Summary.head(tests.getRowCount(), tests);
-    }
-
-    //        @Test
-    public void testSomeTests() throws IOException {
-        test("anneal");
     }
 }

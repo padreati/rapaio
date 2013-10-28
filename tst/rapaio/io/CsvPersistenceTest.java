@@ -22,7 +22,9 @@ import org.junit.Test;
 import rapaio.data.Frame;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -167,12 +169,23 @@ public class CsvPersistenceTest {
 
     @Test
     public void testReadWriteRead() throws IOException {
-        String[] source = new String[] {};
+        String[] source = new String[] {
+            "a, b\n"
+                + "1.00001, 4\n"
+                + "3.4, 3\n"
+                + "2.5, 7\n"
+                + "1000, 2000000000\n"
+                + "1.01, 5"};
         String[] result = new String[] {};
 
         for (int i = 0; i < source.length; i++) {
             CsvPersistence csv = new CsvPersistence();
             Frame df = csv.read("t", new ByteArrayInputStream(source[i].getBytes()));
+            ByteArrayOutputStream os = new ByteArrayOutputStream(1000);
+            csv.write(df, os);
+            os.flush();
+            String output = os.toString();
+            System.out.println(output);
 //            csv.write();
         }
     }

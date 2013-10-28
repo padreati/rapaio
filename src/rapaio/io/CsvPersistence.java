@@ -19,6 +19,7 @@ package rapaio.io;
 import rapaio.data.*;
 
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -338,6 +339,7 @@ public class CsvPersistence {
                 }
                 writer.append("\n");
             }
+            DecimalFormat format = new DecimalFormat("0.###############################");
             for (int i = 0; i < df.getRowCount(); i++) {
                 for (int j = 0; j < df.getColCount(); j++) {
                     if (j != 0) {
@@ -346,7 +348,7 @@ public class CsvPersistence {
                     if (df.getCol(j).isNominal()) {
                         writer.append(unclean(df.getLabel(i, j)));
                     } else {
-                        writer.append(String.format("%f", df.getValue(i, j)));
+                        writer.append(format.format(df.getValue(i, j)));
                     }
                 }
                 writer.append("\n");

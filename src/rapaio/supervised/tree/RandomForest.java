@@ -13,7 +13,6 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
 package rapaio.supervised.tree;
 
 import static rapaio.core.BaseMath.*;
@@ -21,7 +20,7 @@ import rapaio.core.RandomSource;
 import rapaio.core.stat.Mode;
 import rapaio.data.*;
 import rapaio.data.Vector;
-import rapaio.explore.Workspace;
+import static rapaio.explore.Workspace.*;
 import rapaio.filters.RowFilters;
 import rapaio.supervised.Classifier;
 import rapaio.sample.StatSampling;
@@ -228,7 +227,6 @@ public class RandomForest implements Classifier {
         }
 
         // from freq to prob
-
         for (int i = 0; i < dist.getRowCount(); i++) {
             double max = 0;
             int col = 0;
@@ -258,7 +256,7 @@ public class RandomForest implements Classifier {
     public void summary() {
         StringBuilder sb = new StringBuilder();
         summaryVariableImportance(sb);
-        Workspace.code(sb.toString());
+        code(sb.toString());
     }
 
     private void summaryVariableImportance(StringBuilder sb) {
@@ -294,6 +292,7 @@ public class RandomForest implements Classifier {
 }
 
 class Tree {
+
     private final RandomForest rf;
     private TreeNode root;
     private String[] dict;
@@ -340,7 +339,6 @@ class Tree {
                 if (distribution[j] > distribution[indexes[0]]) {
                     len = 1;
                     indexes[0] = j;
-                    continue;
                 }
             }
             prediction.setLabel(i, dict[indexes[RandomSource.nextInt(len)]]);
@@ -383,6 +381,7 @@ class Tree {
 }
 
 class TreeNode {
+
     public boolean leaf = false;
     public String splitCol;
     public String splitLabel;
@@ -597,4 +596,3 @@ class TreeNode {
         return giniOrig - (totalLeft * giniLeft + totalRight * giniRight) / (totalLeft + totalRight);
     }
 }
-
