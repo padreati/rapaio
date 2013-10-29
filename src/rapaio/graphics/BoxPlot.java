@@ -16,12 +16,12 @@
 
 package rapaio.graphics;
 
+import rapaio.core.ColRange;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.OneIndexVector;
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
-import rapaio.core.ColumnRange;
 import rapaio.graphics.base.BaseFigure;
 import rapaio.graphics.base.Range;
 
@@ -78,7 +78,7 @@ public class BoxPlot extends BaseFigure {
         initialize();
     }
 
-    public BoxPlot(Frame df, ColumnRange colRange) {
+    public BoxPlot(Frame df, ColRange colRange) {
         if (colRange == null) {
             int len = 0;
             for (int i = 0; i < df.getColCount(); i++) {
@@ -93,7 +93,7 @@ public class BoxPlot extends BaseFigure {
                     indexes[len++] = i;
                 }
             }
-            colRange = new ColumnRange(indexes);
+            colRange = new ColRange(indexes);
         }
         List<Integer> indexes = colRange.parseColumnIndexes(df);
         vectors = new Vector[indexes.size()];

@@ -79,15 +79,16 @@ public class IrisExplore implements TutorialPage {
                 + " This is probably a well separation of species, so a plot should clarify "
                 + "that immediately.");
 
-        Plot plot = new Plot();
-        Points points = new Points(plot, df.getCol(2), df.getCol(3));
-        points.opt().setColorIndex(df.getCol("class"));
-        points.opt().setPchIndex(new OneIndexVector(1));
-        plot.setBottomLabel(df.getColNames()[2]);
-        plot.setLeftLabel(df.getColNames()[3]);
-        plot.setTitle("Iris datapoints colored by species");
 
-        draw(plot, 600, 350);
+        draw(new Plot(){{
+            new Points(this, df.getCol(2), df.getCol(3)) {{
+                opt().setColorIndex(df.getCol("class"));
+                opt().setPchIndex(1);
+            }};
+            setBottomLabel(df.getColNames()[2]);
+            setLeftLabel(df.getColNames()[3]);
+            setTitle("Iris data points colored by species");
+        }}, 600, 350);
 
         p(""
                 + "Indeed, we can notice that the red points are clustered closer to the bottom-left corner "

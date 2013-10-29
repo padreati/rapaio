@@ -16,9 +16,9 @@
 
 package rapaio.filters;
 
+import rapaio.core.ColRange;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.*;
-import rapaio.core.ColumnRange;
 import rapaio.data.Vector;
 
 import java.util.*;
@@ -41,7 +41,7 @@ public final class ColFilters {
      * @return original frame without columns specified in {@param colRange}
      */
     public static Frame removeCols(Frame df, String colRange) {
-        ColumnRange range = new ColumnRange(colRange);
+        ColRange range = new ColRange(colRange);
         final List<Integer> indexes = range.parseColumnIndexes(df);
         Vector[] vectors = new Vector[df.getColCount() - indexes.size()];
         int posIndexes = 0;
@@ -65,7 +65,7 @@ public final class ColFilters {
      * @return original frame which has only columns specified in {@param colRange}
      */
     public static Frame retainCols(Frame df, String colRange) {
-        ColumnRange range = new ColumnRange(colRange);
+        ColRange range = new ColRange(colRange);
         final List<Integer> indexes = range.parseColumnIndexes(df);
         Vector[] vectors = new Vector[indexes.size()];
         int posIndexes = 0;
@@ -111,7 +111,7 @@ public final class ColFilters {
         return new SolidFrame(df.getName(), df.getRowCount(), vectors);
     }
 
-    public static Frame discretizeNumericToNominal(Frame df, ColumnRange colRange, int bins, boolean useQuantiles) {
+    public static Frame discretizeNumericToNominal(Frame df, ColRange colRange, int bins, boolean useQuantiles) {
         if (df.isMappedFrame()) {
             throw new IllegalArgumentException("Not allowed for mapped frame");
         }

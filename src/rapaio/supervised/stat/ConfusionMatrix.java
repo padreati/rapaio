@@ -30,16 +30,21 @@ public class ConfusionMatrix implements Summarizable {
     private final Vector predict;
     private final String[] dict;
     private final int[][] cmf;
-    private final double[][] cmp;
+    private final boolean percents;
     private double acc;
+    private double completeCases = 0;
 
     public ConfusionMatrix(Vector actual, Vector predict) {
+        this(actual, predict, false);
+    }
+
+    public ConfusionMatrix(Vector actual, Vector predict, boolean percents) {
         validate(actual, predict);
         this.actual = actual;
         this.predict = predict;
         this.dict = actual.getDictionary();
-        this.cmf = new int[dict.length][dict.length];
-        this.cmp = new double[dict.length][dict.length];
+        this.cmf = new int[dict.length - 1][dict.length - 1];
+        this.percents = percents;
         compute();
     }
 
@@ -62,73 +67,227 @@ public class ConfusionMatrix implements Summarizable {
 
     private void compute() {
         for (int i = 0; i < actual.getRowCount(); i++) {
-            cmf[actual.getIndex(i)][predict.getIndex(i)]++;
+            if (actual.getIndex(i) != 0 && predict.getIndex(i) != 0) {
+                completeCases++;
+                cmf[actual.getIndex(i) - 1][predict.getIndex(i) - 1]++;
+            }
         }
         acc = 0;
         for (int i = 0; i < actual.getRowCount(); i++) {
-            if (actual.getIndex(i) == predict.getIndex(i)) {
+            if (actual.getIndex(i) == predict.getIndex(i) && actual.getIndex(i) != 0) {
                 acc++;
             }
         }
-        acc /= (1. * actual.getRowCount());
+
+        if (completeCases == 0) {
+            acc = 0;
+        } else {
+            acc /= completeCases;
+        }
     }
 
     @Override
     public void summary() {
         StringBuilder sb = new StringBuilder();
 
-        addPreamble(sb);
         addConfusionMatrix(sb);
-        addAccuracy(sb);
+        addDetails(sb);
 
         Workspace.code(sb.toString());
     }
 
-    private void addAccuracy(StringBuilder sb) {
+    private void addDetails(StringBuilder sb) {
+        sb.append(String.format("\nComplete cases %d from %d\n", (int) Math.rint(completeCases), actual.getRowCount()));
         sb.append(String.format("Accuracy: %.4f\n", acc));
     }
 
-    private void addPreamble(StringBuilder sb) {
-        sb.append("\nConfusion matrix for actual: ").append(actual.getName()).append(", predict: ").append(predict.getName()).append("\n");
-        sb.append("======================\n\n");
-    }
-
     private void addConfusionMatrix(StringBuilder sb) {
-        sb.append("Confusion matrix\n");
+        sb.append("\nConfusion matrix for actual: <").append(actual.getName()).append(">, predict: <").append(predict.getName()).append(">\n");
 
+        sb.append("\n");
         int maxwidth = "Actual".length();
-        for (int i = 0; i < dict.length; i++) {
+        for (int i = 1; i < dict.length; i++) {
             maxwidth = BaseMath.max(maxwidth, dict[i].length());
-            for (int j = 0; j < dict.length; j++) {
-                maxwidth = BaseMath.max(maxwidth, String.format("%d", cmf[i][j]).length());
+            int total = 0;
+            for (int j = 1; j < dict.length; j++) {
+                maxwidth = BaseMath.max(maxwidth, String.format("%d", cmf[i - 1][j - 1]).length());
+                total += cmf[i - 1][j - 1];
             }
+            maxwidth = BaseMath.max(maxwidth, String.format("%d", total).length());
         }
 
         sb.append(String.format("%" + maxwidth + "s", "")).append("|").append(" Predicted\n");
         sb.append(String.format("%" + maxwidth + "s", "Actual")).append("|");
-        for (int i = 0; i < dict.length; i++) {
-            sb.append(String.format("%" + maxwidth + "s ", dict[i]));
+        for (int i = 1; i < dict.length; i++) {
+            sb.append(String.format("%" + maxwidth + "s", dict[i]));
+            if (i != dict.length - 1) {
+                sb.append(" ");
+            } else {
+                sb.append("|");
+            }
         }
+        sb.append(String.format("%" + maxwidth + "s ", "Total"));
         sb.append("\n");
 
-        for (int i = 0; i < dict.length+1; i++) {
+        for (int i = 1; i < dict.length + 1; i++) {
             for (int j = 0; j < maxwidth; j++) {
                 sb.append("-");
             }
             sb.append(" ");
         }
+        for (int j = 0; j < maxwidth; j++) {
+            sb.append("-");
+        }
+        sb.append(" ");
         sb.append("\n");
 
-        for (int i = 0; i < dict.length; i++) {
+        for (int i = 1; i < dict.length; i++) {
             sb.append(String.format("%" + maxwidth + "s", dict[i])).append("|");
-            for (int j = 0; j < dict.length; j++) {
-                sb.append(String.format("%" + maxwidth + "d ", cmf[i][j]));
+            int total = 0;
+            for (int j = 1; j < dict.length; j++) {
+                sb.append(String.format("%" + maxwidth + "d", cmf[i - 1][j - 1]));
+                if (j != dict.length - 1) {
+                    sb.append(" ");
+                } else {
+                    sb.append("|");
+                }
+                total += cmf[i - 1][j - 1];
             }
+            sb.append(String.format("%" + maxwidth + "d", total));
             sb.append("\n");
         }
+
+        for (int i = 1; i < dict.length + 1; i++) {
+            for (int j = 0; j < maxwidth; j++) {
+                sb.append("-");
+            }
+            sb.append(" ");
+        }
+        for (int j = 0; j < maxwidth; j++) {
+            sb.append("-");
+        }
+        sb.append(" ");
+        sb.append("\n");
+
+
+        sb.append(String.format("%" + maxwidth + "s", "Total")).append("|");
+        for (int j = 1; j < dict.length; j++) {
+            int total = 0;
+            for (int i = 1; i < dict.length; i++) {
+                total += cmf[i - 1][j - 1];
+            }
+            sb.append(String.format("%" + maxwidth + "d", total));
+            if (j != dict.length - 1) {
+                sb.append(" ");
+            } else {
+                sb.append("|");
+            }
+        }
+        sb.append(String.format("%" + maxwidth + "d", (int) Math.rint(completeCases)));
+        sb.append("\n");
+
+
+        // percents
+
+        if (!percents || completeCases == 0.) return;
+
+        sb.append("\n");
+        maxwidth = "Actual".length();
+        for (int i = 1; i < dict.length; i++) {
+            maxwidth = BaseMath.max(maxwidth, dict[i].length());
+            int total = 0;
+            for (int j = 1; j < dict.length; j++) {
+                maxwidth = BaseMath.max(maxwidth, String.format("%.3f", cmf[i - 1][j - 1] / completeCases).length());
+                total += cmf[i - 1][j - 1];
+            }
+            maxwidth = BaseMath.max(maxwidth, String.format("%.3f", total / completeCases).length());
+        }
+
+        sb.append(String.format("%" + maxwidth + "s", "")).append("|").append(" Predicted\n");
+        sb.append(String.format("%" + maxwidth + "s", "Actual")).append("|");
+        for (int i = 1; i < dict.length; i++) {
+            sb.append(String.format("%" + maxwidth + "s", dict[i]));
+            if (i != dict.length - 1) {
+                sb.append(" ");
+            } else {
+                sb.append("|");
+            }
+        }
+        sb.append(String.format("%" + maxwidth + "s ", "Total"));
+        sb.append("\n");
+
+        for (int i = 1; i < dict.length + 1; i++) {
+            for (int j = 0; j < maxwidth; j++) {
+                sb.append("-");
+            }
+            sb.append(" ");
+        }
+        for (int j = 0; j < maxwidth; j++) {
+            sb.append("-");
+        }
+        sb.append(" ");
+        sb.append("\n");
+
+        for (int i = 1; i < dict.length; i++) {
+            sb.append(String.format("%" + maxwidth + "s", dict[i])).append("|");
+            int total = 0;
+            for (int j = 1; j < dict.length; j++) {
+                sb.append(String.format(" %.3f", cmf[i - 1][j - 1] / completeCases));
+                if (j != dict.length - 1) {
+                    sb.append(" ");
+                } else {
+                    sb.append("|");
+                }
+                total += cmf[i - 1][j - 1];
+            }
+            sb.append(String.format(" %.3f", total / completeCases));
+            sb.append("\n");
+        }
+
+        for (int i = 1; i < dict.length + 1; i++) {
+            for (int j = 0; j < maxwidth; j++) {
+                sb.append("-");
+            }
+            sb.append(" ");
+        }
+        for (int j = 0; j < maxwidth; j++) {
+            sb.append("-");
+        }
+        sb.append(" ");
+        sb.append("\n");
+
+
+        sb.append(String.format("%" + maxwidth + "s", "Total")).append("|");
+        for (int j = 1; j < dict.length; j++) {
+            int total = 0;
+            for (int i = 1; i < dict.length; i++) {
+                total += cmf[i - 1][j - 1];
+            }
+            sb.append(String.format(" %.3f", total / completeCases));
+            if (j != dict.length - 1) {
+                sb.append(" ");
+            } else {
+                sb.append("|");
+            }
+        }
+        sb.append(String.format(" %.3f", 1.));
+        sb.append("\n");
+
     }
-    
+
     public double getAccuracy() {
         return acc;
+    }
+
+    public int getCompleteCases() {
+        return (int) Math.rint(completeCases);
+    }
+
+    public void setCompleteCases(double completeCases) {
+        this.completeCases = completeCases;
+    }
+
+    public int[][] getMatrix() {
+        return cmf;
     }
 }

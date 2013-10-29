@@ -35,10 +35,11 @@ import java.util.List;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class ColumnRange {
+public class ColRange {
 
     private static final String COL_DELIMITER = ",";
     private static final String COL_RANGE = "-";
+    private static final String COL_ALL = "all";
     private final String rawColumnRange;
 
     /**
@@ -46,7 +47,7 @@ public class ColumnRange {
      *
      * @param colIndexes list of column indexes
      */
-    public ColumnRange(int... colIndexes) {
+    public ColRange(int... colIndexes) {
         if (colIndexes.length == 0) {
             throw new IllegalArgumentException("No column indexes specified.");
         }
@@ -66,7 +67,7 @@ public class ColumnRange {
      *
      * @param rawColumnRange column ranges specified in string format
      */
-    public ColumnRange(String rawColumnRange) {
+    public ColRange(String rawColumnRange) {
         this.rawColumnRange = rawColumnRange;
     }
 
@@ -78,8 +79,14 @@ public class ColumnRange {
      * @return a list of column indexes which corresponds to column range
      */
     public List<Integer> parseColumnIndexes(Frame df) {
-        String[] ranges = rawColumnRange.split(COL_DELIMITER);
         List<Integer> colIndexes = new ArrayList<>();
+        if ("all".equals(rawColumnRange)) {
+            for (int i = 0; i < df.getColCount(); i++) {
+                colIndexes.add(i);
+            }
+            return colIndexes;
+        }
+        String[] ranges = rawColumnRange.split(COL_DELIMITER);
 
         HashSet<String> colNames = new HashSet<>();
         for (int i = 0; i < df.getColNames().length; i++) {

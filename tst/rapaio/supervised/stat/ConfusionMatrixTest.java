@@ -46,9 +46,9 @@ public class ConfusionMatrixTest {
         actual.setLabel(2, "dog");
         predict.setLabel(2, "dog");
         
-        actual.setLabel(3, "dog");
-        predict.setLabel(3, "mouse");
-        
+//        actual.setLabel(3, "dog");
+//        predict.setLabel(3, "mouse");
+//
         actual.setLabel(4, "mouse");
         predict.setLabel(4, "mouse");
 

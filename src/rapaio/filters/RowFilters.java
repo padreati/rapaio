@@ -16,6 +16,7 @@
 
 package rapaio.filters;
 
+import rapaio.core.ColRange;
 import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.data.Vector;
@@ -125,5 +126,34 @@ public final class RowFilters {
             }
         }
         return new MappedFrame(source.getSourceFrame(), new Mapping(mapping));
+    }
+
+    /**
+     * Returns a mapped frame with cases which does not contain missing values
+     * in any column of the frame.
+     *
+     * @param source source frame
+     * @return mapped frame with complete cases
+     */
+    public static Frame completeCases(Frame source) {
+        return completeCases(source, new ColRange("all"));
+    }
+
+    public static Frame completeCases(Frame source, ColRange colRange) {
+        List<Integer> selectedCols = colRange.parseColumnIndexes(source);
+        List<Integer> ids = new ArrayList<>();
+        for (int i = 0; i < source.getRowCount(); i++) {
+            boolean complete = true;
+            for (int col : selectedCols) {
+                if (source.getCol(col).isMissing(i)) {
+                    complete = false;
+                    break;
+                }
+            }
+            if (complete) {
+                ids.add(source.getRowId(i));
+            }
+        }
+        return new MappedFrame(source.getName(), source.getSourceFrame(), new Mapping(ids));
     }
 }
