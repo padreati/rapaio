@@ -56,8 +56,7 @@ public class CorrelationsPage implements TutorialPage {
         code("Frame df = Datasets.loadIrisDataset();\n" +
                 "df = ColFilters.retainNumeric(df);\n" +
                 "names(df);");
-        Frame df = Datasets.loadIrisDataset();
-        df = ColFilters.retainNumeric(df);
+        final Frame df = ColFilters.retainNumeric(Datasets.loadIrisDataset());
         names(df);
 
         heading(2, "Pearson product-moment correlation");
@@ -111,7 +110,7 @@ public class CorrelationsPage implements TutorialPage {
 
         code("        PearsonRCorrelation corr = new PearsonRCorrelation(df);\n" +
                 "        summary(corr);\n");
-        PearsonRCorrelation r = new PearsonRCorrelation(df);
+        final PearsonRCorrelation r = new PearsonRCorrelation(df);
         summary(r);
 
         p("We can spot with eas that many of the attributes are " +
@@ -123,7 +122,6 @@ public class CorrelationsPage implements TutorialPage {
         Plot plot = new Plot();
         Points points = new Points(plot, jitter(df.getCol("petal-length"), 0.01), jitter(df.getCol("sepal-length"), 0.01));
         points.opt().setPchIndex(new OneIndexVector(1));
-        plot.add(points);
         plot.setTitle("p correlation = " +
                 r.getValues()[df.getColIndex("petal-length")][df.getColIndex("sepal-length")]);
         draw(plot, 400, 300);
@@ -133,7 +131,6 @@ public class CorrelationsPage implements TutorialPage {
 
         plot = new Plot();
         points = new Points(plot, jitter(df.getCol("petal-length"), 0.01), jitter(df.getCol("petal-width"), 0.01));
-        plot.add(points);
         points.opt().setPchIndex(new OneIndexVector(1));
         plot.setTitle("p correlation = " +
                 r.getValues()[df.getColIndex("petal-length")][df.getColIndex("petal-width")]);
@@ -143,12 +140,12 @@ public class CorrelationsPage implements TutorialPage {
                 "which could mean that the variables are not linearly correlated. " +
                 "Such a value for correlation we have between sepal-length and sepal-width. ");
 
-        plot = new Plot();
-        points = new Points(plot, jitter(df.getCol("sepal-length"), 0.01), jitter(df.getCol("sepal-width"), 0.01));
-        plot.add(points);
-        points.opt().setPchIndex(new OneIndexVector(1));
-        plot.setTitle("p correlation = " +
-                r.getValues()[df.getColIndex("sepal-length")][df.getColIndex("sepal-width")]);
+        final Plot plot2 = new Plot() {{
+            setTitle("p correlation = " + r.getValues()[df.getColIndex("sepal-length")][df.getColIndex("sepal-width")]);
+            new Points(this, jitter(df.getCol("sepal-length"), 0.01), jitter(df.getCol("sepal-width"), 0.01)) {{
+                opt().setPchIndex(new OneIndexVector(1));
+            }};
+        }};
         draw(plot, 400, 300);
 
 

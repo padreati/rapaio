@@ -13,7 +13,6 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
 package rapaio.io;
 
 import org.junit.After;
@@ -37,13 +36,13 @@ public class CsvPersistenceTest {
 
     private CsvPersistence persistence;
     private String[] strings = new String[]{
-            "Year,Make,Model,Description,Price\n"
-                    + "1997,Ford,E350,\"ac, abs, moon\",3000.00\n"
-                    + "1999,Chevy,\"Venture \"\"Extended Edition\"\"\",\"\",4900.00\n"
-                    + "1999,Chevy,\"Venture \"\"Extended Edition, Very Large\"\"\",,5000.00\n"
-                    + "1996,Jeep,Grand Cherokee,\"MUST SELL! air, moon roof, loaded\",4799.00",
-            //
-            "\"Year \", \"Make, Model\" , \"Description\"\"\", Price",};
+        "Year,Make,Model,Description,Price\n"
+        + "1997,Ford,E350,\"ac, abs, moon\",3000.00\n"
+        + "1999,Chevy,\"Venture \"\"Extended Edition\"\"\",\"\",4900.00\n"
+        + "1999,Chevy,\"Venture \"\"Extended Edition, Very Large\"\"\",,5000.00\n"
+        + "1996,Jeep,Grand Cherokee,\"MUST SELL! air, moon roof, loaded\",4799.00",
+        //
+        "\"Year \", \"Make, Model\" , \"Description\"\"\", Price",};
 
     @Before
     public void setUp() {
@@ -139,7 +138,6 @@ public class CsvPersistenceTest {
         checkLine(csv, " \"ana\", \"ana\"\"again\"", new String[]{"ana", "ana\"again"});
     }
 
-
     @Test
     public void testFullFrame() {
         try {
@@ -153,7 +151,6 @@ public class CsvPersistenceTest {
         }
 
     }
-
 
     private void checkLine(CsvPersistence csv, String line, String[] matches) {
         List<String> tokens = csv.parseLine(line);
@@ -169,24 +166,27 @@ public class CsvPersistenceTest {
 
     @Test
     public void testReadWriteRead() throws IOException {
-        String[] source = new String[] {
-            "a, b\n"
-                + "1.00001, 4\n"
-                + "3.4, 3\n"
-                + "2.5, 7\n"
-                + "1000, 2000000000\n"
-                + "1.01, 5"};
-        String[] result = new String[] {};
+        String[] source = new String[]{
+            "a,b\n"
+            + "1.00001,4\n"
+            + "3.4,3\n"
+            + "2.5,7\n"
+            + "1000,2000000000\n"
+            + "1.01,5\n",
+            "x\n"
+            + "1.0\n"
+            + "2.0\n"
+            + "xx\n"
+        };
 
         for (int i = 0; i < source.length; i++) {
             CsvPersistence csv = new CsvPersistence();
+            csv.setHasQuotas(false);
             Frame df = csv.read("t", new ByteArrayInputStream(source[i].getBytes()));
             ByteArrayOutputStream os = new ByteArrayOutputStream(1000);
             csv.write(df, os);
             os.flush();
-            String output = os.toString();
-            System.out.println(output);
-//            csv.write();
+            assertEquals(source[i], os.toString());
         }
     }
 }

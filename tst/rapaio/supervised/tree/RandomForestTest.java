@@ -23,7 +23,7 @@ import rapaio.explore.Summary;
 import rapaio.filters.BaseFilters;
 import rapaio.io.ArffPersistence;
 import rapaio.io.CsvPersistence;
-import rapaio.supervised.CrossValidation;
+import rapaio.supervised.ModelEvaluation;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class RandomForestTest {
         Frame df = loadFrame(name);
         String className = df.getCol(df.getColCount() - 1).getName();
         RandomForest rf = new RandomForest(100);
-        CrossValidation cv = new CrossValidation();
+        ModelEvaluation cv = new ModelEvaluation();
         return cv.cv(df, className, rf, 10);
     }
 

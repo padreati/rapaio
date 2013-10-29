@@ -19,7 +19,9 @@ package rapaio.tutorial.pages;
 import rapaio.data.*;
 import rapaio.datasets.Datasets;
 import rapaio.explore.Summary;
+
 import static rapaio.explore.Workspace.*;
+
 import rapaio.filters.ColFilters;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
@@ -147,9 +149,9 @@ public class ClassificationWithRF implements TutorialPage {
 
 
         int pos = 0;
-        Vector index = new IndexVector("number of trees", 400);
-        Vector accuracy = new NumericVector("test error", 400);
-        Vector oob = new NumericVector("oob error", 400);
+        final Vector index = new IndexVector("number of trees", 400);
+        final Vector accuracy = new NumericVector("test error", 400);
+        final Vector oob = new NumericVector("oob error", 400);
         for (int mtree = 1; mtree < 200; mtree += 10) {
             RandomForest rf = new RandomForest(mtree, 2, true);
             rf.learn(train, "spam");
@@ -159,20 +161,21 @@ public class ClassificationWithRF implements TutorialPage {
             oob.setValue(pos, rf.getOobError());
             pos++;
         }
-        Plot p = new Plot();
-        Lines lines = new Lines(p, index, accuracy);
-        lines.opt().setColorIndex(new OneIndexVector(2));
-        p.add(lines);
-        Points pts = new Points(p, index, accuracy);
-        pts.opt().setColorIndex(new OneIndexVector(2));
-        p.add(pts);
-        p.add(new Lines(p, index, oob));
-        p.add(new Points(p, index, oob));
 
-        p.setLeftLabel("test (blue), oob (black)");
-        p.setTitle("Accuracy errors (% misclassified)");
-        p.getOp().setYRange(0, 0.4);
-        draw(p, 600, 400);
+        draw(new Plot() {{
+            new Lines(this, index, accuracy) {{
+                opt().setColorIndex(new OneIndexVector(2));
+            }};
+            new Points(this, index, accuracy) {{
+                opt().setColorIndex(new OneIndexVector(2));
+            }};
+            new Lines(this, index, oob);
+            new Points(this, index, oob);
+
+            setLeftLabel("test (blue), oob (black)");
+            setTitle("Accuracy errors (% misclassified)");
+            opt().setYRange(0, 0.4);
+        }}, 600, 400);
 
         p("Note from the previous plot how both test and oob errors " +
                 "goes down as the number of trained trees grown. " +
@@ -204,7 +207,7 @@ public class ClassificationWithRF implements TutorialPage {
                 "\n" +
                 "        p.setLeftLabel(\"test (blue), oob (black)\");\n" +
                 "        p.setTitle(\"Accuracy errors (% misclassified)\");\n" +
-                "        p.getOp().setYRange(0, 0.4);\n" +
+                "        p.opt().setYRange(0, 0.4);\n" +
                 "        draw(p, 600, 400);\n");
 
         heading(3, "Playing with number of random features");
@@ -217,9 +220,9 @@ public class ClassificationWithRF implements TutorialPage {
                 "prediction and the compensation is better accuracy.");
 
         pos = 0;
-        index = new IndexVector("mtree", 1000);
-        accuracy = new NumericVector("test error", 1000);
-        oob = new NumericVector("oob error", 1000);
+        final Vector index1 = new IndexVector("mtree", 1000);
+        final Vector accuracy1 = new NumericVector("test error", 1000);
+        final Vector oob1 = new NumericVector("oob error", 1000);
         for (int mcol = 1; mcol < 20; mcol += 1) {
 
             RandomForest rf = new RandomForest(30, mcol, true);
@@ -231,20 +234,20 @@ public class ClassificationWithRF implements TutorialPage {
 
             pos++;
         }
-        p = new Plot();
-        lines = new Lines(p, index, accuracy);
-        lines.opt().setColorIndex(new OneIndexVector(2));
-        p.add(lines);
-        pts = new Points(p, index, accuracy);
-        pts.opt().setColorIndex(new OneIndexVector(2));
-        p.add(pts);
-        p.add(new Lines(p, index, oob));
-        p.add(new Points(p, index, oob));
-        p.setLeftLabel("test (blue), oob (black");
-        p.setBottomLabel("mcols - number of features considered");
-        p.setTitle("Accuracy errors (% misclassified)");
-        p.getOp().setYRange(0, 0.4);
-        draw(p, 600, 400);
+        draw(new Plot() {{
+            new Lines(this, index1, accuracy1) {{
+                opt().setColorIndex(new OneIndexVector(2));
+            }};
+            new Points(this, index1, accuracy1){{
+                opt().setColorIndex(new OneIndexVector(2));
+            }};
+            new Lines(this, index1, oob1);
+            new Points(this, index1, oob1);
+            setLeftLabel("test (blue), oob (black");
+            setBottomLabel("mcols - number of features considered");
+            setTitle("Accuracy errors (% misclassified)");
+            opt().setYRange(0, 0.4);
+        }}, 600, 400);
 
         p("It can be seen here that the best prediction according " +
                 "with oob and the test used is when the number of " +
@@ -279,7 +282,7 @@ public class ClassificationWithRF implements TutorialPage {
                 "        p.setLeftLabel(\"test (blue), oob (black\");\n" +
                 "        p.setBottomLabel(\"mcols - number of features considered\");\n" +
                 "        p.setTitle(\"Accuracy errors (% misclassified)\");\n" +
-                "        p.getOp().setYRange(0, 0.4);\n" +
+                "        p.opt().setYRange(0, 0.4);\n" +
                 "        draw(p, 600, 400);\n");
 
         p("Note: the sole purpose of this tutorial is to show what and how it can " +

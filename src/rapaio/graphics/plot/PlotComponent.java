@@ -32,7 +32,8 @@ public abstract class PlotComponent {
 
     public PlotComponent(Plot plot) {
         this.plot = plot;
-        this.options = new GraphicOptions(plot.getOp());
+        this.options = new GraphicOptions(plot.opt());
+        this.plot.getComponents().add(this);
     }
 
     public GraphicOptions opt() {

@@ -16,11 +16,9 @@
 
 package rapaio.data;
 
-import junit.framework.Assert;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import rapaio.datasets.Datasets;
-import rapaio.explore.Summary;
-import rapaio.filters.ColFilters;
 import rapaio.filters.RowFilters;
 
 import java.io.IOException;
@@ -36,7 +34,7 @@ public class MappedFrameTest {
         Frame sort = RowFilters.sort(orig, RowComparators.numericComparator(orig.getCol(1), true));
         sort = RowFilters.sort(sort, RowComparators.numericComparator(orig.getCol(2), true));
         for (int i = 0; i < sort.getRowCount(); i++) {
-            Assert.assertEquals(sort.getValue(i, 0), sort.getCol(0).getValue(i));
+            assertEquals(sort.getValue(i, 0), sort.getCol(0).getValue(i), 1e-10);
         }
     }
 }

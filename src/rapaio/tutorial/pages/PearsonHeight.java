@@ -69,14 +69,12 @@ public class PearsonHeight implements TutorialPage {
         for (int i = 0; i < df.getColCount(); i++) {
             Histogram hist = new Histogram(df.getCol(i), 23, true, 57, 80);
             hist.setBottomLabel(df.getColNames()[i]);
-            hist.getOp().setXRange(57, 80);
-            hist.getOp().setYRange(0, 0.20);
+            hist.opt().setXRange(57, 80);
+            hist.opt().setYRange(0, 0.20);
 
-//            Normal normal = new Normal(new Mean(df.getCol(i)).getValue(), 1.3);
             Normal normal = new Normal(new Mean(df.getCol(i)).getValue(), sqrt(new Variance(df.getCol(i)).getValue()));
             FunctionLine nline = new FunctionLine(hist, normal.getPdfFunction());
             nline.opt().setColorIndex(new OneIndexVector(2));
-            hist.add(nline);
 
             draw(hist, 700, 300);
         }
@@ -101,8 +99,8 @@ public class PearsonHeight implements TutorialPage {
             qqplot.add(df.getCol(i), normal);
             qqplot.setLeftLabel(df.getColNames()[i]);
 
-            qqplot.add(new ABLine(qqplot, mu, true));
-            qqplot.add(new ABLine(qqplot, 0, false));
+            new ABLine(qqplot, mu, true);
+            new ABLine(qqplot, 0, false);
 
             draw(qqplot, 500, 300);
         }
@@ -125,21 +123,19 @@ public class PearsonHeight implements TutorialPage {
         summary(sonQuantiles);
 
         Plot plot = new Plot();
-        plot.getOp().setXRange(55, 80);
-        plot.getOp().setYRange(55, 80);
+        plot.opt().setXRange(55, 80);
+        plot.opt().setYRange(55, 80);
 
         for (int i = 0; i < fatherQuantiles.getValues().length; i++) {
             ABLine line = new ABLine(plot, fatherQuantiles.getValues()[i], false);
             line.opt().setColorIndex(new OneIndexVector(30));
-            plot.add(line);
         }
 
         for (int i = 0; i < sonQuantiles.getValues().length; i++) {
             ABLine line = new ABLine(plot, sonQuantiles.getValues()[i], true);
             line.opt().setColorIndex(new OneIndexVector(30));
-            plot.add(line);
         }
-        plot.add(new Points(plot, df.getCol("Father"), df.getCol("Son")));
+        new Points(plot, df.getCol("Father"), df.getCol("Son"));
         draw(plot, 600, 600);
 
         p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");

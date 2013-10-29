@@ -25,7 +25,7 @@ import java.awt.*;
  */
 public interface Figure {
 
-    GraphicOptions getOp();
+    GraphicOptions opt();
 
     void paint(Graphics2D g2d, Rectangle rect);
 

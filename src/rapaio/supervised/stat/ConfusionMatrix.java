@@ -31,6 +31,7 @@ public class ConfusionMatrix implements Summarizable {
     private final String[] dict;
     private final int[][] cmf;
     private final double[][] cmp;
+    private double acc;
 
     public ConfusionMatrix(Vector actual, Vector predict) {
         validate(actual, predict);
@@ -59,10 +60,17 @@ public class ConfusionMatrix implements Summarizable {
         }
     }
 
-    private final void compute() {
+    private void compute() {
         for (int i = 0; i < actual.getRowCount(); i++) {
             cmf[actual.getIndex(i)][predict.getIndex(i)]++;
         }
+        acc = 0;
+        for (int i = 0; i < actual.getRowCount(); i++) {
+            if (actual.getIndex(i) == predict.getIndex(i)) {
+                acc++;
+            }
+        }
+        acc /= (1. * actual.getRowCount());
     }
 
     @Override
@@ -77,27 +85,18 @@ public class ConfusionMatrix implements Summarizable {
     }
 
     private void addAccuracy(StringBuilder sb) {
-        double acc = 0;
-        for (int i = 0; i < actual.getRowCount(); i++) {
-            if (actual.getIndex(i) == predict.getIndex(i)) {
-                acc++;
-            }
-        }
-        acc /= (1. * actual.getRowCount());
         sb.append(String.format("Accuracy: %.4f\n", acc));
     }
 
     private void addPreamble(StringBuilder sb) {
-        sb.append("\nConfusion matrix summary statistics for " +
-                "actual vector: ").append(actual.getName())
-                .append(", predict vector: ").append(predict.getName()).append("\n");
+        sb.append("\nConfusion matrix for actual: ").append(actual.getName()).append(", predict: ").append(predict.getName()).append("\n");
         sb.append("======================\n\n");
     }
 
     private void addConfusionMatrix(StringBuilder sb) {
-        sb.append("Confusion matrix\n\n");
+        sb.append("Confusion matrix\n");
 
-        int maxwidth = 0;
+        int maxwidth = "Actual".length();
         for (int i = 0; i < dict.length; i++) {
             maxwidth = BaseMath.max(maxwidth, dict[i].length());
             for (int j = 0; j < dict.length; j++) {
@@ -105,13 +104,14 @@ public class ConfusionMatrix implements Summarizable {
             }
         }
 
-        sb.append("Predicted\n");
+        sb.append(String.format("%" + maxwidth + "s", "")).append("|").append(" Predicted\n");
+        sb.append(String.format("%" + maxwidth + "s", "Actual")).append("|");
         for (int i = 0; i < dict.length; i++) {
             sb.append(String.format("%" + maxwidth + "s ", dict[i]));
         }
         sb.append("\n");
 
-        for (int i = 0; i < dict.length; i++) {
+        for (int i = 0; i < dict.length+1; i++) {
             for (int j = 0; j < maxwidth; j++) {
                 sb.append("-");
             }
@@ -120,14 +120,15 @@ public class ConfusionMatrix implements Summarizable {
         sb.append("\n");
 
         for (int i = 0; i < dict.length; i++) {
+            sb.append(String.format("%" + maxwidth + "s", dict[i])).append("|");
             for (int j = 0; j < dict.length; j++) {
                 sb.append(String.format("%" + maxwidth + "d ", cmf[i][j]));
             }
-            sb.append(" |").append(String.format("%" + maxwidth + "s ", dict[i]));
-            if (i == 1) {
-                sb.append("   <- Actual");
-            }
             sb.append("\n");
         }
+    }
+    
+    public double getAccuracy() {
+        return acc;
     }
 }

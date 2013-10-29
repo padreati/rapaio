@@ -44,7 +44,5 @@ public class QQPlot extends Plot {
 
         Points pts = new Points(this, y, x);
         pts.opt().setColorIndex(new OneIndexVector(0));
-        this.add(pts);
     }
-
 }

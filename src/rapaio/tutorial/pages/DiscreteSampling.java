@@ -20,7 +20,7 @@ import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.distributions.empirical.KernelDensityEstimator;
 import rapaio.explore.Summary;
-import static rapaio.explore.Summary.*;
+
 import static rapaio.explore.Workspace.*;
 import rapaio.graphics.Histogram;
 import rapaio.graphics.Plot;
@@ -173,8 +173,8 @@ public class DiscreteSampling implements TutorialPage {
                 "        final Frame df = new SolidFrame(\"lottery\", SAMPLE_SIZE * TRIALS, vectors);\n" +
                 "        draw(new Plot() {{\n" +
                 "            add(new Points(this, df.getCol(0), df.getCol(1)));\n" +
-                "            getOp().setPchIndex(new OneIndexVector(1));\n" +
-                "            getOp().setColorIndex(new OneIndexVector(34));\n" +
+                "            opt().setPchIndex(new OneIndexVector(1));\n" +
+                "            opt().setColorIndex(new OneIndexVector(34));\n" +
                 "        }}, 600, 300);\n");
 
         final int TRIALS = 100;
@@ -194,10 +194,10 @@ public class DiscreteSampling implements TutorialPage {
 
         final Frame df = new SolidFrame("lottery", SAMPLE_SIZE * TRIALS, vectors);
         draw(new Plot() {{
-            add(new Points(this, df.getCol(0), df.getCol(1)));
-            getOp().setPchIndex(new OneIndexVector(1));
-            getOp().setColorIndex(new OneIndexVector(34));
-            getOp().setSizeIndex(new OneNumericVector(2));
+            new Points(this, df.getCol(0), df.getCol(1));
+            opt().setPchIndex(new OneIndexVector(1));
+            opt().setColorIndex(new OneIndexVector(34));
+            opt().setSizeIndex(new OneNumericVector(2));
         }}, 600, 300);
 
         p("There is random in that plot. Everywhere. A summary on the data, however, " +
@@ -241,7 +241,7 @@ public class DiscreteSampling implements TutorialPage {
                 "                opt().setColorIndex(new OneIndexVector(2));\n" +
                 "                opt().setLwd(1.5f);\n" +
                 "            }});\n" +
-                "            getOp().setYRange(0, 1);\n" +
+                "            opt().setYRange(0, 1);\n" +
                 "        }});\n");
 
         RandomSource.setSeed(1);
@@ -256,12 +256,12 @@ public class DiscreteSampling implements TutorialPage {
             value.setValue(i, count / total);
         }
         draw(new Plot() {{
-            add(new ABLine(this, 0.6, true));
-            add(new Lines(this, index, value) {{
+            new ABLine(this, 0.6, true);
+            new Lines(this, index, value) {{
                 opt().setColorIndex(new OneIndexVector(2));
                 opt().setLwd(1.5f);
-            }});
-            getOp().setYRange(0, 1);
+            }};
+            opt().setYRange(0, 1);
         }});
 
         p("From the previous function line we see that the plugged in estimate " +
@@ -317,9 +317,9 @@ public class DiscreteSampling implements TutorialPage {
                 "        final Frame df2 = new SolidFrame(\"lottery\", SAMPLE_SIZE * TRIALS, vectors);\n" +
                 "        draw(new Plot() {{\n" +
                 "            add(new Points(this, df2.getCol(0), df2.getCol(1)));\n" +
-                "            getOp().setPchIndex(new OneIndexVector(1));\n" +
-                "            getOp().setColorIndex(new OneIndexVector(34));\n" +
-                "            getOp().setSizeIndex(new OneNumericVector(2));\n" +
+                "            opt().setPchIndex(new OneIndexVector(1));\n" +
+                "            opt().setColorIndex(new OneIndexVector(34));\n" +
+                "            opt().setSizeIndex(new OneNumericVector(2));\n" +
                 "        }}, 600, 300);\n");
 
         vectors[0] = new NumericVector("loaded lottery", SAMPLE_SIZE * TRIALS);
@@ -347,10 +347,10 @@ public class DiscreteSampling implements TutorialPage {
 
         final Frame df2 = new SolidFrame("lottery", SAMPLE_SIZE * TRIALS, vectors);
         draw(new Plot() {{
-            add(new Points(this, df2.getCol(0), df2.getCol(1)));
-            getOp().setPchIndex(new OneIndexVector(1));
-            getOp().setColorIndex(new OneIndexVector(34));
-            getOp().setSizeIndex(new OneNumericVector(2));
+            new Points(this, df2.getCol(0), df2.getCol(1));
+            opt().setPchIndex(new OneIndexVector(1));
+            opt().setColorIndex(new OneIndexVector(34));
+            opt().setSizeIndex(new OneNumericVector(2));
         }}, 600, 300);
 
         p("This time we see more than random there. There is a clear more dense " +
@@ -361,10 +361,10 @@ public class DiscreteSampling implements TutorialPage {
                 "density would help more.");
 
         draw(new Plot() {{
-            add(new FunctionLine(this, new KernelDensityEstimator(df2.getCol("winning number"), 3).getPdfFunction()));
-            getOp().setXRange(-10, 60);
-            getOp().setYRange(0, .05);
-            getOp().setColorIndex(new OneIndexVector(1));
+            new FunctionLine(this, new KernelDensityEstimator(df2.getCol("winning number"), 3).getPdfFunction());
+            opt().setXRange(-10, 60);
+            opt().setYRange(0, .05);
+            opt().setColorIndex(new OneIndexVector(1));
             setBottomLabel("winning numbers");
             setLeftLabel("kernel probability density");
         }}, 600, 300);

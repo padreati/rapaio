@@ -52,7 +52,7 @@ public abstract class BaseFigure implements Figure {
     protected String bottomLabel;
 
     @Override
-    public GraphicOptions getOp() {
+    public GraphicOptions opt() {
         return options;
     }
 

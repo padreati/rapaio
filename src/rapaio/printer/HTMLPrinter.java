@@ -192,7 +192,7 @@ class Template {
             + "   color: rgb(50%, 0%, 50%);\n"
             + "}\n"
             + "pre {	\n"
-            + "   font-size: 0.8em;\n"
+            + "   font-size: 0.9em;\n"
             + "   margin-top: 0;\n"
             + "   max-width: 95%;\n"
             + "   border: 1px solid #ccc;\n"

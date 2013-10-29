@@ -16,21 +16,24 @@
 
 package rapaio.graphics;
 
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import rapaio.graphics.base.BaseFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.plot.PlotComponent;
 
-import java.awt.*;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author tutuianu
  */
 public class Plot extends BaseFigure {
 
-    private LinkedList<PlotComponent> components = new LinkedList<>();
+    private final List<PlotComponent> components;
 
     public Plot() {
+        components = new LinkedList<>();
         bottomThicker = true;
         bottomMarkers = true;
         leftThicker = true;
@@ -55,19 +58,19 @@ public class Plot extends BaseFigure {
             return null;
         }
 
-        if (getOp().getXRangeStart() == getOp().getXRangeStart() && getOp().getXRangeEnd() == getOp().getXRangeEnd()) {
-            r.setX1(getOp().getXRangeStart());
-            r.setX2(getOp().getXRangeEnd());
+        if (opt().getXRangeStart() == opt().getXRangeStart() && opt().getXRangeEnd() == opt().getXRangeEnd()) {
+            r.setX1(opt().getXRangeStart());
+            r.setX2(opt().getXRangeEnd());
         }
-        if (getOp().getYRangeStart() == getOp().getYRangeStart() && getOp().getYRangeEnd() == getOp().getYRangeEnd()) {
-            r.setY1(getOp().getYRangeStart());
-            r.setY2(getOp().getYRangeEnd());
+        if (opt().getYRangeStart() == opt().getYRangeStart() && opt().getYRangeEnd() == opt().getYRangeEnd()) {
+            r.setY1(opt().getYRangeStart());
+            r.setY2(opt().getYRangeEnd());
         }
         return r;
     }
-
-    public void add(PlotComponent component) {
-        this.components.add(component);
+    
+    public List<PlotComponent> getComponents() {
+        return components;
     }
 
     @Override

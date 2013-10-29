@@ -22,7 +22,6 @@ import rapaio.distributions.StudentT;
 import static rapaio.explore.Workspace.*;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.FunctionLine;
-import rapaio.printer.RemotePrinter;
 
 import java.io.IOException;
 
@@ -75,12 +74,11 @@ public class StudentTDistribution implements TutorialPage {
                 "looks like this: ");
 
         Plot p = new Plot();
-        p.getOp().setXRange(-4, 4);
-        p.getOp().setYRange(0, 0.5);
+        p.opt().setXRange(-4, 4);
+        p.opt().setYRange(0, 0.5);
 
         FunctionLine normalpdf = new FunctionLine(p, new Normal().getPdfFunction());
         normalpdf.opt().setColorIndex(new OneIndexVector(1));
-        p.add(normalpdf);
         draw(p);
 
         p("To understand it's mechanics you have to imagine a " +
@@ -114,9 +112,6 @@ public class StudentTDistribution implements TutorialPage {
                 "to repeat the experiments enough time. ");
 
         FunctionLine fline = new FunctionLine(p, new StudentT(3).getPdfFunction());
-        p.add(fline);
-
-
         draw(p);
 
         p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");

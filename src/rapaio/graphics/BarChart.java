@@ -59,7 +59,7 @@ public class BarChart extends BaseFigure {
         bottomThicker = true;
         bottomMarkers = true;
 
-        getOp().setColorIndex(new OneIndexVector(7));
+        opt().setColorIndex(new OneIndexVector(7));
 
         this.setLeftLabel(numeric.getName());
         this.setBottomLabel(nominal.getName());
@@ -128,7 +128,7 @@ public class BarChart extends BaseFigure {
             g2d.drawPolygon(x, y, 4);
             x = new int[]{xscale(i - 0.4) + 1, xscale(i - 0.4) + 1, xscale(i + 0.4), xscale(i + 0.4), xscale(i - 0.4) + 1};
             y = new int[]{yscale(0), yscale(values[i]) + 1, yscale(values[i]) + 1, yscale(0), yscale(0)};
-            g2d.setColor(getOp().getColor(i));
+            g2d.setColor(opt().getColor(i));
             g2d.fillPolygon(x, y, 4);
         }
     }

@@ -42,7 +42,7 @@ public class IrisExplore implements TutorialPage {
 
     @Override
     public String getPageTitle() {
-        return "Iris Exploration StatSampling";
+        return "Iris Exploration";
     }
 
     @Override
@@ -85,7 +85,6 @@ public class IrisExplore implements TutorialPage {
         plot.setBottomLabel(df.getColNames()[2]);
         plot.setLeftLabel(df.getColNames()[3]);
         plot.setTitle("Iris datapoints colored by species");
-        plot.add(points);
 
         draw(plot, 600, 350);
 

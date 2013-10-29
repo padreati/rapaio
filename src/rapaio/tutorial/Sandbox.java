@@ -91,7 +91,7 @@ public class Sandbox {
         }
 
         Plot p = new Plot();
-        p.add(new Lines(p, new IndexVector("x", 0, TIMES - 1, 1), freq));
+        new Lines(p, new IndexVector("x", 0, TIMES - 1, 1), freq);
         draw(p);
 
         System.out.println(1. / 70.);
