@@ -24,6 +24,7 @@ import rapaio.datasets.Datasets;
 import rapaio.distributions.empirical.KernelDensityEstimator;
 import rapaio.distributions.empirical.KernelFunction;
 import rapaio.explore.Summary;
+
 import static rapaio.explore.Workspace.*;
 
 import rapaio.graphics.Histogram;
@@ -144,16 +145,12 @@ public class HistogramDensityTutorial implements TutorialPage {
                 + "        draw(plot);\n");
 
         final Vector col = df.getCol("Father");
-        draw(new Plot() {
-            {
-                new HistogramBars(this, col) {
-                    {
-                        opt().setColorIndex(new IndexVector("rainbow", 1, 255, 1));
-                    }
-                };
-                new DensityLine(this, col);
-            }
-        });
+        draw(new Plot() {{
+            new HistogramBars(this, col) {{
+                opt().setColorIndex(new IndexVector("rainbow", 1, 255, 1));
+            }};
+            new DensityLine(this, col);
+        }});
 
         p("In statistics, kernel density estimation (KDE) is a non-parametric way to "
                 + "estimate the probability density function of a random variable. "
@@ -172,19 +169,18 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("However one can use a different value for bandwidth in order to obtain "
                 + "a smooth or less smooth approximation of the density function.");
 
-        Histogram h = new Histogram(col);
-
-        FunctionLine fl = new FunctionLine(h, new KernelDensityEstimator(col, 0.1).getPdfFunction());
-        fl.opt().setColorIndex(new OneIndexVector(1));
-
-        fl = new FunctionLine(h, new KernelDensityEstimator(col, 0.5).getPdfFunction());
-        fl.opt().setColorIndex(new OneIndexVector(2));
-
-        fl = new FunctionLine(h, new KernelDensityEstimator(col, 2).getPdfFunction());
-        fl.opt().setColorIndex(new OneIndexVector(3));
-
-        h.opt().setYRange(0, 0.18);
-        draw(h, 600, 300);
+        draw(new Histogram(col) {{
+            new FunctionLine(this, new KernelDensityEstimator(col, 0.1).getPdfFunction()) {{
+                opt().setColorIndex(1);
+            }};
+            new FunctionLine(this, new KernelDensityEstimator(col, 0.5).getPdfFunction()) {{
+                opt().setColorIndex(new OneIndexVector(2));
+            }};
+            new FunctionLine(this, new KernelDensityEstimator(col, 2).getPdfFunction()) {{
+                opt().setColorIndex(new OneIndexVector(3));
+            }};
+            opt().setYRange(0, 0.18);
+        }}, 600, 300);
 
         p("Another thing one can try with kernel density estimator is to "
                 + "change the kernel function, which is the function used to "
@@ -195,32 +191,29 @@ public class HistogramDensityTutorial implements TutorialPage {
                 + "Of course, it is easy to implement your own smoothing method "
                 + "once you implement a custom kernel function. ");
 
-        Plot plot3 = new Plot();
-        FunctionLine kde = new FunctionLine(plot3, new KernelDensityEstimator(col).getPdfFunction());
-        kde.opt().setColorIndex(new OneIndexVector(1));
-        new DensityLine(plot3, col, new KernelFunction() {
-            @Override
-            public double pdf(double x, double x0, double bandwidth) {
-                double value = BaseMath.abs(x - x0) / bandwidth;
-                if (value >= 0.5)
-                    return 0;
-                return 1.;
-            }
+        draw(new Plot() {{
+            new FunctionLine(this, new KernelDensityEstimator(col).getPdfFunction()) {{
+                opt().setColorIndex(new OneIndexVector(1));
+            }};
+            new DensityLine(this, col, new KernelFunction() {
+                @Override
+                public double pdf(double x, double x0, double bandwidth) {
+                    return (BaseMath.abs(x - x0) / bandwidth >= 0.5) ? 0 : 1.;
+                }
 
-            @Override
-            public double getMinValue(double x0, double bandwidth) {
-                return x0 + bandwidth;
-            }
+                @Override
+                public double getMinValue(double x0, double bandwidth) {
+                    return x0 + bandwidth;
+                }
 
-            @Override
-            public double getMaxValue(double x0, double bandwidth) {
-                return x0 - bandwidth;
-            }
-        }, 0.5, 256);
-
-        plot3.opt().setYRange(0, 0.18);
-        plot3.opt().setXRange(55, 80);
-        draw(plot3);
+                @Override
+                public double getMaxValue(double x0, double bandwidth) {
+                    return x0 - bandwidth;
+                }
+            }, 0.5, 256);
+            opt().setYRange(0, 0.18);
+            opt().setXRange(55, 80);
+        }});
 
         p("We could agree that my implementation of kernel function is ugly "
                 + "and maybe no so useful, however you have to know that "
@@ -235,22 +228,16 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("Blue line represents density approximation of father's heights, "
                 + "red line represents density approximation of son's heights.");
 
-        draw(new Plot() {
-            {
-                opt().setYRange(0, 0.18);
-                opt().setXRange(55, 80);
-                new DensityLine(this, df.getCol("Father")) {
-                    {
-                        opt().setColorIndex(new OneIndexVector(6));
-                    }
-                };
-                new DensityLine(this, df.getCol("Son")) {
-                    {
-                        opt().setColorIndex(new OneIndexVector(9));
-                    }
-                };
-            }
-        });
+        draw(new Plot() {{
+            new DensityLine(this, df.getCol("Father")) {{
+                opt().setColorIndex(6);
+            }};
+            new DensityLine(this, df.getCol("Son")) {{
+                opt().setColorIndex(9);
+            }};
+            opt().setYRange(0, 0.18);
+            opt().setXRange(55, 80);
+        }});
 
         p("Note: the sole purpose of this tutorial is to show what and how it can "
                 + "be done with Rapaio toolbox library. ");

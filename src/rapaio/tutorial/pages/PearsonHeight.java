@@ -22,13 +22,16 @@ import rapaio.core.stat.Variance;
 import rapaio.correlation.PearsonRCorrelation;
 import rapaio.data.Frame;
 import rapaio.data.OneIndexVector;
+import rapaio.data.Vector;
 import rapaio.datasets.Datasets;
 import rapaio.distributions.Distribution;
 import rapaio.distributions.Normal;
 import rapaio.explore.Summary;
+
 import static rapaio.explore.Summary.summary;
 import static rapaio.core.BaseMath.*;
 import static rapaio.explore.Workspace.*;
+
 import rapaio.graphics.Histogram;
 import rapaio.graphics.Plot;
 import rapaio.graphics.QQPlot;
@@ -57,7 +60,7 @@ public class PearsonHeight implements TutorialPage {
     public void render() throws IOException {
         heading(1, "Analysis of Pearson's Height dataset");
 
-        Frame df = Datasets.loadPearsonHeightDataset();
+        final Frame df = Datasets.loadPearsonHeightDataset();
 
         p("This exploratory analysis is provided as a sample of analysis produced with Rapaio system.");
         p("The studied data set contains " + df.getRowCount() + " observations and has " + df.getColCount() + " columns.");
@@ -90,19 +93,16 @@ public class PearsonHeight implements TutorialPage {
                 + "is the quantile-quantile plot. ");
 
         for (int i = 0; i < df.getColCount(); i++) {
+            final Vector col = df.getCol(i);
+            draw(new QQPlot() {{
+                double mu = new Mean(col).getValue();
+                Distribution normal = new Normal();
+                this.add(col, normal);
+                this.setLeftLabel(col.getName());
 
-            QQPlot qqplot = new QQPlot();
-
-            double mu = new Mean(df.getCol(i)).getValue();
-
-            Distribution normal = new Normal();
-            qqplot.add(df.getCol(i), normal);
-            qqplot.setLeftLabel(df.getColNames()[i]);
-
-            new ABLine(qqplot, mu, true);
-            new ABLine(qqplot, 0, false);
-
-            draw(qqplot, 500, 300);
+                new ABLine(this, mu, true);
+                new ABLine(this, 0, false);
+            }}, 500, 300);
         }
 
         summary(new Mean(df.getCol("Father")));
@@ -117,26 +117,24 @@ public class PearsonHeight implements TutorialPage {
         for (int i = 0; i < perc.length; i++) {
             perc[i] = i / (10.);
         }
-        Quantiles fatherQuantiles = new Quantiles(df.getCol("Father"), perc);
-        Quantiles sonQuantiles = new Quantiles(df.getCol("Son"), perc);
+        final Quantiles fatherQuantiles = new Quantiles(df.getCol("Father"), perc);
+        final Quantiles sonQuantiles = new Quantiles(df.getCol("Son"), perc);
         summary(fatherQuantiles);
         summary(sonQuantiles);
 
-        Plot plot = new Plot();
-        plot.opt().setXRange(55, 80);
-        plot.opt().setYRange(55, 80);
-
-        for (int i = 0; i < fatherQuantiles.getValues().length; i++) {
-            ABLine line = new ABLine(plot, fatherQuantiles.getValues()[i], false);
-            line.opt().setColorIndex(new OneIndexVector(30));
-        }
-
-        for (int i = 0; i < sonQuantiles.getValues().length; i++) {
-            ABLine line = new ABLine(plot, sonQuantiles.getValues()[i], true);
-            line.opt().setColorIndex(new OneIndexVector(30));
-        }
-        new Points(plot, df.getCol("Father"), df.getCol("Son"));
-        draw(plot, 600, 600);
+        draw(new Plot() {{
+            for (int i = 0; i < fatherQuantiles.getValues().length; i++) {
+                ABLine line = new ABLine(this, fatherQuantiles.getValues()[i], false);
+                line.opt().setColorIndex(30);
+            }
+            for (int i = 0; i < sonQuantiles.getValues().length; i++) {
+                ABLine line = new ABLine(this, sonQuantiles.getValues()[i], true);
+                line.opt().setColorIndex(30);
+            }
+            new Points(this, df.getCol("Father"), df.getCol("Son"));
+            opt().setXRange(55, 80);
+            opt().setYRange(55, 80);
+        }}, 600, 600);
 
         p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");
     }

@@ -19,7 +19,9 @@ package rapaio.tutorial.pages;
 import rapaio.data.OneIndexVector;
 import rapaio.distributions.Normal;
 import rapaio.distributions.StudentT;
+
 import static rapaio.explore.Workspace.*;
+
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.FunctionLine;
 
@@ -73,13 +75,13 @@ public class StudentTDistribution implements TutorialPage {
         p("The probability density of a standard normal distribution " +
                 "looks like this: ");
 
-        Plot p = new Plot();
-        p.opt().setXRange(-4, 4);
-        p.opt().setYRange(0, 0.5);
-
-        FunctionLine normalpdf = new FunctionLine(p, new Normal().getPdfFunction());
-        normalpdf.opt().setColorIndex(new OneIndexVector(1));
-        draw(p);
+        draw(new Plot() {{
+            new FunctionLine(this, new Normal().getPdfFunction()) {{
+                opt().setColorIndex(1);
+            }};
+            opt().setXRange(-4, 4);
+            opt().setYRange(0, 0.5);
+        }});
 
         p("To understand it's mechanics you have to imagine a " +
                 "process, which produces a numeric value. " +
@@ -111,8 +113,14 @@ public class StudentTDistribution implements TutorialPage {
                 "barley have to be selected, have to grow and be measured after harvest. It was too costly " +
                 "to repeat the experiments enough time. ");
 
-        FunctionLine fline = new FunctionLine(p, new StudentT(3).getPdfFunction());
-        draw(p);
+        draw(new Plot() {{
+            new FunctionLine(this, new Normal().getPdfFunction()) {{
+                opt().setColorIndex(1);
+            }};
+            new FunctionLine(this, new StudentT(3).getPdfFunction());
+            opt().setXRange(-4, 4);
+            opt().setYRange(0, 0.5);
+        }});
 
         p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");
     }

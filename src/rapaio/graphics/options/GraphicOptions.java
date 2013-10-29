@@ -78,6 +78,10 @@ public class GraphicOptions {
         this.sizeIndex = sizeIndex;
     }
 
+    public void setSizeIndex(double size) {
+        this.sizeIndex = new OneNumericVector(size);
+    }
+
     public double getSize(int row) {
         Vector index = getSizeIndex();
         if (row >= index.getRowCount()) {
@@ -116,6 +120,10 @@ public class GraphicOptions {
         this.colorIndex = colorIndex;
     }
 
+    public void setColorIndex(int colorIndex) {
+        this.colorIndex = new OneIndexVector(colorIndex);
+    }
+
     public Color getColor(int row) {
         if (parent != null && isDefaultColorIndex()) {
             return parent.getColor(row);
@@ -140,6 +148,10 @@ public class GraphicOptions {
 
     public void setPchIndex(Vector pchIndex) {
         this.pchIndex = pchIndex;
+    }
+
+    public void setPchIndex(int pch) {
+        this.pchIndex = new OneIndexVector(pch);
     }
 
     public int getPch(int row) {

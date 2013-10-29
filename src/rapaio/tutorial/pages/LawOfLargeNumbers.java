@@ -84,11 +84,11 @@ public class LawOfLargeNumbers implements TutorialPage {
         draw(new Plot() {{
             new ABLine(this, 0, 3.5) {{
                 opt().setLwd(1.5f);
-                opt().setColorIndex(new OneIndexVector(1));
+                opt().setColorIndex(1);
             }};
             new Lines(this, new IndexVector("x", 1, N, 1), mean){{
                 opt().setLwd(1.5f);
-                opt().setColorIndex(new OneIndexVector(2));
+                opt().setColorIndex(2);
             }};
             opt().setYRange(2.5, 4.5);
         }}, 800, 300);
@@ -98,20 +98,17 @@ public class LawOfLargeNumbers implements TutorialPage {
                 + "Second fact is that deviation from expected value is smaller as "
                 + "the sample size grows aka. smaller variation. ");
         p("The code for drawing the plot follows:");
-        code("        Plot plot = new Plot();\n"
-                + "\n"
-                + "        ABLine abline = new ABLine(plot, 0, 3.5);\n"
-                + "        abline.opt().setLwd(2);\n"
-                + "        abline.opt().setColorIndex(new OneIndexVector(1));\n"
-                + "        plot.add(abline);\n"
-                + "\n"
-                + "        Lines lines = new Lines(plot, new IndexVector(\"x\", 1, N, 1), mean);\n"
-                + "        lines.opt().setLwd(2);\n"
-                + "        lines.opt().setColorIndex(new OneIndexVector(2));\n"
-                + "        plot.add(lines);\n"
-                + "\n"
-                + "        plot.opt().setYRange(2.5, 4.5);\n"
-                + "        draw(plot, 800, 300);\n");
+        code("        draw(new Plot() {{\n" +
+                "            new ABLine(this, 0, 3.5) {{\n" +
+                "                opt().setLwd(1.5f);\n" +
+                "                opt().setColorIndex(1);\n" +
+                "            }};\n" +
+                "            new Lines(this, new IndexVector(\"x\", 1, N, 1), mean){{\n" +
+                "                opt().setLwd(1.5f);\n" +
+                "                opt().setColorIndex(2);\n" +
+                "            }};\n" +
+                "            opt().setYRange(2.5, 4.5);\n" +
+                "        }}, 800, 300);\n");
         p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");
     }
 }

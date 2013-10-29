@@ -23,10 +23,14 @@ import rapaio.correlation.SpearmanRhoCorrelation;
 import rapaio.data.Frame;
 import rapaio.data.OneIndexVector;
 import rapaio.datasets.Datasets;
+
 import static rapaio.explore.Workspace.*;
 import static rapaio.explore.Summary.*;
+
 import rapaio.filters.ColFilters;
+
 import static rapaio.filters.NumericFilters.*;
+
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;
 
@@ -119,34 +123,33 @@ public class CorrelationsPage implements TutorialPage {
                 "have a very strong linear correlation. Let's check " +
                 "this intuition with a plot:");
 
-        Plot plot = new Plot();
-        Points points = new Points(plot, jitter(df.getCol("petal-length"), 0.01), jitter(df.getCol("sepal-length"), 0.01));
-        points.opt().setPchIndex(new OneIndexVector(1));
-        plot.setTitle("p correlation = " +
-                r.getValues()[df.getColIndex("petal-length")][df.getColIndex("sepal-length")]);
-        draw(plot, 400, 300);
+        draw(new Plot() {{
+            new Points(this, jitter(df.getCol("petal-length"), 0.01), jitter(df.getCol("sepal-length"), 0.01)) {{
+                opt().setPchIndex(1);
+            }};
+            setTitle("p correlation = " + r.getValues()[df.getColIndex("petal-length")][df.getColIndex("sepal-length")]);
+        }}, 400, 300);
 
         p("Another \\(r\\) coefficient which have a value close to \\(1\\) is between " +
                 "sepal-length and petal-length. Let's check that with a plot, also: ");
 
-        plot = new Plot();
-        points = new Points(plot, jitter(df.getCol("petal-length"), 0.01), jitter(df.getCol("petal-width"), 0.01));
-        points.opt().setPchIndex(new OneIndexVector(1));
-        plot.setTitle("p correlation = " +
-                r.getValues()[df.getColIndex("petal-length")][df.getColIndex("petal-width")]);
-        draw(plot, 400, 300);
+        draw(new Plot() {{
+            new Points(this, jitter(df.getCol("petal-length"), 0.01), jitter(df.getCol("petal-width"), 0.01)) {{
+                opt().setPchIndex(1);
+            }};
+            setTitle("p correlation = " + r.getValues()[df.getColIndex("petal-length")][df.getColIndex("petal-width")]);
+        }}, 400, 300);
 
         p("Finally, we plot again, but this time using a coefficient which is closer to 0, " +
                 "which could mean that the variables are not linearly correlated. " +
                 "Such a value for correlation we have between sepal-length and sepal-width. ");
 
-        final Plot plot2 = new Plot() {{
-            setTitle("p correlation = " + r.getValues()[df.getColIndex("sepal-length")][df.getColIndex("sepal-width")]);
+        draw(new Plot() {{
             new Points(this, jitter(df.getCol("sepal-length"), 0.01), jitter(df.getCol("sepal-width"), 0.01)) {{
-                opt().setPchIndex(new OneIndexVector(1));
+                opt().setPchIndex(1);
             }};
-        }};
-        draw(plot, 400, 300);
+            setTitle("p correlation = " + r.getValues()[df.getColIndex("sepal-length")][df.getColIndex("sepal-width")]);
+        }}, 400, 300);
 
 
         heading(2, "Spearman's rank correlation coefficient");

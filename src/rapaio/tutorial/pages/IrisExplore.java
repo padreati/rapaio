@@ -47,7 +47,7 @@ public class IrisExplore implements TutorialPage {
 
     @Override
     public void render() throws IOException {
-        Frame df = Datasets.loadIrisDataset();
+        final Frame df = Datasets.loadIrisDataset();
 
         heading(1, "Iris sample exploratory analysis");
         p("This is a sample just to hold analysis of Iris dataset"
@@ -68,10 +68,11 @@ public class IrisExplore implements TutorialPage {
         p("Now we will take a look over the distribuition of first two measurements.");
 
         for (int i = 0; i < df.getColCount() - 1; i++) {
-            Histogram hist = new Histogram(df.getCol(i));
-            hist.setBins(30);
-            hist.setBottomLabel(df.getColNames()[i]);
-            draw(hist, 500, 250);
+            final int ii = i;
+            draw(new Histogram(df.getCol(i)){{
+                setBins(30);
+                setBottomLabel(df.getColNames()[ii]);
+            }}, 500, 250);
         }
 
         p("We can see easily that for petal length and width there are two well-separated modes."

@@ -236,10 +236,10 @@ public class ClassificationWithRF implements TutorialPage {
         }
         draw(new Plot() {{
             new Lines(this, index1, accuracy1) {{
-                opt().setColorIndex(new OneIndexVector(2));
+                opt().setColorIndex(2);
             }};
             new Points(this, index1, accuracy1){{
-                opt().setColorIndex(new OneIndexVector(2));
+                opt().setColorIndex(2);
             }};
             new Lines(this, index1, oob1);
             new Points(this, index1, oob1);

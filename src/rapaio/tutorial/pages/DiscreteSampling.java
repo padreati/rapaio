@@ -195,9 +195,9 @@ public class DiscreteSampling implements TutorialPage {
         final Frame df = new SolidFrame("lottery", SAMPLE_SIZE * TRIALS, vectors);
         draw(new Plot() {{
             new Points(this, df.getCol(0), df.getCol(1));
-            opt().setPchIndex(new OneIndexVector(1));
-            opt().setColorIndex(new OneIndexVector(34));
-            opt().setSizeIndex(new OneNumericVector(2));
+            opt().setPchIndex(1);
+            opt().setColorIndex(34);
+            opt().setSizeIndex(2);
         }}, 600, 300);
 
         p("There is random in that plot. Everywhere. A summary on the data, however, " +
@@ -258,7 +258,7 @@ public class DiscreteSampling implements TutorialPage {
         draw(new Plot() {{
             new ABLine(this, 0.6, true);
             new Lines(this, index, value) {{
-                opt().setColorIndex(new OneIndexVector(2));
+                opt().setColorIndex(2);
                 opt().setLwd(1.5f);
             }};
             opt().setYRange(0, 1);
