@@ -25,7 +25,7 @@ a:visited {
    color: rgb(50%, 0%, 50%);
 }
 pre {	
-   font-size: 0.8em;
+   font-size: 0.9em;
    margin-top: 0;
    max-width: 95%;
    border: 1px solid #ccc;
@@ -267,8 +267,8 @@ AIYOAAAAGDoAAABg6AAAABg6AAAARIz/BdYupo9j6MFoAAAAAElFTkSuQmCC" alt="graphics"/></
         final Frame df = new SolidFrame("lottery", SAMPLE_SIZE * TRIALS, vectors);
         draw(new Plot() {{
             add(new Points(this, df.getCol(0), df.getCol(1)));
-            getOp().setPchIndex(new OneIndexVector(1));
-            getOp().setColorIndex(new OneIndexVector(34));
+            opt().setPchIndex(new OneIndexVector(1));
+            opt().setColorIndex(new OneIndexVector(34));
         }}, 600, 300);
 </code></pre>
 <p><center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAEsCAYAAAAfPc2WAAAtDUlEQVR42u2dD2Re2bvvS1VFRISK
@@ -504,7 +504,7 @@ rows: 600, cols: 2
                 opt().setColorIndex(new OneIndexVector(2));
                 opt().setLwd(1.5f);
             }});
-            getOp().setYRange(0, 1);
+            opt().setYRange(0, 1);
         }});
 </code></pre>
 <p><center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAfsUlEQVR42u3dD5BVZf3HcXRD2xD5
@@ -678,9 +678,9 @@ hrJD6xbTTgAAAABJRU5ErkJggg==" alt="graphics"/></center></p>
         final Frame df2 = new SolidFrame("lottery", SAMPLE_SIZE * TRIALS, vectors);
         draw(new Plot() {{
             add(new Points(this, df2.getCol(0), df2.getCol(1)));
-            getOp().setPchIndex(new OneIndexVector(1));
-            getOp().setColorIndex(new OneIndexVector(34));
-            getOp().setSizeIndex(new OneNumericVector(2));
+            opt().setPchIndex(new OneIndexVector(1));
+            opt().setColorIndex(new OneIndexVector(34));
+            opt().setSizeIndex(new OneNumericVector(2));
         }}, 600, 300);
 </code></pre>
 <p><center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAEsCAYAAAAfPc2WAAAsZElEQVR42u2dD4SXWfv/I8kYYwwZ
