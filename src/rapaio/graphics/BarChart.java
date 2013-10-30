@@ -195,10 +195,7 @@
 package rapaio.graphics;
 
 import rapaio.core.stat.Sum;
-import rapaio.data.OneIndexVector;
-import rapaio.data.IndexVector;
-import rapaio.data.NumericVector;
-import rapaio.data.Vector;
+import rapaio.data.*;
 import rapaio.graphics.base.BaseFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
@@ -206,41 +203,52 @@ import rapaio.graphics.colors.ColorPalette;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class BarChart extends BaseFigure {
 
+    private final Vector category;
+    private final Vector condition;
     private final Vector numeric;
-    private final Vector nominal;
-    private double[] values;
     private Range range;
+    private double[][] hits;
+    private double[] totals;
 
-    public BarChart(Vector nominal) {
-        this(nominal, new IndexVector("count", nominal.getRowCount(), 1));
+    public BarChart(Vector category) {
+        this(category, new NominalVector("", category.getRowCount(), new HashSet<String>()));
     }
 
-    public BarChart(Vector nominal, Vector numeric) {
-        if (!nominal.isNominal()) {
-            throw new IllegalArgumentException("Nominal vector must be ... isNominal");
+    public BarChart(Vector category, Vector condition) {
+        this(category, condition, new IndexVector("count", category.getRowCount(), 1));
+    }
+
+    public BarChart(Vector category, Vector condition, Vector numeric) {
+        if (!category.isNominal()) {
+            throw new IllegalArgumentException("categories are nominal only");
+        }
+        if (!condition.isNominal()) {
+            throw new IllegalArgumentException("conditions are nominal only");
         }
         if (!numeric.isNumeric()) {
             throw new IllegalArgumentException("Numeric vector must be .. isNumeric");
         }
 
+        this.category = category;
+        this.condition = condition;
         this.numeric = numeric;
-        this.nominal = nominal;
 
         leftThicker = true;
         leftMarkers = true;
         bottomThicker = true;
         bottomMarkers = true;
 
-        opt().setColorIndex(new OneIndexVector(7));
+        opt().setColorIndex(new IndexVector("colors", 10, condition.getDictionary().length + 9, 1));
 
         this.setLeftLabel(numeric.getName());
-        this.setBottomLabel(nominal.getName());
+        this.setBottomLabel(category.getName());
     }
 
     @Override
@@ -248,30 +256,34 @@ public class BarChart extends BaseFigure {
         if (range == null) {
 
             // build preliminaries
-            int bins = nominal.getDictionary().length;
-            values = new double[bins];
-            HashMap<String, ArrayList<Double>> map = new HashMap<>();
-            for (String label : nominal.getDictionary()) {
-                map.put(label, new ArrayList<Double>());
-            }
-            for (int i = 0; i < numeric.getRowCount(); i++) {
-                map.get(nominal.getLabel(i)).add(numeric.getValue(i));
-            }
-            for (int i = 0; i < values.length; i++) {
-                Vector v = new NumericVector("", map.get(nominal.getDictionary()[i]).size());
-                for (int j = 0; j < v.getRowCount(); j++) {
-                    v.setValue(j, map.get(nominal.getDictionary()[i]).get(j));
-                }
-                values[i] = new Sum(v).getValue();
+            int width = category.getDictionary().length;
+            int height = condition.getDictionary().length;
+
+            totals = new double[width];
+            hits = new double[width][height];
+
+            int len = Integer.MAX_VALUE;
+            len = Math.min(len, category.getRowCount());
+            len = Math.min(len, condition.getRowCount());
+            len = Math.min(len, numeric.getRowCount());
+
+            for (int i = 0; i < len; i++) {
+                hits[category.getIndex(i)][condition.getIndex(i)] += numeric.getValue(i);
+                totals[category.getIndex(i)] += numeric.getValue(i);
             }
 
             // now build range
             range = new Range();
-            for (int i = 0; i < values.length; i++) {
-                range.union(i, values[i]);
+            for (int i = 0; i < totals.length; i++) {
+                range.union(Double.NaN, totals[i]);
+                range.union(Double.NaN, 0);
+            }
+            int cnt = 0;
+            for (int i = 0; i < totals.length; i++) {
+                if (totals[i] > 0) cnt++;
             }
             range.union(-0.5, 0);
-            range.union(values.length - 0.5, 0);
+            range.union(cnt - 0.5, 0);
         }
         return range;
     }
@@ -286,12 +298,19 @@ public class BarChart extends BaseFigure {
         bottomMarkersPos.clear();
         bottomMarkersMsg.clear();
 
-        int xspots = nominal.getDictionary().length;
-        double xspotwidth = viewport.width / xspots;
+        int cnt = 0;
+        for (int i = 0; i < category.getDictionary().length; i++) {
+            if (totals[i] > 0) cnt++;
+        }
+        int xspots = cnt;
+        double xspotwidth = viewport.width / (1. * xspots);
 
-        for (int i = 0; i < xspots; i++) {
-            bottomMarkersPos.add(xspotwidth / 2 + i * xspotwidth);
-            bottomMarkersMsg.add(nominal.getDictionary()[i]);
+        cnt = 0;
+        for (int i = 0; i < category.getDictionary().length; i++) {
+            if (totals[i] == 0) continue;
+            bottomMarkersPos.add(xspotwidth * (0.5 + cnt));
+            bottomMarkersMsg.add(category.getDictionary()[i]);
+            cnt++;
         }
     }
 
@@ -299,15 +318,30 @@ public class BarChart extends BaseFigure {
     public void paint(Graphics2D g2d, Rectangle rect) {
         super.paint(g2d, rect);
 
-        for (int i = 0; i < values.length; i++) {
-            int[] x = {xscale(i - 0.4), xscale(i - 0.4), xscale(i + 0.4), xscale(i + 0.4), xscale(i - 0.4)};
-            int[] y = {yscale(0), yscale(values[i]), yscale(values[i]), yscale(0), yscale(0)};
-            g2d.setColor(ColorPalette.STANDARD.getColor(0));
-            g2d.drawPolygon(x, y, 4);
-            x = new int[]{xscale(i - 0.4) + 1, xscale(i - 0.4) + 1, xscale(i + 0.4), xscale(i + 0.4), xscale(i - 0.4) + 1};
-            y = new int[]{yscale(0), yscale(values[i]) + 1, yscale(values[i]) + 1, yscale(0), yscale(0)};
-            g2d.setColor(opt().getColor(i));
-            g2d.fillPolygon(x, y, 4);
+        int colindex = 0;
+        int col = 0;
+        for (int i = 0; i < category.getDictionary().length; i++) {
+            if (totals[i] == 0) continue;
+
+            int ystart = 0;
+            for (int j = 0; j < condition.getDictionary().length; j++) {
+                int yend = ystart + (int) Math.rint(hits[i][j]);
+
+                int[] x = {xscale(col - 0.4), xscale(col - 0.4), xscale(col + 0.4), xscale(col + 0.4), xscale(col - 0.4)};
+                int[] y = {yscale(ystart), yscale(yend), yscale(yend), yscale(ystart), yscale(ystart)};
+
+                g2d.setColor(ColorPalette.STANDARD.getColor(0));
+                g2d.drawPolygon(x, y, 4);
+
+                x = new int[]{xscale(col - 0.4) + 1, xscale(col - 0.4) + 1, xscale(col + 0.4), xscale(col + 0.4), xscale(col - 0.4) + 1};
+                y = new int[]{yscale(ystart), yscale(yend) + 1, yscale(yend) + 1, yscale(ystart), yscale(ystart)};
+
+                g2d.setColor(opt().getColor(colindex++));
+                g2d.fillPolygon(x, y, 4);
+
+                ystart = yend;
+            }
+            col++;
         }
     }
 }

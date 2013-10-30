@@ -288,7 +288,7 @@ public class HTMLPrinter extends AbstractPrinter {
     @SuppressWarnings("deprecation")
     @Override
     public void draw(Figure figure, int width, int height) {
-        BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
         Graphics g = newImage.getGraphics();
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

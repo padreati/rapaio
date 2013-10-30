@@ -206,6 +206,7 @@ public class ImageUtility {
     public static BufferedImage buildImage(Figure figure, int width, int height) {
 //        return buildImage(figure, width, height, BufferedImage.TYPE_BYTE_INDEXED);
         return buildImage(figure, width, height, BufferedImage.TYPE_4BYTE_ABGR_PRE);
+//        return buildImage(figure, width, height, BufferedImage.TYPE_4BYTE_ABGR_PRE);
     }
 
     public static BufferedImage buildImage(Figure figure, int width, int height, int type) {

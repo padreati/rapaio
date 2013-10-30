@@ -227,7 +227,7 @@ public class RandomForestTest {
         return cv.cv(df, className, rf, 10);
     }
 
-    @Test
+        @Test
     public void allCompareTest() throws IOException {
         CsvPersistence csv = new CsvPersistence();
         csv.setHasHeader(true);

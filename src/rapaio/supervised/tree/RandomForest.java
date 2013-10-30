@@ -216,7 +216,6 @@ import java.util.concurrent.Executors;
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class RandomForest implements Classifier {
-    private static String WEIGHT_COL_NAME = "rf.weight";
     final int mtrees;
     final int mcols;
     final boolean computeOob;
@@ -231,6 +230,8 @@ public class RandomForest implements Classifier {
     int[][] oobFreq;
     private NominalVector predict;
     private Frame dist;
+    private long learnTime = 0;
+
 
     public RandomForest(int mtrees) {
         this(mtrees, 0, true);
@@ -257,14 +258,13 @@ public class RandomForest implements Classifier {
     }
 
     @Override
-    public void learn(Frame df, final String classColName) {
+    public void learn(final Frame df, final String classColName) {
+        long start = System.currentTimeMillis();
         for (int i = 0; i < df.getRowCount(); i++) {
             if (df.getCol(classColName).isMissing(i)) {
                 throw new IllegalArgumentException("Not allowed missing classes");
             }
         }
-
-        df = addWeights(df);
 
         this.classColName = classColName;
         this.dict = df.getCol(classColName).getDictionary();
@@ -290,9 +290,6 @@ public class RandomForest implements Classifier {
             tasks.add(new Callable<Object>() {
                 @Override
                 public Object call() throws Exception {
-                    for (int j = 0; j < bootstrap.getRowCount(); j++) {
-                        bootstrap.setValue(j, bootstrap.getColCount() - 1, 1.);
-                    }
                     tree.learn(bootstrap, classColName);
                     double[] vi = tree.getVariableImportance();
                     for (int j = 0; j < vi.length; j++) {
@@ -317,28 +314,7 @@ public class RandomForest implements Classifier {
         if (debug) {
             System.out.println(String.format("avg oob error: %.4f", oobError));
         }
-    }
-
-    private Frame addWeights(Frame df) {
-        String[] colNames = df.getColNames();
-        Vector weight;
-        if (Arrays.binarySearch(colNames, WEIGHT_COL_NAME) >= 0) {
-            weight = df.getCol(WEIGHT_COL_NAME).getSourceVector();
-        } else {
-            weight = new NumericVector(WEIGHT_COL_NAME, new double[df.getSourceFrame().getRowCount()]);
-        }
-        List<Vector> vectors = new ArrayList<>();
-        for (String colName : colNames) {
-            if (colName.equals(WEIGHT_COL_NAME)) continue;
-            vectors.add(df.getCol(colName).getSourceVector());
-        }
-        vectors.add(weight);
-        List<Integer> mapping = new ArrayList<>();
-        for (int i = 0; i < df.getRowCount(); i++) {
-            mapping.add(df.getRowId(i));
-        }
-        Frame solid = new SolidFrame(df.getName(), df.getSourceFrame().getRowCount(), vectors);
-        return new MappedFrame(solid, new Mapping(mapping));
+        learnTime = System.currentTimeMillis() - start;
     }
 
     private void setupOobContainer(Frame df) {
@@ -433,21 +409,27 @@ public class RandomForest implements Classifier {
     @Override
     public void summary() {
         StringBuilder sb = new StringBuilder();
+        summaryDetails(sb);
         summaryVariableImportance(sb);
         code(sb.toString());
     }
 
+    private void summaryDetails(StringBuilder sb) {
+        sb.append(String.format("\nRandomForest(mtrees=%d, mcols=%d)", mtrees, mcols));
+        sb.append(String.format("\nTrain time %d millis", learnTime));
+    }
+
     private void summaryVariableImportance(StringBuilder sb) {
-        sb.append("Gini variable importance: \n");
+        sb.append("\nGini variable importance: \n");
         Vector[] vectors = new Vector[2];
-        vectors[0] = new NominalVector("varName", giniImportanceNames.length - 2, giniImportanceNames);
-        vectors[1] = new NumericVector("meanDecrease", new double[giniImportanceNames.length - 2]);
-        Frame f = new SolidFrame("gini", giniImportanceNames.length - 2, vectors);
+        vectors[0] = new NominalVector("varName", giniImportanceNames.length - 1, giniImportanceNames);
+        vectors[1] = new NumericVector("meanDecrease", new double[giniImportanceNames.length - 1]);
+        Frame f = new SolidFrame("gini", giniImportanceNames.length - 1, vectors);
         int width = 0;
         int pos = 0;
         for (int i = 0; i < giniImportanceNames.length; i++) {
             String colName = giniImportanceNames[i];
-            if (colName.equals(classColName) || colName.equals(WEIGHT_COL_NAME)) continue;
+            if (colName.equals(classColName)) continue;
             width = max(width, classColName.length() + 1);
             double decrease = 0;
             if (giniImportanceCount[i] != 0) {
