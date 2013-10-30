@@ -217,7 +217,6 @@ public class ModelEvaluation {
         print("CrossValidation with " + folds + " folds\n");
 
         List<Integer>[] strata = buildStrata(df, folds, classColName);
-        String[] dict = df.getCol(classColName).getDictionary();
 
         double correct = 0;
 

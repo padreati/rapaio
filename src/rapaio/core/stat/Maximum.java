@@ -237,6 +237,6 @@ public class Maximum implements Summarizable {
 
     @Override
     public void summary() {
-        code(String.format("maximum[%s]\n%.10", vector.getName(), value));
+        code(String.format("maximum[%s]\n%.10f", vector.getName(), value));
     }
 }
