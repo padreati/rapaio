@@ -198,17 +198,16 @@ import rapaio.core.RandomSource;
 import rapaio.core.stat.Mode;
 import rapaio.data.Frame;
 import rapaio.data.NominalVector;
-import rapaio.data.Vector;
 import rapaio.explore.Workspace;
 import rapaio.filters.NominalFilters;
-import rapaio.supervised.AbstractClassifier;
+import rapaio.supervised.Classifier;
 
 import java.util.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class ID3 extends AbstractClassifier {
+public class ID3 implements Classifier {
     private ID3Node root;
     private MetricType metricType = new EntropyMetricType();
     private String[] dict;

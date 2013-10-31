@@ -196,8 +196,8 @@ package rapaio.supervised.tree;
 
 import static rapaio.core.BaseMath.*;
 
+import rapaio.core.ColRange;
 import rapaio.core.RandomSource;
-import rapaio.core.stat.Mode;
 import rapaio.data.*;
 import rapaio.data.Vector;
 
@@ -206,6 +206,9 @@ import static rapaio.explore.Workspace.*;
 import rapaio.filters.RowFilters;
 import rapaio.supervised.Classifier;
 import rapaio.sample.StatSampling;
+import rapaio.supervised.ColSelector;
+import rapaio.supervised.UniformRandomColSelector;
+import rapaio.supervised.VariableColsClassifier;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -219,7 +222,9 @@ public class RandomForest implements Classifier {
     final int mtrees;
     final int mcols;
     final boolean computeOob;
-    private final List<RandomTree> trees = new ArrayList<>();
+    ColSelector colSelector;
+    VariableColsClassifier classifier;
+    List<VariableColsClassifier> trees = new ArrayList<>();
     String classColName;
     String[] dict;
     String[] giniImportanceNames;
@@ -241,10 +246,11 @@ public class RandomForest implements Classifier {
         this(mtrees, mcols, true);
     }
 
-    public RandomForest(int mtrees, int mcols, boolean computeOob) {
+    public RandomForest(final int mtrees, final int mcols, final boolean computeOob) {
         this.mtrees = mtrees;
         this.mcols = mcols;
         this.computeOob = computeOob;
+        this.classifier = new RandomTree(colSelector);
     }
 
     public RandomForest newInstance() {
@@ -266,6 +272,17 @@ public class RandomForest implements Classifier {
             }
         }
 
+        this.colSelector = new UniformRandomColSelector();
+        int mcols2 = mcols;
+        if (mcols2 > df.getColCount() - 1) {
+            mcols2 = df.getColCount() - 1;
+        }
+        if (mcols2 < 1) {
+            mcols2 = ((int) log2(df.getColCount())) + 1;
+        }
+
+        this.colSelector.setUp(df, new ColRange(classColName), mcols2);
+
         this.classColName = classColName;
         this.dict = df.getCol(classColName).getDictionary();
         this.giniImportanceNames = df.getColNames();
@@ -283,7 +300,7 @@ public class RandomForest implements Classifier {
         Collection<Callable<Object>> tasks = new ArrayList<>();
         final List<Frame> bootstraps = new ArrayList<>();
         for (int i = 0; i < mtrees; i++) {
-            final RandomTree tree = new RandomTree(mcols);
+            final RandomTree tree = new RandomTree(colSelector);
             trees.add(tree);
             final Frame bootstrap = StatSampling.randomBootstrap(df);
             bootstraps.add(bootstrap);
@@ -321,7 +338,7 @@ public class RandomForest implements Classifier {
         oobFreq = new int[df.getSourceFrame().getRowCount()][dict.length];
     }
 
-    private void addOob(Frame source, Frame bootstrap, RandomTree tree) {
+    private void addOob(Frame source, Frame bootstrap, VariableColsClassifier tree) {
         Frame delta = RowFilters.delta(source, bootstrap);
         tree.predict(delta);
         Vector predict = tree.getPrediction();
@@ -371,7 +388,7 @@ public class RandomForest implements Classifier {
         dist = new SolidFrame("prob", df.getRowCount(), vectors);
 
         for (int m = 0; m < mtrees; m++) {
-            RandomTree tree = trees.get(m);
+            VariableColsClassifier tree = trees.get(m);
             tree.predict(df);
             for (int i = 0; i < df.getRowCount(); i++) {
                 for (int j = 0; j < tree.getDistribution().getColCount(); j++) {

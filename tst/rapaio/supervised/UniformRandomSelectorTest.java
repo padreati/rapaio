@@ -192,175 +192,63 @@
  *    limitations under the License.
  */
 
-package rapaio.graphics;
+package rapaio.supervised;
 
-import rapaio.core.stat.Sum;
+import org.junit.Test;
+import rapaio.core.ColRange;
 import rapaio.data.*;
-import rapaio.graphics.base.BaseFigure;
-import rapaio.graphics.base.Range;
-import rapaio.graphics.colors.ColorPalette;
 
-import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class BarChart extends BaseFigure {
+public class UniformRandomSelectorTest {
 
-    private final Vector category;
-    private final Vector condition;
-    private final Vector numeric;
-    private boolean density = false;
-    private Range range;
-    private double[][] hits;
-    private double[] totals;
+    @Test
+    public void testNaive() {
+        Frame df = new SolidFrame("test", 0, new Vector[]{
+                new OneIndexVector("a", 1),
+                new OneIndexVector("b", 1),
+                new OneIndexVector("c", 1),
+                new OneIndexVector("d", 1),
+                new OneIndexVector("e", 1),
+                new OneIndexVector("f", 1),
+                new OneIndexVector("g", 1),
+                new OneIndexVector("h", 1),
+                new OneIndexVector("class", 1),
+        });
+        String classColName = "class";
+        int mcols = 4;
 
-    public BarChart(Vector category) {
-        this(category, new NominalVector("", category.getRowCount(), new HashSet<String>()));
-    }
+        ColSelector colSelector = new UniformRandomColSelector();
+        colSelector.setUp(df, new ColRange(classColName), mcols);
 
-    public BarChart(Vector category, Vector condition) {
-        this(category, condition, new IndexVector("count", category.getRowCount(), 1));
-    }
-
-    public BarChart(Vector category, Vector condition, Vector numeric) {
-        if (!category.isNominal()) {
-            throw new IllegalArgumentException("categories are nominal only");
-        }
-        if (!condition.isNominal()) {
-            throw new IllegalArgumentException("conditions are nominal only");
-        }
-        if (!numeric.isNumeric()) {
-            throw new IllegalArgumentException("Numeric vector must be .. isNumeric");
-        }
-
-        this.category = category;
-        this.condition = condition;
-        this.numeric = numeric;
-
-        leftThicker = true;
-        leftMarkers = true;
-        bottomThicker = true;
-        bottomMarkers = true;
-
-        int shift = 9;
-        opt().setColorIndex(new IndexVector("colors", shift, condition.getDictionary().length + shift - 1, 1));
-
-        this.setLeftLabel(numeric.getName());
-        this.setBottomLabel(category.getName());
-    }
-
-    public void useDensity(boolean density) {
-        this.density = density;
-    }
-
-    @Override
-    public Range buildRange() {
-        if (range == null) {
-
-            // build preliminaries
-            int width = category.getDictionary().length;
-            int height = condition.getDictionary().length;
-
-            totals = new double[width];
-            hits = new double[width][height];
-
-            int len = Integer.MAX_VALUE;
-            len = Math.min(len, category.getRowCount());
-            len = Math.min(len, condition.getRowCount());
-            len = Math.min(len, numeric.getRowCount());
-
-            for (int i = 0; i < len; i++) {
-                hits[category.getIndex(i)][condition.getIndex(i)] += numeric.getValue(i);
-                totals[category.getIndex(i)] += numeric.getValue(i);
-            }
-
-            if (density) {
-                double t = 0;
-                for (int i = 0; i < totals.length; i++) {
-                    t += totals[i];
+        final int TESTS = 10_000;
+        HashMap<String, Integer> counter = new HashMap<>();
+        for (int i = 0; i < TESTS; i++) {
+            String[] selection = colSelector.nextColNames();
+            for (String sel : selection) {
+                if (!counter.containsKey(sel)) {
+                    counter.put(sel, 0);
                 }
-                for (int i = 0; i < hits.length; i++) {
-                    for (int j = 0; j < hits[i].length; j++) {
-                        hits[i][j] /= t;
-                    }
-                    totals[i] /= t;
-                }
+                counter.put(sel, counter.get(sel) + 1);
             }
-
-            // now build range
-            range = new Range();
-            for (int i = 0; i < totals.length; i++) {
-                range.union(Double.NaN, totals[i]);
-                range.union(Double.NaN, 0);
-            }
-            int cnt = 0;
-            for (int i = 0; i < totals.length; i++) {
-                if (totals[i] > 0) cnt++;
-            }
-            range.union(-0.5, 0);
-            range.union(cnt - 0.5, 0);
         }
-        return range;
-    }
-
-    @Override
-    public void buildLeftMarkers() {
-        buildNumericLeftMarkers();
-    }
-
-    @Override
-    public void buildBottomMarkers() {
-        bottomMarkersPos.clear();
-        bottomMarkersMsg.clear();
-
-        int cnt = 0;
-        for (int i = 0; i < category.getDictionary().length; i++) {
-            if (totals[i] > 0) cnt++;
+        final double[] freq = new double[counter.size()];
+        int pos = 0;
+        double total = 0;
+        for (int value : counter.values()) {
+            freq[pos++] = value;
+            total += value;
         }
-        int xspots = cnt;
-        double xspotwidth = viewport.width / (1. * xspots);
-
-        cnt = 0;
-        for (int i = 0; i < category.getDictionary().length; i++) {
-            if (totals[i] == 0) continue;
-            bottomMarkersPos.add(xspotwidth * (0.5 + cnt));
-            bottomMarkersMsg.add(category.getDictionary()[i]);
-            cnt++;
+        for (int i = 0; i < freq.length; i++) {
+            freq[i] /= total;
+            System.out.println(String.format("%.6f", freq[i]));
         }
-    }
 
-    @Override
-    public void paint(Graphics2D g2d, Rectangle rect) {
-        super.paint(g2d, rect);
 
-        int colindex = 0;
-        int col = 0;
-        for (int i = 0; i < category.getDictionary().length; i++) {
-            if (totals[i] == 0) continue;
 
-            double ystart = 0;
-            for (int j = 0; j < condition.getDictionary().length; j++) {
-                double yend = ystart + hits[i][j];
 
-                int[] x = {xscale(col - 0.4), xscale(col - 0.4), xscale(col + 0.4), xscale(col + 0.4), xscale(col - 0.4)};
-                int[] y = {yscale(ystart), yscale(yend), yscale(yend), yscale(ystart), yscale(ystart)};
-
-                g2d.setColor(ColorPalette.STANDARD.getColor(0));
-                g2d.drawPolygon(x, y, 4);
-
-                x = new int[]{xscale(col - 0.4) + 1, xscale(col - 0.4) + 1, xscale(col + 0.4), xscale(col + 0.4), xscale(col - 0.4) + 1};
-                y = new int[]{yscale(ystart), yscale(yend) + 1, yscale(yend) + 1, yscale(ystart), yscale(ystart)};
-
-                g2d.setColor(opt().getColor(colindex++));
-                g2d.fillPolygon(x, y, 4);
-
-                ystart = yend;
-            }
-            col++;
-        }
     }
 }

@@ -199,6 +199,8 @@ import rapaio.core.stat.Mode;
 import rapaio.data.*;
 import rapaio.filters.RowFilters;
 import rapaio.supervised.Classifier;
+import rapaio.supervised.ColSelector;
+import rapaio.supervised.VariableColsClassifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -207,25 +209,29 @@ import static rapaio.core.BaseMath.abs;
 import static rapaio.core.BaseMath.log2;
 import static rapaio.core.BaseMath.validNumber;
 
-public class RandomTree implements Classifier {
+public class RandomTree implements VariableColsClassifier {
 
-    final int mcols;
     String classColName;
-    int mcols2;
     TreeNode root;
     String[] dict;
     NominalVector prediction;
     Frame d;
     double[] sumVI;
     double[] cntVI;
+    final ColSelector colSelector;
 
-    public RandomTree(int mcols) {
-        this.mcols = mcols;
+    public RandomTree(ColSelector colSelector) {
+        this.colSelector = colSelector;
     }
 
     @Override
     public Classifier newInstance() {
-        return new RandomTree(mcols);
+        return new RandomTree(colSelector);
+    }
+
+    @Override
+    public ColSelector getColSelector() {
+        return colSelector;
     }
 
     public double[] getVariableImportance() {
@@ -244,14 +250,6 @@ public class RandomTree implements Classifier {
         List<Double> weights = new ArrayList<>();
         for (int i = 0; i < df.getRowCount(); i++) {
             weights.add(1.);
-        }
-
-        mcols2 = mcols;
-        if (mcols2 > df.getColCount() - 1) {
-            mcols2 = df.getColCount() - 1;
-        }
-        if (mcols2 < 1) {
-            mcols2 = (int) log2(df.getColCount()) + 1;
         }
 
         this.classColName = classColName;
@@ -381,7 +379,7 @@ class TreeNode {
 
         // leaf on all classes of same value
         for (int i = 1; i < fd.length; i++) {
-            if (abs(fd[i]-totalFd)<=1e-30) {
+            if (abs(fd[i] - totalFd) <= 1e-30) {
                 predicted = classCol.getLabel(0);
                 leaf = true;
                 return;
@@ -390,15 +388,9 @@ class TreeNode {
         }
 
         // find best split
-        int count = 0;
-        int len = indexes.length - 1;
-        while (count < tree.mcols2) {
-            int next = RandomSource.nextInt(len + 1);
-            int colIndex = indexes[next];
-            indexes[next] = indexes[len];
-            indexes[len] = colIndex;
-            len--;
-            count++;
+        String[] colSel = tree.getColSelector().nextColNames();
+        for(String colName : colSel) {
+            int colIndex = df.getColIndex(colName);
 
             Vector col = df.getCol(colIndex);
             if (col.isNumeric()) {
@@ -444,10 +436,10 @@ class TreeNode {
                     if (false) {
                         if (RandomSource.nextDouble() > .5) {
                             leftMap.add(id);
-                            leftWeights.add(weights.get(i) * pleft);
+                            leftWeights.add(weights.get(i) * 0.5);
                         } else {
                             rightMap.add(id);
-                            rightWeights.add(weights.get(i) * (1. - pleft));
+                            rightWeights.add(weights.get(i) * .5);
                         }
                     } else {
                         leftMap.add(id);

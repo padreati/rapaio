@@ -195,7 +195,9 @@
 package rapaio.supervised;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public abstract class AbstractClassifier implements Classifier {
+public interface VariableColsClassifier extends Classifier {
+
+    ColSelector getColSelector();
 }

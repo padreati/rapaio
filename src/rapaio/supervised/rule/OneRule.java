@@ -199,7 +199,7 @@ import rapaio.data.*;
 import rapaio.data.Vector;
 import static rapaio.explore.Workspace.code;
 import rapaio.filters.RowFilters;
-import rapaio.supervised.AbstractClassifier;
+import rapaio.supervised.Classifier;
 
 import java.io.Serializable;
 import java.util.*;
@@ -207,7 +207,7 @@ import java.util.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class OneRule extends AbstractClassifier {
+public class OneRule implements Classifier {
 
     private int minCount = 6;
     private final List<OneRuleSet> learnedRules = new ArrayList<>();
