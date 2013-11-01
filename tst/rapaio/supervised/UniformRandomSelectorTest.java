@@ -197,6 +197,8 @@ package rapaio.supervised;
 import org.junit.Test;
 import rapaio.core.ColRange;
 import rapaio.data.*;
+import rapaio.supervised.colselect.ColSelector;
+import rapaio.supervised.colselect.UniformRandomColSelector;
 
 import java.util.HashMap;
 

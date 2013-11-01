@@ -194,10 +194,31 @@
 
 package rapaio.supervised;
 
+import rapaio.data.Frame;
+import rapaio.supervised.colselect.ColSelector;
+import rapaio.supervised.colselect.DefaultColSelector;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public interface VariableColsClassifier extends Classifier {
+public abstract class AbstractClassifier implements Classifier {
 
-    ColSelector getColSelector();
+    protected ColSelector colSelector = new DefaultColSelector();
+
+    public ColSelector getColSelector() {
+        return colSelector;
+    }
+
+    @Override
+    public void learn(Frame df, String classColName) {
+        List<Double> weights = new ArrayList<>();
+        for (int i = 0; i < df.getRowCount(); i++) {
+            weights.add(1.);
+        }
+        learn(df, weights, classColName);
+    }
 }

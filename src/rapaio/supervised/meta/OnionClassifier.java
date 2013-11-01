@@ -196,7 +196,10 @@ package rapaio.supervised.meta;
 
 import rapaio.data.Frame;
 import rapaio.data.NominalVector;
+import rapaio.supervised.AbstractClassifier;
 import rapaio.supervised.Classifier;
+
+import java.util.List;
 
 /**
  * Meta data classifier which uses some classifiers as base classifiers and
@@ -204,9 +207,8 @@ import rapaio.supervised.Classifier;
  * If an instance is classified by a sub-classifier than teh result is returned,
  * if than classifier returns missing value for classification then the next
  * sub-classifier is used.
- *
  */
-public class OnionClassifier implements Classifier {
+public class OnionClassifier extends AbstractClassifier {
 
     @Override
     public Classifier newInstance() {
@@ -214,7 +216,7 @@ public class OnionClassifier implements Classifier {
     }
 
     @Override
-    public void learn(Frame df, String classColName) {
+    public void learn(Frame df, List<Double> weights, String classColName) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 

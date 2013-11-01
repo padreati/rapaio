@@ -196,13 +196,17 @@ package rapaio.supervised.tree;
 
 import rapaio.data.Frame;
 import rapaio.data.NominalVector;
+import rapaio.supervised.AbstractClassifier;
 import rapaio.supervised.Classifier;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class CART implements Classifier {
-
+public class CART extends AbstractClassifier{
 
 
     @Override
@@ -211,8 +215,7 @@ public class CART implements Classifier {
     }
 
     @Override
-    public void learn(Frame df, String classColName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void learn(Frame df, List<Double> weights, String classColName) {
     }
 
     @Override

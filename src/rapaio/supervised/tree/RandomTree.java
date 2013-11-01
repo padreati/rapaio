@@ -194,22 +194,22 @@
 
 package rapaio.supervised.tree;
 
+import rapaio.core.ColRange;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Mode;
 import rapaio.data.*;
 import rapaio.filters.RowFilters;
+import rapaio.supervised.AbstractClassifier;
 import rapaio.supervised.Classifier;
-import rapaio.supervised.ColSelector;
-import rapaio.supervised.VariableColsClassifier;
+import rapaio.supervised.colselect.ColSelector;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static rapaio.core.BaseMath.abs;
-import static rapaio.core.BaseMath.log2;
 import static rapaio.core.BaseMath.validNumber;
 
-public class RandomTree implements VariableColsClassifier {
+public class RandomTree extends AbstractClassifier {
 
     String classColName;
     TreeNode root;
@@ -218,7 +218,6 @@ public class RandomTree implements VariableColsClassifier {
     Frame d;
     double[] sumVI;
     double[] cntVI;
-    final ColSelector colSelector;
 
     public RandomTree(ColSelector colSelector) {
         this.colSelector = colSelector;
@@ -227,11 +226,6 @@ public class RandomTree implements VariableColsClassifier {
     @Override
     public Classifier newInstance() {
         return new RandomTree(colSelector);
-    }
-
-    @Override
-    public ColSelector getColSelector() {
-        return colSelector;
     }
 
     public double[] getVariableImportance() {
@@ -245,12 +239,7 @@ public class RandomTree implements VariableColsClassifier {
     }
 
     @Override
-    public void learn(Frame df, String classColName) {
-
-        List<Double> weights = new ArrayList<>();
-        for (int i = 0; i < df.getRowCount(); i++) {
-            weights.add(1.);
-        }
+    public void learn(Frame df, List<Double> weights, String classColName) {
 
         this.classColName = classColName;
         int[] indexes = new int[df.getColCount() - 1];
@@ -355,6 +344,7 @@ class TreeNode {
     public TreeNode rightNode;
 
     public void learn(final Frame df, List<Double> weights, int[] indexes, RandomTree tree) {
+
         Vector classCol = df.getCol(tree.classColName);
         int classColIndex = df.getColIndex(tree.classColName);
 
@@ -389,7 +379,7 @@ class TreeNode {
 
         // find best split
         String[] colSel = tree.getColSelector().nextColNames();
-        for(String colName : colSel) {
+        for (String colName : colSel) {
             int colIndex = df.getColIndex(colName);
 
             Vector col = df.getCol(colIndex);

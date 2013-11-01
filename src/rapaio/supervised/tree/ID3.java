@@ -200,6 +200,7 @@ import rapaio.data.Frame;
 import rapaio.data.NominalVector;
 import rapaio.explore.Workspace;
 import rapaio.filters.NominalFilters;
+import rapaio.supervised.AbstractClassifier;
 import rapaio.supervised.Classifier;
 
 import java.util.*;
@@ -207,7 +208,7 @@ import java.util.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class ID3 implements Classifier {
+public class ID3 extends AbstractClassifier {
     private ID3Node root;
     private MetricType metricType = new EntropyMetricType();
     private String[] dict;
@@ -289,7 +290,7 @@ public class ID3 implements Classifier {
     }
 
     @Override
-    public void learn(Frame df, String classColName) {
+    public void learn(Frame df, List<Double> weights, String classColName) {
         validate(df, df.getColIndex(classColName));
         this.dict = df.getCol(classColName).getDictionary();
         this.root = new ID3Node(null, df, classColName, new HashSet<String>(), metricType);

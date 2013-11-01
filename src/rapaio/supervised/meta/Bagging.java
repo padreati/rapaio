@@ -196,6 +196,7 @@ package rapaio.supervised.meta;
 
 import rapaio.data.*;
 import rapaio.sample.StatSampling;
+import rapaio.supervised.AbstractClassifier;
 import rapaio.supervised.Classifier;
 
 import java.util.ArrayList;
@@ -204,7 +205,7 @@ import java.util.List;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Bagging implements Classifier {
+public class Bagging extends AbstractClassifier {
 
     private final double p;
     private final int bags;
@@ -227,7 +228,7 @@ public class Bagging implements Classifier {
     }
 
     @Override
-    public void learn(Frame df, String classColName) {
+    public void learn(Frame df, List<Double> weights, String classColName) {
         this.classColName = classColName;
         this.dict = df.getCol(classColName).getDictionary();
         classifiers.clear();

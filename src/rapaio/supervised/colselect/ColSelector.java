@@ -192,51 +192,17 @@
  *    limitations under the License.
  */
 
-package rapaio.supervised;
+package rapaio.supervised.colselect;
 
 import rapaio.core.ColRange;
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
-
-import java.util.List;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class UniformRandomColSelector implements ColSelector {
+public interface ColSelector {
 
-    private int mcols = -1;
-    private String[] candidates;
-//    private String[] result;
+    void setUp(Frame df, ColRange except, int mcols);
 
-    public void setUp(Frame df, ColRange except, int mcols) {
-        this.mcols = mcols;
-        List<Integer> exceptColumns = except.parseColumnIndexes(df);
-        candidates = new String[df.getColCount() - exceptColumns.size()];
-        int pos = 0;
-        int expos = 0;
-        for (int i = 0; i < df.getColCount(); i++) {
-            if (i == exceptColumns.get(expos)) {
-                expos++;
-                continue;
-            }
-            candidates[pos++] = df.getColNames()[i];
-        }
-//        result = new String[mcols];
-    }
-
-    @Override
-    public synchronized String[] nextColNames() {
-        String[] result = new String[mcols];
-        if (mcols < 1) {
-            throw new RuntimeException("Uniform random column selector not initialized");
-        }
-        for (int i = 0; i < mcols; i++) {
-            int next = RandomSource.nextInt(candidates.length - i);
-            result[i] = candidates[next];
-            candidates[next] = candidates[candidates.length - 1 - i];
-            candidates[candidates.length - 1 - i] = result[i];
-        }
-        return result;
-    }
+    String[] nextColNames();
 }

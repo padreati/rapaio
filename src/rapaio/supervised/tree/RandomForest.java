@@ -204,11 +204,11 @@ import rapaio.data.Vector;
 import static rapaio.explore.Workspace.*;
 
 import rapaio.filters.RowFilters;
+import rapaio.supervised.AbstractClassifier;
 import rapaio.supervised.Classifier;
 import rapaio.sample.StatSampling;
-import rapaio.supervised.ColSelector;
-import rapaio.supervised.UniformRandomColSelector;
-import rapaio.supervised.VariableColsClassifier;
+import rapaio.supervised.colselect.ColSelector;
+import rapaio.supervised.colselect.UniformRandomColSelector;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -218,13 +218,13 @@ import java.util.concurrent.Executors;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class RandomForest implements Classifier {
+public class RandomForest extends AbstractClassifier {
     final int mtrees;
     final int mcols;
     final boolean computeOob;
     ColSelector colSelector;
-    VariableColsClassifier classifier;
-    List<VariableColsClassifier> trees = new ArrayList<>();
+    Classifier classifier;
+    List<Classifier> trees = new ArrayList<>();
     String classColName;
     String[] dict;
     String[] giniImportanceNames;
@@ -236,7 +236,6 @@ public class RandomForest implements Classifier {
     private NominalVector predict;
     private Frame dist;
     private long learnTime = 0;
-
 
     public RandomForest(int mtrees) {
         this(mtrees, 0, true);
@@ -264,7 +263,7 @@ public class RandomForest implements Classifier {
     }
 
     @Override
-    public void learn(final Frame df, final String classColName) {
+    public void learn(final Frame df, List<Double> weights, final String classColName) {
         long start = System.currentTimeMillis();
         for (int i = 0; i < df.getRowCount(); i++) {
             if (df.getCol(classColName).isMissing(i)) {
@@ -338,7 +337,7 @@ public class RandomForest implements Classifier {
         oobFreq = new int[df.getSourceFrame().getRowCount()][dict.length];
     }
 
-    private void addOob(Frame source, Frame bootstrap, VariableColsClassifier tree) {
+    private void addOob(Frame source, Frame bootstrap, Classifier tree) {
         Frame delta = RowFilters.delta(source, bootstrap);
         tree.predict(delta);
         Vector predict = tree.getPrediction();
@@ -388,7 +387,7 @@ public class RandomForest implements Classifier {
         dist = new SolidFrame("prob", df.getRowCount(), vectors);
 
         for (int m = 0; m < mtrees; m++) {
-            VariableColsClassifier tree = trees.get(m);
+            Classifier tree = trees.get(m);
             tree.predict(df);
             for (int i = 0; i < df.getRowCount(); i++) {
                 for (int j = 0; j < tree.getDistribution().getColCount(); j++) {

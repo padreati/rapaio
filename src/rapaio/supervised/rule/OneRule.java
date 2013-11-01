@@ -197,8 +197,11 @@ package rapaio.supervised.rule;
 import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.data.Vector;
+
 import static rapaio.explore.Workspace.code;
+
 import rapaio.filters.RowFilters;
+import rapaio.supervised.AbstractClassifier;
 import rapaio.supervised.Classifier;
 
 import java.io.Serializable;
@@ -207,16 +210,12 @@ import java.util.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class OneRule implements Classifier {
+public class OneRule extends AbstractClassifier {
 
     private int minCount = 6;
     private final List<OneRuleSet> learnedRules = new ArrayList<>();
     private String[] classDictionary;
     private NominalVector predict;
-
-    public OneRule() {
-        this(6);
-    }
 
     public OneRule(int minCount) {
         this.minCount = minCount;
@@ -237,7 +236,7 @@ public class OneRule implements Classifier {
     }
 
     @Override
-    public void learn(Frame df, String classColName) {
+    public void learn(Frame df, List<Double> weights, String classColName) {
         classDictionary = df.getCol(classColName).getDictionary();
 
         validate(df, classColName);
@@ -248,10 +247,10 @@ public class OneRule implements Classifier {
                 continue;
             }
             if (df.getCol(i).isNominal()) {
-                learnedRules.add(buildNominal(df.getColNames()[i], df.getCol(i), df.getCol(classIndex)));
+                learnedRules.add(buildNominal(df.getColNames()[i], df.getCol(i), df.getCol(classIndex), weights));
             }
             if (df.getCol(i).isNumeric()) {
-                learnedRules.add(buildNumeric(df.getColNames()[i], df.getCol(i), df.getCol(classIndex)));
+                learnedRules.add(buildNumeric(df.getColNames()[i], df.getCol(i), df.getCol(classIndex), weights));
             }
         }
 
@@ -339,18 +338,18 @@ public class OneRule implements Classifier {
         }
     }
 
-    private OneRuleSet buildNominal(String string, Vector sourceCol, Vector classCol) {
+    private OneRuleSet buildNominal(String string, Vector sourceCol, Vector classCol, List<Double> weights) {
         NominalOneRuleSet set = new NominalOneRuleSet(string);
-        int[][] freq = new int[sourceCol.getDictionary().length][classCol.getDictionary().length];
+        double[][] freq = new double[sourceCol.getDictionary().length][classCol.getDictionary().length];
         for (int i = 0; i < sourceCol.getRowCount(); i++) {
-            freq[sourceCol.getIndex(i)][classCol.getIndex(i)]++;
+            freq[sourceCol.getIndex(i)][classCol.getIndex(i)] += weights.get(i);
         }
         for (int i = 0; i < freq.length; i++) {
-            int[] hist = freq[i];
-            int totalSubset = 0;
-            int max = -1;
+            double[] hist = freq[i];
+            double totalSubset = 0;
+            double max = -1;
             int count = 0;
-            for (int aHist : hist) {
+            for (double aHist : hist) {
                 totalSubset += aHist;
                 if (aHist > max) {
                     max = aHist;
@@ -381,7 +380,7 @@ public class OneRule implements Classifier {
         return set;
     }
 
-    private OneRuleSet buildNumeric(String string, Vector sourceCol, Vector classCol) {
+    private OneRuleSet buildNumeric(String string, Vector sourceCol, Vector classCol, List<Double> weights) {
         NumericOneRuleSet set = new NumericOneRuleSet(string);
         Frame df = new SolidFrame("", sourceCol.getRowCount(), new Vector[]{sourceCol, classCol});
         df = RowFilters.sort(df.getName(), df, RowComparators.numericComparator(sourceCol, true));
@@ -400,7 +399,7 @@ public class OneRule implements Classifier {
         if (pos != -1) {
             Arrays.fill(hist, 0);
             for (int i = 0; i <= pos; i++) {
-                hist[df.getIndex(i, 1)]++;
+                hist[df.getIndex(i, 1)] += weights.get(i);
             }
             int totalSubset = 0;
             int max = -1;
@@ -632,19 +631,19 @@ interface GenericOneRule {
 
     String getPredictedClass();
 
-    int getErrorCount();
+    double getErrorCount();
 
-    int getTotalCount();
+    double getTotalCount();
 }
 
 class NominalOneRule implements GenericOneRule {
 
     private final String colValue;
     private final String predictedClass;
-    private final int totalCount;
-    private final int errorCount;
+    private final double totalCount;
+    private final double errorCount;
 
-    public NominalOneRule(String colValue, String predictedClass, int totalCount, int errorCount) {
+    public NominalOneRule(String colValue, String predictedClass, double totalCount, double errorCount) {
         this.colValue = colValue;
         this.predictedClass = predictedClass;
         this.totalCount = totalCount;
@@ -652,12 +651,12 @@ class NominalOneRule implements GenericOneRule {
     }
 
     @Override
-    public int getErrorCount() {
+    public double getErrorCount() {
         return errorCount;
     }
 
     @Override
-    public int getTotalCount() {
+    public double getTotalCount() {
         return totalCount;
     }
 
@@ -687,11 +686,11 @@ class NumericOneRule implements GenericOneRule {
     private final double maxValue;
     private final boolean missingValue;
     private final String predictedClass;
-    private final int errorCount;
-    private final int totalCount;
+    private final double errorCount;
+    private final double totalCount;
 
     public NumericOneRule(double minValue, double maxValue, boolean missingValue,
-                          String predictedClass, int totalCount, int errorCount) {
+                          String predictedClass, double totalCount, double errorCount) {
         this.minValue = minValue;
         this.maxValue = maxValue;
         this.missingValue = missingValue;
@@ -706,12 +705,12 @@ class NumericOneRule implements GenericOneRule {
     }
 
     @Override
-    public int getErrorCount() {
+    public double getErrorCount() {
         return errorCount;
     }
 
     @Override
-    public int getTotalCount() {
+    public double getTotalCount() {
         return totalCount;
     }
 

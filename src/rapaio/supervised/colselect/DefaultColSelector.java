@@ -192,33 +192,38 @@
  *    limitations under the License.
  */
 
-package rapaio.supervised;
+package rapaio.supervised.colselect;
 
-import rapaio.core.Summarizable;
+import rapaio.core.ColRange;
 import rapaio.data.Frame;
-import rapaio.data.NominalVector;
-import rapaio.data.Vector;
-import rapaio.supervised.colselect.ColSelector;
 
 import java.util.List;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public interface Classifier extends Summarizable {
+public class DefaultColSelector implements ColSelector {
 
-    Classifier newInstance();
+    private String[] selection;
 
-    ColSelector getColSelector();
+    @Override
+    public void setUp(Frame df, ColRange except, int mcols) {
+        String[] all = df.getColNames();
+        List<Integer> ex = except.parseColumnIndexes(df);
+        selection = new String[all.length - ex.size()];
+        int pos = 0;
+        int spos = 0;
+        for (int i = 0; i < all.length; i++) {
+            if (pos < ex.size() && i == ex.get(pos)) {
+                pos++;
+                continue;
+            }
+            selection[spos++] = all[i];
+        }
+    }
 
-    void learn(Frame df, List<Double> weights, String classColName);
-
-    void learn(Frame df, String classColName);
-
-    void predict(Frame df);
-
-    NominalVector getPrediction();
-
-    Frame getDistribution();
-
+    @Override
+    public String[] nextColNames() {
+        return selection;
+    }
 }
