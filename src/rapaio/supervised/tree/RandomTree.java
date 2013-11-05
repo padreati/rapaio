@@ -292,7 +292,7 @@ public class RandomTree extends AbstractClassifier {
     }
 
     @Override
-    public Frame getDistribution() {
+    public Frame getDist() {
         return d;
     }
 

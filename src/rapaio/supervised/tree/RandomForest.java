@@ -208,7 +208,7 @@ import rapaio.supervised.AbstractClassifier;
 import rapaio.supervised.Classifier;
 import rapaio.sample.StatSampling;
 import rapaio.supervised.colselect.ColSelector;
-import rapaio.supervised.colselect.UniformRandomColSelector;
+import rapaio.supervised.colselect.RandomColSelector;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -271,7 +271,6 @@ public class RandomForest extends AbstractClassifier {
             }
         }
 
-        this.colSelector = new UniformRandomColSelector();
         int mcols2 = mcols;
         if (mcols2 > df.getColCount() - 1) {
             mcols2 = df.getColCount() - 1;
@@ -280,7 +279,7 @@ public class RandomForest extends AbstractClassifier {
             mcols2 = ((int) log2(df.getColCount())) + 1;
         }
 
-        this.colSelector.setUp(df, new ColRange(classColName), mcols2);
+        this.colSelector = new RandomColSelector(df, new ColRange(classColName), mcols2);
 
         this.classColName = classColName;
         this.dict = df.getCol(classColName).getDictionary();
@@ -390,8 +389,8 @@ public class RandomForest extends AbstractClassifier {
             Classifier tree = trees.get(m);
             tree.predict(df);
             for (int i = 0; i < df.getRowCount(); i++) {
-                for (int j = 0; j < tree.getDistribution().getColCount(); j++) {
-                    dist.setValue(i, j, dist.getValue(i, j) + tree.getDistribution().getValue(i, j));
+                for (int j = 0; j < tree.getDist().getColCount(); j++) {
+                    dist.setValue(i, j, dist.getValue(i, j) + tree.getDist().getValue(i, j));
                 }
             }
         }
@@ -418,7 +417,7 @@ public class RandomForest extends AbstractClassifier {
     }
 
     @Override
-    public Frame getDistribution() {
+    public Frame getDist() {
         return dist;
     }
 

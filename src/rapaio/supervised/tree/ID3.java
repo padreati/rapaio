@@ -197,6 +197,8 @@ package rapaio.supervised.tree;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Mode;
 import rapaio.data.Frame;
+import rapaio.data.MappedFrame;
+import rapaio.data.Mapping;
 import rapaio.data.NominalVector;
 import rapaio.explore.Workspace;
 import rapaio.filters.NominalFilters;
@@ -221,7 +223,7 @@ public class ID3 extends AbstractClassifier {
 
         String getMetricTypeName();
 
-        public double compute(Frame df, String classColName, String splitColName);
+        public double compute(Frame df, List<Double> weights, String classColName, String splitColName);
 
         int compare(double metricValue1, double metricValue2);
     }
@@ -237,8 +239,8 @@ public class ID3 extends AbstractClassifier {
         }
 
         @Override
-        public double compute(Frame df, String classColName, String splitColName) {
-            return new TreeMetrics().entropy(df, classColName, splitColName);
+        public double compute(Frame df, List<Double> weights, String classColName, String splitColName) {
+            return new TreeMetrics().entropy(df, weights, classColName, splitColName);
         }
 
         @Override
@@ -262,8 +264,8 @@ public class ID3 extends AbstractClassifier {
 
 
         @Override
-        public double compute(Frame df, String classColName, String splitColName) {
-            return new TreeMetrics().infoGain(df, classColName, splitColName);
+        public double compute(Frame df, List<Double> weights, String classColName, String splitColName) {
+            return new TreeMetrics().infoGain(df, weights, classColName, splitColName);
         }
 
         @Override
@@ -293,7 +295,7 @@ public class ID3 extends AbstractClassifier {
     public void learn(Frame df, List<Double> weights, String classColName) {
         validate(df, df.getColIndex(classColName));
         this.dict = df.getCol(classColName).getDictionary();
-        this.root = new ID3Node(null, df, classColName, new HashSet<String>(), metricType);
+        this.root = new ID3Node(null, df, weights, classColName, new HashSet<String>(), metricType);
     }
 
     @Override
@@ -343,7 +345,7 @@ public class ID3 extends AbstractClassifier {
     }
 
     @Override
-    public Frame getDistribution() {
+    public Frame getDist() {
         return null;
     }
 
@@ -375,6 +377,7 @@ public class ID3 extends AbstractClassifier {
 class ID3Node {
     private final ID3Node parent;
     private final Frame df;
+    private final List<Double> weights;
     private final String classColName;
     private final ID3.MetricType metricType;
     //
@@ -386,11 +389,13 @@ class ID3Node {
 
     public ID3Node(final ID3Node parent,
                    final Frame df,
+                   final List<Double> weights,
                    final String classColName,
                    final HashSet<String> used,
                    final ID3.MetricType metricType) {
         this.parent = parent;
         this.df = df;
+        this.weights = weights;
         this.classColName = classColName;
         this.metricType = metricType;
 
@@ -463,11 +468,11 @@ class ID3Node {
                 continue;
             }
             if (colName.isEmpty()) {
-                metricValue = metricType.compute(df, classColName, col);
+                metricValue = metricType.compute(df, weights, classColName, col);
                 colName = col;
                 continue;
             }
-            double lastMetricValue = metricType.compute(df, classColName, col);
+            double lastMetricValue = metricType.compute(df, weights, classColName, col);
             if (metricType.compare(lastMetricValue, metricValue) > 0) {
                 metricValue = lastMetricValue;
                 colName = col;
@@ -493,14 +498,30 @@ class ID3Node {
         // usual case, a split node
 
         String[] dict = df.getCol(colName).getDictionary();
-        Frame[] frames = NominalFilters.groupByNominal(df, df.getColIndex(colName));
+        List<Integer>[] splitIds = new List[dict.length];
+        List<Double>[] splitWeights = new List[dict.length];
+
+        for (int i = 0; i < dict.length; i++) {
+            splitIds[i] = new ArrayList<>();
+            splitWeights[i] = new ArrayList<>();
+        }
+
+        for (int i = 0; i < df.getRowCount(); i++) {
+            int index = df.getIndex(i, df.getColIndex(colName));
+            splitIds[index].add(df.getRowId(i));
+            splitWeights[index].add(weights.get(i));
+        }
+        Frame[] frames = new Frame[dict.length];
+        for (int i = 0; i < dict.length; i++) {
+            frames[i] = new MappedFrame(df.getName(), df.getSourceFrame(), new Mapping(splitIds[i]));
+        }
 
         splitCol = colName;
         splitMap = new HashMap<>();
         HashSet<String> newUsed = new HashSet<>(used);
         newUsed.add(colName);
         for (int i = 0; i < dict.length; i++) {
-            splitMap.put(dict[i], new ID3Node(this, frames[i], classColName, newUsed, metricType));
+            splitMap.put(dict[i], new ID3Node(this, frames[i], splitWeights[i], classColName, newUsed, metricType));
         }
     }
 }

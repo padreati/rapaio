@@ -192,51 +192,173 @@
  *    limitations under the License.
  */
 
-package rapaio.supervised.colselect;
+package rapaio.supervised.boost;
 
-import rapaio.core.ColRange;
+import static rapaio.core.BaseMath.*;
+
 import rapaio.core.RandomSource;
-import rapaio.data.Frame;
+import rapaio.data.*;
+import rapaio.supervised.AbstractClassifier;
+import rapaio.supervised.Classifier;
+import rapaio.supervised.colselect.ColSelector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class UniformRandomColSelector implements ColSelector {
+public class AdaBoostM1 extends AbstractClassifier {
 
-    private int mcols = -1;
-    private String[] candidates;
-//    private String[] result;
+    private final Classifier weak;
+    private final int t;
 
-    public void setUp(Frame df, ColRange except, int mcols) {
-        this.mcols = mcols;
-        List<Integer> exceptColumns = except.parseColumnIndexes(df);
-        candidates = new String[df.getColCount() - exceptColumns.size()];
-        int pos = 0;
-        int expos = 0;
-        for (int i = 0; i < df.getColCount(); i++) {
-            if (expos < exceptColumns.size() && i == exceptColumns.get(expos)) {
-                expos++;
-                continue;
-            }
-            candidates[pos++] = df.getColNames()[i];
-        }
-//        result = new String[mcols];
+    private final List<Double> a;
+    private final List<Classifier> h;
+
+    private String[] dict;
+    private NominalVector pred;
+    private Frame dist;
+
+    public AdaBoostM1(Classifier weak, int t) {
+        this.weak = weak;
+        this.t = t;
+        this.a = new ArrayList<>();
+        this.h = new ArrayList<>();
     }
 
     @Override
-    public synchronized String[] nextColNames() {
-        String[] result = new String[mcols];
-        if (mcols < 1) {
-            throw new RuntimeException("Uniform random column selector not initialized");
+    public Classifier newInstance() {
+        return new AdaBoostM1(weak.newInstance(), t);
+    }
+
+    public ColSelector getColSelector() {
+        return colSelector;
+    }
+
+    @Override
+    public void learn(Frame df, List<Double> weights, String classColName) {
+        dict = df.getCol(classColName).getDictionary();
+
+        List<Double> w = new ArrayList<>(weights);
+
+        double total = 0;
+        for (double ww : w) {
+            total += ww;
         }
-        for (int i = 0; i < mcols; i++) {
-            int next = RandomSource.nextInt(candidates.length - i);
-            result[i] = candidates[next];
-            candidates[next] = candidates[candidates.length - 1 - i];
-            candidates[candidates.length - 1 - i] = result[i];
+        for (int j = 0; j < w.size(); j++) {
+            w.set(j, w.get(j) / total);
         }
-        return result;
+
+        for (int i = 0; i < t; i++) {
+            Classifier hh = weak.newInstance();
+            hh.learn(df, new ArrayList<>(w), classColName);
+            hh.predict(df);
+            NominalVector pred = hh.getPrediction();
+
+            double err = 0;
+            for (int j = 0; j < df.getRowCount(); j++) {
+                if (pred.getIndex(j) != df.getCol(classColName).getIndex(j)) {
+                    err += w.get(j);
+                }
+            }
+            double alpha = (1. - err) / err;
+
+            if (err == 0 || err > 0.5) {
+                if (h.isEmpty()) {
+                    h.add(hh);
+                    a.add(log(alpha));
+                }
+                break;
+            }
+            h.add(hh);
+            a.add(log(alpha));
+
+
+            // update
+            total = 0;
+            for (double ww : w) {
+                total += ww;
+            }
+            for (int j = 0; j < w.size(); j++) {
+                if (h.get(i).getPrediction().getIndex(j) != df.getCol(classColName).getIndex(j)) {
+                    w.set(j, w.get(j) * alpha);
+                }
+            }
+            double new_total = 0;
+            for (double ww : w) {
+                new_total += ww;
+            }
+            for (int j = 0; j < w.size(); j++) {
+                w.set(j, w.get(j) * total / new_total);
+            }
+        }
+    }
+
+    @Override
+    public void predict(Frame df) {
+        predict(df, h.size());
+    }
+
+    public void predict(Frame df, int t) {
+
+        pred = new NominalVector("predict", df.getRowCount(), dict);
+        List<Vector> vectors = new ArrayList<>();
+        for (int i = 0; i < dict.length; i++) {
+            vectors.add(new NumericVector(dict[i], new double[df.getRowCount()]));
+        }
+        dist = new SolidFrame("distribution", df.getRowCount(), vectors);
+
+        for (int i = 0; i < t; i++) {
+            h.get(i).predict(df);
+            for (int j = 0; j < df.getRowCount(); j++) {
+                int index = h.get(i).getPrediction().getIndex(j);
+                dist.setValue(j, index, dist.getValue(j, index) + a.get(i));
+            }
+        }
+
+        // from logs to probabilities
+        for (int i = 0; i < dist.getRowCount(); i++) {
+
+            double max = 0;
+            for (int j = 1; j < dist.getColCount(); j++) {
+                if (dist.getValue(i, j) > max) {
+                    max = dist.getValue(i, j);
+                }
+            }
+            double expsum = 0;
+            for (int j = 1; j < dist.getColCount(); j++) {
+                dist.setValue(i, j, exp(dist.getValue(i, j) - max));
+                expsum += dist.getValue(i, j);
+            }
+            for (int j = 1; j < dist.getColCount(); j++) {
+                dist.setValue(i, j, dist.getValue(i, j) / expsum);
+            }
+
+            // predict
+            max = 0;
+            int prediction = 0;
+            for (int j = 1; j < dist.getColCount(); j++) {
+                if (dist.getValue(i, j) > max) {
+                    prediction=j;
+                    max = dist.getValue(i, j);
+                }
+            }
+            pred.setIndex(i, prediction);
+        }
+    }
+
+    @Override
+    public NominalVector getPrediction() {
+        return pred;
+    }
+
+    @Override
+    public Frame getDist() {
+        return dist;
+    }
+
+    @Override
+    public void summary() {
     }
 }

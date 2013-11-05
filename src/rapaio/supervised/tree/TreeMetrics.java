@@ -195,19 +195,22 @@
 package rapaio.supervised.tree;
 
 import static rapaio.core.BaseMath.log;
+
 import rapaio.data.Frame;
 import rapaio.filters.NominalFilters;
+
+import java.util.List;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class TreeMetrics {
 
-    public double entropy(Frame df, String classColName) {
+    public double entropy(Frame df, List<Double> weights, String classColName) {
         int classIndex = df.getColIndex(classColName);
         int[] hits = new int[df.getCol(classIndex).getDictionary().length];
         for (int i = 0; i < df.getRowCount(); i++) {
-            hits[df.getCol(classIndex).getIndex(i)]++;
+            hits[df.getCol(classIndex).getIndex(i)] += weights.get(i);
         }
         double entropy = 0.;
         for (int hit : hits) {
@@ -219,7 +222,7 @@ public class TreeMetrics {
         return entropy;
     }
 
-    public double entropy(Frame df, String classColName, String splitColName) {
+    public double entropy(Frame df, List<Double> weights, String classColName, String splitColName) {
         int splitIndex = df.getColIndex(splitColName);
         Frame[] split = NominalFilters.groupByNominal(df, splitIndex);
         double entropy = 0.;
@@ -227,20 +230,20 @@ public class TreeMetrics {
             if (f == null) {
                 continue;
             }
-            entropy += (1. * f.getRowCount() * entropy(f, classColName)) / (1. * df.getRowCount());
+            entropy += (1. * f.getRowCount() * entropy(f, weights, classColName)) / (1. * df.getRowCount());
         }
         return entropy;
     }
 
-    public double infoGain(Frame df, String classColName, String splitColName) {
+    public double infoGain(Frame df, List<Double> weights, String classColName, String splitColName) {
         int splitIndex = df.getColIndex(splitColName);
         Frame[] split = NominalFilters.groupByNominal(df, splitIndex);
-        double infoGain = entropy(df, classColName);
+        double infoGain = entropy(df, weights, classColName);
         for (Frame f : split) {
             if (f == null) {
                 continue;
             }
-            infoGain -= (f.getRowCount() / (1. * df.getRowCount())) * entropy(f, classColName);
+            infoGain -= (f.getRowCount() / (1. * df.getRowCount())) * entropy(f, weights, classColName);
         }
         return infoGain;
     }

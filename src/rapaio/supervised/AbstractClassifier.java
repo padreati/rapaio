@@ -207,7 +207,7 @@ import java.util.List;
  */
 public abstract class AbstractClassifier implements Classifier {
 
-    protected ColSelector colSelector = new DefaultColSelector();
+    protected ColSelector colSelector;
 
     public ColSelector getColSelector() {
         return colSelector;

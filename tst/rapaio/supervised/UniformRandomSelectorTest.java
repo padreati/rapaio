@@ -198,7 +198,7 @@ import org.junit.Test;
 import rapaio.core.ColRange;
 import rapaio.data.*;
 import rapaio.supervised.colselect.ColSelector;
-import rapaio.supervised.colselect.UniformRandomColSelector;
+import rapaio.supervised.colselect.RandomColSelector;
 
 import java.util.HashMap;
 
@@ -223,8 +223,7 @@ public class UniformRandomSelectorTest {
         String classColName = "class";
         int mcols = 4;
 
-        ColSelector colSelector = new UniformRandomColSelector();
-        colSelector.setUp(df, new ColRange(classColName), mcols);
+        ColSelector colSelector = new RandomColSelector(df, new ColRange(classColName), mcols);
 
         final int TESTS = 10_000;
         HashMap<String, Integer> counter = new HashMap<>();

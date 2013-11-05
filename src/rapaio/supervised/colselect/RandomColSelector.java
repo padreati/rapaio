@@ -192,151 +192,49 @@
  *    limitations under the License.
  */
 
-package rapaio.supervised.boost;
-
-import static rapaio.core.BaseMath.*;
+package rapaio.supervised.colselect;
 
 import rapaio.core.ColRange;
 import rapaio.core.RandomSource;
-import rapaio.data.*;
-import rapaio.supervised.AbstractClassifier;
-import rapaio.supervised.Classifier;
-import rapaio.supervised.colselect.ColSelector;
-import rapaio.supervised.colselect.DefaultColSelector;
-import rapaio.supervised.stat.ConfusionMatrix;
+import rapaio.data.Frame;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class AdaBoost extends AbstractClassifier {
+public class RandomColSelector implements ColSelector {
 
-    private final ColSelector colSelector;
-    private final Classifier weak;
-    private final int t;
+    private int mcols = -1;
+    private String[] candidates;
 
-    private final double[] alpha;
-    private final Classifier[] h;
-
-    private String[] dict;
-    private NominalVector prediction;
-    private Frame distribution;
-
-    public AdaBoost(Classifier weak, int t) {
-        this.weak = weak;
-        this.t = t;
-        this.colSelector = new DefaultColSelector();
-        this.alpha = new double[t];
-        this.h = new Classifier[t];
-        for (int i = 0; i < h.length; i++) {
-            h[i] = weak.newInstance();
-        }
-    }
-
-    @Override
-    public Classifier newInstance() {
-        return new AdaBoost(weak.newInstance(), t);
-    }
-
-    public ColSelector getColSelector() {
-        return colSelector;
-    }
-
-    @Override
-    public void learn(Frame df, List<Double> weights, String classColName) {
-        colSelector.setUp(df, new ColRange(classColName), 0);
-        dict = df.getCol(classColName).getDictionary();
-
-        List<Double> w = new ArrayList<>(weights);
-        normalize(w);
-        for (int i = 0; i < t; i++) {
-            h[i].learn(df, w, classColName);
-            h[i].predict(df);
-            NominalVector pred = h[i].getPrediction();
-            double err = 1. - new ConfusionMatrix(df.getCol(classColName), pred).getAccuracy();
-            alpha[i] = 0.5 * log((1. - err) / err);
-
-            // update
-            for (int j = 0; j < w.size(); j++) {
-                double sign = pred.getIndex(j) == df.getCol(classColName).getIndex(j) ? -1 : 1;
-                double update = w.get(j) * pow(E, sign * alpha[i]);
-                w.set(j, update);
+    public RandomColSelector(Frame df, ColRange except, int mcols) {
+        this.mcols = mcols;
+        List<Integer> exceptColumns = except.parseColumnIndexes(df);
+        candidates = new String[df.getColCount() - exceptColumns.size()];
+        int pos = 0;
+        int expos = 0;
+        for (int i = 0; i < df.getColCount(); i++) {
+            if (expos < exceptColumns.size() && i == exceptColumns.get(expos)) {
+                expos++;
+                continue;
             }
-            normalize(w);
-        }
-    }
-
-    private void normalize(List<Double> weights) {
-        double total = 0;
-        for (double w : weights) {
-            total += w;
-        }
-        ListIterator<Double> it = weights.listIterator();
-        while (it.hasNext()) {
-            double normal = it.next() / total;
-            it.set(normal);
+            candidates[pos++] = df.getColNames()[i];
         }
     }
 
     @Override
-    public void predict(Frame df) {
-        prediction = new NominalVector("predict", df.getRowCount(), dict);
-        List<Vector> vectors = new ArrayList<>();
-        for (int i = 0; i < dict.length; i++) {
-            vectors.add(new NumericVector(dict[i], new double[df.getRowCount()]));
+    public synchronized String[] nextColNames() {
+        String[] result = new String[mcols];
+        if (mcols < 1) {
+            throw new RuntimeException("Uniform random column selector not initialized");
         }
-        distribution = new SolidFrame("distribution", df.getRowCount(), vectors);
-
-        for (int i = 0; i < t; i++) {
-            h[i].predict(df);
-            for (int j = 0; j < df.getRowCount(); j++) {
-                int index = h[i].getPrediction().getIndex(j);
-                double prev = distribution.getValue(j, index);
-                distribution.setValue(j, index, prev + alpha[i]);
-            }
+        for (int i = 0; i < mcols; i++) {
+            int next = RandomSource.nextInt(candidates.length - i);
+            result[i] = candidates[next];
+            candidates[next] = candidates[candidates.length - 1 - i];
+            candidates[candidates.length - 1 - i] = result[i];
         }
-        // normalize and predict
-        for (int i = 0; i < distribution.getRowCount(); i++) {
-            double total = 0;
-            for (int j = 0; j < distribution.getColCount(); j++) {
-                total += distribution.getValue(i, j);
-            }
-            double max = 0;
-            List<Integer> cand = new ArrayList<>();
-            for (int j = 0; j < distribution.getColCount(); j++) {
-                double prev = distribution.getValue(i, j);
-                distribution.setValue(i, j, prev / total);
-
-                if (prev / total > max) {
-                    cand.clear();
-                    cand.add(j);
-                    max = prev/total;
-                    continue;
-                }
-                if (prev / total == max) {
-                    cand.add(j);
-                    continue;
-                }
-            }
-            prediction.setIndex(i, cand.get(RandomSource.nextInt(cand.size())));
-        }
-    }
-
-    @Override
-    public NominalVector getPrediction() {
-        return prediction;
-    }
-
-    @Override
-    public Frame getDistribution() {
-        return distribution;
-    }
-
-    @Override
-    public void summary() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        return result;
     }
 }

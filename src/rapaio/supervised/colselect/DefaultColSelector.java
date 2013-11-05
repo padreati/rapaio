@@ -206,8 +206,7 @@ public class DefaultColSelector implements ColSelector {
 
     private String[] selection;
 
-    @Override
-    public void setUp(Frame df, ColRange except, int mcols) {
+    public DefaultColSelector(Frame df, ColRange except) {
         String[] all = df.getColNames();
         List<Integer> ex = except.parseColumnIndexes(df);
         selection = new String[all.length - ex.size()];

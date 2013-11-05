@@ -284,7 +284,7 @@ public class Bagging extends AbstractClassifier {
     }
 
     @Override
-    public Frame getDistribution() {
+    public Frame getDist() {
         return dist;
     }
 

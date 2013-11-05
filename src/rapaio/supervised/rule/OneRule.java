@@ -271,7 +271,7 @@ public class OneRule extends AbstractClassifier {
     }
 
     @Override
-    public Frame getDistribution() {
+    public Frame getDist() {
         return null;
     }
 

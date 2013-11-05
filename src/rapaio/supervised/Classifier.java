@@ -219,6 +219,6 @@ public interface Classifier extends Summarizable {
 
     NominalVector getPrediction();
 
-    Frame getDistribution();
+    Frame getDist();
 
 }
