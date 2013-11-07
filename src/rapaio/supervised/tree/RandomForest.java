@@ -236,6 +236,7 @@ public class RandomForest extends AbstractClassifier {
     private NominalVector predict;
     private Frame dist;
     private long learnTime = 0;
+    private int minNodeSize = 1;
 
     public RandomForest(int mtrees) {
         this(mtrees, 0, true);
@@ -255,11 +256,20 @@ public class RandomForest extends AbstractClassifier {
     public RandomForest newInstance() {
         RandomForest rf = new RandomForest(mtrees, mcols, computeOob);
         rf.setDebug(debug);
+
         return rf;
     }
 
     public double getOobError() {
         return oobError;
+    }
+
+    public int getMinNodeSize() {
+        return minNodeSize;
+    }
+
+    public void setMinNodeSize(int minNodeSize) {
+        this.minNodeSize = minNodeSize;
     }
 
     @Override
@@ -299,6 +309,7 @@ public class RandomForest extends AbstractClassifier {
         final List<Frame> bootstraps = new ArrayList<>();
         for (int i = 0; i < mtrees; i++) {
             final RandomTree tree = new RandomTree(colSelector);
+            tree.setMinNodeSize(minNodeSize);
             trees.add(tree);
             final Frame bootstrap = StatSampling.randomBootstrap(df);
             bootstraps.add(bootstrap);
@@ -378,6 +389,10 @@ public class RandomForest extends AbstractClassifier {
 
     @Override
     public void predict(final Frame df) {
+        predict(df, mtrees);
+    }
+
+    public void predict(final Frame df, int maxTree) {
         predict = new NominalVector(classColName, df.getRowCount(), dict);
         List<Vector> vectors = new ArrayList<>();
         for (int i = 0; i < dict.length; i++) {
@@ -385,7 +400,7 @@ public class RandomForest extends AbstractClassifier {
         }
         dist = new SolidFrame("prob", df.getRowCount(), vectors);
 
-        for (int m = 0; m < mtrees; m++) {
+        for (int m = 0; m < min(maxTree, mtrees); m++) {
             Classifier tree = trees.get(m);
             tree.predict(df);
             for (int i = 0; i < df.getRowCount(); i++) {
@@ -397,13 +412,18 @@ public class RandomForest extends AbstractClassifier {
 
         // from freq to prob
         for (int i = 0; i < dist.getRowCount(); i++) {
+            double total = 0;
+            for (int j = 0; j < dist.getColCount(); j++) {
+                total += dist.getValue(i, j);
+            }
+            for (int j = 0; j < dist.getColCount(); j++) {
+                dist.setValue(i, j, dist.getValue(i, j) / total);
+            }
             double max = 0;
             int col = 0;
             for (int j = 0; j < dist.getColCount(); j++) {
-                double freq = dist.getValue(i, j);
-                dist.setValue(i, j, freq / (1. * mtrees));
-                if (max < freq) {
-                    max = freq;
+                if (max < dist.getValue(i, j)) {
+                    max = dist.getValue(i, j);
                     col = j;
                 }
             }

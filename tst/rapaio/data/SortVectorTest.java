@@ -205,6 +205,8 @@ import static rapaio.filters.RowFilters.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 
 /**
@@ -305,19 +307,13 @@ public class SortVectorTest {
     }
 
     @Test
-    public void testGetterSetter() throws IOException {
-
-        final String csv = new String("" +
-                "c, 1, 1.\n" +
-                "b, 3, 4.\n" +
-                "a, 2, 2.5\n" +
-                "d, 2, 4");
+    public void testGetterSetter() throws IOException, URISyntaxException {
 
         CsvPersistence persistence = new CsvPersistence();
         persistence.setHasHeader(false);
         persistence.setColSeparator(',');
         persistence.setHasQuotas(false);
-        Frame df = persistence.read("df", new ByteArrayInputStream(csv.getBytes()));
+        Frame df = persistence.read("df", Paths.get(SortVectorTest.class.getResource("sorted-frame.csv").toURI()));
 
         Vector nominal = df.getCol(0);
         Vector index = df.getCol(1);

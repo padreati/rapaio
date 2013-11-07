@@ -260,7 +260,7 @@ public class ConfusionMatrix implements Summarizable {
         if (completeCases == 0) {
             acc = 0;
         } else {
-            acc /= completeCases;
+            acc = acc/completeCases;
         }
     }
 

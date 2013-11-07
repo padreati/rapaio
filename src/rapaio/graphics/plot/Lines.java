@@ -239,10 +239,10 @@ public class Lines extends PlotComponent {
 
         for (int i = 1; i < x.getRowCount(); i++) {
             g2d.setColor(opt().getColor(i));
-            int x1 = (int) (plot.xscale(x.getValue(i - 1)));
-            int y1 = (int) (plot.yscale(y.getValue(i - 1)));
-            int x2 = (int) (plot.xscale(x.getValue(i)));
-            int y2 = (int) (plot.yscale(y.getValue(i)));
+            int x1 = (plot.xscale(x.getValue(i - 1)));
+            int y1 = (plot.yscale(y.getValue(i - 1)));
+            int x2 = (plot.xscale(x.getValue(i)));
+            int y2 = (plot.yscale(y.getValue(i)));
 
             //TODO improve this crap to clip only parts of lines outside of the data range
             if (plot.getRange().contains(x.getValue(i - 1), y.getValue(i - 1))

@@ -218,6 +218,7 @@ public class RandomTree extends AbstractClassifier {
     Frame d;
     double[] sumVI;
     double[] cntVI;
+    private int minNodeSize = 1;
 
     public RandomTree(ColSelector colSelector) {
         this.colSelector = colSelector;
@@ -326,6 +327,14 @@ public class RandomTree extends AbstractClassifier {
     public void summary() {
         //TODO implement summary of random tree
     }
+
+    public void setMinNodeSize(int minNodeSize) {
+        this.minNodeSize = minNodeSize;
+    }
+
+    public int getMinNodeSize() {
+        return minNodeSize;
+    }
 }
 
 class TreeNode {
@@ -363,6 +372,13 @@ class TreeNode {
 
         if (df.getRowCount() == 1) {
             predicted = classCol.getLabel(0);
+            leaf = true;
+            return;
+        }
+
+        if(df.getRowCount() <= tree.getMinNodeSize()) {
+            String[] modes = new Mode(classCol, false).getModes();
+            predicted = modes[RandomSource.nextInt(modes.length)];
             leaf = true;
             return;
         }

@@ -195,18 +195,22 @@
 package rapaio.io;
 
 import rapaio.data.*;
+import rapaio.data.Vector;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class CsvPersistence {
+
 
     private boolean trimSpaces = true;
     private boolean hasHeader = true;
@@ -270,18 +274,14 @@ public class CsvPersistence {
     }
 
     public Frame read(String name, String fileName) throws IOException {
-        return read(name, new File(fileName));
+        return read(name, Paths.get(fileName));
     }
 
-    public Frame read(String name, File file) throws IOException {
-        try (FileInputStream is = new FileInputStream(file)) {
-            return read(name, is);
-        }
-    }
+    public Frame read(String name, Path path) throws IOException {
+        List<String> names = new ArrayList<>();
+        int cols;
 
-    public Frame read(String name, InputStream is) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-            List<String> names = new ArrayList<>();
+        try (BufferedReader reader = Files.newBufferedReader(path, Charset.defaultCharset())) {
             if (hasHeader) {
                 String line = reader.readLine();
                 if (line == null) {
@@ -289,16 +289,116 @@ public class CsvPersistence {
                 }
                 names = parseLine(line);
             }
-            List<String> rows = new ArrayList<>();
+            cols = names.size();
+            int len = 0;
             while (true) {
                 String line = reader.readLine();
                 if (line == null) {
                     break;
                 }
-                rows.add(line);
+                List<String> row = parseLine(line);
+                cols = Math.max(cols, row.size());
+                len++;
+                if (len > 100) break; // enough is enough
             }
-            return buildFrame(name, names, rows);
+            for (int i = names.size(); i < cols; i++) {
+                names.add("V" + (i + 1));
+            }
         }
+
+        // build nominal dictionaries
+//        System.out.println("parse dictionaries..");
+
+        HashMap<String, HashSet<String>> dictionaries = new HashMap<>();
+        HashMap<String, Integer> indexes = new HashMap<>();
+        for (int i = 0; i < names.size(); i++) {
+            String colName = names.get(i);
+            indexes.put(colName, i);
+            if (indexFieldHints.contains(colName) || numericFieldHints.contains(colName)) {
+                continue;
+            }
+            dictionaries.put(colName, new HashSet<String>());
+        }
+        int rows = 0;
+        try (BufferedReader reader = Files.newBufferedReader(path, Charset.defaultCharset())) {
+            if (hasHeader) {
+                String line = reader.readLine();
+                if (line == null) {
+                    return null;
+                }
+            }
+            while (true) {
+                String line = reader.readLine();
+                if (line == null) {
+                    break;
+                }
+                if (!dictionaries.isEmpty()) {
+                    List<String> row = parseLine(line);
+                    for (Map.Entry<String, HashSet<String>> entry : dictionaries.entrySet()) {
+                        entry.getValue().add(row.get(indexes.get(entry.getKey())));
+                    }
+                }
+                rows++;
+//                if (rows % 1_000_000 == 0) {
+//                    System.out.println(rows);
+//                }
+            }
+        }
+
+        // build frame
+//        System.out.println("build frame..");
+
+        Vector[] vectors = new Vector[cols];
+        for (int i = 0; i < cols; i++) {
+            String colName = names.get(i);
+            if (indexFieldHints.contains(colName)) {
+                vectors[i] = new IndexVector(colName, rows);
+                continue;
+            }
+            if (numericFieldHints.contains(colName)) {
+                vectors[i] = new NumericVector(colName, rows);
+                continue;
+            }
+            vectors[i] = new NominalVector(colName, rows, dictionaries.get(colName));
+        }
+        Frame df = new SolidFrame(name, rows, vectors);
+
+        // process data, one row at a time
+//        System.out.println("process data...");
+
+        rows = 0;
+        try (BufferedReader reader = Files.newBufferedReader(path, Charset.defaultCharset())) {
+            if (hasHeader) {
+                String line = reader.readLine();
+                if (line == null) {
+                    return null;
+                }
+            }
+            while (true) {
+                String line = reader.readLine();
+                if (line == null) {
+                    break;
+                }
+                List<String> row = parseLine(line);
+                for (String colName : indexFieldHints) {
+                    df.getCol(colName).setIndex(rows, Integer.parseInt(row.get(indexes.get(colName))));
+                }
+                for (String colName : numericFieldHints) {
+                    df.getCol(colName).setValue(rows, Double.parseDouble(row.get(indexes.get(colName))));
+                }
+                for (String colName : dictionaries.keySet()) {
+                    df.getCol(colName).setLabel(rows, row.get(indexes.get(colName)));
+                }
+                rows++;
+//                if (rows % 1_000_000 == 0) {
+//                    System.out.println(rows);
+//                }
+            }
+        }
+
+        // return solid frame
+
+        return df;
     }
 
     /**
@@ -370,134 +470,25 @@ public class CsvPersistence {
                 tok = tok.substring(0, tok.length() - 1);
             }
         }
-        char[] line = new char[tok.length()];
-        int len = 0;
-        for (int i = 0; i < tok.length(); i++) {
-            if (len < tok.length() - 1 && tok.charAt(i) == getEscapeQuotas() && tok.charAt(i + 1) == '\"') {
-                line[len++] = '\"';
-                i++;
-                continue;
+        if (getHasQuotas()) {
+            char[] line = new char[tok.length()];
+            int len = 0;
+            for (int i = 0; i < tok.length(); i++) {
+                if (len < tok.length() - 1 && tok.charAt(i) == getEscapeQuotas() && tok.charAt(i + 1) == '\"') {
+                    line[len++] = '\"';
+                    i++;
+                    continue;
+                }
+                line[len++] = tok.charAt(i);
             }
-            line[len++] = tok.charAt(i);
+            tok = String.valueOf(line, 0, len);
         }
-        tok = String.valueOf(line, 0, len);
         if (trimSpaces()) {
             tok = tok.trim();
         }
         return tok;
     }
 
-    private Frame buildFrame(String name, List<String> names, List<String> rows) {
-        int cols = names.size();
-        List<List<String>> split = new ArrayList<>();
-        for (String line : rows) {
-            List<String> row = parseLine(line);
-            cols = Math.max(cols, row.size());
-            split.add(row);
-        }
-        for (int i = names.size(); i < cols; i++) {
-            names.add("V" + (i + 1));
-        }
-        Vector[] vectors = new Vector[cols];
-
-        // process data, one column at a time
-        for (int i = 0; i < cols; i++) {
-            // check first for hints
-
-            if (indexFieldHints.contains(names.get(i)) || indexFieldHints.contains(String.valueOf(i))) {
-                vectors[i] = buildIndexVector(names, split, i);
-                continue;
-            }
-            if (numericFieldHints.contains(names.get(i)) || numericFieldHints.contains(String.valueOf(i))) {
-                vectors[i] = buildNumericVector(names, split, i);
-                continue;
-            }
-            if (nominalFieldHints.contains(names.get(i)) || nominalFieldHints.contains(String.valueOf(i))) {
-                vectors[i] = buildNominalVector(names, split, i);
-                continue;
-            }
-
-            // no hints, determine automatically
-            if (isIndex(split, i)) {
-                vectors[i] = buildIndexVector(names, split, i);
-                continue;
-            }
-            if (isNumeric(split, i)) {
-                vectors[i] = buildNumericVector(names, split, i);
-                continue;
-            }
-            vectors[i] = buildNominalVector(names, split, i);
-
-        }
-        return new SolidFrame(name, rows.size(), vectors);
-    }
-
-    private boolean isIndex(List<List<String>> split, int i) {
-        for (int j = 0; j < split.size(); j++) {
-            String token = split.get(j).get(i);
-            if (token.isEmpty()) continue;
-            for (char ch : token.toCharArray()) {
-                if (Character.isDigit(ch)) continue;
-                if (ch == '?') continue;
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public IndexVector buildIndexVector(List<String> names, List<List<String>> split, int i) {
-        IndexVector vector = new IndexVector(names.get(i), split.size(), Integer.MIN_VALUE);
-        for (int j = 0; j < split.size(); j++) {
-            try {
-                vector.setIndex(j, Integer.parseInt(split.get(j).get(i)));
-            } catch (Throwable th) {
-            }
-        }
-        return vector;
-    }
-
-    private boolean isNumeric(List<List<String>> split, int i) {
-        for (int j = 0; j < split.size(); j++) {
-            String token = split.get(j).get(i);
-            if (token.isEmpty()) continue;
-            for (char ch : token.toCharArray()) {
-                if (Character.isDigit(ch)) continue;
-                if (ch == ',') continue;
-                if (ch == '-') continue;
-                if (ch == '.') continue;
-                if (ch == '?') continue;
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public NumericVector buildNumericVector(List<String> names, List<List<String>> split, int i) {
-        NumericVector vector = new NumericVector(names.get(i), split.size());
-        for (int j = 0; j < split.size(); j++) {
-            try {
-                vector.setValue(j, Double.parseDouble(split.get(j).get(i)));
-            } catch (Throwable ex) {
-            }
-        }
-        return vector;
-    }
-
-    public NominalVector buildNominalVector(List<String> names, List<List<String>> split, int i) {
-        HashSet<String> dict = new HashSet<>();
-        for (int j = 0; j < split.size(); j++) {
-            if (split.get(j).size() > i && !split.get(j).get(i).isEmpty()) {
-                dict.add(split.get(j).get(i));
-            }
-        }
-        NominalVector vector = new NominalVector(names.get(i), split.size(), dict);
-        for (int j = 0; j < split.size(); j++) {
-            if (split.get(j).size() > i && !split.get(j).get(i).isEmpty()) {
-                vector.setLabel(j, split.get(j).get(i));
-            }
-        }
-        return vector;
-    }
 
     public void write(Frame df, String fileName) throws IOException {
         try (OutputStream os = new FileOutputStream(fileName)) {

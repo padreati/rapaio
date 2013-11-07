@@ -205,6 +205,8 @@ import rapaio.io.CsvPersistence;
 import rapaio.supervised.ModelEvaluation;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -228,10 +230,10 @@ public class RandomForestTest {
     }
 
         @Test
-    public void allCompareTest() throws IOException {
+    public void allCompareTest() throws IOException, URISyntaxException {
         CsvPersistence csv = new CsvPersistence();
         csv.setHasHeader(true);
-        Frame tests = csv.read("test", getClass().getResourceAsStream("tests.csv"));
+        Frame tests = csv.read("test", Paths.get(getClass().getResource("tests.csv").toURI()));
         for (int i = 0; i < tests.getRowCount(); i++) {
             if (tests.getLabel(i, 0).startsWith("#")) {
                 continue;

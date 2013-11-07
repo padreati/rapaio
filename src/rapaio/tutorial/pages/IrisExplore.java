@@ -204,6 +204,7 @@ import rapaio.graphics.plot.Points;
 import rapaio.printer.HTMLPrinter;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import static rapaio.explore.Workspace.*;
 import rapaio.printer.Printer;
@@ -224,7 +225,7 @@ public class IrisExplore implements TutorialPage {
     }
 
     @Override
-    public void render() throws IOException {
+    public void render() throws IOException, URISyntaxException {
         final Frame df = Datasets.loadIrisDataset();
 
         heading(1, "Iris sample exploratory analysis");

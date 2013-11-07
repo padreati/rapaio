@@ -213,6 +213,7 @@ import rapaio.graphics.plot.FunctionLine;
 import rapaio.graphics.plot.HistogramBars;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -230,7 +231,7 @@ public class HistogramDensityTutorial implements TutorialPage {
     }
 
     @Override
-    public void render() throws IOException {
+    public void render() throws IOException, URISyntaxException {
         heading(1, "Histogram and Kernel Density Estimation Tutorial");
 
         heading(3, "Data set used");

@@ -204,6 +204,8 @@ import rapaio.io.CsvPersistence;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.Comparator;
 
 import static rapaio.filters.RowFilters.*;
@@ -217,16 +219,12 @@ public class SortedFrameTest {
     private Frame df;
 
     @Before
-    public void init() throws IOException {
-        final String csv = new String("" +
-                "c, 1, 1.\n" +
-                "b, 3, 4.\n" +
-                "a, 2, 2.5\n" +
-                "d, 2, 4");
+    public void init() throws IOException, URISyntaxException {
+        final String csv = new String();
         CsvPersistence persistence = new CsvPersistence();
         persistence.setHasHeader(false);
         persistence.setHasQuotas(false);
-        df = persistence.read("df", new ByteArrayInputStream(csv.getBytes()));
+        df = persistence.read("df", Paths.get(SortedFrameTest.class.getResource("sorted-frame.csv").toURI()));
 
         Vector[] vectors = new Vector[3];
         vectors[0] = BaseFilters.renameVector(df.getCol(0), "x");

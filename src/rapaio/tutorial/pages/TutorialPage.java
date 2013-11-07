@@ -197,6 +197,7 @@ package rapaio.tutorial.pages;
 import rapaio.printer.Printer;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -207,5 +208,5 @@ public interface TutorialPage {
 
     String getPageTitle();
 
-    void render() throws IOException;
+    void render() throws IOException, URISyntaxException;
 }

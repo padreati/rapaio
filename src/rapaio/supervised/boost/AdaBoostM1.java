@@ -203,6 +203,7 @@ import rapaio.supervised.Classifier;
 import rapaio.supervised.colselect.ColSelector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -282,15 +283,10 @@ public class AdaBoostM1 extends AbstractClassifier {
             }
             for (int j = 0; j < w.size(); j++) {
                 if (h.get(i).getPrediction().getIndex(j) != df.getCol(classColName).getIndex(j)) {
-                    w.set(j, w.get(j) * alpha);
+                    w.set(j, w.get(j) / (2 * err));
+                } else {
+                    w.set(j, w.get(j) / (2 * (1.-err)));
                 }
-            }
-            double new_total = 0;
-            for (double ww : w) {
-                new_total += ww;
-            }
-            for (int j = 0; j < w.size(); j++) {
-                w.set(j, w.get(j) * total / new_total);
             }
         }
     }
@@ -309,7 +305,7 @@ public class AdaBoostM1 extends AbstractClassifier {
         }
         dist = new SolidFrame("distribution", df.getRowCount(), vectors);
 
-        for (int i = 0; i < t; i++) {
+        for (int i = 0; i < min(t, h.size()); i++) {
             h.get(i).predict(df);
             for (int j = 0; j < df.getRowCount(); j++) {
                 int index = h.get(i).getPrediction().getIndex(j);

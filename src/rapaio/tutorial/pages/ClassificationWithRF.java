@@ -209,6 +209,7 @@ import rapaio.supervised.Classifier;
 import rapaio.supervised.tree.RandomForest;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -226,7 +227,7 @@ public class ClassificationWithRF implements TutorialPage {
     }
 
     @Override
-    public void render() throws IOException {
+    public void render() throws IOException, URISyntaxException {
         heading(1, "Classification with Random Forests");
 
         p("Random forests are an ensemble learning method for " +

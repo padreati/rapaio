@@ -199,6 +199,8 @@ import rapaio.data.Frame;
 import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -212,11 +214,11 @@ public class NormalTest {
     private static final double ERROR = 1e-9;
     private Frame df;
 
-    public NormalTest() throws IOException {
+    public NormalTest() throws IOException, URISyntaxException {
         CsvPersistence persistence = new CsvPersistence();
         persistence.setHasHeader(false);
         persistence.setColSeparator(' ');
-        df = persistence.read("stdnorm", this.getClass().getResourceAsStream("standard_normal.csv"));
+        df = persistence.read("stdnorm", Paths.get(this.getClass().getResource("standard_normal.csv").toURI()));
         df = toNumeric(df);
     }
 

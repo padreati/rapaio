@@ -203,8 +203,13 @@ import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
 import rapaio.explore.Summary;
 
 /**
@@ -212,11 +217,9 @@ import rapaio.explore.Summary;
  */
 public class Datasets {
 
-    public static Frame loadIrisDataset() throws IOException {
-        Frame df;
-        try (InputStream is = Datasets.class.getResourceAsStream("iris.csv")) {
-            df = new CsvPersistence().read("iris", is);
-        }
+    public static Frame loadIrisDataset() throws IOException, URISyntaxException {
+        Path path = Paths.get(Datasets.class.getResource("iris.csv").toURI());
+        Frame df = new CsvPersistence().read("iris", path);
         Vector[] vectors = new Vector[df.getColCount()];
         vectors[vectors.length - 1] = df.getCol(vectors.length - 1);
         for (int i = 0; i < vectors.length - 1; i++) {
@@ -225,8 +228,8 @@ public class Datasets {
         return new SolidFrame(df.getName(), df.getRowCount(), vectors);
     }
 
-    public static Frame loadPearsonHeightDataset() throws IOException {
-        Frame df = new CsvPersistence().read("pearson", Datasets.class.getResourceAsStream("pearsonheight.csv"));
+    public static Frame loadPearsonHeightDataset() throws IOException, URISyntaxException {
+        Frame df = new CsvPersistence().read("pearson", Paths.get(Datasets.class.getResource("pearsonheight.csv").toURI()));
         Vector[] vectors = new Vector[df.getColCount()];
         for (int i = 0; i < df.getColCount(); i++) {
             vectors[i] = BaseFilters.toNumeric(df.getCol(i).getName(), df.getCol(i));
@@ -234,20 +237,20 @@ public class Datasets {
         return new SolidFrame(df.getName(), df.getRowCount(), vectors);
     }
 
-    public static Frame loadChestDataset() throws IOException {
+    public static Frame loadChestDataset() throws IOException, URISyntaxException {
         CsvPersistence persistence = new CsvPersistence();
         persistence.setColSeparator(',');
         persistence.setHasQuotas(false);
-        Frame df = persistence.read("chest", Datasets.class.getResourceAsStream("chest.csv"));
+        Frame df = persistence.read("chest", Paths.get(Datasets.class.getResource("chest.csv").toURI()));
         return BaseFilters.toNumeric(df);
     }
 
-    public static Frame loadCarMpgDataset() throws IOException {
+    public static Frame loadCarMpgDataset() throws IOException, URISyntaxException {
         CsvPersistence persistence = new CsvPersistence();
         persistence.setColSeparator(',');
         persistence.setHasHeader(true);
         persistence.setHasQuotas(false);
-        Frame df = persistence.read("carmpg", Datasets.class.getResourceAsStream("carmpgdat.csv"));
+        Frame df = persistence.read("carmpg", Paths.get(Datasets.class.getResource("carmpgdat.csv").toURI()));
         Vector[] vectors = new Vector[df.getColCount()];
         vectors[0] = df.getCol(0);
         vectors[1] = df.getCol(1);
@@ -257,12 +260,12 @@ public class Datasets {
         return new SolidFrame(df.getName(), df.getRowCount(), vectors);
     }
 
-    public static Frame loadSpamBase() throws IOException {
+    public static Frame loadSpamBase() throws IOException, URISyntaxException {
         CsvPersistence persistence = new CsvPersistence();
         persistence.setColSeparator(',');
         persistence.setHasHeader(true);
         persistence.getNominalFieldHints().add("spam");
-        Frame df = persistence.read("spam-base", Datasets.class.getResourceAsStream("spam-base.csv"));
+        Frame df = persistence.read("spam-base", Paths.get(Datasets.class.getResource("spam-base.csv").toURI()));
         Summary.summary(df);
         System.out.flush();
         return df;

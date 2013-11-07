@@ -201,6 +201,8 @@ import rapaio.filters.BaseFilters;
 import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -209,10 +211,10 @@ public abstract class CoreStatTestUtil {
 
     private Frame df;
 
-    public CoreStatTestUtil() throws IOException {
+    public CoreStatTestUtil() throws IOException, URISyntaxException {
         CsvPersistence p = new CsvPersistence();
         p.setHasHeader(false);
-        df = p.read("core_stat", CoreStatTestUtil.class.getResourceAsStream("core_stat.csv"));
+        df = p.read("core_stat", Paths.get(getClass().getResource("core_stat.csv").toURI()));
         Vector[] vectors = new Vector[df.getColCount()];
         for (int i = 0; i < vectors.length; i++) {
             vectors[i] = BaseFilters.toNumeric(df.getCol(i).getName(), df.getCol(i));

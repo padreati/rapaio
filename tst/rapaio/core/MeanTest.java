@@ -199,6 +199,7 @@ import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -207,7 +208,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class MeanTest extends CoreStatTestUtil {
 
-    public MeanTest() throws IOException {
+    public MeanTest() throws IOException,URISyntaxException {
     }
 
     @Test

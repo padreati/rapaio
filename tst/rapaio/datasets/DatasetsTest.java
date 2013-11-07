@@ -200,6 +200,7 @@ import org.junit.Test;
 import rapaio.data.Frame;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import static org.junit.Assert.*;
 
@@ -220,7 +221,7 @@ public class DatasetsTest {
     }
 
     @Test
-    public void testIrisDataset() throws IOException {
+    public void testIrisDataset() throws IOException, URISyntaxException {
         Frame df = Datasets.loadIrisDataset();
 
         assertNotNull(df);

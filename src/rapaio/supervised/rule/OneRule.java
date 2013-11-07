@@ -382,29 +382,29 @@ public class OneRule extends AbstractClassifier {
 
     private OneRuleSet buildNumeric(String string, Vector sourceCol, Vector classCol, List<Double> weights) {
         NumericOneRuleSet set = new NumericOneRuleSet(string);
-        Frame df = new SolidFrame("", sourceCol.getRowCount(), new Vector[]{sourceCol, classCol});
-        df = RowFilters.sort(df.getName(), df, RowComparators.numericComparator(sourceCol, true));
+        Vector sort = new IndexVector("sort", 0, weights.size()-1, 1);
+        sort = RowFilters.sort(sort, RowComparators.numericComparator(sourceCol, true));
         int pos = -1;
-        while (pos < df.getRowCount()) {
-            if (df.getCol(0).isMissing(pos + 1)) {
+        while (pos < sort.getRowCount()) {
+            if (sourceCol.isMissing(sort.getIndex(pos + 1))) {
                 pos++;
                 continue;
             }
             break;
         }
 
-        int[] hist = new int[classCol.getDictionary().length];
+        double[] hist = new double[classCol.getDictionary().length];
 
         // first process missing values
         if (pos != -1) {
             Arrays.fill(hist, 0);
             for (int i = 0; i <= pos; i++) {
-                hist[df.getIndex(i, 1)] += weights.get(i);
+                hist[classCol.getIndex(sort.getIndex(i))] += weights.get(sort.getIndex(i));
             }
             int totalSubset = 0;
-            int max = -1;
+            double max = -1;
             int count = 0;
-            for (int aHist : hist) {
+            for (double aHist : hist) {
                 totalSubset += aHist;
                 if (max < aHist) {
                     max = aHist;
@@ -435,18 +435,18 @@ public class OneRule extends AbstractClassifier {
         List<NumericOneRule> candidates = new ArrayList<>();
 
         Arrays.fill(hist, 0);
-        int max = -1;
+        double max = -1;
         int minIndex = pos;
-        for (int i = pos; i < df.getRowCount(); i++) {
-            hist[df.getIndex(i, 1)]++;
-            if (max < hist[df.getIndex(i, 1)]) {
-                max = hist[df.getIndex(i, 1)];
+        for (int i = pos; i < sort.getRowCount(); i++) {
+            hist[classCol.getIndex(sort.getIndex(i))]+=weights.get(sort.getIndex(i));
+            if (max < hist[classCol.getIndex(sort.getIndex(i))]) {
+                max = hist[classCol.getIndex(sort.getIndex(i))];
             }
 
-            if (i == df.getRowCount() - 1) {
+            if (i == sort.getRowCount() - 1) {
                 // last getValue, compute rule anyway
                 int count = 0;
-                for (int h : hist) {
+                for (double h : hist) {
                     if (h == max) {
                         count++;
                     }
@@ -460,11 +460,11 @@ public class OneRule extends AbstractClassifier {
                     if (hist[j] == max) {
                         double minValue = Double.NEGATIVE_INFINITY;
                         if (minIndex != pos) {
-                            minValue = (df.getValue(minIndex, 0) + df.getValue(minIndex - 1, 0)) / 2.;
+                            minValue = (sourceCol.getValue(sort.getIndex(minIndex)) + sourceCol.getValue(sort.getIndex(minIndex - 1))) / 2.;
                         }
                         double maxValue = Double.POSITIVE_INFINITY;
                         candidates.add(new NumericOneRule(minValue, maxValue, false,
-                                df.getCol(1).getDictionary()[j],
+                                classCol.getDictionary()[j],
                                 i - minIndex + 1,
                                 i - minIndex + 1 - max));
                     }
@@ -473,10 +473,10 @@ public class OneRule extends AbstractClassifier {
             }
 
             // next are rules to continue no matter how
-            if ((i > pos) && Double.compare(df.getValue(i - 1, 0), df.getValue(i, 0)) == 0) {
+            if ((i > pos) && Double.compare(sourceCol.getValue(sort.getIndex(i - 1)), sourceCol.getValue(sort.getIndex(i))) == 0) {
                 continue;
             }
-            if ((i > pos) && Double.compare(df.getIndex(i - 1, 1), df.getValue(i, 1)) == 0) {
+            if ((i > pos) && Double.compare(classCol.getIndex(sort.getIndex(i - 1)), classCol.getValue(sort.getIndex(i))) == 0) {
                 continue;
             }
 
@@ -484,7 +484,7 @@ public class OneRule extends AbstractClassifier {
 
                 // we have enough sample of a dominant category
                 int count = 0;
-                for (int h : hist) {
+                for (double h : hist) {
                     if (h == max) {
                         count++;
                     }
@@ -498,14 +498,14 @@ public class OneRule extends AbstractClassifier {
                     if (hist[j] == max) {
                         double minValue = Double.NEGATIVE_INFINITY;
                         if (minIndex != pos) {
-                            minValue = (df.getValue(minIndex, 0) + df.getValue(minIndex - 1, 0)) / 2.;
+                            minValue = (sourceCol.getValue(sort.getIndex(minIndex)) + sourceCol.getValue(sort.getIndex(minIndex - 1))) / 2.;
                         }
                         double maxValue = Double.POSITIVE_INFINITY;
-                        if (i != df.getRowCount() - 1) {
-                            maxValue = (df.getValue(i, 0) + df.getValue(i + 1, 0)) / 2;
+                        if (i != sort.getRowCount() - 1) {
+                            maxValue = (sourceCol.getValue(sort.getIndex(i)) + sourceCol.getValue(sort.getIndex(i + 1))) / 2;
                         }
                         candidates.add(new NumericOneRule(minValue, maxValue, false,
-                                df.getCol(1).getDictionary()[j],
+                                classCol.getDictionary()[j],
                                 i - minIndex + 1,
                                 i - minIndex + 1 - max));
                     }

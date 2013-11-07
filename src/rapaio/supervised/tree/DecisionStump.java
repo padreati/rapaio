@@ -265,7 +265,7 @@ public class DecisionStump extends AbstractClassifier {
                 total++;
             }
         }
-        if(total==0) return dict[0];
+        if (total == 0) return dict[0];
         double max = 0;
         List<Integer> sel = new ArrayList<>();
         for (int i = 1; i < dict.length; i++) {
@@ -451,9 +451,9 @@ public class DecisionStump extends AbstractClassifier {
             double pleft = pa[i] / tl;
             double pright = (total[i] - pa[i] - missing[i]) / tr;
             double porig = (total[i] - missing[i]) / to;
-            po -= log(porig) * porig;
-            pl -= log(pleft) * pleft;
-            pr -= log(pright) * pright;
+            po -= porig == 0 ? 0 : log(porig) * porig;
+            pl -= pleft == 0 ? 0 : log(pleft) * pleft;
+            pr -= pright == 0 ? 0 : log(pright) * pright;
         }
         return po - (tl * pl + tr * pr) / (tl + tr);
     }

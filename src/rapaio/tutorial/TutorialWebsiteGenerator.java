@@ -200,6 +200,7 @@ import rapaio.tutorial.pages.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.*;
 
 /**
@@ -209,7 +210,7 @@ public class TutorialWebsiteGenerator {
     //    private static final String TUTORIAL_WEB_ROOT = "webroot/";
     private static final String TUTORIAL_WEB_ROOT = "/home/ati/work/rapaio-tutorial/";
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, URISyntaxException {
         File webRoot = new File(TUTORIAL_WEB_ROOT);
         File pageRoot = new File(webRoot, "pages");
 

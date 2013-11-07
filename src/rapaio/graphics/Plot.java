@@ -244,6 +244,11 @@ public class Plot extends BaseFigure {
             r.setY1(opt().getYRangeStart());
             r.setY2(opt().getYRangeEnd());
         }
+
+        if(r.getY1()==r.getY2()) {
+            r.setY1(r.getY1()-0.5);
+            r.setY2(r.getY2()+0.5);
+        }
         return r;
     }
     

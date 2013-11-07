@@ -195,6 +195,7 @@
 package rapaio.tutorial.pages;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import rapaio.correlation.PearsonRCorrelation;
 import rapaio.correlation.SpearmanRhoCorrelation;
@@ -228,7 +229,7 @@ public class CorrelationsPage implements TutorialPage {
     }
 
     @Override
-    public void render() throws IOException {
+    public void render() throws IOException, URISyntaxException {
 
         heading(2, "Introduction");
         p("This tutorial presents you the correlations tools offered by Rapaio library.");

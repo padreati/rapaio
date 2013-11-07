@@ -202,13 +202,14 @@ import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class VarianceTest extends CoreStatTestUtil {
 
-    public VarianceTest() throws IOException {
+    public VarianceTest() throws IOException, URISyntaxException {
     }
 
     @Test
@@ -218,7 +219,7 @@ public class VarianceTest extends CoreStatTestUtil {
     }
 
     @Test
-    public void testPearsonDSVariance() throws IOException {
+    public void testPearsonDSVariance() throws IOException, URISyntaxException {
         Frame df = Datasets.loadPearsonHeightDataset();
         assertEquals(Double.valueOf("7.93094884953222").doubleValue(), new Variance(df.getCol("Son")).getValue(), 1e-12);
     }

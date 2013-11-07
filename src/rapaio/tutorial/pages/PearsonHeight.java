@@ -218,6 +218,7 @@ import rapaio.graphics.plot.FunctionLine;
 import rapaio.graphics.plot.Points;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -235,7 +236,7 @@ public class PearsonHeight implements TutorialPage {
     }
 
     @Override
-    public void render() throws IOException {
+    public void render() throws IOException, URISyntaxException {
         heading(1, "Analysis of Pearson's Height dataset");
 
         final Frame df = Datasets.loadPearsonHeightDataset();

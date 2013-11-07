@@ -200,6 +200,7 @@ import rapaio.datasets.Datasets;
 import rapaio.filters.RowFilters;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -207,7 +208,7 @@ import java.io.IOException;
 public class MappedFrameTest {
 
     @Test
-    public void colsSortedTest() throws IOException {
+    public void colsSortedTest() throws IOException, URISyntaxException {
         Frame orig = Datasets.loadIrisDataset();
         Frame sort = RowFilters.sort(orig, RowComparators.numericComparator(orig.getCol(1), true));
         sort = RowFilters.sort(sort, RowComparators.numericComparator(orig.getCol(2), true));
