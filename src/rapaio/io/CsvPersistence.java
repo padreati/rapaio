@@ -335,7 +335,11 @@ public class CsvPersistence {
                 if (!dictionaries.isEmpty()) {
                     List<String> row = parseLine(line);
                     for (Map.Entry<String, HashSet<String>> entry : dictionaries.entrySet()) {
-                        entry.getValue().add(row.get(indexes.get(entry.getKey())));
+                        if (row.size() > indexes.get(entry.getKey())) {
+                            String label = row.get(indexes.get(entry.getKey()));
+                            if (!label.isEmpty())
+                                entry.getValue().add(label);
+                        }
                     }
                 }
                 rows++;
@@ -387,7 +391,10 @@ public class CsvPersistence {
                     df.getCol(colName).setValue(rows, Double.parseDouble(row.get(indexes.get(colName))));
                 }
                 for (String colName : dictionaries.keySet()) {
-                    df.getCol(colName).setLabel(rows, row.get(indexes.get(colName)));
+                    if(row.size()<=indexes.get(colName)) continue;
+                    String label = row.get(indexes.get(colName));
+                    if (!label.isEmpty())
+                        df.getCol(colName).setLabel(rows, label);
                 }
                 rows++;
 //                if (rows % 1_000_000 == 0) {

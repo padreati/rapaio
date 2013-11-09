@@ -282,10 +282,10 @@ public class AdaBoostM1 extends AbstractClassifier {
                 total += ww;
             }
             for (int j = 0; j < w.size(); j++) {
-                if (h.get(i).getPrediction().getIndex(j) != df.getCol(classColName).getIndex(j)) {
+                if (pred.getIndex(j) != df.getCol(classColName).getIndex(j)) {
                     w.set(j, w.get(j) / (2 * err));
                 } else {
-                    w.set(j, w.get(j) / (2 * (1.-err)));
+                    w.set(j, w.get(j) / (2 * (1. - err)));
                 }
             }
         }
@@ -313,30 +313,44 @@ public class AdaBoostM1 extends AbstractClassifier {
             }
         }
 
-        // from logs to probabilities
+//        // from logs to probabilities
+//        for (int i = 0; i < dist.getRowCount(); i++) {
+//
+//            double max = 0;
+//            for (int j = 1; j < dist.getColCount(); j++) {
+//                if (dist.getValue(i, j) > max) {
+//                    max = dist.getValue(i, j);
+//                }
+//            }
+//            double expsum = 0;
+//            for (int j = 1; j < dist.getColCount(); j++) {
+//                dist.setValue(i, j, exp(dist.getValue(i, j) - max));
+//                expsum += dist.getValue(i, j);
+//            }
+//            for (int j = 1; j < dist.getColCount(); j++) {
+//                dist.setValue(i, j, dist.getValue(i, j) / expsum);
+//            }
+//
+//            // predict
+//            max = 0;
+//            int prediction = 0;
+//            for (int j = 1; j < dist.getColCount(); j++) {
+//                if (dist.getValue(i, j) > max) {
+//                    prediction=j;
+//                    max = dist.getValue(i, j);
+//                }
+//            }
+//            pred.setIndex(i, prediction);
+//        }
+
+        // simply predict
         for (int i = 0; i < dist.getRowCount(); i++) {
 
             double max = 0;
-            for (int j = 1; j < dist.getColCount(); j++) {
-                if (dist.getValue(i, j) > max) {
-                    max = dist.getValue(i, j);
-                }
-            }
-            double expsum = 0;
-            for (int j = 1; j < dist.getColCount(); j++) {
-                dist.setValue(i, j, exp(dist.getValue(i, j) - max));
-                expsum += dist.getValue(i, j);
-            }
-            for (int j = 1; j < dist.getColCount(); j++) {
-                dist.setValue(i, j, dist.getValue(i, j) / expsum);
-            }
-
-            // predict
-            max = 0;
             int prediction = 0;
             for (int j = 1; j < dist.getColCount(); j++) {
                 if (dist.getValue(i, j) > max) {
-                    prediction=j;
+                    prediction = j;
                     max = dist.getValue(i, j);
                 }
             }
