@@ -222,8 +222,18 @@ public abstract class AbstractFrame implements Frame {
     }
 
     @Override
+    public double getValue(int row, String colName) {
+        return getCol(colName).getValue(row);
+    }
+
+    @Override
     public void setValue(int row, int col, double value) {
         getCol(col).setValue(row, value);
+    }
+
+    @Override
+    public void setValue(int row, String colName, double value) {
+        getCol(colName).setValue(row, value);
     }
 
     @Override
@@ -232,8 +242,18 @@ public abstract class AbstractFrame implements Frame {
     }
 
     @Override
+    public int getIndex(int row, String colName) {
+        return getCol(colName).getIndex(row);
+    }
+
+    @Override
     public void setIndex(int row, int col, int value) {
         getCol(col).setIndex(row, value);
+    }
+
+    @Override
+    public void setIndex(int row, String colName, int value) {
+        getCol(colName).setIndex(row, value);
     }
 
     @Override
@@ -242,7 +262,17 @@ public abstract class AbstractFrame implements Frame {
     }
 
     @Override
+    public String getLabel(int row, String colName) {
+        return getCol(colName).getLabel(row);
+    }
+
+    @Override
     public void setLabel(int row, int col, String value) {
         getCol(col).setLabel(row, value);
+    }
+
+    @Override
+    public void setLabel(int row, String colName, String value) {
+        getCol(colName).setLabel(row, value);
     }
 }

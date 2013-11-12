@@ -292,6 +292,15 @@ public interface Frame extends Serializable {
     double getValue(int row, int col);
 
     /**
+     * Convenient shortcut to call {@link Vector#getValue(int)} for a given column.
+     *
+     * @param row row number
+     * @param colName column name
+     * @return numeric setValue
+     */
+    double getValue(int row, String colName);
+
+    /**
      * Convenient shortcut method to call {@link Vector#setValue(int, double)} for a given column.
      *
      * @param row   row number
@@ -299,6 +308,15 @@ public interface Frame extends Serializable {
      * @param value numeric value
      */
     void setValue(int row, int col, double value);
+
+    /**
+     * Convenient shortcut method to call {@link Vector#setValue(int, double)} for a given column.
+     *
+     * @param row   row number
+     * @param colName   column name
+     * @param value numeric value
+     */
+    void setValue(int row, String colName, double value);
 
 
     /**
@@ -311,6 +329,15 @@ public interface Frame extends Serializable {
     int getIndex(int row, int col);
 
     /**
+     * Convenient shortcut method for calling {@link Vector#getIndex(int)} for a given column.
+     *
+     * @param row row number
+     * @param colName column name
+     * @return setIndex value
+     */
+    int getIndex(int row, String colName);
+
+    /**
      * Convenient shortcut method for calling {@link Vector#setIndex(int, int)} for given column.
      *
      * @param row   row number
@@ -318,6 +345,15 @@ public interface Frame extends Serializable {
      * @param value setIndex value
      */
     void setIndex(int row, int col, int value);
+
+    /**
+     * Convenient shortcut method for calling {@link Vector#setIndex(int, int)} for given column.
+     *
+     * @param row   row number
+     * @param colName   column name
+     * @param value setIndex value
+     */
+    void setIndex(int row, String colName, int value);
 
     /**
      * Convenient shortcut method for calling {@link Vector#getLabel(int)} for given column.
@@ -329,6 +365,15 @@ public interface Frame extends Serializable {
     String getLabel(int row, int col);
 
     /**
+     * Convenient shortcut method for calling {@link Vector#getLabel(int)} for given column.
+     *
+     * @param row row number
+     * @param colName column name
+     * @return nominal label value
+     */
+    String getLabel(int row, String colName);
+
+    /**
      * Convenient shortcut method for calling {@link Vector#setLabel(int, String)} for given column.
      *
      * @param row   row number
@@ -336,4 +381,13 @@ public interface Frame extends Serializable {
      * @param value nominal label value
      */
     void setLabel(int row, int col, String value);
+
+    /**
+     * Convenient shortcut method for calling {@link Vector#setLabel(int, String)} for given column.
+     *
+     * @param row   row number
+     * @param colName   column name
+     * @param value nominal label value
+     */
+    void setLabel(int row, String colName, String value);
 }

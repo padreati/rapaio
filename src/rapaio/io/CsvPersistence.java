@@ -307,8 +307,6 @@ public class CsvPersistence {
         }
 
         // build nominal dictionaries
-//        System.out.println("parse dictionaries..");
-
         HashMap<String, HashSet<String>> dictionaries = new HashMap<>();
         HashMap<String, Integer> indexes = new HashMap<>();
         for (int i = 0; i < names.size(); i++) {
@@ -343,15 +341,10 @@ public class CsvPersistence {
                     }
                 }
                 rows++;
-//                if (rows % 1_000_000 == 0) {
-//                    System.out.println(rows);
-//                }
             }
         }
 
         // build frame
-//        System.out.println("build frame..");
-
         Vector[] vectors = new Vector[cols];
         for (int i = 0; i < cols; i++) {
             String colName = names.get(i);
@@ -368,8 +361,6 @@ public class CsvPersistence {
         Frame df = new SolidFrame(name, rows, vectors);
 
         // process data, one row at a time
-//        System.out.println("process data...");
-
         rows = 0;
         try (BufferedReader reader = Files.newBufferedReader(path, Charset.defaultCharset())) {
             if (hasHeader) {
@@ -385,21 +376,30 @@ public class CsvPersistence {
                 }
                 List<String> row = parseLine(line);
                 for (String colName : indexFieldHints) {
+                    if("?".equals(row.get(indexes.get(colName)))) {
+                        df.getCol(colName).setMissing(rows);
+                        continue;
+                    }
                     df.getCol(colName).setIndex(rows, Integer.parseInt(row.get(indexes.get(colName))));
                 }
                 for (String colName : numericFieldHints) {
+                    if("?".equals(row.get(indexes.get(colName)))) {
+                        df.getCol(colName).setMissing(rows);
+                        continue;
+                    }
                     df.getCol(colName).setValue(rows, Double.parseDouble(row.get(indexes.get(colName))));
                 }
                 for (String colName : dictionaries.keySet()) {
                     if(row.size()<=indexes.get(colName)) continue;
                     String label = row.get(indexes.get(colName));
+                    if("?".equals(label)) {
+                        df.getCol(colName).setMissing(rows);
+                        continue;
+                    }
                     if (!label.isEmpty())
                         df.getCol(colName).setLabel(rows, label);
                 }
                 rows++;
-//                if (rows % 1_000_000 == 0) {
-//                    System.out.println(rows);
-//                }
             }
         }
 
@@ -520,6 +520,10 @@ public class CsvPersistence {
                 for (int j = 0; j < df.getColCount(); j++) {
                     if (j != 0) {
                         writer.append(getColSeparator());
+                    }
+                    if(df.getCol(j).isMissing(i)) {
+                        writer.append("?");
+                        continue;
                     }
                     if (df.getCol(j).isNominal()) {
                         writer.append(unclean(df.getLabel(i, j)));
