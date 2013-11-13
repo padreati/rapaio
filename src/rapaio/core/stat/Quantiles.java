@@ -195,8 +195,10 @@
 package rapaio.core.stat;
 
 import static rapaio.core.BaseMath.floor;
+
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
+
 import static rapaio.filters.RowFilters.sort;
 import static rapaio.explore.Workspace.*;
 

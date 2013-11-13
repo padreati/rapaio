@@ -399,17 +399,17 @@ public class ClassificationWithRF implements TutorialPage {
                 "prediction and the compensation is better accuracy.");
 
         pos = 0;
-        final Vector index1 = new IndexVector("mtree", 1000);
-        final Vector accuracy1 = new NumericVector("test error", 1000);
-        final Vector oob1 = new NumericVector("oob error", 1000);
-        for (int mcol = 1; mcol < 20; mcol += 1) {
+        final Vector index1 = new IndexVector("mtree", 10);
+        final Vector accuracy1 = new NumericVector("test error", 10);
+        final Vector oob1 = new NumericVector("oob error", 10);
+        for (int mcol = 1; mcol <= 10; mcol++) {
 
             RandomForest rf = new RandomForest(30, mcol, true);
             rf.learn(train, "spam");
             rf.predict(test);
-            index.setIndex(pos, mcol);
-            accuracy.setValue(pos, 1 - computeAccuracy(rf, test));
-            oob.setValue(pos, rf.getOobError());
+            index1.setIndex(pos, mcol);
+            accuracy1.setValue(pos, 1 - computeAccuracy(rf, test));
+            oob1.setValue(pos, rf.getOobError());
 
             pos++;
         }
@@ -434,35 +434,34 @@ public class ClassificationWithRF implements TutorialPage {
 
         p("And the code which produced the last plot is listed below.");
         code("        pos = 0;\n" +
-                "        index = new IndexVector(\"mtree\", 1000);\n" +
-                "        accuracy = new NumericVector(\"test error\", 1000);\n" +
-                "        oob = new NumericVector(\"oob error\", 1000);\n" +
-                "        for (int mtree = 1; mtree < 20; mtree += 1) {\n" +
+                "        final Vector index1 = new IndexVector(\"mtree\", 10);\n" +
+                "        final Vector accuracy1 = new NumericVector(\"test error\", 10);\n" +
+                "        final Vector oob1 = new NumericVector(\"oob error\", 10);\n" +
+                "        for (int mcol = 1; mcol <= 10; mcol++) {\n" +
                 "\n" +
-                "            RandomForest rf = new RandomForest(10, mtree, true);\n" +
+                "            RandomForest rf = new RandomForest(30, mcol, true);\n" +
                 "            rf.learn(train, \"spam\");\n" +
-                "            ClassifierModel model = rf.predict(test);\n" +
-                "\n" +
-                "            index.setIndex(pos, mtree);\n" +
-                "            accuracy.setValue(pos, 1 - computeAccuracy(model, test));\n" +
-                "            oob.setValue(pos, rf.getOobError());\n" +
+                "            rf.predict(test);\n" +
+                "            index1.setIndex(pos, mcol);\n" +
+                "            accuracy1.setValue(pos, 1 - computeAccuracy(rf, test));\n" +
+                "            oob1.setValue(pos, rf.getOobError());\n" +
                 "\n" +
                 "            pos++;\n" +
                 "        }\n" +
-                "        p = new Plot();\n" +
-                "        lines = new Lines(p, index, accuracy);\n" +
-                "        lines.opt().setColorIndex(new OneIndexVector(2));\n" +
-                "        p.add(lines);\n" +
-                "        pts = new Points(p, index, accuracy);\n" +
-                "        pts.opt().setColorIndex(new OneIndexVector(2));\n" +
-                "        p.add(pts);\n" +
-                "        p.add(new Lines(p, index, oob));\n" +
-                "        p.add(new Points(p, index, oob));\n" +
-                "        p.setLeftLabel(\"test (blue), oob (black\");\n" +
-                "        p.setBottomLabel(\"mcols - number of features considered\");\n" +
-                "        p.setTitle(\"Accuracy errors (% misclassified)\");\n" +
-                "        p.opt().setYRange(0, 0.4);\n" +
-                "        draw(p, 600, 400);\n");
+                "        draw(new Plot() {{\n" +
+                "            new Lines(this, index1, accuracy1) {{\n" +
+                "                opt().setColorIndex(2);\n" +
+                "            }};\n" +
+                "            new Points(this, index1, accuracy1){{\n" +
+                "                opt().setColorIndex(2);\n" +
+                "            }};\n" +
+                "            new Lines(this, index1, oob1);\n" +
+                "            new Points(this, index1, oob1);\n" +
+                "            setLeftLabel(\"test (blue), oob (black\");\n" +
+                "            setBottomLabel(\"mcols - number of features considered\");\n" +
+                "            setTitle(\"Accuracy errors (% misclassified)\");\n" +
+                "            opt().setYRange(0, 0.4);\n" +
+                "        }}, 600, 400);\n");
 
         p("Note: the sole purpose of this tutorial is to show what and how it can " +
                 "be done with Rapaio toolbox library. ");

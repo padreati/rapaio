@@ -192,113 +192,144 @@
  *    limitations under the License.
  */
 
-package rapaio.graphics.base;
+package rapaio.graphics.plot;
 
-import rapaio.core.BaseMath;
+import rapaio.data.IndexVector;
+import rapaio.data.RowComparators;
+import rapaio.data.Vector;
+import rapaio.filters.RowFilters;
+import rapaio.graphics.Plot;
+import rapaio.graphics.base.Range;
+import rapaio.graphics.colors.ColorPalette;
+import rapaio.graphics.pch.PchPalette;
+
+import java.awt.*;
+import java.util.*;
 
 /**
- * @author tutuianu
+ * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class Range {
+public class ROCCurve extends PlotComponent {
 
-    private double x1 = Double.NaN;
-    private double y1 = Double.NaN;
-    private double x2 = Double.NaN;
-    private double y2 = Double.NaN;
+    private final Vector score;
+    private final Vector classes;
+    private java.util.List<Double> px;
+    private java.util.List<Double> py;
+    private double bestpx;
+    private double bestpy;
+    private double bestacc;
 
-    public Range() {
-    }
-
-    public Range(double x1, double y1, double x2, double y2) {
-        this.x1 = x1;
-        this.y1 = y1;
-        this.x2 = x2;
-        this.y2 = y2;
-    }
-
-    public void union(Range range) {
-        union(range.getX1(), range.getY1());
-        union(range.getX2(), range.getY2());
-    }
-
-    public void union(double x, double y) {
-        if (x == x) {
-            x1 = BaseMath.min(x1 != x1 ? x : x1, x);
-            x2 = BaseMath.max(x2 != x2 ? x : x2, x);
-        }
-        if (y == y) {
-            y1 = BaseMath.min(y1 != y1 ? y : y1, y);
-            y2 = BaseMath.max(y2 != y2 ? y : y2, y);
-        }
-    }
-
-    public boolean contains(double x, double y) {
-        return x1 <= x && x <= x2 && y1 <= y && y <= y2;
-    }
-
-    public double getWidth() {
-        return x2 - x1;
-    }
-
-    public double getHeight() {
-        return y2 - y1;
-    }
-
-    public double getX1() {
-        return x1;
-    }
-
-    public double getY1() {
-        return y1;
-    }
-
-    public double getX2() {
-        return x2;
-    }
-
-    public double getY2() {
-        return y2;
-    }
-
-    public void setX1(double x1) {
-        this.x1 = x1;
-    }
-
-    public void setY1(double y1) {
-        this.y1 = y1;
-    }
-
-    public void setX2(double x2) {
-        this.x2 = x2;
-    }
-
-    public void setY2(double y2) {
-        this.y2 = y2;
-    }
-
-    public int getProperDecimalsX() {
-        int decimals = 0;
-        double max = BaseMath.abs(x2 - x1);
-        while (max <= 10.) {
-            max *= 10;
-            decimals++;
-            if (decimals > 7) {
-                return decimals;
+    public ROCCurve(Plot rocPlot, Vector score, Vector actual, Vector predict) {
+        super(rocPlot);
+        this.score = score;
+        this.classes = new IndexVector("class", actual.getRowCount());
+        for (int i = 0; i < actual.getRowCount(); i++) {
+            if (actual.getLabel(i).equals(predict.getLabel(i))) {
+                classes.setIndex(i, 1);
+            } else {
+                classes.setIndex(i, 0);
             }
         }
-        return decimals;
+        compute();
     }
 
-    public int getProperDecimalsY() {
-        int decimals = 0;
-        double max = BaseMath.abs(y2 - y1);
-        while (max <= 10.) {
-            max *= 10;
-            decimals++;
-            if (decimals > 7) {
-                return decimals;
+    public ROCCurve(Plot plot, Vector score, Vector actual, int index) {
+        this(plot, score, actual, actual.getDictionary()[index]);
+    }
+
+    public ROCCurve(Plot plot, Vector score, Vector actual, String label) {
+        super(plot);
+        this.score = score;
+        this.classes = new IndexVector("class", actual.getRowCount());
+        for (int i = 0; i < actual.getRowCount(); i++) {
+            if (actual.getLabel(i).equals(label)) {
+                classes.setIndex(i, 1);
+            } else {
+                classes.setIndex(i, 0);
             }
         }
-        return decimals;
+        compute();
+    }
+
+    @Override
+    public Range getComponentDataRange() {
+        return new Range(0, 0, 1, 1);
+    }
+
+    private void compute() {
+        int P = 0;
+        int N = 0;
+        for (int i = 0; i < classes.getRowCount(); i++) {
+            if (classes.isMissing(i)) continue;
+            if (classes.getIndex(i) > 0) {
+                P++;
+            } else {
+                N++;
+            }
+        }
+        px = new ArrayList<>();
+        py = new ArrayList<>();
+        px.add(0.);
+        py.add(0.);
+
+        double fp = 0;
+        double tp = 0;
+        bestpx=0;
+        bestpy=0;
+        bestacc=0;
+
+        Vector sort = RowFilters.sort(score, RowComparators.numericComparator(score, false));
+        double prev = Double.MIN_VALUE;
+        for (int i = 0; i < sort.getRowCount(); i++) {
+            if (sort.isMissing(i)) continue;
+            if (classes.isMissing(sort.getRowId(i))) continue;
+
+            if (classes.getIndex(sort.getRowId(i)) > 0) {
+                tp++;
+            } else {
+                fp++;
+            }
+
+            if (sort.getValue(i) != prev) {
+                prev = sort.getValue(i);
+                px.add(fp / (1. * N));
+                py.add(tp / (1. * P));
+                double acc = tp / (1. * P)+1-fp / (1. * N);
+                if(acc>bestacc) {
+                    bestacc=acc;
+                    bestpx=fp / (1. * N);
+                    bestpy=tp / (1. * P);
+                }
+            }
+        }
+        px.add(1.);
+        py.add(1.);
+    }
+
+    @Override
+    public void paint(Graphics2D g2d) {
+
+        g2d.setColor(opt().getColor(0));
+        float lwd = opt().getLwd();
+        g2d.setStroke(new BasicStroke(lwd));
+        g2d.setBackground(ColorPalette.STANDARD.getColor(255));
+
+        for (int i = 1; i < px.size(); i++) {
+            g2d.setColor(opt().getColor(i));
+            int x1 = (plot.xscale(px.get(i - 1)));
+            int y1 = (plot.yscale(py.get(i - 1)));
+            int x2 = (plot.xscale(px.get(i)));
+            int y2 = (plot.yscale(py.get(i)));
+
+            if (plot.getRange().contains(px.get(i - 1), py.get(i - 1))
+                    && plot.getRange().contains(px.get(i), py.get(i))) {
+                g2d.drawLine(x1, y1, x2, y2);
+            }
+        }
+
+        g2d.setColor(opt().getColor(0));
+        int xx = (int) (plot.xscale(bestpx));
+        int yy = (int) (plot.yscale(bestpy));
+        PchPalette.STANDARD.draw(g2d, xx, yy, opt().getSize(0), opt().getPch(0));
     }
 }
