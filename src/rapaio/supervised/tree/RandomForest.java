@@ -45,18 +45,16 @@ import java.util.concurrent.Executors;
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class RandomForest extends AbstractClassifier {
-    final int mtrees;
-    final int mcols;
-    final boolean computeOob;
+    int mtrees = 10;
+    int mcols = -1;
+    boolean computeOob = false;
     ColSelector colSelector;
-    Classifier classifier;
     List<Classifier> trees = new ArrayList<>();
     String classColName;
     String[] dict;
     String[] giniImportanceNames;
     double[] giniImportanceValue;
     double[] giniImportanceCount;
-    boolean debug = false;
     double oobError = 0;
     int[][] oobFreq;
     private NominalVector predict;
@@ -65,30 +63,38 @@ public class RandomForest extends AbstractClassifier {
     private int minNodeSize = 1;
     private double numericSelectionProb = 1.;
 
-    public RandomForest(int mtrees) {
-        this(mtrees, 0, true);
-    }
-
-    public RandomForest(int mtrees, int mcols) {
-        this(mtrees, mcols, true);
-    }
-
-    public RandomForest(final int mtrees, final int mcols, final boolean computeOob) {
-        this.mtrees = mtrees;
-        this.mcols = mcols;
-        this.computeOob = computeOob;
-        this.classifier = new RandomTree(colSelector);
-    }
-
     public RandomForest newInstance() {
-        RandomForest rf = new RandomForest(mtrees, mcols, computeOob);
-        rf.setDebug(debug);
-
+        RandomForest rf = new RandomForest();
+        rf.setMcols(getMcols());
+        rf.setMtrees(getMtrees());
+        rf.setComputeOob(getComputeOob());
+        rf.setMinNodeSize(getMinNodeSize());
+        rf.setNumericSelectionProb(getNumericSelectionProb());
         return rf;
     }
 
-    public double getOobError() {
-        return oobError;
+    public int getMtrees() {
+        return mtrees;
+    }
+
+    public void setMtrees(int mtrees) {
+        this.mtrees = mtrees;
+    }
+
+    public int getMcols() {
+        return mcols;
+    }
+
+    public void setMcols(int mcols) {
+        this.mcols = mcols;
+    }
+
+    public boolean getComputeOob() {
+        return computeOob;
+    }
+
+    public void setComputeOob(boolean computeOob) {
+        this.computeOob = computeOob;
     }
 
     public int getMinNodeSize() {
@@ -103,8 +109,8 @@ public class RandomForest extends AbstractClassifier {
         return numericSelectionProb;
     }
 
-    public void setNumericSelectionProb(double numericSelectionProb){
-        this.numericSelectionProb=numericSelectionProb;
+    public void setNumericSelectionProb(double numericSelectionProb) {
+        this.numericSelectionProb = numericSelectionProb;
     }
 
     @Override
@@ -143,7 +149,8 @@ public class RandomForest extends AbstractClassifier {
         Collection<Callable<Object>> tasks = new ArrayList<>();
         final List<Frame> bootstraps = new ArrayList<>();
         for (int i = 0; i < mtrees; i++) {
-            final RandomTree tree = new RandomTree(colSelector);
+            final RandomTree tree = new RandomTree();
+            tree.setColSelector(new RandomColSelector(df, new ColRange(classColName), mcols));
             tree.setMinNodeSize(minNodeSize);
             trees.add(tree);
             final Frame bootstrap = StatSampling.randomBootstrap(df);
@@ -171,9 +178,6 @@ public class RandomForest extends AbstractClassifier {
                 addOob(df, bootstraps.get(i), trees.get(i));
             }
             oobError = computeOob(df);
-        }
-        if (debug) {
-            System.out.println(String.format("avg oob error: %.4f", oobError));
         }
         learnTime = System.currentTimeMillis() - start;
     }
@@ -239,8 +243,8 @@ public class RandomForest extends AbstractClassifier {
             Classifier tree = trees.get(m);
             tree.predict(df);
             for (int i = 0; i < df.getRowCount(); i++) {
-                for (int j = 0; j < tree.getDist().getColCount(); j++) {
-                    dist.setValue(i, j, dist.getValue(i, j) + tree.getDist().getValue(i, j));
+                for (int j = 0; j < tree.getDistribution().getColCount(); j++) {
+                    dist.setValue(i, j, dist.getValue(i, j) + tree.getDistribution().getValue(i, j));
                 }
             }
         }
@@ -272,8 +276,13 @@ public class RandomForest extends AbstractClassifier {
     }
 
     @Override
-    public Frame getDist() {
+    public Frame getDistribution() {
         return dist;
+    }
+
+
+    public double getOobError() {
+        return oobError;
     }
 
     @Override
@@ -314,10 +323,6 @@ public class RandomForest extends AbstractClassifier {
         for (int i = 0; i < f.getRowCount(); i++) {
             sb.append(String.format("%" + width + "s : %10.4f\n", f.getLabel(i, 0), f.getValue(i, 1)));
         }
-    }
-
-    public void setDebug(boolean debug) {
-        this.debug = debug;
     }
 }
 

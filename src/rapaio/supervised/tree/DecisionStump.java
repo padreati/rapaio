@@ -20,14 +20,11 @@
 
 package rapaio.supervised.tree;
 
-import rapaio.core.ColRange;
 import rapaio.core.RandomSource;
-import rapaio.core.stat.Mode;
 import rapaio.data.*;
 import rapaio.filters.RowFilters;
 import rapaio.supervised.AbstractClassifier;
 import rapaio.supervised.Classifier;
-import rapaio.supervised.colselect.DefaultColSelector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,8 +58,7 @@ public class DecisionStump extends AbstractClassifier {
     public void learn(Frame df, List<Double> weights, String classColName) {
 
         splitGain = 0;
-        colSelector = new DefaultColSelector(df, new ColRange(classColName));
-        String[] colNames = colSelector.nextColNames();
+        String[] colNames = df.getColNames();
         Vector classCol = df.getCol(classColName);
         dict = classCol.getDictionary();
 
@@ -243,7 +239,7 @@ public class DecisionStump extends AbstractClassifier {
     }
 
     @Override
-    public Frame getDist() {
+    public Frame getDistribution() {
         return distr;
     }
 

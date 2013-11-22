@@ -202,6 +202,7 @@ public class CsvPersistence {
                 }
                 List<String> row = parseLine(line);
                 for (String colName : indexFieldHints) {
+                    if(!indexes.containsKey(colName)) continue;
                     if("?".equals(row.get(indexes.get(colName)))) {
                         df.getCol(colName).setMissing(rows);
                         continue;
@@ -209,6 +210,7 @@ public class CsvPersistence {
                     df.getCol(colName).setIndex(rows, Integer.parseInt(row.get(indexes.get(colName))));
                 }
                 for (String colName : numericFieldHints) {
+                    if(!indexes.containsKey(colName)) continue;
                     if("?".equals(row.get(indexes.get(colName)))) {
                         df.getCol(colName).setMissing(rows);
                         continue;
@@ -216,6 +218,7 @@ public class CsvPersistence {
                     df.getCol(colName).setValue(rows, Double.parseDouble(row.get(indexes.get(colName))));
                 }
                 for (String colName : dictionaries.keySet()) {
+                    if(!indexes.containsKey(colName)) continue;
                     if(row.size()<=indexes.get(colName)) continue;
                     String label = row.get(indexes.get(colName));
                     if("?".equals(label)) {

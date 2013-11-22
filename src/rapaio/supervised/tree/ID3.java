@@ -171,7 +171,7 @@ public class ID3 extends AbstractClassifier {
     }
 
     @Override
-    public Frame getDist() {
+    public Frame getDistribution() {
         return null;
     }
 

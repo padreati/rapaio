@@ -33,12 +33,6 @@ import java.util.List;
  */
 public abstract class AbstractClassifier implements Classifier {
 
-    protected ColSelector colSelector;
-
-    public ColSelector getColSelector() {
-        return colSelector;
-    }
-
     @Override
     public void learn(Frame df, String classColName) {
         List<Double> weights = new ArrayList<>();

@@ -197,22 +197,22 @@ public abstract class BaseFigure implements Figure {
         buildLeftMarkers();
 
         g2d.setFont(markersFont);
-        g2d.drawLine((int) (viewport.x - THICKER_PAD),
+        g2d.drawLine(viewport.x - THICKER_PAD,
                 viewport.y,
-                (int) (viewport.x - THICKER_PAD),
+                viewport.x - THICKER_PAD,
                 viewport.y + viewport.height);
 
         for (int i = 0; i < leftMarkersPos.size(); i++) {
             if (leftThicker) {
                 g2d.drawLine(
-                        (int) (viewport.x - 2 * THICKER_PAD),
-                        (int) (viewport.y + leftMarkersPos.get(i)),
-                        (int) (viewport.x - THICKER_PAD),
-                        (int) (viewport.y + leftMarkersPos.get(i)));
+                        viewport.x - 2 * THICKER_PAD,
+                        (int)(viewport.y + leftMarkersPos.get(i)),
+                        viewport.x - THICKER_PAD,
+                        (int)(viewport.y + leftMarkersPos.get(i)));
             }
             if (leftMarkers) {
 
-                int xx = (int) (viewport.x - 3 * THICKER_PAD);
+                int xx = viewport.x - 3 * THICKER_PAD;
                 int yy = (int) (viewport.y + viewport.height - leftMarkersPos.get(i)
                         + g2d.getFontMetrics().getStringBounds(leftMarkersMsg.get(i), g2d).getWidth() / 2);
                 g2d.translate(xx, yy);
@@ -225,7 +225,7 @@ public abstract class BaseFigure implements Figure {
         if (leftLabel != null) {
             g2d.setFont(labelsFont);
             double ywidth = g2d.getFontMetrics().getStringBounds(leftLabel, g2d).getWidth();
-            int xx = (int) (viewport.x - 5 * THICKER_PAD - MARKER_PAD);
+            int xx = viewport.x - 5 * THICKER_PAD - MARKER_PAD;
             int yy = (int) ((rect.height + ywidth) / 2);
             g2d.translate(xx, yy);
             g2d.rotate(-Math.PI / 2);
@@ -238,17 +238,17 @@ public abstract class BaseFigure implements Figure {
         buildBottomMarkers();
 
         g2d.setFont(markersFont);
-        g2d.drawLine((int) (viewport.x),
+        g2d.drawLine(viewport.x,
                 viewport.y + viewport.height + THICKER_PAD,
-                (int) (viewport.x + viewport.width),
+                viewport.x + viewport.width,
                 viewport.y + viewport.height + THICKER_PAD);
 
         for (int i = 0; i < bottomMarkersPos.size(); i++) {
             if (bottomThicker) {
                 g2d.drawLine(
-                        (int) (viewport.x + bottomMarkersPos.get(i)),
+                        (int)(viewport.x + bottomMarkersPos.get(i)),
                         viewport.y + viewport.height + THICKER_PAD,
-                        (int) (viewport.x + bottomMarkersPos.get(i)),
+                        (int)(viewport.x + bottomMarkersPos.get(i)),
                         viewport.y + viewport.height + 2 * THICKER_PAD);
             }
             if (bottomMarkers) {
@@ -265,7 +265,7 @@ public abstract class BaseFigure implements Figure {
             double xwidth = g2d.getFontMetrics().getStringBounds(bottomLabel, g2d).getWidth();
             g2d.drawString(bottomLabel,
                     (int) ((rect.width - xwidth) / 2),
-                    (int) viewport.y + viewport.height + 2 * THICKER_PAD + MARKER_PAD + LABEL_PAD);
+                    viewport.y + viewport.height + 2 * THICKER_PAD + MARKER_PAD + LABEL_PAD);
         }
     }
 

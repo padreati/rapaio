@@ -20,29 +20,20 @@
 
 package rapaio.supervised;
 
-import rapaio.core.Summarizable;
-import rapaio.data.Frame;
-import rapaio.data.NominalVector;
-import rapaio.data.Vector;
-import rapaio.supervised.colselect.ColSelector;
-
-import java.util.List;
+import org.junit.Test;
+import rapaio.supervised.rule.OneRule;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public interface Classifier extends Summarizable {
+public class OneRuleTest {
 
-    Classifier newInstance();
+    @Test
+    public void testNominal() {
 
-    void learn(Frame df, List<Double> weights, String classColName);
 
-    void learn(Frame df, String classColName);
-
-    void predict(Frame df);
-
-    NominalVector getPrediction();
-
-    Frame getDistribution();
-
+        OneRule oneRule = new OneRule();
+        oneRule.setMinCount(10);
+//        oneRule.learn();
+    }
 }

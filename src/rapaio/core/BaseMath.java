@@ -388,36 +388,18 @@ public class BaseMath {
             p = y * (s0 + y * (s1 + y * (s2 + y * (s3 + y * (s4 + y * (s5 + y * s6))))));
             q = 1 + y * (r1 + y * (r2 + y * (r3 + y * (r4 + y * (r5 + y * r6)))));
             r = 0.5 * y + p / q;
-            z = 1;	/*
-             * lgamma(1+s) = log(s) + lgamma(s)
-             */
-
+            z = 1;
             switch (i) {
                 case 7:
-                    z *= (y + 6.0);	/*
-                 * FALLTHRU
-                 */
-
+                    z *= (y + 6.0);
                 case 6:
-                    z *= (y + 5.0);	/*
-                 * FALLTHRU
-                 */
-
+                    z *= (y + 5.0);
                 case 5:
-                    z *= (y + 4.0);	/*
-                 * FALLTHRU
-                 */
-
+                    z *= (y + 4.0);
                 case 4:
-                    z *= (y + 3.0);	/*
-                 * FALLTHRU
-                 */
-
+                    z *= (y + 3.0);
                 case 3:
-                    z *= (y + 2.0);	/*
-                     * FALLTHRU
-                     */
-
+                    z *= (y + 2.0);
                     r += BaseMath.log(z);
                     break;
             }

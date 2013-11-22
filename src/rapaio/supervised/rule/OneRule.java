@@ -32,19 +32,25 @@ import rapaio.supervised.Classifier;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class OneRule extends AbstractClassifier {
 
+    private static final Logger log = Logger.getLogger(OneRule.class.getName());
+
     private int minCount = 6;
-    private final List<OneRuleSet> learnedRules = new ArrayList<>();
     private String[] classDictionary;
+    private OneRuleSet bestRuleSet;
     private NominalVector predict;
 
-    public OneRule(int minCount) {
-        this.minCount = minCount;
+    @Override
+    public OneRule newInstance() {
+        OneRule oneRule = new OneRule();
+        oneRule.setMinCount(getMinCount());
+        return oneRule;
     }
 
     public int getMinCount() {
@@ -56,31 +62,29 @@ public class OneRule extends AbstractClassifier {
     }
 
     @Override
-    public OneRule newInstance() {
-        OneRule oneRule = new OneRule(minCount);
-        return oneRule;
-    }
-
-    @Override
     public void learn(Frame df, List<Double> weights, String classColName) {
         classDictionary = df.getCol(classColName).getDictionary();
-
         validate(df, classColName);
-        learnedRules.clear();
+
+        bestRuleSet=null;
         int classIndex = df.getColIndex(classColName);
         for (int i = 0; i < df.getColCount(); i++) {
             if (i == classIndex) {
                 continue;
             }
             if (df.getCol(i).isNominal()) {
-                learnedRules.add(buildNominal(df.getColNames()[i], df.getCol(i), df.getCol(classIndex), weights));
+                OneRuleSet ruleSet = buildNominal(df.getColNames()[i], df.getCol(i), df.getCol(classIndex), weights);
+                if(bestRuleSet==null||ruleSet.getAccuracy()>bestRuleSet.getAccuracy()) {
+                    bestRuleSet=ruleSet;
+                }
             }
             if (df.getCol(i).isNumeric()) {
-                learnedRules.add(buildNumeric(df.getColNames()[i], df.getCol(i), df.getCol(classIndex), weights));
+                OneRuleSet ruleSet = buildNumeric(df.getColNames()[i], df.getCol(i), df.getCol(classIndex), weights);
+                if(bestRuleSet==null||ruleSet.getAccuracy()>bestRuleSet.getAccuracy()) {
+                    bestRuleSet=ruleSet;
+                }
             }
         }
-
-        Collections.sort(learnedRules, new ComparatorImpl());
     }
 
     @Override
@@ -97,20 +101,20 @@ public class OneRule extends AbstractClassifier {
     }
 
     @Override
-    public Frame getDist() {
+    public Frame getDistribution() {
         return null;
     }
 
     private String predict(Frame test, int row) {
-        if (learnedRules.isEmpty()) {
-            throw new RuntimeException("OneRule must be trained first before prediction.");
+        if(bestRuleSet==null) {
+            log.severe("Best rule not found. Either the classifier was not trained, either something went wrong.");
+            return null;
         }
-        OneRuleSet rule = learnedRules.get(0);
-        String colName = rule.getColName();
+        String colName = bestRuleSet.getColName();
 
         if (test.getCol(colName).isNominal()) {
             String value = test.getLabel(row, test.getColIndex(colName));
-            for (GenericOneRule oneRule : rule.getRules()) {
+            for (GenericOneRule oneRule : bestRuleSet.getRules()) {
                 NominalOneRule nominal = (NominalOneRule) oneRule;
                 if (nominal.getColValue().equals(value)) {
                     return nominal.getPredictedClass();
@@ -120,7 +124,7 @@ public class OneRule extends AbstractClassifier {
         if (test.getCol(colName).isNumeric()) {
             boolean missing = test.getCol(colName).isMissing(row);
             double value = test.getValue(row, test.getColIndex(colName));
-            for (GenericOneRule oneRule : rule.getRules()) {
+            for (GenericOneRule oneRule : bestRuleSet.getRules()) {
                 NumericOneRule numeric = (NumericOneRule) oneRule;
                 if (missing && numeric.isMissingValue()) {
                     return numeric.getPredictedClass();
@@ -138,13 +142,7 @@ public class OneRule extends AbstractClassifier {
         StringBuilder sb = new StringBuilder();
         sb.append("Classification: OneRule\n");
         sb.append("Parameters:{minCount:").append(minCount).append("}\n");
-        sb.append("Learned rules:").append(learnedRules.size()).append("\n");
-        for (int i = 0; i < learnedRules.size(); i++) {
-            sb.append("").append(i + 1).append(". ").append(learnedRules.get(i).toString()).append("\n");
-            for (GenericOneRule rule : learnedRules.get(i).getRules()) {
-                sb.append(" - ").append(rule.toString()).append("\n");
-            }
-        }
+        sb.append("Best one rule:").append(bestRuleSet.toString()).append("\n");
         code(sb.toString());
     }
 

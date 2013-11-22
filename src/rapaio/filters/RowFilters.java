@@ -82,10 +82,12 @@ public final class RowFilters {
         return sort(v.getName(), v, RowComparators.nominalComparator(v, asc));
     }
 
+    @SafeVarargs
     public static Vector sort(Vector vector, Comparator<Integer>... comparators) {
         return sort(vector.getName(), vector, comparators);
     }
 
+    @SafeVarargs
     public static Vector sort(String name, Vector vector, Comparator<Integer>... comparators) {
         List<Integer> mapping = new ArrayList<>();
         for (int i = 0; i < vector.getRowCount(); i++) {

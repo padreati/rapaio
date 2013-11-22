@@ -46,14 +46,42 @@ public class RandomTree extends AbstractClassifier {
     double[] cntVI;
     private int minNodeSize = 1;
     private double numericSelectionProb = 1.;
+    private ColSelector colSelector;
 
-    public RandomTree(ColSelector colSelector) {
-        this.colSelector = colSelector;
+    public RandomTree() {
     }
 
     @Override
     public Classifier newInstance() {
-        return new RandomTree(colSelector);
+        RandomTree randomTree = new RandomTree();
+        randomTree.setMinNodeSize(this.getMinNodeSize());
+        randomTree.setNumericSelectionProb(getNumericSelectionProb());
+        randomTree.setColSelector(getColSelector());
+        return randomTree;
+    }
+
+    public int getMinNodeSize() {
+        return minNodeSize;
+    }
+
+    public void setMinNodeSize(int minNodeSize) {
+        this.minNodeSize = minNodeSize;
+    }
+
+    public double getNumericSelectionProb() {
+        return numericSelectionProb;
+    }
+
+    public void setNumericSelectionProb(double numericSelectionProb){
+        this.numericSelectionProb=numericSelectionProb;
+    }
+
+    public ColSelector getColSelector() {
+        return this.colSelector;
+    }
+
+    public void setColSelector(ColSelector colSelector) {
+        this.colSelector = colSelector;
     }
 
     public double[] getVariableImportance() {
@@ -120,7 +148,7 @@ public class RandomTree extends AbstractClassifier {
     }
 
     @Override
-    public Frame getDist() {
+    public Frame getDistribution() {
         return d;
     }
 
@@ -153,22 +181,6 @@ public class RandomTree extends AbstractClassifier {
     @Override
     public void summary() {
         //TODO implement summary of random tree
-    }
-
-    public void setMinNodeSize(int minNodeSize) {
-        this.minNodeSize = minNodeSize;
-    }
-
-    public int getMinNodeSize() {
-        return minNodeSize;
-    }
-
-    public double getNumericSelectionProb() {
-        return numericSelectionProb;
-    }
-
-    public void setNumericSelectionProb(double numericSelectionProb){
-        this.numericSelectionProb=numericSelectionProb;
     }
 }
 

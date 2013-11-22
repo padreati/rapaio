@@ -59,10 +59,6 @@ public class AdaBoostM1 extends AbstractClassifier {
         return new AdaBoostM1(weak.newInstance(), t);
     }
 
-    public ColSelector getColSelector() {
-        return colSelector;
-    }
-
     @Override
     public void learn(Frame df, List<Double> weights, String classColName) {
         dict = df.getCol(classColName).getDictionary();
@@ -190,7 +186,7 @@ public class AdaBoostM1 extends AbstractClassifier {
     }
 
     @Override
-    public Frame getDist() {
+    public Frame getDistribution() {
         return dist;
     }
 

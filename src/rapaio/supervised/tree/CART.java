@@ -55,7 +55,7 @@ public class CART extends AbstractClassifier{
     }
 
     @Override
-    public Frame getDist() {
+    public Frame getDistribution() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

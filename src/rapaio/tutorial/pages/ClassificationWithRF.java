@@ -158,7 +158,12 @@ public class ClassificationWithRF implements TutorialPage {
         final Vector accuracy = new NumericVector("test error", 400);
         final Vector oob = new NumericVector("oob error", 400);
         for (int mtree = 1; mtree < 200; mtree += 10) {
-            RandomForest rf = new RandomForest(mtree, 2, true);
+            final int mt = mtree;
+            RandomForest rf = new RandomForest() {{
+                setMtrees(mt);
+                setMcols(2);
+                setComputeOob(true);
+            }};
             rf.learn(train, "spam");
             rf.predict(test);
             index.setIndex(pos, mtree);
@@ -230,7 +235,12 @@ public class ClassificationWithRF implements TutorialPage {
         final Vector oob1 = new NumericVector("oob error", 10);
         for (int mcol = 1; mcol <= 10; mcol++) {
 
-            RandomForest rf = new RandomForest(30, mcol, true);
+            final int mmcol = mcol;
+            RandomForest rf = new RandomForest() {{
+                setMtrees(30);
+                setMcols(mmcol);
+                setComputeOob(true);
+            }};
             rf.learn(train, "spam");
             rf.predict(test);
             index1.setIndex(pos, mcol);
@@ -243,7 +253,7 @@ public class ClassificationWithRF implements TutorialPage {
             new Lines(this, index1, accuracy1) {{
                 opt().setColorIndex(2);
             }};
-            new Points(this, index1, accuracy1){{
+            new Points(this, index1, accuracy1) {{
                 opt().setColorIndex(2);
             }};
             new Lines(this, index1, oob1);

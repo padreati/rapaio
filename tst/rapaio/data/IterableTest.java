@@ -18,31 +18,22 @@
  *    limitations under the License.
  */
 
-package rapaio.supervised;
+package rapaio.data;
 
-import rapaio.core.Summarizable;
-import rapaio.data.Frame;
-import rapaio.data.NominalVector;
-import rapaio.data.Vector;
-import rapaio.supervised.colselect.ColSelector;
+import org.junit.Test;
 
-import java.util.List;
+import java.text.NumberFormat;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public interface Classifier extends Summarizable {
+public class IterableTest {
 
-    Classifier newInstance();
-
-    void learn(Frame df, List<Double> weights, String classColName);
-
-    void learn(Frame df, String classColName);
-
-    void predict(Frame df);
-
-    NominalVector getPrediction();
-
-    Frame getDistribution();
-
+    @Test
+    public void testNumericIterable() {
+        Vector v = new NumericVector("test", new double[]{1., 3., 5.});
+//        for(double value : v.numericIterator()) {
+//            System.out.println(NumberFormat.getInstance().format(value));
+//        }
+    }
 }

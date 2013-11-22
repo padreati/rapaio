@@ -50,7 +50,9 @@ public class RandomForestTest {
     public double test(String name) throws IOException {
         Frame df = loadFrame(name);
         String className = df.getCol(df.getColCount() - 1).getName();
-        RandomForest rf = new RandomForest(100);
+        RandomForest rf = new RandomForest(){{
+            setMtrees(100);
+        }};
         ModelEvaluation cv = new ModelEvaluation();
         return cv.cv(df, className, rf, 10);
     }
