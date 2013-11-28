@@ -22,20 +22,20 @@ package rapaio.supervised.boost;
 
 import static rapaio.core.BaseMath.*;
 
-import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.supervised.AbstractClassifier;
 import rapaio.supervised.Classifier;
-import rapaio.supervised.colselect.ColSelector;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
 public class AdaBoostM1 extends AbstractClassifier {
+
+    private static final Logger logger = Logger.getLogger(AdaBoostM1.class.getName());
 
     private final Classifier weak;
     private final int t;
@@ -61,6 +61,7 @@ public class AdaBoostM1 extends AbstractClassifier {
 
     @Override
     public void learn(Frame df, List<Double> weights, String classColName) {
+        logger.fine(String.format("Start learn on AdaBoostM1 (weak=%s, t=%d)", weak.getClass().getName(), t));
         dict = df.getCol(classColName).getDictionary();
 
         List<Double> w = new ArrayList<>(weights);
@@ -96,7 +97,6 @@ public class AdaBoostM1 extends AbstractClassifier {
             }
             h.add(hh);
             a.add(log(alpha));
-
 
             // update
             total = 0;
@@ -164,7 +164,6 @@ public class AdaBoostM1 extends AbstractClassifier {
 //            }
 //            pred.setIndex(i, prediction);
 //        }
-
         // simply predict
         for (int i = 0; i < dist.getRowCount(); i++) {
 

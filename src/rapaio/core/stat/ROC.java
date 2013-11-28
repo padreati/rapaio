@@ -21,9 +21,7 @@
 package rapaio.core.stat;
 
 import rapaio.core.Summarizable;
-import rapaio.data.IndexVector;
-import rapaio.data.RowComparators;
-import rapaio.data.Vector;
+import rapaio.data.*;
 
 import static rapaio.core.BaseMath.*;
 import static rapaio.explore.Workspace.*;
@@ -32,8 +30,6 @@ import static rapaio.filters.RowFilters.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import rapaio.data.NumericVector;
-
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
@@ -41,12 +37,7 @@ public class ROC implements Summarizable {
 
     private final Vector score;
     private final Vector classes;
-    private Vector fprate;
-    private Vector tprate;
-    private Vector acc;
-    private double bestpx;
-    private double bestpy;
-    private double bestacc;
+    private Frame data;
     private double auc;
 
     public ROC(Vector score, Vector actual, Vector predict) {
@@ -89,86 +80,59 @@ public class ROC implements Summarizable {
             if (classes.isMissing(i)) {
                 continue;
             }
-            if (classes.getIndex(i) > 0) {
-                p++;
-            } else {
-                n++;
-            }
+            if (classes.getIndex(i) > 0) p++;
+            else n++;
         }
-        List<Double> fpr = new ArrayList<>();
-        List<Double> tpr = new ArrayList<>();
-        List<Double> accr = new ArrayList<>();
 
-        fpr.add(0.);
-        tpr.add(0.);
-        accr.add(n / (0. + n + p));
 
         double fp = 0;
         double tp = 0;
-        bestpx = 0;
-        bestpy = 0;
-        bestacc = 0;
         auc = 0;
 
         Vector sort = sort(score, RowComparators.numericComparator(score, false));
+        int len = 1;
         double prev = Double.MIN_VALUE;
         for (int i = 0; i < sort.getRowCount(); i++) {
             if (sort.isMissing(i) || classes.isMissing(sort.getRowId(i))) continue;
-            if (classes.getIndex(sort.getRowId(i)) > 0) tp++;
-            else fp++;
-
-            if (sort.getValue(i) != prev || i==sort.getRowCount()-1) {
+            if (sort.getValue(i) != prev) {
                 prev = sort.getValue(i);
-                fpr.add(fp / (1. * n));
-                tpr.add(tp / (1. * p));
-                auc += abs(prevfp - fp) * abs(prevtp + tp) / 2.;
-                prevfp = fp;
-                prevtp = tp;
-                double accValue = (tp + n - fp) / (0. + n + p);
-                accr.add(accValue);
-                if (accValue > bestacc) {
-                    bestacc = accValue;
-                    bestpx = fp / (1. * n);
-                    bestpy = tp / (1. * p);
-                }
+                len++;
             }
         }
-        auc += abs(n - prevfp) * (p + prevtp) / 2.;
-        auc /= (1.*p * n);
+        data = DataFactory.newMatrixFrame("data", len, new String[]{"threshold", "fpr", "tpr", "acc"});
+        prev = Double.POSITIVE_INFINITY;
+        int pos = 0;
 
-        fprate = new NumericVector("fprate", fpr.size());
-        tprate = new NumericVector("tprate", tpr.size());
-        acc = new NumericVector("acc", accr.size());
+        for (int i = 0; i < sort.getRowCount(); i++) {
+            if (sort.isMissing(i) || classes.isMissing(sort.getRowId(i))) continue;
 
-        for (int i = 0; i < fpr.size(); i++) {
-            fprate.setValue(i, fpr.get(i));
-            tprate.setValue(i, tpr.get(i));
-            acc.setValue(i, accr.get(i));
+            if (sort.getValue(i) != prev) {
+                auc += abs(prevfp - fp) * abs(prevtp + tp) / 2.;
+                double accValue = (tp + n - fp) / (0. + n + p);
+                data.setValue(pos, "threshold", prev);
+                data.setValue(pos, "fpr", fp / (1. * n));
+                data.setValue(pos, "tpr", tp / (1. * p));
+                data.setValue(pos, "acc", accValue);
+                prevfp = fp;
+                prevtp = tp;
+                prev = sort.getValue(i);
+                pos++;
+            }
+
+            if (classes.getIndex(sort.getRowId(i)) > 0) tp++;
+            else fp++;
         }
+        data.setValue(pos, "threshold", prev);
+        data.setValue(pos, "fpr", 1.);
+        data.setValue(pos, "tpr", 1.);
+        data.setValue(pos, "acc", p / (0. + n + p));
+
+        auc += abs(n - prevfp) * (p + prevtp) / 2.;
+        auc /= (1. * p * n);
     }
 
-    public Vector getFPRateVector() {
-        return fprate;
-    }
-
-    public Vector getTPRateVector() {
-        return tprate;
-    }
-
-    public Vector getAccVector() {
-        return acc;
-    }
-
-    public double getBestAccFPRate() {
-        return bestpx;
-    }
-
-    public double getBestAccTPRate() {
-        return bestpy;
-    }
-
-    public double getBestAccValue() {
-        return bestacc;
+    public Frame getData() {
+        return data;
     }
 
     public double getAuc() {
@@ -178,6 +142,8 @@ public class ROC implements Summarizable {
     @Override
     public void summary() {
         StringBuilder sb = new StringBuilder();
+
+        sb.append("ROC summary");
 
         code(sb.toString());
     }

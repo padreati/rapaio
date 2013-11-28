@@ -21,17 +21,12 @@
 package rapaio.graphics.plot;
 
 import rapaio.core.stat.ROC;
-import rapaio.data.IndexVector;
-import rapaio.data.RowComparators;
-import rapaio.data.Vector;
-import rapaio.filters.RowFilters;
 import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
-import rapaio.graphics.pch.PchPalette;
 
 import java.awt.*;
-import java.util.*;
+import java.awt.geom.Line2D;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -40,11 +35,12 @@ public class ROCCurve extends PlotComponent {
 
     private final ROC roc;
 
-    public ROCCurve(Plot rocPlot, ROC roc) {
-        super(rocPlot);
+    public ROCCurve(Plot plot, ROC roc) {
+        super(plot);
         this.roc = roc;
+        plot.setBottomLabel("fp rate");
+        plot.setLeftLabel("tp rate");
     }
-
 
     @Override
     public Range getComponentDataRange() {
@@ -59,22 +55,19 @@ public class ROCCurve extends PlotComponent {
         g2d.setStroke(new BasicStroke(lwd));
         g2d.setBackground(ColorPalette.STANDARD.getColor(255));
 
-        for (int i = 1; i < roc.getFPRateVector().getRowCount(); i++) {
+        for (int i = 1; i < roc.getData().getRowCount(); i++) {
             g2d.setColor(opt().getColor(i));
-            int x1 = (plot.xscale(roc.getFPRateVector().getValue(i - 1)));
-            int y1 = (plot.yscale(roc.getTPRateVector().getValue(i - 1)));
-            int x2 = (plot.xscale(roc.getFPRateVector().getValue(i)));
-            int y2 = (plot.yscale(roc.getTPRateVector().getValue(i)));
+            double x1 = plot.xscaledbl(roc.getData().getValue(i - 1, "fpr"));
+            double y1 = plot.yscaledbl(roc.getData().getValue(i - 1, "tpr"));
+            double x2 = plot.xscaledbl(roc.getData().getValue(i, "fpr"));
+            double y2 = plot.yscaledbl(roc.getData().getValue(i, "tpr"));
 
-            if (plot.getRange().contains(roc.getFPRateVector().getValue(i - 1), roc.getTPRateVector().getValue(i - 1))
-                    && plot.getRange().contains(roc.getFPRateVector().getValue(i), roc.getTPRateVector().getValue(i))) {
-                g2d.drawLine(x1, y1, x2, y2);
+            if (plot.getRange().contains(roc.getData().getValue(i - 1, "fpr"), roc.getData().getValue(i - 1, "tpr"))
+                    && plot.getRange().contains(roc.getData().getValue(i, "fpr"), roc.getData().getValue(i, "tpr"))) {
+                g2d.draw(new Line2D.Double(x1, y1, x2, y2));
             }
         }
 
         g2d.setColor(opt().getColor(0));
-        int xx = plot.xscale(roc.getBestAccFPRate());
-        int yy = plot.yscale(roc.getBestAccTPRate());
-        PchPalette.STANDARD.draw(g2d, xx, yy, opt().getSize(0), opt().getPch(0));
     }
 }

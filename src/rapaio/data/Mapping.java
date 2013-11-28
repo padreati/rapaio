@@ -20,15 +20,21 @@
 
 package rapaio.data;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Mapping {
+public class Mapping implements Iterable<Integer> {
 
     private final List<Integer> mapping;
+
+    public Mapping() {
+        this.mapping = new ArrayList<>();
+    }
 
     public Mapping(List<Integer> mapping) {
         this.mapping = mapping;
@@ -42,5 +48,31 @@ public class Mapping {
         if (mapping.size() > pos)
             return mapping.get(pos);
         throw new IllegalArgumentException("Value at pos " + pos + " does not exists");
+    }
+
+    public void add(int pos) {
+        mapping.add(pos);
+    }
+
+    @Override
+    public Iterator<Integer> iterator() {
+        return new Iterator<Integer>() {
+            private int pos = 0;
+
+            @Override
+            public boolean hasNext() {
+                return pos < mapping.size();
+            }
+
+            @Override
+            public Integer next() {
+                return mapping.get(pos++);
+            }
+
+            @Override
+            public void remove() {
+                throw new RuntimeException("This operation is not allowed on mapping.");
+            }
+        };
     }
 }

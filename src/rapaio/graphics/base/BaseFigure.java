@@ -174,6 +174,14 @@ public abstract class BaseFigure implements Figure {
         return (int) (viewport.y + viewport.height * (1. - (y - range.getY1()) / (range.getY2() - range.getY1())));
     }
 
+    public double xscaledbl(double x) {
+        return viewport.x + viewport.width * (x - range.getX1()) / (range.getX2() - range.getX1());
+    }
+
+    public double yscaledbl(double y) {
+        return viewport.y + viewport.height * (1. - (y - range.getY1()) / (range.getY2() - range.getY1()));
+    }
+
     @Override
     public void paint(Graphics2D g2d, Rectangle rect) {
         buildViewport(rect);
@@ -206,9 +214,9 @@ public abstract class BaseFigure implements Figure {
             if (leftThicker) {
                 g2d.drawLine(
                         viewport.x - 2 * THICKER_PAD,
-                        (int)(viewport.y + leftMarkersPos.get(i)),
+                        (int) (viewport.y + leftMarkersPos.get(i)),
                         viewport.x - THICKER_PAD,
-                        (int)(viewport.y + leftMarkersPos.get(i)));
+                        (int) (viewport.y + leftMarkersPos.get(i)));
             }
             if (leftMarkers) {
 
@@ -246,16 +254,16 @@ public abstract class BaseFigure implements Figure {
         for (int i = 0; i < bottomMarkersPos.size(); i++) {
             if (bottomThicker) {
                 g2d.drawLine(
-                        (int)(viewport.x + bottomMarkersPos.get(i)),
+                        (int) (viewport.x + bottomMarkersPos.get(i)),
                         viewport.y + viewport.height + THICKER_PAD,
-                        (int)(viewport.x + bottomMarkersPos.get(i)),
+                        (int) (viewport.x + bottomMarkersPos.get(i)),
                         viewport.y + viewport.height + 2 * THICKER_PAD);
             }
             if (bottomMarkers) {
                 g2d.drawString(
                         bottomMarkersMsg.get(i),
                         (int) (viewport.x + bottomMarkersPos.get(i)
-                                - g2d.getFontMetrics().getStringBounds(bottomMarkersMsg.get(i), g2d).getWidth() / 2),
+                        - g2d.getFontMetrics().getStringBounds(bottomMarkersMsg.get(i), g2d).getWidth() / 2),
                         viewport.y + viewport.height + 2 * THICKER_PAD + MARKER_PAD);
             }
         }

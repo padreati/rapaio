@@ -21,6 +21,7 @@
 package rapaio.tutorial;
 
 import static rapaio.explore.Workspace.*;
+
 import rapaio.printer.HTMLPrinter;
 import rapaio.tutorial.pages.*;
 
@@ -28,15 +29,26 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.logging.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class TutorialWebsiteGenerator {
-    //    private static final String TUTORIAL_WEB_ROOT = "webroot/";
+
+    private static final Logger logger = Logger.getLogger("rapaio");
+
     private static final String TUTORIAL_WEB_ROOT = "/home/ati/work/rapaio-tutorial/";
 
     public static void main(String[] args) throws IOException, URISyntaxException {
+
+        logger.setLevel(Level.FINEST);
+        logger.addHandler(new ConsoleHandler() {
+            {
+                setFormatter(new SimpleFormatter());
+            }
+        });
+
         File webRoot = new File(TUTORIAL_WEB_ROOT);
         File pageRoot = new File(webRoot, "pages");
 
@@ -47,31 +59,31 @@ public class TutorialWebsiteGenerator {
         pageRoot.mkdir();
 
         TreeMap<String, List<TutorialPage>> pages = new TreeMap<>();
-        String category = "";
+        String category;
 
         category = "Graphics";
         pages.put(category, new ArrayList<TutorialPage>());
-        pages.get(category).add(new HistogramDensityTutorial());
+//        pages.get(category).add(new HistogramDensityTutorial());
 
         category = "StatisticalProcedures";
         pages.put(category, new ArrayList<TutorialPage>());
-        pages.get(category).add(new DiscreteSampling());
-        pages.get(category).add(new CorrelationsPage());
+//        pages.get(category).add(new DiscreteSampling());
+//        pages.get(category).add(new CorrelationsPage());
+        pages.get(category).add(new ROCCurvesPage());
 
         category = "SampleAnalysis";
         pages.put(category, new ArrayList<TutorialPage>());
-        pages.get(category).add(new PearsonHeight());
-        pages.get(category).add(new LawOfLargeNumbers());
+//        pages.get(category).add(new PearsonHeight());
+//        pages.get(category).add(new LawOfLargeNumbers());
 
         category = "SupervisedClassification";
         pages.put(category, new ArrayList<TutorialPage>());
-        pages.get(category).add(new ClassificationWithRF());
+//        pages.get(category).add(new ClassificationWithRF());
 
         category = "WorkInProgress";
         pages.put(category, new ArrayList<TutorialPage>());
-        pages.get(category).add(new IrisExplore());
-        pages.get(category).add(new StudentTDistribution());
-
+//        pages.get(category).add(new IrisExplore());
+//        pages.get(category).add(new StudentTDistribution());
 
         makeIndexPage(webRoot, pages);
 
@@ -99,34 +111,33 @@ public class TutorialWebsiteGenerator {
 
         p("This is the home page for Rapaio tutorials.");
 
-        p("A Rapaio tutorial page is a document generated with the Rapaio " +
-                "library documenting facilities in order to exemplify how " +
-                "an analysis could be accomplished using Rapaio statistical," +
-                "data mining and machine learning toolbox.");
+        p("A Rapaio tutorial page is a document generated with the Rapaio "
+                + "library documenting facilities in order to exemplify how "
+                + "an analysis could be accomplished using Rapaio statistical,"
+                + "data mining and machine learning toolbox.");
 
-        p("Most of the tutorials will be strictly oriented on a small " +
-                "type of facility Rapaio offers. As a sample how one ca read " +
-                "and write data with CVSPersistence. Other tutorials will be oriented " +
-                "on the pieces of output facilities useful in data visualization, " +
-                "either as text or as graphical images. ");
+        p("Most of the tutorials will be strictly oriented on a small "
+                + "type of facility Rapaio offers. As a sample how one ca read "
+                + "and write data with CVSPersistence. Other tutorials will be oriented "
+                + "on the pieces of output facilities useful in data visualization, "
+                + "either as text or as graphical images. ");
 
-        p("There are also some tutorials which tries to do an exploration " +
-                "analysis, trying to put together the small pieces into something " +
-                "fluent and understandable as a whole. However, So, these pages does not " +
-                "contain a full exploration analysis or other type of analysis. " +
-                "Its purpose is to illustrate how Rapaio toolbox could be used. " +
-                "They are not a golden-standard for how an exploration must be conduct.");
+        p("There are also some tutorials which tries to do an exploration "
+                + "analysis, trying to put together the small pieces into something "
+                + "fluent and understandable as a whole. However, So, these pages does not "
+                + "contain a full exploration analysis or other type of analysis. "
+                + "Its purpose is to illustrate how Rapaio toolbox could be used. "
+                + "They are not a golden-standard for how an exploration must be conduct.");
 
         p("From time to time the whole tutorials will be regenerated and republished.");
 
-        p("That happens because they will grow together with the library and its " +
-                "facilities. The tutorials are generated from source code, using Rapaio " +
-                "library documenting facilities. The advantage of writing tutorials in this " +
-                "manner is that they will remain comaptible with the last revision of " +
-                "the library, thus they will be up-to-date and ready for immediate usage.");
+        p("That happens because they will grow together with the library and its "
+                + "facilities. The tutorials are generated from source code, using Rapaio "
+                + "library documenting facilities. The advantage of writing tutorials in this "
+                + "manner is that they will remain comaptible with the last revision of "
+                + "the library, thus they will be up-to-date and ready for immediate usage.");
 
         p("Have fun on learning and using Rapaio.");
-
 
         heading(2, "Rapaio Tutorial Gallery");
 

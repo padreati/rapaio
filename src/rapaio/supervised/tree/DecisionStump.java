@@ -67,6 +67,7 @@ public class DecisionStump extends AbstractClassifier {
             total[classCol.getIndex(i)] += weights.get(i);
         }
         for (String colName : colNames) {
+            if(classColName.equals(colName)) continue;
             Vector col = df.getCol(colName);
             if (col.isNumeric()) {
                 evaluateNumeric(df, weights, classCol, col, total);

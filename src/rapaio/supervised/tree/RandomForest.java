@@ -150,7 +150,7 @@ public class RandomForest extends AbstractClassifier {
         final List<Frame> bootstraps = new ArrayList<>();
         for (int i = 0; i < mtrees; i++) {
             final RandomTree tree = new RandomTree();
-            tree.setColSelector(new RandomColSelector(df, new ColRange(classColName), mcols));
+            tree.setColSelector(new RandomColSelector(df, new ColRange(classColName), mcols2));
             tree.setMinNodeSize(minNodeSize);
             trees.add(tree);
             final Frame bootstrap = StatSampling.randomBootstrap(df);
