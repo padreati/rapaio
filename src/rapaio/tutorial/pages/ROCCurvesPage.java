@@ -1,4 +1,22 @@
-
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
 package rapaio.tutorial.pages;
 
 import rapaio.core.RandomSource;
@@ -15,11 +33,11 @@ import rapaio.explore.Summary;
 import rapaio.filters.ColFilters;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.ROCCurve;
-import rapaio.supervised.Classifier;
-import rapaio.supervised.boost.AdaBoostM1;
-import rapaio.supervised.rule.OneRule;
-import rapaio.supervised.tree.DecisionStump;
-import rapaio.supervised.tree.RandomForest;
+import rapaio.ml.classification.Classifier;
+import rapaio.ml.classification.boost.AdaBoostM1;
+import rapaio.ml.classification.rule.OneRule;
+import rapaio.ml.classification.tree.DecisionStump;
+import rapaio.ml.classification.tree.RandomForest;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -53,8 +71,8 @@ public class ROCCurvesPage implements TutorialPage {
         p("In order to get train and test samples the following code could be used:");
 
         RandomSource.setSeed(2718);
-        final Frame spam = ColFilters.retainCols(Datasets.loadSpamBase(), "all");
-        List<Frame> samples = randomSample(spam, new int[]{(int) (spam.getRowCount() * 0.90)});
+        final Frame spam = ColFilters.retainCols(Datasets.loadSpamBase(), "0-4,spam");
+        List<Frame> samples = randomSample(spam, new int[]{(int) (spam.getRowCount() * 0.6)});
         final Frame train = samples.get(0);
         final Frame test = samples.get(1);
 
@@ -73,38 +91,34 @@ public class ROCCurvesPage implements TutorialPage {
         p("Thus we know there are 2788 instances classified as ham, codified by value 0 (not spam), "
                 + "and 1813 instances codified by 1, which denotes spam emails.");
 
-        p("There are a lot of numeric features in this data set, to keep the count of wasted lines at "
-                + "minimum we present you only the summary of the first 4 numeric attributes:");
+        p("There are a lot of numeric features in this data set. We use "
+                + "only the first 5 numerical features for prediction.");
 
         summary(spam);
 
         final List<String> clsLabels = new ArrayList<>();
-        final List<Classifier> clsInst = new ArrayList<>();
         final List<ROC> clsRocs = new ArrayList<>();
 
         final OneRule oneRule = new OneRule();
         oneRule.learn(train, "spam");
         oneRule.predict(test);
         clsLabels.add("oneRule");
-        clsInst.add(oneRule);
         clsRocs.add(new ROC(oneRule.getPrediction(), test.getCol("spam"), "1"));
 
         final RandomForest rf = new RandomForest() {
             {
-                setMtrees(100);
+                setMtrees(50);
             }
         };
         rf.learn(train, "spam");
         rf.predict(test);
         clsLabels.add("rf");
-        clsInst.add(rf);
         clsRocs.add(new ROC(rf.getDistribution().getCol("1"), test.getCol("spam"), "1"));
 
-        final AdaBoostM1 ab = new AdaBoostM1(new DecisionStump(), 1_000);
+        final AdaBoostM1 ab = new AdaBoostM1(new DecisionStump(), 50);
         ab.learn(train, "spam");
         ab.predict(test);
         clsLabels.add("ab");
-        clsInst.add(ab);
         clsRocs.add(new ROC(ab.getDistribution().getCol("1"), test.getCol("spam"), "1"));
 
         draw(new Plot() {

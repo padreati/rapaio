@@ -17,7 +17,6 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
 package rapaio.graphics.plot;
 
 import rapaio.core.BaseMath;
@@ -30,6 +29,7 @@ import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -75,7 +75,8 @@ public class DensityLine extends PlotComponent {
         double ymax = Double.NaN;
 
         for (int i = 0; i < vector.getRowCount(); i++) {
-            if (vector.isMissing(i)) continue;
+            if (vector.isMissing(i))
+                continue;
             if (xmin != xmin) {
                 xmin = kde.getKernel().getMinValue(vector.getValue(i), bandwidth);
             } else {
@@ -117,12 +118,11 @@ public class DensityLine extends PlotComponent {
             if (range.contains(x.getValue(i - 1), y.getValue(i - 1)) && range.contains(x.getValue(i), y.getValue(i))) {
                 g2d.setColor(opt().getColor(i));
                 g2d.setStroke(new BasicStroke(opt().getLwd()));
-                g2d.drawLine(
-                        (int) xscale(x.getValue(i - 1)),
-                        (int) yscale(y.getValue(i - 1)),
-                        (int) xscale(x.getValue(i)),
-                        (int) yscale(y.getValue(i)));
-
+                g2d.draw(new Line2D.Double(
+                        xscale(x.getValue(i - 1)),
+                        yscale(y.getValue(i - 1)),
+                        xscale(x.getValue(i)),
+                        yscale(y.getValue(i))));
 
             }
         }

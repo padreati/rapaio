@@ -17,7 +17,6 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
 package rapaio.tutorial.pages;
 
 import rapaio.data.*;
@@ -31,8 +30,8 @@ import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
 import rapaio.graphics.plot.Points;
 import rapaio.sample.StatSampling;
-import rapaio.supervised.Classifier;
-import rapaio.supervised.tree.RandomForest;
+import rapaio.ml.classification.Classifier;
+import rapaio.ml.classification.tree.RandomForest;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

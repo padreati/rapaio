@@ -17,7 +17,6 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
 package rapaio.graphics.plot;
 
 import rapaio.graphics.Plot;
@@ -49,10 +48,10 @@ public abstract class PlotComponent {
     public abstract void paint(Graphics2D g2d);
 
     public double xscale(double x) {
-        return plot.xscale(x);
+        return plot.xscaledbl(x);
     }
 
     public double yscale(double y) {
-        return plot.yscale(y);
+        return plot.yscaledbl(y);
     }
 }
