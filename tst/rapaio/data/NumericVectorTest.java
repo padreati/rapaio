@@ -23,8 +23,6 @@ package rapaio.data;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import static rapaio.core.BaseMath.*;
-import rapaio.data.NumericVector;
-import rapaio.data.Vector;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -33,9 +31,7 @@ public class NumericVectorTest {
 
     @Test
     public void smokeTest() {
-        Vector v = new NumericVector("x", 0);
-        assertEquals("x", v.getName());
-
+        Vector v = new NumericVector(0);
         boolean flag = v.isNumeric();
         assertEquals(true, flag);
         assertEquals(false, v.isNominal());
@@ -45,7 +41,7 @@ public class NumericVectorTest {
 
     @Test
     public void testGetterSetter() {
-        Vector v = new NumericVector("x", 10);
+        Vector v = new NumericVector(10);
         for (int i = 0; i < 10; i++) {
             v.setValue(i, log(10 + i));
         }
@@ -85,8 +81,7 @@ public class NumericVectorTest {
         assertEquals(1, one.getRowCount());
         assertEquals(PI, one.getValue(0), 1e-10);
 
-        one = new OneNumericVector("test", E);
-        assertEquals("test", one.getName());
+        one = new OneNumericVector(E);
         assertEquals(1, one.getRowCount());
         assertEquals(E, one.getValue(0), 1e-10);
     }

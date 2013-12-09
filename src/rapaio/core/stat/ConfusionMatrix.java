@@ -17,12 +17,12 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package rapaio.ml.classification.stat;
+package rapaio.core.stat;
 
 import rapaio.core.BaseMath;
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
-import rapaio.explore.Workspace;
+import rapaio.session.Workspace;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -105,7 +105,7 @@ public class ConfusionMatrix implements Summarizable {
     }
 
     private void addConfusionMatrix(StringBuilder sb) {
-        sb.append("\nConfusion matrix for actual: <").append(actual.getName()).append(">, predict: <").append(predict.getName()).append(">\n");
+        sb.append("\nConfusion matrix\n");
 
         sb.append("\n");
         int maxwidth = "Actual".length();

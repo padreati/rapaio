@@ -98,11 +98,11 @@ public class CsvPersistence {
         return nominalFieldHints;
     }
 
-    public Frame read(String name, String fileName) throws IOException {
-        return read(name, Paths.get(fileName));
+    public Frame read(String fileName) throws IOException {
+        return read(Paths.get(fileName));
     }
 
-    public Frame read(String name, Path path) throws IOException {
+    public Frame read(Path path) throws IOException {
         List<String> names = new ArrayList<>();
         int cols;
 
@@ -170,20 +170,20 @@ public class CsvPersistence {
         }
 
         // build frame
-        Vector[] vectors = new Vector[cols];
+        List<Vector> vectors = new ArrayList<>();
         for (int i = 0; i < cols; i++) {
             String colName = names.get(i);
             if (indexFieldHints.contains(colName)) {
-                vectors[i] = new IndexVector(colName, rows);
+                vectors.add(new IndexVector(rows));
                 continue;
             }
             if (numericFieldHints.contains(colName)) {
-                vectors[i] = new NumericVector(colName, rows);
+                vectors.add(new NumericVector(rows));
                 continue;
             }
-            vectors[i] = new NominalVector(colName, rows, dictionaries.get(colName));
+            vectors.add(new NominalVector(rows, dictionaries.get(colName)));
         }
-        Frame df = new SolidFrame(name, rows, vectors);
+        Frame df = new SolidFrame(rows, vectors, names);
 
         // process data, one row at a time
         rows = 0;

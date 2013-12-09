@@ -19,9 +19,6 @@
  */
 package rapaio.data;
 
-import java.util.Comparator;
-import java.util.List;
-
 /**
  * Index vector contains numeric integer values.
  * Its primary use is to specify various integer coded values for given rows.
@@ -33,20 +30,18 @@ public class IndexVector extends AbstractVector {
     private static final int missingValue = Integer.MIN_VALUE;
     private final int[] values;
 
-    public IndexVector(String name, int size) {
-        super(name);
+    public IndexVector(int size) {
         this.values = new int[size];
     }
 
-    public IndexVector(String name, int size, int fill) {
-        this(name, size);
+    public IndexVector(int size, int fill) {
+        this(size);
         for (int i = 0; i < values.length; i++) {
             values[i] = fill;
         }
     }
 
-    public IndexVector(String name, int from, int to, int step) {
-        super(name);
+    public IndexVector(int from, int to, int step) {
         int len = (to - from) / step;
         if ((to - from) % step == 0) {
             len++;

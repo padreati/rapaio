@@ -28,8 +28,8 @@ import rapaio.data.Frame;
 import rapaio.data.OneIndexVector;
 import rapaio.datasets.Datasets;
 
-import static rapaio.explore.Workspace.*;
-import static rapaio.explore.Summary.*;
+import static rapaio.session.Workspace.*;
+import static rapaio.session.Summary.*;
 
 import rapaio.filters.ColFilters;
 

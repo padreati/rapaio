@@ -76,18 +76,13 @@ public final class RowFilters {
 
     public static Vector sort(Vector v, boolean asc) {
         if (v.isNumeric()) {
-            return sort(v.getName(), v, RowComparators.numericComparator(v, asc));
+            return sort(v, RowComparators.numericComparator(v, asc));
         }
-        return sort(v.getName(), v, RowComparators.nominalComparator(v, asc));
+        return sort(v, RowComparators.nominalComparator(v, asc));
     }
 
     @SafeVarargs
     public static Vector sort(Vector vector, Comparator<Integer>... comparators) {
-        return sort(vector.getName(), vector, comparators);
-    }
-
-    @SafeVarargs
-    public static Vector sort(String name, Vector vector, Comparator<Integer>... comparators) {
         List<Integer> mapping = new ArrayList<>();
         for (int i = 0; i < vector.getRowCount(); i++) {
             mapping.add(i);
@@ -97,14 +92,10 @@ public final class RowFilters {
         for (int i = 0; i < mapping.size(); i++) {
             ids.add(vector.getRowId(mapping.get(i)));
         }
-        return new MappedVector(name, vector.getSourceVector(), new Mapping(ids));
+        return new MappedVector(vector.getSourceVector(), new Mapping(ids));
     }
 
     public static Frame sort(Frame df, Comparator<Integer>... comparators) {
-        return sort(df.getName(), df, comparators);
-    }
-
-    public static Frame sort(String name, Frame df, Comparator<Integer>... comparators) {
         List<Integer> mapping = new ArrayList();
         for (int i = 0; i < df.getRowCount(); i++) {
             mapping.add(i);
@@ -114,7 +105,7 @@ public final class RowFilters {
         for (int i = 0; i < mapping.size(); i++) {
             ids.add(df.getRowId(mapping.get(i)));
         }
-        return new MappedFrame(name, df.getSourceFrame(), new Mapping(ids));
+        return new MappedFrame(df.getSourceFrame(), new Mapping(ids));
     }
 
 
@@ -159,6 +150,6 @@ public final class RowFilters {
                 ids.add(source.getRowId(i));
             }
         }
-        return new MappedFrame(source.getName(), source.getSourceFrame(), new Mapping(ids));
+        return new MappedFrame(source.getSourceFrame(), new Mapping(ids));
     }
 }

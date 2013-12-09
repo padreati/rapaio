@@ -27,9 +27,8 @@ import rapaio.data.Vector;
 import rapaio.datasets.Datasets;
 import rapaio.distributions.empirical.KernelDensityEstimator;
 import rapaio.distributions.empirical.KernelFunction;
-import rapaio.explore.Summary;
-
-import static rapaio.explore.Workspace.*;
+import rapaio.session.Summary;
+import static rapaio.session.Workspace.*;
 
 import rapaio.graphics.Histogram;
 import rapaio.graphics.Plot;
@@ -152,7 +151,7 @@ public class HistogramDensityTutorial implements TutorialPage {
         final Vector col = df.getCol("Father");
         draw(new Plot() {{
             new HistogramBars(this, col) {{
-                opt().setColorIndex(new IndexVector("rainbow", 1, 255, 1));
+                opt().setColorIndex(new IndexVector(1, 255, 1));
             }};
             new DensityLine(this, col);
         }});

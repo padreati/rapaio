@@ -20,8 +20,6 @@
 package rapaio.data;
 
 import java.io.Serializable;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Random access list of observed values (observations) for a specific variable.
@@ -51,13 +49,6 @@ public interface Vector extends Serializable {
     Vector getSourceVector();
 
     Mapping getMapping();
-
-    /**
-     * The name of the vector. Name is mostly used by various user-interaction facilities.
-     *
-     * @return name of the vector
-     */
-    String getName();
 
     /**
      * Number of observations contained by the vector.

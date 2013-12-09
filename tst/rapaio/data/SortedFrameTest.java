@@ -48,16 +48,11 @@ public class SortedFrameTest {
     public void init() throws IOException, URISyntaxException {
         final String csv = new String();
         CsvPersistence persistence = new CsvPersistence();
-        persistence.setHasHeader(false);
+        persistence.setHasHeader(true);
         persistence.setHasQuotas(false);
-        df = persistence.read("df", Paths.get(SortedFrameTest.class.getResource("sorted-frame.csv").toURI()));
-
-        Vector[] vectors = new Vector[3];
-        vectors[0] = BaseFilters.renameVector(df.getCol(0), "x");
-        vectors[1] = BaseFilters.toIndex("y", df.getCol(1));
-        vectors[2] = BaseFilters.toNumeric("z", df.getCol(2));
-
-        df = new SolidFrame("df", df.getRowCount(), vectors);
+        persistence.getNumericFieldHints().add("z");
+        persistence.getIndexFieldHints().add("y");
+        df = persistence.read(Paths.get(SortedFrameTest.class.getResource("sorted-frame.csv").toURI()));
     }
 
 
@@ -65,13 +60,15 @@ public class SortedFrameTest {
     public void testMultipleStressSortedLayers() {
         RandomSource.setSeed(1);
         Vector[] vectors = new Vector[1_000];
+        String[] names = new String[1_000];
         for (int i = 0; i < 1_000; i++) {
-            vectors[i] = new NumericVector("v" + i, 10_000);
+            vectors[i] = new NumericVector(10_000);
             for (int j = 0; j < 10_000; j++) {
                 vectors[i].setValue(j, RandomSource.nextDouble());
             }
+            names[i] = "v"+i;
         }
-        Frame sorted = new SolidFrame("test", 10_000, vectors);
+        Frame sorted = new SolidFrame(10_000, vectors, names);
 
         for (int i = 0; i < 100; i++) {
             int col = RandomSource.nextInt(sorted.getColCount());
@@ -147,13 +144,13 @@ public class SortedFrameTest {
 
         assertEquals(df.getColCount(), sorted.getColCount());
         for (int i = 0; i < df.getColCount(); i++) {
-            assertEquals(df.getCol(i).getName(), sorted.getCol(i).getName());
+            assertEquals(df.getColNames()[i], sorted.getColNames()[i]);
         }
         assertEquals(df.getColNames().length, sorted.getColNames().length);
         for (int i = 0; i < df.getColNames().length; i++) {
             assertEquals(df.getColNames()[i], sorted.getColNames()[i]);
             assertEquals(df.getColIndex(df.getColNames()[i]), sorted.getColIndex(sorted.getColNames()[i]));
-            assertEquals(df.getCol(i).getName(), sorted.getCol(i).getName());
+            assertEquals(df.getColNames()[i], sorted.getColNames()[i]);
             assertEquals(df.getCol(df.getColNames()[i]).isNominal(), sorted.getCol(sorted.getColNames()[i]).isNominal());
         }
     }

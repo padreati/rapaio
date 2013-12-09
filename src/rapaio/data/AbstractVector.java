@@ -28,21 +28,9 @@ import java.util.List;
  */
 public abstract class AbstractVector implements Vector {
 
-    private final String name;
-
-    public AbstractVector(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
     @Override
     public String toString() {
         return "Vector{" +
-                "name='" + name + '\'' +
                 ",size='" + getRowCount() + '\'' +
                 '}';
     }

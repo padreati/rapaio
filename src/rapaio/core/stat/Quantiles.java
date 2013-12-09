@@ -25,7 +25,7 @@ import rapaio.core.Summarizable;
 import rapaio.data.Vector;
 
 import static rapaio.filters.RowFilters.sort;
-import static rapaio.explore.Workspace.*;
+import static rapaio.session.Workspace.*;
 
 
 /**
@@ -88,9 +88,9 @@ public class Quantiles implements Summarizable {
 
     @Override
     public void summary() {
-        printfln("quantiles[\"%s\", ...] - estimated quantiles", vector.getName());
+        printfln("quantiles - estimated quantiles");
         for (int i = 0; i < quantiles.length; i++) {
-            printfln("quantile[\"%s\",%f = %f\n", vector.getName(), percentiles[i], quantiles[i]);
+            printfln("quantile[%f = %f\n", percentiles[i], quantiles[i]);
         }
     }
 }

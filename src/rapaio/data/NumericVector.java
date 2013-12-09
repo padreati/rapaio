@@ -20,8 +20,6 @@
 package rapaio.data;
 
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Numeric vector holds continuous or discrete random variables.
@@ -33,19 +31,16 @@ public class NumericVector extends AbstractVector {
     private static final double missingValue = Double.NaN;
     private final double[] values;
 
-    public NumericVector(String name, int size) {
-        super(name);
+    public NumericVector(int size) {
         this.values = new double[size];
         Arrays.fill(values, missingValue);
     }
 
-    public NumericVector(String name, double[] values) {
-        super(name);
+    public NumericVector(double[] values) {
         this.values = Arrays.copyOf(values, values.length);
     }
 
-    public NumericVector(String name, int[] values) {
-        super(name);
+    public NumericVector(int[] values) {
         this.values = new double[values.length];
         for (int i = 0; i < values.length; i++) {
             this.values[i] = values[i];

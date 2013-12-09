@@ -22,10 +22,7 @@ package rapaio.ml.classification.tree;
 
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.Vector;
-import rapaio.explore.Summary;
-import rapaio.filters.BaseFilters;
+import rapaio.session.Summary;
 import rapaio.io.ArffPersistence;
 import rapaio.io.CsvPersistence;
 import rapaio.ml.classification.ModelEvaluation;
@@ -33,8 +30,6 @@ import rapaio.ml.classification.ModelEvaluation;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -49,7 +44,7 @@ public class RandomForestTest {
 
     public double test(String name) throws IOException {
         Frame df = loadFrame(name);
-        String className = df.getCol(df.getColCount() - 1).getName();
+        String className = df.getColNames()[df.getColCount() - 1];
         RandomForest rf = new RandomForest(){{
             setMtrees(100);
         }};
@@ -61,7 +56,7 @@ public class RandomForestTest {
     public void allCompareTest() throws IOException, URISyntaxException {
         CsvPersistence csv = new CsvPersistence();
         csv.setHasHeader(true);
-        Frame tests = csv.read("test", Paths.get(getClass().getResource("tests.csv").toURI()));
+        Frame tests = csv.read(Paths.get(getClass().getResource("tests.csv").toURI()));
         for (int i = 0; i < tests.getRowCount(); i++) {
             if (tests.getLabel(i, 0).startsWith("#")) {
                 continue;

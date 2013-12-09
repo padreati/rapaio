@@ -30,17 +30,6 @@ import java.util.List;
  */
 public abstract class AbstractFrame implements Frame {
 
-    private final String name;
-
-    public AbstractFrame(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
     @Override
     public double getValue(int row, int col) {
         return getCol(col).getValue(row);

@@ -19,10 +19,7 @@
  */
 package rapaio.data;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 
 /**
  * A frame which is build on the base of another frame with
@@ -37,19 +34,11 @@ import java.util.List;
  */
 public class MappedFrame extends AbstractFrame {
 
-    //    private final Vector[] vectors;
-//    private final HashMap<String, Integer> colIndex;
-//    private final String[] colNames;
     private final Mapping mapping;
     private final Frame source;
     private final HashMap<Integer, Vector> vectors = new HashMap<>();
 
     public MappedFrame(Frame df, Mapping mapping) {
-        this(df.getName(), df, mapping);
-    }
-
-    public MappedFrame(String name, Frame df, Mapping mapping) {
-        super(name);
         if (df.isMappedFrame()) {
             throw new IllegalArgumentException("Not allowed mapped frames as source");
         }

@@ -23,8 +23,8 @@ package rapaio.core;
 import org.junit.Test;
 import rapaio.core.stat.ROC;
 import rapaio.data.Frame;
-import rapaio.explore.Summary;
-import rapaio.explore.Workspace;
+import rapaio.session.Summary;
+import rapaio.session.Workspace;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
 import rapaio.graphics.plot.ROCCurve;
@@ -46,7 +46,7 @@ public class ROCTest {
         csv.setHasQuotas(false);
         csv.getNumericFieldHints().add("score");
         csv.getNominalFieldHints().add("class");
-        Frame df = csv.read("frame", Paths.get(getClass().getResource("fawcett-roc.csv").toURI()));
+        Frame df = csv.read(Paths.get(getClass().getResource("fawcett-roc.csv").toURI()));
 
         final ROC roc = new ROC(df.getCol("score"), df.getCol("class"), "p");
         Summary.head(roc.getData().getRowCount(), roc.getData());

@@ -39,13 +39,6 @@ public class Points extends PlotComponent {
         super(parent);
         this.x = x;
         this.y = y;
-
-        if (plot.getBottomLabel() == null) {
-            plot.setBottomLabel(x.getName());
-        }
-        if (plot.getLeftLabel() == null) {
-            plot.setLeftLabel(y.getName());
-        }
     }
 
     @Override

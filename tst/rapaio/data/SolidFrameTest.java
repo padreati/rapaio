@@ -30,15 +30,14 @@ public class SolidFrameTest {
 
     @Test
     public void testEmptySolidFrame() {
-        Frame df = new SolidFrame("df", 0, new Vector[0]);
+        Frame df = new SolidFrame(0, new Vector[0], new String[]{});
         assertEquals(0, df.getRowCount());
         assertEquals(0, df.getColCount());
-        assertEquals("df", df.getName());
     }
 
     @Test
     public void testRowId() {
-        Frame df = new SolidFrame("df", 10, new Vector[]{new NumericVector("x", 10)});
+        Frame df = new SolidFrame(10, new Vector[]{new NumericVector(10)}, new String[]{"x"});
         for (int i = 0; i < df.getRowCount(); i++) {
             assertEquals(i, df.getRowId(i));
         }
@@ -47,11 +46,11 @@ public class SolidFrameTest {
     @Test
     public void testColIndexes() {
         Vector[] vectors = new Vector[]{
-                new NumericVector("x", 0),
-                new NumericVector("y", 0),
-                new NumericVector("z", 0)
+            new NumericVector(0),
+            new NumericVector(0),
+            new NumericVector(0)
         };
-        Frame df = new SolidFrame("df", 0, vectors);
+        Frame df = new SolidFrame(0, vectors, new String[]{"x", "y", "z"});
 
         assertEquals(3, df.getColCount());
         assertEquals("x", df.getColNames()[0]);
@@ -83,23 +82,20 @@ public class SolidFrameTest {
         }
         assertEquals(true, exceptional);
 
-        assertEquals("x", df.getCol(0).getName());
-        assertEquals("y", df.getCol(1).getName());
-        assertEquals("z", df.getCol(2).getName());
-
-        assertEquals("x", df.getCol("x").getName());
-        assertEquals("z", df.getCol("z").getName());
+        assertEquals("x", df.getColNames()[0]);
+        assertEquals("y", df.getColNames()[1]);
+        assertEquals("z", df.getColNames()[2]);
     }
 
     @Test
     public void testConvenientMethods() {
         Vector[] vectors = new Vector[]{
-                new NumericVector("x", new double[]{1., 2., 3., 4.}),
-                new NumericVector("y", new double[]{3., 5., 9., 12.}),
-                new NominalVector("name", 4, new String[]{"ana", "are", "mere"}),
-                new IndexVector("index", 1, 4, 1)
+            new NumericVector(new double[]{1., 2., 3., 4.}),
+            new NumericVector(new double[]{3., 5., 9., 12.}),
+            new NominalVector(4, new String[]{"ana", "are", "mere"}),
+            new IndexVector(1, 4, 1)
         };
-        Frame df = new SolidFrame("df", 4, vectors);
+        Frame df = new SolidFrame(4, vectors, new String[]{"x", "y", "name", "index"});
 
         assertEquals(1., df.getValue(0, 0), 1e-10);
         df.setValue(0, 0, 3.);

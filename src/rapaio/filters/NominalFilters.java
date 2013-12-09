@@ -119,14 +119,13 @@ public final class NominalFilters {
                 if (!v.isNominal()) {
                     vectors[i] = v;
                 } else {
-                    Vector newv = new NominalVector(colName, v.getRowCount(), dicts.get(colName));
-                    for (int k = 0; k < newv.getRowCount(); k++) {
-                        newv.setLabel(k, v.getLabel(k));
+                    vectors[i] = new NominalVector(v.getRowCount(), dicts.get(colName));
+                    for (int k = 0; k < vectors[i].getRowCount(); k++) {
+                        vectors[i].setLabel(k, v.getLabel(k));
                     }
-                    vectors[i] = newv;
                 }
             }
-            dest.add(new SolidFrame(frame.getName(), frame.getRowCount(), vectors));
+            dest.add(new SolidFrame(frame.getRowCount(), vectors, frame.getColNames()));
         }
 
         return dest;
@@ -156,7 +155,7 @@ public final class NominalFilters {
             for (int j = 0; j < frames.get(i).getColCount(); j++) {
                 vectors.add(frames.get(i).getCol(j));
             }
-            Vector col = new NominalVector(name, frames.get(i).getRowCount(), dict);
+            Vector col = new NominalVector(frames.get(i).getRowCount(), dict);
             for (int j = 0; j < frames.get(i).getRowCount(); j++) {
                 StringBuilder sb = new StringBuilder();
                 for (int k = 0; k < combined.length; k++) {
@@ -165,7 +164,7 @@ public final class NominalFilters {
                 col.setLabel(j, sb.toString());
             }
             vectors.add(col);
-            result.add(new SolidFrame(frames.get(i).getName(), frames.get(i).getRowCount(), vectors));
+            result.add(new SolidFrame(frames.get(i).getRowCount(), vectors, frames.get(i).getColNames()));
         }
         return result;
     }

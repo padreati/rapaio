@@ -25,7 +25,7 @@ import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import rapaio.data.NominalVector;
-import rapaio.explore.Workspace;
+import rapaio.session.Workspace;
 import rapaio.filters.NominalFilters;
 import rapaio.ml.classification.AbstractClassifier;
 import rapaio.ml.classification.Classifier;
@@ -157,7 +157,7 @@ public class ID3 extends AbstractClassifier {
 
     @Override
     public void predict(final Frame df) {
-        prediction = new NominalVector("classification", df.getRowCount(), dict);
+        prediction = new NominalVector(df.getRowCount(), dict);
         for (int i = 0; i < df.getRowCount(); i++) {
             String label = predict(df, i, root);
             prediction.setLabel(i, label);
@@ -338,7 +338,7 @@ class ID3Node {
         }
         Frame[] frames = new Frame[dict.length];
         for (int i = 0; i < dict.length; i++) {
-            frames[i] = new MappedFrame(df.getName(), df.getSourceFrame(), new Mapping(splitIds[i]));
+            frames[i] = new MappedFrame(df.getSourceFrame(), new Mapping(splitIds[i]));
         }
 
         splitCol = colName;

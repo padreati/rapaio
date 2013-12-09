@@ -24,12 +24,12 @@ import rapaio.core.stat.ROC;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 
-import static rapaio.explore.Workspace.*;
+import static rapaio.session.Workspace.*;
 import static rapaio.sample.StatSampling.*;
 
-import static rapaio.explore.Summary.*;
+import static rapaio.session.Summary.*;
 
-import rapaio.explore.Summary;
+import rapaio.session.Summary;
 import rapaio.filters.ColFilters;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.ROCCurve;

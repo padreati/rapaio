@@ -69,12 +69,8 @@ public class Bagging extends AbstractClassifier {
     public void predict(final Frame df) {
         // voting
 
-        pred = new NominalVector(classColName, df.getRowCount(), dict);
-        final Vector[] probs = new Vector[dict.length - 1];
-        for (int i = 0; i < dict.length - 1; i++) {
-            probs[i] = new NumericVector(dict[i + 1], new double[df.getRowCount()]);
-        }
-        dist = new SolidFrame("probs", df.getRowCount(), probs);
+        pred = new NominalVector(df.getRowCount(), dict);
+        dist = Frames.newMatrixFrame(df.getRowCount(), dict);
 
         // collect results from each classifier
         for (Classifier c : classifiers) {

@@ -46,7 +46,7 @@ public class DecisionStump extends AbstractClassifier {
     private String defaultLabel;
 
     private NominalVector pred;
-    private Frame distr = null;
+    private Frame distr;
 
     @Override
     public Classifier newInstance() {
@@ -69,9 +69,9 @@ public class DecisionStump extends AbstractClassifier {
             if(classColName.equals(colName)) continue;
             Vector col = df.getCol(colName);
             if (col.isNumeric()) {
-                evaluateNumeric(df, weights, classCol, col, total);
+                evaluateNumeric(df, weights, classCol, col, colName, total);
             } else {
-                evaluateNominal(df, weights, classCol, col, total);
+                evaluateNominal(df, weights, classCol, col, colName, total);
             }
         }
         this.defaultLabel = buildDefaultLabel(df, weights, classCol);
@@ -104,7 +104,7 @@ public class DecisionStump extends AbstractClassifier {
         return dict[sel.get(RandomSource.nextInt(sel.size()))];
     }
 
-    private void evaluateNominal(Frame df, List<Double> weights, Vector classCol, Vector col, double[] total) {
+    private void evaluateNominal(Frame df, List<Double> weights, Vector classCol, Vector col, String colName, double[] total) {
         double[][] dist = new double[col.getDictionary().length][classCol.getDictionary().length];
         for (int i = 0; i < df.getRowCount(); i++) {
             dist[col.getIndex(i)][classCol.getIndex(i)] += weights.get(i);
@@ -114,7 +114,7 @@ public class DecisionStump extends AbstractClassifier {
             double metric = computeGini(dist[0], dist[i], total);
             if (validNumber(metric) && metric > splitGain) {
                 splitGain = metric;
-                splitCol = col.getName();
+                splitCol = colName;
                 splitLabel = col.getDictionary()[i];
                 splitValue = Double.NaN;
 
@@ -150,11 +150,11 @@ public class DecisionStump extends AbstractClassifier {
         }
     }
 
-    private void evaluateNumeric(Frame df, List<Double> weights, Vector classCol, Vector col, double[] total) {
+    private void evaluateNumeric(Frame df, List<Double> weights, Vector classCol, Vector col, String colName, double[] total) {
         double[][] p = new double[2][classCol.getDictionary().length];
         int[] rowCounts = new int[2];
 
-        Vector sort = RowFilters.sort(new IndexVector("sort", 0, df.getRowCount() - 1, 1), RowComparators.numericComparator(col, true));
+        Vector sort = RowFilters.sort(new IndexVector(0, df.getRowCount() - 1, 1), RowComparators.numericComparator(col, true));
         for (int i = 0; i < df.getRowCount() - 1; i++) {
             int row = col.isMissing(sort.getIndex(i)) ? 0 : 1;
             int index = classCol.getIndex(sort.getIndex(i));
@@ -171,7 +171,7 @@ public class DecisionStump extends AbstractClassifier {
 
                 if (validNumber(metric) && metric > splitGain) {
                     splitGain = metric;
-                    splitCol = col.getName();
+                    splitCol = colName;
                     splitLabel = null;
                     splitValue = col.getValue(sort.getIndex(i));
 
@@ -210,7 +210,7 @@ public class DecisionStump extends AbstractClassifier {
 
     @Override
     public void predict(Frame df) {
-        pred = new NominalVector("prediction", df.getRowCount(), dict);
+        pred = new NominalVector(df.getRowCount(), dict);
         for (int i = 0; i < df.getRowCount(); i++) {
             if (splitCol == null || splitCol.isEmpty() || df.getCol(splitCol).isMissing(i)) {
                 pred.setLabel(i, defaultLabel);

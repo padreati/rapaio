@@ -17,19 +17,16 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * A vector which is build on the base of another vector and
- * the row selection and order is specified by a
- * mapping give at construction time.
+ * A vector which is build on the base of another vector and the row selection
+ * and order is specified by a mapping give at construction time.
  * <p/>
- * This vector does not hold actual values, it delegate the behavior
- * to the wrapped vector, thus the wrapping affects only the rows
- * selected anf the order of these rows.
+ * This vector does not hold actual values, it delegate the behavior to the
+ * wrapped vector, thus the wrapping affects only the rows selected anf the
+ * order of these rows.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
@@ -39,16 +36,11 @@ public class MappedVector extends AbstractVector {
     private final Mapping mapping;
 
     public MappedVector(Vector source, Mapping mapping) {
-        this(source.getName(), source, mapping);
-    }
-
-    public MappedVector(String name, Vector vector, Mapping sourceMapping) {
-        super(name);
-        if (vector.isMappedVector()) {
+        if (source.isMappedVector()) {
             throw new IllegalArgumentException("Now allowed mapped vector as source");
         }
-        this.source = vector;
-        this.mapping = sourceMapping;
+        this.source = source;
+        this.mapping = mapping;
     }
 
     @Override

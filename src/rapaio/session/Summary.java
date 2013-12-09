@@ -17,7 +17,8 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package rapaio.explore;
+
+package rapaio.session;
 
 import rapaio.core.Summarizable;
 import rapaio.core.stat.Mean;
@@ -29,7 +30,7 @@ import rapaio.data.Vector;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import static rapaio.explore.Workspace.*;
+import static rapaio.session.Workspace.*;
 
 /**
  * @author tutuianu
@@ -42,7 +43,7 @@ public class Summary {
 
     public static void summary(Frame df, String... names) {
         StringBuilder buffer = new StringBuilder();
-        buffer.append(String.format(">>summary(\"%s\", %s)\n", df.getName(), Arrays.deepToString(names)));
+        buffer.append(String.format(">>summary(frame, %s)\n", Arrays.deepToString(names)));
         if (df == null) {
             buffer.append("null instance of frame.\n");
             code(buffer.toString());
@@ -362,7 +363,7 @@ public class Summary {
 
     public static void names(Frame df) {
         StringBuilder buffer = new StringBuilder();
-        buffer.append(String.format(">>names(\"%s\")\n", df.getName()));
+        buffer.append(String.format(">>names(frame)\n"));
         for (int i = 0; i < df.getColCount(); i++) {
             buffer.append(df.getColNames()[i]).append("\n");
         }
@@ -373,21 +374,18 @@ public class Summary {
         Vector[] vectors = new Vector[b.getRowCount() + 1];
 
         // build first column
-
         HashSet<String> labels = new HashSet<>();
         for (int i = 0; i < a.getRowCount(); i++) {
             labels.add(a.getLabel(i));
         }
         labels.add("Totals");
-        vectors[0] = new NominalVector("Table", a.getRowCount() + 1, labels);
+        vectors[0] = new NominalVector(a.getRowCount() + 1, labels);
         for (int i = 0; i < a.getDictionary().length; i++) {
             vectors[0].setLabel(i, a.getDictionary()[i]);
         }
         vectors[0].setLabel(a.getRowCount(), "Totals");
 
         // build numerical columns
-
-
     }
 
     public static void summary(Summarizable result) {
@@ -409,7 +407,7 @@ public class Summary {
 
         int[] max = new int[vectors.length];
         for (int i = 0; i < vectors.length; i++) {
-            max[i] = vectors[i].getName().length() + 1;
+            max[i] = ("V" + i).length() + 1;
             for (int j = 0; j < vectors[i].getRowCount(); j++) {
                 if (vectors[i].isNominal() && max[i] < vectors[i].getLabel(j).length()) {
                     max[i] = vectors[i].getLabel(j).length();
@@ -438,7 +436,7 @@ public class Summary {
             }
 
             for (int j = start; j <= pos; j++) {
-                String value = String.format("%" + max[j] + "s", vectors[j].getName());
+                String value = String.format("%" + max[j] + "s", "V" + j);
                 sb.append(value).append(" ");
             }
             sb.append("\n");

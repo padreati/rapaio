@@ -21,7 +21,6 @@ package rapaio.tutorial.pages;
 
 import rapaio.core.stat.OnlineCoreStat;
 import rapaio.core.RandomSource;
-import rapaio.data.OneIndexVector;
 import rapaio.data.IndexVector;
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
@@ -30,7 +29,7 @@ import rapaio.graphics.Plot;
 import rapaio.graphics.plot.ABLine;
 import rapaio.graphics.plot.Lines;
 
-import static rapaio.explore.Workspace.*;
+import static rapaio.session.Workspace.*;
 
 import java.io.IOException;
 
@@ -78,7 +77,7 @@ public class LawOfLargeNumbers implements TutorialPage {
                 + "            mean.setValue(i, ocs.getMean());\n"
                 + "        }\n");
         OnlineCoreStat ocs = new OnlineCoreStat();
-        final Vector mean = new NumericVector("mean", N);
+        final Vector mean = new NumericVector(N);
         for (int i = 0; i < events.getRowCount(); i++) {
             ocs.update(events.getValue(i), 1);
             mean.setValue(i, ocs.getMean());
@@ -90,7 +89,7 @@ public class LawOfLargeNumbers implements TutorialPage {
                 opt().setLwd(1.5f);
                 opt().setColorIndex(1);
             }};
-            new Lines(this, new IndexVector("x", 1, N, 1), mean){{
+            new Lines(this, new IndexVector(1, N, 1), mean){{
                 opt().setLwd(1.5f);
                 opt().setColorIndex(2);
             }};

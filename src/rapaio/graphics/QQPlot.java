@@ -39,7 +39,7 @@ public class QQPlot extends Plot {
     public void add(Vector points, Distribution distribution) {
         Vector x = sort(points);
 
-        Vector y = new NumericVector("pdf", x.getRowCount());
+        Vector y = new NumericVector(x.getRowCount());
         for (int i = 0; i < y.getRowCount(); i++) {
             double p = (i + 1) / (y.getRowCount() + 1.);
             y.setValue(i, distribution.quantile(p));

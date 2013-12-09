@@ -25,16 +25,12 @@ import org.junit.Before;
 import org.junit.Test;
 import rapaio.data.Frame;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import rapaio.explore.Summary;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -57,7 +53,7 @@ public class CsvPersistenceTest {
     @Test
     public void testHeader() {
         try {
-            Frame f = persistence.read("header", Paths.get(getClass().getResource("csv-test.csv").toURI()));
+            Frame f = persistence.read(Paths.get(getClass().getResource("csv-test.csv").toURI()));
             assertNotNull(f);
             assertEquals(5, f.getColCount());
             assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, f.getColNames());
@@ -135,7 +131,7 @@ public class CsvPersistenceTest {
     public void testFullFrame() {
         try {
             persistence.setHasQuotas(true);
-            Frame df = persistence.read("header", Paths.get(getClass().getResource("csv-test.csv").toURI()));
+            Frame df = persistence.read(Paths.get(getClass().getResource("csv-test.csv").toURI()));
             assertNotNull(df);
             assertEquals(5, df.getColCount());
             assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, df.getColNames());

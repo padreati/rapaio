@@ -29,11 +29,10 @@ import rapaio.data.Vector;
 import rapaio.datasets.Datasets;
 import rapaio.distributions.Distribution;
 import rapaio.distributions.Normal;
-import rapaio.explore.Summary;
-
-import static rapaio.explore.Summary.summary;
+import rapaio.session.Summary;
+import static rapaio.session.Summary.summary;
 import static rapaio.core.BaseMath.*;
-import static rapaio.explore.Workspace.*;
+import static rapaio.session.Workspace.*;
 
 import rapaio.graphics.Histogram;
 import rapaio.graphics.Plot;
@@ -98,11 +97,12 @@ public class PearsonHeight implements TutorialPage {
 
         for (int i = 0; i < df.getColCount(); i++) {
             final Vector col = df.getCol(i);
+            final int colIndex = i;
             draw(new QQPlot() {{
                 double mu = new Mean(col).getValue();
                 Distribution normal = new Normal();
                 this.add(col, normal);
-                this.setLeftLabel(col.getName());
+                this.setLeftLabel(df.getColNames()[colIndex]);
 
                 new ABLine(this, mu, true);
                 new ABLine(this, 0, false);

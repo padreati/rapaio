@@ -62,16 +62,12 @@ public class BoxPlot extends BaseFigure {
             count[nominal.getIndex(i)]++;
         }
         for (int i = 0; i < count.length; i++) {
-            vectors[i] = new NumericVector("count", count[i]);
+            vectors[i] = new NumericVector(count[i]);
         }
         int[] pos = new int[vectors.length];
         for (int i = 0; i < nominal.getRowCount(); i++) {
             vectors[nominal.getIndex(i)].setValue(pos[nominal.getIndex(i)]++, numeric.getValue(i));
         }
-
-        this.setLeftLabel(numeric.getName());
-        this.setBottomLabel(nominal.getName());
-
         initialize();
     }
 

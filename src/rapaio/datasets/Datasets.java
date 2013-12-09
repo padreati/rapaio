@@ -23,19 +23,12 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
 import rapaio.filters.BaseFilters;
-import rapaio.io.ArffPersistence;
 import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-
-import rapaio.explore.Summary;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -44,29 +37,29 @@ public class Datasets {
 
     public static Frame loadIrisDataset() throws IOException, URISyntaxException {
         Path path = Paths.get(Datasets.class.getResource("iris.csv").toURI());
-        Frame df = new CsvPersistence().read("iris", path);
+        Frame df = new CsvPersistence().read(path);
         Vector[] vectors = new Vector[df.getColCount()];
         vectors[vectors.length - 1] = df.getCol(vectors.length - 1);
         for (int i = 0; i < vectors.length - 1; i++) {
-            vectors[i] = BaseFilters.toNumeric(df.getCol(i).getName(), df.getCol(i));
+            vectors[i] = BaseFilters.toNumeric(df.getCol(i));
         }
-        return new SolidFrame(df.getName(), df.getRowCount(), vectors);
+        return new SolidFrame(df.getRowCount(), vectors, df.getColNames());
     }
 
     public static Frame loadPearsonHeightDataset() throws IOException, URISyntaxException {
-        Frame df = new CsvPersistence().read("pearson", Paths.get(Datasets.class.getResource("pearsonheight.csv").toURI()));
+        Frame df = new CsvPersistence().read(Paths.get(Datasets.class.getResource("pearsonheight.csv").toURI()));
         Vector[] vectors = new Vector[df.getColCount()];
         for (int i = 0; i < df.getColCount(); i++) {
-            vectors[i] = BaseFilters.toNumeric(df.getCol(i).getName(), df.getCol(i));
+            vectors[i] = BaseFilters.toNumeric(df.getCol(i));
         }
-        return new SolidFrame(df.getName(), df.getRowCount(), vectors);
+        return new SolidFrame(df.getRowCount(), vectors, df.getColNames());
     }
 
     public static Frame loadChestDataset() throws IOException, URISyntaxException {
         CsvPersistence persistence = new CsvPersistence();
         persistence.setColSeparator(',');
         persistence.setHasQuotas(false);
-        Frame df = persistence.read("chest", Paths.get(Datasets.class.getResource("chest.csv").toURI()));
+        Frame df = persistence.read(Paths.get(Datasets.class.getResource("chest.csv").toURI()));
         return BaseFilters.toNumeric(df);
     }
 
@@ -75,14 +68,14 @@ public class Datasets {
         persistence.setColSeparator(',');
         persistence.setHasHeader(true);
         persistence.setHasQuotas(false);
-        Frame df = persistence.read("carmpg", Paths.get(Datasets.class.getResource("carmpgdat.csv").toURI()));
+        Frame df = persistence.read(Paths.get(Datasets.class.getResource("carmpgdat.csv").toURI()));
         Vector[] vectors = new Vector[df.getColCount()];
         vectors[0] = df.getCol(0);
         vectors[1] = df.getCol(1);
         for (int i = 2; i < df.getColCount(); i++) {
-            vectors[i] = BaseFilters.toNumeric(df.getCol(i).getName(), df.getCol(i));
+            vectors[i] = BaseFilters.toNumeric(df.getCol(i));
         }
-        return new SolidFrame(df.getName(), df.getRowCount(), vectors);
+        return new SolidFrame(df.getRowCount(), vectors, df.getColNames());
     }
 
     public static Frame loadSpamBase() throws IOException, URISyntaxException {
@@ -148,6 +141,6 @@ public class Datasets {
         persistence.getNumericFieldHints().add("capital_run_length_average");
         persistence.getNumericFieldHints().add("capital_run_length_longest");
         persistence.getNumericFieldHints().add("capital_run_length_total");
-        return persistence.read("spam-base", Paths.get(Datasets.class.getResource("spam-base.csv").toURI()));
+        return persistence.read(Paths.get(Datasets.class.getResource("spam-base.csv").toURI()));
     }
 }

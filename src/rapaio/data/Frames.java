@@ -17,26 +17,18 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package rapaio.io;
-
-import rapaio.explore.DataContainer;
-
-import java.io.*;
+package rapaio.data;
 
 /**
- * @author Aurelian Tutuianu
+ * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class DataContainerPersistence {
+public final class Frames {
 
-    public DataContainer restoreFromFile(String file) throws IOException, ClassNotFoundException {
-        FileInputStream fileIn = new FileInputStream(file);
-        ObjectInputStream in = new ObjectInputStream(fileIn);
-        return (DataContainer) in.readObject();
-    }
-
-    public void storeToFile(DataContainer session, String file) throws FileNotFoundException, IOException {
-        FileOutputStream fileOut = new FileOutputStream(file);
-        ObjectOutputStream out = new ObjectOutputStream(fileOut);
-        out.writeObject(session);
+    public static Frame newMatrixFrame(int rows, String[] colNames) {
+        Vector[] vectors = new Vector[colNames.length];
+        for (int i = 0; i < colNames.length; i++) {
+            vectors[i] = new NumericVector(new double[rows]);
+        }
+        return new SolidFrame(rows, vectors, colNames);
     }
 }

@@ -25,11 +25,9 @@ import static org.junit.Assert.assertEquals;
 import static rapaio.data.RowComparators.*;
 import org.junit.Test;
 import rapaio.core.BaseMath;
-import rapaio.filters.BaseFilters;
 import rapaio.io.CsvPersistence;
 import static rapaio.filters.RowFilters.*;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
@@ -42,17 +40,17 @@ public class SortVectorTest {
 
     @Test
     public void smokeTest() {
-        Vector v = new IndexVector("test", 0);
+        Vector v = new IndexVector(0);
         Vector sorted = sort(v, indexComparator(v, true));
         assertTrue(sorted.isNumeric());
         assertFalse(sorted.isNominal());
 
-        v = new NumericVector("test", 0);
+        v = new NumericVector(0);
         sorted = sort(v, numericComparator(v, true));
         assertTrue(sorted.isNumeric());
         assertFalse(sorted.isNominal());
 
-        v = new NominalVector("test", 0, new String[]{});
+        v = new NominalVector(0, new String[]{});
         sorted = sort(v, nominalComparator(v, true));
         assertFalse(sorted.isNumeric());
         assertTrue(sorted.isNominal());
@@ -60,7 +58,7 @@ public class SortVectorTest {
 
     @Test
     public void testSortIndex() {
-        Vector index = new IndexVector("x", 10, 1, -1);
+        Vector index = new IndexVector(10, 1, -1);
         index.setMissing(2);
         index.setMissing(5);
         index.setIndex(0, 1);
@@ -84,7 +82,7 @@ public class SortVectorTest {
 
     @Test
     public void testSortNumeric() {
-        Vector numeric = new NumericVector("x", new double[]{2., 4., 1.2, 1.3, 1.2, 0., 100.});
+        Vector numeric = new NumericVector(new double[]{2., 4., 1.2, 1.3, 1.2, 0., 100.});
 
         assertEquals(7, numeric.getRowCount());
         Vector sort = sort(numeric, numericComparator(numeric, true));
@@ -106,7 +104,7 @@ public class SortVectorTest {
     @Test
     public void testSortNominal() {
         String[] dict = new String[]{"a", "Aa", "b", "c", "Cc"};
-        Vector nominal = new NominalVector("c", 10, dict);
+        Vector nominal = new NominalVector(10, dict);
 
         for (int i = 0; i < 10; i++) {
             nominal.setLabel(i, dict[i % dict.length]);
@@ -139,7 +137,7 @@ public class SortVectorTest {
         persistence.setHasHeader(false);
         persistence.setColSeparator(',');
         persistence.setHasQuotas(false);
-        Frame df = persistence.read("df", Paths.get(SortVectorTest.class.getResource("sorted-frame.csv").toURI()));
+        Frame df = persistence.read(Paths.get(SortVectorTest.class.getResource("sorted-frame.csv").toURI()));
 
         Vector nominal = df.getCol(0);
         Vector index = df.getCol(1);
@@ -175,7 +173,7 @@ public class SortVectorTest {
 
         // numeric
 
-        sort = sort("x", numeric, numericComparator(numeric, true));
+        sort = sort(numeric, numericComparator(numeric, true));
         for (int i = 0; i < sort.getRowCount(); i++) {
             sort.setValue(i, sort.getValue(i) + BaseMath.E);
         }
@@ -187,7 +185,7 @@ public class SortVectorTest {
 
         // index
 
-        sort = sort("x", index, indexComparator(index, true));
+        sort = sort(index, indexComparator(index, true));
         for (int i = 0; i < sort.getRowCount(); i++) {
             sort.setValue(i, sort.getIndex(i) + 10);
         }
@@ -199,7 +197,7 @@ public class SortVectorTest {
 
     @Test
     public void testMissing() {
-        Vector v = new IndexVector("x", 1, 10, 1);
+        Vector v = new IndexVector(1, 10, 1);
         v = sort(v, indexComparator(v, true));
         for (int i = 0; i < 10; i += 3) {
             v.setMissing(i);

@@ -31,9 +31,8 @@ import rapaio.data.Vector;
 
 public class SpearmanRhoCorrelationTest {
 
-    private final Vector iq = new NumericVector("iq", new double[]{106, 86, 100, 101, 99, 103, 97, 113, 112, 110});
-    private final Vector tvHours = new NumericVector("tvHours", new double[]{7, 0, 27, 50, 28, 29, 20, 12, 6, 17});
-
+    private final Vector iq = new NumericVector(new double[]{106, 86, 100, 101, 99, 103, 97, 113, 112, 110});
+    private final Vector tvHours = new NumericVector(new double[]{7, 0, 27, 50, 28, 29, 20, 12, 6, 17});
 
     @Test
     public void testFromWikipedia() {

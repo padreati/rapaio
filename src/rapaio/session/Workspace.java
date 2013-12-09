@@ -17,10 +17,10 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package rapaio.explore;
+package rapaio.session;
 
 import rapaio.graphics.base.Figure;
-import rapaio.io.DataContainerPersistence;
+import rapaio.io.SessionPersistence;
 import rapaio.printer.Printer;
 import rapaio.printer.StandardPrinter;
 
@@ -31,7 +31,7 @@ import java.io.IOException;
  */
 public class Workspace {
 
-    private static DataContainer session = new DataContainer();
+    private static Session session = new Session();
     private static Printer printer = new StandardPrinter();
 
     public static void setPrinter(Printer printer) {
@@ -54,7 +54,7 @@ public class Workspace {
             print("Can't save workspace");
         }
 
-        DataContainerPersistence persistence = new DataContainerPersistence();
+        SessionPersistence persistence = new SessionPersistence();
         try {
             persistence.storeToFile(session, fileName);
             print("workspace saved.");
@@ -68,13 +68,17 @@ public class Workspace {
         if (fileName == null || fileName.isEmpty()) {
             print("Can't load workspace from file.");
         }
-        DataContainerPersistence persistence = new DataContainerPersistence();
+        SessionPersistence persistence = new SessionPersistence();
         try {
             session = persistence.restoreFromFile(fileName);
             print("workspace loaded.");
         } catch (IOException | ClassNotFoundException ex) {
             error("Can't load workspace from file.", ex);
         }
+    }
+    
+    public static Session getSession() {
+        return session;
     }
 
     public static void preparePrinter() {

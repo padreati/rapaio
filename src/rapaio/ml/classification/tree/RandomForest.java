@@ -26,7 +26,7 @@ import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.data.Vector;
 
-import static rapaio.explore.Workspace.*;
+import static rapaio.session.Workspace.*;
 
 import rapaio.filters.RowFilters;
 import rapaio.ml.classification.AbstractClassifier;
@@ -62,6 +62,7 @@ public class RandomForest extends AbstractClassifier {
     private int minNodeSize = 1;
     private double numericSelectionProb = 1.;
 
+    @Override
     public RandomForest newInstance() {
         RandomForest rf = new RandomForest();
         rf.setMcols(getMcols());
@@ -231,12 +232,8 @@ public class RandomForest extends AbstractClassifier {
     }
 
     public void predict(final Frame df, int maxTree) {
-        predict = new NominalVector(classColName, df.getRowCount(), dict);
-        List<Vector> vectors = new ArrayList<>();
-        for (int i = 0; i < dict.length; i++) {
-            vectors.add(new NumericVector(dict[i], new double[df.getRowCount()]));
-        }
-        dist = new SolidFrame("prob", df.getRowCount(), vectors);
+        predict = new NominalVector(df.getRowCount(), dict);
+        dist = Frames.newMatrixFrame(df.getRowCount(), dict);
 
         for (int m = 0; m < min(maxTree, mtrees); m++) {
             Classifier tree = trees.get(m);
@@ -300,9 +297,9 @@ public class RandomForest extends AbstractClassifier {
     private void summaryVariableImportance(StringBuilder sb) {
         sb.append("\nGini variable importance: \n");
         Vector[] vectors = new Vector[2];
-        vectors[0] = new NominalVector("varName", giniImportanceNames.length - 1, giniImportanceNames);
-        vectors[1] = new NumericVector("meanDecrease", new double[giniImportanceNames.length - 1]);
-        Frame f = new SolidFrame("gini", giniImportanceNames.length - 1, vectors);
+        vectors[0] = new NominalVector(giniImportanceNames.length - 1, giniImportanceNames);
+        vectors[1] = new NumericVector(new double[giniImportanceNames.length - 1]);
+        Frame f = new SolidFrame(giniImportanceNames.length - 1, vectors, new String[]{"varName", "meanDecrease"});
         int width = 0;
         int pos = 0;
         for (int i = 0; i < giniImportanceNames.length; i++) {

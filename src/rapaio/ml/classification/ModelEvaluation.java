@@ -22,7 +22,7 @@ package rapaio.ml.classification;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
-import static rapaio.explore.Workspace.print;
+import static rapaio.session.Workspace.print;
 import static rapaio.filters.RowFilters.*;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import rapaio.data.Vector;
 import rapaio.sample.StatSampling;
-import rapaio.ml.classification.stat.ConfusionMatrix;
+import rapaio.core.stat.ConfusionMatrix;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

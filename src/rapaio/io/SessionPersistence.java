@@ -17,21 +17,26 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package rapaio.data;
+package rapaio.io;
 
-import java.util.ArrayList;
-import java.util.List;
+import rapaio.session.Session;
+
+import java.io.*;
 
 /**
- * User: Aurelian Tutuianu <paderati@yahoo.com>
+ * @author Aurelian Tutuianu
  */
-public final class DataFactory {
+public class SessionPersistence {
 
-    public static Frame newMatrixFrame(String name, int rows, String[] colNames) {
-        List<Vector> vectors = new ArrayList<>();
-        for (String colName : colNames) {
-            vectors.add(new NumericVector(colName, new double[rows]));
-        }
-        return new SolidFrame(name, rows, vectors);
+    public Session restoreFromFile(String file) throws IOException, ClassNotFoundException {
+        FileInputStream fileIn = new FileInputStream(file);
+        ObjectInputStream in = new ObjectInputStream(fileIn);
+        return (Session) in.readObject();
+    }
+
+    public void storeToFile(Session session, String file) throws FileNotFoundException, IOException {
+        FileOutputStream fileOut = new FileOutputStream(file);
+        ObjectOutputStream out = new ObjectOutputStream(fileOut);
+        out.writeObject(session);
     }
 }

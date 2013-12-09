@@ -45,12 +45,11 @@ public class NominalVector extends AbstractVector {
     private final String[] terms;
     private final int[] indexes;
 
-    public NominalVector(String name, int size, String[] dict) {
-        this(name, size, Arrays.asList(dict));
+    public NominalVector(int size, String[] dict) {
+        this(size, Arrays.asList(dict));
     }
 
-    public NominalVector(String name, int size, Collection<String> dict) {
-        super(name);
+    public NominalVector(int size, Collection<String> dict) {
         TreeSet<String> copy = new TreeSet<>(dict);
         copy.remove(missingValue);
         terms = new String[copy.size() + 1];

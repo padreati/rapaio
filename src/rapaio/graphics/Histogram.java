@@ -39,7 +39,6 @@ public class Histogram extends Plot {
 
     public Histogram(Vector v, int bins, boolean density, double from, double to) {
         hist = new HistogramBars(this, v, bins, density, from, to);
-        this.setBottomLabel(v.getName());
     }
 
     public int getBins() {

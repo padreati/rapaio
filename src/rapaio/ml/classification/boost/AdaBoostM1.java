@@ -119,12 +119,8 @@ public class AdaBoostM1 extends AbstractClassifier {
 
     public void predict(Frame df, int t) {
 
-        pred = new NominalVector("predict", df.getRowCount(), dict);
-        List<Vector> vectors = new ArrayList<>();
-        for (int i = 0; i < dict.length; i++) {
-            vectors.add(new NumericVector(dict[i], new double[df.getRowCount()]));
-        }
-        dist = new SolidFrame("distribution", df.getRowCount(), vectors);
+        pred = new NominalVector(df.getRowCount(), dict);
+        dist = Frames.newMatrixFrame(df.getRowCount(), dict);
 
         for (int i = 0; i < min(t, h.size()); i++) {
             h.get(i).predict(df);

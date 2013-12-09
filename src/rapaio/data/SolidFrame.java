@@ -17,10 +17,10 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.data;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,8 +36,11 @@ public class SolidFrame extends AbstractFrame {
     private final HashMap<String, Integer> colIndex;
     private final String[] names;
 
-    public SolidFrame(String name, int rows, List<Vector> vectors) {
-        super(name);
+    public SolidFrame(int rows, List<Vector> vectors, List<String> names) {
+        this(rows, vectors, names.toArray(new String[]{}));
+    }
+
+    public SolidFrame(int rows, List<Vector> vectors, String[] names) {
         for (int i = 0; i < vectors.size(); i++) {
             if (vectors.get(i).isMappedVector())
                 throw new IllegalArgumentException("Not allowed mapped vectors in solid frame");
@@ -49,13 +52,13 @@ public class SolidFrame extends AbstractFrame {
 
         for (int i = 0; i < vectors.size(); i++) {
             this.vectors[i] = vectors.get(i);
-            this.colIndex.put(vectors.get(i).getName(), i);
-            names[i] = vectors.get(i).getName();
+            this.colIndex.put(names[i], i);
+            this.names[i] = names[i];
         }
     }
 
-    public SolidFrame(String name, int rows, Vector[] vectors) {
-        this(name, rows, Arrays.asList(vectors));
+    public SolidFrame(int rows, Vector[] vectors, String[] names) {
+        this(rows, Arrays.asList(vectors), names);
     }
 
     @Override

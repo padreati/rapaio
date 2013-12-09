@@ -41,11 +41,11 @@ public class BarChart extends BaseFigure {
     private double[] totals;
 
     public BarChart(Vector category) {
-        this(category, new NominalVector("", category.getRowCount(), new HashSet<String>()));
+        this(category, new NominalVector(category.getRowCount(), new HashSet<String>()));
     }
 
     public BarChart(Vector category, Vector condition) {
-        this(category, condition, new IndexVector("count", category.getRowCount(), 1));
+        this(category, condition, new IndexVector(category.getRowCount(), 1));
     }
 
     public BarChart(Vector category, Vector condition, Vector numeric) {
@@ -69,10 +69,7 @@ public class BarChart extends BaseFigure {
         bottomMarkers = true;
 
         int shift = 9;
-        opt().setColorIndex(new IndexVector("colors", shift, condition.getDictionary().length + shift - 1, 1));
-
-        this.setLeftLabel(numeric.getName());
-        this.setBottomLabel(category.getName());
+        opt().setColorIndex(new IndexVector(shift, condition.getDictionary().length + shift - 1, 1));
     }
 
     public void useDensity(boolean density) {

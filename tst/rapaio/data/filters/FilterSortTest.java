@@ -37,7 +37,7 @@ public class FilterSortTest {
 
     @Test
     public void testValueVector() {
-        Vector unsorted = new NumericVector("test", new double[]{0., 1., 2., 3., 4., 5., 6.});
+        Vector unsorted = new NumericVector(new double[]{0., 1., 2., 3., 4., 5., 6.});
         Vector sorted = sort(unsorted, true);
         for (int i = 1; i < sorted.getRowCount(); i++) {
             assertTrue(sorted.getValue(i - 1) <= sorted.getValue(i));
@@ -46,7 +46,7 @@ public class FilterSortTest {
 
     @Test
     public void testValueVectorWithNA() {
-        Vector unsorted = new NumericVector("test", new double[]{Double.NaN, 0., Double.NaN, 1., Double.NaN, 2.});
+        Vector unsorted = new NumericVector(new double[]{Double.NaN, 0., Double.NaN, 1., Double.NaN, 2.});
         Vector sorted = sort(unsorted);
         for (int i = 0; i < 3; i++) {
             assert (sorted.isMissing(i));
@@ -55,7 +55,7 @@ public class FilterSortTest {
 
     @Test
     public void testNominalVector() {
-        Vector unsorted = new NominalVector("test", 3, Arrays.asList(new String[]{"ana", "vasile", "ion"}));
+        Vector unsorted = new NominalVector(3, Arrays.asList(new String[]{"ana", "vasile", "ion"}));
         unsorted.setLabel(0, "ana");
         unsorted.setLabel(1, "vasile");
         unsorted.setLabel(2, "ion");
@@ -81,7 +81,7 @@ public class FilterSortTest {
 
     @Test
     public void testNominalVectorWithNA() {
-        Vector unsorted = new NominalVector("test", 3, Arrays.asList(new String[]{"ana", "vasile", "ion"}));
+        Vector unsorted = new NominalVector(3, Arrays.asList(new String[]{"ana", "vasile", "ion"}));
         unsorted.setLabel(0, "ana");
         unsorted.setLabel(1, "vasile");
         unsorted.setLabel(2, "?");
@@ -97,6 +97,5 @@ public class FilterSortTest {
         assertEquals("vasile", sorted.getLabel(0));
         assertEquals("ana", sorted.getLabel(1));
         assertEquals("?", sorted.getLabel(2));
-
     }
 }

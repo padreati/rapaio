@@ -34,11 +34,6 @@ import java.util.List;
 public interface Frame extends Serializable {
 
     /**
-     * Returns the name of the frame, used mostly by exploring facilities.
-     */
-    String getName();
-
-    /**
      * Number of observations contained in frame. Observations are accessed by position.
      *
      * @return number of observations

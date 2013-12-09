@@ -21,9 +21,8 @@ package rapaio.tutorial.pages;
 
 import rapaio.data.*;
 import rapaio.datasets.Datasets;
-import rapaio.explore.Summary;
-
-import static rapaio.explore.Workspace.*;
+import rapaio.session.Summary;
+import static rapaio.session.Workspace.*;
 
 import rapaio.filters.ColFilters;
 import rapaio.graphics.Plot;
@@ -153,9 +152,9 @@ public class ClassificationWithRF implements TutorialPage {
 
 
         int pos = 0;
-        final Vector index = new IndexVector("number of trees", 400);
-        final Vector accuracy = new NumericVector("test error", 400);
-        final Vector oob = new NumericVector("oob error", 400);
+        final Vector index = new IndexVector(400);
+        final Vector accuracy = new NumericVector(400);
+        final Vector oob = new NumericVector(400);
         for (int mtree = 1; mtree < 200; mtree += 10) {
             final int mt = mtree;
             RandomForest rf = new RandomForest() {{
@@ -182,6 +181,7 @@ public class ClassificationWithRF implements TutorialPage {
             new Points(this, index, oob);
 
             setLeftLabel("test (blue), oob (black)");
+            setBottomLabel("number of trees");
             setTitle("Accuracy errors (% misclassified)");
             opt().setYRange(0, 0.4);
         }}, 600, 400);
@@ -229,9 +229,9 @@ public class ClassificationWithRF implements TutorialPage {
                 "prediction and the compensation is better accuracy.");
 
         pos = 0;
-        final Vector index1 = new IndexVector("mtree", 10);
-        final Vector accuracy1 = new NumericVector("test error", 10);
-        final Vector oob1 = new NumericVector("oob error", 10);
+        final Vector index1 = new IndexVector(10);
+        final Vector accuracy1 = new NumericVector(10);
+        final Vector oob1 = new NumericVector(10);
         for (int mcol = 1; mcol <= 10; mcol++) {
 
             final int mmcol = mcol;

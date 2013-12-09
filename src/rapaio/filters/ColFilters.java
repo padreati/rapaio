@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.filters;
 
 import rapaio.core.ColRange;
@@ -39,14 +40,16 @@ public final class ColFilters {
     /**
      * Remove columns specified in a column range from a frame.
      *
-     * @param df       frame
+     * @param df frame
      * @param colRange column range
-     * @return original frame without columns specified in {@param colRange}
+     * @return original frame without columns specified in {
+     * @param colRange}
      */
     public static Frame removeCols(Frame df, String colRange) {
         ColRange range = new ColRange(colRange);
         final List<Integer> indexes = range.parseColumnIndexes(df);
         Vector[] vectors = new Vector[df.getColCount() - indexes.size()];
+        String[] names = new String[df.getColCount() - indexes.size()];
         int posIndexes = 0;
         int posFinal = 0;
         for (int i = 0; i < df.getColCount(); i++) {
@@ -55,30 +58,34 @@ public final class ColFilters {
                 continue;
             }
             vectors[posFinal] = df.getCol(i);
+            names[posFinal] = df.getColNames()[i];
             posFinal++;
         }
-        return new SolidFrame(df.getName(), df.getRowCount(), vectors);
+        return new SolidFrame(df.getRowCount(), vectors, names);
     }
 
     /**
      * Remove columns from a frame by specifying which columns to keep.
      *
-     * @param df       frame
+     * @param df frame
      * @param colRange column range
-     * @return original frame which has only columns specified in {@param colRange}
+     * @return original frame which has only columns specified in {
+     * @param colRange}
      */
     public static Frame retainCols(Frame df, String colRange) {
         ColRange range = new ColRange(colRange);
         final List<Integer> indexes = range.parseColumnIndexes(df);
         Vector[] vectors = new Vector[indexes.size()];
+        String[] names = new String[indexes.size()];
         int posIndexes = 0;
         for (int i = 0; i < df.getColCount(); i++) {
             if (posIndexes < indexes.size() && i == indexes.get(posIndexes)) {
                 vectors[posIndexes] = df.getCol(i);
+                names[posIndexes] = df.getColNames()[i];
                 posIndexes++;
             }
         }
-        return new SolidFrame(df.getName(), df.getRowCount(), vectors);
+        return new SolidFrame(df.getRowCount(), vectors, names);
     }
 
     /**
@@ -92,13 +99,16 @@ public final class ColFilters {
             }
         }
         Vector[] vectors = new Vector[len];
+        String[] names = new String[len];
         int pos = 0;
         for (int i = 0; i < df.getColCount(); i++) {
             if (df.getCol(i).isNumeric()) {
-                vectors[pos++] = df.getCol(i);
+                vectors[pos] = df.getCol(i);
+                names[pos] = df.getColNames()[i];
+                pos++;
             }
         }
-        return new SolidFrame(df.getName(), df.getRowCount(), vectors);
+        return new SolidFrame(df.getRowCount(), vectors, names);
     }
 
     /**
@@ -106,12 +116,14 @@ public final class ColFilters {
      */
     public static Frame retainNominal(Frame df) {
         List<Vector> vectors = new ArrayList<>();
+        List<String> names = new ArrayList<>();
         for (int i = 0; i < df.getColCount(); i++) {
             if (df.getCol(i).isNominal()) {
                 vectors.add(df.getCol(i));
+                names.add(df.getColNames()[i]);
             }
         }
-        return new SolidFrame(df.getName(), df.getRowCount(), vectors);
+        return new SolidFrame(df.getRowCount(), vectors, names);
     }
 
     public static Frame discretizeNumericToNominal(Frame df, ColRange colRange, int bins, boolean useQuantiles) {
@@ -132,20 +144,23 @@ public final class ColFilters {
             dict.add(String.valueOf(i + 1));
         }
         List<Vector> vectors = new ArrayList<>();
+        List<String> names = new ArrayList<>();
         for (int i = 0; i < df.getColCount(); i++) {
             if (!colSet.contains(i)) {
                 vectors.add(df.getCol(i));
                 continue;
             }
             Vector origin = df.getCol(i);
-            Vector discrete = new NominalVector(origin.getName(), origin.getRowCount(), dict);
+            Vector discrete = new NominalVector(origin.getRowCount(), dict);
             if (!useQuantiles) {
                 Vector sorted = RowFilters.sort(df.getCol(i));
                 int width = (int) Math.ceil(df.getRowCount() / (1. * bins));
                 for (int j = 0; j < bins; j++) {
                     for (int k = 0; k < width; k++) {
-                        if (j * width + k >= df.getRowCount()) break;
-                        if (sorted.isMissing(j * width + k)) continue;
+                        if (j * width + k >= df.getRowCount())
+                            break;
+                        if (sorted.isMissing(j * width + k))
+                            continue;
                         int rowId = sorted.getRowId(j * width + k);
                         discrete.setLabel(rowId, String.valueOf(j + 1));
                     }
@@ -157,7 +172,8 @@ public final class ColFilters {
                 }
                 double[] q = new Quantiles(origin, p).getValues();
                 for (int j = 0; j < origin.getRowCount(); j++) {
-                    if (origin.isMissing(j)) continue;
+                    if (origin.isMissing(j))
+                        continue;
                     double value = origin.getValue(j);
                     int index = Arrays.binarySearch(q, value);
                     if (index < 0) {
@@ -169,7 +185,8 @@ public final class ColFilters {
                 }
             }
             vectors.add(discrete);
+            names.add(df.getColNames()[i]);
         }
-        return new SolidFrame(df.getName(), df.getRowCount(), vectors);
+        return new SolidFrame(df.getRowCount(), vectors, names);
     }
 }

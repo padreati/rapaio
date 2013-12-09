@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.correlation;
 
 import static rapaio.core.BaseMath.max;
@@ -24,8 +25,8 @@ import rapaio.core.Summarizable;
 import rapaio.data.Frame;
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
-import static rapaio.explore.Workspace.code;
-import static rapaio.explore.Workspace.getPrinter;
+import static rapaio.session.Workspace.code;
+import static rapaio.session.Workspace.getPrinter;
 import static rapaio.filters.RowFilters.*;
 
 import java.util.Arrays;
@@ -35,21 +36,27 @@ import java.util.Arrays;
  * <p/>
  * You can compute coefficient for multiple vectors at the same time.
  * <p/>
- * See:
- * http://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient
+ * See: http://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient
  * <p/>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class SpearmanRhoCorrelation implements Summarizable {
+
+    private final String[] names;
     private final Vector[] vectors;
     private final double[][] rho;
 
     public SpearmanRhoCorrelation(Vector... vectors) {
+        this.names = new String[vectors.length];
+        for (int i = 0; i < names.length; i++) {
+            names[i] = "V" + i;
+        }
         this.vectors = vectors;
         this.rho = compute();
     }
 
     public SpearmanRhoCorrelation(Frame df) {
+        this.names = df.getColNames();
         this.vectors = new Vector[df.getColCount()];
         for (int i = 0; i < df.getColCount(); i++) {
             vectors[i] = df.getCol(i);
@@ -62,7 +69,7 @@ public class SpearmanRhoCorrelation implements Summarizable {
         Vector[] ranks = new Vector[vectors.length];
         for (int i = 0; i < sorted.length; i++) {
             sorted[i] = sort(vectors[i]);
-            ranks[i] = new NumericVector(vectors[i].getName(), vectors[i].getRowCount());
+            ranks[i] = new NumericVector(vectors[i].getRowCount());
         }
 
         // compute ranks
@@ -105,7 +112,7 @@ public class SpearmanRhoCorrelation implements Summarizable {
     private void summaryOne() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("spearman[%s] - Spearman's rank correlation coefficient\n",
-                vectors[0].getName()));
+                names[0]));
         sb.append("1\n");
         sb.append("spearman's rank correlation is 1 for identical vectors");
         code(sb.toString());
@@ -114,17 +121,13 @@ public class SpearmanRhoCorrelation implements Summarizable {
     private void summaryTwo() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("spearman[%s, %s] - Spearman's rank correlation coefficient\n",
-                vectors[0].getName(), vectors[1].getName()));
+                names[0], names[1]));
         sb.append(String.format("%.6f", rho[0][1]));
         code(sb.toString());
     }
 
     private void summaryMore() {
         StringBuilder sb = new StringBuilder();
-        String[] names = new String[vectors.length];
-        for (int i = 0; i < names.length; i++) {
-            names[i] = vectors[i].getName();
-        }
         sb.append(String.format("spearman[%s] - Spearman's rank correlation coefficient\n",
                 Arrays.deepToString(names)));
 
@@ -132,7 +135,7 @@ public class SpearmanRhoCorrelation implements Summarizable {
         table[0][0] = "";
         for (int i = 1; i < vectors.length + 1; i++) {
             table[0][i] = i + ".";
-            table[i][0] = i + "." + vectors[i - 1].getName();
+            table[i][0] = i + "." + names[i - 1];
             for (int j = 1; j < vectors.length + 1; j++) {
                 table[i][j] = String.format("%.6f", rho[i - 1][j - 1]);
                 if (i == j) {

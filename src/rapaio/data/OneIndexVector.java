@@ -27,11 +27,7 @@ package rapaio.data;
 public class OneIndexVector extends IndexVector {
 
     public OneIndexVector(int index) {
-        this("", index);
-    }
-
-    public OneIndexVector(String name, int index) {
-        super(name, 1);
+        super(1);
         setIndex(0, index);
     }
 }

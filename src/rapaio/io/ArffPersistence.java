@@ -59,6 +59,7 @@ public class ArffPersistence {
             String line;
 
             ArrayList<Vector> vectors = new ArrayList<>();
+            ArrayList<String> names = new ArrayList<>();
             HashMap<String, List<String>> nomValueMap = new HashMap<>();
             ArrayList<String> data = new ArrayList<>();
 
@@ -94,11 +95,11 @@ public class ArffPersistence {
                         } else {
                             variableName = fullTrim(line.trim().replaceAll("\\s+.*", ""));
                         }
-
+                        names.add(variableName);
 
                         String[] tmp = line.split("\\s+", 2);
                         if (tmp[1].trim().equalsIgnoreCase("real") || tmp[1].trim().equals("isNumeric") || tmp[1].trim().startsWith("integer")) {
-                            vectors.add(new NumericVector(variableName, 0));
+                            vectors.add(new NumericVector(0));
                         } else//Not correct, but we arent supporting anything other than real and categorical right now
                         {
                             String cats = tmp[1].replace("{", "").replace("}", "").trim();
@@ -111,7 +112,7 @@ public class ArffPersistence {
                                 tempMap.add(fullTrim(catVal));
                             }
                             nomValueMap.put(variableName, tempMap);
-                            vectors.add(new NominalVector(variableName, 0, tempMap));
+                            vectors.add(new NominalVector(0, tempMap));
                         }
                         continue;
                     }
@@ -119,16 +120,16 @@ public class ArffPersistence {
                 data.add(line.trim());
             }
 
-            Vector[] newvectors = new Vector[vectors.size()];
-            for (int i = 0; i < newvectors.length; i++) {
+            List<Vector> newvectors = new ArrayList();
+            for (int i = 0; i < vectors.size(); i++) {
                 if (vectors.get(i) instanceof NumericVector) {
-                    newvectors[i] = new NumericVector(vectors.get(i).getName(), data.size());
+                    newvectors.add(new NumericVector(data.size()));
                 }
                 if (vectors.get(i) instanceof NominalVector) {
-                    newvectors[i] = new NominalVector(vectors.get(i).getName(), data.size(), nomValueMap.get(vectors.get(i).getName()));
+                    newvectors.add(new NominalVector(data.size(), nomValueMap.get(names.get(i))));
                 }
             }
-            Frame df = new SolidFrame(name, data.size(), newvectors);
+            Frame df = new SolidFrame(data.size(), newvectors, names);
 
             // process data 
             for (int i = 0; i < data.size(); i++) {

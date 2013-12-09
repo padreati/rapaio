@@ -17,19 +17,22 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package rapaio.explore;
+
+package rapaio.session;
 
 import rapaio.data.Frame;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author tutuianu
  */
-public class DataContainer implements Serializable {
+public class Session implements Serializable {
 
-    private HashMap<String, Frame> frames = new HashMap<>();
+    private final HashMap<String, Frame> frames = new HashMap<>();
+    private final Map<Class<?>, Map<String, Object>> map = new HashMap<>();
 
     public Frame getFrame(String name) {
         return frames.get(name);
@@ -43,5 +46,19 @@ public class DataContainer implements Serializable {
         for (String name : names) {
             frames.remove(name);
         }
+    }
+
+    public <T> T get(Class<T> clazz, String name) {
+        if (!map.containsKey(clazz)) {
+            return null;
+        }
+        return (T) map.get(clazz).get(name);
+    }
+
+    public <T> void put(Class<T> clazz, String name, T value) {
+        if (!map.containsKey(clazz)) {
+            map.put(clazz, new HashMap<String, Object>());
+        }
+        map.get(clazz).put(name, value);
     }
 }

@@ -30,7 +30,7 @@ public class IndexVectorTest {
 
     @Test
     public void smokeTest() {
-        Vector index = new IndexVector("x", 1);
+        Vector index = new IndexVector(1);
         assertTrue(index.isNumeric());
         assertFalse(index.isNominal());
 
@@ -42,11 +42,10 @@ public class IndexVectorTest {
 
     @Test
     public void testEmptyIndex() {
-        Vector index = new IndexVector("test", 0);
+        Vector index = new IndexVector(0);
         assertEquals(0, index.getRowCount());
-        assertEquals("test", index.getName());
 
-        index = new IndexVector("test", 10);
+        index = new IndexVector(10);
         for (int i = 0; i < 10; i++) {
             assertEquals(0, index.getIndex(i));
         }
@@ -54,7 +53,7 @@ public class IndexVectorTest {
 
     @Test
     public void testFillVector() {
-        Vector index = new IndexVector("fill", 10, -1);
+        Vector index = new IndexVector(10, -1);
         assertEquals(10, index.getRowCount());
         for (int i = 0; i < index.getRowCount(); i++) {
             assertEquals(-1, index.getIndex(i));
@@ -63,7 +62,7 @@ public class IndexVectorTest {
 
     @Test
     public void testSequenceVector() {
-        Vector index = new IndexVector("seq", 1, 10, 1);
+        Vector index = new IndexVector(1, 10, 1);
         assertEquals(10, index.getRowCount());
         for (int i = 0; i < index.getRowCount(); i++) {
             assertEquals(i + 1, index.getIndex(i));
@@ -71,7 +70,7 @@ public class IndexVectorTest {
 
         boolean exceptional = false;
         try {
-            index = new IndexVector("seq", 1, 1, 0);
+            index = new IndexVector(1, 1, 0);
         } catch (Throwable ex) {
             exceptional = true;
         }
@@ -79,7 +78,7 @@ public class IndexVectorTest {
 
         exceptional = false;
         try {
-            new IndexVector("seq", 1, 2, 0);
+            new IndexVector(1, 2, 0);
         } catch (Throwable ex) {
             exceptional = true;
         }
@@ -90,7 +89,7 @@ public class IndexVectorTest {
     @Test
     public void testSetterGetter() {
 
-        Vector index = new IndexVector("fill", 3, 0);
+        Vector index = new IndexVector(3, 0);
 
         assertEquals(0, index.getIndex(0));
         index.setIndex(0, 1);
@@ -127,7 +126,7 @@ public class IndexVectorTest {
 
     @Test
     public void testMissing() {
-        Vector index = new IndexVector("miss", 1, 10, 1);
+        Vector index = new IndexVector(1, 10, 1);
         for (int i = 0; i < index.getRowCount(); i++) {
             assertTrue(!index.isMissing(i));
         }
@@ -146,8 +145,7 @@ public class IndexVectorTest {
         assertEquals(1, one.getRowCount());
         assertEquals(2, one.getIndex(0));
 
-        one = new OneIndexVector("test", 3);
-        assertEquals("test", one.getName());
+        one = new OneIndexVector(3);
         assertEquals(1, one.getRowCount());
         assertEquals(3, one.getIndex(0));
     }

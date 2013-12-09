@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.data;
 
 /**
@@ -27,10 +28,6 @@ package rapaio.data;
 public class OneNumericVector extends NumericVector {
 
     public OneNumericVector(double value) {
-        this("", value);
-    }
-
-    public OneNumericVector(String name, double value) {
-        super(name, new double[]{value});
+        super(new double[]{value});
     }
 }

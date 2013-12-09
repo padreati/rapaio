@@ -58,7 +58,7 @@ public class StatSampling {
             for (int j = 0; j < rowCounts[i]; j++) {
                 mapping.add(shuffle.getRowId(len + j));
             }
-            result.add(new MappedFrame(shuffle.getSourceFrame().getName(), shuffle.getSourceFrame(), new Mapping(mapping)));
+            result.add(new MappedFrame(shuffle.getSourceFrame(), new Mapping(mapping)));
             len += rowCounts[i];
         }
         if (len < shuffle.getRowCount()) {
@@ -66,7 +66,7 @@ public class StatSampling {
             for (int j = len; j < shuffle.getRowCount(); j++) {
                 mapping.add(shuffle.getRowId(j));
             }
-            result.add(new MappedFrame(shuffle.getSourceFrame().getName(), shuffle.getSourceFrame(), new Mapping(mapping)));
+            result.add(new MappedFrame(shuffle.getSourceFrame(), new Mapping(mapping)));
         }
         return result;
     }

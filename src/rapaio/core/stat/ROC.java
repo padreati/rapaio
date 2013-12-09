@@ -23,11 +23,9 @@ import rapaio.core.Summarizable;
 import rapaio.data.*;
 
 import static rapaio.core.BaseMath.*;
-import static rapaio.explore.Workspace.*;
+import static rapaio.session.Workspace.*;
 import static rapaio.filters.RowFilters.*;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -41,7 +39,7 @@ public class ROC implements Summarizable {
 
     public ROC(Vector score, Vector actual, Vector predict) {
         this.score = score;
-        this.classes = new IndexVector("class", actual.getRowCount());
+        this.classes = new IndexVector(actual.getRowCount());
         for (int i = 0; i < actual.getRowCount(); i++) {
             if (actual.getLabel(i).equals(predict.getLabel(i))) {
                 classes.setIndex(i, 1);
@@ -58,7 +56,7 @@ public class ROC implements Summarizable {
 
     public ROC(Vector score, Vector actual, String label) {
         this.score = score;
-        this.classes = new IndexVector("class", actual.getRowCount());
+        this.classes = new IndexVector(actual.getRowCount());
         for (int i = 0; i < actual.getRowCount(); i++) {
             if (actual.getLabel(i).equals(label)) {
                 classes.setIndex(i, 1);
@@ -98,7 +96,7 @@ public class ROC implements Summarizable {
                 len++;
             }
         }
-        data = DataFactory.newMatrixFrame("data", len, new String[]{"threshold", "fpr", "tpr", "acc"});
+        data = Frames.newMatrixFrame(len, new String[]{"threshold", "fpr", "tpr", "acc"});
         prev = Double.POSITIVE_INFINITY;
         int pos = 0;
 

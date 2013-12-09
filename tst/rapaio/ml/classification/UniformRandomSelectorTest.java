@@ -35,17 +35,21 @@ public class UniformRandomSelectorTest {
 
     @Test
     public void testNaive() {
-        Frame df = new SolidFrame("test", 0, new Vector[]{
-                new OneIndexVector("a", 1),
-                new OneIndexVector("b", 1),
-                new OneIndexVector("c", 1),
-                new OneIndexVector("d", 1),
-                new OneIndexVector("e", 1),
-                new OneIndexVector("f", 1),
-                new OneIndexVector("g", 1),
-                new OneIndexVector("h", 1),
-                new OneIndexVector("class", 1),
-        });
+        Frame df = new SolidFrame(
+                0,
+                new Vector[]{
+                    new OneIndexVector(1),
+                    new OneIndexVector(1),
+                    new OneIndexVector(1),
+                    new OneIndexVector(1),
+                    new OneIndexVector(1),
+                    new OneIndexVector(1),
+                    new OneIndexVector(1),
+                    new OneIndexVector(1),
+                    new OneIndexVector(1)},
+                new String[]{
+                    "a", "b", "c", "d", "e", "f", "g", "h", "class"
+                });
         String classColName = "class";
         int mcols = 4;
 
@@ -73,9 +77,6 @@ public class UniformRandomSelectorTest {
             freq[i] /= total;
             System.out.println(String.format("%.6f", freq[i]));
         }
-
-
-
 
     }
 }

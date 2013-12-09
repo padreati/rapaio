@@ -22,7 +22,7 @@ package rapaio.core.stat;
 import rapaio.core.BaseMath;
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
-import static rapaio.explore.Workspace.*;
+import static rapaio.session.Workspace.*;
 
 import java.util.Arrays;
 
@@ -79,6 +79,6 @@ public class Mode implements Summarizable {
 
     @Override
     public void summary() {
-        code(String.format("mode[\"%s\"]=%s", vector.getName(), Arrays.deepToString(modes)));
+        code(String.format("mode\n%s", Arrays.deepToString(modes)));
     }
 }

@@ -18,12 +18,10 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classification.stat;
+package rapaio.core;
 
-import org.junit.After;
-import org.junit.Before;
+import rapaio.core.stat.ConfusionMatrix;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import rapaio.data.NominalVector;
 import rapaio.data.Vector;
 
@@ -35,8 +33,8 @@ public class ConfusionMatrixTest {
 
     @Test
     public void hello() {
-        Vector actual = new NominalVector("actual", 11, new String[]{"cat", "dog", "mouse"});
-        Vector predict = new NominalVector("predict", 11, new String[]{"cat", "dog", "mouse"});
+        Vector actual = new NominalVector(11, new String[]{"cat", "dog", "mouse"});
+        Vector predict = new NominalVector(11, new String[]{"cat", "dog", "mouse"});
 
         actual.setLabel(0, "cat");
         predict.setLabel(0, "cat");

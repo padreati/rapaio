@@ -40,12 +40,12 @@ public abstract class CoreStatTestUtil {
     public CoreStatTestUtil() throws IOException, URISyntaxException {
         CsvPersistence p = new CsvPersistence();
         p.setHasHeader(false);
-        df = p.read("core_stat", Paths.get(getClass().getResource("core_stat.csv").toURI()));
+        df = p.read(Paths.get(getClass().getResource("core_stat.csv").toURI()));
         Vector[] vectors = new Vector[df.getColCount()];
         for (int i = 0; i < vectors.length; i++) {
-            vectors[i] = BaseFilters.toNumeric(df.getCol(i).getName(), df.getCol(i));
+            vectors[i] = BaseFilters.toNumeric(df.getCol(i));
         }
-        df = new SolidFrame(df.getName(), df.getRowCount(), vectors);
+        df = new SolidFrame(df.getRowCount(), vectors, df.getColNames());
     }
 
     public Frame getDataFrame() {

@@ -17,12 +17,11 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.filters;
 
 import rapaio.data.*;
 
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Provides filters for type conversion, metadata changing.
@@ -30,105 +29,6 @@ import java.util.List;
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public final class BaseFilters {
-
-    private BaseFilters() {
-    }
-
-    /**
-     * Renames a vector.
-     *
-     * @param vector original vector
-     * @param name   new name for the vector
-     * @return a wrapped vector which is like the original, with a different name
-     */
-    public static Vector renameVector(final Vector vector, final String name) {
-        return new Vector() {
-            @Override
-            public boolean isNumeric() {
-                return vector.isNumeric();
-            }
-
-            @Override
-            public boolean isNominal() {
-                return vector.isNominal();
-            }
-
-            @Override
-            public boolean isMappedVector() {
-                return vector.isMappedVector();
-            }
-
-            @Override
-            public Vector getSourceVector() {
-                return vector.getSourceVector();
-            }
-
-            @Override
-            public Mapping getMapping() {
-                return vector.getMapping();
-            }
-
-            @Override
-            public String getName() {
-                return name;
-            }
-
-            @Override
-            public int getRowCount() {
-                return vector.getRowCount();
-            }
-
-            @Override
-            public int getRowId(int row) {
-                return vector.getRowId(row);
-            }
-
-            @Override
-            public double getValue(int row) {
-                return vector.getValue(row);
-            }
-
-            @Override
-            public void setValue(int row, double value) {
-                vector.setValue(row, value);
-            }
-
-            @Override
-            public int getIndex(int row) {
-                return vector.getIndex(row);
-            }
-
-            @Override
-            public void setIndex(int row, int value) {
-                vector.setIndex(row, value);
-            }
-
-            @Override
-            public String getLabel(int row) {
-                return vector.getLabel(row);
-            }
-
-            @Override
-            public void setLabel(int row, String value) {
-                vector.setLabel(row, value);
-            }
-
-            @Override
-            public String[] getDictionary() {
-                return vector.getDictionary();
-            }
-
-            @Override
-            public boolean isMissing(int row) {
-                return vector.isMissing(row);
-            }
-
-            @Override
-            public void setMissing(int row) {
-                vector.setMissing(row);
-            }
-        };
-    }
 
     /**
      * Convert to isNumeric values all the columns which are isNominal.
@@ -141,9 +41,9 @@ public final class BaseFilters {
     public static Frame toNumeric(Frame df) {
         Vector[] vectors = new Vector[df.getColCount()];
         for (int i = 0; i < vectors.length; i++) {
-            vectors[i] = toNumeric(df.getCol(i).getName(), df.getCol(i));
+            vectors[i] = toNumeric(df.getCol(i));
         }
-        return new SolidFrame(df.getName(), df.getRowCount(), vectors);
+        return new SolidFrame(df.getRowCount(), vectors, df.getColNames());
     }
 
     /**
@@ -153,15 +53,14 @@ public final class BaseFilters {
      * If the input getValue is already a isNumeric vector, the input vector is
      * returned
      *
-     * @param name
-     * @param v    input vector
+     * @param v input vector
      * @return converted getValue vector
      */
-    public static Vector toNumeric(String name, Vector v) {
+    public static Vector toNumeric(Vector v) {
         if (v.isNumeric()) {
             return v;
         }
-        Vector result = new NumericVector(name, v.getRowCount());
+        Vector result = new NumericVector(v.getRowCount());
         for (int i = 0; i < result.getRowCount(); i++) {
             if (v.isMissing(i)) {
                 continue;
@@ -176,8 +75,8 @@ public final class BaseFilters {
         return result;
     }
 
-    public static Vector toIndex(String name, Vector v) {
-        Vector result = new IndexVector(name, v.getRowCount());
+    public static Vector toIndex(Vector v) {
+        Vector result = new IndexVector(v.getRowCount());
         for (int i = 0; i < v.getRowCount(); i++) {
             if (v.isMissing(i)) {
                 continue;

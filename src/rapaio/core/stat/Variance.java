@@ -23,7 +23,7 @@ import rapaio.core.Summarizable;
 import rapaio.data.Vector;
 
 import static rapaio.core.BaseMath.pow;
-import static rapaio.explore.Workspace.*;
+import static rapaio.session.Workspace.*;
 
 /**
  * Compensated version of the algorithm for calculation of
@@ -75,7 +75,7 @@ public class Variance implements Summarizable {
 
     @Override
     public void summary() {
-        code(String.format("variance[\"%s\"]\n%.10f", vector.getName(), value));
+        code(String.format("variance\n%.10f", value));
     }
 
 }

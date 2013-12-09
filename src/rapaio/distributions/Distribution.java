@@ -84,7 +84,7 @@ public abstract class Distribution {
     abstract public double max();
 
     public NumericVector sample(int n) {
-        NumericVector samples = new NumericVector("rapaio/tutorial", n);
+        NumericVector samples = new NumericVector(n);
         for (int i = 0; i < samples.getRowCount(); i++) {
             samples.setValue(i, quantile(RandomSource.nextDouble()));
         }
