@@ -25,8 +25,8 @@ import rapaio.core.Summarizable;
 import rapaio.data.Frame;
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
-import static rapaio.session.Workspace.code;
-import static rapaio.session.Workspace.getPrinter;
+import static rapaio.workspace.Workspace.code;
+import static rapaio.workspace.Workspace.getPrinter;
 import static rapaio.filters.RowFilters.*;
 
 import java.util.Arrays;

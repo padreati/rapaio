@@ -25,7 +25,7 @@ import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import rapaio.data.NominalVector;
-import rapaio.session.Workspace;
+import rapaio.workspace.Workspace;
 import rapaio.filters.NominalFilters;
 import rapaio.ml.classification.AbstractClassifier;
 import rapaio.ml.classification.Classifier;

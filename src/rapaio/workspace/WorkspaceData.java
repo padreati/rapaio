@@ -18,33 +18,44 @@
  *    limitations under the License.
  */
 
-package rapaio.session;
+package rapaio.workspace;
 
 import rapaio.data.Frame;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author tutuianu
  */
-public class Session implements Serializable {
+public class WorkspaceData implements Serializable {
 
     private final HashMap<String, Frame> frames = new HashMap<>();
     private final Map<Class<?>, Map<String, Object>> map = new HashMap<>();
+    private final List<WorkspaceDataListener> listeners = new LinkedList<>();
 
     public Frame getFrame(String name) {
         return frames.get(name);
     }
 
     public Frame putFrame(String name, Frame df) {
-        return frames.put(name, df);
+        Frame prev = frames.put(name, df);
+        for (WorkspaceDataListener listener : listeners) {
+            listener.onPutFrames(name);
+        }
+        return prev;
     }
 
-    public void dropFrames(String... names) {
+    public void removeFrames(String... names) {
         for (String name : names) {
             frames.remove(name);
+        }
+        for (WorkspaceDataListener listener : listeners) {
+            listener.onRemoveFrames(names);
         }
     }
 
@@ -60,5 +71,17 @@ public class Session implements Serializable {
             map.put(clazz, new HashMap<String, Object>());
         }
         map.get(clazz).put(name, value);
+    }
+
+    public void addListener(WorkspaceDataListener listener) {
+        listeners.add(listener);
+    }
+
+    public Collection<WorkspaceDataListener> getListeners() {
+        return listeners;
+    }
+    
+    public void clearListeners() {
+        listeners.clear();
     }
 }

@@ -19,7 +19,7 @@
  */
 package rapaio.tutorial;
 
-import static rapaio.session.Workspace.*;
+import static rapaio.workspace.Workspace.*;
 
 import rapaio.printer.HTMLPrinter;
 import rapaio.tutorial.pages.*;

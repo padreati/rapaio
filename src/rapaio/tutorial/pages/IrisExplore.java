@@ -22,14 +22,14 @@ package rapaio.tutorial.pages;
 import rapaio.data.Frame;
 import rapaio.data.OneIndexVector;
 import rapaio.datasets.Datasets;
-import rapaio.session.Summary;
+import rapaio.workspace.Summary;
 import rapaio.graphics.Histogram;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;
 import rapaio.printer.HTMLPrinter;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import static rapaio.session.Workspace.*;
+import static rapaio.workspace.Workspace.*;
 import rapaio.printer.Printer;
 
 /**

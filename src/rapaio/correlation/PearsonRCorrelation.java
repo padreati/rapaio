@@ -27,7 +27,7 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.Vector;
 
-import static rapaio.session.Workspace.*;
+import static rapaio.workspace.Workspace.*;
 
 import java.util.Arrays;
 

@@ -22,7 +22,7 @@ package rapaio.core.stat;
 import rapaio.core.BaseMath;
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
-import static rapaio.session.Workspace.*;
+import static rapaio.workspace.Workspace.*;
 
 import java.util.Arrays;
 

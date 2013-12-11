@@ -27,8 +27,8 @@ import rapaio.data.Vector;
 import rapaio.datasets.Datasets;
 import rapaio.distributions.empirical.KernelDensityEstimator;
 import rapaio.distributions.empirical.KernelFunction;
-import rapaio.session.Summary;
-import static rapaio.session.Workspace.*;
+import rapaio.workspace.Summary;
+import static rapaio.workspace.Workspace.*;
 
 import rapaio.graphics.Histogram;
 import rapaio.graphics.Plot;

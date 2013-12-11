@@ -21,8 +21,8 @@ package rapaio.tutorial.pages;
 
 import rapaio.data.*;
 import rapaio.datasets.Datasets;
-import rapaio.session.Summary;
-import static rapaio.session.Workspace.*;
+import rapaio.workspace.Summary;
+import static rapaio.workspace.Workspace.*;
 
 import rapaio.filters.ColFilters;
 import rapaio.graphics.Plot;

@@ -134,9 +134,11 @@ public class SortVectorTest {
     public void testGetterSetter() throws IOException, URISyntaxException {
 
         CsvPersistence persistence = new CsvPersistence();
-        persistence.setHasHeader(false);
+        persistence.setHasHeader(true);
         persistence.setColSeparator(',');
         persistence.setHasQuotas(false);
+        persistence.getNumericFieldHints().add("z");
+        persistence.getIndexFieldHints().add("y");
         Frame df = persistence.read(Paths.get(SortVectorTest.class.getResource("sorted-frame.csv").toURI()));
 
         Vector nominal = df.getCol(0);

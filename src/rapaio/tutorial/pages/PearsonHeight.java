@@ -29,10 +29,10 @@ import rapaio.data.Vector;
 import rapaio.datasets.Datasets;
 import rapaio.distributions.Distribution;
 import rapaio.distributions.Normal;
-import rapaio.session.Summary;
-import static rapaio.session.Summary.summary;
+import rapaio.workspace.Summary;
+import static rapaio.workspace.Summary.summary;
 import static rapaio.core.BaseMath.*;
-import static rapaio.session.Workspace.*;
+import static rapaio.workspace.Workspace.*;
 
 import rapaio.graphics.Histogram;
 import rapaio.graphics.Plot;

@@ -23,7 +23,7 @@ import rapaio.core.Summarizable;
 import rapaio.data.*;
 
 import static rapaio.core.BaseMath.*;
-import static rapaio.session.Workspace.*;
+import static rapaio.workspace.Workspace.*;
 import static rapaio.filters.RowFilters.*;
 
 

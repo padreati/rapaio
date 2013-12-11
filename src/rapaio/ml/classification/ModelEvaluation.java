@@ -22,7 +22,7 @@ package rapaio.ml.classification;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
-import static rapaio.session.Workspace.print;
+import static rapaio.workspace.Workspace.print;
 import static rapaio.filters.RowFilters.*;
 
 import java.util.ArrayList;

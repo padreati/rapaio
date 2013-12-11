@@ -19,22 +19,22 @@
  */
 package rapaio.io;
 
-import rapaio.session.Session;
+import rapaio.workspace.WorkspaceData;
 
 import java.io.*;
 
 /**
  * @author Aurelian Tutuianu
  */
-public class SessionPersistence {
+public class WorkspaceDataPersistence {
 
-    public Session restoreFromFile(String file) throws IOException, ClassNotFoundException {
+    public WorkspaceData restoreFromFile(String file) throws IOException, ClassNotFoundException {
         FileInputStream fileIn = new FileInputStream(file);
         ObjectInputStream in = new ObjectInputStream(fileIn);
-        return (Session) in.readObject();
+        return (WorkspaceData) in.readObject();
     }
 
-    public void storeToFile(Session session, String file) throws FileNotFoundException, IOException {
+    public void storeToFile(WorkspaceData session, String file) throws FileNotFoundException, IOException {
         FileOutputStream fileOut = new FileOutputStream(file);
         ObjectOutputStream out = new ObjectOutputStream(fileOut);
         out.writeObject(session);

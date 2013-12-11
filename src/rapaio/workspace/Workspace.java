@@ -17,21 +17,26 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package rapaio.session;
+
+package rapaio.workspace;
 
 import rapaio.graphics.base.Figure;
-import rapaio.io.SessionPersistence;
+import rapaio.io.WorkspaceDataPersistence;
 import rapaio.printer.Printer;
 import rapaio.printer.StandardPrinter;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author tutuianu
  */
 public class Workspace {
 
-    private static Session session = new Session();
+    private static WorkspaceData session = new WorkspaceData();
+    private static final List<WorkspaceListener> listeners = new LinkedList<>();
     private static Printer printer = new StandardPrinter();
 
     public static void setPrinter(Printer printer) {
@@ -40,6 +45,10 @@ public class Workspace {
 
     public static Printer getPrinter() {
         return printer;
+    }
+
+    public static void newWorkspace() {
+        session = new WorkspaceData();
     }
 
     /**
@@ -54,7 +63,7 @@ public class Workspace {
             print("Can't save workspace");
         }
 
-        SessionPersistence persistence = new SessionPersistence();
+        WorkspaceDataPersistence persistence = new WorkspaceDataPersistence();
         try {
             persistence.storeToFile(session, fileName);
             print("workspace saved.");
@@ -68,7 +77,7 @@ public class Workspace {
         if (fileName == null || fileName.isEmpty()) {
             print("Can't load workspace from file.");
         }
-        SessionPersistence persistence = new SessionPersistence();
+        WorkspaceDataPersistence persistence = new WorkspaceDataPersistence();
         try {
             session = persistence.restoreFromFile(fileName);
             print("workspace loaded.");
@@ -76,8 +85,20 @@ public class Workspace {
             error("Can't load workspace from file.", ex);
         }
     }
-    
-    public static Session getSession() {
+
+    public static void addListener(WorkspaceListener listener) {
+        listeners.add(listener);
+    }
+
+    public static void clearListeners() {
+        listeners.clear();
+    }
+
+    public Collection<WorkspaceListener> getListeners() {
+        return listeners;
+    }
+
+    public static WorkspaceData getData() {
         return session;
     }
 

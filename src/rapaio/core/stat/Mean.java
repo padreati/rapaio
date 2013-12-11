@@ -21,7 +21,7 @@ package rapaio.core.stat;
 
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
-import static rapaio.session.Workspace.*;
+import static rapaio.workspace.Workspace.*;
 
 /**
  * Compensated version of arithmetic mean of values from a {@code Vector}.

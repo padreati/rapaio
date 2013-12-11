@@ -26,7 +26,7 @@ import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.data.Vector;
 
-import static rapaio.session.Workspace.*;
+import static rapaio.workspace.Workspace.*;
 
 import rapaio.filters.RowFilters;
 import rapaio.ml.classification.AbstractClassifier;

@@ -24,7 +24,7 @@ import rapaio.core.Summarizable;
 import rapaio.data.Vector;
 
 import static rapaio.core.BaseMath.validNumber;
-import static rapaio.session.Workspace.*;
+import static rapaio.workspace.Workspace.*;
 
 /**
  * Computes the sum of elements for a {@link Vector} of values.

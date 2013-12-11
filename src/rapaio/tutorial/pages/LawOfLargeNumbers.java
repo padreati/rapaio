@@ -29,7 +29,7 @@ import rapaio.graphics.Plot;
 import rapaio.graphics.plot.ABLine;
 import rapaio.graphics.plot.Lines;
 
-import static rapaio.session.Workspace.*;
+import static rapaio.workspace.Workspace.*;
 
 import java.io.IOException;
 

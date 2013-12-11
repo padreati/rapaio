@@ -18,26 +18,18 @@ http://www.apache.org/licenses/
    limitations under the License.
 */
 
-package rapaio.session;
-
-import rapaio.workspace.Workspace;
-import org.junit.Assert;
-import org.junit.Test;
+package rapaio.workspace;
 
 /**
- *
- * @author Aurelian Tutuianu
+ * Listener interface for workspace data events.
+ * 
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-
-
-public class WorkspaceTest {
-
-    @Test
-    public void testSession() {
-        
-        Workspace.getData().put(String.class, "a", "a value");
-        String get = Workspace.getData().get(String.class, "a");
-        
-        Assert.assertEquals("a value", get);
-    }
+public interface WorkspaceDataListener {
+   
+    void onPutFrames(String...name);
+    
+    void onRemoveFrames(String...names);
+    
+    void onChangeFrames(String...names);
 }

@@ -23,7 +23,7 @@ import rapaio.data.OneIndexVector;
 import rapaio.distributions.Normal;
 import rapaio.distributions.StudentT;
 
-import static rapaio.session.Workspace.*;
+import static rapaio.workspace.Workspace.*;
 
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.FunctionLine;

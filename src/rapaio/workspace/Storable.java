@@ -18,7 +18,7 @@ http://www.apache.org/licenses/
    limitations under the License.
 */
 
-package rapaio.session;
+package rapaio.workspace;
 
 /**
  *

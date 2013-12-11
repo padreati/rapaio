@@ -18,26 +18,15 @@ http://www.apache.org/licenses/
    limitations under the License.
 */
 
-package rapaio.session;
-
-import rapaio.workspace.Workspace;
-import org.junit.Assert;
-import org.junit.Test;
+package rapaio.server;
 
 /**
  *
- * @author Aurelian Tutuianu
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 
 
-public class WorkspaceTest {
+public interface RapaioCmd {
 
-    @Test
-    public void testSession() {
-        
-        Workspace.getData().put(String.class, "a", "a value");
-        String get = Workspace.getData().get(String.class, "a");
-        
-        Assert.assertEquals("a value", get);
-    }
+    void run();
 }

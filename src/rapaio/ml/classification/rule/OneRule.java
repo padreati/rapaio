@@ -24,12 +24,11 @@ import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.data.Vector;
 
-import static rapaio.session.Workspace.code;
+import static rapaio.workspace.Workspace.code;
 
 import rapaio.filters.RowFilters;
 import rapaio.ml.classification.AbstractClassifier;
 
-import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Logger;
 

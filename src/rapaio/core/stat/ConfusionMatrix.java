@@ -22,7 +22,7 @@ package rapaio.core.stat;
 import rapaio.core.BaseMath;
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
-import rapaio.session.Workspace;
+import rapaio.workspace.Workspace;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

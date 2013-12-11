@@ -25,7 +25,7 @@ import rapaio.core.Summarizable;
 import rapaio.data.Vector;
 
 import static rapaio.filters.RowFilters.sort;
-import static rapaio.session.Workspace.*;
+import static rapaio.workspace.Workspace.*;
 
 
 /**

@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.session;
+package rapaio.workspace;
 
 import rapaio.core.Summarizable;
 import rapaio.core.stat.Mean;
@@ -30,7 +30,7 @@ import rapaio.data.Vector;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import static rapaio.session.Workspace.*;
+import static rapaio.workspace.Workspace.*;
 
 /**
  * @author tutuianu
