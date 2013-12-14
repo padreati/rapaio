@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.io;
 
 import rapaio.data.*;
@@ -35,7 +36,6 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class CsvPersistence {
-
 
     private boolean trimSpaces = true;
     private boolean hasHeader = true;
@@ -99,14 +99,18 @@ public class CsvPersistence {
     }
 
     public Frame read(String fileName) throws IOException {
-        return read(Paths.get(fileName));
+        return read(new MyReader(fileName));
     }
 
-    public Frame read(Path path) throws IOException {
+    public Frame read(Class<?> clazz, String resource) throws IOException {
+        return read(new MyReader(clazz, resource));
+    }
+
+    private Frame read(MyReader myReader) throws IOException {
         List<String> names = new ArrayList<>();
         int cols;
 
-        try (BufferedReader reader = Files.newBufferedReader(path, Charset.defaultCharset())) {
+        try (BufferedReader reader = myReader.reader()) {
             if (hasHeader) {
                 String line = reader.readLine();
                 if (line == null) {
@@ -124,11 +128,12 @@ public class CsvPersistence {
                 List<String> row = parseLine(line);
                 cols = Math.max(cols, row.size());
                 len++;
-                if (len > 100) break; // enough is enough
+                if (len > 100)
+                    break; // enough is enough
             }
-            for (int i = names.size(); i < cols; i++) {
-                names.add("V" + (i + 1));
-            }
+        }
+        for (int i = names.size(); i < cols; i++) {
+            names.add("V" + (i + 1));
         }
 
         // build nominal dictionaries
@@ -143,7 +148,7 @@ public class CsvPersistence {
             dictionaries.put(colName, new HashSet<String>());
         }
         int rows = 0;
-        try (BufferedReader reader = Files.newBufferedReader(path, Charset.defaultCharset())) {
+        try (BufferedReader reader = myReader.reader()) {
             if (hasHeader) {
                 String line = reader.readLine();
                 if (line == null) {
@@ -187,7 +192,7 @@ public class CsvPersistence {
 
         // process data, one row at a time
         rows = 0;
-        try (BufferedReader reader = Files.newBufferedReader(path, Charset.defaultCharset())) {
+        try (BufferedReader reader = myReader.reader()) {
             if (hasHeader) {
                 String line = reader.readLine();
                 if (line == null) {
@@ -201,26 +206,30 @@ public class CsvPersistence {
                 }
                 List<String> row = parseLine(line);
                 for (String colName : indexFieldHints) {
-                    if(!indexes.containsKey(colName)) continue;
-                    if("?".equals(row.get(indexes.get(colName)))) {
+                    if (!indexes.containsKey(colName))
+                        continue;
+                    if ("?".equals(row.get(indexes.get(colName)))) {
                         df.getCol(colName).setMissing(rows);
                         continue;
                     }
                     df.getCol(colName).setIndex(rows, Integer.parseInt(row.get(indexes.get(colName))));
                 }
                 for (String colName : numericFieldHints) {
-                    if(!indexes.containsKey(colName)) continue;
-                    if("?".equals(row.get(indexes.get(colName)))) {
+                    if (!indexes.containsKey(colName))
+                        continue;
+                    if ("?".equals(row.get(indexes.get(colName)))) {
                         df.getCol(colName).setMissing(rows);
                         continue;
                     }
                     df.getCol(colName).setValue(rows, Double.parseDouble(row.get(indexes.get(colName))));
                 }
                 for (String colName : dictionaries.keySet()) {
-                    if(!indexes.containsKey(colName)) continue;
-                    if(row.size()<=indexes.get(colName)) continue;
+                    if (!indexes.containsKey(colName))
+                        continue;
+                    if (row.size() <= indexes.get(colName))
+                        continue;
                     String label = row.get(indexes.get(colName));
-                    if("?".equals(label)) {
+                    if ("?".equals(label)) {
                         df.getCol(colName).setMissing(rows);
                         continue;
                     }
@@ -230,16 +239,14 @@ public class CsvPersistence {
                 rows++;
             }
         }
-
         // return solid frame
-
         return df;
     }
 
     /**
-     * Parses a line from csv file according with the configured setting for the parse.
-     * E.g. separates columns by col separator, but not by the cols separators inside quotas,
-     * if quota is  configured.
+     * Parses a line from csv file according with the configured setting for the
+     * parse. E.g. separates columns by col separator, but not by the cols
+     * separators inside quotas, if quota is configured.
      *
      * @param line
      * @return
@@ -285,10 +292,9 @@ public class CsvPersistence {
     }
 
     /**
-     * Clean the string token.
-     * - remove trailing and leading spaces, before and after removing quotas
-     * - remove leading and trailing quotas
-     * - remove escape quota character
+     * Clean the string token. - remove trailing and leading spaces, before and
+     * after removing quotas - remove leading and trailing quotas - remove
+     * escape quota character
      *
      * @param tok
      * @return
@@ -324,7 +330,6 @@ public class CsvPersistence {
         return tok;
     }
 
-
     public void write(Frame df, String fileName) throws IOException {
         try (OutputStream os = new FileOutputStream(fileName)) {
             write(df, os);
@@ -349,7 +354,7 @@ public class CsvPersistence {
                     if (j != 0) {
                         writer.append(getColSeparator());
                     }
-                    if(df.getCol(j).isMissing(i)) {
+                    if (df.getCol(j).isMissing(i)) {
                         writer.append("?");
                         continue;
                     }
@@ -379,5 +384,30 @@ public class CsvPersistence {
             label = "\"" + label + "\"";
         }
         return label;
+    }
+}
+
+class MyReader {
+
+    private final String fileName;
+    private final Class<?> clazz;
+    private final String resource;
+
+    public MyReader(String fileName) {
+        this.fileName = fileName;
+        this.clazz = null;
+        this.resource = null;
+    }
+
+    public MyReader(Class<?> clazz, String resource) {
+        this.fileName = null;
+        this.clazz = clazz;
+        this.resource = resource;
+    }
+
+    public BufferedReader reader() throws FileNotFoundException {
+        if (fileName != null)
+            return new BufferedReader(new FileReader(fileName));
+        return new BufferedReader(new InputStreamReader(clazz.getResourceAsStream(resource)));
     }
 }

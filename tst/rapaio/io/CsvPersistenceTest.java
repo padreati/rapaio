@@ -26,8 +26,6 @@ import org.junit.Test;
 import rapaio.data.Frame;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -53,11 +51,11 @@ public class CsvPersistenceTest {
     @Test
     public void testHeader() {
         try {
-            Frame f = persistence.read(Paths.get(getClass().getResource("csv-test.csv").toURI()));
+            Frame f = persistence.read(getClass(),"csv-test.csv");
             assertNotNull(f);
             assertEquals(5, f.getColCount());
             assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, f.getColNames());
-        } catch (IOException|URISyntaxException ex) {
+        } catch (IOException ex) {
             assertTrue("this should not happen.", false);
         }
     }
@@ -131,11 +129,11 @@ public class CsvPersistenceTest {
     public void testFullFrame() {
         try {
             persistence.setHasQuotas(true);
-            Frame df = persistence.read(Paths.get(getClass().getResource("csv-test.csv").toURI()));
+            Frame df = persistence.read(getClass(),"csv-test.csv");
             assertNotNull(df);
             assertEquals(5, df.getColCount());
             assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, df.getColNames());
-        } catch (IOException|URISyntaxException ex) {
+        } catch (IOException ex) {
             assertTrue("this should not happen.", false);
         }
 

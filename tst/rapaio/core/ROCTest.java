@@ -32,7 +32,6 @@ import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -46,16 +45,14 @@ public class ROCTest {
         csv.setHasQuotas(false);
         csv.getNumericFieldHints().add("score");
         csv.getNominalFieldHints().add("class");
-        Frame df = csv.read(Paths.get(getClass().getResource("fawcett-roc.csv").toURI()));
+        Frame df = csv.read(getClass(), "fawcett-roc.csv");
 
         final ROC roc = new ROC(df.getCol("score"), df.getCol("class"), "p");
         Summary.head(roc.getData().getRowCount(), roc.getData());
 
-        Workspace.draw(new Plot(){{
-            new ROCCurve(this, roc);
-            new Lines(this, roc.getData().getCol("tpr"), roc.getData().getCol("acc")){{
-                opt().setColorIndex(1);
-            }};
-        }});
+        Workspace.draw(new Plot()
+                .add(new ROCCurve(roc))
+                .add(new Lines(roc.getData().getCol("tpr"), roc.getData().getCol("acc")).setColorIndex(1))
+                .add(new Lines(roc.getData().getCol("tpr"), roc.getData().getCol("acc")).setColorIndex(1)));
     }
 }

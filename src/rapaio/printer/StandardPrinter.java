@@ -17,16 +17,13 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.printer;
 
 import rapaio.graphics.base.Figure;
-import rapaio.graphics.base.ImageUtility;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.util.concurrent.ExecutionException;
-
 
 /**
  * @author tutuianu
@@ -112,76 +109,5 @@ public final class StandardPrinter extends AbstractPrinter {
                 break;
             }
         }
-    }
-}
-
-class FigurePanel extends JPanel {
-
-    private final Figure figure;
-    protected volatile BufferedImage currentImage;
-    protected volatile SwingWorker<BufferedImage, Object> drawWorker;
-    boolean forceRedraw = true;
-
-    public FigurePanel(Figure figure) {
-        this.figure = figure;
-    }
-
-    @Override
-    public void paint(Graphics g) {
-        super.paint(g);
-        final String drawingMessage = "Rendering Update...";
-        FontMetrics fm = g.getFontMetrics();
-
-        if (currentImage != null) {
-            if (currentImage.getWidth() != getWidth() || currentImage.getHeight() != getHeight() || forceRedraw) {
-                forceRedraw = false;
-                if (drawWorker == null) {
-                    createBackgroundImage();
-                }
-
-                g.drawImage(currentImage, 0, 0, getWidth(), getHeight(), null);
-                g.drawString(drawingMessage, 3, getHeight() - fm.getHeight() / 2);
-            } else {
-                g.drawImage(currentImage, 0, 0, null);
-            }
-        } else if (currentImage == null) {
-            if (drawWorker == null) {
-                createBackgroundImage();
-            }
-            g.drawString(drawingMessage, getWidth() / 2 - fm.stringWidth(drawingMessage) / 2, getHeight() / 2 - fm.getHeight() / 2);
-        }
-    }
-
-    /**
-     * Creates a new worker to do the image rendering in the background.
-     */
-    private void createBackgroundImage() {
-        drawWorker = new SwingWorker<BufferedImage, Object>() {
-            @Override
-            protected BufferedImage doInBackground() throws Exception {
-                return ImageUtility.buildImage(figure, getWidth(), getHeight());
-            }
-
-            @Override
-            protected void done() {
-
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            currentImage = get();
-                            drawWorker = null;
-                            revalidate();
-                            repaint();
-                        } catch (InterruptedException | ExecutionException ex) {
-                            JOptionPane.showMessageDialog(null, ex.getMessage());
-                        }
-                    }
-                });
-
-            }
-        };
-
-        drawWorker.execute();
     }
 }

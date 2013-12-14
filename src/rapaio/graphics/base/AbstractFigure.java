@@ -17,54 +17,85 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.graphics.base;
 
 import rapaio.graphics.colors.ColorPalette;
-import rapaio.graphics.options.GraphicOptions;
 
 import java.awt.*;
 import java.util.ArrayList;
+import rapaio.data.OneIndexVector;
+import rapaio.data.OneNumericVector;
+import rapaio.data.Vector;
 
 /**
  * @author tutuianu
  */
-public abstract class BaseFigure implements Figure {
+public abstract class AbstractFigure implements Figure {
 
-    protected final GraphicOptions options = new GraphicOptions();
-    protected static final Font titleFont = new Font("Verdana", Font.BOLD, 18);
-    protected static final Font markersFont = new Font("Verdana", Font.PLAIN, 13);
-    protected static final Font labelsFont = new Font("Verdana", Font.BOLD, 16);
+    protected static final Font TITLE_FONT = new Font("Verdana", Font.BOLD, 18);
+    protected static final Font MARKERS_FONT = new Font("Verdana", Font.PLAIN, 13);
+    protected static final Font LABELS_FONT = new Font("Verdana", Font.BOLD, 16);
     protected static final double THICKER_MIN_SPACE = 50.;
     protected static final int THICKER_PAD = 7;
     protected static final int MARKER_PAD = 15;
     protected static final int LABEL_PAD = 30;
     protected static final int TITLE_PAD = 40;
     protected static final int MINIMUM_PAD = 20;
-    protected Rectangle viewport;
-    protected boolean leftThicker;
-    protected boolean bottomThicker;
-    protected boolean leftMarkers;
-    protected boolean bottomMarkers;
+    ;
+    private AbstractFigure parent;
+    ;
+    private Rectangle viewport;
+    private boolean leftThicker;
+    private boolean bottomThicker;
+    private boolean leftMarkers;
+    private boolean bottomMarkers;
     private Range range;
-    protected ArrayList<String> bottomMarkersMsg = new ArrayList<>();
-    protected ArrayList<Double> bottomMarkersPos = new ArrayList<>();
-    protected ArrayList<String> leftMarkersMsg = new ArrayList<>();
-    protected ArrayList<Double> leftMarkersPos = new ArrayList<>();
-    protected String title;
-    protected String leftLabel;
-    protected String bottomLabel;
+    private final ArrayList<String> bottomMarkersMsg = new ArrayList<>();
+    private final ArrayList<Double> bottomMarkersPos = new ArrayList<>();
+    private final ArrayList<String> leftMarkersMsg = new ArrayList<>();
+    private final ArrayList<Double> leftMarkersPos = new ArrayList<>();
+    private String title;
+    private String leftLabel;
+    private String bottomLabel;
+    ;
+    private float lwd = 1.2f;
+    private Vector sizeIndex = new OneNumericVector(2.5);
+    private Vector colorIndex = new OneIndexVector(0);
+    private Vector pchIndex = new OneIndexVector(0);
+    private double x1 = Double.NaN;
+    private double x2 = Double.NaN;
+    private double y1 = Double.NaN;
+    private double y2 = Double.NaN;
 
     @Override
-    public GraphicOptions opt() {
-        return options;
+    public void initialize(Rectangle rect) {
+        buildViewport(rect);
+        range = buildRange();
     }
 
-    public static Font getMarkersFont() {
-        return markersFont;
+    public AbstractFigure getParent() {
+        return parent;
     }
 
-    public static Font getLabelsFont() {
-        return labelsFont;
+    public ArrayList<String> getBottomMarkersMsg() {
+        return bottomMarkersMsg;
+    }
+
+    public ArrayList<Double> getBottomMarkersPos() {
+        return bottomMarkersPos;
+    }
+
+    public ArrayList<String> getLeftMarkersMsg() {
+        return leftMarkersMsg;
+    }
+
+    public ArrayList<Double> getLeftMarkersPos() {
+        return leftMarkersPos;
+    }
+
+    public void setParent(AbstractFigure parent) {
+        this.parent = parent;
     }
 
     public Rectangle getViewport() {
@@ -75,37 +106,43 @@ public abstract class BaseFigure implements Figure {
         return leftThicker;
     }
 
-    public void setLeftThicker(boolean leftThicker) {
+    public AbstractFigure setLeftThicker(boolean leftThicker) {
         this.leftThicker = leftThicker;
+        return this;
     }
 
     public boolean isBottomThicker() {
         return bottomThicker;
     }
 
-    public void setBottomThicker(boolean bottomThicker) {
+    public AbstractFigure setBottomThicker(boolean bottomThicker) {
         this.bottomThicker = bottomThicker;
+        return this;
     }
 
     public boolean isLeftMarkers() {
         return leftMarkers;
     }
 
-    public void setLeftMarkers(boolean leftMarkers) {
+    public AbstractFigure setLeftMarkers(boolean leftMarkers) {
         this.leftMarkers = leftMarkers;
+        return this;
     }
 
     public boolean isBottomMarkers() {
         return bottomMarkers;
     }
 
-    public void setBottomMarkers(boolean bottomMarkers) {
+    public AbstractFigure setBottomMarkers(boolean bottomMarkers) {
         this.bottomMarkers = bottomMarkers;
+        return this;
     }
+
+    public abstract Range buildRange();
 
     public Range getRange() {
         if (range == null) {
-            this.range = buildRange();
+            range = buildRange();
         }
         return range;
     }
@@ -114,27 +151,28 @@ public abstract class BaseFigure implements Figure {
         return title;
     }
 
-    public void setTitle(String title) {
+    public AbstractFigure setTitle(String title) {
         this.title = title;
+        return this;
     }
 
     public String getLeftLabel() {
         return leftLabel;
     }
 
-    public void setLeftLabel(String leftLabel) {
+    public AbstractFigure setLeftLabel(String leftLabel) {
         this.leftLabel = leftLabel;
+        return this;
     }
 
     public String getBottomLabel() {
         return bottomLabel;
     }
 
-    public void setBottomLabel(String bottomLabel) {
+    public AbstractFigure setBottomLabel(String bottomLabel) {
         this.bottomLabel = bottomLabel;
+        return this;
     }
-
-    public abstract Range buildRange();
 
     public void buildViewport(Rectangle rectangle) {
         viewport = new Rectangle(rectangle);
@@ -165,28 +203,163 @@ public abstract class BaseFigure implements Figure {
         viewport.height = rectangle.height - viewport.y - height;
     }
 
-    public int xscale(double x) {
-        return (int) (viewport.x + viewport.width * (x - range.getX1()) / (range.getX2() - range.getX1()));
-    }
-
-    public int yscale(double y) {
-        return (int) (viewport.y + viewport.height * (1. - (y - range.getY1()) / (range.getY2() - range.getY1())));
-    }
-
-    public double xscaledbl(double x) {
+    public double xscale(double x) {
         return viewport.x + viewport.width * (x - range.getX1()) / (range.getX2() - range.getX1());
     }
 
-    public double yscaledbl(double y) {
+    public double yscale(double y) {
         return viewport.y + viewport.height * (1. - (y - range.getY1()) / (range.getY2() - range.getY1()));
+    }
+
+    private boolean isDefaultLwd() {
+        return lwd == 1.2;
+    }
+
+    public float getLwd() {
+        if (parent != null && isDefaultLwd()) {
+            return parent.getLwd();
+        }
+        return lwd;
+    }
+
+    public AbstractFigure setLwd(float lwd) {
+        this.lwd = lwd;
+        return this;
+    }
+
+    private boolean isDefaultSize() {
+        return sizeIndex.getRowCount() == 1 && sizeIndex.getValue(0) == 2.5;
+    }
+
+    public Vector getSizeIndex() {
+        if (parent != null && isDefaultSize()) {
+            return parent.getSizeIndex();
+        }
+        return sizeIndex;
+    }
+
+    public AbstractFigure setSizeIndex(Vector sizeIndex) {
+        this.sizeIndex = sizeIndex;
+        return this;
+    }
+
+    public AbstractFigure setSizeIndex(double size) {
+        this.sizeIndex = new OneNumericVector(size);
+        return this;
+    }
+
+    public double getSize(int row) {
+        Vector index = getSizeIndex();
+        if (row >= index.getRowCount()) {
+            row %= index.getRowCount();
+        }
+        return index.getValue(row);
+    }
+
+    private boolean isDefaultColorIndex() {
+        return colorIndex.getRowCount() == 1 && colorIndex.getIndex(0) == 0;
+    }
+
+    public Vector getColorIndex() {
+        if (parent != null && isDefaultColorIndex()) {
+            return parent.getColorIndex();
+        }
+        return colorIndex;
+    }
+
+    public AbstractFigure setColorIndex(Vector colorIndex) {
+        this.colorIndex = colorIndex;
+        return this;
+    }
+
+    public AbstractFigure setColorIndex(int colorIndex) {
+        this.colorIndex = new OneIndexVector(colorIndex);
+        return this;
+    }
+
+    public Color getColor(int row) {
+        if (parent != null && isDefaultColorIndex()) {
+            return parent.getColor(row);
+        }
+        Vector index = getColorIndex();
+        if (row >= index.getRowCount()) {
+            row %= index.getRowCount();
+        }
+        return ColorPalette.STANDARD.getColor(index.getIndex(row));
+    }
+
+    private boolean isDefaultPchIndex() {
+        return pchIndex.getIndex(0) == 0 && pchIndex.getRowCount() == 1;
+    }
+
+    public Vector getPchIndex() {
+        if (parent != null && isDefaultPchIndex()) {
+            return parent.getPchIndex();
+        }
+        return pchIndex;
+    }
+
+    public AbstractFigure setPchIndex(Vector pchIndex) {
+        this.pchIndex = pchIndex;
+        return this;
+    }
+
+    public AbstractFigure setPchIndex(int pch) {
+        this.pchIndex = new OneIndexVector(pch);
+        return this;
+    }
+
+    public int getPch(int row) {
+        Vector index = getPchIndex();
+        if (row >= index.getRowCount()) {
+            row %= index.getRowCount();
+        }
+        return index.getIndex(row);
+    }
+
+    public double getXRangeStart() {
+        if (parent != null && x1 != x1) {
+            return parent.getXRangeStart();
+        }
+        return x1;
+    }
+
+    public double getXRangeEnd() {
+        if (parent != null && x2 != x2) {
+            return parent.getXRangeEnd();
+        }
+        return x2;
+    }
+
+    public AbstractFigure setXRange(double start, double end) {
+        this.x1 = start;
+        this.x2 = end;
+        return this;
+    }
+
+    public double getYRangeStart() {
+        if (parent != null && y1 != y1) {
+            return parent.getYRangeStart();
+        }
+        return y1;
+    }
+
+    public double getYRangeEnd() {
+        if (parent != null && y2 != y2) {
+            return parent.getYRangeEnd();
+        }
+        return y2;
+    }
+
+    public AbstractFigure setYRange(double start, double end) {
+        this.y1 = start;
+        this.y2 = end;
+        return this;
     }
 
     @Override
     public void paint(Graphics2D g2d, Rectangle rect) {
-        buildViewport(rect);
-        if (range == null) {
-            range = buildRange();
-        }
+        initialize(rect);
 
         g2d.setColor(ColorPalette.STANDARD.getColor(255));
         g2d.fill(rect);
@@ -195,7 +368,7 @@ public abstract class BaseFigure implements Figure {
         g2d.setColor(ColorPalette.STANDARD.getColor(0));
 
         if (title != null) {
-            g2d.setFont(titleFont);
+            g2d.setFont(TITLE_FONT);
             double titleWidth = g2d.getFontMetrics().getStringBounds(title, g2d).getWidth();
             g2d.drawString(title, (int) (rect.width - titleWidth) / 2, TITLE_PAD);
         }
@@ -203,7 +376,7 @@ public abstract class BaseFigure implements Figure {
         // left part
         buildLeftMarkers();
 
-        g2d.setFont(markersFont);
+        g2d.setFont(MARKERS_FONT);
         g2d.drawLine(viewport.x - THICKER_PAD,
                 viewport.y,
                 viewport.x - THICKER_PAD,
@@ -230,7 +403,7 @@ public abstract class BaseFigure implements Figure {
             }
         }
         if (leftLabel != null) {
-            g2d.setFont(labelsFont);
+            g2d.setFont(LABELS_FONT);
             double ywidth = g2d.getFontMetrics().getStringBounds(leftLabel, g2d).getWidth();
             int xx = viewport.x - 5 * THICKER_PAD - MARKER_PAD;
             int yy = (int) ((rect.height + ywidth) / 2);
@@ -244,7 +417,7 @@ public abstract class BaseFigure implements Figure {
         // bottom part
         buildBottomMarkers();
 
-        g2d.setFont(markersFont);
+        g2d.setFont(MARKERS_FONT);
         g2d.drawLine(viewport.x,
                 viewport.y + viewport.height + THICKER_PAD,
                 viewport.x + viewport.width,
@@ -268,7 +441,7 @@ public abstract class BaseFigure implements Figure {
         }
 
         if (bottomLabel != null) {
-            g2d.setFont(labelsFont);
+            g2d.setFont(LABELS_FONT);
             double xwidth = g2d.getFontMetrics().getStringBounds(bottomLabel, g2d).getWidth();
             g2d.drawString(bottomLabel,
                     (int) ((rect.width - xwidth) / 2),
@@ -302,7 +475,9 @@ public abstract class BaseFigure implements Figure {
         }
     }
 
-    public abstract void buildLeftMarkers();
+    public void buildLeftMarkers() {
+    }
 
-    public abstract void buildBottomMarkers();
+    public void buildBottomMarkers() {
+    }
 }

@@ -27,38 +27,39 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.URLClassLoader;
+import java.util.HashMap;
 
 /**
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class ClassMarshaller extends ClassLoader {
+public class ClassMarshaller {
 
     public void marshall(Class<? extends RapaioCmd> clazz, OutputStream out) throws IOException {
         InputStream is = clazz.getClassLoader().getResourceAsStream(clazz.getName().replace('.', '/') + ".class");
-        
+
         byte[] bytes;
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            while(true) {
+            while (true) {
                 int ch = is.read();
-                if(ch==-1) break;
+                if (ch == -1)
+                    break;
                 baos.write(ch);
             }
             bytes = baos.toByteArray();
         }
         ClassBytes cb = new ClassBytes(clazz.getCanonicalName(), bytes);
-        try(ObjectOutputStream oos2 = new ObjectOutputStream(out)) {
+        try (ObjectOutputStream oos2 = new ObjectOutputStream(out)) {
             oos2.writeObject(cb);
             oos2.flush();
         }
-        
+
     }
-    
-    public Class<?> unmarshall(InputStream in) throws IOException, ClassNotFoundException {
-        ClassBytes cb;
+
+    public ClassBytes unmarshall(InputStream in) throws IOException, ClassNotFoundException {
         try (ObjectInputStream ois = new ObjectInputStream(in)) {
-            cb = (ClassBytes) ois.readObject();
+            return (ClassBytes) ois.readObject();
         }
-        return (Class<?>) defineClass(cb.getName(), cb.getBytes(), 0, cb.getBytes().length);
     }
 }

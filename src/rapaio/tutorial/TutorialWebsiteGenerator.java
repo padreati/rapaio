@@ -62,27 +62,27 @@ public class TutorialWebsiteGenerator {
 
         category = "Graphics";
         pages.put(category, new ArrayList<TutorialPage>());
-//        pages.get(category).add(new HistogramDensityTutorial());
+        pages.get(category).add(new HistogramDensityTutorial());
 
         category = "StatisticalProcedures";
         pages.put(category, new ArrayList<TutorialPage>());
-//        pages.get(category).add(new DiscreteSampling());
-//        pages.get(category).add(new CorrelationsPage());
+        pages.get(category).add(new DiscreteSampling());
+        pages.get(category).add(new CorrelationsPage());
         pages.get(category).add(new ROCCurvesPage());
 
         category = "SampleAnalysis";
         pages.put(category, new ArrayList<TutorialPage>());
-//        pages.get(category).add(new PearsonHeight());
-//        pages.get(category).add(new LawOfLargeNumbers());
+        pages.get(category).add(new PearsonHeight());
+        pages.get(category).add(new LawOfLargeNumbers());
 
         category = "SupervisedClassification";
         pages.put(category, new ArrayList<TutorialPage>());
-//        pages.get(category).add(new ClassificationWithRF());
+        pages.get(category).add(new ClassificationWithRF());
 
         category = "WorkInProgress";
         pages.put(category, new ArrayList<TutorialPage>());
-//        pages.get(category).add(new IrisExplore());
-//        pages.get(category).add(new StudentTDistribution());
+        pages.get(category).add(new IrisExplore());
+        pages.get(category).add(new StudentTDistribution());
 
         makeIndexPage(webRoot, pages);
 

@@ -20,7 +20,6 @@
 package rapaio.graphics.plot;
 
 import rapaio.data.Vector;
-import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
 import rapaio.graphics.pch.PchPalette;
@@ -35,14 +34,13 @@ public class Points extends PlotComponent {
     private final Vector x;
     private final Vector y;
 
-    public Points(Plot parent, Vector x, Vector y) {
-        super(parent);
+    public Points(Vector x, Vector y) {
         this.x = x;
         this.y = y;
     }
 
     @Override
-    public Range getComponentDataRange() {
+    public Range buildRange() {
         if (x.getRowCount() == 0) {
             return null;
         }
@@ -64,10 +62,10 @@ public class Points extends PlotComponent {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
-            g2d.setColor(opt().getColor(i));
-            int xx = (int) (plot.xscale(x.getValue(i)));
-            int yy = (int) (plot.yscale(y.getValue(i)));
-            PchPalette.STANDARD.draw(g2d, xx, yy, opt().getSize(i), opt().getPch(i));
+            g2d.setColor(getColor(i));
+            int xx = (int) (getParent().xscale(x.getValue(i)));
+            int yy = (int) (getParent().yscale(y.getValue(i)));
+            PchPalette.STANDARD.draw(g2d, xx, yy, getSize(i), getPch(i));
         }
     }
 }

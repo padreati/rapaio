@@ -17,15 +17,16 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.graphics.plot;
 
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
 import rapaio.core.UnivariateFunction;
-import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 
 import static rapaio.core.BaseMath.validNumber;
 
@@ -37,23 +38,22 @@ public class FunctionLine extends PlotComponent {
     private final UnivariateFunction f;
     private final int points;
 
-    public FunctionLine(Plot plot, UnivariateFunction f) {
-        this(plot, f, 1024);
+    public FunctionLine(UnivariateFunction f) {
+        this(f, 1024);
     }
 
-    public FunctionLine(Plot plot, UnivariateFunction f, int points) {
-        super(plot);
+    public FunctionLine(UnivariateFunction f, int points) {
         this.f = f;
         this.points = points;
     }
 
     @Override
-    public Range getComponentDataRange() {
+    public Range buildRange() {
         Range range = new Range();
-        range.setX1(opt().getXRangeStart());
-        range.setX2(opt().getXRangeEnd());
-        range.setY1(opt().getYRangeStart());
-        range.setY2(opt().getYRangeEnd());
+        range.setX1(getXRangeStart());
+        range.setX2(getXRangeEnd());
+        range.setY1(getYRangeStart());
+        range.setY2(getYRangeEnd());
 
         if (validNumber(range.getX1()) && validNumber(range.getX2())) {
             return range;
@@ -66,7 +66,7 @@ public class FunctionLine extends PlotComponent {
 
     @Override
     public void paint(Graphics2D g2d) {
-        Range range = plot.getRange();
+        Range range = getParent().getRange();
         Vector x = new NumericVector(points + 1);
         Vector y = new NumericVector(points + 1);
         double xstep = (range.getX2() - range.getX1()) / points;
@@ -77,14 +77,13 @@ public class FunctionLine extends PlotComponent {
 
         for (int i = 1; i < x.getRowCount(); i++) {
             if (range.contains(x.getValue(i - 1), y.getValue(i - 1)) && range.contains(x.getValue(i), y.getValue(i))) {
-                g2d.setColor(opt().getColor(i));
-                g2d.setStroke(new BasicStroke(opt().getLwd()));
-                g2d.drawLine(
-                        (int) xscale(x.getValue(i - 1)),
-                        (int) yscale(y.getValue(i - 1)),
-                        (int) xscale(x.getValue(i)),
-                        (int) yscale(y.getValue(i)));
-
+                g2d.setColor(getColor(i));
+                g2d.setStroke(new BasicStroke(getLwd()));
+                g2d.draw(new Line2D.Double(
+                        getParent().xscale(x.getValue(i - 1)),
+                        getParent().yscale(y.getValue(i - 1)),
+                        getParent().xscale(x.getValue(i)),
+                        getParent().yscale(y.getValue(i))));
 
             }
         }

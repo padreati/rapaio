@@ -20,11 +20,11 @@
 package rapaio.graphics.plot;
 
 import rapaio.data.Vector;
-import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 
 /**
  * @author Aurelian Tutuianu
@@ -34,14 +34,13 @@ public class Lines extends PlotComponent {
     private final Vector x;
     private final Vector y;
 
-    public Lines(Plot parent, Vector x, Vector y) {
-        super(parent);
+    public Lines(Vector x, Vector y) {
         this.x = x;
         this.y = y;
     }
 
     @Override
-    public Range getComponentDataRange() {
+    public Range buildRange() {
         if (x.getRowCount() == 0) {
             return null;
         }
@@ -58,21 +57,20 @@ public class Lines extends PlotComponent {
     @Override
     public void paint(Graphics2D g2d) {
 
-        float lwd = opt().getLwd();
-        g2d.setStroke(new BasicStroke(lwd));
+        g2d.setStroke(new BasicStroke(getLwd()));
         g2d.setBackground(ColorPalette.STANDARD.getColor(255));
 
         for (int i = 1; i < x.getRowCount(); i++) {
-            g2d.setColor(opt().getColor(i));
-            int x1 = (plot.xscale(x.getValue(i - 1)));
-            int y1 = (plot.yscale(y.getValue(i - 1)));
-            int x2 = (plot.xscale(x.getValue(i)));
-            int y2 = (plot.yscale(y.getValue(i)));
+            g2d.setColor(getColor(i));
+            double x1 = getParent().xscale(x.getValue(i - 1));
+            double y1 = getParent().yscale(y.getValue(i - 1));
+            double x2 = getParent().xscale(x.getValue(i));
+            double y2 = getParent().yscale(y.getValue(i));
 
             //TODO improve this crap to clip only parts of lines outside of the data range
-            if (plot.getRange().contains(x.getValue(i - 1), y.getValue(i - 1))
-                    && plot.getRange().contains(x.getValue(i), y.getValue(i))) {
-                g2d.drawLine(x1, y1, x2, y2);
+            if (getParent().getRange().contains(x.getValue(i - 1), y.getValue(i - 1))
+                    && getParent().getRange().contains(x.getValue(i), y.getValue(i))) {
+                g2d.draw(new Line2D.Double(x1, y1, x2, y2));
             }
         }
     }

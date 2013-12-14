@@ -30,7 +30,6 @@ import static rapaio.filters.RowFilters.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 
 /**
@@ -139,7 +138,7 @@ public class SortVectorTest {
         persistence.setHasQuotas(false);
         persistence.getNumericFieldHints().add("z");
         persistence.getIndexFieldHints().add("y");
-        Frame df = persistence.read(Paths.get(SortVectorTest.class.getResource("sorted-frame.csv").toURI()));
+        Frame df = persistence.read(SortVectorTest.class,"sorted-frame.csv");
 
         Vector nominal = df.getCol(0);
         Vector index = df.getCol(1);

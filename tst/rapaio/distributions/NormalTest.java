@@ -44,7 +44,7 @@ public class NormalTest {
         CsvPersistence persistence = new CsvPersistence();
         persistence.setHasHeader(false);
         persistence.setColSeparator(' ');
-        df = persistence.read(Paths.get(this.getClass().getResource("standard_normal.csv").toURI()));
+        df = persistence.read(this.getClass(),"standard_normal.csv");
         df = toNumeric(df);
     }
 

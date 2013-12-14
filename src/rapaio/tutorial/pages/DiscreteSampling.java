@@ -198,14 +198,12 @@ public class DiscreteSampling implements TutorialPage {
         }
 
         final Frame df = new SolidFrame(SAMPLE_SIZE * TRIALS, vectors, new String[]{"lottery trial", "winning number"});
-        draw(new Plot() {
-            {
-                new Points(this, df.getCol(0), df.getCol(1));
-                opt().setPchIndex(1);
-                opt().setColorIndex(34);
-                opt().setSizeIndex(2);
-            }
-        }, 600, 300);
+        draw(new Plot()
+                .add(new Points(df.getCol(0), df.getCol(1))
+                        .setPchIndex(1)
+                        .setColorIndex(34)
+                        .setSizeIndex(2)),
+                600, 300);
 
         p("There is random in that plot. Everywhere. A summary on the data, however, "
                 + "can give us enough clues to understand that the distribution "
@@ -231,25 +229,28 @@ public class DiscreteSampling implements TutorialPage {
                 + "will plot the plugin estimate which is the number of times HEAD is "
                 + "drawn divided by the number of experiments. ");
 
-        code("        RandomSource.setSeed(1);\n"
-                + "        final Vector index = new IndexVector(\"experiment no.\", 1, 1000, 1);\n"
-                + "        final Vector value = new NumericVector(\"HEAD/TOTAL\", 1000);\n"
+        code("RandomSource.setSeed(1);\n"
+                + "        final Vector index = new IndexVector(1, 1000, 1);\n"
+                + "        final Vector value = new NumericVector(1000);\n"
                 + "        double count = 0;\n"
                 + "        double total = 0;\n"
                 + "        for (int i = 0; i < 300; i++) {\n"
                 + "            int[] samples = new DiscreteWeightedSamplingWR(new double[]{0.6, 0.4}).sample(1);\n"
-                + "            if (samples[0] == 0) count++;\n"
+                + "            if (samples[0] == 0)\n"
+                + "                count++;\n"
                 + "            total++;\n"
                 + "            value.setValue(i, count / total);\n"
                 + "        }\n"
-                + "        draw(new Plot() {{\n"
-                + "            add(new ABLine(this, 0.6, true));\n"
-                + "            add(new Lines(this, index, value) {{\n"
-                + "                opt().setColorIndex(new OneIndexVector(2));\n"
-                + "                opt().setLwd(1.5f);\n"
-                + "            }});\n"
-                + "            opt().setYRange(0, 1);\n"
-                + "        }});\n");
+                + "        draw(new Plot()\n"
+                + "                .add(new ABLine(0.6, true))\n"
+                + "                .add(new Lines(index, value)\n"
+                + "                        .setColorIndex(2)\n"
+                + "                        .setLwd(1.5f)\n"
+                + "                )\n"
+                + "                .setYRange(0, 1)\n"
+                + "                .setBottomLabel(\"experiment no\")\n"
+                + "                .setLeftLabel(\"HEAD/TOTAL\"));\n"
+                + "");
 
         RandomSource.setSeed(1);
         final Vector index = new IndexVector(1, 1000, 1);
@@ -263,20 +264,15 @@ public class DiscreteSampling implements TutorialPage {
             total++;
             value.setValue(i, count / total);
         }
-        draw(new Plot() {
-            {
-                new ABLine(this, 0.6, true);
-                new Lines(this, index, value) {
-                    {
-                        opt().setColorIndex(2);
-                        opt().setLwd(1.5f);
-                    }
-                };
-                opt().setYRange(0, 1);
-                setBottomLabel("experiment no");
-                setLeftLabel("HEAD/TOTAL");
-            }
-        });
+        draw(new Plot()
+                .add(new ABLine(0.6, true))
+                .add(new Lines(index, value)
+                        .setColorIndex(2)
+                        .setLwd(1.5f)
+                )
+                .setYRange(0, 1)
+                .setBottomLabel("experiment no")
+                .setLeftLabel("HEAD/TOTAL"));
 
         p("From the previous function line we see that the plugged in estimate "
                 + "of the probability of HEAD has a large variation at the beginning "
@@ -304,20 +300,20 @@ public class DiscreteSampling implements TutorialPage {
                 + "smaller probability than usual. We repeat the experiment with a "
                 + "weighted sampling technique.");
 
-        code("        vectors[0] = new NumericVector(\"loaded lottery\", SAMPLE_SIZE * TRIALS);\n"
-                + "        vectors[1] = new NumericVector(\"winning number\", SAMPLE_SIZE * TRIALS);\n"
+        code("        vectors[0] = new NumericVector(SAMPLE_SIZE * TRIALS);\n"
+                + "        vectors[1] = new NumericVector(SAMPLE_SIZE * TRIALS);\n"
                 + "\n"
                 + "        double[] prob = new double[49];\n"
-                + "        for (int i = 0; i <prob.length; i++) {\n"
-                + "            if(i-1>=8 && i-1<=12) {\n"
-                + "                prob[i]=3;\n"
+                + "        for (int i = 0; i < prob.length; i++) {\n"
+                + "            if (i - 1 >= 8 && i - 1 <= 12) {\n"
+                + "                prob[i] = 3;\n"
                 + "                continue;\n"
                 + "            }\n"
-                + "            if(i-1>=40) {\n"
-                + "                prob[i]=30;\n"
+                + "            if (i - 1 >= 40) {\n"
+                + "                prob[i] = 30;\n"
                 + "                continue;\n"
                 + "            }\n"
-                + "            prob[i]=10;\n"
+                + "            prob[i] = 10;\n"
                 + "        }\n"
                 + "        for (int i = 0; i < TRIALS; i++) {\n"
                 + "            int[] numbers = new DiscreteWeightedSamplingWOR(prob).sample(SAMPLE_SIZE);\n"
@@ -327,13 +323,14 @@ public class DiscreteSampling implements TutorialPage {
                 + "            }\n"
                 + "        }\n"
                 + "\n"
-                + "        final Frame df2 = new SolidFrame(\"lottery\", SAMPLE_SIZE * TRIALS, vectors);\n"
-                + "        draw(new Plot() {{\n"
-                + "            add(new Points(this, df2.getCol(0), df2.getCol(1)));\n"
-                + "            opt().setPchIndex(new OneIndexVector(1));\n"
-                + "            opt().setColorIndex(new OneIndexVector(34));\n"
-                + "            opt().setSizeIndex(new OneNumericVector(2));\n"
-                + "        }}, 600, 300);\n");
+                + "        final Frame df2 = new SolidFrame(SAMPLE_SIZE * TRIALS, vectors, new String[]{\"loaded lottery\", \"winning number\"});\n"
+                + "        draw(new Plot()\n"
+                + "                .add(new Points(df2.getCol(0), df2.getCol(1)))\n"
+                + "                .setPchIndex(new OneIndexVector(1))\n"
+                + "                .setColorIndex(new OneIndexVector(34))\n"
+                + "                .setSizeIndex(new OneNumericVector(2)),\n"
+                + "                600, 300);\n"
+                + "");
 
         vectors[0] = new NumericVector(SAMPLE_SIZE * TRIALS);
         vectors[1] = new NumericVector(SAMPLE_SIZE * TRIALS);
@@ -359,14 +356,12 @@ public class DiscreteSampling implements TutorialPage {
         }
 
         final Frame df2 = new SolidFrame(SAMPLE_SIZE * TRIALS, vectors, new String[]{"loaded lottery", "winning number"});
-        draw(new Plot() {
-            {
-                new Points(this, df2.getCol(0), df2.getCol(1));
-                opt().setPchIndex(new OneIndexVector(1));
-                opt().setColorIndex(new OneIndexVector(34));
-                opt().setSizeIndex(new OneNumericVector(2));
-            }
-        }, 600, 300);
+        draw(new Plot()
+                .add(new Points(df2.getCol(0), df2.getCol(1)))
+                .setPchIndex(new OneIndexVector(1))
+                .setColorIndex(new OneIndexVector(34))
+                .setSizeIndex(new OneNumericVector(2)),
+                600, 300);
 
         p("This time we see more than random there. There is a clear more dense "
                 + "region in the upper side of the graph. Also, we can note, perhaps "
@@ -375,16 +370,14 @@ public class DiscreteSampling implements TutorialPage {
         p("To clarify a kernel density plot which approximates the population "
                 + "density would help more.");
 
-        draw(new Plot() {
-            {
-                new FunctionLine(this, new KernelDensityEstimator(df2.getCol("winning number"), 3).getPdfFunction());
-                opt().setXRange(-10, 60);
-                opt().setYRange(0, .05);
-                opt().setColorIndex(new OneIndexVector(1));
-                setBottomLabel("winning numbers");
-                setLeftLabel("kernel probability density");
-            }
-        }, 600, 300);
+        draw(new Plot()
+                .add(new FunctionLine(new KernelDensityEstimator(df2.getCol("winning number"), 3).getPdfFunction())
+                        .setXRange(-10, 60)
+                        .setYRange(0, .05)
+                        .setColorIndex(new OneIndexVector(1)))
+                .setBottomLabel("winning numbers")
+                .setLeftLabel("kernel probability density"),
+                600, 300);
 
         p("Rapaio implementation of this last algorithm is based on a wonderful algorithm "
                 + "invented by Efraimidis-Spirakis. "

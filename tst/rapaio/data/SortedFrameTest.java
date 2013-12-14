@@ -25,13 +25,10 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.RandomSource;
-import rapaio.filters.BaseFilters;
 import rapaio.io.CsvPersistence;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.util.Comparator;
 
 import static rapaio.filters.RowFilters.*;
@@ -52,7 +49,7 @@ public class SortedFrameTest {
         persistence.setHasQuotas(false);
         persistence.getNumericFieldHints().add("z");
         persistence.getIndexFieldHints().add("y");
-        df = persistence.read(Paths.get(SortedFrameTest.class.getResource("sorted-frame.csv").toURI()));
+        df = persistence.read(SortedFrameTest.class,"sorted-frame.csv");
     }
 
 

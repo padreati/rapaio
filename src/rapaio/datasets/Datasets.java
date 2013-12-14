@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.datasets;
 
 import rapaio.data.Frame;
@@ -27,8 +28,6 @@ import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -36,8 +35,7 @@ import java.nio.file.Paths;
 public class Datasets {
 
     public static Frame loadIrisDataset() throws IOException, URISyntaxException {
-        Path path = Paths.get(Datasets.class.getResource("iris.csv").toURI());
-        Frame df = new CsvPersistence().read(path);
+        Frame df = new CsvPersistence().read(Datasets.class, "iris.csv");
         Vector[] vectors = new Vector[df.getColCount()];
         vectors[vectors.length - 1] = df.getCol(vectors.length - 1);
         for (int i = 0; i < vectors.length - 1; i++) {
@@ -47,7 +45,7 @@ public class Datasets {
     }
 
     public static Frame loadPearsonHeightDataset() throws IOException, URISyntaxException {
-        Frame df = new CsvPersistence().read(Paths.get(Datasets.class.getResource("pearsonheight.csv").toURI()));
+        Frame df = new CsvPersistence().read(Datasets.class, "pearsonheight.csv");
         Vector[] vectors = new Vector[df.getColCount()];
         for (int i = 0; i < df.getColCount(); i++) {
             vectors[i] = BaseFilters.toNumeric(df.getCol(i));
@@ -59,7 +57,7 @@ public class Datasets {
         CsvPersistence persistence = new CsvPersistence();
         persistence.setColSeparator(',');
         persistence.setHasQuotas(false);
-        Frame df = persistence.read(Paths.get(Datasets.class.getResource("chest.csv").toURI()));
+        Frame df = persistence.read(Datasets.class, "chest.csv");
         return BaseFilters.toNumeric(df);
     }
 
@@ -68,7 +66,7 @@ public class Datasets {
         persistence.setColSeparator(',');
         persistence.setHasHeader(true);
         persistence.setHasQuotas(false);
-        Frame df = persistence.read(Paths.get(Datasets.class.getResource("carmpgdat.csv").toURI()));
+        Frame df = persistence.read(Datasets.class, "carmpgdat.csv");
         Vector[] vectors = new Vector[df.getColCount()];
         vectors[0] = df.getCol(0);
         vectors[1] = df.getCol(1);
@@ -141,6 +139,6 @@ public class Datasets {
         persistence.getNumericFieldHints().add("capital_run_length_average");
         persistence.getNumericFieldHints().add("capital_run_length_longest");
         persistence.getNumericFieldHints().add("capital_run_length_total");
-        return persistence.read(Paths.get(Datasets.class.getResource("spam-base.csv").toURI()));
+        return persistence.read(Datasets.class, "spam-base.csv");
     }
 }

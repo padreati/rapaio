@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.tutorial.pages;
 
 import rapaio.data.Frame;
@@ -36,16 +37,19 @@ import rapaio.printer.Printer;
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class IrisExplore implements TutorialPage {
+
     @Override
-    public String getPageName(){
+    public String getPageName() {
         return "IrisExploration";
     }
+
     @Override
-    public String getPageTitle(){
+    public String getPageTitle() {
         return "Iris Exploration";
     }
+
     @Override
-    public void render() throws IOException, URISyntaxException{
+    public void render() throws IOException, URISyntaxException {
         final Frame df = Datasets.loadIrisDataset();
         heading(1, "Iris sample exploratory analysis");
         p("This is a sample just to hold analysis of Iris dataset"
@@ -71,19 +75,14 @@ public class IrisExplore implements TutorialPage {
         p("We can see easily that for petal length and width there are two well-separated modes."
                 + " This is probably a well separation of species, so a plot should clarify "
                 + "that immediately.");
-        draw(new Plot() {
-            {
-                new Points(this, df.getCol(2), df.getCol(3)) {
-                    {
-                        opt().setColorIndex(df.getCol("class"));
-                        opt().setPchIndex(1);
-                    }
-                };
-                setBottomLabel(df.getColNames()[2]);
-                setLeftLabel(df.getColNames()[3]);
-                setTitle("Iris data points colored by species");
-            }
-        }, 600, 350);
+        draw(new Plot()
+                .add(new Points(df.getCol(2), df.getCol(3))
+                        .setColorIndex(df.getCol("class"))
+                        .setPchIndex(1))
+                .setBottomLabel(df.getColNames()[2])
+                .setLeftLabel(df.getColNames()[3])
+                .setTitle("Iris data points colored by species"), 
+                600, 350);
         p(""
                 + "Indeed, we can notice that the red points are clustered closer to the bottom-left corner "
                 + "of the plot. The other type of points (the blue and the green ones) are "

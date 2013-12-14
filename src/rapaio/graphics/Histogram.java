@@ -38,7 +38,8 @@ public class Histogram extends Plot {
     }
 
     public Histogram(Vector v, int bins, boolean density, double from, double to) {
-        hist = new HistogramBars(this, v, bins, density, from, to);
+        hist = new HistogramBars(v, bins, density, from, to);
+        add(hist);
     }
 
     public int getBins() {
@@ -47,7 +48,6 @@ public class Histogram extends Plot {
 
     public void setBins(int bins) {
         hist.setBins(bins);
-        hist.setRebuild(true);
     }
 
     public boolean isProb() {
@@ -56,6 +56,5 @@ public class Histogram extends Plot {
 
     public void setProb(boolean prob) {
         hist.setProb(prob);
-        hist.setRebuild(true);
     }
 }

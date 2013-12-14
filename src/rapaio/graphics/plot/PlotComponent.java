@@ -17,41 +17,70 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.graphics.plot;
 
-import rapaio.graphics.Plot;
-import rapaio.graphics.base.Range;
-import rapaio.graphics.options.GraphicOptions;
 
 import java.awt.*;
+import rapaio.data.Vector;
+import rapaio.graphics.base.AbstractFigure;
 
 /**
  * @author Aurelian Tutuianu
  */
-public abstract class PlotComponent {
-
-    private final GraphicOptions options;
-    protected final Plot plot;
-
-    public PlotComponent(Plot plot) {
-        this.plot = plot;
-        this.options = new GraphicOptions(plot.opt());
-        this.plot.getComponents().add(this);
-    }
-
-    public GraphicOptions opt() {
-        return options;
-    }
-
-    public abstract Range getComponentDataRange();
+public abstract class PlotComponent extends AbstractFigure {
 
     public abstract void paint(Graphics2D g2d);
 
-    public double xscale(double x) {
-        return plot.xscaledbl(x);
+    @Override
+    public PlotComponent setLwd(float lwd) {
+        super.setLwd(lwd);
+        return this;
     }
 
-    public double yscale(double y) {
-        return plot.yscaledbl(y);
+    @Override
+    public PlotComponent setSizeIndex(Vector sizeIndex) {
+        super.setSizeIndex(sizeIndex);
+        return this;
+    }
+
+    @Override
+    public PlotComponent setSizeIndex(double size) {
+        super.setSizeIndex(size);
+        return this;
+    }
+
+    @Override
+    public PlotComponent setColorIndex(Vector colorIndex) {
+        super.setColorIndex(colorIndex);
+        return this;
+    }
+
+    @Override
+    public PlotComponent setColorIndex(int colorIndex) {
+        super.setColorIndex(colorIndex);
+        return this;
+    }
+    @Override
+    public PlotComponent setPchIndex(Vector pchIndex) {
+        super.setPchIndex(pchIndex);
+        return this;
+    }
+
+    @Override
+    public PlotComponent setPchIndex(int pch) {
+        super.setPchIndex(pch);
+        return this;
+    }
+    @Override
+    public PlotComponent setXRange(double start, double end) {
+        super.setXRange(start, end);
+        return this;
+    }
+
+    @Override
+    public PlotComponent setYRange(double start, double end) {
+        super.setYRange(start, end);
+        return this;
     }
 }

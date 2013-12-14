@@ -25,10 +25,11 @@ import rapaio.data.Frame;
 import rapaio.data.OneIndexVector;
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
-import rapaio.graphics.base.BaseFigure;
+import rapaio.graphics.base.AbstractFigure;
 import rapaio.graphics.base.Range;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 import java.util.List;
 
 import static rapaio.core.BaseMath.max;
@@ -37,7 +38,7 @@ import static rapaio.core.BaseMath.min;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class BoxPlot extends BaseFigure {
+public class BoxPlot extends AbstractFigure {
 
     private final Vector[] vectors;
     private final String[] labels;
@@ -66,7 +67,8 @@ public class BoxPlot extends BaseFigure {
         }
         int[] pos = new int[vectors.length];
         for (int i = 0; i < nominal.getRowCount(); i++) {
-            vectors[nominal.getIndex(i)].setValue(pos[nominal.getIndex(i)]++, numeric.getValue(i));
+            vectors[nominal.getIndex(i)].setValue(pos[nominal.getIndex(i)], numeric.getValue(i));
+            pos[nominal.getIndex(i)]++;
         }
         initialize();
     }
@@ -113,7 +115,7 @@ public class BoxPlot extends BaseFigure {
         setLeftThicker(true);
         setBottomMarkers(true);
         setBottomThicker(true);
-        opt().setColorIndex(new OneIndexVector(0));
+        setColorIndex(new OneIndexVector(0));
     }
 
     @Override
@@ -137,14 +139,14 @@ public class BoxPlot extends BaseFigure {
 
     @Override
     public void buildBottomMarkers() {
-        bottomMarkersPos.clear();
-        bottomMarkersMsg.clear();
+        getParent().getBottomMarkersPos().clear();
+        getParent().getBottomMarkersMsg().clear();
 
-        double xspotwidth = viewport.width / vectors.length;
+        double xspotwidth = getParent().getViewport().width / vectors.length;
 
         for (int i = 0; i < vectors.length; i++) {
-            bottomMarkersPos.add(i * xspotwidth + xspotwidth / 2);
-            bottomMarkersMsg.add(labels[i]);
+            getParent().getBottomMarkersPos().add(i * xspotwidth + xspotwidth / 2);
+            getParent().getBottomMarkersMsg().add(labels[i]);
         }
     }
 
@@ -167,17 +169,18 @@ public class BoxPlot extends BaseFigure {
             double x2 = i + 0.5;
             double x3 = i + 0.5 + 0.3;
 
-            g2d.setColor(opt().getColor(i));
+            g2d.setColor(getColor(i));
             // median
-            g2d.setStroke(new BasicStroke(opt().getLwd() * 2));
-            g2d.drawLine(xscale(x1), yscale(q[1]), xscale(x3), yscale(q[1]));
+            g2d.setStroke(new BasicStroke(getLwd() * 2));
+            g2d.draw(new Line2D.Double(
+                    xscale(x1), yscale(q[1]), xscale(x3), yscale(q[1])));
 
             // box
-            g2d.setStroke(new BasicStroke(opt().getLwd()));
-            g2d.drawLine(xscale(x1), yscale(q[0]), xscale(x3), yscale(q[0]));
-            g2d.drawLine(xscale(x1), yscale(q[2]), xscale(x3), yscale(q[2]));
-            g2d.drawLine(xscale(x1), yscale(q[0]), xscale(x1), yscale(q[2]));
-            g2d.drawLine(xscale(x3), yscale(q[0]), xscale(x3), yscale(q[2]));
+            g2d.setStroke(new BasicStroke(getLwd()));
+            g2d.draw(new Line2D.Double(xscale(x1), yscale(q[0]), xscale(x3), yscale(q[0])));
+            g2d.draw(new Line2D.Double(xscale(x1), yscale(q[2]), xscale(x3), yscale(q[2])));
+            g2d.draw(new Line2D.Double(xscale(x1), yscale(q[0]), xscale(x1), yscale(q[2])));
+            g2d.draw(new Line2D.Double(xscale(x3), yscale(q[0]), xscale(x3), yscale(q[2])));
 
             // outliers
             double upperwhisker = q[2];
@@ -186,14 +189,20 @@ public class BoxPlot extends BaseFigure {
                 double point = v.getValue(j);
                 if ((point > q[2] + outerfence) || (point < q[0] - outerfence)) {
                     // big outlier
-                    int width = (int) (3 * opt().getSize(i));
-                    g2d.fillOval(xscale(x2) - width / 2 - 1, yscale(point) - width / 2 - 1, width, width);
+                    int width = (int) (3 * getSize(i));
+                    g2d.fillOval(
+                            (int)xscale(x2) - width / 2 - 1, 
+                            (int)yscale(point) - width / 2 - 1, 
+                            width, width);
                     continue;
                 }
                 if ((point > q[2] + innerfence) || (point < q[0] - innerfence)) {
                     // outlier
-                    int width = (int) (3.5 * opt().getSize(i));
-                    g2d.drawOval(xscale(x2) - width / 2 - 1, yscale(point) - width / 2 - 1, width, width);
+                    int width = (int) (3.5 * getSize(i));
+                    g2d.drawOval(
+                            (int)xscale(x2) - width / 2 - 1, 
+                            (int)yscale(point) - width / 2 - 1, 
+                            width, width);
                     continue;
                 }
                 if ((point > upperwhisker) && (point < q[2] + innerfence)) {
@@ -205,12 +214,12 @@ public class BoxPlot extends BaseFigure {
             }
 
             // whiskers
-            g2d.drawLine(xscale(x1), yscale(upperwhisker), xscale(x3), yscale(upperwhisker));
-            g2d.drawLine(xscale(x1), yscale(lowerqhisker), xscale(x3), yscale(lowerqhisker));
+            g2d.draw(new Line2D.Double(xscale(x1), yscale(upperwhisker), xscale(x3), yscale(upperwhisker)));
+            g2d.draw(new Line2D.Double(xscale(x1), yscale(lowerqhisker), xscale(x3), yscale(lowerqhisker)));
 
-            g2d.setStroke(new BasicStroke(opt().getLwd(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[]{8}, 0));
-            g2d.drawLine(xscale(x2), yscale(q[2]), xscale(x2), yscale(upperwhisker));
-            g2d.drawLine(xscale(x2), yscale(q[0]), xscale(x2), yscale(lowerqhisker));
+            g2d.setStroke(new BasicStroke(getLwd(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[]{8}, 0));
+            g2d.draw(new Line2D.Double(xscale(x2), yscale(q[2]), xscale(x2), yscale(upperwhisker)));
+            g2d.draw(new Line2D.Double(xscale(x2), yscale(q[0]), xscale(x2), yscale(lowerqhisker)));
         }
     }
 

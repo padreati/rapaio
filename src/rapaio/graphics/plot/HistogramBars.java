@@ -17,11 +17,11 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.graphics.plot;
 
 import rapaio.data.OneIndexVector;
 import rapaio.data.Vector;
-import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
 
@@ -35,33 +35,33 @@ public class HistogramBars extends PlotComponent {
     private final Vector v;
     int bins = 20;
     boolean prob = false;
-    boolean rebuild = true;
     double[] freqtable;
     double minvalue = Double.NaN;
     double maxvalue = Double.NaN;
 
-    public HistogramBars(Plot parent, Vector v) {
-        this(parent, v, 30, true);
+    public HistogramBars(Vector v) {
+        this(v, 30, true);
     }
 
-    public HistogramBars(Plot parent, Vector v, int bins, boolean prob) {
-        this(parent, v, bins, prob, Double.NaN, Double.NaN);
+    public HistogramBars(Vector v, int bins, boolean prob) {
+        this(v, bins, prob, Double.NaN, Double.NaN);
     }
 
-    public HistogramBars(Plot parent, Vector v, int bins, boolean prob, double minvalue, double maxvalue) {
-        super(parent);
+    public HistogramBars(Vector v, int bins, boolean prob, double minvalue, double maxvalue) {
         this.v = v;
         this.bins = bins;
         this.prob = prob;
-        this.rebuild = true;
         this.minvalue = minvalue;
         this.maxvalue = maxvalue;
+    }
 
-        plot.setLeftLabel(prob ? "density" : "frequency");
-        plot.setLeftThicker(true);
-        plot.setLeftMarkers(true);
-        plot.setBottomThicker(true);
-        plot.setBottomMarkers(true);
+    @Override
+    public void initialize(Rectangle rect) {
+        getParent().setLeftLabel(prob ? "density" : "frequency");
+        getParent().setLeftThicker(true);
+        getParent().setLeftMarkers(true);
+        getParent().setBottomThicker(true);
+        getParent().setBottomMarkers(true);
     }
 
     public int getBins() {
@@ -70,7 +70,6 @@ public class HistogramBars extends PlotComponent {
 
     public void setBins(int bins) {
         this.bins = bins;
-        rebuild = true;
     }
 
     public boolean isProb() {
@@ -79,88 +78,77 @@ public class HistogramBars extends PlotComponent {
 
     public void setProb(boolean prob) {
         this.prob = prob;
-        rebuild = true;
-    }
-
-    public void setRebuild(boolean rebuild) {
-        this.rebuild = rebuild;
     }
 
     private void rebuild() {
-        if (rebuild) {
-            rebuild = false;
-
-            if (minvalue != minvalue) {
-                for (int i = 0; i < v.getRowCount(); i++) {
-                    if (v.isMissing(i)) {
-                        continue;
-                    }
-                    if (minvalue != minvalue) {
-                        minvalue = v.getValue(i);
-                    } else {
-                        minvalue = Math.min(minvalue, v.getValue(i));
-                    }
-                    if (maxvalue != maxvalue) {
-                        maxvalue = v.getValue(i);
-                    } else {
-                        maxvalue = Math.max(maxvalue, v.getValue(i));
-                    }
-                }
-            }
-
-            double step = (maxvalue - minvalue) / (1. * bins);
-            freqtable = new double[bins];
-            double total = 0;
+        if (minvalue != minvalue) {
             for (int i = 0; i < v.getRowCount(); i++) {
                 if (v.isMissing(i)) {
                     continue;
                 }
-                total++;
-                if (v.getValue(i) < minvalue || v.getValue(i) > maxvalue) {
-                    continue;
+                if (minvalue != minvalue) {
+                    minvalue = v.getValue(i);
+                } else {
+                    minvalue = Math.min(minvalue, v.getValue(i));
                 }
-                int index = (int) ((v.getValue(i) - minvalue) / step);
-                if (index == freqtable.length)
-                    index--;
-                freqtable[index]++;
-            }
-
-            if (prob && (total != 0)) {
-                for (int i = 0; i < freqtable.length; i++) {
-                    freqtable[i] /= (total * step);
+                if (maxvalue != maxvalue) {
+                    maxvalue = v.getValue(i);
+                } else {
+                    maxvalue = Math.max(maxvalue, v.getValue(i));
                 }
             }
+        }
 
-            // defaults
-            if (opt().getColorIndex().getRowCount() == 1 && opt().getColorIndex().getIndex(0) == 0) {
-                opt().setColorIndex(new OneIndexVector(7));
+        double step = (maxvalue - minvalue) / (1. * bins);
+        freqtable = new double[bins];
+        double total = 0;
+        for (int i = 0; i < v.getRowCount(); i++) {
+            if (v.isMissing(i)) {
+                continue;
             }
+            total++;
+            if (v.getValue(i) < minvalue || v.getValue(i) > maxvalue) {
+                continue;
+            }
+            int index = (int) ((v.getValue(i) - minvalue) / step);
+            if (index == freqtable.length)
+                index--;
+            freqtable[index]++;
+        }
 
+        if (prob && (total != 0)) {
+            for (int i = 0; i < freqtable.length; i++) {
+                freqtable[i] /= (total * step);
+            }
+        }
+
+        // defaults
+        if (getColorIndex().getRowCount() == 1 && getColorIndex().getIndex(0) == 0) {
+            setColorIndex(new OneIndexVector(7));
         }
     }
 
     @Override
-    public Range getComponentDataRange() {
+    public Range buildRange() {
         rebuild();
 
         Range range = new Range();
-        if (opt().getXRangeStart() != opt().getXRangeStart()) {
+        if (getXRangeStart() != getXRangeStart()) {
             range.union(minvalue, Double.NaN);
             range.union(maxvalue, Double.NaN);
         } else {
-            range.union(opt().getXRangeStart(), Double.NaN);
-            range.union(opt().getXRangeEnd(), Double.NaN);
+            range.union(getXRangeStart(), Double.NaN);
+            range.union(getXRangeEnd(), Double.NaN);
         }
-        if (opt().getYRangeStart() != opt().getYRangeStart()) {
+        if (getYRangeStart() != getYRangeStart()) {
             for (int i = 0; i < freqtable.length; i++) {
                 range.union(Double.NaN, freqtable[i]);
             }
             range.union(Double.NaN, 0);
         } else {
             range.union(Double.NaN, 0);
-            range.union(Double.NaN, opt().getYRangeEnd());
+            range.union(Double.NaN, getYRangeEnd());
         }
-
         return range;
     }
 
@@ -171,41 +159,41 @@ public class HistogramBars extends PlotComponent {
         g2d.setColor(ColorPalette.STANDARD.getColor(0));
         for (int i = 0; i < freqtable.length; i++) {
             double d = freqtable[i];
-            if (!plot.getRange().contains(binStart(i), 0)) {
+            if (!getParent().getRange().contains(binStart(i), 0)) {
                 continue;
             }
-            if (!plot.getRange().contains(binStart(i + 1), d)) {
+            if (!getParent().getRange().contains(binStart(i + 1), d)) {
                 continue;
             }
             g2d.setColor(ColorPalette.STANDARD.getColor(0));
             int[] x = new int[]{
-                    plot.xscale(binStart(i)),
-                    plot.xscale(binStart(i)),
-                    plot.xscale(binStart(i + 1)),
-                    plot.xscale(binStart(i + 1)),
-                    plot.xscale(binStart(i)),};
+                (int) getParent().xscale(binStart(i)),
+                (int) getParent().xscale(binStart(i)),
+                (int) getParent().xscale(binStart(i + 1)),
+                (int) getParent().xscale(binStart(i + 1)),
+                (int) getParent().xscale(binStart(i)),};
             int[] y = new int[]{
-                    plot.yscale(0),
-                    plot.yscale(d),
-                    plot.yscale(d),
-                    plot.yscale(0),
-                    plot.yscale(0)};
+                (int) getParent().yscale(0),
+                (int) getParent().yscale(d),
+                (int) getParent().yscale(d),
+                (int) getParent().yscale(0),
+                (int) getParent().yscale(0)};
             g2d.drawPolyline(x, y, 5);
             if (d != 0) {
                 x = new int[]{
-                        plot.xscale(binStart(i)) + 1,
-                        plot.xscale(binStart(i)) + 1,
-                        plot.xscale(binStart(i + 1)),
-                        plot.xscale(binStart(i + 1)),
-                        plot.xscale(binStart(i)) + 1
+                    (int) getParent().xscale(binStart(i)) + 1,
+                    (int) getParent().xscale(binStart(i)) + 1,
+                    (int) getParent().xscale(binStart(i + 1)),
+                    (int) getParent().xscale(binStart(i + 1)),
+                    (int) getParent().xscale(binStart(i)) + 1
                 };
                 y = new int[]{
-                        plot.yscale(0),
-                        plot.yscale(d) + 1,
-                        plot.yscale(d) + 1,
-                        plot.yscale(0),
-                        plot.yscale(0)};
-                g2d.setColor(opt().getColor(i));
+                    (int) getParent().yscale(0),
+                    (int) getParent().yscale(d) + 1,
+                    (int) getParent().yscale(d) + 1,
+                    (int) getParent().yscale(0),
+                    (int) getParent().yscale(0)};
+                g2d.setColor(getColor(i));
                 g2d.fillPolygon(x, y, 5);
             }
         }

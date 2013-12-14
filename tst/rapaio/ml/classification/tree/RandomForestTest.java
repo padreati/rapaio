@@ -29,7 +29,6 @@ import rapaio.ml.classification.ModelEvaluation;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import org.junit.Assert;
 
 /**
@@ -62,7 +61,7 @@ public class RandomForestTest {
     public void allCompareTest() throws IOException, URISyntaxException {
         CsvPersistence csv = new CsvPersistence();
         csv.setHasHeader(true);
-        Frame tests = csv.read(Paths.get(getClass().getResource("tests.csv").toURI()));
+        Frame tests = csv.read(getClass(),"tests.csv");
         for (int i = 0; i < tests.getRowCount(); i++) {
             if (tests.getLabel(i, 0).startsWith("#")) {
                 continue;

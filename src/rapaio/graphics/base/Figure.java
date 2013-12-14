@@ -19,8 +19,6 @@
  */
 package rapaio.graphics.base;
 
-import rapaio.graphics.options.GraphicOptions;
-
 import java.awt.*;
 
 /**
@@ -28,8 +26,7 @@ import java.awt.*;
  */
 public interface Figure {
 
-    GraphicOptions opt();
-
+    void initialize(Rectangle rect);
+    
     void paint(Graphics2D g2d, Rectangle rect);
-
 }

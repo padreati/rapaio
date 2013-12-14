@@ -28,7 +28,6 @@ import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -40,7 +39,7 @@ public abstract class CoreStatTestUtil {
     public CoreStatTestUtil() throws IOException, URISyntaxException {
         CsvPersistence p = new CsvPersistence();
         p.setHasHeader(false);
-        df = p.read(Paths.get(getClass().getResource("core_stat.csv").toURI()));
+        df = p.read(getClass(),"core_stat.csv");
         Vector[] vectors = new Vector[df.getColCount()];
         for (int i = 0; i < vectors.length; i++) {
             vectors[i] = BaseFilters.toNumeric(df.getCol(i));

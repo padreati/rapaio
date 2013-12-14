@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.graphics.plot;
 
 import rapaio.core.BaseMath;
@@ -25,7 +26,6 @@ import rapaio.data.Vector;
 import rapaio.distributions.empirical.KernelDensityEstimator;
 import rapaio.distributions.empirical.KernelFunction;
 import rapaio.distributions.empirical.KernelFunctionGaussian;
-import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
 
 import java.awt.*;
@@ -41,26 +41,15 @@ public class DensityLine extends PlotComponent {
     private final Vector vector;
     private final double bandwidth;
 
-    public DensityLine(Plot plot, Vector vector) {
-        this(
-                plot,
-                vector,
-                new KernelFunctionGaussian(),
-                new KernelDensityEstimator(vector).getSilvermanBandwidth(vector),
-                256);
+    public DensityLine(Vector vector) {
+        this(vector, new KernelFunctionGaussian(), new KernelDensityEstimator(vector).getSilvermanBandwidth(vector), 256);
     }
 
-    public DensityLine(Plot plot, Vector vector, double bandwidth) {
-        this(
-                plot,
-                vector,
-                new KernelFunctionGaussian(),
-                bandwidth,
-                256);
+    public DensityLine(Vector vector, double bandwidth) {
+        this(vector, new KernelFunctionGaussian(), bandwidth, 256);
     }
 
-    public DensityLine(Plot plot, Vector vector, KernelFunction kf, double bandwidth, int points) {
-        super(plot);
+    public DensityLine(Vector vector, KernelFunction kf, double bandwidth, int points) {
         this.kde = new KernelDensityEstimator(vector, kf, bandwidth);
         this.points = points;
         this.vector = vector;
@@ -68,7 +57,7 @@ public class DensityLine extends PlotComponent {
     }
 
     @Override
-    public Range getComponentDataRange() {
+    public Range buildRange() {
         double xmin = Double.NaN;
         double xmax = Double.NaN;
         double ymin = 0;
@@ -105,7 +94,8 @@ public class DensityLine extends PlotComponent {
 
     @Override
     public void paint(Graphics2D g2d) {
-        Range range = plot.getRange();
+        buildRange();
+        Range range = getParent().getRange();
         Vector x = new NumericVector(points + 1);
         Vector y = new NumericVector(points + 1);
         double xstep = (range.getX2() - range.getX1()) / points;
@@ -116,13 +106,13 @@ public class DensityLine extends PlotComponent {
 
         for (int i = 1; i < x.getRowCount(); i++) {
             if (range.contains(x.getValue(i - 1), y.getValue(i - 1)) && range.contains(x.getValue(i), y.getValue(i))) {
-                g2d.setColor(opt().getColor(i));
-                g2d.setStroke(new BasicStroke(opt().getLwd()));
+                g2d.setColor(getColor(i));
+                g2d.setStroke(new BasicStroke(getLwd()));
                 g2d.draw(new Line2D.Double(
-                        xscale(x.getValue(i - 1)),
-                        yscale(y.getValue(i - 1)),
-                        xscale(x.getValue(i)),
-                        yscale(y.getValue(i))));
+                        getParent().xscale(x.getValue(i - 1)),
+                        getParent().yscale(y.getValue(i - 1)),
+                        getParent().xscale(x.getValue(i)),
+                        getParent().yscale(y.getValue(i))));
 
             }
         }

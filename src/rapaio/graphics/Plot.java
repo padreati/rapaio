@@ -17,11 +17,12 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.graphics;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import rapaio.graphics.base.BaseFigure;
+import rapaio.graphics.base.AbstractFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.plot.PlotComponent;
 
@@ -31,23 +32,24 @@ import java.util.List;
 /**
  * @author tutuianu
  */
-public class Plot extends BaseFigure {
+public class Plot extends AbstractFigure {
 
-    private final List<PlotComponent> components;
+    private final List<PlotComponent> components = new LinkedList<>();
 
-    public Plot() {
-        components = new LinkedList<>();
-        bottomThicker = true;
-        bottomMarkers = true;
-        leftThicker = true;
-        leftMarkers = true;
+    @Override
+    public void initialize(Rectangle rect) {
+        super.initialize(rect);
+        setBottomThicker(true);
+        setBottomMarkers(true);
+        setLeftThicker(true);
+        setLeftMarkers(true);
     }
 
     @Override
     public Range buildRange() {
         Range r = null;
         for (PlotComponent pc : components) {
-            Range newrange = pc.getComponentDataRange();
+            Range newrange = pc.getRange();
             if (newrange != null) {
                 if (r == null) {
                     r = newrange;
@@ -58,27 +60,29 @@ public class Plot extends BaseFigure {
         }
 
         if (r == null) {
-            return null;
+            r = new Range(0, 0, 0, 0);
         }
 
-        if (opt().getXRangeStart() == opt().getXRangeStart() && opt().getXRangeEnd() == opt().getXRangeEnd()) {
-            r.setX1(opt().getXRangeStart());
-            r.setX2(opt().getXRangeEnd());
+        if (getXRangeStart() == getXRangeStart() && getXRangeEnd() == getXRangeEnd()) {
+            r.setX1(getXRangeStart());
+            r.setX2(getXRangeEnd());
         }
-        if (opt().getYRangeStart() == opt().getYRangeStart() && opt().getYRangeEnd() == opt().getYRangeEnd()) {
-            r.setY1(opt().getYRangeStart());
-            r.setY2(opt().getYRangeEnd());
+        if (getYRangeStart() == getYRangeStart() && getYRangeEnd() == getYRangeEnd()) {
+            r.setY1(getYRangeStart());
+            r.setY2(getYRangeEnd());
         }
 
-        if(r.getY1()==r.getY2()) {
-            r.setY1(r.getY1()-0.5);
-            r.setY2(r.getY2()+0.5);
+        if (r.getY1() == r.getY2()) {
+            r.setY1(r.getY1() - 0.5);
+            r.setY2(r.getY2() + 0.5);
         }
         return r;
     }
-    
-    public List<PlotComponent> getComponents() {
-        return components;
+
+    public Plot add(PlotComponent pc) {
+        pc.setParent(this);
+        components.add(pc);
+        return this;
     }
 
     @Override
@@ -97,5 +101,17 @@ public class Plot extends BaseFigure {
     @Override
     public void buildBottomMarkers() {
         buildNumericBottomMarkers();
+    }
+
+    @Override
+    public Plot setXRange(double start, double end) {
+        super.setXRange(start, end);
+        return this;
+    }
+
+    @Override
+    public Plot setYRange(double start, double end) {
+        super.setYRange(start, end);
+        return this;
     }
 }

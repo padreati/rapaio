@@ -17,10 +17,11 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.graphics;
 
 import rapaio.data.*;
-import rapaio.graphics.base.BaseFigure;
+import rapaio.graphics.base.AbstractFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
 
@@ -30,7 +31,7 @@ import java.util.HashSet;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class BarChart extends BaseFigure {
+public class BarChart extends AbstractFigure {
 
     private final Vector category;
     private final Vector condition;
@@ -63,15 +64,20 @@ public class BarChart extends BaseFigure {
         this.condition = condition;
         this.numeric = numeric;
 
-        leftThicker = true;
-        leftMarkers = true;
-        bottomThicker = true;
-        bottomMarkers = true;
-
-        int shift = 9;
-        opt().setColorIndex(new IndexVector(shift, condition.getDictionary().length + shift - 1, 1));
     }
 
+    @Override
+    public void initialize(Rectangle rect) {
+        super.initialize(rect);
+        getParent().setLeftThicker(true);
+        getParent().setLeftMarkers(true);
+        getParent().setBottomThicker(true);
+        getParent().setBottomMarkers(true);
+
+        int shift = 9;
+        setColorIndex(new IndexVector(shift, condition.getDictionary().length + shift - 1, 1));
+    }
+    
     public void useDensity(boolean density) {
         this.density = density;
     }
@@ -118,7 +124,8 @@ public class BarChart extends BaseFigure {
             }
             int cnt = 0;
             for (int i = 0; i < totals.length; i++) {
-                if (totals[i] > 0) cnt++;
+                if (totals[i] > 0)
+                    cnt++;
             }
             range.union(-0.5, 0);
             range.union(cnt - 0.5, 0);
@@ -133,21 +140,23 @@ public class BarChart extends BaseFigure {
 
     @Override
     public void buildBottomMarkers() {
-        bottomMarkersPos.clear();
-        bottomMarkersMsg.clear();
+        getParent().getBottomMarkersPos().clear();
+        getParent().getBottomMarkersMsg().clear();
 
         int cnt = 0;
         for (int i = 0; i < category.getDictionary().length; i++) {
-            if (totals[i] > 0) cnt++;
+            if (totals[i] > 0)
+                cnt++;
         }
         int xspots = cnt;
-        double xspotwidth = viewport.width / (1. * xspots);
+        double xspotwidth = getParent().getViewport().width / (1. * xspots);
 
         cnt = 0;
         for (int i = 0; i < category.getDictionary().length; i++) {
-            if (totals[i] == 0) continue;
-            bottomMarkersPos.add(xspotwidth * (0.5 + cnt));
-            bottomMarkersMsg.add(category.getDictionary()[i]);
+            if (totals[i] == 0)
+                continue;
+            getParent().getBottomMarkersPos().add(xspotwidth * (0.5 + cnt));
+            getParent().getBottomMarkersMsg().add(category.getDictionary()[i]);
             cnt++;
         }
     }
@@ -159,22 +168,43 @@ public class BarChart extends BaseFigure {
         int colindex = 0;
         int col = 0;
         for (int i = 0; i < category.getDictionary().length; i++) {
-            if (totals[i] == 0) continue;
+            if (totals[i] == 0)
+                continue;
 
             double ystart = 0;
             for (int j = 0; j < condition.getDictionary().length; j++) {
                 double yend = ystart + hits[i][j];
 
-                int[] x = {xscale(col - 0.4), xscale(col - 0.4), xscale(col + 0.4), xscale(col + 0.4), xscale(col - 0.4)};
-                int[] y = {yscale(ystart), yscale(yend), yscale(yend), yscale(ystart), yscale(ystart)};
+                int[] x = {
+                    (int) xscale(col - 0.4),
+                    (int) xscale(col - 0.4),
+                    (int) xscale(col + 0.4),
+                    (int) xscale(col + 0.4),
+                    (int) xscale(col - 0.4)};
+                int[] y = {
+                    (int) yscale(ystart),
+                    (int) yscale(yend),
+                    (int) yscale(yend),
+                    (int) yscale(ystart),
+                    (int) yscale(ystart)};
 
                 g2d.setColor(ColorPalette.STANDARD.getColor(0));
                 g2d.drawPolygon(x, y, 4);
 
-                x = new int[]{xscale(col - 0.4) + 1, xscale(col - 0.4) + 1, xscale(col + 0.4), xscale(col + 0.4), xscale(col - 0.4) + 1};
-                y = new int[]{yscale(ystart), yscale(yend) + 1, yscale(yend) + 1, yscale(ystart), yscale(ystart)};
+                x = new int[]{
+                    (int) xscale(col - 0.4) + 1,
+                    (int) xscale(col - 0.4) + 1,
+                    (int) xscale(col + 0.4),
+                    (int) xscale(col + 0.4),
+                    (int) xscale(col - 0.4) + 1};
+                y = new int[]{
+                    (int) yscale(ystart),
+                    (int) yscale(yend) + 1,
+                    (int) yscale(yend) + 1,
+                    (int) yscale(ystart),
+                    (int) yscale(ystart)};
 
-                g2d.setColor(opt().getColor(colindex++));
+                g2d.setColor(getColor(colindex++));
                 g2d.fillPolygon(x, y, 4);
 
                 ystart = yend;

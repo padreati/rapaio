@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.tutorial.pages;
 
 import rapaio.core.stat.Mean;
@@ -73,16 +74,14 @@ public class PearsonHeight implements TutorialPage {
         p("First we take a look at the histograms for the two dimensions");
 
         for (int i = 0; i < df.getColCount(); i++) {
-            Histogram hist = new Histogram(df.getCol(i), 23, true, 57, 80);
-            hist.setBottomLabel(df.getColNames()[i]);
-            hist.opt().setXRange(57, 80);
-            hist.opt().setYRange(0, 0.20);
-
             Normal normal = new Normal(new Mean(df.getCol(i)).getValue(), sqrt(new Variance(df.getCol(i)).getValue()));
-            FunctionLine nline = new FunctionLine(hist, normal.getPdfFunction());
-            nline.opt().setColorIndex(new OneIndexVector(2));
-
-            draw(hist, 700, 300);
+            draw(new Histogram(df.getCol(i), 23, true, 57, 80)
+                    .add(new FunctionLine(normal.getPdfFunction())
+                            .setColorIndex(2))
+                    .setBottomLabel(df.getColNames()[i])
+                    .setXRange(57, 80)
+                    .setYRange(0, 0.20),
+                    700, 300);
         }
 
         heading(2, "About normality");
@@ -98,15 +97,14 @@ public class PearsonHeight implements TutorialPage {
         for (int i = 0; i < df.getColCount(); i++) {
             final Vector col = df.getCol(i);
             final int colIndex = i;
-            draw(new QQPlot() {{
-                double mu = new Mean(col).getValue();
-                Distribution normal = new Normal();
-                this.add(col, normal);
-                this.setLeftLabel(df.getColNames()[colIndex]);
-
-                new ABLine(this, mu, true);
-                new ABLine(this, 0, false);
-            }}, 500, 300);
+            double mu = new Mean(col).getValue();
+            Distribution normal = new Normal();
+            draw(new QQPlot()
+                    .add(col, normal)
+                    .add(new ABLine(mu, true))
+                    .add(new ABLine(0, false))
+                    .setLeftLabel(df.getColNames()[colIndex]),
+                    500, 300);
         }
 
         summary(new Mean(df.getCol("Father")));
@@ -126,19 +124,18 @@ public class PearsonHeight implements TutorialPage {
         summary(fatherQuantiles);
         summary(sonQuantiles);
 
-        draw(new Plot() {{
-            for (int i = 0; i < fatherQuantiles.getValues().length; i++) {
-                ABLine line = new ABLine(this, fatherQuantiles.getValues()[i], false);
-                line.opt().setColorIndex(30);
-            }
-            for (int i = 0; i < sonQuantiles.getValues().length; i++) {
-                ABLine line = new ABLine(this, sonQuantiles.getValues()[i], true);
-                line.opt().setColorIndex(30);
-            }
-            new Points(this, df.getCol("Father"), df.getCol("Son"));
-            opt().setXRange(55, 80);
-            opt().setYRange(55, 80);
-        }}, 600, 600);
+        Plot plot = new Plot()
+                .setXRange(55, 80)
+                .setYRange(55, 80);
+        for (int i = 0; i < fatherQuantiles.getValues().length; i++) {
+            plot.add(new ABLine(fatherQuantiles.getValues()[i], false)
+                    .setColorIndex(30));
+        }
+        for (int i = 0; i < sonQuantiles.getValues().length; i++) {
+            plot.add(new ABLine(sonQuantiles.getValues()[i], true).setColorIndex(30));
+        }
+        plot.add(new Points(df.getCol("Father"), df.getCol("Son")));
+        draw(plot, 600, 600);
 
         p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");
     }

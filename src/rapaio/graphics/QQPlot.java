@@ -19,7 +19,6 @@
  */
 package rapaio.graphics;
 
-import rapaio.data.OneIndexVector;
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
 import rapaio.distributions.Distribution;
@@ -36,16 +35,17 @@ public class QQPlot extends Plot {
         setBottomLabel("Theoretical Quantiles");
     }
 
-    public void add(Vector points, Distribution distribution) {
+    public QQPlot add(Vector points, Distribution distribution) {
         Vector x = sort(points);
-
         Vector y = new NumericVector(x.getRowCount());
         for (int i = 0; i < y.getRowCount(); i++) {
             double p = (i + 1) / (y.getRowCount() + 1.);
             y.setValue(i, distribution.quantile(p));
         }
 
-        Points pts = new Points(this, y, x);
-        pts.opt().setColorIndex(new OneIndexVector(0));
+        Points pts = new Points(y, x);
+        add(pts);
+        pts.setColorIndex(0);
+        return this;
     }
 }

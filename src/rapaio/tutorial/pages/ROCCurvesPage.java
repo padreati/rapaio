@@ -29,11 +29,9 @@ import static rapaio.sample.StatSampling.*;
 
 import static rapaio.workspace.Summary.*;
 
-import rapaio.workspace.Summary;
 import rapaio.filters.ColFilters;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.ROCCurve;
-import rapaio.ml.classification.Classifier;
 import rapaio.ml.classification.boost.AdaBoostM1;
 import rapaio.ml.classification.rule.OneRule;
 import rapaio.ml.classification.tree.DecisionStump;
@@ -121,18 +119,12 @@ public class ROCCurvesPage implements TutorialPage {
         clsLabels.add("ab");
         clsRocs.add(new ROC(ab.getDistribution().getCol("1"), test.getCol("spam"), "1"));
 
-        draw(new Plot() {
-            {
-                for (int i = 0; i < clsLabels.size(); i++) {
-                    final int color = i + 1;
-                    new ROCCurve(this, clsRocs.get(i)) {
-                        {
-                            opt().setColorIndex(color);
-                        }
-                    };
-                }
-            }
-        }, 600, 400);
+        Plot plot = new Plot();
+        for (int i = 0; i < clsLabels.size(); i++) {
+            final int color = i + 1;
+            plot.add(new ROCCurve(clsRocs.get(i)).setColorIndex(color));
+        }
+        draw(plot, 600, 400);
 
         for (int i = 0; i < clsLabels.size(); i++) {
 //            System.out.println(clsLabels.get(i));

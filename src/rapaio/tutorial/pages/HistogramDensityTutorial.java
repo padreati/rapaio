@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.tutorial.pages;
 
 import rapaio.core.BaseMath;
@@ -140,21 +141,16 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("One can draw also the kernel density approximation, over "
                 + "a histogram or as a separate plot.");
 
-        code("        Vector col = df.getCol(\"Father\");\n"
-                + "        Plot plot = new Plot();\n"
-                + "        HistogramBars hb = new HistogramBars(plot, col);\n"
-                + "        hb.opt().setColorIndex(new IndexVector(\"rainbow\", 1, 255, 1));\n"
-                + "        plot.add(hb);\n"
-                + "        plot.add(new DensityLine(plot, col));\n"
-                + "        draw(plot);\n");
+        code("        final Vector col = df.getCol(\"Father\");\n"
+                + "        draw(new Plot()\n"
+                + "                .add(new HistogramBars(col).setColorIndex(new IndexVector(1, 255, 1)))\n"
+                + "                .add(new DensityLine(col)));\n"
+                + "");
 
         final Vector col = df.getCol("Father");
-        draw(new Plot() {{
-            new HistogramBars(this, col) {{
-                opt().setColorIndex(new IndexVector(1, 255, 1));
-            }};
-            new DensityLine(this, col);
-        }});
+        draw(new Plot()
+                .add(new HistogramBars(col).setColorIndex(new IndexVector(1, 255, 1)))
+                .add(new DensityLine(col)));
 
         p("In statistics, kernel density estimation (KDE) is a non-parametric way to "
                 + "estimate the probability density function of a random variable. "
@@ -173,18 +169,12 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("However one can use a different value for bandwidth in order to obtain "
                 + "a smooth or less smooth approximation of the density function.");
 
-        draw(new Histogram(col) {{
-            new FunctionLine(this, new KernelDensityEstimator(col, 0.1).getPdfFunction()) {{
-                opt().setColorIndex(1);
-            }};
-            new FunctionLine(this, new KernelDensityEstimator(col, 0.5).getPdfFunction()) {{
-                opt().setColorIndex(new OneIndexVector(2));
-            }};
-            new FunctionLine(this, new KernelDensityEstimator(col, 2).getPdfFunction()) {{
-                opt().setColorIndex(new OneIndexVector(3));
-            }};
-            opt().setYRange(0, 0.18);
-        }}, 600, 300);
+        draw(new Histogram(col)
+                .add(new FunctionLine(new KernelDensityEstimator(col, 0.1).getPdfFunction()).setColorIndex(1))
+                .add(new FunctionLine(new KernelDensityEstimator(col, 0.5).getPdfFunction()).setColorIndex(2))
+                .add(new FunctionLine(new KernelDensityEstimator(col, 2).getPdfFunction()).setColorIndex(3))
+                .setYRange(0, 0.18),
+                600, 300);
 
         p("Another thing one can try with kernel density estimator is to "
                 + "change the kernel function, which is the function used to "
@@ -195,29 +185,24 @@ public class HistogramDensityTutorial implements TutorialPage {
                 + "Of course, it is easy to implement your own smoothing method "
                 + "once you implement a custom kernel function. ");
 
-        draw(new Plot() {{
-            new FunctionLine(this, new KernelDensityEstimator(col).getPdfFunction()) {{
-                opt().setColorIndex(new OneIndexVector(1));
-            }};
-            new DensityLine(this, col, new KernelFunction() {
-                @Override
-                public double pdf(double x, double x0, double bandwidth) {
-                    return (BaseMath.abs(x - x0) / bandwidth >= 0.5) ? 0 : 1.;
-                }
-
-                @Override
-                public double getMinValue(double x0, double bandwidth) {
-                    return x0 + bandwidth;
-                }
-
-                @Override
-                public double getMaxValue(double x0, double bandwidth) {
-                    return x0 - bandwidth;
-                }
-            }, 0.5, 256);
-            opt().setYRange(0, 0.18);
-            opt().setXRange(55, 80);
-        }});
+        draw(new Plot()
+                .add(new FunctionLine(new KernelDensityEstimator(col).getPdfFunction()).setColorIndex(1))
+                .add(new DensityLine(col, new KernelFunction() {
+                    @Override
+                    public double pdf(double x, double x0, double bandwidth) {
+                        return (BaseMath.abs(x - x0) / bandwidth >= 0.5) ? 0 : 1.;
+                    }
+                    @Override
+                    public double getMinValue(double x0, double bandwidth) {
+                        return x0 + bandwidth;
+                    }
+                    @Override
+                    public double getMaxValue(double x0, double bandwidth) {
+                        return x0 - bandwidth;
+                    }
+                }, 0.5, 256))
+                        .setYRange(0, 0.18)
+                        .setXRange(55, 80));
 
         p("We could agree that my implementation of kernel function is ugly "
                 + "and maybe no so useful, however you have to know that "
@@ -232,17 +217,11 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("Blue line represents density approximation of father's heights, "
                 + "red line represents density approximation of son's heights.");
 
-        draw(new Plot() {{
-            new DensityLine(this, df.getCol("Father")) {{
-                opt().setColorIndex(6);
-            }};
-            new DensityLine(this, df.getCol("Son")) {{
-                opt().setColorIndex(9);
-            }};
-            opt().setYRange(0, 0.18);
-            opt().setXRange(55, 80);
-        }});
-
+        draw(new Plot().add(new DensityLine(df.getCol("Father")).setColorIndex(6))
+                .add(new DensityLine(df.getCol("Son")).setColorIndex(9))
+                .setYRange(0, 0.18)
+                .setXRange(55, 80));
+        
         p("Note: the sole purpose of this tutorial is to show what and how it can "
                 + "be done with Rapaio toolbox library. ");
 

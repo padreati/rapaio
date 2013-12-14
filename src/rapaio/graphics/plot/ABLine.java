@@ -19,10 +19,10 @@
  */
 package rapaio.graphics.plot;
 
-import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 
 /**
  * @author Aurelian Tutuianu
@@ -34,16 +34,14 @@ public class ABLine extends PlotComponent {
     private final boolean h;
     private final boolean v;
 
-    public ABLine(Plot parent, double a, boolean horiz) {
-        super(parent);
+    public ABLine(double a, boolean horiz) {
         this.a = a;
         this.b = a;
         this.h = horiz;
         this.v = !horiz;
     }
 
-    public ABLine(Plot parent, double a, double b) {
-        super(parent);
+    public ABLine(double a, double b) {
         this.a = a;
         this.b = b;
         this.h = false;
@@ -51,52 +49,52 @@ public class ABLine extends PlotComponent {
     }
 
     @Override
-    public Range getComponentDataRange() {
+    public Range buildRange() {
         return null;
     }
 
     @Override
     public void paint(Graphics2D g2d) {
-        Range range = plot.getRange();
-        g2d.setColor(opt().getColor(0));
+        Range range = getParent().getRange();
+        g2d.setColor(getColor(0));
 
-        int x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+        double x1 = 0, x2 = 0, y1 = 0, y2 = 0;
         if (!h && !v) {
             double xx = range.getX1();
             double yy = a * xx + b;
             if (range.contains(xx, yy)) {
-                x1 = (int) plot.xscale(xx);
-                y1 = (int) plot.yscale(yy);
+                x1 = (int) getParent().xscale(xx);
+                y1 = (int) getParent().yscale(yy);
             } else {
-                y1 = (int) plot.yscale(range.getY1());
-                x1 = (int) plot.xscale((range.getY1() - b) / a);
+                y1 = (int) getParent().yscale(range.getY1());
+                x1 = (int) getParent().xscale((range.getY1() - b) / a);
             }
 
             xx = range.getX2();
             yy = a * xx + b;
             if (range.contains(xx, yy)) {
-                x2 = (int) plot.xscale(xx);
-                y2 = (int) plot.yscale(yy);
+                x2 = (int) getParent().xscale(xx);
+                y2 = (int) getParent().yscale(yy);
             } else {
-                y2 = (int) plot.yscale(range.getY2());
-                x2 = (int) plot.xscale((range.getY2() - b) / a);
+                y2 = (int) getParent().yscale(range.getY2());
+                x2 = (int) getParent().xscale((range.getY2() - b) / a);
             }
         } else {
             if (h) {
-                x1 = (int) plot.xscale(range.getX1());
-                y1 = (int) plot.yscale(a);
-                x2 = (int) plot.xscale(range.getX2());
-                y2 = (int) plot.yscale(a);
+                x1 = (int) getParent().xscale(range.getX1());
+                y1 = (int) getParent().yscale(a);
+                x2 = (int) getParent().xscale(range.getX2());
+                y2 = (int) getParent().yscale(a);
             } else {
-                x1 = (int) plot.xscale(a);
-                y1 = (int) plot.yscale(range.getY1());
-                x2 = (int) plot.xscale(a);
-                y2 = (int) plot.yscale(range.getY2());
+                x1 = (int) getParent().xscale(a);
+                y1 = (int) getParent().yscale(range.getY1());
+                x2 = (int) getParent().xscale(a);
+                y2 = (int) getParent().yscale(range.getY2());
             }
         }
         Stroke oldStroke = g2d.getStroke();
-        g2d.setStroke(new BasicStroke(opt().getLwd()));
-        g2d.drawLine(x1, y1, x2, y2);
+        g2d.setStroke(new BasicStroke(getLwd()));
+        g2d.draw(new Line2D.Double(x1, y1, x2, y2));
         g2d.setStroke(oldStroke);
     }
 }

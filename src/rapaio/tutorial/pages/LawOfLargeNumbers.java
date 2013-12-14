@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.tutorial.pages;
 
 import rapaio.core.stat.OnlineCoreStat;
@@ -37,6 +38,7 @@ import java.io.IOException;
  * @author Aurelian Tutuianu
  */
 public class LawOfLargeNumbers implements TutorialPage {
+
     @Override
     public String getPageName() {
         return "LawOfLargeNumbers";
@@ -84,34 +86,27 @@ public class LawOfLargeNumbers implements TutorialPage {
         }
         p("Now we have the running mean stored in the vector mean and we can plot "
                 + "how that running mean evolves as the size of the sample grows.");
-        draw(new Plot() {{
-            new ABLine(this, 0, 3.5) {{
-                opt().setLwd(1.5f);
-                opt().setColorIndex(1);
-            }};
-            new Lines(this, new IndexVector(1, N, 1), mean){{
-                opt().setLwd(1.5f);
-                opt().setColorIndex(2);
-            }};
-            opt().setYRange(2.5, 4.5);
-        }}, 800, 300);
+        draw(new Plot()
+                .add(new ABLine(0, 3.5).setLwd(1.5f).setColorIndex(1))
+                .add(new Lines(new IndexVector(1, N, 1), mean)
+                        .setLwd(1.5f)
+                        .setColorIndex(2))
+                .setYRange(2.5, 4.5), 
+                800, 300);
         p("Thus we can clearly notice two fact from the plot above. "
                 + "First fact is that the running average gets closer to the "
                 + "expected value, as sample size grows. "
                 + "Second fact is that deviation from expected value is smaller as "
                 + "the sample size grows aka. smaller variation. ");
         p("The code for drawing the plot follows:");
-        code("        draw(new Plot() {{\n" +
-                "            new ABLine(this, 0, 3.5) {{\n" +
-                "                opt().setLwd(1.5f);\n" +
-                "                opt().setColorIndex(1);\n" +
-                "            }};\n" +
-                "            new Lines(this, new IndexVector(\"x\", 1, N, 1), mean){{\n" +
-                "                opt().setLwd(1.5f);\n" +
-                "                opt().setColorIndex(2);\n" +
-                "            }};\n" +
-                "            opt().setYRange(2.5, 4.5);\n" +
-                "        }}, 800, 300);\n");
+        code("        draw(new Plot()\n"
+                + "                .add(new ABLine(0, 3.5).setLwd(1.5f).setColorIndex(1))\n"
+                + "                .add(new Lines(new IndexVector(1, N, 1), mean)\n"
+                + "                        .setLwd(1.5f)\n"
+                + "                        .setColorIndex(2))\n"
+                + "                .setYRange(2.5, 4.5), \n"
+                + "                800, 300);\n"
+                + "");
         p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");
     }
 }
