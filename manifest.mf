@@ -1,3 +1,7 @@
 Manifest-Version: 1.0
-X-COMMENT: Main-Class will be added automatically by build
+OpenIDE-Module: rapaio.studio
+OpenIDE-Module-Install: rapaio/studio/Installer.class
+OpenIDE-Module-Localizing-Bundle: rapaio/studio/Bundle.properties
+OpenIDE-Module-Requires: org.openide.windows.WindowManager
+OpenIDE-Module-Specification-Version: 1.0
 
