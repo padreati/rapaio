@@ -1,6 +1,26 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
 
 package rapaio.studio.server;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
@@ -10,10 +30,12 @@ import javax.net.ServerSocketFactory;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
+import org.openide.windows.IOColorPrint;
 import rapaio.printer.Printer;
 import rapaio.server.ClassBytes;
 import rapaio.server.ClassMarshaller;
 import rapaio.studio.printer.AgregatePrinter;
+import rapaio.studio.printer.StandardIOPrinter;
 import rapaio.workspace.Workspace;
 import rapaio.workspace.WorkspaceDataListener;
 import rapaio.workspace.WorkspaceListener;
@@ -35,39 +57,32 @@ public class RapaioNBServer implements WorkspaceListener {
         return instance;
     }
 
-    private ServerSocket serverSocket;
     private Thread listenerThread;
 
     public void start() throws IOException {
-        if (serverSocket != null) {
-            try {
-                serverSocket.close();
-            } catch (IOException ioe) {
-            }
-        }
-        serverSocket = ServerSocketFactory.getDefault().createServerSocket(DEFAULT_PORT);
         listenerThread = new Thread(new Runnable() {
 
             @Override
             public void run() {
-                while (true) {
-                    if (serverSocket.isClosed()) {
-                        return;
-                    }
-                    try (Socket s = serverSocket.accept()) {
-                        ClassBytes cb = new ClassMarshaller().unmarshall(s.getInputStream());
-                        Workspace.print("received command: " + cb.getName() + " ..\n");
+                try (ServerSocket serverSocket = ServerSocketFactory.getDefault().createServerSocket(DEFAULT_PORT)) {
+                    while (true) {
+                        try (Socket s = serverSocket.accept()) {
+                            if (serverSocket.isClosed()) {
+                                return;
+                            }
+                            ClassBytes cb = new ClassMarshaller().unmarshall(s.getInputStream());
+                            IOColorPrint.print(StandardIOPrinter.getIO(), "execute " + cb.getName() + " ..\n", new Color(0, 100, 0));
 
-                        CmdClassLoader cmdClassLoader = new CmdClassLoader(cb, Thread.currentThread().getContextClassLoader());
-                        Class<?> clazz = cmdClassLoader.findClass(cb.getName());
-                        Object object = clazz.newInstance();
-                        clazz.getMethod("run").invoke(object);
-
-                    } catch (SocketException se) {
-                        return;
-                    } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
-                        Exceptions.printStackTrace(ex);
+                            CmdClassLoader cmdClassLoader = new CmdClassLoader(cb, Thread.currentThread().getContextClassLoader());
+                            Class<?> clazz = cmdClassLoader.findClass(cb.getName());
+                            Object object = clazz.newInstance();
+                            clazz.getMethod("run").invoke(object);
+                        } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
+                            Workspace.getPrinter().error("Error running remote command", ex);
+                        }
                     }
+                } catch (IOException ex) {
+                    Workspace.getPrinter().error("Error running remote command", ex);
                 }
             }
         });
@@ -80,9 +95,12 @@ public class RapaioNBServer implements WorkspaceListener {
         wireUpPrinter();
     }
 
-    public void shutdown() throws IOException {
-        serverSocket.close();
-        listenerThread.interrupt();
+    public void shutdown() throws IOException, InterruptedException {
+        if (listenerThread != null) {
+            listenerThread.interrupt();
+            listenerThread.stop();
+            listenerThread.join(0);
+        }
     }
 
     @Override
