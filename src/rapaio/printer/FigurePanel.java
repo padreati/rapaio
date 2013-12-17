@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.printer;
 
 import java.awt.FontMetrics;
@@ -27,15 +28,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import rapaio.graphics.base.AbstractFigure;
 import rapaio.graphics.base.Figure;
 import rapaio.graphics.base.ImageUtility;
+import rapaio.graphics.base.Range;
 
 /**
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-
-
 public class FigurePanel extends JPanel {
 
     private final Figure figure;
@@ -45,6 +46,11 @@ public class FigurePanel extends JPanel {
 
     public FigurePanel(Figure figure) {
         this.figure = figure;
+    }
+
+    public FigurePanel(BufferedImage image) {
+        this.figure = null;
+        this.currentImage = image;
     }
 
     @Override
@@ -80,6 +86,9 @@ public class FigurePanel extends JPanel {
         drawWorker = new SwingWorker<BufferedImage, Object>() {
             @Override
             protected BufferedImage doInBackground() throws Exception {
+                if(figure ==null) {
+                    return currentImage;
+                }
                 return ImageUtility.buildImage(figure, getWidth(), getHeight());
             }
 

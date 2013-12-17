@@ -21,20 +21,25 @@
 package rapaio.studio.server;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
+import javax.imageio.ImageIO;
 import javax.net.ServerSocketFactory;
-import org.openide.util.Exceptions;
+import javax.swing.SwingUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.IOColorPrint;
+import org.openide.windows.WindowManager;
 import rapaio.printer.Printer;
-import rapaio.server.ClassBytes;
+import rapaio.server.CommandBytes;
 import rapaio.server.ClassMarshaller;
 import rapaio.studio.printer.AgregatePrinter;
+import rapaio.studio.printer.GraphicalIOPrinterTopComponent;
 import rapaio.studio.printer.StandardIOPrinter;
 import rapaio.workspace.Workspace;
 import rapaio.workspace.WorkspaceDataListener;
@@ -70,13 +75,30 @@ public class RapaioNBServer implements WorkspaceListener {
                             if (serverSocket.isClosed()) {
                                 return;
                             }
-                            ClassBytes cb = new ClassMarshaller().unmarshall(s.getInputStream());
-                            IOColorPrint.print(StandardIOPrinter.getIO(), "execute " + cb.getName() + " ..\n", new Color(0, 100, 0));
+                            CommandBytes cb = new ClassMarshaller().unmarshall(s.getInputStream());
 
-                            CmdClassLoader cmdClassLoader = new CmdClassLoader(cb, Thread.currentThread().getContextClassLoader());
-                            Class<?> clazz = cmdClassLoader.findClass(cb.getName());
-                            Object object = clazz.newInstance();
-                            clazz.getMethod("run").invoke(object);
+                            switch (cb.getType()) {
+
+                                case CONFIG:
+                                    cb = doConfig(cb);
+                                    new ClassMarshaller().marshallConfig(s.getOutputStream(), cb);
+                                    s.getOutputStream().flush();
+                                    doDraw(new ClassMarshaller().unmarshall(s.getInputStream()));
+                                    break;
+
+                                case REMOTE:
+                                    doRemote(cb);
+                                    break;
+
+                                case PRINT:
+                                    doPrint(cb);
+                                    break;
+
+                                case DRAW:
+                                    doDraw(cb);
+                                    break;
+                            }
+
                         } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
                             Workspace.getPrinter().error("Error running remote command", ex);
                         }
@@ -84,6 +106,63 @@ public class RapaioNBServer implements WorkspaceListener {
                 } catch (IOException ex) {
                     Workspace.getPrinter().error("Error running remote command", ex);
                 }
+            }
+
+            private void doPrint(CommandBytes cb) throws IOException {
+                switch(cb.getName()) {
+                    case "print":
+                        Workspace.print(cb.getValue());
+                        break;
+                    case "println":
+                        Workspace.println();
+                        break;
+                    case "code":
+                        Workspace.code(cb.getValue());
+                        break;
+                    case "error":
+                        Workspace.error(cb.getValue(), null);
+                        break;
+                    case "p":
+                        Workspace.p(cb.getValue());
+                        break;
+                    case "eqn":
+                        Workspace.eqn(cb.getValue());
+                        break;
+                }
+                if(cb.getName().startsWith("heading")) {
+                    int h = Integer.parseInt(cb.getName().substring("heading".length()));
+                    Workspace.heading(h, cb.getValue());
+                }
+            }
+
+            private void doDraw(CommandBytes cb) throws IOException {
+                InputStream in = new ByteArrayInputStream(cb.getBytes());
+                final BufferedImage image = ImageIO.read(in);
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        GraphicalIOPrinterTopComponent tc = (GraphicalIOPrinterTopComponent) WindowManager.getDefault().findTopComponent("GraphicalIOPrinterTopComponent");
+                        tc.setImage(image);
+                        tc.revalidate();
+                        tc.repaint();
+                    }
+                });
+            }
+
+            private void doRemote(CommandBytes cb) throws IOException, InstantiationException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+                IOColorPrint.print(StandardIOPrinter.getIO(), "execute " + cb.getName() + " ..\n", new Color(0, 100, 0));
+                CmdClassLoader cmdClassLoader = new CmdClassLoader(cb, Thread.currentThread().getContextClassLoader());
+                Class<?> clazz = cmdClassLoader.findClass(cb.getName());
+                Object object = clazz.newInstance();
+                clazz.getMethod("run").invoke(object);
+            }
+
+            private CommandBytes doConfig(CommandBytes cb) throws IOException {
+                cb.setTextWidth(Workspace.getPrinter().getTextWidth());
+                cb.setGraphicalWidth(Workspace.getPrinter().getGraphicWidth());
+                cb.setGraphicalHeight(Workspace.getPrinter().getGraphicHeight());
+                return cb;
             }
         });
         listenerThread.start();
@@ -95,6 +174,7 @@ public class RapaioNBServer implements WorkspaceListener {
         wireUpPrinter();
     }
 
+    @SuppressWarnings("CallToThreadStopSuspendOrResumeManager")
     public void shutdown() throws IOException, InterruptedException {
         if (listenerThread != null) {
             listenerThread.interrupt();

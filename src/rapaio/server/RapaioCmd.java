@@ -27,5 +27,11 @@ package rapaio.server;
 
 public interface RapaioCmd {
 
+    void runRemote();
+    
+    void runConsole();
+    
+    void runLocal();
+    
     void run();
 }

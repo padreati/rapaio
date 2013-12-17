@@ -19,7 +19,7 @@
  */
 package rapaio.studio.server;
 
-import rapaio.server.ClassBytes;
+import rapaio.server.CommandBytes;
 
 /**
  *
@@ -27,9 +27,9 @@ import rapaio.server.ClassBytes;
  */
 public class CmdClassLoader extends ClassLoader {
 
-    private final ClassBytes cb;
+    private final CommandBytes cb;
 
-    public CmdClassLoader(ClassBytes cb, ClassLoader parent) {
+    public CmdClassLoader(CommandBytes cb, ClassLoader parent) {
         super(parent);
         this.cb = cb;
     }

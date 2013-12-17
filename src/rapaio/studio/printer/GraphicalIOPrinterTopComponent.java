@@ -20,9 +20,7 @@
 package rapaio.studio.printer;
 
 import java.awt.BorderLayout;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import java.awt.image.BufferedImage;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -77,11 +75,30 @@ public final class GraphicalIOPrinterTopComponent extends TopComponent {
 
         imgPanel = new javax.swing.JPanel();
 
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                formComponentResized(evt);
+            }
+        });
         setLayout(new java.awt.BorderLayout());
 
+        imgPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                imgPanelComponentResized(evt);
+            }
+        });
         imgPanel.setLayout(new java.awt.BorderLayout());
         add(imgPanel, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void imgPanelComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_imgPanelComponentResized
+        StandardIOPrinter.setSize(evt.getComponent().getSize());
+    }//GEN-LAST:event_imgPanelComponentResized
+
+    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
+        StandardIOPrinter.setSize(evt.getComponent().getSize());
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formComponentResized
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel imgPanel;
@@ -113,6 +130,17 @@ public final class GraphicalIOPrinterTopComponent extends TopComponent {
             imgPanel.remove(figurePanel);
         }
         figurePanel = new FigurePanel(figure);
+        figurePanel.setVisible(true);
+        imgPanel.add(figurePanel, BorderLayout.CENTER);
+        revalidate();
+        repaint();
+    }
+    
+    public void setImage(BufferedImage image) {
+        if(figurePanel != null) {
+            imgPanel.remove(figurePanel);
+        }
+        figurePanel = new FigurePanel(image);
         figurePanel.setVisible(true);
         imgPanel.add(figurePanel, BorderLayout.CENTER);
         revalidate();

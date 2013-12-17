@@ -17,8 +17,10 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.studio.printer;
 
+import java.awt.Dimension;
 import javax.swing.SwingUtilities;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.IOProvider;
@@ -34,9 +36,30 @@ import rapaio.printer.Printer;
  */
 @ServiceProvider(service = Printer.class)
 public class StandardIOPrinter extends AbstractPrinter {
-    
+
     public static InputOutput getIO() {
         return IOProvider.getDefault().getIO("Rapaio output", false);
+    }
+    
+    private static Dimension size;
+
+    public static void setSize(Dimension size) {
+        StandardIOPrinter.size = size;
+    }
+
+    @Override
+    public int getGraphicHeight() {
+        return StandardIOPrinter.size.height;
+    }
+
+    @Override
+    public int getGraphicWidth() {
+        return StandardIOPrinter.size.width;
+    }
+
+    @Override
+    public int getTextWidth() {
+        return 120;
     }
 
     @Override
@@ -53,7 +76,9 @@ public class StandardIOPrinter extends AbstractPrinter {
     public void error(String string, Throwable thrwbl) {
         getIO().getErr().append(string);
         getIO().getErr().append("\n");
-        thrwbl.printStackTrace(getIO().getErr());
+        if (thrwbl != null) {
+            thrwbl.printStackTrace(getIO().getErr());
+        }
         getIO().select();
     }
 
@@ -63,7 +88,7 @@ public class StandardIOPrinter extends AbstractPrinter {
 
             @Override
             public void run() {
-                GraphicalIOPrinterTopComponent tc = (GraphicalIOPrinterTopComponent)WindowManager.getDefault().findTopComponent("GraphicalIOPrinterTopComponent");
+                GraphicalIOPrinterTopComponent tc = (GraphicalIOPrinterTopComponent) WindowManager.getDefault().findTopComponent("GraphicalIOPrinterTopComponent");
                 tc.setFigure(figure);
                 tc.revalidate();
                 tc.repaint();

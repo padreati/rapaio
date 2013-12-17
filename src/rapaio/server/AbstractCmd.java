@@ -21,34 +21,36 @@ package rapaio.server;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import rapaio.data.Frame;
-import rapaio.datasets.Datasets;
+import rapaio.printer.LocalPrinter;
+import rapaio.printer.StandardPrinter;
+import rapaio.workspace.Workspace;
 
 /**
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class RemoteClientApp implements RapaioCmd {
+public abstract class AbstractCmd implements RapaioCmd{
+    
     public static final int DEFAULT_PORT = 56339;
 
-    public static void main(String[] args) throws IOException {
-        new RemoteClientApp().runRemote();
-    }
-
-    public void runRemote() throws IOException {
+    @Override
+    public void runRemote() {
         try (Socket s = new Socket("localhost", DEFAULT_PORT)) {
-            new ClassMarshaller().marshall(this.getClass(), s.getOutputStream());
+            new ClassMarshaller().marshallRemote(s.getOutputStream(), this.getClass());
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 
     @Override
-    public void run() {
-        try {
-            Frame df = Datasets.loadCarMpgDataset();
-        } catch (IOException | URISyntaxException ex) {
-        }
+    public void runConsole() {
+        Workspace.setPrinter(new StandardPrinter());
+        run();
+    }
+
+    @Override
+    public void runLocal() {
+        Workspace.setPrinter(new LocalPrinter());
+        run();
     }
 }

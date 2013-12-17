@@ -217,7 +217,6 @@ public class OneRule extends AbstractClassifier {
 
         // first process missing values
         if (pos > 0) {
-            Arrays.fill(hist, 0);
             for (int i = 0; i < pos; i++) {
                 hist[df.getIndex(sort.getIndex(i), classColName)] += weights.get(sort.getIndex(i));
             }

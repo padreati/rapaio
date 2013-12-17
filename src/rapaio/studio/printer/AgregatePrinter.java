@@ -31,9 +31,6 @@ import rapaio.printer.Printer;
 public class AgregatePrinter implements Printer{
     
     private final List<Printer> printers = new ArrayList<>();
-    private int textWidth = 80;
-    private int graphicWidth;
-    private int graphicHeight;
     
     public void addPrinter(Printer printer) {
         printers.add(printer);
@@ -41,32 +38,47 @@ public class AgregatePrinter implements Printer{
 
     @Override
     public int getTextWidth() {
-        return textWidth;
+        int max = 0;
+        for (Printer printer : printers) {
+            if (max < printer.getTextWidth()) {
+                max = printer.getTextWidth();
+            }
+        }
+        return max;
     }
 
     @Override
     public void setTextWidth(int textWidth) {
-        this.textWidth = textWidth;
     }
 
     @Override
     public int getGraphicWidth() {
-        return graphicWidth;
+        int max = 0;
+        for (Printer printer : printers) {
+            if (max < printer.getGraphicWidth()) {
+                max = printer.getGraphicWidth();
+            }
+        }
+        return max;
     }
 
     @Override
     public void setGraphicWidth(int graphicWidth) {
-        this.graphicWidth = graphicWidth;
     }
 
     @Override
     public int getGraphicHeight() {
-        return graphicHeight;
+        int max = 0;
+        for (Printer printer : printers) {
+            if(max<printer.getGraphicHeight()) {
+                max = printer.getGraphicHeight();
+            }
+        }
+        return max;
     }
 
     @Override
     public void setGraphicHeight(int graphicHeight) {
-        this.graphicHeight = graphicHeight;
     }
 
     @Override
