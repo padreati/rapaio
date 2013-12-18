@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.ml.classification.rule;
 
 import rapaio.core.RandomSource;
@@ -38,8 +39,8 @@ public class OneRule extends AbstractClassifier {
 
     private static final Logger log = Logger.getLogger(OneRule.class.getName());
 
-    private int minCount = 6;
-    private String[] classDictionary;
+    private double minCount = 6;
+    private String[] classLabels;
     private OneRuleSet bestRuleSet;
     private NominalVector predict;
 
@@ -49,18 +50,18 @@ public class OneRule extends AbstractClassifier {
                 .setMinCount(getMinCount());
     }
 
-    public int getMinCount() {
+    public double getMinCount() {
         return minCount;
     }
 
-    public OneRule setMinCount(int minCount) {
+    public OneRule setMinCount(double minCount) {
         this.minCount = minCount;
         return this;
     }
 
     @Override
     public void learn(Frame df, List<Double> weights, String classColName) {
-        classDictionary = df.getCol(classColName).getDictionary();
+        classLabels = df.getCol(classColName).getDictionary();
 
         validate(df, classColName);
 
@@ -85,7 +86,7 @@ public class OneRule extends AbstractClassifier {
 
     @Override
     public void predict(Frame test) {
-        predict = new NominalVector(test.getRowCount(), classDictionary);
+        predict = new NominalVector(test.getRowCount(), classLabels);
         for (int i = 0; i < test.getRowCount(); i++) {
             predict.setLabel(i, predict(test, i));
         }
@@ -200,141 +201,110 @@ public class OneRule extends AbstractClassifier {
         return set;
     }
 
-    private OneRuleSet buildNumeric(String sourceColName, String classColName, Frame df, List<Double> weights) {
-        NumericOneRuleSet set = new NumericOneRuleSet(sourceColName);
-        Vector sort = new IndexVector(0, weights.size() - 1, 1);
-        sort = RowFilters.sort(sort, RowComparators.numericComparator(df.getCol(sourceColName), true));
+    private OneRuleSet buildNumeric(String sourceName, String className, Frame df, List<Double> weights) {
+        NumericOneRuleSet set = new NumericOneRuleSet(sourceName);
+        Vector sort = RowFilters.sort(Vectors.newSequence(weights.size()),
+                RowComparators.numericComparator(df.getCol(sourceName), true),
+                RowComparators.nominalComparator(df.getCol(className), true));
         int pos = 0;
         while (pos < sort.getRowCount()) {
-            if (df.getCol(sourceColName).isMissing(sort.getIndex(pos))) {
+            if (df.isMissing(sort.getIndex(pos), sourceName)) {
                 pos++;
                 continue;
             }
             break;
         }
 
-        double[] hist = new double[df.getCol(classColName).getDictionary().length];
-
         // first process missing values
         if (pos > 0) {
+            double[] hist = new double[classLabels.length];
             for (int i = 0; i < pos; i++) {
-                hist[df.getIndex(sort.getIndex(i), classColName)] += weights.get(sort.getIndex(i));
+                hist[df.getIndex(sort.getIndex(i), className)] += weights.get(sort.getIndex(i));
             }
-            int totalSubset = 0;
-            double max = -1;
-            int count = 0;
-            for (double h : hist) {
-                totalSubset += h;
-                if (max < h) {
-                    max = h;
-                    count = 1;
+            List<Integer> best = new ArrayList<>();
+            double max = Double.MIN_VALUE;
+            double total = 0;
+            for (int i = 0; i < hist.length; i++) {
+                total += hist[i];
+                if (max < hist[i]) {
+                    max = hist[i];
+                    best.clear();
+                    best.add(i);
                     continue;
                 }
-                if (max == h) {
-                    count++;
+                if (max == hist[i]) {
+                    best.add(i);
                 }
             }
-            int next = RandomSource.nextInt(count);
-            String[] classLabels = df.getCol(classColName).getDictionary();
-            for (int j = 0; j < hist.length; j++) {
-                if (hist[j] == max && next > 0) {
-                    next--;
-                    continue;
-                }
-                if (hist[j] == max) {
-                    set.getRules().add(new NumericOneRule(Double.NaN, Double.NaN, true, classLabels[j],
-                            totalSubset, totalSubset - hist[j]));
-                    break;
-                }
-            }
+            int next = RandomSource.nextInt(best.size());
+            set.getRules().add(new NumericOneRule(Double.NaN, Double.NaN, true, classLabels[next], total, total - max));
         }
 
         // now build isNumeric intervals
         List<NumericOneRule> candidates = new ArrayList<>();
 
-        Arrays.fill(hist, 0);
-        double max = -1;
-        int minIndex = pos;
-        for (int i = pos; i < sort.getRowCount(); i++) {
-            hist[df.getIndex(sort.getIndex(i), classColName)] += weights.get(sort.getIndex(i));
-            if (max < hist[df.getIndex(sort.getIndex(i), classColName)]) {
-                max = hist[df.getIndex(sort.getIndex(i), classColName)];
+        //splits from same value
+        int i = pos;
+        int index;
+        double[] hist = new double[classLabels.length];
+
+        while (i < sort.getRowCount()) {
+            // start a new bucket
+            int startIndex = i;
+            for (int j = 0; j < hist.length; j++)
+                hist[j] = 0;
+
+            do { // fill it until it has enough of the majority class
+                index = df.getIndex(sort.getIndex(i++), className);
+                hist[index] += weights.get(index);
+            } while (hist[index] < minCount && i < sort.getRowCount());
+
+            // while class remains the same, keep on filling
+            while (i < sort.getRowCount() && df.getIndex(sort.getIndex(i), className) == index) {
+                hist[index] += weights.get(i);
+                i++;
+            }
+            // keep on while attr value is the same
+            while (i < sort.getRowCount()
+                    && df.getValue(sort.getIndex(i - 1), sourceName)
+                    == df.getValue(sort.getIndex(i), sourceName)) {
+                index = df.getIndex(sort.getIndex(i++), className);
+                hist[index]++;
             }
 
-            if (i == sort.getRowCount() - 1) {
-                // last getValue, compute rule anyway
-                int count = 0;
-                for (double h : hist) {
-                    if (h == max) {
-                        count++;
-                    }
+            List<Integer> best = new ArrayList<>();
+            double max = Double.MIN_VALUE;
+            double total = 0;
+
+            for (int j = 0; j < hist.length; j++) {
+                total += hist[j];
+                if (max < hist[j]) {
+                    max = hist[j];
+                    best.clear();
+                    best.add(j);
+                    continue;
                 }
-                int next = RandomSource.nextInt(count);
-                for (int j = 0; j < hist.length; j++) {
-                    if (hist[j] == max && next > 0) {
-                        next--;
-                        continue;
-                    }
-                    if (hist[j] == max) {
-                        double minValue = Double.NEGATIVE_INFINITY;
-                        if (minIndex != pos) {
-                            minValue = (df.getValue(sort.getIndex(minIndex), sourceColName) + df.getValue(sort.getIndex(minIndex - 1), sourceColName)) / 2.;
-                        }
-                        double maxValue = Double.POSITIVE_INFINITY;
-                        candidates.add(new NumericOneRule(minValue, maxValue, false,
-                                df.getCol(classColName).getDictionary()[j],
-                                i - minIndex + 1,
-                                i - minIndex + 1 - max));
-                    }
+                if (max == hist[j]) {
+                    best.add(j);
                 }
-                break;
+            }
+            int next = RandomSource.nextInt(best.size());
+            double minValue = Double.NEGATIVE_INFINITY;
+            if (startIndex != pos) {
+                minValue = (df.getValue(sort.getIndex(startIndex), sourceName)
+                        + df.getValue(sort.getIndex(startIndex - 1), sourceName)) / 2.;
+            }
+            double maxValue = Double.POSITIVE_INFINITY;
+            if (i != sort.getRowCount()) {
+                maxValue = (df.getValue(sort.getIndex(i-1), sourceName) + df.getValue(sort.getIndex(i), sourceName)) / 2;
             }
 
-            // next are rules to continue no matter how
-            if ((i > pos) && df.getValue(sort.getIndex(i - 1), sourceColName) == df.getValue(sort.getIndex(i), sourceColName)) {
-                continue;
-            }
-            if ((i > pos) && df.getIndex(sort.getIndex(i - 1), classColName) == df.getValue(sort.getIndex(i), classColName)) {
-                continue;
-            }
-
-            if (i - pos + 1 >= minCount) {
-
-                int count = 0;
-                for (double h : hist) {
-                    if (h == max) {
-                        count++;
-                    }
-                }
-                int next = RandomSource.nextInt(count);
-                for (int j = 0; j < hist.length; j++) {
-                    if (hist[j] == max && next > 0) {
-                        next--;
-                        continue;
-                    }
-                    if (hist[j] == max) {
-                        double minValue = Double.NEGATIVE_INFINITY;
-                        if (minIndex != pos) {
-                            minValue = (df.getValue(sort.getIndex(minIndex), sourceColName) + df.getValue(sort.getIndex(minIndex - 1), sourceColName)) / 2.;
-                        }
-                        double maxValue = Double.POSITIVE_INFINITY;
-                        if (i != sort.getRowCount() - 1) {
-                            maxValue = (df.getValue(sort.getIndex(i), sourceColName) + df.getValue(sort.getIndex(i + 1), sourceColName)) / 2;
-                        }
-                        candidates.add(new NumericOneRule(minValue, maxValue, false,
-                                df.getCol(classColName).getDictionary()[j],
-                                i - minIndex + 1,
-                                i - minIndex + 1 - max));
-                    }
-                }
-
-                Arrays.fill(hist, 0);
-                minIndex = i + 1;
-                max = 0;
-                pos = i + 1;
-            }
+            candidates.add(new NumericOneRule(minValue, maxValue, false,
+                    classLabels[best.get(next)],
+                    total,
+                    total - max));
         }
-
+        
         NumericOneRule last = null;
         for (NumericOneRule rule : candidates) {
             if (last == null) {
@@ -354,9 +324,11 @@ public class OneRule extends AbstractClassifier {
                 last = rule;
             }
         }
+
         set.getRules().add(last);
         return set;
     }
+
 }
 
 abstract class OneRuleSet {

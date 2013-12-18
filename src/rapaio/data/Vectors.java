@@ -17,25 +17,22 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.data;
 
 /**
- * User: Aurelian Tutuianu <paderati@yahoo.com>
+ * Utility class factory which offers methods for creating vectors of various
+ * forms. Used to shorted the syntax for creating common vector constructs.
+ *
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public final class Frames {
+public final class Vectors {
 
-    /**
-     * Build a frame which has only numeric columns and values are filled with 0 (no missing values).
-     * 
-     * @param rows number of rows
-     * @param colNames column names
-     * @return the new built frame
-     */
-    public static Frame newMatrixFrame(int rows, String[] colNames) {
-        Vector[] vectors = new Vector[colNames.length];
-        for (int i = 0; i < colNames.length; i++) {
-            vectors[i] = new NumericVector(new double[rows]);
+    public static IndexVector newSequence(int size) {
+        IndexVector result = new IndexVector(size);
+        for (int i = 0; i < size; i++) {
+            result.setIndex(i, i);
         }
-        return new SolidFrame(rows, vectors, colNames);
+        return result;
     }
 }

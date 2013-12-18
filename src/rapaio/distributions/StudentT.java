@@ -24,7 +24,6 @@ import static rapaio.core.BaseMath.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class StudentT extends Distribution {
 
     private final double df;

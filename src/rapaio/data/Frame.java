@@ -210,4 +210,8 @@ public interface Frame extends Serializable {
      * @param value nominal label value
      */
     void setLabel(int row, String colName, String value);
+    
+    boolean isMissing(int row, int col);
+    
+    boolean isMissing(int row, String colName);
 }

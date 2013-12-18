@@ -36,7 +36,6 @@ import static rapaio.core.BaseMath.min;
  *
  * @author Aurelian Tutuianu
  */
-@Deprecated
 public class OnlineCoreStat {
 
     private int n = 0; // number of elements

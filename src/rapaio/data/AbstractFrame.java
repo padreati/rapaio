@@ -19,8 +19,6 @@
  */
 package rapaio.data;
 
-import java.util.List;
-
 /**
  * Base class for a vector which enforces to read-only name given at construction time.
  * <p/>
@@ -88,5 +86,15 @@ public abstract class AbstractFrame implements Frame {
     @Override
     public void setLabel(int row, String colName, String value) {
         getCol(colName).setLabel(row, value);
+    }
+
+    @Override
+    public boolean isMissing(int row, int col) {
+        return getCol(col).isMissing(row);
+    }
+
+    @Override
+    public boolean isMissing(int row, String colName) {
+        return getCol(colName).isMissing(row);
     }
 }

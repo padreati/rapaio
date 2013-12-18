@@ -110,4 +110,14 @@ public class SolidFrame extends AbstractFrame {
     public Vector getCol(String name) {
         return getCol(getColIndex(name));
     }
+
+    @Override
+    public boolean isMissing(int row, int col) {
+        return getCol(col).isMissing(row);
+    }
+
+    @Override
+    public boolean isMissing(int row, String colName) {
+        return getCol(colName).isMissing(row);
+    }
 }
