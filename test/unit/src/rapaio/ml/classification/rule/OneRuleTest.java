@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.ml.classification.rule;
 
 import org.junit.Assert;
@@ -26,6 +27,7 @@ import rapaio.data.NominalVector;
 import rapaio.data.NumericVector;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
+import rapaio.workspace.Workspace;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -60,10 +62,20 @@ public class OneRuleTest {
     public void testNominal() {
         Frame df = new SolidFrame(SIZE, new Vector[]{heightVector, classVector}, new String[]{"height", "class"});
 
-        OneRule oneRule = new OneRule().setMinCount(1);
+        String[] labels;
+        OneRule oneRule = new OneRule();
+
+        oneRule.setMinCount(4);
         oneRule.learn(df, "class");
         oneRule.predict(df);
-        String[] labels = new String[]{"True", "True", "True", "False", "False", "False"};
+        for (int i = 1; i < SIZE; i++) {
+            Assert.assertTrue(oneRule.getPrediction().getLabel(i).equals(oneRule.getPrediction().getLabel(0)));
+        }
+
+        oneRule = oneRule.setMinCount(1);
+        oneRule.learn(df, "class");
+        oneRule.predict(df);
+        labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
             Assert.assertEquals(labels[i], oneRule.getPrediction().getLabel(i));
         }
@@ -81,7 +93,7 @@ public class OneRuleTest {
         oneRule.predict(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
-            Assert.assertTrue(labels[i].contains(oneRule.getPrediction().getLabel(i)));
+            Assert.assertTrue(labels[i].equals(oneRule.getPrediction().getLabel(i)));
         }
     }
 }
