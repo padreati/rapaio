@@ -22,7 +22,6 @@ package rapaio.printer;
 
 import java.io.IOException;
 import java.net.Socket;
-import org.openide.util.Exceptions;
 import rapaio.graphics.base.Figure;
 import static rapaio.server.AbstractCmd.DEFAULT_PORT;
 import rapaio.server.ClassMarshaller;
