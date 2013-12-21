@@ -140,4 +140,12 @@ public class Datasets {
         persistence.getNumericFieldHints().add("capital_run_length_total");
         return persistence.read(Datasets.class, "spam-base.csv");
     }
+
+    public static Frame loadMushrooms() throws IOException {
+        CsvPersistence persistence = new CsvPersistence();
+        persistence.setColSeparator(',');
+        persistence.setHasHeader(true);
+        persistence.setHasQuotas(false);
+        return persistence.read(Datasets.class, "mushrooms.csv");
+    }
 }

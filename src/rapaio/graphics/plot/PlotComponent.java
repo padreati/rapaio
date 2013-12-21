@@ -17,17 +17,24 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package rapaio.graphics.plot;
 
+package rapaio.graphics.plot;
 
 import java.awt.*;
 import rapaio.data.Vector;
+import rapaio.graphics.Plot;
 import rapaio.graphics.base.AbstractFigure;
 
 /**
  * @author Aurelian Tutuianu
  */
 public abstract class PlotComponent extends AbstractFigure {
+    
+    private Plot parent;
+
+    public void initialize() {
+        this.parent = parent;
+    }
 
     public abstract void paint(Graphics2D g2d);
 
@@ -60,6 +67,7 @@ public abstract class PlotComponent extends AbstractFigure {
         super.setColorIndex(colorIndex);
         return this;
     }
+
     @Override
     public PlotComponent setPchIndex(Vector pchIndex) {
         super.setPchIndex(pchIndex);
@@ -71,6 +79,7 @@ public abstract class PlotComponent extends AbstractFigure {
         super.setPchIndex(pch);
         return this;
     }
+
     @Override
     public PlotComponent setXRange(double start, double end) {
         super.setXRange(start, end);

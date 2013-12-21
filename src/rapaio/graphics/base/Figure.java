@@ -26,7 +26,5 @@ import java.awt.*;
  */
 public interface Figure {
 
-    void initialize(Rectangle rect);
-    
     void paint(Graphics2D g2d, Rectangle rect);
 }

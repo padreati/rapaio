@@ -67,12 +67,6 @@ public abstract class AbstractFigure implements Figure {
     private double y1 = Double.NaN;
     private double y2 = Double.NaN;
 
-    @Override
-    public void initialize(Rectangle rect) {
-        buildViewport(rect);
-        range = buildRange();
-    }
-
     public AbstractFigure getParent() {
         return parent;
     }
@@ -358,8 +352,9 @@ public abstract class AbstractFigure implements Figure {
 
     @Override
     public void paint(Graphics2D g2d, Rectangle rect) {
-        initialize(rect);
-
+        buildViewport(rect);
+        range = buildRange();
+        
         g2d.setColor(ColorPalette.STANDARD.getColor(255));
         g2d.fill(rect);
 

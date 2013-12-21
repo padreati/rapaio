@@ -55,7 +55,7 @@ public class HistogramBars extends PlotComponent {
     }
 
     @Override
-    public void initialize(Rectangle rect) {
+    public void initialize() {
         getParent().setLeftLabel(prob ? "density" : "frequency");
         getParent().setLeftThicker(true);
         getParent().setLeftMarkers(true);

@@ -105,7 +105,7 @@ public class ConfusionMatrix implements Summarizable {
     }
 
     private void addConfusionMatrix(StringBuilder sb) {
-        sb.append("\nConfusion matrix\n");
+        sb.append("Confusion matrix\n");
 
         sb.append("\n");
         int maxwidth = "Actual".length();

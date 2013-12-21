@@ -77,24 +77,27 @@ public class RandomForest extends AbstractClassifier {
         return mtrees;
     }
 
-    public void setMtrees(int mtrees) {
+    public RandomForest setMtrees(int mtrees) {
         this.mtrees = mtrees;
+        return this;
     }
 
     public int getMcols() {
         return mcols;
     }
 
-    public void setMcols(int mcols) {
+    public RandomForest setMcols(int mcols) {
         this.mcols = mcols;
+        return this;
     }
 
     public boolean getComputeOob() {
         return computeOob;
     }
 
-    public void setComputeOob(boolean computeOob) {
+    public RandomForest setComputeOob(boolean computeOob) {
         this.computeOob = computeOob;
+        return this;
     }
 
     public int getMinNodeSize() {

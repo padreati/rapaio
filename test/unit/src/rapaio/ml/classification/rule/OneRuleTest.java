@@ -20,6 +20,8 @@
 
 package rapaio.ml.classification.rule;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.Frame;
@@ -27,7 +29,16 @@ import rapaio.data.NominalVector;
 import rapaio.data.NumericVector;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
-import rapaio.workspace.Workspace;
+import rapaio.datasets.Datasets;
+import rapaio.graphics.BarChart;
+import rapaio.ml.classification.Classifier;
+import rapaio.ml.classification.ModelEvaluation;
+import rapaio.ml.classification.boost.AdaBoostM1;
+import rapaio.ml.classification.tree.DecisionStump;
+import rapaio.ml.classification.tree.RandomForest;
+import rapaio.printer.LocalPrinter;
+import rapaio.workspace.Summary;
+import static rapaio.workspace.Workspace.*;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -48,29 +59,15 @@ public class OneRuleTest {
         classVector.setLabel(4, "False");
         classVector.setLabel(5, "False");
 
-        heightVector = new NumericVector(new double[]{
-            0.1,
-            0.3,
-            0.5,
-            10,
-            10.3,
-            10.5
-        });
+        heightVector = new NumericVector(new double[]{0.1, 0.3, 0.5, 10, 10.3, 10.5});
     }
 
     @Test
-    public void testNominal() {
+    public void testSimpleNumeric() {
         Frame df = new SolidFrame(SIZE, new Vector[]{heightVector, classVector}, new String[]{"height", "class"});
 
         String[] labels;
         OneRule oneRule = new OneRule();
-
-        oneRule.setMinCount(4);
-        oneRule.learn(df, "class");
-        oneRule.predict(df);
-        for (int i = 1; i < SIZE; i++) {
-            Assert.assertTrue(oneRule.getPrediction().getLabel(i).equals(oneRule.getPrediction().getLabel(0)));
-        }
 
         oneRule = oneRule.setMinCount(1);
         oneRule.learn(df, "class");
@@ -95,5 +92,31 @@ public class OneRuleTest {
         for (int i = 0; i < SIZE; i++) {
             Assert.assertTrue(labels[i].equals(oneRule.getPrediction().getLabel(i)));
         }
+
+        oneRule.setMinCount(4);
+        oneRule.learn(df, "class");
+        oneRule.predict(df);
+        for (int i = 1; i < SIZE; i++) {
+            Assert.assertTrue(oneRule.getPrediction().getLabel(i).equals(oneRule.getPrediction().getLabel(0)));
+        }
+    }
+    
+    
+    @Test
+    public void testSimpleNominal() throws Exception {
+        setPrinter(new LocalPrinter());
+        Frame df = Datasets.loadMushrooms();
+        Summary.names(df);
+        
+        draw(new BarChart(df.getCol("odor"), df.getCol("classes")));
+        
+        OneRule onerule = new OneRule();
+        ModelEvaluation eval = new ModelEvaluation();
+        List<Classifier> cs = new ArrayList<>();
+//        cs.add(onerule);
+        cs.add(new AdaBoostM1(onerule, 40));
+        cs.add(new AdaBoostM1(new DecisionStump(), 40));
+//        cs.add(new RandomForest().setMcols(4));
+        eval.multiCv(df, "classes", cs, 10);
     }
 }

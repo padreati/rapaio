@@ -122,7 +122,8 @@ public class HTMLPrinter extends AbstractPrinter {
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         g2d.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        figure.paint(g2d, new Rectangle(newImage.getWidth(), newImage.getHeight()));
+        Rectangle rect = new Rectangle(newImage.getWidth(), newImage.getHeight());
+        figure.paint(g2d, rect);
         String imageString;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 

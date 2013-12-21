@@ -43,10 +43,13 @@ public class ROCCurve extends PlotComponent {
     }
 
     @Override
-    public void paint(Graphics2D g2d) {
+    public void initialize() {
         getParent().setBottomLabel("fp rate");
         getParent().setLeftLabel("tp rate");
-        
+    }
+    
+    @Override
+    public void paint(Graphics2D g2d) {
         g2d.setColor(getColor(0));
         g2d.setStroke(new BasicStroke(getLwd()));
         g2d.setBackground(ColorPalette.STANDARD.getColor(255));

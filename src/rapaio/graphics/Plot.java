@@ -35,15 +35,13 @@ public class Plot extends AbstractFigure {
 
     private final List<PlotComponent> components = new LinkedList<>();
 
-    @Override
-    public void initialize(Rectangle rect) {
-        super.initialize(rect);
+    public Plot() {
         setBottomThicker(true);
         setBottomMarkers(true);
         setLeftThicker(true);
         setLeftMarkers(true);
     }
-
+    
     @Override
     public Range buildRange() {
         Range r = null;
@@ -80,6 +78,7 @@ public class Plot extends AbstractFigure {
 
     public Plot add(PlotComponent pc) {
         pc.setParent(this);
+        pc.initialize();
         components.add(pc);
         return this;
     }

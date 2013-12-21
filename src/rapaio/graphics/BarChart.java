@@ -63,20 +63,15 @@ public class BarChart extends AbstractFigure {
         this.condition = condition;
         this.numeric = numeric;
 
-    }
-
-    @Override
-    public void initialize(Rectangle rect) {
-        super.initialize(rect);
-        getParent().setLeftThicker(true);
-        getParent().setLeftMarkers(true);
-        getParent().setBottomThicker(true);
-        getParent().setBottomMarkers(true);
+        setLeftThicker(true);
+        setLeftMarkers(true);
+        setBottomThicker(true);
+        setBottomMarkers(true);
 
         int shift = 9;
         setColorIndex(new IndexVector(shift, condition.getDictionary().length + shift - 1, 1));
     }
-    
+
     public void useDensity(boolean density) {
         this.density = density;
     }
@@ -139,8 +134,8 @@ public class BarChart extends AbstractFigure {
 
     @Override
     public void buildBottomMarkers() {
-        getParent().getBottomMarkersPos().clear();
-        getParent().getBottomMarkersMsg().clear();
+        getBottomMarkersPos().clear();
+        getBottomMarkersMsg().clear();
 
         int cnt = 0;
         for (int i = 0; i < category.getDictionary().length; i++) {
@@ -148,14 +143,14 @@ public class BarChart extends AbstractFigure {
                 cnt++;
         }
         int xspots = cnt;
-        double xspotwidth = getParent().getViewport().width / (1. * xspots);
+        double xspotwidth = getViewport().width / (1. * xspots);
 
         cnt = 0;
         for (int i = 0; i < category.getDictionary().length; i++) {
             if (totals[i] == 0)
                 continue;
-            getParent().getBottomMarkersPos().add(xspotwidth * (0.5 + cnt));
-            getParent().getBottomMarkersMsg().add(category.getDictionary()[i]);
+            getBottomMarkersPos().add(xspotwidth * (0.5 + cnt));
+            getBottomMarkersMsg().add(category.getDictionary()[i]);
             cnt++;
         }
     }
