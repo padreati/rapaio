@@ -1,198 +1,4 @@
 <!DOCTYPE html>
-<!--
-  ~ Apache License
-  ~ Version 2.0, January 2004
-  ~ http://www.apache.org/licenses/
-  ~
-  ~ TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
-  ~
-  ~ 1. Definitions.
-  ~
-  ~ "License" shall mean the terms and conditions for use, reproduction, and
-  ~ distribution as defined by Sections 1 through 9 of this document.
-  ~
-  ~ "Licensor" shall mean the copyright owner or entity authorized by the copyright
-  ~ owner that is granting the License.
-  ~
-  ~ "Legal Entity" shall mean the union of the acting entity and all other entities
-  ~ that control, are controlled by, or are under common control with that entity.
-  ~ For the purposes of this definition, "control" means (i) the power, direct or
-  ~ indirect, to cause the direction or management of such entity, whether by
-  ~ contract or otherwise, or (ii) ownership of fifty percent (50%) or more of the
-  ~ outstanding shares, or (iii) beneficial ownership of such entity.
-  ~
-  ~ "You" (or "Your") shall mean an individual or Legal Entity exercising
-  ~ permissions granted by this License.
-  ~
-  ~ "Source" form shall mean the preferred form for making modifications, including
-  ~ but not limited to software source code, documentation source, and configuration
-  ~ files.
-  ~
-  ~ "Object" form shall mean any form resulting from mechanical transformation or
-  ~ translation of a Source form, including but not limited to compiled object code,
-  ~ generated documentation, and conversions to other media types.
-  ~
-  ~ "Work" shall mean the work of authorship, whether in Source or Object form, made
-  ~ available under the License, as indicated by a copyright notice that is included
-  ~ in or attached to the work (an example is provided in the Appendix below).
-  ~
-  ~ "Derivative Works" shall mean any work, whether in Source or Object form, that
-  ~ is based on (or derived from) the Work and for which the editorial revisions,
-  ~ annotations, elaborations, or other modifications represent, as a whole, an
-  ~ original work of authorship. For the purposes of this License, Derivative Works
-  ~ shall not include works that remain separable from, or merely link (or bind by
-  ~ name) to the interfaces of, the Work and Derivative Works thereof.
-  ~
-  ~ "Contribution" shall mean any work of authorship, including the original version
-  ~ of the Work and any modifications or additions to that Work or Derivative Works
-  ~ thereof, that is intentionally submitted to Licensor for inclusion in the Work
-  ~ by the copyright owner or by an individual or Legal Entity authorized to submit
-  ~ on behalf of the copyright owner. For the purposes of this definition,
-  ~ "submitted" means any form of electronic, verbal, or written communication sent
-  ~ to the Licensor or its representatives, including but not limited to
-  ~ communication on electronic mailing lists, source code control systems, and
-  ~ issue tracking systems that are managed by, or on behalf of, the Licensor for
-  ~ the purpose of discussing and improving the Work, but excluding communication
-  ~ that is conspicuously marked or otherwise designated in writing by the copyright
-  ~ owner as "Not a Contribution."
-  ~
-  ~ "Contributor" shall mean Licensor and any individual or Legal Entity on behalf
-  ~ of whom a Contribution has been received by Licensor and subsequently
-  ~ incorporated within the Work.
-  ~
-  ~ 2. Grant of Copyright License.
-  ~
-  ~ Subject to the terms and conditions of this License, each Contributor hereby
-  ~ grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free,
-  ~ irrevocable copyright license to reproduce, prepare Derivative Works of,
-  ~ publicly display, publicly perform, sublicense, and distribute the Work and such
-  ~ Derivative Works in Source or Object form.
-  ~
-  ~ 3. Grant of Patent License.
-  ~
-  ~ Subject to the terms and conditions of this License, each Contributor hereby
-  ~ grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free,
-  ~ irrevocable (except as stated in this section) patent license to make, have
-  ~ made, use, offer to sell, sell, import, and otherwise transfer the Work, where
-  ~ such license applies only to those patent claims licensable by such Contributor
-  ~ that are necessarily infringed by their Contribution(s) alone or by combination
-  ~ of their Contribution(s) with the Work to which such Contribution(s) was
-  ~ submitted. If You institute patent litigation against any entity (including a
-  ~ cross-claim or counterclaim in a lawsuit) alleging that the Work or a
-  ~ Contribution incorporated within the Work constitutes direct or contributory
-  ~ patent infringement, then any patent licenses granted to You under this License
-  ~ for that Work shall terminate as of the date such litigation is filed.
-  ~
-  ~ 4. Redistribution.
-  ~
-  ~ You may reproduce and distribute copies of the Work or Derivative Works thereof
-  ~ in any medium, with or without modifications, and in Source or Object form,
-  ~ provided that You meet the following conditions:
-  ~
-  ~ You must give any other recipients of the Work or Derivative Works a copy of
-  ~ this License; and
-  ~ You must cause any modified files to carry prominent notices stating that You
-  ~ changed the files; and
-  ~ You must retain, in the Source form of any Derivative Works that You distribute,
-  ~ all copyright, patent, trademark, and attribution notices from the Source form
-  ~ of the Work, excluding those notices that do not pertain to any part of the
-  ~ Derivative Works; and
-  ~ If the Work includes a "NOTICE" text file as part of its distribution, then any
-  ~ Derivative Works that You distribute must include a readable copy of the
-  ~ attribution notices contained within such NOTICE file, excluding those notices
-  ~ that do not pertain to any part of the Derivative Works, in at least one of the
-  ~ following places: within a NOTICE text file distributed as part of the
-  ~ Derivative Works; within the Source form or documentation, if provided along
-  ~ with the Derivative Works; or, within a display generated by the Derivative
-  ~ Works, if and wherever such third-party notices normally appear. The contents of
-  ~ the NOTICE file are for informational purposes only and do not modify the
-  ~ License. You may add Your own attribution notices within Derivative Works that
-  ~ You distribute, alongside or as an addendum to the NOTICE text from the Work,
-  ~ provided that such additional attribution notices cannot be construed as
-  ~ modifying the License.
-  ~ You may add Your own copyright statement to Your modifications and may provide
-  ~ additional or different license terms and conditions for use, reproduction, or
-  ~ distribution of Your modifications, or for any such Derivative Works as a whole,
-  ~ provided Your use, reproduction, and distribution of the Work otherwise complies
-  ~ with the conditions stated in this License.
-  ~
-  ~ 5. Submission of Contributions.
-  ~
-  ~ Unless You explicitly state otherwise, any Contribution intentionally submitted
-  ~ for inclusion in the Work by You to the Licensor shall be under the terms and
-  ~ conditions of this License, without any additional terms or conditions.
-  ~ Notwithstanding the above, nothing herein shall supersede or modify the terms of
-  ~ any separate license agreement you may have executed with Licensor regarding
-  ~ such Contributions.
-  ~
-  ~ 6. Trademarks.
-  ~
-  ~ This License does not grant permission to use the trade names, trademarks,
-  ~ service marks, or product names of the Licensor, except as required for
-  ~ reasonable and customary use in describing the origin of the Work and
-  ~ reproducing the content of the NOTICE file.
-  ~
-  ~ 7. Disclaimer of Warranty.
-  ~
-  ~ Unless required by applicable law or agreed to in writing, Licensor provides the
-  ~ Work (and each Contributor provides its Contributions) on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied,
-  ~ including, without limitation, any warranties or conditions of TITLE,
-  ~ NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE. You are
-  ~ solely responsible for determining the appropriateness of using or
-  ~ redistributing the Work and assume any risks associated with Your exercise of
-  ~ permissions under this License.
-  ~
-  ~ 8. Limitation of Liability.
-  ~
-  ~ In no event and under no legal theory, whether in tort (including negligence),
-  ~ contract, or otherwise, unless required by applicable law (such as deliberate
-  ~ and grossly negligent acts) or agreed to in writing, shall any Contributor be
-  ~ liable to You for damages, including any direct, indirect, special, incidental,
-  ~ or consequential damages of any character arising as a result of this License or
-  ~ out of the use or inability to use the Work (including but not limited to
-  ~ damages for loss of goodwill, work stoppage, computer failure or malfunction, or
-  ~ any and all other commercial damages or losses), even if such Contributor has
-  ~ been advised of the possibility of such damages.
-  ~
-  ~ 9. Accepting Warranty or Additional Liability.
-  ~
-  ~ While redistributing the Work or Derivative Works thereof, You may choose to
-  ~ offer, and charge a fee for, acceptance of support, warranty, indemnity, or
-  ~ other liability obligations and/or rights consistent with this License. However,
-  ~ in accepting such obligations, You may act only on Your own behalf and on Your
-  ~ sole responsibility, not on behalf of any other Contributor, and only if You
-  ~ agree to indemnify, defend, and hold each Contributor harmless for any liability
-  ~ incurred by, or claims asserted against, such Contributor by reason of your
-  ~ accepting any such warranty or additional liability.
-  ~
-  ~ END OF TERMS AND CONDITIONS
-  ~
-  ~ APPENDIX: How to apply the Apache License to your work
-  ~
-  ~ To apply the Apache License to your work, attach the following boilerplate
-  ~ notice, with the fields enclosed by brackets "[]" replaced with your own
-  ~ identifying information. (Don't include the brackets!) The text should be
-  ~ enclosed in the appropriate comment syntax for the file format. We also
-  ~ recommend that a file or class name and description of purpose be included on
-  ~ the same "printed page" as the copyright notice for easier identification within
-  ~ third-party archives.
-  ~
-  ~    Copyright 2013 Aurelian Tutuianu
-  ~
-  ~    Licensed under the Apache License, Version 2.0 (the "License");
-  ~    you may not use this file except in compliance with the License.
-  ~    You may obtain a copy of the License at
-  ~
-  ~      http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~    Unless required by applicable law or agreed to in writing, software
-  ~    distributed under the License is distributed on an "AS IS" BASIS,
-  ~    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~    See the License for the specific language governing permissions and
-  ~    limitations under the License.
-  -->
-
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <title>Short story of a distribution: Student's T</title>
@@ -330,7 +136,7 @@ hljs.initHighlightingOnLoad();
 <h3>Foreword</h3>
 <p>I have always believed that knowing the history of scientific achievements is a must for anybody. This story is about William Sealy Gosset and it's famous t distribution. </p><h3>The context</h3>
 <p>When the story begins, the science of mathematical statistics lived its first years as a serious scientific discipline, mainly through the efforts made by Karl Pearson, who was the founder of the first university statistics department in the world. </p><p>After graduating on chemistry and mathematics at New College, Oxford, Gosset joined the brewery of Arthur Guinness and Son, and started to apply his statistical knowledge in brewery and on the selection of barley. </p><p>Note that at that time the methods available involved mainly the practice of Karl Pearson and some other eminent statisticians, around the normal distribution and Central Limit Theorem. </p><h3>Probability density and central limit theorem</h3>
-<p>The probability density of a standard normal distribution looks like this: </p><p><center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAW4klEQVR42u3df2he1f0HcCGUEfpH
+<p>The probability density of a standard normal distribution looks like this: </p><p><center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAW40lEQVR42u3df2he1f0HcCGUEfpH
 CEgQKWMMQij7Q0KhlP0hMgZhjDCGBMZw2kGo1mzsD7c5howwolb2xxiz6mCMUWvV/TNc1DqEMMoo
 VaMllBGKCEFCCFICUkoJpZyvn5vvTW/SJ09+PT/ufZ7XCy425rHec597zvuec889954EAFTePQ4B
 AAh0AECgAwACHQAQ6AAg0OtYWFhIc3NzaXZ2Ns3Pz6dr16450gBQlUCfmppK99xzT7b19fWl/v7+
@@ -382,59 +188,59 @@ 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
-iCwLi0AX6LRJDJGePGl5V/Z/UZgvC/vkk4be6Z5AHxsbyybNCXTaLh9qj0ZYmLPfUI/zyNA73RTo
-J06cSEePHhXotL8BNtROIxl6p9sCfd87KtBpRJh/dWFpqJ2Gn1f50Pvjjzuv6KxAX1hYSHNzc2l2
-djbNz8+na9euCXTK0+g+8YRGl8afXxHm3tRHpwT61NTU+jPjfX19qb+/P/X29mY/Hzp0KHu0TaDT
-Fl6LSitC3WtW6YRAj6VfI3RrPWt+/fr1NDExkYW8QKctDW0+q93EJZopn3AZ55sLR6oa6MPDw2l6
-erruZ6LHvrKyItBpbZjn9809WkSzFR+JdD+dqgb66OhoNuRez4EDB7LeukCnZWHuvjntOO/cT6fK
-gb68vJyF7vj4eDYpLibCRW98aWkpzczMpIGBgTQyMrL3HRXo7Jb75rQz1N1Pp6qBHhYXF9PQ0FD2
-EpbiS1ViqH1ycnJ/OyrQ2W2D6r457eR+OlUO9KIYWo8e+urqamN2VKCzU8X7mO6b4zxEoJdsRwU6
-O21EX3xRz4hyKI4UnT4t1BHoAp0dh/mbb641nrF9/LFjQvt98smdczLOT6GOQBfo7CLMNZw4NxHo
-Ah29IGhqqBs9QqBDDXGfMp4zd5+Ssoe6+R0IdIFOnTC3EhxVCnUrySHQBTp1GkcrwVGli9B8JTkX
-oQh0hLnhSyoe6h5nQ6AjzE0wogOYyIlAR0OoIcSFKQh0qs2Mdjot1N06QqDTlWFuRjudGOpmviPQ
-6apG75FHzGincy9W85nvP/mJi1UEOh3c2OVh/uijwpzOPc8jzPNQd54j0Om4Ri4fZo8w13Ohk8X5
-nYe64XcEOh3VuBlmpxsvYg2/I9DpqEbNMDvdfP4bfkeg01E9c8PsdHM9KIa6eoBAp1INWCyuESGu
-Zw4be+qPPba2qJJgR6BT+jAvrpoVjZeGC9bqwfHjVkdEoFORBuv11+80WFaAg7vrSNSLvI5EfVFH
-EOiUrqHKl76M7ZVXNFSwVV2J+pHXlag36goCndI0UDG0Xgzz1VXHBbYS9aMY6iaNItBpe5AXJ7+Z
-7APqDwKdCjZGxfvlJr/B3utScbKc++oCXaDT0gaoeL/8uec0QLDfOhX1yH11BDota3Q++iiln/7U
-/XJotM331aPXPjsr2AW6QKfJvfJobNzvg8bXs7ivXrxo1lsX6AKdpvXKY2hQrxya21svDsHrrQt0
-gc6+G5Vnn9Urh7L01l1MC3SBzq4bknfe0ZBAWXvrUT9dWAv03VhYWEhzc3NpdnY2zc/Pp2vXrgn0
-Tg/yzcPrhvpA3aS6gT41NZUFb2x9fX2pv78/9fb2Zj8fOnQo3d7Hm7MEekl7AP/+d0ovvbSxsXj3
-XY0FlC3Yo14Wgz3q7XvvGUET6He7cOFCFrqXL1++63fXr19PExMTWcgL9A4K8uefv9M4GF6HatTd
-4jB8bFGPBbtALxoeHk7T09N1PxM99pWVFYFe5av8t99O6YUXNjYIcaVvCA+qU49jGP7llzfW41On
-Uoo2XD0W6KOjo9mQez0HDhzIeusCvYKVP67gi8tMCnLozGCP5ZjPn1e3uznQl5eXs9AdHx/PJsXF
-RLjojS8tLaWZmZk0MDCQRkZG9r6jAr31lT2u1jf3xqOyx3C7yg6dFexRrzdftEev/V//Ute7LdDD
-4uJiGhoaSj09PeuT42KLofbJycn97ahAb03FjiH1rXrjZ864zwadLOr3q69unOha7LUbku+eQC+K
-ofXooa82KAAEehOvzCPAYwbs5hCP1zPGG5ziMyoxdFfb8MEHa/V/c7sQ4R7thWH57gn0hu+oQG9c
-RY2r7HPnNq6xXqysEfB640Cx1x4Bvjnc8zXjX3vN0HynBrqFZUpUEeO+WFxNxwpRUemefPLuChmP
-rcRnhDiwk3CP9mLzY6uxPfHEWmch2pv4jMfhqhvoFpZpY687hsfyihTb2bN3P2+abydP3vmsCgfs
-p8NQr7OQr08R7VHeNsVn3cYrd6BbWKYFlSd60HlvOypITGCLf54+Xbsi5Vv8Pq9IJrUAzepYRJuU
-dxZ20i4V27G8V2+ksP2BbmGZXZ74cYUa96SKV66b/5yf6LUmrNXaYgis+N/Hf2fSClCmdq7WUH2t
-uTz5f1cM/FrtpHau8YHetoVlisM+WwXidoHZ6t9vd+Va7ySv1UN3QgNVDfrNPfSddF7qjURWJQfi
-dufnn6e0j1vRTQv0RiwsU3x2vdZW0/vv7+3LL8O2+d5SvR56/FlgA90Q+NEG7rSHvtVcoapsX2Vk
-6QI9tGVhmSr20M3+BGiMzU/z6KE3XqMXlgEA2hDoAEAHBvrY2FgaHBx0xAGgyoF+4sSJdPToUUcc
-AKoc6ABAxQK9GWu5AwAtCvRmruVetxDbPL9us9lsNlsZt1IGerPXct8u0DvuSkuZlEmZlEmZlKkd
-gd7stdydBMqkTMqkTMqkTC0I9Gav5e4kUCZlUiZlUiZlakGgN2ItdyeBMimTMimTMilTmwM9NHMt
-dyeBMimTMimTMilTiwK9qJVruTsJlEmZlEmZlEmgO2DKpEzKpEzKpEwCHQAowcWDQwAAAh0AEOgA
-QNcG+n//+9/017/+NXvGvZ4rV66kkydPpkcffTT985//LF05Ll26lH7729+mRx55JB0/fjz94x//
-2Pa/KXuZYv9+//vfZ2WK/YzvquplincQxNLGZ86cSX/72992fBzKWKbd7pfvRh3S1lUnkyoX6HHA
-vvnNb2YzB6MibyXe9hYvhonV6/7yl7+k+++/P/3pT38qVVniBI/3xMeJEH+OxXd+/vOfV7pMseZA
-VNoo0y9+8YtsdcC///3vlS5TLJYU7yE4duxY+trXvrbt58tapt3ul+9GHdLWVSuTKhfo3//+97Or
-8e0OXnzuqaeeWv/5nXfeSQcPHky3bt0qbdnOnTuXVd4ql2nzWv2xoNDg4GCly5SvpRD7tpPQKGuZ
-drtfvht1SFtXrUyqVKCfPXs2OyhRibc7eHGyxAErDs3FCnbnz58vbfniqu3rX/+6MpW0TDsNjbKW
-abf75btRh5SpWplUmUD/4osv0je+8Y1sedntDt6NGzey33/66acb/n0Mzb3xxhulKteHH36YDRuO
-jY2lI0eOpIsXL1a+TMXe07e+9a0tl/2tWpl2EhplLdNu98t3ow5p66qXSaUL9LhqiYOTb7k4CU6f
-Pr1+ktc7eLHsbPx+85vd7r333uyKqixlCp999tn6vbL77rsv/fGPf6x8mXIPP/xw+s53vrPlkFLV
-yrST0Chbmfa6X2Utx34CvWplqmIdqqeqbd1WyphJpQv0mP0YFTPf4kD95z//yU6AqLSxvfXWW9nB
-OXXqVPrf//5X86q21sGN+xXtmC1Zq0xbXcHGfteaKVm1Mv34xz9O3/72t+u+LrdqZdpJaJStTHvd
-r7KWYz+BXrUyVbEO7aa3XpW2rpayZlIlhtzjIMR9inz73ve+lx2cONnzK6TN4v5M8conTpz4b65e
-vVracubDMnGyVLlM8UjG8PDwXZN7qv497fQ+bVnLtNv98t2oQ9q6amVSJZ9Dr3W1E5Msio8A/O53
-v0sPPPBAunnzZvZzPCIRB7tM3n///fU/x5DaxMREdtUXQ79VLVPcIzt8+HB2stYavq5imfKh+LgK
-z3vuVSzTdvvlu1GHtHXVzqSOCfS4ov3hD3+44TPxczz3FydOVJC4h1Mm8ShKNELx3GnMgIzJLzEU
-VeUyxfeyeSv2nKpYppi0UqtceSNblTJtt1++G3VIW1ftTOr4pV9jyKrsJ8Ls7Oz6VVsnlKkTv6dO
-KtNu98t3o0zaump8T9ZyB4AOINABQKADAAIdABDoAIBABwCBDgAIdABAoAMAAh0ABDoAINABAIEO
-AAh0ABDoAIBABwAEOgAg0AFAoAMAZfZ/m284eCGiMs4AAAAASUVORK5CYII=" alt="graphics"/></center></p>
-<p>To understand it's mechanics you have to imagine a process, which produces a numeric value. If the only thing you would know about the value of the number to be produces is it's range, than you don't know much. </p><p>Statistics adds a new dimension to that range: your expectation, aka. "which values are expected to be produced with a high probability, and which not". </p><p>The standard normal distribution from the above tells us, for example, that we expect that the value produced by our process to be very close to 0. It might variate but only around 0. There is many information contained in this density function like we expect that the value produced to be in interval [-2,+2] in most of the cases. </p><p>Central Limit Theorem says something like: "if you repeat the event enough times independently and in the same conditions, the mean of the values produced will follow a normal distribution". </p><p>This theory is wonderful due to its generality. However it has a fundamental flow: it doesn't work well if you don't repeat the event many times. </p><p>For scientists like Pearson that was not a problem, since they managed in many cases to get enough data. But for Gosset that was a big trouble. It is not easy to see that you can't repeat the event of barley selection many times. That barley have to be selected, have to grow and be measured after harvest. It was too costly to repeat the experiments enough time. </p><p><center><img src="data:image/png;base64,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" alt="graphics"/></center></p>
+<p>To understand it's mechanics you have to imagine a process, which produces a numeric value. If the only thing you would know about the value of the number to be produces is it's range, than you don't know much. </p><p>Statistics adds a new dimension to that range: your expectation, aka. "which values are expected to be produced with a high probability, and which not". </p><p>The standard normal distribution from the above tells us, for example, that we expect that the value produced by our process to be very close to 0. It might variate but only around 0. There is many information contained in this density function like we expect that the value produced to be in interval [-2,+2] in most of the cases. </p><p>Central Limit Theorem says something like: "if you repeat the event enough times independently and in the same conditions, the mean of the values produced will follow a normal distribution". </p><p>This theory is wonderful due to its generality. However it has a fundamental flow: it doesn't work well if you don't repeat the event many times. </p><p>For scientists like Pearson that was not a problem, since they managed in many cases to get enough data. But for Gosset that was a big trouble. It is not easy to see that you can't repeat the event of barley selection many times. That barley have to be selected, have to grow and be measured after harvest. It was too costly to repeat the experiments enough time. </p><p><center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAgQElEQVR42u2dbUgd2R2HFyQUyQcR
 FlmWUEqLSOiHRaSS9kNYSkHaRUpJLaXNiwHXjbGlH7LbDaUU2TVv9EPJRpMUSimJeeuXsjHG7Aak
 hJJuojFIKBKWBVlEZAnCEoKIyOn8xpzrude5c+e+z9z7PDAkxhudMzPnPPP/n7dXDAAAACSeV7gE
 AAAACB0AAAAQOgAAACB0AAAAQOgAAAAIPYSFhQUzNzdnZmZmzPz8vHn27BlXGgAAIClCHx4eNq+8
@@ -506,78 +312,78 @@ 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
-sp8oQofSttRby7u+XCyE6WmQTeqB09nsIkQsCwsIHaFDlVCD7DXQ7vKuTE+DMAIHSLrLwnrRO6l3
-qBuh9/T0+IPmEDpUHZtqVyP8MrJiRDuEvwNmeeHT86PniNQ71JPQNcios7MToUN1CUi1M6Idoko9
-sEuG1DvUm9CLPlGEDqWQufdi6abaGdEO+Up928h3N/Xu/RtSh5oS+sLCgpmbmzMzMzNmfn7ePHv2
-DKFD9WVuG10vGrf95oxoh/wfpYCR73p2JHO2WYVaEfrw8HCqj6mpqck0NzebxsZG/+tdu3YV1WAi
-dCiKjG1RGdEOxUp928h3tlmFWhG6ln7Vwx001/z58+dmcHDQlzxCh6pE53ZU++SkWVtbMxcvXmRE
-OxSFO5BSz5Oeq9SASz1vvCRCUoXe3t5uxsfHQz+jiH1lZQWhQ2VlbvvNlR5dXU2TOSPaoVAyR77r
-udLzlXp5pD8dkir07u5uP+Uexo4dO/xoHaFDxWTu9JuvexGU2wBfu3YNmUPRUtdzlPaCqEid/nRI
-stCXl5f9B7qvr88fFKeBcIrGl5aWzNTUlGlpaTFdXV2FnyhCh3xx+s3XiMyhgpG6njf60yGxQheL
-i4umra3N34TF3VRFqfahoaHiThShQ77R+cvU5/rEBDKHikt9/dYt+tMhuUJ3UWpdEbo/UKQUJ4rQ
-IXrruiXzI0fMyNmzpNmhIlJ30+8jH31k1m3qnaVhIclCL/mJInSIKvORkU2Ze42pZlcQmUO1InU9
-fympj44idUDoCB0iy9xrTH2Ze8cHL+cJa/EPTTFC5lApqWsqpJ47PX8fes+hnkdf6no+eQ4BoSN0
-iC7zwa4u5plDVXHnqet5ROqA0BE6RGs9tyLznh4ic4hfpP6LX2xJnZdMQOgAAWgp1/5+80iR0N69
-ROYQ20j9qPd8zr4c38HId0DoAJky7+sz15xpkhqIRGQOcYvU3QGael7X334bqQNCB3jZUvqRzg1H
-5idPnkTkEFux6/lMzbp4Oa2S/nRA6FD3Ml87e9ZcdGSe2iADIKZkbgyk53fto4+QOiB0qOPI/No1
-c8KROXPMIUmRujtX/aQide95RuqA0KHuGsPpq1fNYUfm18bGkDkk7jnWc2uf4V7vmLl8mecYEDrU
-TyOo5TRTjeD3v29mp6dpBCGxz/Ojhw/N4T17tpaLHRnheQaEDrXf+B06eHArTek1gmsvXnBhIPHo
-OT7pSP2g95wjdUDoUJtRzKNH5uCBA/4zcMg7Zn/+8809pwFq5Tn3nudH+/aZgy+lfmj/fqZeAkKH
-GopcvEbuxIkTqchFMl/3Gjrm7kJNojUVfv1rvz/dnYbJzA1A6JBokX/66aemt7c31bCNWpkTsUBN
-h+rrvtRHHakfOnTIrw+IHRA6JKw9W0+Lynu/8x0zI5n39xOZQ/1E6m+/baa95/6w9/yzaBIgdEhk
-VG43stBx7nvf29zM4uBBZA51J3Vz4ID//I90dqbqxMDAANE6IHSIb0Q+PT1tzpw5s7UWu9dozf7k
-J1syJyqB+qwcKak/eustM+i87J4+fdrMzMwQsQNCh3iI/MGDB2ki96Py99/f7CsnMgdIRer+1sDe
-nyPHj6fVF4l9mrUYAKFDtcgcva7jwuiomfEap9R+0YcOEZkD2Ei9t3dT6t4xfeqUuejVl1cYDQ8I
-HaoVkSuS+OSTT9JGr/sRxn//a9avXNkUuQ6vsULmABlSV714WUdUXx7cv5+W4dJoeNUvUvEIHaFD
-WWV+7ty5tIhCUvcbntVVY0ZGtmR+8SIyB8gmddUPW1e0TKxXf/SifPjw4fSuK6++IXWEjtChZCgF
-ePny5bSR64rIb926tdnY6FBq3ZU5aUOAsEqVLvWXg0ZVnyYmJtIido2IV/0jFY/QEToUHI1rsNu1
-a9fSUuuSemq6jUT+6NFmY2T7y2dnicwBokbqWepP0PRPrQ2v+sjgOYSO0CFyNK7+u/Pnz29Lraci
-ctsYae9nBr8BFC/2l4Pl/MPZU91G7JmpeNXPO3fuELUjdIQO26NxvfWrgTh16tS26TTj4+PpEYH+
-7vaXnzyJzAGKlbrqkdOv7tYp1T+9UGdOD1V9nZycZAAdQkfoROOb0fhoxtQZGwFsayT0d0/8XrhA
-fzlA6Stker+6onavDmaKXS/fFy5c2FZnVY+J2hE6Qq9Did++fXtbNB76tp8Zlauxob8coPSRuvrV
-3ZfmjGjdFXtQVk1fq34jd4SO0OtM4jnf7IOicqUGaSgAyhutuyn4gGg9s34HZdqQO0JH6DXxor85
-Sv3q1av+6lNBEs/Z96YG4MQJonKAuETrIS/TbtQeJHe1A1euXGGUPEJH6EmRuAawSeJBFTqSxG1D
-MjFBVA4Q12hd9TOkDueSu/5Ncr958yZyrxehLywsmLm5OV8A8/Pz5tmzZwg9VvV8M9WmaS2qnO6c
-1cyUW6RRsEHp9ZBUHwBUMFovsG5auetlPqjL7ciRI34QoHaE1HwNCn14eDh1s5uamkxzc7NpbGz0
-v961a5fZKGLnLIRemghclS+ocmpVKX0/ssRtBOC9GJjz59MbC+9nIHKAmIld9dIVu+qtJ+IoGTRX
-7mFBgA0SiOATLvR79+75N/Xx48fbvvf8+XMzODjoSx6hVyYCv3TpUmgErmNkZMT//rb54lFF7lXg
-VONAeh0gCY1Dehpeh+pxRLG7gtf8dgUBakeC2hc3gld7RASfIKG3t7f7YghDEfvKygpCL2Hkbfu7
-VGnGxsb8CNtdcjUzAtfnCl5QQp/3KrE5cya9QdCbPul1gORE60rDX7iQXo9PnzZGbXie9TizHcoW
-RGg3OLU9aqeKaoeg/ELv7u72U+5h7Nixw4/WEXphUbedQmblne3N2FYeW7nyjsCDKr/e4N1lJhE5
-QG2KXcsxe7Itpm67EbzaoaAgw80UWskzVS4mQl9eXvZvTl9fnz8oTgPhFI0vLS2Zqakp09LSYrq6
-ugo/0ToRutvfrQphH/Sgfu/MvisboaetnV5MZdfbemY0rsqudDsiB6gtsateZ760K2q/ebPoum7X
-lncj9Khtmtoz+uUrLHSxuLho2traTENDQ9rNUap9aGiouBOtEaG787xdYefq73anjdgHveSjS21K
-PVs0fukSfeQAtYzq9+XL6QNd3ai9gJR89l+1NdvGtmdBU+Wy9ctnCp958mWch67UuiL0UskmKULP
-FmHbhy/XA+v2d7v/vyz9TW46XSNgMyWu7Rm1g5M+w5sxQH1F7V7g4df/zHZBcld7UWRaPlv7mTku
-yAo7V7BjA57MNreeInwWlslT0pkPSr4RtptSCvr/RfV3R62oesv2ypK2xrpbWSV4onEAcKN2CTxT
-7nbNeK/tKkVqPlc77PbLu+1wWPo+SoSf2Q4nVf51tbCMO5cy6EZme7OLKumwCNvt467YyE47vUxv
-01ohSpXOK8u2CqlpK/oMEgeAKHJXe5E5bVWHJ0w/WFB7o8/kOR2uVG17KdpxK/8onqh4214JoVdj
-YZmgfphsb15R3+LCJJ3rza7sEXZYesxWJB3eeW2bb2oPryypz1aowgFADcpdAUNYsGDXp1B7ZNsm
-fbYK3XhhEX6hmdawAX3Zfr47/unLL78syotlE3q1Fpa5e/du3hfc9rNEjdCrIumgyqMI2kbbqiAa
-wKY/vfIEViR76Pu2IpVwUAsAQFpgoTbJBgtR2iW3HbNRfQwyha78o0boUcZHBR2aCRY7oVdrYZl8
-IvTYjIS0g9HUJ+W+uWb+3T7oQQPWgg6lwNz/r//H9DIAiFM7F5SqDxrLY/+fK/ygdjIm7Zw7gynx
-EXrVFpZx0z7ZhJhLmJX+fq4317CHPChCR9wAkFTRZ0boUYKXsExkUjyg7k5P6CaOQi/FwjK5UhOB
-3L1b2M2Pw5HZtxQWoevvCBsA6kH4agOjRujZxgol5Yhjyl1UZWGZJEboFRz9CQBQ02TO5iFCLz2l
-XlgGAAAAqiB0AAAAqEGh9/T0mNbWVq44AABAkoXe399vOjs7ueIAAABJFjoAAAAkTOjlWMsdAAAA
-KiT0cq7lHlqIAtfc5eDg4ODgqOYRS6GXey33XEKvuTctykSZKBNlokyUqRpCL/da7jwElIkyUSbK
-RJkoUwWEXu613HkIKBNlokyUiTJRpgoIvRRrufMQUCbKRJkoE2WiTFUWuijnWu48BJSJMlEmykSZ
-KFOFhO5SybXceQgoE2WiTJSJMiF0LhhlokyUiTJRJsqE0AEAACAGLw9cAgAAAIQOAAAACB0AAADq
-Vuj/+c9/zN/+9jd/jnsYT548MQMDA+bgwYPmX//6V+zK8dlnn5k//OEPZv/+/aa3t9f885//zPl/
-4l4mnd8HH3zgl0nnqXuV9DJpDwItbXzp0iXz97//PfJ1iGOZ8j0v7g11iLYuOU5KnNB1wb797W/7
-IwdVkbOh3d60MYxWr/vrX/9qXn/9dXP27NlYlUUPuPaJ14Ogv2vxnd/+9reJLpPWHFClVZl+97vf
-+asD/uMf/0h0mbRYkvYh2LNnj/nGN76R8/NxLVO+58W9oQ7R1iXLSYkT+ltvveW/jee6ePrcsWPH
-Ul9PTEyYnTt3mvX19diW7erVq37lTXKZMtfq14JCra2tiS6TXUtB5xZFGnEtU77nxb2hDtHWJctJ
-iRL62NiYf1FUiXNdPD0sumBuak4r2E1OTsa2fHpr++Y3v0mZYlqmqNKIa5nyPS/uDXWIMiXLSYkR
-+ldffWW+9a1v+cvL5rp4L1688L//+eefp/27UnPXr1+PVbkePnzopw17enpMR0eHuX//fuLL5EZP
-3/3ud7Mu+5u0MkWRRlzLlO95cW+oQ7R1yXNS7ISutxZdHHtY9BCMjo6mHvKwi6dlZ/X9zJ3dXn31
-Vf+NKi5lEl988UWqr+y1114zf/nLXxJfJsu+ffvMD3/4w6wppaSVKYo04lamQs8rruUoRuhJK1MS
-61AYSW3rshFHJ8VO6Br9qIppD12of//73/4DoEqr4+OPP/YvzunTp83//ve/wLfaoIur/opqjJYM
-KlO2N1idd9BIyaSV6Ve/+pX5wQ9+ELpdbtLKFEUacStToecV13IUI/SklSmJdSifaD0pbV0QcXVS
-IlLuugjqp7DHj3/8Y//i6GG3b0iZqH/GffPRg6P/8/Tp09iW06Zl9LAkuUyaktHe3r5tcE/S71PU
-ftq4linf8+LeUIdo65LlpETOQw9629EgC3cKwJ/+9CfzxhtvmNXVVf9rTZHQxY4Td+/eTf1dKbXB
-wUH/rU+p36SWSX1ku3fv9h/WoPR1EstkU/F6C7eRexLLlOu8uDfUIdq6ZDupZoSuN9qf/exnaZ/R
-15r3pwdHFUR9OHFCU1HUCGneqUZAavCLUlFJLpPuS+bhRk5JLJMGrQSVyzaySSlTrvPi3lCHaOuS
-7aSaX/pVKau4PwgzMzOpt7ZaKFMt3qdaKlO+58W9oUy0dcm4T6zlDgAAUAMgdAAAAIQOAAAACB0A
-AAAQOgAAACB0AAAAhA4AAAAIHQAAABA6AAAAIHQAAACEDgAAAAgdAAAAEDoAAAAgdAAAAIQOAAAA
-CB0AAAAQOgAAACB0AAAAhA4AAABx5v8/lXjV52IuYgAAAABJRU5ErkJggg==" alt="graphics"/></center></p>
+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" alt="graphics"/></center></p>
 <p>>>>This tutorial is generated with Rapaio document printer facilities.<<<</p><br/><p><a href="../../index.html">Back</a></p></body></html>

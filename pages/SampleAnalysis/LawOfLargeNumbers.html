@@ -380,16 +380,12 @@ h205apny2ZazbYPU19TXUae33OZ9IeraUqqv21o/Zxsn1zqeAAIAAACg3RBAAAAAABBAAAAAABBA
 AAAAAIAAAgAAAIAAAgAAAAAEEAAAAAAEEAAAAAAEEAAAAAAggAAAAAAggAAAAAAAAQQAAAAAAQQA
 AAAAAQQAAAAACCAAAAAACCAAAAAAQAABAAAAQAABAAAAQAABAAAAgGL4/xwVdQ9l4nu4AAAAAElF
 TkSuQmCC" alt="graphics"/></center></p>
-<p>Thus we can clearly notice two fact from the plot above. First fact is that the running average gets closer to the expected value, as sample size grows. Second fact is that deviation from expected value is smaller as the sample size grows aka. smaller variation. </p><p>The code for drawing the plot follows:</p><pre><code class="Java">        draw(new Plot() {{
-            new ABLine(this, 0, 3.5) {{
-                opt().setLwd(1.5f);
-                opt().setColorIndex(1);
-            }};
-            new Lines(this, new IndexVector("x", 1, N, 1), mean){{
-                opt().setLwd(1.5f);
-                opt().setColorIndex(2);
-            }};
-            opt().setYRange(2.5, 4.5);
-        }}, 800, 300);
+<p>Thus we can clearly notice two fact from the plot above. First fact is that the running average gets closer to the expected value, as sample size grows. Second fact is that deviation from expected value is smaller as the sample size grows aka. smaller variation. </p><p>The code for drawing the plot follows:</p><pre><code class="Java">        draw(new Plot()
+                .add(new ABLine(0, 3.5).setLwd(1.5f).setColorIndex(1))
+                .add(new Lines(new IndexVector(1, N, 1), mean)
+                        .setLwd(1.5f)
+                        .setColorIndex(2))
+                .setYRange(2.5, 4.5), 
+                800, 300);
 </code></pre>
 <p>>>>This tutorial is generated with Rapaio document printer facilities.<<<</p><br/><p><a href="../../index.html">Back</a></p></body></html>
