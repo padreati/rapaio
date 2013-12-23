@@ -35,7 +35,7 @@ public abstract class AbstractFigure implements Figure {
     protected static final Font TITLE_FONT = new Font("Verdana", Font.BOLD, 18);
     protected static final Font MARKERS_FONT = new Font("Verdana", Font.PLAIN, 13);
     protected static final Font LABELS_FONT = new Font("Verdana", Font.BOLD, 16);
-    protected static final double THICKER_MIN_SPACE = 50.;
+    protected static final double DEFAULT_THICKER_MIN_SPACE = 50.;
     protected static final int THICKER_PAD = 7;
     protected static final int MARKER_PAD = 15;
     protected static final int LABEL_PAD = 30;
@@ -57,6 +57,7 @@ public abstract class AbstractFigure implements Figure {
     private String title;
     private String leftLabel;
     private String bottomLabel;
+    private double thickerMinSpace = DEFAULT_THICKER_MIN_SPACE;
     ;
     private float lwd = 1.2f;
     private Vector sizeIndex = new OneNumericVector(2.5);
@@ -128,6 +129,19 @@ public abstract class AbstractFigure implements Figure {
 
     public AbstractFigure setBottomMarkers(boolean bottomMarkers) {
         this.bottomMarkers = bottomMarkers;
+        return this;
+    }
+    
+    
+    public double getThickerMinSpace() {
+        if(parent!=null && thickerMinSpace == DEFAULT_THICKER_MIN_SPACE) {
+            return parent.getThickerMinSpace();
+        }
+        return thickerMinSpace;
+    }
+    
+    public AbstractFigure setThickerMinSpace(double minSpace) {
+        thickerMinSpace = minSpace;
         return this;
     }
 
@@ -447,7 +461,7 @@ public abstract class AbstractFigure implements Figure {
         bottomMarkersPos.clear();
         bottomMarkersMsg.clear();
 
-        int xspots = (int) Math.floor(viewport.width / THICKER_MIN_SPACE);
+        int xspots = (int) Math.floor(viewport.width / getThickerMinSpace());
         double xspotwidth = viewport.width / xspots;
 
         for (int i = 0; i <= xspots; i++) {
@@ -460,7 +474,7 @@ public abstract class AbstractFigure implements Figure {
         leftMarkersPos.clear();
         leftMarkersMsg.clear();
 
-        int yspots = (int) Math.floor(viewport.height / THICKER_MIN_SPACE);
+        int yspots = (int) Math.floor(viewport.height / getThickerMinSpace());
         double yspotwidth = viewport.height / yspots;
 
         for (int i = 0; i <= yspots; i++) {

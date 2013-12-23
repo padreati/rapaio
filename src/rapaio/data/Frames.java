@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.data;
 
 /**
@@ -25,13 +26,14 @@ package rapaio.data;
 public final class Frames {
 
     /**
-     * Build a frame which has only numeric columns and values are filled with 0 (no missing values).
-     * 
+     * Build a frame which has only numeric columns and values are filled with 0
+     * (no missing values).
+     *
      * @param rows number of rows
      * @param colNames column names
      * @return the new built frame
      */
-    public static Frame newMatrixFrame(int rows, String[] colNames) {
+    public static Frame newMatrixFrame(int rows, String... colNames) {
         Vector[] vectors = new Vector[colNames.length];
         for (int i = 0; i < colNames.length; i++) {
             vectors[i] = new NumericVector(new double[rows]);
