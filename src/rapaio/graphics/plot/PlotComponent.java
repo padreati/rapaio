@@ -22,18 +22,14 @@ package rapaio.graphics.plot;
 
 import java.awt.*;
 import rapaio.data.Vector;
-import rapaio.graphics.Plot;
 import rapaio.graphics.base.AbstractFigure;
 
 /**
  * @author Aurelian Tutuianu
  */
 public abstract class PlotComponent extends AbstractFigure {
-    
-    private Plot parent;
 
     public void initialize() {
-        this.parent = parent;
     }
 
     public abstract void paint(Graphics2D g2d);

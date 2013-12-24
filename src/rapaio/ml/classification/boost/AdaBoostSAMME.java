@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.ml.classification.boost;
 
 import static rapaio.core.BaseMath.*;
@@ -28,13 +29,14 @@ import rapaio.ml.classification.Classifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import static rapaio.workspace.Workspace.*;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class AdaBoostM1 extends AbstractClassifier {
+public class AdaBoostSAMME extends AbstractClassifier {
 
-    private static final Logger logger = Logger.getLogger(AdaBoostM1.class.getName());
+    private static final Logger logger = Logger.getLogger(AdaBoostSAMME.class.getName());
 
     private final Classifier weak;
     private final int t;
@@ -46,7 +48,7 @@ public class AdaBoostM1 extends AbstractClassifier {
     private NominalVector pred;
     private Frame dist;
 
-    public AdaBoostM1(Classifier weak, int t) {
+    public AdaBoostSAMME(Classifier weak, int t) {
         this.weak = weak;
         this.t = t;
         this.a = new ArrayList<>();
@@ -55,19 +57,20 @@ public class AdaBoostM1 extends AbstractClassifier {
 
     @Override
     public Classifier newInstance() {
-        return new AdaBoostM1(weak.newInstance(), t);
+        return new AdaBoostSAMME(weak.newInstance(), t);
     }
 
     @Override
     public void learn(Frame df, List<Double> weights, String classColName) {
         logger.fine(String.format("Start learn on AdaBoostM1 (weak=%s, t=%d)", weak.getClass().getName(), t));
         dict = df.getCol(classColName).getDictionary();
+        double k = dict.length - 1;
 
         List<Double> w = new ArrayList<>(weights);
 
         double total = 0;
-        for (double ww : w) {
-            total += ww;
+        for (int j = 0; j < w.size(); j++) {
+            total += w.get(j);
         }
         for (int j = 0; j < w.size(); j++) {
             w.set(j, w.get(j) / total);
@@ -77,37 +80,35 @@ public class AdaBoostM1 extends AbstractClassifier {
             Classifier hh = weak.newInstance();
             hh.learn(df, new ArrayList<>(w), classColName);
             hh.predict(df);
-            NominalVector pred = hh.getPrediction();
+            NominalVector hpred = hh.getPrediction();
 
             double err = 0;
             for (int j = 0; j < df.getRowCount(); j++) {
-                if (pred.getIndex(j) != df.getCol(classColName).getIndex(j)) {
+                if (hpred.getIndex(j) != df.getCol(classColName).getIndex(j)) {
                     err += w.get(j);
                 }
             }
-            double alpha = (1. - err) / err;
-
-            if (err == 0 || err > 0.5) {
+            double alpha = log((1. - err) / err) + log(k - 1);
+            if (err == 0 || err > (1 - 1 / k)) {
                 if (h.isEmpty()) {
                     h.add(hh);
-                    a.add(log(alpha));
+                    a.add(alpha);
                 }
                 break;
             }
             h.add(hh);
-            a.add(log(alpha));
+            a.add(alpha);
 
             // update
             total = 0;
-            for (double ww : w) {
-                total += ww;
+            for (int j = 0; j < w.size(); j++) {
+                if (hpred.getIndex(j) != df.getCol(classColName).getIndex(j)) {
+                    w.set(j, w.get(j) * (1. - err) * (k-1) / err);
+                }
+                total += w.get(j);
             }
             for (int j = 0; j < w.size(); j++) {
-                if (pred.getIndex(j) != df.getCol(classColName).getIndex(j)) {
-                    w.set(j, w.get(j) / (2 * err));
-                } else {
-                    w.set(j, w.get(j) / (2 * (1. - err)));
-                }
+                w.set(j, w.get(j) / total);
             }
         }
     }
@@ -130,35 +131,6 @@ public class AdaBoostM1 extends AbstractClassifier {
             }
         }
 
-//        // from logs to probabilities
-//        for (int i = 0; i < dist.getRowCount(); i++) {
-//
-//            double max = 0;
-//            for (int j = 1; j < dist.getColCount(); j++) {
-//                if (dist.getValue(i, j) > max) {
-//                    max = dist.getValue(i, j);
-//                }
-//            }
-//            double expsum = 0;
-//            for (int j = 1; j < dist.getColCount(); j++) {
-//                dist.setValue(i, j, exp(dist.getValue(i, j) - max));
-//                expsum += dist.getValue(i, j);
-//            }
-//            for (int j = 1; j < dist.getColCount(); j++) {
-//                dist.setValue(i, j, dist.getValue(i, j) / expsum);
-//            }
-//
-//            // predict
-//            max = 0;
-//            int prediction = 0;
-//            for (int j = 1; j < dist.getColCount(); j++) {
-//                if (dist.getValue(i, j) > max) {
-//                    prediction=j;
-//                    max = dist.getValue(i, j);
-//                }
-//            }
-//            pred.setIndex(i, prediction);
-//        }
         // simply predict
         for (int i = 0; i < dist.getRowCount(); i++) {
 
@@ -186,5 +158,10 @@ public class AdaBoostM1 extends AbstractClassifier {
 
     @Override
     public void summary() {
+        StringBuilder sb = new StringBuilder();
+        // title
+        sb.append("AdaBoostSAMME [t=").append(t).append("]\n");
+        sb.append("weak learners built:").append(h.size()).append("\n");
+        code(sb.toString());
     }
 }

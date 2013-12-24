@@ -24,19 +24,28 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
+import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Frame;
+import rapaio.data.Frames;
 import rapaio.data.NominalVector;
 import rapaio.data.NumericVector;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
+import rapaio.data.Vectors;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.BarChart;
+import rapaio.graphics.Plot;
+import rapaio.graphics.plot.ABLine;
+import rapaio.graphics.plot.Legend;
+import rapaio.graphics.plot.Lines;
 import rapaio.ml.classification.Classifier;
 import rapaio.ml.classification.ModelEvaluation;
-import rapaio.ml.classification.boost.AdaBoostM1;
+import rapaio.ml.classification.boost.AdaBoostSAMME;
 import rapaio.ml.classification.tree.DecisionStump;
 import rapaio.ml.classification.tree.RandomForest;
 import rapaio.printer.LocalPrinter;
+import rapaio.sample.StatSampling;
+import rapaio.tutorial.pages.DiscreteSampling;
 import rapaio.workspace.Summary;
 import static rapaio.workspace.Workspace.*;
 
@@ -99,24 +108,5 @@ public class OneRuleTest {
         for (int i = 1; i < SIZE; i++) {
             Assert.assertTrue(oneRule.getPrediction().getLabel(i).equals(oneRule.getPrediction().getLabel(0)));
         }
-    }
-    
-    
-    @Test
-    public void testSimpleNominal() throws Exception {
-        setPrinter(new LocalPrinter());
-        Frame df = Datasets.loadMushrooms();
-        Summary.names(df);
-        
-        draw(new BarChart(df.getCol("odor"), df.getCol("classes")));
-        
-        OneRule onerule = new OneRule();
-        ModelEvaluation eval = new ModelEvaluation();
-        List<Classifier> cs = new ArrayList<>();
-//        cs.add(onerule);
-        cs.add(new AdaBoostM1(onerule, 40));
-        cs.add(new AdaBoostM1(new DecisionStump(), 40));
-//        cs.add(new RandomForest().setMcols(4));
-        eval.multiCv(df, "classes", cs, 10);
     }
 }

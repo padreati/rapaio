@@ -57,7 +57,7 @@ public class Plot extends AbstractFigure {
         }
 
         if (r == null) {
-            r = new Range(0, 0, 0, 0);
+            r = new Range(0, 0, 1, 1);
         }
 
         if (getXRangeStart() == getXRangeStart() && getXRangeEnd() == getXRangeEnd()) {

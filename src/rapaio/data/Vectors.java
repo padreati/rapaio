@@ -35,4 +35,12 @@ public final class Vectors {
         }
         return result;
     }
+
+    public static IndexVector newSequence(int start, int end) {
+        IndexVector result = new IndexVector(end - start + 1);
+        for (int i = start; i <= end; i++) {
+            result.setIndex(i - start, i);
+        }
+        return result;
+    }
 }

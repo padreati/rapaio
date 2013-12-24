@@ -33,7 +33,7 @@ import static rapaio.workspace.Summary.*;
 import rapaio.filters.ColFilters;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.ROCCurve;
-import rapaio.ml.classification.boost.AdaBoostM1;
+import rapaio.ml.classification.boost.AdaBoostSAMME;
 import rapaio.ml.classification.rule.OneRule;
 import rapaio.ml.classification.tree.DecisionStump;
 import rapaio.ml.classification.tree.RandomForest;
@@ -139,7 +139,7 @@ public class ROCCurvesPage implements TutorialPage {
         p("The third prediction model is a boosting algorithm called AdaBoost.M1. This model is "
                 + "is build with decision stump as a weak learner, and boosting 200 iterations. "
                 + "The following code shows how one can achieve that using rapaio.");
-        AdaBoostM1 ab = new AdaBoostM1(new DecisionStump(), 200);
+        AdaBoostSAMME ab = new AdaBoostSAMME(new DecisionStump(), 200);
         ab.learn(train, "spam");
         ab.predict(test);
         code("        AdaBoostM1 ab = new AdaBoostM1(new DecisionStump(), 200);\n"

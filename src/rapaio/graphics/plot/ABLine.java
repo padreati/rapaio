@@ -23,6 +23,7 @@ import rapaio.graphics.base.Range;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
+import rapaio.core.BaseMath;
 
 /**
  * @author Aurelian Tutuianu
@@ -50,6 +51,12 @@ public class ABLine extends PlotComponent {
 
     @Override
     public Range buildRange() {
+        if(h) {
+            return new Range(a, Double.NaN, a, Double.NaN); 
+        }
+        if(v) {
+            return new Range(Double.NaN, a, Double.NaN, a);
+        }
         return null;
     }
 

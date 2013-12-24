@@ -246,30 +246,34 @@ public class OneRule extends AbstractClassifier {
         //splits from same value
         int i = pos;
         int index;
-        double[] hist = new double[classLabels.length];
-
         while (i < sort.getRowCount()) {
             // start a new bucket
             int startIndex = i;
-            for (int j = 0; j < hist.length; j++)
-                hist[j] = 0;
+            double[] hist = new double[classLabels.length];
 
             do { // fill it until it has enough of the majority class
-                index = df.getIndex(sort.getIndex(i++), className);
-                hist[index] += weights.get(index);
+                index = df.getIndex(sort.getIndex(i), className);
+                hist[index] += weights.get(sort.getIndex(i));
+                i++;
             } while (hist[index] < minCount && i < sort.getRowCount());
 
             // while class remains the same, keep on filling
-            while (i < sort.getRowCount() && df.getIndex(sort.getIndex(i), className) == index) {
-                hist[index] += weights.get(i);
-                i++;
+            while (i < sort.getRowCount()) {
+                index = sort.getIndex(i);
+                if (df.getIndex(sort.getIndex(i), className) == index) {
+                    hist[index] += weights.get(sort.getIndex(i));
+                    i++;
+                    continue;
+                }
+                break;
             }
             // keep on while attr value is the same
             while (i < sort.getRowCount()
                     && df.getValue(sort.getIndex(i - 1), sourceName)
                     == df.getValue(sort.getIndex(i), sourceName)) {
-                index = df.getIndex(sort.getIndex(i++), className);
-                hist[index]++;
+                index = df.getIndex(sort.getIndex(i), className);
+                hist[index] += weights.get(sort.getIndex(i));
+                i++;
             }
 
             List<Integer> best = new ArrayList<>();
@@ -296,7 +300,7 @@ public class OneRule extends AbstractClassifier {
             }
             double maxValue = Double.POSITIVE_INFINITY;
             if (i != sort.getRowCount()) {
-                maxValue = (df.getValue(sort.getIndex(i-1), sourceName) + df.getValue(sort.getIndex(i), sourceName)) / 2;
+                maxValue = (df.getValue(sort.getIndex(i - 1), sourceName) + df.getValue(sort.getIndex(i), sourceName)) / 2;
             }
 
             candidates.add(new NumericOneRule(minValue, maxValue, false,
@@ -304,7 +308,7 @@ public class OneRule extends AbstractClassifier {
                     total,
                     total - max));
         }
-        
+
         NumericOneRule last = null;
         for (NumericOneRule rule : candidates) {
             if (last == null) {
