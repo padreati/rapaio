@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.workspace;
 
 import rapaio.data.Frame;
@@ -27,6 +28,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author tutuianu
@@ -79,8 +81,12 @@ public class WorkspaceData implements Serializable {
     public Collection<WorkspaceDataListener> getListeners() {
         return listeners;
     }
-    
+
     public void clearListeners() {
         listeners.clear();
+    }
+
+    public Set<String> getFrameNames() {
+        return frames.keySet();
     }
 }

@@ -100,15 +100,22 @@ public class AdaBoostSAMME extends AbstractClassifier {
             a.add(alpha);
 
             // update
-            total = 0;
+//            total = 0;
+//            for (int j = 0; j < w.size(); j++) {
+//                if (hpred.getIndex(j) != df.getCol(classColName).getIndex(j)) {
+//                    w.set(j, w.get(j) * (1. - err) * (k - 1) / err);
+//                }
+//                total += w.get(j);
+//            }
+//            for (int j = 0; j < w.size(); j++) {
+//                w.set(j, w.get(j) / total);
+//            }
             for (int j = 0; j < w.size(); j++) {
                 if (hpred.getIndex(j) != df.getCol(classColName).getIndex(j)) {
-                    w.set(j, w.get(j) * (1. - err) * (k-1) / err);
+                    w.set(j, w.get(j) * (k - 1) / (k * err));
+                } else {
+                    w.set(j, w.get(j) / (k * (1. - err)));
                 }
-                total += w.get(j);
-            }
-            for (int j = 0; j < w.size(); j++) {
-                w.set(j, w.get(j) / total);
             }
         }
     }
