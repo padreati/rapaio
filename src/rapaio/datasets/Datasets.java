@@ -148,4 +148,22 @@ public class Datasets {
         persistence.setHasQuotas(false);
         return persistence.read(Datasets.class, "mushrooms.csv");
     }
+    
+    public static Frame loadPlay() throws IOException {
+        CsvPersistence persistence = new CsvPersistence();
+        persistence.setColSeparator(',');
+        persistence.setHasHeader(true);
+        persistence.setHasQuotas(false);
+        persistence.getNumericFieldHints().add("temp");
+        persistence.getNumericFieldHints().add("humidity");
+        return persistence.read(Datasets.class, "play.csv");
+    }
+    
+    public static Frame loadOlympic() throws IOException {
+        CsvPersistence csv = new CsvPersistence();
+        csv.setHasHeader(true);
+        csv.setHasQuotas(false);
+        csv.getNumericFieldHints().add("Edition");
+        return csv.read(Datasets.class, "olympic.csv");
+    }
 }

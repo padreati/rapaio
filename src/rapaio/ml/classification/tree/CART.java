@@ -31,6 +31,7 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
+@Deprecated
 public class CART extends AbstractClassifier{
 
 

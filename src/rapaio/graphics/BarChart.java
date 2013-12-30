@@ -17,15 +17,21 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.graphics;
 
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import rapaio.data.*;
 import rapaio.graphics.base.AbstractFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
-
-import java.awt.*;
-import java.util.HashSet;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -37,6 +43,7 @@ public class BarChart extends AbstractFigure {
     private final Vector numeric;
     private boolean density = false;
     private Range range;
+    private int[] sel;
     private double[][] hits;
     private double[] totals;
 
@@ -70,6 +77,25 @@ public class BarChart extends AbstractFigure {
 
         int shift = 9;
         setColorIndex(new IndexVector(shift, condition.getDictionary().length + shift - 1, 1));
+    }
+
+    private SortType sort = SortType.NONE;
+
+    public static enum SortType {
+
+        NONE, ASC, DESC
+    }
+
+    public BarChart useSortType(SortType sort) {
+        this.sort = sort;
+        return this;
+    }
+
+    private int top = Integer.MAX_VALUE;
+
+    public BarChart useTop(int top) {
+        this.top = top;
+        return this;
     }
 
     public void useDensity(boolean density) {
@@ -110,15 +136,49 @@ public class BarChart extends AbstractFigure {
                 }
             }
 
+            // now restrict values
+            List<Integer> list = new ArrayList<>();
+            for (int i = 0; i < totals.length; i++) {
+                list.add(i);
+            }
+
+            Collections.sort(list, new Comparator<Integer>() {
+                @Override
+                public int compare(Integer o1, Integer o2) {
+                    if (totals[o1] == totals[o2])
+                        return 0;
+                    int sign = (SortType.ASC.equals(sort)) ? 1 : -1;
+                    return totals[o1] < totals[o2] ? -sign : sign;
+                }
+            });
+            if (top < list.size()) {
+                list = list.subList(0, top);
+            }
+
+            sel = new int[list.size()];
+            if (SortType.NONE.equals(sort)) {
+                Set<Integer> set = new HashSet(list);
+                int pos = 0;
+                for (int i = 0; i < totals.length; i++) {
+                    if (set.contains(i)) {
+                        sel[pos++] = i;
+                    }
+                }
+            } else {
+                for (int i = 0; i < sel.length; i++) {
+                    sel[i] = list.get(i);
+                }
+            }
+
             // now build range
             range = new Range();
-            for (int i = 0; i < totals.length; i++) {
-                range.union(Double.NaN, totals[i]);
+            for (int i = 0; i < sel.length; i++) {
+                range.union(Double.NaN, totals[sel[i]]);
                 range.union(Double.NaN, 0);
             }
             int cnt = 0;
-            for (int i = 0; i < totals.length; i++) {
-                if (totals[i] > 0)
+            for (int i = 0; i < sel.length; i++) {
+                if (totals[sel[i]] > 0)
                     cnt++;
             }
             range.union(-0.5, 0);
@@ -138,19 +198,19 @@ public class BarChart extends AbstractFigure {
         getBottomMarkersMsg().clear();
 
         int cnt = 0;
-        for (int i = 0; i < category.getDictionary().length; i++) {
-            if (totals[i] > 0)
+        for (int i = 0; i < sel.length; i++) {
+            if (totals[sel[i]] > 0)
                 cnt++;
         }
         int xspots = cnt;
         double xspotwidth = getViewport().width / (1. * xspots);
 
         cnt = 0;
-        for (int i = 0; i < category.getDictionary().length; i++) {
-            if (totals[i] == 0)
+        for (int i = 0; i < sel.length; i++) {
+            if (totals[sel[i]] == 0)
                 continue;
             getBottomMarkersPos().add(xspotwidth * (0.5 + cnt));
-            getBottomMarkersMsg().add(category.getDictionary()[i]);
+            getBottomMarkersMsg().add(category.getDictionary()[sel[i]]);
             cnt++;
         }
     }
@@ -159,15 +219,14 @@ public class BarChart extends AbstractFigure {
     public void paint(Graphics2D g2d, Rectangle rect) {
         super.paint(g2d, rect);
 
-        int colindex = 0;
         int col = 0;
-        for (int i = 0; i < category.getDictionary().length; i++) {
-            if (totals[i] == 0)
+        for (int i = 0; i < sel.length; i++) {
+            if (totals[sel[i]] == 0)
                 continue;
 
             double ystart = 0;
             for (int j = 0; j < condition.getDictionary().length; j++) {
-                double yend = ystart + hits[i][j];
+                double yend = ystart + hits[sel[i]][j];
 
                 int[] x = {
                     (int) xscale(col - 0.4),
@@ -198,7 +257,7 @@ public class BarChart extends AbstractFigure {
                     (int) yscale(ystart),
                     (int) yscale(ystart)};
 
-                g2d.setColor(getColor(colindex++));
+                g2d.setColor(getColor(j));
                 g2d.fillPolygon(x, y, 4);
 
                 ystart = yend;

@@ -33,6 +33,7 @@ import java.util.List;
  * if than classifier returns missing value for classification then the next
  * sub-classifier is used.
  */
+@Deprecated
 public class OnionClassifier extends AbstractClassifier {
 
     @Override

@@ -17,7 +17,6 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
 package rapaio.ml.classification.rule;
 
 import rapaio.core.RandomSource;
@@ -46,8 +45,7 @@ public class OneRule extends AbstractClassifier {
 
     @Override
     public OneRule newInstance() {
-        return new OneRule()
-                .setMinCount(getMinCount());
+        return new OneRule().setMinCount(getMinCount());
     }
 
     public double getMinCount() {
@@ -105,7 +103,7 @@ public class OneRule extends AbstractClassifier {
     private String predict(Frame test, int row) {
         if (bestRuleSet == null) {
             log.severe("Best rule not found. Either the classifier was not trained, either something went wrong.");
-            return null;
+            return "?";
         }
         String colName = bestRuleSet.getColName();
 

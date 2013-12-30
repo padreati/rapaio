@@ -26,9 +26,7 @@ import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import rapaio.data.NominalVector;
 import rapaio.workspace.Workspace;
-import rapaio.filters.NominalFilters;
 import rapaio.ml.classification.AbstractClassifier;
-import rapaio.ml.classification.Classifier;
 
 import java.util.*;
 
@@ -36,6 +34,7 @@ import java.util.*;
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class ID3 extends AbstractClassifier {
+
     private ID3Node root;
     private MetricType metricType = new EntropyMetricType();
     private String[] dict;
@@ -86,7 +85,6 @@ public class ID3 extends AbstractClassifier {
         public String getMetricTypeName() {
             return "InfoGain";
         }
-
 
         @Override
         public double compute(Frame df, List<Double> weights, String classColName, String splitColName) {
@@ -200,6 +198,7 @@ public class ID3 extends AbstractClassifier {
 }
 
 class ID3Node {
+
     private final ID3Node parent;
     private final Frame df;
     private final List<Double> weights;
@@ -284,7 +283,6 @@ class ID3Node {
         }
 
         // find best split
-
         String colName = "";
         metricValue = Double.NaN;
 
@@ -304,24 +302,18 @@ class ID3Node {
             }
         }
 
-
         // if none were selected then there are no columns to select
-
         if (colName.isEmpty()) {
             String[] modes = new Mode(df.getCol(classColName), false).getModes();
             if (modes.length == 0) {
                 throw new IllegalArgumentException("Can't train from an empty frame");
             }
-            predicted = modes[0];
-            if (modes.length > 1) {
-                predicted = modes[RandomSource.nextInt(modes.length)];
-            }
+            predicted = modes[RandomSource.nextInt(modes.length)];
             leaf = true;
             return;
         }
 
         // usual case, a split node
-
         String[] dict = df.getCol(colName).getDictionary();
         List<Integer>[] splitIds = new List[dict.length];
         List<Double>[] splitWeights = new List[dict.length];
@@ -350,4 +342,3 @@ class ID3Node {
         }
     }
 }
-
