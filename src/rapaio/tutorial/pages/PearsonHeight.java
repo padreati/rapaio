@@ -34,7 +34,6 @@ import static rapaio.workspace.Summary.summary;
 import static rapaio.core.BaseMath.*;
 import static rapaio.workspace.Workspace.*;
 
-import rapaio.graphics.Histogram;
 import rapaio.graphics.Plot;
 import rapaio.graphics.QQPlot;
 import rapaio.graphics.plot.ABLine;
@@ -43,6 +42,7 @@ import rapaio.graphics.plot.Points;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import rapaio.graphics.plot.Histogram;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -74,7 +74,8 @@ public class PearsonHeight implements TutorialPage {
 
         for (int i = 0; i < df.getColCount(); i++) {
             Normal normal = new Normal(new Mean(df.getCol(i)).getValue(), sqrt(new Variance(df.getCol(i)).getValue()));
-            draw(new Histogram(df.getCol(i), 23, true, 57, 80)
+            draw(new Plot()
+                    .add(new Histogram(df.getCol(i), 23, true, 57, 80))
                     .add(new FunctionLine(normal.getPdfFunction())
                             .setColorIndex(2))
                     .setBottomLabel(df.getColNames()[i])

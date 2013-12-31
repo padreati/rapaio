@@ -22,7 +22,6 @@ package rapaio.tutorial.pages;
 import rapaio.core.BaseMath;
 import rapaio.data.Frame;
 import rapaio.data.IndexVector;
-import rapaio.data.OneIndexVector;
 import rapaio.data.Vector;
 import rapaio.datasets.Datasets;
 import rapaio.distributions.empirical.KernelDensityEstimator;
@@ -30,11 +29,10 @@ import rapaio.distributions.empirical.KernelFunction;
 import rapaio.workspace.Summary;
 import static rapaio.workspace.Workspace.*;
 
-import rapaio.graphics.Histogram;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.DensityLine;
 import rapaio.graphics.plot.FunctionLine;
-import rapaio.graphics.plot.HistogramBars;
+import rapaio.graphics.plot.Histogram;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -97,7 +95,7 @@ public class HistogramDensityTutorial implements TutorialPage {
 
         code("        draw(new Histogram(df.getCol(\"Father\")));\n");
 
-        draw(new Histogram(df.getCol("Father")));
+        draw(new Plot().add(new Histogram(df.getCol("Father"))));
 
         p("The height of a rectangle is also equal to the frequency density of "
                 + "the interval, i.e., the frequency divided by the width of the interval. "
@@ -148,7 +146,7 @@ public class HistogramDensityTutorial implements TutorialPage {
 
         final Vector col = df.getCol("Father");
         draw(new Plot()
-                .add(new HistogramBars(col).setColorIndex(new IndexVector(1, 255, 1)))
+                .add(new Histogram(col).setColorIndex(new IndexVector(1, 255, 1)))
                 .add(new DensityLine(col)));
 
         p("In statistics, kernel density estimation (KDE) is a non-parametric way to "
@@ -168,7 +166,8 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("However one can use a different value for bandwidth in order to obtain "
                 + "a smooth or less smooth approximation of the density function.");
 
-        draw(new Histogram(col)
+        draw(new Plot()
+                .add(new Histogram(col))
                 .add(new FunctionLine(new KernelDensityEstimator(col, 0.1).getPdfFunction()).setColorIndex(1))
                 .add(new FunctionLine(new KernelDensityEstimator(col, 0.5).getPdfFunction()).setColorIndex(2))
                 .add(new FunctionLine(new KernelDensityEstimator(col, 2).getPdfFunction()).setColorIndex(3))

@@ -24,7 +24,6 @@ import rapaio.data.*;
 import rapaio.distributions.empirical.KernelDensityEstimator;
 import rapaio.workspace.Summary;
 import static rapaio.workspace.Workspace.*;
-import rapaio.graphics.Histogram;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.ABLine;
 import rapaio.graphics.plot.FunctionLine;
@@ -36,6 +35,7 @@ import rapaio.sample.DiscreteWeightedSamplingWOR;
 import rapaio.sample.DiscreteWeightedSamplingWR;
 
 import java.io.IOException;
+import rapaio.graphics.plot.Histogram;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -127,7 +127,7 @@ public class DiscreteSampling implements TutorialPage {
 
         int[] sample = new DiscreteSamplingWR(6).sample(1000);
         Vector vector = new NumericVector(sample);
-        draw(new Histogram(vector, 6, false), 500, 200);
+        draw(new Plot().add(new Histogram(vector, 6, false)), 500, 200);
 
         p("In the presented histogram we see frequencies obtained be taking a sample "
                 + "of size 1000 of the fair-dice process outcomes. We note that the "

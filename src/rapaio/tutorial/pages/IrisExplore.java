@@ -23,12 +23,12 @@ import rapaio.data.Frame;
 import rapaio.data.OneIndexVector;
 import rapaio.datasets.Datasets;
 import rapaio.workspace.Summary;
-import rapaio.graphics.Histogram;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;
 import rapaio.printer.HTMLPrinter;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import rapaio.graphics.plot.Histogram;
 import static rapaio.workspace.Workspace.*;
 import rapaio.printer.Printer;
 
@@ -64,12 +64,9 @@ public class IrisExplore implements TutorialPage {
         p("Now we will take a look over the distribuition of first two measurements.");
         for (int i = 0; i < df.getColCount() - 1; i++) {
             final int ii = i;
-            draw(new Histogram(df.getCol(i)) {
-                {
-                    setBins(30);
-                    setBottomLabel(df.getColNames()[ii]);
-                }
-            }, 500, 250);
+            draw(new Plot()
+                    .add(new Histogram(df.getCol(i)).setBins(30))
+                    .setBottomLabel(df.getColNames()[ii]), 500, 250);
         }
         p("We can see easily that for petal length and width there are two well-separated modes."
                 + " This is probably a well separation of species, so a plot should clarify "

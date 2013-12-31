@@ -393,20 +393,21 @@ public class Summary {
 
     public static void head(int lines, Frame df) {
         Vector[] vectors = new Vector[df.getColCount()];
+        String[] names = df.getColNames();
         for (int i = 0; i < vectors.length; i++) {
             vectors[i] = df.getCol(i);
         }
-        head(lines, vectors);
+        head(lines, vectors, names);
     }
 
-    public static void head(int lines, Vector... vectors) {
+    public static void head(int lines, Vector[] vectors, String[] names) {
         if (lines == -1) {
             lines = vectors[0].getRowCount();
         }
 
         int[] max = new int[vectors.length];
         for (int i = 0; i < vectors.length; i++) {
-            max[i] = ("V" + i).length() + 1;
+            max[i] = names[i].length() + 1;
             for (int j = 0; j < vectors[i].getRowCount(); j++) {
                 if (vectors[i].isNominal() && max[i] < vectors[i].getLabel(j).length()) {
                     max[i] = vectors[i].getLabel(j).length();
@@ -435,7 +436,7 @@ public class Summary {
             }
 
             for (int j = start; j <= pos; j++) {
-                String value = String.format("%" + max[j] + "s", "V" + j);
+                String value = String.format("%" + max[j] + "s", names[j]);
                 sb.append(value).append(" ");
             }
             sb.append("\n");

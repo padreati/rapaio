@@ -34,10 +34,11 @@ public class JavaDBUtil {
         String[] columns = df.getColNames();
         String[] types = new String[columns.length];
         for (int i = 0; i < types.length; i++) {
-            if (df.getCol(columns[i]).isNumeric()) {
+            if (df.getCol(i).isNumeric()) {
                 types[i] = "DOUBLE";
+                continue;
             }
-            if (df.getCol(columns[i]).isNominal()) {
+            if (df.getCol(i).isNominal()) {
                 types[i] = "VARCHAR(8000)";
             }
         }
@@ -73,7 +74,7 @@ public class JavaDBUtil {
         try (PreparedStatement ps = conn.prepareStatement(sb.toString())) {
             for (int i = 0; i < df.getRowCount(); i++) {
                 for (int j = 0; j < types.length; j++) {
-                    switch (types[i]) {
+                    switch (types[j]) {
                         case "VARCHAR(8000)":
                             ps.setString(j + 1, df.getLabel(i, j));
                             break;
@@ -92,15 +93,18 @@ public class JavaDBUtil {
         ResultSet rs = stmt.executeQuery(query);
 
         ResultSetMetaData md = rs.getMetaData();
+        List<String> colNames = new ArrayList();
         List<List> lists = new ArrayList<>();
         for (int i = 0; i < md.getColumnCount(); i++) {
+            colNames.add(md.getColumnLabel(i+1));
             lists.add(new ArrayList());
         }
         while (rs.next()) {
             for (int i = 0; i < md.getColumnCount(); i++) {
-                String sqlTypeName = md.getColumnTypeName(i);
+                String sqlTypeName = md.getColumnTypeName(i+1);
                 switch (sqlTypeName) {
                     case "DOUBLE":
+                    case "INTEGER":
                         lists.get(i).add(rs.getDouble(i + 1));
                         break;
                     default:
@@ -109,11 +113,11 @@ public class JavaDBUtil {
             }
         }
         List<Vector> vectors = new ArrayList<>();
-        List<String> colNames = new ArrayList();
         for (int i = 0; i < md.getColumnCount(); i++) {
-            String sqlTypeName = md.getColumnTypeName(i);
+            String sqlTypeName = md.getColumnTypeName(i+1);
             switch (sqlTypeName) {
                 case "DOUBLE":
+                case "INTEGER":
                     NumericVector v1 = new NumericVector(lists.get(i).size());
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         v1.setValue(j, (Double) lists.get(i).get(j));
@@ -129,7 +133,7 @@ public class JavaDBUtil {
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         v2.setLabel(j, (String) lists.get(i).get(j));
                     }
-                    lists.get(i).add(v2);
+                    vectors.add(v2);
             }
         }
         return new SolidFrame(lists.get(0).size(), vectors, colNames);

@@ -88,12 +88,16 @@ public class AdaBoostSAMME extends AbstractClassifier {
                 }
             }
             double alpha = log((1. - err) / err) + log(k - 1);
-            if (err == 0 || err > (1 - 1 / k)) {
+            if (err == 0) {
                 if (h.isEmpty()) {
                     h.add(hh);
                     a.add(alpha);
                 }
                 break;
+            }
+            if(err > (1 - 1 / k)) {
+                i--;
+                continue;
             }
             h.add(hh);
             a.add(alpha);

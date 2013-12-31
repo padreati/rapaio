@@ -48,19 +48,25 @@ public class BarChart extends AbstractFigure {
     private double[] totals;
 
     public BarChart(Vector category) {
-        this(category, new NominalVector(category.getRowCount(), new HashSet<String>()));
+        this(category, null);
     }
 
     public BarChart(Vector category, Vector condition) {
-        this(category, condition, new IndexVector(category.getRowCount(), 1));
+        this(category, condition, null);
     }
 
     public BarChart(Vector category, Vector condition, Vector numeric) {
         if (!category.isNominal()) {
             throw new IllegalArgumentException("categories are nominal only");
         }
+        if (condition == null) {
+            condition = new NominalVector(category.getRowCount(), new HashSet<String>());
+        }
         if (!condition.isNominal()) {
             throw new IllegalArgumentException("conditions are nominal only");
+        }
+        if (numeric == null) {
+            numeric = new IndexVector(category.getRowCount(), 1);
         }
         if (!numeric.isNumeric()) {
             throw new IllegalArgumentException("Numeric vector must be .. isNumeric");

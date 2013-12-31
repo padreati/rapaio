@@ -29,7 +29,7 @@ import java.awt.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class HistogramBars extends PlotComponent {
+public class Histogram extends PlotComponent {
 
     private final Vector v;
     int bins = 20;
@@ -38,15 +38,15 @@ public class HistogramBars extends PlotComponent {
     double minvalue = Double.NaN;
     double maxvalue = Double.NaN;
 
-    public HistogramBars(Vector v) {
+    public Histogram(Vector v) {
         this(v, 30, true);
     }
 
-    public HistogramBars(Vector v, int bins, boolean prob) {
+    public Histogram(Vector v, int bins, boolean prob) {
         this(v, bins, prob, Double.NaN, Double.NaN);
     }
 
-    public HistogramBars(Vector v, int bins, boolean prob, double minvalue, double maxvalue) {
+    public Histogram(Vector v, int bins, boolean prob, double minvalue, double maxvalue) {
         this.v = v;
         this.bins = bins;
         this.prob = prob;
@@ -67,16 +67,18 @@ public class HistogramBars extends PlotComponent {
         return bins;
     }
 
-    public void setBins(int bins) {
+    public Histogram setBins(int bins) {
         this.bins = bins;
+        return this;
     }
 
     public boolean isProb() {
         return prob;
     }
 
-    public void setProb(boolean prob) {
+    public Histogram setProb(boolean prob) {
         this.prob = prob;
+        return this;
     }
 
     private void rebuild() {
