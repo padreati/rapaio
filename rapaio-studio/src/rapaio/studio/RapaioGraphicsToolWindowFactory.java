@@ -1,5 +1,9 @@
 package rapaio.studio;
 
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationDisplayType;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
@@ -7,7 +11,6 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import rapaio.graphics.base.Figure;
 import rapaio.printer.FigurePanel;
-import rapaio.printer.Printer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,12 +19,10 @@ import java.awt.image.BufferedImage;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class RapaioGraphicsToolWindowFactory implements ToolWindowFactory, Printer {
+public class RapaioGraphicsToolWindowFactory implements ToolWindowFactory, ExtendedPrinter {
 
     private ToolWindow myToolWindow;
     private JPanel myToolWindowContent;
-    private JPanel contentPanel;
-    private JToolBar actionToolBar;
     private FigurePanel figurePanel;
 
     public RapaioGraphicsToolWindowFactory() {
@@ -34,26 +35,29 @@ public class RapaioGraphicsToolWindowFactory implements ToolWindowFactory, Print
         Content content = contentFactory.createContent(myToolWindowContent, "", false);
         toolWindow.getContentManager().addContent(content);
 
-
+        RapaioStudioServer.getInstance().setExtendedPrinter(this);
+        Notifications.Bus.register("Rapaio", NotificationDisplayType.NONE);
     }
 
     public void setFigure(Figure figure) {
         if (figurePanel != null) {
-            contentPanel.remove(figurePanel);
+            myToolWindowContent.remove(figurePanel);
         }
         figurePanel = new FigurePanel(figure);
+        myToolWindowContent.setLayout(new BorderLayout());
+        myToolWindowContent.add(figurePanel, BorderLayout.CENTER);
         figurePanel.setVisible(true);
-        contentPanel.setLayout(new BorderLayout());
-        contentPanel.add(figurePanel, BorderLayout.CENTER);
     }
 
     public void setImage(BufferedImage image) {
-        if(figurePanel != null) {
-            contentPanel.remove(figurePanel);
+        if (figurePanel != null) {
+            myToolWindowContent.remove(figurePanel);
         }
         figurePanel = new FigurePanel(image);
         figurePanel.setVisible(true);
-        contentPanel.add(figurePanel, BorderLayout.CENTER);
+        myToolWindowContent.setLayout(new BorderLayout());
+        myToolWindowContent.add(figurePanel, BorderLayout.CENTER);
+        figurePanel.setVisible(true);
     }
 
     @Override
@@ -67,7 +71,7 @@ public class RapaioGraphicsToolWindowFactory implements ToolWindowFactory, Print
 
     @Override
     public int getGraphicWidth() {
-        return contentPanel.getSize().width;
+        return myToolWindow.getComponent().getWidth();
     }
 
     @Override
@@ -76,7 +80,7 @@ public class RapaioGraphicsToolWindowFactory implements ToolWindowFactory, Print
 
     @Override
     public int getGraphicHeight() {
-        return contentPanel.getSize().height;
+        return myToolWindow.getComponent().getHeight();
     }
 
     @Override
@@ -85,14 +89,17 @@ public class RapaioGraphicsToolWindowFactory implements ToolWindowFactory, Print
 
     @Override
     public void print(String s) {
+        Notifications.Bus.notify(new Notification("Rapaio", "", s, NotificationType.INFORMATION));
     }
 
     @Override
     public void println() {
+        print("\n");
     }
 
     @Override
     public void error(String s, Throwable throwable) {
+        print("Error:" + s);
     }
 
     @Override
@@ -105,18 +112,31 @@ public class RapaioGraphicsToolWindowFactory implements ToolWindowFactory, Print
 
     @Override
     public void heading(int i, String s) {
+        StringBuilder sb = new StringBuilder();
+        for (int j = 0; j < i; j++) {
+            sb.append("*");
+        }
+        sb.append(" ").append(s).append(" ");
+        for (int j = 0; j < i; j++) {
+            sb.append("*");
+        }
+        sb.append("\n");
+        print(sb.toString());
     }
 
     @Override
     public void code(String s) {
+        print(s);
     }
 
     @Override
     public void p(String s) {
+        print(s);
     }
 
     @Override
     public void eqn(String s) {
+        print(s);
     }
 
     @Override
