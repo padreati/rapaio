@@ -33,7 +33,7 @@ import java.util.List;
 import static rapaio.core.BaseMath.abs;
 import static rapaio.core.BaseMath.validNumber;
 
-public class RandomTree extends AbstractClassifier {
+public class RandomTree extends AbstractClassifier<RandomTree> {
 
     String classColName;
     TreeNode root;

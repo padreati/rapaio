@@ -32,11 +32,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
-public class C45 extends AbstractClassifier {
+public class C45 extends AbstractClassifier<C45> {
 
     public static final int SELECTION_INFOGAIN = 0;
     public static final int SELECTION_GAINRATIO = 2;

@@ -33,7 +33,7 @@ import java.util.List;
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
-public class Bagging extends AbstractClassifier {
+public class Bagging extends AbstractClassifier<Bagging> {
 
     private final double p;
     private final int bags;

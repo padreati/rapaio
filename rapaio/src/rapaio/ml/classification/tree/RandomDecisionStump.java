@@ -19,10 +19,9 @@ import static rapaio.core.BaseMath.log;
 import static rapaio.core.BaseMath.validNumber;
 
 /**
- *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class RandomDecisionStump extends AbstractClassifier {
+public class RandomDecisionStump extends AbstractClassifier<RandomDecisionStump> {
 
     private String[] dict;
     private String splitCol;

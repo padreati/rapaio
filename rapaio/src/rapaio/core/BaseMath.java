@@ -286,7 +286,7 @@ public class BaseMath {
      * http://en.wikipedia.org/wiki/Lanczos_approximation
      * http://en.wikipedia.org/wiki/Stirling%27s_approximation
      * http://www.gnu.org/software/gsl/ http://jakarta.apache.org/commons/math/
-     * http://my.fit.edu/~gabdo/gamma.txt
+     * http://my.learn.edu/~gabdo/gamma.txt
      */
     public static double lnGamma(double x) {
         double t, y, z, p, p1, p2, p3, q, r, w;
@@ -605,7 +605,7 @@ public class BaseMath {
      * @param a any getValue >= 0
      * @param b any getValue >= 0
      * @return the getValue x, such that {@link #betaIncReg(double, double, double) I<sub>x</sub>(a, b)
-     *         } will return p.
+     * } will return p.
      */
     public static double invBetaIncReg(double p, double a, double b) {
         if (p < 0 || p > 1) {

@@ -36,13 +36,14 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static rapaio.core.BaseMath.*;
+import static rapaio.core.BaseMath.log2;
+import static rapaio.core.BaseMath.max;
 import static rapaio.workspace.Workspace.code;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class RandomForest extends AbstractClassifier {
+public class RandomForest extends AbstractClassifier<RandomForest> {
     int mtrees = 10;
     int mcols = -1;
     boolean computeOob = false;
@@ -55,11 +56,11 @@ public class RandomForest extends AbstractClassifier {
     double[] giniImportanceCount;
     double oobError = 0;
     int[][] oobFreq;
-    private NominalVector predict;
-    private Frame dist;
-    private long learnTime = 0;
-    private int minNodeSize = 1;
-    private double numericSelectionProb = 1.;
+    NominalVector predict;
+    Frame dist;
+    long learnTime = 0;
+    int minNodeSize = 1;
+    double numericSelectionProb = 1.;
 
     @Override
     public RandomForest newInstance() {
@@ -230,14 +231,11 @@ public class RandomForest extends AbstractClassifier {
 
     @Override
     public void predict(final Frame df) {
-        predict(df, mtrees);
-    }
 
-    public void predict(final Frame df, int maxTree) {
         predict = new NominalVector(df.getRowCount(), dict);
         dist = Frames.newMatrixFrame(df.getRowCount(), dict);
 
-        for (int m = 0; m < min(maxTree, mtrees); m++) {
+        for (int m = 0; m < mtrees; m++) {
             Classifier tree = trees.get(m);
             tree.predict(df);
             for (int i = 0; i < df.getRowCount(); i++) {

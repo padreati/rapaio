@@ -30,7 +30,7 @@ import java.util.List;
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
 @Deprecated
-public class CART extends AbstractClassifier{
+public class CART extends AbstractClassifier<CART> {
 
 
     @Override

@@ -34,7 +34,7 @@ import static rapaio.core.BaseMath.validNumber;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class DecisionStump extends AbstractClassifier {
+public class DecisionStump extends AbstractClassifier<DecisionStump> {
 
     private String[] dict;
     private String splitCol;
@@ -66,7 +66,7 @@ public class DecisionStump extends AbstractClassifier {
             total[classCol.getIndex(i)] += weights.get(i);
         }
         for (String colName : colNames) {
-            if(classColName.equals(colName)) continue;
+            if (classColName.equals(colName)) continue;
             Vector col = df.getCol(colName);
             if (col.isNumeric()) {
                 evaluateNumeric(df, weights, classCol, col, colName, total);

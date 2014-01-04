@@ -47,6 +47,8 @@ public class RapaioGraphicsToolWindowFactory implements ToolWindowFactory, Exten
         myToolWindowContent.setLayout(new BorderLayout());
         myToolWindowContent.add(figurePanel, BorderLayout.CENTER);
         figurePanel.setVisible(true);
+        figurePanel.invalidate();
+        myToolWindowContent.invalidate();
     }
 
     public void setImage(BufferedImage image) {
@@ -58,6 +60,8 @@ public class RapaioGraphicsToolWindowFactory implements ToolWindowFactory, Exten
         myToolWindowContent.setLayout(new BorderLayout());
         myToolWindowContent.add(figurePanel, BorderLayout.CENTER);
         figurePanel.setVisible(true);
+        figurePanel.invalidate();
+        myToolWindowContent.invalidate();
     }
 
     @Override

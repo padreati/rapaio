@@ -20,6 +20,7 @@
 package rapaio.ml.classification;
 
 import rapaio.data.Frame;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public abstract class AbstractClassifier implements Classifier {
+public abstract class AbstractClassifier<T> implements Classifier<T> {
 
     @Override
     public void learn(Frame df, String classColName) {
@@ -36,5 +37,26 @@ public abstract class AbstractClassifier implements Classifier {
             weights.add(1.);
         }
         learn(df, weights, classColName);
+    }
+
+    @Override
+    public void learnFurther(Frame df, String classColName, T classifier) {
+        List<Double> weights = new ArrayList<>();
+        for (int i = 0; i < df.getRowCount(); i++) {
+            weights.add(1.);
+        }
+        learnFurther(df, weights, classColName, classifier);
+    }
+
+    @Override
+    public void learnFurther(Frame df, List<Double> weights, String classColName, T classifier) {
+        // default further prediction is not implemented
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void predictFurther(Frame df, T classifier) {
+        // default further prediction is not implemented
+        throw new NotImplementedException();
     }
 }

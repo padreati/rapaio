@@ -33,7 +33,7 @@ import java.util.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class ID3 extends AbstractClassifier {
+public class ID3 extends AbstractClassifier<ID3> {
 
     private ID3Node root;
     private MetricType metricType = new EntropyMetricType();

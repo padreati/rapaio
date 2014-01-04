@@ -33,7 +33,7 @@ import static rapaio.workspace.Workspace.code;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class OneRule extends AbstractClassifier {
+public class OneRule extends AbstractClassifier<OneRule> {
 
     private static final Logger log = Logger.getLogger(OneRule.class.getName());
 

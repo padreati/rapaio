@@ -34,7 +34,7 @@ import java.util.List;
  * sub-classifier is used.
  */
 @Deprecated
-public class OnionClassifier extends AbstractClassifier {
+public class OnionClassifier extends AbstractClassifier<OnionClassifier> {
 
     @Override
     public Classifier newInstance() {

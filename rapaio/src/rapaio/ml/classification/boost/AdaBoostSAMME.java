@@ -27,7 +27,6 @@ import rapaio.ml.classification.Classifier;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static rapaio.core.BaseMath.log;
 import static rapaio.core.BaseMath.min;
@@ -36,19 +35,19 @@ import static rapaio.workspace.Workspace.code;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class AdaBoostSAMME extends AbstractClassifier {
+public class AdaBoostSAMME extends AbstractClassifier<AdaBoostSAMME> {
 
-    private static final Logger logger = Logger.getLogger(AdaBoostSAMME.class.getName());
+    Classifier weak;
+    int t;
 
-    private final Classifier weak;
-    private final int t;
+    List<Double> a;
+    List<Classifier> h;
+    List<Double> w;
+    double k;
 
-    private final List<Double> a;
-    private final List<Classifier> h;
-
-    private String[] dict;
-    private NominalVector pred;
-    private Frame dist;
+    String[] dict;
+    NominalVector pred;
+    Frame dist;
 
     public AdaBoostSAMME(Classifier weak, int t) {
         this.weak = weak;
@@ -64,11 +63,10 @@ public class AdaBoostSAMME extends AbstractClassifier {
 
     @Override
     public void learn(Frame df, List<Double> weights, String classColName) {
-        logger.fine(String.format("Start learn on AdaBoostM1 (weak=%s, t=%d)", weak.getClass().getName(), t));
         dict = df.getCol(classColName).getDictionary();
-        double k = dict.length - 1;
+        k = dict.length - 1;
 
-        List<Double> w = new ArrayList<>(weights);
+        w = new ArrayList<>(weights);
 
         double total = 0;
         for (int j = 0; j < w.size(); j++) {
@@ -98,7 +96,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
                 }
                 break;
             }
-            if(err > (1 - 1 / k)) {
+            if (err > (1 - 1 / k)) {
                 i--;
                 continue;
             }
@@ -117,12 +115,96 @@ public class AdaBoostSAMME extends AbstractClassifier {
     }
 
     @Override
-    public void predict(Frame df) {
-        predict(df, h.size());
+    public void learnFurther(Frame df, List<Double> weights, String classColName, AdaBoostSAMME classifier) {
+        // TODO validation for further learning
+
+        if (classifier == null) {
+            learn(df, weights, classColName);
+            return;
+        }
+
+        dict = df.getCol(classColName).getDictionary();
+        k = dict.length - 1;
+        h = new ArrayList<>(classifier.h);
+        a = new ArrayList<>(classifier.a);
+        if (t == classifier.t) {
+            return;
+        }
+//        w = (weights == null) ? classifier.w : weights;
+        w = classifier.w;
+        for (int i = h.size(); i < t; i++) {
+            Classifier hh = weak.newInstance();
+            hh.learn(df, new ArrayList<>(w), classColName);
+            hh.predict(df);
+            NominalVector hpred = hh.getPrediction();
+
+            double err = 0;
+            for (int j = 0; j < df.getRowCount(); j++) {
+                if (hpred.getIndex(j) != df.getCol(classColName).getIndex(j)) {
+                    err += w.get(j);
+                }
+            }
+            double alpha = log((1. - err) / err) + log(k - 1);
+            if (err == 0) {
+                if (h.isEmpty()) {
+                    h.add(hh);
+                    a.add(alpha);
+                }
+                break;
+            }
+            if (err > (1 - 1 / k)) {
+                i--;
+                continue;
+            }
+            h.add(hh);
+            a.add(alpha);
+
+            // update
+            for (int j = 0; j < w.size(); j++) {
+                if (hpred.getIndex(j) != df.getCol(classColName).getIndex(j)) {
+                    w.set(j, w.get(j) * (k - 1) / (k * err));
+                } else {
+                    w.set(j, w.get(j) / (k * (1. - err)));
+                }
+            }
+        }
     }
 
-    public void predict(Frame df, int t) {
+    @Override
+    public void predictFurther(Frame df, AdaBoostSAMME classifier) {
+        if (classifier == null) {
+            predict(df);
+            return;
+        }
 
+        pred = classifier.pred;
+        dist = classifier.dist;
+
+        for (int i = classifier.h.size(); i < min(t, h.size()); i++) {
+            h.get(i).predict(df);
+            for (int j = 0; j < df.getRowCount(); j++) {
+                int index = h.get(i).getPrediction().getIndex(j);
+                dist.setValue(j, index, dist.getValue(j, index) + a.get(i));
+            }
+        }
+
+        // simply predict
+        for (int i = 0; i < dist.getRowCount(); i++) {
+
+            double max = 0;
+            int prediction = 0;
+            for (int j = 1; j < dist.getColCount(); j++) {
+                if (dist.getValue(i, j) > max) {
+                    prediction = j;
+                    max = dist.getValue(i, j);
+                }
+            }
+            pred.setIndex(i, prediction);
+        }
+    }
+
+    @Override
+    public void predict(Frame df) {
         pred = new NominalVector(df.getRowCount(), dict);
         dist = Frames.newMatrixFrame(df.getRowCount(), dict);
 
