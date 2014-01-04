@@ -82,7 +82,7 @@ public class DecisionStump extends AbstractClassifier<DecisionStump> {
         double[] freq = new double[classCol.getDictionary().length];
         int total = 0;
         for (int i = 0; i < df.getRowCount(); i++) {
-            if (df.getCol(splitCol).isMissing(i)) {
+            if (splitCol == null || df.getCol(splitCol).isMissing(i)) {
                 freq[classCol.getIndex(i)] += weights.get(i);
                 total++;
             }
