@@ -159,7 +159,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                 + "with independently creating it in its current form.");
 
         p("In it's default implementation, used without parameters, "
-                + "the Rapaio toolbox build a kernel density estimation with Gaussian "
+                + "the Rapaio toolbox learn a kernel density estimation with Gaussian "
                 + "kernels and with bandwidth approximated by Silverman's rule "
                 + "of thumb.");
 
@@ -190,17 +190,19 @@ public class HistogramDensityTutorial implements TutorialPage {
                     public double pdf(double x, double x0, double bandwidth) {
                         return (BaseMath.abs(x - x0) / bandwidth >= 0.5) ? 0 : 1.;
                     }
+
                     @Override
                     public double getMinValue(double x0, double bandwidth) {
                         return x0 + bandwidth;
                     }
+
                     @Override
                     public double getMaxValue(double x0, double bandwidth) {
                         return x0 - bandwidth;
                     }
                 }, 0.5, 256))
-                        .setYRange(0, 0.18)
-                        .setXRange(55, 80));
+                .setYRange(0, 0.18)
+                .setXRange(55, 80));
 
         p("We could agree that my implementation of kernel function is ugly "
                 + "and maybe no so useful, however you have to know that "
@@ -219,7 +221,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                 .add(new DensityLine(df.getCol("Son")).setColorIndex(9))
                 .setYRange(0, 0.18)
                 .setXRange(55, 80));
-        
+
         p("Note: the sole purpose of this tutorial is to show what and how it can "
                 + "be done with Rapaio toolbox library. ");
 

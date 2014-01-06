@@ -157,7 +157,7 @@ public class Summary {
             }
         }
 
-        // build layout
+        // learn layout
         int[] width = new int[names.length];
         int[] wfirst = new int[names.length];
         int[] wsecond = new int[names.length];
@@ -335,7 +335,7 @@ public class Summary {
             }
         }
 
-        // build layout
+        // learn layout
         int wfirst = 0;
         int wsecond = 0;
 
@@ -373,7 +373,7 @@ public class Summary {
     public static void contingencyTable(Vector a, Vector b) {
         Vector[] vectors = new Vector[b.getRowCount() + 1];
 
-        // build first column
+        // learn first column
         HashSet<String> labels = new HashSet<>();
         for (int i = 0; i < a.getRowCount(); i++) {
             labels.add(a.getLabel(i));
@@ -385,7 +385,7 @@ public class Summary {
         }
         vectors[0].setLabel(a.getRowCount(), "Totals");
 
-        // build numerical columns
+        // learn numerical columns
     }
 
     public static void summary(Summarizable result) {

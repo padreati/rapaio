@@ -110,7 +110,7 @@ public class BarChart extends AbstractFigure {
     public Range buildRange() {
         if (range == null) {
 
-            // build preliminaries
+            // learn preliminaries
             int width = category.getDictionary().length;
             int height = condition.getDictionary().length;
 
@@ -174,7 +174,7 @@ public class BarChart extends AbstractFigure {
                 }
             }
 
-            // now build range
+            // now learn range
             range = new Range();
             for (int i = 0; i < sel.length; i++) {
                 range.union(Double.NaN, totals[sel[i]]);
@@ -233,33 +233,33 @@ public class BarChart extends AbstractFigure {
                 double yend = ystart + hits[sel[i]][j];
 
                 int[] x = {
-                    (int) xscale(col - 0.4),
-                    (int) xscale(col - 0.4),
-                    (int) xscale(col + 0.4),
-                    (int) xscale(col + 0.4),
-                    (int) xscale(col - 0.4)};
+                        (int) xscale(col - 0.4),
+                        (int) xscale(col - 0.4),
+                        (int) xscale(col + 0.4),
+                        (int) xscale(col + 0.4),
+                        (int) xscale(col - 0.4)};
                 int[] y = {
-                    (int) yscale(ystart),
-                    (int) yscale(yend),
-                    (int) yscale(yend),
-                    (int) yscale(ystart),
-                    (int) yscale(ystart)};
+                        (int) yscale(ystart),
+                        (int) yscale(yend),
+                        (int) yscale(yend),
+                        (int) yscale(ystart),
+                        (int) yscale(ystart)};
 
                 g2d.setColor(ColorPalette.STANDARD.getColor(0));
                 g2d.drawPolygon(x, y, 4);
 
                 x = new int[]{
-                    (int) xscale(col - 0.4) + 1,
-                    (int) xscale(col - 0.4) + 1,
-                    (int) xscale(col + 0.4),
-                    (int) xscale(col + 0.4),
-                    (int) xscale(col - 0.4) + 1};
+                        (int) xscale(col - 0.4) + 1,
+                        (int) xscale(col - 0.4) + 1,
+                        (int) xscale(col + 0.4),
+                        (int) xscale(col + 0.4),
+                        (int) xscale(col - 0.4) + 1};
                 y = new int[]{
-                    (int) yscale(ystart),
-                    (int) yscale(yend) + 1,
-                    (int) yscale(yend) + 1,
-                    (int) yscale(ystart),
-                    (int) yscale(ystart)};
+                        (int) yscale(ystart),
+                        (int) yscale(yend) + 1,
+                        (int) yscale(yend) + 1,
+                        (int) yscale(ystart),
+                        (int) yscale(ystart)};
 
                 g2d.setColor(getColor(j));
                 g2d.fillPolygon(x, y, 4);

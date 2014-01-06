@@ -248,7 +248,7 @@ class TreeNode {
             }
         }
         if (leftNode != null && rightNode != null) {
-            // build data for left and right nodes
+            // learn data for left and right nodes
             Mapping leftMap = new Mapping();
             List<Double> leftWeights = new ArrayList<>();
             Mapping rightMap = new Mapping();

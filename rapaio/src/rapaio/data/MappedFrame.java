@@ -22,7 +22,7 @@ package rapaio.data;
 import java.util.HashMap;
 
 /**
- * A frame which is build on the base of another frame with
+ * A frame which is learn on the base of another frame with
  * the row order and row selection specified by a
  * mapping give at construction time.
  * <p/>

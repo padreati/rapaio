@@ -20,6 +20,9 @@
 
 package rapaio.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
@@ -29,7 +32,7 @@ public final class Frames {
      * Build a frame which has only numeric columns and values are filled with 0
      * (no missing values).
      *
-     * @param rows number of rows
+     * @param rows     number of rows
      * @param colNames column names
      * @return the new built frame
      */
@@ -39,5 +42,30 @@ public final class Frames {
             vectors[i] = new NumericVector(new double[rows]);
         }
         return new SolidFrame(rows, vectors, colNames);
+    }
+
+    public static Frame solidCopy(Frame df) {
+        int len = df.getRowCount();
+        List<Vector> vectors = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+
+        for (int i = 0; i < df.getColCount(); i++) {
+            Vector src = df.getCol(i);
+            if (src.isNominal()) {
+                vectors.add(new NominalVector(len, df.getCol(i).getDictionary()));
+                names.add(df.getColNames()[i]);
+                for (int j = 0; j < df.getRowCount(); j++) {
+                    vectors.get(i).setLabel(j, src.getLabel(j));
+                }
+            }
+            if (src.isNumeric()) {
+                vectors.add(new NumericVector(len));
+                names.add(df.getColNames()[i]);
+                for (int j = 0; j < df.getRowCount(); j++) {
+                    vectors.get(i).setValue(j, src.getValue(j));
+                }
+            }
+        }
+        return new SolidFrame(len, vectors, names);
     }
 }

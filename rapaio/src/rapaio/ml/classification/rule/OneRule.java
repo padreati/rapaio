@@ -237,7 +237,7 @@ public class OneRule extends AbstractClassifier<OneRule> {
             set.getRules().add(new NumericOneRule(Double.NaN, Double.NaN, true, classLabels[next], total, total - max));
         }
 
-        // now build isNumeric intervals
+        // now learn isNumeric intervals
         List<NumericOneRule> candidates = new ArrayList<>();
 
         //splits from same value

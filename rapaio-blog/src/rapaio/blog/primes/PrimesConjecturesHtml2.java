@@ -17,7 +17,6 @@ import static rapaio.core.BaseMath.sqrt;
 import static rapaio.workspace.Workspace.*;
 
 /**
- *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class PrimesConjecturesHtml2 {
@@ -61,11 +60,11 @@ public class PrimesConjecturesHtml2 {
                 + "that \\(1 > \\sqrt{p_{n+1}}-\\sqrt{p_{n}}\\).");
 
         p("The conjecture is unproved until now. The description states that the conjecture has been proven "
-                + "by computers up to n = 10^5. This looks odd since the vector of primes which I have is build  "
+                + "by computers up to n = 10^5. This looks odd since the vector of primes which I have is learn  "
                 + "with a trivial version of a sieve and has " + primes.getRowCount() + " prime numbers. ");
 
         p("As always I try to use my rapaio tools, so plotting a line with the Andrica's gap function is easy like ");
-        
+
         code("    private void drawAndrica(Vector primes, int size) {\n"
                 + "        Frame m = Frames.newMatrixFrame(size, new String[]{\"index\", \"gap\"});\n"
                 + "        for (int i = 0; i < m.getRowCount(); i++) {\n"
@@ -79,19 +78,19 @@ public class PrimesConjecturesHtml2 {
                 + "                700, 300);\n"
                 + "    }\n"
                 + "");
-        
+
         p("First we plot the function for the first 500 values. ");
-        
+
         drawAndrica(primes, 500, 0.7);
-        
+
         p("What is already been discovered is that the largest known difference in this function "
                 + "happens for a small n, aka for n=4. ");
-        
+
         p("The plotted function looks like a decreasing function (not monotone, but decreasing on average). "
                 + "The question is, if we plot many values the tendency remains the same? ");
-        
-        drawAndrica(primes, primes.getRowCount()-1, 0.015);
-        
+
+        drawAndrica(primes, primes.getRowCount() - 1, 0.015);
+
         p("This are all the prime numbers I have at hand. There are more than 50 millions. And the graph shows "
                 + "the tendency is to decrease on average. Which is really interesting. This is not "
                 + "a proof, of course, but one could find reasonable to expect the conjecture to be true. Nice work Dr. Andrica!");

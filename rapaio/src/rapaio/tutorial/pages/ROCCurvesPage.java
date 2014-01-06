@@ -95,12 +95,12 @@ public class ROCCurvesPage implements TutorialPage {
 
         heading(2, "Binary classification");
 
-        p("We will build 3 models for prediction. We will use the train test which consists "
+        p("We will learn 3 models for prediction. We will use the train test which consists "
                 + "of 66% percents of our initial data. For testing how well the model predicts "
                 + "we use the remaining data.");
 
         heading(4, "OneRule");
-        p("This first model is one of the simplest model possible. It basically build a decision tree "
+        p("This first model is one of the simplest model possible. It basically learn a decision tree "
                 + "with a single level. For documentation obout this algorithm you can "
                 + "check the original paper <a href=\"http://link.springer.com/article/10.1023/A:1022631118932\">"
                 + "Holte, R.C. Very Simple Classification Rules Perform Well on Most Commonly Used Datasets. "
@@ -134,7 +134,7 @@ public class ROCCurvesPage implements TutorialPage {
 
         heading(4, "AdaBoost.M1");
         p("The third prediction model is a boosting algorithm called AdaBoost.M1. This model is "
-                + "is build with decision stump as a weak learner, and boosting 200 iterations. "
+                + "is learn with decision stump as a weak learner, and boosting 200 iterations. "
                 + "The following code shows how one can achieve that using rapaio.");
         AdaBoostSAMME ab = new AdaBoostSAMME(new DecisionStump(), 200);
         ab.learn(train, "spam");
@@ -170,8 +170,8 @@ public class ROCCurvesPage implements TutorialPage {
                 .add(new ROCCurve(rocRF).setColorIndex(2))
                 .add(new ROCCurve(rocAB).setColorIndex(3))
                 .add(new Legend(0.6, 0.33,
-                                new String[]{"onerule", "rf", "adaboost.m1"},
-                                new int[]{1, 2, 3})),
+                        new String[]{"onerule", "rf", "adaboost.m1"},
+                        new int[]{1, 2, 3})),
                 600, 400);
 
         code("        ROC rocOR = new ROC(oneRule.getPrediction(), test.getCol(\"spam\"), \"1\");\n"

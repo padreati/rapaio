@@ -35,7 +35,7 @@ import java.util.TreeSet;
  * Label representation is the natural representation since in experiments
  * the nominal vectors are given as string values.
  * <p/>
- * The index representation is build based on the canonical form of the
+ * The index representation is learn based on the canonical form of the
  * term dictionary and is used often for performance reasons instead of
  * label representation, where the actual label value does not matter.
  *

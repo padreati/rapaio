@@ -20,7 +20,7 @@
 package rapaio.data;
 
 /**
- * A vector which is build on the base of another vector and the row selection
+ * A vector which is learn on the base of another vector and the row selection
  * and order is specified by a mapping give at construction time.
  * <p/>
  * This vector does not hold actual values, it delegate the behavior to the

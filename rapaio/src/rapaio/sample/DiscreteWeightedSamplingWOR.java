@@ -82,7 +82,7 @@ public class DiscreteWeightedSamplingWOR {
             result[i] = i;
         }
 
-        // build heap
+        // learn heap
         for (int i = len / 2 - 1; i > 0; i--) {
             if (heap[i * 2] == -1) {
                 heap[i] = -1;

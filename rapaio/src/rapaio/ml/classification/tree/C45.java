@@ -21,13 +21,14 @@
 package rapaio.ml.classification.tree;
 
 import rapaio.core.RandomSource;
-import rapaio.data.Frame;
-import rapaio.data.Frames;
-import rapaio.data.NominalVector;
+import rapaio.data.*;
+import rapaio.filters.RowFilters;
 import rapaio.ml.classification.AbstractClassifier;
 import rapaio.ml.classification.Classifier;
+import rapaio.ml.classification.DensityTable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +39,7 @@ import java.util.Map;
 public class C45 extends AbstractClassifier<C45> {
 
     public static final int SELECTION_INFOGAIN = 0;
-    public static final int SELECTION_GAINRATIO = 2;
+    public static final int SELECTION_GAINRATIO = 1;
     ;
     private boolean useGrouping = false; // Not implemented
     private double minWeight = 2; // min weight for at least 2 output groups in order for an attribute to be selected
@@ -97,7 +98,7 @@ public class C45 extends AbstractClassifier<C45> {
             testColNames.add(classColName);
         }
         root = new C45Node(this);
-        root.build(df, weights, testColNames, classColName);
+        root.learn(df, weights, testColNames, classColName);
     }
 
     @Override
@@ -146,7 +147,6 @@ public class C45 extends AbstractClassifier<C45> {
 class C45Node {
 
     final C45 parent;
-    String predictedLabel;
     String testColName;
     double testValue; // used by numeric children to distinguish between left and right
     double totalWeight;
@@ -160,50 +160,206 @@ class C45Node {
         this.parent = parent;
     }
 
-    public void build(Frame df, List<Double> weights, List<String> testColNames, String classColName) {
+    public void learn(Frame df, List<Double> weights, List<String> testColNames, String classColName) {
+        totalWeight = 0;
+        for (double weight : weights) {
+            totalWeight += weight;
+        }
 
+        leaf = true;
+
+        // if totalWeight < 2*minWeight we have a leaf
+        if (totalWeight < 2 * parent.getMinWeight()) {
+            distribution = new double[parent.dict.length];
+            for (int i = 0; i < df.getRowCount(); i++) {
+                distribution[df.getIndex(i, classColName)] += weights.get(i);
+            }
+            for (int i = 0; i < distribution.length; i++) {
+                distribution[i] /= totalWeight;
+            }
+            return;
+        }
+
+        // if there is only one label
+        for (int i = 1; i < df.getRowCount(); i++) {
+            if (df.getIndex(0, classColName) != df.getIndex(i, classColName)) {
+                leaf = false;
+                break;
+            }
+        }
+        if (leaf) {
+            distribution = new double[parent.dict.length];
+            distribution[df.getIndex(0, classColName)] += 1.;
+            return;
+        }
+
+        // try to find a good split
+        double max_criteria = 0;
+        String selColName = null;
+        double selSplitValue = Double.NaN;
+
+        for (String testColName : testColNames) {
+            // for nominal columns
+            if (df.getCol(testColName).isNominal()) {
+                DensityTable id = new DensityTable(df, weights, testColName, classColName);
+                int count = id.countWithMinimum(false, parent.getMinWeight());
+                if (count < 2) {
+                    continue;
+                }
+                double criteria = 0;
+                if (parent.SELECTION_GAINRATIO == parent.getSelectionCriterion()) {
+                    criteria = id.getGainRatio(true);
+                }
+                if (parent.SELECTION_INFOGAIN == parent.getSelectionCriterion()) {
+                    criteria = id.getInfoGain(true);
+                }
+                if (criteria > max_criteria) {
+                    selColName = testColName;
+                    max_criteria = criteria;
+                }
+            }
+
+            // for numeric columns
+            if (df.getCol(testColName).isNumeric()) {
+                DensityTable id = new DensityTable(DensityTable.NUMERIC_DEFAULT_LABELS, parent.dict);
+                Vector sort = Vectors.newSequence(df.getRowCount());
+                sort = RowFilters.sort(sort, RowComparators.numericComparator(df.getCol(testColName), true));
+                // first fill the density table
+                for (int i = 0; i < df.getRowCount(); i++) {
+                    int pos = sort.getRowId(i);
+                    if (df.isMissing(pos, testColName)) {
+                        id.update(0, df.getIndex(pos, classColName), weights.get(pos));
+                    } else {
+                        id.update(2, df.getIndex(pos, classColName), weights.get(pos));
+                    }
+                }
+                // process the split points
+                for (int i = 0; i < df.getRowCount(); i++) {
+                    int pos = sort.getRowId(i);
+                    if (df.isMissing(pos, testColName)) continue;
+                    id.move(2, 1, df.getIndex(pos, classColName), weights.get(pos));
+
+                    if (i < df.getRowCount() - 1
+                            && df.getValue(pos, testColName)
+                            == df.getValue(sort.getRowId(i + 1), testColName)) {
+                        continue;
+                    }
+
+                    if (id.countWithMinimum(false, parent.getMinWeight()) < 2) {
+                        continue;
+                    }
+
+                    double criteria = 0;
+                    if (parent.SELECTION_GAINRATIO == parent.getSelectionCriterion()) {
+                        criteria = id.getGainRatio(true);
+                    }
+                    if (parent.SELECTION_INFOGAIN == parent.getSelectionCriterion()) {
+                        criteria = id.getInfoGain(true);
+                    }
+                    if (criteria > max_criteria) {
+                        selColName = testColName;
+                        selSplitValue = df.getValue(pos, testColName);
+                        max_criteria = criteria;
+                    }
+                }
+            }
+        }
+
+        // we have some split
+        if (selColName != null) {
+            if (df.getCol(selColName).isNominal()) {
+                int childrenCount = df.getCol(selColName).getDictionary().length;
+
+                List<Integer>[] childIds = new List[childrenCount];
+                List<Double>[] childWeights = new List[childrenCount];
+                double[] childTotals = new double[childrenCount];
+                double totalNonMissing = 0;
+
+                for (int i = 0; i < childrenCount; i++) {
+                    childIds[i] = new ArrayList<>();
+                    childWeights[i] = new ArrayList<>();
+                }
+
+                // distribute non-missing
+                for (int i = 0; i < df.getRowCount(); i++) {
+                    if (df.isMissing(i, selColName)) {
+                        continue;
+                    }
+                    int index = df.getIndex(i, selColName);
+                    childIds[index].add(i);
+                    childWeights[index].add(weights.get(i));
+                    childTotals[index] += weights.get(i);
+                }
+
+                // compute non missing totals
+                for (int i = 0; i < childrenCount; i++) {
+                    totalNonMissing += childTotals[i];
+                }
+
+                // distribute missing
+                for (int i = 0; i < df.getRowCount(); i++) {
+                    if (df.isMissing(i, selColName)) {
+                        for (int j = 0; j < childrenCount; j++) {
+                            if (childTotals[i] == 0) {
+                                continue;
+                            }
+                            childIds[j].add(i);
+                            childWeights[j].add(weights.get(i) * childTotals[j] / totalNonMissing);
+                        }
+                    }
+                }
+
+                // build children nodes
+                nominalChildren = new HashMap<>();
+                for (int i = 0; i < childrenCount; i++) {
+                    String label = df.getCol(selColName).getDictionary()[i];
+
+                    // TODO continue implementation here
+                }
+            }
+        }
     }
 
     public double[] computeDistribution(Frame df, int row) {
         if (leaf) {
             return distribution;
         }
+        // if missing aggregate all child nodes
         if (df.getCol(testColName).isMissing(row)) {
-            // agregate all subnodes
             if (df.getCol(testColName).isNominal()) {
-                double total = 0;
-                for (C45Node c45Node : nominalChildren.values()) {
-                    total += c45Node.totalWeight;
-                }
                 double[] d = new double[parent.dict.length];
                 for (Map.Entry<String, C45Node> entry : nominalChildren.entrySet()) {
                     double[] dd = entry.getValue().computeDistribution(df, row);
                     for (int i = 0; i < dd.length; i++) {
-                        d[i] += dd[i] * entry.getValue().totalWeight / total;
+                        d[i] += dd[i] * entry.getValue().totalWeight / totalWeight;
                     }
                 }
                 return d;
             }
             if (df.getCol(testColName).isNumeric()) {
                 double[] d = new double[parent.dict.length];
-                double[] dd = numericLeftChild.computeDistribution(df, row);
-                for (int i = 0; i < dd.length; i++) {
-                    d[i] += dd[i] * numericLeftChild.totalWeight;
-                }
-                dd = numericRightChild.computeDistribution(df, row);
-                for (int i = 0; i < dd.length; i++) {
-                    d[i] += dd[i] * numericRightChild.totalWeight;
-                }
-                for (int i = 0; i < dd.length; i++) {
-                    d[i] /= numericLeftChild.totalWeight + numericRightChild.totalWeight;
+                double[] left = numericLeftChild.computeDistribution(df, row);
+                double[] right = numericRightChild.computeDistribution(df, row);
+                for (int i = 0; i < d.length; i++) {
+                    d[i] += left[i] * numericLeftChild.totalWeight / totalWeight;
+                    d[i] += right[i] * numericRightChild.totalWeight / totalWeight;
                 }
                 return d;
             }
             // should not be here
             return null;
         }
+
+        // we have a value
         if (df.getCol(testColName).isNominal()) {
-            return nominalChildren.get(df.getLabel(row, testColName)).computeDistribution(df, row);
+            String label = df.getLabel(row, testColName);
+            for (Map.Entry<String, C45Node> entry : nominalChildren.entrySet()) {
+                if (entry.getKey().equals(label)) {
+                    return entry.getValue().computeDistribution(df, row);
+                }
+            }
+            // should not be here
+            return null;
         }
         if (df.getCol(testColName).isNumeric()) {
             if (df.getValue(row, testColName) <= testValue) {

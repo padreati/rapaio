@@ -93,7 +93,7 @@ public final class NominalFilters {
      */
     public static List<Frame> consolidate(List<Frame> source) {
 
-        // build reunion of labels for all columns
+        // learn reunion of labels for all columns
         HashMap<String, HashSet<String>> dicts = new HashMap<>();
         for (int i = 0; i < source.size(); i++) {
             for (Frame frame : source) {

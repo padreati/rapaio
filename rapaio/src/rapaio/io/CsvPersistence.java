@@ -130,7 +130,7 @@ public class CsvPersistence {
             names.add("V" + (i + 1));
         }
 
-        // build nominal dictionaries
+        // learn nominal dictionaries
         HashMap<String, HashSet<String>> dictionaries = new HashMap<>();
         HashMap<String, Integer> indexes = new HashMap<>();
         for (int i = 0; i < names.size(); i++) {
@@ -168,7 +168,7 @@ public class CsvPersistence {
             }
         }
 
-        // build frame
+        // learn frame
         List<Vector> vectors = new ArrayList<>();
         for (int i = 0; i < cols; i++) {
             String colName = names.get(i);
