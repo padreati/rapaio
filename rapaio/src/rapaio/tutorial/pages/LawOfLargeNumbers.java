@@ -80,7 +80,7 @@ public class LawOfLargeNumbers implements TutorialPage {
         OnlineCoreStat ocs = new OnlineCoreStat();
         final Vector mean = new NumericVector(N);
         for (int i = 0; i < events.getRowCount(); i++) {
-            ocs.update(events.getValue(i), 1);
+            ocs.update(events.getValue(i));
             mean.setValue(i, ocs.getMean());
         }
         p("Now we have the running mean stored in the vector mean and we can plot "
@@ -90,7 +90,7 @@ public class LawOfLargeNumbers implements TutorialPage {
                 .add(new Lines(new IndexVector(1, N, 1), mean)
                         .setLwd(1.5f)
                         .setColorIndex(2))
-                .setYRange(2.5, 4.5), 
+                .setYRange(2.5, 4.5),
                 800, 300);
         p("Thus we can clearly notice two fact from the plot above. "
                 + "First fact is that the running average gets closer to the "

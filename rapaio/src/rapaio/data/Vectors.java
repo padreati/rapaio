@@ -20,6 +20,8 @@
 
 package rapaio.data;
 
+import java.util.List;
+
 /**
  * Utility class factory which offers methods for creating vectors of various
  * forms. Used to shorted the syntax for creating common vector constructs.
@@ -42,5 +44,13 @@ public final class Vectors {
             result.setIndex(i - start, i);
         }
         return result;
+    }
+
+    public static NumericVector newNumeric(List<Double> values) {
+        NumericVector vector = new NumericVector(values.size());
+        for (int i = 0; i < vector.getRowCount(); i++) {
+            vector.setValue(i, values.get(i));
+        }
+        return vector;
     }
 }
