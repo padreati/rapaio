@@ -139,7 +139,7 @@ public class RandomDecisionStump extends AbstractClassifier<RandomDecisionStump>
 
     private void evaluateNumeric(Frame df, List<Double> weights, Vector classCol, Vector col, String colName, double[] total) {
         double[][] p = new double[2][classCol.getDictionary().length];
-        Vector sort = RowFilters.sort(new IndexVector(0, df.getRowCount() - 1, 1), RowComparators.numericComparator(col, true));
+        Vector sort = RowFilters.sort(Vectors.newSequence(0, df.getRowCount() - 1, 1), RowComparators.numericComparator(col, true));
         int next = RandomSource.nextInt(df.getRowCount() - 2) + 1;
         for (int i = 0; i < next; i++) {
             int row = col.isMissing(sort.getIndex(i)) ? 0 : 1;

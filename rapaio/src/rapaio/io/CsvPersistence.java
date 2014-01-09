@@ -173,7 +173,7 @@ public class CsvPersistence {
         for (int i = 0; i < cols; i++) {
             String colName = names.get(i);
             if (indexFieldHints.contains(colName)) {
-                vectors.add(new IndexVector(rows));
+                vectors.add(Vectors.newIndex(rows));
                 continue;
             }
             if (numericFieldHints.contains(colName)) {

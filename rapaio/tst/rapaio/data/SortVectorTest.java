@@ -38,7 +38,7 @@ public class SortVectorTest {
 
     @Test
     public void smokeTest() {
-        Vector v = new IndexVector(0);
+        Vector v = Vectors.newIndex(0);
         Vector sorted = sort(v, indexComparator(v, true));
         assertTrue(sorted.isNumeric());
         assertFalse(sorted.isNominal());
@@ -56,7 +56,7 @@ public class SortVectorTest {
 
     @Test
     public void testSortIndex() {
-        Vector index = new IndexVector(10, 1, -1);
+        Vector index = Vectors.newSequence(10, 1, -1);
         index.setMissing(2);
         index.setMissing(5);
         index.setIndex(0, 1);
@@ -137,7 +137,7 @@ public class SortVectorTest {
         persistence.setHasQuotas(false);
         persistence.getNumericFieldHints().add("z");
         persistence.getIndexFieldHints().add("y");
-        Frame df = persistence.read(SortVectorTest.class,"sorted-frame.csv");
+        Frame df = persistence.read(SortVectorTest.class, "sorted-frame.csv");
 
         Vector nominal = df.getCol(0);
         Vector index = df.getCol(1);
@@ -197,7 +197,7 @@ public class SortVectorTest {
 
     @Test
     public void testMissing() {
-        Vector v = new IndexVector(1, 10, 1);
+        Vector v = Vectors.newSequence(1, 10, 1);
         v = sort(v, indexComparator(v, true));
         for (int i = 0; i < 10; i += 3) {
             v.setMissing(i);

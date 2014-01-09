@@ -123,7 +123,7 @@ public class DiscreteSampling implements TutorialPage {
                 + "        draw(new Histogram(vector, 6, false), 500, 200);\n");
 
         int[] sample = new DiscreteSamplingWR(6).sample(1000);
-        Vector vector = new NumericVector(sample);
+        Vector vector = Vectors.newNumeric(sample);
         draw(new Plot().add(new Histogram(vector, 6, false)), 500, 200);
 
         p("In the presented histogram we see frequencies obtained be taking a sample "
@@ -249,7 +249,7 @@ public class DiscreteSampling implements TutorialPage {
                 + "");
 
         RandomSource.setSeed(1);
-        final Vector index = new IndexVector(1, 1000, 1);
+        final Vector index = Vectors.newSequence(1, 1000, 1);
         final Vector value = new NumericVector(1000);
         double count = 0;
         double total = 0;
@@ -354,9 +354,9 @@ public class DiscreteSampling implements TutorialPage {
         final Frame df2 = new SolidFrame(SAMPLE_SIZE * TRIALS, vectors, new String[]{"loaded lottery", "winning number"});
         draw(new Plot()
                 .add(new Points(df2.getCol(0), df2.getCol(1)))
-                .setPchIndex(new OneIndexVector(1))
-                .setColorIndex(new OneIndexVector(34))
-                .setSizeIndex(new OneNumericVector(2)),
+                .setPchIndex(Vectors.newOneIndex(1))
+                .setColorIndex(Vectors.newOneIndex(34))
+                .setSizeIndex(Vectors.newOneNumeric(2)),
                 600, 300);
 
         p("This time we see more than random there. There is a clear more dense "
@@ -370,7 +370,7 @@ public class DiscreteSampling implements TutorialPage {
                 .add(new FunctionLine(new KernelDensityEstimator(df2.getCol("winning number"), 3).getPdfFunction())
                         .setXRange(-10, 60)
                         .setYRange(0, .05)
-                        .setColorIndex(new OneIndexVector(1)))
+                        .setColorIndex(Vectors.newOneIndex(1)))
                 .setBottomLabel("winning numbers")
                 .setLeftLabel("kernel probability density"),
                 600, 300);

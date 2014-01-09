@@ -21,9 +21,9 @@ package rapaio.tutorial.pages;
 
 import rapaio.core.RandomSource;
 import rapaio.core.stat.StatOnline;
-import rapaio.data.IndexVector;
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
+import rapaio.data.Vectors;
 import rapaio.distributions.DUniform;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.ABLine;
@@ -87,7 +87,7 @@ public class LawOfLargeNumbers implements TutorialPage {
                 + "how that running mean evolves as the size of the sample grows.");
         draw(new Plot()
                 .add(new ABLine(0, 3.5).setLwd(1.5f).setColorIndex(1))
-                .add(new Lines(new IndexVector(1, N, 1), mean)
+                .add(new Lines(Vectors.newSequence(1, N, 1), mean)
                         .setLwd(1.5f)
                         .setColorIndex(2))
                 .setYRange(2.5, 4.5),

@@ -22,9 +22,9 @@ package rapaio.ml.classification;
 import org.junit.Test;
 import rapaio.core.ColRange;
 import rapaio.data.Frame;
-import rapaio.data.OneIndexVector;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
+import rapaio.data.Vectors;
 import rapaio.ml.classification.colselect.ColSelector;
 import rapaio.ml.classification.colselect.RandomColSelector;
 
@@ -40,17 +40,17 @@ public class UniformRandomSelectorTest {
         Frame df = new SolidFrame(
                 0,
                 new Vector[]{
-                    new OneIndexVector(1),
-                    new OneIndexVector(1),
-                    new OneIndexVector(1),
-                    new OneIndexVector(1),
-                    new OneIndexVector(1),
-                    new OneIndexVector(1),
-                    new OneIndexVector(1),
-                    new OneIndexVector(1),
-                    new OneIndexVector(1)},
+                        Vectors.newOneIndex(1),
+                        Vectors.newOneIndex(1),
+                        Vectors.newOneIndex(1),
+                        Vectors.newOneIndex(1),
+                        Vectors.newOneIndex(1),
+                        Vectors.newOneIndex(1),
+                        Vectors.newOneIndex(1),
+                        Vectors.newOneIndex(1),
+                        Vectors.newOneIndex(1)},
                 new String[]{
-                    "a", "b", "c", "d", "e", "f", "g", "h", "class"
+                        "a", "b", "c", "d", "e", "f", "g", "h", "class"
                 });
         String classColName = "class";
         int mcols = 4;

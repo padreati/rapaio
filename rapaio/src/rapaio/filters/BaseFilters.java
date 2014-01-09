@@ -75,7 +75,7 @@ public final class BaseFilters {
     }
 
     public static Vector toIndex(Vector v) {
-        Vector result = new IndexVector(v.getRowCount());
+        Vector result = Vectors.newIndex(v.getRowCount());
         for (int i = 0; i < v.getRowCount(); i++) {
             if (v.isMissing(i)) {
                 continue;

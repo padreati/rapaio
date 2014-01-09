@@ -21,7 +21,6 @@ package rapaio.tutorial.pages;
 
 import rapaio.core.BaseMath;
 import rapaio.data.Frame;
-import rapaio.data.IndexVector;
 import rapaio.data.Vector;
 import rapaio.datasets.Datasets;
 import rapaio.distributions.empirical.KernelDensityEstimator;
@@ -35,6 +34,7 @@ import rapaio.workspace.Summary;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import static rapaio.data.Vectors.newSequence;
 import static rapaio.workspace.Workspace.*;
 
 /**
@@ -146,7 +146,7 @@ public class HistogramDensityTutorial implements TutorialPage {
 
         final Vector col = df.getCol("Father");
         draw(new Plot()
-                .add(new Histogram(col).setColorIndex(new IndexVector(1, 255, 1)))
+                .add(new Histogram(col).setColorIndex(newSequence(1, 255, 1)))
                 .add(new DensityLine(col)));
 
         p("In statistics, kernel density estimation (KDE) is a non-parametric way to "

@@ -77,12 +77,12 @@ public class NumericVectorTest {
 
     @Test
     public void testOneNumeric() {
-        Vector one = new OneNumericVector(PI);
+        Vector one = Vectors.newOneNumeric(PI);
 
         assertEquals(1, one.getRowCount());
         assertEquals(PI, one.getValue(0), 1e-10);
 
-        one = new OneNumericVector(E);
+        one = Vectors.newOneNumeric(E);
         assertEquals(1, one.getRowCount());
         assertEquals(E, one.getValue(0), 1e-10);
     }

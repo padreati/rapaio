@@ -154,7 +154,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
         double[][] p = new double[2][classCol.getDictionary().length];
         int[] rowCounts = new int[2];
 
-        Vector sort = RowFilters.sort(new IndexVector(0, df.getRowCount() - 1, 1), RowComparators.numericComparator(col, true));
+        Vector sort = RowFilters.sort(Vectors.newSequence(0, df.getRowCount() - 1, 1), RowComparators.numericComparator(col, true));
         for (int i = 0; i < df.getRowCount() - 1; i++) {
             int row = col.isMissing(sort.getIndex(i)) ? 0 : 1;
             int index = classCol.getIndex(sort.getIndex(i));

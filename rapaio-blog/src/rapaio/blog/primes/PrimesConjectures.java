@@ -14,7 +14,6 @@ import static rapaio.core.BaseMath.sqrt;
 import static rapaio.workspace.Workspace.draw;
 
 /**
- *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class PrimesConjectures extends AbstractCmd {
@@ -54,7 +53,7 @@ public class PrimesConjectures extends AbstractCmd {
         for (int i = 1; i < SIZE; i++) {
             count[primes.getIndex(i) % 4]++;
             if (i % STEP == 0) {
-                matrix.setValue(i / STEP, "index", i+1);
+                matrix.setValue(i / STEP, "index", i + 1);
                 matrix.setValue(i / STEP, "c1", count[1]);
                 matrix.setValue(i / STEP, "c3", count[1]);
                 matrix.setValue(i / STEP, "delta", count[3] - count[1]);
@@ -75,7 +74,7 @@ public class PrimesConjectures extends AbstractCmd {
     private void runAndricaConjecture(Vector primes) {
         final int SIZE = primes.getRowCount() - 1;
         Vector delta = new NumericVector(SIZE);
-        Vector index = new IndexVector(SIZE);
+        Vector index = Vectors.newIndex(SIZE);
         for (int i = 0; i < SIZE; i++) {
             delta.setValue(i, sqrt(primes.getValue(i + 1)) - sqrt(primes.getValue(i)));
             index.setIndex(i, i + 1);

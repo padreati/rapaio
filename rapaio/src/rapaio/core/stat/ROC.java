@@ -39,7 +39,7 @@ public class ROC implements Summarizable {
 
     public ROC(Vector score, Vector actual, Vector predict) {
         this.score = score;
-        this.classes = new IndexVector(actual.getRowCount());
+        this.classes = Vectors.newIndex(actual.getRowCount());
         for (int i = 0; i < actual.getRowCount(); i++) {
             if (actual.getLabel(i).equals(predict.getLabel(i))) {
                 classes.setIndex(i, 1);
@@ -56,7 +56,7 @@ public class ROC implements Summarizable {
 
     public ROC(Vector score, Vector actual, String label) {
         this.score = score;
-        this.classes = new IndexVector(actual.getRowCount());
+        this.classes = Vectors.newIndex(actual.getRowCount());
         for (int i = 0; i < actual.getRowCount(); i++) {
             if (actual.getLabel(i).equals(label)) {
                 classes.setIndex(i, 1);

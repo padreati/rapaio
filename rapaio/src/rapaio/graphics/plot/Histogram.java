@@ -19,8 +19,8 @@
  */
 package rapaio.graphics.plot;
 
-import rapaio.data.OneIndexVector;
 import rapaio.data.Vector;
+import rapaio.data.Vectors;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
 
@@ -125,7 +125,7 @@ public class Histogram extends PlotComponent {
 
         // defaults
         if (getColorIndex().getRowCount() == 1 && getColorIndex().getIndex(0) == 0) {
-            setColorIndex(new OneIndexVector(7));
+            setColorIndex(Vectors.newOneIndex(7));
         }
     }
 
@@ -168,32 +168,32 @@ public class Histogram extends PlotComponent {
             }
             g2d.setColor(ColorPalette.STANDARD.getColor(0));
             int[] x = new int[]{
-                (int) getParent().xscale(binStart(i)),
-                (int) getParent().xscale(binStart(i)),
-                (int) getParent().xscale(binStart(i + 1)),
-                (int) getParent().xscale(binStart(i + 1)),
-                (int) getParent().xscale(binStart(i)),};
+                    (int) getParent().xscale(binStart(i)),
+                    (int) getParent().xscale(binStart(i)),
+                    (int) getParent().xscale(binStart(i + 1)),
+                    (int) getParent().xscale(binStart(i + 1)),
+                    (int) getParent().xscale(binStart(i)),};
             int[] y = new int[]{
-                (int) getParent().yscale(0),
-                (int) getParent().yscale(d),
-                (int) getParent().yscale(d),
-                (int) getParent().yscale(0),
-                (int) getParent().yscale(0)};
+                    (int) getParent().yscale(0),
+                    (int) getParent().yscale(d),
+                    (int) getParent().yscale(d),
+                    (int) getParent().yscale(0),
+                    (int) getParent().yscale(0)};
             g2d.drawPolyline(x, y, 5);
             if (d != 0) {
                 x = new int[]{
-                    (int) getParent().xscale(binStart(i)) + 1,
-                    (int) getParent().xscale(binStart(i)) + 1,
-                    (int) getParent().xscale(binStart(i + 1)),
-                    (int) getParent().xscale(binStart(i + 1)),
-                    (int) getParent().xscale(binStart(i)) + 1
+                        (int) getParent().xscale(binStart(i)) + 1,
+                        (int) getParent().xscale(binStart(i)) + 1,
+                        (int) getParent().xscale(binStart(i + 1)),
+                        (int) getParent().xscale(binStart(i + 1)),
+                        (int) getParent().xscale(binStart(i)) + 1
                 };
                 y = new int[]{
-                    (int) getParent().yscale(0),
-                    (int) getParent().yscale(d) + 1,
-                    (int) getParent().yscale(d) + 1,
-                    (int) getParent().yscale(0),
-                    (int) getParent().yscale(0)};
+                        (int) getParent().yscale(0),
+                        (int) getParent().yscale(d) + 1,
+                        (int) getParent().yscale(d) + 1,
+                        (int) getParent().yscale(0),
+                        (int) getParent().yscale(0)};
                 g2d.setColor(getColor(i));
                 g2d.fillPolygon(x, y, 5);
             }

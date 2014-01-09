@@ -19,9 +19,8 @@
  */
 package rapaio.graphics.base;
 
-import rapaio.data.OneIndexVector;
-import rapaio.data.OneNumericVector;
 import rapaio.data.Vector;
+import rapaio.data.Vectors;
 import rapaio.graphics.colors.ColorPalette;
 
 import java.awt.*;
@@ -60,9 +59,9 @@ public abstract class AbstractFigure implements Figure {
     private double thickerMinSpace = DEFAULT_THICKER_MIN_SPACE;
     ;
     private float lwd = 1.2f;
-    private Vector sizeIndex = new OneNumericVector(2.5);
-    private Vector colorIndex = new OneIndexVector(0);
-    private Vector pchIndex = new OneIndexVector(0);
+    private Vector sizeIndex = Vectors.newOneNumeric(2.5);
+    private Vector colorIndex = Vectors.newOneIndex(0);
+    private Vector pchIndex = Vectors.newOneIndex(0);
     private double x1 = Double.NaN;
     private double x2 = Double.NaN;
     private double y1 = Double.NaN;
@@ -131,15 +130,15 @@ public abstract class AbstractFigure implements Figure {
         this.bottomMarkers = bottomMarkers;
         return this;
     }
-    
-    
+
+
     public double getThickerMinSpace() {
-        if(parent!=null && thickerMinSpace == DEFAULT_THICKER_MIN_SPACE) {
+        if (parent != null && thickerMinSpace == DEFAULT_THICKER_MIN_SPACE) {
             return parent.getThickerMinSpace();
         }
         return thickerMinSpace;
     }
-    
+
     public AbstractFigure setThickerMinSpace(double minSpace) {
         thickerMinSpace = minSpace;
         return this;
@@ -251,7 +250,7 @@ public abstract class AbstractFigure implements Figure {
     }
 
     public AbstractFigure setSizeIndex(double size) {
-        this.sizeIndex = new OneNumericVector(size);
+        this.sizeIndex = Vectors.newOneNumeric(size);
         return this;
     }
 
@@ -280,7 +279,7 @@ public abstract class AbstractFigure implements Figure {
     }
 
     public AbstractFigure setColorIndex(int colorIndex) {
-        this.colorIndex = new OneIndexVector(colorIndex);
+        this.colorIndex = Vectors.newOneIndex(colorIndex);
         return this;
     }
 
@@ -312,7 +311,7 @@ public abstract class AbstractFigure implements Figure {
     }
 
     public AbstractFigure setPchIndex(int pch) {
-        this.pchIndex = new OneIndexVector(pch);
+        this.pchIndex = Vectors.newOneIndex(pch);
         return this;
     }
 
@@ -368,7 +367,7 @@ public abstract class AbstractFigure implements Figure {
     public void paint(Graphics2D g2d, Rectangle rect) {
         buildViewport(rect);
         range = buildRange();
-        
+
         g2d.setColor(ColorPalette.STANDARD.getColor(255));
         g2d.fill(rect);
 
@@ -443,7 +442,7 @@ public abstract class AbstractFigure implements Figure {
                 g2d.drawString(
                         bottomMarkersMsg.get(i),
                         (int) (viewport.x + bottomMarkersPos.get(i)
-                        - g2d.getFontMetrics().getStringBounds(bottomMarkersMsg.get(i), g2d).getWidth() / 2),
+                                - g2d.getFontMetrics().getStringBounds(bottomMarkersMsg.get(i), g2d).getWidth() / 2),
                         viewport.y + viewport.height + 2 * THICKER_PAD + MARKER_PAD);
             }
         }

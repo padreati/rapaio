@@ -23,8 +23,8 @@ import rapaio.core.ColRange;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.NumericVector;
-import rapaio.data.OneIndexVector;
 import rapaio.data.Vector;
+import rapaio.data.Vectors;
 import rapaio.graphics.base.AbstractFigure;
 import rapaio.graphics.base.Range;
 
@@ -115,7 +115,7 @@ public class BoxPlot extends AbstractFigure {
         setLeftThicker(true);
         setBottomMarkers(true);
         setBottomThicker(true);
-        setColorIndex(new OneIndexVector(0));
+        setColorIndex(Vectors.newOneIndex(0));
     }
 
     @Override
@@ -191,8 +191,8 @@ public class BoxPlot extends AbstractFigure {
                     // big outlier
                     int width = (int) (3 * getSize(i));
                     g2d.fillOval(
-                            (int)xscale(x2) - width / 2 - 1, 
-                            (int)yscale(point) - width / 2 - 1, 
+                            (int) xscale(x2) - width / 2 - 1,
+                            (int) yscale(point) - width / 2 - 1,
                             width, width);
                     continue;
                 }
@@ -200,8 +200,8 @@ public class BoxPlot extends AbstractFigure {
                     // outlier
                     int width = (int) (3.5 * getSize(i));
                     g2d.drawOval(
-                            (int)xscale(x2) - width / 2 - 1, 
-                            (int)yscale(point) - width / 2 - 1, 
+                            (int) xscale(x2) - width / 2 - 1,
+                            (int) yscale(point) - width / 2 - 1,
                             width, width);
                     continue;
                 }

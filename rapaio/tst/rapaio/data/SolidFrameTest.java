@@ -47,9 +47,9 @@ public class SolidFrameTest {
     @Test
     public void testColIndexes() {
         Vector[] vectors = new Vector[]{
-            new NumericVector(0),
-            new NumericVector(0),
-            new NumericVector(0)
+                new NumericVector(0),
+                new NumericVector(0),
+                new NumericVector(0)
         };
         Frame df = new SolidFrame(0, vectors, new String[]{"x", "y", "z"});
 
@@ -91,10 +91,10 @@ public class SolidFrameTest {
     @Test
     public void testConvenientMethods() {
         Vector[] vectors = new Vector[]{
-            new NumericVector(new double[]{1., 2., 3., 4.}),
-            new NumericVector(new double[]{3., 5., 9., 12.}),
-            new NominalVector(4, new String[]{"ana", "are", "mere"}),
-            new IndexVector(1, 4, 1)
+                new NumericVector(new double[]{1., 2., 3., 4.}),
+                new NumericVector(new double[]{3., 5., 9., 12.}),
+                new NominalVector(4, new String[]{"ana", "are", "mere"}),
+                Vectors.newSequence(1, 4, 1)
         };
         Frame df = new SolidFrame(4, vectors, new String[]{"x", "y", "name", "index"});
 
