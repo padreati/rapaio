@@ -34,7 +34,7 @@ import static rapaio.core.BaseMath.validNumber;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class DecisionStump extends AbstractClassifier<DecisionStump> {
+public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpClassifier> {
 
     private String[] dict;
     private String splitCol;
@@ -50,7 +50,7 @@ public class DecisionStump extends AbstractClassifier<DecisionStump> {
 
     @Override
     public Classifier newInstance() {
-        return new DecisionStump();
+        return new DecisionStumpClassifier();
     }
 
     @Override

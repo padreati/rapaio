@@ -157,11 +157,11 @@ public final class DensityTable {
             }
         }
         double total = 0;
-        for (int i = 1; i < totals.length; i++) {
+        for (int i = start; i < totals.length; i++) {
             total += totals[i];
         }
         double splitInfo = 0;
-        for (int i = 1; i < totals.length; i++) {
+        for (int i = start; i < totals.length; i++) {
             if (totals[i] > 0) {
                 splitInfo += -log2(totals[i] / total) * totals[i] / total;
             }

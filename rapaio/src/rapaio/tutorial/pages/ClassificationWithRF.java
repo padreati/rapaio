@@ -29,7 +29,7 @@ import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
 import rapaio.graphics.plot.Points;
 import rapaio.ml.classification.Classifier;
-import rapaio.ml.classification.tree.RandomForest;
+import rapaio.ml.classification.tree.RandomForestClassifier;
 import rapaio.sample.StatSampling;
 import rapaio.workspace.Summary;
 
@@ -160,7 +160,7 @@ public class ClassificationWithRF implements TutorialPage {
         final Vector oob = new NumericVector(400);
         for (int mtree = 1; mtree < 200; mtree += 10) {
             final int mt = mtree;
-            RandomForest rf = new RandomForest() {
+            RandomForestClassifier rf = new RandomForestClassifier() {
                 {
                     setMtrees(mt);
                     setMcols(2);
@@ -195,7 +195,7 @@ public class ClassificationWithRF implements TutorialPage {
                 + "        Vector accuracy = new NumericVector(\"test error\", 1000);\n"
                 + "        Vector oob = new NumericVector(\"oob error\", 1000);\n"
                 + "        for (int mtree = 1; mtree < 100; mtree += 5) {\n"
-                + "            RandomForest rf = new RandomForest(mtree, 3, true);\n"
+                + "            RandomForestClassifier rf = new RandomForestClassifier(mtree, 3, true);\n"
                 + "            rf.learn(train, \"spam\");\n"
                 + "            ClassifierModel model = rf.predict(test);\n"
                 + "            index.setIndex(pos, mtree);\n"
@@ -234,7 +234,7 @@ public class ClassificationWithRF implements TutorialPage {
         for (int mcol = 1; mcol <= 10; mcol++) {
 
             final int mmcol = mcol;
-            RandomForest rf = new RandomForest() {
+            RandomForestClassifier rf = new RandomForestClassifier() {
                 {
                     setMtrees(30);
                     setMcols(mmcol);
@@ -272,7 +272,7 @@ public class ClassificationWithRF implements TutorialPage {
                 + "        final Vector oob1 = new NumericVector(\"oob error\", 10);\n"
                 + "        for (int mcol = 1; mcol <= 10; mcol++) {\n"
                 + "\n"
-                + "            RandomForest rf = new RandomForest(30, mcol, true);\n"
+                + "            RandomForestClassifier rf = new RandomForestClassifier(30, mcol, true);\n"
                 + "            rf.learn(train, \"spam\");\n"
                 + "            rf.predict(test);\n"
                 + "            index1.setIndex(pos, mcol);\n"

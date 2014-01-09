@@ -43,7 +43,7 @@ import static rapaio.workspace.Workspace.code;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class RandomForest extends AbstractClassifier<RandomForest> {
+public class RandomForestClassifier extends AbstractClassifier<RandomForestClassifier> {
     int mtrees = 10;
     int mcols = -1;
     boolean computeOob = false;
@@ -63,8 +63,8 @@ public class RandomForest extends AbstractClassifier<RandomForest> {
     double numericSelectionProb = 1.;
 
     @Override
-    public RandomForest newInstance() {
-        RandomForest rf = new RandomForest();
+    public RandomForestClassifier newInstance() {
+        RandomForestClassifier rf = new RandomForestClassifier();
         rf.setMcols(getMcols());
         rf.setMtrees(getMtrees());
         rf.setComputeOob(getComputeOob());
@@ -77,7 +77,7 @@ public class RandomForest extends AbstractClassifier<RandomForest> {
         return mtrees;
     }
 
-    public RandomForest setMtrees(int mtrees) {
+    public RandomForestClassifier setMtrees(int mtrees) {
         this.mtrees = mtrees;
         return this;
     }
@@ -86,7 +86,7 @@ public class RandomForest extends AbstractClassifier<RandomForest> {
         return mcols;
     }
 
-    public RandomForest setMcols(int mcols) {
+    public RandomForestClassifier setMcols(int mcols) {
         this.mcols = mcols;
         return this;
     }
@@ -95,7 +95,7 @@ public class RandomForest extends AbstractClassifier<RandomForest> {
         return computeOob;
     }
 
-    public RandomForest setComputeOob(boolean computeOob) {
+    public RandomForestClassifier setComputeOob(boolean computeOob) {
         this.computeOob = computeOob;
         return this;
     }
@@ -290,7 +290,7 @@ public class RandomForest extends AbstractClassifier<RandomForest> {
     }
 
     private void summaryDetails(StringBuilder sb) {
-        sb.append(String.format("\nRandomForest(mtrees=%d, mcols=%d)", mtrees, mcols));
+        sb.append(String.format("\nRandomForestClassifier(mtrees=%d, mcols=%d)", mtrees, mcols));
         sb.append(String.format("\nTrain time %d millis", learnTime));
     }
 

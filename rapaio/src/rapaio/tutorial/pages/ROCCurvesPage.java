@@ -31,8 +31,8 @@ import rapaio.graphics.plot.Legend;
 import rapaio.graphics.plot.ROCCurve;
 import rapaio.ml.classification.boost.AdaBoostSAMME;
 import rapaio.ml.classification.rule.OneRule;
-import rapaio.ml.classification.tree.DecisionStump;
-import rapaio.ml.classification.tree.RandomForest;
+import rapaio.ml.classification.tree.DecisionStumpClassifier;
+import rapaio.ml.classification.tree.RandomForestClassifier;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -123,10 +123,10 @@ public class ROCCurvesPage implements TutorialPage {
         heading(4, "Random Forest");
 
         p("The second prediction model is a random forest with 200 random trees. ");
-        RandomForest rf = new RandomForest().setMtrees(200);
+        RandomForestClassifier rf = new RandomForestClassifier().setMtrees(200);
         rf.learn(train, "spam");
         rf.predict(test);
-        code("        RandomForest rf = new RandomForest().setMtrees(200);\n"
+        code("        RandomForestClassifier rf = new RandomForestClassifier().setMtrees(200);\n"
                 + "        rf.learn(train, \"spam\");\n"
                 + "        rf.predict(test);\n"
                 + "");
@@ -136,10 +136,10 @@ public class ROCCurvesPage implements TutorialPage {
         p("The third prediction model is a boosting algorithm called AdaBoost.M1. This model is "
                 + "is learn with decision stump as a weak learner, and boosting 200 iterations. "
                 + "The following code shows how one can achieve that using rapaio.");
-        AdaBoostSAMME ab = new AdaBoostSAMME(new DecisionStump(), 200);
+        AdaBoostSAMME ab = new AdaBoostSAMME(new DecisionStumpClassifier(), 200);
         ab.learn(train, "spam");
         ab.predict(test);
-        code("        AdaBoostM1 ab = new AdaBoostM1(new DecisionStump(), 200);\n"
+        code("        AdaBoostM1 ab = new AdaBoostM1(new DecisionStumpClassifier(), 200);\n"
                 + "        ab.learn(train, \"spam\");\n"
                 + "        ab.predict(test);\n"
                 + "");

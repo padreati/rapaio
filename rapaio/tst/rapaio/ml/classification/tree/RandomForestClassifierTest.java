@@ -33,14 +33,14 @@ import java.net.URISyntaxException;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class RandomForestTest {
+public class RandomForestClassifierTest {
 
     public static Frame loadFrame(String name) throws IOException {
         final String path = "/UCI/" + name + ".arff";
         ArffPersistence arff = new ArffPersistence();
-        return arff.read(name, RandomForestTest.class.getResourceAsStream(path));
+        return arff.read(name, RandomForestClassifierTest.class.getResourceAsStream(path));
     }
-    
+
     @Test
     public void testDummy() {
         Assert.assertTrue(true);
@@ -49,18 +49,18 @@ public class RandomForestTest {
     public double test(String name) throws IOException {
         Frame df = loadFrame(name);
         String className = df.getColNames()[df.getColCount() - 1];
-        RandomForest rf = new RandomForest(){{
+        RandomForestClassifier rf = new RandomForestClassifier() {{
             setMtrees(100);
         }};
         ModelEvaluation cv = new ModelEvaluation();
         return cv.cv(df, className, rf, 10);
     }
 
-//        @Test
+    //        @Test
     public void allCompareTest() throws IOException, URISyntaxException {
         CsvPersistence csv = new CsvPersistence();
         csv.setHasHeader(true);
-        Frame tests = csv.read(getClass(),"tests.csv");
+        Frame tests = csv.read(getClass(), "tests.csv");
         for (int i = 0; i < tests.getRowCount(); i++) {
             if (tests.getLabel(i, 0).startsWith("#")) {
                 continue;

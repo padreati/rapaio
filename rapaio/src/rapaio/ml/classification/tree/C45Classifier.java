@@ -36,7 +36,7 @@ import java.util.Map;
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
-public class C45 extends AbstractClassifier<C45> {
+public class C45Classifier extends AbstractClassifier<C45Classifier> {
 
     public static final int SELECTION_INFOGAIN = 0;
     public static final int SELECTION_GAINRATIO = 1;
@@ -60,7 +60,7 @@ public class C45 extends AbstractClassifier<C45> {
         return selection;
     }
 
-    public C45 setSelectionCriterion(int selection) {
+    public C45Classifier setSelectionCriterion(int selection) {
         this.selection = selection;
         return this;
     }
@@ -69,7 +69,7 @@ public class C45 extends AbstractClassifier<C45> {
         return minWeight;
     }
 
-    public C45 setMinWeight(double minWeight) {
+    public C45Classifier setMinWeight(double minWeight) {
         this.minWeight = minWeight;
         return this;
     }
@@ -78,14 +78,14 @@ public class C45 extends AbstractClassifier<C45> {
         return maxNodes;
     }
 
-    public C45 setMaxNodes(int maxNodes) {
+    public C45Classifier setMaxNodes(int maxNodes) {
         this.maxNodes = maxNodes;
         return this;
     }
 
     @Override
     public Classifier newInstance() {
-        return new C45().setMinWeight(minWeight).setSelectionCriterion(selection);
+        return new C45Classifier().setMinWeight(minWeight).setSelectionCriterion(selection);
     }
 
     @Override
@@ -146,7 +146,7 @@ public class C45 extends AbstractClassifier<C45> {
 
 class C45Node {
 
-    final C45 parent;
+    final C45Classifier parent;
     String testColName;
     double testValue; // used by numeric children to distinguish between left and right
     double totalWeight;
@@ -156,7 +156,7 @@ class C45Node {
     C45Node numericLeftChild;
     C45Node numericRightChild;
 
-    public C45Node(C45 parent) {
+    public C45Node(C45Classifier parent) {
         this.parent = parent;
     }
 

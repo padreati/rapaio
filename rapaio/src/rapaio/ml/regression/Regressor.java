@@ -17,6 +17,4 @@ public interface Regressor {
     void predict(Frame df);
 
     Vector getFittedValues();
-
-    Vector getResiduals();
 }

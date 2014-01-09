@@ -41,7 +41,7 @@ import static rapaio.core.BaseMath.*;
  *
  * @author Aurelian Tutuianu
  */
-public class OnlineCoreStat {
+public class StatOnline {
 
     int n; // number of elements
     double m1;
@@ -51,7 +51,7 @@ public class OnlineCoreStat {
     double min = 0;
     double max = 0;
 
-    public OnlineCoreStat() {
+    public StatOnline() {
         clean();
     }
 
@@ -125,8 +125,8 @@ public class OnlineCoreStat {
         return n * m4 / (m2 * m2) - 3.0;
     }
 
-    public void apply(OnlineCoreStat a) {
-        OnlineCoreStat combined = new OnlineCoreStat();
+    public void apply(StatOnline a) {
+        StatOnline combined = new StatOnline();
         combined.n += a.n + this.n;
 
         double delta = this.m1 - a.m1;

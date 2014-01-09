@@ -20,7 +20,7 @@
 package rapaio.tutorial.pages;
 
 import rapaio.core.RandomSource;
-import rapaio.core.stat.OnlineCoreStat;
+import rapaio.core.stat.StatOnline;
 import rapaio.data.IndexVector;
 import rapaio.data.NumericVector;
 import rapaio.data.Vector;
@@ -70,14 +70,14 @@ public class LawOfLargeNumbers implements TutorialPage {
         final int N = 1_000;
         Vector events = new DUniform(1, 6).sample(N);
         p("Thus we have stored in a vector N (1000) outputs of those events. "
-                + "We compute the running mean using OnlineCoreStat:");
-        code("        OnlineCoreStat ocs = new OnlineCoreStat();\n"
+                + "We compute the running mean using StatOnline:");
+        code("        StatOnline ocs = new StatOnline();\n"
                 + "        Vector mean = new NumericVector(\"mean\", N);\n"
                 + "        for (int i = 0; i < events.getRowCount(); i++) {\n"
                 + "            ocs.update(events.getValue(i), 1);\n"
                 + "            mean.setValue(i, ocs.getMean());\n"
                 + "        }\n");
-        OnlineCoreStat ocs = new OnlineCoreStat();
+        StatOnline ocs = new StatOnline();
         final Vector mean = new NumericVector(N);
         for (int i = 0; i < events.getRowCount(); i++) {
             ocs.update(events.getValue(i));
