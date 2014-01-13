@@ -38,7 +38,7 @@ public class RandomTree extends AbstractClassifier<RandomTree> {
     String classColName;
     TreeNode root;
     String[] dict;
-    NominalVector prediction;
+    NomVector prediction;
     Frame d;
     double[] sumVI;
     double[] cntVI;
@@ -112,7 +112,7 @@ public class RandomTree extends AbstractClassifier<RandomTree> {
 
     @Override
     public void predict(Frame df) {
-        prediction = new NominalVector(df.getRowCount(), dict);
+        prediction = new NomVector(df.getRowCount(), dict);
         d = Frames.newMatrixFrame(df.getRowCount(), dict);
         for (int i = 0; i < df.getRowCount(); i++) {
             double[] distribution = predict(df, i, root);
@@ -137,7 +137,7 @@ public class RandomTree extends AbstractClassifier<RandomTree> {
     }
 
     @Override
-    public NominalVector getPrediction() {
+    public NomVector getPrediction() {
         return prediction;
     }
 
@@ -318,7 +318,7 @@ class TreeNode {
         double[][] p = new double[2][fd.length];
         int[] rowCounts = new int[2];
 
-        Vector sort = RowFilters.sort(Vectors.newSequence(0, df.getRowCount() - 1, 1), RowComparators.numericComparator(col, true));
+        Vector sort = RowFilters.sort(Vectors.newSeq(0, df.getRowCount() - 1, 1), RowComparators.numericComparator(col, true));
         for (int i = 0; i < df.getRowCount() - 1; i++) {
             int row = df.getCol(colIndex).isMissing(sort.getIndex(i)) ? 0 : 1;
             int index = df.getIndex(sort.getIndex(i), classColIndex);

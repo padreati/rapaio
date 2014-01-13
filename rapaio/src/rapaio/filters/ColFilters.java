@@ -22,7 +22,7 @@ package rapaio.filters;
 import rapaio.core.ColRange;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
-import rapaio.data.NominalVector;
+import rapaio.data.NomVector;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
 
@@ -41,10 +41,10 @@ public final class ColFilters {
     /**
      * Remove columns specified in a column range from a frame.
      *
-     * @param df frame
-     * @param colRange column range
-     * @return original frame without columns specified in {
+     * @param df        frame
+     * @param colRange  column range
      * @param colRange}
+     * @return original frame without columns specified in {
      */
     public static Frame removeCols(Frame df, String colRange) {
         ColRange range = new ColRange(colRange);
@@ -68,10 +68,10 @@ public final class ColFilters {
     /**
      * Remove columns from a frame by specifying which columns to keep.
      *
-     * @param df frame
-     * @param colRange column range
-     * @return original frame which has only columns specified in {
+     * @param df        frame
+     * @param colRange  column range
      * @param colRange}
+     * @return original frame which has only columns specified in {
      */
     public static Frame retainCols(Frame df, String colRange) {
         ColRange range = new ColRange(colRange);
@@ -152,7 +152,7 @@ public final class ColFilters {
                 continue;
             }
             Vector origin = df.getCol(i);
-            Vector discrete = new NominalVector(origin.getRowCount(), dict);
+            Vector discrete = new NomVector(origin.getRowCount(), dict);
             if (!useQuantiles) {
                 Vector sorted = RowFilters.sort(df.getCol(i));
                 int width = (int) Math.ceil(df.getRowCount() / (1. * bins));

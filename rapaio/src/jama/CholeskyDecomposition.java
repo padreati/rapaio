@@ -19,13 +19,14 @@
  */
 package jama;
 
+
 /**
  * Cholesky Decomposition.
  * <p/>
- * For a symmetric, positive definite matrix A, the Cholesky decomposition is an
- * lower triangular matrix L so that A = L*L'.
+ * For a symmetric, positive definite rapaio.data.matrix A, the Cholesky decomposition is an
+ * lower triangular rapaio.data.matrix L so that A = L*L'.
  * <p/>
- * If the matrix is not symmetric or positive definite, the constructor returns
+ * If the rapaio.data.matrix is not symmetric or positive definite, the constructor returns
  * a partial decomposition and sets an internal flag that may be queried by the
  * isSPD() method.
  */
@@ -44,9 +45,9 @@ public class CholeskyDecomposition implements java.io.Serializable {
     private double[][] L;
 
     /**
-     * Row and column dimension (square matrix).
+     * Row and column dimension (square rapaio.data.matrix).
      *
-     * @serial matrix dimension.
+     * @serial rapaio.data.matrix dimension.
      */
     private int n;
 
@@ -62,10 +63,10 @@ public class CholeskyDecomposition implements java.io.Serializable {
      */
 
     /**
-     * Cholesky algorithm for symmetric and positive definite matrix. Structure
+     * Cholesky algorithm for symmetric and positive definite rapaio.data.matrix. Structure
      * to access L and isspd flag.
      *
-     * @param Arg Square, symmetric matrix.
+     * @param Arg Square, symmetric rapaio.data.matrix.
      */
     public CholeskyDecomposition(Matrix Arg) {
 
@@ -102,8 +103,8 @@ public class CholeskyDecomposition implements java.io.Serializable {
      * ------------------------ *\
      *
      * \** Right Triangular Cholesky Decomposition. <P> For a symmetric,
-     * positive definite matrix A, the Right Cholesky decomposition is an upper
-     * triangular matrix R so that A = R'*R. This constructor computes R with
+     * positive definite rapaio.data.matrix A, the Right Cholesky decomposition is an upper
+     * triangular rapaio.data.matrix R so that A = R'*R. This constructor computes R with
      * the Fortran inspired column oriented algorithm used in LINPACK and
      * MATLAB. In Java, we suspect a row oriented, lower triangular
      * decomposition is faster. We have temporarily included this constructor
@@ -112,8 +113,8 @@ public class CholeskyDecomposition implements java.io.Serializable {
      * \** Array for internal storage of right triangular decomposition. **\
      * private transient double[][] R;
      *
-     * \** Cholesky algorithm for symmetric and positive definite matrix. @param
-     * A Square, symmetric matrix. @param rightflag Actual getValue ignored.
+     * \** Cholesky algorithm for symmetric and positive definite rapaio.data.matrix. @param
+     * A Square, symmetric rapaio.data.matrix. @param rightflag Actual getValue ignored.
      * @return Structure to access R and isspd flag. \
      *
      * public CholeskyDecomposition (Matrix Arg, int rightflag) { // Initialize.
@@ -139,7 +140,7 @@ public class CholeskyDecomposition implements java.io.Serializable {
      */
 
     /**
-     * Is the matrix symmetric and positive definite?
+     * Is the rapaio.data.matrix symmetric and positive definite?
      *
      * @return true if A is symmetric and positive definite.
      */

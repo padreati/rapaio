@@ -20,7 +20,7 @@
 package rapaio.ml.classification.tree;
 
 import rapaio.data.Frame;
-import rapaio.data.NominalVector;
+import rapaio.data.NomVector;
 import rapaio.ml.classification.AbstractClassifier;
 import rapaio.ml.classification.Classifier;
 
@@ -48,7 +48,7 @@ public class CART extends AbstractClassifier<CART> {
     }
 
     @Override
-    public NominalVector getPrediction() {
+    public NomVector getPrediction() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

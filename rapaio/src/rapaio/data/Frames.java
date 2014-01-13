@@ -39,7 +39,7 @@ public final class Frames {
     public static Frame newMatrixFrame(int rows, String... colNames) {
         Vector[] vectors = new Vector[colNames.length];
         for (int i = 0; i < colNames.length; i++) {
-            vectors[i] = new NumericVector(new double[rows]);
+            vectors[i] = new NumVector(new double[rows]);
         }
         return new SolidFrame(rows, vectors, colNames);
     }
@@ -52,14 +52,14 @@ public final class Frames {
         for (int i = 0; i < df.getColCount(); i++) {
             Vector src = df.getCol(i);
             if (src.isNominal()) {
-                vectors.add(new NominalVector(len, df.getCol(i).getDictionary()));
+                vectors.add(new NomVector(len, df.getCol(i).getDictionary()));
                 names.add(df.getColNames()[i]);
                 for (int j = 0; j < df.getRowCount(); j++) {
                     vectors.get(i).setLabel(j, src.getLabel(j));
                 }
             }
             if (src.isNumeric()) {
-                vectors.add(new NumericVector(len));
+                vectors.add(new NumVector(len));
                 names.add(df.getColNames()[i]);
                 for (int j = 0; j < df.getRowCount(); j++) {
                     vectors.get(i).setValue(j, src.getValue(j));

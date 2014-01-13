@@ -59,9 +59,9 @@ public abstract class AbstractFigure implements Figure {
     private double thickerMinSpace = DEFAULT_THICKER_MIN_SPACE;
     ;
     private float lwd = 1.2f;
-    private Vector sizeIndex = Vectors.newOneNumeric(2.5);
-    private Vector colorIndex = Vectors.newOneIndex(0);
-    private Vector pchIndex = Vectors.newOneIndex(0);
+    private Vector sizeIndex = Vectors.newNumOne(2.5);
+    private Vector colorIndex = Vectors.newIdxOne(0);
+    private Vector pchIndex = Vectors.newIdxOne(0);
     private double x1 = Double.NaN;
     private double x2 = Double.NaN;
     private double y1 = Double.NaN;
@@ -250,7 +250,7 @@ public abstract class AbstractFigure implements Figure {
     }
 
     public AbstractFigure setSizeIndex(double size) {
-        this.sizeIndex = Vectors.newOneNumeric(size);
+        this.sizeIndex = Vectors.newNumOne(size);
         return this;
     }
 
@@ -279,7 +279,7 @@ public abstract class AbstractFigure implements Figure {
     }
 
     public AbstractFigure setColorIndex(int colorIndex) {
-        this.colorIndex = Vectors.newOneIndex(colorIndex);
+        this.colorIndex = Vectors.newIdxOne(colorIndex);
         return this;
     }
 
@@ -311,7 +311,7 @@ public abstract class AbstractFigure implements Figure {
     }
 
     public AbstractFigure setPchIndex(int pch) {
-        this.pchIndex = Vectors.newOneIndex(pch);
+        this.pchIndex = Vectors.newIdxOne(pch);
         return this;
     }
 

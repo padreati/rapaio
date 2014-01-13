@@ -45,7 +45,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
     private String rightLabel;
     private String defaultLabel;
 
-    private NominalVector pred;
+    private NomVector pred;
     private Frame distr;
 
     @Override
@@ -154,7 +154,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
         double[][] p = new double[2][classCol.getDictionary().length];
         int[] rowCounts = new int[2];
 
-        Vector sort = RowFilters.sort(Vectors.newSequence(0, df.getRowCount() - 1, 1), RowComparators.numericComparator(col, true));
+        Vector sort = RowFilters.sort(Vectors.newSeq(0, df.getRowCount() - 1, 1), RowComparators.numericComparator(col, true));
         for (int i = 0; i < df.getRowCount() - 1; i++) {
             int row = col.isMissing(sort.getIndex(i)) ? 0 : 1;
             int index = classCol.getIndex(sort.getIndex(i));
@@ -210,7 +210,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
 
     @Override
     public void predict(Frame df) {
-        pred = new NominalVector(df.getRowCount(), dict);
+        pred = new NomVector(df.getRowCount(), dict);
         for (int i = 0; i < df.getRowCount(); i++) {
             if (splitCol == null || splitCol.isEmpty() || df.getCol(splitCol).isMissing(i)) {
                 pred.setLabel(i, defaultLabel);
@@ -234,7 +234,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
     }
 
     @Override
-    public NominalVector getPrediction() {
+    public NomVector getPrediction() {
         return pred;
     }
 

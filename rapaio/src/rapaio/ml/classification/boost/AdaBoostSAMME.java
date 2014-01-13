@@ -21,7 +21,7 @@ package rapaio.ml.classification.boost;
 
 import rapaio.data.Frame;
 import rapaio.data.Frames;
-import rapaio.data.NominalVector;
+import rapaio.data.NomVector;
 import rapaio.ml.classification.AbstractClassifier;
 import rapaio.ml.classification.Classifier;
 
@@ -46,7 +46,7 @@ public class AdaBoostSAMME extends AbstractClassifier<AdaBoostSAMME> {
     double k;
 
     String[] dict;
-    NominalVector pred;
+    NomVector pred;
     Frame dist;
 
     public AdaBoostSAMME(Classifier weak, int t) {
@@ -80,7 +80,7 @@ public class AdaBoostSAMME extends AbstractClassifier<AdaBoostSAMME> {
             Classifier hh = weak.newInstance();
             hh.learn(df, new ArrayList<>(w), classColName);
             hh.predict(df);
-            NominalVector hpred = hh.getPrediction();
+            NomVector hpred = hh.getPrediction();
 
             double err = 0;
             for (int j = 0; j < df.getRowCount(); j++) {
@@ -136,7 +136,7 @@ public class AdaBoostSAMME extends AbstractClassifier<AdaBoostSAMME> {
             Classifier hh = weak.newInstance();
             hh.learn(df, new ArrayList<>(w), classColName);
             hh.predict(df);
-            NominalVector hpred = hh.getPrediction();
+            NomVector hpred = hh.getPrediction();
 
             double err = 0;
             for (int j = 0; j < df.getRowCount(); j++) {
@@ -205,7 +205,7 @@ public class AdaBoostSAMME extends AbstractClassifier<AdaBoostSAMME> {
 
     @Override
     public void predict(Frame df) {
-        pred = new NominalVector(df.getRowCount(), dict);
+        pred = new NomVector(df.getRowCount(), dict);
         dist = Frames.newMatrixFrame(df.getRowCount(), dict);
 
         for (int i = 0; i < min(t, h.size()); i++) {
@@ -232,7 +232,7 @@ public class AdaBoostSAMME extends AbstractClassifier<AdaBoostSAMME> {
     }
 
     @Override
-    public NominalVector getPrediction() {
+    public NomVector getPrediction() {
         return pred;
     }
 

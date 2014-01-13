@@ -22,15 +22,15 @@ package jama;
 /**
  * Singular Value Decomposition.
  * <p/>
- * For an m-by-n matrix A with m >= n, the singular getValue decomposition is an
- * m-by-n orthogonal matrix U, an n-by-n diagonal matrix S, and an n-by-n
- * orthogonal matrix V so that A = U*S*V'.
+ * For an m-by-n rapaio.data.matrix A with m >= n, the singular getValue decomposition is an
+ * m-by-n orthogonal rapaio.data.matrix U, an n-by-n diagonal rapaio.data.matrix S, and an n-by-n
+ * orthogonal rapaio.data.matrix V so that A = U*S*V'.
  * <p/>
  * The singular values, sigma[k] = S[k][k], are ordered so that sigma[0] >=
  * sigma[1] >= ... >= sigma[n-1].
  * <p/>
  * The singular getValue decompostion always exists, so the constructor will never
- * fail. The matrix condition number and the effective numerical rank can be
+ * fail. The rapaio.data.matrix condition number and the effective numerical rank can be
  * computed from this decomposition.
  */
 
@@ -71,7 +71,7 @@ public class SingularValueDecomposition implements java.io.Serializable {
      * Construct the singular getValue decomposition Structure to access U, S and
      * V.
      *
-     * @param Arg Rectangular matrix
+     * @param Arg Rectangular rapaio.data.matrix
      */
     public SingularValueDecomposition(Matrix Arg) {
 
@@ -194,7 +194,7 @@ public class SingularValueDecomposition implements java.io.Serializable {
             }
         }
 
-        // Set up the final bidiagonal matrix or order p.
+        // Set up the final bidiagonal rapaio.data.matrix or order p.
         int p = Math.min(n, m + 1);
         if (nct < n) {
             s[nct] = A[nct][nct];
@@ -509,7 +509,7 @@ public class SingularValueDecomposition implements java.io.Serializable {
     }
 
     /**
-     * Return the diagonal matrix of singular values
+     * Return the diagonal rapaio.data.matrix of singular values
      *
      * @return S
      */
@@ -544,7 +544,7 @@ public class SingularValueDecomposition implements java.io.Serializable {
     }
 
     /**
-     * Effective numerical matrix rank
+     * Effective numerical rapaio.data.matrix rank
      *
      * @return Number of nonnegligible singular values.
      */

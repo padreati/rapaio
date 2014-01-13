@@ -22,11 +22,11 @@ package jama;
 /**
  * LU Decomposition.
  * <p/>
- * For an m-by-n matrix A with m >= n, the LU decomposition is an m-by-n unit
- * lower triangular matrix L, an n-by-n upper triangular matrix U, and a
+ * For an m-by-n rapaio.data.matrix A with m >= n, the LU decomposition is an m-by-n unit
+ * lower triangular rapaio.data.matrix L, an n-by-n upper triangular rapaio.data.matrix U, and a
  * permutation vector piv of length m so that A(piv,:) = L*U. If m < n, then L
  * is m-by-m and U is m-by-n. <P>
- * The LU decompostion with pivoting always exists, even if the matrix is
+ * The LU decompostion with pivoting always exists, even if the rapaio.data.matrix is
  * singular, so the constructor will never fail. The primary use of the LU
  * decomposition is in the solution of square systems of simultaneous linear
  * equations. This will fail if isNonsingular() returns false.
@@ -68,7 +68,7 @@ public class LUDecomposition implements java.io.Serializable {
     /**
      * LU Decomposition Structure to access L, U and piv.
      *
-     * @param A Rectangular matrix
+     * @param A Rectangular rapaio.data.matrix
      */
     public LUDecomposition(Matrix A) {
 
@@ -143,7 +143,7 @@ public class LUDecomposition implements java.io.Serializable {
      * used in LINPACK and MATLAB. In Java, we suspect the dot-product, Crout
      * algorithm will be faster. We have temporarily included this constructor
      * until timing experiments confirm this suspicion. <P> @param A Rectangular
-     * matrix @param linpackflag Use Gaussian elimination. Actual getValue ignored.
+     * rapaio.data.matrix @param linpackflag Use Gaussian elimination. Actual getValue ignored.
      * @return Structure to access L, U and piv. \
      *
      * public LUDecomposition (Matrix A, int linpackflag) { // Initialize. LU =
@@ -167,7 +167,7 @@ public class LUDecomposition implements java.io.Serializable {
      */
 
     /**
-     * Is the matrix nonsingular?
+     * Is the rapaio.data.matrix nonsingular?
      *
      * @return true if U, and hence A, is nonsingular.
      */

@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class JavaDBUtil {
@@ -87,12 +86,12 @@ public class JavaDBUtil {
         List<String> colNames = new ArrayList();
         List<List> lists = new ArrayList<>();
         for (int i = 0; i < md.getColumnCount(); i++) {
-            colNames.add(md.getColumnLabel(i+1));
+            colNames.add(md.getColumnLabel(i + 1));
             lists.add(new ArrayList());
         }
         while (rs.next()) {
             for (int i = 0; i < md.getColumnCount(); i++) {
-                String sqlTypeName = md.getColumnTypeName(i+1);
+                String sqlTypeName = md.getColumnTypeName(i + 1);
                 switch (sqlTypeName) {
                     case "DOUBLE":
                     case "INTEGER":
@@ -105,11 +104,11 @@ public class JavaDBUtil {
         }
         List<Vector> vectors = new ArrayList<>();
         for (int i = 0; i < md.getColumnCount(); i++) {
-            String sqlTypeName = md.getColumnTypeName(i+1);
+            String sqlTypeName = md.getColumnTypeName(i + 1);
             switch (sqlTypeName) {
                 case "DOUBLE":
                 case "INTEGER":
-                    NumericVector v1 = new NumericVector(lists.get(i).size());
+                    NumVector v1 = new NumVector(lists.get(i).size());
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         v1.setValue(j, (Double) lists.get(i).get(j));
                     }
@@ -120,7 +119,7 @@ public class JavaDBUtil {
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         dict.add((String) lists.get(i).get(j));
                     }
-                    NominalVector v2 = new NominalVector(lists.get(i).size(), dict);
+                    NomVector v2 = new NomVector(lists.get(i).size(), dict);
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         v2.setLabel(j, (String) lists.get(i).get(j));
                     }

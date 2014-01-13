@@ -173,14 +173,14 @@ public class CsvPersistence {
         for (int i = 0; i < cols; i++) {
             String colName = names.get(i);
             if (indexFieldHints.contains(colName)) {
-                vectors.add(Vectors.newIndex(rows));
+                vectors.add(Vectors.newIdx(rows));
                 continue;
             }
             if (numericFieldHints.contains(colName)) {
-                vectors.add(new NumericVector(rows));
+                vectors.add(new NumVector(rows));
                 continue;
             }
-            vectors.add(new NominalVector(rows, dictionaries.get(colName)));
+            vectors.add(new NomVector(rows, dictionaries.get(colName)));
         }
         Frame df = new SolidFrame(rows, vectors, names);
 

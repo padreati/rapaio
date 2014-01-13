@@ -119,7 +119,7 @@ public final class NominalFilters {
                 if (!v.isNominal()) {
                     vectors[i] = v;
                 } else {
-                    vectors[i] = new NominalVector(v.getRowCount(), dicts.get(colName));
+                    vectors[i] = new NomVector(v.getRowCount(), dicts.get(colName));
                     for (int k = 0; k < vectors[i].getRowCount(); k++) {
                         vectors[i].setLabel(k, v.getLabel(k));
                     }
@@ -155,7 +155,7 @@ public final class NominalFilters {
             for (int j = 0; j < frames.get(i).getColCount(); j++) {
                 vectors.add(frames.get(i).getCol(j));
             }
-            Vector col = new NominalVector(frames.get(i).getRowCount(), dict);
+            Vector col = new NomVector(frames.get(i).getRowCount(), dict);
             for (int j = 0; j < frames.get(i).getRowCount(); j++) {
                 StringBuilder sb = new StringBuilder();
                 for (int k = 0; k < combined.length; k++) {

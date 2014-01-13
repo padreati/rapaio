@@ -49,7 +49,7 @@ public class SortedFrameTest {
         persistence.setHasQuotas(false);
         persistence.getNumericFieldHints().add("z");
         persistence.getIndexFieldHints().add("y");
-        df = persistence.read(SortedFrameTest.class,"sorted-frame.csv");
+        df = persistence.read(SortedFrameTest.class, "sorted-frame.csv");
     }
 
 
@@ -59,11 +59,11 @@ public class SortedFrameTest {
         Vector[] vectors = new Vector[1_000];
         String[] names = new String[1_000];
         for (int i = 0; i < 1_000; i++) {
-            vectors[i] = new NumericVector(10_000);
+            vectors[i] = new NumVector(10_000);
             for (int j = 0; j < 10_000; j++) {
                 vectors[i].setValue(j, RandomSource.nextDouble());
             }
-            names[i] = "v"+i;
+            names[i] = "v" + i;
         }
         Frame sorted = new SolidFrame(10_000, vectors, names);
 

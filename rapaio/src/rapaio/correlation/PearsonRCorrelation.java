@@ -34,7 +34,7 @@ import static rapaio.workspace.Workspace.getPrinter;
 
 /**
  * /**
- * StatSampling Pearson product-moment correlation coefficient.
+ * Pearson product-moment correlation coefficient.
  * <p/>
  * See
  * http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient

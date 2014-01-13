@@ -1,23 +1,37 @@
 package rapaio.data;
 
+
 import java.util.Arrays;
 import java.util.Collection;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class IndexVector extends AbstractVector {
+public class NumVector extends AbstractVector {
 
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
     private static final int DEFAULT_CAPACITY = 10;
-    private static final int[] EMPTY_DATA = {};
+    private static final double[] EMPTY_DATA = {};
 
-    private static final int MISSING_VALUE = Integer.MIN_VALUE;
-    private transient int[] data;
+    private static final double missingValue = Double.NaN;
+    private transient double[] data;
     private int rows;
     protected transient int modCount = 0;
 
-    public IndexVector(int rows, int capacity, int fill, boolean debug) {
+    public NumVector() {
+        super();
+        this.data = EMPTY_DATA;
+    }
+
+    public NumVector(int rows) {
+        this(rows, rows, Double.NaN);
+    }
+
+    public NumVector(int rows, int capacity) {
+        this(rows, capacity, Double.NaN);
+    }
+
+    public NumVector(int rows, int capacity, double fill) {
         super();
         if (capacity < 0) {
             throw new IllegalArgumentException("Illegal capacity: " + capacity);
@@ -29,14 +43,22 @@ public class IndexVector extends AbstractVector {
             throw new IllegalArgumentException(
                     "Illegal row count" + rows + " less than capacity:" + capacity);
         }
-        this.data = new int[capacity];
+        this.data = new double[capacity];
         this.rows = rows;
         if (fill != 0)
             Arrays.fill(data, 0, rows, fill);
     }
 
-    public IndexVector(int[] values) {
+    public NumVector(double[] values) {
         data = Arrays.copyOf(values, values.length);
+        this.rows = values.length;
+    }
+
+    public NumVector(int[] values) {
+        data = new double[values.length];
+        for (int i = 0; i < values.length; i++) {
+            data[i] = values[i];
+        }
         this.rows = values.length;
     }
 
@@ -118,9 +140,9 @@ public class IndexVector extends AbstractVector {
      * Appends the specified element to the end of this list.
      *
      * @param x element to be appended to this list
-     * @return <tt>true</tt> (as specified by {@link java.util.Collection#add})
+     * @return <tt>true</tt> (as specified by {@link Collection#add})
      */
-    public boolean add(int x) {
+    public boolean add(double x) {
         ensureCapacityInternal(rows + 1);  // Increments modCount!!
         data[rows++] = x;
         return true;
@@ -135,7 +157,7 @@ public class IndexVector extends AbstractVector {
      * @param element element to be inserted
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
-    public void add(int index, int element) {
+    public void add(int index, double element) {
         rangeCheck(index);
 
         ensureCapacityInternal(rows + 1);  // Increments modCount!!
@@ -310,23 +332,25 @@ public class IndexVector extends AbstractVector {
     }
 
     @Override
-    public int getIndex(int row) {
+    public double getValue(int row) {
+        rangeCheck(row);
         return data[row];
     }
 
     @Override
-    public void setIndex(int row, int value) {
+    public void setValue(int row, double value) {
+        rangeCheck(row);
         data[row] = value;
     }
 
     @Override
-    public double getValue(int row) {
-        return getIndex(row);
+    public int getIndex(int row) {
+        return (int) Math.rint(getValue(row));
     }
 
     @Override
-    public void setValue(int row, double value) {
-        setIndex(row, (int) Math.rint(value));
+    public void setIndex(int row, int value) {
+        setValue(row, value);
     }
 
     @Override
@@ -336,7 +360,7 @@ public class IndexVector extends AbstractVector {
 
     @Override
     public void setLabel(int row, String value) {
-        throw new RuntimeException("Operation not available for index vectors.");
+        throw new RuntimeException("Operation not available for numeric vectors.");
     }
 
     @Override
@@ -346,11 +370,11 @@ public class IndexVector extends AbstractVector {
 
     @Override
     public boolean isMissing(int row) {
-        return getIndex(row) == MISSING_VALUE;
+        return getValue(row) != getValue(row);
     }
 
     @Override
     public void setMissing(int row) {
-        setIndex(row, MISSING_VALUE);
+        setValue(row, missingValue);
     }
 }

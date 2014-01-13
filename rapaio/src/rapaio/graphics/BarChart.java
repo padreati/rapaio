@@ -20,7 +20,7 @@
 
 package rapaio.graphics;
 
-import rapaio.data.NominalVector;
+import rapaio.data.NomVector;
 import rapaio.data.Vector;
 import rapaio.data.Vectors;
 import rapaio.graphics.base.AbstractFigure;
@@ -58,13 +58,13 @@ public class BarChart extends AbstractFigure {
             throw new IllegalArgumentException("categories are nominal only");
         }
         if (condition == null) {
-            condition = new NominalVector(category.getRowCount(), new HashSet<String>());
+            condition = new NomVector(category.getRowCount(), new HashSet<String>());
         }
         if (!condition.isNominal()) {
             throw new IllegalArgumentException("conditions are nominal only");
         }
         if (numeric == null) {
-            numeric = Vectors.newIndex(category.getRowCount(), 1);
+            numeric = Vectors.newIdx(category.getRowCount(), 1);
         }
         if (!numeric.isNumeric()) {
             throw new IllegalArgumentException("Numeric vector must be .. isNumeric");
@@ -80,7 +80,7 @@ public class BarChart extends AbstractFigure {
         setBottomMarkers(true);
 
         int shift = 9;
-        setColorIndex(Vectors.newSequence(shift, condition.getDictionary().length + shift - 1, 1));
+        setColorIndex(Vectors.newSeq(shift, condition.getDictionary().length + shift - 1, 1));
     }
 
     private SortType sort = SortType.NONE;

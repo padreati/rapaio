@@ -73,8 +73,8 @@ public class PrimesConjectures extends AbstractCmd {
 
     private void runAndricaConjecture(Vector primes) {
         final int SIZE = primes.getRowCount() - 1;
-        Vector delta = new NumericVector(SIZE);
-        Vector index = Vectors.newIndex(SIZE);
+        Vector delta = new NumVector(SIZE);
+        Vector index = Vectors.newIdx(SIZE);
         for (int i = 0; i < SIZE; i++) {
             delta.setValue(i, sqrt(primes.getValue(i + 1)) - sqrt(primes.getValue(i)));
             index.setIndex(i, i + 1);

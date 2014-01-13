@@ -23,7 +23,7 @@ import rapaio.core.Summarizable;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
-import rapaio.data.NominalVector;
+import rapaio.data.NomVector;
 import rapaio.data.Vector;
 
 import java.util.Arrays;
@@ -379,7 +379,7 @@ public class Summary {
             labels.add(a.getLabel(i));
         }
         labels.add("Totals");
-        vectors[0] = new NominalVector(a.getRowCount() + 1, labels);
+        vectors[0] = new NomVector(a.getRowCount() + 1, labels);
         for (int i = 0; i < a.getDictionary().length; i++) {
             vectors[0].setLabel(i, a.getDictionary()[i]);
         }

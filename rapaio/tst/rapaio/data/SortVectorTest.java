@@ -38,17 +38,17 @@ public class SortVectorTest {
 
     @Test
     public void smokeTest() {
-        Vector v = Vectors.newIndex(0);
+        Vector v = Vectors.newIdx(0);
         Vector sorted = sort(v, indexComparator(v, true));
         assertTrue(sorted.isNumeric());
         assertFalse(sorted.isNominal());
 
-        v = new NumericVector(0);
+        v = new NumVector(0);
         sorted = sort(v, numericComparator(v, true));
         assertTrue(sorted.isNumeric());
         assertFalse(sorted.isNominal());
 
-        v = new NominalVector(0, new String[]{});
+        v = new NomVector(0, new String[]{});
         sorted = sort(v, nominalComparator(v, true));
         assertFalse(sorted.isNumeric());
         assertTrue(sorted.isNominal());
@@ -56,7 +56,7 @@ public class SortVectorTest {
 
     @Test
     public void testSortIndex() {
-        Vector index = Vectors.newSequence(10, 1, -1);
+        Vector index = Vectors.newSeq(10, 1, -1);
         index.setMissing(2);
         index.setMissing(5);
         index.setIndex(0, 1);
@@ -80,7 +80,7 @@ public class SortVectorTest {
 
     @Test
     public void testSortNumeric() {
-        Vector numeric = new NumericVector(new double[]{2., 4., 1.2, 1.3, 1.2, 0., 100.});
+        Vector numeric = new NumVector(new double[]{2., 4., 1.2, 1.3, 1.2, 0., 100.});
 
         assertEquals(7, numeric.getRowCount());
         Vector sort = sort(numeric, numericComparator(numeric, true));
@@ -102,7 +102,7 @@ public class SortVectorTest {
     @Test
     public void testSortNominal() {
         String[] dict = new String[]{"a", "Aa", "b", "c", "Cc"};
-        Vector nominal = new NominalVector(10, dict);
+        Vector nominal = new NomVector(10, dict);
 
         for (int i = 0; i < 10; i++) {
             nominal.setLabel(i, dict[i % dict.length]);
@@ -197,7 +197,7 @@ public class SortVectorTest {
 
     @Test
     public void testMissing() {
-        Vector v = Vectors.newSequence(1, 10, 1);
+        Vector v = Vectors.newSeq(1, 10, 1);
         v = sort(v, indexComparator(v, true));
         for (int i = 0; i < 10; i += 3) {
             v.setMissing(i);

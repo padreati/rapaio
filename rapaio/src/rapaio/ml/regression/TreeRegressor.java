@@ -53,7 +53,7 @@ public class TreeRegressor extends AbstractRegressor {
 
     @Override
     public void predict(Frame df) {
-        fitted = new NumericVector(new double[df.getRowCount()]);
+        fitted = new NumVector(new double[df.getRowCount()]);
         for (int i = 0; i < df.getRowCount(); i++) {
             fitted.setValue(i, root.predict(df, i));
         }
@@ -130,24 +130,28 @@ class TreeNode {
         Vector testCol = df.getCol(testColName);
         double[] var = new double[df.getRowCount()];
         StatOnline so = new StatOnline();
-        Vector sort = Vectors.newSequence(df.getRowCount());
+        Vector sort = Vectors.newSeq(df.getRowCount());
         sort = RowFilters.sort(sort, RowComparators.numericComparator(testCol, true));
+        double w = 0;
         for (int i = 0; i < df.getRowCount(); i++) {
             int pos = sort.getRowId(i);
             so.update(testCol.getValue(pos));
+            w += weights.get(pos);
             if (i > 0) {
-                var[i] = so.getVariance();
+                var[i] = so.getStandardDeviation() * w / totalWeight;
             }
         }
         so.clean();
+        w = 0;
         for (int i = df.getRowCount() - 1; i >= 0; i--) {
             int pos = sort.getRowId(i);
             so.update(testCol.getValue(pos));
+            w += weights.get(pos);
             if (i < df.getRowCount() - 1) {
-                var[i] += so.getVariance();
+                var[i] += so.getStandardDeviation() * w / totalWeight;
             }
         }
-        int w = 0;
+        w = 0;
         for (int i = 0; i < df.getRowCount(); i++) {
             int pos = sort.getRowId(i);
             w += weights.get(pos);

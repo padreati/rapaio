@@ -21,7 +21,7 @@ package rapaio.distributions;
 
 import rapaio.core.RandomSource;
 import rapaio.core.UnivariateFunction;
-import rapaio.data.NumericVector;
+import rapaio.data.NumVector;
 
 /**
  * @author Aurelian Tutuianu
@@ -83,8 +83,8 @@ public abstract class Distribution {
 
     abstract public double max();
 
-    public NumericVector sample(int n) {
-        NumericVector samples = new NumericVector(n);
+    public NumVector sample(int n) {
+        NumVector samples = new NumVector(n);
         for (int i = 0; i < samples.getRowCount(); i++) {
             samples.setValue(i, quantile(RandomSource.nextDouble()));
         }

@@ -20,7 +20,7 @@
 package rapaio.graphics.plot;
 
 import rapaio.core.BaseMath;
-import rapaio.data.NumericVector;
+import rapaio.data.NumVector;
 import rapaio.data.Vector;
 import rapaio.distributions.empirical.KernelDensityEstimator;
 import rapaio.distributions.empirical.KernelFunction;
@@ -95,8 +95,8 @@ public class DensityLine extends PlotComponent {
     public void paint(Graphics2D g2d) {
         buildRange();
         Range range = getParent().getRange();
-        Vector x = new NumericVector(points + 1);
-        Vector y = new NumericVector(points + 1);
+        Vector x = new NumVector(points + 1);
+        Vector y = new NumVector(points + 1);
         double xstep = (range.getX2() - range.getX1()) / points;
         for (int i = 0; i < x.getRowCount(); i++) {
             x.setValue(i, range.getX1() + i * xstep);

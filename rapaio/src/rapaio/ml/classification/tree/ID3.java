@@ -24,7 +24,7 @@ import rapaio.core.stat.Mode;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
-import rapaio.data.NominalVector;
+import rapaio.data.NomVector;
 import rapaio.ml.classification.AbstractClassifier;
 import rapaio.workspace.Workspace;
 
@@ -38,7 +38,7 @@ public class ID3 extends AbstractClassifier<ID3> {
     private ID3Node root;
     private MetricType metricType = new EntropyMetricType();
     private String[] dict;
-    private NominalVector prediction;
+    private NomVector prediction;
 
     /**
      * Metric type used as criterion for splitting nodes.
@@ -155,7 +155,7 @@ public class ID3 extends AbstractClassifier<ID3> {
 
     @Override
     public void predict(final Frame df) {
-        prediction = new NominalVector(df.getRowCount(), dict);
+        prediction = new NomVector(df.getRowCount(), dict);
         for (int i = 0; i < df.getRowCount(); i++) {
             String label = predict(df, i, root);
             prediction.setLabel(i, label);
@@ -163,7 +163,7 @@ public class ID3 extends AbstractClassifier<ID3> {
     }
 
     @Override
-    public NominalVector getPrediction() {
+    public NomVector getPrediction() {
         return prediction;
     }
 

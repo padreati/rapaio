@@ -40,15 +40,15 @@ public class UniformRandomSelectorTest {
         Frame df = new SolidFrame(
                 0,
                 new Vector[]{
-                        Vectors.newOneIndex(1),
-                        Vectors.newOneIndex(1),
-                        Vectors.newOneIndex(1),
-                        Vectors.newOneIndex(1),
-                        Vectors.newOneIndex(1),
-                        Vectors.newOneIndex(1),
-                        Vectors.newOneIndex(1),
-                        Vectors.newOneIndex(1),
-                        Vectors.newOneIndex(1)},
+                        Vectors.newIdxOne(1),
+                        Vectors.newIdxOne(1),
+                        Vectors.newIdxOne(1),
+                        Vectors.newIdxOne(1),
+                        Vectors.newIdxOne(1),
+                        Vectors.newIdxOne(1),
+                        Vectors.newIdxOne(1),
+                        Vectors.newIdxOne(1),
+                        Vectors.newIdxOne(1)},
                 new String[]{
                         "a", "b", "c", "d", "e", "f", "g", "h", "class"
                 });

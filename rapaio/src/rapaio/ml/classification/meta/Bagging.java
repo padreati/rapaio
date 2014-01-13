@@ -21,7 +21,7 @@ package rapaio.ml.classification.meta;
 
 import rapaio.data.Frame;
 import rapaio.data.Frames;
-import rapaio.data.NominalVector;
+import rapaio.data.NomVector;
 import rapaio.ml.classification.AbstractClassifier;
 import rapaio.ml.classification.Classifier;
 import rapaio.sample.StatSampling;
@@ -41,7 +41,7 @@ public class Bagging extends AbstractClassifier<Bagging> {
     private List<Classifier> classifiers = new ArrayList<>();
     private String[] dict;
     private String classColName;
-    private NominalVector pred;
+    private NomVector pred;
     private Frame dist;
 
     public Bagging(double p, int bags, Classifier provider) {
@@ -72,7 +72,7 @@ public class Bagging extends AbstractClassifier<Bagging> {
     public void predict(final Frame df) {
         // voting
 
-        pred = new NominalVector(df.getRowCount(), dict);
+        pred = new NomVector(df.getRowCount(), dict);
         dist = Frames.newMatrixFrame(df.getRowCount(), dict);
 
         // collect results from each classifier
@@ -103,7 +103,7 @@ public class Bagging extends AbstractClassifier<Bagging> {
     }
 
     @Override
-    public NominalVector getPrediction() {
+    public NomVector getPrediction() {
         return pred;
     }
 

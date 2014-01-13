@@ -20,7 +20,7 @@
 package rapaio.tutorial.pages;
 
 import rapaio.data.Frame;
-import rapaio.data.NumericVector;
+import rapaio.data.NumVector;
 import rapaio.data.Vector;
 import rapaio.data.Vectors;
 import rapaio.datasets.Datasets;
@@ -155,9 +155,9 @@ public class ClassificationWithRF implements TutorialPage {
                 + "You can check how well you predict as the number of trees grows. ");
 
         int pos = 0;
-        final Vector index = Vectors.newIndex(400);
-        final Vector accuracy = new NumericVector(400);
-        final Vector oob = new NumericVector(400);
+        final Vector index = Vectors.newIdx(400);
+        final Vector accuracy = new NumVector(400);
+        final Vector oob = new NumVector(400);
         for (int mtree = 1; mtree < 200; mtree += 10) {
             final int mt = mtree;
             RandomForestClassifier rf = new RandomForestClassifier() {
@@ -228,9 +228,9 @@ public class ClassificationWithRF implements TutorialPage {
                 + "prediction and the compensation is better accuracy.");
 
         pos = 0;
-        final Vector index1 = Vectors.newIndex(10);
-        final Vector accuracy1 = new NumericVector(10);
-        final Vector oob1 = new NumericVector(10);
+        final Vector index1 = Vectors.newIdx(10);
+        final Vector accuracy1 = new NumVector(10);
+        final Vector oob1 = new NumVector(10);
         for (int mcol = 1; mcol <= 10; mcol++) {
 
             final int mmcol = mcol;

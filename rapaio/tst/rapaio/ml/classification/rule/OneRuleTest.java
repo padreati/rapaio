@@ -35,7 +35,7 @@ public class OneRuleTest {
     private final Vector heightVector;
 
     public OneRuleTest() {
-        classVector = new NominalVector(SIZE, new String[]{"False", "True"});
+        classVector = new NomVector(SIZE, new String[]{"False", "True"});
         classVector.setLabel(0, "True");
         classVector.setLabel(1, "True");
         classVector.setLabel(2, "True");
@@ -43,7 +43,7 @@ public class OneRuleTest {
         classVector.setLabel(4, "False");
         classVector.setLabel(5, "False");
 
-        heightVector = new NumericVector(new double[]{0.1, 0.3, 0.5, 10, 10.3, 10.5});
+        heightVector = new NumVector(new double[]{0.1, 0.3, 0.5, 10, 10.3, 10.5});
     }
 
     @Test

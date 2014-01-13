@@ -20,7 +20,7 @@
 package rapaio.filters;
 
 import rapaio.core.UnivariateFunction;
-import rapaio.data.NumericVector;
+import rapaio.data.NumVector;
 import rapaio.data.Vector;
 import rapaio.distributions.Normal;
 
@@ -38,14 +38,14 @@ public final class NumericFilters {
      * Compute the result of a numerical univariate function using numerical
      * values from a {@link Vector} as input parameter.
      *
-     * @param vector input value vector
-     * @param f univariate function
-     * @return function {
-     * @param f} applied over the values from {
+     * @param vector  input value vector
+     * @param f       univariate function
+     * @param f}      applied over the values from {
      * @param vector}
+     * @return function {
      */
     public static Vector applyFunction(Vector vector, UnivariateFunction f) {
-        Vector ret = new NumericVector(vector.getRowCount());
+        Vector ret = new NumVector(vector.getRowCount());
         for (int i = 0; i < vector.getRowCount(); i++) {
             if (vector.isMissing(i)) {
                 continue;
@@ -75,14 +75,13 @@ public final class NumericFilters {
      * specified by {
      *
      * @param sd}
-     *
      * @param vector input values
-     * @param sd standard deviation of the normally distributed noise
+     * @param sd     standard deviation of the normally distributed noise
      * @return altered values
      */
     public static Vector jitter(Vector vector, double sd) {
         Normal d = new Normal(0, sd);
-        Vector result = new NumericVector(vector.getRowCount());
+        Vector result = new NumVector(vector.getRowCount());
         Vector jitter = d.sample(result.getRowCount());
         for (int i = 0; i < result.getRowCount(); i++) {
             if (vector.isMissing(i)) {

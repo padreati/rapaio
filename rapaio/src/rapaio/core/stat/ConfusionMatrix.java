@@ -85,7 +85,7 @@ public class ConfusionMatrix implements Summarizable {
         if (completeCases == 0) {
             acc = 0;
         } else {
-            acc = acc/completeCases;
+            acc = acc / completeCases;
         }
     }
 
@@ -105,7 +105,7 @@ public class ConfusionMatrix implements Summarizable {
     }
 
     private void addConfusionMatrix(StringBuilder sb) {
-        sb.append("Confusion matrix\n");
+        sb.append("Confusion rapaio.data.matrix\n");
 
         sb.append("\n");
         int maxwidth = "Actual".length();

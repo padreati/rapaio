@@ -116,7 +116,7 @@ public class ROCCurvesPage implements TutorialPage {
         oneRule.predict(test);
         p("One of the most used ways to check the performance of a classifier is the accuracy. "
                 + "Accuracy is the percentage of cases with correct prediction from total number of cases. "
-                + "With rapaio library one way to see the accuracy is to summarize the confusion matrix.");
+                + "With rapaio library one way to see the accuracy is to summarize the confusion rapaio.data.matrix.");
         code("        ROC rocOR = new ROC(oneRule.getPrediction(), test.getCol(\"spam\"), \"1\");\n");
         new ConfusionMatrix(test.getCol("spam"), oneRule.getPrediction()).summary();
 

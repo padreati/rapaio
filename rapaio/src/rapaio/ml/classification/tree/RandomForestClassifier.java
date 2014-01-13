@@ -56,7 +56,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
     double[] giniImportanceCount;
     double oobError = 0;
     int[][] oobFreq;
-    NominalVector predict;
+    NomVector predict;
     Frame dist;
     long learnTime = 0;
     int minNodeSize = 1;
@@ -232,7 +232,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
     @Override
     public void predict(final Frame df) {
 
-        predict = new NominalVector(df.getRowCount(), dict);
+        predict = new NomVector(df.getRowCount(), dict);
         dist = Frames.newMatrixFrame(df.getRowCount(), dict);
 
         for (int m = 0; m < mtrees; m++) {
@@ -267,7 +267,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
     }
 
     @Override
-    public NominalVector getPrediction() {
+    public NomVector getPrediction() {
         return predict;
     }
 
@@ -297,8 +297,8 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
     private void summaryVariableImportance(StringBuilder sb) {
         sb.append("\nGini variable importance: \n");
         Vector[] vectors = new Vector[2];
-        vectors[0] = new NominalVector(giniImportanceNames.length - 1, giniImportanceNames);
-        vectors[1] = new NumericVector(new double[giniImportanceNames.length - 1]);
+        vectors[0] = new NomVector(giniImportanceNames.length - 1, giniImportanceNames);
+        vectors[1] = new NumVector(new double[giniImportanceNames.length - 1]);
         Frame f = new SolidFrame(giniImportanceNames.length - 1, vectors, new String[]{"varName", "meanDecrease"});
         int width = 0;
         int pos = 0;

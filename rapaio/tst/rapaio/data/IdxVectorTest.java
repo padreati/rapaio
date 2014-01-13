@@ -26,11 +26,11 @@ import static junit.framework.Assert.*;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class IndexVectorTest {
+public class IdxVectorTest {
 
     @Test
     public void smokeTest() {
-        Vector index = Vectors.newIndex(1);
+        Vector index = Vectors.newIdx(1);
         assertTrue(index.isNumeric());
         assertFalse(index.isNominal());
 
@@ -42,10 +42,10 @@ public class IndexVectorTest {
 
     @Test
     public void testEmptyIndex() {
-        Vector index = Vectors.newIndex(0);
+        Vector index = Vectors.newIdx(0);
         assertEquals(0, index.getRowCount());
 
-        index = Vectors.newIndex(10);
+        index = Vectors.newIdx(10);
         for (int i = 0; i < 10; i++) {
             assertEquals(0, index.getIndex(i));
         }
@@ -53,7 +53,7 @@ public class IndexVectorTest {
 
     @Test
     public void testFillVector() {
-        Vector index = Vectors.newIndex(10, -1);
+        Vector index = Vectors.newIdx(10, -1);
         assertEquals(10, index.getRowCount());
         for (int i = 0; i < index.getRowCount(); i++) {
             assertEquals(-1, index.getIndex(i));
@@ -62,7 +62,7 @@ public class IndexVectorTest {
 
     @Test
     public void testSequenceVector() {
-        Vector index = Vectors.newSequence(1, 10, 1);
+        Vector index = Vectors.newSeq(1, 10, 1);
         assertEquals(10, index.getRowCount());
         for (int i = 0; i < index.getRowCount(); i++) {
             assertEquals(i + 1, index.getIndex(i));
@@ -70,7 +70,7 @@ public class IndexVectorTest {
 
         boolean exceptional = false;
         try {
-            index = Vectors.newSequence(1, 1, 0);
+            index = Vectors.newSeq(1, 1, 0);
         } catch (Throwable ex) {
             exceptional = true;
         }
@@ -78,7 +78,7 @@ public class IndexVectorTest {
 
         exceptional = false;
         try {
-            Vectors.newSequence(1, 2, 0);
+            Vectors.newSeq(1, 2, 0);
         } catch (Throwable ex) {
             exceptional = true;
         }
@@ -89,7 +89,7 @@ public class IndexVectorTest {
     @Test
     public void testSetterGetter() {
 
-        Vector index = Vectors.newIndex(3, 0);
+        Vector index = Vectors.newIdx(3, 0);
 
         assertEquals(0, index.getIndex(0));
         index.setIndex(0, 1);
@@ -126,7 +126,7 @@ public class IndexVectorTest {
 
     @Test
     public void testMissing() {
-        Vector index = Vectors.newSequence(1, 10, 1);
+        Vector index = Vectors.newSeq(1, 10, 1);
         for (int i = 0; i < index.getRowCount(); i++) {
             assertTrue(!index.isMissing(i));
         }
@@ -141,11 +141,11 @@ public class IndexVectorTest {
 
     @Test
     public void testOneIndex() {
-        Vector one = Vectors.newOneIndex(2);
+        Vector one = Vectors.newIdxOne(2);
         assertEquals(1, one.getRowCount());
         assertEquals(2, one.getIndex(0));
 
-        one = Vectors.newOneIndex(3);
+        one = Vectors.newIdxOne(3);
         assertEquals(1, one.getRowCount());
         assertEquals(3, one.getIndex(0));
     }

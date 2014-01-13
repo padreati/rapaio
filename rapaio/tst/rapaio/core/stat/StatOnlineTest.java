@@ -1,7 +1,7 @@
 package rapaio.core.stat;
 
 import org.junit.Test;
-import rapaio.data.NumericVector;
+import rapaio.data.NumVector;
 import rapaio.data.Vector;
 import rapaio.data.Vectors;
 import rapaio.distributions.Normal;
@@ -28,10 +28,10 @@ public class StatOnlineTest {
 
         StatOnline statOnline = new StatOnline();
 
-        Vector index = Vectors.newSequence(LEN);
-        Vector varLeft = new NumericVector(new double[LEN]);
-        Vector varRight = new NumericVector(new double[LEN]);
-        Vector varSum = new NumericVector(new double[LEN]);
+        Vector index = Vectors.newSeq(LEN);
+        Vector varLeft = new NumVector(new double[LEN]);
+        Vector varRight = new NumVector(new double[LEN]);
+        Vector varSum = new NumVector(new double[LEN]);
 
         for (int i = 0; i < LEN; i++) {
             statOnline.update(v.getValue(i));

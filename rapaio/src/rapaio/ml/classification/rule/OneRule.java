@@ -40,7 +40,7 @@ public class OneRule extends AbstractClassifier<OneRule> {
     private double minCount = 6;
     private String[] classLabels;
     private OneRuleSet bestRuleSet;
-    private NominalVector predict;
+    private NomVector predict;
 
     @Override
     public OneRule newInstance() {
@@ -83,14 +83,14 @@ public class OneRule extends AbstractClassifier<OneRule> {
 
     @Override
     public void predict(Frame test) {
-        predict = new NominalVector(test.getRowCount(), classLabels);
+        predict = new NomVector(test.getRowCount(), classLabels);
         for (int i = 0; i < test.getRowCount(); i++) {
             predict.setLabel(i, predict(test, i));
         }
     }
 
     @Override
-    public NominalVector getPrediction() {
+    public NomVector getPrediction() {
         return predict;
     }
 
@@ -200,7 +200,7 @@ public class OneRule extends AbstractClassifier<OneRule> {
 
     private OneRuleSet buildNumeric(String sourceName, String className, Frame df, List<Double> weights) {
         NumericOneRuleSet set = new NumericOneRuleSet(sourceName);
-        Vector sort = RowFilters.sort(Vectors.newSequence(weights.size()),
+        Vector sort = RowFilters.sort(Vectors.newSeq(weights.size()),
                 RowComparators.numericComparator(df.getCol(sourceName), true),
                 RowComparators.nominalComparator(df.getCol(className), true));
         int pos = 0;

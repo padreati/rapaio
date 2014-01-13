@@ -22,7 +22,7 @@ package rapaio.graphics;
 import rapaio.core.ColRange;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
-import rapaio.data.NumericVector;
+import rapaio.data.NumVector;
 import rapaio.data.Vector;
 import rapaio.data.Vectors;
 import rapaio.graphics.base.AbstractFigure;
@@ -63,7 +63,7 @@ public class BoxPlot extends AbstractFigure {
             count[nominal.getIndex(i)]++;
         }
         for (int i = 0; i < count.length; i++) {
-            vectors[i] = new NumericVector(count[i]);
+            vectors[i] = new NumVector(count[i]);
         }
         int[] pos = new int[vectors.length];
         for (int i = 0; i < nominal.getRowCount(); i++) {
@@ -115,7 +115,7 @@ public class BoxPlot extends AbstractFigure {
         setLeftThicker(true);
         setBottomMarkers(true);
         setBottomThicker(true);
-        setColorIndex(Vectors.newOneIndex(0));
+        setColorIndex(Vectors.newIdxOne(0));
     }
 
     @Override

@@ -1,11 +1,11 @@
-package rapaio.datax;
+package rapaio.performance;
 
 import org.junit.Test;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.data.NumericVector;
+import rapaio.data.NumVector;
 import rapaio.graphics.Plot;
-import rapaio.graphics.plot.Histogram;
+import rapaio.graphics.plot.Lines;
 import rapaio.printer.LocalPrinter;
 
 import static rapaio.workspace.Workspace.draw;
@@ -21,13 +21,13 @@ public class PerformanceTests {
 
         setPrinter(new LocalPrinter());
 
-        final int TESTS = 1_000;
+        final int TESTS = 500;
         final int LEN = 100_000;
 
-        NumericVector index = new NumericVector();
-        NumericVector time1 = new NumericVector();
-        NumericVector time2 = new NumericVector();
-        NumericVector delta = new NumericVector();
+        NumVector index = new NumVector();
+        NumVector time1 = new NumVector();
+        NumVector time2 = new NumVector();
+        NumVector delta = new NumVector();
 
         for (int i = 0; i < TESTS; i++) {
 
@@ -39,9 +39,9 @@ public class PerformanceTests {
             time1.add(System.currentTimeMillis() - start);
 
             start = System.currentTimeMillis();
-            NumericVector list = new NumericVector();
+            NumVector numVector = new NumVector(LEN);
             for (int j = 0; j < LEN; j++) {
-                list.add(j * Math.sin(j));
+                numVector.add(j * Math.sin(j));
             }
             time2.add(System.currentTimeMillis() - start);
             index.add(i);
@@ -55,8 +55,15 @@ public class PerformanceTests {
 //        );
 
         draw(new Plot()
-                .add(new Histogram(delta).setBins(30))
+                .add(new Lines(index, time1).setColorIndex(1))
+                .add(new Lines(index, time2).setColorIndex(2))
+                .setBottomLabel("array")
+                .setLeftLabel("NumVector")
         );
+
+//        draw(new Plot()
+//                .add(new Histogram(delta).setBins(30))
+//        );
 
         new Mean(delta).summary();
         new Variance(delta).summary();

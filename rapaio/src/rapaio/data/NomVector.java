@@ -41,18 +41,18 @@ import java.util.TreeSet;
  *
  * @author Aurelian Tutuianu
  */
-public class NominalVector extends AbstractVector {
+public class NomVector extends AbstractVector {
 
     private static final String missingValue = "?";
     private static final int missingIndex = 0;
     private final String[] terms;
     private final int[] indexes;
 
-    public NominalVector(int size, String[] dict) {
+    public NomVector(int size, String[] dict) {
         this(size, Arrays.asList(dict));
     }
 
-    public NominalVector(int size, Collection<String> dict) {
+    public NomVector(int size, Collection<String> dict) {
         TreeSet<String> copy = new TreeSet<>(dict);
         copy.remove(missingValue);
         terms = new String[copy.size() + 1];

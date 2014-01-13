@@ -21,7 +21,7 @@ package rapaio.correlation;
 
 import rapaio.core.Summarizable;
 import rapaio.data.Frame;
-import rapaio.data.NumericVector;
+import rapaio.data.NumVector;
 import rapaio.data.Vector;
 
 import java.util.Arrays;
@@ -69,7 +69,7 @@ public class SpearmanRhoCorrelation implements Summarizable {
         Vector[] ranks = new Vector[vectors.length];
         for (int i = 0; i < sorted.length; i++) {
             sorted[i] = sort(vectors[i]);
-            ranks[i] = new NumericVector(vectors[i].getRowCount());
+            ranks[i] = new NumVector(vectors[i].getRowCount());
         }
 
         // compute ranks

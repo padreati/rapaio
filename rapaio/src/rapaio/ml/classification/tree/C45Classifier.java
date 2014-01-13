@@ -53,7 +53,7 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
     ;
     String[] dict;
     private C45Node root;
-    private NominalVector prediction;
+    private NomVector prediction;
     private Frame distribution;
 
     public int getSelectionCriterion() {
@@ -103,7 +103,7 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
 
     @Override
     public void predict(Frame df) {
-        prediction = new NominalVector(df.getRowCount(), dict);
+        prediction = new NomVector(df.getRowCount(), dict);
         distribution = Frames.newMatrixFrame(df.getRowCount(), dict);
 
         for (int i = 0; i < df.getRowCount(); i++) {
@@ -129,7 +129,7 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
     }
 
     @Override
-    public NominalVector getPrediction() {
+    public NomVector getPrediction() {
         return prediction;
     }
 
@@ -222,7 +222,7 @@ class C45Node {
             // for numeric columns
             if (df.getCol(testColName).isNumeric()) {
                 DensityTable id = new DensityTable(DensityTable.NUMERIC_DEFAULT_LABELS, parent.dict);
-                Vector sort = Vectors.newSequence(df.getRowCount());
+                Vector sort = Vectors.newSeq(df.getRowCount());
                 sort = RowFilters.sort(sort, RowComparators.numericComparator(df.getCol(testColName), true));
                 // first fill the density table
                 for (int i = 0; i < df.getRowCount(); i++) {

@@ -20,18 +20,18 @@
 package jama;
 
 /**
- * Eigenvalues and eigenvectors of a real matrix.
+ * Eigenvalues and eigenvectors of a real rapaio.data.matrix.
  * <p/>
- * If A is symmetric, then A = V*D*V' where the eigenvalue matrix D is diagonal
- * and the eigenvector matrix V is orthogonal. I.e. A =
+ * If A is symmetric, then A = V*D*V' where the eigenvalue rapaio.data.matrix D is diagonal
+ * and the eigenvector rapaio.data.matrix V is orthogonal. I.e. A =
  * V.times(D.times(V.transpose())) and V.times(V.transpose()) equals the
- * identity matrix.
+ * identity rapaio.data.matrix.
  * <p/>
- * If A is not symmetric, then the eigenvalue matrix D is block diagonal with
+ * If A is not symmetric, then the eigenvalue rapaio.data.matrix D is block diagonal with
  * the real eigenvalues in 1-by-1 blocks and any complex eigenvalues, lambda +
  * i*mu, in 2-by-2 blocks, [lambda, mu; -mu, lambda]. The columns of V represent
  * the eigenvectors in the sense that A*V = V*D, i.e. A.times(V) equals
- * V.times(D). The matrix V may be badly conditioned, or even singular, so the
+ * V.times(D). The rapaio.data.matrix V may be badly conditioned, or even singular, so the
  * validity of the equation A = V*D*inverse(V) depends upon V.cond().
  */
 
@@ -42,9 +42,9 @@ public class EigenvalueDecomposition implements java.io.Serializable {
      * ------------------------ Class variables ------------------------
      */
     /**
-     * Row and column dimension (square matrix).
+     * Row and column dimension (square rapaio.data.matrix).
      *
-     * @serial matrix dimension.
+     * @serial rapaio.data.matrix dimension.
      */
     private int n;
 
@@ -428,7 +428,7 @@ public class EigenvalueDecomposition implements java.io.Serializable {
         double exshift = 0.0;
         double p = 0, q = 0, r = 0, s = 0, z = 0, t, w, x, y;
 
-        // Store roots isolated by balanc and compute matrix norm
+        // Store roots isolated by balanc and compute rapaio.data.matrix norm
         double norm = 0.0;
         for (int i = 0; i < nn; i++) {
             if (i < low | i > high) {
@@ -732,7 +732,7 @@ public class EigenvalueDecomposition implements java.io.Serializable {
             } else if (q < 0) {
                 int l = n - 1;
 
-                // Last vector component imaginary so matrix is triangular
+                // Last vector component imaginary so rapaio.data.matrix is triangular
                 if (Math.abs(H[n][n - 1]) > Math.abs(H[n - 1][n])) {
                     H[n - 1][n - 1] = q / H[n][n - 1];
                     H[n - 1][n] = -(H[n][n] - p) / H[n][n - 1];
@@ -809,7 +809,7 @@ public class EigenvalueDecomposition implements java.io.Serializable {
             }
         }
 
-        // Back transformation to get eigenvectors of original matrix
+        // Back transformation to get eigenvectors of original rapaio.data.matrix
         for (int j = nn - 1; j >= low; j--) {
             for (int i = low; i <= high; i++) {
                 z = 0.0;
@@ -830,7 +830,7 @@ public class EigenvalueDecomposition implements java.io.Serializable {
      * Check for symmetry, then construct the eigenvalue decomposition Structure
      * to access D and V.
      *
-     * @param Arg Square matrix
+     * @param Arg Square rapaio.data.matrix
      */
     public EigenvalueDecomposition(Matrix Arg) {
         double[][] A = Arg.getArray();
@@ -882,7 +882,7 @@ public class EigenvalueDecomposition implements java.io.Serializable {
      */
 
     /**
-     * Return the eigenvector matrix
+     * Return the eigenvector rapaio.data.matrix
      *
      * @return V
      */
@@ -909,7 +909,7 @@ public class EigenvalueDecomposition implements java.io.Serializable {
     }
 
     /**
-     * Return the block diagonal eigenvalue matrix
+     * Return the block diagonal eigenvalue rapaio.data.matrix
      *
      * @return D
      */

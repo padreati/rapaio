@@ -28,11 +28,11 @@ import static rapaio.core.BaseMath.*;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class NumericVectorTest {
+public class NumVectorTest {
 
     @Test
     public void smokeTest() {
-        Vector v = new NumericVector(0);
+        Vector v = new NumVector(0);
         boolean flag = v.isNumeric();
         assertEquals(true, flag);
         assertEquals(false, v.isNominal());
@@ -42,7 +42,7 @@ public class NumericVectorTest {
 
     @Test
     public void testGetterSetter() {
-        Vector v = new NumericVector(10);
+        Vector v = new NumVector(10);
         for (int i = 0; i < 10; i++) {
             v.setValue(i, log(10 + i));
         }
@@ -77,12 +77,12 @@ public class NumericVectorTest {
 
     @Test
     public void testOneNumeric() {
-        Vector one = Vectors.newOneNumeric(PI);
+        Vector one = Vectors.newNumOne(PI);
 
         assertEquals(1, one.getRowCount());
         assertEquals(PI, one.getValue(0), 1e-10);
 
-        one = Vectors.newOneNumeric(E);
+        one = Vectors.newNumOne(E);
         assertEquals(1, one.getRowCount());
         assertEquals(E, one.getValue(0), 1e-10);
     }

@@ -19,7 +19,7 @@
  */
 package rapaio.graphics;
 
-import rapaio.data.NumericVector;
+import rapaio.data.NumVector;
 import rapaio.data.Vector;
 import rapaio.distributions.Distribution;
 import rapaio.graphics.plot.Points;
@@ -38,7 +38,7 @@ public class QQPlot extends Plot {
 
     public QQPlot add(Vector points, Distribution distribution) {
         Vector x = sort(points);
-        Vector y = new NumericVector(x.getRowCount());
+        Vector y = new NumVector(x.getRowCount());
         for (int i = 0; i < y.getRowCount(); i++) {
             double p = (i + 1) / (y.getRowCount() + 1.);
             y.setValue(i, distribution.quantile(p));

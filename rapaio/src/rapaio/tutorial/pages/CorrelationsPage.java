@@ -110,8 +110,8 @@ public class CorrelationsPage implements TutorialPage {
         heading(2, "Usa Rapaio for Pearson correlation");
 
         p("Rapaio library allows one to compute Pearson \\(r\\) for more then one vector at a time. "
-                + "Thus the result will be a matrix with computed \\(r\\) values between vectors,"
-                + "using vectors index position as indexes in resulted matrix. ");
+                + "Thus the result will be a rapaio.data.matrix with computed \\(r\\) values between vectors,"
+                + "using vectors index position as indexes in resulted rapaio.data.matrix. ");
 
         code("        PearsonRCorrelation corr = new PearsonRCorrelation(df);\n"
                 + "        summary(corr);\n");
@@ -126,8 +126,8 @@ public class CorrelationsPage implements TutorialPage {
 
         draw(new Plot()
                 .add(new Points(
-                                jitter(df.getCol("petal-length"), 0.01),
-                                jitter(df.getCol("sepal-length"), 0.01)).setPchIndex(1))
+                        jitter(df.getCol("petal-length"), 0.01),
+                        jitter(df.getCol("sepal-length"), 0.01)).setPchIndex(1))
                 .setTitle("p correlation = " + r.getValues()[df.getColIndex("petal-length")][df.getColIndex("sepal-length")]),
                 400, 300);
 
@@ -147,7 +147,7 @@ public class CorrelationsPage implements TutorialPage {
         draw(new Plot()
                 .add(new Points(jitter(df.getCol("sepal-length"), 0.01), jitter(df.getCol("sepal-width"), 0.01))
                         .setPchIndex(1))
-                .setTitle("p correlation = " + r.getValues()[df.getColIndex("sepal-length")][df.getColIndex("sepal-width")]), 
+                .setTitle("p correlation = " + r.getValues()[df.getColIndex("sepal-length")][df.getColIndex("sepal-width")]),
                 400, 300);
 
         heading(2, "Spearman's rank correlation coefficient");
@@ -174,8 +174,8 @@ public class CorrelationsPage implements TutorialPage {
         heading(2, "Use Rapaio to compute Spearman's rank correlation");
 
         p("Rapaio library allows one to compute Spearman \\(\\rho\\) for more then one vector at a time. "
-                + "Thus the result will be a matrix with computed \\(\\rho\\) values between vectors,"
-                + "using vectors index position as indexes in resulted matrix. ");
+                + "Thus the result will be a rapaio.data.matrix with computed \\(\\rho\\) values between vectors,"
+                + "using vectors index position as indexes in resulted rapaio.data.matrix. ");
 
         SpearmanRhoCorrelation rho = new SpearmanRhoCorrelation(df);
         summary(rho);

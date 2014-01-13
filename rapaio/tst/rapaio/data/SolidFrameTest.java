@@ -38,7 +38,7 @@ public class SolidFrameTest {
 
     @Test
     public void testRowId() {
-        Frame df = new SolidFrame(10, new Vector[]{new NumericVector(10)}, new String[]{"x"});
+        Frame df = new SolidFrame(10, new Vector[]{new NumVector(10)}, new String[]{"x"});
         for (int i = 0; i < df.getRowCount(); i++) {
             assertEquals(i, df.getRowId(i));
         }
@@ -47,9 +47,9 @@ public class SolidFrameTest {
     @Test
     public void testColIndexes() {
         Vector[] vectors = new Vector[]{
-                new NumericVector(0),
-                new NumericVector(0),
-                new NumericVector(0)
+                new NumVector(0),
+                new NumVector(0),
+                new NumVector(0)
         };
         Frame df = new SolidFrame(0, vectors, new String[]{"x", "y", "z"});
 
@@ -91,10 +91,10 @@ public class SolidFrameTest {
     @Test
     public void testConvenientMethods() {
         Vector[] vectors = new Vector[]{
-                new NumericVector(new double[]{1., 2., 3., 4.}),
-                new NumericVector(new double[]{3., 5., 9., 12.}),
-                new NominalVector(4, new String[]{"ana", "are", "mere"}),
-                Vectors.newSequence(1, 4, 1)
+                new NumVector(new double[]{1., 2., 3., 4.}),
+                new NumVector(new double[]{3., 5., 9., 12.}),
+                new NomVector(4, new String[]{"ana", "are", "mere"}),
+                Vectors.newSeq(1, 4, 1)
         };
         Frame df = new SolidFrame(4, vectors, new String[]{"x", "y", "name", "index"});
 

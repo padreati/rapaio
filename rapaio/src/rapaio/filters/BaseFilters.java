@@ -59,7 +59,7 @@ public final class BaseFilters {
         if (v.isNumeric()) {
             return v;
         }
-        Vector result = new NumericVector(v.getRowCount());
+        Vector result = new NumVector(v.getRowCount());
         for (int i = 0; i < result.getRowCount(); i++) {
             if (v.isMissing(i)) {
                 continue;
@@ -75,7 +75,7 @@ public final class BaseFilters {
     }
 
     public static Vector toIndex(Vector v) {
-        Vector result = Vectors.newIndex(v.getRowCount());
+        Vector result = Vectors.newIdx(v.getRowCount());
         for (int i = 0; i < v.getRowCount(); i++) {
             if (v.isMissing(i)) {
                 continue;

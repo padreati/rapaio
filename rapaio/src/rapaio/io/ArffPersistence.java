@@ -46,7 +46,7 @@ public class ArffPersistence {
      *
      * @param file the path to the ARFF file to load
      * @return the data set from the ARFF file, or null if the file could not be
-     *         loaded.
+     * loaded.
      * @throws java.io.IOException
      */
     public final Frame read(String name, File file) throws IOException {
@@ -99,7 +99,7 @@ public class ArffPersistence {
 
                         String[] tmp = line.split("\\s+", 2);
                         if (tmp[1].trim().equalsIgnoreCase("real") || tmp[1].trim().equals("isNumeric") || tmp[1].trim().startsWith("integer")) {
-                            vectors.add(new NumericVector(0));
+                            vectors.add(new NumVector(0));
                         } else//Not correct, but we arent supporting anything other than real and categorical right now
                         {
                             String cats = tmp[1].replace("{", "").replace("}", "").trim();
@@ -112,7 +112,7 @@ public class ArffPersistence {
                                 tempMap.add(fullTrim(catVal));
                             }
                             nomValueMap.put(variableName, tempMap);
-                            vectors.add(new NominalVector(0, tempMap));
+                            vectors.add(new NomVector(0, tempMap));
                         }
                         continue;
                     }
@@ -122,11 +122,11 @@ public class ArffPersistence {
 
             List<Vector> newvectors = new ArrayList();
             for (int i = 0; i < vectors.size(); i++) {
-                if (vectors.get(i) instanceof NumericVector) {
-                    newvectors.add(new NumericVector(data.size()));
+                if (vectors.get(i) instanceof NumVector) {
+                    newvectors.add(new NumVector(data.size()));
                 }
-                if (vectors.get(i) instanceof NominalVector) {
-                    newvectors.add(new NominalVector(data.size(), nomValueMap.get(names.get(i))));
+                if (vectors.get(i) instanceof NomVector) {
+                    newvectors.add(new NomVector(data.size(), nomValueMap.get(names.get(i))));
                 }
             }
             Frame df = new SolidFrame(data.size(), newvectors, names);

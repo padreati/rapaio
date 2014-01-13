@@ -30,59 +30,59 @@ import java.util.List;
  */
 public final class Vectors {
 
-    public static IndexVector newSequence(int size) {
-        IndexVector result = new IndexVector(size, size, 0, false);
+    public static IdxVector newSeq(int size) {
+        IdxVector result = new IdxVector(size, size, 0, false);
         for (int i = 0; i < size; i++) {
             result.setIndex(i, i);
         }
         return result;
     }
 
-    public static IndexVector newSequence(int start, int end) {
-        IndexVector result = new IndexVector(end - start + 1, end - start + 1, 0, false);
+    public static IdxVector newSeq(int start, int end) {
+        IdxVector result = new IdxVector(end - start + 1, end - start + 1, 0, false);
         for (int i = start; i <= end; i++) {
             result.setIndex(i - start, i);
         }
         return result;
     }
 
-    public static IndexVector newSequence(int from, int to, int step) {
+    public static IdxVector newSeq(int from, int to, int step) {
         int len = (to - from) / step;
         if ((to - from) % step == 0) {
             len++;
         }
-        IndexVector values = new IndexVector(len, len, 0, false);
+        IdxVector values = new IdxVector(len, len, 0, false);
         for (int i = 0; i < len; i++) {
             values.setIndex(i, from + i * step);
         }
         return values;
     }
 
-    public static IndexVector newNumeric(int[] values) {
-        return new IndexVector(values);
+    public static IdxVector newNum(int[] values) {
+        return new IdxVector(values);
     }
 
-    public static NumericVector newNumeric(List<Double> values) {
-        NumericVector vector = new NumericVector(values.size());
+    public static NumVector newNum(List<Double> values) {
+        NumVector vector = new NumVector(values.size());
         for (int i = 0; i < vector.getRowCount(); i++) {
             vector.setValue(i, values.get(i));
         }
         return vector;
     }
 
-    public static IndexVector newIndex(int rows) {
-        return new IndexVector(rows, rows, 0, true);
+    public static IdxVector newIdx(int rows) {
+        return new IdxVector(rows, rows, 0, true);
     }
 
-    public static IndexVector newIndex(int rows, int fill) {
-        return new IndexVector(rows, rows, fill, true);
+    public static IdxVector newIdx(int rows, int fill) {
+        return new IdxVector(rows, rows, fill, true);
     }
 
-    public static NumericVector newOneNumeric(double value) {
-        return new NumericVector(new double[]{value});
+    public static NumVector newNumOne(double value) {
+        return new NumVector(new double[]{value});
     }
 
-    public static IndexVector newOneIndex(int value) {
-        return new IndexVector(1, 1, value, false);
+    public static IdxVector newIdxOne(int value) {
+        return new IdxVector(1, 1, value, false);
     }
 }

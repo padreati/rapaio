@@ -125,7 +125,7 @@ public class Histogram extends PlotComponent {
 
         // defaults
         if (getColorIndex().getRowCount() == 1 && getColorIndex().getIndex(0) == 0) {
-            setColorIndex(Vectors.newOneIndex(7));
+            setColorIndex(Vectors.newIdxOne(7));
         }
     }
 

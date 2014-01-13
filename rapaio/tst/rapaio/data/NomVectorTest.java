@@ -28,11 +28,11 @@ import static org.junit.Assert.*;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class NominalVectorTest {
+public class NomVectorTest {
 
     @Test
     public void testSmoke() {
-        Vector v = new NominalVector(0, new String[]{});
+        Vector v = new NomVector(0, new String[]{});
         assertEquals(0, v.getRowCount());
         assertEquals(1, v.getDictionary().length);
         assertEquals("?", v.getDictionary()[0]);
@@ -40,7 +40,7 @@ public class NominalVectorTest {
         assertTrue(v.isNominal());
         assertFalse(v.isNumeric());
 
-        v = new NominalVector(1, new String[]{"a"});
+        v = new NomVector(1, new String[]{"a"});
         assertEquals(1, v.getRowCount());
         assertEquals("?", v.getLabel(0));
 
@@ -49,7 +49,7 @@ public class NominalVectorTest {
 
     @Test
     public void testDictionary() {
-        Vector v = new NominalVector(0, new String[]{"a", "a", "v", "a"});
+        Vector v = new NomVector(0, new String[]{"a", "a", "v", "a"});
         assertEquals(3, v.getDictionary().length);
         assertEquals("?", v.getDictionary()[0]);
         assertEquals("a", v.getDictionary()[1]);
@@ -60,7 +60,7 @@ public class NominalVectorTest {
         set.add("v");
         set.add("a");
 
-        v = new NominalVector(0, set);
+        v = new NomVector(0, set);
         assertEquals(3, v.getDictionary().length);
         assertEquals("?", v.getDictionary()[0]);
         assertEquals("a", v.getDictionary()[1]);
@@ -69,7 +69,7 @@ public class NominalVectorTest {
 
     @Test
     public void testSetterGetter() {
-        Vector v = new NominalVector(4, new String[]{"a", "b", "c"});
+        Vector v = new NomVector(4, new String[]{"a", "b", "c"});
         for (int i = 0; i < 4; i++) {
             assertTrue(v.isMissing(i));
             assertEquals(0, v.getIndex(i));
@@ -122,7 +122,7 @@ public class NominalVectorTest {
 
     @Test
     public void testLabel() {
-        Vector v = new NominalVector(1, new String[]{"a", "b", "c"});
+        Vector v = new NomVector(1, new String[]{"a", "b", "c"});
 
         boolean exceptional = false;
         try {
@@ -151,7 +151,7 @@ public class NominalVectorTest {
 
     @Test
     public void testMissing() {
-        Vector v = new NominalVector(1, new String[]{"a", "b"});
+        Vector v = new NomVector(1, new String[]{"a", "b"});
         assertTrue(v.isMissing(0));
 
         v.setLabel(0, "a");
