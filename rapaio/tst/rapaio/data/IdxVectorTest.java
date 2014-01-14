@@ -89,7 +89,7 @@ public class IdxVectorTest {
     @Test
     public void testSetterGetter() {
 
-        Vector index = Vectors.newNum(3, 0);
+        Vector index = Vectors.newIdx(3, 0);
 
         assertEquals(0, index.getIndex(0));
         index.setIndex(0, 1);

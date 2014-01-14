@@ -56,10 +56,7 @@ public class RowComparators {
                 if (vector.isMissing(row2)) {
                     return sign;
                 }
-                if (vector.getIndex(row1) == vector.getIndex(row2)) {
-                    return 0;
-                }
-                return sign * (vector.getIndex(row1) < vector.getIndex(row2) ? -1 : 1);
+                return sign * vector.getLabel(row1).compareTo(vector.getLabel(row2));
             }
         };
     }

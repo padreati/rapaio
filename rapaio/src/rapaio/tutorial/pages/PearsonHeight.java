@@ -100,8 +100,6 @@ public class PearsonHeight implements TutorialPage {
             Distribution normal = new Normal();
             draw(new QQPlot()
                     .add(col, normal)
-                    .add(new ABLine(mu, true))
-                    .add(new ABLine(0, false))
                     .setLeftLabel(df.getColNames()[colIndex]),
                     500, 300);
         }

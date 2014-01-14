@@ -16,7 +16,6 @@ public class NumVector extends AbstractVector {
     private static final double missingValue = Double.NaN;
     private transient double[] data;
     private int rows;
-    protected transient int modCount = 0;
 
     public NumVector() {
         super();
@@ -67,7 +66,6 @@ public class NumVector extends AbstractVector {
      * An application can use this operation to minimize the storage.
      */
     public void trimToSize() {
-        modCount++;
         if (rows < data.length) {
             data = Arrays.copyOf(data, rows);
         }
@@ -101,8 +99,6 @@ public class NumVector extends AbstractVector {
     }
 
     private void ensureExplicitCapacity(int minCapacity) {
-        modCount++;
-
         // overflow-conscious code
         if (minCapacity - data.length > 0)
             grow(minCapacity);
@@ -178,8 +174,6 @@ public class NumVector extends AbstractVector {
      */
     public double remove(int index) {
         rangeCheck(index);
-
-        modCount++;
         double oldValue = data[index];
 
         int numMoved = rows - index - 1;
@@ -193,7 +187,6 @@ public class NumVector extends AbstractVector {
      * be empty after this call returns.
      */
     public void clear() {
-        modCount++;
         rows = 0;
     }
 
@@ -266,7 +259,6 @@ public class NumVector extends AbstractVector {
      *                                   toIndex < fromIndex})
      */
     protected void removeRange(int fromIndex, int toIndex) {
-        modCount++;
         int numMoved = rows - toIndex;
         System.arraycopy(data, toIndex, data, fromIndex,
                 numMoved);

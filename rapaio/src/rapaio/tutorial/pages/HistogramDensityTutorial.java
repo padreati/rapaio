@@ -107,8 +107,8 @@ public class HistogramDensityTutorial implements TutorialPage {
 
         p("One can change the number of bins. ");
 
-        code("        draw(new Histogram(df.getCol(\"Father\"), 100, false));\n");
-        draw(new Histogram(df.getCol("Father"), 100, false));
+        code("        draw(new Plot().add(new Histogram(df.getCol(\"Father\"), 100, false)));\n");
+        draw(new Plot().add(new Histogram(df.getCol("Father"), 100, false)));
 
         p("Note that on the vertical axis we found the count of the elements which "
                 + "are held by the bins that are displayed. We can "
@@ -116,8 +116,8 @@ public class HistogramDensityTutorial implements TutorialPage {
                 + "densities which makes the total area under curve to be 1. "
                 + "That feature is a key property of a probability density function, also.");
 
-        p("        draw(new Histogram(df.getCol(\"Father\"), 30, true));\n");
-        draw(new Histogram(df.getCol("Father"), 30, true));
+        p("        draw(new Plot().add(new Histogram(df.getCol(\"Father\"), 30, true)));\n");
+        draw(new Plot().add(new Histogram(df.getCol("Father"), 30, true)));
 
         p("The histogram is useful but have a weak point. Its weak point lies "
                 + "into it's flexibility given by the number of bins. "

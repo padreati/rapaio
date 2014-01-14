@@ -22,12 +22,8 @@ package rapaio.core;
 import org.junit.Test;
 import rapaio.core.stat.ROC;
 import rapaio.data.Frame;
-import rapaio.graphics.Plot;
-import rapaio.graphics.plot.Lines;
-import rapaio.graphics.plot.ROCCurve;
 import rapaio.io.CsvPersistence;
 import rapaio.workspace.Summary;
-import rapaio.workspace.Workspace;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -49,9 +45,9 @@ public class ROCTest {
         final ROC roc = new ROC(df.getCol("score"), df.getCol("class"), "p");
         Summary.head(roc.getData().getRowCount(), roc.getData());
 
-        Workspace.draw(new Plot()
-                .add(new ROCCurve(roc))
-                .add(new Lines(roc.getData().getCol("tpr"), roc.getData().getCol("acc")).setColorIndex(1))
-                .add(new Lines(roc.getData().getCol("tpr"), roc.getData().getCol("acc")).setColorIndex(1)));
+//        Workspace.draw(new Plot()
+//                .add(new ROCCurve(roc))
+//                .add(new Lines(roc.getData().getCol("tpr"), roc.getData().getCol("acc")).setColorIndex(1))
+//                .add(new Lines(roc.getData().getCol("tpr"), roc.getData().getCol("acc")).setColorIndex(1)));
     }
 }

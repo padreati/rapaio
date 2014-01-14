@@ -21,7 +21,7 @@ package rapaio.data;
 
 import org.junit.Test;
 
-import java.util.HashSet;
+import java.util.TreeSet;
 
 import static org.junit.Assert.*;
 
@@ -55,7 +55,7 @@ public class NomVectorTest {
         assertEquals("a", v.getDictionary()[1]);
         assertEquals("v", v.getDictionary()[2]);
 
-        HashSet<String> set = new HashSet<>();
+        TreeSet<String> set = new TreeSet<>();
         set.add("a");
         set.add("v");
         set.add("a");

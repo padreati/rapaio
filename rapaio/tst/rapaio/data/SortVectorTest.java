@@ -124,7 +124,7 @@ public class SortVectorTest {
 
         Vector second = sort(sort, nominalComparator(sort, true));
         for (int i = 1; i < second.getRowCount(); i++) {
-            assertTrue(second.getIndex(i - 1) <= second.getIndex(i));
+            assertTrue(second.getLabel(i - 1).compareTo(second.getLabel(i)) <= 0);
         }
     }
 

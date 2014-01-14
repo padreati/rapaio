@@ -82,6 +82,10 @@ public final class Vectors {
         return new IdxVector(rows, rows, 0);
     }
 
+    public static IdxVector newIdx(int rows, int fill) {
+        return new IdxVector(rows, rows, fill);
+    }
+
     public static NumVector newNum(int rows, int fill) {
         return new NumVector(rows, rows, fill);
     }

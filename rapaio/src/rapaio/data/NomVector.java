@@ -19,10 +19,7 @@
  */
 package rapaio.data;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Nominal vector contains values for nominal or categorical observations.
@@ -45,24 +42,127 @@ public class NomVector extends AbstractVector {
 
     private static final String missingValue = "?";
     private static final int missingIndex = 0;
-    private final String[] terms;
-    private final int[] indexes;
+
+    int rows = 0;
+    List<String> dict;
+    int[] data;
+    Map<String, Integer> index;
 
     public NomVector(int size, String[] dict) {
         this(size, Arrays.asList(dict));
     }
 
     public NomVector(int size, Collection<String> dict) {
-        TreeSet<String> copy = new TreeSet<>(dict);
-        copy.remove(missingValue);
-        terms = new String[copy.size() + 1];
-        Iterator<String> it = copy.iterator();
-        int pos = 0;
-        terms[pos++] = missingValue;
+
+        // set the missing value
+        this.index = new HashMap<>();
+        this.index.put("?", 0);
+        this.dict = new ArrayList<>();
+        this.dict.add("?");
+
+        Iterator<String> it = dict.iterator();
         while (it.hasNext()) {
-            terms[pos++] = it.next();
+            String next = it.next();
+            if (this.dict.contains(next)) continue;
+            this.dict.add(next);
+            this.index.put(next, index.size());
         }
-        this.indexes = new int[size];
+        data = new int[size];
+        rows = size;
+    }
+
+    public void trimToSize() {
+        if (rows < data.length) {
+            data = Arrays.copyOf(data, rows);
+        }
+    }
+
+    public void ensureCapacity(int minCapacity) {
+        if (minCapacity - data.length > 0)
+            grow(minCapacity);
+    }
+
+    private void grow(int minCapacity) {
+        // overflow-conscious code
+        int oldCapacity = data.length;
+        int newCapacity = oldCapacity + (oldCapacity >> 1);
+        if (newCapacity - minCapacity < 0)
+            newCapacity = minCapacity;
+        // minCapacity is usually close to size, so this is a win:
+        data = Arrays.copyOf(data, newCapacity);
+    }
+
+    // Positional Access Operations
+
+    public void add(int x) {
+        ensureCapacity(rows + 1);
+        data[rows++] = x;
+    }
+
+    public void add(int index, int element) {
+        rangeCheck(index);
+
+        ensureCapacity(rows + 1);
+        System.arraycopy(data, index, data, index + 1, rows - index);
+        data[index] = element;
+        rows++;
+    }
+
+    public double remove(int index) {
+        rangeCheck(index);
+        double oldValue = data[index];
+        int numMoved = rows - index - 1;
+        if (numMoved > 0)
+            System.arraycopy(data, index + 1, data, index, numMoved);
+        return oldValue;
+    }
+
+    public void clear() {
+        rows = 0;
+    }
+
+    public boolean addAll(Collection<? extends String> c) {
+        Object[] a = c.toArray();
+        int numNew = a.length;
+        ensureCapacity(rows + numNew);
+        System.arraycopy(a, 0, data, rows, numNew);
+        rows += numNew;
+        return numNew != 0;
+    }
+
+    public boolean addAll(int index, Collection<? extends String> c) {
+        rangeCheck(index);
+
+        Object[] a = c.toArray();
+        int numNew = a.length;
+        ensureCapacity(rows + numNew);
+
+        int numMoved = rows - index;
+        if (numMoved > 0)
+            System.arraycopy(data, index, data, index + numNew, numMoved);
+
+        System.arraycopy(a, 0, data, index, numNew);
+        rows += numNew;
+        return numNew != 0;
+    }
+
+    protected void removeRange(int fromIndex, int toIndex) {
+        int numMoved = rows - toIndex;
+        System.arraycopy(data, toIndex, data, fromIndex,
+                numMoved);
+
+        // clear to let GC do its work
+        int newSize = rows - (toIndex - fromIndex);
+        rows = newSize;
+    }
+
+    private void rangeCheck(int index) {
+        if (index > rows || index < 0)
+            throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+    }
+
+    private String outOfBoundsMsg(int index) {
+        return "Index: " + index + ", Size: " + rows;
     }
 
     @Override
@@ -92,7 +192,7 @@ public class NomVector extends AbstractVector {
 
     @Override
     public int getRowCount() {
-        return indexes.length;
+        return rows;
     }
 
     @Override
@@ -102,17 +202,17 @@ public class NomVector extends AbstractVector {
 
     @Override
     public int getIndex(int row) {
-        return indexes[row];
+        return data[row];
     }
 
     @Override
     public void setIndex(int row, int value) {
-        indexes[row] = value;
+        data[row] = value;
     }
 
     @Override
     public double getValue(int row) {
-        return indexes[row];
+        return data[row];
     }
 
     @Override
@@ -122,25 +222,26 @@ public class NomVector extends AbstractVector {
 
     @Override
     public String getLabel(int row) {
-        return terms[indexes[row]];
+        return dict.get(data[row]);
     }
 
     @Override
     public void setLabel(int row, String value) {
         if (value.equals(missingValue)) {
-            indexes[row] = missingIndex;
+            data[row] = missingIndex;
             return;
         }
-        int idx = Arrays.binarySearch(terms, 1, terms.length, value);
-        if (idx < 0) {
-            throw new IllegalArgumentException("Can't set a getLabel that is not defined.");
+        Integer idx = index.get(value);
+        if (idx == null) {
+            dict.add(value);
+            index.put(value, index.size());
         }
-        indexes[row] = idx;
+        data[row] = idx;
     }
 
     @Override
     public String[] getDictionary() {
-        return Arrays.copyOf(terms, terms.length);
+        return dict.toArray(new String[]{});
     }
 
     @Override
