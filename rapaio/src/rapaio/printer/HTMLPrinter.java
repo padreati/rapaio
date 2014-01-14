@@ -170,7 +170,7 @@ class Template {
     static final String KEY_TITLE = "#TITLE#";
     static final String BACKLINK = "#BACKLINK#";
     static final String header = "<!DOCTYPE html>\n"
-            + "<html><head>\n"
+            + "<html><lines>\n"
             + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n"
             + "<title>#TITLE#</title>\n"
             + "<style type=\"text/css\">\n"
@@ -301,7 +301,7 @@ class Template {
             + "<!-- MathJax scripts -->\n"
             + "<script type=\"text/javascript\" src=\"https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML\">\n"
             + "</script>\n"
-            + "</head>\n"
+            + "</lines>\n"
             + "<body>\n"
             + "<p>#BACKLINK#</p>";
 

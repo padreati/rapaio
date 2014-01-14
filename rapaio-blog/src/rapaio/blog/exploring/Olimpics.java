@@ -61,7 +61,7 @@ public class Olimpics {
 //        Summary.summary(sel);
 //        draw(new BarChart(sel.getCol("SPORT"), sel.getCol("DISCIPLINE"), sel.getCol("CNT"))
 //                .useSortType(BarChart.SortType.DESC));
-//        Summary.head(-1, sel);
+//        Summary.lines(-1, sel);
 
         Frame sel = db.getFrame("SELECT NOC, COUNT(*) AS CNT "
                 + "FROM T "
@@ -84,7 +84,7 @@ public class Olimpics {
 //                .useTop(10));
 
 //        draw(new Plot().add(new Histogram(sel.getCol("EDITION")).setProb(false)));
-//        Summary.head(-1, sel);
+//        Summary.lines(-1, sel);
 
 
         closePrinter();

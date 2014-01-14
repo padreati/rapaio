@@ -44,6 +44,14 @@ public final class Frames {
         return new SolidFrame(rows, vectors, colNames);
     }
 
+    public static Frame newMatrixFrame(int rows, List<String> colNames) {
+        List<Vector> vectors = new ArrayList<>();
+        for (int i = 0; i < colNames.size(); i++) {
+            vectors.add(new NumVector(new double[rows]));
+        }
+        return new SolidFrame(rows, vectors, colNames);
+    }
+
     public static Frame solidCopy(Frame df) {
         int len = df.getRowCount();
         List<Vector> vectors = new ArrayList<>();
@@ -67,5 +75,23 @@ public final class Frames {
             }
         }
         return new SolidFrame(len, vectors, names);
+    }
+
+    public static Frame addCol(Frame df, Vector col, String name, int position) {
+        if (df.getRowCount() != col.getRowCount()) {
+            throw new IllegalArgumentException("frame and col have different row counts");
+        }
+        if (df.isMappedFrame()) {
+            throw new IllegalArgumentException("operation not allowed on mapped frames");
+        }
+        List<Vector> vectors = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        for (String colName : df.getColNames()) {
+            names.add(colName);
+            vectors.add(df.getCol(colName));
+        }
+        vectors.add(position, col);
+        names.add(position, name);
+        return new SolidFrame(df.getRowCount(), vectors, names);
     }
 }

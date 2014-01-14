@@ -58,6 +58,9 @@ is considered to be fully implemented and well tested.
 
 * Tree Regressor - accept only numerical, non-missing, has no pruning (with this constraints
 this tree is similar with CART and C45)
+* Linear Regressor
+
+**Matrices**
 
 
 Feature Journal

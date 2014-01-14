@@ -53,7 +53,7 @@ public class IdxVectorTest {
 
     @Test
     public void testFillVector() {
-        Vector index = Vectors.newIdx(10, -1);
+        Vector index = Vectors.newNum(10, -1);
         assertEquals(10, index.getRowCount());
         for (int i = 0; i < index.getRowCount(); i++) {
             assertEquals(-1, index.getIndex(i));
@@ -89,7 +89,7 @@ public class IdxVectorTest {
     @Test
     public void testSetterGetter() {
 
-        Vector index = Vectors.newIdx(3, 0);
+        Vector index = Vectors.newNum(3, 0);
 
         assertEquals(0, index.getIndex(0));
         index.setIndex(0, 1);

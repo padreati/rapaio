@@ -23,6 +23,7 @@ public class TreeRegressor extends AbstractRegressor {
     TreeNode root;
     Vector fitted;
     ColSelector colSelector;
+    String targetColNames;
 
     public double getMinWeight() {
         return minWeight;
@@ -44,6 +45,7 @@ public class TreeRegressor extends AbstractRegressor {
 
     @Override
     public void learn(Frame df, List<Double> weights, String targetColName) {
+        this.targetColNames = targetColName;
         root = new TreeNode();
         root.learn(this, df, weights, targetColName);
         if (colSelector == null) {
@@ -60,7 +62,7 @@ public class TreeRegressor extends AbstractRegressor {
     }
 
     @Override
-    public Vector getFittedValues() {
+    public Vector getTestFittedValues() {
         return fitted;
     }
 }
@@ -75,7 +77,7 @@ class TreeNode {
     TreeNode left;
     TreeNode right;
 
-    public void learn(TreeRegressor parent, Frame df, List<Double> weights, String targetColName) {
+    public void learn(TreeRegressor parent, Frame df, List<Double> weights, String targetColNames) {
         totalWeight = 0;
         for (int i = 0; i < weights.size(); i++) {
             totalWeight += weights.get(i);
@@ -83,14 +85,14 @@ class TreeNode {
 
         if (totalWeight < 2 * parent.minWeight) {
             leaf = true;
-            pred = new Mean(df.getCol(targetColName)).getValue();
+            pred = new Mean(df.getCol(targetColNames)).getValue();
             return;
         }
 
         String[] colNames = parent.colSelector.nextColNames();
         for (String testColName : colNames) {
-            if (df.getCol(testColName).isNumeric() && !targetColName.equals(testColName)) {
-                evaluateNumeric(parent, df, weights, targetColName, testColName);
+            if (df.getCol(testColName).isNumeric() && !targetColNames.equals(testColName)) {
+                evaluateNumeric(parent, df, weights, targetColNames, testColName);
             }
         }
 
@@ -112,22 +114,22 @@ class TreeNode {
             }
             left = new TreeNode();
             right = new TreeNode();
-            left.learn(parent, new MappedFrame(df.getSourceFrame(), leftMapping), leftWeights, targetColName);
-            right.learn(parent, new MappedFrame(df.getSourceFrame(), rightMapping), rightWeights, targetColName);
+            left.learn(parent, new MappedFrame(df.getSourceFrame(), leftMapping), leftWeights, targetColNames);
+            right.learn(parent, new MappedFrame(df.getSourceFrame(), rightMapping), rightWeights, targetColNames);
             return;
         }
 
         // else do the default
         leaf = true;
-        pred = new Mean(df.getCol(targetColName)).getValue();
+        pred = new Mean(df.getCol(targetColNames)).getValue();
     }
 
     private void evaluateNumeric(TreeRegressor parent,
                                  Frame df, List<Double> weights,
                                  String targetColName,
-                                 String testColName) {
+                                 String testColNames) {
 
-        Vector testCol = df.getCol(testColName);
+        Vector testCol = df.getCol(testColNames);
         double[] var = new double[df.getRowCount()];
         StatOnline so = new StatOnline();
         Vector sort = Vectors.newSeq(df.getRowCount());
@@ -159,7 +161,7 @@ class TreeNode {
             if (w >= parent.minWeight && totalWeight - w >= parent.minWeight) {
                 if (var[i] < eval && i > 0 && testCol.getValue(sort.getRowId(i - 1)) != testCol.getValue(sort.getRowId(i))) {
                     eval = var[i];
-                    splitColName = testColName;
+                    splitColName = testColNames;
                     splitValue = testCol.getValue(pos);
                 }
             }

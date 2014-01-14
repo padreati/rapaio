@@ -31,7 +31,7 @@ import java.util.List;
 public final class Vectors {
 
     public static IdxVector newSeq(int size) {
-        IdxVector result = new IdxVector(size, size, 0, false);
+        IdxVector result = new IdxVector(size, size, 0);
         for (int i = 0; i < size; i++) {
             result.setIndex(i, i);
         }
@@ -39,7 +39,7 @@ public final class Vectors {
     }
 
     public static IdxVector newSeq(int start, int end) {
-        IdxVector result = new IdxVector(end - start + 1, end - start + 1, 0, false);
+        IdxVector result = new IdxVector(end - start + 1, end - start + 1, 0);
         for (int i = start; i <= end; i++) {
             result.setIndex(i - start, i);
         }
@@ -51,18 +51,18 @@ public final class Vectors {
         if ((to - from) % step == 0) {
             len++;
         }
-        IdxVector values = new IdxVector(len, len, 0, false);
+        IdxVector values = new IdxVector(len, len, 0);
         for (int i = 0; i < len; i++) {
             values.setIndex(i, from + i * step);
         }
         return values;
     }
 
-    public static IdxVector newNum(int[] values) {
+    public static IdxVector newIdxFrom(int[] values) {
         return new IdxVector(values);
     }
 
-    public static NumVector newNum(List<Double> values) {
+    public static NumVector newNumFrom(List<Double> values) {
         NumVector vector = new NumVector(values.size());
         for (int i = 0; i < vector.getRowCount(); i++) {
             vector.setValue(i, values.get(i));
@@ -70,12 +70,20 @@ public final class Vectors {
         return vector;
     }
 
-    public static IdxVector newIdx(int rows) {
-        return new IdxVector(rows, rows, 0, true);
+    public static NumVector newNumFrom(double... values) {
+        NumVector vector = new NumVector(values.length);
+        for (int i = 0; i < vector.getRowCount(); i++) {
+            vector.setValue(i, values[i]);
+        }
+        return vector;
     }
 
-    public static IdxVector newIdx(int rows, int fill) {
-        return new IdxVector(rows, rows, fill, true);
+    public static IdxVector newIdx(int rows) {
+        return new IdxVector(rows, rows, 0);
+    }
+
+    public static NumVector newNum(int rows, int fill) {
+        return new NumVector(rows, rows, fill);
     }
 
     public static NumVector newNumOne(double value) {
@@ -83,6 +91,6 @@ public final class Vectors {
     }
 
     public static IdxVector newIdxOne(int value) {
-        return new IdxVector(1, 1, value, false);
+        return new IdxVector(1, 1, value);
     }
 }

@@ -23,7 +23,7 @@ public class RandomForestRegressor extends AbstractRegressor {
     }
 
     @Override
-    public Vector getFittedValues() {
+    public Vector getTestFittedValues() {
         return null;
     }
 }

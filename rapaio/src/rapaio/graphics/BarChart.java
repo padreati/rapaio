@@ -64,7 +64,7 @@ public class BarChart extends AbstractFigure {
             throw new IllegalArgumentException("conditions are nominal only");
         }
         if (numeric == null) {
-            numeric = Vectors.newIdx(category.getRowCount(), 1);
+            numeric = Vectors.newNum(category.getRowCount(), 1);
         }
         if (!numeric.isNumeric()) {
             throw new IllegalArgumentException("Numeric vector must be .. isNumeric");

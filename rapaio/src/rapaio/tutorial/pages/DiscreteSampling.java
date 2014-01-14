@@ -123,7 +123,7 @@ public class DiscreteSampling implements TutorialPage {
                 + "        draw(new Histogram(vector, 6, false), 500, 200);\n");
 
         int[] sample = new DiscreteSamplingWR(6).sample(1000);
-        Vector vector = Vectors.newNum(sample);
+        Vector vector = Vectors.newIdxFrom(sample);
         draw(new Plot().add(new Histogram(vector, 6, false)), 500, 200);
 
         p("In the presented histogram we see frequencies obtained be taking a sample "

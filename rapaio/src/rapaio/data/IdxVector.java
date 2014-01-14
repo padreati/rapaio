@@ -16,7 +16,7 @@ public class IdxVector extends AbstractVector {
     private transient int[] data;
     private int rows;
 
-    public IdxVector(int rows, int capacity, int fill, boolean debug) {
+    public IdxVector(int rows, int capacity, int fill) {
         super();
         if (capacity < 0) {
             throw new IllegalArgumentException("Illegal capacity: " + capacity);

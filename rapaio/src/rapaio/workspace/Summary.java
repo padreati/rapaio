@@ -392,6 +392,19 @@ public class Summary {
         result.summary();
     }
 
+    public static void lines(Vector v) {
+        head(v.getRowCount(), new Vector[]{v}, new String[]{""});
+    }
+
+    public static void lines(Frame df) {
+        Vector[] vectors = new Vector[df.getColCount()];
+        String[] names = df.getColNames();
+        for (int i = 0; i < vectors.length; i++) {
+            vectors[i] = df.getCol(i);
+        }
+        head(df.getRowCount(), vectors, names);
+    }
+
     public static void head(int lines, Frame df) {
         Vector[] vectors = new Vector[df.getColCount()];
         String[] names = df.getColNames();
