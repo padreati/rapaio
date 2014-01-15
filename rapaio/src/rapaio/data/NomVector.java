@@ -46,40 +46,31 @@ public class NomVector extends AbstractVector {
     int rows = 0;
     List<String> dict;
     int[] data;
-    Map<String, Integer> index;
+    Map<String, Integer> reverse;
+
+    public NomVector() {
+        // set the missing value
+        this.reverse = new HashMap<>();
+        this.reverse.put("?", 0);
+        this.dict = new ArrayList<>();
+        this.dict.add("?");
+        data = new int[0];
+        rows = 0;
+    }
 
     public NomVector(int size, String[] dict) {
         this(size, Arrays.asList(dict));
     }
 
     public NomVector(int size, Collection<String> dict) {
-
-        // set the missing value
-        this.index = new HashMap<>();
-        this.index.put("?", 0);
-        this.dict = new ArrayList<>();
-        this.dict.add("?");
-
-        Iterator<String> it = dict.iterator();
-        while (it.hasNext()) {
-            String next = it.next();
+        this();
+        for (String next : dict) {
             if (this.dict.contains(next)) continue;
             this.dict.add(next);
-            this.index.put(next, index.size());
+            this.reverse.put(next, reverse.size());
         }
         data = new int[size];
         rows = size;
-    }
-
-    public void trimToSize() {
-        if (rows < data.length) {
-            data = Arrays.copyOf(data, rows);
-        }
-    }
-
-    public void ensureCapacity(int minCapacity) {
-        if (minCapacity - data.length > 0)
-            grow(minCapacity);
     }
 
     private void grow(int minCapacity) {
@@ -90,79 +81,6 @@ public class NomVector extends AbstractVector {
             newCapacity = minCapacity;
         // minCapacity is usually close to size, so this is a win:
         data = Arrays.copyOf(data, newCapacity);
-    }
-
-    // Positional Access Operations
-
-    public void add(int x) {
-        ensureCapacity(rows + 1);
-        data[rows++] = x;
-    }
-
-    public void add(int index, int element) {
-        rangeCheck(index);
-
-        ensureCapacity(rows + 1);
-        System.arraycopy(data, index, data, index + 1, rows - index);
-        data[index] = element;
-        rows++;
-    }
-
-    public double remove(int index) {
-        rangeCheck(index);
-        double oldValue = data[index];
-        int numMoved = rows - index - 1;
-        if (numMoved > 0)
-            System.arraycopy(data, index + 1, data, index, numMoved);
-        return oldValue;
-    }
-
-    public void clear() {
-        rows = 0;
-    }
-
-    public boolean addAll(Collection<? extends String> c) {
-        Object[] a = c.toArray();
-        int numNew = a.length;
-        ensureCapacity(rows + numNew);
-        System.arraycopy(a, 0, data, rows, numNew);
-        rows += numNew;
-        return numNew != 0;
-    }
-
-    public boolean addAll(int index, Collection<? extends String> c) {
-        rangeCheck(index);
-
-        Object[] a = c.toArray();
-        int numNew = a.length;
-        ensureCapacity(rows + numNew);
-
-        int numMoved = rows - index;
-        if (numMoved > 0)
-            System.arraycopy(data, index, data, index + numNew, numMoved);
-
-        System.arraycopy(a, 0, data, index, numNew);
-        rows += numNew;
-        return numNew != 0;
-    }
-
-    protected void removeRange(int fromIndex, int toIndex) {
-        int numMoved = rows - toIndex;
-        System.arraycopy(data, toIndex, data, fromIndex,
-                numMoved);
-
-        // clear to let GC do its work
-        int newSize = rows - (toIndex - fromIndex);
-        rows = newSize;
-    }
-
-    private void rangeCheck(int index) {
-        if (index > rows || index < 0)
-            throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
-    }
-
-    private String outOfBoundsMsg(int index) {
-        return "Index: " + index + ", Size: " + rows;
     }
 
     @Override
@@ -211,6 +129,16 @@ public class NomVector extends AbstractVector {
     }
 
     @Override
+    public void addIndex(int value) {
+        addLabel(dict.get(value));
+    }
+
+    @Override
+    public void addIndex(int row, int value) {
+        addLabel(row, dict.get(value));
+    }
+
+    @Override
     public double getValue(int row) {
         return data[row];
     }
@@ -218,6 +146,16 @@ public class NomVector extends AbstractVector {
     @Override
     public void setValue(int row, double value) {
         setIndex(row, (int) Math.rint(value));
+    }
+
+    @Override
+    public void addValue(double value) {
+        addIndex((int) Math.rint(value));
+    }
+
+    @Override
+    public void addValue(int row, double value) {
+        addIndex(row, (int) Math.rint(value));
     }
 
     @Override
@@ -231,17 +169,70 @@ public class NomVector extends AbstractVector {
             data[row] = missingIndex;
             return;
         }
-        Integer idx = index.get(value);
+        Integer idx = reverse.get(value);
         if (idx == null) {
             dict.add(value);
-            index.put(value, index.size());
+            reverse.put(value, reverse.size());
         }
         data[row] = idx;
     }
 
     @Override
+    public void addLabel(String label) {
+        ensureCapacity(rows + 1);
+        if (!reverse.containsKey(label)) {
+            dict.add(label);
+            reverse.put(label, reverse.size());
+        }
+        data[rows++] = reverse.get(label);
+    }
+
+    @Override
+    public void addLabel(int pos, String label) {
+        ensureCapacity(rows + 1);
+        System.arraycopy(data, pos, data, pos + 1, rows - pos);
+
+        if (!reverse.containsKey(label)) {
+            dict.add(label);
+            reverse.put(label, reverse.size());
+        }
+        data[pos] = reverse.get(label);
+        rows++;
+    }
+
+    @Override
     public String[] getDictionary() {
         return dict.toArray(new String[]{});
+    }
+
+    @Override
+    public void setDictionary(String[] dict) {
+        List<String> oldDict = this.dict;
+        Map<String, Integer> oldReverse = this.reverse;
+
+        this.dict = new ArrayList<>();
+        this.reverse = new HashMap<>();
+        this.dict.add("?");
+        this.reverse.put("?", 0);
+
+        for (int i = 0; i < dict.length; i++) {
+            if (!reverse.containsKey(dict[i])) {
+                this.dict.add(dict[i]);
+                this.reverse.put(dict[i], this.reverse.size());
+            }
+        }
+
+        for (int i = 0; i < rows; i++) {
+            if (!this.reverse.containsKey(oldDict.get(data[i]))) {
+                this.dict = oldDict;
+                this.reverse = oldReverse;
+                throw new IllegalArgumentException("new dictionary does not contains all old labels");
+            }
+        }
+
+        for (int i = 0; i < rows; i++) {
+            data[i] = this.reverse.get(oldDict.get(data[i]));
+        }
     }
 
     @Override
@@ -252,5 +243,35 @@ public class NomVector extends AbstractVector {
     @Override
     public void setMissing(int row) {
         setIndex(row, missingIndex);
+    }
+
+    @Override
+    public void remove(int index) {
+        int numMoved = rows - index - 1;
+        if (numMoved > 0)
+            System.arraycopy(data, index + 1, data, index, numMoved);
+    }
+
+    @Override
+    public void removeRange(int fromIndex, int toIndex) {
+        int numMoved = rows - toIndex;
+        System.arraycopy(data, toIndex, data, fromIndex, numMoved);
+        int newSize = rows - (toIndex - fromIndex);
+        rows = newSize;
+    }
+
+    public void clear() {
+        rows = 0;
+    }
+
+    public void trimToSize() {
+        if (rows < data.length) {
+            data = Arrays.copyOf(data, rows);
+        }
+    }
+
+    public void ensureCapacity(int minCapacity) {
+        if (minCapacity - data.length > 0)
+            grow(minCapacity);
     }
 }

@@ -94,6 +94,11 @@ public interface Vector extends Serializable {
      */
     void setValue(int row, double value);
 
+
+    void addValue(double value);
+
+    void addValue(int row, double value);
+
     /**
      * Returns getIndex setValue for the observation specified by {@param row}
      *
@@ -109,6 +114,10 @@ public interface Vector extends Serializable {
      * @param value getIndex setValue for the observation
      */
     void setIndex(int row, int value);
+
+    void addIndex(int value);
+
+    void addIndex(int row, int value);
 
     /**
      * Returns nominal getLabel for the observation specified by {@param row}.
@@ -126,6 +135,10 @@ public interface Vector extends Serializable {
      */
     void setLabel(int row, String value);
 
+    void addLabel(String value);
+
+    void addLabel(int row, String value);
+
     /**
      * Returns the term dictionary used by the nominal values.
      * <p/>
@@ -141,6 +154,8 @@ public interface Vector extends Serializable {
      * @return term dictionary defined by the nominal vector.
      */
     String[] getDictionary();
+
+    void setDictionary(String[] dict);
 
     /**
      * Returns true if the setValue for the observation specified by {@param row} is missing, not available.
@@ -160,4 +175,14 @@ public interface Vector extends Serializable {
      * @param row position of the observation.
      */
     void setMissing(int row);
+
+    void remove(int row);
+
+    void removeRange(int from, int to);
+
+    void clear();
+
+    void trimToSize();
+
+    void ensureCapacity(int minCapacity);
 }

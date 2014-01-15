@@ -1,7 +1,6 @@
 package rapaio.data;
 
 import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -39,18 +38,6 @@ public class IdxVector extends AbstractVector {
         this.rows = values.length;
     }
 
-    public void trimToSize() {
-        if (rows < data.length) {
-            data = Arrays.copyOf(data, rows);
-        }
-    }
-
-    public void ensureCapacity(int minCapacity) {
-        int minExpand = (data != EMPTY_DATA) ? 0 : DEFAULT_CAPACITY;
-        if (minCapacity > minExpand && minCapacity - data.length > 0)
-            grow(minCapacity);
-    }
-
     private void ensureCapacityInternal(int minCapacity) {
         if (data == EMPTY_DATA) {
             minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
@@ -75,70 +62,6 @@ public class IdxVector extends AbstractVector {
         if (minCapacity < 0) // overflow
             throw new OutOfMemoryError();
         return (minCapacity > MAX_ARRAY_SIZE) ? Integer.MAX_VALUE : MAX_ARRAY_SIZE;
-    }
-
-    // Positional Access Operations
-
-    public void add(int x) {
-        ensureCapacityInternal(rows + 1);
-        data[rows++] = x;
-    }
-
-    public void add(int index, int element) {
-        rangeCheck(index);
-
-        ensureCapacityInternal(rows + 1);
-        System.arraycopy(data, index, data, index + 1, rows - index);
-        data[index] = element;
-        rows++;
-    }
-
-    public double remove(int index) {
-        rangeCheck(index);
-        double oldValue = data[index];
-        int numMoved = rows - index - 1;
-        if (numMoved > 0)
-            System.arraycopy(data, index + 1, data, index, numMoved);
-        return oldValue;
-    }
-
-    public void clear() {
-        rows = 0;
-    }
-
-    public boolean addAll(Collection<? extends Double> c) {
-        Object[] a = c.toArray();
-        int numNew = a.length;
-        ensureCapacityInternal(rows + numNew);
-        System.arraycopy(a, 0, data, rows, numNew);
-        rows += numNew;
-        return numNew != 0;
-    }
-
-    public boolean addAll(int index, Collection<? extends Double> c) {
-        rangeCheck(index);
-
-        Object[] a = c.toArray();
-        int numNew = a.length;
-        ensureCapacityInternal(rows + numNew);
-
-        int numMoved = rows - index;
-        if (numMoved > 0)
-            System.arraycopy(data, index, data, index + numNew, numMoved);
-
-        System.arraycopy(a, 0, data, index, numNew);
-        rows += numNew;
-        return numNew != 0;
-    }
-
-    protected void removeRange(int fromIndex, int toIndex) {
-        int numMoved = rows - toIndex;
-        System.arraycopy(data, toIndex, data, fromIndex,
-                numMoved);
-
-        // clear to let GC do its work
-        int newSize = rows - (toIndex - fromIndex);
-        rows = newSize;
     }
 
     private void rangeCheck(int index) {
@@ -196,6 +119,22 @@ public class IdxVector extends AbstractVector {
     }
 
     @Override
+    public void addIndex(int value) {
+        ensureCapacityInternal(rows + 1);
+        data[rows++] = value;
+    }
+
+    @Override
+    public void addIndex(int index, int value) {
+        rangeCheck(index);
+
+        ensureCapacityInternal(rows + 1);
+        System.arraycopy(data, index, data, index + 1, rows - index);
+        data[index] = value;
+        rows++;
+    }
+
+    @Override
     public double getValue(int row) {
         return getIndex(row);
     }
@@ -203,6 +142,16 @@ public class IdxVector extends AbstractVector {
     @Override
     public void setValue(int row, double value) {
         setIndex(row, (int) Math.rint(value));
+    }
+
+    @Override
+    public void addValue(double value) {
+        addIndex((int) Math.rint(value));
+    }
+
+    @Override
+    public void addValue(int row, double value) {
+        addIndex(row, (int) Math.rint(value));
     }
 
     @Override
@@ -216,8 +165,23 @@ public class IdxVector extends AbstractVector {
     }
 
     @Override
+    public void addLabel(String value) {
+        throw new RuntimeException("Operation not available for index vectors.");
+    }
+
+    @Override
+    public void addLabel(int row, String value) {
+        throw new RuntimeException("Operation not available for index vectors.");
+    }
+
+    @Override
     public String[] getDictionary() {
-        return new String[0];
+        throw new RuntimeException("Operation not available for index vectors.");
+    }
+
+    @Override
+    public void setDictionary(String[] dict) {
+        throw new RuntimeException("Operation not available for index vectors.");
     }
 
     @Override
@@ -228,5 +192,39 @@ public class IdxVector extends AbstractVector {
     @Override
     public void setMissing(int row) {
         setIndex(row, MISSING_VALUE);
+    }
+
+    @Override
+    public void remove(int index) {
+        rangeCheck(index);
+        int numMoved = rows - index - 1;
+        if (numMoved > 0)
+            System.arraycopy(data, index + 1, data, index, numMoved);
+    }
+
+    @Override
+    public void removeRange(int fromIndex, int toIndex) {
+        int numMoved = rows - toIndex;
+        System.arraycopy(data, toIndex, data, fromIndex, numMoved);
+        rows -= (toIndex - fromIndex);
+    }
+
+    @Override
+    public void clear() {
+        rows = 0;
+    }
+
+    @Override
+    public void ensureCapacity(int minCapacity) {
+        int minExpand = (data != EMPTY_DATA) ? 0 : DEFAULT_CAPACITY;
+        if (minCapacity > minExpand && minCapacity - data.length > 0)
+            grow(minCapacity);
+    }
+
+    @Override
+    public void trimToSize() {
+        if (rows < data.length) {
+            data = Arrays.copyOf(data, rows);
+        }
     }
 }

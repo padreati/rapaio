@@ -88,6 +88,16 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
+    public void addValue(double value) {
+        throw new IllegalArgumentException("operation not available on mapped vectors");
+    }
+
+    @Override
+    public void addValue(int row, double value) {
+        throw new IllegalArgumentException("operation not available on mapped vectors");
+    }
+
+    @Override
     public int getIndex(int row) {
         return source.getIndex(mapping.get(row));
     }
@@ -95,6 +105,16 @@ public class MappedVector extends AbstractVector {
     @Override
     public void setIndex(int row, int value) {
         source.setIndex(mapping.get(row), value);
+    }
+
+    @Override
+    public void addIndex(int value) {
+        throw new IllegalArgumentException("operation not available on mapped vectors");
+    }
+
+    @Override
+    public void addIndex(int row, int value) {
+        throw new IllegalArgumentException("operation not available on mapped vectors");
     }
 
     @Override
@@ -108,8 +128,23 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
+    public void addLabel(String value) {
+        throw new IllegalArgumentException("operation not available on mapped vectors");
+    }
+
+    @Override
+    public void addLabel(int row, String value) {
+        throw new IllegalArgumentException("operation not available on mapped vectors");
+    }
+
+    @Override
     public String[] getDictionary() {
         return source.getDictionary();
+    }
+
+    @Override
+    public void setDictionary(String[] dict) {
+        source.setDictionary(dict);
     }
 
     @Override
@@ -120,5 +155,30 @@ public class MappedVector extends AbstractVector {
     @Override
     public void setMissing(int row) {
         source.setMissing(mapping.get(row));
+    }
+
+    @Override
+    public void remove(int row) {
+        throw new IllegalArgumentException("operation not available on mapped vectors");
+    }
+
+    @Override
+    public void removeRange(int from, int to) {
+        throw new IllegalArgumentException("operation not available on mapped vectors");
+    }
+
+    @Override
+    public void clear() {
+        throw new IllegalArgumentException("operation not available on mapped vectors");
+    }
+
+    @Override
+    public void trimToSize() {
+        throw new IllegalArgumentException("operation not available on mapped vectors");
+    }
+
+    @Override
+    public void ensureCapacity(int minCapacity) {
+        throw new IllegalArgumentException("operation not available on mapped vectors");
     }
 }

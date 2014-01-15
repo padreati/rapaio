@@ -36,16 +36,16 @@ public class PerformanceTests {
             for (int j = 0; j < LEN; j++) {
                 values[j] += j * Math.sin(j);
             }
-            time1.add(System.currentTimeMillis() - start);
+            time1.addValue(System.currentTimeMillis() - start);
 
             start = System.currentTimeMillis();
             NumVector numVector = new NumVector(LEN);
             for (int j = 0; j < LEN; j++) {
-                numVector.add(j * Math.sin(j));
+                numVector.addValue(j * Math.sin(j));
             }
-            time2.add(System.currentTimeMillis() - start);
-            index.add(i);
-            delta.add(time1.getValue(i) - time2.getValue(i));
+            time2.addValue(System.currentTimeMillis() - start);
+            index.addIndex(i);
+            delta.addValue(time1.getValue(i) - time2.getValue(i));
         }
 
 //        draw(new Plot()
