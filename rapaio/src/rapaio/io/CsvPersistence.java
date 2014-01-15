@@ -352,7 +352,7 @@ public class CsvPersistence {
                         writer.append("?");
                         continue;
                     }
-                    if (df.getCol(j).isNominal()) {
+                    if (df.getCol(j).getType().isNominal()) {
                         writer.append(unclean(df.getLabel(i, j)));
                     } else {
                         writer.append(format.format(df.getValue(i, j)));

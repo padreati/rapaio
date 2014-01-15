@@ -40,18 +40,18 @@ public class SortVectorTest {
     public void smokeTest() {
         Vector v = Vectors.newIdx(0);
         Vector sorted = sort(v, indexComparator(v, true));
-        assertTrue(sorted.isNumeric());
-        assertFalse(sorted.isNominal());
+        assertTrue(sorted.getType().isNumeric());
+        assertFalse(sorted.getType().isNominal());
 
         v = new NumVector(0);
         sorted = sort(v, numericComparator(v, true));
-        assertTrue(sorted.isNumeric());
-        assertFalse(sorted.isNominal());
+        assertTrue(sorted.getType().isNumeric());
+        assertFalse(sorted.getType().isNominal());
 
         v = new NomVector(0, new String[]{});
         sorted = sort(v, nominalComparator(v, true));
-        assertFalse(sorted.isNumeric());
-        assertTrue(sorted.isNominal());
+        assertFalse(sorted.getType().isNumeric());
+        assertTrue(sorted.getType().isNominal());
     }
 
     @Test

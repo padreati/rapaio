@@ -35,7 +35,7 @@ public class EuclideanDistance implements Distance {
     public double measure(Frame df1, int row1, Frame df2, int row2) {
         double total = 0;
         for (int i = 0; i < df1.getColCount(); i++) {
-            if (df1.getCol(i).isNominal()) {
+            if (df1.getCol(i).getType().isNominal()) {
                 if (df1.getIndex(row1, i) == df2.getIndex(row2, i)) {
                     total++;
                 }

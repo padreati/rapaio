@@ -28,21 +28,7 @@ import java.io.Serializable;
  */
 public interface Vector extends Serializable {
 
-    /**
-     * Specifies if a vector contains numeric values.
-     * <p/>
-     * This is used by continuous or discrete random variable observations.
-     *
-     * @return true if the vector is numeric
-     */
-    boolean isNumeric();
-
-    /**
-     * Specifies if the vector contains categorical/nominal values.
-     *
-     * @return true is the vector is nominal, false otherwise
-     */
-    boolean isNominal();
+    VectorType getType();
 
     boolean isMappedVector();
 

@@ -37,8 +37,8 @@ public class NomVectorTest {
         assertEquals(1, v.getDictionary().length);
         assertEquals("?", v.getDictionary()[0]);
 
-        assertTrue(v.isNominal());
-        assertFalse(v.isNumeric());
+        assertTrue(v.getType().isNominal());
+        assertFalse(v.getType().isNumeric());
 
         v = new NomVector(1, new String[]{"a"});
         assertEquals(1, v.getRowCount());

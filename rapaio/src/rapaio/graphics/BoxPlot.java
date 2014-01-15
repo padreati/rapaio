@@ -83,14 +83,14 @@ public class BoxPlot extends AbstractFigure {
         if (colRange == null) {
             int len = 0;
             for (int i = 0; i < df.getColCount(); i++) {
-                if (df.getCol(i).isNumeric()) {
+                if (df.getCol(i).getType().isNumeric()) {
                     len++;
                 }
             }
             int[] indexes = new int[len];
             len = 0;
             for (int i = 0; i < df.getColCount(); i++) {
-                if (df.getCol(i).isNumeric()) {
+                if (df.getCol(i).getType().isNumeric()) {
                     indexes[len++] = i;
                 }
             }

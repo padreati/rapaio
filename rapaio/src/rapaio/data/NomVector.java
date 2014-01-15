@@ -73,6 +73,11 @@ public class NomVector extends AbstractVector {
         rows = size;
     }
 
+    @Override
+    public VectorType getType() {
+        return VectorType.NOMINAL;
+    }
+
     private void grow(int minCapacity) {
         // overflow-conscious code
         int oldCapacity = data.length;
@@ -81,16 +86,6 @@ public class NomVector extends AbstractVector {
             newCapacity = minCapacity;
         // minCapacity is usually close to size, so this is a win:
         data = Arrays.copyOf(data, newCapacity);
-    }
-
-    @Override
-    public boolean isNumeric() {
-        return false;
-    }
-
-    @Override
-    public boolean isNominal() {
-        return true;
     }
 
     @Override

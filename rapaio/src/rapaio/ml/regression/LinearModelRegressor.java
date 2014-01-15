@@ -27,7 +27,7 @@ public class LinearModelRegressor extends AbstractRegressor {
         predictors.clear();
         this.targetColName = targetColName;
         for (String colName : df.getColNames()) {
-            if (!targetColName.contains(colName) && df.getCol(colName).isNumeric()) {
+            if (!targetColName.contains(colName) && df.getCol(colName).getType().isNumeric()) {
                 predictors.add(colName);
             }
         }

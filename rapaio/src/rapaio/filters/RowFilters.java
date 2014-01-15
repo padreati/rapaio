@@ -75,7 +75,7 @@ public final class RowFilters {
     }
 
     public static Vector sort(Vector v, boolean asc) {
-        if (v.isNumeric()) {
+        if (v.getType().isNumeric()) {
             return sort(v, RowComparators.numericComparator(v, asc));
         }
         return sort(v, RowComparators.nominalComparator(v, asc));

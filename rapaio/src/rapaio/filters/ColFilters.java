@@ -95,7 +95,7 @@ public final class ColFilters {
     public static Frame retainNumeric(Frame df) {
         int len = 0;
         for (int i = 0; i < df.getColCount(); i++) {
-            if (df.getCol(i).isNumeric()) {
+            if (df.getCol(i).getType().isNumeric()) {
                 len++;
             }
         }
@@ -103,7 +103,7 @@ public final class ColFilters {
         String[] names = new String[len];
         int pos = 0;
         for (int i = 0; i < df.getColCount(); i++) {
-            if (df.getCol(i).isNumeric()) {
+            if (df.getCol(i).getType().isNumeric()) {
                 vectors[pos] = df.getCol(i);
                 names[pos] = df.getColNames()[i];
                 pos++;
@@ -119,7 +119,7 @@ public final class ColFilters {
         List<Vector> vectors = new ArrayList<>();
         List<String> names = new ArrayList<>();
         for (int i = 0; i < df.getColCount(); i++) {
-            if (df.getCol(i).isNominal()) {
+            if (df.getCol(i).getType().isNominal()) {
                 vectors.add(df.getCol(i));
                 names.add(df.getColNames()[i]);
             }
@@ -136,7 +136,7 @@ public final class ColFilters {
         }
         Set<Integer> colSet = new HashSet<>(colRange.parseColumnIndexes(df));
         for (int col : colSet) {
-            if (!df.getCol(col).isNumeric()) {
+            if (!df.getCol(col).getType().isNumeric()) {
                 throw new IllegalArgumentException("Non-numeric column found in column range");
             }
         }

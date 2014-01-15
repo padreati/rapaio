@@ -43,18 +43,13 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
+    public VectorType getType() {
+        return source.getType();
+    }
+
+    @Override
     public int getRowCount() {
         return mapping.size();
-    }
-
-    @Override
-    public boolean isNumeric() {
-        return source.isNumeric();
-    }
-
-    @Override
-    public boolean isNominal() {
-        return source.isNominal();
     }
 
     @Override

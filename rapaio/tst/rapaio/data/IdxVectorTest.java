@@ -31,13 +31,17 @@ public class IdxVectorTest {
     @Test
     public void smokeTest() {
         Vector index = Vectors.newIdx(1);
-        assertTrue(index.isNumeric());
-        assertFalse(index.isNominal());
+        assertTrue(index.getType().isNumeric());
+        assertFalse(index.getType().isNominal());
 
         assertEquals(0, index.getRowId(0));
 
-        assertNotNull(index.getDictionary());
-        assertEquals(0, index.getDictionary().length);
+        try {
+            index.getDictionary();
+            assertTrue(false);
+        } catch (RuntimeException ex) {
+            assertTrue(true);
+        }
     }
 
     @Test

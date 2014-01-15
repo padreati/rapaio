@@ -200,7 +200,7 @@ class C45Node {
 
         for (String testColName : testColNames) {
             // for nominal columns
-            if (df.getCol(testColName).isNominal()) {
+            if (df.getCol(testColName).getType().isNominal()) {
                 DensityTable id = new DensityTable(df, weights, testColName, classColName);
                 int count = id.countWithMinimum(false, parent.getMinWeight());
                 if (count < 2) {
@@ -220,7 +220,7 @@ class C45Node {
             }
 
             // for numeric columns
-            if (df.getCol(testColName).isNumeric()) {
+            if (df.getCol(testColName).getType().isNumeric()) {
                 DensityTable id = new DensityTable(DensityTable.NUMERIC_DEFAULT_LABELS, parent.dict);
                 Vector sort = Vectors.newSeq(df.getRowCount());
                 sort = RowFilters.sort(sort, RowComparators.numericComparator(df.getCol(testColName), true));
@@ -267,7 +267,7 @@ class C45Node {
 
         // we have some split
         if (selColName != null) {
-            if (df.getCol(selColName).isNominal()) {
+            if (df.getCol(selColName).getType().isNominal()) {
                 int childrenCount = df.getCol(selColName).getDictionary().length;
 
                 List<Integer>[] childIds = new List[childrenCount];
@@ -326,7 +326,7 @@ class C45Node {
         }
         // if missing aggregate all child nodes
         if (df.getCol(testColName).isMissing(row)) {
-            if (df.getCol(testColName).isNominal()) {
+            if (df.getCol(testColName).getType().isNominal()) {
                 double[] d = new double[parent.dict.length];
                 for (Map.Entry<String, C45Node> entry : nominalChildren.entrySet()) {
                     double[] dd = entry.getValue().computeDistribution(df, row);
@@ -336,7 +336,7 @@ class C45Node {
                 }
                 return d;
             }
-            if (df.getCol(testColName).isNumeric()) {
+            if (df.getCol(testColName).getType().isNumeric()) {
                 double[] d = new double[parent.dict.length];
                 double[] left = numericLeftChild.computeDistribution(df, row);
                 double[] right = numericRightChild.computeDistribution(df, row);
@@ -351,7 +351,7 @@ class C45Node {
         }
 
         // we have a value
-        if (df.getCol(testColName).isNominal()) {
+        if (df.getCol(testColName).getType().isNominal()) {
             String label = df.getLabel(row, testColName);
             for (Map.Entry<String, C45Node> entry : nominalChildren.entrySet()) {
                 if (entry.getKey().equals(label)) {
@@ -361,7 +361,7 @@ class C45Node {
             // should not be here
             return null;
         }
-        if (df.getCol(testColName).isNumeric()) {
+        if (df.getCol(testColName).getType().isNumeric()) {
             if (df.getValue(row, testColName) <= testValue) {
                 return numericLeftChild.computeDistribution(df, row);
             } else {

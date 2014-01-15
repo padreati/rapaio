@@ -68,7 +68,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
         for (String colName : colNames) {
             if (classColName.equals(colName)) continue;
             Vector col = df.getCol(colName);
-            if (col.isNumeric()) {
+            if (col.getType().isNumeric()) {
                 evaluateNumeric(df, weights, classCol, col, colName, total);
             } else {
                 evaluateNominal(df, weights, classCol, col, colName, total);
@@ -217,7 +217,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
                 continue;
             }
             Vector col = df.getCol(splitCol);
-            if (col.isNumeric()) {
+            if (col.getType().isNumeric()) {
                 if (col.getValue(i) <= splitValue) {
                     pred.setLabel(i, leftLabel);
                 } else {

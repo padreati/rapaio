@@ -56,7 +56,7 @@ public final class BaseFilters {
      * @return converted getValue vector
      */
     public static Vector toNumeric(Vector v) {
-        if (v.isNumeric()) {
+        if (v.getType().isNumeric()) {
             return v;
         }
         Vector result = new NumVector(v.getRowCount());
@@ -81,11 +81,11 @@ public final class BaseFilters {
                 continue;
             }
             try {
-                if (v.isNominal()) {
+                if (v.getType().isNominal()) {
                     int value = Integer.parseInt(v.getLabel(i));
                     result.setIndex(i, value);
                 }
-                if (v.isNumeric()) {
+                if (v.getType().isNumeric()) {
                     result.setIndex(i, result.getIndex(i));
                 }
             } catch (NumberFormatException nfe) {

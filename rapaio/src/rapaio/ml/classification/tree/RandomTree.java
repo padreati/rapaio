@@ -163,7 +163,7 @@ public class RandomTree extends AbstractClassifier<RandomTree> {
             }
             return pd;
         }
-        if (df.getCol(col).isNumeric()) {
+        if (df.getCol(col).getType().isNumeric()) {
             double value = df.getValue(row, col);
             return predict(df, row, value <= node.splitValue ? node.leftNode : node.rightNode);
         } else {
@@ -241,7 +241,7 @@ class TreeNode {
             int colIndex = df.getColIndex(colName);
 
             Vector col = df.getCol(colIndex);
-            if (col.isNumeric()) {
+            if (col.getType().isNumeric()) {
                 evaluateNumericCol(df, weights, classColIndex, classCol, colIndex, col, tree);
             } else {
                 evaluateNominalCol(df, weights, classColIndex, classCol, colIndex, col);
@@ -265,8 +265,8 @@ class TreeNode {
                     missingWeight += weights.get(i);
                     continue;
                 }
-                if ((col.isNominal() && splitLabel.equals(col.getLabel(i)))
-                        || col.isNumeric() && col.getValue(i) <= splitValue) {
+                if ((col.getType().isNominal() && splitLabel.equals(col.getLabel(i)))
+                        || col.getType().isNumeric() && col.getValue(i) <= splitValue) {
                     leftMap.add(id);
                     leftWeights.add(weights.get(i));
                     leftWeight += weights.get(i);

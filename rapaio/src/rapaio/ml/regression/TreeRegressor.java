@@ -91,7 +91,7 @@ class TreeNode {
 
         String[] colNames = parent.colSelector.nextColNames();
         for (String testColName : colNames) {
-            if (df.getCol(testColName).isNumeric() && !targetColNames.equals(testColName)) {
+            if (df.getCol(testColName).getType().isNumeric() && !targetColNames.equals(testColName)) {
                 evaluateNumeric(parent, df, weights, targetColNames, testColName);
             }
         }

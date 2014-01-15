@@ -33,9 +33,9 @@ public class NumVectorTest {
     @Test
     public void smokeTest() {
         Vector v = new NumVector(0);
-        boolean flag = v.isNumeric();
+        boolean flag = v.getType().isNumeric();
         assertEquals(true, flag);
-        assertEquals(false, v.isNominal());
+        assertEquals(false, v.getType().isNominal());
 
         assertEquals(0, v.getRowCount());
     }
@@ -72,7 +72,13 @@ public class NumVectorTest {
         }
         assertTrue(exceptional);
 
-        assertEquals(0, v.getDictionary().length);
+        exceptional = false;
+        try {
+            v.getDictionary();
+        } catch (Throwable ex) {
+            exceptional = true;
+        }
+        assertTrue(exceptional);
     }
 
     @Test

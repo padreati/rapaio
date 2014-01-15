@@ -43,7 +43,7 @@ public class Mode implements Summarizable {
     }
 
     private String[] compute() {
-        if (!vector.isNominal()) {
+        if (!vector.getType().isNominal()) {
             throw new IllegalArgumentException("Can't compute mode for other than nominal vectors");
         }
         int[] freq = new int[vector.getDictionary().length];

@@ -52,10 +52,10 @@ public class ConfusionMatrix implements Summarizable {
     }
 
     private void validate(Vector actual, Vector predict) {
-        if (!actual.isNominal()) {
+        if (!actual.getType().isNominal()) {
             throw new IllegalArgumentException("actual values vector must be nominal");
         }
-        if (!predict.isNominal()) {
+        if (!predict.getType().isNominal()) {
             throw new IllegalArgumentException("predict values vector must be nominal");
         }
         if (actual.getDictionary().length != predict.getDictionary().length) {

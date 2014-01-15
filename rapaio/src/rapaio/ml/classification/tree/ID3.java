@@ -186,7 +186,7 @@ public class ID3 extends AbstractClassifier<ID3> {
 
     private void validate(Frame df, int classIndex) {
         for (int i = 0; i < df.getColCount(); i++) {
-            if (!df.getCol(i).isNominal()) {
+            if (!df.getCol(i).getType().isNominal()) {
                 throw new IllegalArgumentException("ID3 can handle only isNominal attributes.");
             }
         }

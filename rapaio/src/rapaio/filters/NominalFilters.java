@@ -43,7 +43,7 @@ public final class NominalFilters {
      * @return original vector with missing value on matched positions
      */
     public static Vector fillMissingValues(Vector vector, String[] missingValues) {
-        if (!vector.isNominal()) {
+        if (!vector.getType().isNominal()) {
             throw new IllegalArgumentException("Vector is not isNominal.");
         }
         for (int i = 0; i < vector.getRowCount(); i++) {
@@ -67,7 +67,7 @@ public final class NominalFilters {
      * @return an array of frames, one for each nominal label
      */
     public static Frame[] groupByNominal(final Frame df, final int nominalIndex) {
-        if (!df.getCol(nominalIndex).isNominal()) {
+        if (!df.getCol(nominalIndex).getType().isNominal()) {
             throw new IllegalArgumentException("Index does not specify a nominal attribute");
         }
         int len = df.getCol(nominalIndex).getDictionary().length;
@@ -98,7 +98,7 @@ public final class NominalFilters {
         for (int i = 0; i < source.size(); i++) {
             for (Frame frame : source) {
                 for (String colName : frame.getColNames()) {
-                    if (!frame.getCol(colName).isNominal()) {
+                    if (!frame.getCol(colName).getType().isNominal()) {
                         continue;
                     }
                     if (!dicts.containsKey(colName)) {
@@ -116,7 +116,7 @@ public final class NominalFilters {
             for (int i = 0; i < frame.getColCount(); i++) {
                 Vector v = frame.getCol(i);
                 String colName = frame.getColNames()[i];
-                if (!v.isNominal()) {
+                if (!v.getType().isNominal()) {
                     vectors[i] = v;
                 } else {
                     vectors[i] = new NomVector(v.getRowCount(), dicts.get(colName));

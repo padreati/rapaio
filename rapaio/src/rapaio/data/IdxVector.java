@@ -46,6 +46,11 @@ public class IdxVector extends AbstractVector {
             grow(minCapacity);
     }
 
+    @Override
+    public VectorType getType() {
+        return VectorType.INDEX;
+    }
+
     private void grow(int minCapacity) {
         // overflow-conscious code
         int oldCapacity = data.length;
@@ -71,16 +76,6 @@ public class IdxVector extends AbstractVector {
 
     private String outOfBoundsMsg(int index) {
         return "Index: " + index + ", Size: " + rows;
-    }
-
-    @Override
-    public boolean isNumeric() {
-        return true;
-    }
-
-    @Override
-    public boolean isNominal() {
-        return false;
     }
 
     @Override

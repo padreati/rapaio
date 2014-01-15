@@ -21,13 +21,13 @@ public class RMSE implements Summarizable {
     public RMSE(Frame dfSource, Frame dfTarget) {
         source = new ArrayList<>();
         for (int i = 0; i < dfSource.getColCount(); i++) {
-            if (dfSource.getCol(i).isNumeric()) {
+            if (dfSource.getCol(i).getType().isNumeric()) {
                 source.add(dfSource.getCol(i));
             }
         }
         target = new ArrayList<>();
         for (int i = 0; i < dfTarget.getColCount(); i++) {
-            if (dfTarget.getCol(i).isNumeric()) {
+            if (dfTarget.getCol(i).getType().isNumeric()) {
                 target.add(dfTarget.getCol(i));
             }
         }

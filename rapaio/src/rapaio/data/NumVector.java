@@ -61,6 +61,11 @@ public class NumVector extends AbstractVector {
         this.rows = values.length;
     }
 
+    @Override
+    public VectorType getType() {
+        return VectorType.NUMERIC;
+    }
+
     private void ensureCapacityInternal(int minCapacity) {
         if (data == EMPTY_DATA) {
             minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
@@ -127,16 +132,6 @@ public class NumVector extends AbstractVector {
     private void rangeCheck(int index) {
         if (index > rows || index < 0)
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + rows);
-    }
-
-    @Override
-    public boolean isNumeric() {
-        return true;
-    }
-
-    @Override
-    public boolean isNominal() {
-        return false;
     }
 
     @Override
@@ -218,7 +213,7 @@ public class NumVector extends AbstractVector {
 
     @Override
     public String getLabel(int row) {
-        throw new RuntimeException("Operation not available for numeric vectors.");
+        return "";
     }
 
     @Override

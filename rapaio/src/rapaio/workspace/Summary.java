@@ -64,7 +64,7 @@ public class Summary {
             int i = df.getColIndex(names[k]);
 
             Vector v = df.getCol(i);
-            if (v.isNumeric()) {
+            if (v.getType().isNumeric()) {
                 double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
                 double[] perc = new Quantiles(v, p).getValues();
                 double mean = new Mean(v).getValue();
@@ -96,7 +96,7 @@ public class Summary {
                 }
             }
 
-            if (v.isNominal()) {
+            if (v.getType().isNominal()) {
                 int[] hits = new int[v.getDictionary().length];
                 int[] indexes = new int[v.getDictionary().length];
                 for (int j = 0; j < df.getRowCount(); j++) {
@@ -243,7 +243,7 @@ public class Summary {
             second[i] = " ";
         }
 
-        if (v.isNumeric()) {
+        if (v.getType().isNumeric()) {
             double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
             double[] perc = new Quantiles(v, p).getValues();
             double mean = new Mean(v).getValue();
@@ -275,7 +275,7 @@ public class Summary {
             }
         }
 
-        if (v.isNominal()) {
+        if (v.getType().isNominal()) {
             int[] hits = new int[v.getRowCount() + 1];
             int[] indexes = new int[v.getRowCount() + 1];
             for (int j = 0; j < v.getRowCount(); j++) {
@@ -423,10 +423,10 @@ public class Summary {
         for (int i = 0; i < vectors.length; i++) {
             max[i] = names[i].length() + 1;
             for (int j = 0; j < vectors[i].getRowCount(); j++) {
-                if (vectors[i].isNominal() && max[i] < vectors[i].getLabel(j).length()) {
+                if (vectors[i].getType().isNominal() && max[i] < vectors[i].getLabel(j).length()) {
                     max[i] = vectors[i].getLabel(j).length();
                 }
-                if (vectors[i].isNumeric()) {
+                if (vectors[i].getType().isNumeric()) {
                     String value = String.format("%s", String.format("%.10f", vectors[i].getValue(j)));
                     if (max[i] < value.length()) {
                         max[i] = value.length();
@@ -458,7 +458,7 @@ public class Summary {
             for (int i = 0; i < lines; i++) {
                 for (int j = start; j <= pos; j++) {
                     String value;
-                    if (vectors[j].isNominal()) {
+                    if (vectors[j].getType().isNominal()) {
                         value = String.format("%" + max[j] + "s", vectors[j].getLabel(i));
                     } else {
                         value = String.format("%" + max[j] + "s", String.format("%.10f", vectors[j].getValue(i)));

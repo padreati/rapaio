@@ -66,13 +66,13 @@ public class OneRule extends AbstractClassifier<OneRule> {
         for (String sourceColName : df.getColNames()) {
             if (classColName.equals(sourceColName))
                 continue;
-            if (df.getCol(sourceColName).isNominal()) {
+            if (df.getCol(sourceColName).getType().isNominal()) {
                 OneRuleSet ruleSet = buildNominal(sourceColName, classColName, df, weights);
                 if (bestRuleSet == null || ruleSet.getAccuracy() > bestRuleSet.getAccuracy()) {
                     bestRuleSet = ruleSet;
                 }
             }
-            if (df.getCol(sourceColName).isNumeric()) {
+            if (df.getCol(sourceColName).getType().isNumeric()) {
                 OneRuleSet ruleSet = buildNumeric(sourceColName, classColName, df, weights);
                 if (bestRuleSet == null || ruleSet.getAccuracy() > bestRuleSet.getAccuracy()) {
                     bestRuleSet = ruleSet;
@@ -106,7 +106,7 @@ public class OneRule extends AbstractClassifier<OneRule> {
         }
         String colName = bestRuleSet.getColName();
 
-        if (test.getCol(colName).isNominal()) {
+        if (test.getCol(colName).getType().isNominal()) {
             String value = test.getLabel(row, test.getColIndex(colName));
             for (GenericOneRule oneRule : bestRuleSet.getRules()) {
                 NominalOneRule nominal = (NominalOneRule) oneRule;
@@ -115,7 +115,7 @@ public class OneRule extends AbstractClassifier<OneRule> {
                 }
             }
         }
-        if (test.getCol(colName).isNumeric()) {
+        if (test.getCol(colName).getType().isNumeric()) {
             boolean missing = test.getCol(colName).isMissing(row);
             double value = test.getValue(row, test.getColIndex(colName));
             for (GenericOneRule oneRule : bestRuleSet.getRules()) {
@@ -145,7 +145,7 @@ public class OneRule extends AbstractClassifier<OneRule> {
         if (classIndex >= df.getColCount()) {
             throw new IllegalArgumentException("classIndex is invalid");
         }
-        if (!df.getCol(classIndex).isNominal()) {
+        if (!df.getCol(classIndex).getType().isNominal()) {
             throw new IllegalArgumentException("classIndex does not denote a isNominal vector");
         }
         if (df.getRowCount() == 0) {

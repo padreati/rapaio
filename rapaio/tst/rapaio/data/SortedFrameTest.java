@@ -43,7 +43,6 @@ public class SortedFrameTest {
 
     @Before
     public void init() throws IOException, URISyntaxException {
-        final String csv = new String();
         CsvPersistence persistence = new CsvPersistence();
         persistence.setHasHeader(true);
         persistence.setHasQuotas(false);
@@ -148,7 +147,7 @@ public class SortedFrameTest {
             assertEquals(df.getColNames()[i], sorted.getColNames()[i]);
             assertEquals(df.getColIndex(df.getColNames()[i]), sorted.getColIndex(sorted.getColNames()[i]));
             assertEquals(df.getColNames()[i], sorted.getColNames()[i]);
-            assertEquals(df.getCol(df.getColNames()[i]).isNominal(), sorted.getCol(sorted.getColNames()[i]).isNominal());
+            assertEquals(df.getCol(df.getColNames()[i]).getType().isNominal(), sorted.getCol(sorted.getColNames()[i]).getType().isNominal());
         }
     }
 
@@ -159,7 +158,7 @@ public class SortedFrameTest {
         for (int i = 0; i < 10_000; i++) {
             int col = RandomSource.nextInt(sorted.getColCount());
             boolean asc = RandomSource.nextDouble() >= .5;
-            Comparator<Integer> comp = sorted.getCol(col).isNominal() ?
+            Comparator<Integer> comp = sorted.getCol(col).getType().isNominal() ?
                     nominalComparator(sorted.getCol(0), asc) :
                     numericComparator(sorted.getCol(0), asc);
             sorted = sort(sorted, comp);
