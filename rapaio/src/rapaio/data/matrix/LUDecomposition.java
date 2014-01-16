@@ -264,7 +264,7 @@ public class LUDecomposition implements java.io.Serializable {
         return d;
     }
 
-//    /**
+    //    /**
 //     * Solve A*X = B
 //     *
 //     * @param B A Matrix with as many rowCount as A and any number of columns.
@@ -272,7 +272,9 @@ public class LUDecomposition implements java.io.Serializable {
 //     * @throws IllegalArgumentException Matrix row dimensions must agree.
 //     * @throws RuntimeException         Matrix is singular.
 //     */
-//    public Matrix solve(Matrix B) {
+    public Matrix solve(Matrix B) {
+        //TODO
+        return null;
 //        if (B.getRows() != m) {
 //            throw new IllegalArgumentException("Matrix row dimensions must agree.");
 //        }
@@ -305,6 +307,6 @@ public class LUDecomposition implements java.io.Serializable {
 //            }
 //        }
 //        return Xmat;
-//    }
+    }
 
 }

@@ -1,8 +1,12 @@
 package rapaio.data.matrix;
 
+import rapaio.core.RandomSource;
+
 /**
  * Matrix operations
  * <p/>
+ * @author The MathWorks, Inc. and the National Institute of Standards and Technology.
+ * @version 5 August 1998
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 public class MatrixMath {
@@ -13,7 +17,7 @@ public class MatrixMath {
      * @param A list of matrices
      * @return sum of As
      */
-    public static Matrix add(Matrix... A) {
+    public static Matrix plus(Matrix... A) {
         if (A.length == 0) {
             throw new IllegalArgumentException("can't add zero matrices");
         }
@@ -43,6 +47,21 @@ public class MatrixMath {
         for (int i = 0; i < C.m; i++) {
             for (int j = 0; j < C.n; j++) {
                 C.set(i, j, A.get(i, j) - B.get(i, j));
+            }
+        }
+        return C;
+    }
+
+    /**
+     * Unary minus
+     *
+     * @return -A
+     */
+    public Matrix uminus(Matrix A) {
+        Matrix C = new Matrix(A.m, A.n);
+        for (int i = 0; i < C.m; i++) {
+            for (int j = 0; j < C.n; j++) {
+                C.set(i, j, -A.get(i, j));
             }
         }
         return C;
@@ -126,6 +145,71 @@ public class MatrixMath {
     }
 
     /**
+     * Generate matrix with random elements
+     *
+     * @param m Number of rowCount.
+     * @param n Number of colums.
+     * @return An m-by-n matrix with uniformly distributed random elements.
+     */
+
+    public static Matrix random(int m, int n) {
+        Matrix A = new Matrix(m, n);
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                A.set(i, j, RandomSource.nextDouble());
+            }
+        }
+        return A;
+    }
+
+
+    /**
+     * One norm
+     *
+     * @return maximum column sum.
+     */
+
+    public double norm1(Matrix A) {
+        double f = 0;
+        for (int j = 0; j < A.n; j++) {
+            double s = 0;
+            for (int i = 0; i < A.m; i++) {
+                s += Math.abs(A.get(i, j));
+            }
+            f = Math.max(f, s);
+        }
+        return f;
+    }
+
+
+    /**
+     * Two norm
+     *
+     * @return maximum singular value.
+     */
+    public double norm2(Matrix A) {
+        return (new SingularValueDecomposition(A).norm2());
+    }
+
+    /**
+     * Infinity norm
+     *
+     * @return maximum row sum.
+     */
+
+    public double normInf(Matrix A) {
+        double f = 0;
+        for (int i = 0; i < A.m; i++) {
+            double s = 0;
+            for (int j = 0; j < A.n; j++) {
+                s += Math.abs(A.get(i, j));
+            }
+            f = Math.max(f, s);
+        }
+        return f;
+    }
+
+    /**
      * Frobenius norm
      *
      * @return sqrt of sum of squares of all elements.
@@ -140,5 +224,139 @@ public class MatrixMath {
         }
         return f;
     }
+
+    /**
+     * Matrix inverse or pseudoinverse
+     *
+     * @return inverse(A) if A is square, pseudoinverse otherwise.
+     */
+
+    public Matrix inverse(Matrix A) {
+        return solve(A, identity(A.m, A.m));
+    }
+
+    /**
+     * Matrix determinant
+     *
+     * @return determinant
+     */
+    public double det(Matrix A) {
+        return new LUDecomposition(A).det();
+    }
+
+    /**
+     * Matrix rank
+     *
+     * @return effective numerical rank, obtained from SVD.
+     */
+    public int rank(Matrix A) {
+        return new SingularValueDecomposition(A).rank();
+    }
+
+    /**
+     * Matrix condition (2 norm)
+     *
+     * @return ratio of largest to smallest singular value.
+     */
+    public double cond(Matrix A) {
+        return new SingularValueDecomposition(A).cond();
+    }
+
+    /**
+     * Matrix trace.
+     *
+     * @return sum of the diagonal elements.
+     */
+    public double trace(Matrix A) {
+        double t = 0;
+        for (int i = 0; i < Math.min(A.m, A.n); i++) {
+            t += A.get(i, i);
+        }
+        return t;
+    }
+
+    /**
+     * Solve A*X = B
+     *
+     * @param B right hand side
+     * @return solution if A is square, least squares solution otherwise
+     */
+    public Matrix solve(Matrix A, Matrix B) {
+        return (A.m == A.n ? (new LUDecomposition(A)).solve(B) :
+                (new QRDecomposition(A)).solve(B));
+    }
+
+    /**
+     * Solve X*A = B, which is also A'*X' = B'
+     *
+     * @param B right hand side
+     * @return solution if A is square, least squares solution otherwise.
+     */
+    public Matrix solveTranspose(Matrix A, Matrix B) {
+        return solve(t(A), t(B));
+    }
+
+    private void checkMatrixDimensions(Matrix A, Matrix B) {
+        if (B.m != A.m || B.n != A.n) {
+            throw new IllegalArgumentException("Matrix dimensions must agree.");
+        }
+    }
+
+//    /**
+//     * Element-by-element multiplication, C = A.*B
+//     *
+//     * @param B another matrix
+//     * @return A.*B
+//     */
+//
+//    public Matrix arrayTimes(Matrix B) {
+//        checkMatrixDimensions(B);
+//        Matrix X = new Matrix(m, n);
+//        double[][] C = X.getArray();
+//        for (int i = 0; i < m; i++) {
+//            for (int j = 0; j < n; j++) {
+//                C[i][j] = A[i][j] * B.A[i][j];
+//            }
+//        }
+//        return X;
+//    }
+//
+//    /**
+//     * Element-by-element right division, C = A./B
+//     *
+//     * @param B another matrix
+//     * @return A./B
+//     */
+//
+//    public Matrix arrayRightDivide(Matrix B) {
+//        checkMatrixDimensions(B);
+//        Matrix X = new Matrix(m, n);
+//        double[][] C = X.getArray();
+//        for (int i = 0; i < m; i++) {
+//            for (int j = 0; j < n; j++) {
+//                C[i][j] = A[i][j] / B.A[i][j];
+//            }
+//        }
+//        return X;
+//    }
+//
+//
+//    /**
+//     * Element-by-element left division, C = A.\B
+//     *
+//     * @param B another matrix
+//     * @return A.\B
+//     */
+//
+//    public Matrix arrayLeftDivide(Matrix A, Matrix B) {
+//        checkMatrixDimensions(A, B);
+//        Matrix C = new Matrix(A.m, A.n);
+//        for (int i = 0; i < A.m; i++) {
+//            for (int j = 0; j < A.n; j++) {
+//                C.set(i,j, B.A[i][j] / A[i][j];
+//            }
+//        }
+//        return X;
+//    }
 
 }

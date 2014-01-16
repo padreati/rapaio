@@ -47,7 +47,7 @@ public class MatrixMathTest {
     @Test
     public void basicOperations() {
         assertEqualsM(
-                add(A, B),
+                plus(A, B),
                 new Matrix(3, new double[]{
                         1, 3, 6,
                         8, 5, 0
@@ -62,7 +62,7 @@ public class MatrixMathTest {
         );
 
         assertEqualsM(
-                minus(add(minus(A, B), B), A),
+                minus(plus(minus(A, B), B), A),
                 new Matrix(3, new double[]{
                         0, 0, 0,
                         0, 0, 0
