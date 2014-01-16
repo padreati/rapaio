@@ -1,7 +1,5 @@
 package rapaio.data.matrix;
 
-import static rapaio.core.BaseMath.hypot;
-
 /**
  * QR Decomposition.
  * <p/>
@@ -27,7 +25,7 @@ public class QRDecomposition implements java.io.Serializable {
         // Initialize.
         QR = A.getArrayCopy();
         m = A.getRows();
-        n = A.getColumns();
+        n = A.getCols();
         Rdiag = new double[n];
 
         // Main loop.
@@ -35,7 +33,7 @@ public class QRDecomposition implements java.io.Serializable {
             // Compute 2-norm of k-th column without under/overflow.
             double nrm = 0;
             for (int i = k; i < m; i++) {
-                nrm = hypot(nrm, QR[i][k]);
+                nrm = StrictMath.hypot(nrm, QR[i][k]);
             }
 
             if (nrm != 0.0) {
@@ -181,7 +179,7 @@ public class QRDecomposition implements java.io.Serializable {
         }
 
         // Copy right hand side
-        int nx = B.getColumns();
+        int nx = B.getCols();
         double[][] X = B.getArrayCopy();
 
         // Compute Y = transpose(Q)*B

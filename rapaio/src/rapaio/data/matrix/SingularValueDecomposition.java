@@ -1,23 +1,6 @@
-/*
- * Apache License
- * Version 2.0, January 2004
- * http://www.apache.org/licenses/
- *
- *    Copyright 2013 Aurelian Tutuianu
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- */
-package jama;
+package rapaio.data.matrix;
+
+import static java.lang.StrictMath.hypot;
 
 /**
  * Singular Value Decomposition.
@@ -32,54 +15,22 @@ package jama;
  * The singular value decompostion always exists, so the constructor will never
  * fail. The matrix condition number and the effective numerical rank can be
  * computed from this decomposition.
+ * <p/>
+ * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-
-
 public class SingularValueDecomposition implements java.io.Serializable {
 
-    /*
-     * ------------------------ Class variables ------------------------
-     */
-    /**
-     * Arrays for internal storage of U and V.
-     *
-     * @serial internal storage of U.
-     * @serial internal storage of V.
-     */
     private double[][] U, V;
-
-    /**
-     * Array for internal storage of singular values.
-     *
-     * @serial internal storage of singular values.
-     */
     private double[] s;
-
-    /**
-     * Row and column dimensions.
-     *
-     * @serial row dimension.
-     * @serial column dimension.
-     */
     private int m, n;
 
-    /*
-     * ------------------------ Constructor ------------------------
-     */
-
-    /**
-     * Construct the singular value decomposition Structure to access U, S and
-     * V.
-     *
-     * @param Arg Rectangular rapaio.data.matrix
-     */
     public SingularValueDecomposition(Matrix Arg) {
 
         // Derived from LINPACK code.
         // Initialize.
         double[][] A = Arg.getArrayCopy();
-        m = Arg.getRowDimension();
-        n = Arg.getColumnDimension();
+        m = Arg.getRows();
+        n = Arg.getCols();
 
         /*
          * Apparently the failing cases are only a proper subset of (m<n), so
@@ -107,7 +58,7 @@ public class SingularValueDecomposition implements java.io.Serializable {
                 // Compute 2-norm of k-th column without under/overflow.
                 s[k] = 0;
                 for (int i = k; i < m; i++) {
-                    s[k] = Maths.hypot(s[k], A[i][k]);
+                    s[k] = hypot(s[k], A[i][k]);
                 }
                 if (s[k] != 0.0) {
                     if (A[k][k] < 0.0) {
@@ -153,7 +104,7 @@ public class SingularValueDecomposition implements java.io.Serializable {
                 // Compute 2-norm without under/overflow.
                 e[k] = 0;
                 for (int i = k + 1; i < n; i++) {
-                    e[k] = Maths.hypot(e[k], e[i]);
+                    e[k] = hypot(e[k], e[i]);
                 }
                 if (e[k] != 0.0) {
                     if (e[k + 1] < 0.0) {
@@ -326,7 +277,7 @@ public class SingularValueDecomposition implements java.io.Serializable {
                     double f = e[p - 2];
                     e[p - 2] = 0.0;
                     for (int j = p - 2; j >= k; j--) {
-                        double t = Maths.hypot(s[j], f);
+                        double t = hypot(s[j], f);
                         double cs = s[j] / t;
                         double sn = f / t;
                         s[j] = t;
@@ -350,7 +301,7 @@ public class SingularValueDecomposition implements java.io.Serializable {
                     double f = e[k - 1];
                     e[k - 1] = 0.0;
                     for (int j = k; j < p; j++) {
-                        double t = Maths.hypot(s[j], f);
+                        double t = hypot(s[j], f);
                         double cs = s[j] / t;
                         double sn = f / t;
                         s[j] = t;
@@ -394,7 +345,7 @@ public class SingularValueDecomposition implements java.io.Serializable {
 
                     // Chase zeros.
                     for (int j = k; j < p - 1; j++) {
-                        double t = Maths.hypot(f, g);
+                        double t = hypot(f, g);
                         double cs = f / t;
                         double sn = g / t;
                         if (j != k) {
@@ -411,7 +362,7 @@ public class SingularValueDecomposition implements java.io.Serializable {
                                 V[i][j] = t;
                             }
                         }
-                        t = Maths.hypot(f, g);
+                        t = hypot(f, g);
                         cs = f / t;
                         sn = g / t;
                         s[j] = t;
@@ -477,17 +428,8 @@ public class SingularValueDecomposition implements java.io.Serializable {
         }
     }
 
-    /*
-     * ------------------------ Public Methods ------------------------
-     */
-
-    /**
-     * Return the left singular vectors
-     *
-     * @return U
-     */
     public Matrix getU() {
-        return new Matrix(U, m, Math.min(m + 1, n));
+        return new Matrix(U, 0, m - 1, 0, Math.min(m + 1, n) - 1);
     }
 
     /**
@@ -496,7 +438,7 @@ public class SingularValueDecomposition implements java.io.Serializable {
      * @return V
      */
     public Matrix getV() {
-        return new Matrix(V, n, n);
+        return new Matrix(V, 0, n - 1, 0, n - 1);
     }
 
     /**
@@ -514,15 +456,14 @@ public class SingularValueDecomposition implements java.io.Serializable {
      * @return S
      */
     public Matrix getS() {
-        Matrix X = new Matrix(n, n);
-        double[][] S = X.getArray();
+        Matrix S = new Matrix(n, n);
         for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                S[i][j] = 0.0;
-            }
-            S[i][i] = this.s[i];
+//            for (int j = 0; j < n; j++) {
+//                S.set(i,j,0.0);
+//            }
+            S.set(i, i, this.s[i]);
         }
-        return X;
+        return S;
     }
 
     /**
@@ -544,9 +485,9 @@ public class SingularValueDecomposition implements java.io.Serializable {
     }
 
     /**
-     * Effective numerical rapaio.data.matrix rank
+     * Effective numerical matrix rank
      *
-     * @return Number of nonnegligible singular values.
+     * @return Number of non-negligible singular values.
      */
     public int rank() {
         double eps = Math.pow(2.0, -52.0);
@@ -559,6 +500,4 @@ public class SingularValueDecomposition implements java.io.Serializable {
         }
         return r;
     }
-
-    private static final long serialVersionUID = 1;
 }

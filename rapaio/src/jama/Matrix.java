@@ -19,14 +19,6 @@
  */
 package jama;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.io.StreamTokenizer;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.util.Locale;
-
 /**
  * Jama = Java Matrix class.
  * <p/>
@@ -560,15 +552,15 @@ public class Matrix implements Cloneable, java.io.Serializable {
         return f;
     }
 
-    /**
-     * Two norm
-     *
-     * @return maximum singular value.
-     */
-
-    public double norm2() {
-        return (new SingularValueDecomposition(this).norm2());
-    }
+//    /**
+//     * Two norm
+//     *
+//     * @return maximum singular value.
+//     */
+//
+//    public double norm2() {
+//        return (new SingularValueDecomposition(this).norm2());
+//    }
 
     /**
      * Infinity norm
@@ -588,21 +580,6 @@ public class Matrix implements Cloneable, java.io.Serializable {
         return f;
     }
 
-    /**
-     * Frobenius norm
-     *
-     * @return sqrt of sum of squares of all elements.
-     */
-
-    public double normF() {
-        double f = 0;
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                f = Maths.hypot(f, A[i][j]);
-            }
-        }
-        return f;
-    }
 
     /**
      * Unary minus
@@ -866,137 +843,82 @@ public class Matrix implements Cloneable, java.io.Serializable {
         return X;
     }
 
-    /**
-     * LU Decomposition
-     *
-     * @return LUDecomposition
-     * @see LUDecomposition
-     */
+//    /**
+//     * Solve A*X = B
+//     *
+//     * @param B right hand side
+//     * @return solution if A is square, least squares solution otherwise
+//     */
+//
+//    public Matrix solve(Matrix B) {
+//        return (m == n ? (new LUDecomposition(this)).solve(B) :
+//                (new QRDecomposition(this)).solve(B));
+//    }
 
-    public LUDecomposition lu() {
-        return new LUDecomposition(this);
-    }
+//    /**
+//     * Solve X*A = B, which is also A'*X' = B'
+//     *
+//     * @param B right hand side
+//     * @return solution if A is square, least squares solution otherwise.
+//     */
+//
+//    public Matrix solveTranspose(Matrix B) {
+//        return transpose().solve(B.transpose());
+//    }
 
-    /**
-     * QR Decomposition
-     *
-     * @return QRDecomposition
-     * @see QRDecomposition
-     */
+//    /**
+//     * Matrix inverse or pseudoinverse
+//     *
+//     * @return inverse(A) if A is square, pseudoinverse otherwise.
+//     */
+//
+//    public Matrix inverse() {
+//        return solve(identity(m, m));
+//    }
 
-    public QRDecomposition qr() {
-        return new QRDecomposition(this);
-    }
+//    /**
+//     * Matrix determinant
+//     *
+//     * @return determinant
+//     */
+//
+//    public double det() {
+//        return new LUDecomposition(this).det();
+//    }
 
-    /**
-     * Cholesky Decomposition
-     *
-     * @return CholeskyDecomposition
-     * @see CholeskyDecomposition
-     */
-
-    public CholeskyDecomposition chol() {
-        return new CholeskyDecomposition(this);
-    }
-
-    /**
-     * Singular Value Decomposition
-     *
-     * @return SingularValueDecomposition
-     * @see SingularValueDecomposition
-     */
-
-    public SingularValueDecomposition svd() {
-        return new SingularValueDecomposition(this);
-    }
-
-    /**
-     * Eigenvalue Decomposition
-     *
-     * @return EigenvalueDecomposition
-     * @see EigenvalueDecomposition
-     */
-
-    public EigenvalueDecomposition eig() {
-        return new EigenvalueDecomposition(this);
-    }
-
-    /**
-     * Solve A*X = B
-     *
-     * @param B right hand side
-     * @return solution if A is square, least squares solution otherwise
-     */
-
-    public Matrix solve(Matrix B) {
-        return (m == n ? (new LUDecomposition(this)).solve(B) :
-                (new QRDecomposition(this)).solve(B));
-    }
-
-    /**
-     * Solve X*A = B, which is also A'*X' = B'
-     *
-     * @param B right hand side
-     * @return solution if A is square, least squares solution otherwise.
-     */
-
-    public Matrix solveTranspose(Matrix B) {
-        return transpose().solve(B.transpose());
-    }
-
-    /**
-     * Matrix inverse or pseudoinverse
-     *
-     * @return inverse(A) if A is square, pseudoinverse otherwise.
-     */
-
-    public Matrix inverse() {
-        return solve(identity(m, m));
-    }
-
-    /**
-     * Matrix determinant
-     *
-     * @return determinant
-     */
-
-    public double det() {
-        return new LUDecomposition(this).det();
-    }
-
-    /**
-     * Matrix rank
-     *
-     * @return effective numerical rank, obtained from SVD.
-     */
-
-    public int rank() {
-        return new SingularValueDecomposition(this).rank();
-    }
-
-    /**
-     * Matrix condition (2 norm)
-     *
-     * @return ratio of largest to smallest singular value.
-     */
-
-    public double cond() {
-        return new SingularValueDecomposition(this).cond();
-    }
-
-    /**
-     * Matrix trace.
-     *
-     * @return sum of the diagonal elements.
-     */
-
-    public double trace() {
-        double t = 0;
-        for (int i = 0; i < Math.min(m, n); i++) {
-            t += A[i][i];
-        }
-        return t;
-    }
+//    /**
+//     * Matrix rank
+//     *
+//     * @return effective numerical rank, obtained from SVD.
+//     */
+//
+//    public int rank() {
+//        return new SingularValueDecomposition(this).rank();
+//    }
+//
+//    /**
+//     * Matrix condition (2 norm)
+//     *
+//     * @return ratio of largest to smallest singular value.
+//     */
+//
+//    public double cond() {
+//        return new SingularValueDecomposition(this).cond();
+//    }
+//
+//    /**
+//     * Matrix trace.
+//     *
+//     * @return sum of the diagonal elements.
+//     */
+//
+//    public double trace() {
+//        double t = 0;
+//        for (int i = 0; i < Math.min(m, n); i++) {
+//            t += A[i][i];
+//        }
+//        return t;
+//    }
 
     /**
      * Generate matrix with random elements
@@ -1017,177 +939,10 @@ public class Matrix implements Cloneable, java.io.Serializable {
         return A;
     }
 
-    /**
-     * Generate identity matrix
-     *
-     * @param m Number of rowCount.
-     * @param n Number of colums.
-     * @return An m-by-n matrix with ones on the diagonal and zeros elsewhere.
-     */
-
-    public static Matrix identity(int m, int n) {
-        Matrix A = new Matrix(m, n);
-        double[][] X = A.getArray();
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                X[i][j] = (i == j ? 1.0 : 0.0);
-            }
-        }
-        return A;
-    }
-
-
-    /**
-     * Print the matrix to stdout.   Line the elements up in columns
-     * with a Fortran-like 'Fw.d' style format.
-     *
-     * @param w Column width.
-     * @param d Number of digits after the decimal.
-     */
-
-    public void print(int w, int d) {
-        print(new PrintWriter(System.out, true), w, d);
-    }
-
-    /**
-     * Print the matrix to the output stream.   Line the elements up in
-     * columns with a Fortran-like 'Fw.d' style format.
-     *
-     * @param output Output stream.
-     * @param w      Column width.
-     * @param d      Number of digits after the decimal.
-     */
-
-    public void print(PrintWriter output, int w, int d) {
-        DecimalFormat format = new DecimalFormat();
-        format.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
-        format.setMinimumIntegerDigits(1);
-        format.setMaximumFractionDigits(d);
-        format.setMinimumFractionDigits(d);
-        format.setGroupingUsed(false);
-        print(output, format, w + 2);
-    }
-
-    /**
-     * Print the matrix to stdout.  Line the elements up in columns.
-     * Use the format object, and right justify within columns of width
-     * characters.
-     * Note that is the matrix is to be read back in, you probably will want
-     * to use a NumberFormat that is set to US Locale.
-     *
-     * @param format A  Formatting object for individual elements.
-     * @param width  Field width for each column.
-     * @see java.text.DecimalFormat#setDecimalFormatSymbols
-     */
-
-    public void print(NumberFormat format, int width) {
-        print(new PrintWriter(System.out, true), format, width);
-    }
-
-    // DecimalFormat is a little disappointing coming from Fortran or C's printf.
-    // Since it doesn't pad on the left, the elements will come out different
-    // widths.  Consequently, we'll pass the desired column width in as an
-    // argument and do the extra padding ourselves.
-
-    /**
-     * Print the matrix to the output stream.  Line the elements up in columns.
-     * Use the format object, and right justify within columns of width
-     * characters.
-     * Note that is the matrix is to be read back in, you probably will want
-     * to use a NumberFormat that is set to US Locale.
-     *
-     * @param output the output stream.
-     * @param format A formatting object to format the matrix elements
-     * @param width  Column width.
-     * @see java.text.DecimalFormat#setDecimalFormatSymbols
-     */
-
-    public void print(PrintWriter output, NumberFormat format, int width) {
-        output.println();  // start on new line.
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                String s = format.format(A[i][j]); // format the number
-                int padding = Math.max(1, width - s.length()); // At _least_ 1 space
-                for (int k = 0; k < padding; k++)
-                    output.print(' ');
-                output.print(s);
-            }
-            output.println();
-        }
-        output.println();   // end with blank line.
-    }
-
-    /**
-     * Read a matrix from a stream.  The format is the same the print method,
-     * so printed matrices can be read back in (provided they were printed using
-     * US Locale).  Elements are separated by
-     * whitespace, all the elements for each row appear on a single line,
-     * the last row is followed by a blank line.
-     *
-     * @param input the input stream.
-     */
-
-    public static Matrix read(BufferedReader input) throws java.io.IOException {
-        StreamTokenizer tokenizer = new StreamTokenizer(input);
-
-        // Although StreamTokenizer will parse numbers, it doesn't recognize
-        // scientific notation (E or D); however, Double.valueOf does.
-        // The strategy here is to disable StreamTokenizer's number parsing.
-        // We'll only get whitespace delimited words, EOL's and EOF's.
-        // These words should all be numbers, for Double.valueOf to parse.
-
-        tokenizer.resetSyntax();
-        tokenizer.wordChars(0, 255);
-        tokenizer.whitespaceChars(0, ' ');
-        tokenizer.eolIsSignificant(true);
-        java.util.Vector<Double> vD = new java.util.Vector<Double>();
-
-        // Ignore initial empty lines
-        while (tokenizer.nextToken() == StreamTokenizer.TT_EOL) ;
-        if (tokenizer.ttype == StreamTokenizer.TT_EOF)
-            throw new java.io.IOException("Unexpected EOF on matrix read.");
-        do {
-            vD.addElement(Double.valueOf(tokenizer.sval)); // Read & store 1st row.
-        } while (tokenizer.nextToken() == StreamTokenizer.TT_WORD);
-
-        int n = vD.size();  // Now we've got the number of columns!
-        double row[] = new double[n];
-        for (int j = 0; j < n; j++)  // extract the elements of the 1st row.
-            row[j] = vD.elementAt(j).doubleValue();
-        java.util.Vector<double[]> v = new java.util.Vector<double[]>();
-        v.addElement(row);  // Start storing rowCount instead of columns.
-        while (tokenizer.nextToken() == StreamTokenizer.TT_WORD) {
-            // While non-empty lines
-            v.addElement(row = new double[n]);
-            int j = 0;
-            do {
-                if (j >= n) throw new java.io.IOException
-                        ("Row " + v.size() + " is too long.");
-                row[j++] = Double.valueOf(tokenizer.sval).doubleValue();
-            } while (tokenizer.nextToken() == StreamTokenizer.TT_WORD);
-            if (j < n) throw new java.io.IOException
-                    ("Row " + v.size() + " is too short.");
-        }
-        int m = v.size();  // Now we've got the number of rowCount.
-        double[][] A = new double[m][];
-        v.copyInto(A);  // copy the rowCount out of the vector
-        return new Matrix(A);
-    }
-
-
-/* ------------------------
-   Private Methods
- * ------------------------ */
-
-    /**
-     * Check if size(A) == size(B) *
-     */
 
     private void checkMatrixDimensions(Matrix B) {
         if (B.m != m || B.n != n) {
             throw new IllegalArgumentException("Matrix dimensions must agree.");
         }
     }
-
-    private static final long serialVersionUID = 1;
 }

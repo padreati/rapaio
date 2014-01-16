@@ -12,9 +12,9 @@ import java.util.List;
  */
 public class Matrix {
 
-    int m; // rowCount
-    int n; // colCount
-    List<Numeric> data; // matrices are stored as column vectors
+    final int m; // rowCount
+    final int n; // colCount
+    final List<Numeric> data; // matrices are stored as column vectors
 
     public Matrix(int m, int n) {
         this.m = m;
@@ -34,10 +34,29 @@ public class Matrix {
         }
     }
 
+    public Matrix(int step, double[] values) {
+        int len = values.length;
+        this.m = len / step;
+        this.n = len / m;
+        if (m * n != len) {
+            throw new IllegalArgumentException("step does not fit the length of values");
+        }
+
+        data = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            data.add(new Numeric());
+        }
+        int pos = 0;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                data.get(j).addValue(values[pos++]);
+            }
+        }
+    }
+
     public Matrix(double[][] source) {
         this(source, 0, source.length - 1, 0, source[0].length - 1);
     }
-
 
     public Matrix(double[][] source, int mFirst, int mLast, int nFirst, int nLast) {
         m = mLast - mFirst + 1;
@@ -65,7 +84,7 @@ public class Matrix {
         return m;
     }
 
-    public int getColumns() {
+    public int getCols() {
         return n;
     }
 

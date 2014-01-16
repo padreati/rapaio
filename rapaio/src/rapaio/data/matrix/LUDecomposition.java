@@ -17,7 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package jama;
+package rapaio.data.matrix;
 
 /**
  * LU Decomposition.
@@ -74,8 +74,8 @@ public class LUDecomposition implements java.io.Serializable {
 
         // Use a "left-looking", dot-product, Crout/Doolittle algorithm.
         LU = A.getArrayCopy();
-        m = A.getRowDimension();
-        n = A.getColumnDimension();
+        m = A.getRows();
+        n = A.getCols();
         piv = new int[m];
         for (int i = 0; i < m; i++) {
             piv[i] = i;
@@ -186,41 +186,40 @@ public class LUDecomposition implements java.io.Serializable {
      * @return L
      */
     public Matrix getL() {
-        Matrix X = new Matrix(m, n);
-        double[][] L = X.getArray();
+        Matrix L = new Matrix(m, n);
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 if (i > j) {
-                    L[i][j] = LU[i][j];
+                    L.set(i, j, LU[i][j]);
                 } else if (i == j) {
-                    L[i][j] = 1.0;
+                    L.set(i, j, 1.0);
                 } else {
-                    L[i][j] = 0.0;
+                    L.set(i, j, 0.0);
                 }
             }
         }
-        return X;
+        return L;
     }
 
-    /**
-     * Return upper triangular factor
-     *
-     * @return U
-     */
-    public Matrix getU() {
-        Matrix X = new Matrix(n, n);
-        double[][] U = X.getArray();
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if (i <= j) {
-                    U[i][j] = LU[i][j];
-                } else {
-                    U[i][j] = 0.0;
-                }
-            }
-        }
-        return X;
-    }
+//    /**
+//     * Return upper triangular factor
+//     *
+//     * @return U
+//     */
+//    public Matrix getU() {
+//        Matrix X = new Matrix(n, n);
+//        double[][] U = X.getArray();
+//        for (int i = 0; i < n; i++) {
+//            for (int j = 0; j < n; j++) {
+//                if (i <= j) {
+//                    U[i][j] = LU[i][j];
+//                } else {
+//                    U[i][j] = 0.0;
+//                }
+//            }
+//        }
+//        return X;
+//    }
 
     /**
      * Return pivot permutation vector
@@ -265,48 +264,47 @@ public class LUDecomposition implements java.io.Serializable {
         return d;
     }
 
-    /**
-     * Solve A*X = B
-     *
-     * @param B A Matrix with as many rowCount as A and any number of columns.
-     * @return X so that L*U*X = B(piv,:)
-     * @throws IllegalArgumentException Matrix row dimensions must agree.
-     * @throws RuntimeException         Matrix is singular.
-     */
-    public Matrix solve(Matrix B) {
-        if (B.getRowDimension() != m) {
-            throw new IllegalArgumentException("Matrix row dimensions must agree.");
-        }
-        if (!this.isNonsingular()) {
-            throw new RuntimeException("Matrix is singular.");
-        }
+//    /**
+//     * Solve A*X = B
+//     *
+//     * @param B A Matrix with as many rowCount as A and any number of columns.
+//     * @return X so that L*U*X = B(piv,:)
+//     * @throws IllegalArgumentException Matrix row dimensions must agree.
+//     * @throws RuntimeException         Matrix is singular.
+//     */
+//    public Matrix solve(Matrix B) {
+//        if (B.getRows() != m) {
+//            throw new IllegalArgumentException("Matrix row dimensions must agree.");
+//        }
+//        if (!this.isNonsingular()) {
+//            throw new RuntimeException("Matrix is singular.");
+//        }
+//
+//        // Copy right hand side with pivoting
+//        int nx = B.getCols();
+//        Matrix Xmat = B.getMatrix(piv, 0, nx - 1);
+//        double[][] X = Xmat.getArray();
+//
+//        // Solve L*Y = B(piv,:)
+//        for (int k = 0; k < n; k++) {
+//            for (int i = k + 1; i < n; i++) {
+//                for (int j = 0; j < nx; j++) {
+//                    X[i][j] -= X[k][j] * LU[i][k];
+//                }
+//            }
+//        }
+//        // Solve U*X = Y;
+//        for (int k = n - 1; k >= 0; k--) {
+//            for (int j = 0; j < nx; j++) {
+//                X[k][j] /= LU[k][k];
+//            }
+//            for (int i = 0; i < k; i++) {
+//                for (int j = 0; j < nx; j++) {
+//                    X[i][j] -= X[k][j] * LU[i][k];
+//                }
+//            }
+//        }
+//        return Xmat;
+//    }
 
-        // Copy right hand side with pivoting
-        int nx = B.getColumnDimension();
-        Matrix Xmat = B.getMatrix(piv, 0, nx - 1);
-        double[][] X = Xmat.getArray();
-
-        // Solve L*Y = B(piv,:)
-        for (int k = 0; k < n; k++) {
-            for (int i = k + 1; i < n; i++) {
-                for (int j = 0; j < nx; j++) {
-                    X[i][j] -= X[k][j] * LU[i][k];
-                }
-            }
-        }
-        // Solve U*X = Y;
-        for (int k = n - 1; k >= 0; k--) {
-            for (int j = 0; j < nx; j++) {
-                X[k][j] /= LU[k][k];
-            }
-            for (int i = 0; i < k; i++) {
-                for (int j = 0; j < nx; j++) {
-                    X[i][j] -= X[k][j] * LU[i][k];
-                }
-            }
-        }
-        return Xmat;
-    }
-
-    private static final long serialVersionUID = 1;
 }

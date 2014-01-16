@@ -5,6 +5,8 @@ import rapaio.data.Numeric;
 
 import java.text.DecimalFormat;
 
+import static rapaio.data.matrix.MatrixMath.times;
+
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
@@ -38,6 +40,6 @@ public class QRTest {
         qr.solve(y).print(new DecimalFormat("0.000000000"), 14);
 
         x.print(new DecimalFormat("0.000"), 10);
-        qr.getQ().times(qr.getR()).print(new DecimalFormat("0.000"), 10);
+        times(qr.getQ(), qr.getR()).print(new DecimalFormat("0.000"), 10);
     }
 }

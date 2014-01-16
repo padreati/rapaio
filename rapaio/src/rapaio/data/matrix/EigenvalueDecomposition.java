@@ -17,7 +17,9 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package jama;
+package rapaio.data.matrix;
+
+import static java.lang.StrictMath.hypot;
 
 /**
  * Eigenvalues and eigenvectors of a real rapaio.data.matrix.
@@ -233,7 +235,7 @@ public class EigenvalueDecomposition implements java.io.Serializable {
                     // Compute implicit shift
                     double g = d[l];
                     double p = (d[l + 1] - g) / (2.0 * e[l]);
-                    double r = Maths.hypot(p, 1.0);
+                    double r = hypot(p, 1.0);
                     if (p < 0) {
                         r = -r;
                     }
@@ -260,7 +262,7 @@ public class EigenvalueDecomposition implements java.io.Serializable {
                         s2 = s;
                         g = c * e[i];
                         h = c * p;
-                        r = Maths.hypot(p, e[i]);
+                        r = hypot(p, e[i]);
                         e[i + 1] = s * r;
                         s = e[i] / r;
                         c = p / r;
@@ -826,69 +828,69 @@ public class EigenvalueDecomposition implements java.io.Serializable {
      * ------------------------ Constructor ------------------------
      */
 
-    /**
-     * Check for symmetry, then construct the eigenvalue decomposition Structure
-     * to access D and V.
-     *
-     * @param Arg Square rapaio.data.matrix
-     */
-    public EigenvalueDecomposition(Matrix Arg) {
-        double[][] A = Arg.getArray();
-        n = Arg.getColumnDimension();
-        V = new double[n][n];
-        d = new double[n];
-        e = new double[n];
-
-        issymmetric = true;
-        for (int j = 0; (j < n) & issymmetric; j++) {
-            for (int i = 0; (i < n) & issymmetric; i++) {
-                issymmetric = (A[i][j] == A[j][i]);
-            }
-        }
-
-        if (issymmetric) {
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    V[i][j] = A[i][j];
-                }
-            }
-
-            // Tridiagonalize.
-            tred2();
-
-            // Diagonalize.
-            tql2();
-
-        } else {
-            H = new double[n][n];
-            ort = new double[n];
-
-            for (int j = 0; j < n; j++) {
-                for (int i = 0; i < n; i++) {
-                    H[i][j] = A[i][j];
-                }
-            }
-
-            // Reduce to Hessenberg form.
-            orthes();
-
-            // Reduce Hessenberg to real Schur form.
-            hqr2();
-        }
-    }
+//    /**
+//     * Check for symmetry, then construct the eigenvalue decomposition Structure
+//     * to access D and V.
+//     *
+//     * @param Arg Square rapaio.data.matrix
+//     */
+//    public EigenvalueDecomposition(Matrix Arg) {
+//        double[][] A = Arg.getArray();
+//        n = Arg.getCols();
+//        V = new double[n][n];
+//        d = new double[n];
+//        e = new double[n];
+//
+//        issymmetric = true;
+//        for (int j = 0; (j < n) & issymmetric; j++) {
+//            for (int i = 0; (i < n) & issymmetric; i++) {
+//                issymmetric = (A[i][j] == A[j][i]);
+//            }
+//        }
+//
+//        if (issymmetric) {
+//            for (int i = 0; i < n; i++) {
+//                for (int j = 0; j < n; j++) {
+//                    V[i][j] = A[i][j];
+//                }
+//            }
+//
+//            // Tridiagonalize.
+//            tred2();
+//
+//            // Diagonalize.
+//            tql2();
+//
+//        } else {
+//            H = new double[n][n];
+//            ort = new double[n];
+//
+//            for (int j = 0; j < n; j++) {
+//                for (int i = 0; i < n; i++) {
+//                    H[i][j] = A[i][j];
+//                }
+//            }
+//
+//            // Reduce to Hessenberg form.
+//            orthes();
+//
+//            // Reduce Hessenberg to real Schur form.
+//            hqr2();
+//        }
+//    }
 
     /*
      * ------------------------ Public Methods ------------------------
      */
 
-    /**
-     * Return the eigenvector rapaio.data.matrix
-     *
-     * @return V
-     */
-    public Matrix getV() {
-        return new Matrix(V, n, n);
-    }
+//    /**
+//     * Return the eigenvector rapaio.data.matrix
+//     *
+//     * @return V
+//     */
+//    public Matrix getV() {
+//        return new Matrix(V, n, n);
+//    }
 
     /**
      * Return the real parts of the eigenvalues
@@ -914,20 +916,16 @@ public class EigenvalueDecomposition implements java.io.Serializable {
      * @return D
      */
     public Matrix getD() {
-        Matrix X = new Matrix(n, n);
-        double[][] D = X.getArray();
+        Matrix D = new Matrix(n, n);
         for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                D[i][j] = 0.0;
-            }
-            D[i][i] = d[i];
+            D.set(i, i, d[i]);
             if (e[i] > 0) {
-                D[i][i + 1] = e[i];
+                D.set(i, i + 1, e[i]);
             } else if (e[i] < 0) {
-                D[i][i - 1] = e[i];
+                D.set(i, i - 1, e[i]);
             }
         }
-        return X;
+        return D;
     }
 
     private static final long serialVersionUID = 1;
