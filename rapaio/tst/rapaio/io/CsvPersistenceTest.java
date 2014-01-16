@@ -50,10 +50,10 @@ public class CsvPersistenceTest {
     @Test
     public void testHeader() {
         try {
-            Frame f = persistence.read(getClass(),"csv-test.csv");
+            Frame f = persistence.read(getClass(), "csv-test.csv");
             assertNotNull(f);
-            assertEquals(5, f.getColCount());
-            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, f.getColNames());
+            assertEquals(5, f.colCount());
+            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, f.colNames());
         } catch (IOException ex) {
             assertTrue("this should not happen.", false);
         }
@@ -128,10 +128,10 @@ public class CsvPersistenceTest {
     public void testFullFrame() {
         try {
             persistence.setHasQuotas(true);
-            Frame df = persistence.read(getClass(),"csv-test.csv");
+            Frame df = persistence.read(getClass(), "csv-test.csv");
             assertNotNull(df);
-            assertEquals(5, df.getColCount());
-            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, df.getColNames());
+            assertEquals(5, df.colCount());
+            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, df.colNames());
         } catch (IOException ex) {
             assertTrue("this should not happen.", false);
         }

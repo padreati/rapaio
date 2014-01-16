@@ -21,7 +21,7 @@ package rapaio.ml.classification.meta;
 
 import rapaio.data.Frame;
 import rapaio.data.Frames;
-import rapaio.data.NomVector;
+import rapaio.data.Nominal;
 import rapaio.ml.classification.AbstractClassifier;
 import rapaio.ml.classification.Classifier;
 import rapaio.sample.StatSampling;
@@ -41,7 +41,7 @@ public class Bagging extends AbstractClassifier<Bagging> {
     private List<Classifier> classifiers = new ArrayList<>();
     private String[] dict;
     private String classColName;
-    private NomVector pred;
+    private Nominal pred;
     private Frame dist;
 
     public Bagging(double p, int bags, Classifier provider) {
@@ -58,10 +58,10 @@ public class Bagging extends AbstractClassifier<Bagging> {
     @Override
     public void learn(Frame df, List<Double> weights, String classColName) {
         this.classColName = classColName;
-        this.dict = df.getCol(classColName).getDictionary();
+        this.dict = df.col(classColName).dictionary();
         classifiers.clear();
         for (int i = 0; i < bags; i++) {
-            Frame bootstrap = StatSampling.randomBootstrap(df, (int) Math.rint(df.getRowCount() * p));
+            Frame bootstrap = StatSampling.randomBootstrap(df, (int) Math.rint(df.rowCount() * p));
             Classifier c = provider.newInstance();
             c.learn(bootstrap, classColName);
             classifiers.add(c);
@@ -72,38 +72,38 @@ public class Bagging extends AbstractClassifier<Bagging> {
     public void predict(final Frame df) {
         // voting
 
-        pred = new NomVector(df.getRowCount(), dict);
-        dist = Frames.newMatrixFrame(df.getRowCount(), dict);
+        pred = new Nominal(df.rowCount(), dict);
+        dist = Frames.newMatrixFrame(df.rowCount(), dict);
 
         // collect results from each classifier
         for (Classifier c : classifiers) {
             c.predict(df);
-            for (int j = 0; j < df.getRowCount(); j++) {
-                String prediction = c.getPrediction().getLabel(j);
-                double prev = dist.getValue(j, dist.getColIndex(prediction));
+            for (int j = 0; j < df.rowCount(); j++) {
+                String prediction = c.getPrediction().label(j);
+                double prev = dist.value(j, dist.colIndex(prediction));
                 if (prev != prev) {
                     prev = 0;
                 }
-                dist.setValue(j, dist.getColIndex(prediction), prev + 1);
+                dist.setValue(j, dist.colIndex(prediction), prev + 1);
             }
         }
-        for (int i = 0; i < dist.getRowCount(); i++) {
+        for (int i = 0; i < dist.rowCount(); i++) {
             int index = -1;
             double max = -1;
-            for (int j = 0; j < dist.getColCount(); j++) {
-                double freq = dist.getValue(i, j);
+            for (int j = 0; j < dist.colCount(); j++) {
+                double freq = dist.value(i, j);
                 dist.setValue(i, j, freq / (1. * classifiers.size()));
                 if (max < freq) {
                     max = freq;
                     index = j;
                 }
             }
-            pred.setLabel(i, pred.getDictionary()[index + 1]);
+            pred.setLabel(i, pred.dictionary()[index + 1]);
         }
     }
 
     @Override
-    public NomVector getPrediction() {
+    public Nominal getPrediction() {
         return pred;
     }
 

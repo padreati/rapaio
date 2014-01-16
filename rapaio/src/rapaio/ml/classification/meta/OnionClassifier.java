@@ -20,7 +20,7 @@
 package rapaio.ml.classification.meta;
 
 import rapaio.data.Frame;
-import rapaio.data.NomVector;
+import rapaio.data.Nominal;
 import rapaio.ml.classification.AbstractClassifier;
 import rapaio.ml.classification.Classifier;
 
@@ -52,7 +52,7 @@ public class OnionClassifier extends AbstractClassifier<OnionClassifier> {
     }
 
     @Override
-    public NomVector getPrediction() {
+    public Nominal getPrediction() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

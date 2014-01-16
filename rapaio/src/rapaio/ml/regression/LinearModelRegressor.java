@@ -1,9 +1,6 @@
 package rapaio.ml.regression;
 
-import rapaio.data.Frame;
-import rapaio.data.NumVector;
-import rapaio.data.Vector;
-import rapaio.data.Vectors;
+import rapaio.data.*;
 import rapaio.data.matrix.Matrix;
 import rapaio.data.matrix.QRDecomposition;
 
@@ -17,7 +14,7 @@ public class LinearModelRegressor extends AbstractRegressor {
 
     List<String> predictors = new ArrayList<>();
     String targetColName;
-    Vector coeff;
+    Frame coeff;
     Vector trainFitted;
     Vector trainResidual;
     Vector testFitted;
@@ -26,8 +23,8 @@ public class LinearModelRegressor extends AbstractRegressor {
     public void learn(Frame df, List<Double> weights, String targetColName) {
         predictors.clear();
         this.targetColName = targetColName;
-        for (String colName : df.getColNames()) {
-            if (!targetColName.contains(colName) && df.getCol(colName).getType().isNumeric()) {
+        for (String colName : df.colNames()) {
+            if (!targetColName.contains(colName) && df.col(colName).type().isNumeric()) {
                 predictors.add(colName);
             }
         }
@@ -35,29 +32,32 @@ public class LinearModelRegressor extends AbstractRegressor {
         Matrix X = buildX(df);
         Matrix Y = buildY(df);
         Matrix beta = new QRDecomposition(X).solve(Y);
-        coeff = Vectors.newNum(predictors.size(), 0);
+        Vector bcoeff = Vectors.newNum(predictors.size(), 0);
+        Vector bnames = new Nominal();
         for (int i = 0; i < predictors.size(); i++) {
-            coeff.setValue(i, beta.get(i, 0));
+            bcoeff.setValue(i, beta.get(i, 0));
+            bnames.addLabel(predictors.get(i));
         }
+        coeff = new SolidFrame(predictors.size(), new Vector[]{bnames, bcoeff}, new String[]{"Term", "Coeff"});
 
         trainFitted = buildFit(df);
         trainResidual = buildResidual(Y, trainFitted);
     }
 
     private Vector buildResidual(Matrix actual, Vector predict) {
-        Vector result = Vectors.newNum(predict.getRowCount(), 0);
-        for (int i = 0; i < result.getRowCount(); i++) {
-            result.setValue(i, actual.get(i, 0) - predict.getValue(i));
+        Vector result = Vectors.newNum(predict.rowCount(), 0);
+        for (int i = 0; i < result.rowCount(); i++) {
+            result.setValue(i, actual.get(i, 0) - predict.value(i));
         }
         return result;
     }
 
     private Vector buildFit(Frame df) {
-        Vector result = Vectors.newNum(df.getRowCount(), 0);
-        for (int i = 0; i < df.getRowCount(); i++) {
+        Vector result = Vectors.newNum(df.rowCount(), 0);
+        for (int i = 0; i < df.rowCount(); i++) {
             double acc = 0;
             for (int k = 0; k < predictors.size(); k++) {
-                acc += coeff.getValue(k) * df.getValue(i, predictors.get(k));
+                acc += coeff.value(k, 1) * df.value(i, predictors.get(k));
             }
             result.setValue(i, acc);
         }
@@ -65,16 +65,16 @@ public class LinearModelRegressor extends AbstractRegressor {
     }
 
     private Matrix buildY(Frame df) {
-        NumVector[] vectors = new NumVector[1];
-        vectors[0] = (NumVector) df.getCol(targetColName);
+        Numeric[] vectors = new Numeric[1];
+        vectors[0] = (Numeric) df.col(targetColName);
         return new Matrix(vectors);
     }
 
     private Matrix buildX(Frame df) {
-        NumVector[] vectors = new NumVector[predictors.size()];
+        Numeric[] vectors = new Numeric[predictors.size()];
         int pos = 0;
         for (String colName : predictors) {
-            vectors[pos++] = (NumVector) df.getCol(colName);
+            vectors[pos++] = (Numeric) df.col(colName);
         }
         return new Matrix(vectors);
     }
@@ -84,7 +84,7 @@ public class LinearModelRegressor extends AbstractRegressor {
         testFitted = buildFit(df);
     }
 
-    public Vector getCoeff() {
+    public Frame getCoeff() {
         return coeff;
     }
 

@@ -31,7 +31,7 @@ public class Poisson extends Distribution {
 
     public Poisson(double lambda) {
         if (lambda <= 0.) {
-            throw new IllegalArgumentException("Lambda parameter for Poisson distribution must have positive getValue.");
+            throw new IllegalArgumentException("Lambda parameter for Poisson distribution must have positive value.");
         }
         this.lambda = lambda;
     }

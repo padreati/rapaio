@@ -173,7 +173,7 @@ public class DiscreteSampling implements TutorialPage {
                 + "\n"
                 + "        final Frame df = new SolidFrame(\"lottery\", SAMPLE_SIZE * TRIALS, vectors);\n"
                 + "        draw(new Plot() {{\n"
-                + "            add(new Points(this, df.getCol(0), df.getCol(1)));\n"
+                + "            add(new Points(this, df.col(0), df.col(1)));\n"
                 + "            opt().setPchIndex(new OneIndexVector(1));\n"
                 + "            opt().setColorIndex(new OneIndexVector(34));\n"
                 + "        }}, 600, 300);\n");
@@ -182,8 +182,8 @@ public class DiscreteSampling implements TutorialPage {
         final int SAMPLE_SIZE = 6;
         final int POPULATION_SIZE = 49;
         Vector[] vectors = new Vector[2];
-        vectors[0] = new NumVector(SAMPLE_SIZE * TRIALS);
-        vectors[1] = new NumVector(SAMPLE_SIZE * TRIALS);
+        vectors[0] = new Numeric(SAMPLE_SIZE * TRIALS);
+        vectors[1] = new Numeric(SAMPLE_SIZE * TRIALS);
 
         for (int i = 0; i < TRIALS; i++) {
             int[] numbers = new DiscreteSamplingWOR(POPULATION_SIZE).sample(SAMPLE_SIZE);
@@ -195,7 +195,7 @@ public class DiscreteSampling implements TutorialPage {
 
         final Frame df = new SolidFrame(SAMPLE_SIZE * TRIALS, vectors, new String[]{"lottery trial", "winning number"});
         draw(new Plot()
-                .add(new Points(df.getCol(0), df.getCol(1))
+                .add(new Points(df.col(0), df.col(1))
                         .setPchIndex(1)
                         .setColorIndex(34)
                         .setSizeIndex(2)),
@@ -250,7 +250,7 @@ public class DiscreteSampling implements TutorialPage {
 
         RandomSource.setSeed(1);
         final Vector index = Vectors.newSeq(1, 1000, 1);
-        final Vector value = new NumVector(1000);
+        final Vector value = new Numeric(1000);
         double count = 0;
         double total = 0;
         for (int i = 0; i < 300; i++) {
@@ -321,15 +321,15 @@ public class DiscreteSampling implements TutorialPage {
                 + "\n"
                 + "        final Frame df2 = new SolidFrame(SAMPLE_SIZE * TRIALS, vectors, new String[]{\"loaded lottery\", \"winning number\"});\n"
                 + "        draw(new Plot()\n"
-                + "                .add(new Points(df2.getCol(0), df2.getCol(1)))\n"
+                + "                .add(new Points(df2.col(0), df2.col(1)))\n"
                 + "                .setPchIndex(new OneIndexVector(1))\n"
                 + "                .setColorIndex(new OneIndexVector(34))\n"
                 + "                .setSizeIndex(new OneNumericVector(2)),\n"
                 + "                600, 300);\n"
                 + "");
 
-        vectors[0] = new NumVector(SAMPLE_SIZE * TRIALS);
-        vectors[1] = new NumVector(SAMPLE_SIZE * TRIALS);
+        vectors[0] = new Numeric(SAMPLE_SIZE * TRIALS);
+        vectors[1] = new Numeric(SAMPLE_SIZE * TRIALS);
 
         double[] prob = new double[49];
         for (int i = 0; i < prob.length; i++) {
@@ -353,7 +353,7 @@ public class DiscreteSampling implements TutorialPage {
 
         final Frame df2 = new SolidFrame(SAMPLE_SIZE * TRIALS, vectors, new String[]{"loaded lottery", "winning number"});
         draw(new Plot()
-                .add(new Points(df2.getCol(0), df2.getCol(1)))
+                .add(new Points(df2.col(0), df2.col(1)))
                 .setPchIndex(Vectors.newIdxOne(1))
                 .setColorIndex(Vectors.newIdxOne(34))
                 .setSizeIndex(Vectors.newNumOne(2)),
@@ -367,7 +367,7 @@ public class DiscreteSampling implements TutorialPage {
                 + "density would help more.");
 
         draw(new Plot()
-                .add(new FunctionLine(new KernelDensityEstimator(df2.getCol("winning number"), 3).getPdfFunction())
+                .add(new FunctionLine(new KernelDensityEstimator(df2.col("winning number"), 3).getPdfFunction())
                         .setXRange(-10, 60)
                         .setYRange(0, .05)
                         .setColorIndex(Vectors.newIdxOne(1)))

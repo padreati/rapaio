@@ -61,22 +61,22 @@ public class IrisExplore implements TutorialPage {
         Summary.summary(df);
         heading(2, "Distribution of measurements");
         p("Now we will take a look over the distribuition of first two measurements.");
-        for (int i = 0; i < df.getColCount() - 1; i++) {
+        for (int i = 0; i < df.colCount() - 1; i++) {
             final int ii = i;
             draw(new Plot()
-                    .add(new Histogram(df.getCol(i)).setBins(30))
-                    .setBottomLabel(df.getColNames()[ii]), 500, 250);
+                    .add(new Histogram(df.col(i)).setBins(30))
+                    .setBottomLabel(df.colNames()[ii]), 500, 250);
         }
         p("We can see easily that for petal length and width there are two well-separated modes."
                 + " This is probably a well separation of species, so a plot should clarify "
                 + "that immediately.");
         draw(new Plot()
-                .add(new Points(df.getCol(2), df.getCol(3))
-                        .setColorIndex(df.getCol("class"))
+                .add(new Points(df.col(2), df.col(3))
+                        .setColorIndex(df.col("class"))
                         .setPchIndex(1))
-                .setBottomLabel(df.getColNames()[2])
-                .setLeftLabel(df.getColNames()[3])
-                .setTitle("Iris data points colored by species"), 
+                .setBottomLabel(df.colNames()[2])
+                .setLeftLabel(df.colNames()[3])
+                .setTitle("Iris data points colored by species"),
                 600, 350);
         p(""
                 + "Indeed, we can notice that the red points are clustered closer to the bottom-left corner "

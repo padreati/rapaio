@@ -70,13 +70,13 @@ public class ROCCurvesPage implements TutorialPage {
 
         RandomSource.setSeed(2718);
         final Frame spam = ColFilters.retainCols(Datasets.loadSpamBase(), "0-4,spam");
-        List<Frame> samples = randomSample(spam, new int[]{(int) (spam.getRowCount() * 0.6)});
+        List<Frame> samples = randomSample(spam, new int[]{(int) (spam.rowCount() * 0.6)});
         final Frame train = samples.get(0);
         final Frame test = samples.get(1);
 
         code("        RandomSource.setSeed(2718);\n"
                 + "        final Frame spam = ColFilters.retainCols(Datasets.loadSpamBase(), \"0-4,spam\");\n"
-                + "        List<Frame> samples = randomSample(spam, new int[]{(int) (spam.getRowCount() * 0.6)});\n"
+                + "        List<Frame> samples = randomSample(spam, new int[]{(int) (spam.rowCount() * 0.6)});\n"
                 + "        final Frame train = samples.get(0);\n"
                 + "        final Frame test = samples.get(1);\n");
 
@@ -117,8 +117,8 @@ public class ROCCurvesPage implements TutorialPage {
         p("One of the most used ways to check the performance of a classifier is the accuracy. "
                 + "Accuracy is the percentage of cases with correct prediction from total number of cases. "
                 + "With rapaio library one way to see the accuracy is to summarize the confusion rapaio.data.matrix.");
-        code("        ROC rocOR = new ROC(oneRule.getPrediction(), test.getCol(\"spam\"), \"1\");\n");
-        new ConfusionMatrix(test.getCol("spam"), oneRule.getPrediction()).summary();
+        code("        ROC rocOR = new ROC(oneRule.getPrediction(), test.col(\"spam\"), \"1\");\n");
+        new ConfusionMatrix(test.col("spam"), oneRule.getPrediction()).summary();
 
         heading(4, "Random Forest");
 
@@ -130,7 +130,7 @@ public class ROCCurvesPage implements TutorialPage {
                 + "        rf.learn(train, \"spam\");\n"
                 + "        rf.predict(test);\n"
                 + "");
-        new ConfusionMatrix(test.getCol("spam"), rf.getPrediction()).summary();
+        new ConfusionMatrix(test.col("spam"), rf.getPrediction()).summary();
 
         heading(4, "AdaBoost.M1");
         p("The third prediction model is a boosting algorithm called AdaBoost.M1. This model is "
@@ -143,7 +143,7 @@ public class ROCCurvesPage implements TutorialPage {
                 + "        ab.learn(train, \"spam\");\n"
                 + "        ab.predict(test);\n"
                 + "");
-        new ConfusionMatrix(test.getCol("spam"), ab.getPrediction()).summary();
+        new ConfusionMatrix(test.col("spam"), ab.getPrediction()).summary();
 
         heading(2, "ROC Curves");
 
@@ -162,9 +162,9 @@ public class ROCCurvesPage implements TutorialPage {
                 + "ROCCurve plot component which builds and draws a curve according with "
                 + "a given computed ROC object. The following code does this.");
 
-        ROC rocOR = new ROC(oneRule.getPrediction(), test.getCol("spam"), "1");
-        ROC rocRF = new ROC(rf.getDistribution().getCol("1"), test.getCol("spam"), "1");
-        ROC rocAB = new ROC(ab.getDistribution().getCol("1"), test.getCol("spam"), "1");
+        ROC rocOR = new ROC(oneRule.getPrediction(), test.col("spam"), "1");
+        ROC rocRF = new ROC(rf.getDistribution().col("1"), test.col("spam"), "1");
+        ROC rocAB = new ROC(ab.getDistribution().col("1"), test.col("spam"), "1");
         draw(new Plot()
                 .add(new ROCCurve(rocOR).setColorIndex(1))
                 .add(new ROCCurve(rocRF).setColorIndex(2))
@@ -174,9 +174,9 @@ public class ROCCurvesPage implements TutorialPage {
                         new int[]{1, 2, 3})),
                 600, 400);
 
-        code("        ROC rocOR = new ROC(oneRule.getPrediction(), test.getCol(\"spam\"), \"1\");\n"
-                + "        ROC rocRF = new ROC(rf.getDistribution().getCol(\"1\"), test.getCol(\"spam\"), \"1\");\n"
-                + "        ROC rocAB = new ROC(ab.getDistribution().getCol(\"1\"), test.getCol(\"spam\"), \"1\");\n"
+        code("        ROC rocOR = new ROC(oneRule.getPrediction(), test.col(\"spam\"), \"1\");\n"
+                + "        ROC rocRF = new ROC(rf.getDistribution().col(\"1\"), test.col(\"spam\"), \"1\");\n"
+                + "        ROC rocAB = new ROC(ab.getDistribution().col(\"1\"), test.col(\"spam\"), \"1\");\n"
                 + "        draw(new Plot()\n"
                 + "                .add(new ROCCurve(rocOR).setColorIndex(1))\n"
                 + "                .add(new ROCCurve(rocRF).setColorIndex(2))\n"

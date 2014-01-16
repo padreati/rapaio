@@ -35,7 +35,7 @@ public class OneRuleTest {
     private final Vector heightVector;
 
     public OneRuleTest() {
-        classVector = new NomVector(SIZE, new String[]{"False", "True"});
+        classVector = new Nominal(SIZE, new String[]{"False", "True"});
         classVector.setLabel(0, "True");
         classVector.setLabel(1, "True");
         classVector.setLabel(2, "True");
@@ -43,7 +43,7 @@ public class OneRuleTest {
         classVector.setLabel(4, "False");
         classVector.setLabel(5, "False");
 
-        heightVector = new NumVector(new double[]{0.1, 0.3, 0.5, 10, 10.3, 10.5});
+        heightVector = new Numeric(new double[]{0.1, 0.3, 0.5, 10, 10.3, 10.5});
     }
 
     @Test
@@ -58,7 +58,7 @@ public class OneRuleTest {
         oneRule.predict(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
-            Assert.assertEquals(labels[i], oneRule.getPrediction().getLabel(i));
+            Assert.assertEquals(labels[i], oneRule.getPrediction().label(i));
         }
 
         oneRule.setMinCount(2);
@@ -66,7 +66,7 @@ public class OneRuleTest {
         oneRule.predict(df);
         labels = new String[]{"True", "True", "TrueFalse", "TrueFalse", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
-            Assert.assertTrue(labels[i].contains(oneRule.getPrediction().getLabel(i)));
+            Assert.assertTrue(labels[i].contains(oneRule.getPrediction().label(i)));
         }
 
         oneRule.setMinCount(3);
@@ -74,14 +74,14 @@ public class OneRuleTest {
         oneRule.predict(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
-            Assert.assertTrue(labels[i].equals(oneRule.getPrediction().getLabel(i)));
+            Assert.assertTrue(labels[i].equals(oneRule.getPrediction().label(i)));
         }
 
         oneRule.setMinCount(4);
         oneRule.learn(df, "class");
         oneRule.predict(df);
         for (int i = 1; i < SIZE; i++) {
-            Assert.assertTrue(oneRule.getPrediction().getLabel(i).equals(oneRule.getPrediction().getLabel(0)));
+            Assert.assertTrue(oneRule.getPrediction().label(i).equals(oneRule.getPrediction().label(0)));
         }
     }
 }

@@ -28,51 +28,51 @@ import static org.junit.Assert.*;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class NomVectorTest {
+public class NominalTest {
 
     @Test
     public void testSmoke() {
-        Vector v = new NomVector(0, new String[]{});
-        assertEquals(0, v.getRowCount());
-        assertEquals(1, v.getDictionary().length);
-        assertEquals("?", v.getDictionary()[0]);
+        Vector v = new Nominal(0, new String[]{});
+        assertEquals(0, v.rowCount());
+        assertEquals(1, v.dictionary().length);
+        assertEquals("?", v.dictionary()[0]);
 
-        assertTrue(v.getType().isNominal());
-        assertFalse(v.getType().isNumeric());
+        assertTrue(v.type().isNominal());
+        assertFalse(v.type().isNumeric());
 
-        v = new NomVector(1, new String[]{"a"});
-        assertEquals(1, v.getRowCount());
-        assertEquals("?", v.getLabel(0));
+        v = new Nominal(1, new String[]{"a"});
+        assertEquals(1, v.rowCount());
+        assertEquals("?", v.label(0));
 
-        assertEquals(0, v.getRowId(0));
+        assertEquals(0, v.rowId(0));
     }
 
     @Test
     public void testDictionary() {
-        Vector v = new NomVector(0, new String[]{"a", "a", "v", "a"});
-        assertEquals(3, v.getDictionary().length);
-        assertEquals("?", v.getDictionary()[0]);
-        assertEquals("a", v.getDictionary()[1]);
-        assertEquals("v", v.getDictionary()[2]);
+        Vector v = new Nominal(0, new String[]{"a", "a", "v", "a"});
+        assertEquals(3, v.dictionary().length);
+        assertEquals("?", v.dictionary()[0]);
+        assertEquals("a", v.dictionary()[1]);
+        assertEquals("v", v.dictionary()[2]);
 
         TreeSet<String> set = new TreeSet<>();
         set.add("a");
         set.add("v");
         set.add("a");
 
-        v = new NomVector(0, set);
-        assertEquals(3, v.getDictionary().length);
-        assertEquals("?", v.getDictionary()[0]);
-        assertEquals("a", v.getDictionary()[1]);
-        assertEquals("v", v.getDictionary()[2]);
+        v = new Nominal(0, set);
+        assertEquals(3, v.dictionary().length);
+        assertEquals("?", v.dictionary()[0]);
+        assertEquals("a", v.dictionary()[1]);
+        assertEquals("v", v.dictionary()[2]);
     }
 
     @Test
     public void testSetterGetter() {
-        Vector v = new NomVector(4, new String[]{"a", "b", "c"});
+        Vector v = new Nominal(4, new String[]{"a", "b", "c"});
         for (int i = 0; i < 4; i++) {
             assertTrue(v.isMissing(i));
-            assertEquals(0, v.getIndex(i));
+            assertEquals(0, v.index(i));
         }
 
         // w/ index
@@ -82,20 +82,20 @@ public class NomVectorTest {
         v.setIndex(2, 3);
         v.setIndex(3, 0);
 
-        assertEquals("a", v.getLabel(0));
-        assertEquals("b", v.getLabel(1));
-        assertEquals("c", v.getLabel(2));
-        assertEquals("?", v.getLabel(3));
+        assertEquals("a", v.label(0));
+        assertEquals("b", v.label(1));
+        assertEquals("c", v.label(2));
+        assertEquals("?", v.label(3));
 
         v.setLabel(0, "c");
         v.setLabel(1, "b");
         v.setLabel(2, "a");
         v.setLabel(3, "?");
 
-        assertEquals(3, v.getIndex(0));
-        assertEquals(2, v.getIndex(1));
-        assertEquals(1, v.getIndex(2));
-        assertEquals(0, v.getIndex(3));
+        assertEquals(3, v.index(0));
+        assertEquals(2, v.index(1));
+        assertEquals(1, v.index(2));
+        assertEquals(0, v.index(3));
 
         // w/ value
 
@@ -104,25 +104,25 @@ public class NomVectorTest {
         v.setValue(2, 3);
         v.setValue(3, 0);
 
-        assertEquals("a", v.getLabel(0));
-        assertEquals("b", v.getLabel(1));
-        assertEquals("c", v.getLabel(2));
-        assertEquals("?", v.getLabel(3));
+        assertEquals("a", v.label(0));
+        assertEquals("b", v.label(1));
+        assertEquals("c", v.label(2));
+        assertEquals("?", v.label(3));
 
         v.setLabel(0, "c");
         v.setLabel(1, "b");
         v.setLabel(2, "a");
         v.setLabel(3, "?");
 
-        assertEquals(3, v.getValue(0), 1e-10);
-        assertEquals(2, v.getValue(1), 1e-10);
-        assertEquals(1, v.getValue(2), 1e-10);
-        assertEquals(0, v.getValue(3), 1e-10);
+        assertEquals(3, v.value(0), 1e-10);
+        assertEquals(2, v.value(1), 1e-10);
+        assertEquals(1, v.value(2), 1e-10);
+        assertEquals(0, v.value(3), 1e-10);
     }
 
     @Test
     public void testLabel() {
-        Vector v = new NomVector(1, new String[]{"a", "b", "c"});
+        Vector v = new Nominal(1, new String[]{"a", "b", "c"});
 
         boolean exceptional = false;
         try {
@@ -130,7 +130,7 @@ public class NomVectorTest {
         } catch (Throwable ex) {
             exceptional = true;
         }
-        assertTrue(exceptional);
+        assertTrue(!exceptional);
 
         exceptional = false;
         try {
@@ -151,7 +151,7 @@ public class NomVectorTest {
 
     @Test
     public void testMissing() {
-        Vector v = new NomVector(1, new String[]{"a", "b"});
+        Vector v = new Nominal(1, new String[]{"a", "b"});
         assertTrue(v.isMissing(0));
 
         v.setLabel(0, "a");

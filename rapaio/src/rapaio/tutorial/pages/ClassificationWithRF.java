@@ -20,7 +20,7 @@
 package rapaio.tutorial.pages;
 
 import rapaio.data.Frame;
-import rapaio.data.NumVector;
+import rapaio.data.Numeric;
 import rapaio.data.Vector;
 import rapaio.data.Vectors;
 import rapaio.datasets.Datasets;
@@ -140,10 +140,10 @@ public class ClassificationWithRF implements TutorialPage {
                 + "training the random forest and another one will be used "
                 + "for testing its prediction accuracy. ");
 
-        code("        List<Frame> frames = StatSampling.randomSample(all, new int[]{all.getRowCount() * 15 / 100});\n"
+        code("        List<Frame> frames = StatSampling.randomSample(all, new int[]{all.rowCount() * 15 / 100});\n"
                 + "        Frame train = frames.get(0);\n"
                 + "        Frame test = frames.get(1);\n");
-        List<Frame> frames = StatSampling.randomSample(all, new int[]{all.getRowCount() * 15 / 100});
+        List<Frame> frames = StatSampling.randomSample(all, new int[]{all.rowCount() * 15 / 100});
         Frame train = frames.get(0);
         Frame test = frames.get(1);
 
@@ -156,8 +156,8 @@ public class ClassificationWithRF implements TutorialPage {
 
         int pos = 0;
         final Vector index = Vectors.newIdx(400);
-        final Vector accuracy = new NumVector(400);
-        final Vector oob = new NumVector(400);
+        final Vector accuracy = new Numeric(400);
+        final Vector oob = new Numeric(400);
         for (int mtree = 1; mtree < 200; mtree += 10) {
             final int mt = mtree;
             RandomForestClassifier rf = new RandomForestClassifier() {
@@ -229,8 +229,8 @@ public class ClassificationWithRF implements TutorialPage {
 
         pos = 0;
         final Vector index1 = Vectors.newIdx(10);
-        final Vector accuracy1 = new NumVector(10);
-        final Vector oob1 = new NumVector(10);
+        final Vector accuracy1 = new Numeric(10);
+        final Vector oob1 = new Numeric(10);
         for (int mcol = 1; mcol <= 10; mcol++) {
 
             final int mmcol = mcol;
@@ -305,9 +305,9 @@ public class ClassificationWithRF implements TutorialPage {
     private double computeAccuracy(Classifier model, Frame test) {
         Vector predict = model.getPrediction();
         double accuracy = 0;
-        double total = predict.getRowCount();
-        for (int i = 0; i < predict.getRowCount(); i++) {
-            if (test.getCol("spam").getIndex(i) == predict.getIndex(i)) {
+        double total = predict.rowCount();
+        for (int i = 0; i < predict.rowCount(); i++) {
+            if (test.col("spam").index(i) == predict.index(i)) {
                 accuracy += 1.;
             }
         }

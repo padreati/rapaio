@@ -47,11 +47,11 @@ public class Maximum implements Summarizable {
     private double compute() {
         double max = Double.MIN_VALUE;
         boolean valid = false;
-        for (int i = 0; i < vector.getRowCount(); i++) {
+        for (int i = 0; i < vector.rowCount(); i++) {
             if (vector.isMissing(i)) {
                 continue;
             }
-            max = BaseMath.max(max, vector.getValue(i));
+            max = BaseMath.max(max, vector.value(i));
             valid = true;
         }
         return valid ? max : Double.NaN;

@@ -20,7 +20,7 @@
 
 package rapaio.graphics;
 
-import rapaio.data.NomVector;
+import rapaio.data.Nominal;
 import rapaio.data.Vector;
 import rapaio.data.Vectors;
 import rapaio.graphics.base.AbstractFigure;
@@ -54,19 +54,19 @@ public class BarChart extends AbstractFigure {
     }
 
     public BarChart(Vector category, Vector condition, Vector numeric) {
-        if (!category.getType().isNominal()) {
+        if (!category.type().isNominal()) {
             throw new IllegalArgumentException("categories are nominal only");
         }
         if (condition == null) {
-            condition = new NomVector(category.getRowCount(), new HashSet<String>());
+            condition = new Nominal(category.rowCount(), new HashSet<String>());
         }
-        if (!condition.getType().isNominal()) {
+        if (!condition.type().isNominal()) {
             throw new IllegalArgumentException("conditions are nominal only");
         }
         if (numeric == null) {
-            numeric = Vectors.newNum(category.getRowCount(), 1);
+            numeric = Vectors.newNum(category.rowCount(), 1);
         }
-        if (!numeric.getType().isNumeric()) {
+        if (!numeric.type().isNumeric()) {
             throw new IllegalArgumentException("Numeric vector must be .. isNumeric");
         }
 
@@ -80,7 +80,7 @@ public class BarChart extends AbstractFigure {
         setBottomMarkers(true);
 
         int shift = 9;
-        setColorIndex(Vectors.newSeq(shift, condition.getDictionary().length + shift - 1, 1));
+        setColorIndex(Vectors.newSeq(shift, condition.dictionary().length + shift - 1, 1));
     }
 
     private SortType sort = SortType.NONE;
@@ -111,20 +111,20 @@ public class BarChart extends AbstractFigure {
         if (range == null) {
 
             // learn preliminaries
-            int width = category.getDictionary().length;
-            int height = condition.getDictionary().length;
+            int width = category.dictionary().length;
+            int height = condition.dictionary().length;
 
             totals = new double[width];
             hits = new double[width][height];
 
             int len = Integer.MAX_VALUE;
-            len = Math.min(len, category.getRowCount());
-            len = Math.min(len, condition.getRowCount());
-            len = Math.min(len, numeric.getRowCount());
+            len = Math.min(len, category.rowCount());
+            len = Math.min(len, condition.rowCount());
+            len = Math.min(len, numeric.rowCount());
 
             for (int i = 0; i < len; i++) {
-                hits[category.getIndex(i)][condition.getIndex(i)] += numeric.getValue(i);
-                totals[category.getIndex(i)] += numeric.getValue(i);
+                hits[category.index(i)][condition.index(i)] += numeric.value(i);
+                totals[category.index(i)] += numeric.value(i);
             }
 
             if (density) {
@@ -214,7 +214,7 @@ public class BarChart extends AbstractFigure {
             if (totals[sel[i]] == 0)
                 continue;
             getBottomMarkersPos().add(xspotwidth * (0.5 + cnt));
-            getBottomMarkersMsg().add(category.getDictionary()[sel[i]]);
+            getBottomMarkersMsg().add(category.dictionary()[sel[i]]);
             cnt++;
         }
     }
@@ -229,7 +229,7 @@ public class BarChart extends AbstractFigure {
                 continue;
 
             double ystart = 0;
-            for (int j = 0; j < condition.getDictionary().length; j++) {
+            for (int j = 0; j < condition.dictionary().length; j++) {
                 double yend = ystart + hits[sel[i]][j];
 
                 int[] x = {

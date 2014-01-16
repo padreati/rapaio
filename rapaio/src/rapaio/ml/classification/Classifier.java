@@ -21,7 +21,7 @@ package rapaio.ml.classification;
 
 import rapaio.core.Summarizable;
 import rapaio.data.Frame;
-import rapaio.data.NomVector;
+import rapaio.data.Nominal;
 
 import java.util.List;
 
@@ -100,7 +100,7 @@ public interface Classifier<T> extends Summarizable {
      *
      * @return nominal vector with predicted classes
      */
-    NomVector getPrediction();
+    Nominal getPrediction();
 
     /**
      * Returns predicted class distribution if is computed,

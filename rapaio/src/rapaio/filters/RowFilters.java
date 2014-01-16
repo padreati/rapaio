@@ -27,7 +27,7 @@ import rapaio.data.Vector;
 import java.util.*;
 
 /**
- * Provides filters which manipulates rows from a frame.
+ * Provides filters which manipulates rowCount from a frame.
  * <p/>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
@@ -37,37 +37,37 @@ public final class RowFilters {
     }
 
     /**
-     * Shuffle the order of rows from specified vector.
+     * Shuffle the order of rowCount from specified vector.
      *
      * @param v source frame
      * @return shuffled frame
      */
     public static Vector shuffle(Vector v) {
         ArrayList<Integer> mapping = new ArrayList<>();
-        for (int i = 0; i < v.getRowCount(); i++) {
-            mapping.add(v.getRowId(i));
+        for (int i = 0; i < v.rowCount(); i++) {
+            mapping.add(v.rowId(i));
         }
         for (int i = mapping.size(); i > 1; i--) {
             mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
         }
-        return new MappedVector(v.getSourceVector(), new Mapping(mapping));
+        return new MappedVector(v.sourceVector(), new Mapping(mapping));
     }
 
     /**
-     * Shuffle the order of rows from specified frame.
+     * Shuffle the order of rowCount from specified frame.
      *
      * @param df source frame
      * @return shuffled frame
      */
     public static Frame shuffle(Frame df) {
         ArrayList<Integer> mapping = new ArrayList<>();
-        for (int i = 0; i < df.getRowCount(); i++) {
-            mapping.add(df.getRowId(i));
+        for (int i = 0; i < df.rowCount(); i++) {
+            mapping.add(df.rowId(i));
         }
         for (int i = mapping.size(); i > 1; i--) {
             mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
         }
-        return new MappedFrame(df.getSourceFrame(), new Mapping(mapping));
+        return new MappedFrame(df.sourceFrame(), new Mapping(mapping));
     }
 
     public static Vector sort(Vector v) {
@@ -75,7 +75,7 @@ public final class RowFilters {
     }
 
     public static Vector sort(Vector v, boolean asc) {
-        if (v.getType().isNumeric()) {
+        if (v.type().isNumeric()) {
             return sort(v, RowComparators.numericComparator(v, asc));
         }
         return sort(v, RowComparators.nominalComparator(v, asc));
@@ -84,44 +84,44 @@ public final class RowFilters {
     @SafeVarargs
     public static Vector sort(Vector vector, Comparator<Integer>... comparators) {
         List<Integer> mapping = new ArrayList<>();
-        for (int i = 0; i < vector.getRowCount(); i++) {
+        for (int i = 0; i < vector.rowCount(); i++) {
             mapping.add(i);
         }
         Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
         List<Integer> ids = new ArrayList<>();
         for (int i = 0; i < mapping.size(); i++) {
-            ids.add(vector.getRowId(mapping.get(i)));
+            ids.add(vector.rowId(mapping.get(i)));
         }
-        return new MappedVector(vector.getSourceVector(), new Mapping(ids));
+        return new MappedVector(vector.sourceVector(), new Mapping(ids));
     }
 
     public static Frame sort(Frame df, Comparator<Integer>... comparators) {
         List<Integer> mapping = new ArrayList();
-        for (int i = 0; i < df.getRowCount(); i++) {
+        for (int i = 0; i < df.rowCount(); i++) {
             mapping.add(i);
         }
         Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
         List<Integer> ids = new ArrayList<>();
         for (int i = 0; i < mapping.size(); i++) {
-            ids.add(df.getRowId(mapping.get(i)));
+            ids.add(df.rowId(mapping.get(i)));
         }
-        return new MappedFrame(df.getSourceFrame(), new Mapping(ids));
+        return new MappedFrame(df.sourceFrame(), new Mapping(ids));
     }
 
 
     public static Frame delta(Frame source, Frame remove) {
         HashSet<Integer> existing = new HashSet<>();
-        for (int i = 0; i < remove.getRowCount(); i++) {
-            existing.add(remove.getRowId(i));
+        for (int i = 0; i < remove.rowCount(); i++) {
+            existing.add(remove.rowId(i));
         }
         List<Integer> mapping = new ArrayList<>();
-        for (int i = 0; i < source.getRowCount(); i++) {
-            int rowId = source.getRowId(i);
+        for (int i = 0; i < source.rowCount(); i++) {
+            int rowId = source.rowId(i);
             if (!existing.contains(rowId)) {
                 mapping.add(i);
             }
         }
-        return new MappedFrame(source.getSourceFrame(), new Mapping(mapping));
+        return new MappedFrame(source.sourceFrame(), new Mapping(mapping));
     }
 
     /**
@@ -138,18 +138,18 @@ public final class RowFilters {
     public static Frame completeCases(Frame source, ColRange colRange) {
         List<Integer> selectedCols = colRange.parseColumnIndexes(source);
         List<Integer> ids = new ArrayList<>();
-        for (int i = 0; i < source.getRowCount(); i++) {
+        for (int i = 0; i < source.rowCount(); i++) {
             boolean complete = true;
             for (int col : selectedCols) {
-                if (source.getCol(col).isMissing(i)) {
+                if (source.col(col).isMissing(i)) {
                     complete = false;
                     break;
                 }
             }
             if (complete) {
-                ids.add(source.getRowId(i));
+                ids.add(source.rowId(i));
             }
         }
-        return new MappedFrame(source.getSourceFrame(), new Mapping(ids));
+        return new MappedFrame(source.sourceFrame(), new Mapping(ids));
     }
 }

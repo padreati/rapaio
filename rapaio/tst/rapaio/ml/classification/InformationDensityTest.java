@@ -39,7 +39,7 @@ public class InformationDensityTest {
     public void testPlayWithMissing() throws IOException {
 
         Frame df = Datasets.loadPlay();
-        df.getCol("outlook").setMissing(5);
+        df.col("outlook").setMissing(5);
 
         DensityTable id = new DensityTable(df, "outlook", "class");
         assertEquals(0.892, id.getEntropy(true), 1e-3);

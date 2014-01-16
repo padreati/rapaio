@@ -50,16 +50,16 @@ public class DatasetsTest {
         Frame df = Datasets.loadIrisDataset();
 
         assertNotNull(df);
-        assertEquals(5, df.getColCount());
-        assertEquals(150, df.getRowCount());
+        assertEquals(5, df.colCount());
+        assertEquals(150, df.rowCount());
 
         final String[] names = new String[]{"sepal-length", "sepal-width", "petal-length", "petal-width", "class"};
-        assertArrayEquals(names, df.getColNames());
+        assertArrayEquals(names, df.colNames());
 
         int nas = 0;
-        for (int i = 0; i < df.getColCount(); i++) {
-            for (int j = 0; j < df.getRowCount(); j++) {
-                if (df.getCol(i).isMissing(j)) {
+        for (int i = 0; i < df.colCount(); i++) {
+            for (int j = 0; j < df.rowCount(); j++) {
+                if (df.col(i).isMissing(j)) {
                     nas++;
                 }
             }

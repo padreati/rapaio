@@ -7,7 +7,7 @@ import java.util.Collection;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class NumVector extends AbstractVector {
+public class Numeric extends AbstractVector {
 
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
     private static final int DEFAULT_CAPACITY = 10;
@@ -17,20 +17,20 @@ public class NumVector extends AbstractVector {
     private transient double[] data;
     private int rows;
 
-    public NumVector() {
+    public Numeric() {
         super();
         this.data = EMPTY_DATA;
     }
 
-    public NumVector(int rows) {
+    public Numeric(int rows) {
         this(rows, rows, Double.NaN);
     }
 
-    public NumVector(int rows, int capacity) {
+    public Numeric(int rows, int capacity) {
         this(rows, capacity, Double.NaN);
     }
 
-    public NumVector(int rows, int capacity, double fill) {
+    public Numeric(int rows, int capacity, double fill) {
         super();
         if (capacity < 0) {
             throw new IllegalArgumentException("Illegal capacity: " + capacity);
@@ -48,12 +48,12 @@ public class NumVector extends AbstractVector {
             Arrays.fill(data, 0, rows, fill);
     }
 
-    public NumVector(double[] values) {
+    public Numeric(double[] values) {
         data = Arrays.copyOf(values, values.length);
         this.rows = values.length;
     }
 
-    public NumVector(int[] values) {
+    public Numeric(int[] values) {
         data = new double[values.length];
         for (int i = 0; i < values.length; i++) {
             data[i] = values[i];
@@ -62,7 +62,7 @@ public class NumVector extends AbstractVector {
     }
 
     @Override
-    public VectorType getType() {
+    public VectorType type() {
         return VectorType.NUMERIC;
     }
 
@@ -130,7 +130,7 @@ public class NumVector extends AbstractVector {
     }
 
     private void rangeCheck(int index) {
-        if (index > rows || index < 0)
+        if (index >= rows || index < 0)
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + rows);
     }
 
@@ -140,27 +140,27 @@ public class NumVector extends AbstractVector {
     }
 
     @Override
-    public Vector getSourceVector() {
+    public Vector sourceVector() {
         return this;
     }
 
     @Override
-    public Mapping getMapping() {
+    public Mapping mapping() {
         return null;
     }
 
     @Override
-    public int getRowCount() {
+    public int rowCount() {
         return rows;
     }
 
     @Override
-    public int getRowId(int row) {
+    public int rowId(int row) {
         return row;
     }
 
     @Override
-    public double getValue(int row) {
+    public double value(int row) {
         rangeCheck(row);
         return data[row];
     }
@@ -187,8 +187,8 @@ public class NumVector extends AbstractVector {
     }
 
     @Override
-    public int getIndex(int row) {
-        return (int) Math.rint(getValue(row));
+    public int index(int row) {
+        return (int) Math.rint(value(row));
     }
 
     @Override
@@ -212,7 +212,7 @@ public class NumVector extends AbstractVector {
     }
 
     @Override
-    public String getLabel(int row) {
+    public String label(int row) {
         return "";
     }
 
@@ -232,7 +232,7 @@ public class NumVector extends AbstractVector {
     }
 
     @Override
-    public String[] getDictionary() {
+    public String[] dictionary() {
         throw new RuntimeException("Operation not available for numeric vectors.");
     }
 
@@ -243,12 +243,17 @@ public class NumVector extends AbstractVector {
 
     @Override
     public boolean isMissing(int row) {
-        return getValue(row) != getValue(row);
+        return value(row) != value(row);
     }
 
     @Override
     public void setMissing(int row) {
         setValue(row, missingValue);
+    }
+
+    @Override
+    public void addMissing() {
+        addValue(missingValue);
     }
 
     @Override

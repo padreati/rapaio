@@ -55,8 +55,8 @@ public class TreeRegressor extends AbstractRegressor {
 
     @Override
     public void predict(Frame df) {
-        fitted = new NumVector(new double[df.getRowCount()]);
-        for (int i = 0; i < df.getRowCount(); i++) {
+        fitted = new Numeric(new double[df.rowCount()]);
+        for (int i = 0; i < df.rowCount(); i++) {
             fitted.setValue(i, root.predict(df, i));
         }
     }
@@ -85,13 +85,13 @@ class TreeNode {
 
         if (totalWeight < 2 * parent.minWeight) {
             leaf = true;
-            pred = new Mean(df.getCol(targetColNames)).getValue();
+            pred = new Mean(df.col(targetColNames)).getValue();
             return;
         }
 
         String[] colNames = parent.colSelector.nextColNames();
         for (String testColName : colNames) {
-            if (df.getCol(testColName).getType().isNumeric() && !targetColNames.equals(testColName)) {
+            if (df.col(testColName).type().isNumeric() && !targetColNames.equals(testColName)) {
                 evaluateNumeric(parent, df, weights, targetColNames, testColName);
             }
         }
@@ -103,25 +103,25 @@ class TreeNode {
             List<Double> leftWeights = new ArrayList<>();
             List<Double> rightWeights = new ArrayList<>();
 
-            for (int i = 0; i < df.getRowCount(); i++) {
-                if (df.getValue(i, splitColName) <= splitValue) {
-                    leftMapping.add(df.getRowId(i));
+            for (int i = 0; i < df.rowCount(); i++) {
+                if (df.value(i, splitColName) <= splitValue) {
+                    leftMapping.add(df.rowId(i));
                     leftWeights.add(weights.get(i));
                 } else {
-                    rightMapping.add(df.getRowId(i));
+                    rightMapping.add(df.rowId(i));
                     rightWeights.add(weights.get(i));
                 }
             }
             left = new TreeNode();
             right = new TreeNode();
-            left.learn(parent, new MappedFrame(df.getSourceFrame(), leftMapping), leftWeights, targetColNames);
-            right.learn(parent, new MappedFrame(df.getSourceFrame(), rightMapping), rightWeights, targetColNames);
+            left.learn(parent, new MappedFrame(df.sourceFrame(), leftMapping), leftWeights, targetColNames);
+            right.learn(parent, new MappedFrame(df.sourceFrame(), rightMapping), rightWeights, targetColNames);
             return;
         }
 
         // else do the default
         leaf = true;
-        pred = new Mean(df.getCol(targetColNames)).getValue();
+        pred = new Mean(df.col(targetColNames)).getValue();
     }
 
     private void evaluateNumeric(TreeRegressor parent,
@@ -129,15 +129,15 @@ class TreeNode {
                                  String targetColName,
                                  String testColNames) {
 
-        Vector testCol = df.getCol(testColNames);
-        double[] var = new double[df.getRowCount()];
+        Vector testCol = df.col(testColNames);
+        double[] var = new double[df.rowCount()];
         StatOnline so = new StatOnline();
-        Vector sort = Vectors.newSeq(df.getRowCount());
+        Vector sort = Vectors.newSeq(df.rowCount());
         sort = RowFilters.sort(sort, RowComparators.numericComparator(testCol, true));
         double w = 0;
-        for (int i = 0; i < df.getRowCount(); i++) {
-            int pos = sort.getRowId(i);
-            so.update(testCol.getValue(pos));
+        for (int i = 0; i < df.rowCount(); i++) {
+            int pos = sort.rowId(i);
+            so.update(testCol.value(pos));
             w += weights.get(pos);
             if (i > 0) {
                 var[i] = so.getStandardDeviation() * w / totalWeight;
@@ -145,24 +145,24 @@ class TreeNode {
         }
         so.clean();
         w = 0;
-        for (int i = df.getRowCount() - 1; i >= 0; i--) {
-            int pos = sort.getRowId(i);
-            so.update(testCol.getValue(pos));
+        for (int i = df.rowCount() - 1; i >= 0; i--) {
+            int pos = sort.rowId(i);
+            so.update(testCol.value(pos));
             w += weights.get(pos);
-            if (i < df.getRowCount() - 1) {
+            if (i < df.rowCount() - 1) {
                 var[i] += so.getStandardDeviation() * w / totalWeight;
             }
         }
         w = 0;
-        for (int i = 0; i < df.getRowCount(); i++) {
-            int pos = sort.getRowId(i);
+        for (int i = 0; i < df.rowCount(); i++) {
+            int pos = sort.rowId(i);
             w += weights.get(pos);
 
             if (w >= parent.minWeight && totalWeight - w >= parent.minWeight) {
-                if (var[i] < eval && i > 0 && testCol.getValue(sort.getRowId(i - 1)) != testCol.getValue(sort.getRowId(i))) {
+                if (var[i] < eval && i > 0 && testCol.value(sort.rowId(i - 1)) != testCol.value(sort.rowId(i))) {
                     eval = var[i];
                     splitColName = testColNames;
-                    splitValue = testCol.getValue(pos);
+                    splitValue = testCol.value(pos);
                 }
             }
         }
@@ -172,7 +172,7 @@ class TreeNode {
         if (leaf) {
             return pred;
         }
-        if (df.getValue(row, splitColName) <= splitValue) {
+        if (df.value(row, splitColName) <= splitValue) {
             return left.predict(df, row);
         } else {
             return right.predict(df, row);

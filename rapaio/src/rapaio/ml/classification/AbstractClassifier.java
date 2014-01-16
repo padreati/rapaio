@@ -33,7 +33,7 @@ public abstract class AbstractClassifier<T> implements Classifier<T> {
     @Override
     public void learn(Frame df, String classColName) {
         List<Double> weights = new ArrayList<>();
-        for (int i = 0; i < df.getRowCount(); i++) {
+        for (int i = 0; i < df.rowCount(); i++) {
             weights.add(1.);
         }
         learn(df, weights, classColName);
@@ -42,7 +42,7 @@ public abstract class AbstractClassifier<T> implements Classifier<T> {
     @Override
     public void learnFurther(Frame df, String classColName, T classifier) {
         List<Double> weights = new ArrayList<>();
-        for (int i = 0; i < df.getRowCount(); i++) {
+        for (int i = 0; i < df.rowCount(); i++) {
             weights.add(1.);
         }
         learnFurther(df, weights, classColName, classifier);

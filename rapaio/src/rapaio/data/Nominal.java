@@ -38,7 +38,7 @@ import java.util.*;
  *
  * @author Aurelian Tutuianu
  */
-public class NomVector extends AbstractVector {
+public class Nominal extends AbstractVector {
 
     private static final String missingValue = "?";
     private static final int missingIndex = 0;
@@ -48,7 +48,7 @@ public class NomVector extends AbstractVector {
     int[] data;
     Map<String, Integer> reverse;
 
-    public NomVector() {
+    public Nominal() {
         // set the missing value
         this.reverse = new HashMap<>();
         this.reverse.put("?", 0);
@@ -58,11 +58,11 @@ public class NomVector extends AbstractVector {
         rows = 0;
     }
 
-    public NomVector(int size, String[] dict) {
+    public Nominal(int size, String[] dict) {
         this(size, Arrays.asList(dict));
     }
 
-    public NomVector(int size, Collection<String> dict) {
+    public Nominal(int size, Collection<String> dict) {
         this();
         for (String next : dict) {
             if (this.dict.contains(next)) continue;
@@ -74,7 +74,7 @@ public class NomVector extends AbstractVector {
     }
 
     @Override
-    public VectorType getType() {
+    public VectorType type() {
         return VectorType.NOMINAL;
     }
 
@@ -94,27 +94,27 @@ public class NomVector extends AbstractVector {
     }
 
     @Override
-    public Vector getSourceVector() {
+    public Vector sourceVector() {
         return this;
     }
 
     @Override
-    public Mapping getMapping() {
+    public Mapping mapping() {
         return null;
     }
 
     @Override
-    public int getRowCount() {
+    public int rowCount() {
         return rows;
     }
 
     @Override
-    public int getRowId(int row) {
+    public int rowId(int row) {
         return row;
     }
 
     @Override
-    public int getIndex(int row) {
+    public int index(int row) {
         return data[row];
     }
 
@@ -134,7 +134,7 @@ public class NomVector extends AbstractVector {
     }
 
     @Override
-    public double getValue(int row) {
+    public double value(int row) {
         return data[row];
     }
 
@@ -154,7 +154,7 @@ public class NomVector extends AbstractVector {
     }
 
     @Override
-    public String getLabel(int row) {
+    public String label(int row) {
         return dict.get(data[row]);
     }
 
@@ -168,6 +168,7 @@ public class NomVector extends AbstractVector {
         if (idx == null) {
             dict.add(value);
             reverse.put(value, reverse.size());
+            idx = reverse.size() - 1;
         }
         data[row] = idx;
     }
@@ -196,7 +197,7 @@ public class NomVector extends AbstractVector {
     }
 
     @Override
-    public String[] getDictionary() {
+    public String[] dictionary() {
         return dict.toArray(new String[]{});
     }
 
@@ -232,12 +233,17 @@ public class NomVector extends AbstractVector {
 
     @Override
     public boolean isMissing(int row) {
-        return missingIndex == getIndex(row);
+        return missingIndex == index(row);
     }
 
     @Override
     public void setMissing(int row) {
         setIndex(row, missingIndex);
+    }
+
+    @Override
+    public void addMissing() {
+        addIndex(missingIndex);
     }
 
     @Override

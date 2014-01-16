@@ -28,20 +28,20 @@ import java.io.Serializable;
  */
 public interface Vector extends Serializable {
 
-    VectorType getType();
+    VectorType type();
 
     boolean isMappedVector();
 
-    Vector getSourceVector();
+    Vector sourceVector();
 
-    Mapping getMapping();
+    Mapping mapping();
 
     /**
      * Number of observations contained by the vector.
      *
      * @return size of vector
      */
-    int getRowCount();
+    int rowCount();
 
     /**
      * Returns observation identifier which is an integer.
@@ -56,7 +56,7 @@ public interface Vector extends Serializable {
      * @param row row for which row identifier is returned
      * @return row identifier
      */
-    int getRowId(int row);
+    int rowId(int row);
 
     /**
      * Returns numeric setValue for the observation specified by {@code row}.
@@ -67,7 +67,7 @@ public interface Vector extends Serializable {
      * @param row
      * @return numerical setValue
      */
-    double getValue(int row);
+    double value(int row);
 
     /**
      * Set numeric setValue for the observation specified by {@param row} to {@param setValue}.
@@ -86,18 +86,18 @@ public interface Vector extends Serializable {
     void addValue(int row, double value);
 
     /**
-     * Returns getIndex setValue for the observation specified by {@param row}
+     * Returns index setValue for the observation specified by {@param row}
      *
      * @param row position of the observation
-     * @return getIndex setValue
+     * @return index setValue
      */
-    int getIndex(int row);
+    int index(int row);
 
     /**
-     * Set getIndex setValue for the observation specified by {@param row}.
+     * Set index setValue for the observation specified by {@param row}.
      *
      * @param row   position of the observation
-     * @param value getIndex setValue for the observation
+     * @param value index setValue for the observation
      */
     void setIndex(int row, int value);
 
@@ -106,18 +106,18 @@ public interface Vector extends Serializable {
     void addIndex(int row, int value);
 
     /**
-     * Returns nominal getLabel for the observation specified by {@param row}.
+     * Returns nominal label for the observation specified by {@param row}.
      *
      * @param row position of the observation
-     * @return getLabel setValue for the observation
+     * @return label setValue for the observation
      */
-    String getLabel(int row);
+    String label(int row);
 
     /**
-     * Set nominal getLabel for the observation specified by {@param row}.
+     * Set nominal label for the observation specified by {@param row}.
      *
      * @param row   position of the observation
-     * @param value getLabel setValue of the observation
+     * @param value label setValue of the observation
      */
     void setLabel(int row, String value);
 
@@ -139,7 +139,7 @@ public interface Vector extends Serializable {
      *
      * @return term dictionary defined by the nominal vector.
      */
-    String[] getDictionary();
+    String[] dictionary();
 
     void setDictionary(String[] dict);
 
@@ -161,6 +161,8 @@ public interface Vector extends Serializable {
      * @param row position of the observation.
      */
     void setMissing(int row);
+
+    void addMissing();
 
     void remove(int row);
 

@@ -5,7 +5,7 @@ import java.util.Arrays;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class IdxVector extends AbstractVector {
+public class Index extends AbstractVector {
 
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
     private static final int DEFAULT_CAPACITY = 10;
@@ -15,7 +15,7 @@ public class IdxVector extends AbstractVector {
     private transient int[] data;
     private int rows;
 
-    public IdxVector(int rows, int capacity, int fill) {
+    public Index(int rows, int capacity, int fill) {
         super();
         if (capacity < 0) {
             throw new IllegalArgumentException("Illegal capacity: " + capacity);
@@ -33,7 +33,7 @@ public class IdxVector extends AbstractVector {
             Arrays.fill(data, 0, rows, fill);
     }
 
-    public IdxVector(int[] values) {
+    public Index(int[] values) {
         data = Arrays.copyOf(values, values.length);
         this.rows = values.length;
     }
@@ -47,7 +47,7 @@ public class IdxVector extends AbstractVector {
     }
 
     @Override
-    public VectorType getType() {
+    public VectorType type() {
         return VectorType.INDEX;
     }
 
@@ -84,27 +84,27 @@ public class IdxVector extends AbstractVector {
     }
 
     @Override
-    public Vector getSourceVector() {
+    public Vector sourceVector() {
         return this;
     }
 
     @Override
-    public Mapping getMapping() {
+    public Mapping mapping() {
         return null;
     }
 
     @Override
-    public int getRowCount() {
+    public int rowCount() {
         return rows;
     }
 
     @Override
-    public int getRowId(int row) {
+    public int rowId(int row) {
         return row;
     }
 
     @Override
-    public int getIndex(int row) {
+    public int index(int row) {
         return data[row];
     }
 
@@ -130,8 +130,8 @@ public class IdxVector extends AbstractVector {
     }
 
     @Override
-    public double getValue(int row) {
-        return getIndex(row);
+    public double value(int row) {
+        return index(row);
     }
 
     @Override
@@ -150,7 +150,7 @@ public class IdxVector extends AbstractVector {
     }
 
     @Override
-    public String getLabel(int row) {
+    public String label(int row) {
         return "";
     }
 
@@ -170,7 +170,7 @@ public class IdxVector extends AbstractVector {
     }
 
     @Override
-    public String[] getDictionary() {
+    public String[] dictionary() {
         throw new RuntimeException("Operation not available for index vectors.");
     }
 
@@ -181,12 +181,17 @@ public class IdxVector extends AbstractVector {
 
     @Override
     public boolean isMissing(int row) {
-        return getIndex(row) == MISSING_VALUE;
+        return index(row) == MISSING_VALUE;
     }
 
     @Override
     public void setMissing(int row) {
         setIndex(row, MISSING_VALUE);
+    }
+
+    @Override
+    public void addMissing() {
+        addIndex(MISSING_VALUE);
     }
 
     @Override

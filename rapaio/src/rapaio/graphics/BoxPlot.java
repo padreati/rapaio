@@ -22,7 +22,7 @@ package rapaio.graphics;
 import rapaio.core.ColRange;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
-import rapaio.data.NumVector;
+import rapaio.data.Numeric;
 import rapaio.data.Vector;
 import rapaio.data.Vectors;
 import rapaio.graphics.base.AbstractFigure;
@@ -56,19 +56,19 @@ public class BoxPlot extends AbstractFigure {
     }
 
     public BoxPlot(Vector numeric, Vector nominal) {
-        labels = nominal.getDictionary();
+        labels = nominal.dictionary();
         vectors = new Vector[labels.length];
         int[] count = new int[labels.length];
-        for (int i = 0; i < numeric.getRowCount(); i++) {
-            count[nominal.getIndex(i)]++;
+        for (int i = 0; i < numeric.rowCount(); i++) {
+            count[nominal.index(i)]++;
         }
         for (int i = 0; i < count.length; i++) {
-            vectors[i] = new NumVector(count[i]);
+            vectors[i] = new Numeric(count[i]);
         }
         int[] pos = new int[vectors.length];
-        for (int i = 0; i < nominal.getRowCount(); i++) {
-            vectors[nominal.getIndex(i)].setValue(pos[nominal.getIndex(i)], numeric.getValue(i));
-            pos[nominal.getIndex(i)]++;
+        for (int i = 0; i < nominal.rowCount(); i++) {
+            vectors[nominal.index(i)].setValue(pos[nominal.index(i)], numeric.value(i));
+            pos[nominal.index(i)]++;
         }
         initialize();
     }
@@ -82,15 +82,15 @@ public class BoxPlot extends AbstractFigure {
     public BoxPlot(Frame df, ColRange colRange) {
         if (colRange == null) {
             int len = 0;
-            for (int i = 0; i < df.getColCount(); i++) {
-                if (df.getCol(i).getType().isNumeric()) {
+            for (int i = 0; i < df.colCount(); i++) {
+                if (df.col(i).type().isNumeric()) {
                     len++;
                 }
             }
             int[] indexes = new int[len];
             len = 0;
-            for (int i = 0; i < df.getColCount(); i++) {
-                if (df.getCol(i).getType().isNumeric()) {
+            for (int i = 0; i < df.colCount(); i++) {
+                if (df.col(i).type().isNumeric()) {
                     indexes[len++] = i;
                 }
             }
@@ -102,8 +102,8 @@ public class BoxPlot extends AbstractFigure {
 
         int pos = 0;
         for (int index : indexes) {
-            vectors[pos] = df.getCol(index);
-            labels[pos] = df.getColNames()[index];
+            vectors[pos] = df.col(index);
+            labels[pos] = df.colNames()[index];
             pos++;
         }
 
@@ -124,9 +124,9 @@ public class BoxPlot extends AbstractFigure {
         range.union(0, Double.NaN);
         range.union(vectors.length, Double.NaN);
         for (Vector v : vectors) {
-            for (int i = 0; i < v.getRowCount(); i++) {
+            for (int i = 0; i < v.rowCount(); i++) {
                 if (v.isMissing(i)) continue;
-                range.union(Double.NaN, v.getValue(i));
+                range.union(Double.NaN, v.value(i));
             }
         }
         return range;
@@ -156,7 +156,7 @@ public class BoxPlot extends AbstractFigure {
 
         for (int i = 0; i < vectors.length; i++) {
             Vector v = vectors[i];
-            if (v.getRowCount() == 0) {
+            if (v.rowCount() == 0) {
                 continue;
             }
             double[] p = new double[]{0.25, 0.5, 0.75};
@@ -185,8 +185,8 @@ public class BoxPlot extends AbstractFigure {
             // outliers
             double upperwhisker = q[2];
             double lowerqhisker = q[0];
-            for (int j = 0; j < v.getRowCount(); j++) {
-                double point = v.getValue(j);
+            for (int j = 0; j < v.rowCount(); j++) {
+                double point = v.value(j);
                 if ((point > q[2] + outerfence) || (point < q[0] - outerfence)) {
                     // big outlier
                     int width = (int) (3 * getSize(i));

@@ -20,7 +20,7 @@
 package rapaio.graphics.plot;
 
 import rapaio.core.UnivariateFunction;
-import rapaio.data.NumVector;
+import rapaio.data.Numeric;
 import rapaio.data.Vector;
 import rapaio.graphics.base.Range;
 
@@ -66,23 +66,23 @@ public class FunctionLine extends PlotComponent {
     @Override
     public void paint(Graphics2D g2d) {
         Range range = getParent().getRange();
-        Vector x = new NumVector(points + 1);
-        Vector y = new NumVector(points + 1);
+        Vector x = new Numeric(points + 1);
+        Vector y = new Numeric(points + 1);
         double xstep = (range.getX2() - range.getX1()) / points;
-        for (int i = 0; i < x.getRowCount(); i++) {
+        for (int i = 0; i < x.rowCount(); i++) {
             x.setValue(i, range.getX1() + i * xstep);
-            y.setValue(i, f.eval(x.getValue(i)));
+            y.setValue(i, f.eval(x.value(i)));
         }
 
-        for (int i = 1; i < x.getRowCount(); i++) {
-            if (range.contains(x.getValue(i - 1), y.getValue(i - 1)) && range.contains(x.getValue(i), y.getValue(i))) {
+        for (int i = 1; i < x.rowCount(); i++) {
+            if (range.contains(x.value(i - 1), y.value(i - 1)) && range.contains(x.value(i), y.value(i))) {
                 g2d.setColor(getColor(i));
                 g2d.setStroke(new BasicStroke(getLwd()));
                 g2d.draw(new Line2D.Double(
-                        getParent().xscale(x.getValue(i - 1)),
-                        getParent().yscale(y.getValue(i - 1)),
-                        getParent().xscale(x.getValue(i)),
-                        getParent().yscale(y.getValue(i))));
+                        getParent().xscale(x.value(i - 1)),
+                        getParent().yscale(y.value(i - 1)),
+                        getParent().xscale(x.value(i)),
+                        getParent().yscale(y.value(i))));
 
             }
         }

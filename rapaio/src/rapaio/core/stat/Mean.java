@@ -45,11 +45,11 @@ public final class Mean implements Summarizable {
 
         double sum = 0.;
         double count = 0;
-        for (int i = 0; i < vector.getRowCount(); i++) {
+        for (int i = 0; i < vector.rowCount(); i++) {
             if (vector.isMissing(i)) {
                 continue;
             }
-            sum += vector.getValue(i);
+            sum += vector.value(i);
             count++;
         }
         if (count == 0) {
@@ -57,11 +57,11 @@ public final class Mean implements Summarizable {
         }
         sum /= count;
         double t = 0;
-        for (int i = 0; i < vector.getRowCount(); i++) {
+        for (int i = 0; i < vector.rowCount(); i++) {
             if (vector.isMissing(i)) {
                 continue;
             }
-            t += vector.getValue(i) - sum;
+            t += vector.value(i) - sum;
         }
         sum += t / count;
         return sum;

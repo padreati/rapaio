@@ -47,27 +47,27 @@ public class ROCCurve extends PlotComponent {
         getParent().setBottomLabel("fp rate");
         getParent().setLeftLabel("tp rate");
     }
-    
+
     @Override
     public void paint(Graphics2D g2d) {
         g2d.setColor(getColor(0));
         g2d.setStroke(new BasicStroke(getLwd()));
         g2d.setBackground(ColorPalette.STANDARD.getColor(255));
 
-        for (int i = 1; i < roc.getData().getRowCount(); i++) {
+        for (int i = 1; i < roc.getData().rowCount(); i++) {
             g2d.setColor(getColor(i));
-            double x1 = getParent().xscale(roc.getData().getValue(i - 1, "fpr"));
-            double y1 = getParent().yscale(roc.getData().getValue(i - 1, "tpr"));
-            double x2 = getParent().xscale(roc.getData().getValue(i, "fpr"));
-            double y2 = getParent().yscale(roc.getData().getValue(i, "tpr"));
+            double x1 = getParent().xscale(roc.getData().value(i - 1, "fpr"));
+            double y1 = getParent().yscale(roc.getData().value(i - 1, "tpr"));
+            double x2 = getParent().xscale(roc.getData().value(i, "fpr"));
+            double y2 = getParent().yscale(roc.getData().value(i, "tpr"));
 
             if (getParent().getRange().contains(
-                    roc.getData().getValue(i - 1, "fpr"),
-                    roc.getData().getValue(i - 1, "tpr")
+                    roc.getData().value(i - 1, "fpr"),
+                    roc.getData().value(i - 1, "tpr")
             )
                     && getParent().getRange().contains(
-                            roc.getData().getValue(i, "fpr"),
-                            roc.getData().getValue(i, "tpr"))) {
+                    roc.getData().value(i, "fpr"),
+                    roc.getData().value(i, "tpr"))) {
                 g2d.draw(new Line2D.Double(x1, y1, x2, y2));
             }
         }

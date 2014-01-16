@@ -47,12 +47,12 @@ public class Minimum implements Summarizable {
     private double compute() {
         double min = Double.MAX_VALUE;
         boolean valid = false;
-        for (int i = 0; i < vector.getRowCount(); i++) {
+        for (int i = 0; i < vector.rowCount(); i++) {
             if (vector.isMissing(i)) {
                 continue;
             }
             valid = true;
-            min = BaseMath.min(min, vector.getValue(i));
+            min = BaseMath.min(min, vector.value(i));
         }
         return valid ? min : Double.NaN;
     }

@@ -37,7 +37,7 @@ public interface Frame extends Serializable {
      *
      * @return number of observations
      */
-    int getRowCount();
+    int rowCount();
 
     /**
      * Number of vectors contained in frame. Vector references could be obtained by name or by position.
@@ -47,7 +47,7 @@ public interface Frame extends Serializable {
      *
      * @return number of vectors
      */
-    int getColCount();
+    int colCount();
 
     /**
      * Returns an array of vector names, the names are ordered by the position of the vectors.
@@ -57,15 +57,15 @@ public interface Frame extends Serializable {
      *
      * @return array of vector names
      */
-    String[] getColNames();
+    String[] colNames();
 
     /**
-     * Returns the getIndex (position) of the vector inside the frame given the vector's name as parameter.
+     * Returns the index (position) of the vector inside the frame given the vector's name as parameter.
      *
      * @param name vector's name
      * @return column position inside the frame corresponding to the vector with the specified name
      */
-    int getColIndex(String name);
+    int colIndex(String name);
 
     /**
      * Returns a vector reference for column at given position
@@ -73,7 +73,7 @@ public interface Frame extends Serializable {
      * @param col position of the column inside the frame
      * @return a vector type reference
      */
-    Vector getCol(int col);
+    Vector col(int col);
 
     /**
      * Returns a vector reference for column with given name
@@ -81,15 +81,15 @@ public interface Frame extends Serializable {
      * @param name name of the column inside the frame
      * @return a vector type reference
      */
-    Vector getCol(String name);
+    Vector col(String name);
 
     /**
-     * Returns row identifier for a specific column. See {@link Vector#getRowId(int)} for further reference.
+     * Returns row identifier for a specific column. See {@link Vector#rowId(int)} for further reference.
      *
      * @param row row for which row identifier is returned
      * @return row identifier
      */
-    int getRowId(int row);
+    int rowId(int row);
 
     public boolean isMappedFrame();
 
@@ -99,25 +99,25 @@ public interface Frame extends Serializable {
      *
      * @return
      */
-    public Frame getSourceFrame();
+    public Frame sourceFrame();
 
     /**
-     * Convenient shortcut to call {@link Vector#getValue(int)} for a given column.
+     * Convenient shortcut to call {@link Vector#value(int)} for a given column.
      *
      * @param row row number
      * @param col column number
      * @return numeric setValue
      */
-    double getValue(int row, int col);
+    double value(int row, int col);
 
     /**
-     * Convenient shortcut to call {@link Vector#getValue(int)} for a given column.
+     * Convenient shortcut to call {@link Vector#value(int)} for a given column.
      *
      * @param row     row number
      * @param colName column name
      * @return numeric setValue
      */
-    double getValue(int row, String colName);
+    double value(int row, String colName);
 
     /**
      * Convenient shortcut method to call {@link Vector#setValue(int, double)} for a given column.
@@ -139,22 +139,22 @@ public interface Frame extends Serializable {
 
 
     /**
-     * Convenient shortcut method for calling {@link Vector#getIndex(int)} for a given column.
+     * Convenient shortcut method for calling {@link Vector#index(int)} for a given column.
      *
      * @param row row number
      * @param col column number
      * @return setIndex value
      */
-    int getIndex(int row, int col);
+    int index(int row, int col);
 
     /**
-     * Convenient shortcut method for calling {@link Vector#getIndex(int)} for a given column.
+     * Convenient shortcut method for calling {@link Vector#index(int)} for a given column.
      *
      * @param row     row number
      * @param colName column name
      * @return setIndex value
      */
-    int getIndex(int row, String colName);
+    int index(int row, String colName);
 
     /**
      * Convenient shortcut method for calling {@link Vector#setIndex(int, int)} for given column.
@@ -175,22 +175,22 @@ public interface Frame extends Serializable {
     void setIndex(int row, String colName, int value);
 
     /**
-     * Convenient shortcut method for calling {@link Vector#getLabel(int)} for given column.
+     * Convenient shortcut method for calling {@link Vector#label(int)} for given column.
      *
      * @param row row number
      * @param col column number
      * @return nominal label value
      */
-    String getLabel(int row, int col);
+    String label(int row, int col);
 
     /**
-     * Convenient shortcut method for calling {@link Vector#getLabel(int)} for given column.
+     * Convenient shortcut method for calling {@link Vector#label(int)} for given column.
      *
      * @param row     row number
      * @param colName column name
      * @return nominal label value
      */
-    String getLabel(int row, String colName);
+    String label(int row, String colName);
 
     /**
      * Convenient shortcut method for calling {@link Vector#setLabel(int, String)} for given column.

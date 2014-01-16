@@ -27,8 +27,8 @@ import java.util.HashMap;
  * mapping give at construction time.
  * <p/>
  * This frame does not hold actual values, it delegate the behavior
- * to the wrapped frame, thus the wrapping affects only the rows
- * selected anf the order of these rows.
+ * to the wrapped frame, thus the wrapping affects only the rowCount
+ * selected anf the order of these rowCount.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
@@ -47,17 +47,17 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public int getRowCount() {
+    public int rowCount() {
         return mapping.size();
     }
 
     @Override
-    public int getColCount() {
-        return source.getColCount();
+    public int colCount() {
+        return source.colCount();
     }
 
     @Override
-    public int getRowId(int row) {
+    public int rowId(int row) {
         return mapping.get(row);
     }
 
@@ -67,30 +67,30 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public Frame getSourceFrame() {
+    public Frame sourceFrame() {
         return source;
     }
 
     @Override
-    public String[] getColNames() {
-        return source.getColNames();
+    public String[] colNames() {
+        return source.colNames();
     }
 
     @Override
-    public int getColIndex(String name) {
-        return source.getColIndex(name);
+    public int colIndex(String name) {
+        return source.colIndex(name);
     }
 
     @Override
-    public Vector getCol(int col) {
+    public Vector col(int col) {
         if (!vectors.containsKey(col)) {
-            vectors.put(col, new MappedVector(source.getCol(col), mapping));
+            vectors.put(col, new MappedVector(source.col(col), mapping));
         }
         return vectors.get(col);
     }
 
     @Override
-    public Vector getCol(String name) {
-        return getCol(getColIndex(name));
+    public Vector col(String name) {
+        return col(colIndex(name));
     }
 }

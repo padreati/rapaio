@@ -22,6 +22,7 @@ package rapaio.datasets;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
+import rapaio.data.VectorType;
 import rapaio.filters.BaseFilters;
 import rapaio.io.CsvPersistence;
 
@@ -35,21 +36,21 @@ public class Datasets {
 
     public static Frame loadIrisDataset() throws IOException, URISyntaxException {
         Frame df = new CsvPersistence().read(Datasets.class, "iris.csv");
-        Vector[] vectors = new Vector[df.getColCount()];
-        vectors[vectors.length - 1] = df.getCol(vectors.length - 1);
+        Vector[] vectors = new Vector[df.colCount()];
+        vectors[vectors.length - 1] = df.col(vectors.length - 1);
         for (int i = 0; i < vectors.length - 1; i++) {
-            vectors[i] = BaseFilters.toNumeric(df.getCol(i));
+            vectors[i] = BaseFilters.toNumeric(df.col(i));
         }
-        return new SolidFrame(df.getRowCount(), vectors, df.getColNames());
+        return new SolidFrame(df.rowCount(), vectors, df.colNames());
     }
 
     public static Frame loadPearsonHeightDataset() throws IOException, URISyntaxException {
         Frame df = new CsvPersistence().read(Datasets.class, "pearsonheight.csv");
-        Vector[] vectors = new Vector[df.getColCount()];
-        for (int i = 0; i < df.getColCount(); i++) {
-            vectors[i] = BaseFilters.toNumeric(df.getCol(i));
+        Vector[] vectors = new Vector[df.colCount()];
+        for (int i = 0; i < df.colCount(); i++) {
+            vectors[i] = BaseFilters.toNumeric(df.col(i));
         }
-        return new SolidFrame(df.getRowCount(), vectors, df.getColNames());
+        return new SolidFrame(df.rowCount(), vectors, df.colNames());
     }
 
     public static Frame loadChestDataset() throws IOException, URISyntaxException {
@@ -66,13 +67,13 @@ public class Datasets {
         persistence.setHasHeader(true);
         persistence.setHasQuotas(false);
         Frame df = persistence.read(Datasets.class, "carmpgdat.csv");
-        Vector[] vectors = new Vector[df.getColCount()];
-        vectors[0] = df.getCol(0);
-        vectors[1] = df.getCol(1);
-        for (int i = 2; i < df.getColCount(); i++) {
-            vectors[i] = BaseFilters.toNumeric(df.getCol(i));
+        Vector[] vectors = new Vector[df.colCount()];
+        vectors[0] = df.col(0);
+        vectors[1] = df.col(1);
+        for (int i = 2; i < df.colCount(); i++) {
+            vectors[i] = BaseFilters.toNumeric(df.col(i));
         }
-        return new SolidFrame(df.getRowCount(), vectors, df.getColNames());
+        return new SolidFrame(df.rowCount(), vectors, df.colNames());
     }
 
     public static Frame loadSpamBase() throws IOException, URISyntaxException {
@@ -148,7 +149,7 @@ public class Datasets {
         persistence.setHasQuotas(false);
         return persistence.read(Datasets.class, "mushrooms.csv");
     }
-    
+
     public static Frame loadPlay() throws IOException {
         CsvPersistence persistence = new CsvPersistence();
         persistence.setColSeparator(',');
@@ -158,12 +159,20 @@ public class Datasets {
         persistence.getNumericFieldHints().add("humidity");
         return persistence.read(Datasets.class, "play.csv");
     }
-    
+
     public static Frame loadOlympic() throws IOException {
         CsvPersistence csv = new CsvPersistence();
         csv.setHasHeader(true);
         csv.setHasQuotas(false);
         csv.getNumericFieldHints().add("Edition");
         return csv.read(Datasets.class, "olympic.csv");
+    }
+
+    public static Frame loadProstateCancer() throws IOException {
+        CsvPersistence csv = new CsvPersistence();
+        csv.setHasHeader(true);
+        csv.setColSeparator('\t');
+        csv.setDefaultTypeHint(VectorType.NUMERIC);
+        return csv.read(Datasets.class, "prostate.csv");
     }
 }

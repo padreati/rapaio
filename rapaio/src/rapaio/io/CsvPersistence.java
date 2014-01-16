@@ -20,11 +20,12 @@
 package rapaio.io;
 
 import rapaio.data.*;
-import rapaio.data.Vector;
 
 import java.io.*;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -39,6 +40,7 @@ public class CsvPersistence {
     private final HashSet<String> numericFieldHints = new HashSet<>();
     private final HashSet<String> indexFieldHints = new HashSet<>();
     private final HashSet<String> nominalFieldHints = new HashSet<>();
+    private VectorType defaultTypeHint = VectorType.NOMINAL;
 
     public boolean hasHeader() {
         return hasHeader;
@@ -92,6 +94,14 @@ public class CsvPersistence {
         return nominalFieldHints;
     }
 
+    public VectorType getDefaultTypeHint() {
+        return defaultTypeHint;
+    }
+
+    public void setDefaultTypeHint(VectorType defaultTypeHint) {
+        this.defaultTypeHint = defaultTypeHint;
+    }
+
     public Frame read(String fileName) throws IOException {
         return read(new MyReader(fileName));
     }
@@ -101,8 +111,9 @@ public class CsvPersistence {
     }
 
     private Frame read(MyReader myReader) throws IOException {
+        int rows = 0;
         List<String> names = new ArrayList<>();
-        int cols;
+        List<Vector> vectors = new ArrayList<>();
 
         try (BufferedReader reader = myReader.reader()) {
             if (hasHeader) {
@@ -112,134 +123,117 @@ public class CsvPersistence {
                 }
                 names = parseLine(line);
             }
-            cols = names.size();
-            int len = 0;
+            boolean first = true;
             while (true) {
                 String line = reader.readLine();
                 if (line == null) {
                     break;
                 }
                 List<String> row = parseLine(line);
-                cols = Math.max(cols, row.size());
-                len++;
-                if (len > 100)
-                    break; // enough is enough
-            }
-        }
-        for (int i = names.size(); i < cols; i++) {
-            names.add("V" + (i + 1));
-        }
 
-        // learn nominal dictionaries
-        HashMap<String, HashSet<String>> dictionaries = new HashMap<>();
-        HashMap<String, Integer> indexes = new HashMap<>();
-        for (int i = 0; i < names.size(); i++) {
-            String colName = names.get(i);
-            indexes.put(colName, i);
-            if (indexFieldHints.contains(colName) || numericFieldHints.contains(colName)) {
-                continue;
-            }
-            dictionaries.put(colName, new HashSet<String>());
-        }
-        int rows = 0;
-        try (BufferedReader reader = myReader.reader()) {
-            if (hasHeader) {
-                String line = reader.readLine();
-                if (line == null) {
-                    return null;
-                }
-            }
-            while (true) {
-                String line = reader.readLine();
-                if (line == null) {
-                    break;
-                }
-                if (!dictionaries.isEmpty()) {
-                    List<String> row = parseLine(line);
-                    for (Map.Entry<String, HashSet<String>> entry : dictionaries.entrySet()) {
-                        if (row.size() > indexes.get(entry.getKey())) {
-                            String label = row.get(indexes.get(entry.getKey()));
-                            if (!label.isEmpty())
-                                entry.getValue().add(label);
+                // build vectors with initial types
+                if (first) {
+                    first = false;
+                    for (int i = names.size(); i < row.size(); i++) {
+                        names.add("V" + (i + 1));
+                    }
+                    for (int i = 0; i < names.size(); i++) {
+                        String colName = names.get(i);
+                        if (indexFieldHints.contains(colName)) {
+                            vectors.add(new Index(0, 0, 0));
+                            continue;
+                        }
+                        if (numericFieldHints.contains(colName)) {
+                            vectors.add(new Numeric());
+                            continue;
+                        }
+                        if (nominalFieldHints.contains(colName)) {
+                            vectors.add(new Nominal());
+                            continue;
+                        }
+                        // default type
+                        switch (defaultTypeHint) {
+                            case NOMINAL:
+                                vectors.add(new Nominal());
+                                break;
+                            case NUMERIC:
+                                vectors.add(new Numeric());
+                                break;
+                            case INDEX:
+                                vectors.add(new Index(0, 0, 0));
+                                break;
                         }
                     }
                 }
-                rows++;
-            }
-        }
 
-        // learn frame
-        List<Vector> vectors = new ArrayList<>();
-        for (int i = 0; i < cols; i++) {
-            String colName = names.get(i);
-            if (indexFieldHints.contains(colName)) {
-                vectors.add(Vectors.newIdx(rows));
-                continue;
-            }
-            if (numericFieldHints.contains(colName)) {
-                vectors.add(new NumVector(rows));
-                continue;
-            }
-            vectors.add(new NomVector(rows, dictionaries.get(colName)));
-        }
-        Frame df = new SolidFrame(rows, vectors, names);
-
-        // process data, one row at a time
-        rows = 0;
-        try (BufferedReader reader = myReader.reader()) {
-            if (hasHeader) {
-                String line = reader.readLine();
-                if (line == null) {
-                    return null;
-                }
-            }
-            while (true) {
-                String line = reader.readLine();
-                if (line == null) {
-                    break;
-                }
-                List<String> row = parseLine(line);
-                for (String colName : indexFieldHints) {
-                    if (!indexes.containsKey(colName))
-                        continue;
-                    if ("?".equals(row.get(indexes.get(colName)))) {
-                        df.getCol(colName).setMissing(rows);
-                        continue;
-                    }
-                    df.getCol(colName).setIndex(rows, Integer.parseInt(row.get(indexes.get(colName))));
-                }
-                for (String colName : numericFieldHints) {
-                    if (!indexes.containsKey(colName))
-                        continue;
-                    if ("?".equals(row.get(indexes.get(colName)))) {
-                        df.getCol(colName).setMissing(rows);
-                        continue;
-                    }
-                    df.getCol(colName).setValue(rows, Double.parseDouble(row.get(indexes.get(colName))));
-                }
-                for (String colName : dictionaries.keySet()) {
-                    if (!indexes.containsKey(colName))
-                        continue;
-                    if (row.size() <= indexes.get(colName))
-                        continue;
-                    String label = row.get(indexes.get(colName));
-                    if ("?".equals(label)) {
-                        df.getCol(colName).setMissing(rows);
-                        continue;
-                    }
-                    if (!label.isEmpty())
-                        df.getCol(colName).setLabel(rows, label);
-                }
                 rows++;
+                for (int i = 0; i < names.size(); i++) {
+                    if (row.size() <= i || "?".equals(row.get(i))) {
+                        vectors.get(i).addMissing();
+                        continue;
+                    }
+                    String value = row.get(i);
+                    Vector v = vectors.get(i);
+                    switch (v.type()) {
+                        case INDEX:
+                            Integer intValue;
+                            try {
+                                intValue = Integer.parseInt(value);
+                                v.addIndex(intValue);
+                            } catch (Throwable ex) {
+                                // can't parse, try numeric
+                                Double fallbackNumeric;
+                                try {
+                                    fallbackNumeric = Double.parseDouble(value);
+                                    Numeric num = new Numeric();
+                                    for (int j = 0; j < v.rowCount(); j++) {
+                                        num.addValue(v.index(j));
+                                    }
+                                    num.addValue(fallbackNumeric);
+                                    vectors.set(i, num);
+                                    continue;
+
+                                } catch (Throwable ex2) {
+                                    // can't parse, use nominal
+                                    Nominal nom = new Nominal();
+                                    for (int j = 0; j < v.rowCount(); j++) {
+                                        nom.addLabel(String.valueOf(v.index(j)));
+                                    }
+                                    nom.addLabel(value);
+                                    vectors.set(i, nom);
+                                    continue;
+                                }
+                            }
+                            break;
+                        case NUMERIC:
+                            Double numValue;
+                            try {
+                                numValue = Double.parseDouble(value);
+                                v.addValue(numValue);
+                            } catch (Throwable ex) {
+                                // can't parse, use nominal
+                                Nominal nom = new Nominal();
+                                for (int j = 0; j < v.rowCount(); j++) {
+                                    nom.addLabel(String.valueOf(v.value(j)));
+                                }
+                                nom.addLabel(value);
+                                vectors.set(i, nom);
+                                continue;
+                            }
+                            break;
+                        case NOMINAL:
+                            v.addLabel(value);
+                            break;
+                    }
+                }
             }
         }
-        // return solid frame
-        return df;
+        return new SolidFrame(rows, vectors, names);
     }
 
     /**
      * Parses a line from csv file according with the configured setting for the
-     * parse. E.g. separates columns by col separator, but not by the cols
+     * parse. E.g. separates columns by col separator, but not by the colCount
      * separators inside quotas, if quota is configured.
      *
      * @param line
@@ -334,28 +328,28 @@ public class CsvPersistence {
 
         try (PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)))) {
             if (hasHeader()) {
-                for (int i = 0; i < df.getColNames().length; i++) {
+                for (int i = 0; i < df.colNames().length; i++) {
                     if (i != 0) {
                         writer.append(getColSeparator());
                     }
-                    writer.append(df.getColNames()[i]);
+                    writer.append(df.colNames()[i]);
                 }
                 writer.append("\n");
             }
             DecimalFormat format = new DecimalFormat("0.###############################");
-            for (int i = 0; i < df.getRowCount(); i++) {
-                for (int j = 0; j < df.getColCount(); j++) {
+            for (int i = 0; i < df.rowCount(); i++) {
+                for (int j = 0; j < df.colCount(); j++) {
                     if (j != 0) {
                         writer.append(getColSeparator());
                     }
-                    if (df.getCol(j).isMissing(i)) {
+                    if (df.col(j).isMissing(i)) {
                         writer.append("?");
                         continue;
                     }
-                    if (df.getCol(j).getType().isNominal()) {
-                        writer.append(unclean(df.getLabel(i, j)));
+                    if (df.col(j).type().isNominal()) {
+                        writer.append(unclean(df.label(i, j)));
                     } else {
-                        writer.append(format.format(df.getValue(i, j)));
+                        writer.append(format.format(df.value(i, j)));
                     }
                 }
                 writer.append("\n");

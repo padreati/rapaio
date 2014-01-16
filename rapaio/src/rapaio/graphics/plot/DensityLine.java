@@ -20,7 +20,7 @@
 package rapaio.graphics.plot;
 
 import rapaio.core.BaseMath;
-import rapaio.data.NumVector;
+import rapaio.data.Numeric;
 import rapaio.data.Vector;
 import rapaio.distributions.empirical.KernelDensityEstimator;
 import rapaio.distributions.empirical.KernelFunction;
@@ -62,23 +62,23 @@ public class DensityLine extends PlotComponent {
         double ymin = 0;
         double ymax = Double.NaN;
 
-        for (int i = 0; i < vector.getRowCount(); i++) {
+        for (int i = 0; i < vector.rowCount(); i++) {
             if (vector.isMissing(i))
                 continue;
             if (xmin != xmin) {
-                xmin = kde.getKernel().getMinValue(vector.getValue(i), bandwidth);
+                xmin = kde.getKernel().getMinValue(vector.value(i), bandwidth);
             } else {
-                xmin = BaseMath.min(xmin, kde.getKernel().getMinValue(vector.getValue(i), bandwidth));
+                xmin = BaseMath.min(xmin, kde.getKernel().getMinValue(vector.value(i), bandwidth));
             }
             if (xmax != xmax) {
-                xmax = kde.getKernel().getMaxValue(vector.getValue(i), bandwidth);
+                xmax = kde.getKernel().getMaxValue(vector.value(i), bandwidth);
             } else {
-                xmax = BaseMath.min(xmax, kde.getKernel().getMaxValue(vector.getValue(i), bandwidth));
+                xmax = BaseMath.min(xmax, kde.getKernel().getMaxValue(vector.value(i), bandwidth));
             }
             if (ymax != ymax) {
-                ymax = kde.getPdfFunction().eval(vector.getValue(i));
+                ymax = kde.getPdfFunction().eval(vector.value(i));
             } else {
-                ymax = BaseMath.min(ymax, kde.getPdfFunction().eval(vector.getValue(i)));
+                ymax = BaseMath.min(ymax, kde.getPdfFunction().eval(vector.value(i)));
             }
         }
         // give some space
@@ -95,23 +95,23 @@ public class DensityLine extends PlotComponent {
     public void paint(Graphics2D g2d) {
         buildRange();
         Range range = getParent().getRange();
-        Vector x = new NumVector(points + 1);
-        Vector y = new NumVector(points + 1);
+        Vector x = new Numeric(points + 1);
+        Vector y = new Numeric(points + 1);
         double xstep = (range.getX2() - range.getX1()) / points;
-        for (int i = 0; i < x.getRowCount(); i++) {
+        for (int i = 0; i < x.rowCount(); i++) {
             x.setValue(i, range.getX1() + i * xstep);
-            y.setValue(i, kde.getPdfFunction().eval(x.getValue(i)));
+            y.setValue(i, kde.getPdfFunction().eval(x.value(i)));
         }
 
-        for (int i = 1; i < x.getRowCount(); i++) {
-            if (range.contains(x.getValue(i - 1), y.getValue(i - 1)) && range.contains(x.getValue(i), y.getValue(i))) {
+        for (int i = 1; i < x.rowCount(); i++) {
+            if (range.contains(x.value(i - 1), y.value(i - 1)) && range.contains(x.value(i), y.value(i))) {
                 g2d.setColor(getColor(i));
                 g2d.setStroke(new BasicStroke(getLwd()));
                 g2d.draw(new Line2D.Double(
-                        getParent().xscale(x.getValue(i - 1)),
-                        getParent().yscale(y.getValue(i - 1)),
-                        getParent().xscale(x.getValue(i)),
-                        getParent().yscale(y.getValue(i))));
+                        getParent().xscale(x.value(i - 1)),
+                        getParent().yscale(y.value(i - 1)),
+                        getParent().xscale(x.value(i)),
+                        getParent().yscale(y.value(i))));
 
             }
         }

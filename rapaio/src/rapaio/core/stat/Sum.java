@@ -45,9 +45,9 @@ public class Sum implements Summarizable {
 
     private double compute() {
         double sum = 0;
-        for (int i = 0; i < vector.getRowCount(); i++) {
-            if (validNumber(vector.getValue(i))) {
-                sum += vector.getValue(i);
+        for (int i = 0; i < vector.rowCount(); i++) {
+            if (validNumber(vector.value(i))) {
+                sum += vector.value(i);
             }
         }
         return sum;

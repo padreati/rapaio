@@ -1,6 +1,6 @@
 package rapaio.data.matrix;
 
-import rapaio.data.NumVector;
+import rapaio.data.Numeric;
 
 import java.io.PrintWriter;
 import java.text.NumberFormat;
@@ -12,21 +12,21 @@ import java.util.List;
  */
 public class Matrix {
 
-    int m; // rows
-    int n; // cols
-    List<NumVector> data;
+    int m; // rowCount
+    int n; // colCount
+    List<Numeric> data; // matrices are stored as column vectors
 
     public Matrix(int m, int n) {
         this.m = m;
         this.n = n;
         data = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
-            data.add(new NumVector(m, m, 0));
+            data.add(new Numeric(m, m, 0));
         }
     }
 
-    public Matrix(NumVector... vectors) {
-        m = vectors[0].getRowCount();
+    public Matrix(Numeric... vectors) {
+        m = vectors[0].rowCount();
         n = vectors.length;
         data = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
@@ -44,7 +44,7 @@ public class Matrix {
         n = nLast - nFirst + 1;
         data = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
-            data.add(new NumVector(m, m, 0));
+            data.add(new Numeric(m, m, 0));
         }
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
@@ -54,18 +54,18 @@ public class Matrix {
     }
 
     public double get(int i, int j) {
-        return data.get(j).getValue(i);
+        return data.get(j).value(i);
     }
 
     public void set(int i, int j, double x) {
         data.get(j).setValue(i, x);
     }
 
-    public int getRowDimension() {
+    public int getRows() {
         return m;
     }
 
-    public int getColumnDimension() {
+    public int getColumns() {
         return n;
     }
 
@@ -110,7 +110,7 @@ public class Matrix {
         output.println();  // start on new line.
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                String s = format.format(data.get(j).getValue(i)); // format the number
+                String s = format.format(data.get(j).value(i)); // format the number
                 int padding = Math.max(1, width - s.length()); // At _least_ 1 space
                 for (int k = 0; k < padding; k++)
                     output.print(' ');
@@ -121,34 +121,5 @@ public class Matrix {
         output.println();   // end with blank line.
     }
 
-    /**
-     * Linear algebraic matrix multiplication, A * B
-     *
-     * @param B another matrix
-     * @return Matrix product, A * B
-     * @throws IllegalArgumentException Matrix inner dimensions must agree.
-     */
-
-    public Matrix times(Matrix B) {
-        if (B.m != n) {
-            throw new IllegalArgumentException("Matrix inner dimensions must agree.");
-        }
-        Matrix C = new Matrix(m, B.n);
-        double[] Bcolj = new double[n];
-        for (int j = 0; j < B.n; j++) {
-            for (int k = 0; k < n; k++) {
-                Bcolj[k] = B.get(k, j);
-            }
-            for (int i = 0; i < m; i++) {
-//                double[] Arowi = A[i];
-                double s = 0;
-                for (int k = 0; k < n; k++) {
-                    s += get(i, k) * Bcolj[k];
-                }
-                C.set(i, j, s);
-            }
-        }
-        return C;
-    }
 
 }

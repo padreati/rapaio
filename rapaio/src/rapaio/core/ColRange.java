@@ -84,7 +84,7 @@ public class ColRange {
     public List<Integer> parseColumnIndexes(Frame df) {
         List<Integer> colIndexes = new ArrayList<>();
         if ("all".equals(rawColumnRange)) {
-            for (int i = 0; i < df.getColCount(); i++) {
+            for (int i = 0; i < df.colCount(); i++) {
                 colIndexes.add(i);
             }
             return colIndexes;
@@ -92,8 +92,8 @@ public class ColRange {
         String[] ranges = rawColumnRange.split(COL_DELIMITER);
 
         HashSet<String> colNames = new HashSet<>();
-        for (int i = 0; i < df.getColNames().length; i++) {
-            colNames.add(df.getColNames()[i]);
+        for (int i = 0; i < df.colNames().length; i++) {
+            colNames.add(df.colNames()[i]);
         }
 
         for (String range : ranges) {
@@ -104,18 +104,18 @@ public class ColRange {
                 if (!colNames.contains(parts[0])) {
                     start = Integer.parseInt(parts[0]);
                 } else {
-                    start = df.getColIndex(parts[0]);
+                    start = df.colIndex(parts[0]);
                 }
                 if (!colNames.contains(parts[1])) {
                     end = Integer.parseInt(parts[1]);
                 } else {
-                    end = df.getColIndex(parts[1]);
+                    end = df.colIndex(parts[1]);
                 }
             } else {
                 if (!colNames.contains(range)) {
                     start = Integer.parseInt(range);
                 } else {
-                    start = df.getColIndex(range);
+                    start = df.colIndex(range);
                 }
                 end = start;
             }

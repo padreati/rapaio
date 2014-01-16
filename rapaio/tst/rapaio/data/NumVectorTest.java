@@ -32,24 +32,24 @@ public class NumVectorTest {
 
     @Test
     public void smokeTest() {
-        Vector v = new NumVector(0);
-        boolean flag = v.getType().isNumeric();
+        Vector v = new Numeric(0);
+        boolean flag = v.type().isNumeric();
         assertEquals(true, flag);
-        assertEquals(false, v.getType().isNominal());
+        assertEquals(false, v.type().isNominal());
 
-        assertEquals(0, v.getRowCount());
+        assertEquals(0, v.rowCount());
     }
 
     @Test
     public void testGetterSetter() {
-        Vector v = new NumVector(10);
+        Vector v = new Numeric(10);
         for (int i = 0; i < 10; i++) {
             v.setValue(i, log(10 + i));
         }
 
         for (int i = 0; i < 10; i++) {
-            assertEquals(log(10 + i), v.getValue(i), 1e-10);
-            assertEquals((int) Math.rint(log(10 + i)), v.getIndex(i));
+            assertEquals(log(10 + i), v.value(i), 1e-10);
+            assertEquals((int) Math.rint(log(10 + i)), v.index(i));
         }
 
         for (int i = 0; i < 10; i++) {
@@ -57,12 +57,12 @@ public class NumVectorTest {
         }
 
         for (int i = 0; i < 10; i++) {
-            assertEquals(i * i, v.getIndex(i));
-            assertEquals(i * i, v.getValue(i), 1e-10);
+            assertEquals(i * i, v.index(i));
+            assertEquals(i * i, v.value(i), 1e-10);
         }
 
-        for (int i = 0; i < v.getRowCount(); i++) {
-            assertEquals("", v.getLabel(i));
+        for (int i = 0; i < v.rowCount(); i++) {
+            assertEquals("", v.label(i));
         }
         boolean exceptional = false;
         try {
@@ -74,7 +74,7 @@ public class NumVectorTest {
 
         exceptional = false;
         try {
-            v.getDictionary();
+            v.dictionary();
         } catch (Throwable ex) {
             exceptional = true;
         }
@@ -85,11 +85,11 @@ public class NumVectorTest {
     public void testOneNumeric() {
         Vector one = Vectors.newNumOne(PI);
 
-        assertEquals(1, one.getRowCount());
-        assertEquals(PI, one.getValue(0), 1e-10);
+        assertEquals(1, one.rowCount());
+        assertEquals(PI, one.value(0), 1e-10);
 
         one = Vectors.newNumOne(E);
-        assertEquals(1, one.getRowCount());
-        assertEquals(E, one.getValue(0), 1e-10);
+        assertEquals(1, one.rowCount());
+        assertEquals(E, one.value(0), 1e-10);
     }
 }

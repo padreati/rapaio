@@ -24,8 +24,8 @@ package rapaio.data;
  * and order is specified by a mapping give at construction time.
  * <p/>
  * This vector does not hold actual values, it delegate the behavior to the
- * wrapped vector, thus the wrapping affects only the rows selected anf the
- * order of these rows.
+ * wrapped vector, thus the wrapping affects only the rowCount selected anf the
+ * order of these rowCount.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
@@ -43,12 +43,12 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public VectorType getType() {
-        return source.getType();
+    public VectorType type() {
+        return source.type();
     }
 
     @Override
-    public int getRowCount() {
+    public int rowCount() {
         return mapping.size();
     }
 
@@ -58,23 +58,23 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public Vector getSourceVector() {
+    public Vector sourceVector() {
         return source;
     }
 
     @Override
-    public Mapping getMapping() {
+    public Mapping mapping() {
         return mapping;
     }
 
     @Override
-    public int getRowId(int row) {
-        return source.getRowId(mapping.get(row));
+    public int rowId(int row) {
+        return source.rowId(mapping.get(row));
     }
 
     @Override
-    public double getValue(int row) {
-        return source.getValue(mapping.get(row));
+    public double value(int row) {
+        return source.value(mapping.get(row));
     }
 
     @Override
@@ -93,8 +93,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public int getIndex(int row) {
-        return source.getIndex(mapping.get(row));
+    public int index(int row) {
+        return source.index(mapping.get(row));
     }
 
     @Override
@@ -113,8 +113,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public String getLabel(int row) {
-        return source.getLabel(mapping.get(row));
+    public String label(int row) {
+        return source.label(mapping.get(row));
     }
 
     @Override
@@ -133,8 +133,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public String[] getDictionary() {
-        return source.getDictionary();
+    public String[] dictionary() {
+        return source.dictionary();
     }
 
     @Override
@@ -150,6 +150,11 @@ public class MappedVector extends AbstractVector {
     @Override
     public void setMissing(int row) {
         source.setMissing(mapping.get(row));
+    }
+
+    @Override
+    public void addMissing() {
+        throw new IllegalArgumentException("operation not available on mapped vectors");
     }
 
     @Override

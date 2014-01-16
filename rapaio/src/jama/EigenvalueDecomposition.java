@@ -440,7 +440,7 @@ public class EigenvalueDecomposition implements java.io.Serializable {
             }
         }
 
-        // Outer loop over eigenvalue getIndex
+        // Outer loop over eigenvalue index
         int iter = 0;
         while (n >= low) {
 
@@ -603,7 +603,7 @@ public class EigenvalueDecomposition implements java.io.Serializable {
                     }
                 }
 
-                // Double QR step involving rows l:n and columns m:n
+                // Double QR step involving rowCount l:n and columns m:n
                 for (int k = m; k <= n - 1; k++) {
                     boolean notlast = (k != n - 1);
                     if (k != m) {

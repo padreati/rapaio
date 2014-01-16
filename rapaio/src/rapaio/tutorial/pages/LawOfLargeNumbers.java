@@ -21,7 +21,7 @@ package rapaio.tutorial.pages;
 
 import rapaio.core.RandomSource;
 import rapaio.core.stat.StatOnline;
-import rapaio.data.NumVector;
+import rapaio.data.Numeric;
 import rapaio.data.Vector;
 import rapaio.data.Vectors;
 import rapaio.distributions.DUniform;
@@ -73,14 +73,14 @@ public class LawOfLargeNumbers implements TutorialPage {
                 + "We compute the running mean using StatOnline:");
         code("        StatOnline ocs = new StatOnline();\n"
                 + "        Vector mean = new NumericVector(\"mean\", N);\n"
-                + "        for (int i = 0; i < events.getRowCount(); i++) {\n"
-                + "            ocs.update(events.getValue(i), 1);\n"
+                + "        for (int i = 0; i < events.rowCount(); i++) {\n"
+                + "            ocs.update(events.value(i), 1);\n"
                 + "            mean.setValue(i, ocs.getMean());\n"
                 + "        }\n");
         StatOnline ocs = new StatOnline();
-        final Vector mean = new NumVector(N);
-        for (int i = 0; i < events.getRowCount(); i++) {
-            ocs.update(events.getValue(i));
+        final Vector mean = new Numeric(N);
+        for (int i = 0; i < events.rowCount(); i++) {
+            ocs.update(events.value(i));
             mean.setValue(i, ocs.getMean());
         }
         p("Now we have the running mean stored in the vector mean and we can plot "

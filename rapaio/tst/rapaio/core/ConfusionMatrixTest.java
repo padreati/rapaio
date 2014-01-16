@@ -21,7 +21,7 @@ package rapaio.core;
 
 import org.junit.Test;
 import rapaio.core.stat.ConfusionMatrix;
-import rapaio.data.NomVector;
+import rapaio.data.Nominal;
 import rapaio.data.Vector;
 
 /**
@@ -31,8 +31,8 @@ public class ConfusionMatrixTest {
 
     @Test
     public void hello() {
-        Vector actual = new NomVector(11, new String[]{"cat", "dog", "mouse"});
-        Vector predict = new NomVector(11, new String[]{"cat", "dog", "mouse"});
+        Vector actual = new Nominal(11, new String[]{"cat", "dog", "mouse"});
+        Vector predict = new Nominal(11, new String[]{"cat", "dog", "mouse"});
 
         actual.setLabel(0, "cat");
         predict.setLabel(0, "cat");

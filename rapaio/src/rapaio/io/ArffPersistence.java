@@ -99,7 +99,7 @@ public class ArffPersistence {
 
                         String[] tmp = line.split("\\s+", 2);
                         if (tmp[1].trim().equalsIgnoreCase("real") || tmp[1].trim().equals("isNumeric") || tmp[1].trim().startsWith("integer")) {
-                            vectors.add(new NumVector(0));
+                            vectors.add(new Numeric(0));
                         } else//Not correct, but we arent supporting anything other than real and categorical right now
                         {
                             String cats = tmp[1].replace("{", "").replace("}", "").trim();
@@ -112,7 +112,7 @@ public class ArffPersistence {
                                 tempMap.add(fullTrim(catVal));
                             }
                             nomValueMap.put(variableName, tempMap);
-                            vectors.add(new NomVector(0, tempMap));
+                            vectors.add(new Nominal(0, tempMap));
                         }
                         continue;
                     }
@@ -122,11 +122,11 @@ public class ArffPersistence {
 
             List<Vector> newvectors = new ArrayList();
             for (int i = 0; i < vectors.size(); i++) {
-                if (vectors.get(i) instanceof NumVector) {
-                    newvectors.add(new NumVector(data.size()));
+                if (vectors.get(i) instanceof Numeric) {
+                    newvectors.add(new Numeric(data.size()));
                 }
-                if (vectors.get(i) instanceof NomVector) {
-                    newvectors.add(new NomVector(data.size(), nomValueMap.get(names.get(i))));
+                if (vectors.get(i) instanceof Nominal) {
+                    newvectors.add(new Nominal(data.size(), nomValueMap.get(names.get(i))));
                 }
             }
             Frame df = new SolidFrame(data.size(), newvectors, names);
@@ -138,11 +138,11 @@ public class ArffPersistence {
                     if ("?".equals(tmp[j])) {
                         continue;
                     }
-                    if (df.getCol(j).getType().isNumeric()) {
-                        df.getCol(j).setValue(i, Double.parseDouble(tmp[j]));
+                    if (df.col(j).type().isNumeric()) {
+                        df.col(j).setValue(i, Double.parseDouble(tmp[j]));
                     }
-                    if (df.getCol(j).getType().isNominal()) {
-                        df.getCol(j).setLabel(i, fullTrim(tmp[j]));
+                    if (df.col(j).type().isNominal()) {
+                        df.col(j).setLabel(i, fullTrim(tmp[j]));
                     }
                 }
             }

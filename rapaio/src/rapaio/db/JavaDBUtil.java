@@ -21,14 +21,14 @@ public class JavaDBUtil {
     }
 
     public void putFrame(Frame df, String tableName) throws SQLException {
-        String[] columns = df.getColNames();
+        String[] columns = df.colNames();
         String[] types = new String[columns.length];
         for (int i = 0; i < types.length; i++) {
-            if (df.getCol(i).getType().isNumeric()) {
+            if (df.col(i).type().isNumeric()) {
                 types[i] = "DOUBLE";
                 continue;
             }
-            if (df.getCol(i).getType().isNominal()) {
+            if (df.col(i).type().isNominal()) {
                 types[i] = "VARCHAR(8000)";
             }
         }
@@ -62,14 +62,14 @@ public class JavaDBUtil {
         }
         sb.append(")");
         try (PreparedStatement ps = conn.prepareStatement(sb.toString())) {
-            for (int i = 0; i < df.getRowCount(); i++) {
+            for (int i = 0; i < df.rowCount(); i++) {
                 for (int j = 0; j < types.length; j++) {
                     switch (types[j]) {
                         case "VARCHAR(8000)":
-                            ps.setString(j + 1, df.getLabel(i, j));
+                            ps.setString(j + 1, df.label(i, j));
                             break;
                         case "DOUBLE":
-                            ps.setDouble(j + 1, df.getValue(i, j));
+                            ps.setDouble(j + 1, df.value(i, j));
                             break;
                     }
                 }
@@ -108,7 +108,7 @@ public class JavaDBUtil {
             switch (sqlTypeName) {
                 case "DOUBLE":
                 case "INTEGER":
-                    NumVector v1 = new NumVector(lists.get(i).size());
+                    Numeric v1 = new Numeric(lists.get(i).size());
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         v1.setValue(j, (Double) lists.get(i).get(j));
                     }
@@ -119,7 +119,7 @@ public class JavaDBUtil {
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         dict.add((String) lists.get(i).get(j));
                     }
-                    NomVector v2 = new NomVector(lists.get(i).size(), dict);
+                    Nominal v2 = new Nominal(lists.get(i).size(), dict);
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         v2.setLabel(j, (String) lists.get(i).get(j));
                     }

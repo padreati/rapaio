@@ -36,15 +36,15 @@ public class RandomColSelector implements ColSelector {
     public RandomColSelector(Frame df, ColRange except, int mcols) {
         this.mcols = mcols;
         List<Integer> exceptColumns = except.parseColumnIndexes(df);
-        candidates = new String[df.getColCount() - exceptColumns.size()];
+        candidates = new String[df.colCount() - exceptColumns.size()];
         int pos = 0;
         int expos = 0;
-        for (int i = 0; i < df.getColCount(); i++) {
+        for (int i = 0; i < df.colCount(); i++) {
             if (expos < exceptColumns.size() && i == exceptColumns.get(expos)) {
                 expos++;
                 continue;
             }
-            candidates[pos++] = df.getColNames()[i];
+            candidates[pos++] = df.colNames()[i];
         }
     }
 

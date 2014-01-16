@@ -42,12 +42,12 @@ public class ROCTest {
         csv.getNominalFieldHints().add("class");
         Frame df = csv.read(getClass(), "fawcett-roc.csv");
 
-        final ROC roc = new ROC(df.getCol("score"), df.getCol("class"), "p");
-        Summary.head(roc.getData().getRowCount(), roc.getData());
+        final ROC roc = new ROC(df.col("score"), df.col("class"), "p");
+        Summary.head(roc.getData().rowCount(), roc.getData());
 
 //        Workspace.draw(new Plot()
 //                .add(new ROCCurve(roc))
-//                .add(new Lines(roc.getData().getCol("tpr"), roc.getData().getCol("acc")).setColorIndex(1))
-//                .add(new Lines(roc.getData().getCol("tpr"), roc.getData().getCol("acc")).setColorIndex(1)));
+//                .add(new Lines(roc.getData().col("tpr"), roc.getData().col("acc")).setColorIndex(1))
+//                .add(new Lines(roc.getData().col("tpr"), roc.getData().col("acc")).setColorIndex(1)));
     }
 }

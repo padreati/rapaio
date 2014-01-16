@@ -16,7 +16,6 @@ import java.io.IOException;
 import static rapaio.workspace.Workspace.*;
 
 /**
- *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class PrimesConjecturesHtml1 {
@@ -39,36 +38,36 @@ public class PrimesConjecturesHtml1 {
                 + "the which gives 1 as rest are less than the ones which gives rest 3. "
                 + "We denote by \\(\\pi(x,4,1)\\) primes \\(p \\leq x \\), congruent with 1 modulo 4 and "
                 + "with \\(\\pi(x,4,3)\\) primes \\(p \\leq x\\), congruent with 3 modulo 4. ");
-        
+
         p("It is a known fact that \\(\\pi(x,a,b) \\sim \\frac{1}{\\varphi(q)}\\frac{x}{ln(x)}\\). "
                 + "That means that this number does not depend on the value of \\(a\\). "
                 + "As a consequence, one would expect that \\(\\pi(x,4,1) \\sim \\pi(x,4,3)\\). "
                 + "Which is true when \\(x \\to \\infty\\).");
-        
+
         p("If we draw the ration between \\(\\pi(x,4,3)\\) and \\(\\pi(x,4,1)\\) we can start "
                 + "to see what Chebyshev noted. The ratio gets closer to 1, but it seems to be "
                 + "almost always a little bit upper than that.");
-        
+
         drawPoints(primes, 5_000);
-        
+
         p("But we can get a better picture if we plot the difference between those values, "
                 + "not the ratio. We denote by \\(delta(x) = \\pi(x,4,3) - \\pi(x,4,1) \\). "
                 + "If we plot delta values for \\( x \\leq 5000\\) we have the plot below. ");
         drawLines(primes, 5_000);
-        
+
         p("It is obvious that the value of delta function is always greater or equal than 0 with one exception. "
                 + "This exception was determined also by Chebyshev, and the value is 2946. "
                 + "But this is the only exception? We can see something if we plot delta values for \\(x\\leq 60000\\). ");
         drawLines(primes, 60_000);
-        
+
         p("It is obvious that there are some points where delta function "
                 + "is negative, and those points are around 50380. This time there are many points not just one. ");
-        
+
         p("If I plot the delta for all the prime number values that I have (in a file computed with a naive sieve), we "
                 + "see that the next  time when the delta function has negative values is somewhere around 48 millions, "
                 + "which is preety high. ");
-        
-        drawLines(primes, primes.getRowCount()); 
+
+        drawLines(primes, primes.rowCount());
 
         p("It is sure that we can't draw any conclusion from those plots. The delta function looks "
                 + "like one which is able to provide unexpected behavior. Howevere it seems safe to "
@@ -83,7 +82,7 @@ public class PrimesConjecturesHtml1 {
         csv.getIndexFieldHints().add("primes");
         try {
             Frame df = csv.read("/home/ati/work/rapaio-data/primes/primes.txt");
-            return df.getCol(0);
+            return df.col(0);
         } catch (IOException ex) {
         }
         return null;
@@ -92,15 +91,15 @@ public class PrimesConjecturesHtml1 {
     private void drawLines(Vector primes, int size) {
         Frame m = Frames.newMatrixFrame(size, "n", "delta");
         int[] count = new int[4];
-        for (int i = 0; i < m.getRowCount(); i++) {
-            count[primes.getIndex(i) % 4]++;
+        for (int i = 0; i < m.rowCount(); i++) {
+            count[primes.index(i) % 4]++;
 
             m.setValue(i, "n", i + 1);
             m.setValue(i, "delta", count[3] - count[1]);
         }
         draw(new Plot()
                 .add(new ABLine(0, true).setColorIndex(2))
-                .add(new Lines(m.getCol("n"), m.getCol("delta")))
+                .add(new Lines(m.col("n"), m.col("delta")))
                 .setThickerMinSpace(80)
                 .setBottomLabel("x")
                 .setLeftLabel("delta"),
@@ -111,15 +110,15 @@ public class PrimesConjecturesHtml1 {
     private void drawPoints(Vector primes, int size) {
         Frame m = Frames.newMatrixFrame(size, "n", "f");
         int[] count = new int[4];
-        for (int i = 0; i < m.getRowCount(); i++) {
-            count[primes.getIndex(i) % 4]++;
+        for (int i = 0; i < m.rowCount(); i++) {
+            count[primes.index(i) % 4]++;
 
             m.setValue(i, "n", i + 1);
             m.setValue(i, "f", (count[1] == 0 ? 0 : count[3] / (1. * count[1])));
         }
         draw(new Plot()
                 .add(new ABLine(1, true).setColorIndex(2))
-                .add(new Lines(m.getCol("n"), m.getCol("f")))
+                .add(new Lines(m.col("n"), m.col("f")))
                 .setThickerMinSpace(80)
                 .setYRange(0.5, 1.5)
                 .setBottomLabel("x")

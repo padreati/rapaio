@@ -26,18 +26,18 @@ import static junit.framework.Assert.*;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class IdxVectorTest {
+public class IndexTest {
 
     @Test
     public void smokeTest() {
         Vector index = Vectors.newIdx(1);
-        assertTrue(index.getType().isNumeric());
-        assertFalse(index.getType().isNominal());
+        assertTrue(index.type().isNumeric());
+        assertFalse(index.type().isNominal());
 
-        assertEquals(0, index.getRowId(0));
+        assertEquals(0, index.rowId(0));
 
         try {
-            index.getDictionary();
+            index.dictionary();
             assertTrue(false);
         } catch (RuntimeException ex) {
             assertTrue(true);
@@ -47,29 +47,29 @@ public class IdxVectorTest {
     @Test
     public void testEmptyIndex() {
         Vector index = Vectors.newIdx(0);
-        assertEquals(0, index.getRowCount());
+        assertEquals(0, index.rowCount());
 
         index = Vectors.newIdx(10);
         for (int i = 0; i < 10; i++) {
-            assertEquals(0, index.getIndex(i));
+            assertEquals(0, index.index(i));
         }
     }
 
     @Test
     public void testFillVector() {
         Vector index = Vectors.newNum(10, -1);
-        assertEquals(10, index.getRowCount());
-        for (int i = 0; i < index.getRowCount(); i++) {
-            assertEquals(-1, index.getIndex(i));
+        assertEquals(10, index.rowCount());
+        for (int i = 0; i < index.rowCount(); i++) {
+            assertEquals(-1, index.index(i));
         }
     }
 
     @Test
     public void testSequenceVector() {
         Vector index = Vectors.newSeq(1, 10, 1);
-        assertEquals(10, index.getRowCount());
-        for (int i = 0; i < index.getRowCount(); i++) {
-            assertEquals(i + 1, index.getIndex(i));
+        assertEquals(10, index.rowCount());
+        for (int i = 0; i < index.rowCount(); i++) {
+            assertEquals(i + 1, index.index(i));
         }
 
         boolean exceptional = false;
@@ -95,29 +95,29 @@ public class IdxVectorTest {
 
         Vector index = Vectors.newIdx(3, 0);
 
-        assertEquals(0, index.getIndex(0));
+        assertEquals(0, index.index(0));
         index.setIndex(0, 1);
         index.setIndex(1, 3);
 
-        assertEquals(1, index.getIndex(0));
-        assertEquals(3, index.getIndex(1));
+        assertEquals(1, index.index(0));
+        assertEquals(3, index.index(1));
 
-        assertEquals(1., index.getValue(0), 1e-10);
-        assertEquals(3., index.getValue(1), 1e-10);
+        assertEquals(1., index.value(0), 1e-10);
+        assertEquals(3., index.value(1), 1e-10);
 
         index.setValue(0, 2.5);
         index.setValue(1, 7.8);
         index.setValue(2, 2.51);
 
-        assertEquals(2, index.getIndex(0));
-        assertEquals(2., index.getValue(0), 1e-10);
-        assertEquals(8, index.getIndex(1));
-        assertEquals(8., index.getValue(1), 1e-10);
-        assertEquals(3, index.getIndex(2));
-        assertEquals(3., index.getValue(2), 1e-10);
+        assertEquals(2, index.index(0));
+        assertEquals(2., index.value(0), 1e-10);
+        assertEquals(8, index.index(1));
+        assertEquals(8., index.value(1), 1e-10);
+        assertEquals(3, index.index(2));
+        assertEquals(3., index.value(2), 1e-10);
 
-        assertEquals("", index.getLabel(0));
-        assertEquals("", index.getLabel(1));
+        assertEquals("", index.label(0));
+        assertEquals("", index.label(1));
 
         boolean exceptional = false;
         try {
@@ -131,14 +131,14 @@ public class IdxVectorTest {
     @Test
     public void testMissing() {
         Vector index = Vectors.newSeq(1, 10, 1);
-        for (int i = 0; i < index.getRowCount(); i++) {
+        for (int i = 0; i < index.rowCount(); i++) {
             assertTrue(!index.isMissing(i));
         }
-        for (int i = 0; i < index.getRowCount(); i++) {
+        for (int i = 0; i < index.rowCount(); i++) {
             if (i % 2 == 0)
                 index.setMissing(i);
         }
-        for (int i = 0; i < index.getRowCount(); i++) {
+        for (int i = 0; i < index.rowCount(); i++) {
             assertEquals(i % 2 == 0, index.isMissing(i));
         }
     }
@@ -146,11 +146,11 @@ public class IdxVectorTest {
     @Test
     public void testOneIndex() {
         Vector one = Vectors.newIdxOne(2);
-        assertEquals(1, one.getRowCount());
-        assertEquals(2, one.getIndex(0));
+        assertEquals(1, one.rowCount());
+        assertEquals(2, one.index(0));
 
         one = Vectors.newIdxOne(3);
-        assertEquals(1, one.getRowCount());
-        assertEquals(3, one.getIndex(0));
+        assertEquals(1, one.rowCount());
+        assertEquals(3, one.index(0));
     }
 }

@@ -29,72 +29,72 @@ package rapaio.data;
 public abstract class AbstractFrame implements Frame {
 
     @Override
-    public double getValue(int row, int col) {
-        return getCol(col).getValue(row);
+    public double value(int row, int col) {
+        return col(col).value(row);
     }
 
     @Override
-    public double getValue(int row, String colName) {
-        return getCol(colName).getValue(row);
+    public double value(int row, String colName) {
+        return col(colName).value(row);
     }
 
     @Override
     public void setValue(int row, int col, double value) {
-        getCol(col).setValue(row, value);
+        col(col).setValue(row, value);
     }
 
     @Override
     public void setValue(int row, String colName, double value) {
-        getCol(colName).setValue(row, value);
+        col(colName).setValue(row, value);
     }
 
     @Override
-    public int getIndex(int row, int col) {
-        return getCol(col).getIndex(row);
+    public int index(int row, int col) {
+        return col(col).index(row);
     }
 
     @Override
-    public int getIndex(int row, String colName) {
-        return getCol(colName).getIndex(row);
+    public int index(int row, String colName) {
+        return col(colName).index(row);
     }
 
     @Override
     public void setIndex(int row, int col, int value) {
-        getCol(col).setIndex(row, value);
+        col(col).setIndex(row, value);
     }
 
     @Override
     public void setIndex(int row, String colName, int value) {
-        getCol(colName).setIndex(row, value);
+        col(colName).setIndex(row, value);
     }
 
     @Override
-    public String getLabel(int row, int col) {
-        return getCol(col).getLabel(row);
+    public String label(int row, int col) {
+        return col(col).label(row);
     }
 
     @Override
-    public String getLabel(int row, String colName) {
-        return getCol(colName).getLabel(row);
+    public String label(int row, String colName) {
+        return col(colName).label(row);
     }
 
     @Override
     public void setLabel(int row, int col, String value) {
-        getCol(col).setLabel(row, value);
+        col(col).setLabel(row, value);
     }
 
     @Override
     public void setLabel(int row, String colName, String value) {
-        getCol(colName).setLabel(row, value);
+        col(colName).setLabel(row, value);
     }
 
     @Override
     public boolean isMissing(int row, int col) {
-        return getCol(col).isMissing(row);
+        return col(col).isMissing(row);
     }
 
     @Override
     public boolean isMissing(int row, String colName) {
-        return getCol(colName).isMissing(row);
+        return col(colName).isMissing(row);
     }
 }

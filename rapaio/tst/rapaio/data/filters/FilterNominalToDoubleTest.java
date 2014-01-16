@@ -20,7 +20,7 @@
 package rapaio.data.filters;
 
 import org.junit.Test;
-import rapaio.data.NomVector;
+import rapaio.data.Nominal;
 import rapaio.data.Vector;
 import rapaio.filters.BaseFilters;
 
@@ -44,15 +44,15 @@ public class FilterNominalToDoubleTest {
         for (int i = 0; i < n; i++) {
             dict.add(String.valueOf(pow(i, 1.5)));
         }
-        Vector v = new NomVector(10, dict);
-        for (int i = 0; i < v.getRowCount(); i++) {
+        Vector v = new Nominal(10, dict);
+        for (int i = 0; i < v.rowCount(); i++) {
             String value = String.valueOf(pow(i, 1.5));
             v.setLabel(i, value);
         }
         Vector filtered = BaseFilters.toNumeric(v);
-        for (int i = 0; i < v.getRowCount(); i++) {
+        for (int i = 0; i < v.rowCount(); i++) {
             double value = pow(i, 1.5);
-            assertEquals(value, filtered.getValue(i), 1e-10);
+            assertEquals(value, filtered.value(i), 1e-10);
         }
     }
 
@@ -67,10 +67,10 @@ public class FilterNominalToDoubleTest {
 
     @Test
     public void testNFE() {
-        Vector filtered = new NomVector(1, Arrays.asList(new String[]{"abc"}));
+        Vector filtered = new Nominal(1, Arrays.asList(new String[]{"abc"}));
         filtered.setLabel(0, "abc");
         Vector numeric = BaseFilters.toNumeric(filtered);
-        assertEquals(numeric.getValue(0), numeric.getValue(0), 1e-10);
+        assertEquals(numeric.value(0), numeric.value(0), 1e-10);
         assertTrue(numeric.isMissing(0));
     }
 }

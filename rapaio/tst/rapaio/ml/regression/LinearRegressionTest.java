@@ -49,13 +49,13 @@ public class LinearRegressionTest {
 
     }
 
-    @Test
+    //    @Test
     public void pearsonTest() throws IOException, URISyntaxException {
 
         setPrinter(new LocalPrinter());
         Frame df = Datasets.loadPearsonHeightDataset();
 
-        Vector intercept = Vectors.newNum(df.getRowCount(), 1);
+        Vector intercept = Vectors.newNum(df.rowCount(), 1);
         df = Frames.addCol(df, intercept, "I", 0);
         Summary.summary(df);
 
@@ -65,12 +65,12 @@ public class LinearRegressionTest {
         Summary.lines(lm.getCoeff());
 
         draw(new Plot()
-                .add(new Points(df.getCol("Father"), df.getCol("Son"))
+                .add(new Points(df.col("Father"), df.col("Son"))
                         .setPchIndex(1).setSizeIndex(1)
                 )
                 .add(new ABLine(
-                        lm.getCoeff().getValue(1),
-                        lm.getCoeff().getValue(0)))
+                        lm.getCoeff().value(1, 1),
+                        lm.getCoeff().value(0, 1)))
                 .setXRange(58, 78)
                 .setYRange(58, 78)
                 .setBottomLabel("Father")
@@ -78,7 +78,21 @@ public class LinearRegressionTest {
         );
 
         draw(new Plot()
-                .add(new Points(df.getCol("Father"), lm.getTrainResidualValues()))
+                .add(new Points(df.col("Father"), lm.getTrainResidualValues()))
         );
+    }
+
+    @Test
+    public void testESTL() throws IOException {
+        setPrinter(new LocalPrinter());
+        Frame df = Datasets.loadProstateCancer();
+        df = Frames.addCol(df, Vectors.newNum(df.rowCount(), 1.), "inter", 0);
+
+        Summary.lines(df);
+
+        LinearModelRegressor lm = new LinearModelRegressor();
+        lm.learn(df, "lpsa");
+
+        Summary.lines(lm.getCoeff());
     }
 }

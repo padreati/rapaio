@@ -24,7 +24,7 @@ import rapaio.core.stat.Mode;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
-import rapaio.data.NomVector;
+import rapaio.data.Nominal;
 import rapaio.ml.classification.AbstractClassifier;
 import rapaio.workspace.Workspace;
 
@@ -38,7 +38,7 @@ public class ID3 extends AbstractClassifier<ID3> {
     private ID3Node root;
     private MetricType metricType = new EntropyMetricType();
     private String[] dict;
-    private NomVector prediction;
+    private Nominal prediction;
 
     /**
      * Metric type used as criterion for splitting nodes.
@@ -116,8 +116,8 @@ public class ID3 extends AbstractClassifier<ID3> {
 
     @Override
     public void learn(Frame df, List<Double> weights, String classColName) {
-        validate(df, df.getColIndex(classColName));
-        this.dict = df.getCol(classColName).getDictionary();
+        validate(df, df.colIndex(classColName));
+        this.dict = df.col(classColName).dictionary();
         this.root = new ID3Node(null, df, weights, classColName, new HashSet<String>(), metricType);
     }
 
@@ -155,15 +155,15 @@ public class ID3 extends AbstractClassifier<ID3> {
 
     @Override
     public void predict(final Frame df) {
-        prediction = new NomVector(df.getRowCount(), dict);
-        for (int i = 0; i < df.getRowCount(); i++) {
+        prediction = new Nominal(df.rowCount(), dict);
+        for (int i = 0; i < df.rowCount(); i++) {
             String label = predict(df, i, root);
             prediction.setLabel(i, label);
         }
     }
 
     @Override
-    public NomVector getPrediction() {
+    public Nominal getPrediction() {
         return prediction;
     }
 
@@ -176,7 +176,7 @@ public class ID3 extends AbstractClassifier<ID3> {
         if (root.isLeaf()) {
             return root.getPredicted();
         }
-        String label = df.getLabel(row, df.getColIndex(root.getSplitCol()));
+        String label = df.label(row, df.colIndex(root.getSplitCol()));
         Map<String, ID3Node> map = root.getSplitMap();
         if (!map.containsKey(label)) {
             throw new RuntimeException("Inconsistency");
@@ -185,13 +185,13 @@ public class ID3 extends AbstractClassifier<ID3> {
     }
 
     private void validate(Frame df, int classIndex) {
-        for (int i = 0; i < df.getColCount(); i++) {
-            if (!df.getCol(i).getType().isNominal()) {
+        for (int i = 0; i < df.colCount(); i++) {
+            if (!df.col(i).type().isNominal()) {
                 throw new IllegalArgumentException("ID3 can handle only isNominal attributes.");
             }
         }
-        if (df.getColCount() <= classIndex) {
-            throw new IllegalArgumentException("Class getIndex is not valid");
+        if (df.colCount() <= classIndex) {
+            throw new IllegalArgumentException("Class index is not valid");
         }
     }
 
@@ -252,11 +252,11 @@ class ID3Node {
 
     private void learn(HashSet<String> used) {
         // leaf on empty set
-        if (df == null || df.getRowCount() == 0) {
+        if (df == null || df.rowCount() == 0) {
             if (parent == null) {
                 throw new IllegalArgumentException("Can't train from an empty frame");
             }
-            String[] modes = new Mode(parent.df.getCol(classColName), false).getModes();
+            String[] modes = new Mode(parent.df.col(classColName), false).getModes();
             if (modes.length == 0) {
                 throw new IllegalArgumentException("Can't train from an empty frame");
             }
@@ -270,14 +270,14 @@ class ID3Node {
 
         // leaf on all classes of same value
         boolean same = true;
-        for (int i = 1; i < df.getRowCount(); i++) {
-            if (df.getIndex(i - 1, df.getColIndex(classColName)) != df.getIndex(i, df.getColIndex(classColName))) {
+        for (int i = 1; i < df.rowCount(); i++) {
+            if (df.index(i - 1, df.colIndex(classColName)) != df.index(i, df.colIndex(classColName))) {
                 same = false;
                 break;
             }
         }
         if (same) {
-            predicted = df.getLabel(0, df.getColIndex(classColName));
+            predicted = df.label(0, df.colIndex(classColName));
             leaf = true;
             return;
         }
@@ -286,7 +286,7 @@ class ID3Node {
         String colName = "";
         metricValue = Double.NaN;
 
-        for (String col : df.getColNames()) {
+        for (String col : df.colNames()) {
             if (col.equals(classColName) || used.contains(col)) {
                 continue;
             }
@@ -304,7 +304,7 @@ class ID3Node {
 
         // if none were selected then there are no columns to select
         if (colName.isEmpty()) {
-            String[] modes = new Mode(df.getCol(classColName), false).getModes();
+            String[] modes = new Mode(df.col(classColName), false).getModes();
             if (modes.length == 0) {
                 throw new IllegalArgumentException("Can't train from an empty frame");
             }
@@ -314,7 +314,7 @@ class ID3Node {
         }
 
         // usual case, a split node
-        String[] dict = df.getCol(colName).getDictionary();
+        String[] dict = df.col(colName).dictionary();
         List<Integer>[] splitIds = new List[dict.length];
         List<Double>[] splitWeights = new List[dict.length];
 
@@ -323,14 +323,14 @@ class ID3Node {
             splitWeights[i] = new ArrayList<>();
         }
 
-        for (int i = 0; i < df.getRowCount(); i++) {
-            int index = df.getIndex(i, df.getColIndex(colName));
-            splitIds[index].add(df.getRowId(i));
+        for (int i = 0; i < df.rowCount(); i++) {
+            int index = df.index(i, df.colIndex(colName));
+            splitIds[index].add(df.rowId(i));
             splitWeights[index].add(weights.get(i));
         }
         Frame[] frames = new Frame[dict.length];
         for (int i = 0; i < dict.length; i++) {
-            frames[i] = new MappedFrame(df.getSourceFrame(), new Mapping(splitIds[i]));
+            frames[i] = new MappedFrame(df.sourceFrame(), new Mapping(splitIds[i]));
         }
 
         splitCol = colName;

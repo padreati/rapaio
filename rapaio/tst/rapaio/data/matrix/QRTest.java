@@ -1,7 +1,7 @@
 package rapaio.data.matrix;
 
 import org.junit.Test;
-import rapaio.data.NumVector;
+import rapaio.data.Numeric;
 
 import java.text.DecimalFormat;
 
@@ -21,8 +21,8 @@ public class QRTest {
         });
 
         Matrix y = new Matrix(
-                new NumVector(new double[]{2.8, 3.2, 7.1, 6.8, 8.8}),
-                new NumVector(new double[]{2.8, 3.2, 7.1, 6.8, 8.9})
+                new Numeric(new double[]{2.8, 3.2, 7.1, 6.8, 8.8}),
+                new Numeric(new double[]{2.8, 3.2, 7.1, 6.8, 8.9})
         );
 
         QRDecomposition qr = new QRDecomposition(x);

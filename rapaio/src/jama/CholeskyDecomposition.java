@@ -114,7 +114,7 @@ public class CholeskyDecomposition implements java.io.Serializable {
      * private transient double[][] R;
      *
      * \** Cholesky algorithm for symmetric and positive definite rapaio.data.matrix. @param
-     * A Square, symmetric rapaio.data.matrix. @param rightflag Actual getValue ignored.
+     * A Square, symmetric rapaio.data.matrix. @param rightflag Actual value ignored.
      * @return Structure to access R and isspd flag. \
      *
      * public CholeskyDecomposition (Matrix Arg, int rightflag) { // Initialize.
@@ -160,7 +160,7 @@ public class CholeskyDecomposition implements java.io.Serializable {
     /**
      * Solve A*X = B
      *
-     * @param B A Matrix with as many rows as A and any number of columns.
+     * @param B A Matrix with as many rowCount as A and any number of columns.
      * @return X so that L*L'*X = B
      * @throws IllegalArgumentException Matrix row dimensions must agree.
      * @throws RuntimeException         Matrix is not symmetric positive definite.

@@ -26,8 +26,8 @@ public class QRDecomposition implements java.io.Serializable {
     public QRDecomposition(Matrix A) {
         // Initialize.
         QR = A.getArrayCopy();
-        m = A.getRowDimension();
-        n = A.getColumnDimension();
+        m = A.getRows();
+        n = A.getColumns();
         Rdiag = new double[n];
 
         // Main loop.
@@ -76,7 +76,7 @@ public class QRDecomposition implements java.io.Serializable {
 
     public boolean isFullRank() {
         for (int j = 0; j < n; j++) {
-            if (Rdiag[j] == 0)
+            if (Rdiag[j] == 0 || Rdiag[j] != Rdiag[j])
                 return false;
         }
         return true;
@@ -166,14 +166,14 @@ public class QRDecomposition implements java.io.Serializable {
     /**
      * Least squares solution of A*X = B
      *
-     * @param B A Matrix with as many rows as A and any number of columns.
+     * @param B A Matrix with as many rowCount as A and any number of columns.
      * @return X that minimizes the two norm of Q*R*X-B.
      * @throws IllegalArgumentException Matrix row dimensions must agree.
      * @throws RuntimeException         Matrix is rank deficient.
      */
 
     public Matrix solve(Matrix B) {
-        if (B.getRowDimension() != m) {
+        if (B.getRows() != m) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
         if (!this.isFullRank()) {
@@ -181,7 +181,7 @@ public class QRDecomposition implements java.io.Serializable {
         }
 
         // Copy right hand side
-        int nx = B.getColumnDimension();
+        int nx = B.getColumns();
         double[][] X = B.getArrayCopy();
 
         // Compute Y = transpose(Q)*B

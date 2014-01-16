@@ -48,9 +48,9 @@ public final class DensityTable {
     }
 
     public DensityTable(Frame df, List<Double> weights, String testColName, String classColName) {
-        this(df.getCol(testColName).getDictionary(), df.getCol(classColName).getDictionary());
-        for (int i = 0; i < df.getRowCount(); i++) {
-            update(df.getIndex(i, testColName), df.getIndex(i, classColName), weights != null ? weights.get(i) : 1.);
+        this(df.col(testColName).dictionary(), df.col(classColName).dictionary());
+        for (int i = 0; i < df.rowCount(); i++) {
+            update(df.index(i, testColName), df.index(i, classColName), weights != null ? weights.get(i) : 1.);
         }
     }
 

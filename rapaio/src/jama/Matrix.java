@@ -98,7 +98,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
     /**
      * Construct an m-by-n matrix of zeros.
      *
-     * @param m Number of rows.
+     * @param m Number of rowCount.
      * @param n Number of colums.
      */
 
@@ -111,9 +111,9 @@ public class Matrix implements Cloneable, java.io.Serializable {
     /**
      * Construct an m-by-n constant matrix.
      *
-     * @param m Number of rows.
+     * @param m Number of rowCount.
      * @param n Number of colums.
-     * @param s Fill the matrix with this scalar getValue.
+     * @param s Fill the matrix with this scalar value.
      */
 
     public Matrix(int m, int n, double s) {
@@ -131,7 +131,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
      * Construct a matrix from a 2-D array.
      *
      * @param A Two-dimensional array of doubles.
-     * @throws IllegalArgumentException All rows must have the same length
+     * @throws IllegalArgumentException All rowCount must have the same length
      * @see #constructWithCopy
      */
 
@@ -140,7 +140,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
         n = A[0].length;
         for (int i = 0; i < m; i++) {
             if (A[i].length != n) {
-                throw new IllegalArgumentException("All rows must have the same length.");
+                throw new IllegalArgumentException("All rowCount must have the same length.");
             }
         }
         this.A = A;
@@ -150,7 +150,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
      * Construct a matrix quickly without checking arguments.
      *
      * @param A Two-dimensional array of doubles.
-     * @param m Number of rows.
+     * @param m Number of rowCount.
      * @param n Number of colums.
      */
 
@@ -164,7 +164,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
      * Construct a matrix from a one-dimensional packed array
      *
      * @param vals One-dimensional array of doubles, packed by columns (ala Fortran).
-     * @param m    Number of rows.
+     * @param m    Number of rowCount.
      * @throws IllegalArgumentException Array length must be a multiple of m.
      */
 
@@ -190,7 +190,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
      * Construct a matrix from a copy of a 2-D array.
      *
      * @param A Two-dimensional array of doubles.
-     * @throws IllegalArgumentException All rows must have the same length
+     * @throws IllegalArgumentException All rowCount must have the same length
      */
 
     public static Matrix constructWithCopy(double[][] A) {
@@ -201,7 +201,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
         for (int i = 0; i < m; i++) {
             if (A[i].length != n) {
                 throw new IllegalArgumentException
-                        ("All rows must have the same length.");
+                        ("All rowCount must have the same length.");
             }
             for (int j = 0; j < n; j++) {
                 C[i][j] = A[i][j];
@@ -278,7 +278,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
     /**
      * Make a one-dimensional row packed copy of the internal array.
      *
-     * @return Matrix elements packed in a one-dimensional array by rows.
+     * @return Matrix elements packed in a one-dimensional array by rowCount.
      */
 
     public double[] getRowPackedCopy() {
@@ -294,7 +294,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
     /**
      * Get row dimension.
      *
-     * @return m, the number of rows.
+     * @return m, the number of rowCount.
      */
 
     public int getRowDimension() {
@@ -314,8 +314,8 @@ public class Matrix implements Cloneable, java.io.Serializable {
     /**
      * Get a single element.
      *
-     * @param i Row getIndex.
-     * @param j Column getIndex.
+     * @param i Row index.
+     * @param j Column index.
      * @return A(i, j)
      * @throws ArrayIndexOutOfBoundsException
      */
@@ -327,10 +327,10 @@ public class Matrix implements Cloneable, java.io.Serializable {
     /**
      * Get a submatrix.
      *
-     * @param i0 Initial row getIndex
-     * @param i1 Final row getIndex
-     * @param j0 Initial column getIndex
-     * @param j1 Final column getIndex
+     * @param i0 Initial row index
+     * @param i1 Final row index
+     * @param j0 Initial column index
+     * @param j1 Final column index
      * @return A(i0:i1, j0:j1)
      * @throws ArrayIndexOutOfBoundsException Submatrix indices
      */
@@ -377,8 +377,8 @@ public class Matrix implements Cloneable, java.io.Serializable {
     /**
      * Get a submatrix.
      *
-     * @param i0 Initial row getIndex
-     * @param i1 Final row getIndex
+     * @param i0 Initial row index
+     * @param i1 Final row index
      * @param c  Array of column indices.
      * @return A(i0:i1, c(:))
      * @throws ArrayIndexOutOfBoundsException Submatrix indices
@@ -403,8 +403,8 @@ public class Matrix implements Cloneable, java.io.Serializable {
      * Get a submatrix.
      *
      * @param r  Array of row indices.
-     * @param j0 Initial column getIndex
-     * @param j1 Final column getIndex
+     * @param j0 Initial column index
+     * @param j1 Final column index
      * @return A(r(:), j0:j1)
      * @throws ArrayIndexOutOfBoundsException Submatrix indices
      */
@@ -427,8 +427,8 @@ public class Matrix implements Cloneable, java.io.Serializable {
     /**
      * Set a single element.
      *
-     * @param i Row getIndex.
-     * @param j Column getIndex.
+     * @param i Row index.
+     * @param j Column index.
      * @param s A(i,j).
      * @throws ArrayIndexOutOfBoundsException
      */
@@ -440,10 +440,10 @@ public class Matrix implements Cloneable, java.io.Serializable {
     /**
      * Set a submatrix.
      *
-     * @param i0 Initial row getIndex
-     * @param i1 Final row getIndex
-     * @param j0 Initial column getIndex
-     * @param j1 Final column getIndex
+     * @param i0 Initial row index
+     * @param i1 Final row index
+     * @param j0 Initial column index
+     * @param j1 Final column index
      * @param X  A(i0:i1,j0:j1)
      * @throws ArrayIndexOutOfBoundsException Submatrix indices
      */
@@ -485,8 +485,8 @@ public class Matrix implements Cloneable, java.io.Serializable {
      * Set a submatrix.
      *
      * @param r  Array of row indices.
-     * @param j0 Initial column getIndex
-     * @param j1 Final column getIndex
+     * @param j0 Initial column index
+     * @param j1 Final column index
      * @param X  A(r(:),j0:j1)
      * @throws ArrayIndexOutOfBoundsException Submatrix indices
      */
@@ -506,8 +506,8 @@ public class Matrix implements Cloneable, java.io.Serializable {
     /**
      * Set a submatrix.
      *
-     * @param i0 Initial row getIndex
-     * @param i1 Final row getIndex
+     * @param i0 Initial row index
+     * @param i1 Final row index
      * @param c  Array of column indices.
      * @param X  A(i0:i1,c(:))
      * @throws ArrayIndexOutOfBoundsException Submatrix indices
@@ -563,7 +563,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
     /**
      * Two norm
      *
-     * @return maximum singular getValue.
+     * @return maximum singular value.
      */
 
     public double norm2() {
@@ -977,7 +977,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
     /**
      * Matrix condition (2 norm)
      *
-     * @return ratio of largest to smallest singular getValue.
+     * @return ratio of largest to smallest singular value.
      */
 
     public double cond() {
@@ -1001,7 +1001,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
     /**
      * Generate matrix with random elements
      *
-     * @param m Number of rows.
+     * @param m Number of rowCount.
      * @param n Number of colums.
      * @return An m-by-n matrix with uniformly distributed random elements.
      */
@@ -1020,7 +1020,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
     /**
      * Generate identity matrix
      *
-     * @param m Number of rows.
+     * @param m Number of rowCount.
      * @param n Number of colums.
      * @return An m-by-n matrix with ones on the diagonal and zeros elsewhere.
      */
@@ -1155,7 +1155,7 @@ public class Matrix implements Cloneable, java.io.Serializable {
         for (int j = 0; j < n; j++)  // extract the elements of the 1st row.
             row[j] = vD.elementAt(j).doubleValue();
         java.util.Vector<double[]> v = new java.util.Vector<double[]>();
-        v.addElement(row);  // Start storing rows instead of columns.
+        v.addElement(row);  // Start storing rowCount instead of columns.
         while (tokenizer.nextToken() == StreamTokenizer.TT_WORD) {
             // While non-empty lines
             v.addElement(row = new double[n]);
@@ -1168,9 +1168,9 @@ public class Matrix implements Cloneable, java.io.Serializable {
             if (j < n) throw new java.io.IOException
                     ("Row " + v.size() + " is too short.");
         }
-        int m = v.size();  // Now we've got the number of rows.
+        int m = v.size();  // Now we've got the number of rowCount.
         double[][] A = new double[m][];
-        v.copyInto(A);  // copy the rows out of the vector
+        v.copyInto(A);  // copy the rowCount out of the vector
         return new Matrix(A);
     }
 

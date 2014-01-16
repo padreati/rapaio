@@ -41,15 +41,15 @@ public class Points extends PlotComponent {
 
     @Override
     public Range buildRange() {
-        if (x.getRowCount() == 0) {
+        if (x.rowCount() == 0) {
             return null;
         }
         Range range = new Range();
-        for (int i = 0; i < x.getRowCount(); i++) {
+        for (int i = 0; i < x.rowCount(); i++) {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
-            range.union(x.getValue(i), y.getValue(i));
+            range.union(x.value(i), y.value(i));
         }
         return range;
     }
@@ -58,13 +58,13 @@ public class Points extends PlotComponent {
     public void paint(Graphics2D g2d) {
         g2d.setBackground(ColorPalette.STANDARD.getColor(255));
 
-        for (int i = 0; i < x.getRowCount(); i++) {
+        for (int i = 0; i < x.rowCount(); i++) {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
             g2d.setColor(getColor(i));
-            int xx = (int) (getParent().xscale(x.getValue(i)));
-            int yy = (int) (getParent().yscale(y.getValue(i)));
+            int xx = (int) (getParent().xscale(x.value(i)));
+            int yy = (int) (getParent().yscale(y.value(i)));
             PchPalette.STANDARD.draw(g2d, xx, yy, getSize(i), getPch(i));
         }
     }

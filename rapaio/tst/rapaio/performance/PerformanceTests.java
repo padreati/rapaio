@@ -3,7 +3,7 @@ package rapaio.performance;
 import org.junit.Test;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.data.NumVector;
+import rapaio.data.Numeric;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
 import rapaio.printer.LocalPrinter;
@@ -24,10 +24,10 @@ public class PerformanceTests {
         final int TESTS = 500;
         final int LEN = 100_000;
 
-        NumVector index = new NumVector();
-        NumVector time1 = new NumVector();
-        NumVector time2 = new NumVector();
-        NumVector delta = new NumVector();
+        Numeric index = new Numeric();
+        Numeric time1 = new Numeric();
+        Numeric time2 = new Numeric();
+        Numeric delta = new Numeric();
 
         for (int i = 0; i < TESTS; i++) {
 
@@ -39,13 +39,13 @@ public class PerformanceTests {
             time1.addValue(System.currentTimeMillis() - start);
 
             start = System.currentTimeMillis();
-            NumVector numVector = new NumVector(LEN);
+            Numeric numeric = new Numeric(LEN);
             for (int j = 0; j < LEN; j++) {
-                numVector.addValue(j * Math.sin(j));
+                numeric.addValue(j * Math.sin(j));
             }
             time2.addValue(System.currentTimeMillis() - start);
             index.addIndex(i);
-            delta.addValue(time1.getValue(i) - time2.getValue(i));
+            delta.addValue(time1.value(i) - time2.value(i));
         }
 
 //        draw(new Plot()

@@ -32,7 +32,7 @@ public class DefaultColSelector implements ColSelector {
     private String[] selection;
 
     public DefaultColSelector(Frame df, ColRange except) {
-        String[] all = df.getColNames();
+        String[] all = df.colNames();
         List<Integer> ex = except.parseColumnIndexes(df);
         selection = new String[all.length - ex.size()];
         int pos = 0;
