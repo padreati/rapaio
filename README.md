@@ -58,7 +58,7 @@ is considered to be fully implemented and well tested.
 
 * Tree Regressor - accept only numerical, non-missing, has no pruning (with this constraints
 this tree is similar with CART and C45)
-* Linear Regressor
+* Linear Regressor - filter only numerical attributes
 
 **Matrices**
 
@@ -69,4 +69,4 @@ Feature Journal
 This journal contains info regarding the history of implementation. Basically here we can follow
 the progress of the implementation:
 
-**TODO**
+16-Feb-2014 - Ported matrix operations and decompositions from JAMA project to rapaio.

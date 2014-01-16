@@ -72,6 +72,30 @@ public class Matrix {
         }
     }
 
+    /**
+     * Get a submatrix.
+     *
+     * @param r  Array of row indices.
+     * @param j0 Initial column index
+     * @param j1 Final column index
+     * @return A(r(:), j0:j1)
+     * @throws ArrayIndexOutOfBoundsException Submatrix indices
+     */
+
+    public Matrix getMatrix(int[] r, int j0, int j1) {
+        Matrix B = new Matrix(r.length, j1 - j0 + 1);
+        try {
+            for (int i = 0; i < r.length; i++) {
+                for (int j = j0; j <= j1; j++) {
+                    B.set(i, j - j0, get(r[i], j));
+                }
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new ArrayIndexOutOfBoundsException("Submatrix indices");
+        }
+        return B;
+    }
+
     public double get(int i, int j) {
         return data.get(j).value(i);
     }

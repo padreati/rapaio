@@ -83,7 +83,9 @@ public class MatrixMathTest {
         });
 
         Matrix invC = new QRDecomposition(C).solve(I);
-
+        print(invC);
+        print(times(C, invC));
+        invC = new LUDecomposition(C).solve(I);
         print(invC);
         print(times(C, invC));
     }
