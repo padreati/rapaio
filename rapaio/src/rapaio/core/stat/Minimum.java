@@ -19,7 +19,7 @@
  */
 package rapaio.core.stat;
 
-import rapaio.core.BaseMath;
+import rapaio.core.MathBase;
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
 
@@ -36,33 +36,33 @@ import static rapaio.workspace.Workspace.code;
  */
 public class Minimum implements Summarizable {
 
-    private final Vector vector;
-    private final double value;
+	private final Vector vector;
+	private final double value;
 
-    public Minimum(Vector vector) {
-        this.vector = vector;
-        this.value = compute();
-    }
+	public Minimum(Vector vector) {
+		this.vector = vector;
+		this.value = compute();
+	}
 
-    private double compute() {
-        double min = Double.MAX_VALUE;
-        boolean valid = false;
-        for (int i = 0; i < vector.rowCount(); i++) {
-            if (vector.isMissing(i)) {
-                continue;
-            }
-            valid = true;
-            min = BaseMath.min(min, vector.value(i));
-        }
-        return valid ? min : Double.NaN;
-    }
+	private double compute() {
+		double min = Double.MAX_VALUE;
+		boolean valid = false;
+		for (int i = 0; i < vector.rowCount(); i++) {
+			if (vector.isMissing(i)) {
+				continue;
+			}
+			valid = true;
+			min = MathBase.min(min, vector.value(i));
+		}
+		return valid ? min : Double.NaN;
+	}
 
-    public double getValue() {
-        return value;
-    }
+	public double getValue() {
+		return value;
+	}
 
-    @Override
-    public void summary() {
-        code(String.format("minimum\n%.10f", value));
-    }
+	@Override
+	public void summary() {
+		code(String.format("minimum\n%.10f", value));
+	}
 }

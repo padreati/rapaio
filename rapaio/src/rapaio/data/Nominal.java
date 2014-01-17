@@ -40,239 +40,244 @@ import java.util.*;
  */
 public class Nominal extends AbstractVector {
 
-    private static final String missingValue = "?";
-    private static final int missingIndex = 0;
+	private static final String missingValue = "?";
+	private static final int missingIndex = 0;
 
-    int rows = 0;
-    List<String> dict;
-    int[] data;
-    Map<String, Integer> reverse;
+	int rows = 0;
+	List<String> dict;
+	int[] data;
+	Map<String, Integer> reverse;
 
-    public Nominal() {
-        // set the missing value
-        this.reverse = new HashMap<>();
-        this.reverse.put("?", 0);
-        this.dict = new ArrayList<>();
-        this.dict.add("?");
-        data = new int[0];
-        rows = 0;
-    }
+	public Nominal() {
+		// set the missing value
+		this.reverse = new HashMap<>();
+		this.reverse.put("?", 0);
+		this.dict = new ArrayList<>();
+		this.dict.add("?");
+		data = new int[0];
+		rows = 0;
+	}
 
-    public Nominal(int size, String[] dict) {
-        this(size, Arrays.asList(dict));
-    }
+	public Nominal(int size, String[] dict) {
+		this(size, Arrays.asList(dict));
+	}
 
-    public Nominal(int size, Collection<String> dict) {
-        this();
-        for (String next : dict) {
-            if (this.dict.contains(next)) continue;
-            this.dict.add(next);
-            this.reverse.put(next, reverse.size());
-        }
-        data = new int[size];
-        rows = size;
-    }
+	public Nominal(int size, Collection<String> dict) {
+		this();
+		for (String next : dict) {
+			if (this.dict.contains(next)) continue;
+			this.dict.add(next);
+			this.reverse.put(next, reverse.size());
+		}
+		data = new int[size];
+		rows = size;
+	}
 
-    @Override
-    public VectorType type() {
-        return VectorType.NOMINAL;
-    }
+	@Override
+	public VectorType type() {
+		return VectorType.NOMINAL;
+	}
 
-    private void grow(int minCapacity) {
-        // overflow-conscious code
-        int oldCapacity = data.length;
-        int newCapacity = oldCapacity + (oldCapacity >> 1);
-        if (newCapacity - minCapacity < 0)
-            newCapacity = minCapacity;
-        // minCapacity is usually close to size, so this is a win:
-        data = Arrays.copyOf(data, newCapacity);
-    }
+	private void grow(int minCapacity) {
+		// overflow-conscious code
+		int oldCapacity = data.length;
+		int newCapacity = oldCapacity + (oldCapacity >> 1);
+		if (newCapacity - minCapacity < 0)
+			newCapacity = minCapacity;
+		// minCapacity is usually close to size, so this is a win:
+		data = Arrays.copyOf(data, newCapacity);
+	}
 
-    @Override
-    public boolean isMappedVector() {
-        return false;
-    }
+	@Override
+	public boolean isMappedVector() {
+		return false;
+	}
 
-    @Override
-    public Vector sourceVector() {
-        return this;
-    }
+	@Override
+	public Vector sourceVector() {
+		return this;
+	}
 
-    @Override
-    public Mapping mapping() {
-        return null;
-    }
+	@Override
+	public Mapping mapping() {
+		return null;
+	}
 
-    @Override
-    public int rowCount() {
-        return rows;
-    }
+	@Override
+	public int rowCount() {
+		return rows;
+	}
 
-    @Override
-    public int rowId(int row) {
-        return row;
-    }
+	@Override
+	public int rowId(int row) {
+		return row;
+	}
 
-    @Override
-    public int index(int row) {
-        return data[row];
-    }
+	@Override
+	public int index(int row) {
+		return data[row];
+	}
 
-    @Override
-    public void setIndex(int row, int value) {
-        data[row] = value;
-    }
+	@Override
+	public void setIndex(int row, int value) {
+		data[row] = value;
+	}
 
-    @Override
-    public void addIndex(int value) {
-        addLabel(dict.get(value));
-    }
+	@Override
+	public void addIndex(int value) {
+		addLabel(dict.get(value));
+	}
 
-    @Override
-    public void addIndex(int row, int value) {
-        addLabel(row, dict.get(value));
-    }
+	@Override
+	public void addIndex(int row, int value) {
+		addLabel(row, dict.get(value));
+	}
 
-    @Override
-    public double value(int row) {
-        return data[row];
-    }
+	@Override
+	public double value(int row) {
+		return data[row];
+	}
 
-    @Override
-    public void setValue(int row, double value) {
-        setIndex(row, (int) Math.rint(value));
-    }
+	@Override
+	public void setValue(int row, double value) {
+		setIndex(row, (int) Math.rint(value));
+	}
 
-    @Override
-    public void addValue(double value) {
-        addIndex((int) Math.rint(value));
-    }
+	@Override
+	public void addValue(double value) {
+		addIndex((int) Math.rint(value));
+	}
 
-    @Override
-    public void addValue(int row, double value) {
-        addIndex(row, (int) Math.rint(value));
-    }
+	@Override
+	public void addValue(int row, double value) {
+		addIndex(row, (int) Math.rint(value));
+	}
 
-    @Override
-    public String label(int row) {
-        return dict.get(data[row]);
-    }
+	@Override
+	public String label(int row) {
+		return dict.get(data[row]);
+	}
 
-    @Override
-    public void setLabel(int row, String value) {
-        if (value.equals(missingValue)) {
-            data[row] = missingIndex;
-            return;
-        }
-        Integer idx = reverse.get(value);
-        if (idx == null) {
-            dict.add(value);
-            reverse.put(value, reverse.size());
-            idx = reverse.size() - 1;
-        }
-        data[row] = idx;
-    }
+	@Override
+	public void setLabel(int row, String value) {
+		if (value.equals(missingValue)) {
+			data[row] = missingIndex;
+			return;
+		}
+		Integer idx = reverse.get(value);
+		if (idx == null) {
+			dict.add(value);
+			reverse.put(value, reverse.size());
+			idx = reverse.size() - 1;
+		}
+		data[row] = idx;
+	}
 
-    @Override
-    public void addLabel(String label) {
-        ensureCapacity(rows + 1);
-        if (!reverse.containsKey(label)) {
-            dict.add(label);
-            reverse.put(label, reverse.size());
-        }
-        data[rows++] = reverse.get(label);
-    }
+	@Override
+	public void addLabel(String label) {
+		ensureCapacity(rows + 1);
+		if (!reverse.containsKey(label)) {
+			dict.add(label);
+			reverse.put(label, reverse.size());
+		}
+		data[rows++] = reverse.get(label);
+	}
 
-    @Override
-    public void addLabel(int pos, String label) {
-        ensureCapacity(rows + 1);
-        System.arraycopy(data, pos, data, pos + 1, rows - pos);
+	@Override
+	public void addLabel(int pos, String label) {
+		ensureCapacity(rows + 1);
+		System.arraycopy(data, pos, data, pos + 1, rows - pos);
 
-        if (!reverse.containsKey(label)) {
-            dict.add(label);
-            reverse.put(label, reverse.size());
-        }
-        data[pos] = reverse.get(label);
-        rows++;
-    }
+		if (!reverse.containsKey(label)) {
+			dict.add(label);
+			reverse.put(label, reverse.size());
+		}
+		data[pos] = reverse.get(label);
+		rows++;
+	}
 
-    @Override
-    public String[] dictionary() {
-        return dict.toArray(new String[]{});
-    }
+	@Override
+	public String[] dictionary() {
+		return dict.toArray(new String[]{});
+	}
 
-    @Override
-    public void setDictionary(String[] dict) {
-        List<String> oldDict = this.dict;
-        Map<String, Integer> oldReverse = this.reverse;
+	@Override
+	public void setDictionary(String[] dict) {
+		List<String> oldDict = this.dict;
+		Map<String, Integer> oldReverse = this.reverse;
 
-        this.dict = new ArrayList<>();
-        this.reverse = new HashMap<>();
-        this.dict.add("?");
-        this.reverse.put("?", 0);
+		this.dict = new ArrayList<>();
+		this.reverse = new HashMap<>();
+		this.dict.add("?");
+		this.reverse.put("?", 0);
 
-        for (int i = 0; i < dict.length; i++) {
-            if (!reverse.containsKey(dict[i])) {
-                this.dict.add(dict[i]);
-                this.reverse.put(dict[i], this.reverse.size());
-            }
-        }
+		for (int i = 0; i < dict.length; i++) {
+			if (!reverse.containsKey(dict[i])) {
+				this.dict.add(dict[i]);
+				this.reverse.put(dict[i], this.reverse.size());
+			}
+		}
 
-        for (int i = 0; i < rows; i++) {
-            if (!this.reverse.containsKey(oldDict.get(data[i]))) {
-                this.dict = oldDict;
-                this.reverse = oldReverse;
-                throw new IllegalArgumentException("new dictionary does not contains all old labels");
-            }
-        }
+		for (int i = 0; i < rows; i++) {
+			if (!this.reverse.containsKey(oldDict.get(data[i]))) {
+				this.dict = oldDict;
+				this.reverse = oldReverse;
+				throw new IllegalArgumentException("new dictionary does not contains all old labels");
+			}
+		}
 
-        for (int i = 0; i < rows; i++) {
-            data[i] = this.reverse.get(oldDict.get(data[i]));
-        }
-    }
+		for (int i = 0; i < rows; i++) {
+			data[i] = this.reverse.get(oldDict.get(data[i]));
+		}
+	}
 
-    @Override
-    public boolean isMissing(int row) {
-        return missingIndex == index(row);
-    }
+	@Override
+	public boolean isMissing(int row) {
+		return missingIndex == index(row);
+	}
 
-    @Override
-    public void setMissing(int row) {
-        setIndex(row, missingIndex);
-    }
+	@Override
+	public void setMissing(int row) {
+		setIndex(row, missingIndex);
+	}
 
-    @Override
-    public void addMissing() {
-        addIndex(missingIndex);
-    }
+	@Override
+	public void addMissing() {
+		addIndex(missingIndex);
+	}
 
-    @Override
-    public void remove(int index) {
-        int numMoved = rows - index - 1;
-        if (numMoved > 0)
-            System.arraycopy(data, index + 1, data, index, numMoved);
-    }
+	@Override
+	public void remove(int index) {
+		int numMoved = rows - index - 1;
+		if (numMoved > 0)
+			System.arraycopy(data, index + 1, data, index, numMoved);
+	}
 
-    @Override
-    public void removeRange(int fromIndex, int toIndex) {
-        int numMoved = rows - toIndex;
-        System.arraycopy(data, toIndex, data, fromIndex, numMoved);
-        int newSize = rows - (toIndex - fromIndex);
-        rows = newSize;
-    }
+	@Override
+	public void removeRange(int fromIndex, int toIndex) {
+		int numMoved = rows - toIndex;
+		System.arraycopy(data, toIndex, data, fromIndex, numMoved);
+		int newSize = rows - (toIndex - fromIndex);
+		rows = newSize;
+	}
 
-    public void clear() {
-        rows = 0;
-    }
+	public void clear() {
+		rows = 0;
+	}
 
-    public void trimToSize() {
-        if (rows < data.length) {
-            data = Arrays.copyOf(data, rows);
-        }
-    }
+	public void trimToSize() {
+		if (rows < data.length) {
+			data = Arrays.copyOf(data, rows);
+		}
+	}
 
-    public void ensureCapacity(int minCapacity) {
-        if (minCapacity - data.length > 0)
-            grow(minCapacity);
-    }
+	public void ensureCapacity(int minCapacity) {
+		if (minCapacity - data.length > 0)
+			grow(minCapacity);
+	}
+
+	@Override
+	public String toString() {
+		return "Nominal[" + rowCount() + "]";
+	}
 }

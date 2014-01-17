@@ -26,10 +26,8 @@ package rapaio.data;
  */
 public abstract class AbstractVector implements Vector {
 
-    @Override
-    public String toString() {
-        return "Vector{" +
-                ",size='" + rowCount() + '\'' +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "Vector{ size='" + rowCount() + "\'}";
+	}
 }

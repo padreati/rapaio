@@ -22,7 +22,7 @@ package rapaio.core.stat;
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
 
-import static rapaio.core.BaseMath.pow;
+import static rapaio.core.MathBase.pow;
 import static rapaio.workspace.Workspace.code;
 
 /**
@@ -36,46 +36,46 @@ import static rapaio.workspace.Workspace.code;
  */
 public class Variance implements Summarizable {
 
-    private final Vector vector;
-    private final double value;
+	private final Vector vector;
+	private final double value;
 
-    public Variance(Vector vector) {
-        this.vector = vector;
-        this.value = compute();
-    }
+	public Variance(Vector vector) {
+		this.vector = vector;
+		this.value = compute();
+	}
 
-    private double compute() {
-        double mean = new Mean(vector).getValue();
-        double n = 0;
-        for (int i = 0; i < vector.rowCount(); i++) {
-            if (vector.isMissing(i)) {
-                continue;
-            }
-            n++;
-        }
-        if (n == 0) {
-            return Double.NaN;
-        }
-        double sum2 = 0;
-        double sum3 = 0;
-        for (int i = 0; i < vector.rowCount(); i++) {
-            if (vector.isMissing(i)) {
-                continue;
-            }
-            sum2 += pow(vector.value(i) - mean, 2);
-            sum3 += vector.value(i) - mean;
-        }
-        return (sum2 - pow(sum3, 2) / n) / (n - 1);
+	private double compute() {
+		double mean = new Mean(vector).getValue();
+		double n = 0;
+		for (int i = 0; i < vector.rowCount(); i++) {
+			if (vector.isMissing(i)) {
+				continue;
+			}
+			n++;
+		}
+		if (n == 0) {
+			return Double.NaN;
+		}
+		double sum2 = 0;
+		double sum3 = 0;
+		for (int i = 0; i < vector.rowCount(); i++) {
+			if (vector.isMissing(i)) {
+				continue;
+			}
+			sum2 += pow(vector.value(i) - mean, 2);
+			sum3 += vector.value(i) - mean;
+		}
+		return (sum2 - pow(sum3, 2) / n) / (n - 1);
 
-    }
+	}
 
-    public double getValue() {
-        return value;
-    }
+	public double getValue() {
+		return value;
+	}
 
-    @Override
-    public void summary() {
-        code(String.format("variance\n%.10f", value));
-    }
+	@Override
+	public void summary() {
+		code(String.format("variance\n%.10f", value));
+	}
 
 }

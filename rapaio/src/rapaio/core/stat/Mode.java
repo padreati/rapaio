@@ -19,7 +19,7 @@
  */
 package rapaio.core.stat;
 
-import rapaio.core.BaseMath;
+import rapaio.core.MathBase;
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
 
@@ -32,54 +32,54 @@ import static rapaio.workspace.Workspace.code;
  */
 public class Mode implements Summarizable {
 
-    private final Vector vector;
-    private final boolean includeMissing;
-    private final String[] modes;
+	private final Vector vector;
+	private final boolean includeMissing;
+	private final String[] modes;
 
-    public Mode(Vector vector, boolean includeMissing) {
-        this.vector = vector;
-        this.includeMissing = includeMissing;
-        this.modes = compute();
-    }
+	public Mode(Vector vector, boolean includeMissing) {
+		this.vector = vector;
+		this.includeMissing = includeMissing;
+		this.modes = compute();
+	}
 
-    private String[] compute() {
-        if (!vector.type().isNominal()) {
-            throw new IllegalArgumentException("Can't compute mode for other than nominal vectors");
-        }
-        int[] freq = new int[vector.dictionary().length];
-        for (int i = 0; i < vector.rowCount(); i++) {
-            if (vector.isMissing(i)) {
-                continue;
-            }
-            freq[vector.index(i)]++;
-        }
-        int max = 0;
-        int start = includeMissing ? 0 : 1;
-        for (int i = start; i < freq.length; i++) {
-            max = BaseMath.max(max, freq[i]);
-        }
-        int count = 0;
-        for (int i = start; i < freq.length; i++) {
-            if (freq[i] == max) {
-                count++;
-            }
-        }
-        int pos = 0;
-        String[] modes = new String[count];
-        for (int i = start; i < freq.length; i++) {
-            if (freq[i] == max) {
-                modes[pos++] = vector.dictionary()[i];
-            }
-        }
-        return modes;
-    }
+	private String[] compute() {
+		if (!vector.type().isNominal()) {
+			throw new IllegalArgumentException("Can't compute mode for other than nominal vectors");
+		}
+		int[] freq = new int[vector.dictionary().length];
+		for (int i = 0; i < vector.rowCount(); i++) {
+			if (vector.isMissing(i)) {
+				continue;
+			}
+			freq[vector.index(i)]++;
+		}
+		int max = 0;
+		int start = includeMissing ? 0 : 1;
+		for (int i = start; i < freq.length; i++) {
+			max = MathBase.max(max, freq[i]);
+		}
+		int count = 0;
+		for (int i = start; i < freq.length; i++) {
+			if (freq[i] == max) {
+				count++;
+			}
+		}
+		int pos = 0;
+		String[] modes = new String[count];
+		for (int i = start; i < freq.length; i++) {
+			if (freq[i] == max) {
+				modes[pos++] = vector.dictionary()[i];
+			}
+		}
+		return modes;
+	}
 
-    public String[] getModes() {
-        return modes;
-    }
+	public String[] getModes() {
+		return modes;
+	}
 
-    @Override
-    public void summary() {
-        code(String.format("mode\n%s", Arrays.deepToString(modes)));
-    }
+	@Override
+	public void summary() {
+		code(String.format("mode\n%s", Arrays.deepToString(modes)));
+	}
 }

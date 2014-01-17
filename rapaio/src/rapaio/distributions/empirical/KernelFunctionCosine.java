@@ -20,31 +20,31 @@
 package rapaio.distributions.empirical;
 
 
-import static rapaio.core.BaseMath.PI;
-import static rapaio.core.BaseMath.abs;
+import static rapaio.core.MathBase.PI;
+import static rapaio.core.MathBase.abs;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class KernelFunctionCosine implements KernelFunction {
 
-    @Override
-    public double pdf(double x, double x0, double bandwidth) {
+	@Override
+	public double pdf(double x, double x0, double bandwidth) {
 
-        double value = abs(x - x0) / bandwidth;
-        if (value <= 1) {
-            return PI * Math.cos(PI * value / 2) / 4.;
-        }
-        return 0;
-    }
+		double value = abs(x - x0) / bandwidth;
+		if (value <= 1) {
+			return PI * Math.cos(PI * value / 2) / 4.;
+		}
+		return 0;
+	}
 
-    @Override
-    public double getMinValue(double x0, double bandwidth) {
-        return x0 - bandwidth;
-    }
+	@Override
+	public double getMinValue(double x0, double bandwidth) {
+		return x0 - bandwidth;
+	}
 
-    @Override
-    public double getMaxValue(double x0, double bandwidth) {
-        return x0 + bandwidth;
-    }
+	@Override
+	public double getMaxValue(double x0, double bandwidth) {
+		return x0 + bandwidth;
+	}
 }

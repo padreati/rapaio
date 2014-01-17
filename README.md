@@ -60,8 +60,9 @@ is considered to be fully implemented and well tested.
 this tree is similar with CART and C45)
 * Linear Regressor - filter only numerical attributes
 
-**Matrices**
-
+**Matrices and vectors**
+* Numeric vector operations
+* Basic matrix operations and matrix decompositions
 
 Feature Journal
 ===============
@@ -70,3 +71,4 @@ This journal contains info regarding the history of implementation. Basically he
 the progress of the implementation:
 
 16-Feb-2014 - Ported matrix operations and decompositions from JAMA project to rapaio.
+16-Feb-2014 - Implemented numeric vector operations. It follows the design from R.

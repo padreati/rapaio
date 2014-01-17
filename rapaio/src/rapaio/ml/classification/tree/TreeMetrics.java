@@ -24,52 +24,52 @@ import rapaio.filters.NominalFilters;
 
 import java.util.List;
 
-import static rapaio.core.BaseMath.log;
+import static rapaio.core.MathBase.log;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class TreeMetrics {
 
-    public double entropy(Frame df, List<Double> weights, String classColName) {
-        int classIndex = df.colIndex(classColName);
-        int[] hits = new int[df.col(classIndex).dictionary().length];
-        for (int i = 0; i < df.rowCount(); i++) {
-            hits[df.col(classIndex).index(i)] += weights.get(i);
-        }
-        double entropy = 0.;
-        for (int hit : hits) {
-            if (hit != 0) {
-                double p = hit / (1. * df.rowCount());
-                entropy += -p * log(p) / log(2);
-            }
-        }
-        return entropy;
-    }
+	public double entropy(Frame df, List<Double> weights, String classColName) {
+		int classIndex = df.colIndex(classColName);
+		int[] hits = new int[df.col(classIndex).dictionary().length];
+		for (int i = 0; i < df.rowCount(); i++) {
+			hits[df.col(classIndex).index(i)] += weights.get(i);
+		}
+		double entropy = 0.;
+		for (int hit : hits) {
+			if (hit != 0) {
+				double p = hit / (1. * df.rowCount());
+				entropy += -p * log(p) / log(2);
+			}
+		}
+		return entropy;
+	}
 
-    public double entropy(Frame df, List<Double> weights, String classColName, String splitColName) {
-        int splitIndex = df.colIndex(splitColName);
-        Frame[] split = NominalFilters.groupByNominal(df, splitIndex);
-        double entropy = 0.;
-        for (Frame f : split) {
-            if (f == null) {
-                continue;
-            }
-            entropy += (1. * f.rowCount() * entropy(f, weights, classColName)) / (1. * df.rowCount());
-        }
-        return entropy;
-    }
+	public double entropy(Frame df, List<Double> weights, String classColName, String splitColName) {
+		int splitIndex = df.colIndex(splitColName);
+		Frame[] split = NominalFilters.groupByNominal(df, splitIndex);
+		double entropy = 0.;
+		for (Frame f : split) {
+			if (f == null) {
+				continue;
+			}
+			entropy += (1. * f.rowCount() * entropy(f, weights, classColName)) / (1. * df.rowCount());
+		}
+		return entropy;
+	}
 
-    public double infoGain(Frame df, List<Double> weights, String classColName, String splitColName) {
-        int splitIndex = df.colIndex(splitColName);
-        Frame[] split = NominalFilters.groupByNominal(df, splitIndex);
-        double infoGain = entropy(df, weights, classColName);
-        for (Frame f : split) {
-            if (f == null) {
-                continue;
-            }
-            infoGain -= (f.rowCount() / (1. * df.rowCount())) * entropy(f, weights, classColName);
-        }
-        return infoGain;
-    }
+	public double infoGain(Frame df, List<Double> weights, String classColName, String splitColName) {
+		int splitIndex = df.colIndex(splitColName);
+		Frame[] split = NominalFilters.groupByNominal(df, splitIndex);
+		double infoGain = entropy(df, weights, classColName);
+		for (Frame f : split) {
+			if (f == null) {
+				continue;
+			}
+			infoGain -= (f.rowCount() / (1. * df.rowCount())) * entropy(f, weights, classColName);
+		}
+		return infoGain;
+	}
 }

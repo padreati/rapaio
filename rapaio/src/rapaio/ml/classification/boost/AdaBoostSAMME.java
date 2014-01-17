@@ -28,8 +28,8 @@ import rapaio.ml.classification.Classifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import static rapaio.core.BaseMath.log;
-import static rapaio.core.BaseMath.min;
+import static rapaio.core.MathBase.log;
+import static rapaio.core.MathBase.min;
 import static rapaio.workspace.Workspace.code;
 
 /**
@@ -37,216 +37,216 @@ import static rapaio.workspace.Workspace.code;
  */
 public class AdaBoostSAMME extends AbstractClassifier<AdaBoostSAMME> {
 
-    Classifier weak;
-    int t;
+	Classifier weak;
+	int t;
 
-    List<Double> a;
-    List<Classifier> h;
-    List<Double> w;
-    double k;
+	List<Double> a;
+	List<Classifier> h;
+	List<Double> w;
+	double k;
 
-    String[] dict;
-    Nominal pred;
-    Frame dist;
+	String[] dict;
+	Nominal pred;
+	Frame dist;
 
-    public AdaBoostSAMME(Classifier weak, int t) {
-        this.weak = weak;
-        this.t = t;
-        this.a = new ArrayList<>();
-        this.h = new ArrayList<>();
-    }
+	public AdaBoostSAMME(Classifier weak, int t) {
+		this.weak = weak;
+		this.t = t;
+		this.a = new ArrayList<>();
+		this.h = new ArrayList<>();
+	}
 
-    @Override
-    public Classifier newInstance() {
-        return new AdaBoostSAMME(weak.newInstance(), t);
-    }
+	@Override
+	public Classifier newInstance() {
+		return new AdaBoostSAMME(weak.newInstance(), t);
+	}
 
-    @Override
-    public void learn(Frame df, List<Double> weights, String classColName) {
-        dict = df.col(classColName).dictionary();
-        k = dict.length - 1;
+	@Override
+	public void learn(Frame df, List<Double> weights, String classColName) {
+		dict = df.col(classColName).dictionary();
+		k = dict.length - 1;
 
-        w = new ArrayList<>(weights);
+		w = new ArrayList<>(weights);
 
-        double total = 0;
-        for (int j = 0; j < w.size(); j++) {
-            total += w.get(j);
-        }
-        for (int j = 0; j < w.size(); j++) {
-            w.set(j, w.get(j) / total);
-        }
+		double total = 0;
+		for (int j = 0; j < w.size(); j++) {
+			total += w.get(j);
+		}
+		for (int j = 0; j < w.size(); j++) {
+			w.set(j, w.get(j) / total);
+		}
 
-        for (int i = 0; i < t; i++) {
-            Classifier hh = weak.newInstance();
-            hh.learn(df, new ArrayList<>(w), classColName);
-            hh.predict(df);
-            Nominal hpred = hh.getPrediction();
+		for (int i = 0; i < t; i++) {
+			Classifier hh = weak.newInstance();
+			hh.learn(df, new ArrayList<>(w), classColName);
+			hh.predict(df);
+			Nominal hpred = hh.getPrediction();
 
-            double err = 0;
-            for (int j = 0; j < df.rowCount(); j++) {
-                if (hpred.index(j) != df.col(classColName).index(j)) {
-                    err += w.get(j);
-                }
-            }
-            double alpha = log((1. - err) / err) + log(k - 1);
-            if (err == 0) {
-                if (h.isEmpty()) {
-                    h.add(hh);
-                    a.add(alpha);
-                }
-                break;
-            }
-            if (err > (1 - 1 / k)) {
-                i--;
-                continue;
-            }
-            h.add(hh);
-            a.add(alpha);
+			double err = 0;
+			for (int j = 0; j < df.rowCount(); j++) {
+				if (hpred.index(j) != df.col(classColName).index(j)) {
+					err += w.get(j);
+				}
+			}
+			double alpha = log((1. - err) / err) + log(k - 1);
+			if (err == 0) {
+				if (h.isEmpty()) {
+					h.add(hh);
+					a.add(alpha);
+				}
+				break;
+			}
+			if (err > (1 - 1 / k)) {
+				i--;
+				continue;
+			}
+			h.add(hh);
+			a.add(alpha);
 
-            // update
-            for (int j = 0; j < w.size(); j++) {
-                if (hpred.index(j) != df.col(classColName).index(j)) {
-                    w.set(j, w.get(j) * (k - 1) / (k * err));
-                } else {
-                    w.set(j, w.get(j) / (k * (1. - err)));
-                }
-            }
-        }
-    }
+			// update
+			for (int j = 0; j < w.size(); j++) {
+				if (hpred.index(j) != df.col(classColName).index(j)) {
+					w.set(j, w.get(j) * (k - 1) / (k * err));
+				} else {
+					w.set(j, w.get(j) / (k * (1. - err)));
+				}
+			}
+		}
+	}
 
-    @Override
-    public void learnFurther(Frame df, List<Double> weights, String classColName, AdaBoostSAMME classifier) {
-        // TODO validation for further learning
+	@Override
+	public void learnFurther(Frame df, List<Double> weights, String classColName, AdaBoostSAMME classifier) {
+		// TODO validation for further learning
 
-        if (classifier == null) {
-            learn(df, weights, classColName);
-            return;
-        }
+		if (classifier == null) {
+			learn(df, weights, classColName);
+			return;
+		}
 
-        dict = df.col(classColName).dictionary();
-        k = dict.length - 1;
-        h = new ArrayList<>(classifier.h);
-        a = new ArrayList<>(classifier.a);
-        if (t == classifier.t) {
-            return;
-        }
+		dict = df.col(classColName).dictionary();
+		k = dict.length - 1;
+		h = new ArrayList<>(classifier.h);
+		a = new ArrayList<>(classifier.a);
+		if (t == classifier.t) {
+			return;
+		}
 //        w = (weights == null) ? classifier.w : weights;
-        w = classifier.w;
-        for (int i = h.size(); i < t; i++) {
-            Classifier hh = weak.newInstance();
-            hh.learn(df, new ArrayList<>(w), classColName);
-            hh.predict(df);
-            Nominal hpred = hh.getPrediction();
+		w = classifier.w;
+		for (int i = h.size(); i < t; i++) {
+			Classifier hh = weak.newInstance();
+			hh.learn(df, new ArrayList<>(w), classColName);
+			hh.predict(df);
+			Nominal hpred = hh.getPrediction();
 
-            double err = 0;
-            for (int j = 0; j < df.rowCount(); j++) {
-                if (hpred.index(j) != df.col(classColName).index(j)) {
-                    err += w.get(j);
-                }
-            }
-            double alpha = log((1. - err) / err) + log(k - 1);
-            if (err == 0) {
-                if (h.isEmpty()) {
-                    h.add(hh);
-                    a.add(alpha);
-                }
-                break;
-            }
-            if (err > (1 - 1 / k)) {
-                i--;
-                continue;
-            }
-            h.add(hh);
-            a.add(alpha);
+			double err = 0;
+			for (int j = 0; j < df.rowCount(); j++) {
+				if (hpred.index(j) != df.col(classColName).index(j)) {
+					err += w.get(j);
+				}
+			}
+			double alpha = log((1. - err) / err) + log(k - 1);
+			if (err == 0) {
+				if (h.isEmpty()) {
+					h.add(hh);
+					a.add(alpha);
+				}
+				break;
+			}
+			if (err > (1 - 1 / k)) {
+				i--;
+				continue;
+			}
+			h.add(hh);
+			a.add(alpha);
 
-            // update
-            for (int j = 0; j < w.size(); j++) {
-                if (hpred.index(j) != df.col(classColName).index(j)) {
-                    w.set(j, w.get(j) * (k - 1) / (k * err));
-                } else {
-                    w.set(j, w.get(j) / (k * (1. - err)));
-                }
-            }
-        }
-    }
+			// update
+			for (int j = 0; j < w.size(); j++) {
+				if (hpred.index(j) != df.col(classColName).index(j)) {
+					w.set(j, w.get(j) * (k - 1) / (k * err));
+				} else {
+					w.set(j, w.get(j) / (k * (1. - err)));
+				}
+			}
+		}
+	}
 
-    @Override
-    public void predictFurther(Frame df, AdaBoostSAMME classifier) {
-        if (classifier == null) {
-            predict(df);
-            return;
-        }
+	@Override
+	public void predictFurther(Frame df, AdaBoostSAMME classifier) {
+		if (classifier == null) {
+			predict(df);
+			return;
+		}
 
-        pred = classifier.pred;
-        dist = classifier.dist;
+		pred = classifier.pred;
+		dist = classifier.dist;
 
-        for (int i = classifier.h.size(); i < min(t, h.size()); i++) {
-            h.get(i).predict(df);
-            for (int j = 0; j < df.rowCount(); j++) {
-                int index = h.get(i).getPrediction().index(j);
-                dist.setValue(j, index, dist.value(j, index) + a.get(i));
-            }
-        }
+		for (int i = classifier.h.size(); i < min(t, h.size()); i++) {
+			h.get(i).predict(df);
+			for (int j = 0; j < df.rowCount(); j++) {
+				int index = h.get(i).getPrediction().index(j);
+				dist.setValue(j, index, dist.value(j, index) + a.get(i));
+			}
+		}
 
-        // simply predict
-        for (int i = 0; i < dist.rowCount(); i++) {
+		// simply predict
+		for (int i = 0; i < dist.rowCount(); i++) {
 
-            double max = 0;
-            int prediction = 0;
-            for (int j = 1; j < dist.colCount(); j++) {
-                if (dist.value(i, j) > max) {
-                    prediction = j;
-                    max = dist.value(i, j);
-                }
-            }
-            pred.setIndex(i, prediction);
-        }
-    }
+			double max = 0;
+			int prediction = 0;
+			for (int j = 1; j < dist.colCount(); j++) {
+				if (dist.value(i, j) > max) {
+					prediction = j;
+					max = dist.value(i, j);
+				}
+			}
+			pred.setIndex(i, prediction);
+		}
+	}
 
-    @Override
-    public void predict(Frame df) {
-        pred = new Nominal(df.rowCount(), dict);
-        dist = Frames.newMatrixFrame(df.rowCount(), dict);
+	@Override
+	public void predict(Frame df) {
+		pred = new Nominal(df.rowCount(), dict);
+		dist = Frames.newMatrixFrame(df.rowCount(), dict);
 
-        for (int i = 0; i < min(t, h.size()); i++) {
-            h.get(i).predict(df);
-            for (int j = 0; j < df.rowCount(); j++) {
-                int index = h.get(i).getPrediction().index(j);
-                dist.setValue(j, index, dist.value(j, index) + a.get(i));
-            }
-        }
+		for (int i = 0; i < min(t, h.size()); i++) {
+			h.get(i).predict(df);
+			for (int j = 0; j < df.rowCount(); j++) {
+				int index = h.get(i).getPrediction().index(j);
+				dist.setValue(j, index, dist.value(j, index) + a.get(i));
+			}
+		}
 
-        // simply predict
-        for (int i = 0; i < dist.rowCount(); i++) {
+		// simply predict
+		for (int i = 0; i < dist.rowCount(); i++) {
 
-            double max = 0;
-            int prediction = 0;
-            for (int j = 1; j < dist.colCount(); j++) {
-                if (dist.value(i, j) > max) {
-                    prediction = j;
-                    max = dist.value(i, j);
-                }
-            }
-            pred.setIndex(i, prediction);
-        }
-    }
+			double max = 0;
+			int prediction = 0;
+			for (int j = 1; j < dist.colCount(); j++) {
+				if (dist.value(i, j) > max) {
+					prediction = j;
+					max = dist.value(i, j);
+				}
+			}
+			pred.setIndex(i, prediction);
+		}
+	}
 
-    @Override
-    public Nominal getPrediction() {
-        return pred;
-    }
+	@Override
+	public Nominal getPrediction() {
+		return pred;
+	}
 
-    @Override
-    public Frame getDistribution() {
-        return dist;
-    }
+	@Override
+	public Frame getDistribution() {
+		return dist;
+	}
 
-    @Override
-    public void summary() {
-        StringBuilder sb = new StringBuilder();
-        // title
-        sb.append("AdaBoostSAMME [t=").append(t).append("]\n");
-        sb.append("weak learners built:").append(h.size()).append("\n");
-        code(sb.toString());
-    }
+	@Override
+	public void summary() {
+		StringBuilder sb = new StringBuilder();
+		// title
+		sb.append("AdaBoostSAMME [t=").append(t).append("]\n");
+		sb.append("weak learners built:").append(h.size()).append("\n");
+		code(sb.toString());
+	}
 }

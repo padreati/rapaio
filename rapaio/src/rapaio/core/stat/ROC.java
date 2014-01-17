@@ -22,7 +22,7 @@ package rapaio.core.stat;
 import rapaio.core.Summarizable;
 import rapaio.data.*;
 
-import static rapaio.core.BaseMath.abs;
+import static rapaio.core.MathBase.abs;
 import static rapaio.filters.RowFilters.sort;
 import static rapaio.workspace.Workspace.code;
 
@@ -32,116 +32,116 @@ import static rapaio.workspace.Workspace.code;
  */
 public class ROC implements Summarizable {
 
-    private final Vector score;
-    private final Vector classes;
-    private Frame data;
-    private double auc;
+	private final Vector score;
+	private final Vector classes;
+	private Frame data;
+	private double auc;
 
-    public ROC(Vector score, Vector actual, Vector predict) {
-        this.score = score;
-        this.classes = Vectors.newIdx(actual.rowCount());
-        for (int i = 0; i < actual.rowCount(); i++) {
-            if (actual.label(i).equals(predict.label(i))) {
-                classes.setIndex(i, 1);
-            } else {
-                classes.setIndex(i, 0);
-            }
-        }
-        compute();
-    }
+	public ROC(Vector score, Vector actual, Vector predict) {
+		this.score = score;
+		this.classes = Vectors.newIdx(actual.rowCount());
+		for (int i = 0; i < actual.rowCount(); i++) {
+			if (actual.label(i).equals(predict.label(i))) {
+				classes.setIndex(i, 1);
+			} else {
+				classes.setIndex(i, 0);
+			}
+		}
+		compute();
+	}
 
-    public ROC(Vector score, Vector actual, int index) {
-        this(score, actual, actual.dictionary()[index]);
-    }
+	public ROC(Vector score, Vector actual, int index) {
+		this(score, actual, actual.dictionary()[index]);
+	}
 
-    public ROC(Vector score, Vector actual, String label) {
-        this.score = score;
-        this.classes = Vectors.newIdx(actual.rowCount());
-        for (int i = 0; i < actual.rowCount(); i++) {
-            if (actual.label(i).equals(label)) {
-                classes.setIndex(i, 1);
-            } else {
-                classes.setIndex(i, 0);
-            }
-        }
-        compute();
-    }
+	public ROC(Vector score, Vector actual, String label) {
+		this.score = score;
+		this.classes = Vectors.newIdx(actual.rowCount());
+		for (int i = 0; i < actual.rowCount(); i++) {
+			if (actual.label(i).equals(label)) {
+				classes.setIndex(i, 1);
+			} else {
+				classes.setIndex(i, 0);
+			}
+		}
+		compute();
+	}
 
-    private void compute() {
-        int p = 0;
-        int n = 0;
-        double prevtp = 0;
-        double prevfp = 0;
-        auc = 0;
-        for (int i = 0; i < classes.rowCount(); i++) {
-            if (classes.isMissing(i)) {
-                continue;
-            }
-            if (classes.index(i) > 0) p++;
-            else n++;
-        }
+	private void compute() {
+		int p = 0;
+		int n = 0;
+		double prevtp = 0;
+		double prevfp = 0;
+		auc = 0;
+		for (int i = 0; i < classes.rowCount(); i++) {
+			if (classes.isMissing(i)) {
+				continue;
+			}
+			if (classes.index(i) > 0) p++;
+			else n++;
+		}
 
 
-        double fp = 0;
-        double tp = 0;
-        auc = 0;
+		double fp = 0;
+		double tp = 0;
+		auc = 0;
 
-        Vector sort = sort(score, RowComparators.numericComparator(score, false));
-        int len = 1;
-        double prev = Double.MIN_VALUE;
-        for (int i = 0; i < sort.rowCount(); i++) {
-            if (sort.isMissing(i) || classes.isMissing(sort.rowId(i))) continue;
-            if (sort.value(i) != prev) {
-                prev = sort.value(i);
-                len++;
-            }
-        }
-        data = Frames.newMatrixFrame(len, new String[]{"threshold", "fpr", "tpr", "acc"});
-        prev = Double.POSITIVE_INFINITY;
-        int pos = 0;
+		Vector sort = sort(score, RowComparators.numericComparator(score, false));
+		int len = 1;
+		double prev = Double.MIN_VALUE;
+		for (int i = 0; i < sort.rowCount(); i++) {
+			if (sort.isMissing(i) || classes.isMissing(sort.rowId(i))) continue;
+			if (sort.value(i) != prev) {
+				prev = sort.value(i);
+				len++;
+			}
+		}
+		data = Frames.newMatrixFrame(len, new String[]{"threshold", "fpr", "tpr", "acc"});
+		prev = Double.POSITIVE_INFINITY;
+		int pos = 0;
 
-        for (int i = 0; i < sort.rowCount(); i++) {
-            if (sort.isMissing(i) || classes.isMissing(sort.rowId(i))) continue;
+		for (int i = 0; i < sort.rowCount(); i++) {
+			if (sort.isMissing(i) || classes.isMissing(sort.rowId(i))) continue;
 
-            if (sort.value(i) != prev) {
-                auc += abs(prevfp - fp) * abs(prevtp + tp) / 2.;
-                double accValue = (tp + n - fp) / (0. + n + p);
-                data.setValue(pos, "threshold", prev);
-                data.setValue(pos, "fpr", fp / (1. * n));
-                data.setValue(pos, "tpr", tp / (1. * p));
-                data.setValue(pos, "acc", accValue);
-                prevfp = fp;
-                prevtp = tp;
-                prev = sort.value(i);
-                pos++;
-            }
+			if (sort.value(i) != prev) {
+				auc += abs(prevfp - fp) * abs(prevtp + tp) / 2.;
+				double accValue = (tp + n - fp) / (0. + n + p);
+				data.setValue(pos, "threshold", prev);
+				data.setValue(pos, "fpr", fp / (1. * n));
+				data.setValue(pos, "tpr", tp / (1. * p));
+				data.setValue(pos, "acc", accValue);
+				prevfp = fp;
+				prevtp = tp;
+				prev = sort.value(i);
+				pos++;
+			}
 
-            if (classes.index(sort.rowId(i)) > 0) tp++;
-            else fp++;
-        }
-        data.setValue(pos, "threshold", prev);
-        data.setValue(pos, "fpr", 1.);
-        data.setValue(pos, "tpr", 1.);
-        data.setValue(pos, "acc", p / (0. + n + p));
+			if (classes.index(sort.rowId(i)) > 0) tp++;
+			else fp++;
+		}
+		data.setValue(pos, "threshold", prev);
+		data.setValue(pos, "fpr", 1.);
+		data.setValue(pos, "tpr", 1.);
+		data.setValue(pos, "acc", p / (0. + n + p));
 
-        auc += abs(n - prevfp) * (p + prevtp) / 2.;
-        auc /= (1. * p * n);
-    }
+		auc += abs(n - prevfp) * (p + prevtp) / 2.;
+		auc /= (1. * p * n);
+	}
 
-    public Frame getData() {
-        return data;
-    }
+	public Frame getData() {
+		return data;
+	}
 
-    public double getAuc() {
-        return auc;
-    }
+	public double getAuc() {
+		return auc;
+	}
 
-    @Override
-    public void summary() {
-        StringBuilder sb = new StringBuilder();
+	@Override
+	public void summary() {
+		StringBuilder sb = new StringBuilder();
 
-        sb.append("ROC summary");
+		sb.append("ROC summary");
 
-        code(sb.toString());
-    }
+		code(sb.toString());
+	}
 }

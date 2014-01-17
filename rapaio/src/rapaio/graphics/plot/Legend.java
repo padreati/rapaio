@@ -20,7 +20,7 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.core.BaseMath;
+import rapaio.core.MathBase;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
 
@@ -28,45 +28,44 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 /**
- *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class Legend extends PlotComponent {
 
-    private final double x;
-    private final double y;
-    private final String[] labels;
-    private final int[] colors;
+	private final double x;
+	private final double y;
+	private final String[] labels;
+	private final int[] colors;
 
-    public Legend(double x, double y, String[] labels, int[] colors) {
-        this.x = x;
-        this.y = y;
-        this.labels = labels;
-        this.colors = colors;
-    }
+	public Legend(double x, double y, String[] labels, int[] colors) {
+		this.x = x;
+		this.y = y;
+		this.labels = labels;
+		this.colors = colors;
+	}
 
-    @Override
-    public void paint(Graphics2D g2d) {
-        g2d.setFont(MARKERS_FONT);
-        double minHeight = Double.MAX_VALUE;
-        for (String string : labels) {
-            double height = g2d.getFontMetrics().getStringBounds(string, g2d).getHeight();
-            minHeight = BaseMath.min(minHeight, height);
-        }
-        double size = g2d.getFontMetrics().getStringBounds("aa", g2d).getWidth();
-        double xstart = getParent().xscale(x);
-        double ystart = getParent().yscale(y);
+	@Override
+	public void paint(Graphics2D g2d) {
+		g2d.setFont(MARKERS_FONT);
+		double minHeight = Double.MAX_VALUE;
+		for (String string : labels) {
+			double height = g2d.getFontMetrics().getStringBounds(string, g2d).getHeight();
+			minHeight = MathBase.min(minHeight, height);
+		}
+		double size = g2d.getFontMetrics().getStringBounds("aa", g2d).getWidth();
+		double xstart = getParent().xscale(x);
+		double ystart = getParent().yscale(y);
 
-        for (int i = 0; i < labels.length; i++) {
-            g2d.setColor(ColorPalette.STANDARD.getColor(colors[i]));
-            g2d.draw(new Rectangle2D.Double(xstart, ystart-minHeight/3, size, 1));
-            g2d.drawString(labels[i], (int) (xstart + size + size / 2), (int) (ystart));
-            ystart += minHeight + 1;
-        }
-    }
+		for (int i = 0; i < labels.length; i++) {
+			g2d.setColor(ColorPalette.STANDARD.getColor(colors[i]));
+			g2d.draw(new Rectangle2D.Double(xstart, ystart - minHeight / 3, size, 1));
+			g2d.drawString(labels[i], (int) (xstart + size + size / 2), (int) (ystart));
+			ystart += minHeight + 1;
+		}
+	}
 
-    @Override
-    public Range buildRange() {
-        return null;
-    }
+	@Override
+	public Range buildRange() {
+		return null;
+	}
 }

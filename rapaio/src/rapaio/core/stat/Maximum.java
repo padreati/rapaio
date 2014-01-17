@@ -19,7 +19,7 @@
  */
 package rapaio.core.stat;
 
-import rapaio.core.BaseMath;
+import rapaio.core.MathBase;
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
 
@@ -36,33 +36,33 @@ import static rapaio.workspace.Workspace.code;
  */
 public class Maximum implements Summarizable {
 
-    private final Vector vector;
-    private final double value;
+	private final Vector vector;
+	private final double value;
 
-    public Maximum(Vector vector) {
-        this.vector = vector;
-        this.value = compute();
-    }
+	public Maximum(Vector vector) {
+		this.vector = vector;
+		this.value = compute();
+	}
 
-    private double compute() {
-        double max = Double.MIN_VALUE;
-        boolean valid = false;
-        for (int i = 0; i < vector.rowCount(); i++) {
-            if (vector.isMissing(i)) {
-                continue;
-            }
-            max = BaseMath.max(max, vector.value(i));
-            valid = true;
-        }
-        return valid ? max : Double.NaN;
-    }
+	private double compute() {
+		double max = Double.MIN_VALUE;
+		boolean valid = false;
+		for (int i = 0; i < vector.rowCount(); i++) {
+			if (vector.isMissing(i)) {
+				continue;
+			}
+			max = MathBase.max(max, vector.value(i));
+			valid = true;
+		}
+		return valid ? max : Double.NaN;
+	}
 
-    public double getValue() {
-        return value;
-    }
+	public double getValue() {
+		return value;
+	}
 
-    @Override
-    public void summary() {
-        code(String.format("maximum\n%.10f", value));
-    }
+	@Override
+	public void summary() {
+		code(String.format("maximum\n%.10f", value));
+	}
 }

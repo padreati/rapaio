@@ -22,7 +22,7 @@ package rapaio.core.stat;
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
 
-import static rapaio.core.BaseMath.floor;
+import static rapaio.core.MathBase.floor;
 import static rapaio.filters.RowFilters.sort;
 import static rapaio.workspace.Workspace.printfln;
 
@@ -39,57 +39,57 @@ import static rapaio.workspace.Workspace.printfln;
  */
 public class Quantiles implements Summarizable {
 
-    private final Vector vector;
-    private final double[] percentiles;
-    private final double[] quantiles;
+	private final Vector vector;
+	private final double[] percentiles;
+	private final double[] quantiles;
 
-    public Quantiles(Vector vector, double[] percentiles) {
-        this.vector = vector;
-        this.percentiles = percentiles;
-        this.quantiles = compute();
-    }
+	public Quantiles(Vector vector, double[] percentiles) {
+		this.vector = vector;
+		this.percentiles = percentiles;
+		this.quantiles = compute();
+	}
 
-    private double[] compute() {
-        Vector sorted = sort(vector);
-        int start = 0;
-        while (sorted.isMissing(start)) {
-            start++;
-            if (start == sorted.rowCount()) {
-                break;
-            }
-        }
-        double[] values = new double[percentiles.length];
-        if (start == sorted.rowCount()) {
-            return values;
-        }
-        for (int i = 0; i < percentiles.length; i++) {
-            int N = sorted.rowCount() - start;
-            double h = (N + 1. / 3.) * percentiles[i] + 1. / 3.;
-            int hfloor = (int) floor(h);
+	private double[] compute() {
+		Vector sorted = sort(vector);
+		int start = 0;
+		while (sorted.isMissing(start)) {
+			start++;
+			if (start == sorted.rowCount()) {
+				break;
+			}
+		}
+		double[] values = new double[percentiles.length];
+		if (start == sorted.rowCount()) {
+			return values;
+		}
+		for (int i = 0; i < percentiles.length; i++) {
+			int N = sorted.rowCount() - start;
+			double h = (N + 1. / 3.) * percentiles[i] + 1. / 3.;
+			int hfloor = (int) floor(h);
 
-            if (percentiles[i] < (2. / 3.) / (N + 1. / 3.)) {
-                values[i] = sorted.value(start);
-                continue;
-            }
-            if (percentiles[i] >= (N - 1. / 3.) / (N + 1. / 3.)) {
-                values[i] = sorted.value(sorted.rowCount() - 1);
-                continue;
-            }
-            values[i] = sorted.value(start + hfloor - 1)
-                    + (h - hfloor) * (sorted.value(start + hfloor) - sorted.value(start + hfloor - 1));
-        }
-        return values;
-    }
+			if (percentiles[i] < (2. / 3.) / (N + 1. / 3.)) {
+				values[i] = sorted.value(start);
+				continue;
+			}
+			if (percentiles[i] >= (N - 1. / 3.) / (N + 1. / 3.)) {
+				values[i] = sorted.value(sorted.rowCount() - 1);
+				continue;
+			}
+			values[i] = sorted.value(start + hfloor - 1)
+					+ (h - hfloor) * (sorted.value(start + hfloor) - sorted.value(start + hfloor - 1));
+		}
+		return values;
+	}
 
-    public double[] getValues() {
-        return quantiles;
-    }
+	public double[] getValues() {
+		return quantiles;
+	}
 
-    @Override
-    public void summary() {
-        printfln("quantiles - estimated quantiles");
-        for (int i = 0; i < quantiles.length; i++) {
-            printfln("quantile[%f = %f\n", percentiles[i], quantiles[i]);
-        }
-    }
+	@Override
+	public void summary() {
+		printfln("quantiles - estimated quantiles");
+		for (int i = 0; i < quantiles.length; i++) {
+			printfln("quantile[%f = %f\n", percentiles[i], quantiles[i]);
+		}
+	}
 }

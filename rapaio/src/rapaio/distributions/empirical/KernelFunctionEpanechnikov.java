@@ -19,26 +19,26 @@
  */
 package rapaio.distributions.empirical;
 
-import rapaio.core.BaseMath;
+import rapaio.core.MathBase;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class KernelFunctionEpanechnikov implements KernelFunction {
 
-    @Override
-    public double pdf(double x, double x0, double bandwidth) {
-        double value = BaseMath.abs(x - x0) / bandwidth;
-        return value <= 1 ? 3. * (1 - value * value) / 4. : 0;
-    }
+	@Override
+	public double pdf(double x, double x0, double bandwidth) {
+		double value = MathBase.abs(x - x0) / bandwidth;
+		return value <= 1 ? 3. * (1 - value * value) / 4. : 0;
+	}
 
-    @Override
-    public double getMinValue(double x0, double bandwidth) {
-        return x0 - bandwidth;
-    }
+	@Override
+	public double getMinValue(double x0, double bandwidth) {
+		return x0 - bandwidth;
+	}
 
-    @Override
-    public double getMaxValue(double x0, double bandwidth) {
-        return x0 + bandwidth;
-    }
+	@Override
+	public double getMaxValue(double x0, double bandwidth) {
+		return x0 + bandwidth;
+	}
 }

@@ -28,25 +28,25 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
-import static rapaio.core.BaseMath.sqrt;
+import static rapaio.core.MathBase.sqrt;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class VarianceTest extends CoreStatTestUtil {
 
-    public VarianceTest() throws IOException, URISyntaxException {
-    }
+	public VarianceTest() throws IOException, URISyntaxException {
+	}
 
-    @Test
-    public void testRReferenceVariance() {
-        Frame df = getDataFrame();
-        assertEquals(Double.valueOf("1.0012615815492349469"), sqrt(new Variance(df.col(0)).getValue()), 1e-12);
-    }
+	@Test
+	public void testRReferenceVariance() {
+		Frame df = getDataFrame();
+		assertEquals(Double.valueOf("1.0012615815492349469"), sqrt(new Variance(df.col(0)).getValue()), 1e-12);
+	}
 
-    @Test
-    public void testPearsonDSVariance() throws IOException, URISyntaxException {
-        Frame df = Datasets.loadPearsonHeightDataset();
-        assertEquals(Double.valueOf("7.93094884953222").doubleValue(), new Variance(df.col("Son")).getValue(), 1e-12);
-    }
+	@Test
+	public void testPearsonDSVariance() throws IOException, URISyntaxException {
+		Frame df = Datasets.loadPearsonHeightDataset();
+		assertEquals(Double.valueOf("7.93094884953222").doubleValue(), new Variance(df.col("Son")).getValue(), 1e-12);
+	}
 }
