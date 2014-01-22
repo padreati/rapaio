@@ -37,7 +37,9 @@
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="Rapaio Graphics" anchor="right" factoryClass="rapaio.studio.RapaioGraphicsToolWindowFactory">
-        </toolWindow>
+        <toolWindow id="Rapaio Graphics"
+                    anchor="right" factoryClass="rapaio.studio.RapaioGraphicsToolWindowFactory"/>
+        <toolWindow id="RapaioOutput"
+                    anchor="bottom" factoryClass="rapaio.studio.RapaioOutputToolWindowFactory"/>
     </extensions>
 </idea-plugin>

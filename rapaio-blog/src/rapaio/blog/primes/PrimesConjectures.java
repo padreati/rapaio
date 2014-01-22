@@ -20,7 +20,7 @@ public class PrimesConjectures extends AbstractCmd {
 
 	private final String file = "/home/ati/work/rapaio-data/primes/primes.txt";
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		new PrimesConjectures().runLocal();
 	}
 

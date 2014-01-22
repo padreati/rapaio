@@ -70,5 +70,6 @@ Feature Journal
 This journal contains info regarding the history of implementation. Basically here we can follow
 the progress of the implementation:
 
-16-Feb-2014 - Ported matrix operations and decompositions from JAMA project to rapaio.
-16-Feb-2014 - Implemented numeric vector operations. It follows the design from R.
+**16-Feb-2014** - Ported matrix operations and decompositions from JAMA project to rapaio.
+
+**16-Feb-2014** - Implemented numeric vector operations. It follows the design from R.

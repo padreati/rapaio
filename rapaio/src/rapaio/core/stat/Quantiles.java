@@ -50,6 +50,13 @@ public class Quantiles implements Summarizable {
 	}
 
 	private double[] compute() {
+		if (vector.rowCount() == 1) {
+			double[] values = new double[percentiles.length];
+			for (int i = 0; i < values.length; i++) {
+				values[i] = vector.value(0);
+			}
+			return values;
+		}
 		Vector sorted = sort(vector);
 		int start = 0;
 		while (sorted.isMissing(start)) {

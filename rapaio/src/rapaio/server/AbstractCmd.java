@@ -27,31 +27,30 @@ import java.io.IOException;
 import java.net.Socket;
 
 /**
- *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public abstract class AbstractCmd implements RapaioCmd{
-    
-    public static final int DEFAULT_PORT = 56339;
+public abstract class AbstractCmd implements RapaioCmd {
 
-    @Override
-    public void runRemote() {
-        try (Socket s = new Socket("localhost", DEFAULT_PORT)) {
-            new ClassMarshaller().marshallRemote(s.getOutputStream(), this.getClass());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
+	public static final int DEFAULT_PORT = 56339;
 
-    @Override
-    public void runConsole() {
-        Workspace.setPrinter(new StandardPrinter());
-        run();
-    }
+	@Override
+	public void runRemote() {
+		try (Socket s = new Socket("localhost", DEFAULT_PORT)) {
+			new ClassMarshaller().marshallRemote(s.getOutputStream(), this.getClass());
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
 
-    @Override
-    public void runLocal() {
-        Workspace.setPrinter(new LocalPrinter());
-        run();
-    }
+	@Override
+	public void runConsole() throws Exception {
+		Workspace.setPrinter(new StandardPrinter());
+		run();
+	}
+
+	@Override
+	public void runLocal() throws Exception {
+		Workspace.setPrinter(new LocalPrinter());
+		run();
+	}
 }

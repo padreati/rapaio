@@ -25,165 +25,168 @@ import java.net.Socket;
  */
 public class RapaioStudioServer implements ApplicationComponent {
 
-    public static final int DEFAULT_PORT = 56339;
-    public static final String RAPAIO_GROUP_ID_INFO = "RapaioInfo";
-    private static RapaioStudioServer instance;
+	public static final int DEFAULT_PORT = 56339;
+	public static final String RAPAIO_GROUP_ID_INFO = "RapaioInfo";
+	private static RapaioStudioServer instance;
 
-    public static RapaioStudioServer getInstance() {
-        if (instance == null) {
-            instance = new RapaioStudioServer();
-        }
-        return instance;
-    }
+	private ExtendedPrinter graphicPrinter;
+	private ExtendedPrinter textPrinter;
 
-    private ExtendedPrinter printer;
-    private ServerSocket serverSocket;
+	public static RapaioStudioServer getInstance() {
+		if (instance == null) {
+			instance = new RapaioStudioServer();
+		}
+		return instance;
+	}
 
-    private RapaioStudioServer() {
-    }
+	private ExtendedPrinter printer;
+	private ServerSocket serverSocket;
 
-    public void initComponent() {
-        try {
-            getInstance().shutdown();
-            getInstance().start();
-        } catch (Exception ex) {
-            Notifications.Bus.notify(
-                    new Notification(RAPAIO_GROUP_ID_INFO, "Error", ex.getMessage(), NotificationType.ERROR));
-        }
-    }
+	private RapaioStudioServer() {
+	}
 
-    public void disposeComponent() {
-        try {
-            getInstance().shutdown();
-        } catch (Exception ex) {
-            Notifications.Bus.notify(
-                    new Notification(RAPAIO_GROUP_ID_INFO, "Error", ex.getMessage(), NotificationType.ERROR));
-        }
-    }
+	public void initComponent() {
+		try {
+			getInstance().shutdown();
+			getInstance().start();
+		} catch (Exception ex) {
+			Notifications.Bus.notify(
+					new Notification(RAPAIO_GROUP_ID_INFO, "Error", ex.getMessage(), NotificationType.ERROR));
+		}
+	}
 
-    public void setExtendedPrinter(ExtendedPrinter printer) {
-        this.printer = printer;
-        Workspace.setPrinter(printer);
-    }
+	public void disposeComponent() {
+		try {
+			getInstance().shutdown();
+		} catch (Exception ex) {
+			Notifications.Bus.notify(
+					new Notification(RAPAIO_GROUP_ID_INFO, "Error", ex.getMessage(), NotificationType.ERROR));
+		}
+	}
 
-    @NotNull
-    public String getComponentName() {
-        return "rapaio.studio.RapaioStudioServer";
-    }
+	public void setExtendedPrinter(ExtendedPrinter printer) {
+		this.printer = printer;
+		Workspace.setPrinter(printer);
+	}
 
-    private Thread listenerThread;
+	@NotNull
+	public String getComponentName() {
+		return "rapaio.studio.RapaioStudioServer";
+	}
 
-    public void start() throws IOException {
-        listenerThread = new Thread(new Runnable() {
+	private Thread listenerThread;
 
-            @Override
-            public void run() {
-                try {
-                    serverSocket = ServerSocketFactory.getDefault().createServerSocket(DEFAULT_PORT);
-                    while (true) {
-                        try {
-                            Socket s = serverSocket.accept();
-                            if (serverSocket.isClosed()) {
-                                return;
-                            }
-                            CommandBytes cb = new ClassMarshaller().unmarshall(s.getInputStream());
+	public void start() throws IOException {
+		listenerThread = new Thread(new Runnable() {
 
-                            switch (cb.getType()) {
+			@Override
+			public void run() {
+				try {
+					serverSocket = ServerSocketFactory.getDefault().createServerSocket(DEFAULT_PORT);
+					while (true) {
+						try {
+							Socket s = serverSocket.accept();
+							if (serverSocket.isClosed()) {
+								return;
+							}
+							CommandBytes cb = new ClassMarshaller().unmarshall(s.getInputStream());
 
-                                case CONFIG:
-                                    cb = doConfig(cb);
-                                    new ClassMarshaller().marshallConfig(s.getOutputStream(), cb);
-                                    s.getOutputStream().flush();
-                                    doDraw(new ClassMarshaller().unmarshall(s.getInputStream()));
-                                    break;
+							switch (cb.getType()) {
 
-                                case REMOTE:
-                                    doRemote(cb);
-                                    break;
+								case CONFIG:
+									cb = doConfig(cb);
+									new ClassMarshaller().marshallConfig(s.getOutputStream(), cb);
+									s.getOutputStream().flush();
+									doDraw(new ClassMarshaller().unmarshall(s.getInputStream()));
+									break;
 
-                                case PRINT:
-                                    doPrint(cb);
-                                    break;
+								case REMOTE:
+									doRemote(cb);
+									break;
 
-                                case DRAW:
-                                    doDraw(cb);
-                                    break;
-                            }
+								case PRINT:
+									doPrint(cb);
+									break;
 
-                        } catch (Exception ex) {
-                            Workspace.getPrinter().error("Error running remote command", ex);
-                        }
-                    }
-                } catch (IOException ex) {
-                    Workspace.getPrinter().error("Error running remote command", ex);
-                }
-            }
+								case DRAW:
+									doDraw(cb);
+									break;
+							}
 
-            private void doPrint(CommandBytes cb) throws IOException {
-                if ("print".equals(cb.getName())) {
-                    Workspace.print(cb.getValue());
-                }
-                if ("println".equals(cb.getName())) {
-                    Workspace.println();
-                }
-                if ("code".equals(cb.getName())) {
-                    Workspace.code(cb.getValue());
-                }
-                if ("error".equals(cb.getName())) {
-                    Workspace.error(cb.getValue(), null);
-                }
-                if ("p".equals(cb.getName())) {
-                    Workspace.p(cb.getValue());
-                }
-                if ("eqn".equals(cb.getName())) {
-                    Workspace.eqn(cb.getValue());
-                }
+						} catch (Exception ex) {
+							Workspace.getPrinter().error("Error running remote command", ex);
+						}
+					}
+				} catch (IOException ex) {
+					Workspace.getPrinter().error("Error running remote command", ex);
+				}
+			}
 
-                if (cb.getName().startsWith("heading")) {
-                    int h = Integer.parseInt(cb.getName().substring("heading".length()));
-                    Workspace.heading(h, cb.getValue());
-                }
-            }
+			private void doPrint(CommandBytes cb) throws IOException {
+				if ("print".equals(cb.getName())) {
+					Workspace.print(cb.getValue());
+				}
+				if ("println".equals(cb.getName())) {
+					Workspace.println();
+				}
+				if ("code".equals(cb.getName())) {
+					Workspace.code(cb.getValue());
+				}
+				if ("error".equals(cb.getName())) {
+					Workspace.error(cb.getValue(), null);
+				}
+				if ("p".equals(cb.getName())) {
+					Workspace.p(cb.getValue());
+				}
+				if ("eqn".equals(cb.getName())) {
+					Workspace.eqn(cb.getValue());
+				}
 
-            private void doDraw(CommandBytes cb) throws IOException {
-                InputStream in = new ByteArrayInputStream(cb.getBytes());
-                final BufferedImage image = ImageIO.read(in);
-                if (printer != null)
-                    printer.setImage(image);
-            }
+				if (cb.getName().startsWith("heading")) {
+					int h = Integer.parseInt(cb.getName().substring("heading".length()));
+					Workspace.heading(h, cb.getValue());
+				}
+			}
 
-            private void doRemote(CommandBytes cb) throws IOException, InstantiationException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-                CmdClassLoader cmdClassLoader = new CmdClassLoader(cb, Thread.currentThread().getContextClassLoader());
-                Class<?> clazz = cmdClassLoader.findClass(cb.getName());
-                Object object = clazz.newInstance();
-                clazz.getMethod("run").invoke(object);
-            }
+			private void doDraw(CommandBytes cb) throws IOException {
+				InputStream in = new ByteArrayInputStream(cb.getBytes());
+				final BufferedImage image = ImageIO.read(in);
+				if (printer != null)
+					printer.setImage(image);
+			}
 
-            private CommandBytes doConfig(CommandBytes cb) throws IOException {
-                if (printer != null) {
-                    cb.setTextWidth(printer.getTextWidth());
-                    cb.setGraphicalWidth(printer.getGraphicWidth());
-                    cb.setGraphicalHeight(printer.getGraphicHeight());
-                } else {
-                    cb.setTextWidth(80);
-                    cb.setGraphicalWidth(200);
-                    cb.setGraphicalHeight(200);
-                }
-                return cb;
-            }
-        });
-        listenerThread.start();
-    }
+			private void doRemote(CommandBytes cb) throws IOException, InstantiationException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+				CmdClassLoader cmdClassLoader = new CmdClassLoader(cb, Thread.currentThread().getContextClassLoader());
+				Class<?> clazz = cmdClassLoader.findClass(cb.getName());
+				Object object = clazz.newInstance();
+				clazz.getMethod("run").invoke(object);
+			}
 
-    public void shutdown() throws IOException, InterruptedException {
-        try {
-            serverSocket.close();
-        } catch (Throwable ex) {
-        }
-        if (listenerThread != null) {
-            listenerThread.interrupt();
-            listenerThread.stop();
-            listenerThread.join(0);
-        }
-    }
+			private CommandBytes doConfig(CommandBytes cb) throws IOException {
+				if (printer != null) {
+					cb.setTextWidth(printer.getTextWidth());
+					cb.setGraphicalWidth(printer.getGraphicWidth());
+					cb.setGraphicalHeight(printer.getGraphicHeight());
+				} else {
+					cb.setTextWidth(80);
+					cb.setGraphicalWidth(200);
+					cb.setGraphicalHeight(200);
+				}
+				return cb;
+			}
+		});
+		listenerThread.start();
+	}
+
+	public void shutdown() throws IOException, InterruptedException {
+		try {
+			serverSocket.close();
+		} catch (Throwable ex) {
+		}
+		if (listenerThread != null) {
+			listenerThread.interrupt();
+			listenerThread.stop();
+			listenerThread.join(0);
+		}
+	}
 }

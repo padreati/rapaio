@@ -20,18 +20,17 @@
 package rapaio.server;
 
 /**
- *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 
 
 public interface RapaioCmd {
 
-    void runRemote();
-    
-    void runConsole();
-    
-    void runLocal();
-    
-    void run();
+	void runRemote() throws Exception;
+
+	void runConsole() throws Exception;
+
+	void runLocal() throws Exception;
+
+	void run() throws Exception;
 }
