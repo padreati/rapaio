@@ -59,6 +59,7 @@ is considered to be fully implemented and well tested.
 * Tree Regressor - accept only numerical, non-missing, has no pruning (with this constraints
 this tree is similar with CART and C45)
 * Linear Regressor - filter only numerical attributes
+* MultiLayer Perceptron - regression with sigmoid
 
 **Matrices and vectors**
 * Numeric vector operations
@@ -70,6 +71,8 @@ Feature Journal
 This journal contains info regarding the history of implementation. Basically here we can follow
 the progress of the implementation:
 
-**16-Feb-2014** - Ported matrix operations and decompositions from JAMA project to rapaio.
+**16-Jan-2014** - Ported matrix operations and decompositions from JAMA project to rapaio.
 
-**16-Feb-2014** - Implemented numeric vector operations. It follows the design from R.
+**16-Jan-2014** - Implemented numeric vector operations. It follows the design from R.
+
+**21-Jan-2014** - Implemented multilayer perceptron with sigmoid function
