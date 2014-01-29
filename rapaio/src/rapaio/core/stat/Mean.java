@@ -21,6 +21,7 @@ package rapaio.core.stat;
 
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
+import rapaio.data.VectorIterator;
 
 import static rapaio.workspace.Workspace.code;
 
@@ -33,46 +34,41 @@ import static rapaio.workspace.Workspace.code;
  */
 public final class Mean implements Summarizable {
 
-    private final Vector vector;
-    private final double value;
+	private final Vector vector;
+	private final double value;
 
-    public Mean(Vector vector) {
-        this.vector = vector;
-        this.value = compute();
-    }
+	public Mean(Vector vector) {
+		this.vector = vector;
+		this.value = compute();
+	}
 
-    private double compute() {
+	private double compute() {
+		double sum = 0.;
+		double count = 0;
+		VectorIterator it = vector.getIterator(true);
+		while (it.next()) {
+			sum += it.getValue();
+			count++;
+		}
+		if (count == 0) {
+			return Double.NaN;
+		}
+		sum /= count;
+		double t = 0;
+		it.reset();
+		while (it.next()) {
+			t += it.getValue() - sum;
+		}
+		sum += t / count;
+		return sum;
+	}
 
-        double sum = 0.;
-        double count = 0;
-        for (int i = 0; i < vector.rowCount(); i++) {
-            if (vector.isMissing(i)) {
-                continue;
-            }
-            sum += vector.value(i);
-            count++;
-        }
-        if (count == 0) {
-            return Double.NaN;
-        }
-        sum /= count;
-        double t = 0;
-        for (int i = 0; i < vector.rowCount(); i++) {
-            if (vector.isMissing(i)) {
-                continue;
-            }
-            t += vector.value(i) - sum;
-        }
-        sum += t / count;
-        return sum;
-    }
+	public double getValue() {
+		return value;
+	}
 
-    public double getValue() {
-        return value;
-    }
-
-    @Override
-    public void summary() {
-        code(String.format("> mean\n%.10f", value));
-    }
+	@Override
+	public void summary() {
+		code(String.format("> mean\n%.10f", value));
+	}
 }

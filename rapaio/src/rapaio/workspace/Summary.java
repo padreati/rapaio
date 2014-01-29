@@ -38,7 +38,7 @@ import static rapaio.workspace.Workspace.getPrinter;
 public class Summary {
 
 	public static void summary(Frame df) {
-		summary(df, df.colNames());
+		summary(df, df.getColNames());
 	}
 
 	public static void summary(Frame df, String... names) {
@@ -50,7 +50,7 @@ public class Summary {
 			code(buffer.toString());
 			return;
 		}
-		buffer.append(String.format("rowCount: %d, colCount: %d%n", df.rowCount(), df.colCount()));
+		buffer.append(String.format("getRowCount: %d, getColCount: %d%n", df.getRowCount(), df.getColCount()));
 
 		String[][] first = new String[names.length][7];
 		String[][] second = new String[names.length][7];
@@ -62,16 +62,16 @@ public class Summary {
 		}
 
 		for (int k = 0; k < names.length; k++) {
-			int i = df.colIndex(names[k]);
+			int i = df.getColIndex(names[k]);
 
-			Vector v = df.col(i);
-			if (v.type().isNumeric()) {
+			Vector v = df.getCol(i);
+			if (v.getType().isNumeric()) {
 				double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
 				double[] perc = new Quantiles(v, p).getValues();
 				double mean = new Mean(v).getValue();
 
 				int nas = 0;
-				for (int j = 0; j < df.rowCount(); j++) {
+				for (int j = 0; j < df.getRowCount(); j++) {
 					if (v.isMissing(j)) {
 						nas++;
 					}
@@ -97,12 +97,12 @@ public class Summary {
 				}
 			}
 
-			if (v.type().isNominal()) {
-				int[] hits = new int[v.dictionary().length];
-				int[] indexes = new int[v.dictionary().length];
-				for (int j = 0; j < df.rowCount(); j++) {
-					hits[v.index(j)]++;
-					indexes[v.index(j)] = j;
+			if (v.getType().isNominal()) {
+				int[] hits = new int[v.getDictionary().length];
+				int[] indexes = new int[v.getDictionary().length];
+				for (int j = 0; j < df.getRowCount(); j++) {
+					hits[v.getIndex(j)]++;
+					indexes[v.getIndex(j)] = j;
 				}
 				int[] tophit = new int[6];
 				int[] topindex = new int[6];
@@ -122,18 +122,18 @@ public class Summary {
 					}
 				}
 				int nas = 0;
-				for (int j = 0; j < df.rowCount(); j++) {
+				for (int j = 0; j < df.getRowCount(); j++) {
 					if (v.isMissing(j)) {
 						nas++;
 					}
 				}
 
-				int other = df.rowCount();
+				int other = df.getRowCount();
 				int pos = 0;
 				for (int j = 0; j < 6; j++) {
 					if (tophit[j] != 0) {
 						other -= tophit[j];
-						first[k][j] = v.label(indexes[topindex[j]]);
+						first[k][j] = v.getLabel(indexes[topindex[j]]);
 						second[k][j] = String.valueOf(tophit[j]);
 						pos++;
 					}
@@ -244,13 +244,13 @@ public class Summary {
 			second[i] = " ";
 		}
 
-		if (v.type().isNumeric()) {
+		if (v.getType().isNumeric()) {
 			double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
 			double[] perc = new Quantiles(v, p).getValues();
 			double mean = new Mean(v).getValue();
 
 			int nas = 0;
-			for (int j = 0; j < v.rowCount(); j++) {
+			for (int j = 0; j < v.getRowCount(); j++) {
 				if (v.isMissing(j)) {
 					nas++;
 				}
@@ -276,12 +276,12 @@ public class Summary {
 			}
 		}
 
-		if (v.type().isNominal()) {
-			int[] hits = new int[v.rowCount() + 1];
-			int[] indexes = new int[v.rowCount() + 1];
-			for (int j = 0; j < v.rowCount(); j++) {
-				hits[v.index(j)]++;
-				indexes[v.index(j)] = j;
+		if (v.getType().isNominal()) {
+			int[] hits = new int[v.getRowCount() + 1];
+			int[] indexes = new int[v.getRowCount() + 1];
+			for (int j = 0; j < v.getRowCount(); j++) {
+				hits[v.getIndex(j)]++;
+				indexes[v.getIndex(j)] = j;
 			}
 			int[] tophit = new int[6];
 			int[] topindex = new int[6];
@@ -301,18 +301,18 @@ public class Summary {
 				}
 			}
 			int nas = 0;
-			for (int j = 0; j < v.rowCount(); j++) {
+			for (int j = 0; j < v.getRowCount(); j++) {
 				if (v.isMissing(j)) {
 					nas++;
 				}
 			}
 
-			int other = v.rowCount();
+			int other = v.getRowCount();
 			int pos = 0;
 			for (int j = 0; j < 6; j++) {
 				if (tophit[j] != 0) {
 					other -= tophit[j];
-					first[j] = v.label(indexes[topindex[j]]);
+					first[j] = v.getLabel(indexes[topindex[j]]);
 					second[j] = String.valueOf(tophit[j]);
 					pos++;
 				}
@@ -365,26 +365,26 @@ public class Summary {
 	public static void names(Frame df) {
 		StringBuilder buffer = new StringBuilder();
 		buffer.append(String.format(">>names(frame)\n"));
-		for (int i = 0; i < df.colCount(); i++) {
-			buffer.append(df.colNames()[i]).append("\n");
+		for (int i = 0; i < df.getColCount(); i++) {
+			buffer.append(df.getColNames()[i]).append("\n");
 		}
 		code(buffer.toString());
 	}
 
 	public static void contingencyTable(Vector a, Vector b) {
-		Vector[] vectors = new Vector[b.rowCount() + 1];
+		Vector[] vectors = new Vector[b.getRowCount() + 1];
 
 		// learn first column
 		HashSet<String> labels = new HashSet<>();
-		for (int i = 0; i < a.rowCount(); i++) {
-			labels.add(a.label(i));
+		for (int i = 0; i < a.getRowCount(); i++) {
+			labels.add(a.getLabel(i));
 		}
 		labels.add("Totals");
-		vectors[0] = new Nominal(a.rowCount() + 1, labels);
-		for (int i = 0; i < a.dictionary().length; i++) {
-			vectors[0].setLabel(i, a.dictionary()[i]);
+		vectors[0] = new Nominal(a.getRowCount() + 1, labels);
+		for (int i = 0; i < a.getDictionary().length; i++) {
+			vectors[0].setLabel(i, a.getDictionary()[i]);
 		}
-		vectors[0].setLabel(a.rowCount(), "Totals");
+		vectors[0].setLabel(a.getRowCount(), "Totals");
 
 		// learn numerical columns
 	}
@@ -394,41 +394,41 @@ public class Summary {
 	}
 
 	public static void lines(Vector v) {
-		head(v.rowCount(), new Vector[]{v}, new String[]{""});
+		head(v.getRowCount(), new Vector[]{v}, new String[]{""});
 	}
 
 	public static void lines(Frame df) {
-		Vector[] vectors = new Vector[df.colCount()];
-		String[] names = df.colNames();
+		Vector[] vectors = new Vector[df.getColCount()];
+		String[] names = df.getColNames();
 		for (int i = 0; i < vectors.length; i++) {
-			vectors[i] = df.col(i);
+			vectors[i] = df.getCol(i);
 		}
-		head(df.rowCount(), vectors, names);
+		head(df.getRowCount(), vectors, names);
 	}
 
 	public static void head(int lines, Frame df) {
-		Vector[] vectors = new Vector[df.colCount()];
-		String[] names = df.colNames();
+		Vector[] vectors = new Vector[df.getColCount()];
+		String[] names = df.getColNames();
 		for (int i = 0; i < vectors.length; i++) {
-			vectors[i] = df.col(i);
+			vectors[i] = df.getCol(i);
 		}
 		head(lines, vectors, names);
 	}
 
 	public static void head(int lines, Vector[] vectors, String[] names) {
 		if (lines == -1) {
-			lines = vectors[0].rowCount();
+			lines = vectors[0].getRowCount();
 		}
 
 		int[] max = new int[vectors.length];
 		for (int i = 0; i < vectors.length; i++) {
 			max[i] = names[i].length() + 1;
-			for (int j = 0; j < vectors[i].rowCount(); j++) {
-				if (vectors[i].type().isNominal() && max[i] < vectors[i].label(j).length()) {
-					max[i] = vectors[i].label(j).length();
+			for (int j = 0; j < vectors[i].getRowCount(); j++) {
+				if (vectors[i].getType().isNominal() && max[i] < vectors[i].getLabel(j).length()) {
+					max[i] = vectors[i].getLabel(j).length();
 				}
-				if (vectors[i].type().isNumeric()) {
-					String value = String.format("%s", String.format("%.10f", vectors[i].value(j)));
+				if (vectors[i].getType().isNumeric()) {
+					String value = String.format("%s", String.format("%.10f", vectors[i].getValue(j)));
 					if (max[i] < value.length()) {
 						max[i] = value.length();
 					}
@@ -459,10 +459,10 @@ public class Summary {
 			for (int i = 0; i < lines; i++) {
 				for (int j = start; j <= pos; j++) {
 					String value;
-					if (vectors[j].type().isNominal()) {
-						value = String.format("%" + max[j] + "s", vectors[j].label(i));
+					if (vectors[j].getType().isNominal()) {
+						value = String.format("%" + max[j] + "s", vectors[j].getLabel(i));
 					} else {
-						value = String.format("%" + max[j] + "s", String.format("%.10f", vectors[j].value(i)));
+						value = String.format("%" + max[j] + "s", String.format("%.10f", vectors[j].getValue(i)));
 					}
 					sb.append(value).append(" ");
 				}

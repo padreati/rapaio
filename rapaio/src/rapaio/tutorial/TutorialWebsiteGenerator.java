@@ -58,7 +58,7 @@ public class TutorialWebsiteGenerator {
 		File pageRoot = new File(webRoot, "pages");
 
 		deleteRoot(pageRoot);
-		deleteRoot(new File(webRoot, "index.html"));
+		deleteRoot(new File(webRoot, "getIndex.html"));
 
 		webRoot.mkdir();
 		pageRoot.mkdir();
@@ -105,7 +105,7 @@ public class TutorialWebsiteGenerator {
 			}
 			for (TutorialPage page : pages.get(categ)) {
 				File pageFile = new File(categoryRoot, page.getPageName() + ".html");
-				setPrinter(new HTMLPrinter(pageFile.getAbsolutePath(), page.getPageTitle(), "<a href=\"../../index.html\">Back</a>"));
+				setPrinter(new HTMLPrinter(pageFile.getAbsolutePath(), page.getPageTitle(), "<a href=\"../../getIndex.html\">Back</a>"));
 				preparePrinter();
 				page.render();
 				closePrinter();
@@ -114,7 +114,7 @@ public class TutorialWebsiteGenerator {
 	}
 
 	private static void makeIndexPage(File webRoot, TreeMap<String, List<TutorialPage>> pages) {
-		File indexPage = new File(webRoot, "index.html");
+		File indexPage = new File(webRoot, "getIndex.html");
 		setPrinter(new HTMLPrinter(indexPage.getAbsolutePath(), "Rapaio Tutorials"));
 		preparePrinter();
 
@@ -128,7 +128,7 @@ public class TutorialWebsiteGenerator {
 				+ "data mining and machine learning toolbox.");
 
 		p("Most of the tutorials will be strictly oriented on a small "
-				+ "type of facility Rapaio offers. As a sample how one ca read "
+				+ "getType of facility Rapaio offers. As a sample how one ca read "
 				+ "and write data with CVSPersistence. Other tutorials will be oriented "
 				+ "on the pieces of output facilities useful in data visualization, "
 				+ "either as text or as graphical images. ");
@@ -136,7 +136,7 @@ public class TutorialWebsiteGenerator {
 		p("There are also some tutorials which tries to do an exploration "
 				+ "analysis, trying to put together the small pieces into something "
 				+ "fluent and understandable as a whole. However, So, these pages does not "
-				+ "contain a full exploration analysis or other type of analysis. "
+				+ "contain a full exploration analysis or other getType of analysis. "
 				+ "Its purpose is to illustrate how Rapaio toolbox could be used. "
 				+ "They are not a golden-standard for how an exploration must be conduct.");
 

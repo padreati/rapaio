@@ -33,20 +33,20 @@ import java.net.URISyntaxException;
  */
 public abstract class CoreStatTestUtil {
 
-    private Frame df;
+	private Frame df;
 
-    public CoreStatTestUtil() throws IOException, URISyntaxException {
-        CsvPersistence p = new CsvPersistence();
-        p.setHasHeader(false);
-        df = p.read(getClass(), "core_stat.csv");
-        Vector[] vectors = new Vector[df.colCount()];
-        for (int i = 0; i < vectors.length; i++) {
-            vectors[i] = BaseFilters.toNumeric(df.col(i));
-        }
-        df = new SolidFrame(df.rowCount(), vectors, df.colNames());
-    }
+	public CoreStatTestUtil() throws IOException, URISyntaxException {
+		CsvPersistence p = new CsvPersistence();
+		p.setHasHeader(false);
+		df = p.read(getClass(), "core_stat.csv");
+		Vector[] vectors = new Vector[df.getColCount()];
+		for (int i = 0; i < vectors.length; i++) {
+			vectors[i] = BaseFilters.toNumeric(df.getCol(i));
+		}
+		df = new SolidFrame(df.getRowCount(), vectors, df.getColNames());
+	}
 
-    public Frame getDataFrame() {
-        return df;
-    }
+	public Frame getDataFrame() {
+		return df;
+	}
 }

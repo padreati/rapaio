@@ -93,9 +93,9 @@ public class HistogramDensityTutorial implements TutorialPage {
 
 		p("We draw histograms with Rapaio toolbox in the following way:");
 
-		code("        draw(new Histogram(df.col(\"Father\")));\n");
+		code("        draw(new Histogram(df.getCol(\"Father\")));\n");
 
-		draw(new Plot().add(new Histogram(df.col("Father"))));
+		draw(new Plot().add(new Histogram(df.getCol("Father"))));
 
 		p("The height of a rectangle is also equal to the frequency density of "
 				+ "the interval, i.e., the frequency divided by the width of the interval. "
@@ -107,8 +107,8 @@ public class HistogramDensityTutorial implements TutorialPage {
 
 		p("One can change the number of bins. ");
 
-		code("        draw(new Plot().add(new Histogram(df.col(\"Father\"), 100, false)));\n");
-		draw(new Plot().add(new Histogram(df.col("Father"), 100, false)));
+		code("        draw(new Plot().add(new Histogram(df.getCol(\"Father\"), 100, false)));\n");
+		draw(new Plot().add(new Histogram(df.getCol("Father"), 100, false)));
 
 		p("Note that on the vertical axis we found the count of the elements which "
 				+ "are held by the bins that are displayed. We can "
@@ -116,8 +116,8 @@ public class HistogramDensityTutorial implements TutorialPage {
 				+ "densities which makes the total area under curve to be 1. "
 				+ "That feature is a key property of a probability density function, also.");
 
-		p("        draw(new Plot().add(new Histogram(df.col(\"Father\"), 30, true)));\n");
-		draw(new Plot().add(new Histogram(df.col("Father"), 30, true)));
+		p("        draw(new Plot().add(new Histogram(df.getCol(\"Father\"), 30, true)));\n");
+		draw(new Plot().add(new Histogram(df.getCol("Father"), 30, true)));
 
 		p("The histogram is useful but have a weak point. Its weak point lies "
 				+ "into it's flexibility given by the number of bins. "
@@ -138,13 +138,13 @@ public class HistogramDensityTutorial implements TutorialPage {
 		p("One can draw also the kernel density approximation, over "
 				+ "a histogram or as a separate plot.");
 
-		code("        final Vector col = df.col(\"Father\");\n"
+		code("        final Vector getCol = df.getCol(\"Father\");\n"
 				+ "        draw(new Plot()\n"
-				+ "                .add(new HistogramBars(col).setColorIndex(new IndexVector(1, 255, 1)))\n"
-				+ "                .add(new DensityLine(col)));\n"
+				+ "                .add(new HistogramBars(getCol).setColorIndex(new IndexVector(1, 255, 1)))\n"
+				+ "                .add(new DensityLine(getCol)));\n"
 				+ "");
 
-		final Vector col = df.col("Father");
+		final Vector col = df.getCol("Father");
 		draw(new Plot()
 				.add(new Histogram(col).setColorIndex(Vectors.newSeq(1, 255, 1)))
 				.add(new DensityLine(col)));
@@ -163,7 +163,7 @@ public class HistogramDensityTutorial implements TutorialPage {
 				+ "kernels and with bandwidth approximated by Silverman's rule "
 				+ "of thumb.");
 
-		p("However one can use a different value for bandwidth in order to obtain "
+		p("However one can use a different getValue for bandwidth in order to obtain "
 				+ "a smooth or less smooth approximation of the density function.");
 
 		draw(new Plot()
@@ -217,8 +217,8 @@ public class HistogramDensityTutorial implements TutorialPage {
 		p("Blue line represents density approximation of father's heights, "
 				+ "red line represents density approximation of son's heights.");
 
-		draw(new Plot().add(new DensityLine(df.col("Father")).setColorIndex(6))
-				.add(new DensityLine(df.col("Son")).setColorIndex(9))
+		draw(new Plot().add(new DensityLine(df.getCol("Father")).setColorIndex(6))
+				.add(new DensityLine(df.getCol("Son")).setColorIndex(9))
 				.setYRange(0, 0.18)
 				.setXRange(55, 80));
 

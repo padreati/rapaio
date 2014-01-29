@@ -23,8 +23,8 @@ public class LinearModelRegressor extends AbstractRegressor {
 	public void learn(Frame df, List<Double> weights, String targetColName) {
 		predictors.clear();
 		this.targetColName = targetColName;
-		for (String colName : df.colNames()) {
-			if (!targetColName.contains(colName) && df.col(colName).type().isNumeric()) {
+		for (String colName : df.getColNames()) {
+			if (!targetColName.contains(colName) && df.getCol(colName).getType().isNumeric()) {
 				predictors.add(colName);
 			}
 		}
@@ -45,19 +45,19 @@ public class LinearModelRegressor extends AbstractRegressor {
 	}
 
 	private Vector buildResidual(Matrix actual, Vector predict) {
-		Vector result = Vectors.newNum(predict.rowCount(), 0);
-		for (int i = 0; i < result.rowCount(); i++) {
-			result.setValue(i, actual.get(i, 0) - predict.value(i));
+		Vector result = Vectors.newNum(predict.getRowCount(), 0);
+		for (int i = 0; i < result.getRowCount(); i++) {
+			result.setValue(i, actual.get(i, 0) - predict.getValue(i));
 		}
 		return result;
 	}
 
 	private Vector buildFit(Frame df) {
-		Vector result = Vectors.newNum(df.rowCount(), 0);
-		for (int i = 0; i < df.rowCount(); i++) {
+		Vector result = Vectors.newNum(df.getRowCount(), 0);
+		for (int i = 0; i < df.getRowCount(); i++) {
 			double acc = 0;
 			for (int k = 0; k < predictors.size(); k++) {
-				acc += coeff.value(k, "Coeff") * df.value(i, predictors.get(k));
+				acc += coeff.getValue(k, "Coeff") * df.getValue(i, predictors.get(k));
 			}
 			result.setValue(i, acc);
 		}
@@ -66,7 +66,7 @@ public class LinearModelRegressor extends AbstractRegressor {
 
 	private Matrix buildY(Frame df) {
 		Numeric[] vectors = new Numeric[1];
-		vectors[0] = (Numeric) df.col(targetColName);
+		vectors[0] = (Numeric) df.getCol(targetColName);
 		return new Matrix(vectors);
 	}
 
@@ -74,7 +74,7 @@ public class LinearModelRegressor extends AbstractRegressor {
 		Numeric[] vectors = new Numeric[predictors.size()];
 		int pos = 0;
 		for (String colName : predictors) {
-			vectors[pos++] = (Numeric) df.col(colName);
+			vectors[pos++] = (Numeric) df.getCol(colName);
 		}
 		return new Matrix(vectors);
 	}

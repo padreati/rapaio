@@ -62,23 +62,23 @@ public class DensityLine extends PlotComponent {
 		double ymin = 0;
 		double ymax = Double.NaN;
 
-		for (int i = 0; i < vector.rowCount(); i++) {
+		for (int i = 0; i < vector.getRowCount(); i++) {
 			if (vector.isMissing(i))
 				continue;
 			if (xmin != xmin) {
-				xmin = kde.getKernel().getMinValue(vector.value(i), bandwidth);
+				xmin = kde.getKernel().getMinValue(vector.getValue(i), bandwidth);
 			} else {
-				xmin = MathBase.min(xmin, kde.getKernel().getMinValue(vector.value(i), bandwidth));
+				xmin = MathBase.min(xmin, kde.getKernel().getMinValue(vector.getValue(i), bandwidth));
 			}
 			if (xmax != xmax) {
-				xmax = kde.getKernel().getMaxValue(vector.value(i), bandwidth);
+				xmax = kde.getKernel().getMaxValue(vector.getValue(i), bandwidth);
 			} else {
-				xmax = MathBase.min(xmax, kde.getKernel().getMaxValue(vector.value(i), bandwidth));
+				xmax = MathBase.min(xmax, kde.getKernel().getMaxValue(vector.getValue(i), bandwidth));
 			}
 			if (ymax != ymax) {
-				ymax = kde.getPdfFunction().eval(vector.value(i));
+				ymax = kde.getPdfFunction().eval(vector.getValue(i));
 			} else {
-				ymax = MathBase.min(ymax, kde.getPdfFunction().eval(vector.value(i)));
+				ymax = MathBase.min(ymax, kde.getPdfFunction().eval(vector.getValue(i)));
 			}
 		}
 		// give some space
@@ -98,20 +98,20 @@ public class DensityLine extends PlotComponent {
 		Vector x = new Numeric(points + 1);
 		Vector y = new Numeric(points + 1);
 		double xstep = (range.getX2() - range.getX1()) / points;
-		for (int i = 0; i < x.rowCount(); i++) {
+		for (int i = 0; i < x.getRowCount(); i++) {
 			x.setValue(i, range.getX1() + i * xstep);
-			y.setValue(i, kde.getPdfFunction().eval(x.value(i)));
+			y.setValue(i, kde.getPdfFunction().eval(x.getValue(i)));
 		}
 
-		for (int i = 1; i < x.rowCount(); i++) {
-			if (range.contains(x.value(i - 1), y.value(i - 1)) && range.contains(x.value(i), y.value(i))) {
+		for (int i = 1; i < x.getRowCount(); i++) {
+			if (range.contains(x.getValue(i - 1), y.getValue(i - 1)) && range.contains(x.getValue(i), y.getValue(i))) {
 				g2d.setColor(getColor(i));
 				g2d.setStroke(new BasicStroke(getLwd()));
 				g2d.draw(new Line2D.Double(
-						getParent().xscale(x.value(i - 1)),
-						getParent().yscale(y.value(i - 1)),
-						getParent().xscale(x.value(i)),
-						getParent().yscale(y.value(i))));
+						getParent().xscale(x.getValue(i - 1)),
+						getParent().yscale(y.getValue(i - 1)),
+						getParent().xscale(x.getValue(i)),
+						getParent().yscale(y.getValue(i))));
 
 			}
 		}

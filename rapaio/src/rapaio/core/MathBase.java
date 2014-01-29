@@ -30,20 +30,20 @@ import rapaio.distributions.Normal;
 public class MathBase {
 
 	/**
-	 * The {@code double} value that is closer than any other to
+	 * The {@code double} getValue that is closer than any other to
 	 * <i>pi</i>, the ratio of the circumference of a circle to its
 	 * diameter.
 	 */
 	public static final double PI = Math.PI;
 
 	/**
-	 * The {@code double} value that is closer than any other to
+	 * The {@code double} getValue that is closer than any other to
 	 * <i>e</i>, the base of the natural logarithms.
 	 */
 	public static final double E = Math.E;
 
 	/**
-	 * Returns the absolute value of a {@code double} value.
+	 * Returns the absolute getValue of a {@code double} getValue.
 	 * If the argument is not negative, the argument is returned.
 	 * If the argument is negative, the negation of the argument is returned.
 	 * Special cases:
@@ -51,11 +51,11 @@ public class MathBase {
 	 * is positive zero.
 	 * <li>If the argument is infinite, the result is positive infinity.
 	 * <li>If the argument is NaN, the result is NaN.</ul>
-	 * In other words, the result is the same as the value of the expression:
+	 * In other words, the result is the same as the getValue of the expression:
 	 * <p>{@code Double.longBitsToDouble((Double.doubleToLongBits(a)<<1)>>>1)}
 	 *
-	 * @param x the argument whose absolute value is to be determined
-	 * @return the absolute value of the argument.
+	 * @param x the argument whose absolute getValue is to be determined
+	 * @return the absolute getValue of the argument.
 	 */
 	public static double abs(double x) {
 		return Math.abs(x);
@@ -73,7 +73,7 @@ public class MathBase {
 	 * result is the same as the argument.
 	 * </ul>
 	 *
-	 * @param x the floating-point value whose signum is to be returned
+	 * @param x the floating-point getValue whose signum is to be returned
 	 * @return the signum function of the argument
 	 */
 	public static double signum(double x) {
@@ -91,7 +91,7 @@ public class MathBase {
 	}
 
 	/**
-	 * Returns the value of the first argument raised to the power of the
+	 * Returns the getValue of the first argument raised to the power of the
 	 * second argument.
 	 *
 	 * @param x   first argument, number raised to power
@@ -114,20 +114,20 @@ public class MathBase {
 
 	/**
 	 * Returns the natural logarithm (base <i>e</i>) of a {@code double}
-	 * value.
+	 * getValue.
 	 *
 	 * @param x the number from which we take natural logarithm
-	 * @return the natural logarithm of input value
+	 * @return the natural logarithm of input getValue
 	 */
 	public static double log(double x) {
 		return Math.log(x);
 	}
 
 	/**
-	 * Returns the base 2 logarithm of a {@code double} value.
+	 * Returns the base 2 logarithm of a {@code double} getValue.
 	 *
 	 * @param x the number from which we take base 2 logarithm
-	 * @return the base 2 logarithm of input value
+	 * @return the base 2 logarithm of input getValue
 	 */
 	public static double log2(double x) {
 		return Math.log(x) / log(2);
@@ -135,7 +135,7 @@ public class MathBase {
 
 	/**
 	 * Returns the smallest (closest to negative infinity)
-	 * {@code double} value that is greater than or equal to the
+	 * {@code double} getValue that is greater than or equal to the
 	 * argument and is equal to a mathematical integer.
 	 *
 	 * @param x number from which we take ceil
@@ -147,7 +147,7 @@ public class MathBase {
 
 	/**
 	 * Returns the largest (closest to positive infinity)
-	 * {@code double} value that is less than or equal to the
+	 * {@code double} getValue that is less than or equal to the
 	 * argument and is equal to a mathematical integer.
 	 *
 	 * @param x number from which we take floor
@@ -158,10 +158,10 @@ public class MathBase {
 	}
 
 	/**
-	 * Returns smallest value from two {@code double} values.
+	 * Returns smallest getValue from two {@code double} values.
 	 *
-	 * @param x first value
-	 * @param y second value
+	 * @param x first getValue
+	 * @param y second getValue
 	 * @return min function of x and y
 	 */
 	public static double min(double x, double y) {
@@ -169,10 +169,10 @@ public class MathBase {
 	}
 
 	/**
-	 * Returns biggest value from two {@code int} values.
+	 * Returns biggest getValue from two {@code int} values.
 	 *
-	 * @param x first value
-	 * @param y second value
+	 * @param x first getValue
+	 * @param y second getValue
 	 * @return min function of x and y
 	 */
 	public static int max(int x, int y) {
@@ -180,10 +180,10 @@ public class MathBase {
 	}
 
 	/**
-	 * Returns biggest value from two {@code double} values.
+	 * Returns biggest getValue from two {@code double} values.
 	 *
-	 * @param x first value
-	 * @param y second value
+	 * @param x first getValue
+	 * @param y second getValue
 	 * @return min function of x and y
 	 */
 	public static double max(double x, double y) {
@@ -191,10 +191,10 @@ public class MathBase {
 	}
 
 	/**
-	 * Returns {@code boolean} value indicating if the number if finite and different than {@code Double.NaN}.
+	 * Returns {@code boolean} getValue indicating if the number if finite and different than {@code Double.NaN}.
 	 * <p/>
 	 * This function is used to check if a computation can produce finite results or not.
-	 * Another situation where is useful is when we test for a default numeric value which is usually set to {@code Double.NaN}.
+	 * Another situation where is useful is when we test for a default numeric getValue which is usually set to {@code Double.NaN}.
 	 *
 	 * @param x the number which needs to be verified
 	 * @return true if the number is finite and different than {@code Double.NaN}
@@ -313,7 +313,7 @@ public class MathBase {
 		}
 
         /*
-         * purge off 1 and 2
+		 * purge off 1 and 2
          */
 		if ((((ix - 0x3ff00000) | lx) == 0) || (((ix - 0x40000000) | lx) == 0)) {
 			r = 0;
@@ -420,7 +420,7 @@ public class MathBase {
 	}
 
 	/**
-	 * Error function of a {@code double} value.
+	 * Error function of a {@code double} getValue.
 	 * <p/>
 	 * erf(x) = 2 * cdf(x sqrt(2)) -1
 	 * <p/>
@@ -436,7 +436,7 @@ public class MathBase {
 	}
 
 	/**
-	 * Inverse error function of a {@code double} value.
+	 * Inverse error function of a {@code double} getValue.
 	 * <p/>
 	 * inverf(x) = invcdf(x/2+1/2)/sqrt(2)
 	 * <p/>
@@ -452,7 +452,7 @@ public class MathBase {
 	}
 
 	/**
-	 * Complementary error function of a {@code double} value.
+	 * Complementary error function of a {@code double} getValue.
 	 * <p/>
 	 * erfc(x) = 1 - erf(x)
 	 * <p/>
@@ -466,7 +466,7 @@ public class MathBase {
 	}
 
 	/**
-	 * Inverse of complementary error function of a {@code double} value.
+	 * Inverse of complementary error function of a {@code double} getValue.
 	 * <p/>
 	 * inverfc(x) = invcdf(x/2)/-sqrt(2)
 	 * <p/>
@@ -486,8 +486,8 @@ public class MathBase {
 	 * <p/>
 	 * http://en.wikipedia.org/wiki/Beta_function
 	 *
-	 * @param z first argument value >= 0
-	 * @param w second argument value >= 0
+	 * @param z first argument getValue >= 0
+	 * @param w second argument getValue >= 0
 	 * @return beta function of z and w
 	 */
 	public static double beta(double z, double w) {
@@ -499,8 +499,8 @@ public class MathBase {
 	 * <p/>
 	 * http://en.wikipedia.org/wiki/Beta_function
 	 *
-	 * @param z first argument value >= 0
-	 * @param w second argument value >= 0
+	 * @param z first argument getValue >= 0
+	 * @param w second argument getValue >= 0
 	 * @return lnBeta function of z and w
 	 */
 	public static double lnBeta(double z, double w) {
@@ -511,9 +511,9 @@ public class MathBase {
 	 * Computes the regularized incomplete beta function, I<sub>x</sub>(a, b).
 	 * The result of which is always in the range [0, 1]
 	 *
-	 * @param x any value in the range [0, 1]
-	 * @param a any value >= 0
-	 * @param b any value >= 0
+	 * @param x any getValue in the range [0, 1]
+	 * @param a any getValue >= 0
+	 * @param b any getValue >= 0
 	 * @return the result in a range of [0,1]
 	 */
 	public static double betaIncReg(double x, double a, double b) {
@@ -598,18 +598,18 @@ public class MathBase {
 	/**
 	 * Computes the inverse of the incomplete beta function,
 	 * I<sub>p</sub><sup>-1</sup>(a,b), such that {@link #betaIncReg(double, double, double) I<sub>x</sub>(a, b)
-	 * } = <tt>p</tt>. The returned value, x, will always be in the range [0,1].
+	 * } = <tt>p</tt>. The returned getValue, x, will always be in the range [0,1].
 	 * The input <tt>p</tt>, must also be in the range [0,1].
 	 *
-	 * @param p any value in the range [0,1]
-	 * @param a any value >= 0
-	 * @param b any value >= 0
-	 * @return the value x, such that {@link #betaIncReg(double, double, double) I<sub>x</sub>(a, b)
+	 * @param p any getValue in the range [0,1]
+	 * @param a any getValue >= 0
+	 * @param b any getValue >= 0
+	 * @return the getValue x, such that {@link #betaIncReg(double, double, double) I<sub>x</sub>(a, b)
 	 * } will return p.
 	 */
 	public static double invBetaIncReg(double p, double a, double b) {
 		if (p < 0 || p > 1) {
-			throw new ArithmeticException("The value p must be in the range [0,1], not" + p);
+			throw new ArithmeticException("The getValue p must be in the range [0,1], not" + p);
 		}
 
 		double eps = 1e-15;
@@ -646,7 +646,7 @@ public class MathBase {
 				fx2 = fx4;
 			} else if (fx1 * fx4 < 0) {
 				dif = abs(x4 - x2);
-				if (dif <= halfEps)//WE are no longer updating, return the value
+				if (dif <= halfEps)//WE are no longer updating, return the getValue
 				{
 					return x4;
 				}
@@ -654,7 +654,7 @@ public class MathBase {
 				fx2 = fx4;
 			} else {
 				dif = abs(x4 - x1);
-				if (dif <= halfEps)//WE are no longer updating, return the value
+				if (dif <= halfEps)//WE are no longer updating, return the getValue
 				{
 					return x4;
 				}

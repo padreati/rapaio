@@ -119,27 +119,27 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
 	@Override
 	public void learn(final Frame df, List<Double> weights, final String classColName) {
 		long start = System.currentTimeMillis();
-		for (int i = 0; i < df.rowCount(); i++) {
-			if (df.col(classColName).isMissing(i)) {
+		for (int i = 0; i < df.getRowCount(); i++) {
+			if (df.getCol(classColName).isMissing(i)) {
 				throw new IllegalArgumentException("Not allowed missing classes");
 			}
 		}
 
 		int mcols2 = mcols;
-		if (mcols2 > df.colCount() - 1) {
-			mcols2 = df.colCount() - 1;
+		if (mcols2 > df.getColCount() - 1) {
+			mcols2 = df.getColCount() - 1;
 		}
 		if (mcols2 < 1) {
-			mcols2 = ((int) log2(df.colCount())) + 1;
+			mcols2 = ((int) log2(df.getColCount())) + 1;
 		}
 
 		this.colSelector = new RandomColSelector(df, new ColRange(classColName), mcols2);
 
 		this.classColName = classColName;
-		this.dict = df.col(classColName).dictionary();
-		this.giniImportanceNames = df.colNames();
-		this.giniImportanceValue = new double[df.colNames().length];
-		this.giniImportanceCount = new double[df.colNames().length];
+		this.dict = df.getCol(classColName).getDictionary();
+		this.giniImportanceNames = df.getColNames();
+		this.giniImportanceValue = new double[df.getColNames().length];
+		this.giniImportanceCount = new double[df.getColNames().length];
 		trees.clear();
 
 		oobError = computeOob ? 0 : Double.NaN;
@@ -186,16 +186,16 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
 	}
 
 	private void setupOobContainer(Frame df) {
-		oobFreq = new int[df.sourceFrame().rowCount()][dict.length];
+		oobFreq = new int[df.sourceFrame().getRowCount()][dict.length];
 	}
 
 	private void addOob(Frame source, Frame bootstrap, Classifier tree) {
 		Frame delta = RowFilters.delta(source, bootstrap);
 		tree.predict(delta);
 		Vector predict = tree.getPrediction();
-		for (int i = 0; i < delta.rowCount(); i++) {
-			int rowId = delta.rowId(i);
-			oobFreq[rowId][predict.index(i)]++;
+		for (int i = 0; i < delta.getRowCount(); i++) {
+			int rowId = delta.getRowId(i);
+			oobFreq[rowId][predict.getIndex(i)]++;
 		}
 	}
 
@@ -203,7 +203,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
 		double total = 0;
 		double count = 0;
 		int[] indexes = new int[dict.length];
-		for (int i = 0; i < df.rowCount(); i++) {
+		for (int i = 0; i < df.getRowCount(); i++) {
 			int len = 1;
 			indexes[0] = 1;
 			for (int j = 1; j < dict.length; j++) {
@@ -221,7 +221,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
 			int next = indexes[RandomSource.nextInt(len)];
 			if (oobFreq[i][next] > 0) {
 				count += 1.;
-				if (next != df.sourceFrame().col(classColName).index(i)) {
+				if (next != df.sourceFrame().getCol(classColName).getIndex(i)) {
 					total += 1.;
 				}
 			}
@@ -232,33 +232,33 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
 	@Override
 	public void predict(final Frame df) {
 
-		predict = new Nominal(df.rowCount(), dict);
-		dist = Frames.newMatrixFrame(df.rowCount(), dict);
+		predict = new Nominal(df.getRowCount(), dict);
+		dist = Frames.newMatrixFrame(df.getRowCount(), dict);
 
 		for (int m = 0; m < mtrees; m++) {
 			Classifier tree = trees.get(m);
 			tree.predict(df);
-			for (int i = 0; i < df.rowCount(); i++) {
-				for (int j = 0; j < tree.getDistribution().colCount(); j++) {
-					dist.setValue(i, j, dist.value(i, j) + tree.getDistribution().value(i, j));
+			for (int i = 0; i < df.getRowCount(); i++) {
+				for (int j = 0; j < tree.getDistribution().getColCount(); j++) {
+					dist.setValue(i, j, dist.getValue(i, j) + tree.getDistribution().getValue(i, j));
 				}
 			}
 		}
 
 		// from freq to prob
-		for (int i = 0; i < dist.rowCount(); i++) {
+		for (int i = 0; i < dist.getRowCount(); i++) {
 			double total = 0;
-			for (int j = 0; j < dist.colCount(); j++) {
-				total += dist.value(i, j);
+			for (int j = 0; j < dist.getColCount(); j++) {
+				total += dist.getValue(i, j);
 			}
-			for (int j = 0; j < dist.colCount(); j++) {
-				dist.setValue(i, j, dist.value(i, j) / total);
+			for (int j = 0; j < dist.getColCount(); j++) {
+				dist.setValue(i, j, dist.getValue(i, j) / total);
 			}
 			double max = 0;
 			int col = 0;
-			for (int j = 0; j < dist.colCount(); j++) {
-				if (max < dist.value(i, j)) {
-					max = dist.value(i, j);
+			for (int j = 0; j < dist.getColCount(); j++) {
+				if (max < dist.getValue(i, j)) {
+					max = dist.getValue(i, j);
 					col = j;
 				}
 			}
@@ -314,10 +314,10 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
 			f.setValue(pos, 1, decrease);
 			pos++;
 		}
-		f = RowFilters.sort(f, RowComparators.numericComparator(f.col(1), false));
+		f = RowFilters.sort(f, RowComparators.numericComparator(f.getCol(1), false));
 
-		for (int i = 0; i < f.rowCount(); i++) {
-			sb.append(String.format("%" + width + "s : %10.4f\n", f.label(i, 0), f.value(i, 1)));
+		for (int i = 0; i < f.getRowCount(); i++) {
+			sb.append(String.format("%" + width + "s : %10.4f\n", f.getLabel(i, 0), f.getValue(i, 1)));
 		}
 	}
 }

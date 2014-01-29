@@ -26,83 +26,83 @@ import java.util.Comparator;
  */
 public class RowComparators {
 
-    public static Comparator<Integer> aggregateComparator(final Comparator<Integer>... comparators) {
-        return new Comparator<Integer>() {
-            @Override
-            public int compare(Integer row1, Integer row2) {
-                for (Comparator<Integer> comparator : comparators) {
-                    int comp = comparator.compare(row1, row2);
-                    if (comp != 0) {
-                        return comp;
-                    }
-                }
-                return 0;
-            }
-        };
-    }
+	public static Comparator<Integer> aggregateComparator(final Comparator<Integer>... comparators) {
+		return new Comparator<Integer>() {
+			@Override
+			public int compare(Integer row1, Integer row2) {
+				for (Comparator<Integer> comparator : comparators) {
+					int comp = comparator.compare(row1, row2);
+					if (comp != 0) {
+						return comp;
+					}
+				}
+				return 0;
+			}
+		};
+	}
 
-    public static Comparator<Integer> nominalComparator(final Vector vector, final boolean asc) {
-        final int sign = asc ? 1 : -1;
+	public static Comparator<Integer> nominalComparator(final Vector vector, final boolean asc) {
+		final int sign = asc ? 1 : -1;
 
-        return new Comparator<Integer>() {
-            @Override
-            public int compare(Integer row1, Integer row2) {
-                if (vector.isMissing(row1) && vector.isMissing(row2)) {
-                    return 0;
-                }
-                if (vector.isMissing(row1)) {
-                    return -sign;
-                }
-                if (vector.isMissing(row2)) {
-                    return sign;
-                }
-                return sign * vector.label(row1).compareTo(vector.label(row2));
-            }
-        };
-    }
+		return new Comparator<Integer>() {
+			@Override
+			public int compare(Integer row1, Integer row2) {
+				if (vector.isMissing(row1) && vector.isMissing(row2)) {
+					return 0;
+				}
+				if (vector.isMissing(row1)) {
+					return -sign;
+				}
+				if (vector.isMissing(row2)) {
+					return sign;
+				}
+				return sign * vector.getLabel(row1).compareTo(vector.getLabel(row2));
+			}
+		};
+	}
 
-    public static Comparator<Integer> numericComparator(final Vector vector, final boolean asc) {
-        final int sign = asc ? 1 : -1;
-        return new Comparator<Integer>() {
-            @Override
-            public int compare(Integer row1, Integer row2) {
-                if (vector.isMissing(row1) && vector.isMissing(row2)) {
-                    return 0;
-                }
-                if (vector.isMissing(row1)) {
-                    return -sign;
-                }
-                if (vector.isMissing(row2)) {
-                    return sign;
-                }
-                if (vector.value(row1) == vector.value(row2)) {
-                    return 0;
-                }
-                return sign * (vector.value(row1) < vector.value(row2) ? -1 : 1);
-            }
-        };
-    }
+	public static Comparator<Integer> numericComparator(final Vector vector, final boolean asc) {
+		final int sign = asc ? 1 : -1;
+		return new Comparator<Integer>() {
+			@Override
+			public int compare(Integer row1, Integer row2) {
+				if (vector.isMissing(row1) && vector.isMissing(row2)) {
+					return 0;
+				}
+				if (vector.isMissing(row1)) {
+					return -sign;
+				}
+				if (vector.isMissing(row2)) {
+					return sign;
+				}
+				if (vector.getValue(row1) == vector.getValue(row2)) {
+					return 0;
+				}
+				return sign * (vector.getValue(row1) < vector.getValue(row2) ? -1 : 1);
+			}
+		};
+	}
 
-    public static Comparator<Integer> indexComparator(final Vector vector, final boolean asc) {
-        final int sign = asc ? 1 : -1;
+	public static Comparator<Integer> indexComparator(final Vector vector, final boolean asc) {
+		final int sign = asc ? 1 : -1;
 
-        return new Comparator<Integer>() {
-            @Override
-            public int compare(Integer row1, Integer row2) {
-                if (vector.isMissing(row1) && vector.isMissing(row2)) {
-                    return 0;
-                }
-                if (vector.isMissing(row1)) {
-                    return -1 * sign;
-                }
-                if (vector.isMissing(row2)) {
-                    return sign;
-                }
-                if (vector.index(row1) == vector.index(row2)) {
-                    return 0;
-                }
-                return sign * (vector.index(row1) < vector.index(row2) ? -1 : 1);
-            }
-        };
-    }
+		return new Comparator<Integer>() {
+			@Override
+			public int compare(Integer row1, Integer row2) {
+				if (vector.isMissing(row1) && vector.isMissing(row2)) {
+					return 0;
+				}
+				if (vector.isMissing(row1)) {
+					return -1 * sign;
+				}
+				if (vector.isMissing(row2)) {
+					return sign;
+				}
+				if (vector.getIndex(row1) == vector.getIndex(row2)) {
+					return 0;
+				}
+				return sign * (vector.getIndex(row1) < vector.getIndex(row2) ? -1 : 1);
+			}
+		};
+	}
 }

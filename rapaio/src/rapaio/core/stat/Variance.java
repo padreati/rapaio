@@ -47,7 +47,7 @@ public class Variance implements Summarizable {
 	private double compute() {
 		double mean = new Mean(vector).getValue();
 		double n = 0;
-		for (int i = 0; i < vector.rowCount(); i++) {
+		for (int i = 0; i < vector.getRowCount(); i++) {
 			if (vector.isMissing(i)) {
 				continue;
 			}
@@ -58,12 +58,12 @@ public class Variance implements Summarizable {
 		}
 		double sum2 = 0;
 		double sum3 = 0;
-		for (int i = 0; i < vector.rowCount(); i++) {
+		for (int i = 0; i < vector.getRowCount(); i++) {
 			if (vector.isMissing(i)) {
 				continue;
 			}
-			sum2 += pow(vector.value(i) - mean, 2);
-			sum3 += vector.value(i) - mean;
+			sum2 += pow(vector.getValue(i) - mean, 2);
+			sum3 += vector.getValue(i) - mean;
 		}
 		return (sum2 - pow(sum3, 2) / n) / (n - 1);
 

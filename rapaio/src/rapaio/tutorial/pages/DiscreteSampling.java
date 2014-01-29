@@ -68,11 +68,11 @@ public class DiscreteSampling implements TutorialPage {
 
 		p("A discrete probability distribution function is completely described by "
 				+ "the set of possible values the random variable can take and "
-				+ "by the probabilities assigned to each value.");
+				+ "by the probabilities assigned to each getValue.");
 
 		p("An example of discrete distribution is the process of throwing a standard dice. "
 				+ "We have a finite set of outcomes of the process (6 possible values) and "
-				+ "a probability function value associated with each output (for a fair dice we "
+				+ "a probability function getValue associated with each output (for a fair dice we "
 				+ "can associate probability \\( p(x_i) = \\frac{1}{6} \\)).");
 
 		p("Drawing a sample from a distribution is the process of selecting some values "
@@ -92,7 +92,7 @@ public class DiscreteSampling implements TutorialPage {
 				+ "an uniform distribution. A discrete uniform distribution is a distribution "
 				+ "which assigns equal probability mass function values to each outcome. "
 				+ "The previous example of throwing a fair dice is an example of uniform "
-				+ "distribution, since it assigns equal value \\(\\frac{1}{6}\\) to each "
+				+ "distribution, since it assigns equal getValue \\(\\frac{1}{6}\\) to each "
 				+ "possible outcome \\( x_i \\). ");
 
 		p("A sample with replacement is a sample where values of the sample can appear multiple "
@@ -103,7 +103,7 @@ public class DiscreteSampling implements TutorialPage {
 				+ "of \\(p(x_i) \\). Take randomly one element from the set, according with "
 				+ "their probabilities (denote the taken element with \\(x_k\\)). "
 				+ "Replace the element taken from the set with a new element, which has "
-				+ "the same value as the element previously removed. At this stage we have again "
+				+ "the same getValue as the element previously removed. At this stage we have again "
 				+ "a situation identical with the initial situation. Repeat the process of "
 				+ "taking elements from the original set, followed by replacing that element "
 				+ "with another similar element unit you collect the desired number of elements "
@@ -173,7 +173,7 @@ public class DiscreteSampling implements TutorialPage {
 				"\n" +
 				"        final Frame df = new SolidFrame(SAMPLE_SIZE * TRIALS, vectors, new String[]{\"lottery trial\", \"winning number\"});\n" +
 				"        draw(new Plot()\n" +
-				"                .add(new Points(df.col(0), df.col(1))\n" +
+				"                .add(new Points(df.getCol(0), df.getCol(1))\n" +
 				"                        .setPchIndex(1)\n" +
 				"                        .setColorIndex(34)\n" +
 				"                        .setSizeIndex(2)),\n" +
@@ -196,7 +196,7 @@ public class DiscreteSampling implements TutorialPage {
 
 		final Frame df = new SolidFrame(SAMPLE_SIZE * TRIALS, vectors, new String[]{"lottery trial", "winning number"});
 		draw(new Plot()
-				.add(new Points(df.col(0), df.col(1))
+				.add(new Points(df.getCol(0), df.getCol(1))
 						.setPchIndex(1)
 						.setColorIndex(34)
 						.setSizeIndex(2)),
@@ -227,8 +227,8 @@ public class DiscreteSampling implements TutorialPage {
 				+ "drawn divided by the number of experiments. ");
 
 		code("        RandomSource.setSeed(1);\n" +
-				"        final Vector index = Vectors.newSeq(1, 1000, 1);\n" +
-				"        final Vector value = new Numeric(1000);\n" +
+				"        final Vector getIndex = Vectors.newSeq(1, 1000, 1);\n" +
+				"        final Vector getValue = new Numeric(1000);\n" +
 				"        double count = 0;\n" +
 				"        double total = 0;\n" +
 				"        for (int i = 0; i < 300; i++) {\n" +
@@ -236,11 +236,11 @@ public class DiscreteSampling implements TutorialPage {
 				"            if (samples[0] == 0)\n" +
 				"                count++;\n" +
 				"            total++;\n" +
-				"            value.setValue(i, count / total);\n" +
+				"            getValue.setValue(i, count / total);\n" +
 				"        }\n" +
 				"        draw(new Plot()\n" +
 				"                .add(new ABLine(0.6, true))\n" +
-				"                .add(new Lines(index, value)\n" +
+				"                .add(new Lines(getIndex, getValue)\n" +
 				"                        .setColorIndex(2)\n" +
 				"                        .setLwd(1.5f)\n" +
 				"                )\n" +
@@ -274,7 +274,7 @@ public class DiscreteSampling implements TutorialPage {
 				+ "of the probability of HEAD has a large variation at the beginning "
 				+ "of our experiment. However, as number of trials increases we have "
 				+ "clear reasoning to confirm that the coin is biased, since "
-				+ "the variation decrease, the estimator converge to value 0.6 which "
+				+ "the variation decrease, the estimator converge to getValue 0.6 which "
 				+ "is not what we could expect from a fair coin. ");
 
 		p("The sampling algorithm implemented is one of the family of alias method, "
@@ -285,7 +285,7 @@ public class DiscreteSampling implements TutorialPage {
 
 		heading(2, "Weighted random sample without replacement");
 
-		p("This is the last type of discrete random sampling covered here. What we are "
+		p("This is the last getType of discrete random sampling covered here. What we are "
 				+ "interested in is to generate samples without replacement (no repetition), "
 				+ "from a discrete distribution different than uniform distribution. ");
 
@@ -321,7 +321,7 @@ public class DiscreteSampling implements TutorialPage {
 				"\n" +
 				"        final Frame df2 = new SolidFrame(SAMPLE_SIZE * TRIALS, vectors, new String[]{\"loaded lottery\", \"winning number\"});\n" +
 				"        draw(new Plot()\n" +
-				"                .add(new Points(df2.col(0), df2.col(1)))\n" +
+				"                .add(new Points(df2.getCol(0), df2.getCol(1)))\n" +
 				"                .setPchIndex(Vectors.newIdxOne(1))\n" +
 				"                .setColorIndex(Vectors.newIdxOne(34))\n" +
 				"                .setSizeIndex(Vectors.newNumOne(2)),\n" +
@@ -352,7 +352,7 @@ public class DiscreteSampling implements TutorialPage {
 
 		final Frame df2 = new SolidFrame(SAMPLE_SIZE * TRIALS, vectors, new String[]{"loaded lottery", "winning number"});
 		draw(new Plot()
-				.add(new Points(df2.col(0), df2.col(1)))
+				.add(new Points(df2.getCol(0), df2.getCol(1)))
 				.setPchIndex(Vectors.newIdxOne(1))
 				.setColorIndex(Vectors.newIdxOne(34))
 				.setSizeIndex(Vectors.newNumOne(2)),
@@ -366,7 +366,7 @@ public class DiscreteSampling implements TutorialPage {
 				+ "density would help more.");
 
 		draw(new Plot()
-				.add(new FunctionLine(new KernelDensityEstimator(df2.col("winning number"), 3).getPdfFunction())
+				.add(new FunctionLine(new KernelDensityEstimator(df2.getCol("winning number"), 3).getPdfFunction())
 						.setXRange(-10, 60)
 						.setYRange(0, .05)
 						.setColorIndex(Vectors.newIdxOne(1)))

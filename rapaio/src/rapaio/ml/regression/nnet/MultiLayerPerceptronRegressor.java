@@ -73,13 +73,13 @@ public class MultiLayerPerceptronRegressor {
 		List<Integer> targets = targetColRange.parseColumnIndexes(df);
 		targetCols = new ArrayList<>();
 		for (int i = 0; i < targets.size(); i++) {
-			targetCols.add(df.colNames()[targets.get(i)]);
+			targetCols.add(df.getColNames()[targets.get(i)]);
 		}
 		inputCols = new ArrayList<>();
-		for (int i = 0; i < df.colNames().length; i++) {
-			if (targetCols.contains(df.colNames()[i])) continue;
-			if (df.col(df.colNames()[i]).type().isNominal()) continue;
-			inputCols.add(df.colNames()[i]);
+		for (int i = 0; i < df.getColNames().length; i++) {
+			if (targetCols.contains(df.getColNames()[i])) continue;
+			if (df.getCol(df.getColNames()[i]).getType().isNominal()) continue;
+			inputCols.add(df.getColNames()[i]);
 		}
 
 		// validate
@@ -93,11 +93,11 @@ public class MultiLayerPerceptronRegressor {
 		// learn network
 
 		for (int kk = 0; kk < rounds; kk++) {
-			int pos = RandomSource.nextInt(df.rowCount());
+			int pos = RandomSource.nextInt(df.getRowCount());
 
 			// set inputs
 			for (int i = 0; i < inputCols.size(); i++) {
-				net[0][i + 1].value = df.value(pos, inputCols.get(i));
+				net[0][i + 1].value = df.getValue(pos, inputCols.get(i));
 			}
 
 			// feed forward
@@ -123,7 +123,7 @@ public class MultiLayerPerceptronRegressor {
 
 			int last = net.length - 1;
 			for (int i = 0; i < net[last].length; i++) {
-				double expected = df.value(pos, targetCols.get(i));
+				double expected = df.getValue(pos, targetCols.get(i));
 				double actual = net[last][i].value;
 				net[last][i].gamma = sigmoid.differential(actual) * (expected - actual);
 			}
@@ -151,12 +151,12 @@ public class MultiLayerPerceptronRegressor {
 	}
 
 	public void predict(Frame df) {
-		prediction = Frames.newMatrixFrame(df.rowCount(), targetCols);
+		prediction = Frames.newMatrixFrame(df.getRowCount(), targetCols);
 
-		for (int pos = 0; pos < df.rowCount(); pos++) {
+		for (int pos = 0; pos < df.getRowCount(); pos++) {
 			// set inputs
 			for (int i = 0; i < inputCols.size(); i++) {
-				net[0][i + 1].value = df.value(pos, inputCols.get(i));
+				net[0][i + 1].value = df.getValue(pos, inputCols.get(i));
 			}
 
 			// feed forward

@@ -17,45 +17,45 @@ import static rapaio.workspace.Workspace.setPrinter;
  */
 public class StatOnlineTest {
 
-    @Test
-    public void testVariance() {
+	@Test
+	public void testVariance() {
 
 //        RandomSource.setSeed(1223);
-        setPrinter(new LocalPrinter());
+		setPrinter(new LocalPrinter());
 
-        int LEN = 1_000;
-        Vector v = new Normal(0, 1).sample(LEN);
+		int LEN = 1_000;
+		Vector v = new Normal(0, 1).sample(LEN);
 
-        StatOnline statOnline = new StatOnline();
+		StatOnline statOnline = new StatOnline();
 
-        Vector index = Vectors.newSeq(LEN);
-        Vector varLeft = new Numeric(new double[LEN]);
-        Vector varRight = new Numeric(new double[LEN]);
-        Vector varSum = new Numeric(new double[LEN]);
+		Vector index = Vectors.newSeq(LEN);
+		Vector varLeft = new Numeric(new double[LEN]);
+		Vector varRight = new Numeric(new double[LEN]);
+		Vector varSum = new Numeric(new double[LEN]);
 
-        for (int i = 0; i < LEN; i++) {
-            statOnline.update(v.value(i));
-            if (i > 0) {
-                varLeft.setValue(i, statOnline.getVariance());
-            }
-        }
-        statOnline.clean();
-        for (int i = LEN - 1; i >= 0; i--) {
-            statOnline.update(v.value(i));
-            if (i < LEN - 1) {
-                varRight.setValue(i, statOnline.getVariance());
-            }
-        }
-        for (int i = 0; i < LEN; i++) {
-            varSum.setValue(i, (varLeft.value(i) + varRight.value(i)) / 2);
-        }
+		for (int i = 0; i < LEN; i++) {
+			statOnline.update(v.getValue(i));
+			if (i > 0) {
+				varLeft.setValue(i, statOnline.getVariance());
+			}
+		}
+		statOnline.clean();
+		for (int i = LEN - 1; i >= 0; i--) {
+			statOnline.update(v.getValue(i));
+			if (i < LEN - 1) {
+				varRight.setValue(i, statOnline.getVariance());
+			}
+		}
+		for (int i = 0; i < LEN; i++) {
+			varSum.setValue(i, (varLeft.getValue(i) + varRight.getValue(i)) / 2);
+		}
 
-        draw(new Plot()
-                .add(new Points(index, varLeft).setColorIndex(1))
-                .add(new Points(index, varRight).setColorIndex(2))
-                .add(new Points(index, varSum).setColorIndex(3))
-                .setSizeIndex(0.4)
-                .setYRange(0.5, 1.5)
-        );
-    }
+		draw(new Plot()
+				.add(new Points(index, varLeft).setColorIndex(1))
+				.add(new Points(index, varRight).setColorIndex(2))
+				.add(new Points(index, varSum).setColorIndex(3))
+				.setSizeIndex(0.4)
+				.setYRange(0.5, 1.5)
+		);
+	}
 }

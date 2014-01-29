@@ -28,49 +28,49 @@ import java.util.List;
  */
 public class Mapping implements Iterable<Integer> {
 
-    private final List<Integer> mapping;
+	private final List<Integer> mapping;
 
-    public Mapping() {
-        this.mapping = new ArrayList<>();
-    }
+	public Mapping() {
+		this.mapping = new ArrayList<>();
+	}
 
-    public Mapping(List<Integer> mapping) {
-        this.mapping = mapping;
-    }
+	public Mapping(List<Integer> mapping) {
+		this.mapping = mapping;
+	}
 
-    public int size() {
-        return mapping.size();
-    }
+	public int size() {
+		return mapping.size();
+	}
 
-    public int get(int pos) {
-        if (mapping.size() > pos)
-            return mapping.get(pos);
-        throw new IllegalArgumentException("Value at pos " + pos + " does not exists");
-    }
+	public int get(int pos) {
+		if (mapping.size() > pos)
+			return mapping.get(pos);
+		throw new IllegalArgumentException("Value at pos " + pos + " does not exists");
+	}
 
-    public void add(int pos) {
-        mapping.add(pos);
-    }
+	public void add(int pos) {
+		mapping.add(pos);
+	}
 
-    @Override
-    public Iterator<Integer> iterator() {
-        return new Iterator<Integer>() {
-            private int pos = 0;
+	@Override
+	public Iterator<Integer> iterator() {
+		return new Iterator<Integer>() {
+			private int pos = 0;
 
-            @Override
-            public boolean hasNext() {
-                return pos < mapping.size();
-            }
+			@Override
+			public boolean hasNext() {
+				return pos < mapping.size();
+			}
 
-            @Override
-            public Integer next() {
-                return mapping.get(pos++);
-            }
+			@Override
+			public Integer next() {
+				return mapping.get(pos++);
+			}
 
-            @Override
-            public void remove() {
-                throw new RuntimeException("This operation is not allowed on mapping.");
-            }
-        };
-    }
+			@Override
+			public void remove() {
+				throw new RuntimeException("This operation is not allowed on getMapping.");
+			}
+		};
+	}
 }

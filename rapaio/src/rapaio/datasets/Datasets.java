@@ -36,21 +36,21 @@ public class Datasets {
 
 	public static Frame loadIrisDataset() throws IOException, URISyntaxException {
 		Frame df = new CsvPersistence().read(Datasets.class, "iris.csv");
-		Vector[] vectors = new Vector[df.colCount()];
-		vectors[vectors.length - 1] = df.col(vectors.length - 1);
+		Vector[] vectors = new Vector[df.getColCount()];
+		vectors[vectors.length - 1] = df.getCol(vectors.length - 1);
 		for (int i = 0; i < vectors.length - 1; i++) {
-			vectors[i] = BaseFilters.toNumeric(df.col(i));
+			vectors[i] = BaseFilters.toNumeric(df.getCol(i));
 		}
-		return new SolidFrame(df.rowCount(), vectors, df.colNames());
+		return new SolidFrame(df.getRowCount(), vectors, df.getColNames());
 	}
 
 	public static Frame loadPearsonHeightDataset() throws IOException, URISyntaxException {
 		Frame df = new CsvPersistence().read(Datasets.class, "pearsonheight.csv");
-		Vector[] vectors = new Vector[df.colCount()];
-		for (int i = 0; i < df.colCount(); i++) {
-			vectors[i] = BaseFilters.toNumeric(df.col(i));
+		Vector[] vectors = new Vector[df.getColCount()];
+		for (int i = 0; i < df.getColCount(); i++) {
+			vectors[i] = BaseFilters.toNumeric(df.getCol(i));
 		}
-		return new SolidFrame(df.rowCount(), vectors, df.colNames());
+		return new SolidFrame(df.getRowCount(), vectors, df.getColNames());
 	}
 
 	public static Frame loadChestDataset() throws IOException, URISyntaxException {

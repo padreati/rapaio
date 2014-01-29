@@ -31,64 +31,64 @@ import rapaio.distributions.Normal;
  */
 public final class NumericFilters {
 
-    private NumericFilters() {
-    }
+	private NumericFilters() {
+	}
 
-    /**
-     * Compute the result of a numerical univariate function using numerical
-     * values from a {@link Vector} as input parameter.
-     *
-     * @param vector  input value vector
-     * @param f       univariate function
-     * @param f}      applied over the values from {
-     * @param vector}
-     * @return function {
-     */
-    public static Vector applyFunction(Vector vector, UnivariateFunction f) {
-        Vector ret = new Numeric(vector.rowCount());
-        for (int i = 0; i < vector.rowCount(); i++) {
-            if (vector.isMissing(i)) {
-                continue;
-            }
-            ret.setValue(i, f.eval(vector.value(i)));
-        }
-        return ret;
-    }
+	/**
+	 * Compute the result of a numerical univariate function using numerical
+	 * values from a {@link Vector} as input parameter.
+	 *
+	 * @param vector  input getValue vector
+	 * @param f       univariate function
+	 * @param f}      applied over the values from {
+	 * @param vector}
+	 * @return function {
+	 */
+	public static Vector applyFunction(Vector vector, UnivariateFunction f) {
+		Vector ret = new Numeric(vector.getRowCount());
+		for (int i = 0; i < vector.getRowCount(); i++) {
+			if (vector.isMissing(i)) {
+				continue;
+			}
+			ret.setValue(i, f.eval(vector.getValue(i)));
+		}
+		return ret;
+	}
 
-    /**
-     * Alter valid numeric values with normally distributed noise.
-     * <p/>
-     * Noise comes from a normal distribution with mean 0 and standard deviation
-     * 0.1
-     *
-     * @param vector input values
-     * @return altered values
-     */
-    public static Vector jitter(Vector vector) {
-        return jitter(vector, 0.1);
-    }
+	/**
+	 * Alter valid numeric values with normally distributed noise.
+	 * <p/>
+	 * Noise comes from a normal distribution with mean 0 and standard deviation
+	 * 0.1
+	 *
+	 * @param vector input values
+	 * @return altered values
+	 */
+	public static Vector jitter(Vector vector) {
+		return jitter(vector, 0.1);
+	}
 
-    /**
-     * Alter valid numeric values with normally distributed noise.
-     * <p/>
-     * Noise comes from a normal distribution with mean 0 and standard deviation
-     * specified by {
-     *
-     * @param sd}
-     * @param vector input values
-     * @param sd     standard deviation of the normally distributed noise
-     * @return altered values
-     */
-    public static Vector jitter(Vector vector, double sd) {
-        Normal d = new Normal(0, sd);
-        Vector result = new Numeric(vector.rowCount());
-        Vector jitter = d.sample(result.rowCount());
-        for (int i = 0; i < result.rowCount(); i++) {
-            if (vector.isMissing(i)) {
-                continue;
-            }
-            result.setValue(i, vector.value(i) + jitter.value(i));
-        }
-        return result;
-    }
+	/**
+	 * Alter valid numeric values with normally distributed noise.
+	 * <p/>
+	 * Noise comes from a normal distribution with mean 0 and standard deviation
+	 * specified by {
+	 *
+	 * @param sd}
+	 * @param vector input values
+	 * @param sd     standard deviation of the normally distributed noise
+	 * @return altered values
+	 */
+	public static Vector jitter(Vector vector, double sd) {
+		Normal d = new Normal(0, sd);
+		Vector result = new Numeric(vector.getRowCount());
+		Vector jitter = d.sample(result.getRowCount());
+		for (int i = 0; i < result.getRowCount(); i++) {
+			if (vector.isMissing(i)) {
+				continue;
+			}
+			result.setValue(i, vector.getValue(i) + jitter.getValue(i));
+		}
+		return result;
+	}
 }

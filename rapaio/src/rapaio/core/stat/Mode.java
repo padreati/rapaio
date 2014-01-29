@@ -43,15 +43,15 @@ public class Mode implements Summarizable {
 	}
 
 	private String[] compute() {
-		if (!vector.type().isNominal()) {
+		if (!vector.getType().isNominal()) {
 			throw new IllegalArgumentException("Can't compute mode for other than nominal vectors");
 		}
-		int[] freq = new int[vector.dictionary().length];
-		for (int i = 0; i < vector.rowCount(); i++) {
+		int[] freq = new int[vector.getDictionary().length];
+		for (int i = 0; i < vector.getRowCount(); i++) {
 			if (vector.isMissing(i)) {
 				continue;
 			}
-			freq[vector.index(i)]++;
+			freq[vector.getIndex(i)]++;
 		}
 		int max = 0;
 		int start = includeMissing ? 0 : 1;
@@ -68,7 +68,7 @@ public class Mode implements Summarizable {
 		String[] modes = new String[count];
 		for (int i = start; i < freq.length; i++) {
 			if (freq[i] == max) {
-				modes[pos++] = vector.dictionary()[i];
+				modes[pos++] = vector.getDictionary()[i];
 			}
 		}
 		return modes;

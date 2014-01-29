@@ -28,80 +28,80 @@ import rapaio.data.Numeric;
  */
 public abstract class Distribution {
 
-    /**
-     * @return canonical getName of the distribution
-     */
-    public abstract String getName();
+	/**
+	 * @return canonical getName of the distribution
+	 */
+	public abstract String getName();
 
-    /**
-     * @param x value for which it calculates log of probability
-     * @return log of probability of x
-     */
-    public double logpdf(double x) {
-        double pdf = pdf(x);
-        if (pdf <= 0) {
-            return -Double.MAX_VALUE;
-        }
-        return Math.log(pdf);
-    }
+	/**
+	 * @param x getValue for which it calculates log of probability
+	 * @return log of probability of x
+	 */
+	public double logpdf(double x) {
+		double pdf = pdf(x);
+		if (pdf <= 0) {
+			return -Double.MAX_VALUE;
+		}
+		return Math.log(pdf);
+	}
 
-    /**
-     * Calculates probability mass function (pmf) of a discrete distribution or
-     * probability density function (pdf) of a continuous distribution for given
-     * value x
-     *
-     * @param x value for which it calculates
-     * @return pmf / pdf of x
-     */
-    abstract public double pdf(double x);
+	/**
+	 * Calculates probability mass function (pmf) of a discrete distribution or
+	 * probability density function (pdf) of a continuous distribution for given
+	 * getValue x
+	 *
+	 * @param x getValue for which it calculates
+	 * @return pmf / pdf of x
+	 */
+	abstract public double pdf(double x);
 
-    abstract public double cdf(double x);
+	abstract public double cdf(double x);
 
-    abstract public double quantile(double p);
+	abstract public double quantile(double p);
 
-    public UnivariateFunction getPdfFunction() {
-        return new UnivariateFunction() {
+	public UnivariateFunction getPdfFunction() {
+		return new UnivariateFunction() {
 
-            @Override
-            public double eval(double value) {
-                return pdf(value);
-            }
-        };
-    }
+			@Override
+			public double eval(double value) {
+				return pdf(value);
+			}
+		};
+	}
 
-    public UnivariateFunction getCdfFunction() {
-        return new UnivariateFunction() {
+	public UnivariateFunction getCdfFunction() {
+		return new UnivariateFunction() {
 
-            @Override
-            public double eval(double value) {
-                return cdf(value);
-            }
-        };
-    }
+			@Override
+			public double eval(double value) {
+				return cdf(value);
+			}
+		};
+	}
 
-    abstract public double min();
+	abstract public double min();
 
-    abstract public double max();
+	abstract public double max();
 
-    public Numeric sample(int n) {
-        Numeric samples = new Numeric(n);
-        for (int i = 0; i < samples.rowCount(); i++) {
-            samples.setValue(i, quantile(RandomSource.nextDouble()));
-        }
-        return samples;
-    }
+	public Numeric sample(int n) {
+		Numeric samples = new Numeric(n);
+		for (int i = 0; i < samples.getRowCount(); i++) {
+			samples.setValue(i, quantile(RandomSource.nextDouble()));
+		}
+		return samples;
+	}
 
-    abstract public double mean();
+	abstract public double mean();
 
-    abstract public double mode();
+	abstract public double mode();
 
-    abstract public double variance();
+	abstract public double variance();
 
-    abstract public double skewness();
+	abstract public double skewness();
 
-    abstract public double kurtosis();
+	abstract public double kurtosis();
 
-    public double sd() {
-        return Math.sqrt(variance());
-    }
+	public double sd() {
+		return Math.sqrt(variance());
+	}
 }

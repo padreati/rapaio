@@ -35,39 +35,39 @@ package rapaio.data.matrix;
 public class CholeskyDecomposition implements java.io.Serializable {
 
     /*
-     * ------------------------ Class variables ------------------------
+	 * ------------------------ Class variables ------------------------
      */
-    /**
-     * Array for internal storage of decomposition.
-     *
-     * @serial internal array storage.
-     */
-    private double[][] L;
+	/**
+	 * Array for internal storage of decomposition.
+	 *
+	 * @serial internal array storage.
+	 */
+	private double[][] L;
 
-    /**
-     * Row and column dimension (square rapaio.data.matrix).
-     *
-     * @serial rapaio.data.matrix dimension.
-     */
-    private int n;
+	/**
+	 * Row and column dimension (square rapaio.data.matrix).
+	 *
+	 * @serial rapaio.data.matrix dimension.
+	 */
+	private int n;
 
-    /**
-     * Symmetric and positive definite flag.
-     *
-     * @serial is symmetric and positive definite flag.
-     */
-    private boolean isspd;
+	/**
+	 * Symmetric and positive definite flag.
+	 *
+	 * @serial is symmetric and positive definite flag.
+	 */
+	private boolean isspd;
 
     /*
      * ------------------------ Constructor ------------------------
      */
 
-    /**
-     * Cholesky algorithm for symmetric and positive definite rapaio.data.matrix. Structure
-     * to access L and isspd flag.
-     *
-     * @param Arg Square, symmetric rapaio.data.matrix.
-     */
+	/**
+	 * Cholesky algorithm for symmetric and positive definite rapaio.data.matrix. Structure
+	 * to access L and isspd flag.
+	 *
+	 * @param Arg Square, symmetric rapaio.data.matrix.
+	 */
 //    public CholeskyDecomposition(Matrix Arg) {
 //
 //        // Initialize.
@@ -114,7 +114,7 @@ public class CholeskyDecomposition implements java.io.Serializable {
      * private transient double[][] R;
      *
      * \** Cholesky algorithm for symmetric and positive definite rapaio.data.matrix. @param
-     * A Square, symmetric rapaio.data.matrix. @param rightflag Actual value ignored.
+     * A Square, symmetric rapaio.data.matrix. @param rightflag Actual getValue ignored.
      * @return Structure to access R and isspd flag. \
      *
      * public CholeskyDecomposition (Matrix Arg, int rightflag) { // Initialize.
@@ -139,20 +139,20 @@ public class CholeskyDecomposition implements java.io.Serializable {
      * ------------------------ Public Methods ------------------------
      */
 
-    /**
-     * Is the rapaio.data.matrix symmetric and positive definite?
-     *
-     * @return true if A is symmetric and positive definite.
-     */
-    public boolean isSPD() {
-        return isspd;
-    }
+	/**
+	 * Is the rapaio.data.matrix symmetric and positive definite?
+	 *
+	 * @return true if A is symmetric and positive definite.
+	 */
+	public boolean isSPD() {
+		return isspd;
+	}
 
-    /**
-     * Return triangular factor.
-     *
-     * @return L
-     */
+	/**
+	 * Return triangular factor.
+	 *
+	 * @return L
+	 */
 //    public Matrix getL() {
 //        return new Matrix(L, n, n);
 //    }
@@ -160,7 +160,7 @@ public class CholeskyDecomposition implements java.io.Serializable {
 //    /**
 //     * Solve A*X = B
 //     *
-//     * @param B A Matrix with as many rowCount as A and any number of columns.
+//     * @param B A Matrix with as many getRowCount as A and any number of columns.
 //     * @return X so that L*L'*X = B
 //     * @throws IllegalArgumentException Matrix row dimensions must agree.
 //     * @throws RuntimeException         Matrix is not symmetric positive definite.

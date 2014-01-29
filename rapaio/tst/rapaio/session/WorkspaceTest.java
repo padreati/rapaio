@@ -24,19 +24,18 @@ import org.junit.Test;
 import rapaio.workspace.Workspace;
 
 /**
- *
  * @author Aurelian Tutuianu
  */
 
 
 public class WorkspaceTest {
 
-    @Test
-    public void testSession() {
-        
-        Workspace.getData().put(String.class, "a", "a value");
-        String get = Workspace.getData().get(String.class, "a");
-        
-        Assert.assertEquals("a value", get);
-    }
+	@Test
+	public void testSession() {
+
+		Workspace.getData().put(String.class, "a", "a getValue");
+		String get = Workspace.getData().get(String.class, "a");
+
+		Assert.assertEquals("a getValue", get);
+	}
 }

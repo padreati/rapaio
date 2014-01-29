@@ -26,7 +26,7 @@ import rapaio.data.Vector;
 import static rapaio.workspace.Workspace.code;
 
 /**
- * Finds the minimum value from a {@link Vector} of values.
+ * Finds the minimum getValue from a {@link Vector} of values.
  * <p/>
  * Ignores missing elements.
  * <p/>
@@ -47,12 +47,12 @@ public class Minimum implements Summarizable {
 	private double compute() {
 		double min = Double.MAX_VALUE;
 		boolean valid = false;
-		for (int i = 0; i < vector.rowCount(); i++) {
+		for (int i = 0; i < vector.getRowCount(); i++) {
 			if (vector.isMissing(i)) {
 				continue;
 			}
 			valid = true;
-			min = MathBase.min(min, vector.value(i));
+			min = MathBase.min(min, vector.getValue(i));
 		}
 		return valid ? min : Double.NaN;
 	}

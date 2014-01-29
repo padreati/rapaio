@@ -164,7 +164,7 @@ public class QRDecomposition implements java.io.Serializable {
 	/**
 	 * Least squares solution of A*X = B
 	 *
-	 * @param B A Matrix with as many rowCount as A and any number of columns.
+	 * @param B A Matrix with as many getRowCount as A and any number of columns.
 	 * @return X that minimizes the two norm of Q*R*X-B.
 	 * @throws IllegalArgumentException Matrix row dimensions must agree.
 	 * @throws RuntimeException         Matrix is rank deficient.

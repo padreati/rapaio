@@ -29,10 +29,10 @@ public class VectorsExperiment extends AbstractCmd {
 	@Override
 	public void run() throws IOException, URISyntaxException {
 		Frame df = Datasets.loadPearsonHeightDataset();
-		Numeric son = (Numeric) df.col("Son");
-		Numeric father = (Numeric) df.col("Father");
+		Numeric son = (Numeric) df.getCol("Son");
+		Numeric father = (Numeric) df.getCol("Father");
 
-		Numeric unit = Vectors.newNum(son.rowCount(), 1.);
+		Numeric unit = Vectors.newNum(son.getRowCount(), 1.);
 
 
 		Numeric sonScale = scale(son);

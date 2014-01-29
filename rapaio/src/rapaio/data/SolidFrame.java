@@ -30,94 +30,94 @@ import java.util.List;
  */
 public class SolidFrame extends AbstractFrame {
 
-    private final int rows;
-    private final Vector[] vectors;
-    private final HashMap<String, Integer> colIndex;
-    private final String[] names;
+	private final int rows;
+	private final Vector[] vectors;
+	private final HashMap<String, Integer> colIndex;
+	private final String[] names;
 
-    public SolidFrame(int rows, List<Vector> vectors, List<String> names) {
-        this(rows, vectors, names.toArray(new String[]{}));
-    }
+	public SolidFrame(int rows, List<Vector> vectors, List<String> names) {
+		this(rows, vectors, names.toArray(new String[]{}));
+	}
 
-    public SolidFrame(int rows, List<Vector> vectors, String[] names) {
-        for (int i = 0; i < vectors.size(); i++) {
-            if (vectors.get(i).isMappedVector())
-                throw new IllegalArgumentException("Not allowed mapped vectors in solid frame");
-        }
-        this.rows = rows;
-        this.vectors = new Vector[vectors.size()];
-        this.colIndex = new HashMap<>();
-        this.names = new String[vectors.size()];
+	public SolidFrame(int rows, List<Vector> vectors, String[] names) {
+		for (int i = 0; i < vectors.size(); i++) {
+			if (vectors.get(i).isMappedVector())
+				throw new IllegalArgumentException("Not allowed mapped vectors in solid frame");
+		}
+		this.rows = rows;
+		this.vectors = new Vector[vectors.size()];
+		this.colIndex = new HashMap<>();
+		this.names = new String[vectors.size()];
 
-        for (int i = 0; i < vectors.size(); i++) {
-            this.vectors[i] = vectors.get(i);
-            this.colIndex.put(names[i], i);
-            this.names[i] = names[i];
-        }
-    }
+		for (int i = 0; i < vectors.size(); i++) {
+			this.vectors[i] = vectors.get(i);
+			this.colIndex.put(names[i], i);
+			this.names[i] = names[i];
+		}
+	}
 
-    public SolidFrame(int rows, Vector[] vectors, String[] names) {
-        this(rows, Arrays.asList(vectors), names);
-    }
+	public SolidFrame(int rows, Vector[] vectors, String[] names) {
+		this(rows, Arrays.asList(vectors), names);
+	}
 
-    @Override
-    public int rowCount() {
-        return rows;
-    }
+	@Override
+	public int getRowCount() {
+		return rows;
+	}
 
-    @Override
-    public int colCount() {
-        return vectors.length;
-    }
+	@Override
+	public int getColCount() {
+		return vectors.length;
+	}
 
-    @Override
-    public int rowId(int row) {
-        return row;
-    }
+	@Override
+	public int getRowId(int row) {
+		return row;
+	}
 
-    @Override
-    public boolean isMappedFrame() {
-        return false;
-    }
+	@Override
+	public boolean isMappedFrame() {
+		return false;
+	}
 
-    @Override
-    public Frame sourceFrame() {
-        return this;
-    }
+	@Override
+	public Frame sourceFrame() {
+		return this;
+	}
 
-    @Override
-    public String[] colNames() {
-        return names;
-    }
+	@Override
+	public String[] getColNames() {
+		return names;
+	}
 
-    @Override
-    public int colIndex(String name) {
-        if (!colIndex.containsKey(name)) {
-            throw new IllegalArgumentException("Column name is invalid");
-        }
-        return colIndex.get(name);
-    }
+	@Override
+	public int getColIndex(String name) {
+		if (!colIndex.containsKey(name)) {
+			throw new IllegalArgumentException("Column name is invalid");
+		}
+		return colIndex.get(name);
+	}
 
-    @Override
-    public Vector col(int col) {
-        if (col >= 0 && col < vectors.length) {
-            return vectors[col];
-        }
-        throw new IllegalArgumentException("Invalid column index");
-    }
+	@Override
+	public Vector getCol(int col) {
+		if (col >= 0 && col < vectors.length) {
+			return vectors[col];
+		}
+		throw new IllegalArgumentException("Invalid column getIndex");
+	}
 
-    @Override
-    public Vector col(String name) {
-        return col(colIndex(name));
-    }
+	@Override
+	public Vector getCol(String name) {
+		return getCol(getColIndex(name));
+	}
 
-    @Override
-    public boolean isMissing(int row, int col) {
-        return col(col).isMissing(row);
-    }
+	@Override
+	public boolean isMissing(int row, int col) {
+		return getCol(col).isMissing(row);
+	}
 
-    @Override
-    public boolean isMissing(int row, String colName) {
-        return col(colName).isMissing(row);
-    }
+	@Override
+	public boolean isMissing(int row, String colName) {
+		return getCol(colName).isMissing(row);
+	}
 }

@@ -55,7 +55,7 @@ public class LinearRegressionTest {
 		setPrinter(new LocalPrinter());
 		Frame df = Datasets.loadPearsonHeightDataset();
 
-		Vector intercept = Vectors.newNum(df.rowCount(), 1);
+		Vector intercept = Vectors.newNum(df.getRowCount(), 1);
 		df = Frames.addCol(df, intercept, "I", 0);
 		Summary.summary(df);
 
@@ -65,12 +65,12 @@ public class LinearRegressionTest {
 		Summary.lines(lm.getCoeff());
 
 		draw(new Plot()
-				.add(new Points(df.col("Father"), df.col("Son"))
+				.add(new Points(df.getCol("Father"), df.getCol("Son"))
 						.setPchIndex(1).setSizeIndex(1)
 				)
 				.add(new ABLine(
-						lm.getCoeff().value(1, 1),
-						lm.getCoeff().value(0, 1)))
+						lm.getCoeff().getValue(1, 1),
+						lm.getCoeff().getValue(0, 1)))
 				.setXRange(58, 78)
 				.setYRange(58, 78)
 				.setBottomLabel("Father")
@@ -78,7 +78,7 @@ public class LinearRegressionTest {
 		);
 
 		draw(new Plot()
-				.add(new Points(df.col("Father"), lm.getTrainResidualValues()))
+				.add(new Points(df.getCol("Father"), lm.getTrainResidualValues()))
 		);
 	}
 
@@ -87,16 +87,16 @@ public class LinearRegressionTest {
 		setPrinter(new LocalPrinter());
 		Frame df = Datasets.loadProstateCancer();
 
-		Numeric inter = Vectors.newNum(df.rowCount(), 1.);
+		Numeric inter = Vectors.newNum(df.getRowCount(), 1.);
 //		df = Frames.addCol(df, inter, "inter", 0);
 
 		Frame bf = new SolidFrame(
-				df.rowCount(),
-				new Vector[]{df.col(0)},
-				new String[]{df.colNames()[0]});
+				df.getRowCount(),
+				new Vector[]{df.getCol(0)},
+				new String[]{df.getColNames()[0]});
 
-		for (int i = 1; i < df.colCount(); i++) {
-			bf = Frames.addCol(bf, df.col(i), df.colNames()[i], 0);
+		for (int i = 1; i < df.getColCount(); i++) {
+			bf = Frames.addCol(bf, df.getCol(i), df.getColNames()[i], 0);
 		}
 
 		LinearModelRegressor lm1 = new LinearModelRegressor();

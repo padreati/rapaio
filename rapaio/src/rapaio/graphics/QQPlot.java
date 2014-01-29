@@ -31,22 +31,22 @@ import static rapaio.filters.RowFilters.sort;
  */
 public class QQPlot extends Plot {
 
-    public QQPlot() {
-        setLeftLabel("StatSampling Quantiles");
-        setBottomLabel("Theoretical Quantiles");
-    }
+	public QQPlot() {
+		setLeftLabel("StatSampling Quantiles");
+		setBottomLabel("Theoretical Quantiles");
+	}
 
-    public QQPlot add(Vector points, Distribution distribution) {
-        Vector x = sort(points);
-        Vector y = new Numeric(x.rowCount());
-        for (int i = 0; i < y.rowCount(); i++) {
-            double p = (i + 1) / (y.rowCount() + 1.);
-            y.setValue(i, distribution.quantile(p));
-        }
+	public QQPlot add(Vector points, Distribution distribution) {
+		Vector x = sort(points);
+		Vector y = new Numeric(x.getRowCount());
+		for (int i = 0; i < y.getRowCount(); i++) {
+			double p = (i + 1) / (y.getRowCount() + 1.);
+			y.setValue(i, distribution.quantile(p));
+		}
 
-        Points pts = new Points(y, x);
-        add(pts);
-        pts.setColorIndex(0);
-        return this;
-    }
+		Points pts = new Points(y, x);
+		add(pts);
+		pts.setColorIndex(0);
+		return this;
+	}
 }

@@ -39,9 +39,9 @@ public class ROC implements Summarizable {
 
 	public ROC(Vector score, Vector actual, Vector predict) {
 		this.score = score;
-		this.classes = Vectors.newIdx(actual.rowCount());
-		for (int i = 0; i < actual.rowCount(); i++) {
-			if (actual.label(i).equals(predict.label(i))) {
+		this.classes = Vectors.newIdx(actual.getRowCount());
+		for (int i = 0; i < actual.getRowCount(); i++) {
+			if (actual.getLabel(i).equals(predict.getLabel(i))) {
 				classes.setIndex(i, 1);
 			} else {
 				classes.setIndex(i, 0);
@@ -51,14 +51,14 @@ public class ROC implements Summarizable {
 	}
 
 	public ROC(Vector score, Vector actual, int index) {
-		this(score, actual, actual.dictionary()[index]);
+		this(score, actual, actual.getDictionary()[index]);
 	}
 
 	public ROC(Vector score, Vector actual, String label) {
 		this.score = score;
-		this.classes = Vectors.newIdx(actual.rowCount());
-		for (int i = 0; i < actual.rowCount(); i++) {
-			if (actual.label(i).equals(label)) {
+		this.classes = Vectors.newIdx(actual.getRowCount());
+		for (int i = 0; i < actual.getRowCount(); i++) {
+			if (actual.getLabel(i).equals(label)) {
 				classes.setIndex(i, 1);
 			} else {
 				classes.setIndex(i, 0);
@@ -73,11 +73,11 @@ public class ROC implements Summarizable {
 		double prevtp = 0;
 		double prevfp = 0;
 		auc = 0;
-		for (int i = 0; i < classes.rowCount(); i++) {
+		for (int i = 0; i < classes.getRowCount(); i++) {
 			if (classes.isMissing(i)) {
 				continue;
 			}
-			if (classes.index(i) > 0) p++;
+			if (classes.getIndex(i) > 0) p++;
 			else n++;
 		}
 
@@ -89,10 +89,10 @@ public class ROC implements Summarizable {
 		Vector sort = sort(score, RowComparators.numericComparator(score, false));
 		int len = 1;
 		double prev = Double.MIN_VALUE;
-		for (int i = 0; i < sort.rowCount(); i++) {
-			if (sort.isMissing(i) || classes.isMissing(sort.rowId(i))) continue;
-			if (sort.value(i) != prev) {
-				prev = sort.value(i);
+		for (int i = 0; i < sort.getRowCount(); i++) {
+			if (sort.isMissing(i) || classes.isMissing(sort.getRowId(i))) continue;
+			if (sort.getValue(i) != prev) {
+				prev = sort.getValue(i);
 				len++;
 			}
 		}
@@ -100,10 +100,10 @@ public class ROC implements Summarizable {
 		prev = Double.POSITIVE_INFINITY;
 		int pos = 0;
 
-		for (int i = 0; i < sort.rowCount(); i++) {
-			if (sort.isMissing(i) || classes.isMissing(sort.rowId(i))) continue;
+		for (int i = 0; i < sort.getRowCount(); i++) {
+			if (sort.isMissing(i) || classes.isMissing(sort.getRowId(i))) continue;
 
-			if (sort.value(i) != prev) {
+			if (sort.getValue(i) != prev) {
 				auc += abs(prevfp - fp) * abs(prevtp + tp) / 2.;
 				double accValue = (tp + n - fp) / (0. + n + p);
 				data.setValue(pos, "threshold", prev);
@@ -112,11 +112,11 @@ public class ROC implements Summarizable {
 				data.setValue(pos, "acc", accValue);
 				prevfp = fp;
 				prevtp = tp;
-				prev = sort.value(i);
+				prev = sort.getValue(i);
 				pos++;
 			}
 
-			if (classes.index(sort.rowId(i)) > 0) tp++;
+			if (classes.getIndex(sort.getRowId(i)) > 0) tp++;
 			else fp++;
 		}
 		data.setValue(pos, "threshold", prev);

@@ -20,15 +20,15 @@ public class RMSE implements Summarizable {
 
 	public RMSE(Frame dfSource, Frame dfTarget) {
 		source = new ArrayList<>();
-		for (int i = 0; i < dfSource.colCount(); i++) {
-			if (dfSource.col(i).type().isNumeric()) {
-				source.add(dfSource.col(i));
+		for (int i = 0; i < dfSource.getColCount(); i++) {
+			if (dfSource.getCol(i).getType().isNumeric()) {
+				source.add(dfSource.getCol(i));
 			}
 		}
 		target = new ArrayList<>();
-		for (int i = 0; i < dfTarget.colCount(); i++) {
-			if (dfTarget.col(i).type().isNumeric()) {
-				target.add(dfTarget.col(i));
+		for (int i = 0; i < dfTarget.getColCount(); i++) {
+			if (dfTarget.getCol(i).getType().isNumeric()) {
+				target.add(dfTarget.getCol(i));
 			}
 		}
 		compute();
@@ -47,9 +47,9 @@ public class RMSE implements Summarizable {
 		double count = 0;
 
 		for (int i = 0; i < source.size(); i++) {
-			for (int j = 0; j < source.get(i).rowCount(); j++) {
+			for (int j = 0; j < source.get(i).getRowCount(); j++) {
 				count++;
-				total += MathBase.pow(source.get(i).value(j) - target.get(i).value(j), 2);
+				total += MathBase.pow(source.get(i).getValue(j) - target.get(i).getValue(j), 2);
 			}
 		}
 		value = MathBase.sqrt(total / count);

@@ -30,33 +30,33 @@ import java.util.List;
  */
 public abstract class AbstractClassifier<T> implements Classifier<T> {
 
-    @Override
-    public void learn(Frame df, String classColName) {
-        List<Double> weights = new ArrayList<>();
-        for (int i = 0; i < df.rowCount(); i++) {
-            weights.add(1.);
-        }
-        learn(df, weights, classColName);
-    }
+	@Override
+	public void learn(Frame df, String classColName) {
+		List<Double> weights = new ArrayList<>();
+		for (int i = 0; i < df.getRowCount(); i++) {
+			weights.add(1.);
+		}
+		learn(df, weights, classColName);
+	}
 
-    @Override
-    public void learnFurther(Frame df, String classColName, T classifier) {
-        List<Double> weights = new ArrayList<>();
-        for (int i = 0; i < df.rowCount(); i++) {
-            weights.add(1.);
-        }
-        learnFurther(df, weights, classColName, classifier);
-    }
+	@Override
+	public void learnFurther(Frame df, String classColName, T classifier) {
+		List<Double> weights = new ArrayList<>();
+		for (int i = 0; i < df.getRowCount(); i++) {
+			weights.add(1.);
+		}
+		learnFurther(df, weights, classColName, classifier);
+	}
 
-    @Override
-    public void learnFurther(Frame df, List<Double> weights, String classColName, T classifier) {
-        // default further prediction is not implemented
-        throw new NotImplementedException();
-    }
+	@Override
+	public void learnFurther(Frame df, List<Double> weights, String classColName, T classifier) {
+		// default further prediction is not implemented
+		throw new NotImplementedException();
+	}
 
-    @Override
-    public void predictFurther(Frame df, T classifier) {
-        // default further prediction is not implemented
-        throw new NotImplementedException();
-    }
+	@Override
+	public void predictFurther(Frame df, T classifier) {
+		// default further prediction is not implemented
+		throw new NotImplementedException();
+	}
 }

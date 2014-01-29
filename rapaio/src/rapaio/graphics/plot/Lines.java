@@ -31,47 +31,47 @@ import java.awt.geom.Line2D;
  */
 public class Lines extends PlotComponent {
 
-    private final Vector x;
-    private final Vector y;
+	private final Vector x;
+	private final Vector y;
 
-    public Lines(Vector x, Vector y) {
-        this.x = x;
-        this.y = y;
-    }
+	public Lines(Vector x, Vector y) {
+		this.x = x;
+		this.y = y;
+	}
 
-    @Override
-    public Range buildRange() {
-        if (x.rowCount() == 0) {
-            return null;
-        }
-        Range range = new Range();
-        for (int i = 0; i < x.rowCount(); i++) {
-            if (x.isMissing(i) || y.isMissing(i)) {
-                continue;
-            }
-            range.union(x.value(i), y.value(i));
-        }
-        return range;
-    }
+	@Override
+	public Range buildRange() {
+		if (x.getRowCount() == 0) {
+			return null;
+		}
+		Range range = new Range();
+		for (int i = 0; i < x.getRowCount(); i++) {
+			if (x.isMissing(i) || y.isMissing(i)) {
+				continue;
+			}
+			range.union(x.getValue(i), y.getValue(i));
+		}
+		return range;
+	}
 
-    @Override
-    public void paint(Graphics2D g2d) {
+	@Override
+	public void paint(Graphics2D g2d) {
 
-        g2d.setStroke(new BasicStroke(getLwd()));
-        g2d.setBackground(ColorPalette.STANDARD.getColor(255));
+		g2d.setStroke(new BasicStroke(getLwd()));
+		g2d.setBackground(ColorPalette.STANDARD.getColor(255));
 
-        for (int i = 1; i < x.rowCount(); i++) {
-            g2d.setColor(getColor(i));
-            double x1 = getParent().xscale(x.value(i - 1));
-            double y1 = getParent().yscale(y.value(i - 1));
-            double x2 = getParent().xscale(x.value(i));
-            double y2 = getParent().yscale(y.value(i));
+		for (int i = 1; i < x.getRowCount(); i++) {
+			g2d.setColor(getColor(i));
+			double x1 = getParent().xscale(x.getValue(i - 1));
+			double y1 = getParent().yscale(y.getValue(i - 1));
+			double x2 = getParent().xscale(x.getValue(i));
+			double y2 = getParent().yscale(y.getValue(i));
 
-            //TODO improve this crap to clip only parts of lines outside of the data range
-            if (getParent().getRange().contains(x.value(i - 1), y.value(i - 1))
-                    && getParent().getRange().contains(x.value(i), y.value(i))) {
-                g2d.draw(new Line2D.Double(x1, y1, x2, y2));
-            }
-        }
-    }
+			//TODO improve this crap to clip only parts of lines outside of the data range
+			if (getParent().getRange().contains(x.getValue(i - 1), y.getValue(i - 1))
+					&& getParent().getRange().contains(x.getValue(i), y.getValue(i))) {
+				g2d.draw(new Line2D.Double(x1, y1, x2, y2));
+			}
+		}
+	}
 }

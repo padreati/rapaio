@@ -47,7 +47,7 @@ public class Index extends AbstractVector {
 	}
 
 	@Override
-	public VectorType type() {
+	public VectorType getType() {
 		return VectorType.INDEX;
 	}
 
@@ -84,27 +84,27 @@ public class Index extends AbstractVector {
 	}
 
 	@Override
-	public Vector sourceVector() {
+	public Vector getSourceVector() {
 		return this;
 	}
 
 	@Override
-	public Mapping mapping() {
+	public Mapping getMapping() {
 		return null;
 	}
 
 	@Override
-	public int rowCount() {
+	public int getRowCount() {
 		return rows;
 	}
 
 	@Override
-	public int rowId(int row) {
+	public int getRowId(int row) {
 		return row;
 	}
 
 	@Override
-	public int index(int row) {
+	public int getIndex(int row) {
 		return data[row];
 	}
 
@@ -130,8 +130,8 @@ public class Index extends AbstractVector {
 	}
 
 	@Override
-	public double value(int row) {
-		return index(row);
+	public double getValue(int row) {
+		return getIndex(row);
 	}
 
 	@Override
@@ -150,38 +150,38 @@ public class Index extends AbstractVector {
 	}
 
 	@Override
-	public String label(int row) {
+	public String getLabel(int row) {
 		return "";
 	}
 
 	@Override
 	public void setLabel(int row, String value) {
-		throw new RuntimeException("Operation not available for index vectors.");
+		throw new RuntimeException("Operation not available for getIndex vectors.");
 	}
 
 	@Override
 	public void addLabel(String value) {
-		throw new RuntimeException("Operation not available for index vectors.");
+		throw new RuntimeException("Operation not available for getIndex vectors.");
 	}
 
 	@Override
 	public void addLabel(int row, String value) {
-		throw new RuntimeException("Operation not available for index vectors.");
+		throw new RuntimeException("Operation not available for getIndex vectors.");
 	}
 
 	@Override
-	public String[] dictionary() {
-		throw new RuntimeException("Operation not available for index vectors.");
+	public String[] getDictionary() {
+		throw new RuntimeException("Operation not available for getIndex vectors.");
 	}
 
 	@Override
 	public void setDictionary(String[] dict) {
-		throw new RuntimeException("Operation not available for index vectors.");
+		throw new RuntimeException("Operation not available for getIndex vectors.");
 	}
 
 	@Override
 	public boolean isMissing(int row) {
-		return index(row) == MISSING_VALUE;
+		return getIndex(row) == MISSING_VALUE;
 	}
 
 	@Override
@@ -230,6 +230,6 @@ public class Index extends AbstractVector {
 
 	@Override
 	public String toString() {
-		return "Index[" + rowCount() + "]";
+		return "Index[" + getRowCount() + "]";
 	}
 }

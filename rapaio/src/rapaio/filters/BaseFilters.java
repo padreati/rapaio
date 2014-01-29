@@ -23,75 +23,75 @@ import rapaio.data.*;
 
 
 /**
- * Provides filters for type conversion, metadata changing.
+ * Provides filters for getType conversion, metadata changing.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public final class BaseFilters {
 
-    /**
-     * Convert to isNumeric values all the columns which are isNominal.
-     * <p/>
-     * All the other columns remain the same.
-     *
-     * @param df input frame
-     * @return frame with value converted columns
-     */
-    public static Frame toNumeric(Frame df) {
-        Vector[] vectors = new Vector[df.colCount()];
-        for (int i = 0; i < vectors.length; i++) {
-            vectors[i] = toNumeric(df.col(i));
-        }
-        return new SolidFrame(df.rowCount(), vectors, df.colNames());
-    }
+	/**
+	 * Convert to isNumeric values all the columns which are isNominal.
+	 * <p/>
+	 * All the other columns remain the same.
+	 *
+	 * @param df input frame
+	 * @return frame with getValue converted columns
+	 */
+	public static Frame toNumeric(Frame df) {
+		Vector[] vectors = new Vector[df.getColCount()];
+		for (int i = 0; i < vectors.length; i++) {
+			vectors[i] = toNumeric(df.getCol(i));
+		}
+		return new SolidFrame(df.getRowCount(), vectors, df.getColNames());
+	}
 
-    /**
-     * Convert a isNominal vector to isNumeric parsing as numbers the isNominal
-     * labels.
-     * <p/>
-     * If the input value is already a isNumeric vector, the input vector is
-     * returned
-     *
-     * @param v input vector
-     * @return converted value vector
-     */
-    public static Vector toNumeric(Vector v) {
-        if (v.type().isNumeric()) {
-            return v;
-        }
-        Vector result = new Numeric(v.rowCount());
-        for (int i = 0; i < result.rowCount(); i++) {
-            if (v.isMissing(i)) {
-                continue;
-            }
-            try {
-                double value = Double.parseDouble(v.label(i));
-                result.setValue(i, value);
-            } catch (NumberFormatException nfe) {
-                result.setMissing(i);
-            }
-        }
-        return result;
-    }
+	/**
+	 * Convert a isNominal vector to isNumeric parsing as numbers the isNominal
+	 * labels.
+	 * <p/>
+	 * If the input getValue is already a isNumeric vector, the input vector is
+	 * returned
+	 *
+	 * @param v input vector
+	 * @return converted getValue vector
+	 */
+	public static Vector toNumeric(Vector v) {
+		if (v.getType().isNumeric()) {
+			return v;
+		}
+		Vector result = new Numeric(v.getRowCount());
+		for (int i = 0; i < result.getRowCount(); i++) {
+			if (v.isMissing(i)) {
+				continue;
+			}
+			try {
+				double value = Double.parseDouble(v.getLabel(i));
+				result.setValue(i, value);
+			} catch (NumberFormatException nfe) {
+				result.setMissing(i);
+			}
+		}
+		return result;
+	}
 
-    public static Vector toIndex(Vector v) {
-        Vector result = Vectors.newIdx(v.rowCount());
-        for (int i = 0; i < v.rowCount(); i++) {
-            if (v.isMissing(i)) {
-                continue;
-            }
-            try {
-                if (v.type().isNominal()) {
-                    int value = Integer.parseInt(v.label(i));
-                    result.setIndex(i, value);
-                }
-                if (v.type().isNumeric()) {
-                    result.setIndex(i, result.index(i));
-                }
-            } catch (NumberFormatException nfe) {
-                result.setMissing(i);
-            }
-        }
-        return result;
-    }
+	public static Vector toIndex(Vector v) {
+		Vector result = Vectors.newIdx(v.getRowCount());
+		for (int i = 0; i < v.getRowCount(); i++) {
+			if (v.isMissing(i)) {
+				continue;
+			}
+			try {
+				if (v.getType().isNominal()) {
+					int value = Integer.parseInt(v.getLabel(i));
+					result.setIndex(i, value);
+				}
+				if (v.getType().isNumeric()) {
+					result.setIndex(i, result.getIndex(i));
+				}
+			} catch (NumberFormatException nfe) {
+				result.setMissing(i);
+			}
+		}
+		return result;
+	}
 }

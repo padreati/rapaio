@@ -45,39 +45,39 @@ public class ConfusionMatrix implements Summarizable {
 		validate(actual, predict);
 		this.actual = actual;
 		this.predict = predict;
-		this.dict = actual.dictionary();
+		this.dict = actual.getDictionary();
 		this.cmf = new int[dict.length - 1][dict.length - 1];
 		this.percents = percents;
 		compute();
 	}
 
 	private void validate(Vector actual, Vector predict) {
-		if (!actual.type().isNominal()) {
+		if (!actual.getType().isNominal()) {
 			throw new IllegalArgumentException("actual values vector must be nominal");
 		}
-		if (!predict.type().isNominal()) {
+		if (!predict.getType().isNominal()) {
 			throw new IllegalArgumentException("predict values vector must be nominal");
 		}
-		if (actual.dictionary().length != predict.dictionary().length) {
-			throw new IllegalArgumentException("actual and predict does not have the same nominal dictionary");
+		if (actual.getDictionary().length != predict.getDictionary().length) {
+			throw new IllegalArgumentException("actual and predict does not have the same nominal getDictionary");
 		}
-		for (int i = 0; i < actual.dictionary().length; i++) {
-			if (!actual.dictionary()[i].equals(predict.dictionary()[i])) {
-				throw new IllegalArgumentException("actual and predict does not have the same nominal dictionary");
+		for (int i = 0; i < actual.getDictionary().length; i++) {
+			if (!actual.getDictionary()[i].equals(predict.getDictionary()[i])) {
+				throw new IllegalArgumentException("actual and predict does not have the same nominal getDictionary");
 			}
 		}
 	}
 
 	private void compute() {
-		for (int i = 0; i < actual.rowCount(); i++) {
-			if (actual.index(i) != 0 && predict.index(i) != 0) {
+		for (int i = 0; i < actual.getRowCount(); i++) {
+			if (actual.getIndex(i) != 0 && predict.getIndex(i) != 0) {
 				completeCases++;
-				cmf[actual.index(i) - 1][predict.index(i) - 1]++;
+				cmf[actual.getIndex(i) - 1][predict.getIndex(i) - 1]++;
 			}
 		}
 		acc = 0;
-		for (int i = 0; i < actual.rowCount(); i++) {
-			if (actual.index(i) == predict.index(i) && actual.index(i) != 0) {
+		for (int i = 0; i < actual.getRowCount(); i++) {
+			if (actual.getIndex(i) == predict.getIndex(i) && actual.getIndex(i) != 0) {
 				acc++;
 			}
 		}
@@ -100,7 +100,7 @@ public class ConfusionMatrix implements Summarizable {
 	}
 
 	private void addDetails(StringBuilder sb) {
-		sb.append(String.format("\nComplete cases %d from %d\n", (int) Math.rint(completeCases), actual.rowCount()));
+		sb.append(String.format("\nComplete cases %d from %d\n", (int) Math.rint(completeCases), actual.getRowCount()));
 		sb.append(String.format("Accuracy: %.4f\n", acc));
 	}
 

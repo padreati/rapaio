@@ -23,35 +23,35 @@ import static rapaio.workspace.Workspace.*;
  */
 public class Olimpics {
 
-    public static void main(String[] args) throws IOException, SQLException, ClassNotFoundException {
+	public static void main(String[] args) throws IOException, SQLException, ClassNotFoundException {
 //        setPrinter(new HTMLPrinter("/home/ati/work/rapaio-blog/src/rapaio/blog/exploring/SummerOlympics.html", "Summer Olympics"));
-        setPrinter(new LocalPrinter());
-        new Olimpics().run();
-    }
+		setPrinter(new LocalPrinter());
+		new Olimpics().run();
+	}
 
-    public void run() throws IOException, SQLException {
-        preparePrinter();
-        Frame df = Datasets.loadOlympic();
+	public void run() throws IOException, SQLException {
+		preparePrinter();
+		Frame df = Datasets.loadOlympic();
 //        Summary.summary(df);
 
 
-        JavaDBUtil db = new JavaDBUtil();
-        try {
-            db.connect();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        db.putFrame(df, "T");
+		JavaDBUtil db = new JavaDBUtil();
+		try {
+			db.connect();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		db.putFrame(df, "T");
 
 //        Frame sel = db.getFrame("SELECT NOC, COUNT(*) AS CNT FROM T GROUP BY NOC");
 //        Summary.summary(sel);
-//        draw(new BarChart(sel.col("NOC"), null, sel.col("CNT"))
+//        draw(new BarChart(sel.getCol("NOC"), null, sel.getCol("CNT"))
 //                .useSortType(BarChart.SortType.DESC)
 //                .useTop(20));
 
 //        Frame rou = db.getFrame("SELECT * FROM T WHERE NOC = 'ROU'");
 //        Summary.summary(rou);
-//        draw(new Plot().add(new Histogram(rou.col("EDITION")).setBins(100)));
+//        draw(new Plot().add(new Histogram(rou.getCol("EDITION")).setBins(100)));
 
 //        Frame sel = db.getFrame("SELECT SPORT, DISCIPLINE, COUNT(*) AS CNT "
 //                + "FROM T "
@@ -59,35 +59,35 @@ public class Olimpics {
 //                + "GROUP BY SPORT, DISCIPLINE");
 //        Summary.names(df);
 //        Summary.summary(sel);
-//        draw(new BarChart(sel.col("SPORT"), sel.col("DISCIPLINE"), sel.col("CNT"))
+//        draw(new BarChart(sel.getCol("SPORT"), sel.getCol("DISCIPLINE"), sel.getCol("CNT"))
 //                .useSortType(BarChart.SortType.DESC));
 //        Summary.lines(-1, sel);
 
-        Frame sel = db.getFrame("SELECT NOC, COUNT(*) AS CNT "
-                + "FROM T "
-                + "WHERE SPORT='Rowing' "
-                + "GROUP BY NOC");
-        Summary.names(df);
-        Summary.summary(sel);
-        draw(new BarChart(sel.col("NOC"), null, sel.col("CNT"))
-                .useSortType(BarChart.SortType.DESC)
-                .useTop(10));
-        Summary.head(-1, sel);
+		Frame sel = db.getFrame("SELECT NOC, COUNT(*) AS CNT "
+				+ "FROM T "
+				+ "WHERE SPORT='Rowing' "
+				+ "GROUP BY NOC");
+		Summary.names(df);
+		Summary.summary(sel);
+		draw(new BarChart(sel.getCol("NOC"), null, sel.getCol("CNT"))
+				.useSortType(BarChart.SortType.DESC)
+				.useTop(10));
+		Summary.head(-1, sel);
 
 //        Frame sel = db.getFrame("SELECT NOC, EDITION, MEDAL "
 //                + "FROM T "
 //                + "WHERE SPORT='Gymnastics' AND DISCIPLINE = 'Artistic G.' AND GENDER = 'Women' ");
 //        Summary.names(df);
 //        Summary.summary(sel);
-//        draw(new BarChart(sel.col("NOC"), null, null)
+//        draw(new BarChart(sel.getCol("NOC"), null, null)
 //                .useSortType(BarChart.SortType.DESC)
 //                .useTop(10));
 
-//        draw(new Plot().add(new Histogram(sel.col("EDITION")).setProb(false)));
+//        draw(new Plot().add(new Histogram(sel.getCol("EDITION")).setProb(false)));
 //        Summary.lines(-1, sel);
 
 
-        closePrinter();
-    }
+		closePrinter();
+	}
 
 }

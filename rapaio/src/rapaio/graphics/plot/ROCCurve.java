@@ -31,47 +31,47 @@ import java.awt.geom.Line2D;
  */
 public class ROCCurve extends PlotComponent {
 
-    private final ROC roc;
+	private final ROC roc;
 
-    public ROCCurve(ROC roc) {
-        this.roc = roc;
-    }
+	public ROCCurve(ROC roc) {
+		this.roc = roc;
+	}
 
-    @Override
-    public Range buildRange() {
-        return new Range(0, 0, 1, 1);
-    }
+	@Override
+	public Range buildRange() {
+		return new Range(0, 0, 1, 1);
+	}
 
-    @Override
-    public void initialize() {
-        getParent().setBottomLabel("fp rate");
-        getParent().setLeftLabel("tp rate");
-    }
+	@Override
+	public void initialize() {
+		getParent().setBottomLabel("fp rate");
+		getParent().setLeftLabel("tp rate");
+	}
 
-    @Override
-    public void paint(Graphics2D g2d) {
-        g2d.setColor(getColor(0));
-        g2d.setStroke(new BasicStroke(getLwd()));
-        g2d.setBackground(ColorPalette.STANDARD.getColor(255));
+	@Override
+	public void paint(Graphics2D g2d) {
+		g2d.setColor(getColor(0));
+		g2d.setStroke(new BasicStroke(getLwd()));
+		g2d.setBackground(ColorPalette.STANDARD.getColor(255));
 
-        for (int i = 1; i < roc.getData().rowCount(); i++) {
-            g2d.setColor(getColor(i));
-            double x1 = getParent().xscale(roc.getData().value(i - 1, "fpr"));
-            double y1 = getParent().yscale(roc.getData().value(i - 1, "tpr"));
-            double x2 = getParent().xscale(roc.getData().value(i, "fpr"));
-            double y2 = getParent().yscale(roc.getData().value(i, "tpr"));
+		for (int i = 1; i < roc.getData().getRowCount(); i++) {
+			g2d.setColor(getColor(i));
+			double x1 = getParent().xscale(roc.getData().getValue(i - 1, "fpr"));
+			double y1 = getParent().yscale(roc.getData().getValue(i - 1, "tpr"));
+			double x2 = getParent().xscale(roc.getData().getValue(i, "fpr"));
+			double y2 = getParent().yscale(roc.getData().getValue(i, "tpr"));
 
-            if (getParent().getRange().contains(
-                    roc.getData().value(i - 1, "fpr"),
-                    roc.getData().value(i - 1, "tpr")
-            )
-                    && getParent().getRange().contains(
-                    roc.getData().value(i, "fpr"),
-                    roc.getData().value(i, "tpr"))) {
-                g2d.draw(new Line2D.Double(x1, y1, x2, y2));
-            }
-        }
+			if (getParent().getRange().contains(
+					roc.getData().getValue(i - 1, "fpr"),
+					roc.getData().getValue(i - 1, "tpr")
+			)
+					&& getParent().getRange().contains(
+					roc.getData().getValue(i, "fpr"),
+					roc.getData().getValue(i, "tpr"))) {
+				g2d.draw(new Line2D.Double(x1, y1, x2, y2));
+			}
+		}
 
-        g2d.setColor(getColor(0));
-    }
+		g2d.setColor(getColor(0));
+	}
 }

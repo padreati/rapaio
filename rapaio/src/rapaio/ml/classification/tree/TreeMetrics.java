@@ -32,15 +32,15 @@ import static rapaio.core.MathBase.log;
 public class TreeMetrics {
 
 	public double entropy(Frame df, List<Double> weights, String classColName) {
-		int classIndex = df.colIndex(classColName);
-		int[] hits = new int[df.col(classIndex).dictionary().length];
-		for (int i = 0; i < df.rowCount(); i++) {
-			hits[df.col(classIndex).index(i)] += weights.get(i);
+		int classIndex = df.getColIndex(classColName);
+		int[] hits = new int[df.getCol(classIndex).getDictionary().length];
+		for (int i = 0; i < df.getRowCount(); i++) {
+			hits[df.getCol(classIndex).getIndex(i)] += weights.get(i);
 		}
 		double entropy = 0.;
 		for (int hit : hits) {
 			if (hit != 0) {
-				double p = hit / (1. * df.rowCount());
+				double p = hit / (1. * df.getRowCount());
 				entropy += -p * log(p) / log(2);
 			}
 		}
@@ -48,27 +48,27 @@ public class TreeMetrics {
 	}
 
 	public double entropy(Frame df, List<Double> weights, String classColName, String splitColName) {
-		int splitIndex = df.colIndex(splitColName);
+		int splitIndex = df.getColIndex(splitColName);
 		Frame[] split = NominalFilters.groupByNominal(df, splitIndex);
 		double entropy = 0.;
 		for (Frame f : split) {
 			if (f == null) {
 				continue;
 			}
-			entropy += (1. * f.rowCount() * entropy(f, weights, classColName)) / (1. * df.rowCount());
+			entropy += (1. * f.getRowCount() * entropy(f, weights, classColName)) / (1. * df.getRowCount());
 		}
 		return entropy;
 	}
 
 	public double infoGain(Frame df, List<Double> weights, String classColName, String splitColName) {
-		int splitIndex = df.colIndex(splitColName);
+		int splitIndex = df.getColIndex(splitColName);
 		Frame[] split = NominalFilters.groupByNominal(df, splitIndex);
 		double infoGain = entropy(df, weights, classColName);
 		for (Frame f : split) {
 			if (f == null) {
 				continue;
 			}
-			infoGain -= (f.rowCount() / (1. * df.rowCount())) * entropy(f, weights, classColName);
+			infoGain -= (f.getRowCount() / (1. * df.getRowCount())) * entropy(f, weights, classColName);
 		}
 		return infoGain;
 	}

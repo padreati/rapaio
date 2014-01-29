@@ -62,7 +62,7 @@ public class Numeric extends AbstractVector {
 	}
 
 	@Override
-	public VectorType type() {
+	public VectorType getType() {
 		return VectorType.NUMERIC;
 	}
 
@@ -140,27 +140,27 @@ public class Numeric extends AbstractVector {
 	}
 
 	@Override
-	public Vector sourceVector() {
+	public Vector getSourceVector() {
 		return this;
 	}
 
 	@Override
-	public Mapping mapping() {
+	public Mapping getMapping() {
 		return null;
 	}
 
 	@Override
-	public int rowCount() {
+	public int getRowCount() {
 		return rows;
 	}
 
 	@Override
-	public int rowId(int row) {
+	public int getRowId(int row) {
 		return row;
 	}
 
 	@Override
-	public double value(int row) {
+	public double getValue(int row) {
 		rangeCheck(row);
 		return data[row];
 	}
@@ -187,8 +187,8 @@ public class Numeric extends AbstractVector {
 	}
 
 	@Override
-	public int index(int row) {
-		return (int) Math.rint(value(row));
+	public int getIndex(int row) {
+		return (int) Math.rint(getValue(row));
 	}
 
 	@Override
@@ -212,7 +212,7 @@ public class Numeric extends AbstractVector {
 	}
 
 	@Override
-	public String label(int row) {
+	public String getLabel(int row) {
 		return "";
 	}
 
@@ -232,7 +232,7 @@ public class Numeric extends AbstractVector {
 	}
 
 	@Override
-	public String[] dictionary() {
+	public String[] getDictionary() {
 		throw new RuntimeException("Operation not available for numeric vectors.");
 	}
 
@@ -243,7 +243,7 @@ public class Numeric extends AbstractVector {
 
 	@Override
 	public boolean isMissing(int row) {
-		return value(row) != value(row);
+		return getValue(row) != getValue(row);
 	}
 
 	@Override
@@ -295,6 +295,6 @@ public class Numeric extends AbstractVector {
 
 	@Override
 	public String toString() {
-		return "Numeric[" + rowCount() + "]";
+		return "Numeric[" + getRowCount() + "]";
 	}
 }

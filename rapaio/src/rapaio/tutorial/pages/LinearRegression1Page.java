@@ -54,15 +54,15 @@ public class LinearRegression1Page implements TutorialPage {
 
 		p("First we get the heights of the sons in a numeric vector. ");
 
-		Numeric sons = (Numeric) df.col("Son");
+		Numeric sons = (Numeric) df.getCol("Son");
 
 		code("\t\tFrame df = Datasets.loadPearsonHeightDataset();\n" +
-				"\t\tNumeric sons = (Numeric) df.col(\"Son\");\n");
+				"\t\tNumeric sons = (Numeric) df.getCol(\"Son\");\n");
 
 		p("We ");
 
-		code("mean: " + mean(sons).value(0));
-		code("variance: " + var(sons).value(0));
-		code("sd: " + sd(sons).value(0));
+		code("mean: " + mean(sons).getValue(0));
+		code("variance: " + var(sons).getValue(0));
+		code("sd: " + sd(sons).getValue(0));
 	}
 }

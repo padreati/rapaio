@@ -56,10 +56,10 @@ public class SpearmanRhoCorrelation implements Summarizable {
 	}
 
 	public SpearmanRhoCorrelation(Frame df) {
-		this.names = df.colNames();
-		this.vectors = new Vector[df.colCount()];
-		for (int i = 0; i < df.colCount(); i++) {
-			vectors[i] = df.col(i);
+		this.names = df.getColNames();
+		this.vectors = new Vector[df.getColCount()];
+		for (int i = 0; i < df.getColCount(); i++) {
+			vectors[i] = df.getCol(i);
 		}
 		this.rho = compute();
 	}
@@ -69,20 +69,20 @@ public class SpearmanRhoCorrelation implements Summarizable {
 		Vector[] ranks = new Vector[vectors.length];
 		for (int i = 0; i < sorted.length; i++) {
 			sorted[i] = sort(vectors[i]);
-			ranks[i] = new Numeric(vectors[i].rowCount());
+			ranks[i] = new Numeric(vectors[i].getRowCount());
 		}
 
 		// compute ranks
 		for (int i = 0; i < sorted.length; i++) {
 			int start = 0;
-			while (start < sorted[i].rowCount()) {
+			while (start < sorted[i].getRowCount()) {
 				int end = start;
-				while (end < sorted[i].rowCount() - 1 && sorted[i].value(end) == sorted[i].value(end + 1)) {
+				while (end < sorted[i].getRowCount() - 1 && sorted[i].getValue(end) == sorted[i].getValue(end + 1)) {
 					end++;
 				}
 				double value = 1 + (start + end) / 2.;
 				for (int j = start; j <= end; j++) {
-					ranks[i].setValue(sorted[i].rowId(j), value);
+					ranks[i].setValue(sorted[i].getRowId(j), value);
 				}
 				start = end + 1;
 			}

@@ -62,12 +62,12 @@ public class KernelDensityEstimator {
 	public double pdf(double x) {
 		double sum = 0;
 		double count = 0;
-		for (int i = 0; i < values.rowCount(); i++) {
+		for (int i = 0; i < values.getRowCount(); i++) {
 			if (values.isMissing(i)) {
 				continue;
 			}
 			count++;
-			sum += kernel.pdf(x, values.value(i), bandwidth);
+			sum += kernel.pdf(x, values.getValue(i), bandwidth);
 		}
 		return sum / (count * bandwidth);
 	}
@@ -105,7 +105,7 @@ public class KernelDensityEstimator {
 	 * http://en.wikipedia.org/wiki/Kernel_density_estimation
 	 *
 	 * @param vector sample of values
-	 * @return teh value of the approximation for bandwidth
+	 * @return teh getValue of the approximation for bandwidth
 	 */
 	public final double getSilvermanBandwidth(Vector vector) {
 		Variance var = new Variance(vector);
@@ -114,7 +114,7 @@ public class KernelDensityEstimator {
 			sd = 1;
 		}
 		double count = 0;
-		for (int i = 0; i < vector.rowCount(); i++) if (!vector.isMissing(i)) count++;
+		for (int i = 0; i < vector.getRowCount(); i++) if (!vector.isMissing(i)) count++;
 		return 1.06 * sd * pow(count, -1. / 5.);
 	}
 }

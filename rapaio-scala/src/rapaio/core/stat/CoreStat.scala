@@ -3,7 +3,9 @@ package rapaio.core.stat
 import rapaio.data.NumericFeature
 
 /**
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * Compensated version of arithmetic mean of values from a {@code Vector}.
+ * <p/>
+ * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 object CoreStat {
 

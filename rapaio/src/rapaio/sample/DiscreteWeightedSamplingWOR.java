@@ -116,7 +116,7 @@ public class DiscreteWeightedSamplingWOR {
 			}
 			if (pos == p.length) break;
 
-			// min replaced with the new selected value
+			// min replaced with the new selected getValue
 			double tw = pow(k[heap[1]], p[pos]);
 			double r2 = nextDouble() * (1. - tw) + tw;
 			double ki = pow(r2, 1 / p[pos]);

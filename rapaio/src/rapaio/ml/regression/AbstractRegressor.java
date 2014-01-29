@@ -10,12 +10,12 @@ import java.util.List;
  */
 public abstract class AbstractRegressor implements Regressor {
 
-    @Override
-    public void learn(Frame df, String targetColName) {
-        List<Double> weights = new ArrayList<>();
-        for (int i = 0; i < df.rowCount(); i++) {
-            weights.add(1.);
-        }
-        learn(df, weights, targetColName);
-    }
+	@Override
+	public void learn(Frame df, String targetColName) {
+		List<Double> weights = new ArrayList<>();
+		for (int i = 0; i < df.getRowCount(); i++) {
+			weights.add(1.);
+		}
+		learn(df, weights, targetColName);
+	}
 }

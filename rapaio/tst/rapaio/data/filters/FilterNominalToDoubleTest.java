@@ -45,14 +45,14 @@ public class FilterNominalToDoubleTest {
 			dict.add(String.valueOf(pow(i, 1.5)));
 		}
 		Vector v = new Nominal(10, dict);
-		for (int i = 0; i < v.rowCount(); i++) {
+		for (int i = 0; i < v.getRowCount(); i++) {
 			String value = String.valueOf(pow(i, 1.5));
 			v.setLabel(i, value);
 		}
 		Vector filtered = BaseFilters.toNumeric(v);
-		for (int i = 0; i < v.rowCount(); i++) {
+		for (int i = 0; i < v.getRowCount(); i++) {
 			double value = pow(i, 1.5);
-			assertEquals(value, filtered.value(i), 1e-10);
+			assertEquals(value, filtered.getValue(i), 1e-10);
 		}
 	}
 
@@ -70,7 +70,7 @@ public class FilterNominalToDoubleTest {
 		Vector filtered = new Nominal(1, Arrays.asList(new String[]{"abc"}));
 		filtered.setLabel(0, "abc");
 		Vector numeric = BaseFilters.toNumeric(filtered);
-		assertEquals(numeric.value(0), numeric.value(0), 1e-10);
+		assertEquals(numeric.getValue(0), numeric.getValue(0), 1e-10);
 		assertTrue(numeric.isMissing(0));
 	}
 }

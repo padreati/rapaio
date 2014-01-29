@@ -23,7 +23,7 @@ package rapaio.core;
  * Interface for univariate functions.
  * <p/>
  * An univariate function is a function which takes one
- * real numeric argument and returns one real numeric value.
+ * real numeric argument and returns one real numeric getValue.
  * <p/>
  * It is mostly used as contract for various facilities which
  * needs a univariate function as input argument.
@@ -36,5 +36,5 @@ package rapaio.core;
  */
 public interface UnivariateFunction {
 
-    double eval(double value);
+	double eval(double value);
 }

@@ -24,17 +24,17 @@ import java.util.*;
 /**
  * Nominal vector contains values for nominal or categorical observations.
  * <p/>
- * The domain of the definition is called dictionary and is
+ * The domain of the definition is called getDictionary and is
  * given at construction time.
  * <p/>
- * This vector accepts two value representation: as labels and as indexes.
+ * This vector accepts two getValue representation: as labels and as indexes.
  * <p/>
  * Label representation is the natural representation since in experiments
  * the nominal vectors are given as string values.
  * <p/>
- * The index representation is learn based on the canonical form of the
- * term dictionary and is used often for performance reasons instead of
- * label representation, where the actual label value does not matter.
+ * The getIndex representation is learn based on the canonical form of the
+ * term getDictionary and is used often for performance reasons instead of
+ * getLabel representation, where the actual getLabel getValue does not matter.
  *
  * @author Aurelian Tutuianu
  */
@@ -49,7 +49,7 @@ public class Nominal extends AbstractVector {
 	Map<String, Integer> reverse;
 
 	public Nominal() {
-		// set the missing value
+		// set the missing getValue
 		this.reverse = new HashMap<>();
 		this.reverse.put("?", 0);
 		this.dict = new ArrayList<>();
@@ -74,7 +74,7 @@ public class Nominal extends AbstractVector {
 	}
 
 	@Override
-	public VectorType type() {
+	public VectorType getType() {
 		return VectorType.NOMINAL;
 	}
 
@@ -94,27 +94,27 @@ public class Nominal extends AbstractVector {
 	}
 
 	@Override
-	public Vector sourceVector() {
+	public Vector getSourceVector() {
 		return this;
 	}
 
 	@Override
-	public Mapping mapping() {
+	public Mapping getMapping() {
 		return null;
 	}
 
 	@Override
-	public int rowCount() {
+	public int getRowCount() {
 		return rows;
 	}
 
 	@Override
-	public int rowId(int row) {
+	public int getRowId(int row) {
 		return row;
 	}
 
 	@Override
-	public int index(int row) {
+	public int getIndex(int row) {
 		return data[row];
 	}
 
@@ -134,7 +134,7 @@ public class Nominal extends AbstractVector {
 	}
 
 	@Override
-	public double value(int row) {
+	public double getValue(int row) {
 		return data[row];
 	}
 
@@ -154,7 +154,7 @@ public class Nominal extends AbstractVector {
 	}
 
 	@Override
-	public String label(int row) {
+	public String getLabel(int row) {
 		return dict.get(data[row]);
 	}
 
@@ -197,7 +197,7 @@ public class Nominal extends AbstractVector {
 	}
 
 	@Override
-	public String[] dictionary() {
+	public String[] getDictionary() {
 		return dict.toArray(new String[]{});
 	}
 
@@ -222,7 +222,7 @@ public class Nominal extends AbstractVector {
 			if (!this.reverse.containsKey(oldDict.get(data[i]))) {
 				this.dict = oldDict;
 				this.reverse = oldReverse;
-				throw new IllegalArgumentException("new dictionary does not contains all old labels");
+				throw new IllegalArgumentException("new getDictionary does not contains all old labels");
 			}
 		}
 
@@ -233,7 +233,7 @@ public class Nominal extends AbstractVector {
 
 	@Override
 	public boolean isMissing(int row) {
-		return missingIndex == index(row);
+		return missingIndex == getIndex(row);
 	}
 
 	@Override
@@ -278,6 +278,6 @@ public class Nominal extends AbstractVector {
 
 	@Override
 	public String toString() {
-		return "Nominal[" + rowCount() + "]";
+		return "Nominal[" + getRowCount() + "]";
 	}
 }

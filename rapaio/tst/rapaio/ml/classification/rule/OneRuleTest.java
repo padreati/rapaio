@@ -29,59 +29,59 @@ import rapaio.data.*;
  */
 public class OneRuleTest {
 
-    private static final int SIZE = 6;
+	private static final int SIZE = 6;
 
-    private final Vector classVector;
-    private final Vector heightVector;
+	private final Vector classVector;
+	private final Vector heightVector;
 
-    public OneRuleTest() {
-        classVector = new Nominal(SIZE, new String[]{"False", "True"});
-        classVector.setLabel(0, "True");
-        classVector.setLabel(1, "True");
-        classVector.setLabel(2, "True");
-        classVector.setLabel(3, "False");
-        classVector.setLabel(4, "False");
-        classVector.setLabel(5, "False");
+	public OneRuleTest() {
+		classVector = new Nominal(SIZE, new String[]{"False", "True"});
+		classVector.setLabel(0, "True");
+		classVector.setLabel(1, "True");
+		classVector.setLabel(2, "True");
+		classVector.setLabel(3, "False");
+		classVector.setLabel(4, "False");
+		classVector.setLabel(5, "False");
 
-        heightVector = new Numeric(new double[]{0.1, 0.3, 0.5, 10, 10.3, 10.5});
-    }
+		heightVector = new Numeric(new double[]{0.1, 0.3, 0.5, 10, 10.3, 10.5});
+	}
 
-    @Test
-    public void testSimpleNumeric() {
-        Frame df = new SolidFrame(SIZE, new Vector[]{heightVector, classVector}, new String[]{"height", "class"});
+	@Test
+	public void testSimpleNumeric() {
+		Frame df = new SolidFrame(SIZE, new Vector[]{heightVector, classVector}, new String[]{"height", "class"});
 
-        String[] labels;
-        OneRule oneRule = new OneRule();
+		String[] labels;
+		OneRule oneRule = new OneRule();
 
-        oneRule = oneRule.setMinCount(1);
-        oneRule.learn(df, "class");
-        oneRule.predict(df);
-        labels = new String[]{"True", "True", "True", "False", "False", "False"};
-        for (int i = 0; i < SIZE; i++) {
-            Assert.assertEquals(labels[i], oneRule.getPrediction().label(i));
-        }
+		oneRule = oneRule.setMinCount(1);
+		oneRule.learn(df, "class");
+		oneRule.predict(df);
+		labels = new String[]{"True", "True", "True", "False", "False", "False"};
+		for (int i = 0; i < SIZE; i++) {
+			Assert.assertEquals(labels[i], oneRule.getPrediction().getLabel(i));
+		}
 
-        oneRule.setMinCount(2);
-        oneRule.learn(df, "class");
-        oneRule.predict(df);
-        labels = new String[]{"True", "True", "TrueFalse", "TrueFalse", "False", "False"};
-        for (int i = 0; i < SIZE; i++) {
-            Assert.assertTrue(labels[i].contains(oneRule.getPrediction().label(i)));
-        }
+		oneRule.setMinCount(2);
+		oneRule.learn(df, "class");
+		oneRule.predict(df);
+		labels = new String[]{"True", "True", "TrueFalse", "TrueFalse", "False", "False"};
+		for (int i = 0; i < SIZE; i++) {
+			Assert.assertTrue(labels[i].contains(oneRule.getPrediction().getLabel(i)));
+		}
 
-        oneRule.setMinCount(3);
-        oneRule.learn(df, "class");
-        oneRule.predict(df);
-        labels = new String[]{"True", "True", "True", "False", "False", "False"};
-        for (int i = 0; i < SIZE; i++) {
-            Assert.assertTrue(labels[i].equals(oneRule.getPrediction().label(i)));
-        }
+		oneRule.setMinCount(3);
+		oneRule.learn(df, "class");
+		oneRule.predict(df);
+		labels = new String[]{"True", "True", "True", "False", "False", "False"};
+		for (int i = 0; i < SIZE; i++) {
+			Assert.assertTrue(labels[i].equals(oneRule.getPrediction().getLabel(i)));
+		}
 
-        oneRule.setMinCount(4);
-        oneRule.learn(df, "class");
-        oneRule.predict(df);
-        for (int i = 1; i < SIZE; i++) {
-            Assert.assertTrue(oneRule.getPrediction().label(i).equals(oneRule.getPrediction().label(0)));
-        }
-    }
+		oneRule.setMinCount(4);
+		oneRule.learn(df, "class");
+		oneRule.predict(df);
+		for (int i = 1; i < SIZE; i++) {
+			Assert.assertTrue(oneRule.getPrediction().getLabel(i).equals(oneRule.getPrediction().getLabel(0)));
+		}
+	}
 }

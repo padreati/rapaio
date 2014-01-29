@@ -24,73 +24,73 @@ import java.util.HashMap;
 /**
  * A frame which is learn on the base of another frame with
  * the row order and row selection specified by a
- * mapping give at construction time.
+ * getMapping give at construction time.
  * <p/>
  * This frame does not hold actual values, it delegate the behavior
- * to the wrapped frame, thus the wrapping affects only the rowCount
- * selected anf the order of these rowCount.
+ * to the wrapped frame, thus the wrapping affects only the getRowCount
+ * selected anf the order of these getRowCount.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class MappedFrame extends AbstractFrame {
 
-    private final Mapping mapping;
-    private final Frame source;
-    private final HashMap<Integer, Vector> vectors = new HashMap<>();
+	private final Mapping mapping;
+	private final Frame source;
+	private final HashMap<Integer, Vector> vectors = new HashMap<>();
 
-    public MappedFrame(Frame df, Mapping mapping) {
-        if (df.isMappedFrame()) {
-            throw new IllegalArgumentException("Not allowed mapped frames as source");
-        }
-        this.mapping = mapping;
-        this.source = df;
-    }
+	public MappedFrame(Frame df, Mapping mapping) {
+		if (df.isMappedFrame()) {
+			throw new IllegalArgumentException("Not allowed mapped frames as source");
+		}
+		this.mapping = mapping;
+		this.source = df;
+	}
 
-    @Override
-    public int rowCount() {
-        return mapping.size();
-    }
+	@Override
+	public int getRowCount() {
+		return mapping.size();
+	}
 
-    @Override
-    public int colCount() {
-        return source.colCount();
-    }
+	@Override
+	public int getColCount() {
+		return source.getColCount();
+	}
 
-    @Override
-    public int rowId(int row) {
-        return mapping.get(row);
-    }
+	@Override
+	public int getRowId(int row) {
+		return mapping.get(row);
+	}
 
-    @Override
-    public boolean isMappedFrame() {
-        return true;
-    }
+	@Override
+	public boolean isMappedFrame() {
+		return true;
+	}
 
-    @Override
-    public Frame sourceFrame() {
-        return source;
-    }
+	@Override
+	public Frame sourceFrame() {
+		return source;
+	}
 
-    @Override
-    public String[] colNames() {
-        return source.colNames();
-    }
+	@Override
+	public String[] getColNames() {
+		return source.getColNames();
+	}
 
-    @Override
-    public int colIndex(String name) {
-        return source.colIndex(name);
-    }
+	@Override
+	public int getColIndex(String name) {
+		return source.getColIndex(name);
+	}
 
-    @Override
-    public Vector col(int col) {
-        if (!vectors.containsKey(col)) {
-            vectors.put(col, new MappedVector(source.col(col), mapping));
-        }
-        return vectors.get(col);
-    }
+	@Override
+	public Vector getCol(int col) {
+		if (!vectors.containsKey(col)) {
+			vectors.put(col, new MappedVector(source.getCol(col), mapping));
+		}
+		return vectors.get(col);
+	}
 
-    @Override
-    public Vector col(String name) {
-        return col(colIndex(name));
-    }
+	@Override
+	public Vector getCol(String name) {
+		return getCol(getColIndex(name));
+	}
 }

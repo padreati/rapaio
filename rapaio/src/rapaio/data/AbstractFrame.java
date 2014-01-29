@@ -20,81 +20,80 @@
 package rapaio.data;
 
 /**
- * Base class for a vector which enforces to read-only name given at construction time.
- * <p/>
- * It also provides behavior for the utility access methods based on row and column indexes.
+ * Base class for a frame, which provides behavior for the utility
+ * access methods based on row and column indexes.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public abstract class AbstractFrame implements Frame {
 
-    @Override
-    public double value(int row, int col) {
-        return col(col).value(row);
-    }
+	@Override
+	public double getValue(int row, int col) {
+		return getCol(col).getValue(row);
+	}
 
-    @Override
-    public double value(int row, String colName) {
-        return col(colName).value(row);
-    }
+	@Override
+	public double getValue(int row, String colName) {
+		return getCol(colName).getValue(row);
+	}
 
-    @Override
-    public void setValue(int row, int col, double value) {
-        col(col).setValue(row, value);
-    }
+	@Override
+	public void setValue(int row, int col, double value) {
+		getCol(col).setValue(row, value);
+	}
 
-    @Override
-    public void setValue(int row, String colName, double value) {
-        col(colName).setValue(row, value);
-    }
+	@Override
+	public void setValue(int row, String colName, double value) {
+		getCol(colName).setValue(row, value);
+	}
 
-    @Override
-    public int index(int row, int col) {
-        return col(col).index(row);
-    }
+	@Override
+	public int getIndex(int row, int col) {
+		return getCol(col).getIndex(row);
+	}
 
-    @Override
-    public int index(int row, String colName) {
-        return col(colName).index(row);
-    }
+	@Override
+	public int getIndex(int row, String colName) {
+		return getCol(colName).getIndex(row);
+	}
 
-    @Override
-    public void setIndex(int row, int col, int value) {
-        col(col).setIndex(row, value);
-    }
+	@Override
+	public void setIndex(int row, int col, int value) {
+		getCol(col).setIndex(row, value);
+	}
 
-    @Override
-    public void setIndex(int row, String colName, int value) {
-        col(colName).setIndex(row, value);
-    }
+	@Override
+	public void setIndex(int row, String colName, int value) {
+		getCol(colName).setIndex(row, value);
+	}
 
-    @Override
-    public String label(int row, int col) {
-        return col(col).label(row);
-    }
+	@Override
+	public String getLabel(int row, int col) {
+		return getCol(col).getLabel(row);
+	}
 
-    @Override
-    public String label(int row, String colName) {
-        return col(colName).label(row);
-    }
+	@Override
+	public String getLabel(int row, String colName) {
+		return getCol(colName).getLabel(row);
+	}
 
-    @Override
-    public void setLabel(int row, int col, String value) {
-        col(col).setLabel(row, value);
-    }
+	@Override
+	public void setLabel(int row, int col, String value) {
+		getCol(col).setLabel(row, value);
+	}
 
-    @Override
-    public void setLabel(int row, String colName, String value) {
-        col(colName).setLabel(row, value);
-    }
+	@Override
+	public void setLabel(int row, String colName, String value) {
+		getCol(colName).setLabel(row, value);
+	}
 
-    @Override
-    public boolean isMissing(int row, int col) {
-        return col(col).isMissing(row);
-    }
+	@Override
+	public boolean isMissing(int row, int col) {
+		return getCol(col).isMissing(row);
+	}
 
-    @Override
-    public boolean isMissing(int row, String colName) {
-        return col(colName).isMissing(row);
-    }
+	@Override
+	public boolean isMissing(int row, String colName) {
+		return getCol(colName).isMissing(row);
+	}
 }

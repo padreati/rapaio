@@ -61,18 +61,18 @@ public class PrimesConjecturesHtml2 {
 
 		p("The conjecture is unproved until now. The description states that the conjecture has been proven "
 				+ "by computers up to n = 10^5. This looks odd since the vector of primes which I have is learn  "
-				+ "with a trivial version of a sieve and has " + primes.rowCount() + " prime numbers. ");
+				+ "with a trivial version of a sieve and has " + primes.getRowCount() + " prime numbers. ");
 
 		p("As always I try to use my rapaio tools, so plotting a line with the Andrica's gap function is easy like ");
 
 		code("    private void drawAndrica(Vector primes, int size) {\n"
-				+ "        Frame m = Frames.newMatrixFrame(size, new String[]{\"index\", \"gap\"});\n"
-				+ "        for (int i = 0; i < m.rowCount(); i++) {\n"
-				+ "            m.setValue(i, \"index\", i + 1);\n"
-				+ "            m.setValue(i, \"gap\", sqrt(primes.value(i + 1)) - sqrt(primes.value(i)));\n"
+				+ "        Frame m = Frames.newMatrixFrame(size, new String[]{\"getIndex\", \"gap\"});\n"
+				+ "        for (int i = 0; i < m.getRowCount(); i++) {\n"
+				+ "            m.setValue(i, \"getIndex\", i + 1);\n"
+				+ "            m.setValue(i, \"gap\", sqrt(primes.getValue(i + 1)) - sqrt(primes.getValue(i)));\n"
 				+ "        }\n"
 				+ "        draw(new Plot()\n"
-				+ "                .add(new Lines(m.col(\"index\"), m.col(\"gap\")))\n"
+				+ "                .add(new Lines(m.getCol(\"getIndex\"), m.getCol(\"gap\")))\n"
 				+ "                .add(new ABLine(0, true))\n"
 				+ "                .setYRange(0, 0.7),\n"
 				+ "                700, 300);\n"
@@ -89,7 +89,7 @@ public class PrimesConjecturesHtml2 {
 		p("The plotted function looks like a decreasing function (not monotone, but decreasing on average). "
 				+ "The question is, if we plot many values the tendency remains the same? ");
 
-		drawAndrica(primes, primes.rowCount() - 1, 0.015);
+		drawAndrica(primes, primes.getRowCount() - 1, 0.015);
 
 		p("This are all the prime numbers I have at hand. There are more than 50 millions. And the graph shows "
 				+ "the tendency is to decrease on average. Which is really interesting. This is not "
@@ -104,20 +104,20 @@ public class PrimesConjecturesHtml2 {
 		csv.getIndexFieldHints().add("primes");
 		try {
 			Frame df = csv.read("/home/ati/work/rapaio-data/primes/primes.txt");
-			return df.col(0);
+			return df.getCol(0);
 		} catch (IOException ex) {
 		}
 		return null;
 	}
 
 	private void drawAndrica(Vector primes, int size, double maxyrange) {
-		Frame m = Frames.newMatrixFrame(size, new String[]{"index", "gap"});
-		for (int i = 0; i < m.rowCount(); i++) {
-			m.setValue(i, "index", i + 1);
-			m.setValue(i, "gap", sqrt(primes.value(i + 1)) - sqrt(primes.value(i)));
+		Frame m = Frames.newMatrixFrame(size, new String[]{"getIndex", "gap"});
+		for (int i = 0; i < m.getRowCount(); i++) {
+			m.setValue(i, "getIndex", i + 1);
+			m.setValue(i, "gap", sqrt(primes.getValue(i + 1)) - sqrt(primes.getValue(i)));
 		}
 		draw(new Plot()
-				.add(new Lines(m.col("index"), m.col("gap")))
+				.add(new Lines(m.getCol("getIndex"), m.getCol("gap")))
 				.add(new ABLine(0, true))
 				.setYRange(0, maxyrange).setThickerMinSpace(100),
 				700, 300);

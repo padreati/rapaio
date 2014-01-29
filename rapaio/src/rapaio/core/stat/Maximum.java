@@ -22,11 +22,12 @@ package rapaio.core.stat;
 import rapaio.core.MathBase;
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
+import rapaio.data.VectorIterator;
 
 import static rapaio.workspace.Workspace.code;
 
 /**
- * Finds the maximum value from a {@link Vector} of values.
+ * Finds the maximum getValue from a {@link Vector} of values.
  * <p/>
  * Ignores missing elements.
  * <p/>
@@ -47,11 +48,9 @@ public class Maximum implements Summarizable {
 	private double compute() {
 		double max = Double.MIN_VALUE;
 		boolean valid = false;
-		for (int i = 0; i < vector.rowCount(); i++) {
-			if (vector.isMissing(i)) {
-				continue;
-			}
-			max = MathBase.max(max, vector.value(i));
+		VectorIterator it = vector.getIterator(true);
+		while (it.next()) {
+			max = MathBase.max(max, it.getValue());
 			valid = true;
 		}
 		return valid ? max : Double.NaN;

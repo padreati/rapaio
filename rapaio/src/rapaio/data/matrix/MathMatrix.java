@@ -89,7 +89,7 @@ public class MathMatrix {
 	 *
 	 * @param A     given matrix
 	 * @param value given scalar
-	 * @return value*A
+	 * @return getValue*A
 	 */
 	public static Matrix times(Matrix A, double value) {
 		Matrix C = new Matrix(A.m, A.n);
@@ -133,7 +133,7 @@ public class MathMatrix {
 	/**
 	 * Generate identity matrix
 	 *
-	 * @param m Number of rowCount.
+	 * @param m Number of getRowCount.
 	 * @param n Number of colums.
 	 * @return An m-by-n matrix with ones on the diagonal and zeros elsewhere.
 	 */
@@ -148,7 +148,7 @@ public class MathMatrix {
 	/**
 	 * Generate matrix with random elements
 	 *
-	 * @param m Number of rowCount.
+	 * @param m Number of getRowCount.
 	 * @param n Number of colums.
 	 * @return An m-by-n matrix with uniformly distributed random elements.
 	 */
@@ -186,7 +186,7 @@ public class MathMatrix {
 	/**
 	 * Two norm
 	 *
-	 * @return maximum singular value.
+	 * @return maximum singular getValue.
 	 */
 	public double norm2(Matrix A) {
 		return (new SingularValueDecomposition(A).norm2());
@@ -257,7 +257,7 @@ public class MathMatrix {
 	/**
 	 * Matrix condition (2 norm)
 	 *
-	 * @return ratio of largest to smallest singular value.
+	 * @return ratio of largest to smallest singular getValue.
 	 */
 	public double cond(Matrix A) {
 		return new SingularValueDecomposition(A).cond();

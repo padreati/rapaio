@@ -34,8 +34,8 @@ import static rapaio.core.MathBase.*;
  * <p/>
  * This class provides online statistics for:
  * <ul>
- * <ui>min - minimum value</ui>
- * <ui>max - maximum value</ui>
+ * <ui>min - minimum getValue</ui>
+ * <ui>max - maximum getValue</ui>
  * <ui>mean - mean of the values</ui>
  * </ul>
  *
@@ -69,9 +69,9 @@ public class StatOnline {
 	 * For now implement this method using only positive values for times. It
 	 * may be later modified in order to support negative values for times, with
 	 * the new meaning that we "remove" elements from calculations and as a side
-	 * effect to decrease the value of N;
+	 * effect to decrease the getValue of N;
 	 *
-	 * @param x value to be used to update statistics
+	 * @param x getValue to be used to update statistics
 	 */
 	public void update(double x) {
 		double delta, delta_n, delta_n2, term1;

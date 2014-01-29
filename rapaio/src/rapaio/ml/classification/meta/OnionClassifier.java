@@ -30,39 +30,39 @@ import java.util.List;
  * Meta data classifier which uses some classifiers as base classifiers and
  * for each tested instance it tries to classify with each sub-classifier.
  * If an instance is classified by a sub-classifier than teh result is returned,
- * if than classifier returns missing value for classification then the next
+ * if than classifier returns missing getValue for classification then the next
  * sub-classifier is used.
  */
 @Deprecated
 public class OnionClassifier extends AbstractClassifier<OnionClassifier> {
 
-    @Override
-    public Classifier newInstance() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Override
+	public Classifier newInstance() {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
 
-    @Override
-    public void learn(Frame df, List<Double> weights, String classColName) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Override
+	public void learn(Frame df, List<Double> weights, String classColName) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
 
-    @Override
-    public void predict(Frame df) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Override
+	public void predict(Frame df) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
 
-    @Override
-    public Nominal getPrediction() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Override
+	public Nominal getPrediction() {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
 
-    @Override
-    public Frame getDistribution() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Override
+	public Frame getDistribution() {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
 
-    @Override
-    public void summary() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Override
+	public void summary() {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
 }

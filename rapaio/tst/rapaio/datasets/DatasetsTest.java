@@ -34,36 +34,36 @@ import static org.junit.Assert.*;
  */
 public class DatasetsTest {
 
-    public DatasetsTest() {
-    }
+	public DatasetsTest() {
+	}
 
-    @Before
-    public void setUp() {
-    }
+	@Before
+	public void setUp() {
+	}
 
-    @After
-    public void tearDown() {
-    }
+	@After
+	public void tearDown() {
+	}
 
-    @Test
-    public void testIrisDataset() throws IOException, URISyntaxException {
-        Frame df = Datasets.loadIrisDataset();
+	@Test
+	public void testIrisDataset() throws IOException, URISyntaxException {
+		Frame df = Datasets.loadIrisDataset();
 
-        assertNotNull(df);
-        assertEquals(5, df.colCount());
-        assertEquals(150, df.rowCount());
+		assertNotNull(df);
+		assertEquals(5, df.getColCount());
+		assertEquals(150, df.getRowCount());
 
-        final String[] names = new String[]{"sepal-length", "sepal-width", "petal-length", "petal-width", "class"};
-        assertArrayEquals(names, df.colNames());
+		final String[] names = new String[]{"sepal-length", "sepal-width", "petal-length", "petal-width", "class"};
+		assertArrayEquals(names, df.getColNames());
 
-        int nas = 0;
-        for (int i = 0; i < df.colCount(); i++) {
-            for (int j = 0; j < df.rowCount(); j++) {
-                if (df.col(i).isMissing(j)) {
-                    nas++;
-                }
-            }
-        }
-        assertEquals(0, nas);
-    }
+		int nas = 0;
+		for (int i = 0; i < df.getColCount(); i++) {
+			for (int j = 0; j < df.getRowCount(); j++) {
+				if (df.getCol(i).isMissing(j)) {
+					nas++;
+				}
+			}
+		}
+		assertEquals(0, nas);
+	}
 }
