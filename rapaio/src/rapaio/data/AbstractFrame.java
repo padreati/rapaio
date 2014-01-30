@@ -307,12 +307,12 @@ class FrameIterator implements FIterator {
 
 	@Override
 	public Frame getMappedFrame() {
-		return new MappedFrame(frame, getMapping());
+		return new MappedFrame(frame.sourceFrame(), getMapping());
 	}
 
 	@Override
 	public Frame getMappedFrame(String key) {
-		return new MappedFrame(frame, getMapping(key));
+		return new MappedFrame(frame.sourceFrame(), getMapping(key));
 	}
 
 	@Override
