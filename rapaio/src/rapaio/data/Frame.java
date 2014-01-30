@@ -218,9 +218,9 @@ public interface Frame extends Serializable {
 
 	boolean isMissing(int row);
 
-	boolean setMissing(int row, int col);
+	void setMissing(int row, int col);
 
-	boolean setMissing(int row, String colName);
+	void setMissing(int row, String colName);
 
 	public FIterator getIterator();
 

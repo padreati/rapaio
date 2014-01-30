@@ -22,7 +22,6 @@ package rapaio.ml.classification.tree;
 
 import rapaio.core.RandomSource;
 import rapaio.data.*;
-import rapaio.data.filters.RowFilters;
 import rapaio.ml.classification.AbstractClassifier;
 import rapaio.ml.classification.Classifier;
 import rapaio.ml.classification.DensityTable;
@@ -31,6 +30,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static rapaio.data.filters.BaseFilters.sort;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -223,7 +224,7 @@ class C45Node {
 			if (df.getCol(testColName).getType().isNumeric()) {
 				DensityTable id = new DensityTable(DensityTable.NUMERIC_DEFAULT_LABELS, parent.dict);
 				Vector sort = Vectors.newSeq(df.getRowCount());
-				sort = RowFilters.sort(sort, RowComparators.numericComparator(df.getCol(testColName), true));
+				sort = sort(sort, RowComparators.numericComparator(df.getCol(testColName), true));
 				// first fill the density table
 				for (int i = 0; i < df.getRowCount(); i++) {
 					int pos = sort.getRowId(i);

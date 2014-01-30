@@ -22,7 +22,7 @@ package rapaio.ml.classification.tree;
 import rapaio.core.ColRange;
 import rapaio.core.RandomSource;
 import rapaio.data.*;
-import rapaio.data.filters.RowFilters;
+import rapaio.data.filters.BaseFilters;
 import rapaio.ml.classification.AbstractClassifier;
 import rapaio.ml.classification.Classifier;
 import rapaio.ml.classification.colselect.ColSelector;
@@ -190,7 +190,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
 	}
 
 	private void addOob(Frame source, Frame bootstrap, Classifier tree) {
-		Frame delta = RowFilters.delta(source, bootstrap);
+		Frame delta = BaseFilters.delta(source, bootstrap);
 		tree.predict(delta);
 		Vector predict = tree.getPrediction();
 		for (int i = 0; i < delta.getRowCount(); i++) {
@@ -314,7 +314,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
 			f.setValue(pos, 1, decrease);
 			pos++;
 		}
-		f = RowFilters.sort(f, RowComparators.numericComparator(f.getCol(1), false));
+		f = BaseFilters.sort(f, RowComparators.numericComparator(f.getCol(1), false));
 
 		for (int i = 0; i < f.getRowCount(); i++) {
 			sb.append(String.format("%" + width + "s : %10.4f\n", f.getLabel(i, 0), f.getValue(i, 1)));

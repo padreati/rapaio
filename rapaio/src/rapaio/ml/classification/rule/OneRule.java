@@ -21,7 +21,7 @@ package rapaio.ml.classification.rule;
 
 import rapaio.core.RandomSource;
 import rapaio.data.*;
-import rapaio.data.filters.RowFilters;
+import rapaio.data.filters.BaseFilters;
 import rapaio.ml.classification.AbstractClassifier;
 
 import java.util.ArrayList;
@@ -200,7 +200,7 @@ public class OneRule extends AbstractClassifier<OneRule> {
 
 	private OneRuleSet buildNumeric(String sourceName, String className, Frame df, List<Double> weights) {
 		NumericOneRuleSet set = new NumericOneRuleSet(sourceName);
-		Vector sort = RowFilters.sort(Vectors.newSeq(weights.size()),
+		Vector sort = BaseFilters.sort(Vectors.newSeq(weights.size()),
 				RowComparators.numericComparator(df.getCol(sourceName), true),
 				RowComparators.nominalComparator(df.getCol(className), true));
 		int pos = 0;

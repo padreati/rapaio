@@ -29,7 +29,8 @@ import java.util.HashSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static rapaio.core.MathBase.pow;
-import static rapaio.data.filters.RowFilters.sort;
+import static rapaio.data.filters.BaseFilters.sort;
+import static rapaio.data.filters.BaseFilters.toNumeric;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -48,7 +49,7 @@ public class FilterNominalToDoubleTest {
 			String value = String.valueOf(pow(i, 1.5));
 			v.setLabel(i, value);
 		}
-		Vector filtered = VectorFilters.toNumeric(v);
+		Vector filtered = toNumeric(v);
 		for (int i = 0; i < v.getRowCount(); i++) {
 			double value = pow(i, 1.5);
 			assertEquals(value, filtered.getValue(i), 1e-10);
@@ -68,7 +69,7 @@ public class FilterNominalToDoubleTest {
 	public void testNFE() {
 		Vector filtered = new Nominal(1, Arrays.asList(new String[]{"abc"}));
 		filtered.setLabel(0, "abc");
-		Vector numeric = VectorFilters.toNumeric(filtered);
+		Vector numeric = toNumeric(filtered);
 		assertEquals(numeric.getValue(0), numeric.getValue(0), 1e-10);
 		assertTrue(numeric.isMissing(0));
 	}

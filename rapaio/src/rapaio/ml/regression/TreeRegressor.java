@@ -4,7 +4,7 @@ import rapaio.core.ColRange;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.StatOnline;
 import rapaio.data.*;
-import rapaio.data.filters.RowFilters;
+import rapaio.data.filters.BaseFilters;
 import rapaio.ml.classification.colselect.ColSelector;
 import rapaio.ml.classification.colselect.DefaultColSelector;
 
@@ -133,7 +133,7 @@ class TreeNode {
 		double[] var = new double[df.getRowCount()];
 		StatOnline so = new StatOnline();
 		Vector sort = Vectors.newSeq(df.getRowCount());
-		sort = RowFilters.sort(sort, RowComparators.numericComparator(testCol, true));
+		sort = BaseFilters.sort(sort, RowComparators.numericComparator(testCol, true));
 		double w = 0;
 		for (int i = 0; i < df.getRowCount(); i++) {
 			int pos = sort.getRowId(i);

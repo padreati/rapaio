@@ -112,6 +112,16 @@ public abstract class AbstractFrame implements Frame {
 	}
 
 	@Override
+	public void setMissing(int row, int col) {
+		getCol(col).setMissing(row);
+	}
+
+	@Override
+	public void setMissing(int row, String colName) {
+		getCol(colName).setMissing(row);
+	}
+
+	@Override
 	public FIterator getCycleIterator(int size) {
 		return new FrameIterator(false, size, this);
 	}

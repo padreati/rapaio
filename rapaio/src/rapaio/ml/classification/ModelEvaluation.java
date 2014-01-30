@@ -30,8 +30,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static rapaio.data.filters.RowFilters.delta;
-import static rapaio.data.filters.RowFilters.shuffle;
+import static rapaio.data.filters.BaseFilters.delta;
+import static rapaio.data.filters.BaseFilters.shuffle;
 import static rapaio.workspace.Workspace.print;
 
 /**

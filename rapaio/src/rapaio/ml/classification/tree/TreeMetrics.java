@@ -20,7 +20,7 @@
 package rapaio.ml.classification.tree;
 
 import rapaio.data.Frame;
-import rapaio.data.filters.NominalFilters;
+import rapaio.data.filters.BaseFilters;
 
 import java.util.List;
 
@@ -49,9 +49,8 @@ public class TreeMetrics {
 
 	public double entropy(Frame df, List<Double> weights, String classColName, String splitColName) {
 		int splitIndex = df.getColIndex(splitColName);
-		Frame[] split = NominalFilters.groupByNominal(df, splitIndex);
 		double entropy = 0.;
-		for (Frame f : split) {
+		for (Frame f : BaseFilters.groupByNominal(df, splitIndex).values()) {
 			if (f == null) {
 				continue;
 			}
@@ -62,9 +61,8 @@ public class TreeMetrics {
 
 	public double infoGain(Frame df, List<Double> weights, String classColName, String splitColName) {
 		int splitIndex = df.getColIndex(splitColName);
-		Frame[] split = NominalFilters.groupByNominal(df, splitIndex);
 		double infoGain = entropy(df, weights, classColName);
-		for (Frame f : split) {
+		for (Frame f : BaseFilters.groupByNominal(df, splitIndex).values()) {
 			if (f == null) {
 				continue;
 			}

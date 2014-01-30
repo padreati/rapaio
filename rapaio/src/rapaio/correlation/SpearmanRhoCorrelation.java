@@ -27,7 +27,7 @@ import rapaio.data.Vector;
 import java.util.Arrays;
 
 import static rapaio.core.MathBase.max;
-import static rapaio.data.filters.RowFilters.sort;
+import static rapaio.data.filters.BaseFilters.sort;
 import static rapaio.workspace.Workspace.code;
 import static rapaio.workspace.Workspace.getPrinter;
 

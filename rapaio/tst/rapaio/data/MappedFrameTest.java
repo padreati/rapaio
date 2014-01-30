@@ -20,7 +20,7 @@
 package rapaio.data;
 
 import org.junit.Test;
-import rapaio.data.filters.RowFilters;
+import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
 
 import java.io.IOException;
@@ -36,8 +36,8 @@ public class MappedFrameTest {
 	@Test
 	public void colsSortedTest() throws IOException, URISyntaxException {
 		Frame orig = Datasets.loadIrisDataset();
-		Frame sort = RowFilters.sort(orig, RowComparators.numericComparator(orig.getCol(1), true));
-		sort = RowFilters.sort(sort, RowComparators.numericComparator(orig.getCol(2), true));
+		Frame sort = BaseFilters.sort(orig, RowComparators.numericComparator(orig.getCol(1), true));
+		sort = BaseFilters.sort(sort, RowComparators.numericComparator(orig.getCol(2), true));
 		for (int i = 0; i < sort.getRowCount(); i++) {
 			assertEquals(sort.getValue(i, 0), sort.getCol(0).getValue(i), 1e-10);
 		}

@@ -23,12 +23,12 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
-import rapaio.data.filters.NominalFilters;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static rapaio.data.filters.RowFilters.shuffle;
+import static rapaio.data.filters.BaseFilters.groupByNominal;
+import static rapaio.data.filters.BaseFilters.shuffle;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -92,8 +92,7 @@ public class StatSampling {
 			String col = strataCols[i];
 			List<Frame> split = new ArrayList<>();
 			for (Frame f : frames) {
-				Frame[] groups = NominalFilters.groupByNominal(f, f.getColIndex(col));
-				for (Frame group : groups) {
+				for (Frame group : groupByNominal(f, f.getColIndex(col)).values()) {
 					if (group != null && group.getRowCount() > 0) {
 						split.add(group);
 					}

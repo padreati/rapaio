@@ -261,7 +261,7 @@ public final class BaseFilters {
 	 * @param nominalIndex getIndex fo the nominal column
 	 * @return a map of frames, with nominal labels as keys
 	 */
-	public static Map<String, Frame> groupFramesByNominal(final Frame df, final int nominalIndex) {
+	public static Map<String, Frame> groupByNominal(final Frame df, final int nominalIndex) {
 		if (!df.getCol(nominalIndex).getType().isNominal()) {
 			throw new IllegalArgumentException("Index does not specify a nominal attribute");
 		}
@@ -316,6 +316,47 @@ public final class BaseFilters {
 			}
 		}
 		return new MappedFrame(source.sourceFrame(), new Mapping(mapping));
+	}
+
+	public static List<Frame> combine(String name, List<Frame> frames, String... combined) {
+		Set<String> dict = new HashSet<>();
+		dict.add("");
+		for (int i = 0; i < frames.size(); i++) {
+			if (frames.get(i).isMappedFrame()) {
+				throw new IllegalArgumentException("Not allowed mapped frames");
+			}
+		}
+
+		for (int j = 0; j < combined.length; j++) {
+			String[] vdict = frames.get(0).getCol(combined[j]).getDictionary();
+			Set<String> newdict = new HashSet<>();
+			for (String term : dict) {
+				for (int k = 0; k < vdict.length; k++) {
+					newdict.add(term + "." + vdict[k]);
+				}
+			}
+			dict = newdict;
+		}
+
+		List<Frame> result = new ArrayList<>();
+		for (int i = 0; i < frames.size(); i++) {
+			List<Vector> vectors = new ArrayList<>();
+			for (int j = 0; j < frames.get(i).getColCount(); j++) {
+				vectors.add(frames.get(i).getCol(j));
+			}
+			Vector col = new Nominal(frames.get(i).getRowCount(), dict);
+			for (int j = 0; j < frames.get(i).getRowCount(); j++) {
+				StringBuilder sb = new StringBuilder();
+				for (int k = 0; k < combined.length; k++) {
+					sb.append(".").append(frames.get(i).getLabel(j, frames.get(i).getColIndex(combined[k])));
+				}
+				col.setLabel(j, sb.toString());
+			}
+			vectors.add(col);
+			result.add(new SolidFrame(frames.get(i).getRowCount(), vectors, frames.get(i).getColNames()));
+		}
+		return result;
+
 	}
 
 	/**

@@ -103,19 +103,19 @@ public class CsvPersistence {
 	}
 
 	public Frame read(String fileName) throws IOException {
-		return read(new MyReader(fileName));
+		return read(new FileInputStream(fileName));
 	}
 
 	public Frame read(Class<?> clazz, String resource) throws IOException {
-		return read(new MyReader(clazz, resource));
+		return read(clazz.getResourceAsStream(resource));
 	}
 
-	private Frame read(MyReader myReader) throws IOException {
+	public Frame read(InputStream inputStream) throws IOException {
 		int rows = 0;
 		List<String> names = new ArrayList<>();
 		List<Vector> vectors = new ArrayList<>();
 
-		try (BufferedReader reader = myReader.reader()) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
 			if (hasHeader) {
 				String line = reader.readLine();
 				if (line == null) {
@@ -372,30 +372,5 @@ public class CsvPersistence {
 			label = "\"" + label + "\"";
 		}
 		return label;
-	}
-}
-
-class MyReader {
-
-	private final String fileName;
-	private final Class<?> clazz;
-	private final String resource;
-
-	public MyReader(String fileName) {
-		this.fileName = fileName;
-		this.clazz = null;
-		this.resource = null;
-	}
-
-	public MyReader(Class<?> clazz, String resource) {
-		this.fileName = null;
-		this.clazz = clazz;
-		this.resource = resource;
-	}
-
-	public BufferedReader reader() throws FileNotFoundException {
-		if (fileName != null)
-			return new BufferedReader(new FileReader(fileName));
-		return new BufferedReader(new InputStreamReader(clazz.getResourceAsStream(resource)));
 	}
 }

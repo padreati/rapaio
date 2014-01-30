@@ -23,11 +23,12 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
 import rapaio.data.VectorType;
-import rapaio.data.filters.VectorFilters;
 import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+
+import static rapaio.data.filters.BaseFilters.toNumeric;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -39,7 +40,7 @@ public class Datasets {
 		Vector[] vectors = new Vector[df.getColCount()];
 		vectors[vectors.length - 1] = df.getCol(vectors.length - 1);
 		for (int i = 0; i < vectors.length - 1; i++) {
-			vectors[i] = VectorFilters.toNumeric(df.getCol(i));
+			vectors[i] = toNumeric(df.getCol(i));
 		}
 		return new SolidFrame(df.getRowCount(), vectors, df.getColNames());
 	}
@@ -48,7 +49,7 @@ public class Datasets {
 		Frame df = new CsvPersistence().read(Datasets.class, "pearsonheight.csv");
 		Vector[] vectors = new Vector[df.getColCount()];
 		for (int i = 0; i < df.getColCount(); i++) {
-			vectors[i] = VectorFilters.toNumeric(df.getCol(i));
+			vectors[i] = toNumeric(df.getCol(i));
 		}
 		return new SolidFrame(df.getRowCount(), vectors, df.getColNames());
 	}
@@ -58,7 +59,7 @@ public class Datasets {
 		persistence.setColSeparator(',');
 		persistence.setHasQuotas(false);
 		Frame df = persistence.read(Datasets.class, "chest.csv");
-		return VectorFilters.toNumeric(df);
+		return toNumeric(df);
 	}
 
 	public static Frame loadCarMpgDataset() throws IOException, URISyntaxException {

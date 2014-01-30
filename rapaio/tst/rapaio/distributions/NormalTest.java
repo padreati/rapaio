@@ -21,7 +21,7 @@ package rapaio.distributions;
 
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.filters.VectorFilters;
+import rapaio.data.filters.BaseFilters;
 import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class NormalTest {
 		persistence.setHasHeader(false);
 		persistence.setColSeparator(' ');
 		df = persistence.read(this.getClass(), "standard_normal.csv");
-		df = VectorFilters.toNumeric(df);
+		df = BaseFilters.toNumeric(df);
 	}
 
 	@Test

@@ -30,7 +30,7 @@ import rapaio.graphics.plot.Points;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.data.filters.NumericFilters.jitter;
+import static rapaio.data.filters.BaseFilters.jitter;
 import static rapaio.workspace.Summary.names;
 import static rapaio.workspace.Summary.summary;
 import static rapaio.workspace.Workspace.*;

@@ -33,9 +33,9 @@ package rapaio.core;
  */
 public interface Summarizable {
 
-    /**
-     * Prints a summary of the object to the system printer configured
-     * with {@link rapaio.explore.Workspace#setPrinter(rapaio.printer.Printer)}.
-     */
-    void summary();
+	/**
+	 * Prints a summary of the object to the system printer configured
+	 * with {@link rapaio.workspace.Workspace#setPrinter(rapaio.printer.Printer)}.
+	 */
+	void summary();
 }

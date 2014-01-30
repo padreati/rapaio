@@ -22,7 +22,7 @@ package rapaio.ml.classification.tree;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Mode;
 import rapaio.data.*;
-import rapaio.data.filters.RowFilters;
+import rapaio.data.filters.BaseFilters;
 import rapaio.ml.classification.AbstractClassifier;
 import rapaio.ml.classification.Classifier;
 import rapaio.ml.classification.colselect.ColSelector;
@@ -318,7 +318,7 @@ class TreeNode {
 		double[][] p = new double[2][fd.length];
 		int[] rowCounts = new int[2];
 
-		Vector sort = RowFilters.sort(Vectors.newSeq(0, df.getRowCount() - 1, 1), RowComparators.numericComparator(col, true));
+		Vector sort = BaseFilters.sort(Vectors.newSeq(0, df.getRowCount() - 1, 1), RowComparators.numericComparator(col, true));
 		for (int i = 0; i < df.getRowCount() - 1; i++) {
 			int row = df.getCol(colIndex).isMissing(sort.getIndex(i)) ? 0 : 1;
 			int index = df.getIndex(sort.getIndex(i), classColIndex);
