@@ -19,6 +19,8 @@
  */
 package rapaio.data;
 
+import rapaio.data.collect.VIterator;
+
 import java.io.Serializable;
 
 /**
@@ -70,25 +72,25 @@ public interface Vector extends Serializable {
 	double getValue(int row);
 
 	/**
-     * Set numeric setValue for the observation specified by {@param row} to {@param setValue}.
-     * <p/>
-     * Returns valid values for numerical vector types, otherwise the method
-     * returns unspeified values.
-     *
-     * @param row   position of the observation
-     * @param value numeric setValue from position {@param row}
-     */
-    void setValue(int row, double value);
+	 * Set numeric setValue for the observation specified by {@param row} to {@param setValue}.
+	 * <p/>
+	 * Returns valid values for numerical vector types, otherwise the method
+	 * returns unspeified values.
+	 *
+	 * @param row   position of the observation
+	 * @param value numeric setValue from position {@param row}
+	 */
+	void setValue(int row, double value);
 
 
-    void addValue(double value);
+	void addValue(double value);
 
-    void addValue(int row, double value);
+	void addValue(int row, double value);
 
-    /**
+	/**
 	 * Returns getIndex setValue for the observation specified by {@param row}
 	 *
-     * @param row position of the observation
+	 * @param row position of the observation
 	 * @return getIndex setValue
 	 */
 	int getIndex(int row);
@@ -96,19 +98,19 @@ public interface Vector extends Serializable {
 	/**
 	 * Set getIndex setValue for the observation specified by {@param row}.
 	 *
-     * @param row   position of the observation
+	 * @param row   position of the observation
 	 * @param value getIndex setValue for the observation
 	 */
-    void setIndex(int row, int value);
+	void setIndex(int row, int value);
 
-    void addIndex(int value);
+	void addIndex(int value);
 
-    void addIndex(int row, int value);
+	void addIndex(int row, int value);
 
-    /**
+	/**
 	 * Returns nominal getLabel for the observation specified by {@param row}.
 	 *
-     * @param row position of the observation
+	 * @param row position of the observation
 	 * @return getLabel setValue for the observation
 	 */
 	String getLabel(int row);
@@ -116,16 +118,16 @@ public interface Vector extends Serializable {
 	/**
 	 * Set nominal getLabel for the observation specified by {@param row}.
 	 *
-     * @param row   position of the observation
+	 * @param row   position of the observation
 	 * @param value getLabel setValue of the observation
 	 */
-    void setLabel(int row, String value);
+	void setLabel(int row, String value);
 
-    void addLabel(String value);
+	void addLabel(String value);
 
-    void addLabel(int row, String value);
+	void addLabel(int row, String value);
 
-    /**
+	/**
 	 * Returns the term getDictionary used by the nominal values.
 	 * <p/>
 	 * Term getDictionary contains all the nominal labels used by
@@ -134,47 +136,49 @@ public interface Vector extends Serializable {
 	 * <p/>
 	 * The term getDictionary contains nominal labels sorted in lexicografical order,
 	 * so binary search techniques may be used on this vector.
-     * <p/>
-     * For other vector types like numerical ones this method returns nothing.
-     *
+	 * <p/>
+	 * For other vector types like numerical ones this method returns nothing.
+	 *
 	 * @return term getDictionary defined by the nominal vector.
 	 */
 	String[] getDictionary();
 
 	void setDictionary(String[] dict);
 
-    /**
-     * Returns true if the setValue for the observation specified by {@param row} is missing, not available.
-     * <p/>
-     * A missing setValue for the observation means taht the measurement
-     * was not completed or the result of the measurement was not documented,
-     * thus the setValue is not available for analysis.
-     *
+	/**
+	 * Returns true if the setValue for the observation specified by {@param row} is missing, not available.
+	 * <p/>
+	 * A missing setValue for the observation means taht the measurement
+	 * was not completed or the result of the measurement was not documented,
+	 * thus the setValue is not available for analysis.
+	 *
 	 * @param row position of the observation
 	 * @return true if the observation measurement is not specified
-     */
-    boolean isMissing(int row);
+	 */
+	boolean isMissing(int row);
 
-    /**
-     * Set the setValue of the observation specified by {@param row} as missing, not available for analysis.
-     *
-     * @param row position of the observation.
-     */
-    void setMissing(int row);
+	/**
+	 * Set the setValue of the observation specified by {@param row} as missing, not available for analysis.
+	 *
+	 * @param row position of the observation.
+	 */
+	void setMissing(int row);
 
-    void addMissing();
+	void addMissing();
 
-    void remove(int row);
+	void remove(int row);
 
-    void removeRange(int from, int to);
+	void removeRange(int from, int to);
 
-    void clear();
+	void clear();
 
-    void trimToSize();
+	void trimToSize();
 
-    void ensureCapacity(int minCapacity);
+	void ensureCapacity(int minCapacity);
 
-	public VectorIterator getIterator(boolean complete);
+	public VIterator getIterator();
 
-	public VectorIterator getCyclingIterator(int size);
+	public VIterator getIterator(boolean complete);
+
+	public VIterator getCycleIterator(int size);
 }

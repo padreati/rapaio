@@ -20,7 +20,7 @@
 package rapaio.ml.classification.tree;
 
 import rapaio.data.Frame;
-import rapaio.filters.NominalFilters;
+import rapaio.data.filters.NominalFilters;
 
 import java.util.List;
 

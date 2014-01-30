@@ -22,7 +22,7 @@ package rapaio.core.stat;
 import rapaio.core.MathBase;
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
-import rapaio.data.VectorIterator;
+import rapaio.data.collect.VIterator;
 
 import static rapaio.workspace.Workspace.code;
 
@@ -48,7 +48,7 @@ public class Maximum implements Summarizable {
 	private double compute() {
 		double max = Double.MIN_VALUE;
 		boolean valid = false;
-		VectorIterator it = vector.getIterator(true);
+		VIterator it = vector.getIterator(true);
 		while (it.next()) {
 			max = MathBase.max(max, it.getValue());
 			valid = true;

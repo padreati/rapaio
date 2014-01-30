@@ -4,7 +4,7 @@ import rapaio.core.ColRange;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.StatOnline;
 import rapaio.data.*;
-import rapaio.filters.RowFilters;
+import rapaio.data.filters.RowFilters;
 import rapaio.ml.classification.colselect.ColSelector;
 import rapaio.ml.classification.colselect.DefaultColSelector;
 

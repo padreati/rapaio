@@ -23,8 +23,8 @@ import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Vector;
 import rapaio.data.Vectors;
+import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
-import rapaio.filters.ColFilters;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
 import rapaio.graphics.plot.Points;
@@ -128,10 +128,10 @@ public class ClassificationWithRF implements TutorialPage {
 				+ "        Summary.summary(ColFilters.retainCols(all, \"spam\"));\n");
 
 		Frame all = Datasets.loadSpamBase();
-		all = ColFilters.retainCols(all, "1-20,spam"); // keep only some columns
+		all = BaseFilters.retainCols(all, "1-20,spam"); // keep only some columns
 
-		Summary.summary(ColFilters.retainCols(all, "1-5")); // summary of first 5 columsn
-		Summary.summary(ColFilters.retainCols(all, "spam"));
+		Summary.summary(BaseFilters.retainCols(all, "1-5")); // summary of first 5 columsn
+		Summary.summary(BaseFilters.retainCols(all, "spam"));
 
 		p("Above you see some 5-number information on the data. It is not exhaustive "
 				+ "since it is not the purpose of this tutorial.");

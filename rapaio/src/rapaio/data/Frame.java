@@ -19,6 +19,8 @@
  */
 package rapaio.data;
 
+import rapaio.data.collect.FIterator;
+
 import java.io.Serializable;
 
 /**
@@ -213,4 +215,16 @@ public interface Frame extends Serializable {
 	boolean isMissing(int row, int col);
 
 	boolean isMissing(int row, String colName);
+
+	boolean isMissing(int row);
+
+	boolean setMissing(int row, int col);
+
+	boolean setMissing(int row, String colName);
+
+	public FIterator getIterator();
+
+	public FIterator getIterator(boolean complete);
+
+	public FIterator getCycleIterator(int size);
 }

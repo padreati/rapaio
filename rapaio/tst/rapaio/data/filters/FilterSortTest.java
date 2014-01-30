@@ -28,7 +28,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static rapaio.filters.RowFilters.sort;
+import static rapaio.data.filters.RowFilters.sort;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

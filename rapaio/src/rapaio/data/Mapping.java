@@ -69,7 +69,7 @@ public class Mapping implements Iterable<Integer> {
 
 			@Override
 			public void remove() {
-				throw new RuntimeException("This operation is not allowed on getMapping.");
+				throw new RuntimeException("This operation is not allowed on mappings.");
 			}
 		};
 	}

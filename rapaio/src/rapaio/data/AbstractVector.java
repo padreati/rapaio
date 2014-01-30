@@ -19,7 +19,10 @@
  */
 package rapaio.data;
 
+import rapaio.data.collect.VIterator;
+
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -35,17 +38,22 @@ public abstract class AbstractVector implements Vector {
 	}
 
 	@Override
-	public VectorIterator getIterator(boolean complete) {
-		return new SolidVectorIterator(complete, getRowCount(), this);
+	public VIterator getIterator() {
+		return getIterator(false);
 	}
 
 	@Override
-	public VectorIterator getCyclingIterator(int size) {
-		return new SolidVectorIterator(true, size, this);
+	public VIterator getIterator(boolean complete) {
+		return new VectorIterator(complete, getRowCount(), this);
+	}
+
+	@Override
+	public VIterator getCycleIterator(int size) {
+		return new VectorIterator(true, size, this);
 	}
 }
 
-class SolidVectorIterator implements VectorIterator {
+class VectorIterator implements VIterator {
 
 	private static final String DEFAULT_MAPPING_KEY = "$$DEFAULT$$";
 	final boolean complete;
@@ -56,7 +64,7 @@ class SolidVectorIterator implements VectorIterator {
 	int pos = -1;
 	int cyclePos = -1;
 
-	SolidVectorIterator(boolean complete, int size, Vector vector) {
+	VectorIterator(boolean complete, int size, Vector vector) {
 		this.complete = complete;
 		this.size = size;
 		this.vector = vector;
@@ -166,5 +174,24 @@ class SolidVectorIterator implements VectorIterator {
 	@Override
 	public Mapping getMapping(String key) {
 		return mappings.get(key);
+	}
+
+	@Override
+	public Vector getMappedVector() {
+		return new MappedVector(vector.getSourceVector(), getMapping());
+	}
+
+	@Override
+	public Vector getMappedVector(String key) {
+		return new MappedVector(vector.getSourceVector(), getMapping(key));
+	}
+
+	@Override
+	public Map<String, Vector> getMappedVectors() {
+		Map<String, Vector> map = new HashMap<>();
+		for (String key : getMappingsKeys()) {
+			map.put(key, getMappedVector(key));
+		}
+		return map;
 	}
 }

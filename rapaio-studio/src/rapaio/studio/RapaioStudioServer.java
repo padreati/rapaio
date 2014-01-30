@@ -185,7 +185,6 @@ public class RapaioStudioServer implements ApplicationComponent {
 		}
 		if (listenerThread != null) {
 			listenerThread.interrupt();
-			listenerThread.stop();
 			listenerThread.join(0);
 		}
 	}

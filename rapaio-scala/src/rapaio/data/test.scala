@@ -8,13 +8,11 @@ import rapaio.core.stat.CoreStat
 object test extends App {
 
   var x = DoubleFeature(1.0, 2.0, 3.0, 0.0)
-  println(x mkString ", ")
   println(CoreStat.mean(x))
   println(x.rowCount)
 
   x.addValue(10.0, 20.0, 30, 50, 100, 1000, 10 ^ 5)
 
-  println(x mkString ", ")
   println(CoreStat.mean(x))
   println(x.rowCount)
 

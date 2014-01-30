@@ -22,7 +22,7 @@ package rapaio.core;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
-import rapaio.filters.BaseFilters;
+import rapaio.data.filters.VectorFilters;
 import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
@@ -41,7 +41,7 @@ public abstract class CoreStatTestUtil {
 		df = p.read(getClass(), "core_stat.csv");
 		Vector[] vectors = new Vector[df.getColCount()];
 		for (int i = 0; i < vectors.length; i++) {
-			vectors[i] = BaseFilters.toNumeric(df.getCol(i));
+			vectors[i] = VectorFilters.toNumeric(df.getCol(i));
 		}
 		df = new SolidFrame(df.getRowCount(), vectors, df.getColNames());
 	}

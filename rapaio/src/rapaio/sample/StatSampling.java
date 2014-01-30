@@ -23,12 +23,12 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
-import rapaio.filters.NominalFilters;
+import rapaio.data.filters.NominalFilters;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static rapaio.filters.RowFilters.shuffle;
+import static rapaio.data.filters.RowFilters.shuffle;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

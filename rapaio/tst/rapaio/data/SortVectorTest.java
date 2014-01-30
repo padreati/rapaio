@@ -29,7 +29,7 @@ import java.util.HashMap;
 
 import static org.junit.Assert.*;
 import static rapaio.data.RowComparators.*;
-import static rapaio.filters.RowFilters.sort;
+import static rapaio.data.filters.RowFilters.sort;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

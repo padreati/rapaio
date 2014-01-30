@@ -22,15 +22,15 @@ package rapaio.tutorial.pages;
 import rapaio.correlation.PearsonRCorrelation;
 import rapaio.correlation.SpearmanRhoCorrelation;
 import rapaio.data.Frame;
+import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
-import rapaio.filters.ColFilters;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.filters.NumericFilters.jitter;
+import static rapaio.data.filters.NumericFilters.jitter;
 import static rapaio.workspace.Summary.names;
 import static rapaio.workspace.Summary.summary;
 import static rapaio.workspace.Workspace.*;
@@ -61,7 +61,7 @@ public class CorrelationsPage implements TutorialPage {
 		code("Frame df = Datasets.loadIrisDataset();\n"
 				+ "df = ColFilters.retainNumeric(df);\n"
 				+ "names(df);");
-		final Frame df = ColFilters.retainNumeric(Datasets.loadIrisDataset());
+		final Frame df = BaseFilters.retainNumeric(Datasets.loadIrisDataset());
 		names(df);
 
 		heading(2, "Pearson product-moment correlation");

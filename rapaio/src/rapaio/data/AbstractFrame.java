@@ -19,6 +19,12 @@
  */
 package rapaio.data;
 
+import rapaio.data.collect.FIterator;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Base class for a frame, which provides behavior for the utility
  * access methods based on row and column indexes.
@@ -95,5 +101,216 @@ public abstract class AbstractFrame implements Frame {
 	@Override
 	public boolean isMissing(int row, String colName) {
 		return getCol(colName).isMissing(row);
+	}
+
+	@Override
+	public boolean isMissing(int row) {
+		for (String colName : getColNames()) {
+			if (getCol(colName).isMissing(row)) return true;
+		}
+		return false;
+	}
+
+	@Override
+	public FIterator getCycleIterator(int size) {
+		return new FrameIterator(false, size, this);
+	}
+
+	@Override
+	public FIterator getIterator(boolean complete) {
+		return new FrameIterator(complete, getRowCount(), this);
+	}
+
+	@Override
+	public FIterator getIterator() {
+		return getIterator(false);
+	}
+}
+
+class FrameIterator implements FIterator {
+
+	private static final String DEFAULT_MAPPING_KEY = "$$DEFAULT$$";
+	final boolean complete;
+	final int size;
+	final Frame frame;
+	private final HashMap<String, Mapping> mappings = new HashMap<>();
+
+	int pos = -1;
+	int cyclePos = -1;
+
+	FrameIterator(boolean complete, int size, Frame frame) {
+		this.complete = complete;
+		this.size = size;
+		this.frame = frame;
+	}
+
+	@Override
+	public boolean next() {
+		while (pos < size - 1) {
+			pos++;
+			cyclePos++;
+			if (cyclePos >= frame.getRowCount()) {
+				cyclePos = 0;
+			}
+			if (complete && frame.isMissing(cyclePos)) continue;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void reset() {
+		pos = -1;
+		cyclePos = -1;
+	}
+
+	@Override
+	public int getRowId() {
+		return frame.getRowId(cyclePos);
+	}
+
+	@Override
+	public int getRow() {
+		return cyclePos;
+	}
+
+	@Override
+	public double getValue(int col) {
+		return frame.getValue(cyclePos, col);
+	}
+
+	@Override
+	public double getValue(String colName) {
+		return frame.getValue(cyclePos, colName);
+	}
+
+	@Override
+	public void setValue(int col, double value) {
+		frame.setValue(cyclePos, col, value);
+	}
+
+	@Override
+	public void setValue(String colName, double value) {
+		frame.setValue(cyclePos, colName, value);
+	}
+
+	@Override
+	public int getIndex(int col) {
+		return frame.getIndex(cyclePos, col);
+	}
+
+	@Override
+	public int getIndex(String colName) {
+		return frame.getIndex(cyclePos, colName);
+	}
+
+	@Override
+	public void setIndex(int col, int value) {
+		frame.setIndex(cyclePos, col, value);
+	}
+
+	@Override
+	public void setIndex(String colName, int value) {
+		frame.setIndex(cyclePos, colName, value);
+	}
+
+	@Override
+	public String getLabel(int col) {
+		return frame.getLabel(cyclePos, col);
+	}
+
+	@Override
+	public String getLabel(String colName) {
+		return frame.getLabel(cyclePos, colName);
+	}
+
+	@Override
+	public void setLabel(int col, String value) {
+		frame.setLabel(cyclePos, col, value);
+	}
+
+	@Override
+	public void setLabel(String colName, String value) {
+		frame.setLabel(cyclePos, colName, value);
+	}
+
+	@Override
+	public boolean isMissing(int col) {
+		return frame.isMissing(cyclePos, col);
+	}
+
+	@Override
+	public boolean isMissing(String colName) {
+		return frame.isMissing(cyclePos, colName);
+	}
+
+	@Override
+	public boolean isMissing() {
+		return frame.isMissing(cyclePos);
+	}
+
+	@Override
+	public void setMissing(int col) {
+		frame.setMissing(cyclePos, col);
+	}
+
+	@Override
+	public void setMissing(String colName) {
+		frame.setMissing(cyclePos, colName);
+	}
+
+	@Override
+	public void appendToMapping() {
+		if (!mappings.containsKey(DEFAULT_MAPPING_KEY)) {
+			mappings.put(DEFAULT_MAPPING_KEY, new Mapping());
+		}
+		mappings.get(DEFAULT_MAPPING_KEY).add(getRowId());
+	}
+
+	@Override
+	public void appendToMapping(String key) {
+		if (!mappings.containsKey(key)) {
+			mappings.put(key, new Mapping());
+		}
+		mappings.get(key).add(getRowId());
+	}
+
+	@Override
+	public int getMappingsCount() {
+		return mappings.size();
+	}
+
+	@Override
+	public Set<String> getMappingsKeys() {
+		return mappings.keySet();
+	}
+
+	@Override
+	public Mapping getMapping() {
+		return mappings.get(DEFAULT_MAPPING_KEY);
+	}
+
+	@Override
+	public Mapping getMapping(String key) {
+		return mappings.get(key);
+	}
+
+	@Override
+	public Frame getMappedFrame() {
+		return new MappedFrame(frame, getMapping());
+	}
+
+	@Override
+	public Frame getMappedFrame(String key) {
+		return new MappedFrame(frame, getMapping(key));
+	}
+
+	@Override
+	public Map<String, Frame> getMappedFrames() {
+		Map<String, Frame> map = new HashMap<>();
+		for (String key : getMappingsKeys()) {
+			map.put(key, getMappedFrame(key));
+		}
+		return map;
 	}
 }

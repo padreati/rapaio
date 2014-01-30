@@ -21,6 +21,7 @@ package rapaio.distributions;
 
 import org.junit.Test;
 import rapaio.data.Frame;
+import rapaio.data.filters.VectorFilters;
 import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
@@ -28,7 +29,6 @@ import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static rapaio.filters.BaseFilters.toNumeric;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -43,7 +43,7 @@ public class NormalTest {
 		persistence.setHasHeader(false);
 		persistence.setColSeparator(' ');
 		df = persistence.read(this.getClass(), "standard_normal.csv");
-		df = toNumeric(df);
+		df = VectorFilters.toNumeric(df);
 	}
 
 	@Test

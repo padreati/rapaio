@@ -24,8 +24,8 @@ import rapaio.core.RandomSource;
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.core.stat.ROC;
 import rapaio.data.Frame;
+import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
-import rapaio.filters.ColFilters;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Legend;
 import rapaio.graphics.plot.ROCCurve;
@@ -69,7 +69,7 @@ public class ROCCurvesPage implements TutorialPage {
 				+ "testing our model. ");
 
 		RandomSource.setSeed(2718);
-		final Frame spam = ColFilters.retainCols(Datasets.loadSpamBase(), "0-4,spam");
+		final Frame spam = BaseFilters.retainCols(Datasets.loadSpamBase(), "0-4,spam");
 		List<Frame> samples = randomSample(spam, new int[]{(int) (spam.getRowCount() * 0.6)});
 		final Frame train = samples.get(0);
 		final Frame test = samples.get(1);

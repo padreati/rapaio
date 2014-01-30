@@ -21,7 +21,7 @@ package rapaio.ml.classification.rule;
 
 import rapaio.core.RandomSource;
 import rapaio.data.*;
-import rapaio.filters.RowFilters;
+import rapaio.data.filters.RowFilters;
 import rapaio.ml.classification.AbstractClassifier;
 
 import java.util.ArrayList;

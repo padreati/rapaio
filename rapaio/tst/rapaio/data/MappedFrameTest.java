@@ -20,8 +20,8 @@
 package rapaio.data;
 
 import org.junit.Test;
+import rapaio.data.filters.RowFilters;
 import rapaio.datasets.Datasets;
-import rapaio.filters.RowFilters;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

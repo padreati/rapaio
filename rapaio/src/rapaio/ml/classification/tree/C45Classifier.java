@@ -22,7 +22,7 @@ package rapaio.ml.classification.tree;
 
 import rapaio.core.RandomSource;
 import rapaio.data.*;
-import rapaio.filters.RowFilters;
+import rapaio.data.filters.RowFilters;
 import rapaio.ml.classification.AbstractClassifier;
 import rapaio.ml.classification.Classifier;
 import rapaio.ml.classification.DensityTable;

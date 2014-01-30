@@ -15,6 +15,10 @@ public class Index extends AbstractVector {
 	private transient int[] data;
 	private int rows;
 
+	public Index() {
+		this(0, 0, 0);
+	}
+
 	public Index(int rows, int capacity, int fill) {
 		super();
 		if (capacity < 0) {

@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/rapaio/rapaio.iml" filepath="$PROJECT_DIR$/rapaio/rapaio.iml" />
       <module fileurl="file://$PROJECT_DIR$/rapaio-blog/rapaio-blog.iml" filepath="$PROJECT_DIR$/rapaio-blog/rapaio-blog.iml" />
       <module fileurl="file://$PROJECT_DIR$/../rapaio-kaggle/rapaio-kaggle.iml" filepath="$PROJECT_DIR$/../rapaio-kaggle/rapaio-kaggle.iml" />
-      <module fileurl="file://$PROJECT_DIR$/rapaio-scala/rapaio-scala.iml" filepath="$PROJECT_DIR$/rapaio-scala/rapaio-scala.iml" />
       <module fileurl="file://$PROJECT_DIR$/rapaio-studio/rapaio-studio.iml" filepath="$PROJECT_DIR$/rapaio-studio/rapaio-studio.iml" />
     </modules>
   </component>

@@ -3,8 +3,8 @@ package rapaio.tutorial.pages;
 import rapaio.correlation.PearsonRCorrelation;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
+import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
-import rapaio.filters.ColFilters;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;
 import rapaio.workspace.Summary;
@@ -41,7 +41,7 @@ public class LinearRegression3Page implements TutorialPage {
 
 		heading(4, "Multiple Linear Regression");
 
-		Frame cars = ColFilters.retainNumeric(Datasets.loadCarMpgDataset());
+		Frame cars = BaseFilters.retainNumeric(Datasets.loadCarMpgDataset());
 		Summary.summary(cars);
 		new PearsonRCorrelation(cars).summary();
 

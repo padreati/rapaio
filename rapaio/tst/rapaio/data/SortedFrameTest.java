@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static rapaio.data.RowComparators.nominalComparator;
 import static rapaio.data.RowComparators.numericComparator;
-import static rapaio.filters.RowFilters.sort;
+import static rapaio.data.filters.RowFilters.sort;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

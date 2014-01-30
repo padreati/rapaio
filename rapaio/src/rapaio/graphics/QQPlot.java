@@ -24,7 +24,7 @@ import rapaio.data.Vector;
 import rapaio.distributions.Distribution;
 import rapaio.graphics.plot.Points;
 
-import static rapaio.filters.RowFilters.sort;
+import static rapaio.data.filters.RowFilters.sort;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

@@ -23,7 +23,7 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
 import rapaio.data.VectorType;
-import rapaio.filters.BaseFilters;
+import rapaio.data.filters.VectorFilters;
 import rapaio.io.CsvPersistence;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class Datasets {
 		Vector[] vectors = new Vector[df.getColCount()];
 		vectors[vectors.length - 1] = df.getCol(vectors.length - 1);
 		for (int i = 0; i < vectors.length - 1; i++) {
-			vectors[i] = BaseFilters.toNumeric(df.getCol(i));
+			vectors[i] = VectorFilters.toNumeric(df.getCol(i));
 		}
 		return new SolidFrame(df.getRowCount(), vectors, df.getColNames());
 	}
@@ -48,7 +48,7 @@ public class Datasets {
 		Frame df = new CsvPersistence().read(Datasets.class, "pearsonheight.csv");
 		Vector[] vectors = new Vector[df.getColCount()];
 		for (int i = 0; i < df.getColCount(); i++) {
-			vectors[i] = BaseFilters.toNumeric(df.getCol(i));
+			vectors[i] = VectorFilters.toNumeric(df.getCol(i));
 		}
 		return new SolidFrame(df.getRowCount(), vectors, df.getColNames());
 	}
@@ -58,7 +58,7 @@ public class Datasets {
 		persistence.setColSeparator(',');
 		persistence.setHasQuotas(false);
 		Frame df = persistence.read(Datasets.class, "chest.csv");
-		return BaseFilters.toNumeric(df);
+		return VectorFilters.toNumeric(df);
 	}
 
 	public static Frame loadCarMpgDataset() throws IOException, URISyntaxException {
