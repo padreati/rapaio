@@ -186,7 +186,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
 	}
 
 	private void setupOobContainer(Frame df) {
-		oobFreq = new int[df.sourceFrame().getRowCount()][dict.length];
+		oobFreq = new int[df.getSourceFrame().getRowCount()][dict.length];
 	}
 
 	private void addOob(Frame source, Frame bootstrap, Classifier tree) {
@@ -221,7 +221,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
 			int next = indexes[RandomSource.nextInt(len)];
 			if (oobFreq[i][next] > 0) {
 				count += 1.;
-				if (next != df.sourceFrame().getCol(classColName).getIndex(i)) {
+				if (next != df.getSourceFrame().getCol(classColName).getIndex(i)) {
 					total += 1.;
 				}
 			}

@@ -101,7 +101,7 @@ public interface Frame extends Serializable {
 	 *
 	 * @return
 	 */
-	public Frame sourceFrame();
+	public Frame getSourceFrame();
 
 	/**
 	 * Convenient shortcut to call {@link Vector#getValue(int)} for a given column.

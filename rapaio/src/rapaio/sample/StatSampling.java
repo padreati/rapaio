@@ -59,7 +59,7 @@ public class StatSampling {
 			for (int j = 0; j < rowCounts[i]; j++) {
 				mapping.add(shuffle.getRowId(len + j));
 			}
-			result.add(new MappedFrame(shuffle.sourceFrame(), new Mapping(mapping)));
+			result.add(new MappedFrame(shuffle.getSourceFrame(), new Mapping(mapping)));
 			len += rowCounts[i];
 		}
 		if (len < shuffle.getRowCount()) {
@@ -67,7 +67,7 @@ public class StatSampling {
 			for (int j = len; j < shuffle.getRowCount(); j++) {
 				mapping.add(shuffle.getRowId(j));
 			}
-			result.add(new MappedFrame(shuffle.sourceFrame(), new Mapping(mapping)));
+			result.add(new MappedFrame(shuffle.getSourceFrame(), new Mapping(mapping)));
 		}
 		return result;
 	}
@@ -82,7 +82,7 @@ public class StatSampling {
 			int next = RandomSource.nextInt(frame.getRowCount());
 			mapping.add(frame.getRowId(next));
 		}
-		return new MappedFrame(frame.sourceFrame(), new Mapping(mapping));
+		return new MappedFrame(frame.getSourceFrame(), new Mapping(mapping));
 	}
 
 	public static Frame stratifiedBootstrap(Frame frame, String... strataCols) {
@@ -106,7 +106,7 @@ public class StatSampling {
 				mapping.add(f.getRowId(RandomSource.nextInt(f.getRowCount())));
 			}
 		}
-		return new MappedFrame(frame.sourceFrame(), new Mapping(mapping));
+		return new MappedFrame(frame.getSourceFrame(), new Mapping(mapping));
 	}
 
 }

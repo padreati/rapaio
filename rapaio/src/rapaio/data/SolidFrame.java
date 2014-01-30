@@ -81,7 +81,7 @@ public class SolidFrame extends AbstractFrame {
 	}
 
 	@Override
-	public Frame sourceFrame() {
+	public Frame getSourceFrame() {
 		return this;
 	}
 

@@ -301,10 +301,10 @@ class TreeNode {
 			tree.sumVI[df.getColIndex(splitCol)] += metricValue * (1 - missingWeight / totalFd);
 			tree.cntVI[df.getColIndex(splitCol)]++;
 
-			Frame leftFrame = new MappedFrame(df.sourceFrame(), leftMap);
+			Frame leftFrame = new MappedFrame(df.getSourceFrame(), leftMap);
 			leftNode.learn(leftFrame, leftWeights, indexes, tree);
 
-			Frame rightFrame = new MappedFrame(df.sourceFrame(), rightMap);
+			Frame rightFrame = new MappedFrame(df.getSourceFrame(), rightMap);
 			rightNode.learn(rightFrame, rightWeights, indexes, tree);
 			return;
 		}

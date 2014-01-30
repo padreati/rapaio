@@ -114,8 +114,8 @@ class TreeNode {
 			}
 			left = new TreeNode();
 			right = new TreeNode();
-			left.learn(parent, new MappedFrame(df.sourceFrame(), leftMapping), leftWeights, targetColNames);
-			right.learn(parent, new MappedFrame(df.sourceFrame(), rightMapping), rightWeights, targetColNames);
+			left.learn(parent, new MappedFrame(df.getSourceFrame(), leftMapping), leftWeights, targetColNames);
+			right.learn(parent, new MappedFrame(df.getSourceFrame(), rightMapping), rightWeights, targetColNames);
 			return;
 		}
 

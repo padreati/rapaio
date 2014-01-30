@@ -330,7 +330,7 @@ class ID3Node {
 		}
 		Frame[] frames = new Frame[dict.length];
 		for (int i = 0; i < dict.length; i++) {
-			frames[i] = new MappedFrame(df.sourceFrame(), new Mapping(splitIds[i]));
+			frames[i] = new MappedFrame(df.getSourceFrame(), new Mapping(splitIds[i]));
 		}
 
 		splitCol = colName;

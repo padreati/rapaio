@@ -67,7 +67,7 @@ public class MappedFrame extends AbstractFrame {
 	}
 
 	@Override
-	public Frame sourceFrame() {
+	public Frame getSourceFrame() {
 		return source;
 	}
 

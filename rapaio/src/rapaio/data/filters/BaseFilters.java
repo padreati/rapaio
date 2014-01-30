@@ -286,7 +286,7 @@ public final class BaseFilters {
 		for (int i = mapping.size(); i > 1; i--) {
 			mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
 		}
-		return new MappedFrame(df.sourceFrame(), new Mapping(mapping));
+		return new MappedFrame(df.getSourceFrame(), new Mapping(mapping));
 	}
 
 	public static Frame sort(Frame df, Comparator<Integer>... comparators) {
@@ -299,7 +299,7 @@ public final class BaseFilters {
 		for (int i = 0; i < mapping.size(); i++) {
 			ids.add(df.getRowId(mapping.get(i)));
 		}
-		return new MappedFrame(df.sourceFrame(), new Mapping(ids));
+		return new MappedFrame(df.getSourceFrame(), new Mapping(ids));
 	}
 
 
@@ -315,7 +315,7 @@ public final class BaseFilters {
 				mapping.add(i);
 			}
 		}
-		return new MappedFrame(source.sourceFrame(), new Mapping(mapping));
+		return new MappedFrame(source.getSourceFrame(), new Mapping(mapping));
 	}
 
 	public static List<Frame> combine(String name, List<Frame> frames, String... combined) {
@@ -385,7 +385,7 @@ public final class BaseFilters {
 				ids.add(source.getRowId(i));
 			}
 		}
-		return new MappedFrame(source.sourceFrame(), new Mapping(ids));
+		return new MappedFrame(source.getSourceFrame(), new Mapping(ids));
 	}
 
 	/**
