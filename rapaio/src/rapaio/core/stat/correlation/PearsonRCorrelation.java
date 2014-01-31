@@ -17,7 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package rapaio.correlation;
+package rapaio.core.stat.correlation;
 
 import rapaio.core.Summarizable;
 import rapaio.core.stat.Mean;

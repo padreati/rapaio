@@ -5,13 +5,14 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Frames;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class MultiLayerPerceptronRegressor {
+public class MultiLayerPerceptronRegressor implements Serializable {
 
 	private final double learningRate;
 	private final NetNode[][] net;

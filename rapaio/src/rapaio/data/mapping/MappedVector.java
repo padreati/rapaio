@@ -17,7 +17,11 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package rapaio.data;
+package rapaio.data.mapping;
+
+import rapaio.data.AbstractVector;
+import rapaio.data.Vector;
+import rapaio.data.VectorType;
 
 /**
  * A vector which is learn on the base of another vector and the row selection

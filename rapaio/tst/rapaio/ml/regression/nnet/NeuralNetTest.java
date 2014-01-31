@@ -59,4 +59,9 @@ public class NeuralNetTest {
 		Assert.assertTrue(nn.getFittedValues().getValue(2, 0) < .5);
 		Assert.assertTrue(nn.getFittedValues().getValue(3, 0) > .5);
 	}
+
+	@Test
+	public void serializationTest() {
+
+	}
 }

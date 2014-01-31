@@ -23,6 +23,8 @@ import rapaio.core.RandomSource;
 import rapaio.core.stat.Mode;
 import rapaio.data.*;
 import rapaio.data.filters.BaseFilters;
+import rapaio.data.mapping.MappedFrame;
+import rapaio.data.mapping.Mapping;
 import rapaio.ml.classification.AbstractClassifier;
 import rapaio.ml.classification.Classifier;
 import rapaio.ml.classification.colselect.ColSelector;

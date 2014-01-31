@@ -21,13 +21,13 @@ package rapaio.sample;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
-import rapaio.data.MappedFrame;
-import rapaio.data.Mapping;
+import rapaio.data.collect.FIterator;
+import rapaio.data.mapping.MappedFrame;
+import rapaio.data.mapping.Mapping;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static rapaio.data.filters.BaseFilters.groupByNominal;
 import static rapaio.data.filters.BaseFilters.shuffle;
 
 /**
@@ -53,21 +53,19 @@ public class StatSampling {
 		}
 		List<Frame> result = new ArrayList<>();
 		Frame shuffle = shuffle(frame);
-		int len = 0;
+		FIterator it = shuffle.getIterator();
 		for (int i = 0; i < rowCounts.length; i++) {
-			List<Integer> mapping = new ArrayList<>();
 			for (int j = 0; j < rowCounts[i]; j++) {
-				mapping.add(shuffle.getRowId(len + j));
+				it.next();
+				it.appendToMapping(i);
 			}
-			result.add(new MappedFrame(shuffle.getSourceFrame(), new Mapping(mapping)));
-			len += rowCounts[i];
+			result.add(it.getMappedFrame(i));
 		}
-		if (len < shuffle.getRowCount()) {
-			List<Integer> mapping = new ArrayList<>();
-			for (int j = len; j < shuffle.getRowCount(); j++) {
-				mapping.add(shuffle.getRowId(j));
-			}
-			result.add(new MappedFrame(shuffle.getSourceFrame(), new Mapping(mapping)));
+		while (it.next()) {
+			it.appendToMapping(rowCounts.length);
+		}
+		if (it.getMappingsKeys().contains(rowCounts.length)) {
+			result.add(it.getMappedFrame(rowCounts.length));
 		}
 		return result;
 	}
@@ -84,29 +82,4 @@ public class StatSampling {
 		}
 		return new MappedFrame(frame.getSourceFrame(), new Mapping(mapping));
 	}
-
-	public static Frame stratifiedBootstrap(Frame frame, String... strataCols) {
-		List<Frame> frames = new ArrayList<>();
-		frames.add(frame);
-		for (int i = 0; i < strataCols.length; i++) {
-			String col = strataCols[i];
-			List<Frame> split = new ArrayList<>();
-			for (Frame f : frames) {
-				for (Frame group : groupByNominal(f, f.getColIndex(col)).values()) {
-					if (group != null && group.getRowCount() > 0) {
-						split.add(group);
-					}
-				}
-			}
-			frames = split;
-		}
-		List<Integer> mapping = new ArrayList<>();
-		for (Frame f : frames) {
-			for (int i = 0; i < f.getRowCount(); i++) {
-				mapping.add(f.getRowId(RandomSource.nextInt(f.getRowCount())));
-			}
-		}
-		return new MappedFrame(frame.getSourceFrame(), new Mapping(mapping));
-	}
-
 }

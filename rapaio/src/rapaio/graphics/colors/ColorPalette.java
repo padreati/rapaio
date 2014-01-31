@@ -27,20 +27,21 @@ import java.io.Serializable;
  */
 public enum ColorPalette {
 
-    STANDARD(new StandardColorPalette());
-    //
-    private final Mapping palette;
+	STANDARD(new StandardColorPalette()),
+	GRAYSCALE(new GrayColorPallete());
+	//
+	private final Mapping palette;
 
-    ColorPalette(Mapping palette) {
-        this.palette = palette;
-    }
+	ColorPalette(Mapping palette) {
+		this.palette = palette;
+	}
 
-    public Color getColor(int index) {
-        return palette.getColor(index);
-    }
+	public Color getColor(int index) {
+		return palette.getColor(index);
+	}
 
-    public static interface Mapping extends Serializable {
+	public static interface Mapping extends Serializable {
 
-        Color getColor(int index);
-    }
+		Color getColor(int index);
+	}
 }

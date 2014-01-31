@@ -22,9 +22,9 @@ package rapaio.ml.classification.tree;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.Mode;
 import rapaio.data.Frame;
-import rapaio.data.MappedFrame;
-import rapaio.data.Mapping;
 import rapaio.data.Nominal;
+import rapaio.data.mapping.MappedFrame;
+import rapaio.data.mapping.Mapping;
 import rapaio.ml.classification.AbstractClassifier;
 import rapaio.workspace.Workspace;
 

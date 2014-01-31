@@ -22,7 +22,7 @@ package rapaio.tutorial.pages;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
 import rapaio.core.stat.Variance;
-import rapaio.correlation.PearsonRCorrelation;
+import rapaio.core.stat.correlation.PearsonRCorrelation;
 import rapaio.data.Frame;
 import rapaio.data.Vector;
 import rapaio.datasets.Datasets;

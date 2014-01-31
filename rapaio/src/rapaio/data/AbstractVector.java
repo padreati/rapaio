@@ -20,6 +20,8 @@
 package rapaio.data;
 
 import rapaio.data.collect.VIterator;
+import rapaio.data.mapping.MappedVector;
+import rapaio.data.mapping.Mapping;
 
 import java.util.HashMap;
 import java.util.Map;

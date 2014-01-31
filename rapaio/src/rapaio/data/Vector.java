@@ -20,6 +20,7 @@
 package rapaio.data;
 
 import rapaio.data.collect.VIterator;
+import rapaio.data.mapping.Mapping;
 
 import java.io.Serializable;
 

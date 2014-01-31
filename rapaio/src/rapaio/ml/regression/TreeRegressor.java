@@ -5,6 +5,8 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.StatOnline;
 import rapaio.data.*;
 import rapaio.data.filters.BaseFilters;
+import rapaio.data.mapping.MappedFrame;
+import rapaio.data.mapping.Mapping;
 import rapaio.ml.classification.colselect.ColSelector;
 import rapaio.ml.classification.colselect.DefaultColSelector;
 

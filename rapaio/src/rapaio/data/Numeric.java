@@ -1,6 +1,8 @@
 package rapaio.data;
 
 
+import rapaio.data.mapping.Mapping;
+
 import java.util.Arrays;
 import java.util.Collection;
 

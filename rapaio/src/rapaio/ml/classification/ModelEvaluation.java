@@ -21,9 +21,9 @@ package rapaio.ml.classification;
 
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Frame;
-import rapaio.data.MappedFrame;
-import rapaio.data.Mapping;
 import rapaio.data.Vector;
+import rapaio.data.mapping.MappedFrame;
+import rapaio.data.mapping.Mapping;
 import rapaio.sample.StatSampling;
 
 import java.util.ArrayList;

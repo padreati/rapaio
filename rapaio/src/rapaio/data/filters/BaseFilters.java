@@ -26,6 +26,9 @@ import rapaio.data.*;
 import rapaio.data.Vector;
 import rapaio.data.collect.FIterator;
 import rapaio.data.collect.VIterator;
+import rapaio.data.mapping.MappedFrame;
+import rapaio.data.mapping.MappedVector;
+import rapaio.data.mapping.Mapping;
 import rapaio.distributions.Normal;
 
 import java.util.*;

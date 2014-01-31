@@ -17,7 +17,11 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package rapaio.data;
+package rapaio.data.mapping;
+
+import rapaio.data.AbstractFrame;
+import rapaio.data.Frame;
+import rapaio.data.Vector;
 
 import java.util.HashMap;
 

@@ -20,6 +20,8 @@
 package rapaio.data;
 
 import rapaio.data.collect.FIterator;
+import rapaio.data.mapping.MappedFrame;
+import rapaio.data.mapping.Mapping;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -286,6 +288,11 @@ class FrameIterator implements FIterator {
 	}
 
 	@Override
+	public void appendToMapping(int key) {
+		appendToMapping(String.valueOf(key));
+	}
+
+	@Override
 	public int getMappingsCount() {
 		return mappings.size();
 	}
@@ -306,6 +313,11 @@ class FrameIterator implements FIterator {
 	}
 
 	@Override
+	public Mapping getMapping(int key) {
+		return mappings.get(String.valueOf(key));
+	}
+
+	@Override
 	public Frame getMappedFrame() {
 		return new MappedFrame(frame.getSourceFrame(), getMapping());
 	}
@@ -313,6 +325,11 @@ class FrameIterator implements FIterator {
 	@Override
 	public Frame getMappedFrame(String key) {
 		return new MappedFrame(frame.getSourceFrame(), getMapping(key));
+	}
+
+	@Override
+	public Frame getMappedFrame(int key) {
+		return getMappedFrame(String.valueOf(key));
 	}
 
 	@Override
