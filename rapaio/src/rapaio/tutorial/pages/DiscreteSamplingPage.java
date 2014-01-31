@@ -24,9 +24,7 @@ import rapaio.data.*;
 import rapaio.distributions.empirical.KernelDensityEstimator;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.*;
-import rapaio.sample.DiscreteSamplingWOR;
-import rapaio.sample.DiscreteSamplingWR;
-import rapaio.sample.DiscreteWeightedSamplingWOR;
+import rapaio.sample.DiscreteSampling;
 import rapaio.sample.DiscreteWeightedSamplingWR;
 import rapaio.workspace.Summary;
 
@@ -37,7 +35,7 @@ import static rapaio.workspace.Workspace.*;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class DiscreteSampling implements TutorialPage {
+public class DiscreteSamplingPage implements TutorialPage {
 
 	@Override
 	public String getPageName() {
@@ -122,7 +120,8 @@ public class DiscreteSampling implements TutorialPage {
 				+ "        Vector vector = new NumericVector(\"fair-dice\", sample);\n"
 				+ "        draw(new Histogram(vector, 6, false), 500, 200);\n");
 
-		int[] sample = new DiscreteSamplingWR(6).sample(1000);
+		DiscreteSampling ds = new DiscreteSampling();
+		int[] sample = ds.sampleWR(1000, 6);
 		Vector vector = Vectors.newIdxFrom(sample);
 		draw(new Plot().add(new Histogram(vector, 6, false)), 500, 200);
 
@@ -187,7 +186,7 @@ public class DiscreteSampling implements TutorialPage {
 		vectors[1] = new Numeric(SAMPLE_SIZE * TRIALS);
 
 		for (int i = 0; i < TRIALS; i++) {
-			int[] numbers = new DiscreteSamplingWOR(POPULATION_SIZE).sample(SAMPLE_SIZE);
+			int[] numbers = ds.sampleWOR(SAMPLE_SIZE, POPULATION_SIZE);
 			for (int j = 0; j < numbers.length; j++) {
 				vectors[0].setValue(i * SAMPLE_SIZE + j, i + 1);
 				vectors[1].setValue(i * SAMPLE_SIZE + j, numbers[j] + 1);
@@ -343,7 +342,7 @@ public class DiscreteSampling implements TutorialPage {
 			prob[i] = 10;
 		}
 		for (int i = 0; i < TRIALS; i++) {
-			int[] numbers = new DiscreteWeightedSamplingWOR(prob).sample(SAMPLE_SIZE);
+			int[] numbers = ds.sampleWeightedWOR(SAMPLE_SIZE, prob);
 			for (int j = 0; j < numbers.length; j++) {
 				vectors[0].setValue(i * SAMPLE_SIZE + j, i + 1);
 				vectors[1].setValue(i * SAMPLE_SIZE + j, numbers[j] + 1);

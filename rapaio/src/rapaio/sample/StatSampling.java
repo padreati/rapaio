@@ -64,7 +64,7 @@ public class StatSampling {
 		while (it.next()) {
 			it.appendToMapping(rowCounts.length);
 		}
-		if (it.getMappingsKeys().contains(rowCounts.length)) {
+		if (it.getMappingsKeys().contains(String.valueOf(rowCounts.length))) {
 			result.add(it.getMappedFrame(rowCounts.length));
 		}
 		return result;

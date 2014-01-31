@@ -26,65 +26,65 @@ import org.junit.Test;
  */
 public class DiscreteSamplingTest {
 
-    //    @Test
-    public void worTest() {
+	//    @Test
+	public void worTest() {
 
-        double[] w = null;
+		double[] w = null;
 //        w = new double[]{0.5, 0.1, 0.1, 0.1, 0.1, 0.1};
 //        w = new double[]{0.2, 0.2, 0.2, 0.2, 0.2, 0.2};
 //        w = new double[]{0.6, 0.05, 0.1, 0.05, 0.2, 0.8, 0.3, 0.7};
-        w = new double[]{0.4, 0.3, 0.2, 0.1};
-        double[] freq = new double[w.length];
-        final int TRIALS = 1_000_000;
-        final int SAMPLES = 2;
-        for (int i = 0; i < TRIALS; i++) {
-            for (int next : new DiscreteWeightedSamplingWOR(w).sample(SAMPLES)) {
-                freq[next]++;
+		w = new double[]{0.4, 0.3, 0.2, 0.1};
+		double[] freq = new double[w.length];
+		final int TRIALS = 1_000_000;
+		final int SAMPLES = 2;
+		for (int i = 0; i < TRIALS; i++) {
+			for (int next : new DiscreteSampling().sampleWeightedWOR(SAMPLES, w)) {
+				freq[next]++;
 //                System.out.print(next + " ");
-            }
+			}
 //            System.out.println();
-        }
+		}
 
-        for (int i = 0; i < freq.length; i++) {
-            System.out.print(String.format("%.4f, ", freq[i] / (1. * TRIALS)));
-        }
-        System.out.println();
-    }
+		for (int i = 0; i < freq.length; i++) {
+			System.out.print(String.format("%.4f, ", freq[i] / (1. * TRIALS)));
+		}
+		System.out.println();
+	}
 
-    //    @Test
-    public void wrTest() {
-        double[] w = null;
+	//    @Test
+	public void wrTest() {
+		double[] w = null;
 //        w = new double[]{0.5, 0.5};
 //        w = new double[]{0.2, 0.1, 0.4, 0.3};
-        w = new double[]{0.001, 0.009, 0.09, 0.9};
-        double[] freq = new double[w.length];
-        final int TRIALS = 100_000;
-        final int SAMPLES = 100;
-        for (int i = 0; i < TRIALS; i++) {
-            for (int next : new DiscreteWeightedSamplingWR(w).sample(SAMPLES)) {
-                freq[next]++;
-            }
-        }
-        for (int i = 0; i < freq.length; i++) {
-            System.out.print(String.format("%.6f, ", freq[i] / (1. * TRIALS * SAMPLES)));
-        }
-        System.out.println();
-    }
+		w = new double[]{0.001, 0.009, 0.09, 0.9};
+		double[] freq = new double[w.length];
+		final int TRIALS = 100_000;
+		final int SAMPLES = 100;
+		for (int i = 0; i < TRIALS; i++) {
+			for (int next : new DiscreteWeightedSamplingWR(w).sample(SAMPLES)) {
+				freq[next]++;
+			}
+		}
+		for (int i = 0; i < freq.length; i++) {
+			System.out.print(String.format("%.6f, ", freq[i] / (1. * TRIALS * SAMPLES)));
+		}
+		System.out.println();
+	}
 
-    @Test
-    public void worUnifTest() {
+	@Test
+	public void worUnifTest() {
 
-        double[] freq = new double[10];
-        final int TRIALS = 100_000;
-        final int SAMPLES = 3;
-        for (int i = 0; i < TRIALS; i++) {
-            for (int next : new DiscreteSamplingWOR(10).sample(SAMPLES)) {
-                freq[next]++;
-            }
-        }
-        for (int i = 0; i < freq.length; i++) {
-            System.out.print(String.format("%.6f, ", freq[i] / (1. * TRIALS * SAMPLES)));
-        }
-        System.out.println();
-    }
+		double[] freq = new double[10];
+		final int TRIALS = 100_000;
+		final int SAMPLES = 3;
+		for (int i = 0; i < TRIALS; i++) {
+			for (int next : new DiscreteSampling().sampleWOR(SAMPLES, 10)) {
+				freq[next]++;
+			}
+		}
+		for (int i = 0; i < freq.length; i++) {
+			System.out.print(String.format("%.6f, ", freq[i] / (1. * TRIALS * SAMPLES)));
+		}
+		System.out.println();
+	}
 }
