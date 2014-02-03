@@ -2,6 +2,8 @@ package rapaio.sample;
 
 import rapaio.core.RandomSource;
 
+import java.util.Arrays;
+
 import static rapaio.core.MathBase.log;
 import static rapaio.core.MathBase.pow;
 import static rapaio.core.RandomSource.nextDouble;
@@ -69,7 +71,7 @@ public class DiscreteSampling {
 	 */
 	public int[] sampleWeightedWOR(final int sampleSize, final double[] prob) {
 		// validation
-		validate(prob, sampleSize);
+		validateWeighterWOR(prob, sampleSize);
 
 		int[] result = new int[sampleSize];
 
@@ -158,7 +160,7 @@ public class DiscreteSampling {
 		return result;
 	}
 
-	private void validate(double[] p, int m) {
+	private void validateWeighterWOR(double[] p, int m) {
 		if (m > p.length) {
 			throw new IllegalArgumentException("required sample size is bigger than population size");
 		}
@@ -175,5 +177,96 @@ public class DiscreteSampling {
 			}
 		}
 	}
+
+
+	/**
+	 * Generate discrete weighted random samples with replacement (same values might occur),
+	 * based on previous aliases computed by a previous call
+	 * to {@link rapaio.sample.DiscreteSampling#sampleWeightedWR(int, double[])}.
+	 * <p/>
+	 * Implementation based on Vose alias-method algorithm.
+	 */
+	public int[] sampleWeightedWR(int m) {
+		return sampleWeightedWR(m, null);
+	}
+
+	/**
+	 * Generate discrete weighted random samples with replacement (same values might occur)
+	 * with building aliases according to the new probabilities.
+	 * <p/>
+	 * Implementation based on Vose alias-method algorithm
+	 */
+	public int[] sampleWeightedWR(int m, double[] p) {
+		if (p != null) {
+			makeAliasWR(p);
+		}
+		int[] sample = new int[m];
+		for (int i = 0; i < m; i++) {
+			int column = RandomSource.nextInt(prob.length);
+			sample[i] = RandomSource.nextDouble() < prob[column] ? column : alias[column];
+		}
+		return sample;
+	}
+
+	/* The probability and alias tables. */
+	private double[] prob;
+	private int[] alias;
+
+
+	/**
+	 * Builds discrete random sampler without replacement
+	 *
+	 * @param p The list of probabilities.
+	 */
+	private void makeAliasWR(double[] p) {
+		if (p.length == 0)
+			throw new IllegalArgumentException("Probability vector must be nonempty.");
+
+		prob = Arrays.copyOf(p, p.length);
+		for (int i = 0; i < prob.length; i++) {
+			prob[i] *= prob.length;
+		}
+		alias = new int[p.length];
+
+		int[] dq = new int[p.length];
+		int smallPos = -1;
+		int largePos = prob.length;
+
+		for (int i = 0; i < prob.length; ++i) {
+			if (prob[i] >= 1.) {
+				dq[largePos - 1] = i;
+				largePos--;
+			} else {
+				dq[smallPos + 1] = i;
+				smallPos++;
+			}
+		}
+
+		while (smallPos >= 0 && largePos <= p.length - 1) {
+			int small = dq[smallPos--];
+			int large = dq[largePos++];
+
+			alias[small] = large;
+			prob[large] = prob[large] + prob[small] - 1.;
+
+			if (prob[large] >= 1.0) {
+				dq[largePos - 1] = large;
+				largePos--;
+			} else {
+				dq[smallPos + 1] = large;
+				smallPos++;
+			}
+		}
+
+		while (smallPos > 0) {
+			prob[dq[smallPos - 1]] = 1.0;
+			smallPos--;
+		}
+		while (largePos < dq.length) {
+			prob[dq[largePos]] = 1.0;
+			largePos++;
+		}
+	}
+
 
 }

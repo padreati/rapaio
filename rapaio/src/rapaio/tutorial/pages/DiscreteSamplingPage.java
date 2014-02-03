@@ -25,7 +25,6 @@ import rapaio.distributions.empirical.KernelDensityEstimator;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.*;
 import rapaio.sample.DiscreteSampling;
-import rapaio.sample.DiscreteWeightedSamplingWR;
 import rapaio.workspace.Summary;
 
 import java.io.IOException;
@@ -253,7 +252,7 @@ public class DiscreteSamplingPage implements TutorialPage {
 		double count = 0;
 		double total = 0;
 		for (int i = 0; i < 300; i++) {
-			int[] samples = new DiscreteWeightedSamplingWR(new double[]{0.6, 0.4}).sample(1);
+			int[] samples = new DiscreteSampling().sampleWeightedWR(1, new double[]{0.6, 0.4});
 			if (samples[0] == 0)
 				count++;
 			total++;

@@ -60,8 +60,10 @@ public class DiscreteSamplingTest {
 		double[] freq = new double[w.length];
 		final int TRIALS = 100_000;
 		final int SAMPLES = 100;
+		DiscreteSampling ds = new DiscreteSampling();
+		ds.sampleWeightedWR(0, w);
 		for (int i = 0; i < TRIALS; i++) {
-			for (int next : new DiscreteWeightedSamplingWR(w).sample(SAMPLES)) {
+			for (int next : ds.sampleWeightedWR(SAMPLES)) {
 				freq[next]++;
 			}
 		}
