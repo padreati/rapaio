@@ -291,7 +291,7 @@ public abstract class AbstractFigure implements Figure {
 		if (row >= index.getRowCount()) {
 			row %= index.getRowCount();
 		}
-		return ColorPalette.GRAYSCALE.getColor(index.getIndex(row));
+		return ColorPalette.STANDARD.getColor(index.getIndex(row));
 	}
 
 	private boolean isDefaultPchIndex() {

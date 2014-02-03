@@ -16,7 +16,7 @@ public class Numeric extends AbstractVector {
 	private static final double[] EMPTY_DATA = {};
 
 	private static final double missingValue = Double.NaN;
-	private transient double[] data;
+	private double[] data;
 	private int rows;
 
 	public Numeric() {
