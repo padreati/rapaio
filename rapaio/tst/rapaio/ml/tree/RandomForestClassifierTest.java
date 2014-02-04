@@ -24,7 +24,7 @@ import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.io.ArffPersistence;
 import rapaio.io.CsvPersistence;
-import rapaio.ml.ModelEvaluation;
+import rapaio.ml.tools.ModelEvaluation;
 import rapaio.workspace.Summary;
 
 import java.io.IOException;

@@ -21,6 +21,7 @@ package rapaio.ml.tree;
 
 import rapaio.core.RandomSource;
 import rapaio.data.*;
+import rapaio.data.collect.FIterator;
 import rapaio.data.filters.BaseFilters;
 import rapaio.ml.AbstractClassifier;
 import rapaio.ml.Classifier;
@@ -75,17 +76,14 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
 			}
 		}
 		this.defaultLabel = buildDefaultLabel(df, weights, classCol);
-
 	}
 
 	private String buildDefaultLabel(Frame df, List<Double> weights, Vector classCol) {
 		double[] freq = new double[classCol.getDictionary().length];
 		int total = 0;
 		for (int i = 0; i < df.getRowCount(); i++) {
-			if (splitCol == null || df.getCol(splitCol).isMissing(i)) {
-				freq[classCol.getIndex(i)] += weights.get(i);
-				total++;
-			}
+			freq[classCol.getIndex(i)] += weights.get(i);
+			total++;
 		}
 		if (total == 0) return dict[0];
 		double max = 0;
@@ -211,23 +209,23 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
 	@Override
 	public void predict(Frame df) {
 		pred = new Nominal(df.getRowCount(), dict);
-		for (int i = 0; i < df.getRowCount(); i++) {
-			if (splitCol == null || splitCol.isEmpty() || df.getCol(splitCol).isMissing(i)) {
-				pred.setLabel(i, defaultLabel);
+		FIterator it = df.getIterator();
+		while (it.next()) {
+			if (splitCol == null || it.isMissing(splitCol)) {
+				pred.setLabel(it.getRow(), defaultLabel);
 				continue;
 			}
-			Vector col = df.getCol(splitCol);
-			if (col.getType().isNumeric()) {
-				if (col.getValue(i) <= splitValue) {
-					pred.setLabel(i, leftLabel);
+			if (df.getCol(splitCol).getType().isNumeric()) {
+				if (it.getValue(splitCol) <= splitValue) {
+					pred.setLabel(it.getRow(), leftLabel);
 				} else {
-					pred.setLabel(i, rightLabel);
+					pred.setLabel(it.getRow(), rightLabel);
 				}
 			} else {
-				if (splitLabel.equals(col.getLabel(i))) {
-					pred.setLabel(i, leftLabel);
+				if (splitLabel.equals(it.getLabel(splitCol))) {
+					pred.setLabel(it.getRow(), leftLabel);
 				} else {
-					pred.setLabel(i, rightLabel);
+					pred.setLabel(it.getRow(), rightLabel);
 				}
 			}
 		}

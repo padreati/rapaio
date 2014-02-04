@@ -17,7 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package rapaio.ml;
+package rapaio.ml.tools;
 
 import rapaio.core.sample.StatSampling;
 import rapaio.core.stat.ConfusionMatrix;
@@ -25,6 +25,7 @@ import rapaio.data.Frame;
 import rapaio.data.Vector;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
+import rapaio.ml.Classifier;
 
 import java.util.ArrayList;
 import java.util.Collections;

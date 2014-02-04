@@ -24,7 +24,7 @@ import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.ml.AbstractClassifier;
 import rapaio.ml.Classifier;
-import rapaio.ml.DensityTable;
+import rapaio.ml.tools.DensityTable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,21 +39,17 @@ import static rapaio.data.filters.BaseFilters.sort;
 @Deprecated
 public class C45Classifier extends AbstractClassifier<C45Classifier> {
 
+	/**
+	 * Features which need to be implemented:
+	 * - use grouping
+	 */
 	public static final int SELECTION_INFOGAIN = 0;
 	public static final int SELECTION_GAINRATIO = 1;
-	;
-	private boolean useGrouping = false; // Not implemented
 	private double minWeight = 2; // min weight for at least 2 output groups in order for an attribute to be selected
-	private double cf = 0.25; // Not implemented
-	private int windowSize = 0; // defaul is min(0.2*train.getRowCount(), 2*srt(train.getRowCount());
-	private int windowIncrement = 0; // default is min(windowIncrement*windowSize, 0.5*currentErrors);
-	private int windowTrees = 10; // how many widnow trees to grow before selecting the best
 	private int selection = SELECTION_GAINRATIO;
-	private int maxNodes = Integer.MAX_VALUE;
-	// perhaps some parameters about rules should be used
 	;
 	String[] dict;
-	private C45Node root;
+	private C45ClassifierNode root;
 	private Nominal prediction;
 	private Frame distribution;
 
@@ -75,15 +71,6 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
 		return this;
 	}
 
-	public int getMaxNodes() {
-		return maxNodes;
-	}
-
-	public C45Classifier setMaxNodes(int maxNodes) {
-		this.maxNodes = maxNodes;
-		return this;
-	}
-
 	@Override
 	public Classifier newInstance() {
 		return new C45Classifier().setMinWeight(minWeight).setSelectionCriterion(selection);
@@ -98,7 +85,7 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
 				continue;
 			testColNames.add(classColName);
 		}
-		root = new C45Node(this);
+		root = new C45ClassifierNode(this);
 		root.learn(df, weights, testColNames, classColName);
 	}
 
@@ -145,7 +132,7 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
 	}
 }
 
-class C45Node {
+class C45ClassifierNode {
 
 	final C45Classifier parent;
 	String testColName;
@@ -153,11 +140,11 @@ class C45Node {
 	double totalWeight;
 	boolean leaf = false;
 	double[] distribution;
-	Map<String, C45Node> nominalChildren;
-	C45Node numericLeftChild;
-	C45Node numericRightChild;
+	Map<String, C45ClassifierNode> nominalChildren;
+	C45ClassifierNode numericLeftChild;
+	C45ClassifierNode numericRightChild;
 
-	public C45Node(C45Classifier parent) {
+	public C45ClassifierNode(C45Classifier parent) {
 		this.parent = parent;
 	}
 
@@ -329,7 +316,7 @@ class C45Node {
 		if (df.getCol(testColName).isMissing(row)) {
 			if (df.getCol(testColName).getType().isNominal()) {
 				double[] d = new double[parent.dict.length];
-				for (Map.Entry<String, C45Node> entry : nominalChildren.entrySet()) {
+				for (Map.Entry<String, C45ClassifierNode> entry : nominalChildren.entrySet()) {
 					double[] dd = entry.getValue().computeDistribution(df, row);
 					for (int i = 0; i < dd.length; i++) {
 						d[i] += dd[i] * entry.getValue().totalWeight / totalWeight;
@@ -354,7 +341,7 @@ class C45Node {
 		// we have a getValue
 		if (df.getCol(testColName).getType().isNominal()) {
 			String label = df.getLabel(row, testColName);
-			for (Map.Entry<String, C45Node> entry : nominalChildren.entrySet()) {
+			for (Map.Entry<String, C45ClassifierNode> entry : nominalChildren.entrySet()) {
 				if (entry.getKey().equals(label)) {
 					return entry.getValue().computeDistribution(df, row);
 				}
