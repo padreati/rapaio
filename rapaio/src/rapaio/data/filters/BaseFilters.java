@@ -21,6 +21,7 @@ package rapaio.data.filters;
 
 import rapaio.core.ColRange;
 import rapaio.core.RandomSource;
+import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.*;
 import rapaio.data.Vector;
@@ -29,7 +30,6 @@ import rapaio.data.collect.VIterator;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.MappedVector;
 import rapaio.data.mapping.Mapping;
-import rapaio.distributions.Normal;
 
 import java.util.*;
 

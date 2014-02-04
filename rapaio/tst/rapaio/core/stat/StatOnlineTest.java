@@ -1,10 +1,10 @@
 package rapaio.core.stat;
 
 import org.junit.Test;
+import rapaio.core.distributions.Normal;
 import rapaio.data.Numeric;
 import rapaio.data.Vector;
 import rapaio.data.Vectors;
-import rapaio.distributions.Normal;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;
 import rapaio.printer.LocalPrinter;

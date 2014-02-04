@@ -20,11 +20,11 @@
 package rapaio.graphics.plot;
 
 import rapaio.core.MathBase;
+import rapaio.core.distributions.empirical.KernelDensityEstimator;
+import rapaio.core.distributions.empirical.KernelFunction;
+import rapaio.core.distributions.empirical.KernelFunctionGaussian;
 import rapaio.data.Numeric;
 import rapaio.data.Vector;
-import rapaio.distributions.empirical.KernelDensityEstimator;
-import rapaio.distributions.empirical.KernelFunction;
-import rapaio.distributions.empirical.KernelFunctionGaussian;
 import rapaio.graphics.base.Range;
 
 import java.awt.*;

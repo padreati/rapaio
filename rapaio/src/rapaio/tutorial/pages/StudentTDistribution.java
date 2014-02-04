@@ -19,8 +19,8 @@
  */
 package rapaio.tutorial.pages;
 
-import rapaio.distributions.Normal;
-import rapaio.distributions.StudentT;
+import rapaio.core.distributions.Normal;
+import rapaio.core.distributions.StudentT;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.FunctionLine;
 

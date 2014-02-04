@@ -6,6 +6,7 @@ import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.ABLine;
 import rapaio.graphics.plot.Points;
+import rapaio.ml.linear.LinearModelRegressor;
 import rapaio.printer.LocalPrinter;
 import rapaio.workspace.Summary;
 

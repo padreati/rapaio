@@ -171,7 +171,7 @@ class Template {
 	static final String BACKLINK = "#BACKLINK#";
 	static final String header = "<!DOCTYPE html>\n"
 			+ "<html><lines>\n"
-			+ "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n"
+			+ "<experimental http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n"
 			+ "<title>#TITLE#</title>\n"
 			+ "<style getType=\"text/css\">\n"
 			+ "body, td {\n"

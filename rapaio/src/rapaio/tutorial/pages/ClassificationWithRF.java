@@ -19,6 +19,7 @@
  */
 package rapaio.tutorial.pages;
 
+import rapaio.core.sample.StatSampling;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Vector;
@@ -28,9 +29,8 @@ import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
 import rapaio.graphics.plot.Points;
-import rapaio.ml.classification.Classifier;
-import rapaio.ml.classification.tree.RandomForestClassifier;
-import rapaio.sample.StatSampling;
+import rapaio.ml.Classifier;
+import rapaio.ml.tree.RandomForestClassifier;
 import rapaio.workspace.Summary;
 
 import java.io.IOException;

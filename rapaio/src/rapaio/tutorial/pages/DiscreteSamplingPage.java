@@ -20,11 +20,11 @@
 package rapaio.tutorial.pages;
 
 import rapaio.core.RandomSource;
+import rapaio.core.distributions.empirical.KernelDensityEstimator;
+import rapaio.core.sample.DiscreteSampling;
 import rapaio.data.*;
-import rapaio.distributions.empirical.KernelDensityEstimator;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.*;
-import rapaio.sample.DiscreteSampling;
 import rapaio.workspace.Summary;
 
 import java.io.IOException;

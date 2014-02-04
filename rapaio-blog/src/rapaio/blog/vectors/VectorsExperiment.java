@@ -7,7 +7,7 @@ import rapaio.data.Vectors;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;
-import rapaio.ml.regression.LinearModelRegressor;
+import rapaio.ml.linear.LinearModelRegressor;
 import rapaio.server.AbstractCmd;
 import rapaio.workspace.Summary;
 

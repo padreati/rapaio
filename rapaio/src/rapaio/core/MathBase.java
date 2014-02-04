@@ -19,7 +19,7 @@
  */
 package rapaio.core;
 
-import rapaio.distributions.Normal;
+import rapaio.core.distributions.Normal;
 
 /**
  * Utility class which simplifies access to common java math utilities and also
@@ -318,7 +318,7 @@ public class MathBase {
 		if ((((ix - 0x3ff00000) | lx) == 0) || (((ix - 0x40000000) | lx) == 0)) {
 			r = 0;
 		} /*
-         * for x < 2.0
+		 * for x < 2.0
          */ else if (ix < 0x40000000) {
 			if (ix <= 0x3feccccc) { 	/*
                  * lgamma(x) = lgamma(x+1)-log(x)

@@ -20,12 +20,12 @@
 package rapaio.tutorial.pages;
 
 import rapaio.core.MathBase;
+import rapaio.core.distributions.empirical.KernelDensityEstimator;
+import rapaio.core.distributions.empirical.KernelFunction;
 import rapaio.data.Frame;
 import rapaio.data.Vector;
 import rapaio.data.Vectors;
 import rapaio.datasets.Datasets;
-import rapaio.distributions.empirical.KernelDensityEstimator;
-import rapaio.distributions.empirical.KernelFunction;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.DensityLine;
 import rapaio.graphics.plot.FunctionLine;

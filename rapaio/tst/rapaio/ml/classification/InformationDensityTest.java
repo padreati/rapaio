@@ -3,6 +3,7 @@ package rapaio.ml.classification;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
+import rapaio.ml.DensityTable;
 
 import java.io.IOException;
 
