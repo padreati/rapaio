@@ -1,9 +1,8 @@
-package rapaio.ml.classification;
+package rapaio.ml.tools;
 
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.ml.tools.DensityTable;
 
 import java.io.IOException;
 

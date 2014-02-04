@@ -22,21 +22,21 @@ package rapaio.ml.tree;
 
 import rapaio.core.RandomSource;
 import rapaio.data.*;
+import rapaio.data.Vector;
+import rapaio.data.mapping.MappedFrame;
+import rapaio.data.mapping.Mapping;
 import rapaio.ml.AbstractClassifier;
 import rapaio.ml.Classifier;
 import rapaio.ml.tools.DensityTable;
+import rapaio.workspace.Workspace;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static rapaio.data.filters.BaseFilters.sort;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class C45Classifier extends AbstractClassifier<C45Classifier> {
 
 	/**
@@ -45,19 +45,18 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
 	 */
 	public static final int SELECTION_INFOGAIN = 0;
 	public static final int SELECTION_GAINRATIO = 1;
-	private double minWeight = 2; // min weight for at least 2 output groups in order for an attribute to be selected
-	private int selection = SELECTION_GAINRATIO;
-	;
+	double minWeight = 2;
+	int selection = SELECTION_GAINRATIO;
 	String[] dict;
-	private C45ClassifierNode root;
-	private Nominal prediction;
-	private Frame distribution;
+	C45ClassifierNode root;
+	Nominal prediction;
+	Frame distribution;
 
-	public int getSelectionCriterion() {
+	public int getSelection() {
 		return selection;
 	}
 
-	public C45Classifier setSelectionCriterion(int selection) {
+	public C45Classifier setSelection(int selection) {
 		this.selection = selection;
 		return this;
 	}
@@ -73,17 +72,17 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
 
 	@Override
 	public Classifier newInstance() {
-		return new C45Classifier().setMinWeight(minWeight).setSelectionCriterion(selection);
+		return new C45Classifier().setMinWeight(minWeight).setSelection(selection);
 	}
 
 	@Override
 	public void learn(Frame df, List<Double> weights, String classColName) {
 		dict = df.getCol(classColName).getDictionary();
-		List<String> testColNames = new ArrayList<>();
+		Set<String> testColNames = new HashSet<>();
 		for (String colName : df.getColNames()) {
 			if (colName.equals(classColName))
 				continue;
-			testColNames.add(classColName);
+			testColNames.add(colName);
 		}
 		root = new C45ClassifierNode(this);
 		root.learn(df, weights, testColNames, classColName);
@@ -99,20 +98,20 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
 			for (int j = 0; j < dict.length; j++) {
 				distribution.setValue(i, j, d[j]);
 			}
-			List<Integer> cand = new ArrayList<>();
+			List<Integer> candidates = new ArrayList<>();
 			double max = 0;
-			for (int j = 0; j < dict.length; j++) {
-				if (distribution.getValue(i, j) > max) {
-					max = distribution.getValue(i, j);
-					cand.clear();
-					cand.add(j);
+			for (int j = 1; j < dict.length; j++) {
+				if (d[j] > max) {
+					max = d[j];
+					candidates.clear();
+					candidates.add(j);
 					continue;
 				}
-				if (distribution.getValue(i, j) == max) {
-					cand.add(j);
+				if (d[j] == max) {
+					candidates.add(j);
 				}
 			}
-			prediction.setLabel(i, dict[RandomSource.nextInt(cand.size())]);
+			prediction.setLabel(i, dict[candidates.get(RandomSource.nextInt(candidates.size()))]);
 		}
 	}
 
@@ -128,7 +127,53 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
 
 	@Override
 	public void summary() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		StringBuilder sb = new StringBuilder();
+		sb.append("\nC45(selection=");
+		switch (selection) {
+			case SELECTION_GAINRATIO:
+				sb.append("gainratio");
+				break;
+			case SELECTION_INFOGAIN:
+				sb.append("infogain");
+				break;
+		}
+		sb.append(")\n");
+		summary(root, sb, 0);
+		Workspace.code(sb.toString());
+	}
+
+	private void summary(C45ClassifierNode root, StringBuilder sb, int level) {
+		if (root.leaf) {
+			for (int i = 0; i < level; i++) {
+				sb.append("   ");
+			}
+			sb.append("-> ");
+			sb.append("predict:{");
+			for (int i = 1; i < dict.length; i++) {
+				sb.append(String.format(" %s=%.2f,", dict[i], root.distribution[i]));
+			}
+			sb.append("}\n");
+			return;
+		}
+		for (String label : root.children.keySet()) {
+			for (int i = 0; i < level; i++) {
+				sb.append("   ");
+			}
+			sb.append("-> ");
+			sb.append(root.testColName);
+			if (root.testValue != root.testValue) {
+				sb.append(":").append(label);
+			} else {
+				if ("left".equals(label)) {
+					sb.append(String.format("<=%.4f)", root.testValue));
+				} else {
+					sb.append(String.format(">%.4f)", root.testValue));
+				}
+			}
+			sb.append(String.format(" (crt=%.6f)", root.testCriteria));
+			sb.append("\n");
+			summary(root.children.get(label), sb, level + 1);
+		}
 	}
 }
 
@@ -136,19 +181,18 @@ class C45ClassifierNode {
 
 	final C45Classifier parent;
 	String testColName;
-	double testValue; // used by numeric children to distinguish between left and right
+	double testValue;
+	double testCriteria;
 	double totalWeight;
 	boolean leaf = false;
 	double[] distribution;
-	Map<String, C45ClassifierNode> nominalChildren;
-	C45ClassifierNode numericLeftChild;
-	C45ClassifierNode numericRightChild;
+	Map<String, C45ClassifierNode> children;
 
 	public C45ClassifierNode(C45Classifier parent) {
 		this.parent = parent;
 	}
 
-	public void learn(Frame df, List<Double> weights, List<String> testColNames, String classColName) {
+	public void learn(Frame df, List<Double> weights, Set<String> testColNames, String classColName) {
 		totalWeight = 0;
 		for (double weight : weights) {
 			totalWeight += weight;
@@ -157,6 +201,7 @@ class C45ClassifierNode {
 		leaf = true;
 
 		// if totalWeight < 2*minWeight we have a leaf
+
 		if (totalWeight < 2 * parent.getMinWeight()) {
 			distribution = new double[parent.dict.length];
 			for (int i = 0; i < df.getRowCount(); i++) {
@@ -182,54 +227,59 @@ class C45ClassifierNode {
 		}
 
 		// try to find a good split
-		double max_criteria = 0;
-		String selColName = null;
-		double selSplitValue = Double.NaN;
+		testCriteria = 0;
+		for (String selColName : testColNames) {
 
-		for (String testColName : testColNames) {
 			// for nominal columns
-			if (df.getCol(testColName).getType().isNominal()) {
-				DensityTable id = new DensityTable(df, weights, testColName, classColName);
+
+			if (df.getCol(selColName).getType().isNominal()) {
+				DensityTable id = new DensityTable(df, weights, selColName, classColName);
 				int count = id.countWithMinimum(false, parent.getMinWeight());
 				if (count < 2) {
 					continue;
 				}
-				double criteria = 0;
-				if (parent.SELECTION_GAINRATIO == parent.getSelectionCriterion()) {
-					criteria = id.getGainRatio(true);
+				double value = 0;
+				switch (parent.selection) {
+					case C45Classifier.SELECTION_GAINRATIO:
+						value = id.getGainRatio(true);
+						break;
+					case C45Classifier.SELECTION_INFOGAIN:
+						value = id.getInfoGain();
+						break;
 				}
-				if (parent.SELECTION_INFOGAIN == parent.getSelectionCriterion()) {
-					criteria = id.getInfoGain(true);
+				if (compareCriteria(value, testCriteria, parent.selection) > 0) {
+					testColName = selColName;
+					testCriteria = value;
+					testValue = Double.NaN;
 				}
-				if (criteria > max_criteria) {
-					selColName = testColName;
-					max_criteria = criteria;
-				}
+				continue;
 			}
 
 			// for numeric columns
-			if (df.getCol(testColName).getType().isNumeric()) {
+
+			if (df.getCol(selColName).getType().isNumeric()) {
 				DensityTable id = new DensityTable(DensityTable.NUMERIC_DEFAULT_LABELS, parent.dict);
 				Vector sort = Vectors.newSeq(df.getRowCount());
-				sort = sort(sort, RowComparators.numericComparator(df.getCol(testColName), true));
+				sort = sort(sort, RowComparators.numericComparator(df.getCol(selColName), true));
+
 				// first fill the density table
 				for (int i = 0; i < df.getRowCount(); i++) {
 					int pos = sort.getRowId(i);
-					if (df.isMissing(pos, testColName)) {
+					if (df.isMissing(pos, selColName)) {
 						id.update(0, df.getIndex(pos, classColName), weights.get(pos));
 					} else {
 						id.update(2, df.getIndex(pos, classColName), weights.get(pos));
 					}
 				}
+
 				// process the split points
 				for (int i = 0; i < df.getRowCount(); i++) {
 					int pos = sort.getRowId(i);
-					if (df.isMissing(pos, testColName)) continue;
+					if (df.isMissing(pos, selColName)) continue;
 					id.move(2, 1, df.getIndex(pos, classColName), weights.get(pos));
 
 					if (i < df.getRowCount() - 1
-							&& df.getValue(pos, testColName)
-							== df.getValue(sort.getRowId(i + 1), testColName)) {
+							&& df.getValue(pos, selColName) == df.getValue(sort.getRowId(i + 1), selColName)) {
 						continue;
 					}
 
@@ -237,44 +287,50 @@ class C45ClassifierNode {
 						continue;
 					}
 
-					double criteria = 0;
-					if (parent.SELECTION_GAINRATIO == parent.getSelectionCriterion()) {
-						criteria = id.getGainRatio(true);
+					double value = 0;
+					switch (parent.selection) {
+						case C45Classifier.SELECTION_GAINRATIO:
+							value = id.getGainRatio(true);
+							break;
+						case C45Classifier.SELECTION_INFOGAIN:
+							value = id.getInfoGain(true);
+							break;
 					}
-					if (parent.SELECTION_INFOGAIN == parent.getSelectionCriterion()) {
-						criteria = id.getInfoGain(true);
-					}
-					if (criteria > max_criteria) {
-						selColName = testColName;
-						selSplitValue = df.getValue(pos, testColName);
-						max_criteria = criteria;
+					if (compareCriteria(value, testCriteria, parent.selection) > 0) {
+						testColName = selColName;
+						testValue = df.getValue(pos, selColName);
+						testCriteria = value;
 					}
 				}
 			}
 		}
 
 		// we have some split
-		if (selColName != null) {
-			if (df.getCol(selColName).getType().isNominal()) {
-				int childrenCount = df.getCol(selColName).getDictionary().length;
 
-				List<Integer>[] childIds = new List[childrenCount];
+		if (testColName != null) {
+
+			// for nominal columns
+
+			if (df.getCol(testColName).getType().isNominal()) {
+				int childrenCount = df.getCol(testColName).getDictionary().length - 1;
+
+				Mapping[] childMappings = new Mapping[childrenCount];
 				List<Double>[] childWeights = new List[childrenCount];
 				double[] childTotals = new double[childrenCount];
 				double totalNonMissing = 0;
 
 				for (int i = 0; i < childrenCount; i++) {
-					childIds[i] = new ArrayList<>();
+					childMappings[i] = new Mapping();
 					childWeights[i] = new ArrayList<>();
 				}
 
 				// distribute non-missing
 				for (int i = 0; i < df.getRowCount(); i++) {
-					if (df.isMissing(i, selColName)) {
+					if (df.isMissing(i, testColName)) {
 						continue;
 					}
-					int index = df.getIndex(i, selColName);
-					childIds[index].add(i);
+					int index = df.getIndex(i, testColName) - 1;
+					childMappings[index].add(df.getRowId(i));
 					childWeights[index].add(weights.get(i));
 					childTotals[index] += weights.get(i);
 				}
@@ -286,77 +342,142 @@ class C45ClassifierNode {
 
 				// distribute missing
 				for (int i = 0; i < df.getRowCount(); i++) {
-					if (df.isMissing(i, selColName)) {
+					if (df.isMissing(i, testColName)) {
 						for (int j = 0; j < childrenCount; j++) {
 							if (childTotals[i] == 0) {
 								continue;
 							}
-							childIds[j].add(i);
+							childMappings[j].add(df.getRowId(i));
 							childWeights[j].add(weights.get(i) * childTotals[j] / totalNonMissing);
 						}
 					}
 				}
 
 				// build children nodes
-				nominalChildren = new HashMap<>();
+				children = new HashMap<>();
+				HashSet<String> newTestColNames = new HashSet<>(testColNames);
+				newTestColNames.remove(testColName);
 				for (int i = 0; i < childrenCount; i++) {
-					String label = df.getCol(selColName).getDictionary()[i];
+					String label = df.getCol(testColName).getDictionary()[i + 1];
+					C45ClassifierNode node = new C45ClassifierNode(parent);
+					children.put(label, node);
+					node.learn(new MappedFrame(df.getSourceFrame(), childMappings[i]), childWeights[i], testColNames, classColName);
+				}
+				return;
+			}
 
-					// TODO continue implementation here
+			// for numeric columns
+
+			int childrenCount = 2;
+
+			Mapping[] childMappings = new Mapping[childrenCount];
+			List<Double>[] childWeights = new List[childrenCount];
+			double[] childTotals = new double[childrenCount];
+			double totalNonMissing = 0;
+
+			for (int i = 0; i < childrenCount; i++) {
+				childMappings[i] = new Mapping();
+				childWeights[i] = new ArrayList<>();
+			}
+
+			// distribute non-missing
+			for (int i = 0; i < df.getRowCount(); i++) {
+				if (df.isMissing(i, testColName)) {
+					continue;
+				}
+				int index = df.getValue(i, testColName) <= testValue ? 0 : 1;
+				childMappings[index].add(df.getRowId(i));
+				childWeights[index].add(weights.get(i));
+				childTotals[index] += weights.get(i);
+			}
+
+			// compute non missing totals
+			for (int i = 0; i < childrenCount; i++) {
+				totalNonMissing += childTotals[i];
+			}
+
+			// distribute missing
+			for (int i = 0; i < df.getRowCount(); i++) {
+				if (df.isMissing(i, testColName)) {
+					for (int j = 0; j < childrenCount; j++) {
+						if (childTotals[i] == 0) {
+							continue;
+						}
+						childMappings[j].add(df.getRowId(i));
+						childWeights[j].add(weights.get(i) * childTotals[j] / totalNonMissing);
+					}
 				}
 			}
+
+			// build children nodes
+
+			children = new HashMap<>();
+			HashSet<String> newTestColNames = new HashSet<>(testColNames);
+			newTestColNames.remove(testColName);
+
+			C45ClassifierNode left = new C45ClassifierNode(parent);
+			children.put("left", left);
+			C45ClassifierNode right = new C45ClassifierNode(parent);
+			children.put("right", right);
+			left.learn(new MappedFrame(df.getSourceFrame(), childMappings[0]), childWeights[0], newTestColNames, classColName);
+			right.learn(new MappedFrame(df.getSourceFrame(), childMappings[1]), childWeights[1], newTestColNames, classColName);
+
+		} else {
+
+			// we could not find a split, so we degenerate to default
+			leaf = true;
+			distribution = new double[parent.dict.length];
+			for (int i = 0; i < df.getRowCount(); i++) {
+				distribution[df.getIndex(i, classColName)] += weights.get(i);
+			}
+			for (int i = 0; i < distribution.length; i++) {
+				distribution[i] /= totalWeight;
+			}
 		}
+	}
+
+	private int compareCriteria(double value, double criteria, int selection) {
+		switch (selection) {
+			case C45Classifier.SELECTION_GAINRATIO:
+				return (value >= criteria) ? 1 : -1;
+			case C45Classifier.SELECTION_INFOGAIN:
+				return (value >= criteria) ? 1 : -1;
+		}
+		return 0;
 	}
 
 	public double[] computeDistribution(Frame df, int row) {
 		if (leaf) {
 			return distribution;
 		}
+
 		// if missing aggregate all child nodes
+
 		if (df.getCol(testColName).isMissing(row)) {
-			if (df.getCol(testColName).getType().isNominal()) {
-				double[] d = new double[parent.dict.length];
-				for (Map.Entry<String, C45ClassifierNode> entry : nominalChildren.entrySet()) {
-					double[] dd = entry.getValue().computeDistribution(df, row);
-					for (int i = 0; i < dd.length; i++) {
-						d[i] += dd[i] * entry.getValue().totalWeight / totalWeight;
-					}
+			double[] d = new double[parent.dict.length];
+			for (Map.Entry<String, C45ClassifierNode> entry : children.entrySet()) {
+				double[] dd = entry.getValue().computeDistribution(df, row);
+				for (int i = 0; i < dd.length; i++) {
+					d[i] += dd[i] * entry.getValue().totalWeight / totalWeight;
 				}
-				return d;
 			}
-			if (df.getCol(testColName).getType().isNumeric()) {
-				double[] d = new double[parent.dict.length];
-				double[] left = numericLeftChild.computeDistribution(df, row);
-				double[] right = numericRightChild.computeDistribution(df, row);
-				for (int i = 0; i < d.length; i++) {
-					d[i] += left[i] * numericLeftChild.totalWeight / totalWeight;
-					d[i] += right[i] * numericRightChild.totalWeight / totalWeight;
-				}
-				return d;
-			}
-			// should not be here
-			return null;
+			return d;
 		}
 
 		// we have a getValue
 		if (df.getCol(testColName).getType().isNominal()) {
 			String label = df.getLabel(row, testColName);
-			for (Map.Entry<String, C45ClassifierNode> entry : nominalChildren.entrySet()) {
+			for (Map.Entry<String, C45ClassifierNode> entry : children.entrySet()) {
 				if (entry.getKey().equals(label)) {
 					return entry.getValue().computeDistribution(df, row);
 				}
 			}
-			// should not be here
-			return null;
+			throw new RuntimeException("label value not found in classification tree");
 		}
-		if (df.getCol(testColName).getType().isNumeric()) {
-			if (df.getValue(row, testColName) <= testValue) {
-				return numericLeftChild.computeDistribution(df, row);
-			} else {
-				return numericRightChild.computeDistribution(df, row);
-			}
+		if (df.getValue(row, testColName) <= testValue) {
+			return children.get("left").computeDistribution(df, row);
+		} else {
+			return children.get("right").computeDistribution(df, row);
 		}
-		// should not be here
-		return null;
 	}
 }
