@@ -31,3 +31,4 @@ label is the same. this option makes a step in the direction given by CART trees
  - windowing option
  - grouping option
  - max nodes option
+- column selector option (which can enable C45 to be used in RandomForests)
