@@ -137,6 +137,7 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
 				sb.append("infogain");
 				break;
 		}
+		sb.append(String.format(", minWeight=%.3f", minWeight));
 		sb.append(")\n");
 		summary(root, sb, 0);
 		Workspace.code(sb.toString());
@@ -150,7 +151,7 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
 			sb.append("-> ");
 			sb.append("predict:{");
 			for (int i = 1; i < dict.length; i++) {
-				sb.append(String.format(" %s=%.2f,", dict[i], root.distribution[i]));
+				sb.append(String.format(" %s=%.2f", dict[i], root.counts[i]));
 			}
 			sb.append("}\n");
 			return;
@@ -165,12 +166,12 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
 				sb.append(":").append(label);
 			} else {
 				if ("left".equals(label)) {
-					sb.append(String.format("<=%.4f)", root.testValue));
+					sb.append(String.format("<=%.4f", root.testValue));
 				} else {
-					sb.append(String.format(">%.4f)", root.testValue));
+					sb.append(String.format(">%.4f", root.testValue));
 				}
 			}
-			sb.append(String.format(" (crt=%.6f)", root.testCriteria));
+//			sb.append(String.format(" (crt=%.6f)", root.testCriteria));
 			sb.append("\n");
 			summary(root.children.get(label), sb, level + 1);
 		}
@@ -185,6 +186,7 @@ class C45ClassifierNode {
 	double testCriteria;
 	double totalWeight;
 	boolean leaf = false;
+	double[] counts;
 	double[] distribution;
 	Map<String, C45ClassifierNode> children;
 
@@ -194,22 +196,20 @@ class C45ClassifierNode {
 
 	public void learn(Frame df, List<Double> weights, Set<String> testColNames, String classColName) {
 		totalWeight = 0;
-		for (double weight : weights) {
-			totalWeight += weight;
+		counts = new double[parent.dict.length];
+		distribution = new double[parent.dict.length];
+		for (int i = 0; i < df.getRowCount(); i++) {
+			counts[df.getIndex(i, classColName)] += weights.get(i);
+			totalWeight += weights.get(i);
+		}
+		for (int i = 0; i < distribution.length; i++) {
+			distribution[i] = counts[i] / totalWeight;
 		}
 
 		leaf = true;
 
 		// if totalWeight < 2*minWeight we have a leaf
-
 		if (totalWeight < 2 * parent.getMinWeight()) {
-			distribution = new double[parent.dict.length];
-			for (int i = 0; i < df.getRowCount(); i++) {
-				distribution[df.getIndex(i, classColName)] += weights.get(i);
-			}
-			for (int i = 0; i < distribution.length; i++) {
-				distribution[i] /= totalWeight;
-			}
 			return;
 		}
 
@@ -221,8 +221,6 @@ class C45ClassifierNode {
 			}
 		}
 		if (leaf) {
-			distribution = new double[parent.dict.length];
-			distribution[df.getIndex(0, classColName)] += 1.;
 			return;
 		}
 
@@ -264,22 +262,20 @@ class C45ClassifierNode {
 
 				// first fill the density table
 				for (int i = 0; i < df.getRowCount(); i++) {
-					int pos = sort.getRowId(i);
-					if (df.isMissing(pos, selColName)) {
-						id.update(0, df.getIndex(pos, classColName), weights.get(pos));
+					if (df.isMissing(sort.getIndex(i), selColName)) {
+						id.update(0, df.getIndex(sort.getIndex(i), classColName), weights.get(sort.getIndex(i)));
 					} else {
-						id.update(2, df.getIndex(pos, classColName), weights.get(pos));
+						id.update(2, df.getIndex(sort.getIndex(i), classColName), weights.get(sort.getIndex(i)));
 					}
 				}
 
 				// process the split points
 				for (int i = 0; i < df.getRowCount(); i++) {
-					int pos = sort.getRowId(i);
-					if (df.isMissing(pos, selColName)) continue;
-					id.move(2, 1, df.getIndex(pos, classColName), weights.get(pos));
+					if (df.isMissing(sort.getIndex(i), selColName)) continue;
+					id.move(2, 1, df.getIndex(sort.getIndex(i), classColName), weights.get(sort.getIndex(i)));
 
 					if (i < df.getRowCount() - 1
-							&& df.getValue(pos, selColName) == df.getValue(sort.getRowId(i + 1), selColName)) {
+							&& df.getValue(sort.getIndex(i), selColName) == df.getValue(sort.getIndex(i + 1), selColName)) {
 						continue;
 					}
 
@@ -298,7 +294,7 @@ class C45ClassifierNode {
 					}
 					if (compareCriteria(value, testCriteria, parent.selection) > 0) {
 						testColName = selColName;
-						testValue = df.getValue(pos, selColName);
+						testValue = df.getValue(sort.getIndex(i), selColName);
 						testCriteria = value;
 					}
 				}
@@ -426,13 +422,6 @@ class C45ClassifierNode {
 
 			// we could not find a split, so we degenerate to default
 			leaf = true;
-			distribution = new double[parent.dict.length];
-			for (int i = 0; i < df.getRowCount(); i++) {
-				distribution[df.getIndex(i, classColName)] += weights.get(i);
-			}
-			for (int i = 0; i < distribution.length; i++) {
-				distribution[i] /= totalWeight;
-			}
 		}
 	}
 

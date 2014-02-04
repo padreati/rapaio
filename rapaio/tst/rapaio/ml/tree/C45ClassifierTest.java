@@ -16,13 +16,13 @@ import java.io.IOException;
  */
 public class C45ClassifierTest {
 
-	@Test
+	//	@Test
 	public void testNominalInfoGain() throws IOException {
 		Frame df = Datasets.loadPlay();
 		df = BaseFilters.retainNominal(df);
 		final String className = "class";
 
-		C45Classifier classifier = new C45Classifier().setSelection(C45Classifier.SELECTION_INFOGAIN);
+		C45Classifier classifier = new C45Classifier().setSelection(C45Classifier.SELECTION_GAINRATIO);
 		classifier.learn(df, className);
 		classifier.predict(df);
 
@@ -37,7 +37,7 @@ public class C45ClassifierTest {
 		Summary.summary(cm);
 	}
 
-	@Test
+	//	@Test
 	public void testNumericInfoGain() throws IOException {
 		Frame df = Datasets.loadPlay();
 		df = BaseFilters.retainCols(df, "temp,humidity,class");
