@@ -11,21 +11,24 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public class LinearModelRegressor extends AbstractRegressor {
 
 	List<String> predictors = new ArrayList<>();
-	String targetColName;
-	Frame coeff;
-	Vector trainFitted;
-	Vector trainResidual;
-	Vector testFitted;
+	List<String> targets = new ArrayList<>();
+	Frame coefficients;
+	Vector fittedValues;
+	Vector residualValues;
 
 	@Override
-	public void learn(Frame df, List<Double> weights, String targetColName) {
+	public void learn(Frame df, List<Double> weights, String targetColNames) {
+		targets.clear();
 		predictors.clear();
-		this.targetColName = targetColName;
+		for (String targetColName : targetColNames.split(",", -1)) {
+			targets.add(targetColName);
+		}
 		for (String colName : df.getColNames()) {
-			if (!targetColName.contains(colName) && df.getCol(colName).getType().isNumeric()) {
+			if (!targetColNames.contains(colName) && df.getCol(colName).getType().isNumeric()) {
 				predictors.add(colName);
 			}
 		}
@@ -39,10 +42,10 @@ public class LinearModelRegressor extends AbstractRegressor {
 			bnames.addLabel(predictors.get(i));
 			bcoeff.addValue(beta.get(i, 0));
 		}
-		coeff = new SolidFrame(predictors.size(), new Vector[]{bnames, bcoeff}, new String[]{"Term", "Coeff"});
+		coefficients = new SolidFrame(predictors.size(), new Vector[]{bnames, bcoeff}, new String[]{"Term", "Coeff"});
 
-		trainFitted = buildFit(df);
-		trainResidual = buildResidual(Y, trainFitted);
+		fittedValues = buildFit(df);
+		residualValues = buildResidual(Y, fittedValues);
 	}
 
 	private Vector buildResidual(Matrix actual, Vector predict) {
@@ -58,7 +61,7 @@ public class LinearModelRegressor extends AbstractRegressor {
 		for (int i = 0; i < df.getRowCount(); i++) {
 			double acc = 0;
 			for (int k = 0; k < predictors.size(); k++) {
-				acc += coeff.getValue(k, "Coeff") * df.getValue(i, predictors.get(k));
+				acc += coefficients.getValue(k, "Coeff") * df.getValue(i, predictors.get(k));
 			}
 			result.setValue(i, acc);
 		}
@@ -66,8 +69,11 @@ public class LinearModelRegressor extends AbstractRegressor {
 	}
 
 	private Matrix buildY(Frame df) {
-		Numeric[] vectors = new Numeric[1];
-		vectors[0] = (Numeric) df.getCol(targetColName);
+		Numeric[] vectors = new Numeric[targets.size()];
+		int pos = 0;
+		for (String targetColName : targets) {
+			vectors[pos++] = (Numeric) df.getCol(targetColName);
+		}
 		return new Matrix(vectors);
 	}
 
@@ -82,23 +88,30 @@ public class LinearModelRegressor extends AbstractRegressor {
 
 	@Override
 	public void predict(Frame df) {
-		testFitted = buildFit(df);
+		fittedValues = buildFit(df);
 	}
 
 	public Frame getCoeff() {
-		return coeff;
-	}
-
-	public Vector getTrainFittedValues() {
-		return trainFitted;
-	}
-
-	public Vector getTrainResidualValues() {
-		return trainResidual;
+		return coefficients;
 	}
 
 	@Override
-	public Vector getTestFittedValues() {
-		return testFitted;
+	public Vector getFitValues() {
+		return fittedValues;
+	}
+
+	@Override
+	public Vector getResidualValues() {
+		return residualValues;
+	}
+
+	@Override
+	public Frame getAllFitValues() {
+		return null;
+	}
+
+	@Override
+	public Frame getAllResidualValues() {
+		return null;
 	}
 }

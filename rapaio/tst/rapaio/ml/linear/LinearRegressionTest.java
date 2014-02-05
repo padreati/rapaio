@@ -44,8 +44,8 @@ public class LinearRegressionTest {
 		lm.learn(df, "y1");
 
 		Summary.lines(lm.getCoeff());
-		Summary.lines(lm.getTrainFittedValues());
-		Summary.lines(lm.getTrainResidualValues());
+		Summary.lines(lm.getFitValues());
+		Summary.lines(lm.getResidualValues());
 
 	}
 
@@ -78,7 +78,7 @@ public class LinearRegressionTest {
 		);
 
 		draw(new Plot()
-				.add(new Points(df.getCol("Father"), lm.getTrainResidualValues()))
+				.add(new Points(df.getCol("Father"), lm.getResidualValues()))
 		);
 	}
 

@@ -17,9 +17,10 @@ import java.util.List;
 /**
  * This works for numeric attributes only with no missing values.
  * With this restriction it works like CART or C45Classifier regression trees.
- * <p/>
+ * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
+@Deprecated
 public class TreeRegressor extends AbstractRegressor {
 
 	double minWeight = 1;
@@ -65,8 +66,23 @@ public class TreeRegressor extends AbstractRegressor {
 	}
 
 	@Override
-	public Vector getTestFittedValues() {
+	public Vector getFitValues() {
 		return fitted;
+	}
+
+	@Override
+	public Vector getResidualValues() {
+		return null;
+	}
+
+	@Override
+	public Frame getAllFitValues() {
+		return null;
+	}
+
+	@Override
+	public Frame getAllResidualValues() {
+		return null;
 	}
 }
 

@@ -16,5 +16,11 @@ public interface Regressor {
 
 	void predict(Frame df);
 
-	Vector getTestFittedValues();
+	Vector getFitValues();
+
+	Vector getResidualValues();
+
+	Frame getAllFitValues();
+
+	Frame getAllResidualValues();
 }

@@ -26,9 +26,10 @@ label is the same. this option makes a step in the direction given by CART trees
  to not overfit; this is somehow a weaker way to try not to overfit (other than pruning)
  which has the main advantage that is computationally faster
 
- These are the features which are **NOT** implemented:
- - pruning procedure
- - windowing option
- - grouping option
- - max nodes option
-- column selector option (which can enable C45 to be used in RandomForests)
+These are the features which are **NOT** implemented:
+
+* pruning procedure
+* windowing option
+* grouping option
+* max nodes option
+* column selector option (which can enable C45 to be used in RandomForests)

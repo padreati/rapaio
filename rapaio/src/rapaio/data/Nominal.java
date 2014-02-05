@@ -25,15 +25,15 @@ import java.util.*;
 
 /**
  * Nominal vector contains values for nominal or categorical observations.
- * <p/>
+ * <p>
  * The domain of the definition is called getDictionary and is
  * given at construction time.
- * <p/>
+ * <p>
  * This vector accepts two getValue representation: as labels and as indexes.
- * <p/>
+ * <p>
  * Label representation is the natural representation since in experiments
  * the nominal vectors are given as string values.
- * <p/>
+ * <p>
  * The getIndex representation is learn based on the canonical form of the
  * term getDictionary and is used often for performance reasons instead of
  * getLabel representation, where the actual getLabel getValue does not matter.
