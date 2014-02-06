@@ -4,6 +4,8 @@ import rapaio.core.ColRange;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Frames;
+import rapaio.data.Vector;
+import rapaio.ml.AbstractRegressor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -12,15 +14,16 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class MultiLayerPerceptronRegressor implements Serializable {
+public class MultiLayerPerceptronRegressor extends AbstractRegressor implements Serializable {
 
 	private final double learningRate;
 	private final NetNode[][] net;
 	private final SigmoidFunction sigmoid = new SigmoidFunction();
 
-	private List<String> inputCols;
-	private List<String> targetCols;
-	private Frame prediction;
+	List<String> inputCols;
+	List<String> targetCols;
+	Frame prediction;
+	int rounds = 0;
 
 	public MultiLayerPerceptronRegressor(int[] layerSizes, double learningRate) {
 		this.learningRate = learningRate;
@@ -69,7 +72,22 @@ public class MultiLayerPerceptronRegressor implements Serializable {
 		}
 	}
 
-	public void learn(Frame df, String targetColNames, int rounds) {
+	public int getRounds() {
+		return rounds;
+	}
+
+	public MultiLayerPerceptronRegressor setRounds(int rounds) {
+		this.rounds = rounds;
+		return this;
+	}
+
+	@Override
+	public void learn(Frame df, List<Double> weights, String targetColName) {
+		this.learn(df, null, targetColName);
+	}
+
+	@Override
+	public void learn(Frame df, String targetColNames) {
 		ColRange targetColRange = new ColRange(targetColNames);
 		List<Integer> targets = targetColRange.parseColumnIndexes(df);
 		targetCols = new ArrayList<>();
@@ -181,7 +199,23 @@ public class MultiLayerPerceptronRegressor implements Serializable {
 		}
 	}
 
-	public Frame getFittedValues() {
+	@Override
+	public Vector getFitValues() {
+		return prediction.getCol(0);
+	}
+
+	@Override
+	public Vector getResidualValues() {
+		return null;
+	}
+
+	@Override
+	public Frame getAllFitValues() {
 		return prediction;
+	}
+
+	@Override
+	public Frame getAllResidualValues() {
+		return null;
 	}
 }
