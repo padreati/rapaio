@@ -52,7 +52,7 @@ is considered to be fully implemented and well tested.
 * Random Tree (used in Random Forest)
 * Random Forests uses a variant of tree similar with C45 (in the future will be implemented with CART)
 * ID3 - additional option to use missing values as category
-* C45 Classifier (incomplete)
+* C45 Classifier (without pruning)
 
 **Regression**
 

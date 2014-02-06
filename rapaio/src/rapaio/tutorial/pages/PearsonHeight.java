@@ -19,15 +19,15 @@
  */
 package rapaio.tutorial.pages;
 
+import rapaio.core.distributions.Distribution;
+import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
 import rapaio.core.stat.Variance;
-import rapaio.correlation.PearsonRCorrelation;
+import rapaio.core.stat.correlation.PearsonRCorrelation;
 import rapaio.data.Frame;
 import rapaio.data.Vector;
 import rapaio.datasets.Datasets;
-import rapaio.distributions.Distribution;
-import rapaio.distributions.Normal;
 import rapaio.graphics.Plot;
 import rapaio.graphics.QQPlot;
 import rapaio.graphics.plot.ABLine;

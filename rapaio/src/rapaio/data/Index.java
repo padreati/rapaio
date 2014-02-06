@@ -1,5 +1,7 @@
 package rapaio.data;
 
+import rapaio.data.mapping.Mapping;
+
 import java.util.Arrays;
 
 /**
@@ -12,7 +14,7 @@ public class Index extends AbstractVector {
 	private static final int[] EMPTY_DATA = {};
 
 	private static final int MISSING_VALUE = Integer.MIN_VALUE;
-	private transient int[] data;
+	private int[] data;
 	private int rows;
 
 	public Index() {

@@ -1,8 +1,11 @@
 package rapaio.data;
 
 
+import rapaio.data.mapping.Mapping;
+
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.DoubleStream;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -14,7 +17,7 @@ public class Numeric extends AbstractVector {
 	private static final double[] EMPTY_DATA = {};
 
 	private static final double missingValue = Double.NaN;
-	private transient double[] data;
+	private double[] data;
 	private int rows;
 
 	public Numeric() {
@@ -296,5 +299,10 @@ public class Numeric extends AbstractVector {
 	@Override
 	public String toString() {
 		return "Numeric[" + getRowCount() + "]";
+	}
+
+	@Override
+	public DoubleStream getDoubleStream() {
+		return Arrays.stream(Arrays.copyOf(data, getRowCount()));
 	}
 }

@@ -20,11 +20,11 @@
 package rapaio.tutorial.pages;
 
 import rapaio.core.RandomSource;
+import rapaio.core.distributions.DUniform;
 import rapaio.core.stat.StatOnline;
 import rapaio.data.Numeric;
 import rapaio.data.Vector;
 import rapaio.data.Vectors;
-import rapaio.distributions.DUniform;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.ABLine;
 import rapaio.graphics.plot.Lines;

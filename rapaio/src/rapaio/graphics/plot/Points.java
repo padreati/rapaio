@@ -63,6 +63,7 @@ public class Points extends PlotComponent {
 				continue;
 			}
 			g2d.setColor(getColor(i));
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f));
 			int xx = (int) (getParent().xscale(x.getValue(i)));
 			int yy = (int) (getParent().yscale(y.getValue(i)));
 			PchPalette.STANDARD.draw(g2d, xx, yy, getSize(i), getPch(i));

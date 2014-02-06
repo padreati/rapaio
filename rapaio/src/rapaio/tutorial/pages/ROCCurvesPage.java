@@ -29,16 +29,16 @@ import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Legend;
 import rapaio.graphics.plot.ROCCurve;
-import rapaio.ml.classification.boost.AdaBoostSAMME;
-import rapaio.ml.classification.rule.OneRule;
-import rapaio.ml.classification.tree.DecisionStumpClassifier;
-import rapaio.ml.classification.tree.RandomForestClassifier;
+import rapaio.ml.boost.AdaBoostSAMMEClassifier;
+import rapaio.ml.rule.OneRule;
+import rapaio.ml.tree.DecisionStumpClassifier;
+import rapaio.ml.tree.RandomForestClassifier;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import static rapaio.sample.StatSampling.randomSample;
+import static rapaio.core.sample.StatSampling.randomSample;
 import static rapaio.workspace.Summary.summary;
 import static rapaio.workspace.Workspace.*;
 
@@ -143,7 +143,7 @@ public class ROCCurvesPage implements TutorialPage {
 				"and builds 200 boosting iterations. "
 				+ "The following code shows how one can achieve that using rapaio.");
 
-		AdaBoostSAMME ab = new AdaBoostSAMME(new DecisionStumpClassifier(), 200);
+		AdaBoostSAMMEClassifier ab = new AdaBoostSAMMEClassifier(new DecisionStumpClassifier(), 200);
 		ab.learn(train, "spam");
 		ab.predict(test);
 

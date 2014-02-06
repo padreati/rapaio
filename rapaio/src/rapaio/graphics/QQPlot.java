@@ -19,9 +19,9 @@
  */
 package rapaio.graphics;
 
+import rapaio.core.distributions.Distribution;
 import rapaio.data.Numeric;
 import rapaio.data.Vector;
-import rapaio.distributions.Distribution;
 import rapaio.graphics.plot.Points;
 
 import static rapaio.data.filters.BaseFilters.sort;

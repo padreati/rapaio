@@ -19,9 +19,13 @@
  */
 package rapaio.data;
 
+import rapaio.data.collect.VInstance;
 import rapaio.data.collect.VIterator;
+import rapaio.data.mapping.Mapping;
 
 import java.io.Serializable;
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 
 /**
  * Random access list of observed values (observations) for a specific variable.
@@ -47,11 +51,11 @@ public interface Vector extends Serializable {
 
 	/**
 	 * Returns observation identifier which is an integer.
-	 * <p/>
+	 * <p>
 	 * When a vector or frame is created from scratch as a solid vector/frame then
 	 * row identifiers are the row numbers. When the vector/frame wraps other
 	 * vector/frame then row identifier is the wrapped row identifier.
-	 * <p/>
+	 * <p>
 	 * This is mostly used to keep track of the original row numbers even after a series
 	 * of transformations which use wrapped vectors/frames.
 	 *
@@ -62,7 +66,7 @@ public interface Vector extends Serializable {
 
 	/**
 	 * Returns numeric setValue for the observation specified by {@code row}.
-	 * <p/>
+	 * <p>
 	 * Returns valid values for numerical vector types, otherwise the method
 	 * returns unspeified values.
 	 *
@@ -73,7 +77,7 @@ public interface Vector extends Serializable {
 
 	/**
 	 * Set numeric setValue for the observation specified by {@param row} to {@param setValue}.
-	 * <p/>
+	 * <p>
 	 * Returns valid values for numerical vector types, otherwise the method
 	 * returns unspeified values.
 	 *
@@ -129,14 +133,14 @@ public interface Vector extends Serializable {
 
 	/**
 	 * Returns the term getDictionary used by the nominal values.
-	 * <p/>
+	 * <p>
 	 * Term getDictionary contains all the nominal labels used by
 	 * observations and might contain also additional nominal labels.
 	 * Term getDictionary defines the domain of the definition for the nominal vector.
-	 * <p/>
+	 * <p>
 	 * The term getDictionary contains nominal labels sorted in lexicografical order,
 	 * so binary search techniques may be used on this vector.
-	 * <p/>
+	 * <p>
 	 * For other vector types like numerical ones this method returns nothing.
 	 *
 	 * @return term getDictionary defined by the nominal vector.
@@ -147,7 +151,7 @@ public interface Vector extends Serializable {
 
 	/**
 	 * Returns true if the setValue for the observation specified by {@param row} is missing, not available.
-	 * <p/>
+	 * <p>
 	 * A missing setValue for the observation means taht the measurement
 	 * was not completed or the result of the measurement was not documented,
 	 * thus the setValue is not available for analysis.
@@ -181,4 +185,8 @@ public interface Vector extends Serializable {
 	public VIterator getIterator(boolean complete);
 
 	public VIterator getCycleIterator(int size);
+
+	public Stream<VInstance> getStream();
+
+	public DoubleStream getDoubleStream();
 }

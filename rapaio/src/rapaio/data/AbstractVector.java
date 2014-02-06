@@ -19,11 +19,14 @@
  */
 package rapaio.data;
 
+import rapaio.data.collect.VInstance;
 import rapaio.data.collect.VIterator;
+import rapaio.data.mapping.MappedVector;
+import rapaio.data.mapping.Mapping;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 
 /**
  * Base class for a vector which enforces to read-only name given at construction time.
@@ -50,6 +53,20 @@ public abstract class AbstractVector implements Vector {
 	@Override
 	public VIterator getCycleIterator(int size) {
 		return new VectorIterator(true, size, this);
+	}
+
+	@Override
+	public Stream<VInstance> getStream() {
+		List<VInstance> instances = new ArrayList<>();
+		for (int i = 0; i < this.getRowCount(); i++) {
+			instances.add(new VInstanceImpl(i, this));
+		}
+		return instances.stream();
+	}
+
+	@Override
+	public DoubleStream getDoubleStream() {
+		throw new RuntimeException("Not implemented for this type of vector");
 	}
 }
 
@@ -193,5 +210,36 @@ class VectorIterator implements VIterator {
 			map.put(key, getMappedVector(key));
 		}
 		return map;
+	}
+}
+
+final class VInstanceImpl implements VInstance {
+
+	final int row;
+	final Vector vector;
+
+	VInstanceImpl(int row, Vector vector) {
+		this.row = vector.getRowId(row);
+		this.vector = vector.getSourceVector();
+	}
+
+	@Override
+	public boolean isMissing() {
+		return vector.isMissing(row);
+	}
+
+	@Override
+	public void setMissing() {
+		vector.setMissing(row);
+	}
+
+	@Override
+	public double getValue() {
+		return vector.getValue(row);
+	}
+
+	@Override
+	public void setValue(final double value) {
+		vector.setValue(row, value);
 	}
 }

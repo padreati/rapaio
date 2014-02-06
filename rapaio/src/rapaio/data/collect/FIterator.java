@@ -1,7 +1,7 @@
 package rapaio.data.collect;
 
 import rapaio.data.Frame;
-import rapaio.data.Mapping;
+import rapaio.data.mapping.Mapping;
 
 import java.util.Map;
 import java.util.Set;
@@ -59,6 +59,8 @@ public interface FIterator {
 
 	public void appendToMapping(String key);
 
+	public void appendToMapping(int key);
+
 	public int getMappingsCount();
 
 	public Set<String> getMappingsKeys();
@@ -67,9 +69,13 @@ public interface FIterator {
 
 	public Mapping getMapping(String key);
 
+	public Mapping getMapping(int key);
+
 	public Frame getMappedFrame();
 
 	public Frame getMappedFrame(String key);
+
+	public Frame getMappedFrame(int key);
 
 	public Map<String, Frame> getMappedFrames();
 }

@@ -1,7 +1,7 @@
 package rapaio.data.collect;
 
-import rapaio.data.Mapping;
 import rapaio.data.Vector;
+import rapaio.data.mapping.Mapping;
 
 import java.util.Map;
 import java.util.Set;

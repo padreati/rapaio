@@ -19,8 +19,8 @@
  */
 package rapaio.tutorial.pages;
 
-import rapaio.correlation.PearsonRCorrelation;
-import rapaio.correlation.SpearmanRhoCorrelation;
+import rapaio.core.stat.correlation.PearsonRCorrelation;
+import rapaio.core.stat.correlation.SpearmanRhoCorrelation;
 import rapaio.data.Frame;
 import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;

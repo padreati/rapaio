@@ -160,26 +160,30 @@ public class Histogram extends PlotComponent {
 		g2d.setColor(ColorPalette.STANDARD.getColor(0));
 		for (int i = 0; i < freqtable.length; i++) {
 			double d = freqtable[i];
+			double mind = Math.min(d, getParent().getRange().getY2());
 			if (!getParent().getRange().contains(binStart(i), 0)) {
 				continue;
 			}
-			if (!getParent().getRange().contains(binStart(i + 1), d)) {
-				continue;
-			}
+//			if (!getParent().getRange().contains(binStart(i + 1), maxd)) {
+//				continue;
+//			}
+			int[] x;
+			int[] y;
 			g2d.setColor(ColorPalette.STANDARD.getColor(0));
-			int[] x = new int[]{
+			x = new int[]{
 					(int) getParent().xscale(binStart(i)),
 					(int) getParent().xscale(binStart(i)),
 					(int) getParent().xscale(binStart(i + 1)),
 					(int) getParent().xscale(binStart(i + 1)),
 					(int) getParent().xscale(binStart(i)),};
-			int[] y = new int[]{
+			y = new int[]{
 					(int) getParent().yscale(0),
-					(int) getParent().yscale(d),
-					(int) getParent().yscale(d),
+					(int) getParent().yscale(mind),
+					(int) getParent().yscale(mind),
 					(int) getParent().yscale(0),
 					(int) getParent().yscale(0)};
 			g2d.drawPolyline(x, y, 5);
+
 			if (d != 0) {
 				x = new int[]{
 						(int) getParent().xscale(binStart(i)) + 1,
@@ -190,8 +194,8 @@ public class Histogram extends PlotComponent {
 				};
 				y = new int[]{
 						(int) getParent().yscale(0),
-						(int) getParent().yscale(d) + 1,
-						(int) getParent().yscale(d) + 1,
+						(int) getParent().yscale(mind) + ((d == mind) ? 1 : -2),
+						(int) getParent().yscale(mind) + ((d == mind) ? 1 : -2),
 						(int) getParent().yscale(0),
 						(int) getParent().yscale(0)};
 				g2d.setColor(getColor(i));
