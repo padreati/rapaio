@@ -24,6 +24,7 @@ import rapaio.data.collect.VIterator;
 import rapaio.data.mapping.Mapping;
 
 import java.io.Serializable;
+import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
 /**
@@ -187,4 +188,5 @@ public interface Vector extends Serializable {
 
 	public Stream<VInstance> getStream();
 
+	public DoubleStream getDoubleStream();
 }

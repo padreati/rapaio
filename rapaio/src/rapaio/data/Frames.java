@@ -23,8 +23,7 @@ package rapaio.data;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -98,14 +97,31 @@ public final class Frames {
 		return new SolidFrame(df.getRowCount(), vectors, names);
 	}
 
-	public static void scale(Frame df) {
+	/**
+	 * Scale all numeric columns by substracting mean and dividing by variance.
+	 * Additionally it replaces missing values with 0.
+	 *
+	 * @param df
+	 */
+	public static void scale(Frame df, String exceptCols) {
+		Set<String> except = new HashSet<>();
+		if (exceptCols != null && !exceptCols.isEmpty())
+			Collections.addAll(except, exceptCols.split(",", -1));
 		for (int i = 0; i < df.getColCount(); i++) {
-			if (df.getCol(i).getType().isNumeric()) {
+			if (df.getCol(i).getType().isNumeric() && !exceptCols.contains(df.getColNames()[i])) {
 				double mean = new Mean(df.getCol(i)).getValue();
 				double sd = StrictMath.sqrt(new Variance(df.getCol(i)).getValue());
 
+				if (mean != mean || sd != sd) {
+					throw new RuntimeException("mean or sd is NaN");
+				}
+				if (sd == 0) continue;
+
 				for (int j = 0; j < df.getRowCount(); j++) {
-					if (df.isMissing(j, i)) continue;
+					if (df.isMissing(j, i)) {
+						df.setValue(i, j, 0);
+						continue;
+					}
 					df.setValue(j, i, (df.getValue(j, i) - mean) / sd);
 				}
 			}

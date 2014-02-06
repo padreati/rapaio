@@ -25,6 +25,7 @@ import rapaio.data.mapping.MappedVector;
 import rapaio.data.mapping.Mapping;
 
 import java.util.*;
+import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
 /**
@@ -61,6 +62,11 @@ public abstract class AbstractVector implements Vector {
 			instances.add(new VInstanceImpl(i, this));
 		}
 		return instances.stream();
+	}
+
+	@Override
+	public DoubleStream getDoubleStream() {
+		throw new RuntimeException("Not implemented for this type of vector");
 	}
 }
 

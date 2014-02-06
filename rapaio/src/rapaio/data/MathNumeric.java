@@ -101,4 +101,12 @@ public final class MathNumeric {
 		return v;
 	}
 
+	public static Numeric ln(final Vector a, double shift) {
+		Numeric v = new Numeric();
+		for (int i = 0; i < a.getRowCount(); i++) {
+			v.addValue(StrictMath.log(a.getValue(i) + shift));
+		}
+		return v;
+	}
+
 }

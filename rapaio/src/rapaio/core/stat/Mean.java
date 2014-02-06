@@ -21,13 +21,12 @@ package rapaio.core.stat;
 
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
-import rapaio.data.collect.VIterator;
 
 import static rapaio.workspace.Workspace.code;
 
 /**
  * Compensated version of arithmetic mean of values from a {@code Vector}.
- * <p/>
+ * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  * Date: 9/7/13
  * Time: 12:21 PM
@@ -43,24 +42,12 @@ public final class Mean implements Summarizable {
 	}
 
 	private double compute() {
-		double sum = 0.;
-		double count = 0;
-		VIterator it = vector.getIterator(true);
-		while (it.next()) {
-			sum += it.getValue();
-			count++;
-		}
+		double count = vector.getDoubleStream().count();
 		if (count == 0) {
 			return Double.NaN;
 		}
-		sum /= count;
-		double t = 0;
-		it.reset();
-		while (it.next()) {
-			t += it.getValue() - sum;
-		}
-		sum += t / count;
-		return sum;
+		final double mean = vector.getDoubleStream().sum() / count;
+		return mean + (vector.getDoubleStream().map(x -> x - mean).reduce(0, (x, y) -> x + y) / count);
 	}
 
 	public double getValue() {

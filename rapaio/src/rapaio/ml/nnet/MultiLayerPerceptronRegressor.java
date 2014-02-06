@@ -98,6 +98,9 @@ public class MultiLayerPerceptronRegressor implements Serializable {
 
 			// set inputs
 			for (int i = 0; i < inputCols.size(); i++) {
+				if (df.isMissing(pos, inputCols.get(i))) {
+					throw new RuntimeException("detected NaN in input values");
+				}
 				net[0][i + 1].value = df.getValue(pos, inputCols.get(i));
 			}
 

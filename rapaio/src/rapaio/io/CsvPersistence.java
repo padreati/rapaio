@@ -41,6 +41,8 @@ public class CsvPersistence {
 	private final HashSet<String> indexFieldHints = new HashSet<>();
 	private final HashSet<String> nominalFieldHints = new HashSet<>();
 	private VectorType defaultTypeHint = VectorType.NOMINAL;
+	private int startRow = 0;
+	private int endRow = Integer.MAX_VALUE;
 
 	public boolean hasHeader() {
 		return hasHeader;
@@ -96,6 +98,22 @@ public class CsvPersistence {
 
 	public VectorType getDefaultTypeHint() {
 		return defaultTypeHint;
+	}
+
+	public int getStartRow() {
+		return startRow;
+	}
+
+	public void setStartRow(int startRow) {
+		this.startRow = startRow;
+	}
+
+	public int getEndRow() {
+		return endRow;
+	}
+
+	public void setEndRow(int endRow) {
+		this.endRow = endRow;
 	}
 
 	public void setDefaultTypeHint(VectorType defaultTypeHint) {
@@ -160,12 +178,17 @@ public class CsvPersistence {
 								vectors.add(new Numeric());
 								break;
 							case INDEX:
-								vectors.add(new Index(0, 0, 0));
+								vectors.add(new Index());
 								break;
 						}
 					}
 				}
 
+				if (rows < startRow) {
+					rows++;
+					continue;
+				}
+				if (rows == endRow) break;
 				rows++;
 				for (int i = 0; i < names.size(); i++) {
 					if (row.size() <= i || "?".equals(row.get(i))) {
@@ -228,7 +251,7 @@ public class CsvPersistence {
 				}
 			}
 		}
-		return new SolidFrame(rows, vectors, names);
+		return new SolidFrame(rows - startRow, vectors, names);
 	}
 
 	/**
