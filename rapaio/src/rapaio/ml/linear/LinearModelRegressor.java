@@ -4,6 +4,7 @@ import rapaio.data.*;
 import rapaio.data.matrix.Matrix;
 import rapaio.data.matrix.QRDecomposition;
 import rapaio.ml.AbstractRegressor;
+import rapaio.ml.Regressor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,11 @@ public class LinearModelRegressor extends AbstractRegressor {
 	Frame coefficients;
 	Vector fittedValues;
 	Vector residualValues;
+
+	@Override
+	public Regressor newInstance() {
+		return new LinearModelRegressor();
+	}
 
 	@Override
 	public void learn(Frame df, List<Double> weights, String targetColNames) {

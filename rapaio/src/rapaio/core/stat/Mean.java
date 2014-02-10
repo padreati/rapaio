@@ -42,12 +42,12 @@ public final class Mean implements Summarizable {
 	}
 
 	private double compute() {
-		double count = vector.getDoubleStream().count();
+		double count = vector.getDoubleStream().filter(x -> x == x).count();
 		if (count == 0) {
 			return Double.NaN;
 		}
-		final double mean = vector.getDoubleStream().sum() / count;
-		return mean + (vector.getDoubleStream().map(x -> x - mean).reduce(0, (x, y) -> x + y) / count);
+		final double mean = vector.getDoubleStream().filter(x -> x == x).sum() / count;
+		return mean + (vector.getDoubleStream().filter(x -> x == x).map(x -> x - mean).reduce(0, (x, y) -> x + y) / count);
 	}
 
 	public double getValue() {

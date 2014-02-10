@@ -119,7 +119,7 @@ public final class Frames {
 
 				for (int j = 0; j < df.getRowCount(); j++) {
 					if (df.isMissing(j, i)) {
-						df.setValue(i, j, 0);
+						df.setValue(j, i, 0);
 						continue;
 					}
 					df.setValue(j, i, (df.getValue(j, i) - mean) / sd);

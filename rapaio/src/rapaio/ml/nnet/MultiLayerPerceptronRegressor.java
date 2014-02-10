@@ -6,6 +6,7 @@ import rapaio.data.Frame;
 import rapaio.data.Frames;
 import rapaio.data.Vector;
 import rapaio.ml.AbstractRegressor;
+import rapaio.ml.Regressor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -70,6 +71,11 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor implements 
 				net[i][j].setInputs(net[i - 1]);
 			}
 		}
+	}
+
+	@Override
+	public Regressor newInstance() {
+		throw new RuntimeException("Not implemented");
 	}
 
 	public int getRounds() {

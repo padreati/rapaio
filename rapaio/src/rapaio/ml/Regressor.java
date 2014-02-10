@@ -10,6 +10,8 @@ import java.util.List;
  */
 public interface Regressor {
 
+	Regressor newInstance();
+
 	void learn(Frame df, List<Double> weights, String targetColName);
 
 	void learn(Frame df, String targetColName);
