@@ -1,5 +1,6 @@
 package rapaio.ml.tree;
 
+import rapaio.core.RandomSource;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.StatOnline;
 import rapaio.data.Frame;
@@ -64,6 +65,7 @@ public class DecisionStumpRegressor extends AbstractRegressor implements BTRegre
 		//
 		criterion = Double.MAX_VALUE;
 		for (String colName : df.getColNames()) {
+			if (RandomSource.nextDouble() > 0.3) continue;
 			if (colName.equals(targetColName)) continue;
 			switch (df.getCol(colName).getType()) {
 				case INDEX:
@@ -85,12 +87,12 @@ public class DecisionStumpRegressor extends AbstractRegressor implements BTRegre
 		StatOnline so = new StatOnline();
 		for (int i = 0; i < sort.getRowCount(); i++) {
 			so.update(sort.getValue(i));
-			var[i] = so.getStandardDeviation() * i;
+			var[i] = so.getVariance() * so.getN();
 		}
 		so = new StatOnline();
 		for (int i = sort.getRowCount() - 1; i >= 0; i--) {
 			so.update(sort.getValue(i));
-			var[i] += so.getStandardDeviation() * (sort.getRowCount() - 1 - i);
+			var[i] += so.getVariance() * so.getN();
 		}
 		for (int i = minCount + 1; i < sort.getRowCount() - minCount; i++) {
 			if (var[i - 1] < criterion && sort.getValue(i - 1) != sort.getValue(i)
@@ -125,11 +127,11 @@ public class DecisionStumpRegressor extends AbstractRegressor implements BTRegre
 			}
 		}
 
-		defaultFit = lossFunction.minimize(y, fx);
-		leftFit = lossFunction.minimize(
+		defaultFit = lossFunction.findMinimum(y, fx);
+		leftFit = lossFunction.findMinimum(
 				new MappedVector(y.getSourceVector(), dfLeft),
 				new MappedVector(fx.getSourceVector(), dfLeft));
-		rightFit = lossFunction.minimize(
+		rightFit = lossFunction.findMinimum(
 				new MappedVector(y.getSourceVector(), dfRight),
 				new MappedVector(fx.getSourceVector(), dfRight));
 	}

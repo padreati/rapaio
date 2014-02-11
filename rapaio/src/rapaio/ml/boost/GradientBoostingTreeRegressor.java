@@ -24,7 +24,7 @@ import java.util.List;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class GBTRegressor extends AbstractRegressor {
+public class GradientBoostingTreeRegressor extends AbstractRegressor {
 
 	// parameters
 	int rounds = 10; // number of rounds
@@ -44,7 +44,7 @@ public class GBTRegressor extends AbstractRegressor {
 
 	@Override
 	public Regressor newInstance() {
-		return new GBTRegressor()
+		return new GradientBoostingTreeRegressor()
 				.setRounds(rounds)
 				.setLossFunction(lossFunction)
 				.setRegressor(regressor)
@@ -56,7 +56,7 @@ public class GBTRegressor extends AbstractRegressor {
 		return rounds;
 	}
 
-	public GBTRegressor setRounds(int rounds) {
+	public GradientBoostingTreeRegressor setRounds(int rounds) {
 		this.rounds = rounds;
 		return this;
 	}
@@ -65,7 +65,7 @@ public class GBTRegressor extends AbstractRegressor {
 		return lossFunction;
 	}
 
-	public GBTRegressor setLossFunction(BoostingLossFunction lossFunction) {
+	public GradientBoostingTreeRegressor setLossFunction(BoostingLossFunction lossFunction) {
 		this.lossFunction = lossFunction;
 		return this;
 	}
@@ -74,7 +74,7 @@ public class GBTRegressor extends AbstractRegressor {
 		return regressor;
 	}
 
-	public GBTRegressor setRegressor(BTRegressor regressor) {
+	public GradientBoostingTreeRegressor setRegressor(BTRegressor regressor) {
 		this.regressor = regressor;
 		return this;
 	}
@@ -83,7 +83,7 @@ public class GBTRegressor extends AbstractRegressor {
 		return initialRegressor;
 	}
 
-	public GBTRegressor setInitialRegressor(Regressor initialRegressor) {
+	public GradientBoostingTreeRegressor setInitialRegressor(Regressor initialRegressor) {
 		this.initialRegressor = initialRegressor;
 		return this;
 	}
@@ -92,7 +92,7 @@ public class GBTRegressor extends AbstractRegressor {
 		return shrinkage;
 	}
 
-	public GBTRegressor setShrinkage(double shrinkage) {
+	public GradientBoostingTreeRegressor setShrinkage(double shrinkage) {
 		this.shrinkage = shrinkage;
 		return this;
 	}
@@ -101,7 +101,7 @@ public class GBTRegressor extends AbstractRegressor {
 		return bootstrap;
 	}
 
-	public GBTRegressor setBootstrap(double bootstrap) {
+	public GradientBoostingTreeRegressor setBootstrap(double bootstrap) {
 		this.bootstrap = bootstrap;
 		return this;
 	}
@@ -115,7 +115,7 @@ public class GBTRegressor extends AbstractRegressor {
 	public void learn(Frame dfOld, String targetColName) {
 		this.df = dfOld;
 		if (df.isMappedFrame()) {
-			this.df = Frames.solidCopy(df);
+			this.df = Frames.solidCopy(dfOld);
 		}
 		this.targetColName = targetColName;
 
@@ -130,10 +130,8 @@ public class GBTRegressor extends AbstractRegressor {
 		}
 
 		for (int i = 1; i <= rounds; i++) {
-			Numeric gradient = new Numeric(df.getRowCount());
-			for (int j = 0; j < df.getRowCount(); j++) {
-				gradient.setValue(j, lossFunction.computeInvGradient(y.getValue(j), fitLearn.getValue(j)));
-			}
+			Numeric gradient = lossFunction.gradient(y, fitLearn);
+
 			Frame xm = Frames.addCol(x, gradient, "target", x.getColCount());
 			BTRegressor tree = createBTRegressor();
 
@@ -144,14 +142,20 @@ public class GBTRegressor extends AbstractRegressor {
 			Mapping bootstrapMapping = null;
 			if (bootstrap != 1) {
 				bootstrapMapping = new Mapping();
-				int[] sample = new DiscreteSampling().sampleWR((int) (bootstrap * xmLearn.getRowCount()), xmLearn.getRowCount());
+				int[] sample = new DiscreteSampling().sampleWOR((int) (bootstrap * xmLearn.getRowCount()), xmLearn.getRowCount());
 				for (int j = 0; j < sample.length; j++) {
 					bootstrapMapping.add(xmLearn.getRowId(sample[j]));
 				}
 				xmLearn = new MappedFrame(xm, bootstrapMapping);
 				xLearn = new MappedFrame(x, bootstrapMapping);
 			}
+
+			// build regions
+
 			tree.learn(xmLearn, "target");
+
+			// fit residuals
+
 			if (bootstrapMapping == null) {
 				tree.boostFit(xLearn, y, fitLearn, lossFunction);
 			} else {
@@ -168,6 +172,9 @@ public class GBTRegressor extends AbstractRegressor {
 			for (int j = 0; j < df.getRowCount(); j++) {
 				fitLearn.setValue(j, fitLearn.getValue(j) + shrinkage * tree.getFitValues().getValue(j));
 			}
+
+			// add tree in the predictors list
+
 			trees.add(tree);
 		}
 
@@ -184,28 +191,37 @@ public class GBTRegressor extends AbstractRegressor {
 		Frame x = BaseFilters.removeCols(df, targetColName);
 
 		for (int i = 0; i < additionalRounds; i++) {
-			Numeric gradient = new Numeric(df.getRowCount());
-			for (int j = 0; j < df.getRowCount(); j++) {
-				gradient.setValue(j, lossFunction.computeInvGradient(y.getValue(j), fitLearn.getValue(j)));
-			}
+
+			// build gradient
+
+			Numeric gradient = lossFunction.gradient(y, fitLearn);
+
+			// build next tree and gradient learning data set
+
 			Frame xm = Frames.addCol(x, gradient, "target", x.getColCount());
 			BTRegressor tree = createBTRegressor();
 
-			// bootstrap samples
+			// bootstrap samples if is the case
 
 			Frame xmLearn = xm;
 			Frame xLearn = x;
 			Mapping bootstrapMapping = null;
 			if (bootstrap != 1) {
 				bootstrapMapping = new Mapping();
-				int[] sample = new DiscreteSampling().sampleWR((int) (bootstrap * xmLearn.getRowCount()), xmLearn.getRowCount());
+				int[] sample = new DiscreteSampling().sampleWOR((int) (bootstrap * xmLearn.getRowCount()), xmLearn.getRowCount());
 				for (int j = 0; j < sample.length; j++) {
 					bootstrapMapping.add(xmLearn.getRowId(sample[j]));
 				}
 				xmLearn = new MappedFrame(xm, bootstrapMapping);
 				xLearn = new MappedFrame(x, bootstrapMapping);
 			}
+
+			// learn regions from gradients
+
 			tree.learn(xmLearn, "target");
+
+			// fit residuals
+
 			if (bootstrapMapping == null) {
 				tree.boostFit(xLearn, y, fitLearn, lossFunction);
 			} else {
@@ -222,6 +238,9 @@ public class GBTRegressor extends AbstractRegressor {
 			for (int j = 0; j < df.getRowCount(); j++) {
 				fitLearn.setValue(j, fitLearn.getValue(j) + shrinkage * tree.getFitValues().getValue(j));
 			}
+
+			// add tree to the list of trees
+
 			trees.add(tree);
 		}
 

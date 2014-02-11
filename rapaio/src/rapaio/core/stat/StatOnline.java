@@ -25,13 +25,13 @@ import static rapaio.core.MathBase.*;
  * Class which implements core online statistics. This class does not hold
  * values used for calculations, just the statistics itself and some additional
  * elements required for calculations.
- * <p/>
+ * <p>
  * This is an extension over an algorithm presented by John D Cook
  * http://www.johndcook.com/skewness_kurtosis.html.
  * Which itself it is an extension of a method presented by Donald Knuth's The Art of Programming.
  * Which itself it was proposed by B.P Welford.
  * Which itself .. joking. This is the end of the recursion.
- * <p/>
+ * <p>
  * This class provides online statistics for:
  * <ul>
  * <ui>min - minimum getValue</ui>
@@ -43,7 +43,7 @@ import static rapaio.core.MathBase.*;
  */
 public class StatOnline {
 
-	int n; // number of elements
+	double n; // number of elements
 	double m1;
 	double m2;
 	double m3;
@@ -76,7 +76,7 @@ public class StatOnline {
 	public void update(double x) {
 		double delta, delta_n, delta_n2, term1;
 
-		long n1 = n;
+		long n1 = (long) Math.rint(n);
 		n++;
 		delta = x - m1;
 		delta_n = delta / n;
@@ -93,7 +93,7 @@ public class StatOnline {
 	/**
 	 * @return the number of elements seen so far and used in calculation
 	 */
-	public int getN() {
+	public double getN() {
 		return n;
 	}
 

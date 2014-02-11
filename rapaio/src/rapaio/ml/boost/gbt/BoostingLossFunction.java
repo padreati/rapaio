@@ -1,5 +1,6 @@
 package rapaio.ml.boost.gbt;
 
+import rapaio.data.Numeric;
 import rapaio.data.Vector;
 
 /**
@@ -7,7 +8,7 @@ import rapaio.data.Vector;
  */
 public interface BoostingLossFunction {
 
-	double minimize(Vector y, Vector fx);
+	double findMinimum(Vector y, Vector fx);
 
-	double computeInvGradient(double y, double fx);
+	Numeric gradient(Vector y, Vector fx);
 }
