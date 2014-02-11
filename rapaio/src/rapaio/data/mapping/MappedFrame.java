@@ -29,7 +29,7 @@ import java.util.HashMap;
  * A frame which is learn on the base of another frame with
  * the row order and row selection specified by a
  * getMapping give at construction time.
- * <p/>
+ * <p>
  * This frame does not hold actual values, it delegate the behavior
  * to the wrapped frame, thus the wrapping affects only the getRowCount
  * selected anf the order of these getRowCount.
@@ -73,6 +73,12 @@ public class MappedFrame extends AbstractFrame {
 	@Override
 	public Frame getSourceFrame() {
 		return source;
+	}
+
+
+	@Override
+	public Mapping getMapping() {
+		return mapping;
 	}
 
 	@Override

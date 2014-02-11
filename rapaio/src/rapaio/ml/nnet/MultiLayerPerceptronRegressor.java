@@ -211,17 +211,7 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor implements 
 	}
 
 	@Override
-	public Vector getResidualValues() {
-		return null;
-	}
-
-	@Override
 	public Frame getAllFitValues() {
 		return prediction;
-	}
-
-	@Override
-	public Frame getAllResidualValues() {
-		return null;
 	}
 }

@@ -20,9 +20,5 @@ public interface Regressor {
 
 	Vector getFitValues();
 
-	Vector getResidualValues();
-
 	Frame getAllFitValues();
-
-	Frame getAllResidualValues();
 }

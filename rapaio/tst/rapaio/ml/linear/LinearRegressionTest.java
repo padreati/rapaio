@@ -45,7 +45,6 @@ public class LinearRegressionTest {
 
 		Summary.lines(lm.getCoeff());
 		Summary.lines(lm.getFitValues());
-		Summary.lines(lm.getResidualValues());
 
 	}
 
@@ -75,10 +74,6 @@ public class LinearRegressionTest {
 				.setYRange(58, 78)
 				.setBottomLabel("Father")
 				.setLeftLabel("Son")
-		);
-
-		draw(new Plot()
-				.add(new Points(df.getCol("Father"), lm.getResidualValues()))
 		);
 	}
 

@@ -1,15 +1,13 @@
 package rapaio.ml.boost.gbt;
 
-import rapaio.ml.Regressor;
+import rapaio.data.Vector;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 public interface BoostingLossFunction {
 
-	double computeError(double y, double fx);
+	double minimize(Vector y, Vector fx);
 
 	double computeInvGradient(double y, double fx);
-
-	Regressor getInitialRegressor();
 }

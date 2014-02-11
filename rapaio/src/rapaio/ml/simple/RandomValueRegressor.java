@@ -1,7 +1,7 @@
 package rapaio.ml.simple;
 
 import rapaio.core.ColRange;
-import rapaio.core.stat.Quantiles;
+import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
@@ -13,25 +13,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Simple regressor which predicts with the median value of the target columns.
- * <p>
- * This simple regressor is used alone for simple prediction or as a
- * starting point for other more complex regressors.
- * <p>
- * Tis regressor implements the regression by a constant paradigm using
- * sum of absolute deviations loss function: L1(y - y_hat) = \sum(|y - y_hat|).
- * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class L1ConstantRegressor extends AbstractRegressor {
-
-	private List<String> targets;
-	private List<Double> medians;
-	private List<Vector> fitValues;
+public class RandomValueRegressor extends AbstractRegressor {
+	List<String> targets;
+	double startValue;
+	double stopValue;
+	List<Vector> fitValues;
 
 	@Override
 	public Regressor newInstance() {
-		return new L1ConstantRegressor();
+		return new L2ConstantRegressor();
+	}
+
+	public double getStartValue() {
+		return startValue;
+	}
+
+	public RandomValueRegressor setStartValue(double startValue) {
+		this.startValue = startValue;
+		return this;
+	}
+
+	public double getStopValue() {
+		return stopValue;
+	}
+
+	public RandomValueRegressor setStopValue(double stopValue) {
+		this.stopValue = stopValue;
+		return this;
+	}
+
+	private double getRandomValue() {
+		return RandomSource.nextDouble() * (stopValue - startValue) + startValue;
 	}
 
 	@Override
@@ -49,12 +63,10 @@ public class L1ConstantRegressor extends AbstractRegressor {
 			targets.add(df.getColNames()[colIndexes.get(i)]);
 		}
 
-		medians = new ArrayList<>();
 		fitValues = new ArrayList<>();
 		for (String target : targets) {
-			double median = new Quantiles(df.getCol(target), new double[]{0.5}).getValues()[0];
-			medians.add(median);
-			fitValues.add(new Numeric(df.getCol(target).getRowCount(), df.getCol(target).getRowCount(), median));
+			double customValue = getRandomValue();
+			fitValues.add(new Numeric(df.getCol(target).getRowCount(), df.getCol(target).getRowCount(), customValue));
 		}
 	}
 
@@ -62,7 +74,10 @@ public class L1ConstantRegressor extends AbstractRegressor {
 	public void predict(Frame df) {
 		fitValues = new ArrayList<>();
 		for (int i = 0; i < targets.size(); i++) {
-			fitValues.add(new Numeric(df.getRowCount(), df.getRowCount(), medians.get(i)));
+			fitValues.add(new Numeric(df.getRowCount()));
+			for (int j = 0; j < df.getRowCount(); j++) {
+				fitValues.get(i).setValue(j, getRandomValue());
+			}
 		}
 	}
 

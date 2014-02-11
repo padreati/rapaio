@@ -77,17 +77,7 @@ public class TreeRegressor extends AbstractRegressor {
 	}
 
 	@Override
-	public Numeric getResidualValues() {
-		throw new RuntimeException("Not implemented");
-	}
-
-	@Override
 	public Frame getAllFitValues() {
-		return null;
-	}
-
-	@Override
-	public Frame getAllResidualValues() {
 		return null;
 	}
 }
