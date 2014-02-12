@@ -68,6 +68,15 @@ public abstract class AbstractVector implements Vector {
 	public DoubleStream getDoubleStream() {
 		throw new RuntimeException("Not implemented for this type of vector");
 	}
+
+	@Override
+	public double[] toListValue() {
+		double[] list = new double[getRowCount()];
+		for (int i = 0; i < getRowCount(); i++) {
+			list[i] = getValue(i);
+		}
+		return list;
+	}
 }
 
 class VectorIterator implements VIterator {

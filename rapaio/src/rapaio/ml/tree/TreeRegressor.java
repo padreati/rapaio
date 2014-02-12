@@ -21,7 +21,6 @@ import java.util.List;
  * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-@Deprecated
 public class TreeRegressor extends AbstractRegressor {
 
 	double minWeight = 1;
@@ -50,7 +49,7 @@ public class TreeRegressor extends AbstractRegressor {
 
 	@Override
 	public Regressor newInstance() {
-		throw new RuntimeException("Not implemented");
+		return new TreeRegressor().setColSelector(colSelector).setMinWeight(minWeight);
 	}
 
 	@Override

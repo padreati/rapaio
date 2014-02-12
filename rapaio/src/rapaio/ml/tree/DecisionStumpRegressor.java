@@ -1,6 +1,5 @@
 package rapaio.ml.tree;
 
-import rapaio.core.RandomSource;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.StatOnline;
 import rapaio.data.Frame;
@@ -65,7 +64,7 @@ public class DecisionStumpRegressor extends AbstractRegressor implements BTRegre
 		//
 		criterion = Double.MAX_VALUE;
 		for (String colName : df.getColNames()) {
-			if (RandomSource.nextDouble() > 0.3) continue;
+//			if (RandomSource.nextDouble() > 0.3) continue;
 			if (colName.equals(targetColName)) continue;
 			switch (df.getCol(colName).getType()) {
 				case INDEX:
