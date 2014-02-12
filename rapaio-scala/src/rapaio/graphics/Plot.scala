@@ -26,7 +26,7 @@ import java.awt._
 import scala.collection.mutable
 
 /**
- * @author tutuianu
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 class Plot extends AbstractFigure {
 
@@ -64,6 +64,10 @@ class Plot extends AbstractFigure {
     if (r.getY1 == r.getY2) {
       r.setY1(r.getY1 - 0.5)
       r.setY2(r.getY2 + 0.5)
+    }
+    if (r.getX1 == r.getX2) {
+      r.setX1(r.getX1 - 0.5)
+      r.setX2(r.getX2 + 0.5)
     }
     return r
   }

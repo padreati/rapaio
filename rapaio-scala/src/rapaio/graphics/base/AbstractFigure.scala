@@ -65,64 +65,42 @@ abstract class AbstractFigure extends Figure {
   private var y1: Double = Double.NaN
   private var y2: Double = Double.NaN
 
-  def getParent: AbstractFigure = {
-    return parent
-  }
+  def getParent: AbstractFigure = parent
 
-  def getBottomMarkersMsg: mutable.MutableList[String] = {
-    return bottomMarkersMsg
-  }
+  def getBottomMarkersMsg: mutable.MutableList[String] = bottomMarkersMsg
 
-  def getBottomMarkersPos: mutable.MutableList[Double] = {
-    return bottomMarkersPos
-  }
+  def getBottomMarkersPos: mutable.MutableList[Double] = bottomMarkersPos
 
-  def getLeftMarkersMsg: mutable.MutableList[String] = {
-    return leftMarkersMsg
-  }
+  def getLeftMarkersMsg: mutable.MutableList[String] = leftMarkersMsg
 
-  def getLeftMarkersPos: mutable.MutableList[Double] = {
-    return leftMarkersPos
-  }
+  def getLeftMarkersPos: mutable.MutableList[Double] = leftMarkersPos
 
-  def setParent(parent: AbstractFigure) {
-    this.parent = parent
-  }
+  def setParent(parent: AbstractFigure): Unit = this.parent = parent
 
-  def getViewport: Rectangle = {
-    return viewport
-  }
+  def getViewport: Rectangle = viewport
 
-  def isLeftThicker: Boolean = {
-    return leftThicker
-  }
+  def isLeftThicker: Boolean = leftThicker
 
   def setLeftThicker(leftThicker: Boolean): AbstractFigure = {
     this.leftThicker = leftThicker
     return this
   }
 
-  def isBottomThicker: Boolean = {
-    return bottomThicker
-  }
+  def isBottomThicker: Boolean = bottomThicker
 
   def setBottomThicker(bottomThicker: Boolean): AbstractFigure = {
     this.bottomThicker = bottomThicker
     return this
   }
 
-  def isLeftMarkers: Boolean = {
-    return leftMarkers
-  }
+  def isLeftMarkers: Boolean = leftMarkers
 
   def setLeftMarkers(leftMarkers: Boolean): AbstractFigure = {
     this.leftMarkers = leftMarkers
     return this
   }
 
-  def isBottomMarkers: Boolean = {
-    return bottomMarkers
-  }
+  def isBottomMarkers: Boolean = bottomMarkers
 
   def setBottomMarkers(bottomMarkers: Boolean): AbstractFigure = {
     this.bottomMarkers = bottomMarkers
@@ -150,27 +128,21 @@ abstract class AbstractFigure extends Figure {
     return range
   }
 
-  def getTitle: String = {
-    return title
-  }
+  def getTitle: String = title
 
   def setTitle(title: String): AbstractFigure = {
     this.title = title
     return this
   }
 
-  def getLeftLabel: String = {
-    return leftLabel
-  }
+  def getLeftLabel: String = leftLabel
 
   def setLeftLabel(leftLabel: String): AbstractFigure = {
     this.leftLabel = leftLabel
     return this
   }
 
-  def getBottomLabel: String = {
-    return bottomLabel
-  }
+  def getBottomLabel: String = bottomLabel
 
   def setBottomLabel(bottomLabel: String): AbstractFigure = {
     this.bottomLabel = bottomLabel
@@ -212,9 +184,7 @@ abstract class AbstractFigure extends Figure {
     return viewport.y + viewport.height * (1.-(y - range.getY1) / (range.getY2 - range.getY1))
   }
 
-  private def isDefaultLwd: Boolean = {
-    return lwd == 1.2
-  }
+  private def isDefaultLwd: Boolean = lwd == 1.2
 
   def getLwd: Float = {
     if (parent != null && isDefaultLwd) {
@@ -228,9 +198,7 @@ abstract class AbstractFigure extends Figure {
     return this
   }
 
-  private def isDefaultSize: Boolean = {
-    return sizeIndex.getRowCount == 1 && sizeIndex.getValue(0) == 2.5
-  }
+  private def isDefaultSize: Boolean = sizeIndex.getRowCount == 1 && sizeIndex.getValue(0) == 2.5
 
   def getSizeIndex: Vector = {
     if (parent != null && isDefaultSize) {
