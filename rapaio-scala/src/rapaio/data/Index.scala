@@ -35,9 +35,9 @@ class Index(private var rows: Int, private val capacity: Int, private val fill: 
     return if (minCapacity > Index.MAX_ARRAY_SIZE) Integer.MAX_VALUE else Index.MAX_ARRAY_SIZE
   }
 
-  def getType: VectorType = {
-    return INDEX
-  }
+  def isNominal: Boolean = false
+
+  def isNumeric: Boolean = true
 
   private def grow(minCapacity: Int) {
     val oldCapacity: Int = data.length

@@ -33,9 +33,9 @@ class Value(private var rows: Int, private val capacity: Int, private val fill: 
     return if ((minCapacity > Value.MAX_ARRAY_SIZE)) Integer.MAX_VALUE else Value.MAX_ARRAY_SIZE
   }
 
-  def getType: VectorType = {
-    return VALUE
-  }
+  def isNominal: Boolean = false
+
+  def isNumeric: Boolean = true
 
   private def ensureCapacityInternal(minCapacity: Int) {
     var capacity = minCapacity

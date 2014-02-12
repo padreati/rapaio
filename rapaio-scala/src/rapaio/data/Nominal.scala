@@ -21,11 +21,6 @@ import scala.collection.mutable
  *
  * @author Aurelian Tutuianu
  */
-object Nominal {
-  private val missingValue: String = "?"
-  private val missingIndex: Int = 0
-}
-
 class Nominal(private var rows: Int, private var dictionary: List[String]) extends AbstractVector {
   private var dict = new mutable.MutableList[String]
   private var data = Array[Int](rows)
@@ -46,9 +41,9 @@ class Nominal(private var rows: Int, private var dictionary: List[String]) exten
     this(size, dict.toList)
   }
 
-  def getType: VectorType = {
-    return NOMINAL
-  }
+  def isNominal: Boolean = true
+
+  def isNumeric: Boolean = false
 
   private def grow(minCapacity: Int) {
     var newCapacity = data.length + (data.length >> 1)
@@ -198,5 +193,10 @@ class Nominal(private var rows: Int, private var dictionary: List[String]) exten
     return "Nominal[" + getRowCount + "]"
   }
 
+}
+
+object Nominal {
+  private val missingValue: String = "?"
+  private val missingIndex: Int = 0
 }
 
