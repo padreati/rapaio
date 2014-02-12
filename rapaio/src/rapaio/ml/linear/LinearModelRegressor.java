@@ -4,6 +4,7 @@ import rapaio.data.*;
 import rapaio.data.matrix.Matrix;
 import rapaio.data.matrix.QRDecomposition;
 import rapaio.ml.AbstractRegressor;
+import rapaio.ml.Regressor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,11 @@ public class LinearModelRegressor extends AbstractRegressor {
 	List<String> targets = new ArrayList<>();
 	Frame coefficients;
 	Vector fittedValues;
-	Vector residualValues;
+
+	@Override
+	public Regressor newInstance() {
+		return new LinearModelRegressor();
+	}
 
 	@Override
 	public void learn(Frame df, List<Double> weights, String targetColNames) {
@@ -45,15 +50,6 @@ public class LinearModelRegressor extends AbstractRegressor {
 		coefficients = new SolidFrame(predictors.size(), new Vector[]{bnames, bcoeff}, new String[]{"Term", "Coeff"});
 
 		fittedValues = buildFit(df);
-		residualValues = buildResidual(Y, fittedValues);
-	}
-
-	private Vector buildResidual(Matrix actual, Vector predict) {
-		Vector result = Vectors.newNum(predict.getRowCount(), 0);
-		for (int i = 0; i < result.getRowCount(); i++) {
-			result.setValue(i, actual.get(i, 0) - predict.getValue(i));
-		}
-		return result;
 	}
 
 	private Vector buildFit(Frame df) {
@@ -101,17 +97,7 @@ public class LinearModelRegressor extends AbstractRegressor {
 	}
 
 	@Override
-	public Vector getResidualValues() {
-		return residualValues;
-	}
-
-	@Override
 	public Frame getAllFitValues() {
-		return null;
-	}
-
-	@Override
-	public Frame getAllResidualValues() {
 		return null;
 	}
 }

@@ -191,7 +191,7 @@ public class CsvPersistence {
 				if (rows == endRow) break;
 				rows++;
 				for (int i = 0; i < names.size(); i++) {
-					if (row.size() <= i || "?".equals(row.get(i))) {
+					if (row.size() <= i || "?".equals(row.get(i)) || "NA".equals(row.get(i))) {
 						vectors.get(i).addMissing();
 						continue;
 					}

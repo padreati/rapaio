@@ -35,7 +35,7 @@ import java.util.*;
 
 /**
  * Provides filters for frames.
- * <p/>
+ * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public final class BaseFilters {
@@ -51,7 +51,7 @@ public final class BaseFilters {
 
 	/**
 	 * Convert to numeric values all the columns which are nominal.
-	 * <p/>
+	 * <p>
 	 * All the other columns remain the same.
 	 *
 	 * @param df input frame
@@ -85,11 +85,15 @@ public final class BaseFilters {
 				posIndexes++;
 				continue;
 			}
-			vectors[posFinal] = df.getCol(i);
+			vectors[posFinal] = df.getCol(i).getSourceVector();
 			names[posFinal] = df.getColNames()[i];
 			posFinal++;
 		}
-		return new SolidFrame(df.getRowCount(), vectors, names);
+		Frame solid = new SolidFrame(df.getRowCount(), vectors, names);
+		if (!df.isMappedFrame()) {
+			return solid;
+		}
+		return new MappedFrame(solid, df.getSourceFrame().getMapping());
 	}
 
 	/**
@@ -362,6 +366,15 @@ public final class BaseFilters {
 
 	}
 
+	public static Vector completeCases(Vector source) {
+		Mapping mapping = new Mapping();
+		for (int i = 0; i < source.getRowCount(); i++) {
+			if (source.isMissing(i)) continue;
+			mapping.add(source.getRowId(i));
+		}
+		return new MappedVector(source.getSourceVector(), mapping);
+	}
+
 	/**
 	 * Returns a mapped frame with cases which does not contain missing values
 	 * in any column of the frame.
@@ -399,7 +412,7 @@ public final class BaseFilters {
 	/**
 	 * Convert a vector to numeric by parsing as numbers the nominal
 	 * labels, or promoting to double the numeric values.
-	 * <p/>
+	 * <p>
 	 * If the input value is already a numeric vector, the input vector is
 	 * returned untouched.
 	 *
@@ -468,7 +481,7 @@ public final class BaseFilters {
 
 	/**
 	 * Alter valid numeric values with normally distributed noise.
-	 * <p/>
+	 * <p>
 	 * Noise comes from a normal distribution with mean 0 and standard deviation
 	 * 0.1
 	 *
@@ -481,7 +494,7 @@ public final class BaseFilters {
 
 	/**
 	 * Alter valid numeric values with normally distributed noise.
-	 * <p/>
+	 * <p>
 	 * Noise comes from a normal distribution with mean 0 and standard deviation
 	 * specified by {
 	 *

@@ -397,6 +397,10 @@ public class Summary {
 		head(v.getRowCount(), new Vector[]{v}, new String[]{""});
 	}
 
+	public static void head(int lines, Vector v) {
+		head(lines, new Vector[]{v}, new String[]{""});
+	}
+
 	public static void lines(Frame df) {
 		Vector[] vectors = new Vector[df.getColCount()];
 		String[] names = df.getColNames();

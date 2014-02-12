@@ -8,6 +8,7 @@ import rapaio.data.filters.BaseFilters;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
 import rapaio.ml.AbstractRegressor;
+import rapaio.ml.Regressor;
 import rapaio.ml.colselect.ColSelector;
 import rapaio.ml.colselect.DefaultColSelector;
 
@@ -48,6 +49,11 @@ public class TreeRegressor extends AbstractRegressor {
 	}
 
 	@Override
+	public Regressor newInstance() {
+		throw new RuntimeException("Not implemented");
+	}
+
+	@Override
 	public void learn(Frame df, List<Double> weights, String targetColName) {
 		this.targetColNames = targetColName;
 		root = new TreeRegressorNode();
@@ -66,22 +72,12 @@ public class TreeRegressor extends AbstractRegressor {
 	}
 
 	@Override
-	public Vector getFitValues() {
-		return fitted;
-	}
-
-	@Override
-	public Vector getResidualValues() {
-		return null;
+	public Numeric getFitValues() {
+		return (Numeric) fitted;
 	}
 
 	@Override
 	public Frame getAllFitValues() {
-		return null;
-	}
-
-	@Override
-	public Frame getAllResidualValues() {
 		return null;
 	}
 }

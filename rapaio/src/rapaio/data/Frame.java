@@ -20,12 +20,13 @@
 package rapaio.data;
 
 import rapaio.data.collect.FIterator;
+import rapaio.data.mapping.Mapping;
 
 import java.io.Serializable;
 
 /**
  * Random access list of observed values for multiple variables.
- * <p/>
+ * <p>
  * The observed values are represented in a tabular format.
  * Rows corresponds to observations and columns corresponds to
  * observed (measured) statstical variables.
@@ -43,7 +44,7 @@ public interface Frame extends Serializable {
 
 	/**
 	 * Number of vectors contained in frame. Vector references could be obtained by name or by position.
-	 * <p/>
+	 * <p>
 	 * Each vector corresponds to a column in tabular format, thus in the frame terminology
 	 * this is denoted as getCol (short form of column).
 	 *
@@ -53,7 +54,7 @@ public interface Frame extends Serializable {
 
 	/**
 	 * Returns an array of vector names, the names are ordered by the position of the vectors.
-	 * <p/>
+	 * <p>
 	 * Each vector has it's own name. Inside a frame a specific vector could be named differently.
 	 * However, the default name for a vector inside a frame is the vector's name.
 	 *
@@ -102,6 +103,8 @@ public interface Frame extends Serializable {
 	 * @return
 	 */
 	public Frame getSourceFrame();
+
+	public Mapping getMapping();
 
 	/**
 	 * Convenient shortcut to call {@link Vector#getValue(int)} for a given column.

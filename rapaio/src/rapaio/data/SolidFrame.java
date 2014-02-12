@@ -19,6 +19,8 @@
  */
 package rapaio.data;
 
+import rapaio.data.mapping.Mapping;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -83,6 +85,11 @@ public class SolidFrame extends AbstractFrame {
 	@Override
 	public Frame getSourceFrame() {
 		return this;
+	}
+
+	@Override
+	public Mapping getMapping() {
+		return null;
 	}
 
 	@Override
