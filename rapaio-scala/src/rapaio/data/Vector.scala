@@ -28,7 +28,10 @@ import java.io.Serializable
  * @author Aurelian Tutuianu
  */
 abstract trait Vector extends Serializable {
-  def getType: VectorType
+
+  def isNominal: Boolean
+
+  def isNumeric: Boolean
 
   def isMappedVector: Boolean
 
