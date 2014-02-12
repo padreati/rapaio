@@ -13,6 +13,7 @@ notes regarding the development stage. If there are no notes it means the featur
 is considered to be fully implemented and well tested.
 
 **Core Statistics**
+
 * Base Math functions
 * Special Math functions
 * Maximum
@@ -20,12 +21,14 @@ is considered to be fully implemented and well tested.
 * Mode (only for nominal values)
 * Quantiles
 * Root Mean Squared Error
+* Absolute Error
 * ROC (Receiver Operator Characteristic) - ROC curves and ROC Area
 * Sum
 * Variance
 * Confusion Matrix
 
 **Online Core Statistics**
+
 * Minimum
 * Maximum
 * Count
@@ -36,16 +39,19 @@ is considered to be fully implemented and well tested.
 * Kurtosis
 
 **Distributions**
+
 * Normal Distribution
 * StudentT - not tested
 * Continuous Uniform
 * Discrete Uniform
 
 **Correlations**
+
 * Pearson product-moment coefficient
 * Spearman's rank correlation coefficient
 
 **Classification**
+
 * One Rule
 * Decision Stump
 * AdaBoost SAMME
@@ -60,6 +66,9 @@ is considered to be fully implemented and well tested.
 this tree is similar with CART and C45)
 * Linear Regressor - filter only numerical attributes
 * MultiLayer Perceptron - regression with sigmoid
+* Simple regression - L1Regressor, L2Regressor, ConstantRegressor, RandomValueRegressor
+* Decision Stump Regressor
+* Gradient Boosting Tree regressor
 
 **Matrices and vectors**
 * Numeric vector operations
@@ -76,3 +85,8 @@ the progress of the implementation:
 **16-Jan-2014** - Implemented numeric vector operations. It follows the design from R.
 
 **21-Jan-2014** - Implemented multilayer perceptron with sigmoid function
+
+**12-Feb-2014** - Implemented Decision Stump Regressor
+
+**12-Feb-2014** - Implemented Gradient Boosting Tree Regressor with L1, L2, and
+Huber loss functions, shrinkage, and stochastic sub-sampling

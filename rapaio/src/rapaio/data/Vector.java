@@ -189,4 +189,6 @@ public interface Vector extends Serializable {
 	public Stream<VInstance> getStream();
 
 	public DoubleStream getDoubleStream();
+
+	public double[] toListValue();
 }
