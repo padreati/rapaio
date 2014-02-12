@@ -1,7 +1,8 @@
 package rapaio.data.collect;
 
 import rapaio.data.Frame;
-import rapaio.data.mapping.Mapping;
+import rapaio.data.mapping.*;
+
 
 import java.util.Map;
 import java.util.Set;

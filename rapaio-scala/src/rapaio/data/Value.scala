@@ -37,6 +37,8 @@ class Value(private var rows: Int, private val capacity: Int, private val fill: 
     return VALUE
   }
 
+  def apply(index : Int) = getValue(index)
+
   private def ensureCapacityInternal(minCapacity: Int) {
     var capacity = minCapacity
     if (data eq Value.EMPTY_DATA) {
