@@ -28,15 +28,15 @@ import scala.collection.mutable
  * @author tutuianu
  */
 object AbstractFigure {
-  protected final val TITLE_FONT: Font = new Font("Verdana", Font.BOLD, 18)
-  protected final val MARKERS_FONT: Font = new Font("Verdana", Font.PLAIN, 13)
-  protected final val LABELS_FONT: Font = new Font("Verdana", Font.BOLD, 16)
-  protected final val DEFAULT_THICKER_MIN_SPACE: Double = 50.
-  protected final val THICKER_PAD: Int = 7
-  protected final val MARKER_PAD: Int = 15
-  protected final val LABEL_PAD: Int = 30
-  protected final val TITLE_PAD: Int = 40
-  protected final val MINIMUM_PAD: Int = 20
+  protected val TITLE_FONT = new Font("Verdana", Font.BOLD, 18)
+  protected val MARKERS_FONT = new Font("Verdana", Font.PLAIN, 13)
+  protected val LABELS_FONT = new Font("Verdana", Font.BOLD, 16)
+  protected val DEFAULT_THICKER_MIN_SPACE = 50.0
+  protected val THICKER_PAD = 7
+  protected val MARKER_PAD = 15
+  protected val LABEL_PAD = 30
+  protected val TITLE_PAD = 40
+  protected val MINIMUM_PAD = 20
 }
 
 abstract class AbstractFigure extends Figure {
@@ -65,6 +65,8 @@ abstract class AbstractFigure extends Figure {
   private var y1: Double = Double.NaN
   private var y2: Double = Double.NaN
 
+//  private var options: GraphicOptions
+//
   def getParent: AbstractFigure = parent
 
   def getBottomMarkersMsg: mutable.MutableList[String] = bottomMarkersMsg

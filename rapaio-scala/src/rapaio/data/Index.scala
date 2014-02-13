@@ -201,5 +201,11 @@ object Index {
     index.rows = values.length
     index
   }
+
+  def apply(values: Int*): Index = {
+    val index = new Index(values.length, values.length, 0)
+    values.iterator.copyToArray(index.data)
+    index
+  }
 }
 
