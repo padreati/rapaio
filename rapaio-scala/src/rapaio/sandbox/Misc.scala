@@ -12,18 +12,18 @@ object Misc extends App {
   val base = new GraphicOptions
   val child = new GraphicOptions(base)
 
-  base.color = Color.GREEN
-  println(base.color(10))
+  base.col = Color.GREEN
+  println(base.col(10))
 
-  println(child.color(9))
-  child.color = 9
-  println(child.color(9))
+  println(child.col(9))
+  child.col = 9
+  println(child.col(9))
 
-  println(child.color.colorArray mkString ",")
+  println(child.col.values mkString ",")
 
   val nice = new GraphicOptions(child)
 
-  nice.color = Index(1, 2, 3, 4, 6)
+  nice.col = Index(1, 2, 3, 4, 6)
 
-  println(nice.color.colorArray mkString "")
+  println(nice.col.values mkString "")
 }

@@ -3,26 +3,29 @@ package rapaio.graphics.base
 import rapaio.data.Index
 import java.awt.Color
 import rapaio.graphics.colors.ColorPalette
-import rapaio.graphics.base
 
 /**
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ *
+ * @author Aurelian Tutuianu <padreati@yahoo.com>
  */
 class GraphicOptions(parentOpt: GraphicOptions = null) {
 
-  var color: ColorOption = GraphicOptions.DEFAULT_COLOR
+  var col: ColorOption = GraphicOptions.DEFAULT_COLOR
+
+  var lwd: LwdOption = GraphicOptions.DEFAULT_LWD
 }
 
 object GraphicOptions {
   private val DEFAULT_COLOR: ColorOption = Color.BLACK
+  private val DEFAULT_LWD: LwdOption = 1
 }
 
-class ColorOption(val colorArray: Array[Color]) {
+class ColorOption(val values: Array[Color]) {
 
   def apply(i: Int): Color = {
     require(i >= 0, "color index must be greater than 0")
-    if (i >= colorArray.length) colorArray(i % colorArray.length)
-    else colorArray(i)
+    if (i >= values.length) values(i % values.length)
+    else values(i)
   }
 }
 
@@ -37,10 +40,25 @@ object ColorOption {
   }
 
   implicit def fromIndex(index: Index): ColorOption = {
-    val colors = new Array[Color](index.getRowCount)
+    val values = new Array[Color](index.getRowCount)
     for (i <- 0 until index.getRowCount) {
-      colors(i) = ColorPalette.STANDARD.getColor(i)
+      values(i) = ColorPalette.STANDARD.getColor(i)
     }
-    new ColorOption(colors)
+    new ColorOption(values)
+  }
+}
+
+class LwdOption(val values: Array[Float]) {
+
+}
+
+object LwdOption {
+
+  implicit def fromOneInt(value: Int): LwdOption = {
+    new LwdOption(Array[Float](value.toFloat))
+  }
+
+  implicit def fromOneDouble(value: Double): LwdOption = {
+    new LwdOption(Array[Float](value.toFloat))
   }
 }
