@@ -22,15 +22,15 @@ package rapaio.graphics.base
 /**
  * @author tutuianu
  */
-class Range(private var x1: Double, private var y1: Double, private var x2: Double, private var y2: Double) {
-
-  def this() {
-    this(Double.NaN, Double.NaN, Double.NaN, Double.NaN)
-  }
+class Range(
+             var x1: Double = Double.NaN,
+             var y1: Double = Double.NaN,
+             var x2: Double = Double.NaN,
+             var y2: Double = Double.NaN) {
 
   def union(range: Range) {
-    union(range.getX1, range.getY1)
-    union(range.getX2, range.getY2)
+    union(range.x1, range.y1)
+    union(range.x2, range.y2)
   }
 
   def union(x: Double, y: Double) {
@@ -49,30 +49,6 @@ class Range(private var x1: Double, private var y1: Double, private var x2: Doub
   def getWidth: Double = x2 - x1
 
   def getHeight: Double = y2 - y1
-
-  def getX1: Double = x1
-
-  def getY1: Double = y1
-
-  def getX2: Double = x2
-
-  def getY2: Double = y2
-
-  def setX1(x1: Double) {
-    this.x1 = x1
-  }
-
-  def setY1(y1: Double) {
-    this.y1 = y1
-  }
-
-  def setX2(x2: Double) {
-    this.x2 = x2
-  }
-
-  def setY2(y2: Double) {
-    this.y2 = y2
-  }
 
   def getProperDecimalsX: Int = {
     var decimals: Int = 0

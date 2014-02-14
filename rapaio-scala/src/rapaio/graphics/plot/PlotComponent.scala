@@ -17,14 +17,21 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package rapaio.graphics.base;
+package rapaio.graphics.plot
 
-import java.awt.*;
+import rapaio.data.Vector
+import rapaio.graphics.base.AbstractFigure
+import java.awt._
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * @author Aurelian Tutuianu
  */
-public interface Figure {
+abstract class PlotComponent extends AbstractFigure {
 
-    void paint(Graphics2D g2d, Rectangle rect);
+  var parent: AbstractFigure = null
+
+  def initialize {}
+
+  def paint(g2d: Graphics2D)
+
 }

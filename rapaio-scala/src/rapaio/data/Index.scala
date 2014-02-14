@@ -15,7 +15,6 @@ class Index(private var rows: Int, private val capacity: Int, private val fill: 
   require(rows <= capacity, "Illegal row count" + rows + " less than capacity:" + capacity)
 
   var data: Array[Int] = new Array[Int](capacity)
-  this.rows = rows
   if (fill != 0) Arrays.fill(data, 0, rows, fill)
 
   def this() {

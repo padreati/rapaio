@@ -9,7 +9,6 @@ import java.awt
  */
 class GraphicOptionsSpec extends FlatSpec with Matchers {
 
-
   "A color option " should " receive it's value from a color" in {
     val opt = new GraphicOptions
     opt.col = Color.GREEN
@@ -17,6 +16,10 @@ class GraphicOptionsSpec extends FlatSpec with Matchers {
     for (i <- 0 until 100) {
       opt.col(i) should be(Color.GREEN)
     }
+  }
 
+  "The default value for color option " should " be black for all index values" in {
+    val opt = new GraphicOptions
+    for(i<-0 until 100) opt.col(i) should be(Color.BLACK)
   }
 }

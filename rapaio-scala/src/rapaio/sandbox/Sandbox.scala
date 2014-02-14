@@ -5,77 +5,29 @@ import rapaio.core.stat.Mean
 import rapaio.graphics.base.Figure
 import rapaio.printer.FigurePanel
 import javax.swing.JDialog
-import java.awt.BorderLayout
+import java.awt._
 import rapaio.graphics.Plot
 import rapaio.graphics.plot.Points
+import rapaio.workspace.Workspace._
+import scala.annotation.tailrec
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 object Sandbox extends App {
 
-  val x = Index(Array(1, 2, 3))
-
-  val y = Index(x.toIndexArray)
-  val z = Value(x.toValueArray)
-  z.addValue(10.17)
-
-  println(x.toIndexArray mkString ",")
-  println(y.toValueArray mkString ",")
-  println(z.toValueArray mkString ",")
-  println(z.toIndexArray mkString ",")
-
-  println(new Mean(z).getValue)
-
-
-  draw(new Plot().add(new Points(
-    new Value {
-      for (i <- 1 to 100) addValue(math.random)
-    },
-    new Value {
-      for (i <- 1 to 100) addValue(math.random)
-    }
-  )), 500, 500)
-
-  draw(new Plot().add(new Points(
-    new Value {
-      for (i <- 1 to 100) addValue(math.random)
-    },
-    new Value {
-      for (i <- 1 to 100) addValue(math.random)
-    }
-  )), 500, 500)
-
-  draw(new Plot().add(new Points(
-    new Value {
-      for (i <- 1 to 100) addValue(math.random)
-    },
-    new Value {
-      for (i <- 1 to 100) addValue(math.random)
-    }
-  )), 500, 500)
-
-
-  def draw(figure: Figure, width: Int, height: Int) {
-    val figurePanel: FigurePanel = new FigurePanel(figure)
-    val frame: JDialog = new JDialog
-    frame.setContentPane(figurePanel)
-    frame.setVisible(true)
-    frame.setDefaultCloseOperation(2)
-    frame.setLayout(new BorderLayout)
-    frame.setAutoRequestFocus(true)
-    frame.setSize(width, height)
-    while (true) {
-      try {
-        Thread.sleep(10)
+  val N = 5000
+  draw(new Plot() {
+    add(new Points(
+      x = new Value {
+        for (i <- 1 to N) this.addValue(math.sin(i / math.E))
+      },
+      y = new Value {
+        for (i <- 1 to N) this.addValue(i / 10)
       }
-      catch {
-        case ex: InterruptedException => {
-        }
-      }
-      if (!frame.isVisible) {
-        return
-      }
-    }
-  }
+    ) {
+      this.options.col = Color.BLACK
+    })
+    this.options.col = Color.BLUE
+  }, 500, 500)
 }

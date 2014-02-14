@@ -21,7 +21,6 @@ package rapaio.graphics.base
 
 import java.awt._
 import rapaio.data._
-import rapaio.graphics.colors.ColorPalette
 import scala.collection.mutable
 
 /**
@@ -41,85 +40,27 @@ object AbstractFigure {
 
 abstract class AbstractFigure extends Figure {
 
-  private var parent: AbstractFigure = null
-  private var viewport: Rectangle = null
-  private var leftThicker: Boolean = false
-  private var bottomThicker: Boolean = false
-  private var leftMarkers: Boolean = false
-  private var bottomMarkers: Boolean = false
-  private var range: Range = null
-  private final val bottomMarkersMsg = new mutable.MutableList[String]
-  private final val bottomMarkersPos = new mutable.MutableList[Double]
-  private final val leftMarkersMsg = new mutable.MutableList[String]
-  private final val leftMarkersPos = new mutable.MutableList[Double]
-  private var title: String = null
-  private var leftLabel: String = null
-  private var bottomLabel: String = null
-  private var thickerMinSpace: Double = AbstractFigure.DEFAULT_THICKER_MIN_SPACE
-  private var lwd: Float = 1.2f
-  private var sizeIndex: Vector = Value(Array(2.5))
-  private var colorIndex: Vector = Index(Array(0))
-  private var pchIndex: Vector = Index(Array(0))
-  private var x1: Double = Double.NaN
-  private var x2: Double = Double.NaN
-  private var y1: Double = Double.NaN
-  private var y2: Double = Double.NaN
+  protected var viewport: Rectangle = null
+  protected var range: Range = null
+  protected val bottomMarkersMsg = new mutable.MutableList[String]
+  protected val bottomMarkersPos = new mutable.MutableList[Double]
+  protected val leftMarkersMsg = new mutable.MutableList[String]
+  protected val leftMarkersPos = new mutable.MutableList[Double]
+  protected var title: String = null
+  protected var leftLabel: String = null
+  protected var bottomLabel: String = null
+  protected var thickerMinSpace: Double = AbstractFigure.DEFAULT_THICKER_MIN_SPACE
+  protected var x1: Double = Double.NaN
+  protected var x2: Double = Double.NaN
+  protected var y1: Double = Double.NaN
+  protected var y2: Double = Double.NaN
 
-//  private var options: GraphicOptions
-//
-  def getParent: AbstractFigure = parent
+  protected var leftThicker: Boolean = false
+  protected var bottomThicker: Boolean = false
+  protected var leftMarkers: Boolean = false
+  protected var bottomMarkers: Boolean = false
 
-  def getBottomMarkersMsg: mutable.MutableList[String] = bottomMarkersMsg
-
-  def getBottomMarkersPos: mutable.MutableList[Double] = bottomMarkersPos
-
-  def getLeftMarkersMsg: mutable.MutableList[String] = leftMarkersMsg
-
-  def getLeftMarkersPos: mutable.MutableList[Double] = leftMarkersPos
-
-  def setParent(parent: AbstractFigure): Unit = this.parent = parent
-
-  def getViewport: Rectangle = viewport
-
-  def isLeftThicker: Boolean = leftThicker
-
-  def setLeftThicker(leftThicker: Boolean): AbstractFigure = {
-    this.leftThicker = leftThicker
-    return this
-  }
-
-  def isBottomThicker: Boolean = bottomThicker
-
-  def setBottomThicker(bottomThicker: Boolean): AbstractFigure = {
-    this.bottomThicker = bottomThicker
-    return this
-  }
-
-  def isLeftMarkers: Boolean = leftMarkers
-
-  def setLeftMarkers(leftMarkers: Boolean): AbstractFigure = {
-    this.leftMarkers = leftMarkers
-    return this
-  }
-
-  def isBottomMarkers: Boolean = bottomMarkers
-
-  def setBottomMarkers(bottomMarkers: Boolean): AbstractFigure = {
-    this.bottomMarkers = bottomMarkers
-    return this
-  }
-
-  def getThickerMinSpace: Double = {
-    if (parent != null && thickerMinSpace == AbstractFigure.DEFAULT_THICKER_MIN_SPACE) {
-      return parent.getThickerMinSpace
-    }
-    return thickerMinSpace
-  }
-
-  def setThickerMinSpace(minSpace: Double): AbstractFigure = {
-    thickerMinSpace = minSpace
-    return this
-  }
+  protected var options: GraphicOptions = new GraphicOptions
 
   def buildRange: Range
 
@@ -127,28 +68,7 @@ abstract class AbstractFigure extends Figure {
     if (range == null) {
       range = buildRange
     }
-    return range
-  }
-
-  def getTitle: String = title
-
-  def setTitle(title: String): AbstractFigure = {
-    this.title = title
-    return this
-  }
-
-  def getLeftLabel: String = leftLabel
-
-  def setLeftLabel(leftLabel: String): AbstractFigure = {
-    this.leftLabel = leftLabel
-    return this
-  }
-
-  def getBottomLabel: String = bottomLabel
-
-  def setBottomLabel(bottomLabel: String): AbstractFigure = {
-    this.bottomLabel = bottomLabel
-    return this
+    range
   }
 
   def buildViewport(rectangle: Rectangle) {
@@ -179,171 +99,38 @@ abstract class AbstractFigure extends Figure {
   }
 
   def xscale(x: Double): Double = {
-    return viewport.x + viewport.width * (x - range.getX1) / (range.getX2 - range.getX1)
+    viewport.x + viewport.width * (x - range.x1) / (range.x2 - range.x1)
   }
 
   def yscale(y: Double): Double = {
-    return viewport.y + viewport.height * (1.-(y - range.getY1) / (range.getY2 - range.getY1))
-  }
-
-  private def isDefaultLwd: Boolean = lwd == 1.2
-
-  def getLwd: Float = {
-    if (parent != null && isDefaultLwd) {
-      return parent.getLwd
-    }
-    return lwd
-  }
-
-  def setLwd(lwd: Float): AbstractFigure = {
-    this.lwd = lwd
-    return this
-  }
-
-  private def isDefaultSize: Boolean = sizeIndex.getRowCount == 1 && sizeIndex.getValue(0) == 2.5
-
-  def getSizeIndex: Vector = {
-    if (parent != null && isDefaultSize) {
-      return parent.getSizeIndex
-    }
-    return sizeIndex
-  }
-
-  def setSizeIndex(sizeIndex: Vector): AbstractFigure = {
-    this.sizeIndex = sizeIndex
-    return this
-  }
-
-  def setSizeIndex(size: Double): AbstractFigure = {
-    this.sizeIndex = Value(Array(size))
-    return this
-  }
-
-  def getSize(row: Int): Double = {
-    val index = getSizeIndex
-    var pos = row
-    if (pos >= index.getRowCount) {
-      pos %= index.getRowCount
-    }
-    index.getValue(pos)
-  }
-
-  private def isDefaultColorIndex: Boolean = {
-    return colorIndex.getRowCount == 1 && colorIndex.getIndex(0) == 0
-  }
-
-  def getColorIndex: Vector = {
-    if (parent != null && isDefaultColorIndex) {
-      return parent.getColorIndex
-    }
-    return colorIndex
-  }
-
-  def setColorIndex(colorIndex: Vector): AbstractFigure = {
-    this.colorIndex = colorIndex
-    return this
-  }
-
-  def setColorIndex(colorIndex: Int): AbstractFigure = {
-    this.colorIndex = Index(Array(colorIndex))
-    return this
-  }
-
-  def getColor(row: Int): Color = {
-    if (parent != null && isDefaultColorIndex) {
-      return parent.getColor(row)
-    }
-    val index: Vector = getColorIndex
-    var pos = row
-    if (pos >= index.getRowCount) {
-      pos %= index.getRowCount
-    }
-    return ColorPalette.STANDARD.getColor(index.getIndex(pos))
-  }
-
-  private def isDefaultPchIndex: Boolean = {
-    return pchIndex.getIndex(0) == 0 && pchIndex.getRowCount == 1
-  }
-
-  def getPchIndex: Vector = {
-    if (parent != null && isDefaultPchIndex) {
-      return parent.getPchIndex
-    }
-    return pchIndex
-  }
-
-  def setPchIndex(pchIndex: Vector): AbstractFigure = {
-    this.pchIndex = pchIndex
-    return this
-  }
-
-  def setPchIndex(pch: Int): AbstractFigure = {
-    this.pchIndex = Index(Array(pch))
-    return this
-  }
-
-  def getPch(row: Int): Int = {
-    val index: Vector = getPchIndex
-    var pos = row
-    if (pos >= index.getRowCount) {
-      pos %= index.getRowCount
-    }
-    return index.getIndex(pos)
-  }
-
-  def getXRangeStart: Double = {
-    if (parent != null && x1 != x1) {
-      return parent.getXRangeStart
-    }
-    return x1
-  }
-
-  def getXRangeEnd: Double = {
-    if (parent != null && x2 != x2) {
-      return parent.getXRangeEnd
-    }
-    return x2
+    viewport.y + viewport.height * (1.-(y - range.y1) / (range.y2 - range.y1))
   }
 
   def setXRange(start: Double, end: Double): AbstractFigure = {
     this.x1 = start
     this.x2 = end
-    return this
-  }
-
-  def getYRangeStart: Double = {
-    if (parent != null && y1 != y1) {
-      return parent.getYRangeStart
-    }
-    return y1
-  }
-
-  def getYRangeEnd: Double = {
-    if (parent != null && y2 != y2) {
-      return parent.getYRangeEnd
-    }
-    return y2
+    this
   }
 
   def setYRange(start: Double, end: Double): AbstractFigure = {
     this.y1 = start
     this.y2 = end
-    return this
+    this
   }
 
   def paint(g2d: Graphics2D, rect: Rectangle) {
     buildViewport(rect)
     range = buildRange
-    g2d.setColor(ColorPalette.STANDARD.getColor(255))
+    g2d.setColor(StandardColorPalette.color(255))
     g2d.fill(rect)
-    g2d.setBackground(ColorPalette.STANDARD.getColor(255))
-    g2d.setColor(ColorPalette.STANDARD.getColor(0))
+    g2d.setBackground(StandardColorPalette.color(255))
+    g2d.setColor(StandardColorPalette.color(0))
     if (title != null) {
       g2d.setFont(AbstractFigure.TITLE_FONT)
       val titleWidth: Double = g2d.getFontMetrics.getStringBounds(title, g2d).getWidth
       g2d.drawString(title, (rect.width - titleWidth).asInstanceOf[Int] / 2, AbstractFigure.TITLE_PAD)
     }
-    buildLeftMarkers
+    buildLeftMarkers()
     g2d.setFont(AbstractFigure.MARKERS_FONT)
     g2d.drawLine(viewport.x - AbstractFigure.THICKER_PAD, viewport.y, viewport.x - AbstractFigure.THICKER_PAD, viewport.y + viewport.height)
     for (i <- 0 until leftMarkersPos.size) {
@@ -374,7 +161,7 @@ abstract class AbstractFigure extends Figure {
       g2d.rotate(Math.PI / 2)
       g2d.translate(-xx, -yy)
     }
-    buildBottomMarkers
+    buildBottomMarkers()
     g2d.setFont(AbstractFigure.MARKERS_FONT)
     g2d.drawLine(viewport.x, viewport.y + viewport.height + AbstractFigure.THICKER_PAD, viewport.x + viewport.width, viewport.y + viewport.height + AbstractFigure.THICKER_PAD)
     for (i <- 0 until bottomMarkersPos.size) {
@@ -401,32 +188,32 @@ abstract class AbstractFigure extends Figure {
     }
   }
 
-  protected def buildNumericBottomMarkers {
-    bottomMarkersPos.clear
-    bottomMarkersMsg.clear
-    val xspots: Int = Math.floor(viewport.width / getThickerMinSpace).toInt
+  protected def buildNumericBottomMarkers() {
+    bottomMarkersPos.clear()
+    bottomMarkersMsg.clear()
+    val xspots: Int = math.floor(viewport.width / thickerMinSpace).toInt
     val xspotwidth: Double = viewport.width / xspots
     for (i <- 0 to xspots) {
       bottomMarkersPos += i * xspotwidth
-      bottomMarkersMsg += ("%." + range.getProperDecimalsX.toString + "f").format(range.getX1 + range.getWidth * i / xspots)
+      bottomMarkersMsg += ("%." + range.getProperDecimalsX.toString + "f").format(range.x1 + range.getWidth * i / xspots)
     }
   }
 
-  protected def buildNumericLeftMarkers {
-    leftMarkersPos.clear
-    leftMarkersMsg.clear
-    val yspots: Int = Math.floor(viewport.height / getThickerMinSpace).toInt
+  protected def buildNumericLeftMarkers() {
+    leftMarkersPos.clear()
+    leftMarkersMsg.clear()
+    val yspots: Int = math.floor(viewport.height / thickerMinSpace).toInt
     val yspotwidth: Double = viewport.height / yspots
     for (i <- 0 to yspots) {
       leftMarkersPos += i * yspotwidth
-      leftMarkersMsg += ("%." + range.getProperDecimalsY + "f").format(range.getY1 + range.getHeight * i / yspots)
+      leftMarkersMsg += ("%." + range.getProperDecimalsY + "f").format(range.y1 + range.getHeight * i / yspots)
     }
   }
 
-  def buildLeftMarkers {
+  def buildLeftMarkers() {
   }
 
-  def buildBottomMarkers {
+  def buildBottomMarkers() {
   }
 
 }

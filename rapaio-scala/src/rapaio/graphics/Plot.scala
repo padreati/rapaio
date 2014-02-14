@@ -32,48 +32,45 @@ class Plot extends AbstractFigure {
 
   private final val components = new mutable.MutableList[PlotComponent]
 
-  setBottomThicker(true)
-  setBottomMarkers(true)
-  setLeftThicker(true)
-  setLeftMarkers(true)
+  bottomThicker = true
+  bottomMarkers = true
+  leftThicker = true
+  leftMarkers = true
+
+  private def mergeRange(a: Range, b: Range): Range = {
+    if (a == null) b
+    else {
+      a.union(b)
+      a
+    }
+  }
 
   def buildRange: Range = {
-    var r: Range = null
-    for (pc <- components) {
-      val newrange: Range = pc.getRange
-      if (newrange != null) {
-        if (r == null) {
-          r = newrange
-        }
-        else {
-          r.union(newrange)
-        }
-      }
-    }
+    var r: Range = components.map(pc => pc.getRange).fold(null)((a, b) => mergeRange(a, b))
     if (r == null) {
       r = new Range(0, 0, 1, 1)
     }
-    if (getXRangeStart == getXRangeStart && getXRangeEnd == getXRangeEnd) {
-      r.setX1(getXRangeStart)
-      r.setX2(getXRangeEnd)
+    if (x1 == x1 && x2 == x2) {
+      r.x1 = x1
+      r.x2 = x2
     }
-    if (getYRangeStart == getYRangeStart && getYRangeEnd == getYRangeEnd) {
-      r.setY1(getYRangeStart)
-      r.setY2(getYRangeEnd)
+    if (y1 == y1 && y2 == y2) {
+      r.y1 = y1
+      r.y2 = y2
     }
-    if (r.getY1 == r.getY2) {
-      r.setY1(r.getY1 - 0.5)
-      r.setY2(r.getY2 + 0.5)
+    if (r.y1 == r.y2) {
+      r.y1 -= 0.5
+      r.y2 += 0.5
     }
-    if (r.getX1 == r.getX2) {
-      r.setX1(r.getX1 - 0.5)
-      r.setX2(r.getX2 + 0.5)
+    if (r.x1 == r.x2) {
+      r.x1 -= 0.5
+      r.x2 += 0.5
     }
-    return r
+    r
   }
 
   def add(pc: PlotComponent): Plot = {
-    pc.setParent(this)
+    pc.parent = this
     pc.initialize
     components += pc
     this
@@ -81,7 +78,6 @@ class Plot extends AbstractFigure {
 
   override def paint(g2d: Graphics2D, rect: Rectangle) {
     super.paint(g2d, rect)
-    import scala.collection.JavaConversions._
     for (pc <- components) {
       pc.paint(g2d)
     }

@@ -17,55 +17,33 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package rapaio.graphics.pch
+package rapaio.graphics.base
 
 import java.awt._
-import scala.collection.mutable
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 object PchPalette {
-  final val STANDARD = StandardPchPalette
-
-  abstract trait Mapping {
-    def draw(g2d: Graphics2D, x: Int, y: Int, size: Double, pch: Int)
-  }
-}
-
-final class PchPalette(private val mapping: PchPalette.Mapping) {
-  def draw(g2d: Graphics2D, x: Int, y: Int, size: Double, pch: Int) {
-    mapping.draw(g2d, x, y, size, pch)
-  }
-}
-
-object StandardPchPalette extends PchPalette.Mapping {
-
   private val pchs = Array[Drawer](
-    new Drawer {
+    new Drawer('o') {
       def draw(g2d: Graphics2D, x: Int, y: Int, size: Double) {
-        g2d.drawOval((x - size).asInstanceOf[Int], (y - size).asInstanceOf[Int], (size * 2 + 1).asInstanceOf[Int], (size * 2 + 1).asInstanceOf[Int])
+        g2d.drawOval((x - size).toInt, (y - size).toInt, (size * 2 + 1).toInt, (size * 2 + 1).toInt)
       }
     },
-    new Drawer {
+    new Drawer('p') {
       def draw(g2d: Graphics2D, x: Int, y: Int, size: Double) {
-        g2d.fillOval((x - size).asInstanceOf[Int], (y - size).asInstanceOf[Int], (size * 2 + 1).asInstanceOf[Int], (size * 2 + 1).asInstanceOf[Int])
+        g2d.fillOval((x - size).toInt, (y - size).toInt, (size * 2 + 1).toInt, (size * 2 + 1).toInt)
       }
     })
 
   def draw(g2d: Graphics2D, x: Int, y: Int, size: Double, pch: Int) {
-    var _pch = pch
-    if (_pch < 0) {
-      _pch = 0
-    }
-    if (_pch >= pchs.size) {
-      _pch %= pchs.size
-    }
-    pchs(_pch).draw(g2d, x, y, size)
+    if (pch < 0) draw(g2d, x, y, size, 0)
+    if (pch >= pchs.size) draw(g2d, x, y, size, pch % pchs.size)
+    pchs(pch).draw(g2d, x, y, size)
   }
-
 }
 
-abstract trait Drawer {
+abstract class Drawer(charPattern: Char) {
   def draw(g2d: Graphics2D, x: Int, y: Int, size: Double)
 }
