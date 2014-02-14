@@ -1,3 +1,23 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package rapaio.data
 
 import java.util.Arrays
@@ -50,33 +70,19 @@ class Index(private var rows: Int, private val capacity: Int, private val fill: 
     if (index > rows || index < 0) throw new IndexOutOfBoundsException(outOfBoundsMsg(index))
   }
 
-  private def outOfBoundsMsg(index: Int): String = {
-    return "Index: " + index + ", Size: " + rows
-  }
+  private def outOfBoundsMsg(index: Int): String = "Index: " + index + ", Size: " + rows
 
-  def isMappedVector: Boolean = {
-    return false
-  }
+  def isMappedVector: Boolean = false
 
-  def getSourceVector: Vector = {
-    return this
-  }
+  def sourceVector: Vector = this
 
-  def getMapping: Mapping = {
-    return null
-  }
+  def mapping: Mapping = null
 
-  def getRowCount: Int = {
-    return rows
-  }
+  def rowCount: Int = rows
 
-  def getRowId(row: Int): Int = {
-    return row
-  }
+  def rowId(row: Int): Int = row
 
-  def getIndex(row: Int): Int = {
-    return data(row)
-  }
+  def getIndex(row: Int): Int = data(row)
 
   def setIndex(row: Int, value: Int) {
     data(row) = value
@@ -96,9 +102,7 @@ class Index(private var rows: Int, private val capacity: Int, private val fill: 
     rows += 1
   }
 
-  def getValue(row: Int): Double = {
-    return getIndex(row)
-  }
+  def getValue(row: Int): Double = getIndex(row)
 
   def setValue(row: Int, value: Double) {
     setIndex(row, math.rint(value).asInstanceOf[Int])
@@ -112,9 +116,7 @@ class Index(private var rows: Int, private val capacity: Int, private val fill: 
     addIndex(row, Math.rint(value).asInstanceOf[Int])
   }
 
-  def getLabel(row: Int): String = {
-    return ""
-  }
+  def getLabel(row: Int): String = ""
 
   def setLabel(row: Int, value: String) {
     throw new RuntimeException("Operation not available for getIndex vectors.")
@@ -165,7 +167,7 @@ class Index(private var rows: Int, private val capacity: Int, private val fill: 
   }
 
   def ensureCapacity(minCapacity: Int) {
-    val minExpand: Int = if ((data ne Index.EMPTY_DATA)) 0 else Index.DEFAULT_CAPACITY
+    val minExpand: Int = if (!data.sameElements(Index.EMPTY_DATA)) 0 else Index.DEFAULT_CAPACITY
     if (minCapacity > minExpand && minCapacity - data.length > 0) grow(minCapacity)
   }
 
@@ -175,9 +177,7 @@ class Index(private var rows: Int, private val capacity: Int, private val fill: 
     }
   }
 
-  override def toString: String = {
-    return "Index[" + getRowCount + "]"
-  }
+  override def toString: String = "Index[" + rowCount + "]"
 }
 
 object Index {

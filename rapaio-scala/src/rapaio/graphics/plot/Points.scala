@@ -30,11 +30,11 @@ import java.awt._
 class Points(private val x: Vector, private var y: Vector) extends PlotComponent {
 
   def buildRange: Range = {
-    if (x.getRowCount == 0) null
+    if (math.min(x.rowCount, y.rowCount) == 0) null
     else {
       val range = new Range
-      for (i <- 0 until math.min(x.getRowCount, y.getRowCount)) {
-        if (!x.isMissing(i) && !(y.isMissing(i))) range.union(x.getValue(i), y.getValue(i))
+      for (i <- 0 until math.min(x.rowCount, y.rowCount)) {
+        if (!x.isMissing(i) && !y.isMissing(i)) range.union(x.getValue(i), y.getValue(i))
       }
       range
     }
@@ -42,7 +42,7 @@ class Points(private val x: Vector, private var y: Vector) extends PlotComponent
 
   def paint(g2d: Graphics2D) {
     g2d.setBackground(StandardColorPalette.color(255))
-    for (i <- 0 until math.min(x.getRowCount, y.getRowCount)) {
+    for (i <- 0 until math.min(x.rowCount, y.rowCount)) {
       if ((!x.isMissing(i)) && (!y.isMissing(i))) {
         g2d.setColor(options.col(i))
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f))

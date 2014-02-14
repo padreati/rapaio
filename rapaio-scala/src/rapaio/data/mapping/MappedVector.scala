@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.data.mapping
 
 import rapaio.data.AbstractVector
@@ -32,34 +33,28 @@ import rapaio.data.Vector
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-class MappedVector(private val source: Vector, private val mapping: Mapping) extends AbstractVector {
+class MappedVector(private val _source: Vector, private val _mapping: Mapping) extends AbstractVector {
 
-  require(!source.isMappedVector, "Now allowed mapped vector as source")
+  require(!_source.isMappedVector, "Now allowed mapped vector as source")
 
-  def isNominal: Boolean = source.isNominal
+  def isNominal: Boolean = _source.isNominal
 
-  def isNumeric: Boolean = source.isNumeric
+  def isNumeric: Boolean = _source.isNumeric
 
-  def getRowCount: Int = mapping.size
+  def rowCount: Int = _mapping.size
 
   def isMappedVector: Boolean = true
 
-  def getSourceVector: Vector = source
+  def sourceVector: Vector = _source
 
-  def getMapping: Mapping = {
-    return mapping
-  }
+  def mapping: Mapping = _mapping
 
-  def getRowId(row: Int): Int = {
-    return source.getRowId(mapping(row))
-  }
+  def rowId(row: Int): Int = _source.rowId(_mapping(row))
 
-  def getValue(row: Int): Double = {
-    return source.getValue(mapping(row))
-  }
+  def getValue(row: Int): Double = _source.getValue(_mapping(row))
 
   def setValue(row: Int, value: Double) {
-    source.setValue(mapping(row), value)
+    _source.setValue(mapping(row), value)
   }
 
   def addValue(value: Double) {
@@ -71,11 +66,11 @@ class MappedVector(private val source: Vector, private val mapping: Mapping) ext
   }
 
   def getIndex(row: Int): Int = {
-    return source.getIndex(mapping(row))
+    return _source.getIndex(mapping(row))
   }
 
   def setIndex(row: Int, value: Int) {
-    source.setIndex(mapping(row), value)
+    _source.setIndex(mapping(row), value)
   }
 
   def addIndex(value: Int) {
@@ -87,11 +82,11 @@ class MappedVector(private val source: Vector, private val mapping: Mapping) ext
   }
 
   def getLabel(row: Int): String = {
-    return source.getLabel(mapping(row))
+    _source.getLabel(mapping(row))
   }
 
   def setLabel(row: Int, value: String) {
-    source.setLabel(mapping(row), value)
+    _source.setLabel(mapping(row), value)
   }
 
   def addLabel(value: String) {
@@ -103,19 +98,19 @@ class MappedVector(private val source: Vector, private val mapping: Mapping) ext
   }
 
   def getDictionary: Array[String] = {
-    return source.getDictionary
+    _source.getDictionary
   }
 
   def setDictionary(dict: Array[String]) {
-    source.setDictionary(dict)
+    _source.setDictionary(dict)
   }
 
   def isMissing(row: Int): Boolean = {
-    return source.isMissing(mapping(row))
+    _source.isMissing(mapping(row))
   }
 
   def setMissing(row: Int) {
-    source.setMissing(mapping(row))
+    _source.setMissing(mapping(row))
   }
 
   def addMissing {

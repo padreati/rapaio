@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.data
 
 import rapaio.data.mapping.Mapping
@@ -35,16 +36,16 @@ abstract trait Vector extends Serializable {
 
   def isMappedVector: Boolean
 
-  def getSourceVector: Vector
+  def sourceVector: Vector
 
-  def getMapping: Mapping
+  def mapping: Mapping
 
   /**
    * Number of observations contained by the vector.
    *
    * @return size of vector
    */
-  def getRowCount: Int
+  def rowCount: Int
 
   /**
    * Returns observation identifier which is an integer.
@@ -59,7 +60,7 @@ abstract trait Vector extends Serializable {
    * @param row row for which row identifier is returned
    * @return row identifier
    */
-  def getRowId(row: Int): Int
+  def rowId(row: Int): Int
 
   /**
    * Returns numeric setValue for the observation specified by {@code row}.
@@ -186,27 +187,27 @@ abstract trait Vector extends Serializable {
  */
 abstract class AbstractVector extends Vector {
   override def toString: String = {
-    return "Vector{ size='" + getRowCount + "\'}"
+    "Vector{ size='" + rowCount + "\'}"
   }
 
   def toValueArray: Array[Double] = {
-    val list = new Array[Double](getRowCount)
+    val list = new Array[Double](rowCount)
     var i: Int = 0
-    while (i < getRowCount) {
+    while (i < rowCount) {
       list(i) = getValue(i)
-      i += 1;
+      i += 1
     }
-    return list
+    list
   }
 
   def toIndexArray: Array[Int] = {
-    val list = new Array[Int](getRowCount)
+    val list = new Array[Int](rowCount)
     var i: Int = 0
-    while (i < getRowCount) {
+    while (i < rowCount) {
       list(i) = getIndex(i)
-      i += 1;
+      i += 1
     }
-    return list
+    list
   }
 }
 

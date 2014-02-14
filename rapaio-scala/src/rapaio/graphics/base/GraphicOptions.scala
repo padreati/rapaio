@@ -31,17 +31,17 @@ class GraphicOptions {
   var col: ColorOption = GraphicOptions.DEFAULT_COLOR
   var lwd: LwdOption = GraphicOptions.DEFAULT_LWD
   var pch: PchOption = GraphicOptions.DEFAULT_PCH
-  var sz: SizeOption = GraphicOptions.DEFAULT_SIZE
+  var sz: SizeOption = GraphicOptions.DEFAULT_SZ
 }
 
 /**
  * Provides default values for graphical options.
  */
 object GraphicOptions {
-  private val DEFAULT_COLOR: ColorOption = Color.BLACK
-  private val DEFAULT_LWD: LwdOption = 1.2
-  private val DEFAULT_PCH: PchOption = 'o'
-  private val DEFAULT_SIZE: SizeOption = 2.5
+  val DEFAULT_COLOR: ColorOption = Color.BLACK
+  val DEFAULT_LWD: LwdOption = 1.2
+  val DEFAULT_PCH: PchOption = 'o'
+  val DEFAULT_SZ: SizeOption = 2.5
 }
 
 /**
@@ -56,6 +56,21 @@ class ColorOption(val values: Array[Color]) {
     if (i >= values.length) values(i % values.length)
     else values(i)
   }
+
+
+  def canEqual(other: Any): Boolean = other.isInstanceOf[ColorOption]
+
+  override def equals(other: Any): Boolean = other match {
+    case that: ColorOption =>
+      (that canEqual this) &&
+        values.sameElements(that.values)
+    case _ => false
+  }
+
+  override def hashCode(): Int = {
+    val state = Seq(values)
+    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+  }
 }
 
 object ColorOption {
@@ -69,8 +84,8 @@ object ColorOption {
   }
 
   implicit def fromIndex(index: Index): ColorOption = {
-    val values = new Array[Color](index.getRowCount)
-    for (i <- 0 until index.getRowCount) {
+    val values = new Array[Color](index.rowCount)
+    for (i <- 0 until index.rowCount) {
       values(i) = StandardColorPalette.color(i)
     }
     new ColorOption(values)
@@ -80,6 +95,21 @@ object ColorOption {
 class LwdOption(val values: Array[Float]) {
 
   def apply(i: Int): Float = if (i >= values.length) values(i % values.length) else values(i)
+
+
+  def canEqual(other: Any): Boolean = other.isInstanceOf[LwdOption]
+
+  override def equals(other: Any): Boolean = other match {
+    case that: LwdOption =>
+      (that canEqual this) &&
+        values.sameElements(that.values)
+    case _ => false
+  }
+
+  override def hashCode(): Int = {
+    val state = Seq(values)
+    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+  }
 }
 
 /**
@@ -95,6 +125,20 @@ object SizeOption {
 class SizeOption(val values: Array[Double]) {
 
   def apply(i: Int): Double = if (i >= values.length) values(i % values.length) else values(i)
+
+  def canEqual(other: Any): Boolean = other.isInstanceOf[SizeOption]
+
+  override def equals(other: Any): Boolean = other match {
+    case that: SizeOption =>
+      (that canEqual this) &&
+        values.sameElements(that.values)
+    case _ => false
+  }
+
+  override def hashCode(): Int = {
+    val state = Seq(values)
+    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+  }
 }
 
 /**
@@ -107,19 +151,38 @@ object LwdOption {
   implicit def fromOneDouble(value: Double): LwdOption = new LwdOption(Array[Float](value.toFloat))
 }
 
-class PchOption(val index: Index = Index(0)) {
+class PchOption(val index: Array[Int]) {
 
   def apply(i: Int): Int = {
-    if (i >= index.getRowCount) apply(i % index.getRowCount)
-    else index.getIndex(i)
+    if (i >= index.length) apply(i % index.length)
+    else index(i)
+  }
+
+  def canEqual(other: Any): Boolean = other.isInstanceOf[PchOption]
+
+  override def equals(other: Any): Boolean = other match {
+    case that: PchOption =>
+      (that canEqual this) && index.sameElements(that.index)
+    case _ => false
+  }
+
+  override def hashCode(): Int = {
+    val state = Seq(index)
+    state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 }
 
 object PchOption {
 
   implicit def fromOneString(xs: Char): PchOption = {
-    new PchOption(Index(PchPalette(xs)))
+    new PchOption(Array[Int](PchPalette(xs)))
   }
 
-  implicit def fromOneInt(xs: Int): PchOption = new PchOption(Index(xs))
+  implicit def fromOneInt(xs: Int): PchOption = new PchOption(Array[Int](xs))
+
+  implicit def fromIndex(index: Index): PchOption = {
+    val pch = new Array[Int](index.rowCount)
+    for (i <- 0 until index.rowCount) pch(i) = index.getIndex(i)
+    new PchOption(pch)
+  }
 }

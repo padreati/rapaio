@@ -83,9 +83,9 @@ class Plot extends AbstractFigure {
              pch: PchOption = 'o',
              sz: SizeOption = 4): Plot = {
     val points = new Points(x, y)
-    points.options.col = col
-    points.options.pch = pch
-    points.options.sz = sz
+    points.options.col = if (col == GraphicOptions.DEFAULT_COLOR) options.col else col
+    points.options.pch = if (pch == GraphicOptions.DEFAULT_PCH) options.pch else pch
+    points.options.sz = if (sz == GraphicOptions.DEFAULT_SZ) options.sz else sz
     add(points)
   }
 

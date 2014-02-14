@@ -1,3 +1,23 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package rapaio.data
 
 import java.util.Arrays
@@ -8,7 +28,7 @@ import rapaio.data.mapping.Mapping
  */
 class Value(private var rows: Int, private val capacity: Int, private val fill: Double) extends AbstractVector {
   require(capacity >= 0, "Illegal capacity: " + capacity)
-  require(getRowCount >= 0, "Illegal row count: " + this.rows)
+  require(rowCount >= 0, "Illegal row count: " + this.rows)
   require(rows <= capacity, "Illegal row count" + rows + " less than capacity:" + capacity)
 
   private var data: Array[Double] = null
@@ -30,7 +50,7 @@ class Value(private var rows: Int, private val capacity: Int, private val fill: 
 
   private def hugeCapacity(minCapacity: Int): Int = {
     if (minCapacity < 0) throw new OutOfMemoryError
-    return if ((minCapacity > Value.MAX_ARRAY_SIZE)) Integer.MAX_VALUE else Value.MAX_ARRAY_SIZE
+    else if (minCapacity > Value.MAX_ARRAY_SIZE) Int.MaxValue else Value.MAX_ARRAY_SIZE
   }
 
   def isNominal: Boolean = false
@@ -67,13 +87,13 @@ class Value(private var rows: Int, private val capacity: Int, private val fill: 
 
   def isMappedVector: Boolean = false
 
-  def getSourceVector: Vector = this
+  def sourceVector: Vector = this
 
-  def getMapping: Mapping = null
+  def mapping: Mapping = null
 
-  def getRowCount: Int = rows
+  def rowCount: Int = rows
 
-  def getRowId(row: Int): Int = row
+  def rowId(row: Int): Int = row
 
   def getValue(row: Int): Double = {
     rangeCheck(row)
@@ -172,9 +192,7 @@ class Value(private var rows: Int, private val capacity: Int, private val fill: 
     }
   }
 
-  override def toString: String = {
-    return "Numeric[" + getRowCount + "]"
-  }
+  override def toString: String = "Value[" + rowCount + "]"
 }
 
 object Value {

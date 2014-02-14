@@ -1,3 +1,23 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package rapaio.data
 
 import java.util.Arrays
@@ -55,13 +75,13 @@ class Nominal(private var rows: Int, private var dictionary: List[String]) exten
 
   def isMappedVector: Boolean = false
 
-  def getSourceVector: Vector = this
+  def sourceVector: Vector = this
 
-  def getMapping: Mapping = null
+  def mapping: Mapping = null
 
-  def getRowCount: Int = rows
+  def rowCount: Int = rows
 
-  def getRowId(row: Int): Int = row
+  def rowId(row: Int): Int = row
 
   def getIndex(row: Int): Int = data(row)
 
@@ -73,9 +93,7 @@ class Nominal(private var rows: Int, private var dictionary: List[String]) exten
     addLabel(row, dict(value))
   }
 
-  def getValue(row: Int): Double = {
-    return data(row)
-  }
+  def getValue(row: Int): Double = data(row)
 
   def setValue(row: Int, value: Double) {
     setIndex(row, Math.rint(value).asInstanceOf[Int])
@@ -189,10 +207,7 @@ class Nominal(private var rows: Int, private var dictionary: List[String]) exten
     if (minCapacity - data.length > 0) grow(minCapacity)
   }
 
-  override def toString: String = {
-    return "Nominal[" + getRowCount + "]"
-  }
-
+  override def toString: String = "Nominal[" + rowCount + "]"
 }
 
 object Nominal {

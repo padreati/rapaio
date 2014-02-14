@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.core.stat
 
 import rapaio.core.Summarizable
@@ -33,9 +34,9 @@ final class Mean(private val vector: Vector) extends Summarizable {
   private val value: Double = compute
 
   private def compute: Double = {
-    var sum: Double = 0.
-    var count: Double = 0
-    for (i <- 0 until vector.getRowCount) {
+    var sum = 0.0
+    var count = 0.0
+    for (i <- 0 until vector.rowCount) {
       if (!vector.isMissing(i)) {
         sum += vector.getValue(i)
         count += 1
@@ -46,7 +47,7 @@ final class Mean(private val vector: Vector) extends Summarizable {
     }
     sum /= count
     var t: Double = 0
-    for (i <- 0 until vector.getRowCount) {
+    for (i <- 0 until vector.rowCount) {
       if (!vector.isMissing(i)) {
         t += vector.getValue(i) - sum
       }
