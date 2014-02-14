@@ -51,8 +51,8 @@ class Points(private val x: Vector, private var y: Vector) extends PlotComponent
     for (i <- 0 until x.getRowCount) {
       g2d.setColor(options.col(i))
       g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f))
-      val xx: Int = parent.xscale(x.getValue(i)).toInt
-      val yy: Int = parent.yscale(y.getValue(i)).toInt
+      val xx: Int = parent.xScale(x.getValue(i)).toInt
+      val yy: Int = parent.yScale(y.getValue(i)).toInt
       PchPalette.draw(g2d, xx, yy, options.sz(i), options.pch(i))
     }
   }

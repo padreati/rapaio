@@ -37,7 +37,7 @@ class Value(private var rows: Int, private val capacity: Int, private val fill: 
 
   def isNumeric: Boolean = true
 
-  def apply(index : Int) = getValue(index)
+  def apply(index: Int) = getValue(index)
 
   private def ensureCapacityInternal(minCapacity: Int) {
     var capacity = minCapacity
@@ -199,5 +199,15 @@ object Value {
     x.rows = values.length
     x
   }
+
+  def apply(from: Int = 0, to: Int, f: (Int) => Double): Value = {
+    val value = new Value
+    for (i <- from until to) {
+      value.addValue(f(i))
+    }
+    value
+  }
+
+  //  Array[Int](10).for
 }
 

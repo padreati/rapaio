@@ -19,18 +19,18 @@
  */
 package rapaio.graphics
 
-import rapaio.graphics.base.AbstractFigure
-import rapaio.graphics.base.Range
-import rapaio.graphics.plot.PlotComponent
+import rapaio.graphics.base._
+import rapaio.graphics.plot._
 import java.awt._
-import scala.collection.mutable
+import scala.collection.mutable.MutableList
+import rapaio._
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 class Plot extends AbstractFigure {
 
-  private final val components = new mutable.MutableList[PlotComponent]
+  private final val components = new MutableList[PlotComponent]
 
   bottomThicker = true
   bottomMarkers = true
@@ -69,11 +69,17 @@ class Plot extends AbstractFigure {
     r
   }
 
-  def add(pc: PlotComponent): Plot = {
+  private def add(pc: PlotComponent): Plot = {
     pc.parent = this
     pc.initialize
     components += pc
     this
+  }
+
+  def points(x: data.Vector = null, y: data.Vector, col: ColorOption = Color.BLACK): Plot = {
+    val points = new Points(x, y)
+    points.options.col = col
+    add(points)
   }
 
   override def paint(g2d: Graphics2D, rect: Rectangle) {
@@ -83,12 +89,12 @@ class Plot extends AbstractFigure {
     }
   }
 
-  override def buildLeftMarkers {
-    buildNumericLeftMarkers
+  override def buildLeftMarkers() {
+    buildNumericLeftMarkers()
   }
 
-  override def buildBottomMarkers {
-    buildNumericBottomMarkers
+  override def buildBottomMarkers() {
+    buildNumericBottomMarkers()
   }
 
   override def setXRange(start: Double, end: Double): Plot = {

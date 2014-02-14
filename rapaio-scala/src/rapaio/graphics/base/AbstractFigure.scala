@@ -20,7 +20,6 @@
 package rapaio.graphics.base
 
 import java.awt._
-import rapaio.data._
 import scala.collection.mutable
 
 /**
@@ -40,7 +39,7 @@ object AbstractFigure {
 
 abstract class AbstractFigure extends Figure {
 
-  protected var viewport: Rectangle = null
+  protected var view: Rectangle = null
   protected var range: Range = null
   protected val bottomMarkersMsg = new mutable.MutableList[String]
   protected val bottomMarkersPos = new mutable.MutableList[Double]
@@ -49,18 +48,18 @@ abstract class AbstractFigure extends Figure {
   protected var title: String = null
   protected var leftLabel: String = null
   protected var bottomLabel: String = null
-  protected var thickerMinSpace: Double = AbstractFigure.DEFAULT_THICKER_MIN_SPACE
-  protected var x1: Double = Double.NaN
-  protected var x2: Double = Double.NaN
-  protected var y1: Double = Double.NaN
-  protected var y2: Double = Double.NaN
+  protected var thickerMinSpace = AbstractFigure.DEFAULT_THICKER_MIN_SPACE
+  protected var x1 = Double.NaN
+  protected var x2 = Double.NaN
+  protected var y1 = Double.NaN
+  protected var y2 = Double.NaN
 
-  protected var leftThicker: Boolean = false
-  protected var bottomThicker: Boolean = false
-  protected var leftMarkers: Boolean = false
-  protected var bottomMarkers: Boolean = false
+  protected var leftThicker = false
+  protected var bottomThicker = false
+  protected var leftMarkers = false
+  protected var bottomMarkers = false
 
-  protected var options: GraphicOptions = new GraphicOptions
+  var options: GraphicOptions = new GraphicOptions
 
   def buildRange: Range
 
@@ -72,20 +71,20 @@ abstract class AbstractFigure extends Figure {
   }
 
   def buildViewport(rectangle: Rectangle) {
-    viewport = new Rectangle(rectangle)
-    viewport.x += 2 * AbstractFigure.THICKER_PAD
+    view = new Rectangle(rectangle)
+    view.x += 2 * AbstractFigure.THICKER_PAD
     if (leftMarkers) {
-      viewport.x += AbstractFigure.MARKER_PAD
+      view.x += AbstractFigure.MARKER_PAD
     }
     if (leftLabel != null) {
-      viewport.x += AbstractFigure.LABEL_PAD
+      view.x += AbstractFigure.LABEL_PAD
     }
-    viewport.x += AbstractFigure.MINIMUM_PAD
+    view.x += AbstractFigure.MINIMUM_PAD
     if (title != null) {
-      viewport.y += AbstractFigure.TITLE_PAD
+      view.y += AbstractFigure.TITLE_PAD
     }
-    viewport.y += AbstractFigure.MINIMUM_PAD
-    viewport.width = rectangle.width - viewport.x - AbstractFigure.MINIMUM_PAD
+    view.y += AbstractFigure.MINIMUM_PAD
+    view.width = rectangle.width - view.x - AbstractFigure.MINIMUM_PAD
     var height: Int = 0
     height += 2 * AbstractFigure.THICKER_PAD
     if (bottomMarkers) {
@@ -95,15 +94,15 @@ abstract class AbstractFigure extends Figure {
       height += AbstractFigure.LABEL_PAD
     }
     height += AbstractFigure.MINIMUM_PAD
-    viewport.height = rectangle.height - viewport.y - height
+    view.height = rectangle.height - view.y - height
   }
 
-  def xscale(x: Double): Double = {
-    viewport.x + viewport.width * (x - range.x1) / (range.x2 - range.x1)
+  def xScale(x: Double): Double = {
+    view.x + view.width * (x - range.x1) / (range.x2 - range.x1)
   }
 
-  def yscale(y: Double): Double = {
-    viewport.y + viewport.height * (1.-(y - range.y1) / (range.y2 - range.y1))
+  def yScale(y: Double): Double = {
+    view.y + view.height * (1.-(y - range.y1) / (range.y2 - range.y1))
   }
 
   def setXRange(start: Double, end: Double): AbstractFigure = {
@@ -132,15 +131,15 @@ abstract class AbstractFigure extends Figure {
     }
     buildLeftMarkers()
     g2d.setFont(AbstractFigure.MARKERS_FONT)
-    g2d.drawLine(viewport.x - AbstractFigure.THICKER_PAD, viewport.y, viewport.x - AbstractFigure.THICKER_PAD, viewport.y + viewport.height)
+    g2d.drawLine(view.x - AbstractFigure.THICKER_PAD, view.y, view.x - AbstractFigure.THICKER_PAD, view.y + view.height)
     for (i <- 0 until leftMarkersPos.size) {
       {
         if (leftThicker) {
-          g2d.drawLine(viewport.x - 2 * AbstractFigure.THICKER_PAD, viewport.y + leftMarkersPos(i).toInt, viewport.x - AbstractFigure.THICKER_PAD, viewport.y + leftMarkersPos(i).toInt)
+          g2d.drawLine(view.x - 2 * AbstractFigure.THICKER_PAD, view.y + leftMarkersPos(i).toInt, view.x - AbstractFigure.THICKER_PAD, view.y + leftMarkersPos(i).toInt)
         }
         if (leftMarkers) {
-          val xx: Int = viewport.x - 3 * AbstractFigure.THICKER_PAD
-          val yy: Int = (viewport.y + viewport.height - leftMarkersPos(i) + g2d.getFontMetrics.getStringBounds(leftMarkersMsg(i), g2d).getWidth / 2).toInt
+          val xx: Int = view.x - 3 * AbstractFigure.THICKER_PAD
+          val yy: Int = (view.y + view.height - leftMarkersPos(i) + g2d.getFontMetrics.getStringBounds(leftMarkersMsg(i), g2d).getWidth / 2).toInt
           g2d.translate(xx, yy)
           g2d.rotate(-Math.PI / 2)
           g2d.drawString(leftMarkersMsg(i), 0, 0)
@@ -153,46 +152,46 @@ abstract class AbstractFigure extends Figure {
     if (leftLabel != null) {
       g2d.setFont(AbstractFigure.LABELS_FONT)
       val ywidth: Double = g2d.getFontMetrics.getStringBounds(leftLabel, g2d).getWidth
-      val xx: Int = viewport.x - 5 * AbstractFigure.THICKER_PAD - AbstractFigure.MARKER_PAD
+      val xx: Int = view.x - 5 * AbstractFigure.THICKER_PAD - AbstractFigure.MARKER_PAD
       val yy: Int = ((rect.height + ywidth) / 2).asInstanceOf[Int]
       g2d.translate(xx, yy)
-      g2d.rotate(-Math.PI / 2)
+      g2d.rotate(-math.Pi / 2)
       g2d.drawString(leftLabel, 0, 0)
-      g2d.rotate(Math.PI / 2)
+      g2d.rotate(math.Pi / 2)
       g2d.translate(-xx, -yy)
     }
     buildBottomMarkers()
     g2d.setFont(AbstractFigure.MARKERS_FONT)
-    g2d.drawLine(viewport.x, viewport.y + viewport.height + AbstractFigure.THICKER_PAD, viewport.x + viewport.width, viewport.y + viewport.height + AbstractFigure.THICKER_PAD)
+    g2d.drawLine(view.x, view.y + view.height + AbstractFigure.THICKER_PAD, view.x + view.width, view.y + view.height + AbstractFigure.THICKER_PAD)
     for (i <- 0 until bottomMarkersPos.size) {
       {
         if (bottomThicker) {
           g2d.drawLine(
-            viewport.x + bottomMarkersPos(i).toInt,
-            viewport.y + viewport.height + AbstractFigure.THICKER_PAD,
-            viewport.x + bottomMarkersPos(i).toInt,
-            viewport.y + viewport.height + 2 * AbstractFigure.THICKER_PAD)
+            view.x + bottomMarkersPos(i).toInt,
+            view.y + view.height + AbstractFigure.THICKER_PAD,
+            view.x + bottomMarkersPos(i).toInt,
+            view.y + view.height + 2 * AbstractFigure.THICKER_PAD)
         }
         if (bottomMarkers) {
           g2d.drawString(
             bottomMarkersMsg(i),
-            viewport.x + bottomMarkersPos(i).toInt - g2d.getFontMetrics.getStringBounds(bottomMarkersMsg(i), g2d).getWidth.toInt / 2,
-            viewport.y + viewport.height + 2 * AbstractFigure.THICKER_PAD + AbstractFigure.MARKER_PAD)
+            view.x + bottomMarkersPos(i).toInt - g2d.getFontMetrics.getStringBounds(bottomMarkersMsg(i), g2d).getWidth.toInt / 2,
+            view.y + view.height + 2 * AbstractFigure.THICKER_PAD + AbstractFigure.MARKER_PAD)
         }
       }
     }
     if (bottomLabel != null) {
       g2d.setFont(AbstractFigure.LABELS_FONT)
       val xwidth: Double = g2d.getFontMetrics.getStringBounds(bottomLabel, g2d).getWidth
-      g2d.drawString(bottomLabel, ((rect.width - xwidth) / 2).asInstanceOf[Int], viewport.y + viewport.height + 2 * AbstractFigure.THICKER_PAD + AbstractFigure.MARKER_PAD + AbstractFigure.LABEL_PAD)
+      g2d.drawString(bottomLabel, ((rect.width - xwidth) / 2).asInstanceOf[Int], view.y + view.height + 2 * AbstractFigure.THICKER_PAD + AbstractFigure.MARKER_PAD + AbstractFigure.LABEL_PAD)
     }
   }
 
   protected def buildNumericBottomMarkers() {
     bottomMarkersPos.clear()
     bottomMarkersMsg.clear()
-    val xspots: Int = math.floor(viewport.width / thickerMinSpace).toInt
-    val xspotwidth: Double = viewport.width / xspots
+    val xspots: Int = math.floor(view.width / thickerMinSpace).toInt
+    val xspotwidth: Double = view.width / xspots
     for (i <- 0 to xspots) {
       bottomMarkersPos += i * xspotwidth
       bottomMarkersMsg += ("%." + range.getProperDecimalsX.toString + "f").format(range.x1 + range.getWidth * i / xspots)
@@ -202,8 +201,8 @@ abstract class AbstractFigure extends Figure {
   protected def buildNumericLeftMarkers() {
     leftMarkersPos.clear()
     leftMarkersMsg.clear()
-    val yspots: Int = math.floor(viewport.height / thickerMinSpace).toInt
-    val yspotwidth: Double = viewport.height / yspots
+    val yspots: Int = math.floor(view.height / thickerMinSpace).toInt
+    val yspotwidth: Double = view.height / yspots
     for (i <- 0 to yspots) {
       leftMarkersPos += i * yspotwidth
       leftMarkersMsg += ("%." + range.getProperDecimalsY + "f").format(range.y1 + range.getHeight * i / yspots)
