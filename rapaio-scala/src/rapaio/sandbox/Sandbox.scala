@@ -18,7 +18,7 @@ object Sandbox extends App {
 
   draw(
     new Plot()
-      .points(x = x1, y = y, col = Index(3, 4, 2, 1, 9, 15))
-      .points(x = x2, y = y, col = Color.RED)
+      .points(x = x1, y = y, col = Index(3, 4, 2, 1, 9, 15), pch = 'p')
+      .points(x = x2, y = y, col = Color.PINK, pch = 's')
     , 500, 500)
 }

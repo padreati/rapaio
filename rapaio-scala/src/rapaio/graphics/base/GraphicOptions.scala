@@ -111,9 +111,10 @@ class PchOption(val index: Index = Index(0)) {
 }
 
 object PchOption {
+
   implicit def fromOneString(xs: Char): PchOption = {
-    if (xs == 'o') new PchOption(Index(0))
-    if (xs == 'p') new PchOption(Index(1))
-    new PchOption(Index(0))
+    new PchOption(Index(PchPalette(xs)))
   }
+
+  implicit def fromOneInt(xs: Int): PchOption = new PchOption(Index(xs))
 }

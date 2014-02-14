@@ -78,12 +78,12 @@ class Plot extends AbstractFigure {
 
   def points(x: data.Vector = null,
              y: data.Vector,
-             col: ColorOption = Color.BLACK//,
-//             pch: PchOption = 'o'
+             col: ColorOption = Color.BLACK,
+             pch: PchOption = 'o'
               ): Plot = {
     val points = new Points(x, y)
     points.options.col = col
-//    points.options.pch = pch
+    points.options.pch = pch
     add(points)
   }
 

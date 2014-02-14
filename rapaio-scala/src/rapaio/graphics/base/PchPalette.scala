@@ -35,15 +35,31 @@ object PchPalette {
       def draw(g2d: Graphics2D, x: Int, y: Int, size: Double) {
         g2d.fillOval((x - size).toInt, (y - size).toInt, (size * 2 + 1).toInt, (size * 2 + 1).toInt)
       }
-    })
+    },
+    new Drawer('s') {
+      override def draw(g2d: Graphics2D, x: Int, y: Int, size: Double): Unit = {
+        g2d.fillRect((x - size).toInt, (y - size).toInt, (size * 2 + 1).toInt, (size * 2 + 1).toInt)
+      }
+    }
+  )
 
   def draw(g2d: Graphics2D, x: Int, y: Int, size: Double, pch: Int) {
     if (pch < 0) draw(g2d, x, y, size, 0)
     if (pch >= pchs.size) draw(g2d, x, y, size, pch % pchs.size)
     pchs(pch).draw(g2d, x, y, size)
   }
+
+  def apply(ch: Char): Int = {
+    var result = 0
+    for (i <- 0 until pchs.length) {
+      if (pchs(i).pattern.equals(ch)) result = i
+    }
+    result
+  }
 }
 
 abstract class Drawer(charPattern: Char) {
   def draw(g2d: Graphics2D, x: Int, y: Int, size: Double)
+
+  def pattern: Char = charPattern
 }
