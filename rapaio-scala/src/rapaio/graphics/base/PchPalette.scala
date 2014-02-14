@@ -40,6 +40,20 @@ object PchPalette {
       override def draw(g2d: Graphics2D, x: Int, y: Int, size: Double): Unit = {
         g2d.fillRect((x - size).toInt, (y - size).toInt, (size * 2 + 1).toInt, (size * 2 + 1).toInt)
       }
+    },
+    new Drawer('+') {
+      override def draw(g2d: Graphics2D, x: Int, y: Int, size: Double): Unit = {
+        val sz = size.toInt
+        g2d.drawLine(x, y - sz - 1, x, y + sz + 1)
+        g2d.drawLine(x - sz - 1, y, x + sz + 1, y)
+      }
+    },
+    new Drawer('x') {
+      override def draw(g2d: Graphics2D, x: Int, y: Int, size: Double): Unit = {
+        val sz = size.toInt
+        g2d.drawLine(x - sz, y - sz, x + sz, y + sz)
+        g2d.drawLine(x + sz, y - sz, x - sz, y + sz)
+      }
     }
   )
 
