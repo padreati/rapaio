@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.graphics.base
 
 import java.awt._
@@ -61,7 +62,7 @@ abstract class AbstractFigure extends Figure {
 
   var options: GraphicOptions = new GraphicOptions
 
-  def buildRange: Range
+  protected def buildRange: Range
 
   def getRange: Range = {
     if (range == null) {
@@ -70,7 +71,7 @@ abstract class AbstractFigure extends Figure {
     range
   }
 
-  def buildViewport(rectangle: Rectangle) {
+  protected def buildViewport(rectangle: Rectangle) {
     view = new Rectangle(rectangle)
     view.x += 2 * AbstractFigure.THICKER_PAD
     if (leftMarkers) {
@@ -117,7 +118,7 @@ abstract class AbstractFigure extends Figure {
     this
   }
 
-  def paint(g2d: Graphics2D, rect: Rectangle) {
+  protected def paint(g2d: Graphics2D, rect: Rectangle) {
     buildViewport(rect)
     range = buildRange
     g2d.setColor(StandardColorPalette.color(255))
@@ -209,10 +210,10 @@ abstract class AbstractFigure extends Figure {
     }
   }
 
-  def buildLeftMarkers() {
+  protected def buildLeftMarkers() {
   }
 
-  def buildBottomMarkers() {
+  protected def buildBottomMarkers() {
   }
 
 }

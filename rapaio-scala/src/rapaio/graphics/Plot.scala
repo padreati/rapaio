@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.graphics
 
 import rapaio.graphics.base._
@@ -80,7 +81,7 @@ class Plot extends AbstractFigure {
              y: data.Vector,
              col: ColorOption = Color.BLACK,
              pch: PchOption = 'o',
-             sz: SizeOption = 4 ): Plot = {
+             sz: SizeOption = 4): Plot = {
     val points = new Points(x, y)
     points.options.col = col
     points.options.pch = pch
@@ -111,5 +112,19 @@ class Plot extends AbstractFigure {
   override def setYRange(start: Double, end: Double): Plot = {
     super.setYRange(start, end)
     return this
+  }
+}
+
+object Plot {
+  def apply(col: ColorOption = Color.BLACK,
+            pch: PchOption = 'o',
+            lwd: LwdOption = 1.2,
+            sz: SizeOption = 4): Plot = {
+    val plot = new Plot()
+    plot.options.col = col
+    plot.options.pch = pch
+    plot.options.lwd = lwd
+    plot.options.sz = sz
+    plot
   }
 }

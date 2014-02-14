@@ -18,13 +18,27 @@
  *    limitations under the License.
  */
 
-package rapaio.graphics.base
+package rapaio.server;
 
-import java.awt._
+import rapaio.graphics.base.Figure;
+
+import java.io.IOException;
+import java.net.Socket;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-abstract trait Figure {
-  protected def paint(g2d: Graphics2D, rect: Rectangle)
+public class LocalPrinter {
+
+	static final int DEFAULT_PORT = 56339;
+
+	public static void draw(Figure figure) {
+		try (Socket s = new Socket("localhost", DEFAULT_PORT)) {
+			new ClassMarshaller().marshallConfig(s.getOutputStream());
+			CommandBytes cb = new ClassMarshaller().unmarshall(s.getInputStream());
+			new ClassMarshaller().marshallDraw(s.getOutputStream(), figure, cb.getGraphicalWidth(), cb.getGraphicalHeight());
+		} catch (IOException | ClassNotFoundException ex) {
+			ex.printStackTrace();
+		}
+	}
 }

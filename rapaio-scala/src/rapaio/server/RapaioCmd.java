@@ -18,13 +18,20 @@
  *    limitations under the License.
  */
 
-package rapaio.graphics.base
-
-import java.awt._
+package rapaio.server;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-abstract trait Figure {
-  protected def paint(g2d: Graphics2D, rect: Rectangle)
+
+
+public interface RapaioCmd {
+
+	void runRemote() throws Exception;
+
+	void runConsole() throws Exception;
+
+	void runLocal() throws Exception;
+
+	void run() throws Exception;
 }
