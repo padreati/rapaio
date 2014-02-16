@@ -26,7 +26,7 @@ import rapaio.data.mapping.Mapping
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-class Value(private var rows: Int, private val capacity: Int, private val fill: Double) extends AbstractVector {
+class Value(protected var rows: Int, private val capacity: Int, private val fill: Double) extends AbstractVector {
   require(capacity >= 0, "Illegal capacity: " + capacity)
   require(rowCount >= 0, "Illegal row count: " + this.rows)
   require(rows <= capacity, "Illegal row count" + rows + " less than capacity:" + capacity)
@@ -56,8 +56,6 @@ class Value(private var rows: Int, private val capacity: Int, private val fill: 
   def isNominal: Boolean = false
 
   def isNumeric: Boolean = true
-
-  def apply(index: Int) = getValue(index)
 
   private def ensureCapacityInternal(minCapacity: Int) {
     var capacity = minCapacity
@@ -95,64 +93,6 @@ class Value(private var rows: Int, private val capacity: Int, private val fill: 
 
   def rowId(row: Int): Int = row
 
-  def getValue(row: Int): Double = {
-    rangeCheck(row)
-    return data(row)
-  }
-
-  def setValue(row: Int, value: Double) {
-    rangeCheck(row)
-    data(row) = value
-  }
-
-  def addValue(value: Double) {
-    ensureCapacityInternal(rows + 1)
-    data(rows) = value
-    rows += 1
-  }
-
-  def addValue(row: Int, value: Double) {
-    rangeCheck(row)
-    ensureCapacityInternal(rows + 1)
-    System.arraycopy(data, row, data, row + 1, rows - row)
-    data(row) = value
-    rows += 1
-  }
-
-  def getIndex(row: Int): Int = Math.rint(getValue(row)).toInt
-
-  def setIndex(row: Int, value: Int) {
-    setValue(row, value)
-  }
-
-  def addIndex(value: Int) {
-    ensureCapacityInternal(rows + 1)
-    data(rows) = value
-    rows += 1
-  }
-
-  def addIndex(row: Int, value: Int) {
-    rangeCheck(row)
-    ensureCapacityInternal(rows + 1)
-    System.arraycopy(data, row, data, row + 1, rows - row)
-    data(row) = value
-    rows += 1
-  }
-
-  def getLabel(row: Int): String = ""
-
-  def setLabel(row: Int, value: String) {
-    throw new RuntimeException("Operation not available for numeric vectors.")
-  }
-
-  def addLabel(value: String) {
-    throw new RuntimeException("Operation not available for numeric vectors.")
-  }
-
-  def addLabel(row: Int, value: String) {
-    throw new RuntimeException("Operation not available for numeric vectors.")
-  }
-
   def getDictionary: Array[String] = {
     throw new RuntimeException("Operation not available for numeric vectors.")
   }
@@ -162,12 +102,12 @@ class Value(private var rows: Int, private val capacity: Int, private val fill: 
   }
 
   def isMissing(row: Int): Boolean = {
-    return getValue(row) != getValue(row)
+    return values(row) != values(row)
   }
 
-  def setMissing(row: Int) = setValue(row, Value.missingValue)
+  def setMissing(row: Int) = values(row) = Value.missingValue
 
-  def addMissing = addValue(Value.missingValue)
+  def addMissing = values ++ Value.missingValue
 
   def remove(index: Int) {
     rangeCheck(index)
@@ -193,6 +133,43 @@ class Value(private var rows: Int, private val capacity: Int, private val fill: 
   }
 
   override def toString: String = "Value[" + rowCount + "]"
+
+  val values = new Values {
+    override def update(i: Int, v: Double): Unit = data(i) = v
+
+    override def apply(i: Int): Double = data(i)
+
+    override def ++(value: Double): Unit = {
+      ensureCapacityInternal(rows + 1)
+      data(rows) = value
+      rows += 1
+    }
+  }
+
+  val indexes = new Indexes {
+
+    override def apply(row: Int): Int = math.rint(data(row)).toInt
+
+    override def update(row: Int, value: Int): Unit = data(row) = value
+
+    override def ++(value: Int): Unit = {
+      ensureCapacityInternal(rows + 1)
+      data(rows) = value
+      rows += 1
+    }
+  }
+
+  val labels = new Labels {
+    override def apply(row: Int): String = ""
+
+    override def update(row: Int, value: String): Unit = {
+      throw new RuntimeException("Operation not available for numeric vectors.")
+    }
+
+    override def ++(value: String): Unit = {
+      throw new RuntimeException("Operation not available for numeric vectors.")
+    }
+  }
 }
 
 object Value {
@@ -221,11 +198,9 @@ object Value {
   def apply(from: Int = 0, to: Int, f: (Int) => Double): Value = {
     val value = new Value
     for (i <- from until to) {
-      value.addValue(f(i))
+      value.values ++ f(i)
     }
     value
   }
-
-  //  Array[Int](10).for
 }
 

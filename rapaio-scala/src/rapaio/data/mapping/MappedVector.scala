@@ -51,52 +51,6 @@ class MappedVector(private val _source: Vector, private val _mapping: Mapping) e
 
   def rowId(row: Int): Int = _source.rowId(_mapping(row))
 
-  def getValue(row: Int): Double = _source.getValue(_mapping(row))
-
-  def setValue(row: Int, value: Double) {
-    _source.setValue(mapping(row), value)
-  }
-
-  def addValue(value: Double) {
-    throw new IllegalArgumentException("operation not available on mapped vectors")
-  }
-
-  def addValue(row: Int, value: Double) {
-    throw new IllegalArgumentException("operation not available on mapped vectors")
-  }
-
-  def getIndex(row: Int): Int = {
-    return _source.getIndex(mapping(row))
-  }
-
-  def setIndex(row: Int, value: Int) {
-    _source.setIndex(mapping(row), value)
-  }
-
-  def addIndex(value: Int) {
-    throw new IllegalArgumentException("operation not available on mapped vectors")
-  }
-
-  def addIndex(row: Int, value: Int) {
-    throw new IllegalArgumentException("operation not available on mapped vectors")
-  }
-
-  def getLabel(row: Int): String = {
-    _source.getLabel(mapping(row))
-  }
-
-  def setLabel(row: Int, value: String) {
-    _source.setLabel(mapping(row), value)
-  }
-
-  def addLabel(value: String) {
-    throw new IllegalArgumentException("operation not available on mapped vectors")
-  }
-
-  def addLabel(row: Int, value: String) {
-    throw new IllegalArgumentException("operation not available on mapped vectors")
-  }
-
   def getDictionary: Array[String] = {
     _source.getDictionary
   }
@@ -135,5 +89,35 @@ class MappedVector(private val _source: Vector, private val _mapping: Mapping) e
 
   def ensureCapacity(minCapacity: Int) {
     throw new IllegalArgumentException("operation not available on mapped vectors")
+  }
+
+  val values = new Values {
+    override def apply(row: Int): Double = _source.values.apply(mapping(row))
+
+    override def update(row: Int, value: Double): Unit = {
+      _source.values.update(mapping(row), value)
+    }
+
+    override def ++(value: Double): Unit = _source.values.++(value)
+  }
+
+  val indexes = new Indexes {
+    override def apply(row: Int): Int = _source.indexes.apply(mapping(row))
+
+    override def update(row: Int, value: Int): Unit = {
+      _source.indexes.update(mapping(row), value)
+    }
+
+    override def ++(value: Int): Unit = _source.indexes.++(value)
+  }
+
+  val labels = new Labels {
+    override def apply(row: Int): String = _source.labels.apply(mapping(row))
+
+    override def update(row: Int, value: String): Unit = {
+      _source.labels.update(mapping(row), value)
+    }
+
+    override def ++(value: String): Unit = _source.labels.++(value)
   }
 }

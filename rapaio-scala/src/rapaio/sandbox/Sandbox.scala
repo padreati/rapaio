@@ -21,7 +21,7 @@
 package rapaio.sandbox
 
 import rapaio.data._
-import rapaio.graphics.Plot
+import rapaio.graphics._
 import rapaio.workspace.Workspace._
 import scala.util.Random
 
@@ -35,9 +35,9 @@ object Sandbox extends App {
 
   val x1 = Value(0, N, (i) => math.sin(i / math.E))
   val x2 = Value(0, N, (i) => math.sin(i * 2))
-  val y = Value(0, N, (i) => i / 100.)
+  val y = Value(0, N, (i) => i / 100.0)
 
-  val f = () => (Value(0, N, (i) => math.random))
+  val f = () => Value(0, N, (i) => math.random)
   val rand = new Random()
 
   val m = Value(0, N, (i) => 10 * math.pow(math.sin(i / F), 3))
@@ -47,16 +47,22 @@ object Sandbox extends App {
       - 2 * math.cos(3 * i / F)
       - math.cos(4 * i / F))
 
+  m.values ++ 13
+  n.values ++ 0
+
+
+
   drawPlugin(
     Plot(lwd = 2)
       //      .points(x = f(), y = f(), col = rand.nextInt(20), pch = 'o')
       //      .points(x = f(), y = f(), col = rand.nextInt(20), pch = 'p')
       //      .points(x = f(), y = f(), col = rand.nextInt(20), pch = 's')
-      .points(x = f(), y = f(), col = rand.nextInt(20), pch = '+')
-      .points(x = f(), y = f(), col = rand.nextInt(20), pch = 'x')
-    //      .points(x = m, y = n, pch = 1)
+      //      .points(x = f(), y = f(), col = rand.nextInt(20), pch = '+')
+      //      .points(x = f(), y = f(), col = rand.nextInt(20), pch = 'x')
+      .points(x = m, y = n, pch = 1)
 
 
   )
 
 }
+

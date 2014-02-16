@@ -26,7 +26,7 @@ import rapaio.data.mapping.Mapping
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-class Index(private var rows: Int, private val capacity: Int, private val fill: Int)
+class Index(protected var rows: Int, private val capacity: Int, private val fill: Int)
   extends AbstractVector {
 
 
@@ -102,12 +102,6 @@ class Index(private var rows: Int, private val capacity: Int, private val fill: 
     rows += 1
   }
 
-  def getValue(row: Int): Double = getIndex(row)
-
-  def setValue(row: Int, value: Double) {
-    setIndex(row, math.rint(value).asInstanceOf[Int])
-  }
-
   def addValue(value: Double) {
     addIndex(math.rint(value).asInstanceOf[Int])
   }
@@ -178,6 +172,42 @@ class Index(private var rows: Int, private val capacity: Int, private val fill: 
   }
 
   override def toString: String = "Index[" + rowCount + "]"
+
+  def values = new Values {
+    override def update(i: Int, v: Double): Unit = data(i) = math.rint(v).toInt
+
+    override def apply(i: Int): Double = data(i)
+
+    override def ++(value: Double): Unit = {
+      ensureCapacityInternal(rows + 1)
+      data(rows) = math.rint(value).toInt
+      rows += 1
+    }
+  }
+
+  def indexes = new Indexes {
+    override def apply(row: Int): Int = data(row)
+
+    override def update(row: Int, value: Int): Unit = data(row) = value
+
+    override def ++(value: Int): Unit = {
+      ensureCapacityInternal(rows + 1)
+      data(rows) = value
+      rows += 1
+    }
+  }
+
+  def labels = new Labels {
+    override def apply(row: Int): String = ""
+
+    override def update(row: Int, value: String): Unit = {
+      throw new RuntimeException("Operation not available for getIndex vectors.")
+    }
+
+    override def ++(value: String): Unit = {
+      throw new RuntimeException("Operation not available for getIndex vectors.")
+    }
+  }
 }
 
 object Index {

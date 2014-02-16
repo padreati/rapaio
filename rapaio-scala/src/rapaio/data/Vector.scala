@@ -63,72 +63,6 @@ abstract trait Vector extends Serializable {
   def rowId(row: Int): Int
 
   /**
-   * Returns numeric setValue for the observation specified by {@code row}.
-   * <p>
-   * Returns valid values for numerical vector types, otherwise the method
-   * returns unspeified values.
-   *
-   * @param row
-   * @return numerical setValue
-   */
-  def getValue(row: Int): Double
-
-  /**
-   * Set numeric setValue for the observation specified by {@param row} to {@param setValue}.
-   * <p>
-   * Returns valid values for numerical vector types, otherwise the method
-   * returns unspeified values.
-   *
-   * @param row   position of the observation
-   * @param value numeric setValue from position { @param row}
-   */
-  def setValue(row: Int, value: Double)
-
-  def addValue(value: Double)
-
-  def addValue(row: Int, value: Double)
-
-  /**
-   * Returns getIndex setValue for the observation specified by {@param row}
-   *
-   * @param row position of the observation
-   * @return getIndex setValue
-   */
-  def getIndex(row: Int): Int
-
-  /**
-   * Set getIndex setValue for the observation specified by {@param row}.
-   *
-   * @param row   position of the observation
-   * @param value getIndex setValue for the observation
-   */
-  def setIndex(row: Int, value: Int)
-
-  def addIndex(value: Int)
-
-  def addIndex(row: Int, value: Int)
-
-  /**
-   * Returns nominal getLabel for the observation specified by {@param row}.
-   *
-   * @param row position of the observation
-   * @return getLabel setValue for the observation
-   */
-  def getLabel(row: Int): String
-
-  /**
-   * Set nominal getLabel for the observation specified by {@param row}.
-   *
-   * @param row   position of the observation
-   * @param value getLabel setValue of the observation
-   */
-  def setLabel(row: Int, value: String)
-
-  def addLabel(value: String)
-
-  def addLabel(row: Int, value: String)
-
-  /**
    * Returns the term getDictionary used by the nominal values.
    * <p>
    * Term getDictionary contains all the nominal labels used by
@@ -178,6 +112,39 @@ abstract trait Vector extends Serializable {
   def ensureCapacity(minCapacity: Int)
 
   def toValueArray: Array[Double]
+
+  def values: Values
+
+  def indexes: Indexes
+
+  def labels: Labels
+
+  abstract class Values {
+    def apply(row: Int): Double
+
+    def update(row: Int, value: Double): Unit
+
+    def ++(value: Double): Unit
+  }
+
+  abstract class Indexes {
+
+    def apply(row: Int): Int
+
+    def update(row: Int, value: Int): Unit
+
+    def ++(value: Int): Unit
+  }
+
+  abstract class Labels {
+
+    def apply(row: Int): String
+
+    def update(row: Int, value: String): Unit
+
+    def ++(value: String): Unit
+  }
+
 }
 
 /**
@@ -194,7 +161,7 @@ abstract class AbstractVector extends Vector {
     val list = new Array[Double](rowCount)
     var i: Int = 0
     while (i < rowCount) {
-      list(i) = getValue(i)
+      list(i) = values(i)
       i += 1
     }
     list
@@ -204,7 +171,7 @@ abstract class AbstractVector extends Vector {
     val list = new Array[Int](rowCount)
     var i: Int = 0
     while (i < rowCount) {
-      list(i) = getIndex(i)
+      list(i) = indexes(i)
       i += 1
     }
     list

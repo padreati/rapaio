@@ -41,7 +41,7 @@ import scala.collection.mutable
  *
  * @author Aurelian Tutuianu
  */
-class Nominal(private var rows: Int, private var dictionary: List[String]) extends AbstractVector {
+class Nominal(protected var rows: Int, private var dictionary: List[String]) extends AbstractVector {
   private var dict = new mutable.MutableList[String]
   private var data = Array[Int](rows)
   private var reverse = new mutable.HashMap[String, Int]
@@ -91,12 +91,6 @@ class Nominal(private var rows: Int, private var dictionary: List[String]) exten
 
   def addIndex(row: Int, value: Int) {
     addLabel(row, dict(value))
-  }
-
-  def getValue(row: Int): Double = data(row)
-
-  def setValue(row: Int, value: Double) {
-    setIndex(row, Math.rint(value).asInstanceOf[Int])
   }
 
   def addValue(value: Double) {
@@ -208,6 +202,67 @@ class Nominal(private var rows: Int, private var dictionary: List[String]) exten
   }
 
   override def toString: String = "Nominal[" + rowCount + "]"
+
+  def values = new Values {
+    def apply(row: Int): Double = data(row)
+
+    def update(row: Int, value: Double) = data(row) = math.rint(value).toInt
+
+    override def ++(value: Double): Unit = {
+      val row = math.rint(value).toInt
+      val label = dict(data(row))
+      ensureCapacity(rows + 1)
+      if (!reverse.contains(label)) {
+        dict += label
+        reverse.put(label, reverse.size)
+      }
+      data(rows) = reverse(label)
+      rows += 1
+    }
+  }
+
+  def indexes = new Indexes {
+    override def apply(row: Int): Int = data(row)
+
+    override def update(row: Int, value: Int): Unit = data(row) = value
+
+    override def ++(value: Int): Unit = {
+      val label = dict(value)
+      ensureCapacity(rows + 1)
+      if (!reverse.contains(label)) {
+        dict += label
+        reverse.put(label, reverse.size)
+      }
+      data(rows) = reverse(label)
+      rows += 1
+    }
+  }
+
+  def labels = new Labels {
+    override def apply(row: Int): String = dict(data(row))
+
+    override def update(row: Int, value: String): Unit = {
+      if (value equals Nominal.missingValue) {
+        data(row) = Nominal.missingIndex
+        return
+      }
+      if (!reverse.contains(value)) {
+        dict += value
+        reverse += (value -> reverse.size)
+      }
+      data(row) = reverse(value)
+    }
+
+    override def ++(value: String): Unit = {
+      ensureCapacity(rows + 1)
+      if (!reverse.contains(value)) {
+        dict += value
+        reverse.put(value, reverse.size)
+      }
+      data(rows) = reverse(value)
+      rows += 1
+    }
+  }
 }
 
 object Nominal {

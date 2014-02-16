@@ -31,16 +31,16 @@ import rapaio.data.Value
 
 class ValueSpec extends FlatSpec with Matchers {
   "A value" should "contain the same double values when used with a fill parameter" in {
-    val value = new Value(10, 10, 100.12)
-    for (index <- 0 until value.rowCount - 1) {
-      value(index) should be(100.12)
+    val x = new Value(10, 10, 100.12)
+    for (index <- 0 until x.rowCount - 1) {
+      x.values(index) should be(100.12)
     }
   }
 
   "A value" should "only contain Double.NaN when a fill value is not used" in {
-    val value = new Value(10)
-    for (index <- 0 until value.rowCount - 1) {
-      value(index) should not be (Double.NaN)
+    val x = new Value(10)
+    for (index <- 0 until x.rowCount - 1) {
+      x.values(index) should not be (Double.NaN)
     }
   }
 }

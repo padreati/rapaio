@@ -34,7 +34,7 @@ class Points(private val x: Vector, private var y: Vector) extends PlotComponent
     else {
       val range = new Range
       for (i <- 0 until math.min(x.rowCount, y.rowCount)) {
-        if (!x.isMissing(i) && !y.isMissing(i)) range.union(x.getValue(i), y.getValue(i))
+        if (!x.isMissing(i) && !y.isMissing(i)) range.union(x.values(i), y.values(i))
       }
       range
     }
@@ -46,8 +46,8 @@ class Points(private val x: Vector, private var y: Vector) extends PlotComponent
       if ((!x.isMissing(i)) && (!y.isMissing(i))) {
         g2d.setColor(options.col(i))
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f))
-        val xx: Int = parent.xScale(x.getValue(i)).toInt
-        val yy: Int = parent.yScale(y.getValue(i)).toInt
+        val xx = parent.xScale(x.values(i)).toInt
+        val yy = parent.yScale(y.values(i)).toInt
         PchPalette.draw(g2d, xx, yy, options.sz(i), options.pch(i))
       }
     }
