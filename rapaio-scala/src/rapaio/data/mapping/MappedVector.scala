@@ -45,7 +45,7 @@ class MappedVector(private val _source: Vector, private val _mapping: Mapping) e
 
   def isMappedVector: Boolean = true
 
-  def sourceVector: Vector = _source
+  def source: Vector = _source
 
   def mapping: Mapping = _mapping
 

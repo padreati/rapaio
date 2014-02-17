@@ -89,6 +89,17 @@ class Plot extends AbstractFigure {
     add(points)
   }
 
+  def hist(x: data.Vector,
+           bins: Int = 30,
+           prob: Boolean = true,
+           min: Double = Double.NaN,
+           max: Double = Double.NaN,
+           col: ColorOption = 7): Plot = {
+    val hist = new Histogram(x, bins, prob, min, max)
+    hist.options.col = if (col == GraphicOptions.DEFAULT_COLOR) options.col else col
+    add(hist)
+  }
+
   override def paint(g2d: Graphics2D, rect: Rectangle) {
     super.paint(g2d, rect)
     for (pc <- components) {

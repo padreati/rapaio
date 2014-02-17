@@ -59,7 +59,7 @@ object Sandbox extends App {
       //      .points(x = f(), y = f(), col = rand.nextInt(20), pch = 's')
       //      .points(x = f(), y = f(), col = rand.nextInt(20), pch = '+')
       //      .points(x = f(), y = f(), col = rand.nextInt(20), pch = 'x')
-      .points(x = m, y = n, pch = 1)
+      .hist(x = x1, prob = false)
 
 
   )

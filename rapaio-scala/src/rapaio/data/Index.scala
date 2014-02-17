@@ -74,7 +74,7 @@ class Index(protected var rows: Int, private val capacity: Int, private val fill
 
   def isMappedVector: Boolean = false
 
-  def sourceVector: Vector = this
+  def source: Vector = this
 
   def mapping: Mapping = null
 

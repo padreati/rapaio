@@ -36,7 +36,7 @@ abstract trait Vector extends Serializable {
 
   def isMappedVector: Boolean
 
-  def sourceVector: Vector
+  def source: Vector
 
   def mapping: Mapping
 
@@ -113,6 +113,10 @@ abstract trait Vector extends Serializable {
 
   def toValueArray: Array[Double]
 
+  def toIndexArray: Array[Int]
+
+  def toLabelArray: Array[String]
+
   def values: Values
 
   def indexes: Indexes
@@ -172,6 +176,16 @@ abstract class AbstractVector extends Vector {
     var i: Int = 0
     while (i < rowCount) {
       list(i) = indexes(i)
+      i += 1
+    }
+    list
+  }
+
+  def toLabelArray: Array[String] = {
+    val list = new Array[String](rowCount)
+    var i: Int = 0
+    while (i < rowCount) {
+      list(i) = labels(i)
       i += 1
     }
     list

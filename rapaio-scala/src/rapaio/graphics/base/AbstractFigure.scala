@@ -41,24 +41,24 @@ object AbstractFigure {
 abstract class AbstractFigure extends Figure {
 
   protected var view: Rectangle = null
-  protected var range: Range = null
+  var range: Range = null
   protected val bottomMarkersMsg = new mutable.MutableList[String]
   protected val bottomMarkersPos = new mutable.MutableList[Double]
   protected val leftMarkersMsg = new mutable.MutableList[String]
   protected val leftMarkersPos = new mutable.MutableList[Double]
-  protected var title: String = null
-  protected var leftLabel: String = null
-  protected var bottomLabel: String = null
+  var title: String = null
+  var leftLabel: String = null
+  var bottomLabel: String = null
   protected var thickerMinSpace = AbstractFigure.DEFAULT_THICKER_MIN_SPACE
   protected var x1 = Double.NaN
   protected var x2 = Double.NaN
   protected var y1 = Double.NaN
   protected var y2 = Double.NaN
 
-  protected var leftThicker = false
-  protected var bottomThicker = false
-  protected var leftMarkers = false
-  protected var bottomMarkers = false
+  var leftThicker = false
+  var bottomThicker = false
+  var leftMarkers = false
+  var bottomMarkers = false
 
   var options: GraphicOptions = new GraphicOptions
 
@@ -195,7 +195,7 @@ abstract class AbstractFigure extends Figure {
     val xspotwidth: Double = view.width / xspots
     for (i <- 0 to xspots) {
       bottomMarkersPos += i * xspotwidth
-      bottomMarkersMsg += ("%." + range.getProperDecimalsX.toString + "f").format(range.x1 + range.getWidth * i / xspots)
+      bottomMarkersMsg += ("%." + range.properDecimalsX.toString + "f").format(range.x1 + range.width * i / xspots)
     }
   }
 
@@ -206,7 +206,7 @@ abstract class AbstractFigure extends Figure {
     val yspotwidth: Double = view.height / yspots
     for (i <- 0 to yspots) {
       leftMarkersPos += i * yspotwidth
-      leftMarkersMsg += ("%." + range.getProperDecimalsY + "f").format(range.y1 + range.getHeight * i / yspots)
+      leftMarkersMsg += ("%." + range.properDecimalsY + "f").format(range.y1 + range.height * i / yspots)
     }
   }
 

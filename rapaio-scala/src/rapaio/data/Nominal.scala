@@ -75,7 +75,7 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
 
   def isMappedVector: Boolean = false
 
-  def sourceVector: Vector = this
+  def source: Vector = this
 
   def mapping: Mapping = null
 

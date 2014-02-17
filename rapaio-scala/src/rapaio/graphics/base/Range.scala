@@ -17,6 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.graphics.base
 
 /**
@@ -46,11 +47,11 @@ class Range(
 
   def contains(x: Double, y: Double): Boolean = x1 <= x && x <= x2 && y1 <= y && y <= y2
 
-  def getWidth: Double = x2 - x1
+  def width: Double = x2 - x1
 
-  def getHeight: Double = y2 - y1
+  def height: Double = y2 - y1
 
-  def getProperDecimalsX: Int = {
+  def properDecimalsX: Int = {
     var decimals: Int = 0
     var max: Double = math.abs(x2 - x1)
     while (max <= 10.) {
@@ -63,7 +64,7 @@ class Range(
     decimals
   }
 
-  def getProperDecimalsY: Int = {
+  def properDecimalsY: Int = {
     var decimals: Int = 0
     var max: Double = math.abs(y2 - y1)
     while (max <= 10.) {
