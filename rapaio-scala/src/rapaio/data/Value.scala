@@ -93,22 +93,6 @@ class Value(protected var rows: Int, private val capacity: Int, private val fill
 
   def rowId(row: Int): Int = row
 
-  def getDictionary: Array[String] = {
-    throw new RuntimeException("Operation not available for numeric vectors.")
-  }
-
-  def setDictionary(dict: Array[String]) {
-    throw new RuntimeException("Operation not available for numeric vectors.")
-  }
-
-  def isMissing(row: Int): Boolean = {
-    return values(row) != values(row)
-  }
-
-  def setMissing(row: Int) = values(row) = Value.missingValue
-
-  def addMissing = values ++ Value.missingValue
-
   def remove(index: Int) {
     rangeCheck(index)
     val numMoved: Int = rows - index - 1
@@ -133,6 +117,14 @@ class Value(protected var rows: Int, private val capacity: Int, private val fill
   }
 
   override def toString: String = "Value[" + rowCount + "]"
+
+  var missing = new Missing {
+    override def apply(row: Int): Boolean = values(row) != values(row)
+
+    override def update(row: Int, value: Boolean): Unit = values(row) = Value.missingValue
+
+    override def ++(): Unit = values ++ Value.missingValue
+  }
 
   val values = new Values {
     override def update(i: Int, v: Double): Unit = data(i) = v

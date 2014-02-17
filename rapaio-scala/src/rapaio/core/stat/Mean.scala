@@ -37,7 +37,7 @@ final class Mean(private val vector: Vector) extends Summarizable {
     var sum = 0.0
     var count = 0.0
     for (i <- 0 until vector.rowCount) {
-      if (!vector.isMissing(i)) {
+      if (!vector.missing(i)) {
         sum += vector.values(i)
         count += 1
       }
@@ -48,7 +48,7 @@ final class Mean(private val vector: Vector) extends Summarizable {
     sum /= count
     var t: Double = 0
     for (i <- 0 until vector.rowCount) {
-      if (!vector.isMissing(i)) {
+      if (!vector.missing(i)) {
         t += vector.values(i) - sum
       }
     }

@@ -26,9 +26,7 @@ import rapaio.data.mapping.Mapping
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-class Index(protected var rows: Int, private val capacity: Int, private val fill: Int)
-  extends AbstractVector {
-
+class Index(protected var rows: Int, private val capacity: Int, private val fill: Int) extends AbstractVector {
 
   require(capacity >= 0, "Illegal capacity: " + capacity)
   require(rows >= 0, "Illegal row count: " + rows)
@@ -82,68 +80,6 @@ class Index(protected var rows: Int, private val capacity: Int, private val fill
 
   def rowId(row: Int): Int = row
 
-  def getIndex(row: Int): Int = data(row)
-
-  def setIndex(row: Int, value: Int) {
-    data(row) = value
-  }
-
-  def addIndex(value: Int) {
-    ensureCapacityInternal(rows + 1)
-    data(rows) = value
-    rows += 1
-  }
-
-  def addIndex(index: Int, value: Int) {
-    rangeCheck(index)
-    ensureCapacityInternal(rows + 1)
-    System.arraycopy(data, index, data, index + 1, rows - index)
-    data(index) = value
-    rows += 1
-  }
-
-  def addValue(value: Double) {
-    addIndex(math.rint(value).asInstanceOf[Int])
-  }
-
-  def addValue(row: Int, value: Double) {
-    addIndex(row, Math.rint(value).asInstanceOf[Int])
-  }
-
-  def getLabel(row: Int): String = ""
-
-  def setLabel(row: Int, value: String) {
-    throw new RuntimeException("Operation not available for getIndex vectors.")
-  }
-
-  def addLabel(value: String) {
-    throw new RuntimeException("Operation not available for getIndex vectors.")
-  }
-
-  def addLabel(row: Int, value: String) {
-    throw new RuntimeException("Operation not available for getIndex vectors.")
-  }
-
-  def getDictionary: Array[String] = {
-    throw new RuntimeException("Operation not available for getIndex vectors.")
-  }
-
-  def setDictionary(dict: Array[String]) {
-    throw new RuntimeException("Operation not available for getIndex vectors.")
-  }
-
-  def isMissing(row: Int): Boolean = {
-    return getIndex(row) == Index.MISSING_VALUE
-  }
-
-  def setMissing(row: Int) {
-    setIndex(row, Index.MISSING_VALUE)
-  }
-
-  def addMissing {
-    addIndex(Index.MISSING_VALUE)
-  }
-
   def remove(index: Int) {
     rangeCheck(index)
     val numMoved: Int = rows - index - 1
@@ -172,6 +108,14 @@ class Index(protected var rows: Int, private val capacity: Int, private val fill
   }
 
   override def toString: String = "Index[" + rowCount + "]"
+
+  def missing = new Missing {
+    override def apply(row: Int): Boolean = indexes(row) == Index.MISSING_VALUE
+
+    override def update(row: Int, value: Boolean): Unit = indexes(row) = Index.MISSING_VALUE
+
+    def ++(): Unit = indexes ++ Index.MISSING_VALUE
+  }
 
   def values = new Values {
     override def update(i: Int, v: Double): Unit = data(i) = math.rint(v).toInt

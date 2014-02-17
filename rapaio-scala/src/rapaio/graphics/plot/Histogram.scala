@@ -47,7 +47,7 @@ class Histogram(private val v: Vector,
   private def rebuild {
     if (min != min) {
       for (i <- 0 until v.rowCount) {
-        if (!v.isMissing(i)) {
+        if (!v.missing(i)) {
           min = if (min != min) v.values(i)
           else math.min(min, v.values(i))
         }
@@ -55,7 +55,7 @@ class Histogram(private val v: Vector,
     }
     if (max != max) {
       for (i <- 0 until v.rowCount) {
-        if (!v.isMissing(i)) {
+        if (!v.missing(i)) {
           max = if (max != max) v.values(i)
           else math.max(max, v.values(i))
         }
@@ -65,7 +65,7 @@ class Histogram(private val v: Vector,
     freqTable = new Array[Double](bins)
     var total: Double = 0
     for (i <- 0 until v.rowCount) {
-      if (!v.isMissing(i)) {
+      if (!v.missing(i)) {
         total += 1
         if (!(v.values(i) < min || v.values(i) > max)) {
           var index = ((v.values(i) - min) / step).toInt

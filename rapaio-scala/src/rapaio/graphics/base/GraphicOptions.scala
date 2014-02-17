@@ -182,7 +182,7 @@ object PchOption {
 
   implicit def fromIndex(index: Index): PchOption = {
     val pch = new Array[Int](index.rowCount)
-    for (i <- 0 until index.rowCount) pch(i) = index.getIndex(i)
+    for (i <- 0 until index.rowCount) pch(i) = index.indexes(i)
     new PchOption(pch)
   }
 }

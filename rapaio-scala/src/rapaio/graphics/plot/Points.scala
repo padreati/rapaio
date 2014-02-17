@@ -34,7 +34,7 @@ class Points(private val x: Vector, private var y: Vector) extends PlotComponent
     else {
       val range = new Range
       for (i <- 0 until math.min(x.rowCount, y.rowCount)) {
-        if (!x.isMissing(i) && !y.isMissing(i)) range.union(x.values(i), y.values(i))
+        if (!x.missing(i) && !y.missing(i)) range.union(x.values(i), y.values(i))
       }
       range
     }
@@ -43,7 +43,7 @@ class Points(private val x: Vector, private var y: Vector) extends PlotComponent
   def paint(g2d: Graphics2D) {
     g2d.setBackground(StandardColorPalette.color(255))
     for (i <- 0 until math.min(x.rowCount, y.rowCount)) {
-      if ((!x.isMissing(i)) && (!y.isMissing(i))) {
+      if ((!x.missing(i)) && (!y.missing(i))) {
         g2d.setColor(options.col(i))
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f))
         val xx = parent.xScale(x.values(i)).toInt

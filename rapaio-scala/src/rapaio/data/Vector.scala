@@ -78,27 +78,6 @@ abstract trait Vector extends Serializable {
    */
   def rowId(row: Int): Int
 
-  /**
-   * Returns true if the setValue for the observation specified by {@param row} is missing, not available.
-   * <p>
-   * A missing setValue for the observation means taht the measurement
-   * was not completed or the result of the measurement was not documented,
-   * thus the setValue is not available for analysis.
-   *
-   * @param row position of the observation
-   * @return true if the observation measurement is not specified
-   */
-  def isMissing(row: Int): Boolean
-
-  /**
-   * Set the setValue of the observation specified by {@param row} as missing, not available for analysis.
-   *
-   * @param row position of the observation.
-   */
-  def setMissing(row: Int)
-
-  def addMissing
-
   def remove(row: Int)
 
   def removeRange(from: Int, to: Int)
@@ -115,11 +94,21 @@ abstract trait Vector extends Serializable {
 
   def toLabelArray: Array[String]
 
+  def missing: Missing
+
   def values: Values
 
   def indexes: Indexes
 
   def labels: Labels
+
+  abstract class Missing {
+    def apply(row: Int): Boolean
+
+    def update(row: Int, value: Boolean): Unit
+
+    def ++(): Unit
+  }
 
   abstract class Values {
     def apply(row: Int): Double
@@ -174,46 +163,6 @@ abstract trait Vector extends Serializable {
   }
 }
 
-/**
- * Base class for a vector which enforces to read-only name given at construction time.
- *
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
- */
-abstract class AbstractVector extends Vector {
-  override def toString: String = {
-    "Vector{ size='" + rowCount + "\'}"
-  }
 
-  def toValueArray: Array[Double] = {
-    val list = new Array[Double](rowCount)
-    var i: Int = 0
-    while (i < rowCount) {
-      list(i) = values(i)
-      i += 1
-    }
-    list
-  }
-
-  def toIndexArray: Array[Int] = {
-    val list = new Array[Int](rowCount)
-    var i: Int = 0
-    while (i < rowCount) {
-      list(i) = indexes(i)
-      i += 1
-    }
-    list
-  }
-
-  def toLabelArray: Array[String] = {
-    val list = new Array[String](rowCount)
-    var i: Int = 0
-    while (i < rowCount) {
-      list(i) = labels(i)
-      i += 1
-    }
-    list
-  }
-
-}
 
 

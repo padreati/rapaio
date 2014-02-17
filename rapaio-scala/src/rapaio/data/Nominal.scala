@@ -81,12 +81,6 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
 
   def rowId(row: Int): Int = row
 
-  def isMissing(row: Int): Boolean = Nominal.missingIndex == indexes(row)
-
-  def setMissing(row: Int) = indexes(row) = Nominal.missingIndex
-
-  def addMissing: Unit = indexes ++ Nominal.missingIndex
-
   def remove(index: Int) {
     val numMoved: Int = rows - index - 1
     if (numMoved > 0) System.arraycopy(data, index + 1, data, index, numMoved)
@@ -114,6 +108,14 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
   }
 
   override def toString: String = "Nominal[" + rowCount + "]"
+
+  def missing = new Missing {
+    def apply(row: Int): Boolean = Nominal.missingIndex == indexes(row)
+
+    def update(row: Int, value: Boolean): Unit = indexes(row) = Nominal.missingIndex
+
+    def ++(): Unit = indexes ++ Nominal.missingIndex
+  }
 
   def values = new Values {
     def apply(row: Int): Double = data(row)

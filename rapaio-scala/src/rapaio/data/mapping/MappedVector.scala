@@ -50,18 +50,6 @@ class MappedVector(private val _source: Vector, private val _mapping: Mapping) e
 
   def rowId(row: Int): Int = _source.rowId(_mapping(row))
 
-  def isMissing(row: Int): Boolean = {
-    _source.isMissing(mapping(row))
-  }
-
-  def setMissing(row: Int) {
-    _source.setMissing(mapping(row))
-  }
-
-  def addMissing {
-    throw new IllegalArgumentException("operation not available on mapped vectors")
-  }
-
   def remove(row: Int) {
     throw new IllegalArgumentException("operation not available on mapped vectors")
   }
@@ -80,6 +68,16 @@ class MappedVector(private val _source: Vector, private val _mapping: Mapping) e
 
   def ensureCapacity(minCapacity: Int) {
     throw new IllegalArgumentException("operation not available on mapped vectors")
+  }
+
+  val missing = new Missing {
+    override def apply(row: Int): Boolean = _source.missing(mapping(row))
+
+    override def update(row: Int, value: Boolean): Unit = _source.missing(mapping(row))
+
+    override def ++(): Unit = {
+      throw new IllegalArgumentException("operation not available on mapped vectors")
+    }
   }
 
   val values = new Values {
