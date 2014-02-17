@@ -24,6 +24,7 @@ import rapaio.data._
 import rapaio.graphics._
 import rapaio.workspace.Workspace._
 import scala.util.Random
+import rapaio.data.mapping.MappedVector
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -50,7 +51,18 @@ object Sandbox extends App {
   m.values ++ 13
   n.values ++ 0
 
+  println(m.instances.filter((inst: VInst) => inst.value < 5) mkString ",")
 
+  val nom = new Nominal()
+  nom.labels ++ "Ana"
+  nom.labels ++ "are"
+  nom.labels ++ "mere"
+  nom.labels ++ "?"
+  nom.labels ++ "something"
+
+  val b = MappedVector(nom.instances)
+
+  println(b.instances mkString ",")
 
   drawPlugin(
     Plot(lwd = 2)

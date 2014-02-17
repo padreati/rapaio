@@ -169,6 +169,14 @@ class Value(protected var rows: Int, private val capacity: Int, private val fill
     override def ++(value: String): Unit = {
       throw new RuntimeException("Operation not available for numeric vectors.")
     }
+
+    def dictionary: Array[String] = {
+      throw new RuntimeException("Operation not available for getIndex vectors.")
+    }
+
+    def dictionary_=(dict: Array[String]): Unit = {
+      throw new RuntimeException("Operation not available for getIndex vectors.")
+    }
   }
 }
 

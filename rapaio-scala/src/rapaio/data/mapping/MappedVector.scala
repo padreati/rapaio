@@ -20,8 +20,7 @@
 
 package rapaio.data.mapping
 
-import rapaio.data.AbstractVector
-import rapaio.data.Vector
+import rapaio.data._
 
 /**
  * A vector which is learn on the base of another vector and the row selection
@@ -50,14 +49,6 @@ class MappedVector(private val _source: Vector, private val _mapping: Mapping) e
   def mapping: Mapping = _mapping
 
   def rowId(row: Int): Int = _source.rowId(_mapping(row))
-
-  def getDictionary: Array[String] = {
-    _source.getDictionary
-  }
-
-  def setDictionary(dict: Array[String]) {
-    _source.setDictionary(dict)
-  }
 
   def isMissing(row: Int): Boolean = {
     _source.isMissing(mapping(row))
@@ -119,5 +110,22 @@ class MappedVector(private val _source: Vector, private val _mapping: Mapping) e
     }
 
     override def ++(value: String): Unit = _source.labels.++(value)
+
+    override def dictionary: Array[String] = _source.labels.dictionary
+
+    override def dictionary_=(dict: Array[String]): Unit = _source.labels.dictionary = dict
+  }
+}
+
+object MappedVector {
+  def apply(instances: Array[VInst]): MappedVector = {
+    val src = instances(0).vector.source
+    if (instances.forall((inst: VInst) => src eq inst.vector.source)) {
+      val mapping = new Mapping
+      instances.foreach((inst: VInst) => mapping.add(inst.rowId))
+      new MappedVector(src, mapping)
+    } else {
+      throw new IllegalArgumentException("Cannot build mapped vector from multiple source vectors")
+    }
   }
 }

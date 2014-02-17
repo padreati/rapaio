@@ -24,26 +24,42 @@ import rapaio.data.mapping.Mapping
 import java.io.Serializable
 
 /**
- * Random access list of observed values (observations) for a specific variable.
+ * Random access list of observed values for a specific variable.
  *
  * @author Aurelian Tutuianu
  */
 abstract trait Vector extends Serializable {
 
+  /**
+   * @return true is the vector can be used as a nominal variable, false otherwise
+   */
   def isNominal: Boolean
 
+  /**
+   * @return true if the vector can be treated as a numeric variable, false otherwise
+   */
   def isNumeric: Boolean
 
+  /**
+   * @return true if the vector is mapped (is a mapping over an original vector),
+   *         false otherwise
+   */
   def isMappedVector: Boolean
 
+  /**
+   * @return the source vector if is a mapping vector, otherwise
+   *         the same instance is returned
+   */
   def source: Vector
 
+  /**
+   * @return mapping which consists of all rowId for all the available rows, null if
+   *         the vector is not mapped
+   */
   def mapping: Mapping
 
   /**
-   * Number of observations contained by the vector.
-   *
-   * @return size of vector
+   * @return number of observations contained by the vector
    */
   def rowCount: Int
 
@@ -61,24 +77,6 @@ abstract trait Vector extends Serializable {
    * @return row identifier
    */
   def rowId(row: Int): Int
-
-  /**
-   * Returns the term getDictionary used by the nominal values.
-   * <p>
-   * Term getDictionary contains all the nominal labels used by
-   * observations and might contain also additional nominal labels.
-   * Term getDictionary defines the domain of the definition for the nominal vector.
-   * <p>
-   * The term getDictionary contains nominal labels sorted in lexicografical order,
-   * so binary search techniques may be used on this vector.
-   * <p>
-   * For other vector types like numerical ones this method returns nothing.
-   *
-   * @return term getDictionary defined by the nominal vector.
-   */
-  def getDictionary: Array[String]
-
-  def setDictionary(dict: Array[String])
 
   /**
    * Returns true if the setValue for the observation specified by {@param row} is missing, not available.
@@ -147,8 +145,33 @@ abstract trait Vector extends Serializable {
     def update(row: Int, value: String): Unit
 
     def ++(value: String): Unit
+
+    /**
+     * Returns the term getDictionary used by the nominal values.
+     * <p>
+     * Term getDictionary contains all the nominal labels used by
+     * observations and might contain also additional nominal labels.
+     * Term getDictionary defines the domain of the definition for the nominal vector.
+     * <p>
+     * The term getDictionary contains nominal labels sorted in lexicografical order,
+     * so binary search techniques may be used on this vector.
+     * <p>
+     * For other vector types like numerical ones this method returns nothing.
+     *
+     * @return term getDictionary defined by the nominal vector.
+     */
+    def dictionary: Array[String]
+
+    def dictionary_=(dict: Array[String]): Unit
+
   }
 
+  def instances: Array[VInst] = {
+    val inst = new Array[VInst](rowCount)
+    for (i <- 0 until rowCount)
+      inst(i) = new VInst(i, this)
+    inst
+  }
 }
 
 /**
@@ -190,6 +213,7 @@ abstract class AbstractVector extends Vector {
     }
     list
   }
+
 }
 
 

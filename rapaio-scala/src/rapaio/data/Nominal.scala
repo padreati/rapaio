@@ -42,15 +42,15 @@ import scala.collection.mutable
  * @author Aurelian Tutuianu
  */
 class Nominal(protected var rows: Int, private var dictionary: List[String]) extends AbstractVector {
-  private var dict = new mutable.MutableList[String]
+  private var _dict = new mutable.MutableList[String]
   private var data = Array[Int](rows)
   private var reverse = new mutable.HashMap[String, Int]
 
   for (next <- dictionary) {
-    if (!dict.contains(next)) {
-      dict += next
+    if (!_dict.contains(next)) {
+      _dict += next
     }
-    reverse += (next -> dict.size)
+    reverse += (next -> _dict.size)
   }
 
   def this() {
@@ -68,9 +68,7 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
   private def grow(minCapacity: Int) {
     var newCapacity = data.length + (data.length >> 1)
     if (newCapacity - minCapacity < 0) newCapacity = minCapacity
-    val _new_data = Array[Int](newCapacity)
-    data.copyToArray(_new_data)
-    data = _new_data
+    data = Arrays.copyOf(data, newCapacity)
   }
 
   def isMappedVector: Boolean = false
@@ -83,97 +81,11 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
 
   def rowId(row: Int): Int = row
 
-  def getIndex(row: Int): Int = data(row)
+  def isMissing(row: Int): Boolean = Nominal.missingIndex == indexes(row)
 
-  def setIndex(row: Int, value: Int): Unit = data(row) = value
+  def setMissing(row: Int) = indexes(row) = Nominal.missingIndex
 
-  def addIndex(value: Int): Unit = addLabel(dict(value))
-
-  def addIndex(row: Int, value: Int) {
-    addLabel(row, dict(value))
-  }
-
-  def addValue(value: Double) {
-    addIndex(Math.rint(value).asInstanceOf[Int])
-  }
-
-  def addValue(row: Int, value: Double) {
-    addIndex(row, Math.rint(value).asInstanceOf[Int])
-  }
-
-  def getLabel(row: Int): String = dict(data(row))
-
-  def setLabel(row: Int, label: String) {
-    if (label eq Nominal.missingValue) {
-      data(row) = Nominal.missingIndex
-      return
-    }
-    if (!reverse.contains(label)) {
-      dict += label
-      reverse += (label -> reverse.size)
-    }
-    data(row) = reverse(label)
-  }
-
-  def addLabel(label: String) {
-    ensureCapacity(rows + 1)
-    if (!reverse.contains(label)) {
-      dict += label
-      reverse.put(label, reverse.size)
-    }
-    data(rows) = reverse(label)
-    rows += 1
-  }
-
-  def addLabel(pos: Int, label: String) {
-    ensureCapacity(rows + 1)
-    System.arraycopy(data, pos, data, pos + 1, rows - pos)
-    if (!reverse.contains(label)) {
-      dict += label
-      reverse += (label -> reverse.size)
-    }
-    data(pos) = reverse(label)
-    rows += 1
-  }
-
-  def getDictionary: Array[String] = dict.toArray
-
-  def setDictionary(dictionary: Array[String]) {
-    val oldDict = dict;
-    val oldReverse = reverse;
-
-    dict = new mutable.MutableList();
-    reverse = new mutable.HashMap();
-    dict += "?";
-    reverse += ("?" -> 0);
-
-    for (i <- 0 until dictionary.length) {
-      if (!reverse.contains(dictionary(i))) {
-        dict += dictionary(i);
-        reverse += (dictionary(i) -> reverse.size);
-      }
-    }
-
-    for (i <- 0 until rows) {
-      if (!reverse.contains(oldDict(data(i)))) {
-        dict = oldDict;
-        reverse = oldReverse;
-        throw new IllegalArgumentException("new getDictionary does not contains all old labels");
-      }
-    }
-
-    for (i <- 0 until rows) {
-      data(i) = reverse(oldDict(data(i)));
-    }
-  }
-
-  def isMissing(row: Int): Boolean = (Nominal.missingIndex == getIndex(row))
-
-  def setMissing(row: Int) {
-    setIndex(row, Nominal.missingIndex)
-  }
-
-  def addMissing: Unit = addIndex(Nominal.missingIndex)
+  def addMissing: Unit = indexes ++ Nominal.missingIndex
 
   def remove(index: Int) {
     val numMoved: Int = rows - index - 1
@@ -210,10 +122,10 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
 
     override def ++(value: Double): Unit = {
       val row = math.rint(value).toInt
-      val label = dict(data(row))
+      val label = _dict(data(row))
       ensureCapacity(rows + 1)
       if (!reverse.contains(label)) {
-        dict += label
+        _dict += label
         reverse.put(label, reverse.size)
       }
       data(rows) = reverse(label)
@@ -227,10 +139,10 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
     override def update(row: Int, value: Int): Unit = data(row) = value
 
     override def ++(value: Int): Unit = {
-      val label = dict(value)
+      val label = _dict(value)
       ensureCapacity(rows + 1)
       if (!reverse.contains(label)) {
-        dict += label
+        _dict += label
         reverse.put(label, reverse.size)
       }
       data(rows) = reverse(label)
@@ -239,7 +151,7 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
   }
 
   def labels = new Labels {
-    override def apply(row: Int): String = dict(data(row))
+    override def apply(row: Int): String = _dict(data(row))
 
     override def update(row: Int, value: String): Unit = {
       if (value equals Nominal.missingValue) {
@@ -247,7 +159,7 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
         return
       }
       if (!reverse.contains(value)) {
-        dict += value
+        _dict += value
         reverse += (value -> reverse.size)
       }
       data(row) = reverse(value)
@@ -256,12 +168,43 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
     override def ++(value: String): Unit = {
       ensureCapacity(rows + 1)
       if (!reverse.contains(value)) {
-        dict += value
+        _dict += value
         reverse.put(value, reverse.size)
       }
       data(rows) = reverse(value)
       rows += 1
     }
+
+    override def dictionary_=(dict: Array[String]): Unit = {
+      val oldDict = _dict;
+      val oldReverse = reverse;
+
+      _dict = new mutable.MutableList();
+      reverse = new mutable.HashMap();
+      _dict += "?";
+      reverse += ("?" -> 0);
+
+      for (i <- 0 until dict.length) {
+        if (!reverse.contains(dict(i))) {
+          _dict += dict(i);
+          reverse += (dict(i) -> reverse.size);
+        }
+      }
+
+      for (i <- 0 until rows) {
+        if (!reverse.contains(oldDict(data(i)))) {
+          _dict = oldDict;
+          reverse = oldReverse;
+          throw new IllegalArgumentException("new getDictionary does not contains all old labels");
+        }
+      }
+
+      for (i <- 0 until rows) {
+        data(i) = reverse(oldDict(data(i)));
+      }
+    }
+
+    override def dictionary: Array[String] = _dict.toArray
   }
 }
 
