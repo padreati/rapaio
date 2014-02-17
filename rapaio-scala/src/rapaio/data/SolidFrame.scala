@@ -30,7 +30,7 @@ import scala.collection.mutable
  */
 class SolidFrame extends AbstractFrame {
 
-  var _rows: Int = 0
+  var _rows: Int = _
   var _vectors: Array[Vector] = _
   var _names: Array[String] = _
   var _colIndex: mutable.HashMap[String, Int] = _
@@ -102,9 +102,9 @@ class SolidFrame extends AbstractFrame {
     else throw new IllegalArgumentException("Invalid column index")
   }
 
-  def col(name: String): Vector = col(colIndex(name))
+  def col(colName: String): Vector = col(colIndex(colName))
+}
 
-  override def isMissing(row: Int, colIndex: Int): Boolean = col(colIndex).missing(row)
+object SolidFrame {
 
-  override def isMissing(row: Int, colName: String): Boolean = col(colName).missing(row)
 }

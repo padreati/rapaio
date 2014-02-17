@@ -211,13 +211,18 @@ abstract trait Frame extends Serializable {
    */
   def setLabel(row: Int, colName: String, value: String)
 
-  def isMissing(row: Int, col: Int): Boolean
+  def missing: Missing
 
-  def isMissing(row: Int, colName: String): Boolean
+  abstract class Missing {
+    def apply(row: Int, colIndex: Int): Boolean
 
-  def isMissing(row: Int): Boolean
+    def apply(row: Int, colName: String): Boolean
 
-  def setMissing(row: Int, col: Int)
+    def apply(row: Int): Boolean
 
-  def setMissing(row: Int, colName: String)
+    def update(row: Int, colIndex: Int, value: Boolean): Unit
+
+    def update(row: Int, colName: String, value: Boolean): Unit
+  }
+
 }

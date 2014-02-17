@@ -52,13 +52,15 @@ abstract class AbstractFrame extends Frame {
 
   def setLabel(row: Int, colName: String, value: String): Unit = col(colName).labels(row) = value
 
-  def isMissing(row: Int, colIndex: Int): Boolean = col(colIndex).missing(row)
+  def missing = new Missing {
+    override def apply(row: Int, colIndex: Int): Boolean = col(colIndex).missing(row)
 
-  def isMissing(row: Int, colName: String): Boolean = col(colName).missing(row)
+    override def apply(row: Int, colName: String): Boolean = col(colName).missing(row)
 
-  def isMissing(row: Int): Boolean = colNames.exists((colName) => col(colName).missing(row))
+    override def apply(row: Int): Boolean = colNames.exists((colName) => col(colName).missing(row))
 
-  def setMissing(row: Int, colIndex: Int): Unit = col(colIndex).missing(row) = true
+    override def update(row: Int, colIndex: Int, value: Boolean): Unit = col(colIndex).missing(row) = true
 
-  def setMissing(row: Int, colName: String): Unit = col(colName).missing(row) = true
+    override def update(row: Int, colName: String, value: Boolean): Unit = col(colName).missing(row) = true
+  }
 }
