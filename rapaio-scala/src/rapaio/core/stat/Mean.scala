@@ -60,5 +60,7 @@ final class Mean(private val vector: Vector) extends Summarizable {
 
   def summary {
     //    code(String.format("> mean\n%.10f", value))
+    // TODO placeholder implementation
+    println("> mean\n%.10f".format(value))
   }
 }

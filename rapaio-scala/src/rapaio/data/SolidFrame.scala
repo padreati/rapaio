@@ -28,13 +28,44 @@ import scala.collection.mutable
  *
  * @author Aurelian Tutuianu
  */
-class SolidFrame extends AbstractFrame {
+class SolidFrame(private var _rows: Int,
+                 private var _vectors: Array[Vector],
+                 private var _names: Array[String]) extends AbstractFrame {
 
-  var _rows: Int = _
-  var _vectors: Array[Vector] = _
-  var _names: Array[String] = _
-  var _colIndex: mutable.HashMap[String, Int] = _
+  var _colIndex = new mutable.HashMap[String, Int]()
+  for (i <- 0 until _names.length) {
+    _colIndex.put(_names(i), i)
+  }
 
+  def rowCount: Int = _rows
+
+  def colCount: Int = _vectors.length
+
+  def rowId(row: Int): Int = _rows
+
+  def isMappedFrame: Boolean = false
+
+  def sourceFrame: Frame = this
+
+  def mapping: Mapping = null
+
+  def colNames: Array[String] = _names
+
+  def colIndex(colName: String): Int = {
+    if (!_colIndex.contains(colName))
+      throw new IllegalArgumentException("Column name is invalid")
+    else _colIndex(colName)
+  }
+
+  def col(colIndex: Int): Vector = {
+    if (colIndex >= 0 && colIndex < _vectors.length) _vectors(colIndex)
+    else throw new IllegalArgumentException("Invalid column index")
+  }
+
+  def col(colName: String): Vector = col(colIndex(colName))
+}
+
+object SolidFrame {
   //  def this(rows: Int, vectors: List[Vector], names: List[String]) {
   //    this()
   //    `this`(rows, vectors, names.toArray(Array[String]))
@@ -76,35 +107,5 @@ class SolidFrame extends AbstractFrame {
   //    this()
   //    `this`(rows, Arrays.asList(vectors), names)
   //  }
-
-  def rowCount: Int = _rows
-
-  def colCount: Int = _vectors.length
-
-  def rowId(row: Int): Int = _rows
-
-  def isMappedFrame: Boolean = false
-
-  def sourceFrame: Frame = this
-
-  def mapping: Mapping = null
-
-  def colNames: Array[String] = _names
-
-  def colIndex(colName: String): Int = {
-    if (!_colIndex.contains(colName))
-      throw new IllegalArgumentException("Column name is invalid")
-    else _colIndex(colName)
-  }
-
-  def col(colIndex: Int): Vector = {
-    if (colIndex >= 0 && colIndex < _vectors.length) _vectors(colIndex)
-    else throw new IllegalArgumentException("Invalid column index")
-  }
-
-  def col(colName: String): Vector = col(colIndex(colName))
-}
-
-object SolidFrame {
 
 }

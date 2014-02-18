@@ -25,6 +25,7 @@ import rapaio.graphics._
 import rapaio.workspace.Workspace._
 import scala.util.Random
 import rapaio.data.mapping.MappedVector
+import rapaio.core._
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -37,6 +38,8 @@ object Sandbox extends App {
   val x1 = Value(0, N, (i) => math.sin(i / math.E))
   val x2 = Value(0, N, (i) => math.sin(i * 2))
   val y = Value(0, N, (i) => i / 100.0)
+
+  mean(x1).summary
 
   val f = () => Value(0, N, (i) => math.random)
   val rand = new Random()
@@ -61,7 +64,6 @@ object Sandbox extends App {
   nom.labels ++ "something"
 
   val b = MappedVector(nom.instances)
-
   println(b.instances mkString ",")
 
   drawPlugin(
@@ -71,9 +73,7 @@ object Sandbox extends App {
       //      .points(x = f(), y = f(), col = rand.nextInt(20), pch = 's')
       //      .points(x = f(), y = f(), col = rand.nextInt(20), pch = '+')
       //      .points(x = f(), y = f(), col = rand.nextInt(20), pch = 'x')
-      .hist(x = x1, prob = false)
-
-
+      .hist(x = x1, prob = true, bins = 10)
   )
 
 }
