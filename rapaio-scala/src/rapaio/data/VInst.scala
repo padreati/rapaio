@@ -20,18 +20,18 @@
 
 package rapaio.data
 
-import rapaio.data.mapping.MappedVector
+import rapaio.data.mapping.MappedFeature
 
 /**
  * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-class VInst(private val _row: Int, private val _vector: Vector) {
+class VInst(private val _row: Int, private val _vector: Feature) {
 
   def rowId: Int = _vector.rowId(_row)
 
   def row: Int = _row
 
-  def vector: Vector = _vector
+  def vector: Feature = _vector
 
   def value = _vector.values(_row)
 
@@ -47,12 +47,12 @@ class VInst(private val _row: Int, private val _vector: Vector) {
 
   override def toString: String = {
     _vector match {
-      case _vector: MappedVector => toString(_vector.source)
+      case _vector: MappedFeature => toString(_vector.source)
       case _ => toString(_vector)
     }
   }
 
-  private def toString(v: Vector): String = {
+  private def toString(v: Feature): String = {
     v match {
       case v: Value => v.values(_row).toString
       case v: Index => v.indexes(_row).toString

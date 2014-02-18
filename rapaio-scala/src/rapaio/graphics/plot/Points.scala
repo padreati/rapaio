@@ -27,7 +27,7 @@ import java.awt._
 /**
  * @author tutuianu
  */
-class Points(private val x: Vector, private var y: Vector) extends PlotComponent {
+class Points(private val x: Feature, private var y: Feature) extends PlotComponent {
 
   def buildRange: Range = {
     if (math.min(x.rowCount, y.rowCount) == 0) null

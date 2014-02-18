@@ -26,7 +26,9 @@ import rapaio.data.mapping.Mapping
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-class Value(protected var rows: Int, private val capacity: Int, private val fill: Double) extends AbstractVector {
+class Value(protected var rows: Int,
+            private val capacity: Int,
+            private val fill: Double) extends AbstractFeature {
   require(capacity >= 0, "Illegal capacity: " + capacity)
   require(rowCount >= 0, "Illegal row count: " + this.rows)
   require(rows <= capacity, "Illegal row count" + rows + " less than capacity:" + capacity)
@@ -85,7 +87,7 @@ class Value(protected var rows: Int, private val capacity: Int, private val fill
 
   def isMappedVector: Boolean = false
 
-  def source: Vector = this
+  def source: Feature = this
 
   def mapping: Mapping = null
 

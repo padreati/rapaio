@@ -29,7 +29,7 @@ import scala.collection.mutable
  * @author Aurelian Tutuianu
  */
 class SolidFrame(private var _rows: Int,
-                 private var _vectors: Array[Vector],
+                 private var _vectors: Array[Feature],
                  private var _names: Array[String]) extends AbstractFrame {
 
   var _colIndex = new mutable.HashMap[String, Int]()
@@ -57,12 +57,12 @@ class SolidFrame(private var _rows: Int,
     else _colIndex(colName)
   }
 
-  def col(colIndex: Int): Vector = {
+  def col(colIndex: Int): Feature = {
     if (colIndex >= 0 && colIndex < _vectors.length) _vectors(colIndex)
     else throw new IllegalArgumentException("Invalid column index")
   }
 
-  def col(colName: String): Vector = col(colIndex(colName))
+  def col(colName: String): Feature = col(colIndex(colName))
 }
 
 object SolidFrame {

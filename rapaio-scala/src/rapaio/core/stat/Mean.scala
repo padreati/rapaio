@@ -21,7 +21,7 @@
 package rapaio.core.stat
 
 import rapaio.core.Summarizable
-import rapaio.data.Vector
+import rapaio.data.Feature
 
 /**
  * Compensated version of arithmetic mean of values from a {@code Vector}.
@@ -30,7 +30,7 @@ import rapaio.data.Vector
  * Date: 9/7/13
  * Time: 12:21 PM
  */
-final class Mean(private val vector: Vector) extends Summarizable {
+final class Mean(private val vector: Feature) extends Summarizable {
   private val value: Double = compute
 
   private def compute: Double = {

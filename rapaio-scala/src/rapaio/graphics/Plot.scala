@@ -24,7 +24,7 @@ import rapaio.graphics.base._
 import rapaio.graphics.plot._
 import java.awt._
 import scala.collection.mutable.MutableList
-import rapaio._
+import rapaio.data.Feature
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -77,8 +77,8 @@ class Plot extends AbstractFigure {
     this
   }
 
-  def points(x: data.Vector = null,
-             y: data.Vector,
+  def points(x: Feature = null,
+             y: Feature,
              col: ColorOption = Color.BLACK,
              pch: PchOption = 'o',
              sz: SizeOption = 4): Plot = {
@@ -89,7 +89,7 @@ class Plot extends AbstractFigure {
     add(points)
   }
 
-  def hist(x: data.Vector,
+  def hist(x: Feature,
            bins: Int = 30,
            prob: Boolean = true,
            min: Double = Double.NaN,

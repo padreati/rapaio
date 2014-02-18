@@ -21,13 +21,13 @@
 package rapaio
 
 import rapaio.core.stat.Mean
-import rapaio.data.Vector
+import rapaio.data.Feature
 
 /**
  * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 package object core {
 
-  def mean(v: Vector): Mean = new Mean(v)
+  def mean(v: Feature): Mean = new Mean(v)
 
 }

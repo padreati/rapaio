@@ -20,7 +20,7 @@
 
 package rapaio.graphics.plot
 
-import rapaio.data.Vector
+import rapaio.data.Feature
 import rapaio.graphics.base._
 import java.awt._
 import rapaio.graphics.base.Range
@@ -28,7 +28,7 @@ import rapaio.graphics.base.Range
 /**
  * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-class Histogram(private val v: Vector,
+class Histogram(private val v: Feature,
                 private val bins: Int = 30,
                 private val prob: Boolean = true,
                 private var min: Double = Double.NaN,

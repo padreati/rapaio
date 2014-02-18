@@ -17,9 +17,9 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.graphics.plot
 
-import rapaio.data.Vector
 import rapaio.graphics.base.AbstractFigure
 import java.awt._
 

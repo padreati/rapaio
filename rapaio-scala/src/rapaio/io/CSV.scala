@@ -27,7 +27,6 @@ import scala.collection.immutable.PagedSeq
 import scala.util.parsing.combinator.RegexParsers
 import rapaio.data._
 import scala.collection.mutable
-import rapaio.data.Vector
 import scala.Some
 
 /**
@@ -41,7 +40,7 @@ object CSV {
     val csv = CSVReader.open(new FileReader(file))(opt)
 
     val names = new mutable.MutableList[String]
-    val vectors = new mutable.MutableList[Vector]
+    val vectors = new mutable.MutableList[rapaio.data.Feature]
     val it = csv.iterator
 
     var rows = 0
@@ -61,7 +60,7 @@ object CSV {
       rows += 1
     }
 
-    new SolidFrame(rows, vectors.toArray[Vector], names.toArray[String])
+    new SolidFrame(rows, vectors.toArray[Feature], names.toArray[String])
   }
 
   private def assureName(names: mutable.MutableList[String], index: Int): String = {
@@ -70,7 +69,7 @@ object CSV {
     names(index)
   }
 
-  private def pushValue(vectors: mutable.MutableList[Vector], index: Int, row: Int, value: String) {
+  private def pushValue(vectors: mutable.MutableList[Feature], index: Int, row: Int, value: String) {
     if (vectors.length <= index)
       for (i <- vectors.length to index) vectors += new Nominal()
     if (vectors(index).rowCount <= row - 1)
@@ -413,5 +412,3 @@ protected case object QUOTE_NONE extends Quoting
 protected case object QUOTE_NONNUMERIC extends Quoting
 
 protected class MalformedCSVException(message: String) extends Exception(message)
-
-

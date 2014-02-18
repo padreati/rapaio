@@ -24,7 +24,7 @@ import rapaio.data._
 import rapaio.graphics._
 import rapaio.workspace.Workspace._
 import scala.util.Random
-import rapaio.data.mapping.MappedVector
+import rapaio.data.mapping.MappedFeature
 import rapaio.core._
 
 /**
@@ -63,7 +63,7 @@ object Sandbox extends App {
   nom.labels ++ "?"
   nom.labels ++ "something"
 
-  val b = MappedVector(nom.instances)
+  val b = MappedFeature(nom.instances)
   println(b.instances mkString ",")
 
   drawPlugin(

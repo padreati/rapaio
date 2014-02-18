@@ -41,7 +41,8 @@ import scala.collection.mutable
  *
  * @author Aurelian Tutuianu
  */
-class Nominal(protected var rows: Int, private var dictionary: List[String]) extends AbstractVector {
+class Nominal(protected var rows: Int,
+              private var dictionary: List[String]) extends AbstractFeature {
   private var _dict = new mutable.MutableList[String]
   private var data = Array[Int](rows)
   private var reverse = new mutable.HashMap[String, Int]
@@ -73,7 +74,7 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
 
   def isMappedVector: Boolean = false
 
-  def source: Vector = this
+  def source: Feature = this
 
   def mapping: Mapping = null
 

@@ -73,7 +73,7 @@ abstract trait Frame extends Serializable {
    * @param col position of the column inside the frame
    * @return a vector getType reference
    */
-  def col(colIndex: Int): Vector
+  def col(colIndex: Int): Feature
 
   /**
    * Returns a vector reference for column with given name
@@ -81,7 +81,7 @@ abstract trait Frame extends Serializable {
    * @param name name of the column inside the frame
    * @return a vector getType reference
    */
-  def col(name: String): Vector
+  def col(name: String): Feature
 
   /**
    * Returns row identifier for a specific column

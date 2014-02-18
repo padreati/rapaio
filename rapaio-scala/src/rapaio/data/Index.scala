@@ -26,7 +26,9 @@ import rapaio.data.mapping.Mapping
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-class Index(protected var rows: Int, private val capacity: Int, private val fill: Int) extends AbstractVector {
+class Index(protected var rows: Int,
+            private val capacity: Int,
+            private val fill: Int) extends AbstractFeature {
 
   require(capacity >= 0, "Illegal capacity: " + capacity)
   require(rows >= 0, "Illegal row count: " + rows)
@@ -72,7 +74,7 @@ class Index(protected var rows: Int, private val capacity: Int, private val fill
 
   def isMappedVector: Boolean = false
 
-  def source: Vector = this
+  def source: Feature = this
 
   def mapping: Mapping = null
 

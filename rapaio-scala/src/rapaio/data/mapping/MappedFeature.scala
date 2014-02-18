@@ -32,7 +32,8 @@ import rapaio.data._
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-class MappedVector(private val _source: Vector, private val _mapping: Mapping) extends AbstractVector {
+class MappedFeature(private val _source: Feature,
+                    private val _mapping: Mapping) extends AbstractFeature {
 
   require(!_source.isMappedVector, "Now allowed mapped vector as source")
 
@@ -44,7 +45,7 @@ class MappedVector(private val _source: Vector, private val _mapping: Mapping) e
 
   def isMappedVector: Boolean = true
 
-  def source: Vector = _source
+  def source: Feature = _source
 
   def mapping: Mapping = _mapping
 
@@ -115,13 +116,13 @@ class MappedVector(private val _source: Vector, private val _mapping: Mapping) e
   }
 }
 
-object MappedVector {
-  def apply(instances: Array[VInst]): MappedVector = {
+object MappedFeature {
+  def apply(instances: Array[VInst]): MappedFeature = {
     val src = instances(0).vector.source
     if (instances.forall((inst: VInst) => src eq inst.vector.source)) {
       val mapping = new Mapping
       instances.foreach((inst: VInst) => mapping.add(inst.rowId))
-      new MappedVector(src, mapping)
+      new MappedFeature(src, mapping)
     } else {
       throw new IllegalArgumentException("Cannot build mapped vector from multiple source vectors")
     }

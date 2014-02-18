@@ -22,7 +22,7 @@ package rapaio.data.mapping
 
 import rapaio.data.AbstractFrame
 import rapaio.data.Frame
-import rapaio.data.Vector
+import rapaio.data.Feature
 import scala.collection.mutable
 
 /**
@@ -40,7 +40,7 @@ class MappedFrame extends AbstractFrame {
 
   private var _mapping: Mapping = _
   private var _source: Frame = _
-  private var _vectors: mutable.HashMap[Integer, Vector] = _
+  private var _vectors: mutable.HashMap[Integer, Feature] = _
 
   //  def this(df: Frame, mapping: Mapping) {
   //    this()
@@ -67,12 +67,12 @@ class MappedFrame extends AbstractFrame {
 
   def colIndex(colName: String): Int = _source.colIndex(colName)
 
-  def col(colIndex: Int): Vector = {
+  def col(colIndex: Int): Feature = {
     if (!_vectors.contains(colIndex)) {
-      _vectors(colIndex) = new MappedVector(_source.col(colIndex), _mapping)
+      _vectors(colIndex) = new MappedFeature(_source.col(colIndex), _mapping)
     }
     _vectors(colIndex)
   }
 
-  def col(colName: String): Vector = col(colIndex(colName))
+  def col(colName: String): Feature = col(colIndex(colName))
 }

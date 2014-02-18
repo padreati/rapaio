@@ -28,7 +28,7 @@ import java.io.Serializable
  *
  * @author Aurelian Tutuianu
  */
-abstract trait Vector extends Serializable {
+abstract class Feature extends Serializable {
 
   /**
    * @return true is the vector can be used as a nominal variable, false otherwise
@@ -50,7 +50,7 @@ abstract trait Vector extends Serializable {
    * @return the source vector if is a mapping vector, otherwise
    *         the same instance is returned
    */
-  def source: Vector
+  def source: Feature
 
   /**
    * @return mapping which consists of all rowId for all the available rows, null if

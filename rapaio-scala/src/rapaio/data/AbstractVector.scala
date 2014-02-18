@@ -25,7 +25,7 @@ package rapaio.data
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-abstract class AbstractVector extends Vector {
+abstract class AbstractFeature extends Feature {
   override def toString: String = {
     "Vector{ size='" + rowCount + "\'}"
   }
