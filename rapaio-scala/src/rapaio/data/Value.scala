@@ -28,7 +28,7 @@ import rapaio.data.mapping.Mapping
  */
 class Value(protected var rows: Int,
             private val capacity: Int,
-            private val fill: Double) extends AbstractFeature {
+            private val fill: Double) extends Feature {
   require(capacity >= 0, "Illegal capacity: " + capacity)
   require(rowCount >= 0, "Illegal row count: " + this.rows)
   require(rows <= capacity, "Illegal row count" + rows + " less than capacity:" + capacity)
@@ -36,6 +36,9 @@ class Value(protected var rows: Int,
   private var data: Array[Double] = null
   this.data = new Array[Double](capacity)
   if (fill != 0) Arrays.fill(data, 0, rows, fill)
+
+
+  override def shortName: String = "val"
 
   def this() {
     this(0, 0, 0)

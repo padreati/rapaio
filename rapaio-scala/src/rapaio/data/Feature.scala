@@ -28,7 +28,9 @@ import java.io.Serializable
  *
  * @author Aurelian Tutuianu
  */
-abstract class Feature extends Serializable {
+trait Feature extends Serializable {
+
+  def shortName: String
 
   /**
    * @return true is the vector can be used as a nominal variable, false otherwise
@@ -82,17 +84,41 @@ abstract class Feature extends Serializable {
 
   def removeRange(from: Int, to: Int)
 
-  def clear
+  def clear(): Unit
 
-  def trimToSize
+  def trimToSize(): Unit
 
   def ensureCapacity(minCapacity: Int)
 
-  def toValueArray: Array[Double]
+  def toValueArray: Array[Double] = {
+    val list = new Array[Double](rowCount)
+    var i: Int = 0
+    while (i < rowCount) {
+      list(i) = values(i)
+      i += 1
+    }
+    list
+  }
 
-  def toIndexArray: Array[Int]
+  def toIndexArray: Array[Int] = {
+    val list = new Array[Int](rowCount)
+    var i: Int = 0
+    while (i < rowCount) {
+      list(i) = indexes(i)
+      i += 1
+    }
+    list
+  }
 
-  def toLabelArray: Array[String]
+  def toLabelArray: Array[String] = {
+    val list = new Array[String](rowCount)
+    var i: Int = 0
+    while (i < rowCount) {
+      list(i) = labels(i)
+      i += 1
+    }
+    list
+  }
 
   def missing: Missing
 
@@ -160,6 +186,10 @@ abstract class Feature extends Serializable {
     for (i <- 0 until rowCount)
       inst(i) = new VInst(i, this)
     inst
+  }
+
+  override def toString: String = {
+    "Vector{ size='" + rowCount + "\'}"
   }
 }
 

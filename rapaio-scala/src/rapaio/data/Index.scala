@@ -28,7 +28,7 @@ import rapaio.data.mapping.Mapping
  */
 class Index(protected var rows: Int,
             private val capacity: Int,
-            private val fill: Int) extends AbstractFeature {
+            private val fill: Int) extends Feature {
 
   require(capacity >= 0, "Illegal capacity: " + capacity)
   require(rows >= 0, "Illegal row count: " + rows)
@@ -40,6 +40,9 @@ class Index(protected var rows: Int,
   def this() {
     this(0, 0, 0)
   }
+
+
+  override def shortName: String = "idx"
 
   private def ensureCapacityInternal(minCapacity: Int) {
     var capacity = minCapacity

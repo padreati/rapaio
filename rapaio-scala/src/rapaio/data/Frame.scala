@@ -70,7 +70,7 @@ abstract trait Frame extends Serializable {
   /**
    * Returns a vector reference for column at given position
    *
-   * @param col position of the column inside the frame
+   * @param colIndex position of the column inside the frame
    * @return a vector getType reference
    */
   def col(colIndex: Int): Feature
@@ -103,126 +103,54 @@ abstract trait Frame extends Serializable {
 
   def mapping: Mapping
 
-  /**
-   * Convenient shortcut to call
-   *
-   * @param row row number
-   * @param col column number
-   * @return numeric setValue
-   */
-  def getValue(row: Int, col: Int): Double
+  def missing: Missing = new Missing
 
-  /**
-   * Convenient shortcut to call {@link rapaio.data.Vector#getValue(int)} for a given column.
-   *
-   * @param row     row number
-   * @param colName column name
-   * @return numeric setValue
-   */
-  def getValue(row: Int, colName: String): Double
+  def values: Values = new Values
 
-  /**
-   * Convenient shortcut method to call {@link rapaio.data.Vector#setValue(int, double)} for a given column.
-   *
-   * @param row   row number
-   * @param col   column number
-   * @param value numeric getValue
-   */
-  def setValue(row: Int, col: Int, value: Double)
+  def indexes: Indexes = new Indexes
 
-  /**
-   * Convenient shortcut method to call {@link rapaio.data.Vector#setValue(int, double)} for a given column.
-   *
-   * @param row     row number
-   * @param colName column name
-   * @param value   numeric getValue
-   */
-  def setValue(row: Int, colName: String, value: Double)
+  def labels: Labels = new Labels
 
-  /**
-   * Convenient shortcut method for calling {@link rapaio.data.Vector#getIndex(int)} for a given column.
-   *
-   * @param row row number
-   * @param col column number
-   * @return setIndex getValue
-   */
-  def getIndex(row: Int, col: Int): Int
+  class Missing {
+    def apply(row: Int, colIndex: Int): Boolean = col(colIndex).missing(row)
 
-  /**
-   * Convenient shortcut method for calling {@link rapaio.data.Vector#getIndex(int)} for a given column.
-   *
-   * @param row     row number
-   * @param colName column name
-   * @return setIndex getValue
-   */
-  def getIndex(row: Int, colName: String): Int
+    def apply(row: Int, colName: String): Boolean = col(colName).missing(row)
 
-  /**
-   * Convenient shortcut method for calling {@link rapaio.data.Vector#setIndex(int, int)} for given column.
-   *
-   * @param row   row number
-   * @param col   column number
-   * @param value setIndex getValue
-   */
-  def setIndex(row: Int, col: Int, value: Int)
+    def apply(row: Int): Boolean = colNames.exists((colName) => col(colName).missing(row))
 
-  /**
-   * Convenient shortcut method for calling {@link rapaio.data.Vector#setIndex(int, int)} for given column.
-   *
-   * @param row     row number
-   * @param colName column name
-   * @param value   setIndex getValue
-   */
-  def setIndex(row: Int, colName: String, value: Int)
+    def update(row: Int, colIndex: Int, value: Boolean): Unit = col(colIndex).missing(row) = true
 
-  /**
-   * Convenient shortcut method for calling {@link rapaio.data.Vector#getLabel(int)} for given column.
-   *
-   * @param row row number
-   * @param col column number
-   * @return nominal getLabel getValue
-   */
-  def getLabel(row: Int, col: Int): String
+    def update(row: Int, colName: String, value: Boolean): Unit = col(colName).missing(row) = true
+  }
 
-  /**
-   * Convenient shortcut method for calling {@link rapaio.data.Vector#getLabel(int)} for given column.
-   *
-   * @param row     row number
-   * @param colName column name
-   * @return nominal getLabel getValue
-   */
-  def getLabel(row: Int, colName: String): String
+  class Values {
+    def apply(row: Int, colIndex: Int): Double = col(colIndex).values(row)
 
-  /**
-   * Convenient shortcut method for calling {@link rapaio.data.Vector#setLabel(int, String)} for given column.
-   *
-   * @param row   row number
-   * @param col   column number
-   * @param value nominal getLabel getValue
-   */
-  def setLabel(row: Int, col: Int, value: String)
+    def apply(row: Int, colName: String): Double = col(colName).values(row)
 
-  /**
-   * Convenient shortcut method for calling {@link rapaio.data.Vector#setLabel(int, String)} for given column.
-   *
-   * @param row     row number
-   * @param colName column name
-   * @param value   nominal getLabel getValue
-   */
-  def setLabel(row: Int, colName: String, value: String)
+    def update(row: Int, colIndex: Int, x: Double): Unit = col(colIndex).values(row) = x
 
-  def missing: Missing
+    def update(row: Int, colName: String, x: Double): Unit = col(colName).values(row) = x
+  }
 
-  abstract class Missing {
-    def apply(row: Int, colIndex: Int): Boolean
+  class Indexes {
+    def apply(row: Int, colIndex: Int): Int = col(colIndex).indexes(row)
 
-    def apply(row: Int, colName: String): Boolean
+    def apply(row: Int, colName: String): Int = col(colName).indexes(row)
 
-    def apply(row: Int): Boolean
+    def update(row: Int, colIndex: Int, x: Int): Unit = col(colIndex).indexes(row) = x
 
-    def update(row: Int, colIndex: Int, value: Boolean): Unit
+    def update(row: Int, colName: String, x: Int): Unit = col(colName).indexes(row) = x
+  }
 
-    def update(row: Int, colName: String, value: Boolean): Unit
+  class Labels {
+    def apply(row: Int, colIndex: Int): String = col(colIndex).labels(row)
+
+    def apply(row: Int, colName: String): String = col(colName).labels(row)
+
+    def update(row: Int, colIndex: Int, x: String): Unit = col(colIndex).labels(row) = x
+
+    def update(row: Int, colName: String, x: String): Unit = col(colName).labels(row) = x
   }
 
 }

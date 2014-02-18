@@ -35,12 +35,12 @@ import scala.Some
 
 object CSV {
 
-  def read(file: File, hasHeader: Boolean = true): Frame = {
+  def read(file: File, hasHeader: Boolean = true, defaultType: String = "val"): Frame = {
     val opt = new CSVFormat {}
     val csv = CSVReader.open(new FileReader(file))(opt)
 
     val names = new mutable.MutableList[String]
-    val vectors = new mutable.MutableList[rapaio.data.Feature]
+    val vectors = new mutable.MutableList[Feature]
     val it = csv.iterator
 
     var rows = 0

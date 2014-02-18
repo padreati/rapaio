@@ -30,7 +30,7 @@ import scala.collection.mutable
  */
 class SolidFrame(private var _rows: Int,
                  private var _vectors: Array[Feature],
-                 private var _names: Array[String]) extends AbstractFrame {
+                 private var _names: Array[String]) extends Frame {
 
   var _colIndex = new mutable.HashMap[String, Int]()
   for (i <- 0 until _names.length) {

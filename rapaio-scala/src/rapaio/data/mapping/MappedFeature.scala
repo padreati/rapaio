@@ -33,13 +33,16 @@ import rapaio.data._
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 class MappedFeature(private val _source: Feature,
-                    private val _mapping: Mapping) extends AbstractFeature {
+                    private val _mapping: Mapping) extends Feature {
 
   require(!_source.isMappedVector, "Now allowed mapped vector as source")
 
-  def isNominal: Boolean = _source.isNominal
 
-  def isNumeric: Boolean = _source.isNumeric
+  override def shortName: String = _source.shortName
+
+  override def isNominal: Boolean = _source.isNominal
+
+  override def isNumeric: Boolean = _source.isNumeric
 
   def rowCount: Int = _mapping.size
 

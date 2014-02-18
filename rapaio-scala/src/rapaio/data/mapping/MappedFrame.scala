@@ -20,7 +20,6 @@
 
 package rapaio.data.mapping
 
-import rapaio.data.AbstractFrame
 import rapaio.data.Frame
 import rapaio.data.Feature
 import scala.collection.mutable
@@ -36,20 +35,11 @@ import scala.collection.mutable
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-class MappedFrame extends AbstractFrame {
+class MappedFrame(private val _source: Frame, private val _mapping: Mapping) extends Frame {
 
-  private var _mapping: Mapping = _
-  private var _source: Frame = _
-  private var _vectors: mutable.HashMap[Integer, Feature] = _
+  require(!_source.isMappedFrame, "Not allowed mapped frames as source")
 
-  //  def this(df: Frame, mapping: Mapping) {
-  //    this()
-  //    if (df.isMappedFrame) {
-  //      throw new IllegalArgumentException("Not allowed mapped frames as source")
-  //    }
-  //    this.mapping = mapping
-  //    this.source = df
-  //  }
+  private var _vectors = new mutable.HashMap[Integer, Feature]()
 
   def rowCount: Int = _mapping.size
 
@@ -69,7 +59,7 @@ class MappedFrame extends AbstractFrame {
 
   def col(colIndex: Int): Feature = {
     if (!_vectors.contains(colIndex)) {
-      _vectors(colIndex) = new MappedFeature(_source.col(colIndex), _mapping)
+      _vectors.put(colIndex, new MappedFeature(_source.col(colIndex), _mapping))
     }
     _vectors(colIndex)
   }
