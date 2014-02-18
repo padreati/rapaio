@@ -20,7 +20,7 @@
 
 package rapaio.data
 
-import rapaio.data.mapping.Mapping
+import rapaio.data.mapping._
 import java.io.Serializable
 
 /**
@@ -46,7 +46,7 @@ trait Feature extends Serializable {
    * @return true if the vector is mapped (is a mapping over an original vector),
    *         false otherwise
    */
-  def isMappedVector: Boolean
+  def isMappedFeature: Boolean
 
   /**
    * @return the source vector if is a mapping vector, otherwise
@@ -186,6 +186,23 @@ trait Feature extends Serializable {
     for (i <- 0 until rowCount)
       inst(i) = new VInst(i, this)
     inst
+  }
+
+  def apply(f: VInst => Boolean): MappedFeature = {
+    val p = new VInst(0, this)
+    val m = new Mapping
+    if (isMappedFeature) {
+      mapping.foreach(row => {
+        p.row = row
+        if (f(p)) m.add(p.rowId)
+      })
+    } else {
+      for (row <- 0 until rowCount) {
+        p.row = row
+        if (f(p)) m.add(p.rowId)
+      }
+    }
+    new MappedFeature(source, m)
   }
 
   override def toString: String = {

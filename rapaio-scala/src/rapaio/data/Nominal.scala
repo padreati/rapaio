@@ -75,7 +75,7 @@ class Nominal(protected var rows: Int,
     data = Arrays.copyOf(data, newCapacity)
   }
 
-  def isMappedVector: Boolean = false
+  def isMappedFeature: Boolean = false
 
   def source: Feature = this
 

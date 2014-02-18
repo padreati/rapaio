@@ -25,25 +25,27 @@ import rapaio.data.mapping.MappedFeature
 /**
  * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-class VInst(private val _row: Int, private val _vector: Feature) {
+class VInst(private var _row: Int, private val _vector: Feature) {
 
   def rowId: Int = _vector.rowId(_row)
 
   def row: Int = _row
 
+  def row_=(r: Int) = _row = r
+
   def vector: Feature = _vector
 
   def value = _vector.values(_row)
 
-  def value_(x: Double) = _vector.values(_row) = x
+  def value_=(x: Double) = _vector.values(_row) = x
 
   def index = _vector.indexes(_row)
 
-  def index_(x: Int) = _vector.indexes(_row) = x
+  def index_=(x: Int) = _vector.indexes(_row) = x
 
   def label = _vector.labels(_row)
 
-  def label_(x: String) = _vector.labels(_row) = x
+  def label_=(x: String) = _vector.labels(_row) = x
 
   override def toString: String = {
     _vector match {

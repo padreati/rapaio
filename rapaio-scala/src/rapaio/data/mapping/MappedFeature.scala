@@ -35,7 +35,7 @@ import rapaio.data._
 class MappedFeature(private val _source: Feature,
                     private val _mapping: Mapping) extends Feature {
 
-  require(!_source.isMappedVector, "Now allowed mapped vector as source")
+  require(!_source.isMappedFeature, "Now allowed mapped vector as source")
 
 
   override def shortName: String = _source.shortName
@@ -46,7 +46,7 @@ class MappedFeature(private val _source: Feature,
 
   def rowCount: Int = _mapping.size
 
-  def isMappedVector: Boolean = true
+  def isMappedFeature: Boolean = true
 
   def source: Feature = _source
 

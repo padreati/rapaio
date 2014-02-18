@@ -75,7 +75,7 @@ class Index(protected var rows: Int,
 
   private def outOfBoundsMsg(index: Int): String = "Index: " + index + ", Size: " + rows
 
-  def isMappedVector: Boolean = false
+  def isMappedFeature: Boolean = false
 
   def source: Feature = this
 

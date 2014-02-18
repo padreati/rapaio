@@ -79,9 +79,9 @@ class Plot extends AbstractFigure {
 
   def points(x: Feature = null,
              y: Feature,
-             col: ColorOption = Color.BLACK,
-             pch: PchOption = 'o',
-             sz: SizeOption = 4): Plot = {
+             col: ColorOption = GraphicOptions.DEFAULT_COLOR,
+             pch: PchOption = GraphicOptions.DEFAULT_PCH,
+             sz: SizeOption = GraphicOptions.DEFAULT_SZ): Plot = {
     val points = new Points(x, y)
     points.options.col = if (col == GraphicOptions.DEFAULT_COLOR) options.col else col
     points.options.pch = if (pch == GraphicOptions.DEFAULT_PCH) options.pch else pch
@@ -127,15 +127,19 @@ class Plot extends AbstractFigure {
 }
 
 object Plot {
-  def apply(col: ColorOption = Color.BLACK,
-            pch: PchOption = 'o',
-            lwd: LwdOption = 1.2,
-            sz: SizeOption = 4): Plot = {
+  def apply(col: ColorOption = GraphicOptions.DEFAULT_COLOR,
+            pch: PchOption = GraphicOptions.DEFAULT_PCH,
+            lwd: LwdOption = GraphicOptions.DEFAULT_LWD,
+            sz: SizeOption = GraphicOptions.DEFAULT_SZ,
+            xRange: (Double, Double) = (Double.NaN, Double.NaN),
+            yRange: (Double, Double) = (Double.NaN, Double.NaN)): Plot = {
     val plot = new Plot()
     plot.options.col = col
     plot.options.pch = pch
     plot.options.lwd = lwd
     plot.options.sz = sz
+    plot.setXRange(xRange._1, xRange._2)
+    plot.setYRange(yRange._1, yRange._2)
     plot
   }
 }

@@ -88,7 +88,7 @@ class Value(protected var rows: Int,
     if (index >= rows || index < 0) throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + rows)
   }
 
-  def isMappedVector: Boolean = false
+  def isMappedFeature: Boolean = false
 
   def source: Feature = this
 
@@ -200,7 +200,7 @@ object Value {
     x
   }
 
-  def apply(from: Int = 0, to: Int, f: (Int) => Double): Value = {
+  def apply(from: Int, to: Int, f: (Int) => Double): Value = {
     val value = new Value
     for (i <- from until to) {
       value.values ++ f(i)
