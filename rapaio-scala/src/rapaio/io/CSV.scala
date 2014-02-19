@@ -21,13 +21,12 @@
 package rapaio.io
 
 import java.io._
-import java.util.NoSuchElementException
+import scala.collection
+import rapaio.data._
+import scala.Some
 import scala.util.parsing.input.PagedSeqReader
 import scala.collection.immutable.PagedSeq
 import scala.util.parsing.combinator.RegexParsers
-import rapaio.data._
-import scala.collection.mutable
-import scala.Some
 
 /**
  * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -35,16 +34,25 @@ import scala.Some
 
 object CSV {
 
-  def read(file: File, hasHeader: Boolean = true, defaultType: String = "val"): Frame = {
+  private val typePrecedence: List[String] = List("idx", "val", "nom")
+
+  def read(file: File,
+           header: Boolean = true,
+           naValues: List[String] = List("?"),
+           defaultType: String = "val",
+           typeHints: Map[String, String] = Map.empty)
+  : Frame = {
+
     val opt = new CSVFormat {}
     val csv = CSVReader.open(new FileReader(file))(opt)
 
-    val names = new mutable.MutableList[String]
-    val vectors = new mutable.MutableList[Feature]
+    val names = new collection.mutable.MutableList[String]
+    val vectors = new collection.mutable.MutableList[Feature]
     val it = csv.iterator
 
+
     var rows = 0
-    if (hasHeader) {
+    if (header) {
       val next = it.next()
       for (i <- 0 until next.size) {
         names += next(i)
@@ -55,7 +63,7 @@ object CSV {
       val next = it.next()
       for (i <- 0 until next.size) {
         assureName(names, i)
-        pushValue(vectors, i, rows, next(i))
+        pushElement(vectors, names, naValues, i, rows, next(i), defaultType, typeHints)
       }
       rows += 1
     }
@@ -63,21 +71,93 @@ object CSV {
     new SolidFrame(rows, vectors.toArray[Feature], names.toArray[String])
   }
 
-  private def assureName(names: mutable.MutableList[String], index: Int): String = {
-    if (names.length <= index)
-      for (i <- names.length to index) names ++ ("V" + i).toString
+  private def assureName(names: collection.mutable.MutableList[String], index: Int): String = {
+    if (names.length <= index) names ++ ("V" + index)
     names(index)
   }
 
-  private def pushValue(vectors: mutable.MutableList[Feature], index: Int, row: Int, value: String) {
-    if (vectors.length <= index)
-      for (i <- vectors.length to index) vectors += new Nominal()
-    if (vectors(index).rowCount <= row - 1)
-      for (i <- vectors(index).rowCount to row - 1) {
-        vectors(index).missing ++
+  private def pushElement(features: collection.mutable.MutableList[Feature],
+                          names: collection.mutable.MutableList[String],
+                          naValues: List[String],
+                          index: Int, row: Int, value: String,
+                          defaultType: String = "val",
+                          typeHints: Map[String, String]) {
+
+    def buildFeature(shortName: String): Feature = {
+      shortName match {
+        case "val" => new Value()
+        case "nom" => new Nominal()
+        case "idx" => new Index()
       }
-    vectors(index).labels ++ value
+    }
+
+    def initialHint(colName: String): String = {
+      if (typeHints.contains(colName)) typeHints(colName)
+      else defaultType
+    }
+
+    def pushIndex() {
+      try {
+        val t = Integer.parseInt(value)
+        features(index).indexes ++ t
+      }
+      catch {
+        case _: Throwable => {
+          convertIndexToValue()
+          pushValue()
+        }
+      }
+    }
+
+    def pushValue() {
+      try {
+        val t = java.lang.Double.parseDouble(value)
+        features(index).values ++ t
+      } catch {
+        case _: Throwable => {
+          convertValueToNominal()
+          pushNominal()
+        }
+      }
+    }
+
+    def pushNominal() = features(index).labels ++ value
+
+    def convertIndexToValue() {
+      val old = features(index)
+      features(index) = new Value()
+      for (i <- 0 until old.rowCount) {
+        if (old.missing(i)) features(index).missing ++
+        else features(index).values ++ old.indexes(i).toDouble
+      }
+    }
+
+    def convertValueToNominal() {
+      val old = features(index)
+      features(index) = new Nominal()
+      for (i <- 0 until old.rowCount) {
+        if (old.missing(i)) features(index).missing ++
+        else features(index).labels ++ old.values(i).toString
+      }
+    }
+
+
+    // build feature 
+    if (features.length <= index)
+      features += buildFeature(initialHint(names(index)))
+    if (features(index).rowCount <= row - 1)
+      for (i <- features(index).rowCount to row - 1) {
+        features(index).missing.++()
+      }
+    if (naValues.contains(value)) features(index).missing ++
+    else
+      features(index).shortName match {
+        case "nom" => pushNominal()
+        case "val" => pushIndex()
+        case "idx" => pushIndex()
+      }
   }
+
 
 }
 

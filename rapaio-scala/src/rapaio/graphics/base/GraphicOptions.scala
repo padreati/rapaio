@@ -20,7 +20,7 @@
 
 package rapaio.graphics.base
 
-import rapaio.data.Index
+import rapaio.data._
 import java.awt.Color
 
 /**
@@ -43,7 +43,7 @@ object GraphicOptions {
   val DefaultColor: ColorOption = Color.BLACK
   val DefaultLwd: LwdOption = 1.2
   val DefaultPch: PchOption = 'o'
-  val DefaultSz: SizeOption = 2.5
+  val DefaultSz: SizeOption = 2.7
   val DefaultXLim: (Double, Double) = (Double.NaN, Double.NaN)
   val DefaultYLim: (Double, Double) = (Double.NaN, Double.NaN)
 }
@@ -87,10 +87,10 @@ object ColorOption {
     new ColorOption(Array[Color](StandardColorPalette.color(i)))
   }
 
-  implicit def fromIndex(index: Index): ColorOption = {
-    val values = new Array[Color](index.rowCount)
-    for (i <- 0 until index.rowCount) {
-      values(i) = StandardColorPalette.color(i)
+  implicit def fromFeature(feat: Feature): ColorOption = {
+    val values = new Array[Color](feat.rowCount)
+    for (i <- 0 until feat.rowCount) {
+      values(i) = StandardColorPalette.color(if (feat.missing(i)) 0; else feat.indexes(i))
     }
     new ColorOption(values)
   }
