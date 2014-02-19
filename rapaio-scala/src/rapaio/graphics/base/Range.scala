@@ -45,7 +45,9 @@ class Range(
     }
   }
 
-  def contains(x: Double, y: Double): Boolean = x1 <= x && x <= x2 && y1 <= y && y <= y2
+  def contains(x: Double, y: Double): Boolean = {
+    x1 <= x && x <= x2 && y1 <= y && y <= y2
+  }
 
   def width: Double = x2 - x1
 

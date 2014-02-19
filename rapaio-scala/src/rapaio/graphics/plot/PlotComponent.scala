@@ -20,15 +20,15 @@
 
 package rapaio.graphics.plot
 
-import rapaio.graphics.base.AbstractFigure
+import rapaio.graphics.base._
 import java.awt._
 
 /**
  * @author Aurelian Tutuianu
  */
-abstract class PlotComponent extends AbstractFigure {
+abstract class PlotComponent extends Figure {
 
-  var parent: AbstractFigure = null
+  var parent: Figure = _
 
   def initialize {}
 

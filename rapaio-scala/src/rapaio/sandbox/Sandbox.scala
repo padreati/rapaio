@@ -36,6 +36,6 @@ object Sandbox extends App {
 
   //  println(y.toValueArray mkString ",")
 
-  drawPlugin(Plot().points(x, y))
+  drawPlugin(Plot(xLim = (0, 1), yLim = (Double.NaN, 0.0002)).points(x, y))
 }
 

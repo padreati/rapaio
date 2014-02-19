@@ -43,7 +43,7 @@ class Points(private val x: Feature, private var y: Feature) extends PlotCompone
   def paint(g2d: Graphics2D) {
     g2d.setBackground(StandardColorPalette.color(255))
     for (i <- 0 until math.min(x.rowCount, y.rowCount)) {
-      if ((!x.missing(i)) && (!y.missing(i))) {
+      if (!x.missing(i) && !y.missing(i) && range.contains(x.values(i), y.values(i))) {
         g2d.setColor(options.col(i))
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f))
         val xx = parent.xScale(x.values(i)).toInt

@@ -29,7 +29,7 @@ import rapaio.data.Feature
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-class Plot extends AbstractFigure {
+class Plot extends Figure {
 
   private final val components = new MutableList[PlotComponent]
 
@@ -51,12 +51,20 @@ class Plot extends AbstractFigure {
     if (r == null) {
       r = new Range(0, 0, 1, 1)
     }
-    if (x1 == x1 && x2 == x2) {
+    val x1 = options.xLim._1
+    val x2 = options.xLim._2
+    val y1 = options.yLim._1
+    val y2 = options.yLim._2
+    if (x1 == x1) {
       r.x1 = x1
+    }
+    if (x2 == x2) {
       r.x2 = x2
     }
-    if (y1 == y1 && y2 == y2) {
+    if (y1 == y1) {
       r.y1 = y1
+    }
+    if (y2 == y2) {
       r.y2 = y2
     }
     if (r.y1 == r.y2) {
@@ -79,13 +87,13 @@ class Plot extends AbstractFigure {
 
   def points(x: Feature = null,
              y: Feature,
-             col: ColorOption = GraphicOptions.DEFAULT_COLOR,
-             pch: PchOption = GraphicOptions.DEFAULT_PCH,
-             sz: SizeOption = GraphicOptions.DEFAULT_SZ): Plot = {
+             col: ColorOption = GraphicOptions.DefaultColor,
+             pch: PchOption = GraphicOptions.DefaultPch,
+             sz: SizeOption = GraphicOptions.DefaultSz): Plot = {
     val points = new Points(x, y)
-    points.options.col = if (col == GraphicOptions.DEFAULT_COLOR) options.col else col
-    points.options.pch = if (pch == GraphicOptions.DEFAULT_PCH) options.pch else pch
-    points.options.sz = if (sz == GraphicOptions.DEFAULT_SZ) options.sz else sz
+    points.options.col = if (col == GraphicOptions.DefaultColor) options.col else col
+    points.options.pch = if (pch == GraphicOptions.DefaultPch) options.pch else pch
+    points.options.sz = if (sz == GraphicOptions.DefaultSz) options.sz else sz
     add(points)
   }
 
@@ -96,7 +104,7 @@ class Plot extends AbstractFigure {
            max: Double = Double.NaN,
            col: ColorOption = 7): Plot = {
     val hist = new Histogram(x, bins, prob, min, max)
-    hist.options.col = if (col == GraphicOptions.DEFAULT_COLOR) options.col else col
+    hist.options.col = if (col == GraphicOptions.DefaultColor) options.col else col
     add(hist)
   }
 
@@ -114,32 +122,22 @@ class Plot extends AbstractFigure {
   override def buildBottomMarkers() {
     buildNumericBottomMarkers()
   }
-
-  override def setXRange(start: Double, end: Double): Plot = {
-    super.setXRange(start, end)
-    return this
-  }
-
-  override def setYRange(start: Double, end: Double): Plot = {
-    super.setYRange(start, end)
-    return this
-  }
 }
 
 object Plot {
-  def apply(col: ColorOption = GraphicOptions.DEFAULT_COLOR,
-            pch: PchOption = GraphicOptions.DEFAULT_PCH,
-            lwd: LwdOption = GraphicOptions.DEFAULT_LWD,
-            sz: SizeOption = GraphicOptions.DEFAULT_SZ,
-            xRange: (Double, Double) = (Double.NaN, Double.NaN),
-            yRange: (Double, Double) = (Double.NaN, Double.NaN)): Plot = {
+  def apply(col: ColorOption = GraphicOptions.DefaultColor,
+            pch: PchOption = GraphicOptions.DefaultPch,
+            lwd: LwdOption = GraphicOptions.DefaultLwd,
+            sz: SizeOption = GraphicOptions.DefaultSz,
+            xLim: (Double, Double) = (Double.NaN, Double.NaN),
+            yLim: (Double, Double) = (Double.NaN, Double.NaN)): Plot = {
     val plot = new Plot()
     plot.options.col = col
     plot.options.pch = pch
     plot.options.lwd = lwd
     plot.options.sz = sz
-    plot.setXRange(xRange._1, xRange._2)
-    plot.setYRange(yRange._1, yRange._2)
+    plot.options.xLim = xLim
+    plot.options.yLim = yLim
     plot
   }
 }

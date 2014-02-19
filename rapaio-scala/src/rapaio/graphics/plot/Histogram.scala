@@ -87,21 +87,21 @@ class Histogram(private val v: Feature,
   def buildRange: Range = {
     rebuild
     val range: Range = new Range
-    if (x1 != x1) {
+    if (options.xLim._1 != options.xLim._1) {
       range.union(min, Double.NaN)
       range.union(max, Double.NaN)
     } else {
-      range.union(x1, Double.NaN)
-      range.union(x2, Double.NaN)
+      range.union(options.xLim._1, Double.NaN)
+      range.union(options.xLim._2, Double.NaN)
     }
-    if (y1 != y1) {
+    if (options.yLim._1 != options.yLim._1) {
       for (i <- 0 until freqTable.length) {
         range.union(Double.NaN, freqTable(i))
       }
       range.union(Double.NaN, 0)
     } else {
-      range.union(Double.NaN, y1)
-      range.union(Double.NaN, y2)
+      range.union(Double.NaN, options.yLim._1)
+      range.union(Double.NaN, options.yLim._2)
     }
     return range
   }

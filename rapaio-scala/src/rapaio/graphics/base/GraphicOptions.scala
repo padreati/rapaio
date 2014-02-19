@@ -28,20 +28,24 @@ import java.awt.Color
  * @author Aurelian Tutuianu <padreati@yahoo.com>
  */
 class GraphicOptions {
-  var col: ColorOption = GraphicOptions.DEFAULT_COLOR
-  var lwd: LwdOption = GraphicOptions.DEFAULT_LWD
-  var pch: PchOption = GraphicOptions.DEFAULT_PCH
-  var sz: SizeOption = GraphicOptions.DEFAULT_SZ
+  var col: ColorOption = GraphicOptions.DefaultColor
+  var lwd: LwdOption = GraphicOptions.DefaultLwd
+  var pch: PchOption = GraphicOptions.DefaultPch
+  var sz: SizeOption = GraphicOptions.DefaultSz
+  var xLim: (Double, Double) = GraphicOptions.DefaultXLim
+  var yLim: (Double, Double) = GraphicOptions.DefaultYLim
 }
 
 /**
  * Provides default values for graphical options.
  */
 object GraphicOptions {
-  val DEFAULT_COLOR: ColorOption = Color.BLACK
-  val DEFAULT_LWD: LwdOption = 1.2
-  val DEFAULT_PCH: PchOption = 'o'
-  val DEFAULT_SZ: SizeOption = 2.5
+  val DefaultColor: ColorOption = Color.BLACK
+  val DefaultLwd: LwdOption = 1.2
+  val DefaultPch: PchOption = 'o'
+  val DefaultSz: SizeOption = 2.5
+  val DefaultXLim: (Double, Double) = (Double.NaN, Double.NaN)
+  val DefaultYLim: (Double, Double) = (Double.NaN, Double.NaN)
 }
 
 /**
