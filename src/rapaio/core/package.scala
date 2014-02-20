@@ -28,6 +28,17 @@ import rapaio.data.Feature
  */
 package object core {
 
+  private val MathLog2 = math.log(2.0)
+
   def mean(v: Feature): Mean = new Mean(v)
 
+  /**
+   * Returns the base 2 logarithm of a double value
+   *
+   * @param x the number from which we take base 2 logarithm
+   * @return the base 2 logarithm of input getValue
+   */
+  def log2(x: Double): Double = {
+    return math.log(x) / MathLog2
+  }
 }

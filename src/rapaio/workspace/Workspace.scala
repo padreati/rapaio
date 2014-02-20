@@ -31,9 +31,6 @@ import rapaio.server.LocalPrinter
  */
 object Workspace {
 
-  def importAll {
-  }
-
   def p(xs: String*) {
     xs.foreach(x => print(x + " "))
     println

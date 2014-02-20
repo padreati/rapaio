@@ -61,7 +61,7 @@ class Histogram(private val v: Feature,
         }
       }
     }
-    val step = (max - min) / (1.* bins)
+    val step = (max - min) / (1.0 * bins)
     freqTable = new Array[Double](bins)
     var total: Double = 0
     for (i <- 0 until v.rowCount) {
@@ -149,7 +149,7 @@ class Histogram(private val v: Feature,
 
   private def binStart(i: Int): Double = {
     val value = min
-    val fraction = (max - min) / (1.* bins)
+    val fraction = (max - min) / (1.0 * bins)
     return value + fraction * (i)
   }
 }

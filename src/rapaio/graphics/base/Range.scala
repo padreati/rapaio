@@ -56,7 +56,7 @@ class Range(
   def properDecimalsX: Int = {
     var decimals: Int = 0
     var max: Double = math.abs(x2 - x1)
-    while (max <= 10.) {
+    while (max <= 10.0) {
       max *= 10
       decimals += 1
       if (decimals > 7) {
@@ -69,7 +69,7 @@ class Range(
   def properDecimalsY: Int = {
     var decimals: Int = 0
     var max: Double = math.abs(y2 - y1)
-    while (max <= 10.) {
+    while (max <= 10.0) {
       max *= 10
       decimals += 1
       if (decimals > 7) {

@@ -100,7 +100,7 @@ trait Figure {
   }
 
   def yScale(y: Double): Double = {
-    view.y + view.height * (1.-(y - range.y1) / (range.y2 - range.y1))
+    view.y + view.height * (1.0 - (y - range.y1) / (range.y2 - range.y1))
   }
 
   protected def paint(g2d: Graphics2D, rect: Rectangle) {

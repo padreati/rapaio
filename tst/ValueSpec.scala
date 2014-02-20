@@ -26,6 +26,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
+import org.scalatest.{FlatSpec, Matchers}
 import rapaio.data.Value
 
 class ValueSpec extends FlatSpec with Matchers {

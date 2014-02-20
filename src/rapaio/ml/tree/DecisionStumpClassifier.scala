@@ -22,6 +22,7 @@ package rapaio.ml.tree
 
 import rapaio.data._
 import rapaio.ml.Classifier
+import rapaio.ml.tools.DensityTable
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -57,27 +58,25 @@ class DecisionStumpClassifier extends Classifier {
 
   def learn(df: Frame, weights: Value, targetName: String) {
     splitGain = 0
-    val targetCol: Feature = df.col(targetName)
-    dict = targetCol.labels.dictionary
+    dict = df.col(targetName).labels.dictionary
     val totals = new Array[Double](dict.length)
     for (i <- 0 until df.rowCount) {
       totals(df.col(targetName).indexes(i)) += weights.values(i)
     }
-    for (testName <- df.colNames) {
-      if (!(targetName == testName)) {
-        val col = df.col(testName)
-        if (col.isNumeric) {
-          evaluateNumeric(df, weights, testName, totals)
-        }
-        else {
-          evaluateNominal(df, weights, testName, totals)
+    df.colNames.foreach(testName => {
+      if (targetName != testName) {
+        df.col(testName).shortName match {
+          case "nom" => evaluateNominal(df, weights, testName, totals)
+          case _ => evaluateNumeric(df, weights, testName, totals)
         }
       }
-    }
+    })
     this.defaultLabel = buildDefaultLabel(df, weights)
   }
 
   private def buildDefaultLabel(df: Frame, weights: Value): String = {
+    val dt = DensityTable(df, targetName, targetName)
+
     //    val freq: Array[Double] = new Array[Double](classCol.getDictionary.length)
     //    var total: Int = 0 {
     //      var i: Int = 0
@@ -115,7 +114,7 @@ class DecisionStumpClassifier extends Classifier {
     //      }
     //    }
     //    return dict(sel.get(RandomSource.nextInt(sel.size)))
-    "Nil"
+    ""
   }
 
   private def evaluateNominal(df: Frame, weights: Value, testName: String, totals: Array[Double]) {

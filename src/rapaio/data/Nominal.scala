@@ -45,13 +45,15 @@ class Nominal(protected var rows: Int,
               private var dictionary: List[String]) extends Feature {
   private var _dict = new mutable.MutableList[String]
   private var data = Array[Int](rows)
-  private var reverse = new mutable.HashMap[String, Int]
+  private var _reverse = new mutable.HashMap[String, Int]
 
+  _dict += "?"
+  _reverse += ("?" -> 0)
   for (next <- dictionary) {
     if (!_dict.contains(next)) {
       _dict += next
     }
-    reverse += (next -> _dict.size)
+    _reverse += (next -> _dict.size)
   }
 
 
@@ -130,11 +132,11 @@ class Nominal(protected var rows: Int,
       val row = math.rint(value).toInt
       val label = _dict(data(row))
       ensureCapacity(rows + 1)
-      if (!reverse.contains(label)) {
+      if (!_reverse.contains(label)) {
         _dict += label
-        reverse.put(label, reverse.size)
+        _reverse.put(label, _reverse.size)
       }
-      data(rows) = reverse(label)
+      data(rows) = _reverse(label)
       rows += 1
     }
   }
@@ -147,11 +149,11 @@ class Nominal(protected var rows: Int,
     override def ++(value: Int): Unit = {
       val label = _dict(value)
       ensureCapacity(rows + 1)
-      if (!reverse.contains(label)) {
+      if (!_reverse.contains(label)) {
         _dict += label
-        reverse.put(label, reverse.size)
+        _reverse.put(label, _reverse.size)
       }
-      data(rows) = reverse(label)
+      data(rows) = _reverse(label)
       rows += 1
     }
   }
@@ -164,49 +166,49 @@ class Nominal(protected var rows: Int,
         data(row) = Nominal.missingIndex
         return
       }
-      if (!reverse.contains(value)) {
+      if (!_reverse.contains(value)) {
         _dict += value
-        reverse += (value -> reverse.size)
+        _reverse += (value -> _reverse.size)
       }
-      data(row) = reverse(value)
+      data(row) = _reverse(value)
     }
 
     override def ++(value: String): Unit = {
       ensureCapacity(rows + 1)
-      if (!reverse.contains(value)) {
+      if (!_reverse.contains(value)) {
         _dict += value
-        reverse.put(value, reverse.size)
+        _reverse.put(value, _reverse.size)
       }
-      data(rows) = reverse(value)
+      data(rows) = _reverse(value)
       rows += 1
     }
 
     override def dictionary_=(dict: Array[String]): Unit = {
       val oldDict = _dict;
-      val oldReverse = reverse;
+      val oldReverse = _reverse;
 
       _dict = new mutable.MutableList();
-      reverse = new mutable.HashMap();
+      _reverse = new mutable.HashMap();
       _dict += "?";
-      reverse += ("?" -> 0);
+      _reverse += ("?" -> 0);
 
       for (i <- 0 until dict.length) {
-        if (!reverse.contains(dict(i))) {
+        if (!_reverse.contains(dict(i))) {
           _dict += dict(i);
-          reverse += (dict(i) -> reverse.size);
+          _reverse += (dict(i) -> _reverse.size);
         }
       }
 
       for (i <- 0 until rows) {
-        if (!reverse.contains(oldDict(data(i)))) {
+        if (!_reverse.contains(oldDict(data(i)))) {
           _dict = oldDict;
-          reverse = oldReverse;
+          _reverse = oldReverse;
           throw new IllegalArgumentException("new getDictionary does not contains all old labels");
         }
       }
 
       for (i <- 0 until rows) {
-        data(i) = reverse(oldDict(data(i)));
+        data(i) = _reverse(oldDict(data(i)));
       }
     }
 

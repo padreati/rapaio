@@ -22,8 +22,7 @@ package rapaio.sandbox
 
 import rapaio.io.CSV
 import java.io.File
-import rapaio.workspace.Workspace
-import rapaio.graphics.Plot
+import rapaio.ml.tools.DensityTable
 
 /**
  * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -46,7 +45,6 @@ object CSVSandbox extends App {
     println
   })
 
-  Workspace.drawPlugin(Plot().points(
-    df.col("Age"), df.col("Fare"),
-    col = df.col("Sex"), pch = 1))
+  val dt = DensityTable(df, "Sex", "Survived")
+  println(dt)
 }

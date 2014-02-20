@@ -67,7 +67,7 @@ trait Classifier {
    * @param targetName target column name
    */
   def learn(df: Frame, targetName: String) {
-    learn(df, new Value(df.rowCount, df.rowCount, 1.), targetName)
+    learn(df, new Value(df.rowCount, df.rowCount, 1.0), targetName)
   }
 
   /**
