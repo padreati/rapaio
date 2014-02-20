@@ -29,8 +29,18 @@ import java.util
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 object DensityTable {
-  val NUMERIC_DEFAULT_LABELS: Array[String] = Array[String]("?", "less-equals", "greater")
+  val NumericDefaultLabels: Array[String] = Array[String]("?", "less-equals", "greater")
 
+  /**
+   * Builds an empty density table having column and row names given as parameter
+   * and the table size computed accordingly.
+   * Be aware that the density table tool considers the first column and
+   * first row as missing value.
+   *
+   * @param testLabels names for the test feature
+   * @param targetLabels names for the target feature
+   * @return an empty density feature with specified rows and columns
+   */
   def apply(testLabels: Array[String], targetLabels: Array[String]): DensityTable = {
     val dt = new DensityTable
     dt.testLabels = testLabels
@@ -39,17 +49,38 @@ object DensityTable {
     dt
   }
 
+  /**
+   * Builds a density table from two named nominal features of a given frame,
+   * each observation having weight 1.
+   *
+   * @param df frame which contains the observations
+   * @param testColName test feature which maps to rows
+   * @param targetColName target feature which maps to columns
+   * @return a density table filled with values from observations
+   */
   def apply(df: Frame, testColName: String, targetColName: String): DensityTable = {
     apply(df, null, testColName, targetColName)
   }
 
+  /**
+   * Builds a density table from two named nominal features of a given frame,
+   * each observation having weight specified by {@param weights}.
+   *
+   * @param df frame which contains observations
+   * @param weights array with observation weights
+   * @param testColName test feature which maps to rows
+   * @param targetColName target feature which maps to columns
+   * @return
+   */
   def apply(df: Frame, weights: List[Double], testColName: String, targetColName: String): DensityTable = {
     require(df.col(targetColName).isNominal, "Target feature must be nominal")
     require(df.col(testColName).isNominal, "Test feature must be nominal")
 
+    def virtualWeight(i: Int): Double = if (weights != null) weights.get(i) else 1.0
+
     val dt = apply(df.col(testColName).labels.dictionary, df.col(targetColName).labels.dictionary)
     for (i <- 0 until df.rowCount) {
-      dt.update(df.indexes(i, testColName), df.indexes(i, targetColName), if (weights != null) weights.get(i) else 1.0)
+      dt.update(df.indexes(i, testColName), df.indexes(i, targetColName), virtualWeight(i))
     }
     dt
   }
@@ -84,25 +115,45 @@ final class DensityTable {
    */
   def reset = values.foreach(row => util.Arrays.fill(row, 0.0))
 
+  /**
+   * Adds to density table cell with row and col the given weight.
+   *
+   * @param row row of the cell
+   * @param col column of the cell
+   * @param weight weight which wil be added
+   */
   def update(row: Int, col: Int, weight: Double) = values(row)(col) += weight
 
+  /**
+   * Moves a weight from row1 to row2 on given column. This is implemented
+   * as to updates, one which adds -weight on row1, and second which add weight on row2.
+   *
+   * @param row1 initial row
+   * @param row2 final row
+   * @param col column of the cells
+   * @param weight amount for update
+   */
   def moveOnRow(row1: Int, row2: Int, col: Int, weight: Double) {
     update(row1, col, -weight)
     update(row2, col, weight)
   }
 
-  def getEntropy: Double = getEntropy(false)
+  /**
+   * Computes entropy without considering missing values
+   * @return computed entropy without considering missing values
+   */
+  def getEntropy: Double = getEntropy(useMissing = false)
 
   def getEntropy(useMissing: Boolean): Double = {
     var entropy: Double = 0
     val totals: Array[Double] = Array[Double](targetLabels.length)
-    for (i <- 0 until testLabels.length)
-      for (j <- 0 until targetLabels.length)
+    for (i <- 1 until testLabels.length)
+      for (j <- 1 until targetLabels.length)
         totals(j) += values(i)(j)
     var total: Double = 0
-    for (i <- 0 until totals.length)
+    for (i <- 1 until totals.length)
       total += totals(i)
-    for (i <- 0 until totals.length) {
+    for (i <- 1 until totals.length) {
       if (totals(i) > 0) {
         entropy += -core.log2(totals(i) / total) * totals(i) / total
       }
@@ -110,7 +161,7 @@ final class DensityTable {
 
     val factor: Double = if (useMissing) {
       var missing: Double = 0
-      for (i <- 0 until targetLabels.length) {
+      for (i <- 1 until targetLabels.length) {
         missing += values(0)(i)
       }
       total / (missing + total)
@@ -118,22 +169,22 @@ final class DensityTable {
     factor * entropy
   }
 
-  def getInfoXGain: Double = getInfoXGain(false)
+  def getInfoXGain: Double = getInfoXGain(useMissing = false)
 
   def getInfoXGain(useMissing: Boolean): Double = {
     val totals: Array[Double] = new Array[Double](testLabels.length)
-    for (i <- 0 until testLabels.length) {
-      for (j <- 0 until targetLabels.length) {
+    for (i <- 1 until testLabels.length) {
+      for (j <- 1 until targetLabels.length) {
         totals(i) += values(i)(j)
       }
     }
     var total: Double = 0
-    for (i <- 0 until totals.length) {
+    for (i <- 1 until totals.length) {
       total += totals(i)
     }
     var gain: Double = 0
-    for (i <- 0 until testLabels.length) {
-      for (j <- 0 until targetLabels.length) {
+    for (i <- 1 until testLabels.length) {
+      for (j <- 1 until targetLabels.length) {
         if (values(i)(j) > 0) gain += -core.log2(values(i)(j) / totals(i)) * values(i)(j) / total
       }
     }
@@ -146,13 +197,11 @@ final class DensityTable {
     factor * gain
   }
 
-  def getInfoGain: Double = getInfoGain(false)
+  def getInfoGain: Double = getInfoGain(useMissing = false)
 
-  def getInfoGain(useMissing: Boolean): Double = {
-    return getEntropy(useMissing) - getInfoXGain(useMissing)
-  }
+  def getInfoGain(useMissing: Boolean): Double = getEntropy(useMissing) - getInfoXGain(useMissing)
 
-  def splitInfo: Double = splitInfo(false)
+  def splitInfo: Double = splitInfo(useMissing = false)
 
   def splitInfo(useMissing: Boolean): Double = {
     val start: Int = if (useMissing) 0 else 1
@@ -164,12 +213,12 @@ final class DensityTable {
     }
 
     var total: Double = 0
-    for (i <- 0 until totals.length) {
+    for (i <- start until totals.length) {
       total += totals(i)
     }
 
     var splitInfo: Double = 0
-    for (i <- 0 until totals.length) {
+    for (i <- start until totals.length) {
       if (totals(i) > 0) {
         splitInfo += -core.log2(totals(i) / total) * totals(i) / total
       }
@@ -177,13 +226,13 @@ final class DensityTable {
     splitInfo
   }
 
-  def gainRatio: Double = gainRatio(false)
+  def gainRatio: Double = gainRatio(useMissing = false)
 
   def gainRatio(useMissing: Boolean): Double = getInfoGain(useMissing) / splitInfo(useMissing)
 
   /**
-   * Computes the number of columns which have totals equal or greater than {@param minWeight} minWeight,
-   * considering missing values only if {@param isMissing} is true.
+   * Computes the number of columns which have totals equal or greater than minWeight minWeight,
+   * considering missing values only if isMissing is true.
    *
    * @param useMissing if missing row information is used
    * @return number of columns which meet criteria
@@ -191,11 +240,9 @@ final class DensityTable {
   def countWithMinimum(useMissing: Boolean, minWeight: Double): Int = {
     val start: Int = if (useMissing) 0 else 1
     val totals: Array[Double] = new Array[Double](testLabels.length)
-    for (i <- start until testLabels.length) {
-      for (j <- 0 until targetLabels.length) {
+    for (i <- start until testLabels.length)
+      for (j <- 1 until targetLabels.length)
         totals(i) += values(i)(j)
-      }
-    }
     totals.count(x => x >= minWeight)
   }
 }
