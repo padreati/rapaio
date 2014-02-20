@@ -38,11 +38,11 @@ class Value(protected var rows: Int,
   if (fill != 0) Arrays.fill(data, 0, rows, fill)
 
 
-  override def shortName: String = "val"
+  override def shortName: String = Value.ShortName
 
   def this() {
     this(0, 0, 0)
-    data = Value.EMPTY_DATA
+    data = Value.EmptyData
   }
 
   def this(rows: Int) {
@@ -55,7 +55,7 @@ class Value(protected var rows: Int,
 
   private def hugeCapacity(minCapacity: Int): Int = {
     if (minCapacity < 0) throw new OutOfMemoryError
-    else if (minCapacity > Value.MAX_ARRAY_SIZE) Int.MaxValue else Value.MAX_ARRAY_SIZE
+    else if (minCapacity > Value.MaxArraySize) Int.MaxValue else Value.MaxArraySize
   }
 
   def isNominal: Boolean = false
@@ -64,8 +64,8 @@ class Value(protected var rows: Int,
 
   private def ensureCapacityInternal(minCapacity: Int) {
     var capacity = minCapacity
-    if (data eq Value.EMPTY_DATA) {
-      capacity = math.max(Value.DEFAULT_CAPACITY, minCapacity)
+    if (data eq Value.EmptyData) {
+      capacity = math.max(Value.DefaultCapacity, minCapacity)
     }
     if (capacity - data.length > 0) grow(capacity)
   }
@@ -80,7 +80,7 @@ class Value(protected var rows: Int,
     val oldCapacity: Int = data.length
     var newCapacity: Int = oldCapacity + (oldCapacity >> 1)
     if (newCapacity - minCapacity < 0) newCapacity = minCapacity
-    if (newCapacity - Value.MAX_ARRAY_SIZE > 0) newCapacity = hugeCapacity(minCapacity)
+    if (newCapacity - Value.MaxArraySize > 0) newCapacity = hugeCapacity(minCapacity)
     data = Arrays.copyOf(data, newCapacity)
   }
 
@@ -115,7 +115,7 @@ class Value(protected var rows: Int,
   def trimToSize = if (rows < data.length) data = Arrays.copyOf(data, rows)
 
   def ensureCapacity(minCapacity: Int) {
-    val minExpand: Int = if ((data ne Value.EMPTY_DATA)) 0 else Value.DEFAULT_CAPACITY
+    val minExpand: Int = if ((data ne Value.EmptyData)) 0 else Value.DefaultCapacity
     if (minCapacity > minExpand) {
       if (minCapacity - data.length > 0) grow(minCapacity)
     }
@@ -178,10 +178,12 @@ class Value(protected var rows: Int,
 }
 
 object Value {
-  private final val MAX_ARRAY_SIZE: Int = Integer.MAX_VALUE - 8
-  private final val DEFAULT_CAPACITY: Int = 10
-  private final val EMPTY_DATA: Array[Double] = Array[Double](DEFAULT_CAPACITY)
-  private final val missingValue: Double = Double.NaN
+  val ShortName = "val"
+  private val MaxArraySize: Int = Integer.MAX_VALUE - 8
+  private val DefaultCapacity: Int = 10
+  private val EmptyData: Array[Double] = Array[Double](DefaultCapacity)
+  private val missingValue: Double = Double.NaN
+
 
   def apply(values: Array[Double]): Value = {
     val x = new Value(values.length)

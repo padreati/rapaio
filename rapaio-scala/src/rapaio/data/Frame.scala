@@ -154,3 +154,19 @@ abstract trait Frame extends Serializable {
   }
 
 }
+
+object Frame {
+
+  /**
+   * Builds a frame only with Value features, with given column names.
+   *
+   * @param rows number of rows of the resulted frame
+   * @param names column names
+   * @return new solid frame only with Value columns
+   */
+  def matrix(rows: Int, names: Array[String]): Frame = {
+    val features = new Array[Feature](names.length)
+    for (i <- 0 until names.length) features(i) = new Value()
+    new SolidFrame(rows, features, names)
+  }
+}
