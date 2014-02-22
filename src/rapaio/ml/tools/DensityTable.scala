@@ -29,6 +29,11 @@ import java.util
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 object DensityTable {
+  /**
+   * Labels which can be used when test feature is numeric.
+   * One use case is finding the best binary split point for a numerical feature
+   * in a decision tree classifier.
+   */
   val NumericDefaultLabels: Array[String] = Array[String]("?", "less-equals", "greater")
 
   /**
@@ -139,33 +144,34 @@ final class DensityTable {
   }
 
   /**
-   * Computes entropy without considering missing values
+   * Computes entropy on target feature only, without considering missing values.
+   *
+   * $\sum{x}$
    * @return computed entropy without considering missing values
    */
   def getEntropy: Double = getEntropy(useMissing = false)
 
+  /**
+   * Computes entropy o target feature only with the possibility
+   * to involve missing values.
+   *
+   * @param useMissing if true, missing values are considered an additional
+   *
+   * @return
+   */
   def getEntropy(useMissing: Boolean): Double = {
-    var entropy: Double = 0
     val totals: Array[Double] = Array[Double](targetLabels.length)
     for (i <- 1 until testLabels.length)
       for (j <- 1 until targetLabels.length)
         totals(j) += values(i)(j)
-    var total: Double = 0
-    for (i <- 1 until totals.length)
-      total += totals(i)
-    for (i <- 1 until totals.length) {
-      if (totals(i) > 0) {
-        entropy += -core.log2(totals(i) / total) * totals(i) / total
-      }
-    }
+    val total: Double = totals.slice(1, targetLabels.length).sum
+    val entropy: Double = totals.slice(1, totals.length).
+      filter(x => x > 0).foldLeft(0.0)((b, a) => b - core.log2(a / total) * a / total)
 
-    val factor: Double = if (useMissing) {
-      var missing: Double = 0
-      for (i <- 1 until targetLabels.length) {
-        missing += values(0)(i)
-      }
-      total / (missing + total)
-    } else 1
+    val factor: Double =
+      if (useMissing) total / (values(0).slice(1, targetLabels.length).sum + total)
+      else 1
+
     factor * entropy
   }
 
@@ -178,10 +184,7 @@ final class DensityTable {
         totals(i) += values(i)(j)
       }
     }
-    var total: Double = 0
-    for (i <- 1 until totals.length) {
-      total += totals(i)
-    }
+    val total: Double = totals.slice(1, totals.length).sum
     var gain: Double = 0
     for (i <- 1 until testLabels.length) {
       for (j <- 1 until targetLabels.length) {

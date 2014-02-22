@@ -90,7 +90,7 @@ trait Classifier {
    * @param classifier   previous classifier
    */
   def learnFurther(df: Frame, targetName: String, classifier: Classifier) {
-    learnFurther(df, new Value(df.rowCount, df.rowCount, 1.), targetName, classifier)
+    learnFurther(df, new Value(df.rowCount, df.rowCount, 1.0), targetName, classifier)
   }
 
   /**

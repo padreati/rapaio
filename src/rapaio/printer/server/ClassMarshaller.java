@@ -18,10 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.server;
-
-import rapaio.graphics.base.Figure;
-import rapaio.graphics.base.ImageUtility;
+package rapaio.printer.server;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -32,35 +29,7 @@ import java.io.*;
  */
 public class ClassMarshaller {
 
-    public void marshallRemote(OutputStream out, Class<? extends RapaioCmd> clazz) throws IOException {
-        InputStream is = clazz.getClassLoader().getResourceAsStream(clazz.getName().replace('.', '/') + ".class");
-        byte[] bytes;
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            while (true) {
-                int ch = is.read();
-                if (ch == -1)
-                    break;
-                baos.write(ch);
-            }
-            bytes = baos.toByteArray();
-        }
-        CommandBytes cb = CommandBytes.newRemote(clazz.getCanonicalName(), bytes);
-        try (ObjectOutputStream oos2 = new ObjectOutputStream(out)) {
-            oos2.writeObject(cb);
-            oos2.flush();
-        }
-    }
-
-    public void marshallPrint(OutputStream out, String name, String value) throws IOException {
-        CommandBytes cb = CommandBytes.newPrint(name, value);
-        try (ObjectOutputStream oos2 = new ObjectOutputStream(out)) {
-            oos2.writeObject(cb);
-            oos2.flush();
-        }
-    }
-
-    public void marshallDraw(OutputStream out, Figure figure, int width, int height) throws IOException {
-        BufferedImage image = ImageUtility.buildImage(figure, width, height);
+    public void marshallDraw(OutputStream out, BufferedImage image, int width, int height) throws IOException {
         byte[] bytes;
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             ImageIO.write(image, "png", baos);

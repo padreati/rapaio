@@ -36,15 +36,6 @@ object Sandbox extends App {
 
   //  println(y.toValueArray mkString ",")
 
-  drawPlugin(Plot(xLim = (0, 1), yLim = (Double.NaN, 0.0002)).points(x, y))
-
-
-  var m = "d"
-
-  m match {
-    case "b" | "a" => println(1)
-    case "c" => println(2)
-    case _ => println(3)
-  }
+  draw(Plot(xLim = (0, 1), yLim = (Double.NaN, 0.01)).points(x, y))
 }
 

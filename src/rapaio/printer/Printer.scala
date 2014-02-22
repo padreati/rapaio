@@ -18,20 +18,46 @@
  *    limitations under the License.
  */
 
-package rapaio.server;
+package rapaio.printer
+
+import rapaio.graphics.base.Figure
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+trait Printer {
 
+  def textWidth(): Int
 
-public interface RapaioCmd {
+  def textWidth_=(width: Int)
 
-    void runRemote() throws Exception;
+  def graphicWidth: Int
 
-    void runConsole() throws Exception;
+  def graphicWidth_=(width: Int)
 
-    void runLocal() throws Exception;
+  def graphicHeight: Int
 
-    void run() throws Exception;
+  def graphicHeight_=(height: Int)
+
+  def print(message: String)
+
+  def println()
+
+  def error(message: String, throwable: Throwable)
+
+  def preparePrinter()
+
+  def closePrinter()
+
+  def heading(h: Int, lines: String)
+
+  def code(lines: String)
+
+  def p(lines: String)
+
+  def eqn(equation: String)
+
+  def draw(figure: Figure, width: Int, height: Int)
+
+  def draw(figure: Figure)
 }

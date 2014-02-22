@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.server;
+package rapaio.printer.server;
 
 import java.io.Serializable;
 
@@ -28,66 +28,34 @@ import java.io.Serializable;
 public class CommandBytes implements Serializable {
 
     public static enum Type {
-
-        REMOTE,
-        PRINT,
         DRAW,
         CONFIG
     }
 
     private final Type type;
-    private final String name;
-    private final String value;
     private final byte[] bytes;
-    private int textWidth;
     private int graphicalWidth;
     private int graphicalHeight;
 
-    private CommandBytes(Type type, String name, String value, byte[] bytes) {
+    private CommandBytes(Type type, byte[] bytes) {
         this.type = type;
-        this.name = name;
-        this.value = value;
         this.bytes = bytes;
     }
 
-    public static CommandBytes newRemote(String name, byte[] bytes) {
-        return new CommandBytes(Type.REMOTE, name, null, bytes);
-    }
-
-    public static CommandBytes newPrint(String name, String value) {
-        return new CommandBytes(Type.PRINT, name, value, null);
-    }
-
     public static CommandBytes newDraw(byte[] bytes) {
-        return new CommandBytes(Type.DRAW, null, null, bytes);
+        return new CommandBytes(Type.DRAW, bytes);
     }
 
     public static CommandBytes newConfig() {
-        return new CommandBytes(Type.CONFIG, null, null, null);
+        return new CommandBytes(Type.CONFIG, null);
     }
 
     public Type getType() {
         return type;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
     public byte[] getBytes() {
         return bytes;
-    }
-
-    public int getTextWidth() {
-        return textWidth;
-    }
-
-    public void setTextWidth(int textWidth) {
-        this.textWidth = textWidth;
     }
 
     public int getGraphicalWidth() {
@@ -105,5 +73,4 @@ public class CommandBytes implements Serializable {
     public void setGraphicalHeight(int graphicalHeight) {
         this.graphicalHeight = graphicalHeight;
     }
-
 }
