@@ -21,7 +21,8 @@
 package rapaio.workspace
 
 import rapaio.graphics.base.Figure
-import rapaio.printer.{IdeaPrinter, Printer}
+import rapaio.printer.Printer
+import rapaio.printer.idea.IdeaPrinter
 
 /**
  * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>

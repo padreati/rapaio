@@ -18,12 +18,11 @@
  *    limitations under the License.
  */
 
-package rapaio.printer
+package rapaio.printer.idea
 
 import rapaio.graphics.base.{ImageUtility, Figure}
-import rapaio.printer.server.ClassMarshaller
-import rapaio.printer.server.CommandBytes
 import java.net.Socket
+import rapaio.printer.Printer
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -37,11 +36,11 @@ class IdeaPrinter extends Printer {
   private var _graphicWidth: Int = 800
   private var _graphicHeight: Int = 600
 
-  def preparePrinter {}
+  def preparePrinter() {}
 
-  def closePrinter {}
+  def closePrinter() {}
 
-  def textWidth: Int = _textWidth
+  def textWidth(): Int = _textWidth
 
   def textWidth_=(width: Int) = _textWidth = width
 
@@ -61,7 +60,7 @@ class IdeaPrinter extends Printer {
 
   def error(message: String, throwable: Throwable) = Console.println(message + "\n.Error message: " + throwable.getMessage)
 
-  def println = Console.println
+  def println() = Console.println()
 
   def heading(h: Int, lines: String) = {
     Console.print("=" * h)
@@ -86,7 +85,7 @@ class IdeaPrinter extends Printer {
     }
     catch {
       case ex: Any => {
-        ex.printStackTrace
+        ex.printStackTrace()
       }
     }
   }

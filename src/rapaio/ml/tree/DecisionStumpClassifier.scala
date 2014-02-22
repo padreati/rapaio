@@ -22,7 +22,7 @@ package rapaio.ml.tree
 
 import rapaio.data._
 import rapaio.ml.Classifier
-import rapaio.ml.tools.DensityTable
+import rapaio.ml.tools.DensityMatrix
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -75,7 +75,7 @@ class DecisionStumpClassifier extends Classifier {
   }
 
   private def buildDefaultLabel(df: Frame, weights: Value): String = {
-    val dt = DensityTable(df, targetName, targetName)
+    val dt = DensityMatrix(df, targetName, targetName)
 
     //    val freq: Array[Double] = new Array[Double](classCol.getDictionary.length)
     //    var total: Int = 0 {

@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.printer.server;
+package rapaio.printer.idea;
 
 import java.io.Serializable;
 

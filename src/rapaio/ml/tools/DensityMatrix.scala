@@ -28,7 +28,7 @@ import java.util
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-object DensityTable {
+object DensityMatrix {
   /**
    * Labels which can be used when test feature is numeric.
    * One use case is finding the best binary split point for a numerical feature
@@ -46,8 +46,8 @@ object DensityTable {
    * @param targetLabels names for the target feature
    * @return an empty density feature with specified rows and columns
    */
-  def apply(testLabels: Array[String], targetLabels: Array[String]): DensityTable = {
-    val dt = new DensityTable
+  def apply(testLabels: Array[String], targetLabels: Array[String]): DensityMatrix = {
+    val dt = new DensityMatrix
     dt.testLabels = testLabels
     dt.targetLabels = targetLabels
     dt.values = Array.fill(testLabels.length, targetLabels.length)(0.0)
@@ -63,7 +63,7 @@ object DensityTable {
    * @param targetColName target feature which maps to columns
    * @return a density table filled with values from observations
    */
-  def apply(df: Frame, testColName: String, targetColName: String): DensityTable = {
+  def apply(df: Frame, testColName: String, targetColName: String): DensityMatrix = {
     apply(df, null, testColName, targetColName)
   }
 
@@ -77,7 +77,7 @@ object DensityTable {
    * @param targetColName target feature which maps to columns
    * @return
    */
-  def apply(df: Frame, weights: List[Double], testColName: String, targetColName: String): DensityTable = {
+  def apply(df: Frame, weights: List[Double], testColName: String, targetColName: String): DensityMatrix = {
     require(df.col(targetColName).isNominal, "Target feature must be nominal")
     require(df.col(testColName).isNominal, "Test feature must be nominal")
 
@@ -109,7 +109,7 @@ object DensityTable {
  * After construction, fill or update operations, one can use density table to compute various results
  * needed by some classification algorithms.
  */
-final class DensityTable {
+final class DensityMatrix {
 
   private var testLabels: Array[String] = _
   private var targetLabels: Array[String] = _

@@ -22,7 +22,7 @@ package rapaio.sandbox
 
 import rapaio.io.CSV
 import java.io.File
-import rapaio.ml.tools.DensityTable
+import rapaio.ml.tools.DensityVector
 
 /**
  * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -30,7 +30,7 @@ import rapaio.ml.tools.DensityTable
 object CSVSandbox extends App {
 
   val df = CSV.read(
-    file = new File("/home/ati/work/rapaio/rapaio/src/rapaio/datasets/titanic-train.csv"),
+    file = new File("/home/ati/rapaio/rapaio-java/src/rapaio/datasets/titanic-train.csv"),
     header = true,
     typeHints = Map[String, String](("PassengerId", "idx"), ("Survived", "nom"))
   )
@@ -45,6 +45,6 @@ object CSVSandbox extends App {
     println
   })
 
-  val dt = DensityTable(df, "Sex", "Survived")
-  println(dt)
+  DensityVector(df.col("Sex")).summary()
+  DensityVector(df.col("Embarked")).summary()
 }

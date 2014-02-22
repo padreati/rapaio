@@ -18,11 +18,12 @@
  *    limitations under the License.
  */
 
-package rapaio.printer
+package rapaio.printer.local
 
 import rapaio.graphics.base.Figure
 import javax.swing.JDialog
 import java.awt.BorderLayout
+import rapaio.printer.{FigurePanel, Printer}
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>

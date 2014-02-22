@@ -20,8 +20,9 @@
 
 package rapaio.core.stat
 
-import rapaio.core.Summarizable
 import rapaio.data.Feature
+import rapaio.printer.Summarizable
+import rapaio.workspace.Workspace
 
 /**
  * Compensated version of arithmetic mean of values from a {@code Vector}.
@@ -31,7 +32,7 @@ import rapaio.data.Feature
  * Time: 12:21 PM
  */
 final class Mean(private val vector: Feature) extends Summarizable {
-  private val value: Double = compute
+  private val _value: Double = compute
 
   private def compute: Double = {
     var sum = 0.0
@@ -53,14 +54,12 @@ final class Mean(private val vector: Feature) extends Summarizable {
       }
     }
     sum += t / count
-    return sum
+    sum
   }
 
-  def getValue: Double = value
+  def value: Double = _value
 
-  def summary {
-    //    code(String.format("> mean\n%.10f", value))
-    // TODO placeholder implementation
-    println("> mean\n%.10f".format(value))
+  override def summary {
+    Workspace.code("> mean\n%.10f".format(_value))
   }
 }
