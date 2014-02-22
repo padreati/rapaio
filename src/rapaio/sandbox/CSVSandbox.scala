@@ -45,6 +45,16 @@ object CSVSandbox extends App {
     println
   })
 
+  def printMode(name: String): Unit = {
+    println("mode: " + DensityVector(df.col(name)).mode())
+  }
+
   DensityVector(df.col("Sex")).summary()
+  printMode("Sex")
   DensityVector(df.col("Embarked")).summary()
+  printMode("Embarked")
+  DensityVector(df.col("Survived")).summary()
+  printMode("Survived")
+  DensityVector(df.col("Cabin")).summary()
+  printMode("Cabin")
 }

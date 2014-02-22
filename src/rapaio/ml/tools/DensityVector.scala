@@ -23,6 +23,8 @@ package rapaio.ml.tools
 import rapaio.data.{Value, Feature}
 import rapaio.printer.Summarizable
 import rapaio.workspace.Workspace
+import rapaio.core.RandomSource
+import scala.annotation.tailrec
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -31,6 +33,20 @@ class DensityVector extends Summarizable {
 
   private var targetLabels: Array[String] = _
   private var values: Array[Double] = _
+
+  def mode(): String = {
+    @tailrec
+    def modeNext(i: Int, n: Double, max: Double, last: String): String = {
+      if (i >= values.length) last
+      else if (values(i) < max) modeNext(i + 1, n, max, last)
+      else if (values(i) == max) {
+        val nn = n + 1
+        if (RandomSource.next >= (nn - 1) / nn) modeNext(i + 1, 1, values(i), targetLabels(i))
+        else modeNext(i + 1, nn, max, last)
+      } else modeNext(i + 1, 1, values(i), targetLabels(i))
+    }
+    modeNext(1, 1, 0, "")
+  }
 
   override def summary(): Unit = {
     val total = values.sum

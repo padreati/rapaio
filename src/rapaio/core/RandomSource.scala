@@ -20,9 +20,11 @@
 
 package rapaio.core
 
+import scala.util.Random
+
 /**
  * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 object RandomSource {
-
+  def next: Double = Random.nextDouble()
 }
