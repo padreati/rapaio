@@ -76,17 +76,24 @@ class IdeaPrinter extends Printer {
   }
 
   def draw(figure: Figure, width: Int, height: Int) {
+    var s: Socket = null
     try {
-      val s = new Socket("localhost", IdeaPrinter.DefaultPort)
+      s = new Socket("localhost", IdeaPrinter.DefaultPort)
       new ClassMarshaller().marshallConfig(s.getOutputStream)
       val cb: CommandBytes = new ClassMarshaller().unmarshall(s.getInputStream)
-      val image = ImageUtility.buildImage(figure, cb.getGraphicalWidth, cb.getGraphicalHeight);
-      new ClassMarshaller().marshallDraw(s.getOutputStream, image, cb.getGraphicalWidth, cb.getGraphicalHeight)
+      if (!(cb.getGraphicalWidth == 0 || cb.getGraphicalHeight == 0)) {
+        val image = ImageUtility.buildImage(figure, cb.getGraphicalWidth, cb.getGraphicalHeight);
+        new ClassMarshaller().marshallDraw(s.getOutputStream, image, cb.getGraphicalWidth, cb.getGraphicalHeight)
+      }
     }
     catch {
       case ex: Any => {
         ex.printStackTrace()
       }
+    }
+    finally {
+      if (s != null)
+        s.close()
     }
   }
 

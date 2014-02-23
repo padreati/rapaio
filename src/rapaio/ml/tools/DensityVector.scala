@@ -34,18 +34,26 @@ class DensityVector extends Summarizable {
   private var targetLabels: Array[String] = _
   private var values: Array[Double] = _
 
-  def mode(): String = {
+  def mode(): (Int, String) = {
     @tailrec
-    def modeNext(i: Int, n: Double, max: Double, last: String): String = {
-      if (i >= values.length) last
-      else if (values(i) < max) modeNext(i + 1, n, max, last)
+    def modeNext(i: Int, n: Double, max: Double, lastIndex: Int, lastLabel: String): (Int, String) = {
+      if (i >= values.length) {
+        (lastIndex, lastLabel)
+      }
+      else if (values(i) < max) {
+        modeNext(i + 1, n, max, lastIndex, lastLabel)
+      }
       else if (values(i) == max) {
-        val nn = n + 1
-        if (RandomSource.next >= (nn - 1) / nn) modeNext(i + 1, 1, values(i), targetLabels(i))
-        else modeNext(i + 1, nn, max, last)
-      } else modeNext(i + 1, 1, values(i), targetLabels(i))
+        if (RandomSource.next >= n / (n + 1)) {
+          modeNext(i + 1, 1, values(i), i, targetLabels(i))
+        } else {
+          modeNext(i + 1, n + 1, max, lastIndex, lastLabel)
+        }
+      } else {
+        modeNext(i + 1, 1, values(i), i, targetLabels(i))
+      }
     }
-    modeNext(1, 1, 0, "")
+    modeNext(1, 1, -1, -1, "")
   }
 
   override def summary(): Unit = {

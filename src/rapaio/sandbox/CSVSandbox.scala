@@ -23,6 +23,9 @@ package rapaio.sandbox
 import rapaio.io.CSV
 import java.io.File
 import rapaio.ml.tools.DensityVector
+import rapaio.data.{Value, Nominal}
+import rapaio.workspace.Workspace
+import rapaio.graphics.Plot
 
 /**
  * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -49,12 +52,21 @@ object CSVSandbox extends App {
     println("mode: " + DensityVector(df.col(name)).mode())
   }
 
-  DensityVector(df.col("Sex")).summary()
-  printMode("Sex")
-  DensityVector(df.col("Embarked")).summary()
-  printMode("Embarked")
-  DensityVector(df.col("Survived")).summary()
-  printMode("Survived")
-  DensityVector(df.col("Cabin")).summary()
-  printMode("Cabin")
+  //  DensityVector(df.col("Sex")).summary()
+  //  printMode("Sex")
+  //  DensityVector(df.col("Embarked")).summary()
+  //  printMode("Embarked")
+  //  DensityVector(df.col("Survived")).summary()
+  //  printMode("Survived")
+  //  DensityVector(df.col("Cabin")).summary()
+  //  printMode("Cabin")
+
+  val nominal = new Nominal()
+  for (i <- 0 until 100) nominal.labels ++ (i % 10).toString
+  val hit = Value(0, 11, _ => 0)
+  for (i <- 0 until 10000) {
+    val index = DensityVector(nominal).mode()._1
+    hit.values(index) += 1
+  }
+  Workspace.draw(Plot().hist(hit))
 }
