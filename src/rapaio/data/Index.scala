@@ -149,21 +149,15 @@ class Index(protected var rows: Int,
   def labels = new Labels {
     override def apply(row: Int): String = ""
 
-    override def update(row: Int, value: String): Unit = {
-      throw new RuntimeException("Operation not available for getIndex vectors.")
-    }
+    override def update(row: Int, value: String): Unit = sys.error("Not available for index features.")
 
-    override def ++(value: String): Unit = {
-      throw new RuntimeException("Operation not available for getIndex vectors.")
-    }
+    override def ++(value: String): Unit = sys.error("Not available for index features.")
 
-    def dictionary: Array[String] = {
-      throw new RuntimeException("Operation not available for getIndex vectors.")
-    }
+    def dictionary: Array[String] = sys.error("Not available for index features.")
 
-    def dictionary_=(dict: Array[String]): Unit = {
-      throw new RuntimeException("Operation not available for getIndex vectors.")
-    }
+    def dictionary_=(dict: Array[String]): Unit = sys.error("Not available for index features.")
+
+    override def indexOf(label: String): Option[Int] = sys.error("Not available for index features.")
   }
 }
 

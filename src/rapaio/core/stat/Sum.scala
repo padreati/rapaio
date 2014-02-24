@@ -18,15 +18,31 @@
  *    limitations under the License.
  */
 
-package rapaio.core
+package rapaio.core.stat
 
-import scala.util.Random
+import rapaio.data.Feature
+import rapaio.printer.Summarizable
+import rapaio.workspace.Workspace.code
 
 /**
- * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * Computes the sum of elements for value feature, ignoring missing values.
+ * <p/>
+ * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-object RandomSource {
-  def seed(seed: Long): Unit = Random.setSeed(seed)
+class Sum(feature: Feature) extends Summarizable {
 
-  def nextDouble(): Double = Random.nextDouble()
+  private val _value: Double = {
+    def sum(i: Int, _sum: Double): Double = {
+      if (i >= feature.rowCount) _sum
+      else if (feature.missing(i)) sum(i + 1, _sum)
+      else sum(i + 1, _sum + feature.values(i))
+    }
+    sum(0, 0)
+  }
+
+  def value: Double = _value
+
+  override def summary {
+    code("sum\n%.10f\n".format(value))
+  }
 }

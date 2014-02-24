@@ -159,21 +159,20 @@ class Value(protected var rows: Int,
   val labels = new Labels {
     override def apply(row: Int): String = ""
 
-    override def update(row: Int, value: String): Unit = {
-      throw new RuntimeException("Operation not available for numeric vectors.")
-    }
+    override def update(row: Int, value: String): Unit =
+      sys.error("Operation not available for numeric vectors.")
 
-    override def ++(value: String): Unit = {
-      throw new RuntimeException("Operation not available for numeric vectors.")
-    }
+    override def ++(value: String): Unit =
+      sys.error("Operation not available for numeric vectors.")
 
-    def dictionary: Array[String] = {
-      throw new RuntimeException("Operation not available for getIndex vectors.")
-    }
+    def dictionary: Array[String] =
+      sys.error("Operation not available for getIndex vectors.")
 
-    def dictionary_=(dict: Array[String]): Unit = {
-      throw new RuntimeException("Operation not available for getIndex vectors.")
-    }
+    override def dictionary_=(dict: Array[String]): Unit =
+      sys.error("Operation not available for getIndex vectors.")
+
+    override def indexOf(label: String): Option[Int] =
+      sys.error("Not implemented")
   }
 }
 

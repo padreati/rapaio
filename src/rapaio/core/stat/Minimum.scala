@@ -18,15 +18,34 @@
  *    limitations under the License.
  */
 
-package rapaio
+package rapaio.core.stat
 
-import rapaio.core.stat.Mean
 import rapaio.data.Feature
+import rapaio.workspace.Workspace.code
+import rapaio.printer.Summarizable
 
 /**
- * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * Finds the minimum value from a [[rapaio.data.Feature]] of values.
+ * <p/>
+ * Ignores missing elements.
+ * <p/>
+ * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * Date: 9/7/13
+ * Time: 12:36 PM
  */
-package object core {
+class Minimum(feature: Feature) extends Summarizable {
+  var min: Double = Double.MaxValue
+  var valid: Boolean = false
+  var i: Int = 0
+  for (i <- 0 until feature.rowCount) {
+    if (!feature.missing(i)) {
+      valid = true
+      min = math.min(min, feature.values(i))
+    }
+  }
+  private val _value = if (valid) min else Double.NaN
 
-  def mean(v: Feature): Mean = new Mean(v)
+  def value: Double = _value
+
+  override def summary(): Unit = code("minimum\n%.10f".format(_value))
 }

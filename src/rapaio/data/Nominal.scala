@@ -213,6 +213,8 @@ class Nominal(protected var rows: Int,
     }
 
     override def dictionary: Array[String] = _dict.toArray
+
+    def indexOf(label: String): Option[Int] = Option(_reverse(label))
   }
 }
 

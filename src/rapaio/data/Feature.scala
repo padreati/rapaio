@@ -179,6 +179,7 @@ trait Feature extends Serializable {
 
     def dictionary_=(dict: Array[String]): Unit
 
+    def indexOf(label: String): Option[Int]
   }
 
   def instances: Array[VInst] = {

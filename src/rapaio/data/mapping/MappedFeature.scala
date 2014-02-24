@@ -54,34 +54,22 @@ class MappedFeature(private val _source: Feature,
 
   def rowId(row: Int): Int = _source.rowId(_mapping(row))
 
-  def remove(row: Int) {
-    throw new IllegalArgumentException("operation not available on mapped vectors")
-  }
+  def remove(row: Int) = sys.error("Not available for index features.")
 
-  def removeRange(from: Int, to: Int) {
-    throw new IllegalArgumentException("operation not available on mapped vectors")
-  }
+  def removeRange(from: Int, to: Int) = sys.error("Not available for index features.")
 
-  def clear {
-    throw new IllegalArgumentException("operation not available on mapped vectors")
-  }
+  def clear() = sys.error("Not available for index features.")
 
-  def trimToSize {
-    throw new IllegalArgumentException("operation not available on mapped vectors")
-  }
+  def trimToSize() = sys.error("Not available for index features.")
 
-  def ensureCapacity(minCapacity: Int) {
-    throw new IllegalArgumentException("operation not available on mapped vectors")
-  }
+  def ensureCapacity(minCapacity: Int) = sys.error("Not available for index features.")
 
   val missing = new Missing {
     override def apply(row: Int): Boolean = _source.missing(mapping(row))
 
     override def update(row: Int, value: Boolean): Unit = _source.missing(mapping(row))
 
-    override def ++(): Unit = {
-      throw new IllegalArgumentException("operation not available on mapped vectors")
-    }
+    override def ++(): Unit = sys.error("Not available for index features.")
   }
 
   val values = new Values {
@@ -116,6 +104,8 @@ class MappedFeature(private val _source: Feature,
     override def dictionary: Array[String] = _source.labels.dictionary
 
     override def dictionary_=(dict: Array[String]): Unit = _source.labels.dictionary = dict
+
+    override def indexOf(label: String): Option[Int] = _source.labels.indexOf(label)
   }
 }
 

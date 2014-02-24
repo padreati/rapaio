@@ -20,13 +20,24 @@
 
 package rapaio.core
 
-import scala.util.Random
+import rapaio.data.Feature
+import rapaio.core.stat.Mean
 
 /**
- * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-object RandomSource {
-  def seed(seed: Long): Unit = Random.setSeed(seed)
+object SpecialMath {
 
-  def nextDouble(): Double = Random.nextDouble()
+  val Ln2 = math.log(2.0)
+
+  def mean(v: Feature): Mean = new Mean(v)
+
+  /**
+   * Returns the base 2 logarithm of a double value
+   *
+   * @param x the number from which we take base 2 logarithm
+   * @return the base 2 logarithm of input getValue
+   */
+  def log2(x: Double): Double = math.log(x) / Ln2
+
 }

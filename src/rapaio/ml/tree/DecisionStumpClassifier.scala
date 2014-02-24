@@ -22,7 +22,7 @@ package rapaio.ml.tree
 
 import rapaio.data._
 import rapaio.ml.Classifier
-import rapaio.ml.tools.DensityMatrix
+import rapaio.core.stat.DensityMatrix
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>

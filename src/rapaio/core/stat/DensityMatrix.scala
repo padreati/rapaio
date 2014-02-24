@@ -18,12 +18,172 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.tools
+package rapaio.core.stat
 
 import rapaio.data.Frame
 import java.util.List
-import rapaio.core
+import rapaio.core.SpecialMath._
 import java.util
+
+
+/**
+ * Tool for computing various statistics like entropy, infoGain using a density table.
+ *
+ * A density table is a table build from two features, called test feature and target feature.
+ *
+ * Test feature can be nominal or numeric, target feature is always nominal.
+ * The density table has the same number of columns like target feature, withe the same
+ * names, containing in the first position the missing label column. The number of rows is
+ * given by the number of labels from the test feature (if nominal), otherwise there are either
+ * given as parameter or 2 by default, for numeric features.
+ *
+ * Each cell of the density table is able to contain the sum of weights of the observations
+ * of a given data set, which has the index of the target feature label equals with column number, and
+ * index of test feature label equals row number.
+ *
+ * After construction, fill or update operations, one can use density table to compute various results
+ * needed by some classification algorithms.
+ */
+final class DensityMatrix {
+
+  private var testLabels: Array[String] = _
+  private var targetLabels: Array[String] = _
+  private var values: Array[Array[Double]] = _
+
+  /**
+   * Reset all values from density table with 0
+   */
+  def reset() = values.foreach(row => util.Arrays.fill(row, 0.0))
+
+  /**
+   * Adds to density table cell with row and col the given weight.
+   *
+   * @param row row of the cell
+   * @param col column of the cell
+   * @param weight weight which wil be added
+   */
+  def update(row: Int, col: Int, weight: Double) = values(row)(col) += weight
+
+  /**
+   * Moves a weight from row1 to row2 on given column. This is implemented
+   * as to updates, one which adds -weight on row1, and second which add weight on row2.
+   *
+   * @param row1 initial row
+   * @param row2 final row
+   * @param col column of the cells
+   * @param weight amount for update
+   */
+  def moveOnRow(row1: Int, row2: Int, col: Int, weight: Double) {
+    update(row1, col, -weight)
+    update(row2, col, weight)
+  }
+
+  /**
+   * Computes entropy on target feature only, without considering missing values.
+   *
+   * $\sum{x}$
+   * @return computed entropy without considering missing values
+   */
+  def getEntropy: Double = getEntropy(useMissing = false)
+
+  /**
+   * Computes entropy o target feature only with the possibility
+   * to involve missing values.
+   *
+   * @param useMissing if true, missing values are considered an additional
+   *
+   * @return
+   */
+  def getEntropy(useMissing: Boolean): Double = {
+    val totals: Array[Double] = Array[Double](targetLabels.length)
+    for (i <- 1 until testLabels.length)
+      for (j <- 1 until targetLabels.length)
+        totals(j) += values(i)(j)
+    val total: Double = totals.slice(1, targetLabels.length).sum
+    val entropy: Double = totals.slice(1, totals.length).
+      filter(x => x > 0).foldLeft(0.0)((b, a) => b - log2(a / total) * a / total)
+
+    val factor: Double =
+      if (useMissing) total / (values(0).slice(1, targetLabels.length).sum + total)
+      else 1
+
+    factor * entropy
+  }
+
+  def getInfoXGain: Double = getInfoXGain(useMissing = false)
+
+  def getInfoXGain(useMissing: Boolean): Double = {
+    val totals: Array[Double] = new Array[Double](testLabels.length)
+    for (i <- 1 until testLabels.length) {
+      for (j <- 1 until targetLabels.length) {
+        totals(i) += values(i)(j)
+      }
+    }
+    val total: Double = totals.slice(1, totals.length).sum
+    var gain: Double = 0
+    for (i <- 1 until testLabels.length) {
+      for (j <- 1 until targetLabels.length) {
+        if (values(i)(j) > 0) gain += -log2(values(i)(j) / totals(i)) * values(i)(j) / total
+      }
+    }
+    val factor: Double = if (!useMissing) 1
+    else {
+      var missing: Double = 0
+      for (i <- 0 until targetLabels.length) missing += values(0)(i)
+      total / (missing + total)
+    }
+    factor * gain
+  }
+
+  def getInfoGain: Double = getInfoGain(useMissing = false)
+
+  def getInfoGain(useMissing: Boolean): Double = getEntropy(useMissing) - getInfoXGain(useMissing)
+
+  def splitInfo: Double = splitInfo(useMissing = false)
+
+  def splitInfo(useMissing: Boolean): Double = {
+    val start: Int = if (useMissing) 0 else 1
+    val totals: Array[Double] = new Array[Double](testLabels.length)
+    for (i <- start until testLabels.length) {
+      for (j <- 0 until targetLabels.length) {
+        totals(i) += values(i)(j)
+      }
+    }
+
+    var total: Double = 0
+    for (i <- start until totals.length) {
+      total += totals(i)
+    }
+
+    var splitInfo: Double = 0
+    for (i <- start until totals.length) {
+      if (totals(i) > 0) {
+        splitInfo += -log2(totals(i) / total) * totals(i) / total
+      }
+    }
+    splitInfo
+  }
+
+  def gainRatio: Double = gainRatio(useMissing = false)
+
+  def gainRatio(useMissing: Boolean): Double = getInfoGain(useMissing) / splitInfo(useMissing)
+
+  /**
+   * Computes the number of columns which have totals equal or greater than minWeight minWeight,
+   * considering missing values only if isMissing is true.
+   *
+   * @param useMissing if missing row information is used
+   * @return number of columns which meet criteria
+   */
+  def countWithMinimum(useMissing: Boolean, minWeight: Double): Int = {
+    val start: Int = if (useMissing) 0 else 1
+    val totals: Array[Double] = new Array[Double](testLabels.length)
+    for (i <- start until testLabels.length)
+      for (j <- 1 until targetLabels.length)
+        totals(i) += values(i)(j)
+    totals.count(x => x >= minWeight)
+  }
+}
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -88,164 +248,5 @@ object DensityMatrix {
       dt.update(df.indexes(i, testColName), df.indexes(i, targetColName), virtualWeight(i))
     }
     dt
-  }
-}
-
-/**
- * Tool for computing various statistics like entropy, infoGain using a density table.
- *
- * A density table is a table build from two features, called test feature and target feature.
- *
- * Test feature can be nominal or numeric, target feature is always nominal.
- * The density table has the same number of columns like target feature, withe the same
- * names, containing in the first position the missing label column. The number of rows is
- * given by the number of labels from the test feature (if nominal), otherwise there are either
- * given as parameter or 2 by default, for numeric features.
- *
- * Each cell of the density table is able to contain the sum of weights of the observations
- * of a given data set, which has the index of the target feature label equals with column number, and
- * index of test feature label equals row number.
- *
- * After construction, fill or update operations, one can use density table to compute various results
- * needed by some classification algorithms.
- */
-final class DensityMatrix {
-
-  private var testLabels: Array[String] = _
-  private var targetLabels: Array[String] = _
-  private var values: Array[Array[Double]] = _
-
-  /**
-   * Reset all values from density table with 0
-   */
-  def reset = values.foreach(row => util.Arrays.fill(row, 0.0))
-
-  /**
-   * Adds to density table cell with row and col the given weight.
-   *
-   * @param row row of the cell
-   * @param col column of the cell
-   * @param weight weight which wil be added
-   */
-  def update(row: Int, col: Int, weight: Double) = values(row)(col) += weight
-
-  /**
-   * Moves a weight from row1 to row2 on given column. This is implemented
-   * as to updates, one which adds -weight on row1, and second which add weight on row2.
-   *
-   * @param row1 initial row
-   * @param row2 final row
-   * @param col column of the cells
-   * @param weight amount for update
-   */
-  def moveOnRow(row1: Int, row2: Int, col: Int, weight: Double) {
-    update(row1, col, -weight)
-    update(row2, col, weight)
-  }
-
-  /**
-   * Computes entropy on target feature only, without considering missing values.
-   *
-   * $\sum{x}$
-   * @return computed entropy without considering missing values
-   */
-  def getEntropy: Double = getEntropy(useMissing = false)
-
-  /**
-   * Computes entropy o target feature only with the possibility
-   * to involve missing values.
-   *
-   * @param useMissing if true, missing values are considered an additional
-   *
-   * @return
-   */
-  def getEntropy(useMissing: Boolean): Double = {
-    val totals: Array[Double] = Array[Double](targetLabels.length)
-    for (i <- 1 until testLabels.length)
-      for (j <- 1 until targetLabels.length)
-        totals(j) += values(i)(j)
-    val total: Double = totals.slice(1, targetLabels.length).sum
-    val entropy: Double = totals.slice(1, totals.length).
-      filter(x => x > 0).foldLeft(0.0)((b, a) => b - core.log2(a / total) * a / total)
-
-    val factor: Double =
-      if (useMissing) total / (values(0).slice(1, targetLabels.length).sum + total)
-      else 1
-
-    factor * entropy
-  }
-
-  def getInfoXGain: Double = getInfoXGain(useMissing = false)
-
-  def getInfoXGain(useMissing: Boolean): Double = {
-    val totals: Array[Double] = new Array[Double](testLabels.length)
-    for (i <- 1 until testLabels.length) {
-      for (j <- 1 until targetLabels.length) {
-        totals(i) += values(i)(j)
-      }
-    }
-    val total: Double = totals.slice(1, totals.length).sum
-    var gain: Double = 0
-    for (i <- 1 until testLabels.length) {
-      for (j <- 1 until targetLabels.length) {
-        if (values(i)(j) > 0) gain += -core.log2(values(i)(j) / totals(i)) * values(i)(j) / total
-      }
-    }
-    val factor: Double = if (!useMissing) 1
-    else {
-      var missing: Double = 0
-      for (i <- 0 until targetLabels.length) missing += values(0)(i)
-      total / (missing + total)
-    }
-    factor * gain
-  }
-
-  def getInfoGain: Double = getInfoGain(useMissing = false)
-
-  def getInfoGain(useMissing: Boolean): Double = getEntropy(useMissing) - getInfoXGain(useMissing)
-
-  def splitInfo: Double = splitInfo(useMissing = false)
-
-  def splitInfo(useMissing: Boolean): Double = {
-    val start: Int = if (useMissing) 0 else 1
-    val totals: Array[Double] = new Array[Double](testLabels.length)
-    for (i <- start until testLabels.length) {
-      for (j <- 0 until targetLabels.length) {
-        totals(i) += values(i)(j)
-      }
-    }
-
-    var total: Double = 0
-    for (i <- start until totals.length) {
-      total += totals(i)
-    }
-
-    var splitInfo: Double = 0
-    for (i <- start until totals.length) {
-      if (totals(i) > 0) {
-        splitInfo += -core.log2(totals(i) / total) * totals(i) / total
-      }
-    }
-    splitInfo
-  }
-
-  def gainRatio: Double = gainRatio(useMissing = false)
-
-  def gainRatio(useMissing: Boolean): Double = getInfoGain(useMissing) / splitInfo(useMissing)
-
-  /**
-   * Computes the number of columns which have totals equal or greater than minWeight minWeight,
-   * considering missing values only if isMissing is true.
-   *
-   * @param useMissing if missing row information is used
-   * @return number of columns which meet criteria
-   */
-  def countWithMinimum(useMissing: Boolean, minWeight: Double): Int = {
-    val start: Int = if (useMissing) 0 else 1
-    val totals: Array[Double] = new Array[Double](testLabels.length)
-    for (i <- start until testLabels.length)
-      for (j <- 1 until targetLabels.length)
-        totals(i) += values(i)(j)
-    totals.count(x => x >= minWeight)
   }
 }

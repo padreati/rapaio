@@ -18,15 +18,32 @@
  *    limitations under the License.
  */
 
-package rapaio
+package rapaio.core.stat
 
-import rapaio.core.stat.Mean
+import rapaio.printer.Summarizable
+import rapaio.workspace.Workspace.code
 import rapaio.data.Feature
 
 /**
- * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * Finds the maximum value from a [[rapaio.data.Feature]].
+ * Ignores missing elements.
+ * <p/>
+ * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * Date: 9/7/13
+ * Time: 12:39 PM
  */
-package object core {
+class Maximum(feature: Feature) extends Summarizable {
+  var max: Double = Double.MinValue
+  var valid: Boolean = false
 
-  def mean(v: Feature): Mean = new Mean(v)
+  for (i <- 0 until feature.rowCount) {
+    if (!feature.missing(i))
+      max = math.max(max, feature.values(i))
+    valid = true
+  }
+  val _value = if (valid) max else Double.NaN
+
+  def value: Double = _value
+
+  override def summary(): Unit = code("maximum\n%.10f".format(_value))
 }

@@ -1,0 +1,67 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
+package rapaio.core.stat
+
+import rapaio.workspace.Workspace.code
+import rapaio.printer.Summarizable
+import rapaio.data.Feature
+
+/**
+ * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ */
+class Mode(feature: Feature, useMissing: Boolean = false) extends Summarizable {
+
+  require(!feature.isNominal, "Can't compute mode for other than nominal vectors")
+
+  private val _modes: Array[String] = {
+
+    val freq: Array[Int] = new Array[Int](feature.labels.dictionary.length)
+    for (i <- 0 until feature.rowCount) freq(feature.indexes(i)) += 1
+
+    var max: Int = 0
+    val start: Int = if (useMissing) 0 else 1
+    for (i <- start until freq.length) {
+      max = math.max(max, freq(i))
+    }
+
+    var count: Int = 0
+    for (i <- start until freq.length) {
+      if (freq(i) == max) {
+        count += 1
+      }
+    }
+    var pos: Int = 0
+    val modes = new Array[String](count)
+    for (i <- start until freq.length) {
+      if (freq(i) == max) {
+        modes(pos) = feature.labels.dictionary(i)
+        pos += 1
+      }
+    }
+    modes
+  }
+
+  def getModes: Array[String] = _modes
+
+  override def summary(): Unit = {
+    code("mode\n[" + (_modes mkString ",") + "]")
+  }
+}

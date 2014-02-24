@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.tools
+package rapaio.core.stat
 
 import rapaio.data.{Value, Feature}
 import rapaio.printer.Summarizable
@@ -34,26 +34,17 @@ class DensityVector extends Summarizable {
   private var targetLabels: Array[String] = _
   private var values: Array[Double] = _
 
-  def mode(): (Int, String) = {
+  def mode(useMissing: Boolean = false): String = {
     @tailrec
-    def modeNext(i: Int, n: Double, max: Double, lastIndex: Int, lastLabel: String): (Int, String) = {
-      if (i >= values.length) {
-        (lastIndex, lastLabel)
-      }
-      else if (values(i) < max) {
-        modeNext(i + 1, n, max, lastIndex, lastLabel)
-      }
-      else if (values(i) == max) {
-        if (RandomSource.next >= n / (n + 1)) {
-          modeNext(i + 1, 1, values(i), i, targetLabels(i))
-        } else {
-          modeNext(i + 1, n + 1, max, lastIndex, lastLabel)
-        }
-      } else {
-        modeNext(i + 1, 1, values(i), i, targetLabels(i))
-      }
+    def modeNext(i: Int, n: Double, max: Double, lastLabel: String): String = {
+      if (i >= values.length) lastLabel
+      else if (values(i) < max) modeNext(i + 1, n, max, lastLabel)
+      else if (values(i) == max)
+        if (RandomSource.nextDouble >= n / (n + 1)) modeNext(i + 1, 1, values(i), targetLabels(i))
+        else modeNext(i + 1, n + 1, max, lastLabel)
+      else modeNext(i + 1, 1, values(i), targetLabels(i))
     }
-    modeNext(1, 1, -1, -1, "")
+    modeNext(if (!useMissing) 1 else 0, 1, -1, "")
   }
 
   override def summary(): Unit = {
