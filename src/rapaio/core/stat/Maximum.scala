@@ -32,18 +32,21 @@ import rapaio.data.Feature
  * Date: 9/7/13
  * Time: 12:39 PM
  */
-class Maximum(feature: Feature) extends Summarizable {
-  var max: Double = Double.MinValue
-  var valid: Boolean = false
+class Maximum extends Summarizable {
 
-  for (i <- 0 until feature.rowCount) {
-    if (!feature.missing(i))
-      max = math.max(max, feature.values(i))
-    valid = true
-  }
-  val _value = if (valid) max else Double.NaN
+  private var _value: Double = _
 
   def value: Double = _value
 
+  private def compute(feature: Feature): Maximum = {
+    val filtered = feature.values.filter(x => !x.isNaN)
+    _value = if (filtered.length == 0) filtered.max else Double.NaN
+    this
+  }
+
   override def summary(): Unit = code("maximum\n%.10f".format(_value))
+}
+
+object Maximum {
+  def apply(feature: Feature): Maximum = new Maximum().compute(feature)
 }

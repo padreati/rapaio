@@ -22,6 +22,7 @@ package rapaio.data
 
 import rapaio.data.mapping._
 import java.io.Serializable
+import scala.annotation.tailrec
 
 /**
  * Random access list of observed values for a specific variable.
@@ -142,6 +143,29 @@ trait Feature extends Serializable {
     def update(row: Int, value: Double): Unit
 
     def ++(value: Double): Unit
+
+    def foreach[U](f: Double => U) {
+      for (i <- 0 until rowCount) {
+        f(source.values(rowId(i)))
+      }
+    }
+
+    //    def filterComplete(p: (Double) => Boolean: Array[Double] = {
+    //
+    //    }
+
+    def filter(p: (Double) => Boolean): Array[Double] = {
+
+      @tailrec
+      def filter(i: Int, list: List[Double]): List[Double] = {
+        if (i >= rowCount) list
+        else {
+          if (p(values(i))) filter(i + 1, list ::: List(values(i)))
+          else filter(i + 1, list)
+        }
+      }
+      filter(0, List.empty).toArray
+    }
   }
 
   abstract class Indexes {

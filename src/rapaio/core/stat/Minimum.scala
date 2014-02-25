@@ -33,19 +33,20 @@ import rapaio.printer.Summarizable
  * Date: 9/7/13
  * Time: 12:36 PM
  */
-class Minimum(feature: Feature) extends Summarizable {
-  var min: Double = Double.MaxValue
-  var valid: Boolean = false
-  var i: Int = 0
-  for (i <- 0 until feature.rowCount) {
-    if (!feature.missing(i)) {
-      valid = true
-      min = math.min(min, feature.values(i))
-    }
-  }
-  private val _value = if (valid) min else Double.NaN
+class Minimum extends Summarizable {
+  private var _value: Double = _
 
   def value: Double = _value
 
-  override def summary(): Unit = code("minimum\n%.10f".format(_value))
+  private def compute(feature: Feature): Minimum = {
+    val filtered = feature.values.filter(x => !x.isNaN)
+    _value = if (filtered.length == 0) filtered.min else Double.NaN
+    this
+  }
+
+  override def summary(): Unit = code("maximum\n%.10f".format(_value))
+}
+
+object Minimum {
+  def apply(feature: Feature): Minimum = new Minimum().compute(feature)
 }

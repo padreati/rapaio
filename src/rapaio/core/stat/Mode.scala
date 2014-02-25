@@ -27,11 +27,12 @@ import rapaio.data.Feature
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-class Mode(feature: Feature, useMissing: Boolean = false) extends Summarizable {
+class Mode extends Summarizable {
 
-  require(!feature.isNominal, "Can't compute mode for other than nominal vectors")
+  private var _modes: Array[String] = _
 
-  private val _modes: Array[String] = {
+  private def compute(feature: Feature, useMissing: Boolean): Mode = {
+    require(!feature.isNominal, "Can't compute mode for other than nominal vectors")
 
     val freq: Array[Int] = new Array[Int](feature.labels.dictionary.length)
     for (i <- 0 until feature.rowCount) freq(feature.indexes(i)) += 1
@@ -49,14 +50,15 @@ class Mode(feature: Feature, useMissing: Boolean = false) extends Summarizable {
       }
     }
     var pos: Int = 0
-    val modes = new Array[String](count)
+    _modes = new Array[String](count)
     for (i <- start until freq.length) {
       if (freq(i) == max) {
-        modes(pos) = feature.labels.dictionary(i)
+        _modes(pos) = feature.labels.dictionary(i)
         pos += 1
       }
     }
-    modes
+
+    this
   }
 
   def getModes: Array[String] = _modes
@@ -64,4 +66,9 @@ class Mode(feature: Feature, useMissing: Boolean = false) extends Summarizable {
   override def summary(): Unit = {
     code("mode\n[" + (_modes mkString ",") + "]")
   }
+}
+
+object Mode {
+
+  def apply(feature: Feature, useMissing: Boolean = false): Mode = new Mode().compute(feature, useMissing)
 }

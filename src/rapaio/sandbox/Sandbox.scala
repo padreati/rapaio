@@ -21,8 +21,6 @@
 package rapaio.sandbox
 
 import rapaio.data._
-import rapaio.graphics._
-import rapaio.workspace.Workspace._
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -32,10 +30,14 @@ object Sandbox extends App {
 
   val x = Value(1, 10000, x => 1 / x.toDouble + math.sin(x))
 
-  val y = Value(1, 10000, x => 1 / x.toDouble)
+  //  val y = Value(1, 10000, x => 1 / x.toDouble)
 
   //  println(y.toValueArray mkString ",")
 
-  draw(Plot(xLim = (0, 1), yLim = (Double.NaN, 0.01)).points(x, y))
+  //  draw(Plot(xLim = (0, 1), yLim = (Double.NaN, 0.01)).points(x, y))
+
+  //  Workspace.draw(Plot().hist(x.values.filter(x => x<1)))
+
+
 }
 

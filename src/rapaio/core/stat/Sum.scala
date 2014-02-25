@@ -23,26 +23,36 @@ package rapaio.core.stat
 import rapaio.data.Feature
 import rapaio.printer.Summarizable
 import rapaio.workspace.Workspace.code
+import scala.annotation.tailrec
 
 /**
  * Computes the sum of elements for value feature, ignoring missing values.
  * <p/>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-class Sum(feature: Feature) extends Summarizable {
+class Sum extends Summarizable {
 
-  private val _value: Double = {
+  private var _value: Double = _
+
+  private def compute(feature: Feature): Sum = {
+    @tailrec
     def sum(i: Int, _sum: Double): Double = {
       if (i >= feature.rowCount) _sum
       else if (feature.missing(i)) sum(i + 1, _sum)
       else sum(i + 1, _sum + feature.values(i))
     }
-    sum(0, 0)
+    _value = sum(0, 0)
+    this
   }
 
   def value: Double = _value
 
   override def summary {
-    code("sum\n%.10f\n".format(value))
+    code("sum\n%.10f\n".format(_value))
   }
+}
+
+object Sum {
+
+  def apply(feature: Feature): Sum = new Sum().compute(feature)
 }

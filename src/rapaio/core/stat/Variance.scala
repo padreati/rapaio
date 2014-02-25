@@ -33,34 +33,35 @@ import rapaio.printer.Summarizable
  * Date: 9/7/13
  * Time: 12:26 PM
  */
-class Variance(feature: Feature) extends Summarizable {
+class Variance extends Summarizable {
 
-  require(feature.isNumeric, "Variance can be computed on numeric features only.")
+  private var _value: Double = _
 
-  private final val _value: Double = {
-    val mean: Double = new Mean(feature).value
-    var n: Double = 0
-    for (i <- 0 until feature.rowCount)
-      if (!feature.missing(i)) {
-        n += 1
-      }
+  def compute(feature: Feature): Variance = {
 
+    require(feature.isNumeric, "Variance can be computed on numeric features only.")
+
+    val mean: Double = Mean(feature).value
+    val n: Double = feature.values.filter(x => !x.isNaN).length
     if (n == 0) {
       Double.NaN
     }
     var sum2: Double = 0
     var sum3: Double = 0
-    for (i <- 0 until feature.rowCount) {
-      if (!feature.missing(i)) {
-        sum2 += math.pow(feature.values(i) - mean, 2)
-        sum3 += feature.values(i) - mean
-      }
-    }
-    (sum2 - math.pow(sum3, 2) / n) / (n - 1)
+    feature.values.filter(x => !x.isNaN).foreach(x => {
+      sum2 += math.pow(x - mean, 2)
+      sum3 += x - mean
+    })
+    _value = (sum2 - math.pow(sum3, 2) / n) / (n - 1)
+    this
   }
 
   def getValue: Double = _value
 
   override def summary(): Unit = code("variance\n%.10f".format(_value))
 
+}
+
+object Variance {
+  def apply(feature: Feature): Variance = new Variance().compute(feature)
 }

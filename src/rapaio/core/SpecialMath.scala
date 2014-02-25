@@ -20,8 +20,6 @@
 
 package rapaio.core
 
-import rapaio.data.Feature
-import rapaio.core.stat.Mean
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -29,8 +27,6 @@ import rapaio.core.stat.Mean
 object SpecialMath {
 
   val Ln2 = math.log(2.0)
-
-  def mean(v: Feature): Mean = new Mean(v)
 
   /**
    * Returns the base 2 logarithm of a double value

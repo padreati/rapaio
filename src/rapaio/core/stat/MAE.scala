@@ -31,21 +31,24 @@ import rapaio.printer.Summarizable
  *
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-class MAE(_source: Array[Feature], _target: Array[Feature]) extends Summarizable {
+class MAE extends Summarizable {
 
-  require(_source.length == _target.length, "MAE (mean absolute error) requires " +
-    "to have same number of features on source and target")
+  private var _value: Double = _
+
+  private def compute(_source: Array[Feature], _target: Array[Feature]): MAE = {
+    require(_source.length == _target.length, "MAE (mean absolute error) requires " +
+      "to have same number of features on source and target")
 
 
-  var total: Double = 0
-  var count: Double = 0
-  for (i <- 0 until _source.length) {
-    for (j <- 0 until _source(i).rowCount) {
+    var total: Double = 0
+    var count: Double = 0
+    for (i <- 0 until _source.length; j <- 0 until _source(i).rowCount) {
       count += 1
       total += math.abs(_source(i).values(j) - _target(i).values(j))
     }
+    _value = total / count
+    this
   }
-  private val _value: Double = total / count
 
   def value: Double = _value
 
@@ -65,10 +68,10 @@ object MAE {
       result
     }
 
-    new MAE(features(dfSource), features(dfTarget))
+    new MAE().compute(features(dfSource), features(dfTarget))
   }
 
   def apply(source: Feature, target: Feature): MAE = {
-    new MAE(Array[Feature](source), Array[Feature](target))
+    new MAE().compute(Array[Feature](source), Array[Feature](target))
   }
 }

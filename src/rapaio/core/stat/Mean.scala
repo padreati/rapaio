@@ -31,30 +31,32 @@ import rapaio.workspace.Workspace
  * Date: 9/7/13
  * Time: 12:21 PM
  */
-final class Mean(private val vector: Feature) extends Summarizable {
-  private val _value: Double = compute
+final class Mean extends Summarizable {
+  private var _value: Double = _
 
-  private def compute: Double = {
+  private def compute(feature: Feature): Mean = {
     var sum = 0.0
     var count = 0.0
-    for (i <- 0 until vector.rowCount) {
-      if (!vector.missing(i)) {
-        sum += vector.values(i)
+    for (i <- 0 until feature.rowCount) {
+      if (!feature.missing(i)) {
+        sum += feature.values(i)
         count += 1
       }
     }
     if (count == 0) {
-      return Double.NaN
-    }
-    sum /= count
-    var t: Double = 0
-    for (i <- 0 until vector.rowCount) {
-      if (!vector.missing(i)) {
-        t += vector.values(i) - sum
+      _value = Double.NaN
+    } else {
+      sum /= count
+      var t: Double = 0
+      for (i <- 0 until feature.rowCount) {
+        if (!feature.missing(i)) {
+          t += feature.values(i) - sum
+        }
       }
+      sum += t / count
+      _value = sum
     }
-    sum += t / count
-    sum
+    this
   }
 
   def value: Double = _value
@@ -62,4 +64,8 @@ final class Mean(private val vector: Feature) extends Summarizable {
   override def summary {
     Workspace.code("> mean\n%.10f".format(_value))
   }
+}
+
+object Mean {
+  def apply(feature: Feature): Mean = new Mean().compute(feature)
 }
