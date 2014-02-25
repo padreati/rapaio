@@ -22,7 +22,6 @@ package rapaio.core.stat
 
 import rapaio.printer.Summarizable
 import rapaio.data.Feature
-import rapaio.workspace.Workspace
 
 /**
  * Estimates quantiles from a numerical feature.
@@ -77,10 +76,10 @@ class Quantiles(feature: Feature, percentiles: Array[Double]) extends Summarizab
 
   def getValues: Array[Double] = quantiles
 
-  override def summary(): Unit = {
-    Workspace.println("quantiles - estimated quantiles")
+  override def buildSummary(sb: StringBuilder): Unit = {
+    sb.append("quantiles - estimated quantiles\n")
     for (i <- 0 until quantiles.length) {
-      Workspace.println("quantile[%f = %f\n".format(percentiles(i), quantiles(i)))
+      sb.append("quantile[%f = %f\n".format(percentiles(i), quantiles(i)))
     }
   }
 }

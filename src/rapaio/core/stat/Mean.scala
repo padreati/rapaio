@@ -22,10 +22,9 @@ package rapaio.core.stat
 
 import rapaio.data.Feature
 import rapaio.printer.Summarizable
-import rapaio.workspace.Workspace
 
 /**
- * Compensated version of arithmetic mean of values from a {@code Vector}.
+ * Compensated version of arithmetic mean of values from a [[Feature]].
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  * Date: 9/7/13
@@ -61,8 +60,8 @@ final class Mean extends Summarizable {
 
   def value: Double = _value
 
-  override def summary {
-    Workspace.code("> mean\n%.10f".format(_value))
+  override def buildSummary(sb: StringBuilder) {
+    sb.append("> mean\n%.10f".format(_value))
   }
 }
 

@@ -38,6 +38,11 @@ object Sandbox extends App {
 
   //  Workspace.draw(Plot().hist(x.values.filter(x => x<1)))
 
+  val a = Value(Array[Double](1.0, Double.NaN, Double.NaN, 3.0, 5.0, Double.NaN, 7.0))
+  println(a.values.filterComplete(_ => true) mkString ",")
+  println(a.values.filterComplete(x => x > 4) mkString ",")
 
+  val b = Nominal("Ana", "are", "mere")
+  println(b.values.filter(x => x > 0).map(x => x.toInt) mkString ",")
 }
 

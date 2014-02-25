@@ -22,7 +22,6 @@ package rapaio.core.stat
 
 import rapaio.data.{Value, Feature}
 import rapaio.printer.Summarizable
-import rapaio.workspace.Workspace
 import rapaio.core.RandomSource
 import scala.annotation.tailrec
 
@@ -47,7 +46,7 @@ class DensityVector extends Summarizable {
     modeNext(if (!useMissing) 1 else 0, 1, -1, "")
   }
 
-  override def summary(): Unit = {
+  override def buildSummary(sb: StringBuilder): Unit = {
     val total = values.sum
 
     // collect widths
@@ -62,7 +61,6 @@ class DensityVector extends Summarizable {
       widths(3) = math.max(widths(2), "%.6f ".format(values(i) / total).toString.length)
     }
 
-    val sb = new StringBuilder()
     sb ++= "> density vector:\n"
     sb ++= ("%" + widths(0) + "s   ").format("")
     sb ++= ("%" + widths(1) + "s ").format("label")
@@ -76,7 +74,6 @@ class DensityVector extends Summarizable {
       sb ++= ("%" + widths(3) + ".6f").format(values(i) / total)
       sb ++= "\n"
     }
-    Workspace.code(sb.toString())
   }
 }
 

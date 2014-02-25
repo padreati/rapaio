@@ -21,7 +21,6 @@
 package rapaio.core.stat
 
 import rapaio.data.Feature
-import rapaio.workspace.Workspace.code
 import rapaio.printer.Summarizable
 
 /**
@@ -58,7 +57,7 @@ class Variance extends Summarizable {
 
   def getValue: Double = _value
 
-  override def summary(): Unit = code("variance\n%.10f".format(_value))
+  override def buildSummary(sb: StringBuilder): Unit = sb.append("variance\n%.10f\n".format(_value))
 
 }
 

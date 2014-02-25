@@ -21,7 +21,6 @@
 package rapaio.core.stat
 
 import rapaio.data.{Feature, Frame}
-import rapaio.workspace.Workspace
 import rapaio.printer.Summarizable
 
 /**
@@ -41,7 +40,7 @@ class RMSE(_source: Array[Feature], _target: Array[Feature]) extends Summarizabl
 
   def getValue: Double = value
 
-  override def summary(): Unit = Workspace.code("not implemented")
+  override def buildSummary(sb: StringBuilder): Unit = ???
 }
 
 object RMSE {

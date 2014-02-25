@@ -150,9 +150,13 @@ trait Feature extends Serializable {
       }
     }
 
-    //    def filterComplete(p: (Double) => Boolean: Array[Double] = {
-    //
-    //    }
+    def filterComplete(p: (Double) => Boolean): Array[Double] = {
+      def compose(x: Double): Boolean = {
+        if (x.isNaN) false
+        else p(x)
+      }
+      filter(compose)
+    }
 
     def filter(p: (Double) => Boolean): Array[Double] = {
 

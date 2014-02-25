@@ -21,7 +21,6 @@
 package rapaio.core.stat
 
 import rapaio.printer.Summarizable
-import rapaio.workspace.Workspace.code
 import rapaio.data.Feature
 
 /**
@@ -44,7 +43,7 @@ class Maximum extends Summarizable {
     this
   }
 
-  override def summary(): Unit = code("maximum\n%.10f".format(_value))
+  override def buildSummary(sb: StringBuilder): Unit = sb.append("maximum\n%.10f".format(_value))
 }
 
 object Maximum {

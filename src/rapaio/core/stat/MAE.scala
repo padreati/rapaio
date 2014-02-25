@@ -21,7 +21,6 @@
 package rapaio.core.stat
 
 import rapaio.data.{Feature, Frame}
-import rapaio.workspace.Workspace
 import rapaio.printer.Summarizable
 
 /**
@@ -52,8 +51,8 @@ class MAE extends Summarizable {
 
   def value: Double = _value
 
-  override def summary(): Unit = {
-    Workspace.code("MAE: %.6f".format(_value))
+  override def buildSummary(sb: StringBuilder): Unit = {
+    sb.append("MAE: %.6f\n".format(_value))
   }
 }
 

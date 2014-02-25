@@ -22,7 +22,6 @@ package rapaio.core.stat
 
 import rapaio.data.Feature
 import rapaio.printer.Summarizable
-import rapaio.workspace.Workspace.code
 import scala.annotation.tailrec
 
 /**
@@ -47,8 +46,8 @@ class Sum extends Summarizable {
 
   def value: Double = _value
 
-  override def summary {
-    code("sum\n%.10f\n".format(_value))
+  override def buildSummary(sb: StringBuilder) {
+    sb.append("sum\n%.10f\n".format(_value))
   }
 }
 

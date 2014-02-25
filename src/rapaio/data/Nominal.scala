@@ -41,8 +41,7 @@ import scala.collection.mutable
  *
  * @author Aurelian Tutuianu
  */
-class Nominal(protected var rows: Int,
-              private var dictionary: List[String]) extends Feature {
+class Nominal(protected var rows: Int, private var dictionary: List[String]) extends Feature {
   private var _dict = new mutable.MutableList[String]
   private var data = Array[Int](rows)
   private var _reverse = new mutable.HashMap[String, Int]
@@ -55,7 +54,6 @@ class Nominal(protected var rows: Int,
     }
     _reverse += (next -> _dict.size)
   }
-
 
   override def shortName: String = "nom"
 
@@ -99,11 +97,11 @@ class Nominal(protected var rows: Int,
     rows = newSize
   }
 
-  def clear {
+  def clear() {
     rows = 0
   }
 
-  def trimToSize {
+  def trimToSize() {
     if (rows < data.length) {
       data = Arrays.copyOf(data, rows)
     }
@@ -221,5 +219,18 @@ class Nominal(protected var rows: Int,
 object Nominal {
   private val missingValue: String = "?"
   private val missingIndex: Int = 0
+
+  def apply(xs: Array[String]): Nominal = {
+    val nom = new Nominal()
+    xs.foreach(label => nom.labels ++ label)
+    nom
+  }
+
+
+  def apply(xs: String*): Nominal = {
+    val nom = new Nominal()
+    xs.foreach(label => nom.labels ++ label)
+    nom
+  }
 }
 

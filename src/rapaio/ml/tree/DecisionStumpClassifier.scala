@@ -273,7 +273,7 @@ class DecisionStumpClassifier extends Classifier {
     //    }
   }
 
-  def predict(df: Frame) {
+  def predict(df: Frame, row: Int): (String, Array[Double]) = {
     //    pred = new Nominal(df.getRowCount, dict)
     //    val it: Nothing = df.getIterator
     //    while (it.next) {
@@ -298,17 +298,18 @@ class DecisionStumpClassifier extends Classifier {
     //        }
     //      }
     //    }
+    ("", new Array[Double](0))
   }
 
-  def getPrediction: Nominal = {
+  def prediction: Nominal = {
     return pred
   }
 
-  def getDistribution: Frame = {
+  def distribution: Frame = {
     return distr
   }
 
-  def summary {
+  def buildSummary(sb: StringBuilder) {
   }
 
   //

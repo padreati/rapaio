@@ -21,7 +21,6 @@
 package rapaio.core.stat
 
 import rapaio.data.{Index, Feature, Frame}
-import rapaio.workspace.Workspace.code
 import rapaio.printer.Summarizable
 
 /**
@@ -98,11 +97,7 @@ class ROC extends Summarizable {
 
   def getAuc: Double = _auc
 
-  override def summary(): Unit = {
-    val sb = new StringBuilder
-    sb.append("ROC summary")
-    code(sb.toString())
-  }
+  override def buildSummary(sb: StringBuilder): Unit = ???
 
 }
 

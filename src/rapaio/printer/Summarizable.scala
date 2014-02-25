@@ -35,8 +35,11 @@ import rapaio.workspace.Workspace
  */
 trait Summarizable {
 
-  // default implementation uses toString
   def summary(): Unit = {
-    Workspace.printer().p(this.toString)
+    val sb = new StringBuilder
+    buildSummary(sb)
+    Workspace.printer().code(sb.toString())
   }
+
+  def buildSummary(sb: StringBuilder): Unit
 }

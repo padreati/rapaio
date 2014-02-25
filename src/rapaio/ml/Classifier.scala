@@ -21,13 +21,19 @@
 package rapaio.ml
 
 import rapaio.data._
+import rapaio.printer.Summarizable
 
 /**
  * Trait for all classifiers. For now the number of target features is 1.
  *
  * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-trait Classifier {
+trait Classifier extends Summarizable {
+
+  protected var _prediction: Nominal = _
+  protected var _distribution: Frame = _
+  protected var _target: String = _
+  protected var _dictionary: Array[String] = _
 
   /**
    * Name of the classification algorithm used for informative messages
@@ -94,11 +100,27 @@ trait Classifier {
   }
 
   /**
-   * Predict classes for new data set instances
+   * Predicts classes for new data set instances
    *
    * @param df data set instances
    */
-  def predict(df: Frame): Unit
+  def predict(df: Frame): Unit = {
+    _distribution = Frame.matrix(df.rowCount, _dictionary)
+    _prediction = new Nominal(df.rowCount, _dictionary)
+
+    for (i <- 0 until df.rowCount) {
+      val prediction = predict(df, i)
+      _prediction.labels(i) = prediction._1
+      for (j <- 0 until _dictionary.length) {
+        _distribution.values(i, j) = prediction._2(j)
+      }
+    }
+  }
+
+  /**
+   * Predicts class for one instance from the data set
+   */
+  protected def predict(df: Frame, row: Int): (String, Array[Double])
 
   /**
    * Predict further classes for new data set instances, using
@@ -110,6 +132,19 @@ trait Classifier {
    * @param df data set instances
    */
   def predictFurther(df: Frame, classifier: Classifier): Unit = {
+    _distribution = Frame.matrix(df.rowCount, _dictionary)
+    _prediction = new Nominal(df.rowCount, _dictionary)
+
+    for (i <- 0 until df.rowCount) {
+      val prediction = predictFurther(df, classifier, i)
+      _prediction.labels(i) = prediction._1
+      for (j <- 0 until _dictionary.length) {
+        _distribution.values(i, j) = prediction._2(j)
+      }
+    }
+  }
+
+  protected def predictFurther(df: Frame, classifier: Classifier, row: Int): (String, Array[Double]) = {
     sys.error("Predict further not implemented for " + name)
   }
 
@@ -118,7 +153,7 @@ trait Classifier {
    *
    * @return nominal vector with predicted classes
    */
-  def getPrediction: Nominal
+  def getPrediction: Nominal = _prediction
 
   /**
    * Returns predicted class distribution.
@@ -127,5 +162,5 @@ trait Classifier {
    *         column for each target class, including the missing
    *         label column in first position)
    */
-  def getDistribution: Frame
+  def getDistribution: Frame = _distribution
 }

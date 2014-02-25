@@ -20,7 +20,6 @@
 
 package rapaio.core.stat
 
-import rapaio.workspace.Workspace.code
 import rapaio.printer.Summarizable
 import rapaio.data.Feature
 
@@ -63,8 +62,8 @@ class Mode extends Summarizable {
 
   def getModes: Array[String] = _modes
 
-  override def summary(): Unit = {
-    code("mode\n[" + (_modes mkString ",") + "]")
+  override def buildSummary(sb: StringBuilder): Unit = {
+    sb.append("mode\n[" + (_modes mkString ",") + "]\n")
   }
 }
 
