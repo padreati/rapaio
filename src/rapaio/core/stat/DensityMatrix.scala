@@ -20,8 +20,7 @@
 
 package rapaio.core.stat
 
-import rapaio.data.Frame
-import java.util.List
+import rapaio.data.{Value, Frame}
 import rapaio.core.SpecialMath._
 import java.util
 
@@ -79,12 +78,44 @@ final class DensityMatrix {
   }
 
   /**
+   * Computes accuracy on a density matrix for the case when a source
+   * data set is split in two parts: first which have index equals with
+   * given row on test columns and the rest of the frame
+   *
+   * @param row
+   * @return accuracy computed for a binary split
+   */
+  def binaryAccuracy(row: Int): Double = {
+    var left = 0.0
+    var right = 0.0
+    var leftMax = 0.0
+    var rightMax = 0.0
+    val totals = new Array[Double](targetLabels.length)
+    for (i <- 0 until targetLabels.length; j <- 0 until testLabels.length) {
+      if (j == row) {
+        leftMax = math.max(leftMax, values(i)(j))
+        left += values(i)(j)
+      } else {
+        totals(i) += values(i)(j)
+      }
+    }
+    for (i <- 0 until targetLabels.length) {
+      right += totals(i)
+      rightMax = math.max(rightMax, totals(i))
+    }
+
+    def prob(part: Double, total: Double): Double = if (total == 0 || part == 0) 0 else part / total
+
+    prob(leftMax + rightMax, left + right)
+  }
+
+  /**
    * Computes entropy on target feature only, without considering missing values.
    *
    * $\sum{x}$
    * @return computed entropy without considering missing values
    */
-  def getEntropy: Double = getEntropy(useMissing = false)
+  def entropy(): Double = entropy(useMissing = false)
 
   /**
    * Computes entropy o target feature only with the possibility
@@ -94,7 +125,7 @@ final class DensityMatrix {
    *
    * @return
    */
-  def getEntropy(useMissing: Boolean): Double = {
+  def entropy(useMissing: Boolean): Double = {
     val totals: Array[Double] = Array[Double](targetLabels.length)
     for (i <- 1 until testLabels.length)
       for (j <- 1 until targetLabels.length)
@@ -110,9 +141,9 @@ final class DensityMatrix {
     factor * entropy
   }
 
-  def getInfoXGain: Double = getInfoXGain(useMissing = false)
+  def infoXGain: Double = infoXGain(useMissing = false)
 
-  def getInfoXGain(useMissing: Boolean): Double = {
+  def infoXGain(useMissing: Boolean): Double = {
     val totals: Array[Double] = new Array[Double](testLabels.length)
     for (i <- 1 until testLabels.length) {
       for (j <- 1 until targetLabels.length) {
@@ -135,9 +166,9 @@ final class DensityMatrix {
     factor * gain
   }
 
-  def getInfoGain: Double = getInfoGain(useMissing = false)
+  def infoGain: Double = infoGain(useMissing = false)
 
-  def getInfoGain(useMissing: Boolean): Double = getEntropy(useMissing) - getInfoXGain(useMissing)
+  def infoGain(useMissing: Boolean): Double = entropy(useMissing) - infoXGain(useMissing)
 
   def splitInfo: Double = splitInfo(useMissing = false)
 
@@ -166,7 +197,7 @@ final class DensityMatrix {
 
   def gainRatio: Double = gainRatio(useMissing = false)
 
-  def gainRatio(useMissing: Boolean): Double = getInfoGain(useMissing) / splitInfo(useMissing)
+  def gainRatio(useMissing: Boolean): Double = infoGain(useMissing) / splitInfo(useMissing)
 
   /**
    * Computes the number of columns which have totals equal or greater than minWeight minWeight,
@@ -237,11 +268,11 @@ object DensityMatrix {
    * @param targetColName target feature which maps to columns
    * @return
    */
-  def apply(df: Frame, weights: List[Double], testColName: String, targetColName: String): DensityMatrix = {
+  def apply(df: Frame, weights: Value, testColName: String, targetColName: String): DensityMatrix = {
     require(df.col(targetColName).isNominal, "Target feature must be nominal")
     require(df.col(testColName).isNominal, "Test feature must be nominal")
 
-    def virtualWeight(i: Int): Double = if (weights != null) weights.get(i) else 1.0
+    def virtualWeight(i: Int): Double = if (weights != null) weights.values(i) else 1.0
 
     val dt = apply(df.col(testColName).labels.dictionary, df.col(targetColName).labels.dictionary)
     for (i <- 0 until df.rowCount) {

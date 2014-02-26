@@ -23,23 +23,22 @@ package rapaio.ml.tree
 import rapaio.data._
 import rapaio.ml.Classifier
 import rapaio.core.stat.DensityMatrix
+import rapaio.ml.base.MajorityClassifier
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
 class DecisionStumpClassifier extends Classifier {
 
-  private var targetName: String = _
-  private var dict: Array[String] = _
+  var minWeight: Double = 2.0
+
   private var splitCol: String = _
   private var splitLabel: String = _
   private var splitValue: Double = .0
   private var splitGain: Double = .0
-  private var leftLabel: String = null
-  private var rightLabel: String = null
-  private var defaultLabel: String = null
-  private var pred: Nominal = null
-  private var distr: Frame = null
+  private val leftClassifier: Classifier = new MajorityClassifier()
+  private val rightClassifier: Classifier = new MajorityClassifier()
+  private val defaultClassifier: Classifier = new MajorityClassifier()
 
 
   /**
@@ -58,351 +57,89 @@ class DecisionStumpClassifier extends Classifier {
 
   def learn(df: Frame, weights: Value, targetName: String) {
     splitGain = 0
-    dict = df.col(targetName).labels.dictionary
-    val totals = new Array[Double](dict.length)
-    for (i <- 0 until df.rowCount) {
-      totals(df.col(targetName).indexes(i)) += weights.values(i)
-    }
+    _dictionary = df.col(targetName).labels.dictionary
+    _target = targetName
     df.colNames.foreach(testName => {
       if (targetName != testName) {
         df.col(testName).shortName match {
-          case "nom" => evaluateNominal(df, weights, testName, totals)
-          case _ => evaluateNumeric(df, weights, testName, totals)
+          case "nom" => evaluateNominal(df, weights, testName)
+          case _ => evaluateNumeric(df, weights, testName)
         }
       }
     })
-    this.defaultLabel = buildDefaultLabel(df, weights)
+    this.defaultClassifier.learn(df, weights, targetName)
+
+    if (Option(splitCol).isDefined) {
+      val split =
+        if (splitValue.isNaN) df.binarySplit((df: Frame, row: Int) => df.labels(row, splitCol) == splitLabel)
+        else df.binarySplit((df: Frame, row: Int) => df.values(row, splitCol) <= splitValue)
+
+      leftClassifier.learn(split._1, _target)
+      rightClassifier.learn(split._2, _target)
+    } else {
+      leftClassifier.learn(df, _target)
+      rightClassifier.learn(df, _target)
+    }
   }
 
-  private def buildDefaultLabel(df: Frame, weights: Value): String = {
-    val dt = DensityMatrix(df, targetName, targetName)
-
-    //    val freq: Array[Double] = new Array[Double](classCol.getDictionary.length)
-    //    var total: Int = 0 {
-    //      var i: Int = 0
-    //      while (i < df.getRowCount) {
-    //        {
-    //          freq(classCol.getIndex(i)) += weights.get(i)
-    //          total += 1
-    //        }
-    //        ({
-    //          i += 1;
-    //          i - 1
-    //        })
-    //      }
-    //    }
-    //    if (total == 0) return dict(0)
-    //    var max: Double = 0
-    //    val sel: List[Integer] = new ArrayList[Integer] {
-    //      var i: Int = 1
-    //      while (i < dict.length) {
-    //        {
-    //          if (freq(i) > max) {
-    //            max = freq(i)
-    //            sel.clear
-    //            sel.add(i)
-    //            continue //todo: continue is not supported
-    //          }
-    //          if (freq(i) == max) {
-    //            sel.add(i)
-    //          }
-    //        }
-    //        ({
-    //          i += 1;
-    //          i - 1
-    //        })
-    //      }
-    //    }
-    //    return dict(sel.get(RandomSource.nextInt(sel.size)))
-    ""
+  private def evaluateNominal(df: Frame, weights: Value, test: String) {
+    val dm = DensityMatrix(df, weights, test, _target)
+    val testCol = df.col(test)
+    val dict = testCol.labels.dictionary
+    for (i <- 0 until dict.length) {
+      val accuracy = dm.binaryAccuracy(i)
+      if (splitGain < accuracy) {
+        splitCol = test
+        splitGain = accuracy
+        splitLabel = dict(i)
+        splitValue = Double.NaN
+      }
+    }
   }
 
-  private def evaluateNominal(df: Frame, weights: Value, testName: String, totals: Array[Double]) {
-    //    val dist: Array[Array[Double]] = new Array[Array[Double]](col.getDictionary.length, classCol.getDictionary.length) {
-    //      var i: Int = 0
-    //      while (i < df.getRowCount) {
-    //        {
-    //          dist(col.getIndex(i))(classCol.getIndex(i)) += weights.get(i)
-    //        }
-    //        ({
-    //          i += 1;
-    //          i - 1
-    //        })
-    //      }
-    //    }
-    //    {
-    //      var i: Int = 1
-    //      while (i < col.getDictionary.length) {
-    //        {
-    //          val metric: Double = computeGini(dist(0), dist(i), total)
-    //          if (validNumber(metric) && metric > splitGain) {
-    //            splitGain = metric
-    //            splitCol = colName
-    //            splitLabel = col.getDictionary(i)
-    //            splitValue = Double.NaN
-    //            val left: List[Integer] = new ArrayList[Integer]
-    //            val right: List[Integer] = new ArrayList[Integer]
-    //            var leftMax: Double = 0
-    //            var rightMax: Double = 0 {
-    //              var j: Int = 0
-    //              while (j < dict.length) {
-    //                {
-    //                  if (dist(i)(j) > leftMax) {
-    //                    leftMax = dist(i)(j)
-    //                    left.clear
-    //                    left.add(j)
-    //                    continue //todo: continue is not supported
-    //                  }
-    //                  if (dist(i)(j) == leftMax) {
-    //                    left.add(j)
-    //                  }
-    //                }
-    //                ({
-    //                  j += 1;
-    //                  j - 1
-    //                })
-    //              }
-    //            } {
-    //              var j: Int = 0
-    //              while (j < dict.length) {
-    //                {
-    //                  if (total(j) - dist(0)(j) - dist(i)(j) > rightMax) {
-    //                    rightMax = total(j) - dist(0)(j) - dist(i)(j)
-    //                    right.clear
-    //                    right.add(j)
-    //                    continue //todo: continue is not supported
-    //                  }
-    //                  if (total(j) - dist(0)(j) - dist(i)(j) == rightMax) {
-    //                    right.add(j)
-    //                  }
-    //                }
-    //                ({
-    //                  j += 1;
-    //                  j - 1
-    //                })
-    //              }
-    //            }
-    //            leftLabel = dict(left.get(RandomSource.nextInt(left.size)))
-    //            rightLabel = dict(right.get(RandomSource.nextInt(right.size)))
-    //          }
-    //        }
-    //        ({
-    //          i += 1;
-    //          i - 1
-    //        })
-    //      }
-    //    }
-  }
+  private def evaluateNumeric(df: Frame, weights: Value, test: String) {
 
-  private def evaluateNumeric(df: Frame, weights: Value, testName: String, totals: Array[Double]) {
-    //    val p: Array[Array[Double]] = new Array[Array[Double]](2, classCol.getDictionary.length)
-    //    val rowCounts: Array[Int] = new Array[Int](2)
-    //    val sort: Nothing = BaseFilters.sort(Vectors.newSeq(0, df.getRowCount - 1, 1), RowComparators.numericComparator(col, true)) {
-    //      var i: Int = 0
-    //      while (i < df.getRowCount - 1) {
-    //        {
-    //          val row: Int = if (col.isMissing(sort.getIndex(i))) 0 else 1
-    //          val index: Int = classCol.getIndex(sort.getIndex(i))
-    //          p(row)(index) += weights.get(sort.getIndex(i))
-    //          rowCounts(row) += 1
-    //          if (row == 0) {
-    //            continue //todo: continue is not supported
-    //          }
-    //          if (rowCounts(1) == 0) continue //todo: continue is not supported
-    //          if (df.getRowCount - rowCounts(1) - rowCounts(0) eq 0) continue //todo: continue is not supported
-    //          if (col.getValue(sort.getIndex(i)) < col.getValue(sort.getIndex(i + 1))) {
-    //            val metric: Double = compute(p(0), p(1), total)
-    //            if (!validNumber(metric)) continue //todo: continue is not supported
-    //            if (validNumber(metric) && metric > splitGain) {
-    //              splitGain = metric
-    //              splitCol = colName
-    //              splitLabel = null
-    //              splitValue = col.getValue(sort.getIndex(i))
-    //              val left: List[Integer] = new ArrayList[Integer]
-    //              val right: List[Integer] = new ArrayList[Integer]
-    //              var leftMax: Double = 0
-    //              var rightMax: Double = 0 {
-    //                var j: Int = 0
-    //                while (j < dict.length) {
-    //                  {
-    //                    if (p(1)(j) > leftMax) {
-    //                      leftMax = p(1)(j)
-    //                      left.clear
-    //                      left.add(j)
-    //                      continue //todo: continue is not supported
-    //                    }
-    //                    if (p(1)(j) == leftMax) {
-    //                      left.add(j)
-    //                    }
-    //                  }
-    //                  ({
-    //                    j += 1;
-    //                    j - 1
-    //                  })
-    //                }
-    //              } {
-    //                var j: Int = 0
-    //                while (j < dict.length) {
-    //                  {
-    //                    if (total(j) - p(0)(j) - p(1)(j) > rightMax) {
-    //                      rightMax = total(j) - p(0)(j) - p(1)(j)
-    //                      right.clear
-    //                      right.add(j)
-    //                      continue //todo: continue is not supported
-    //                    }
-    //                    if (total(j) - p(0)(j) - p(1)(j) == rightMax) {
-    //                      right.add(j)
-    //                    }
-    //                  }
-    //                  ({
-    //                    j += 1;
-    //                    j - 1
-    //                  })
-    //                }
-    //              }
-    //              leftLabel = dict(left.get(RandomSource.nextInt(left.size)))
-    //              rightLabel = dict(right.get(RandomSource.nextInt(right.size)))
-    //            }
-    //          }
-    //        }
-    //        ({
-    //          i += 1;
-    //          i - 1
-    //        })
-    //      }
-    //    }
+    val sort = (0 until df.rowCount).toArray
+    sort.sortWith((i, j) => df.values(i, test) < df.values(j, test))
+
+    // build an initial density matrix required for computing accuracies
+    val dm = DensityMatrix(DensityMatrix.NumericDefaultLabels, df.col(_target).labels.dictionary)
+    sort.foreach(i => dm.update(2, df.indexes(i, _target), weights.values(i)))
+
+    // test each split point to find the best numerical split
+    var lastPos = sort(0)
+    sort.foreach(i => {
+      dm.moveOnRow(2, 1, df.indexes(i, _target), weights.values(i))
+      if ((dm.countWithMinimum(useMissing = false, minWeight) == 2) &&
+        i != sort(0) && df.values(lastPos, test) != df.values(i, test)) {
+
+        lastPos = i
+        val accuracy = dm.binaryAccuracy(1)
+        if (splitGain < accuracy) {
+          splitCol = test
+          splitGain = accuracy
+          splitLabel = null
+          splitValue = df.values(i, test)
+        }
+      }
+    })
   }
 
   def predict(df: Frame, row: Int): (String, Array[Double]) = {
-    //    pred = new Nominal(df.getRowCount, dict)
-    //    val it: Nothing = df.getIterator
-    //    while (it.next) {
-    //      if (splitCol == null || it.isMissing(splitCol)) {
-    //        pred.setLabel(it.getRow, defaultLabel)
-    //        continue //todo: continue is not supported
-    //      }
-    //      if (df.getCol(splitCol).getType.isNumeric) {
-    //        if (it.getValue(splitCol) <= splitValue) {
-    //          pred.setLabel(it.getRow, leftLabel)
-    //        }
-    //        else {
-    //          pred.setLabel(it.getRow, rightLabel)
-    //        }
-    //      }
-    //      else {
-    //        if (splitLabel == it.getLabel(splitCol)) {
-    //          pred.setLabel(it.getRow, leftLabel)
-    //        }
-    //        else {
-    //          pred.setLabel(it.getRow, rightLabel)
-    //        }
-    //      }
-    //    }
-    ("", new Array[Double](0))
+    if (df.missing(row, splitCol)) {
+      defaultClassifier.predict(df, row)
+    }
+    else {
+      val classifier =
+        if (splitValue.isNaN) {
+          if (df.labels(row, splitCol) == splitLabel) leftClassifier else rightClassifier
+        } else {
+          if (df.values(row, splitCol) <= splitValue) leftClassifier else rightClassifier
+        }
+
+      classifier.predict(df, row)
+    }
   }
 
-  def prediction: Nominal = {
-    return pred
-  }
-
-  def distribution: Frame = {
-    return distr
-  }
-
-  def buildSummary(sb: StringBuilder) {
-  }
-
-  //
-  //  private def compute(missing: Array[Double], pa: Array[Double], total: Array[Double]): Double = {
-  //    return computeInfoGain(missing, pa, total)
-  //  }
-  //
-  //  private def computeInfoGain(missing: Array[Double], pa: Array[Double], total: Array[Double]): Double = {
-  //    var to: Double = 0
-  //    var tl: Double = 0
-  //    var tr: Double = 0 {
-  //      var i: Int = 1
-  //      while (i < total.length) {
-  //        {
-  //          val left: Double = pa(i)
-  //          val right: Double = total(i) - pa(i) - missing(i)
-  //          val orig: Double = total(i) - missing(i)
-  //          tl += left
-  //          tr += right
-  //          to += orig
-  //        }
-  //        ({
-  //          i += 1;
-  //          i - 1
-  //        })
-  //      }
-  //    }
-  //    if (tl == 0 || tr == 0) return Double.NaN
-  //    if (!validNumber(tl) || !validNumber(tr)) return Double.NaN
-  //    var po: Double = 0
-  //    var pl: Double = 0
-  //    var pr: Double = 0 {
-  //      var i: Int = 1
-  //      while (i < total.length) {
-  //        {
-  //          val pleft: Double = pa(i) / tl
-  //          val pright: Double = (total(i) - pa(i) - missing(i)) / tr
-  //          val porig: Double = (total(i) - missing(i)) / to
-  //          po -= if (porig == 0) 0 else log(porig) * porig
-  //          pl -= if (pleft == 0) 0 else log(pleft) * pleft
-  //          pr -= if (pright == 0) 0 else log(pright) * pright
-  //        }
-  //        ({
-  //          i += 1;
-  //          i - 1
-  //        })
-  //      }
-  //    }
-  //    return po - (tl * pl + tr * pr) / (tl + tr)
-  //  }
-  //
-  //  private def computeGini(missing: Array[Double], pa: Array[Double], total: Array[Double]): Double = {
-  //    var totalOrig: Double = 0
-  //    var totalLeft: Double = 0
-  //    var totalRight: Double = 0 {
-  //      var i: Int = 1
-  //      while (i < total.length) {
-  //        {
-  //          val left: Double = pa(i)
-  //          val right: Double = total(i) - pa(i) - missing(i)
-  //          val orig: Double = total(i) - missing(i)
-  //          totalLeft += left
-  //          totalRight += right
-  //          totalOrig += orig
-  //        }
-  //        ({
-  //          i += 1;
-  //          i - 1
-  //        })
-  //      }
-  //    }
-  //    if (totalLeft == 0 || totalRight == 0) return Double.NaN
-  //    if (!validNumber(totalLeft) || !validNumber(totalRight)) return Double.NaN
-  //    var giniOrig: Double = 1
-  //    var giniLeft: Double = 1
-  //    var giniRight: Double = 1 {
-  //      var i: Int = 1
-  //      while (i < total.length) {
-  //        {
-  //          val pleft: Double = pa(i) / totalLeft
-  //          val pright: Double = (total(i) - pa(i) - missing(i)) / totalRight
-  //          val porig: Double = (total(i) - missing(i)) / totalOrig
-  //          giniOrig -= porig * porig
-  //          giniLeft -= pleft * pleft
-  //          giniRight -= pright * pright
-  //        }
-  //        ({
-  //          i += 1;
-  //          i - 1
-  //        })
-  //      }
-  //    }
-  //    return giniOrig - (totalLeft * giniLeft + totalRight * giniRight) / (totalLeft + totalRight)
-  //  }
-
+  def buildSummary(sb: StringBuilder): Unit = ???
 }

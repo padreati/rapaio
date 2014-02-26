@@ -38,15 +38,6 @@ object CSVSandbox extends App {
     typeHints = Map[String, String](("PassengerId", "idx"), ("Survived", "nom"))
   )
 
-  df.colNames.foreach(colName => {
-    print(colName + "[" + df.col(colName).shortName + "]: ")
-    df.col(colName).shortName match {
-      case "nom" => print(df.col(colName).toLabelArray.slice(0, 20) mkString ",")
-      case "val" => print(df.col(colName).toValueArray.slice(0, 20) mkString ",")
-      case "idx" => print(df.col(colName).toIndexArray.slice(0, 20) mkString ",")
-    }
-    println
-  })
 
   def printMode(name: String): Unit = {
     println("mode: " + DensityVector(df.col(name)).mode())

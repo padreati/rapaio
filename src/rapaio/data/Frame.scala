@@ -20,7 +20,7 @@
 
 package rapaio.data
 
-import rapaio.data.mapping.Mapping
+import rapaio.data.mapping.{MappedFrame, Mapping}
 import java.io.Serializable
 
 /**
@@ -153,6 +153,24 @@ abstract trait Frame extends Serializable {
     def update(row: Int, colName: String, x: String): Unit = col(colName).labels(row) = x
   }
 
+
+  def filter(f: (Frame, Int) => Boolean): MappedFrame = {
+    val mapping = new Mapping
+    for (i <- 0 until rowCount) {
+      if (f(this, i)) mapping.add(rowId(i))
+    }
+    new MappedFrame(sourceFrame, mapping)
+  }
+
+  def binarySplit(f: (Frame, Int) => Boolean): (MappedFrame, MappedFrame) = {
+    val leftMapping = new Mapping
+    val rightMapping = new Mapping
+    for (i <- 0 until rowCount) {
+      if (f(this, i)) leftMapping.add(rowId(i))
+      else rightMapping.add(rowId(i))
+    }
+    (new MappedFrame(this, leftMapping), new MappedFrame(this, rightMapping))
+  }
 }
 
 object Frame {

@@ -91,36 +91,6 @@ trait Feature extends Serializable {
 
   def ensureCapacity(minCapacity: Int)
 
-  def toValueArray: Array[Double] = {
-    val list = new Array[Double](rowCount)
-    var i: Int = 0
-    while (i < rowCount) {
-      list(i) = values(i)
-      i += 1
-    }
-    list
-  }
-
-  def toIndexArray: Array[Int] = {
-    val list = new Array[Int](rowCount)
-    var i: Int = 0
-    while (i < rowCount) {
-      list(i) = indexes(i)
-      i += 1
-    }
-    list
-  }
-
-  def toLabelArray: Array[String] = {
-    val list = new Array[String](rowCount)
-    var i: Int = 0
-    while (i < rowCount) {
-      list(i) = labels(i)
-      i += 1
-    }
-    list
-  }
-
   def missing: Missing
 
   def values: Values

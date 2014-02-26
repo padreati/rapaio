@@ -120,7 +120,7 @@ trait Classifier extends Summarizable {
   /**
    * Predicts class for one instance from the data set
    */
-  protected def predict(df: Frame, row: Int): (String, Array[Double])
+  def predict(df: Frame, row: Int): (String, Array[Double])
 
   /**
    * Predict further classes for new data set instances, using
