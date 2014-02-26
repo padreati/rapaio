@@ -41,7 +41,7 @@ class SolidFrame(private var _rows: Int,
 
   def colCount: Int = _vectors.length
 
-  def rowId(row: Int): Int = _rows
+  def rowId(row: Int): Int = row
 
   def isMappedFrame: Boolean = false
 

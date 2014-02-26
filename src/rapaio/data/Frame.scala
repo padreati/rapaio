@@ -163,13 +163,13 @@ abstract trait Frame extends Serializable {
   }
 
   def binarySplit(f: (Frame, Int) => Boolean): (MappedFrame, MappedFrame) = {
-    val leftMapping = new Mapping
-    val rightMapping = new Mapping
+    val left = new Mapping
+    val right = new Mapping
     for (i <- 0 until rowCount) {
-      if (f(this, i)) leftMapping.add(rowId(i))
-      else rightMapping.add(rowId(i))
+      if (f(this, i)) left.add(rowId(i))
+      else right.add(rowId(i))
     }
-    (new MappedFrame(this, leftMapping), new MappedFrame(this, rightMapping))
+    (new MappedFrame(sourceFrame, left), new MappedFrame(sourceFrame, right))
   }
 }
 
@@ -184,7 +184,16 @@ object Frame {
    */
   def matrix(rows: Int, names: Array[String]): Frame = {
     val features = new Array[Feature](names.length)
-    for (i <- 0 until names.length) features(i) = new Value()
+    for (i <- 0 until names.length) features(i) = new Value(rows, rows, 0)
     new SolidFrame(rows, features, names)
+  }
+
+  def solid(rows: Int, pair: (String, Feature)*): SolidFrame = {
+    require(rows >= 0, "rows must have a positive value")
+    require(pair.forall(p => p._2.rowCount >= rows), "all features must have at least the same row count as rows")
+    require(pair.forall(p => !p._2.isMappedFeature), "features should not be mapped")
+
+    val cols = pair.unzip
+    new SolidFrame(rows, cols._2.toArray, cols._1.toArray)
   }
 }

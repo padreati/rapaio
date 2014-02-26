@@ -33,10 +33,8 @@ class Value(protected var rows: Int,
   require(rowCount >= 0, "Illegal row count: " + this.rows)
   require(rows <= capacity, "Illegal row count" + rows + " less than capacity:" + capacity)
 
-  private var data: Array[Double] = null
-  this.data = new Array[Double](capacity)
+  private var data = new Array[Double](capacity)
   if (fill != 0) Arrays.fill(data, 0, rows, fill)
-
 
   override def shortName: String = Value.ShortName
 
@@ -186,10 +184,12 @@ object Value {
 
   def apply(values: Array[Double]): Value = {
     val x = new Value(values.length)
-    x.data = Arrays.copyOf(values, values.length)
+    Array.copy(values, 0, x.data, 0, values.length)
     x.rows = values.length
     x
   }
+
+  def apply(values: Double*): Value = apply(values.toArray)
 
   def apply(values: Array[Int]): Value = {
     val x = new Value(values.length)

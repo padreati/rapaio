@@ -27,9 +27,10 @@ import rapaio.core.stat.DensityVector
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-class MajorityClassifier extends Classifier {
+class ModeClassifier extends Classifier {
 
   private var _predictedLabel: String = _
+  private var _dfRowCount: Int = _
 
   /**
    * Predict classes for new data set instances
@@ -54,6 +55,7 @@ class MajorityClassifier extends Classifier {
     val dv = DensityVector(df.col(targetName), weights)
     _predictedLabel = dv.mode(false)
     _dictionary = df.col(targetName).labels.dictionary
+    _dfRowCount = df.rowCount
   }
 
   /**
@@ -62,7 +64,7 @@ class MajorityClassifier extends Classifier {
    *
    * @return new parametrized instance
    */
-  override def newInstance: Classifier = new MajorityClassifier
+  override def newInstance: Classifier = new ModeClassifier
 
   /**
    * Algorithm name with the eventual parameter values used.
@@ -70,16 +72,17 @@ class MajorityClassifier extends Classifier {
    */
   override def description: String =
     """
-      |MajorityClassifier
+      |ModeClassifier
     """.stripMargin
 
   /**
    * Name of the classification algorithm used for informative messages
    * @return short name of the implemented classifier
    */
-  override def name: String = "MajorityClassifier"
+  override def name: String = "ModeClassifier"
 
-  override def buildSummary(sb: StringBuilder): Unit = {
-
+  override def buildModelSummary(sb: StringBuilder): Unit = {
+    sb.append("observations: " + _dfRowCount + "\n")
+    sb.append("predicted label: " + _predictedLabel + "\n")
   }
 }

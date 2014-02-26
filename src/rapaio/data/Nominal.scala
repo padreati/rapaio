@@ -43,7 +43,7 @@ import scala.collection.mutable
  */
 class Nominal(protected var rows: Int, private var dictionary: List[String]) extends Feature {
   private var _dict = new mutable.MutableList[String]
-  private var data = Array[Int](rows)
+  private var data = new Array[Int](rows)
   private var _reverse = new mutable.HashMap[String, Int]
 
   _dict += "?"
@@ -51,8 +51,8 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
   for (next <- dictionary) {
     if (!_dict.contains(next)) {
       _dict += next
+      _reverse += (next -> (_dict.size - 1))
     }
-    _reverse += (next -> _dict.size)
   }
 
   override def shortName: String = "nom"
@@ -160,15 +160,15 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
     override def apply(row: Int): String = _dict(data(row))
 
     override def update(row: Int, value: String): Unit = {
-      if (value equals Nominal.missingValue) {
+      if (value == Nominal.missingValue) {
         data(row) = Nominal.missingIndex
-        return
+      } else {
+        if (!_reverse.contains(value)) {
+          _dict += value
+          _reverse += (value -> _reverse.size)
+        }
+        data(row) = _reverse(value)
       }
-      if (!_reverse.contains(value)) {
-        _dict += value
-        _reverse += (value -> _reverse.size)
-      }
-      data(row) = _reverse(value)
     }
 
     override def ++(value: String): Unit = {

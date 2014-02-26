@@ -178,6 +178,16 @@ trait Feature extends Serializable {
     def dictionary_=(dict: Array[String]): Unit
 
     def indexOf(label: String): Option[Int]
+
+    def forall(p: (String) => Boolean): Boolean = {
+      @tailrec
+      def forOne(i: Int): Boolean = {
+        if (i >= rowCount) true
+        else if (p(labels(i))) forOne(i + 1)
+        else false
+      }
+      forOne(0)
+    }
   }
 
   def instances: Array[VInst] = {

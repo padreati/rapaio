@@ -93,10 +93,10 @@ final class DensityMatrix {
     val totals = new Array[Double](targetLabels.length)
     for (i <- 0 until targetLabels.length; j <- 0 until testLabels.length) {
       if (j == row) {
-        leftMax = math.max(leftMax, values(i)(j))
-        left += values(i)(j)
+        leftMax = math.max(leftMax, values(j)(i))
+        left += values(j)(i)
       } else {
-        totals(i) += values(i)(j)
+        totals(i) += values(j)(i)
       }
     }
     for (i <- 0 until targetLabels.length) {

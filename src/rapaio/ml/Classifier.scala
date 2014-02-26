@@ -32,8 +32,10 @@ trait Classifier extends Summarizable {
 
   protected var _prediction: Nominal = _
   protected var _distribution: Frame = _
+
   protected var _target: String = _
   protected var _dictionary: Array[String] = _
+
 
   /**
    * Name of the classification algorithm used for informative messages
@@ -153,7 +155,7 @@ trait Classifier extends Summarizable {
    *
    * @return nominal vector with predicted classes
    */
-  def getPrediction: Nominal = _prediction
+  def prediction: Nominal = _prediction
 
   /**
    * Returns predicted class distribution.
@@ -162,5 +164,26 @@ trait Classifier extends Summarizable {
    *         column for each target class, including the missing
    *         label column in first position)
    */
-  def getDistribution: Frame = _distribution
+  def distribution: Frame = _distribution
+
+  override def buildSummary(sb: StringBuilder): Unit = {
+    sb.append("\n>> classification model summary\n")
+    sb.append("* model: " + name + "\n")
+
+    sb.append("* parameters:");
+    buildParameterSummary(sb)
+
+    sb.append("* structure:")
+    buildModelSummary(sb)
+
+    if (_prediction != null) {
+      sb.append("* prediction:")
+
+
+    }
+  }
+
+  def buildParameterSummary(sb: StringBuilder): Unit = sb.append("none\n")
+
+  def buildModelSummary(sb: StringBuilder): Unit = sb.append("no information\n")
 }

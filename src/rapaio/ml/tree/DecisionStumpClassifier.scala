@@ -23,7 +23,7 @@ package rapaio.ml.tree
 import rapaio.data._
 import rapaio.ml.Classifier
 import rapaio.core.stat.DensityMatrix
-import rapaio.ml.base.MajorityClassifier
+import rapaio.ml.base.ModeClassifier
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -36,10 +36,14 @@ class DecisionStumpClassifier extends Classifier {
   private var splitLabel: String = _
   private var splitValue: Double = .0
   private var splitGain: Double = .0
-  private val leftClassifier: Classifier = new MajorityClassifier()
-  private val rightClassifier: Classifier = new MajorityClassifier()
-  private val defaultClassifier: Classifier = new MajorityClassifier()
+  private val leftClassifier: ModeClassifier = new ModeClassifier()
+  private val rightClassifier: ModeClassifier = new ModeClassifier()
+  private val defaultClassifier: ModeClassifier = new ModeClassifier()
 
+  // information from model
+  private var _dfRowCount: Int = _
+  private var _leftCount: Int = _
+  private var _rightCount: Int = _
 
   /**
    * Name of the classification algorithm used for informative messages
@@ -56,6 +60,9 @@ class DecisionStumpClassifier extends Classifier {
   def newInstance: Classifier = new DecisionStumpClassifier
 
   def learn(df: Frame, weights: Value, targetName: String) {
+
+    require(df.colCount > 1, "should have at least an input feature")
+
     splitGain = 0
     _dictionary = df.col(targetName).labels.dictionary
     _target = targetName
@@ -69,6 +76,8 @@ class DecisionStumpClassifier extends Classifier {
     })
     this.defaultClassifier.learn(df, weights, targetName)
 
+    _dfRowCount = df.rowCount
+
     if (Option(splitCol).isDefined) {
       val split =
         if (splitValue.isNaN) df.binarySplit((df: Frame, row: Int) => df.labels(row, splitCol) == splitLabel)
@@ -76,9 +85,10 @@ class DecisionStumpClassifier extends Classifier {
 
       leftClassifier.learn(split._1, _target)
       rightClassifier.learn(split._2, _target)
-    } else {
-      leftClassifier.learn(df, _target)
-      rightClassifier.learn(df, _target)
+
+      _leftCount = split._1.rowCount
+      _rightCount = split._2.rowCount
+
     }
   }
 
@@ -86,7 +96,7 @@ class DecisionStumpClassifier extends Classifier {
     val dm = DensityMatrix(df, weights, test, _target)
     val testCol = df.col(test)
     val dict = testCol.labels.dictionary
-    for (i <- 0 until dict.length) {
+    for (i <- 1 until dict.length) {
       val accuracy = dm.binaryAccuracy(i)
       if (splitGain < accuracy) {
         splitCol = test
@@ -130,16 +140,31 @@ class DecisionStumpClassifier extends Classifier {
       defaultClassifier.predict(df, row)
     }
     else {
-      val classifier =
+      var classifier =
         if (splitValue.isNaN) {
           if (df.labels(row, splitCol) == splitLabel) leftClassifier else rightClassifier
         } else {
           if (df.values(row, splitCol) <= splitValue) leftClassifier else rightClassifier
         }
 
+      if (classifier == null) {
+        classifier = defaultClassifier
+      }
+
       classifier.predict(df, row)
     }
   }
 
-  def buildSummary(sb: StringBuilder): Unit = ???
+  override def buildModelSummary(sb: StringBuilder): Unit = {
+    sb.append("\n")
+    sb.append("observations: " + _dfRowCount + "\n")
+    sb.append("- default model (" + defaultClassifier.name + "): \n")
+    defaultClassifier.buildModelSummary(sb)
+
+    sb.append("- left model (" + leftClassifier.name + "): \n")
+    if (leftClassifier == null) sb.append("none") else leftClassifier.buildModelSummary(sb)
+
+    sb.append("- right model (" + rightClassifier.name + "): \n")
+    if (rightClassifier == null) sb.append("none") else rightClassifier.buildModelSummary(sb)
+  }
 }
