@@ -22,10 +22,10 @@ package rapaio.sandbox
 
 import rapaio.io.CSV
 import java.io.File
-import rapaio.data.{Value, Nominal}
-import rapaio.workspace.Workspace
+import rapaio.data.Value
 import rapaio.graphics.Plot
-import rapaio.core.stat.DensityVector
+import rapaio.core.stat.ConfusionMatrix
+import rapaio.ml.boosting.AdaBoostSAMMEClassifier
 
 /**
  * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -38,25 +38,13 @@ object CSVSandbox extends App {
     typeHints = Map[String, String](("PassengerId", "idx"), ("Survived", "nom"))
   )
 
+  var c = new AdaBoostSAMMEClassifier()
+  c.times = 10
+  c.learn(df, "Survived")
+  c.predict(df)
 
-  def printMode(name: String): Unit = {
-    println("mode: " + DensityVector(df.col(name)).mode())
-  }
+  c.summary()
 
-  //  DensityVector(df.col("Sex")).summary()
-  //  printMode("Sex")
-  //  DensityVector(df.col("Embarked")).summary()
-  //  printMode("Embarked")
-  //  DensityVector(df.col("Survived")).summary()
-  //  printMode("Survived")
-  //  DensityVector(df.col("Cabin")).summary()
-  //  printMode("Cabin")
-
-  val nominal = new Nominal()
-  for (i <- 0 until 100) nominal.labels ++ (i % 10).toString
-  val hit = Value(0, 11, _ => 0)
-  for (i <- 0 until 10000) {
-    nominal.labels.indexOf(DensityVector(nominal).mode()).foreach(x => hit.values(x) += 1)
-  }
-  Workspace.draw(Plot().hist(hit))
+  val cm = new ConfusionMatrix(df.col("Survived"), c.prediction)
+  cm.summary()
 }

@@ -21,8 +21,9 @@
 package rapaio.ml.boosting
 
 import rapaio.ml.Classifier
-import rapaio.data.{Value, Frame, Nominal}
+import rapaio.data.{Value, Frame}
 import rapaio.core.stat.Sum
+import rapaio.ml.tree.DecisionStumpClassifier
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -32,9 +33,10 @@ class AdaBoostSAMMEClassifier extends Classifier {
   // parameters
 
   // weak classifier instance used to create new weak classifiers
-  private var _weak: Classifier = _
+  private var _weak: DecisionStumpClassifier = new DecisionStumpClassifier()
+  _weak.minWeight = 0.1
 
-  // number of weka classifiers to build
+  // number of weak classifiers to build
   private var _t: Int = 10
 
   // list of alpha coefficients
@@ -75,10 +77,10 @@ class AdaBoostSAMMEClassifier extends Classifier {
       |is equivalent with AdaBoost.M1
     """.stripMargin
 
-  /**
-   * Predicts class for one instance from the data set
-   */
-  override def predict(df: Frame, row: Int): (String, Array[Double]) = ???
+
+  def times = _t
+
+  def times_=(a: Int) = _t = a
 
   def learn(df: Frame, weights: Value, targetName: String) {
     _dictionary = df.col(targetName: String).labels.dictionary
@@ -118,29 +120,26 @@ class AdaBoostSAMMEClassifier extends Classifier {
     }
   }
 
-  // TODO rewrite row prediction
-  override def predict(df: Frame) {
-    _prediction = new Nominal(df.rowCount, _dictionary)
-    _distribution = Frame.matrix(df.rowCount, _dictionary)
+  /**
+   * Predicts class for one instance from the data set
+   */
+  override def predict(df: Frame, row: Int): (String, Array[Double]) = {
+    val d = new Array[Double](_dictionary.length)
     for (i <- 0 until math.min(_t, _h.size)) {
-      _h(i).predict(df)
-      for (j <- 0 until df.rowCount) {
-        val index: Int = _h(i).prediction.indexes(j)
-        _distribution.values(j, index) = _distribution.values(j, index) + _a(i)
-      }
+      val p = _h(i).predict(df, row)
+      val index: Int = _dictionary.indexOf(p._1)
+      d(index) += _a(i)
     }
 
-    for (i <- 0 until _distribution.rowCount) {
-      var max: Double = 0
-      var prediction: Int = 0
-      for (j <- 0 until _distribution.colCount) {
-        if (_distribution.values(i, j) > max) {
-          prediction = j
-          max = _distribution.values(i, j)
-        }
+    var max: Double = 0
+    var prediction: Int = 0
+    for (j <- 0 until d.length) {
+      if (d(j) > max) {
+        prediction = j
+        max = d(j)
       }
-      _prediction.indexes(i) = prediction
     }
+    (_dictionary(prediction), d)
   }
 
   //  override def learnFurther(df: Frame, weights: List[Double], classColName: String, classifier: AdaBoostSAMMEClassifier) {

@@ -143,7 +143,7 @@ trait Feature extends Serializable {
 
     def transform(f: (Double) => Double): Unit = {
       def transform(i: Int) {
-        if (i > rowCount) Unit
+        if (i >= rowCount) Unit
         else {
           values(i) = f(values(i))
           transform(i + 1)

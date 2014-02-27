@@ -57,7 +57,11 @@ class DecisionStumpClassifier extends Classifier {
    */
   override def description: String = "DecisionStump Classifier"
 
-  def newInstance: Classifier = new DecisionStumpClassifier
+  def newInstance: Classifier = {
+    val c = new DecisionStumpClassifier
+    c.minWeight = minWeight
+    c
+  }
 
   def learn(df: Frame, weights: Value, targetName: String) {
 
