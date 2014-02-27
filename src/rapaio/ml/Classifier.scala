@@ -41,13 +41,13 @@ trait Classifier extends Summarizable {
    * Name of the classification algorithm used for informative messages
    * @return short name of the implemented classifier
    */
-  def name: String
+  def name(): String
 
   /**
    * Algorithm name with the eventual parameter values used.
    * @return algorithm name and parameter values
    */
-  def description: String
+  def description(): String
 
   /**
    * Creates a new classifier instance with the same parameters as the original.
@@ -55,7 +55,7 @@ trait Classifier extends Summarizable {
    *
    * @return new parametrized instance
    */
-  def newInstance: Classifier
+  def newInstance(): Classifier
 
   /**
    * Fit a classifier on instances specified by frame, with row weights

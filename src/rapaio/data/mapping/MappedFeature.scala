@@ -110,14 +110,4 @@ class MappedFeature(private val _source: Feature,
 }
 
 object MappedFeature {
-  def apply(instances: Array[VInst]): MappedFeature = {
-    val src = instances(0).vector.source
-    if (instances.forall((inst: VInst) => src eq inst.vector.source)) {
-      val mapping = new Mapping
-      instances.foreach((inst: VInst) => mapping.add(inst.rowId))
-      new MappedFeature(src, mapping)
-    } else {
-      throw new IllegalArgumentException("Cannot build mapped vector from multiple source vectors")
-    }
-  }
 }

@@ -72,7 +72,7 @@ class ModeClassifier extends Classifier {
    */
   override def description: String =
     """
-      |ModeClassifier
+      |ModelClassifier
     """.stripMargin
 
   /**

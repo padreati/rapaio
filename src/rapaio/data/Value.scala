@@ -108,12 +108,18 @@ class Value(protected var rows: Int,
     rows -= (toIndex - fromIndex)
   }
 
-  def clear = rows = 0
+  def clear() = rows = 0
 
-  def trimToSize = if (rows < data.length) data = Arrays.copyOf(data, rows)
+  def trimToSize() = {
+    if (rows < data.length) {
+      val copy = new Array[Double](rows)
+      Array.copy(data, 0, copy, 0, rows)
+      data = copy
+    }
+  }
 
   def ensureCapacity(minCapacity: Int) {
-    val minExpand: Int = if ((data ne Value.EmptyData)) 0 else Value.DefaultCapacity
+    val minExpand: Int = if (data != Value.EmptyData) 0 else Value.DefaultCapacity
     if (minCapacity > minExpand) {
       if (minCapacity - data.length > 0) grow(minCapacity)
     }
@@ -172,9 +178,16 @@ class Value(protected var rows: Int,
     override def indexOf(label: String): Option[Int] =
       sys.error("Not implemented")
   }
+
+  def solidCopy(): Value = {
+    val result = new Value(rowCount, rowCount, 0)
+    for (i <- 0 until rowCount) result.values(i) = values(i)
+    result
+  }
 }
 
 object Value {
+
   val ShortName = "val"
   private val MaxArraySize: Int = Integer.MAX_VALUE - 8
   private val DefaultCapacity: Int = 10

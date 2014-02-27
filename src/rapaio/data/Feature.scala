@@ -140,6 +140,17 @@ trait Feature extends Serializable {
       }
       filter(0, List.empty).toArray
     }
+
+    def transform(f: (Double) => Double): Unit = {
+      def transform(i: Int) {
+        if (i > rowCount) Unit
+        else {
+          values(i) = f(values(i))
+          transform(i + 1)
+        }
+      }
+      transform(0)
+    }
   }
 
   abstract class Indexes {
@@ -190,25 +201,15 @@ trait Feature extends Serializable {
     }
   }
 
-  def instances: Array[VInst] = {
-    val inst = new Array[VInst](rowCount)
-    for (i <- 0 until rowCount)
-      inst(i) = new VInst(i, this)
-    inst
-  }
-
-  def apply(f: VInst => Boolean): MappedFeature = {
-    val p = new VInst(0, this)
+  def apply(f: (Feature, Int) => Boolean): MappedFeature = {
     val m = new Mapping
     if (isMappedFeature) {
       mapping.foreach(row => {
-        p.row = row
-        if (f(p)) m.add(p.rowId)
+        if (f(this, row)) m.add(rowId(row))
       })
     } else {
       for (row <- 0 until rowCount) {
-        p.row = row
-        if (f(p)) m.add(p.rowId)
+        if (f(this, row)) m.add(rowId(row))
       }
     }
     new MappedFeature(source, m)
