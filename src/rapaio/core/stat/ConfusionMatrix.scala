@@ -78,6 +78,7 @@ class ConfusionMatrix(private val _actual: Feature,
 
   private def addConfusionMatrix(sb: StringBuilder) {
     sb.append("Confusion rapaio.data.matrix\n")
+
     sb.append("\n")
     var maxwidth: Int = "Actual".length
     for (i <- 1 until _dict.length) {
@@ -87,7 +88,6 @@ class ConfusionMatrix(private val _actual: Feature,
         maxwidth = math.max(maxwidth, "%d".format(_cmf(i - 1)(j - 1)).length)
         total += _cmf(i - 1)(j - 1)
       }
-
       maxwidth = math.max(maxwidth, "%d".format(total).length)
     }
 
@@ -113,39 +113,39 @@ class ConfusionMatrix(private val _actual: Feature,
     for (j <- 0 until maxwidth) {
       sb.append("-")
     }
-
     sb.append(" ")
     sb.append("\n")
+
     for (i <- 1 until _dict.length) {
       sb.append(("%" + maxwidth + "s").format(_dict(i))).append("|")
       var total: Int = 0
       for (j <- 1 until _dict.length) {
-        {
-          sb.append(("%" + maxwidth + "d").format(_cmf(i - 1)(j - 1)))
-          if (j != _dict.length - 1) {
-            sb.append(" ")
-          }
-          else {
-            sb.append("|")
-          }
-          total += _cmf(i - 1)(j - 1)
+        sb.append(("%" + maxwidth + "d").format(_cmf(i - 1)(j - 1)))
+        if (j != _dict.length - 1) {
+          sb.append(" ")
         }
-        sb.append(("%" + maxwidth + "d").format(total))
-        sb.append("\n")
-      }
-      for (i <- 1 until _dict.length + 1) {
-        for (j <- 0 until maxwidth) {
-          sb.append("-")
+        else {
+          sb.append("|")
         }
-        sb.append(" ")
+        total += _cmf(i - 1)(j - 1)
       }
+      sb.append(("%" + maxwidth + "d").format(total))
+      sb.append("\n")
+    }
+
+    for (i <- 1 until _dict.length + 1) {
       for (j <- 0 until maxwidth) {
         sb.append("-")
       }
+      sb.append(" ")
     }
-
+    for (j <- 0 until maxwidth) {
+      sb.append("-")
+    }
     sb.append(" ")
     sb.append("\n")
+
+
     sb.append(("%" + maxwidth + "s").format("Total")).append("|")
     for (j <- 1 until _dict.length) {
       var total: Int = 0
@@ -160,9 +160,11 @@ class ConfusionMatrix(private val _actual: Feature,
         sb.append("|")
       }
     }
-
     sb.append(("%" + maxwidth + "d").format(math.rint(completeCases).asInstanceOf[Int]))
     sb.append("\n")
+
+    // percents
+
     if (!_percents || completeCases == 0.0) return
 
     sb.append("\n")
@@ -171,10 +173,10 @@ class ConfusionMatrix(private val _actual: Feature,
       maxwidth = math.max(maxwidth, _dict(i).length)
       var total: Int = 0
       for (j <- 1 until _dict.length) {
-        maxwidth = math.max(maxwidth, "%.3f".format(_cmf(i - 1)(j - 1) / completeCases).length)
+        maxwidth = math.max(maxwidth, "%.3f".format(_cmf(i - 1)(j - 1) / _completeCases).length)
         total += _cmf(i - 1)(j - 1)
       }
-      maxwidth = math.max(maxwidth, "%.3f".format(total / completeCases).length)
+      maxwidth = math.max(maxwidth, "%.3f".format(total / _completeCases).length)
     }
 
     sb.append(String.format("%" + maxwidth + "s", "")).append("|").append(" Predicted\n")
@@ -187,27 +189,26 @@ class ConfusionMatrix(private val _actual: Feature,
         sb.append("|")
       }
     }
-
     sb.append(String.format("%" + maxwidth + "s ", "Total"))
     sb.append("\n")
+
     for (i <- 1 until _dict.length + 1) {
       for (j <- 0 until maxwidth) {
         sb.append("-")
       }
       sb.append(" ")
     }
-
     for (j <- 0 until maxwidth) {
       sb.append("-")
     }
-
     sb.append(" ")
     sb.append("\n")
+
     for (i <- 1 until _dict.length) {
       sb.append(("%" + maxwidth + "s").format(_dict(i))).append("|")
       var total: Int = 0
       for (j <- 1 until _dict.length) {
-        sb.append(" %.3f".format(_cmf(i - 1)(j - 1) / completeCases))
+        sb.append(" %.3f".format(_cmf(i - 1)(j - 1) / _completeCases))
         if (j != _dict.length - 1) {
           sb.append(" ")
         } else {
@@ -215,29 +216,30 @@ class ConfusionMatrix(private val _actual: Feature,
         }
         total += _cmf(i - 1)(j - 1)
       }
-      sb.append(" %.3f".format(total / completeCases))
+      sb.append(" %.3f".format(total / _completeCases))
       sb.append("\n")
     }
+
     for (i <- 1 until _dict.length + 1) {
       for (j <- 0 until maxwidth) {
         sb.append("-")
       }
       sb.append(" ")
     }
-
     for (j <- 0 until maxwidth) {
       sb.append("-")
     }
     sb.append(" ")
     sb.append("\n")
+
+
     sb.append(("%" + maxwidth + "s").format("Total")).append("|")
     for (j <- 1 until _dict.length) {
       var total: Int = 0
       for (i <- 1 until _dict.length) {
         total += _cmf(i - 1)(j - 1)
       }
-
-      sb.append(" %.3f".format(total / completeCases))
+      sb.append(" %.3f".format(total / _completeCases))
       if (j != _dict.length - 1) {
         sb.append(" ")
       } else {

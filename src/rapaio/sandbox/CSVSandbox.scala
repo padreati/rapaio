@@ -22,8 +22,7 @@ package rapaio.sandbox
 
 import rapaio.io.CSV
 import java.io.File
-import rapaio.data.Value
-import rapaio.graphics.Plot
+import rapaio.data.Frame
 import rapaio.core.stat.ConfusionMatrix
 import rapaio.ml.boosting.AdaBoostSAMMEClassifier
 
@@ -32,19 +31,27 @@ import rapaio.ml.boosting.AdaBoostSAMMEClassifier
  */
 object CSVSandbox extends App {
 
-  val df = CSV.read(
+  var df = CSV.read(
     file = new File("/home/ati/rapaio/rapaio-java/src/rapaio/datasets/titanic-train.csv"),
     header = true,
     typeHints = Map[String, String](("PassengerId", "idx"), ("Survived", "nom"))
   )
 
-  var c = new AdaBoostSAMMEClassifier()
-  c.times = 10
-  c.learn(df, "Survived")
-  c.predict(df)
+  df = Frame.solid(df.rowCount,
+    ("Survived", df.col("Survived")),
+    ("Sex", df.col("Sex")),
+    ("Embarked", df.col("Embarked")),
+    ("Pclass", df.col("Pclass")))
 
-  c.summary()
+  def runWith(runs: Int) {
+    var c = new AdaBoostSAMMEClassifier()
+    c.times = runs
+    c.learn(df, "Survived")
+    c.predict(df)
+    c.summary()
+    new ConfusionMatrix(df.col("Survived"), c.prediction).summary()
+  }
 
-  val cm = new ConfusionMatrix(df.col("Survived"), c.prediction)
-  cm.summary()
+  runWith(10)
+  runWith(1000)
 }

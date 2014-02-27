@@ -24,6 +24,7 @@ import rapaio.ml.Classifier
 import rapaio.data.{Value, Frame}
 import rapaio.core.stat.Sum
 import rapaio.ml.tree.DecisionStumpClassifier
+import scala.annotation.tailrec
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -34,7 +35,7 @@ class AdaBoostSAMMEClassifier extends Classifier {
 
   // weak classifier instance used to create new weak classifiers
   private var _weak: DecisionStumpClassifier = new DecisionStumpClassifier()
-  _weak.minWeight = 0.1
+  _weak.minWeight = 0.0001
 
   // number of weak classifiers to build
   private var _t: Int = 10
@@ -96,17 +97,22 @@ class AdaBoostSAMMEClassifier extends Classifier {
       hh.learn(df, _w, targetName)
       hh.predict(df)
       val hp = hh.prediction
-      val err = (0 until _w.rowCount)
-        .filter(i => hp.indexes(i) != df.col(targetName).indexes(i))
-        .map(i => _w.values(i))
-        .sum
+      var err = 0.0
+      for (i <- 0 until df.rowCount) {
+        if (hp.indexes(i) != df.col(targetName).indexes(i)) {
+          err += _w.values(i)
+        }
+      }
       val alpha = math.log((1.0 - err) / err) + math.log(_k - 1.0)
-      if (err == 0 || err > (1.0 - 1.0 / _k)) {
-        if (_h == Nil && err <= (1 - 1 / _k)) {
+      if (err == 0) {
+        if (_h == Nil) {
           _h = List(hh)
           _a = List(alpha)
         }
         run = false
+        //      } else if (err > (1.0 - 1.0 / _k)) {
+        //        i = i - 1
+        //        println(err)
       } else {
         _h = _h ::: List(hh)
         _a = _a ::: List(alpha)
@@ -125,11 +131,19 @@ class AdaBoostSAMMEClassifier extends Classifier {
    */
   override def predict(df: Frame, row: Int): (String, Array[Double]) = {
     val d = new Array[Double](_dictionary.length)
-    for (i <- 0 until math.min(_t, _h.size)) {
-      val p = _h(i).predict(df, row)
-      val index: Int = _dictionary.indexOf(p._1)
-      d(index) += _a(i)
+
+    @tailrec def eval(h: List[Classifier], a: List[Double]) {
+      h match {
+        case Nil => Unit
+        case _ => {
+          val p = h.head.predict(df, row)
+          val index: Int = _dictionary.indexOf(p._1)
+          d(index) += a.head
+          eval(h.tail, a.tail)
+        }
+      }
     }
+    eval(_h, _a)
 
     var max: Double = 0
     var prediction: Int = 0
