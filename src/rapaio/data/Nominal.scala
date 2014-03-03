@@ -114,11 +114,11 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
   override def toString: String = "Nominal[" + rowCount + "]"
 
   def missing = new Missing {
-    def apply(row: Int): Boolean = Nominal.missingIndex == indexes(row)
+    def apply(row: Int): Boolean = Nominal.MissingIndex == indexes(row)
 
-    def update(row: Int, value: Boolean): Unit = indexes(row) = Nominal.missingIndex
+    def update(row: Int, value: Boolean): Unit = indexes(row) = Nominal.MissingIndex
 
-    def ++(): Unit = indexes ++ Nominal.missingIndex
+    def ++(): Unit = indexes ++ Nominal.MissingIndex
   }
 
   def values = new Values {
@@ -160,8 +160,8 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
     override def apply(row: Int): String = _dict(data(row))
 
     override def update(row: Int, value: String): Unit = {
-      if (value == Nominal.missingValue) {
-        data(row) = Nominal.missingIndex
+      if (value == Nominal.MissingValue) {
+        data(row) = Nominal.MissingIndex
       } else {
         if (!_reverse.contains(value)) {
           _dict += value
@@ -217,8 +217,8 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
 }
 
 object Nominal {
-  private val missingValue: String = "?"
-  private val missingIndex: Int = 0
+  val MissingValue: String = "?"
+  val MissingIndex: Int = 0
 
   def apply(xs: Array[String]): Nominal = {
     val nom = new Nominal()

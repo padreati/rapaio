@@ -20,7 +20,7 @@
 
 package rapaio.core.stat
 
-import rapaio.printer.Summarizable
+import rapaio.printer.Printable
 import rapaio.data.Feature
 
 /**
@@ -31,7 +31,7 @@ import rapaio.data.Feature
  * Date: 9/7/13
  * Time: 12:39 PM
  */
-class Maximum extends Summarizable {
+class Maximum extends Printable {
 
   private var _value: Double = _
 

@@ -25,6 +25,7 @@ import java.io.File
 import rapaio.data.Frame
 import rapaio.core.stat.ConfusionMatrix
 import rapaio.ml.boosting.AdaBoostSAMMEClassifier
+import rapaio.ml.tree.DecisionStumpClassifier
 
 /**
  * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -34,17 +35,25 @@ object CSVSandbox extends App {
   var df = CSV.read(
     file = new File("/home/ati/rapaio/rapaio-java/src/rapaio/datasets/titanic-train.csv"),
     header = true,
-    typeHints = Map[String, String](("PassengerId", "idx"), ("Survived", "nom"))
+    typeHints = Map[String, String](("PassengerId", "idx"), ("Survived", "nom"), ("Pclass", "nom"))
   )
 
   df = Frame.solid(df.rowCount,
     ("Survived", df.col("Survived")),
     ("Sex", df.col("Sex")),
-    ("Embarked", df.col("Embarked")),
-    ("Pclass", df.col("Pclass")))
+    //    ("Embarked", df.col("Embarked")),
+    ("Pclass", df.col("Pclass")) //,
+    //    ("Fare", df.col("Fare")),
+    //    ("SibSp", df.col("SibSp")),
+    //    ("Age", df.col("Age")),
+    //    ("Parch", df.col("Parch"))
+  )
 
   def runWith(runs: Int) {
-    var c = new AdaBoostSAMMEClassifier()
+    val c = new AdaBoostSAMMEClassifier()
+    val weak = new DecisionStumpClassifier()
+    weak.minCount = 1
+    c.weak = weak
     c.times = runs
     c.learn(df, "Survived")
     c.predict(df)
@@ -52,6 +61,6 @@ object CSVSandbox extends App {
     new ConfusionMatrix(df.col("Survived"), c.prediction).summary()
   }
 
-  runWith(10)
-  runWith(1000)
+  runWith(20)
+  //  runWith(1)
 }

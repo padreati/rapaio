@@ -21,7 +21,7 @@
 package rapaio.core.stat
 
 import rapaio.data.{Feature, Frame}
-import rapaio.printer.Summarizable
+import rapaio.printer.Printable
 
 /**
  * MAE is an error metric used usually on regressions,
@@ -30,7 +30,7 @@ import rapaio.printer.Summarizable
  *
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-class MAE extends Summarizable {
+class MAE extends Printable {
 
   private var _value: Double = _
 

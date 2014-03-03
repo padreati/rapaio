@@ -22,13 +22,16 @@ package rapaio.data
 
 import java.util.Arrays
 import rapaio.data.mapping.Mapping
+import rapaio.printer.Printable
+import rapaio.workspace.Workspace
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 class Value(protected var rows: Int,
             private val capacity: Int,
-            private val fill: Double) extends Feature {
+            private val fill: Double) extends Feature with Printable {
+
   require(capacity >= 0, "Illegal capacity: " + capacity)
   require(rowCount >= 0, "Illegal row count: " + this.rows)
   require(rows <= capacity, "Illegal row count" + rows + " less than capacity:" + capacity)
@@ -183,6 +186,37 @@ class Value(protected var rows: Int,
     val result = new Value(rowCount, rowCount, 0)
     for (i <- 0 until rowCount) result.values(i) = values(i)
     result
+  }
+
+  override def buildSummary(sb: StringBuilder): Unit = {
+    sb.append("not implemented")
+  }
+
+  override def buildShow(sb: StringBuilder): Unit = {
+    val indexWidth = "[%d]".format(rowCount).length
+    var maxLeft = 1
+    var maxRight = 1
+    values.filter(x => !x.isNaN).foreach(x => {
+      val str = "%f".format(x).split("\\.")
+      maxLeft = math.max(maxLeft, str(0).length)
+      maxRight = math.max(maxRight, str(1).length)
+    })
+    val width = maxLeft + maxRight + 1
+    val fmt = "%" + maxLeft + "." + maxRight + "f"
+    val idxFmt = "[%" + indexWidth + "d]"
+
+    var pos = Workspace.printer().textWidth()
+    for (i <- 0 until rowCount) {
+      if (pos + width + 1 > Workspace.printer().textWidth) {
+        sb.append("\n")
+        sb.append(idxFmt.format(i))
+        sb.append(" ")
+        pos = indexWidth + 1
+      }
+      sb.append(fmt.format(values(i)))
+      sb.append(" ")
+      pos += width + 1
+    }
   }
 }
 

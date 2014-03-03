@@ -21,7 +21,7 @@
 package rapaio.core.stat
 
 import rapaio.data.Feature
-import rapaio.printer.Summarizable
+import rapaio.printer.Printable
 
 /**
  * Finds the minimum value from a [[rapaio.data.Feature]] of values.
@@ -32,7 +32,7 @@ import rapaio.printer.Summarizable
  * Date: 9/7/13
  * Time: 12:36 PM
  */
-class Minimum extends Summarizable {
+class Minimum extends Printable {
   private var _value: Double = _
 
   def value: Double = _value

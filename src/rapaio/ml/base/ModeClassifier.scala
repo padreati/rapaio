@@ -53,7 +53,7 @@ class ModeClassifier extends Classifier {
    */
   override def learn(df: Frame, weights: Value, targetName: String): Unit = {
     val dv = DensityVector(df.col(targetName), weights)
-    _predictedLabel = dv.mode(false)
+    _predictedLabel = dv.mode(useMissing = false)
     _dictionary = df.col(targetName).labels.dictionary
     _dfRowCount = df.rowCount
   }
@@ -64,13 +64,13 @@ class ModeClassifier extends Classifier {
    *
    * @return new parametrized instance
    */
-  override def newInstance: Classifier = new ModeClassifier
+  override def newInstance(): Classifier = new ModeClassifier
 
   /**
    * Algorithm name with the eventual parameter values used.
    * @return algorithm name and parameter values
    */
-  override def description: String =
+  override def description(): String =
     """
       |ModelClassifier
     """.stripMargin
@@ -79,7 +79,7 @@ class ModeClassifier extends Classifier {
    * Name of the classification algorithm used for informative messages
    * @return short name of the implemented classifier
    */
-  override def name: String = "ModeClassifier"
+  override def name(): String = "ModeClassifier"
 
   override def buildModelSummary(sb: StringBuilder): Unit = {
     sb.append("observations: " + _dfRowCount + "\n")

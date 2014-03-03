@@ -20,13 +20,13 @@
 
 package rapaio.core.stat
 
-import rapaio.printer.Summarizable
+import rapaio.printer.Printable
 import rapaio.data.Feature
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-class Mode extends Summarizable {
+class Mode extends Printable {
 
   private var _modes: Array[String] = _
 

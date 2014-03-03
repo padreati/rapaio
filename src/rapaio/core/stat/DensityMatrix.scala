@@ -20,7 +20,7 @@
 
 package rapaio.core.stat
 
-import rapaio.data.{Value, Frame}
+import rapaio.data.{Feature, Nominal, Value, Frame}
 import rapaio.core.SpecialMath._
 import java.util
 
@@ -91,12 +91,12 @@ final class DensityMatrix {
     var leftMax = 0.0
     var rightMax = 0.0
     val totals = new Array[Double](targetLabels.length)
-    for (i <- 0 until targetLabels.length; j <- 0 until testLabels.length) {
-      if (j == row) {
-        leftMax = math.max(leftMax, values(j)(i))
-        left += values(j)(i)
+    for (i <- 0 until testLabels.length; j <- 0 until targetLabels.length) {
+      if (i == row) {
+        leftMax = math.max(leftMax, values(i)(j))
+        left += values(i)(j)
       } else {
-        totals(i) += values(j)(i)
+        totals(j) += values(i)(j)
       }
     }
     for (i <- 0 until targetLabels.length) {
@@ -105,6 +105,10 @@ final class DensityMatrix {
     }
 
     def prob(part: Double, total: Double): Double = if (total == 0 || part == 0) 0 else part / total
+
+    if (prob(leftMax + rightMax, left + right) < 0.5) {
+      println()
+    }
 
     prob(leftMax + rightMax, left + right)
   }
@@ -126,7 +130,7 @@ final class DensityMatrix {
    * @return
    */
   def entropy(useMissing: Boolean): Double = {
-    val totals: Array[Double] = Array[Double](targetLabels.length)
+    val totals: Array[Double] = new Array[Double](targetLabels.length)
     for (i <- 1 until testLabels.length)
       for (j <- 1 until targetLabels.length)
         totals(j) += values(i)(j)
@@ -260,7 +264,7 @@ object DensityMatrix {
 
   /**
    * Builds a density table from two named nominal features of a given frame,
-   * each observation having weight specified by {@param weights}.
+   * each observation having weight specified by weights.
    *
    * @param df frame which contains observations
    * @param weights array with observation weights
@@ -277,6 +281,50 @@ object DensityMatrix {
     val dt = apply(df.col(testColName).labels.dictionary, df.col(targetColName).labels.dictionary)
     for (i <- 0 until df.rowCount) {
       dt.update(df.indexes(i, testColName), df.indexes(i, targetColName), virtualWeight(i))
+    }
+    dt
+  }
+
+  /**
+   * Builds a binary density table from two named nominal features of a given frame, testValue being 
+   * on the left, others on the right,
+   * each observation having weight 1.
+   *
+   * @param test test feature which maps to rows
+   * @param target target feature which maps to columns
+   * @param testValue test value used for binary split
+   * @return a density table filled with values from observations
+   */
+  def apply(test: Feature, target: Feature, testValue: String): DensityMatrix = {
+    apply(test, target, null, testValue)
+  }
+
+  /**
+   * Builds a binary density table from two named nominal features of a given frame,
+   * testValues being value on the left, others on the right,
+   * each observation having weight specified by weights
+   *
+   * @param weights array with observation weights
+   * @param test test feature which maps to rows
+   * @param target target feature which maps to columns
+   * @param testValue test value of the feature test value used for binary split
+   * @return
+   */
+  def apply(test: Feature, target: Feature, weights: Value, testValue: String): DensityMatrix = {
+    require(target.isNominal, "Target feature must be nominal")
+    require(test.isNominal, "Test feature must be nominal")
+
+    def virtualWeight(i: Int): Double = if (weights != null) weights.values(i) else 1.0
+
+    val dt = apply(Array[String]("?", testValue, "others"), target.labels.dictionary)
+    for (i <- 0 until test.rowCount) {
+      if (test.labels(i) == Nominal.MissingValue) {
+        dt.update(0, target.indexes(i), virtualWeight(i))
+      } else if (test.labels(i) == testValue) {
+        dt.update(1, target.indexes(i), virtualWeight(i))
+      } else {
+        dt.update(2, target.indexes(i), virtualWeight(i))
+      }
     }
     dt
   }

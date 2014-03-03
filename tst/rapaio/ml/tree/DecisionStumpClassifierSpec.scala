@@ -22,6 +22,8 @@ package rapaio.ml.tree
 
 import org.scalatest.{Matchers, FlatSpec}
 import rapaio.data.{Value, Frame, Nominal}
+import rapaio.core.RandomSource
+import rapaio.core.stat.{Sum, ConfusionMatrix}
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -70,4 +72,49 @@ class DecisionStumpClassifierSpec extends FlatSpec with Matchers {
 
     c.summary()
   }
+
+  it should " give an error less than or equal with 1/k " in {
+
+    val from = Array[String]("a", "b", "c", "d")
+    val N = 100
+
+    for (i <- 0 until 2000) {
+      val k = i % 3 + 1
+      val x = Array.fill(N)(from(RandomSource.nextInt(from.length)))
+      val y = Array.fill(N)(from(RandomSource.nextInt(k)))
+
+      val df = Frame.solid(N, ("x", Nominal(x)), ("y", Nominal(y)))
+      val c = new DecisionStumpClassifier()
+      c.learn(df, "y")
+      c.predict(df)
+
+      val acc = new ConfusionMatrix(Nominal(y), c.prediction).accuracy
+      acc should be >= 1 / k.toDouble
+    }
+  }
+
+  it should " give an error less than or equal with 1/k for small weights " in {
+
+    val from = Array[String]("a", "b", "c", "d")
+    val N = 100
+
+    for (i <- 0 until 2000) {
+      val k = i % 3 + 1
+      val x = Array.fill(N)(from(RandomSource.nextInt(from.length)))
+      val y = Array.fill(N)(from(RandomSource.nextInt(k)))
+      val w = Array.fill(N)(RandomSource.nextDouble())
+      val sum = Sum(Value(w)).value
+      w.transform(x => x / sum)
+
+      val df = Frame.solid(N, ("x", Nominal(x)), ("y", Nominal(y)))
+      val c = new DecisionStumpClassifier()
+      c.minCount = 2
+      c.learn(df, Value(w), "y")
+      c.predict(df)
+
+      val acc = new ConfusionMatrix(Nominal(y), c.prediction).accuracy
+      acc should be >= 1 / k.toDouble
+    }
+  }
+
 }

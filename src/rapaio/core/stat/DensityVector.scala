@@ -21,44 +21,47 @@
 package rapaio.core.stat
 
 import rapaio.data.{Value, Feature}
-import rapaio.printer.Summarizable
+import rapaio.printer.Printable
 import rapaio.core.RandomSource
 import scala.annotation.tailrec
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-class DensityVector extends Summarizable {
+class DensityVector extends Printable {
 
   private var targetLabels: Array[String] = _
-  private var values: Array[Double] = _
+  private var _values: Array[Double] = _
 
   def mode(useMissing: Boolean = false): String = {
     @tailrec
     def modeNext(i: Int, n: Double, max: Double, lastLabel: String): String = {
-      if (i >= values.length) lastLabel
-      else if (values(i) < max) modeNext(i + 1, n, max, lastLabel)
-      else if (values(i) == max)
-        if (RandomSource.nextDouble >= n / (n + 1)) modeNext(i + 1, 1, values(i), targetLabels(i))
+      if (i >= _values.length) lastLabel
+      else if (_values(i) < max) modeNext(i + 1, n, max, lastLabel)
+      else if (_values(i) == max)
+        if (RandomSource.nextDouble >= n / (n + 1)) modeNext(i + 1, 1, _values(i), targetLabels(i))
         else modeNext(i + 1, n + 1, max, lastLabel)
-      else modeNext(i + 1, 1, values(i), targetLabels(i))
+      //        modeNext(i + 1, n + 1, max, lastLabel)
+      else modeNext(i + 1, 1, _values(i), targetLabels(i))
     }
     modeNext(if (!useMissing) 1 else 0, 1, -1, "")
   }
 
+  def values(i: Int): Double = _values(i)
+
   override def buildSummary(sb: StringBuilder): Unit = {
-    val total = values.sum
+    val total = _values.sum
 
     // collect widths
     val widths = new Array[Int](4)
-    widths(0) = values.length.toString.size
+    widths(0) = _values.length.toString.size
     widths(1) = "label".length
     widths(2) = "density".length
     widths(3) = "percent".length
     for (i <- 0 until targetLabels.length) {
       widths(1) = math.max(widths(1), targetLabels(i).length)
-      widths(2) = math.max(widths(2), "%.6f ".format(values(i)).toString.length)
-      widths(3) = math.max(widths(2), "%.6f ".format(values(i) / total).toString.length)
+      widths(2) = math.max(widths(2), "%.6f ".format(_values(i)).toString.length)
+      widths(3) = math.max(widths(2), "%.6f ".format(_values(i) / total).toString.length)
     }
 
     sb ++= "> density vector:\n"
@@ -70,8 +73,8 @@ class DensityVector extends Summarizable {
     for (i <- 0 until targetLabels.length) {
       sb ++= ("[%" + widths(0) + "d] ").format(i)
       sb ++= ("%-" + widths(1) + "s ").format(targetLabels(i))
-      sb ++= ("%" + widths(2) + ".6f ").format(values(i))
-      sb ++= ("%" + widths(3) + ".6f").format(values(i) / total)
+      sb ++= ("%" + widths(2) + ".6f ").format(_values(i))
+      sb ++= ("%" + widths(3) + ".6f").format(_values(i) / total)
       sb ++= "\n"
     }
   }
@@ -88,7 +91,7 @@ object DensityVector {
     def weight(i: Int): Double = if (weights != null) weights.values(i) else 1.0
 
     val dv = apply(feature.labels.dictionary)
-    for (i <- 0 until feature.rowCount) dv.values(feature.indexes(i)) += weight(i)
+    for (i <- 0 until feature.rowCount) dv._values(feature.indexes(i)) += weight(i)
     dv
   }
 
@@ -98,7 +101,7 @@ object DensityVector {
 
     val dv = new DensityVector
     dv.targetLabels = new Array[String](labels.length)
-    dv.values = new Array[Double](labels.length)
+    dv._values = new Array[Double](labels.length)
     labels.copyToArray(dv.targetLabels)
     dv
   }

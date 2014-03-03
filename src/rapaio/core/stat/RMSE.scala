@@ -21,12 +21,12 @@
 package rapaio.core.stat
 
 import rapaio.data.{Feature, Frame}
-import rapaio.printer.Summarizable
+import rapaio.printer.Printable
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-class RMSE(_source: Array[Feature], _target: Array[Feature]) extends Summarizable {
+class RMSE(_source: Array[Feature], _target: Array[Feature]) extends Printable {
 
   private val value: Double = {
     var total: Double = 0.0

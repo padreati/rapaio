@@ -21,14 +21,14 @@
 package rapaio.core.stat
 
 import rapaio.data.Feature
-import rapaio.printer.Summarizable
+import rapaio.printer.Printable
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 class ConfusionMatrix(private val _actual: Feature,
                       private val _predict: Feature,
-                      private val _percents: Boolean = false) extends Summarizable {
+                      private val _percents: Boolean = false) extends Printable {
 
   require(_actual.isNominal, "actual values vector must be nominal")
   require(_predict.isNominal, "predict values vector must be nominal")

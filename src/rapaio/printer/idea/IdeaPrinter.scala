@@ -32,7 +32,7 @@ object IdeaPrinter {
 }
 
 class IdeaPrinter extends Printer {
-  private var _textWidth: Int = 80
+  private var _textWidth: Int = 160
   private var _graphicWidth: Int = 800
   private var _graphicHeight: Int = 600
 

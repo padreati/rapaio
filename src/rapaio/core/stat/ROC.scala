@@ -21,13 +21,13 @@
 package rapaio.core.stat
 
 import rapaio.data.{Index, Feature, Frame}
-import rapaio.printer.Summarizable
+import rapaio.printer.Printable
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
 @deprecated("not fully implemented", "1.0")
-class ROC extends Summarizable {
+class ROC extends Printable {
   private var score: Feature = null
   private var classes: Feature = null
   private var _data: Frame = null

@@ -22,7 +22,7 @@ package rapaio.ml.tree
 
 import rapaio.data._
 import rapaio.ml.Classifier
-import rapaio.core.stat.DensityMatrix
+import rapaio.core.stat.{DensityVector, DensityMatrix}
 import rapaio.ml.base.ModeClassifier
 
 /**
@@ -30,7 +30,7 @@ import rapaio.ml.base.ModeClassifier
  */
 class DecisionStumpClassifier extends Classifier {
 
-  var minWeight: Double = 2.0
+  var minCount: Int = 2
 
   private var splitCol: String = _
   private var splitLabel: String = _
@@ -49,17 +49,17 @@ class DecisionStumpClassifier extends Classifier {
    * Name of the classification algorithm used for informative messages
    * @return short name of the implemented classifier
    */
-  override def name: String = "DecisionStump Classifier"
+  override def name(): String = "DecisionStump Classifier"
 
   /**
    * Algorithm name with the eventual parameter values used.
    * @return algorithm name and parameter values
    */
-  override def description: String = "DecisionStump Classifier"
+  override def description(): String = "DecisionStump Classifier"
 
-  def newInstance: Classifier = {
+  def newInstance(): Classifier = {
     val c = new DecisionStumpClassifier
-    c.minWeight = minWeight
+    c.minCount = minCount
     c
   }
 
@@ -79,13 +79,16 @@ class DecisionStumpClassifier extends Classifier {
       }
     })
     this.defaultClassifier.learn(df, weights, targetName)
-
     _dfRowCount = df.rowCount
 
     if (Option(splitCol).isDefined) {
+      val missingSplit = df.binarySplit((df: Frame, row: Int) => df.missing(row))
+      val missing = missingSplit._1
+      val dfComplete = missingSplit._2
+
       val split =
-        if (splitValue.isNaN) df.binarySplit((df: Frame, row: Int) => df.labels(row, splitCol) == splitLabel)
-        else df.binarySplit((df: Frame, row: Int) => df.values(row, splitCol) <= splitValue)
+        if (splitValue.isNaN) dfComplete.binarySplit((df: Frame, row: Int) => df.labels(row, splitCol) == splitLabel)
+        else dfComplete.binarySplit((df: Frame, row: Int) => df.values(row, splitCol) <= splitValue)
 
       leftClassifier.learn(split._1, _target)
       rightClassifier.learn(split._2, _target)
@@ -93,20 +96,28 @@ class DecisionStumpClassifier extends Classifier {
       _leftCount = split._1.rowCount
       _rightCount = split._2.rowCount
 
+      if (missing.rowCount > 0) {
+        defaultClassifier.learn(missing, _target)
+        _dfRowCount = missing.rowCount
+      }
     }
   }
 
   private def evaluateNominal(df: Frame, weights: Value, test: String) {
-    val dm = DensityMatrix(df, weights, test, _target)
     val testCol = df.col(test)
     val dict = testCol.labels.dictionary
+    val dv = DensityVector(df.col(test))
     for (i <- 1 until dict.length) {
-      val accuracy = dm.binaryAccuracy(i)
-      if (splitGain < accuracy) {
-        splitCol = test
-        splitGain = accuracy
-        splitLabel = dict(i)
-        splitValue = Double.NaN
+      if (dv.values(i) >= minCount && df.rowCount - dv.values(0) - dv.values(i) >= minCount) {
+        //        val accuracy = dm.binaryAccuracy(i)
+        val dm = DensityMatrix(df.col(test), df.col(_target), weights, df.col(test).labels.dictionary(i))
+        val accuracy = dm.infoGain(useMissing = false)
+        if (splitGain < accuracy) {
+          splitCol = test
+          splitGain = accuracy
+          splitLabel = dict(i)
+          splitValue = Double.NaN
+        }
       }
     }
   }
@@ -120,23 +131,29 @@ class DecisionStumpClassifier extends Classifier {
     val dm = DensityMatrix(DensityMatrix.NumericDefaultLabels, df.col(_target).labels.dictionary)
     sort.foreach(i => dm.update(2, df.indexes(i, _target), weights.values(i)))
 
+    var start = sort.length - 1
+    var stop = 0
+    for (i <- 0 until sort.length) {
+      if (!df.missing(sort(i))) {
+        start = math.min(start, i)
+        stop = math.max(stop, i)
+      }
+    }
     // test each split point to find the best numerical split
-    var lastPos = sort(0)
-    sort.foreach(i => {
-      dm.moveOnRow(2, 1, df.indexes(i, _target), weights.values(i))
-      if ((dm.countWithMinimum(useMissing = false, minWeight) == 2) &&
-        i != sort(0) && df.values(lastPos, test) != df.values(i, test)) {
-
-        lastPos = i
-        val accuracy = dm.binaryAccuracy(1)
+    for (i <- 0 until sort.length) {
+      dm.moveOnRow(2, 1, df.indexes(sort(i), _target), weights.values(sort(i)))
+      if (i >= start + minCount && i <= stop - minCount &&
+        df.values(sort(i - 1), test) != df.values(sort(i), test)) {
+        //        val accuracy = dm.binaryAccuracy(1)
+        val accuracy = dm.infoGain(useMissing = false)
         if (splitGain < accuracy) {
           splitCol = test
           splitGain = accuracy
           splitLabel = null
-          splitValue = df.values(i, test)
+          splitValue = df.values(sort(i), test)
         }
       }
-    })
+    }
   }
 
   def predict(df: Frame, row: Int): (String, Array[Double]) = {

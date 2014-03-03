@@ -21,7 +21,7 @@
 package rapaio.core.stat
 
 import rapaio.data.Feature
-import rapaio.printer.Summarizable
+import rapaio.printer.Printable
 import scala.annotation.tailrec
 
 /**
@@ -29,7 +29,7 @@ import scala.annotation.tailrec
  * <p/>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-class Sum extends Summarizable {
+class Sum extends Printable {
 
   private var _value: Double = _
 

@@ -21,7 +21,7 @@
 package rapaio.core.stat
 
 import rapaio.data.Feature
-import rapaio.printer.Summarizable
+import rapaio.printer.Printable
 
 /**
  * Compensated version of the algorithm for calculation of
@@ -32,7 +32,7 @@ import rapaio.printer.Summarizable
  * Date: 9/7/13
  * Time: 12:26 PM
  */
-class Variance extends Summarizable {
+class Variance extends Printable {
 
   private var _value: Double = _
 

@@ -33,13 +33,29 @@ import rapaio.workspace.Workspace
  * from [[rapaio.]]
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-trait Summarizable {
+trait Printable {
 
-  def summary(): Unit = {
+  final def summary(): Unit = {
     val sb = new StringBuilder
     buildSummary(sb)
     Workspace.printer().code(sb.toString())
   }
 
   def buildSummary(sb: StringBuilder): Unit
+
+  /**
+   * Show content of an object. By default is implemented using toString.
+   */
+  final def show(): Unit = {
+    val sb = new StringBuilder
+    buildShow(sb)
+    Workspace.printer().code(sb.toString())
+  }
+
+  /**
+   * Builds show content for an object.
+   */
+  def buildShow(sb: StringBuilder): Unit = {
+    sb.append(this.toString)
+  }
 }

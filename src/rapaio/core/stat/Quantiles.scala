@@ -20,7 +20,7 @@
 
 package rapaio.core.stat
 
-import rapaio.printer.Summarizable
+import rapaio.printer.Printable
 import rapaio.data.Feature
 
 /**
@@ -34,7 +34,7 @@ import rapaio.data.Feature
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @deprecated("Not fully implemented", "1.0")
-class Quantiles(feature: Feature, percentiles: Array[Double]) extends Summarizable {
+class Quantiles(feature: Feature, percentiles: Array[Double]) extends Printable {
 
   private val quantiles: Array[Double] = {
     if (feature.rowCount == 1) {

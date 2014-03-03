@@ -23,7 +23,7 @@ package rapaio.printer
 /**
  * Holds and maintains output options for summary feature.
  *
- * @see [[Summarizable]]
+ * @see [[Printable]]
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */

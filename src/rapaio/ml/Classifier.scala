@@ -21,14 +21,14 @@
 package rapaio.ml
 
 import rapaio.data._
-import rapaio.printer.Summarizable
+import rapaio.printer.Printable
 
 /**
  * Trait for all classifiers. For now the number of target features is 1.
  *
  * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-trait Classifier extends Summarizable {
+trait Classifier extends Printable {
 
   protected var _prediction: Nominal = _
   protected var _distribution: Frame = _
@@ -114,7 +114,7 @@ trait Classifier extends Summarizable {
       val prediction = predict(df, i)
       _prediction.labels(i) = prediction._1
       for (j <- 0 until _dictionary.length) {
-        _distribution.values(i, j) = prediction._2(j)
+        _distribution.values(i, j) += prediction._2(j)
       }
     }
   }

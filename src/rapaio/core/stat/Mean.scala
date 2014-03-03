@@ -21,7 +21,7 @@
 package rapaio.core.stat
 
 import rapaio.data.Feature
-import rapaio.printer.Summarizable
+import rapaio.printer.Printable
 
 /**
  * Compensated version of arithmetic mean of values from a [[Feature]].
@@ -30,7 +30,7 @@ import rapaio.printer.Summarizable
  * Date: 9/7/13
  * Time: 12:21 PM
  */
-final class Mean extends Summarizable {
+final class Mean extends Printable {
   private var _value: Double = _
 
   private def compute(feature: Feature): Mean = {

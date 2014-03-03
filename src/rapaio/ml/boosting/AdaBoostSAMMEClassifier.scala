@@ -34,8 +34,7 @@ class AdaBoostSAMMEClassifier extends Classifier {
   // parameters
 
   // weak classifier instance used to create new weak classifiers
-  private var _weak: DecisionStumpClassifier = new DecisionStumpClassifier()
-  _weak.minWeight = 0.0001
+  var weak: DecisionStumpClassifier = new DecisionStumpClassifier()
 
   // number of weak classifiers to build
   private var _t: Int = 10
@@ -54,7 +53,7 @@ class AdaBoostSAMMEClassifier extends Classifier {
 
   def newInstance(): AdaBoostSAMMEClassifier = {
     val classifier = new AdaBoostSAMMEClassifier()
-    classifier._weak = _weak
+    classifier.weak = weak
     classifier._t = _t
     classifier
   }
@@ -93,26 +92,28 @@ class AdaBoostSAMMEClassifier extends Classifier {
 
     var run = true
     for (i <- 0 until _t if run) {
-      val hh = _weak.newInstance()
-      hh.learn(df, _w, targetName)
+      val hh = weak.newInstance()
+      hh.learn(df, _w.solidCopy(), targetName)
       hh.predict(df)
       val hp = hh.prediction
       var err = 0.0
+      var total = 0.0
       for (i <- 0 until df.rowCount) {
-        if (hp.indexes(i) != df.col(targetName).indexes(i)) {
+        if (hp.labels(i) != df.col(targetName).labels(i)) {
           err += _w.values(i)
         }
+        total += _w.values(i)
       }
+      err = err / total
+
+      println(err)
       val alpha = math.log((1.0 - err) / err) + math.log(_k - 1.0)
-      if (err == 0) {
+      if ((err == 0) || (err > (1.0 - 1.0 / _k))) {
         if (_h == Nil) {
           _h = List(hh)
           _a = List(alpha)
         }
         run = false
-        //      } else if (err > (1.0 - 1.0 / _k)) {
-        //        i = i - 1
-        //        println(err)
       } else {
         _h = _h ::: List(hh)
         _a = _a ::: List(alpha)
@@ -135,12 +136,11 @@ class AdaBoostSAMMEClassifier extends Classifier {
     @tailrec def eval(h: List[Classifier], a: List[Double]) {
       h match {
         case Nil => Unit
-        case _ => {
-          val p = h.head.predict(df, row)
+        case _ =>
+        val p = h.head.predict(df, row)
           val index: Int = _dictionary.indexOf(p._1)
           d(index) += a.head
           eval(h.tail, a.tail)
-        }
       }
     }
     eval(_h, _a)
@@ -291,7 +291,7 @@ class AdaBoostSAMMEClassifier extends Classifier {
 
   override def buildSummary(sb: StringBuilder): Unit = {
     sb.append("AdaBoostSAMME [t=").append(_t).append("]\n")
-    sb.append("weak learners built:").append(_h.size).append("\n")
+    sb.append("weak learners built:").append(_h.length).append("\n")
   }
 
 }
