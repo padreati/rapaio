@@ -81,6 +81,11 @@ class ModeClassifier extends Classifier {
    */
   override def name(): String = "ModeClassifier"
 
+
+  def learnedObservations(): Int = _dfRowCount
+
+  def predictedLabel(): String = _predictedLabel
+
   override def buildModelSummary(sb: StringBuilder): Unit = {
     sb.append("observations: " + _dfRowCount + "\n")
     sb.append("predicted label: " + _predictedLabel + "\n")

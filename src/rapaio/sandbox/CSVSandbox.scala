@@ -41,12 +41,12 @@ object CSVSandbox extends App {
   df = Frame.solid(df.rowCount,
     ("Survived", df.col("Survived")),
     ("Sex", df.col("Sex")),
-    //    ("Embarked", df.col("Embarked")),
-    ("Pclass", df.col("Pclass")) //,
-    //    ("Fare", df.col("Fare")),
-    //    ("SibSp", df.col("SibSp")),
-    //    ("Age", df.col("Age")),
-    //    ("Parch", df.col("Parch"))
+    ("Embarked", df.col("Embarked")),
+    ("Pclass", df.col("Pclass")),
+    ("Fare", df.col("Fare")),
+    ("SibSp", df.col("SibSp")),
+    ("Age", df.col("Age")),
+    ("Parch", df.col("Parch"))
   )
 
   def runWith(runs: Int) {

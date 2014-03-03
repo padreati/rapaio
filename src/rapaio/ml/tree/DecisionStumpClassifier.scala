@@ -176,16 +176,24 @@ class DecisionStumpClassifier extends Classifier {
     }
   }
 
+
+  override def buildParameterSummary(sb: StringBuilder): Unit = {
+    sb.append("minCount=" + minCount + "\n")
+  }
+
   override def buildModelSummary(sb: StringBuilder): Unit = {
     sb.append("\n")
+    sb.append("splitCol: " + splitCol + "\n")
+    sb.append("splitLabel: " + splitLabel + "\n")
+    sb.append("splitValue: " + splitValue + "\n")
+    sb.append("splitGain: " + splitGain + "\n")
     sb.append("observations: " + _dfRowCount + "\n")
-    sb.append("- default model (" + defaultClassifier.name + "): \n")
-    defaultClassifier.buildModelSummary(sb)
 
-    sb.append("- left model (" + leftClassifier.name + "): \n")
-    if (leftClassifier == null) sb.append("none") else leftClassifier.buildModelSummary(sb)
-
-    sb.append("- right model (" + rightClassifier.name + "): \n")
-    if (rightClassifier == null) sb.append("none") else rightClassifier.buildModelSummary(sb)
+    def subSummary(title: String, c: ModeClassifier): Unit = {
+      sb.append("- " + title + " (" + c.name + "): predicted label -> " + c.predictedLabel() + ", observations: " + c.learnedObservations() + "\n")
+    }
+    subSummary("left", leftClassifier)
+    subSummary("right", rightClassifier)
+    subSummary("default", defaultClassifier)
   }
 }

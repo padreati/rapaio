@@ -97,16 +97,13 @@ class AdaBoostSAMMEClassifier extends Classifier {
       hh.predict(df)
       val hp = hh.prediction
       var err = 0.0
-      var total = 0.0
       for (i <- 0 until df.rowCount) {
         if (hp.labels(i) != df.col(targetName).labels(i)) {
           err += _w.values(i)
         }
-        total += _w.values(i)
       }
-      err = err / total
 
-      println(err)
+      hh.summary()
       val alpha = math.log((1.0 - err) / err) + math.log(_k - 1.0)
       if ((err == 0) || (err > (1.0 - 1.0 / _k))) {
         if (_h == Nil) {
@@ -119,9 +116,12 @@ class AdaBoostSAMMEClassifier extends Classifier {
         _a = _a ::: List(alpha)
 
         for (i <- 0 until _w.rowCount) {
-          _w.values(i) =
-            if (hp.indexes(i) != df.col(targetName).indexes(i)) _w.values(i) * (_k - 1) / (_k * err)
-            else _w.values(i) / (_k * (1.0 - err))
+
+          if (hp.indexes(i) != df.col(targetName).indexes(i)) {
+            _w.values(i) = _w.values(i) / (_k * err)
+          } else {
+            _w.values(i) = _w.values(i) / (_k * (1.0 - err))
+          }
         }
       }
     }
@@ -137,7 +137,7 @@ class AdaBoostSAMMEClassifier extends Classifier {
       h match {
         case Nil => Unit
         case _ =>
-        val p = h.head.predict(df, row)
+          val p = h.head.predict(df, row)
           val index: Int = _dictionary.indexOf(p._1)
           d(index) += a.head
           eval(h.tail, a.tail)
