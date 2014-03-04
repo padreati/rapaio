@@ -32,18 +32,13 @@ class DecisionStumpClassifier extends Classifier {
 
   var minCount: Int = 2
 
-  private var splitCol: String = _
-  private var splitLabel: String = _
-  private var splitValue: Double = .0
-  private var splitGain: Double = .0
-  private val leftClassifier: ModeClassifier = new ModeClassifier()
-  private val rightClassifier: ModeClassifier = new ModeClassifier()
-  private val defaultClassifier: ModeClassifier = new ModeClassifier()
-
-  // information from model
-  private var _dfRowCount: Int = _
-  private var _leftCount: Int = _
-  private var _rightCount: Int = _
+  private var _splitCol: String = null
+  private var _splitLabel: String = _
+  private var _splitValue: Double = .0
+  private var _splitGain: Double = .0
+  private val _leftClassifier: ModeClassifier = new ModeClassifier()
+  private val _rightClassifier: ModeClassifier = new ModeClassifier()
+  private val _defaultClassifier: ModeClassifier = new ModeClassifier()
 
   /**
    * Name of the classification algorithm used for informative messages
@@ -58,48 +53,43 @@ class DecisionStumpClassifier extends Classifier {
   override def description(): String = "DecisionStump Classifier"
 
   def newInstance(): Classifier = {
-    val c = new DecisionStumpClassifier
-    c.minCount = minCount
-    c
+    new DecisionStumpClassifier {
+      this.minCount = minCount
+    }
   }
 
   def learn(df: Frame, weights: Value, targetName: String) {
 
     require(df.colCount > 1, "should have at least an input feature")
+    collectLearningInfo(df, weights, targetName)
 
-    splitGain = 0
-    _dictionary = df.col(targetName).labels.dictionary
-    _target = targetName
+    _splitGain = 0
+
     df.colNames.foreach(testName => {
       if (targetName != testName) {
-        df.col(testName).shortName match {
+        df.col(testName).typeName match {
           case "nom" => evaluateNominal(df, weights, testName)
           case _ => evaluateNumeric(df, weights, testName)
         }
       }
     })
-    this.defaultClassifier.learn(df, weights, targetName)
-    _dfRowCount = df.rowCount
+    this._defaultClassifier.learn(df, weights, _target)
 
-    if (Option(splitCol).isDefined) {
-      val missingSplit = df.binarySplit((df: Frame, row: Int) => df.missing(row))
+    if (Option(_splitCol).isDefined) {
+      val missingSplit = df.weightedSplit(weights, (df: Frame, row: Int) => df.missing(row, _splitCol))
       val missing = missingSplit._1
-      val dfComplete = missingSplit._2
+      val complete = missingSplit._2
 
       val split =
-        if (splitValue.isNaN) dfComplete.binarySplit((df: Frame, row: Int) => df.labels(row, splitCol) == splitLabel)
-        else dfComplete.binarySplit((df: Frame, row: Int) => df.values(row, splitCol) <= splitValue)
+        if (df.col(_splitCol).isNominal) {
+          complete._1.weightedSplit(complete._2, (df: Frame, row: Int) => df.labels(row, _splitCol) == _splitLabel)
+        } else {
+          complete._1.weightedSplit(complete._2, (df: Frame, row: Int) => df.values(row, _splitCol) <= _splitValue)
+        }
 
-      leftClassifier.learn(split._1, _target)
-      rightClassifier.learn(split._2, _target)
-
-      _leftCount = split._1.rowCount
-      _rightCount = split._2.rowCount
-
-      if (missing.rowCount > 0) {
-        defaultClassifier.learn(missing, _target)
-        _dfRowCount = missing.rowCount
-      }
+      _leftClassifier.learn(split._1._1, split._1._2, _target)
+      _rightClassifier.learn(split._2._1, split._2._2, _target)
+      _defaultClassifier.learn(missing._1, missing._2, _target)
     }
   }
 
@@ -109,14 +99,13 @@ class DecisionStumpClassifier extends Classifier {
     val dv = DensityVector(df.col(test))
     for (i <- 1 until dict.length) {
       if (dv.values(i) >= minCount && df.rowCount - dv.values(0) - dv.values(i) >= minCount) {
-        //        val accuracy = dm.binaryAccuracy(i)
-        val dm = DensityMatrix(df.col(test), df.col(_target), weights, df.col(test).labels.dictionary(i))
+        val dm = DensityMatrix(df.col(test), df.col(_target), weights, dict(i))
         val accuracy = dm.infoGain(useMissing = false)
-        if (splitGain < accuracy) {
-          splitCol = test
-          splitGain = accuracy
-          splitLabel = dict(i)
-          splitValue = Double.NaN
+        if (_splitGain < accuracy) {
+          _splitCol = test
+          _splitGain = accuracy
+          _splitLabel = dict(i)
+          _splitValue = Double.NaN
         }
       }
     }
@@ -125,7 +114,11 @@ class DecisionStumpClassifier extends Classifier {
   private def evaluateNumeric(df: Frame, weights: Value, test: String) {
 
     val sort = (0 until df.rowCount).toArray
-    sort.sortWith((i, j) => df.values(i, test) < df.values(j, test))
+    sort.sortWith((i, j) => {
+      if (df.missing(i, test)) !df.missing(j, test)
+      else if (df.missing(j, test)) false
+      else df.values(i, test) < df.values(j, test)
+    })
 
     // build an initial density matrix required for computing accuracies
     val dm = DensityMatrix(DensityMatrix.NumericDefaultLabels, df.col(_target).labels.dictionary)
@@ -146,30 +139,30 @@ class DecisionStumpClassifier extends Classifier {
         df.values(sort(i - 1), test) != df.values(sort(i), test)) {
         //        val accuracy = dm.binaryAccuracy(1)
         val accuracy = dm.infoGain(useMissing = false)
-        if (splitGain < accuracy) {
-          splitCol = test
-          splitGain = accuracy
-          splitLabel = null
-          splitValue = df.values(sort(i), test)
+        if (_splitGain < accuracy) {
+          _splitCol = test
+          _splitGain = accuracy
+          _splitLabel = null
+          _splitValue = df.values(sort(i), test)
         }
       }
     }
   }
 
   def predict(df: Frame, row: Int): (String, Array[Double]) = {
-    if (df.missing(row, splitCol)) {
-      defaultClassifier.predict(df, row)
+    if (_splitCol == null || df.missing(row, _splitCol)) {
+      _defaultClassifier.predict(df, row)
     }
     else {
       var classifier =
-        if (splitValue.isNaN) {
-          if (df.labels(row, splitCol) == splitLabel) leftClassifier else rightClassifier
+        if (_splitValue.isNaN) {
+          if (df.labels(row, _splitCol) == _splitLabel) _leftClassifier else _rightClassifier
         } else {
-          if (df.values(row, splitCol) <= splitValue) leftClassifier else rightClassifier
+          if (df.values(row, _splitCol) <= _splitValue) _leftClassifier else _rightClassifier
         }
 
       if (classifier == null) {
-        classifier = defaultClassifier
+        classifier = _defaultClassifier
       }
 
       classifier.predict(df, row)
@@ -183,17 +176,17 @@ class DecisionStumpClassifier extends Classifier {
 
   override def buildModelSummary(sb: StringBuilder): Unit = {
     sb.append("\n")
-    sb.append("splitCol: " + splitCol + "\n")
-    sb.append("splitLabel: " + splitLabel + "\n")
-    sb.append("splitValue: " + splitValue + "\n")
-    sb.append("splitGain: " + splitGain + "\n")
-    sb.append("observations: " + _dfRowCount + "\n")
+    sb.append("splitCol: " + _splitCol + "\n")
+    sb.append("splitLabel: " + _splitLabel + "\n")
+    sb.append("splitValue: " + _splitValue + "\n")
+    sb.append("splitGain: " + _splitGain + "\n")
+    sb.append("observations: " + _rowCount + "\n")
 
     def subSummary(title: String, c: ModeClassifier): Unit = {
       sb.append("- " + title + " (" + c.name + "): predicted label -> " + c.predictedLabel() + ", observations: " + c.learnedObservations() + "\n")
     }
-    subSummary("left", leftClassifier)
-    subSummary("right", rightClassifier)
-    subSummary("default", defaultClassifier)
+    subSummary("left", _leftClassifier)
+    subSummary("right", _rightClassifier)
+    subSummary("default", _defaultClassifier)
   }
 }

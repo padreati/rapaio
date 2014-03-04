@@ -38,7 +38,7 @@ class MappedFeature(private val _source: Feature,
   require(!_source.isMappedFeature, "Now allowed mapped vector as source")
 
 
-  override def shortName: String = _source.shortName
+  override def typeName: String = _source.typeName
 
   override def isNominal: Boolean = _source.isNominal
 

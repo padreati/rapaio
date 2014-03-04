@@ -39,7 +39,7 @@ class Value(protected var rows: Int,
   private var data = new Array[Double](capacity)
   if (fill != 0) Arrays.fill(data, 0, rows, fill)
 
-  override def shortName: String = Value.ShortName
+  override def typeName: String = Value.ShortName
 
   def this() {
     this(0, 0, 0)

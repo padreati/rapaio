@@ -35,32 +35,40 @@ object CSVSandbox extends App {
   var df = CSV.read(
     file = new File("/home/ati/rapaio/rapaio-java/src/rapaio/datasets/titanic-train.csv"),
     header = true,
-    typeHints = Map[String, String](("PassengerId", "idx"), ("Survived", "nom"), ("Pclass", "nom"))
+    typeHints = Map[String, String](
+      ("PassengerId", "idx"),
+      ("Survived", "nom"),
+      ("Pclass", "nom"),
+      ("SibSp", "nom"),
+      ("Parch", "nom")
+    ),
+    naValues = List[String]("?", "", " ")
   )
 
   df = Frame.solid(df.rowCount,
-    ("Survived", df.col("Survived")),
     ("Sex", df.col("Sex")),
     ("Embarked", df.col("Embarked")),
     ("Pclass", df.col("Pclass")),
     ("Fare", df.col("Fare")),
     ("SibSp", df.col("SibSp")),
     ("Age", df.col("Age")),
-    ("Parch", df.col("Parch"))
+    ("Parch", df.col("Parch")),
+    ("Survived", df.col("Survived"))
   )
 
   def runWith(runs: Int) {
     val c = new AdaBoostSAMMEClassifier()
-    val weak = new DecisionStumpClassifier()
-    weak.minCount = 1
-    c.weak = weak
+    c.weak = new DecisionStumpClassifier() {
+      minCount = 2
+    }
     c.times = runs
+    c.learningRate = 1.2
     c.learn(df, "Survived")
     c.predict(df)
     c.summary()
     new ConfusionMatrix(df.col("Survived"), c.prediction).summary()
   }
 
-  runWith(20)
+  runWith(200)
   //  runWith(1)
 }

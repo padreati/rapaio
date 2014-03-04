@@ -55,7 +55,7 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
     }
   }
 
-  override def shortName: String = "nom"
+  override def typeName: String = "nom"
 
   def this() {
     this(0, List.empty[String])

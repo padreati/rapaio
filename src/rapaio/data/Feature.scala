@@ -31,7 +31,7 @@ import scala.annotation.tailrec
  */
 trait Feature extends Serializable {
 
-  def shortName: String
+  def typeName: String
 
   /**
    * @return true is the vector can be used as a nominal variable, false otherwise

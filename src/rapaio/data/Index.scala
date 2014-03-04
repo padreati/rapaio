@@ -42,7 +42,7 @@ class Index(protected var rows: Int,
   }
 
 
-  override def shortName: String = "idx"
+  override def typeName: String = "idx"
 
   private def ensureCapacityInternal(minCapacity: Int) {
     var capacity = minCapacity

@@ -151,7 +151,7 @@ object CSV {
       }
     if (naValues.contains(value)) features(index).missing ++
     else
-      features(index).shortName match {
+      features(index).typeName match {
         case "nom" => pushNominal()
         case "val" => pushIndex()
         case "idx" => pushIndex()

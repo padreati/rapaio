@@ -162,7 +162,7 @@ abstract trait Frame extends Serializable {
     new MappedFrame(sourceFrame, mapping)
   }
 
-  def binarySplit(f: (Frame, Int) => Boolean): (MappedFrame, MappedFrame) = {
+  def split(f: (Frame, Int) => Boolean): (MappedFrame, MappedFrame) = {
     val left = new Mapping
     val right = new Mapping
     for (i <- 0 until rowCount) {
@@ -170,6 +170,23 @@ abstract trait Frame extends Serializable {
       else right.add(rowId(i))
     }
     (new MappedFrame(sourceFrame, left), new MappedFrame(sourceFrame, right))
+  }
+
+  def weightedSplit(weights: Value, f: (Frame, Int) => Boolean): ((MappedFrame, Value), (MappedFrame, Value)) = {
+    val left = new Mapping
+    val right = new Mapping
+    val leftWeights = new Value()
+    val rightWeights = new Value()
+    for (i <- 0 until rowCount) {
+      if (f(this, i)) {
+        left.add(rowId(i))
+        leftWeights.values ++ weights.values(i)
+      } else {
+        right.add(rowId(i))
+        rightWeights.values ++ weights.values(i)
+      }
+    }
+    ((new MappedFrame(sourceFrame, left), leftWeights), (new MappedFrame(sourceFrame, right), rightWeights))
   }
 }
 

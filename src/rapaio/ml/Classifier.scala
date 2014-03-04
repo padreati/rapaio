@@ -35,7 +35,7 @@ trait Classifier extends Printable {
 
   protected var _target: String = _
   protected var _dictionary: Array[String] = _
-
+  protected var _rowCount: Int = _
 
   /**
    * Name of the classification algorithm used for informative messages
@@ -56,6 +56,12 @@ trait Classifier extends Printable {
    * @return new parametrized instance
    */
   def newInstance(): Classifier
+
+  protected def collectLearningInfo(df: Frame, weights: Value, targetName: String): Unit = {
+    _rowCount = df.rowCount
+    _dictionary = df.col(targetName).labels.dictionary
+    _target = targetName
+  }
 
   /**
    * Fit a classifier on instances specified by frame, with row weights
