@@ -24,33 +24,20 @@ import rapaio.data._
 import java.io._
 import java.text.DecimalFormat
 import java.util.ArrayList
-import java.util.HashSet
-import java.util
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 class CsvPersistence {
+
   var hasHeader: Boolean = true
-
   var colSeparator: Char = ','
-
   var hasQuotas: Boolean = true
-
   var escapeQuotas: Char = '"'
-
   var trimSpaces: Boolean = true
-
-  var numericFieldHints: HashSet[String] = new util.HashSet[String]()
-
-  var indexFieldHints: HashSet[String] = new util.HashSet[String]()
-
-  var nominalFieldHints: HashSet[String] = new util.HashSet[String]()
-
+  var fieldHints: Map[String, String] = Map[String, String]()
   var defaultTypeHint: String = "nom"
-
   var startRow: Int = 0
-
   var endRow: Int = Int.MaxValue
 
   def read(fileName: String): Frame = {
@@ -63,8 +50,8 @@ class CsvPersistence {
 
   def read(inputStream: InputStream): Frame = {
     var rows: Int = 0
-    var names: ArrayList[String] = new ArrayList[String]
-    val vectors: ArrayList[Feature] = new ArrayList[Feature]
+    var names = new ArrayList[String]
+    val vectors = new ArrayList[Feature]
     try {
       val reader = new BufferedReader(new InputStreamReader(inputStream))
       if (hasHeader) {
@@ -81,7 +68,7 @@ class CsvPersistence {
         if (line == null) {
           break = true
         } else {
-          val row: ArrayList[String] = parseLine(line)
+          val row = parseLine(line)
           if (first) {
             first = false
             for (i <- names.size until row.size) {
@@ -89,12 +76,13 @@ class CsvPersistence {
             }
             for (i <- 0 until names.size) {
               val colName: String = names.get(i)
-              if (indexFieldHints.contains(colName)) {
-                vectors.add(new Index())
-              } else if (numericFieldHints.contains(colName)) {
-                vectors.add(new Value())
-              } else if (nominalFieldHints.contains(colName)) {
-                vectors.add(new Nominal())
+              if (fieldHints.contains(colName)) {
+                fieldHints(colName) match {
+                  case "idx" => vectors.add(new Index())
+                  case "val" => vectors.add(new Value())
+                  case "nom" => vectors.add(new Nominal())
+                  case _ => vectors.add(new Nominal())
+                }
               } else {
                 defaultTypeHint match {
                   case "nom" => vectors.add(new Nominal)
@@ -112,7 +100,7 @@ class CsvPersistence {
             rows += 1
             for (i <- 0 until names.size) {
               if (row.size <= i || ("?" == row.get(i)) || ("NA" == row.get(i))) {
-                vectors.get(i).missing.$plus$plus
+                vectors.get(i).missing ++()
               } else {
                 val value: String = row.get(i)
                 val v: Feature = vectors.get(i)
@@ -121,7 +109,7 @@ class CsvPersistence {
                     var intValue: Integer = null
                     try {
                       intValue = Integer.parseInt(value)
-                      v.indexes.$plus$plus(intValue)
+                      v.indexes ++ intValue
                     }
                     catch {
                       case ex: Throwable => {
@@ -131,7 +119,7 @@ class CsvPersistence {
                           for (j <- 0 until v.rowCount) {
                             num.values ++ v.indexes(j)
                           }
-                          num.values.$plus$plus(fallbackNumeric)
+                          num.values ++ fallbackNumeric
                           vectors.set(i, num)
                         }
                         catch {
@@ -149,15 +137,14 @@ class CsvPersistence {
                   case "val" =>
                     try {
                       val numValue: Double = java.lang.Double.parseDouble(value)
-                      v.values.$plus$plus(numValue)
+                      v.values ++ numValue
                     }
                     catch {
-                      case ex: Throwable => {
-                        val nom: Nominal = new Nominal
+                      case ex: Throwable =>
+                      val nom: Nominal = new Nominal
                         v.values.foreach(x => if (x.isNaN) nom.missing ++() else nom.labels ++ x.toString)
                         nom.labels ++ value
                         vectors.set(i, nom)
-                      }
                     }
                   case "nom" =>
                     v.labels.$plus$plus(value)
@@ -189,7 +176,7 @@ class CsvPersistence {
     }
 
     var start = 0
-    var list: ArrayList[String] = new ArrayList[String]()
+    val list = new ArrayList[String]()
     while (start < line.length) {
       val end = nextEnd(line, start, false)
       list.add(clean(line.substring(start, end)))
@@ -241,13 +228,9 @@ class CsvPersistence {
     try {
       val writer = new PrintWriter(new OutputStreamWriter(os))
       if (hasHeader) {
-        {
-          for (i <- 0 until df.colNames.length) {
-            if (i != 0) {
-              writer.append(colSeparator)
-            }
-            writer.append(df.colNames(i))
-          }
+        for (i <- 0 until df.colNames.length) {
+          if (i != 0) writer.append(colSeparator)
+          writer.append(df.colNames(i))
         }
         writer.append("\n")
       }
@@ -261,8 +244,7 @@ class CsvPersistence {
             writer.append("?")
           } else if (df.col(j).isNominal) {
             writer.append(unclean(df.labels.apply(i, j)))
-          }
-          else {
+          } else {
             writer.append(format.format(df.values.apply(i, j)))
           }
         }

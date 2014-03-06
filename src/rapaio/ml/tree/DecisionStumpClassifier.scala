@@ -73,7 +73,6 @@ class DecisionStumpClassifier extends Classifier {
         }
       }
     })
-    this._defaultClassifier.learn(df, weights, _target)
 
     if (_splitCol != null) {
       val missingSplit = df.weightedSplit(weights, (df: Frame, row: Int) => df.missing(row, _splitCol))
@@ -88,6 +87,8 @@ class DecisionStumpClassifier extends Classifier {
       _leftClassifier.learn(split._1._1, split._1._2, _target)
       _rightClassifier.learn(split._2._1, split._2._2, _target)
       _defaultClassifier.learn(missing._1, missing._2, _target)
+    } else {
+      _defaultClassifier.learn(df, weights, _target)
     }
   }
 
@@ -134,8 +135,6 @@ class DecisionStumpClassifier extends Classifier {
           _splitGain = gain
           _splitLabel = null
           _splitValue = df.values(sort(i), test)
-          //          dm.summary()
-          //          println("col:%s, value:%f, gain:%.6f".format(_splitCol, _splitValue, _splitGain))
         }
       }
     }
