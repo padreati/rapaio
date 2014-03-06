@@ -74,7 +74,9 @@ object CSVSandbox extends App {
     index.values ++ c.times
     accuracy.values ++ acc
 
-    Workspace.draw(Plot().points(x = index, y = accuracy))
+    Workspace.draw(
+      Plot().
+        points(x = index, y = accuracy, pch = 1))
     Console.println()
   }
 }

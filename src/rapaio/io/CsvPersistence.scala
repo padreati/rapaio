@@ -50,7 +50,7 @@ class CsvPersistence {
 
   def read(inputStream: InputStream): Frame = {
     var rows: Int = 0
-    var names = new ArrayList[String]
+    var names = List[String]()
     val vectors = new ArrayList[Feature]
     try {
       val reader = new BufferedReader(new InputStreamReader(inputStream))
@@ -72,10 +72,10 @@ class CsvPersistence {
           if (first) {
             first = false
             for (i <- names.size until row.size) {
-              names.add("V" + (i + 1))
+              names = names ::: List("V" + (i + 1))
             }
             for (i <- 0 until names.size) {
-              val colName: String = names.get(i)
+              val colName: String = names(i)
               if (fieldHints.contains(colName)) {
                 fieldHints(colName) match {
                   case "idx" => vectors.add(new Index())
@@ -99,10 +99,10 @@ class CsvPersistence {
           } else {
             rows += 1
             for (i <- 0 until names.size) {
-              if (row.size <= i || ("?" == row.get(i)) || ("NA" == row.get(i))) {
+              if (row.size <= i || ("?" == row(i)) || ("NA" == row(i))) {
                 vectors.get(i).missing ++()
               } else {
-                val value: String = row.get(i)
+                val value: String = row(i)
                 val v: Feature = vectors.get(i)
                 v.typeName match {
                   case "idx" =>
@@ -141,7 +141,7 @@ class CsvPersistence {
                     }
                     catch {
                       case ex: Throwable =>
-                      val nom: Nominal = new Nominal
+                        val nom: Nominal = new Nominal
                         v.values.foreach(x => if (x.isNaN) nom.missing ++() else nom.labels ++ x.toString)
                         nom.labels ++ value
                         vectors.set(i, nom)
@@ -155,7 +155,7 @@ class CsvPersistence {
         }
       }
     }
-    new SolidFrame(rows - startRow, vectors.toArray(Array[Feature]()), names.toArray(Array[String]()))
+    new SolidFrame(rows - startRow, vectors.toArray(Array[Feature]()), names.toArray)
   }
 
   /**
@@ -166,7 +166,7 @@ class CsvPersistence {
    * @param line
    * @return
    */
-  def parseLine(line: String): ArrayList[String] = {
+  def parseLine(line: String): List[String] = {
     def nextEnd(line: String, start: Int, inQuotas: Boolean): Int = {
       if (start >= line.length) start
       else if (line(start) == colSeparator && !inQuotas) start
@@ -176,13 +176,13 @@ class CsvPersistence {
     }
 
     var start = 0
-    val list = new ArrayList[String]()
+    var list = List[String]()
     while (start < line.length) {
       val end = nextEnd(line, start, false)
-      list.add(clean(line.substring(start, end)))
+      list = List(clean(line.substring(start, end))) ::: list
       start = end + 1
     }
-    list
+    list.reverse
   }
 
   /**
@@ -190,29 +190,25 @@ class CsvPersistence {
    * after removing quotas - remove leading and trailing quotas - remove
    * escape quota character
    *
-   * @param _tok
+   * @param tok
    * @return
    */
-  private def clean(_tok: String): String = {
-    var tok = _tok
-    if (trimSpaces) {
-      tok = tok.trim
+  private def clean(tok: String): String = {
+
+    def trim(tok: String): String = if (trimSpaces) tok.trim else tok
+    def unquote(tok: String): String = {
+      if (hasQuotas && !tok.isEmpty) {
+        val tok1 = if (tok.charAt(0) == '\"') tok.substring(1) else tok
+        if (tok1.charAt(tok1.length - 1) == '\"') {
+          tok1.substring(0, tok1.length - 1)
+        } else tok1
+      } else tok
     }
-    if (hasQuotas && !tok.isEmpty) {
-      if (tok.charAt(0) == '\"') {
-        tok = tok.substring(1)
-      }
-      if (tok.charAt(tok.length - 1) == '\"') {
-        tok = tok.substring(0, tok.length - 1)
-      }
+
+    trim {
+      if (hasQuotas) unquote(trim(tok)).replace(Array[Char](escapeQuotas, '\"'), Array[Char]('\"'))
+      else unquote(trim(tok))
     }
-    if (hasQuotas) {
-      tok = tok.replace(Array[Char](escapeQuotas, '\"'), Array[Char]('\"'))
-    }
-    if (trimSpaces) {
-      tok = tok.trim
-    }
-    tok
   }
 
   def write(df: Frame, fileName: String) {
