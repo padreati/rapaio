@@ -64,7 +64,7 @@ class AdaBoostSAMMEClassifier extends Classifier {
    * Name of the classification algorithm used for informative messages
    * @return short name of the implemented classifier
    */
-  override def name(): String = "AdaBoostSAMME"
+  override def name(): String = "AdaBoost.SAMME"
 
   /**
    * Algorithm name with the eventual parameter values used.
@@ -84,19 +84,17 @@ class AdaBoostSAMMEClassifier extends Classifier {
 
   def times_=(a: Int) = _t = a
 
-  def learn(df: Frame, weights: Value, targetName: String) {
-    _dictionary = df.col(targetName: String).labels.dictionary
-    _k = _dictionary.length - 1
-    _w = weights.solidCopy()
+  private def buildLearners(df: Frame, weights: Value, targetName: String): Unit = {
 
     val total: Double = Sum(_w).value
     _w.values.transform(x => x / total)
 
     var run = true
-    for (i <- 0 until _t if run) {
+    for (i <- _h.length until _t if run) {
       val hh = weak.newInstance()
       hh.learn(df, _w.solidCopy(), targetName)
       hh.predict(df)
+      hh.summary()
       val hp = hh.prediction
       var acc = 0.0
       var err = 0.0
@@ -107,8 +105,6 @@ class AdaBoostSAMMEClassifier extends Classifier {
           acc += _w.values(i)
         }
       }
-      //            println("acc:" + acc + ", err: " + err)
-      //            hh.summary()
       val alpha = math.log((1.0 - err) / err) + math.log(_k - 1.0)
       if ((err == 0) || (err > (1.0 - (1.0 / _k)))) {
         if (_h == Nil) {
@@ -128,6 +124,33 @@ class AdaBoostSAMMEClassifier extends Classifier {
         val sum = Sum(_w).value
         _w.values.transform(x => x / sum)
       }
+    }
+  }
+
+  override def learn(df: Frame, weights: Value, targetName: String) {
+    _dictionary = df.col(targetName: String).labels.dictionary
+    _k = _dictionary.length - 1
+    _w = weights.solidCopy()
+
+    _h = Nil
+    _a = Nil
+
+    buildLearners(df, weights, targetName)
+  }
+
+  override def learnFurther(df: Frame, weights: Value, targetName: String, classifier: Classifier) {
+
+    if (classifier == null || !classifier.isInstanceOf[AdaBoostSAMMEClassifier]) {
+      learn(df, weights, targetName)
+    } else {
+      _dictionary = df.col(targetName).labels.dictionary
+      _k = _dictionary.length - 1
+      val c = classifier.asInstanceOf[AdaBoostSAMMEClassifier]
+      _h = c._h
+      _a = c._a
+      _w = if (c._w == null) weights.solidCopy() else c._w.solidCopy()
+
+      buildLearners(df, weights, targetName)
     }
   }
 
@@ -160,137 +183,34 @@ class AdaBoostSAMMEClassifier extends Classifier {
     (_dictionary(prediction), d)
   }
 
-  //  override def learnFurther(df: Frame, weights: List[Double], classColName: String, classifier: AdaBoostSAMMEClassifier) {
-  //    if (classifier == null) {
-  //      learn(df, weights, classColName)
-  //      return
-  //    }
-  //    dict = df.getCol(classColName).getDictionary
-  //    k = dict.length - 1
-  //    h = new ArrayList[Classifier[_]](classifier.h)
-  //    a = new ArrayList[Double](classifier.a)
-  //    if (t == classifier.t) {
-  //      return
-  //    }
-  //    w = classifier.w {
-  //      var i: Int = h.size
-  //      while (i < t) {
-  //        {
-  //          val hh: Classifier[_] = weak.newInstance
-  //          hh.learn(df, new ArrayList[Double](w), classColName)
-  //          hh.predict(df)
-  //          val hpred: Nominal = hh.getPrediction
-  //          var err: Double = 0 {
-  //            var j: Int = 0
-  //            while (j < df.getRowCount) {
-  //              {
-  //                if (hpred.getIndex(j) != df.getCol(classColName).getIndex(j)) {
-  //                  err += w.get(j)
-  //                }
-  //              }
-  //              ({
-  //                j += 1;
-  //                j - 1
-  //              })
-  //            }
-  //          }
-  //          val alpha: Double = log((1.- err) / err) + log(k - 1)
-  //          if (err == 0) {
-  //            if (h.isEmpty) {
-  //              h.add(hh)
-  //              a.add(alpha)
-  //            }
-  //            break //todo: break is not supported
-  //          }
-  //          if (err > (1 - 1 / k)) {
-  //            i -= 1
-  //            continue //todo: continue is not supported
-  //          }
-  //          h.add(hh)
-  //          a.add(alpha) {
-  //            var j: Int = 0
-  //            while (j < w.size) {
-  //              {
-  //                if (hpred.getIndex(j) != df.getCol(classColName).getIndex(j)) {
-  //                  w.set(j, w.get(j) * (k - 1) / (k * err))
-  //                }
-  //                else {
-  //                  w.set(j, w.get(j) / (k * (1.- err)))
-  //                }
-  //              }
-  //              ({
-  //                j += 1;
-  //                j - 1
-  //              })
-  //            }
-  //          }
-  //        }
-  //        ({
-  //          i += 1;
-  //          i - 1
-  //        })
-  //      }
-  //    }
-  //  }
+  override def predictFurther(df: Frame, classifier: Classifier) {
+    if (classifier == null || classifier.isInstanceOf[AdaBoostSAMMEClassifier]) {
+      predict(df)
+      return
+    }
+    val c = classifier.asInstanceOf[AdaBoostSAMMEClassifier]
+    _prediction = c._prediction
+    _distribution = c._distribution
+    for (i <- c._h.size until math.min(_t, _h.size)) {
+      _h(i).predict(df)
+      for (j <- 0 until df.rowCount) {
+        val index: Int = _h(i).prediction.indexes(j)
+        _distribution.values(j, index) = _a(i)
+      }
 
-  //  override def predictFurther(df: Frame, classifier: AdaBoostSAMMEClassifier) {
-  //    if (classifier == null) {
-  //      predict(df)
-  //      return
-  //    }
-  //    pred = classifier.pred
-  //    dist = classifier.dist {
-  //      var i: Int = classifier.h.size
-  //      while (i < min(t, h.size)) {
-  //        {
-  //          h.get(i).predict(df) {
-  //            var j: Int = 0
-  //            while (j < df.getRowCount) {
-  //              {
-  //                val index: Int = h.get(i).getPrediction.getIndex(j)
-  //                dist.setValue(j, index, dist.getValue(j, index) + a.get(i))
-  //              }
-  //              ({
-  //                j += 1;
-  //                j - 1
-  //              })
-  //            }
-  //          }
-  //        }
-  //        ({
-  //          i += 1;
-  //          i - 1
-  //        })
-  //      }
-  //    } {
-  //      var i: Int = 0
-  //      while (i < dist.getRowCount) {
-  //        {
-  //          var max: Double = 0
-  //          var prediction: Int = 0 {
-  //            var j: Int = 1
-  //            while (j < dist.getColCount) {
-  //              {
-  //                if (dist.getValue(i, j) > max) {
-  //                  prediction = j
-  //                  max = dist.getValue(i, j)
-  //                }
-  //              }
-  //              ({
-  //                j += 1;
-  //                j - 1
-  //              })
-  //            }
-  //          }
-  //          pred.setIndex(i, prediction)
-  //        }
-  //        ({
-  //          i += 1;
-  //          i - 1
-  //        })
-  //      }
-  //    }
-  //  }
+    }
+    for (i <- 0 until _distribution.rowCount) {
+      var max: Double = 0
+      var prediction: Int = 0
+      for (j <- 1 until _distribution.colCount) {
+        if (_distribution.values(i, j) > max) {
+          prediction = j
+          max = _distribution.values(i, j)
+        }
+      }
+      _prediction.indexes(i) = prediction
+    }
+  }
 
 
   override def buildSummary(sb: StringBuilder): Unit = {

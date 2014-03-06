@@ -159,6 +159,8 @@ class Index(protected var rows: Int,
 
     override def indexOf(label: String): Option[Int] = sys.error("Not available for index features.")
   }
+
+  override def buildSummary(sb: StringBuilder): Unit = ???
 }
 
 object Index {

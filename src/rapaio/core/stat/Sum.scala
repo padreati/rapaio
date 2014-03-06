@@ -36,7 +36,8 @@ class Sum extends Printable {
   private def compute(feature: Feature): Sum = {
     @tailrec
     def sum(i: Int, _sum: Double): Double = {
-      if (i >= feature.rowCount) _sum
+      if (feature.rowCount == 0) 0
+      else if (i >= feature.rowCount) _sum
       else if (feature.missing(i)) sum(i + 1, _sum)
       else sum(i + 1, _sum + feature.values(i))
     }

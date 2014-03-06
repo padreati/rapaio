@@ -214,6 +214,8 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
 
     def indexOf(label: String): Option[Int] = Option(_reverse(label))
   }
+
+  override def buildSummary(sb: StringBuilder): Unit = ???
 }
 
 object Nominal {

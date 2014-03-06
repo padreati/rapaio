@@ -23,13 +23,14 @@ package rapaio.data
 import rapaio.data.mapping._
 import java.io.Serializable
 import scala.annotation.tailrec
+import rapaio.printer.Printable
 
 /**
  * Random access list of observed values for a specific variable.
  *
  * @author Aurelian Tutuianu
  */
-trait Feature extends Serializable {
+trait Feature extends Serializable with Printable {
 
   def typeName: String
 

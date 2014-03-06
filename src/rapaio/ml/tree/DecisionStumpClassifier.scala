@@ -53,9 +53,9 @@ class DecisionStumpClassifier extends Classifier {
   override def description(): String = "DecisionStump Classifier"
 
   def newInstance(): Classifier = {
-    new DecisionStumpClassifier {
-      this.minCount = minCount
-    }
+    val c = new DecisionStumpClassifier()
+    c.minCount = minCount
+    c
   }
 
   def learn(df: Frame, weights: Value, targetName: String) {
@@ -80,12 +80,10 @@ class DecisionStumpClassifier extends Classifier {
       val missing = missingSplit._1
       val complete = missingSplit._2
 
-      val split =
-        if (df.col(_splitCol).isNominal) {
-          complete._1.weightedSplit(complete._2, (df: Frame, row: Int) => df.labels(row, _splitCol) == _splitLabel)
-        } else {
-          complete._1.weightedSplit(complete._2, (df: Frame, row: Int) => df.values(row, _splitCol) <= _splitValue)
-        }
+      val split = complete._1.weightedSplit(complete._2, (df: Frame, row: Int) =>
+        if (df.col(_splitCol).isNominal) df.labels(row, _splitCol) == _splitLabel
+        else df.values(row, _splitCol) <= _splitValue
+      )
 
       _leftClassifier.learn(split._1._1, split._1._2, _target)
       _rightClassifier.learn(split._2._1, split._2._2, _target)
@@ -100,10 +98,10 @@ class DecisionStumpClassifier extends Classifier {
     for (i <- 1 until dict.length) {
       if (dv.values(i) >= minCount && df.rowCount - dv.values(0) - dv.values(i) >= minCount) {
         val dm = DensityMatrix(df.col(test), df.col(_target), weights, dict(i))
-        val accuracy = dm.infoGain(useMissing = false)
-        if (_splitGain < accuracy) {
+        val gain = dm.infoGain(useMissing = false)
+        if (_splitGain < gain) {
           _splitCol = test
-          _splitGain = accuracy
+          _splitGain = gain
           _splitLabel = dict(i)
           _splitValue = Double.NaN
         }
@@ -124,24 +122,17 @@ class DecisionStumpClassifier extends Classifier {
     val dm = DensityMatrix(DensityMatrix.NumericDefaultLabels, df.col(_target).labels.dictionary)
     sort.foreach(i => dm.update(2, df.indexes(i, _target), weights.values(i)))
 
-    var start = sort.length - 1
-    var stop = 0
-    for (i <- 0 until sort.length) {
-      if (!df.missing(sort(i))) {
-        start = math.min(start, i)
-        stop = math.max(stop, i)
-      }
-    }
+    val missingCount = df.col(test).values.filter(x => !x.isNaN).count(x => true)
+
     // test each split point to find the best numerical split
     for (i <- 0 until sort.length) {
       dm.moveOnRow(2, 1, df.indexes(sort(i), _target), weights.values(sort(i)))
-      if (i >= start + minCount && i <= stop - minCount &&
-        df.values(sort(i - 1), test) != df.values(sort(i), test)) {
-        //        val accuracy = dm.binaryAccuracy(1)
-        val accuracy = dm.infoGain(useMissing = false)
-        if (_splitGain < accuracy) {
+      if ((i >= minCount + missingCount) && (i <= df.rowCount - minCount - 1) &&
+        df.values(sort(i + 1), test) != df.values(sort(i), test)) {
+        val gain = dm.infoGain(useMissing = false)
+        if (_splitGain < gain) {
           _splitCol = test
-          _splitGain = accuracy
+          _splitGain = gain
           _splitLabel = null
           _splitValue = df.values(sort(i), test)
         }

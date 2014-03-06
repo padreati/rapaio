@@ -107,6 +107,8 @@ class MappedFeature(private val _source: Feature,
 
     override def indexOf(label: String): Option[Int] = _source.labels.indexOf(label)
   }
+
+  override def buildSummary(sb: StringBuilder): Unit = ???
 }
 
 object MappedFeature {

@@ -22,10 +22,12 @@ package rapaio.sandbox
 
 import rapaio.io.CSV
 import java.io.File
-import rapaio.data.Frame
+import rapaio.data.{Value, Index, Frame}
 import rapaio.core.stat.ConfusionMatrix
 import rapaio.ml.boosting.AdaBoostSAMMEClassifier
 import rapaio.ml.tree.DecisionStumpClassifier
+import rapaio.graphics.Plot
+import rapaio.workspace.Workspace
 
 /**
  * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -49,26 +51,32 @@ object CSVSandbox extends App {
     ("Sex", df.col("Sex")),
     ("Embarked", df.col("Embarked")),
     ("Pclass", df.col("Pclass")),
-    ("Fare", df.col("Fare")),
+    //    ("Fare", df.col("Fare")),
     ("SibSp", df.col("SibSp")),
-    ("Age", df.col("Age")),
+    //    ("Age", df.col("Age")),
     ("Parch", df.col("Parch")),
     ("Survived", df.col("Survived"))
   )
 
-  def runWith(runs: Int) {
-    val c = new AdaBoostSAMMEClassifier()
-    c.weak = new DecisionStumpClassifier() {
-      minCount = 2
-    }
-    c.times = runs
-    c.learningRate = 1.2
-    c.learn(df, "Survived")
-    c.predict(df)
-    c.summary()
-    new ConfusionMatrix(df.col("Survived"), c.prediction).summary()
+  val c = new AdaBoostSAMMEClassifier()
+  c.weak = new DecisionStumpClassifier() {
+    minCount = 10
   }
+  c.learningRate = 1
 
-  runWith(200)
-  //  runWith(1)
+  val index = new Index()
+  val accuracy = new Value()
+
+  for (runs <- 1 to 1000) {
+    c.times = runs
+    c.learnFurther(df, "Survived", c)
+    c.predict(df)
+    val acc = new ConfusionMatrix(df.col("Survived"), c.prediction).accuracy
+
+    index.values ++ c.times
+    accuracy.values ++ acc
+
+    Workspace.draw(Plot().points(x = index, y = accuracy))
+    Console.println()
+  }
 }

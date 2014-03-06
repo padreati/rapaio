@@ -198,7 +198,7 @@ class Value(protected var rows: Int,
     var maxRight = 1
     values.filter(x => !x.isNaN).foreach(x => {
       val str = "%f".format(x).split("\\.")
-      maxLeft = math.max(maxLeft, str(0).length)
+      maxLeft = math.max(maxLeft, str(0).length + 7)
       maxRight = math.max(maxRight, str(1).length)
     })
     val width = maxLeft + maxRight + 1
