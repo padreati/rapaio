@@ -206,11 +206,27 @@ object Frame {
   }
 
   def solid(rows: Int, pair: (String, Feature)*): SolidFrame = {
+    solid(rows, pair.toList)
+  }
+
+  def solid(rows: Int, pair: List[(String, Feature)]): SolidFrame = {
     require(rows >= 0, "rows must have a positive value")
     require(pair.forall(p => p._2.rowCount >= rows), "all features must have at least the same row count as rows")
     require(pair.forall(p => !p._2.isMappedFeature), "features should not be mapped")
 
     val cols = pair.unzip
     new SolidFrame(rows, cols._2.toArray, cols._1.toArray)
+  }
+
+  def bind(rows: Int, left: Frame, right: Frame): SolidFrame = {
+
+    require(!left.isMappedFrame || !right.isMappedFrame, "operation not available on mapped frames")
+    require(rows <= left.rowCount, "rows must be no greater then rowCount of the left frame")
+    require(rows <= right.rowCount, "rows must be no greate then rowCount of the right frame")
+
+    var pairs = List[(String, Feature)]()
+    for (i <- 0 until left.colCount) pairs = List((left.colNames(i), left.col(i))) ::: pairs
+    for (i <- 0 until right.colCount) pairs = List((right.colNames(i), right.col(i))) ::: pairs
+    solid(rows, pairs.reverse)
   }
 }

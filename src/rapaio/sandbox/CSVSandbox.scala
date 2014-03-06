@@ -51,9 +51,9 @@ object CSVSandbox extends App {
     ("Sex", df.col("Sex")),
     ("Embarked", df.col("Embarked")),
     ("Pclass", df.col("Pclass")),
-    //    ("Fare", df.col("Fare")),
+    ("Fare", df.col("Fare")),
     ("SibSp", df.col("SibSp")),
-    //    ("Age", df.col("Age")),
+    ("Age", df.col("Age")),
     ("Parch", df.col("Parch")),
     ("Survived", df.col("Survived"))
   )
@@ -62,8 +62,6 @@ object CSVSandbox extends App {
   c.weak = new DecisionStumpClassifier() {
     minCount = 10
   }
-  c.learningRate = 1
-
   val index = new Index()
   val accuracy = new Value()
 

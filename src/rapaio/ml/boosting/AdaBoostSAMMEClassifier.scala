@@ -36,8 +36,6 @@ class AdaBoostSAMMEClassifier extends Classifier {
   // weak classifier instance used to create new weak classifiers
   var weak: DecisionStumpClassifier = new DecisionStumpClassifier()
 
-  var learningRate: Double = 1.0
-
   // number of weak classifiers to build
   private var _t: Int = 10
 
@@ -94,17 +92,10 @@ class AdaBoostSAMMEClassifier extends Classifier {
       val hh = weak.newInstance()
       hh.learn(df, _w.solidCopy(), targetName)
       hh.predict(df)
-      hh.summary()
       val hp = hh.prediction
       var acc = 0.0
-      var err = 0.0
-      for (i <- 0 until df.rowCount) {
-        if (hp.labels(i) != df.col(targetName).labels(i)) {
-          err += _w.values(i)
-        } else {
-          acc += _w.values(i)
-        }
-      }
+      (0 until df.rowCount).foreach(i => if (hp.labels(i) == df.col(targetName).labels(i)) acc += _w.values(i))
+      val err = 1.0 - acc
       val alpha = math.log((1.0 - err) / err) + math.log(_k - 1.0)
       if ((err == 0) || (err > (1.0 - (1.0 / _k)))) {
         if (_h == Nil) {
@@ -116,13 +107,13 @@ class AdaBoostSAMMEClassifier extends Classifier {
         _h = _h ::: List(hh)
         _a = _a ::: List(alpha)
 
-        for (i <- 0 until _w.rowCount) {
+        (0 until _w.rowCount).foreach(i =>
           if (hp.indexes(i) != df.col(targetName).indexes(i)) {
-            _w.values(i) = _w.values(i) * learningRate * (1.0 - err) * (_k - 1) / err
+            _w.values(i) = _w.values(i) * (_k - 1.0) / (_k * err)
+          } else {
+            _w.values(i) = _w.values(i) / (_k * (1.0 - err))
           }
-        }
-        val sum = Sum(_w).value
-        _w.values.transform(x => x / sum)
+        )
       }
     }
   }

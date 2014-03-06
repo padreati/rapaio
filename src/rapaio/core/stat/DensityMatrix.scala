@@ -23,6 +23,7 @@ package rapaio.core.stat
 import rapaio.data.{Feature, Nominal, Value, Frame}
 import rapaio.core.SpecialMath._
 import java.util
+import rapaio.printer.Printable
 
 
 /**
@@ -43,7 +44,7 @@ import java.util
  * After construction, fill or update operations, one can use density table to compute various results
  * needed by some classification algorithms.
  */
-final class DensityMatrix {
+final class DensityMatrix extends Printable {
 
   private var testLabels: Array[String] = _
   private var targetLabels: Array[String] = _
@@ -161,9 +162,9 @@ final class DensityMatrix {
         if (values(i)(j) > 0) gain += -log2(values(i)(j) / totals(i)) * values(i)(j) / total
       }
     }
-    val factor: Double = if (!useMissing) 1
+    val factor: Double = if (!useMissing) 1.0
     else {
-      var missing: Double = 0
+      var missing: Double = 0.0
       for (i <- 0 until targetLabels.length) missing += values(0)(i)
       total / (missing + total)
     }
@@ -217,6 +218,15 @@ final class DensityMatrix {
       for (j <- 1 until targetLabels.length)
         totals(i) += values(i)(j)
     totals.count(x => x >= minWeight)
+  }
+
+  override def buildSummary(sb: StringBuilder): Unit = {
+    sb.append("--- EXPERIMENTAL IMPL ---\n")
+
+    values.foreach(row => {
+      row.foreach(x => sb.append("%10.6f".format(x)).append(" "))
+      sb.append("\n")
+    })
   }
 }
 

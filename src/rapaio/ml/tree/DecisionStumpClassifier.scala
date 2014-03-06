@@ -75,7 +75,7 @@ class DecisionStumpClassifier extends Classifier {
     })
     this._defaultClassifier.learn(df, weights, _target)
 
-    if (Option(_splitCol).isDefined) {
+    if (_splitCol != null) {
       val missingSplit = df.weightedSplit(weights, (df: Frame, row: Int) => df.missing(row, _splitCol))
       val missing = missingSplit._1
       val complete = missingSplit._2
@@ -111,8 +111,7 @@ class DecisionStumpClassifier extends Classifier {
 
   private def evaluateNumeric(df: Frame, weights: Value, test: String) {
 
-    val sort = (0 until df.rowCount).toArray
-    sort.sortWith((i, j) => {
+    val sort = (0 until df.rowCount).sortWith((i, j) => {
       if (df.missing(i, test)) !df.missing(j, test)
       else if (df.missing(j, test)) false
       else df.values(i, test) < df.values(j, test)
@@ -120,9 +119,9 @@ class DecisionStumpClassifier extends Classifier {
 
     // build an initial density matrix required for computing accuracies
     val dm = DensityMatrix(DensityMatrix.NumericDefaultLabels, df.col(_target).labels.dictionary)
-    sort.foreach(i => dm.update(2, df.indexes(i, _target), weights.values(i)))
+    (0 until df.rowCount).foreach(i => dm.update(2, df.indexes(i, _target), weights.values(i)))
 
-    val missingCount = df.col(test).values.filter(x => !x.isNaN).count(x => true)
+    val missingCount = df.col(test).values.count(x => x.isNaN)
 
     // test each split point to find the best numerical split
     for (i <- 0 until sort.length) {
@@ -135,6 +134,8 @@ class DecisionStumpClassifier extends Classifier {
           _splitGain = gain
           _splitLabel = null
           _splitValue = df.values(sort(i), test)
+          //          dm.summary()
+          //          println("col:%s, value:%f, gain:%.6f".format(_splitCol, _splitValue, _splitGain))
         }
       }
     }

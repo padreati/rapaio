@@ -142,6 +142,19 @@ trait Feature extends Serializable with Printable {
       filter(0, List.empty).toArray
     }
 
+    def count(p: (Double) => Boolean): Int = {
+
+      @tailrec
+      def filter(i: Int, count: Int): Int = {
+        if (i >= rowCount) count
+        else {
+          if (p(values(i))) filter(i + 1, count + 1)
+          else filter(i + 1, count)
+        }
+      }
+      filter(0, 0)
+    }
+
     def transform(f: (Double) => Double): Unit = {
       def transform(i: Int) {
         if (i >= rowCount) Unit
@@ -200,6 +213,14 @@ trait Feature extends Serializable with Printable {
       }
       forOne(0)
     }
+
+    def foreach[U](f: String => U) {
+      for (i <- 0 until rowCount) {
+        f(source.labels(rowId(i)))
+      }
+    }
+
+
   }
 
   def apply(f: (Feature, Int) => Boolean): MappedFeature = {
