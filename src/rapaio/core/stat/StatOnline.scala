@@ -87,22 +87,15 @@ class StatOnline {
    */
   def getN: Double = n
 
-  /**
-   * @return the minimum value seen so far
-   */
-  def min(): Double = min
+  def mean: Double = m1
 
-  def max(): Double = max
+  def variance: Double = m2 / (n - 1.0)
 
-  def mean(): Double = m1
+  def sd: Double = math.sqrt(variance)
 
-  def variance(): Double = m2 / (n - 1.0)
+  def skewness: Double = math.sqrt(n) * m3 / math.pow(m2, 1.5)
 
-  def sd(): Double = math.sqrt(variance())
-
-  def skewness(): Double = math.sqrt(n) * m3 / math.pow(m2, 1.5)
-
-  def kurtosis(): Double = n * m4 / (m2 * m2) - 3.0
+  def kurtosis: Double = n * m4 / (m2 * m2) - 3.0
 
   def append(a: StatOnline) {
     val combined: StatOnline = new StatOnline()

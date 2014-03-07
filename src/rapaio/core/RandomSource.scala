@@ -26,6 +26,7 @@ import scala.util.Random
  * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 object RandomSource {
+
   def seed(seed: Long): Unit = Random.setSeed(seed)
 
   def nextDouble(): Double = Random.nextDouble()

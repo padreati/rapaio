@@ -20,7 +20,7 @@
 
 package rapaio.tutorials
 
-import rapaio.tutorials.pages.{LinearRegression1Page, TutorialPage}
+import rapaio.tutorials.pages.{LawOfLargeNumbers, TutorialPage}
 import java.io.File
 import rapaio.workspace.Workspace._
 import rapaio.printer.html.HTMLPrinter
@@ -36,11 +36,40 @@ object TutorialWebsiteGenerator {
     val webRoot: File = new File(TUTORIAL_WEB_ROOT)
     val pageRoot: File = new File(webRoot, "pages")
     deleteRoot(pageRoot)
-    deleteRoot(new File(webRoot, "getIndex.html"))
+    deleteRoot(new File(webRoot, "index.html"))
     webRoot.mkdir
     pageRoot.mkdir
+
+
+    //        category = "Graphics";
+    //        pages.put(category, new ArrayList<TutorialPage>());
+    //        pages.get(category).add(new HistogramDensityTutorial());
+    //        category = "StatisticalProcedures";
+    //        pages.put(category, new ArrayList<TutorialPage>());
+    //        pages.get(category).add(new DiscreteSampling());
+    //        pages.get(category).add(new CorrelationsPage());
+    //        pages.get(category).add(new ROCCurvesPage());
+    //
+    //        category = "SampleAnalysis";
+    //        pages.put(category, new ArrayList<TutorialPage>());
+    //        pages.get(category).add(new PearsonHeight());
+    //        pages.get(category).add(new LawOfLargeNumbers());
+    //
+    //        category = "SupervisedClassification";
+    //        pages.put(category, new ArrayList<TutorialPage>());
+    //        pages.get(category).add(new ClassificationWithRF());
+    //
+    //    category = "Regression"
+    //    pages.put(category, new ArrayList[TutorialPage])
+    //    pages.get(category).add(new LinearRegression1Page)
+    //		pages.get(category).add(new LinearRegression2Page());
+    //		pages.get(category).add(new LinearRegression3Page());
+    //        category = "WorkInProgress";
+    //        pages.put(category, new ArrayList<TutorialPage>());
+    //        pages.get(category).add(new IrisExplore());
+    //        pages.get(category).add(new StudentTDistribution());
     val pages = Map(
-      "Regression" -> List(new LinearRegression1Page())
+      "SampleAnalysis" -> List(new LawOfLargeNumbers())
     )
 
     makeIndexPage(webRoot, pages)
@@ -60,7 +89,7 @@ object TutorialWebsiteGenerator {
   }
 
   private def makeIndexPage(webRoot: File, pages: Map[String, List[TutorialPage]]) {
-    val indexPage: File = new File(webRoot, "getIndex.html")
+    val indexPage: File = new File(webRoot, "index.html")
     printer = new HTMLPrinter(indexPage.getAbsolutePath, "Rapaio Tutorials")
     printer.preparePrinter()
     heading(1, "Rapaio Tutorial page")

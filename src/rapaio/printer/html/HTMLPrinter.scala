@@ -96,7 +96,7 @@ class HTMLPrinter(fileName: String, title: String, backLink: String = "") extend
 
   def code(lines: String) = _writer.append("<pre><code class=\"Java\">" + lines + "</code></pre>\n")
 
-  def p(lines: String) = _writer.append("<p>" + lines + "</p>")
+  def p(lines: String) = _writer.append("<p>" + lines.replace("\n//\n".toCharArray, "\n</p><p>\n".toCharArray) + "</p>")
 }
 
 object Template {
