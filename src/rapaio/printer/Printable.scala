@@ -38,7 +38,7 @@ trait Printable {
   final def summary(): Unit = {
     val sb = new StringBuilder
     buildSummary(sb)
-    Workspace.printer().code(sb.toString())
+    Workspace.printer.code(sb.toString())
   }
 
   def buildSummary(sb: StringBuilder): Unit
@@ -49,7 +49,7 @@ trait Printable {
   final def show(): Unit = {
     val sb = new StringBuilder
     buildShow(sb)
-    Workspace.printer().code(sb.toString())
+    Workspace.printer.code(sb.toString())
   }
 
   /**

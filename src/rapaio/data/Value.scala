@@ -205,9 +205,9 @@ class Value(protected var rows: Int,
     val fmt = "%" + maxLeft + "." + maxRight + "f"
     val idxFmt = "[%" + indexWidth + "d]"
 
-    var pos = Workspace.printer().textWidth()
+    var pos = Workspace.printer.textWidth
     for (i <- 0 until rowCount) {
-      if (pos + width + 1 > Workspace.printer().textWidth) {
+      if (pos + width + 1 > Workspace.printer.textWidth) {
         sb.append("\n")
         sb.append(idxFmt.format(i))
         sb.append(" ")

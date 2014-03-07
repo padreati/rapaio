@@ -63,7 +63,7 @@ class DUniform extends Distribution {
 
   def skewness: Double = 0
 
-  def kurtosis: Double = -6.*(math.pow(b - a, 2) + 1) / (5.0 * (math.pow(b - a, 2) - 1))
+  def kurtosis: Double = -6.0 * (math.pow(b - a, 2) + 1) / (5.0 * (math.pow(b - a, 2) - 1))
 }
 
 object DUniform {
