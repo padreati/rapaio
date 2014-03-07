@@ -103,7 +103,7 @@ trait Figure {
     view.y + view.height * (1.0 - (y - range.y1) / (range.y2 - range.y1))
   }
 
-  protected def paint(g2d: Graphics2D, rect: Rectangle) {
+  def paint(g2d: Graphics2D, rect: Rectangle) {
     buildViewport(rect)
     range = buildRange
     g2d.setColor(StandardColorPalette.color(255))

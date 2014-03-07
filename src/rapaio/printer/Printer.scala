@@ -27,7 +27,7 @@ import rapaio.graphics.base.Figure
  */
 trait Printer {
 
-  def textWidth(): Int
+  def textWidth: Int
 
   def textWidth_=(width: Int)
 
@@ -39,15 +39,13 @@ trait Printer {
 
   def graphicHeight_=(height: Int)
 
+  def preparePrinter() {}
+
+  def closePrinter() {}
+
   def print(message: String)
 
-  def println()
-
   def error(message: String, throwable: Throwable)
-
-  def preparePrinter()
-
-  def closePrinter()
 
   def heading(h: Int, lines: String)
 
@@ -55,9 +53,5 @@ trait Printer {
 
   def p(lines: String)
 
-  def eqn(equation: String)
-
-  def draw(figure: Figure, width: Int, height: Int)
-
-  def draw(figure: Figure)
+  def draw(figure: Figure, width: Int = -1, height: Int = -1)
 }

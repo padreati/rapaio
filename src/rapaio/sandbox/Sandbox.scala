@@ -20,29 +20,23 @@
 
 package rapaio.sandbox
 
-import rapaio.data._
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 object Sandbox extends App {
 
+  val x =
+    <html>
+      <body>
+        {for (i <- 0 until 100) yield (i + 100) + ","}<p>
+        {math.E}
+      </p>
+      </body>
+    </html>
 
-  val x = Value(1, 10000, x => 1 / x.toDouble + math.sin(x))
+  println(x)
 
-  //  val y = Value(1, 10000, x => 1 / x.toDouble)
-
-  //  println(y.toValueArray mkString ",")
-
-  //  draw(Plot(xLim = (0, 1), yLim = (Double.NaN, 0.01)).points(x, y))
-
-  //  Workspace.draw(Plot().hist(x.values.filter(x => x<1)))
-
-  val a = Value(Array[Double](1.0, Double.NaN, Double.NaN, 3.0, 5.0, Double.NaN, 7.0))
-  println(a.values.filterComplete(_ => true) mkString ",")
-  println(a.values.filterComplete(x => x > 4) mkString ",")
-
-  val b = Nominal("Ana", "are", "mere")
-  println(b.values.filter(x => x > 0).map(x => x.toInt) mkString ",")
+  println(f"test text ${var b = 10; b / math.E}")
 }
 

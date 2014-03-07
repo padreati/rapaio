@@ -18,3 +18,16 @@
  *    limitations under the License.
  */
 
+package rapaio.tutorials.pages
+
+
+/**
+ * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ */
+trait TutorialPage {
+  def pageName: String
+
+  def pageTitle: String
+
+  def render()
+}

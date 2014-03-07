@@ -20,32 +20,25 @@
 
 package rapaio.sandbox
 
-import rapaio.io.CSV
-import java.io.File
 import rapaio.data.{Value, Index, Frame}
 import rapaio.core.stat.ConfusionMatrix
 import rapaio.ml.boosting.AdaBoostSAMMEClassifier
 import rapaio.ml.tree.DecisionStumpClassifier
 import rapaio.graphics.Plot
 import rapaio.workspace.Workspace
+import rapaio.io.CsvPersistence
 
 /**
  * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 object CSVSandbox extends App {
 
-  var df = CSV.read(
-    file = new File("/home/ati/rapaio/rapaio-java/src/rapaio/datasets/titanic-train.csv"),
+  var df = new CsvPersistence(
     header = true,
-    typeHints = Map[String, String](
-      ("PassengerId", "idx"),
-      ("Survived", "nom"),
-      ("Pclass", "nom"),
-      ("SibSp", "nom"),
-      ("Parch", "nom")
-    ),
-    naValues = List[String]("?", "", " ")
-  )
+    typeHints = Map(("PassengerId", "idx"), ("Survived", "nom"), ("Pclass", "nom"),
+      ("SibSp", "nom"), ("Parch", "nom")),
+    naValues = Set("?", "", " ")).
+    read("/home/ati/rapaio/rapaio-java/src/rapaio/datasets/titanic-train.csv")
 
   df = Frame.solid(df.rowCount,
     ("Sex", df.col("Sex")),
@@ -57,6 +50,8 @@ object CSVSandbox extends App {
     ("Parch", df.col("Parch")),
     ("Survived", df.col("Survived"))
   )
+
+  df.summary()
 
   val c = new AdaBoostSAMMEClassifier()
   c.weak = new DecisionStumpClassifier() {
@@ -77,6 +72,6 @@ object CSVSandbox extends App {
     Workspace.draw(
       Plot().
         points(x = index, y = accuracy, pch = 1))
-    Console.println()
+    Console.print(".")
   }
 }

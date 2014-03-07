@@ -22,6 +22,7 @@ package rapaio.data
 
 import rapaio.data.mapping.{MappedFrame, Mapping}
 import java.io.Serializable
+import rapaio.printer.Printable
 
 /**
  * Random access list of observed values for multiple variables.
@@ -32,7 +33,7 @@ import java.io.Serializable
  *
  * @author Aurelian Tutuianu
  */
-abstract trait Frame extends Serializable {
+trait Frame extends Serializable with Printable {
   /**
    * Number of observations contained in frame
    * @return number of observations
@@ -187,6 +188,16 @@ abstract trait Frame extends Serializable {
       }
     }
     ((new MappedFrame(sourceFrame, left), leftWeights), (new MappedFrame(sourceFrame, right), rightWeights))
+  }
+
+  override def buildSummary(sb: StringBuilder): Unit = {
+    sb.append(">> frame summary\n")
+    sb.append("rowCount: %d, colCount: %d\n".format(rowCount, colCount))
+
+    sb.append("cols:\n\t")
+    val slide = colNames.map(colName => "%s[%s]".format(colName, col(colName).typeName)).sliding(5, 2)
+    slide.foreach(s => sb.append(s mkString ",").append("\n\t"))
+
   }
 }
 

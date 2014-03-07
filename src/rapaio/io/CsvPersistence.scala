@@ -28,17 +28,17 @@ import java.util.ArrayList
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-class CsvPersistence {
+class CsvPersistence(header: Boolean = true,
+                     hasQuotas: Boolean = true,
+                     separator: Char = ',',
+                     escapeChar: Char = '"',
+                     trimSpaces: Boolean = true,
+                     naValues: Set[String] = Set("?", ""),
+                     typeHints: Map[String, String] = Map[String, String](),
+                     defaultTypeHint: String = "nom",
+                     start: Int = 0,
+                     end: Int = Int.MaxValue) {
 
-  var hasHeader: Boolean = true
-  var colSeparator: Char = ','
-  var hasQuotas: Boolean = true
-  var escapeQuotas: Char = '"'
-  var trimSpaces: Boolean = true
-  var fieldHints: Map[String, String] = Map[String, String]()
-  var defaultTypeHint: String = "nom"
-  var startRow: Int = 0
-  var endRow: Int = Int.MaxValue
 
   def read(fileName: String): Frame = {
     read(new FileInputStream(fileName))
@@ -54,7 +54,7 @@ class CsvPersistence {
     val vectors = new ArrayList[Feature]
     try {
       val reader = new BufferedReader(new InputStreamReader(inputStream))
-      if (hasHeader) {
+      if (header) {
         val line: String = reader.readLine
         if (line == null) {
           return null
@@ -76,8 +76,8 @@ class CsvPersistence {
             }
             for (i <- 0 until names.size) {
               val colName: String = names(i)
-              if (fieldHints.contains(colName)) {
-                fieldHints(colName) match {
+              if (typeHints.contains(colName)) {
+                typeHints(colName) match {
                   case "idx" => vectors.add(new Index())
                   case "val" => vectors.add(new Value())
                   case "nom" => vectors.add(new Nominal())
@@ -92,14 +92,14 @@ class CsvPersistence {
               }
             }
           }
-          if (rows < startRow) {
+          if (rows < start) {
             rows += 1
-          } else if (rows == endRow) {
+          } else if (rows == end) {
             break = true
           } else {
             rows += 1
             for (i <- 0 until names.size) {
-              if (row.size <= i || ("?" == row(i)) || ("NA" == row(i))) {
+              if (row.size <= i || naValues.contains(row(i))) {
                 vectors.get(i).missing ++()
               } else {
                 val value: String = row(i)
@@ -155,7 +155,7 @@ class CsvPersistence {
         }
       }
     }
-    new SolidFrame(rows - startRow, vectors.toArray(Array[Feature]()), names.toArray)
+    new SolidFrame(rows - start, vectors.toArray(Array[Feature]()), names.toArray)
   }
 
   /**
@@ -169,9 +169,9 @@ class CsvPersistence {
   def parseLine(line: String): List[String] = {
     def nextEnd(line: String, start: Int, inQuotas: Boolean): Int = {
       if (start >= line.length) start
-      else if (line(start) == colSeparator && !inQuotas) start
-      else if (line(start) == colSeparator && inQuotas && hasQuotas) nextEnd(line, start + 1, inQuotas)
-      else if (line(start) == escapeQuotas && hasQuotas) nextEnd(line, start + 1, !inQuotas)
+      else if (line(start) == separator && !inQuotas) start
+      else if (line(start) == separator && inQuotas && hasQuotas) nextEnd(line, start + 1, inQuotas)
+      else if (line(start) == escapeChar && hasQuotas) nextEnd(line, start + 1, !inQuotas)
       else nextEnd(line, start + 1, inQuotas)
     }
 
@@ -206,7 +206,7 @@ class CsvPersistence {
     }
 
     trim {
-      if (hasQuotas) unquote(trim(tok)).replace(Array[Char](escapeQuotas, '\"'), Array[Char]('\"'))
+      if (hasQuotas) unquote(trim(tok)).replace(Array[Char](escapeChar, '\"'), Array[Char]('\"'))
       else unquote(trim(tok))
     }
   }
@@ -223,9 +223,9 @@ class CsvPersistence {
   def write(df: Frame, os: OutputStream) {
     try {
       val writer = new PrintWriter(new OutputStreamWriter(os))
-      if (hasHeader) {
+      if (header) {
         for (i <- 0 until df.colNames.length) {
-          if (i != 0) writer.append(colSeparator)
+          if (i != 0) writer.append(separator)
           writer.append(df.colNames(i))
         }
         writer.append("\n")
@@ -234,7 +234,7 @@ class CsvPersistence {
       for (i <- 0 until df.rowCount) {
         for (j <- 0 until df.colCount) {
           if (j != 0) {
-            writer.append(colSeparator)
+            writer.append(separator)
           }
           if (df.col(j).missing.apply(i)) {
             writer.append("?")
@@ -256,7 +256,7 @@ class CsvPersistence {
     var len: Int = 0
     for (i <- 0 until label.length) {
       if (label.charAt(i) == '\"') {
-        line(len) = escapeQuotas
+        line(len) = escapeChar
         len += 1
       }
       line(len) = label.charAt(i)

@@ -18,27 +18,22 @@
  *    limitations under the License.
  */
 
-package rapaio.workspace
+package rapaio.tutorials.pages
 
-import rapaio.graphics.base.Figure
-import rapaio.printer.Printer
-import rapaio.printer.idea.IdeaPrinter
+import rapaio.workspace.Workspace.heading
+import rapaio.workspace.Workspace.p
 
 /**
- * @author <a href="email:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-object Workspace {
-  var printer: Printer = new IdeaPrinter
+class LinearRegression2Page extends TutorialPage {
+  def pageName: String = "LinearRegression2"
 
-  def print(message: String) = printer.print(message)
+  def pageTitle: String = "Linear Regression: Simple linear regression"
 
-  def heading(h: Int, lines: String) = printer.heading(h, lines)
-
-  def error(message: String, ex: Throwable) = printer.error(message, ex)
-
-  def code(lines: String) = printer.code(lines)
-
-  def p(lines: String) = printer.p(lines)
-
-  def draw(figure: Figure, width: Int = -1, height: Int = -1) = printer.draw(figure, width, height)
+  def render() {
+    heading(3, "Linear Regression with vectors and matrices - part 2")
+    p("This tutorial aims to present how one can do by hand " + "linear regression using only vectors and matrices " + "operations. For practical purposes it should be used " + "linear regression models. ")
+    heading(4, "Simple linear regression")
+  }
 }

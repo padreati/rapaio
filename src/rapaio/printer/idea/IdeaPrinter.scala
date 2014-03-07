@@ -22,7 +22,7 @@ package rapaio.printer.idea
 
 import rapaio.graphics.base.{ImageUtility, Figure}
 import java.net.Socket
-import rapaio.printer.Printer
+import rapaio.printer.local.LocalPrinter
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -31,51 +31,9 @@ object IdeaPrinter {
   private val DefaultPort: Int = 56339
 }
 
-class IdeaPrinter extends Printer {
-  private var _textWidth: Int = 160
-  private var _graphicWidth: Int = 800
-  private var _graphicHeight: Int = 600
+class IdeaPrinter extends LocalPrinter {
 
-  def preparePrinter() {}
-
-  def closePrinter() {}
-
-  def textWidth(): Int = _textWidth
-
-  def textWidth_=(width: Int) = _textWidth = width
-
-  def graphicHeight: Int = _graphicHeight
-
-  def graphicHeight_=(height: Int) = _graphicHeight = height
-
-  def graphicWidth: Int = _graphicWidth
-
-  def graphicWidth_=(width: Int) = _graphicWidth = width
-
-  def p(lines: String) = Console.println(lines)
-
-  def code(lines: String) = p(lines)
-
-  def eqn(equation: String) = p(equation)
-
-  def error(message: String, throwable: Throwable) = Console.println(message + "\n.Error message: " + throwable.getMessage)
-
-  def println() = Console.println()
-
-  def heading(h: Int, lines: String) = {
-    Console.print("=" * h)
-    Console.print(lines)
-    Console.print("=" * h)
-    Console.println()
-  }
-
-  def print(message: String) = Console.print(message)
-
-  def draw(figure: Figure) {
-    draw(figure, graphicWidth, graphicHeight)
-  }
-
-  def draw(figure: Figure, width: Int, height: Int) {
+  override def draw(figure: Figure, width: Int = -1, height: Int = -1) {
     var s: Socket = null
     try {
       s = new Socket("localhost", IdeaPrinter.DefaultPort)

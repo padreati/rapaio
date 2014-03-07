@@ -29,53 +29,37 @@ import rapaio.printer.{FigurePanel, Printer}
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 class LocalPrinter extends Printer {
-  def textWidth: Int = {
-    return 0
+
+  protected var _textWidth: Int = 160
+  protected var _graphicWidth: Int = 800
+  protected var _graphicHeight: Int = 600
+
+  def textWidth(): Int = _textWidth
+
+  def textWidth_=(width: Int) = _textWidth = width
+
+  def graphicHeight: Int = _graphicHeight
+
+  def graphicHeight_=(height: Int) = _graphicHeight = height
+
+  def graphicWidth: Int = _graphicWidth
+
+  def graphicWidth_=(width: Int) = _graphicWidth = width
+
+  def p(lines: String) = Console.println(lines)
+
+  def code(lines: String) = p(lines)
+
+  def error(message: String, throwable: Throwable) = Console.println(message + "\n.Error message: " + throwable.getMessage)
+
+  def heading(h: Int, lines: String) = {
+    print("=" * h)
+    print(lines)
+    print("=" * h)
+    println()
   }
 
-  def textWidth_$eq(width: Int) {
-  }
-
-  def graphicWidth: Int = {
-    return 0
-  }
-
-  def graphicWidth_$eq(width: Int) {
-  }
-
-  def graphicHeight: Int = {
-    return 0
-  }
-
-  def graphicHeight_$eq(height: Int) {
-  }
-
-  def print(message: String) {
-  }
-
-  def println {
-  }
-
-  def error(message: String, throwable: Throwable) {
-  }
-
-  def preparePrinter {
-  }
-
-  def closePrinter {
-  }
-
-  def heading(h: Int, lines: String) {
-  }
-
-  def code(lines: String) {
-  }
-
-  def p(lines: String) {
-  }
-
-  def eqn(equation: String) {
-  }
+  def print(message: String) = Console.print(message)
 
   def draw(figure: Figure, width: Int, height: Int) {
     val figurePanel = new FigurePanel(figure)
@@ -98,9 +82,5 @@ class LocalPrinter extends Printer {
         return
       }
     }
-  }
-
-  def draw(figure: Figure) {
-    draw(figure, 500, 500)
   }
 }
