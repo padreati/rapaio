@@ -182,7 +182,7 @@ class Value(protected var rows: Int,
       sys.error("Not implemented")
   }
 
-  def solidCopy(): Value = {
+  override def solidCopy: Feature = {
     val result = new Value(rowCount, rowCount, 0)
     for (i <- 0 until rowCount) result.values(i) = values(i)
     result

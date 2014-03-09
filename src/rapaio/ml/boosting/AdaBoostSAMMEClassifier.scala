@@ -62,13 +62,13 @@ class AdaBoostSAMMEClassifier extends Classifier {
    * Name of the classification algorithm used for informative messages
    * @return short name of the implemented classifier
    */
-  override def name(): String = "AdaBoost.SAMME"
+  override def name: String = "AdaBoost.SAMME"
 
   /**
    * Algorithm name with the eventual parameter values used.
    * @return algorithm name and parameter values
    */
-  override def description(): String =
+  override def description: String =
     """
       |AdaBoostSAMME
       |A variant of AdaBoost.M1 adapted to handle classification
@@ -90,7 +90,7 @@ class AdaBoostSAMMEClassifier extends Classifier {
     var run = true
     for (i <- _h.length until _t if run) {
       val hh = weak.newInstance()
-      hh.learn(df, _w.solidCopy(), targetName)
+      hh.learn(df, _w.solidCopy.asInstanceOf[Value], targetName)
       hh.predict(df)
       val hp = hh.prediction
       var acc = 0.0
@@ -121,7 +121,7 @@ class AdaBoostSAMMEClassifier extends Classifier {
   override def learn(df: Frame, weights: Value, targetName: String) {
     _dictionary = df.col(targetName: String).labels.dictionary
     _k = _dictionary.length - 1
-    _w = weights.solidCopy()
+    _w = weights.solidCopy.asInstanceOf[Value]
 
     _h = Nil
     _a = Nil
@@ -139,39 +139,29 @@ class AdaBoostSAMMEClassifier extends Classifier {
       val c = classifier.asInstanceOf[AdaBoostSAMMEClassifier]
       _h = c._h
       _a = c._a
-      _w = if (c._w == null) weights.solidCopy() else c._w.solidCopy()
+      _w = if (c._w == null) weights.solidCopy.asInstanceOf[Value] else c._w.solidCopy.asInstanceOf[Value]
 
       buildLearners(df, weights, targetName)
     }
   }
 
-  /**
-   * Predicts class for one instance from the data set
-   */
-  override def predict(df: Frame, row: Int): (String, Array[Double]) = {
-    val d = new Array[Double](_dictionary.length)
+  override def predict(df: Frame) {
+    _distribution = Frame.matrix(df.rowCount, _dictionary)
 
     @tailrec def eval(h: List[Classifier], a: List[Double]) {
       h match {
         case Nil => Unit
         case _ =>
-          val p = h.head.predict(df, row)
-          val index: Int = _dictionary.indexOf(p._1)
-          d(index) += a.head
+          h.head.predict(df)
+          for (i <- 0 until df.rowCount) {
+            _distribution.values(i, h.head.prediction.indexes(i)) += a.head
+          }
           eval(h.tail, a.tail)
       }
     }
-    eval(_h, _a)
 
-    var max: Double = 0
-    var prediction: Int = 0
-    for (j <- 0 until d.length) {
-      if (d(j) > max) {
-        prediction = j
-        max = d(j)
-      }
-    }
-    (_dictionary(prediction), d)
+    eval(_h, _a)
+    buildPrediction()
   }
 
   override def predictFurther(df: Frame, classifier: Classifier) {

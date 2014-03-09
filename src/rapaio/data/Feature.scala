@@ -165,6 +165,8 @@ trait Feature extends Serializable with Printable {
       }
       transform(0)
     }
+
+    def fill(value: Double) = (0 until rowCount).foreach(i => values(i) = value)
   }
 
   abstract class Indexes {
@@ -220,7 +222,18 @@ trait Feature extends Serializable with Printable {
       }
     }
 
+    def transform(f: (String) => String): Unit = {
+      def transform(i: Int) {
+        if (i >= rowCount) Unit
+        else {
+          labels(i) = f(labels(i))
+          transform(i + 1)
+        }
+      }
+      transform(0)
+    }
 
+    def fill(label: String) = (0 until rowCount).foreach(i => labels(i) = label)
   }
 
   def apply(f: (Feature, Int) => Boolean): MappedFeature = {
@@ -236,6 +249,8 @@ trait Feature extends Serializable with Printable {
     }
     new MappedFeature(source, m)
   }
+
+  def solidCopy: Feature
 
   override def toString: String = {
     "Vector{ size='" + rowCount + "\'}"

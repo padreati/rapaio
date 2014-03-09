@@ -21,7 +21,7 @@
 package rapaio.ml.base
 
 import rapaio.ml.Classifier
-import rapaio.data.{Value, Frame}
+import rapaio.data.{Nominal, Value, Frame}
 import rapaio.core.stat.DensityVector
 
 /**
@@ -31,17 +31,6 @@ class ModeClassifier extends Classifier {
 
   private var _predictedLabel: String = _
   private var _dfRowCount: Int = _
-
-  /**
-   * Predict classes for new data set instances
-   *
-   * @param df data set instances
-   */
-  override def predict(df: Frame, row: Int): (String, Array[Double]) = {
-    val density = new Array[Double](_dictionary.length)
-    density(_dictionary.indexOf(_predictedLabel)) = 1.0
-    (_predictedLabel, density)
-  }
 
   /**
    * Fit a classifier on instances specified by frame, with row weights
@@ -58,6 +47,14 @@ class ModeClassifier extends Classifier {
     _dfRowCount = df.rowCount
   }
 
+  override def predict(df: Frame) {
+    _prediction = new Nominal(df.rowCount, _dictionary)
+    _distribution = Frame.matrix(df.rowCount, _dictionary)
+    _prediction.labels.fill(_predictedLabel)
+    val index = _dictionary.indexOf(_predictedLabel)
+    _distribution.col(index).values.fill(1.0)
+  }
+
   /**
    * Creates a new classifier instance with the same parameters as the original.
    * The fitted model and other artifacts are not replicated.
@@ -70,21 +67,20 @@ class ModeClassifier extends Classifier {
    * Algorithm name with the eventual parameter values used.
    * @return algorithm name and parameter values
    */
-  override def description(): String =
+  override def description: String =
     """
-      |ModelClassifier
+      |ModeClassifier
     """.stripMargin
 
   /**
    * Name of the classification algorithm used for informative messages
    * @return short name of the implemented classifier
    */
-  override def name(): String = "ModeClassifier"
+  override def name: String = "ModeClassifier"
 
+  def learnedObservations: Int = _dfRowCount
 
-  def learnedObservations(): Int = _dfRowCount
-
-  def predictedLabel(): String = _predictedLabel
+  def predictedLabel: String = _predictedLabel
 
   override def buildModelSummary(sb: StringBuilder): Unit = {
     sb.append("observations: " + _dfRowCount + "\n")

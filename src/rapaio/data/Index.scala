@@ -97,7 +97,7 @@ class Index(protected var rows: Int,
     rows -= (toIndex - fromIndex)
   }
 
-  def clear {
+  def clear() {
     rows = 0
   }
 
@@ -106,7 +106,7 @@ class Index(protected var rows: Int,
     if (minCapacity > minExpand && minCapacity - data.length > 0) grow(minCapacity)
   }
 
-  def trimToSize {
+  def trimToSize() {
     if (rows < data.length) {
       data = Arrays.copyOf(data, rows)
     }
@@ -158,6 +158,10 @@ class Index(protected var rows: Int,
     def dictionary_=(dict: Array[String]): Unit = sys.error("Not available for index features.")
 
     override def indexOf(label: String): Option[Int] = sys.error("Not available for index features.")
+  }
+
+  def solidCopy: Feature = {
+    Index(data)
   }
 
   override def buildSummary(sb: StringBuilder): Unit = ???

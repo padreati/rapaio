@@ -190,6 +190,14 @@ trait Frame extends Serializable with Printable {
     ((new MappedFrame(sourceFrame, left), leftWeights), (new MappedFrame(sourceFrame, right), rightWeights))
   }
 
+  def solidCopy: Frame = {
+    var pairs: List[(String, Feature)] = Nil
+    for (colName <- colNames) {
+      pairs = List((colName, col(colName))) ::: pairs
+    }
+    Frame.solid(rowCount, pairs.reverse)
+  }
+
   override def buildSummary(sb: StringBuilder): Unit = {
     sb.append(">> frame summary\n")
     sb.append("rowCount: %d, colCount: %d\n".format(rowCount, colCount))

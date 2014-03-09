@@ -140,23 +140,25 @@ class DecisionStumpClassifier extends Classifier {
     }
   }
 
-  def predict(df: Frame, row: Int): (String, Array[Double]) = {
-    if (_splitCol == null || df.missing(row, _splitCol)) {
-      _defaultClassifier.predict(df, row)
-    }
-    else {
-      var classifier =
-        if (_splitValue.isNaN) {
-          if (df.labels(row, _splitCol) == _splitLabel) _leftClassifier else _rightClassifier
-        } else {
-          if (df.values(row, _splitCol) <= _splitValue) _leftClassifier else _rightClassifier
-        }
-
-      if (classifier == null) {
-        classifier = _defaultClassifier
+  def predict(df: Frame) {
+    _prediction = new Nominal(df.rowCount, _dictionary)
+    _distribution = Frame.matrix(df.rowCount, _dictionary)
+    for (i <- 0 until df.rowCount) {
+      if (_splitCol == null || df.missing(i, _splitCol)) {
+        val label = _defaultClassifier.predictedLabel
+        _prediction.labels(i) = label
+        _distribution.values(i, _dictionary.indexOf(label)) = 1.0
+      } else {
+        val classifier =
+          if (df.col(_splitCol).isNominal) {
+            if (df.labels(i, _splitCol) == _splitLabel) _leftClassifier else _rightClassifier
+          } else {
+            if (df.values(i, _splitCol) <= _splitValue) _leftClassifier else _rightClassifier
+          }
+        val label = classifier.predictedLabel
+        _prediction.labels(i) = label
+        _distribution.values(i, _dictionary.indexOf(label)) = 1.0
       }
-
-      classifier.predict(df, row)
     }
   }
 
@@ -174,7 +176,7 @@ class DecisionStumpClassifier extends Classifier {
     sb.append("observations: " + _rowCount + "\n")
 
     def subSummary(title: String, c: ModeClassifier): Unit = {
-      sb.append("- " + title + " (" + c.name + "): predicted label -> " + c.predictedLabel() + ", observations: " + c.learnedObservations() + "\n")
+      sb.append("- " + title + " (" + c.name + "): predicted label -> " + c.predictedLabel + ", observations: " + c.learnedObservations + "\n")
     }
     subSummary("left", _leftClassifier)
     subSummary("right", _rightClassifier)

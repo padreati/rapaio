@@ -215,6 +215,12 @@ class Nominal(protected var rows: Int, private var dictionary: List[String]) ext
     def indexOf(label: String): Option[Int] = Option(_reverse(label))
   }
 
+  def solidCopy: Feature = {
+    val nom = new Nominal()
+    for (i <- 0 until rowCount) nom.labels ++ labels(i)
+    nom
+  }
+
   override def buildSummary(sb: StringBuilder): Unit = ???
 }
 

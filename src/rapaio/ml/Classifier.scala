@@ -22,6 +22,7 @@ package rapaio.ml
 
 import rapaio.data._
 import rapaio.printer.Printable
+import rapaio.core.RandomSource
 
 /**
  * Trait for all classifiers. For now the number of target features is 1.
@@ -41,13 +42,13 @@ trait Classifier extends Printable {
    * Name of the classification algorithm used for informative messages
    * @return short name of the implemented classifier
    */
-  def name(): String
+  def name: String
 
   /**
    * Algorithm name with the eventual parameter values used.
    * @return algorithm name and parameter values
    */
-  def description(): String
+  def description: String
 
   /**
    * Creates a new classifier instance with the same parameters as the original.
@@ -93,7 +94,7 @@ trait Classifier extends Printable {
    * @param classifier   previous classifier
    */
   def learnFurther(df: Frame, weights: Value, targetName: String, classifier: Classifier) {
-    sys.error("learnFurther not implemented for " + name)
+    sys.error(f"learnFurther not implemented for ${name}")
   }
 
   /**
@@ -112,23 +113,7 @@ trait Classifier extends Printable {
    *
    * @param df data set instances
    */
-  def predict(df: Frame): Unit = {
-    _distribution = Frame.matrix(df.rowCount, _dictionary)
-    _prediction = new Nominal(df.rowCount, _dictionary)
-
-    for (i <- 0 until df.rowCount) {
-      val prediction = predict(df, i)
-      _prediction.labels(i) = prediction._1
-      for (j <- 0 until _dictionary.length) {
-        _distribution.values(i, j) += prediction._2(j)
-      }
-    }
-  }
-
-  /**
-   * Predicts class for one instance from the data set
-   */
-  def predict(df: Frame, row: Int): (String, Array[Double])
+  def predict(df: Frame): Unit
 
   /**
    * Predict further classes for new data set instances, using
@@ -139,21 +124,8 @@ trait Classifier extends Printable {
    *
    * @param df data set instances
    */
-  def predictFurther(df: Frame, classifier: Classifier): Unit = {
-    _distribution = Frame.matrix(df.rowCount, _dictionary)
-    _prediction = new Nominal(df.rowCount, _dictionary)
-
-    for (i <- 0 until df.rowCount) {
-      val prediction = predictFurther(df, classifier, i)
-      _prediction.labels(i) = prediction._1
-      for (j <- 0 until _dictionary.length) {
-        _distribution.values(i, j) = prediction._2(j)
-      }
-    }
-  }
-
-  protected def predictFurther(df: Frame, classifier: Classifier, row: Int): (String, Array[Double]) = {
-    sys.error("Predict further not implemented for " + name)
+  def predictFurther(df: Frame, classifier: Classifier) {
+    sys.error(f"predictFurther not implemented for ${name}")
   }
 
   /**
@@ -192,4 +164,26 @@ trait Classifier extends Printable {
   def buildParameterSummary(sb: StringBuilder): Unit = sb.append("none\n")
 
   def buildModelSummary(sb: StringBuilder): Unit = sb.append("no information\n")
+
+  /**
+   * Build [[_prediction]] from the previously computed [[_distribution]]
+   * and specified [[_dictionary]].
+   * It is mainly used by various classifier as the last step for prediction,
+   * before the classifier selected [[_dictionary]] and computed [[_distribution]]
+   */
+  protected def buildPrediction(): Unit = {
+    _prediction = new Nominal(_distribution.rowCount, _dictionary)
+
+    def modeNext(row: Int, i: Int, n: Double, max: Double, lastLabel: String): String = {
+      if (i >= _dictionary.length) lastLabel
+      else if (_distribution.values(row, i) < max) modeNext(row, i + 1, n, max, lastLabel)
+      else if (_distribution.values(row, i) == max)
+        if (RandomSource.nextDouble >= n / (n + 1)) modeNext(row, i + 1, 1, max, _dictionary(i))
+        else modeNext(row, i + 1, n + 1, max, lastLabel)
+      else modeNext(row, i + 1, 1, _distribution.values(row, i), _dictionary(i))
+    }
+    (0 until _distribution.rowCount).foreach(row => {
+      _prediction.labels(row) = modeNext(row, 0, 1, -1, "")
+    })
+  }
 }
