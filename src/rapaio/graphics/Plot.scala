@@ -46,8 +46,11 @@ class Plot extends Figure {
     }
   }
 
-  def buildRange: Range = {
-    var r: Range = components.map(pc => pc.getRange).fold(null)((a, b) => mergeRange(a, b))
+  def buildRange(): Range = {
+    components.foreach(pc => {
+      pc.range = pc.buildRange()
+    })
+    var r: Range = components.map(pc => pc.range).fold(null)((a, b) => mergeRange(a, b))
     if (r == null) {
       r = new Range(0, 0, 1, 1)
     }
@@ -80,7 +83,7 @@ class Plot extends Figure {
 
   private def add(pc: PlotComponent): Plot = {
     pc.parent = this
-    pc.initialize
+    pc.initialize()
     components += pc
     this
   }

@@ -30,7 +30,7 @@ abstract class PlotComponent extends Figure {
 
   var parent: Figure = _
 
-  def initialize {}
+  def initialize() {}
 
   def paint(g2d: Graphics2D)
 

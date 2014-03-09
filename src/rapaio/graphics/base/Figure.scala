@@ -58,14 +58,7 @@ trait Figure {
 
   var options: GraphicOptions = new GraphicOptions
 
-  protected def buildRange(): Range
-
-  def getRange: Range = {
-    if (range == null) {
-      range = buildRange
-    }
-    range
-  }
+  def buildRange(): Range
 
   protected def buildViewport(rectangle: Rectangle) {
     view = new Rectangle(rectangle)
@@ -95,8 +88,7 @@ trait Figure {
   }
 
   def xScale(x: Double): Double = {
-    val r = getRange
-    view.x + view.width * (x - r.x1) / (r.x2 - r.x1)
+    view.x + view.width * (x - range.x1) / (range.x2 - range.x1)
   }
 
   def yScale(y: Double): Double = {
@@ -105,7 +97,8 @@ trait Figure {
 
   def paint(g2d: Graphics2D, rect: Rectangle) {
     buildViewport(rect)
-    range = buildRange
+    range = null
+    range = buildRange()
     g2d.setColor(StandardColorPalette.color(255))
     g2d.fill(rect)
     g2d.setBackground(StandardColorPalette.color(255))

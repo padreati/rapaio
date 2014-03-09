@@ -29,7 +29,7 @@ import java.awt._
  */
 class Points(private val x: Feature, private var y: Feature) extends PlotComponent {
 
-  def buildRange: Range = {
+  def buildRange(): Range = {
     if (math.min(x.rowCount, y.rowCount) == 0) null
     else {
       val range = new Range

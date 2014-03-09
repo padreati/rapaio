@@ -44,7 +44,7 @@ class Histogram(private val v: Feature,
     parent.bottomMarkers = true
   }
 
-  private def rebuild {
+  private def rebuild() {
     if (min != min) {
       for (i <- 0 until v.rowCount) {
         if (!v.missing(i)) {
