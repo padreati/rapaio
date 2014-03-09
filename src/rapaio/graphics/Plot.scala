@@ -88,6 +88,17 @@ class Plot extends Figure {
     this
   }
 
+  def lines(x: Feature = null,
+            y: Feature,
+            col: ColorOption = GraphicOptions.DefaultColor,
+            lwd: LwdOption = GraphicOptions.DefaultLwd): Plot = {
+    val lines = new Lines(x, y)
+    lines.options.col = if (col == GraphicOptions.DefaultColor) options.col else col
+    lines.options.lwd = if (lwd == GraphicOptions.DefaultLwd) options.lwd else lwd
+    add(lines)
+  }
+
+
   def points(x: Feature = null,
              y: Feature,
              col: ColorOption = GraphicOptions.DefaultColor,
