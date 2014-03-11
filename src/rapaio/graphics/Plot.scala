@@ -143,9 +143,13 @@ class Plot extends Figure {
            prob: Boolean = true,
            min: Double = Double.NaN,
            max: Double = Double.NaN,
-           col: ColorOption = 7): Plot = {
+           col: ColorOption = 7,
+           xLab: String = null,
+           yLab: String = null): Plot = {
     val hist = new Histogram(x, bins, prob, min, max)
     hist.options.col = if (col == GraphicOptions.DefaultColor) options.col else col
+    if (xLab != null) bottomLabel = xLab
+    if (yLab != null) leftLabel = yLab
     add(hist)
   }
 
@@ -171,7 +175,9 @@ object Plot {
             lwd: LwdOption = GraphicOptions.DefaultLwd,
             sz: SizeOption = GraphicOptions.DefaultSz,
             xLim: (Double, Double) = (Double.NaN, Double.NaN),
-            yLim: (Double, Double) = (Double.NaN, Double.NaN)): Plot = {
+            yLim: (Double, Double) = (Double.NaN, Double.NaN),
+            xLab: String = null,
+            yLab: String = null): Plot = {
     val plot = new Plot()
     plot.options.col = col
     plot.options.pch = pch
@@ -179,6 +185,8 @@ object Plot {
     plot.options.sz = sz
     plot.options.xLim = xLim
     plot.options.yLim = yLim
+    plot.leftLabel = yLab
+    plot.bottomLabel = xLab
     plot
   }
 }

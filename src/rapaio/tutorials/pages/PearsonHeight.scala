@@ -49,22 +49,34 @@ class PearsonHeight extends TutorialPage {
 
     df.summary()
 
+    heading(2, "Distribution of Measurements")
+
     p(
       """
-        |First we take a look at the histograms for the two dimensions.
+        |We take a look at the histograms for the two dimensions.
       """.stripMargin)
 
     for (i <- 0 until df.colCount) {
       val normal = new Normal(Mean(df.col(i)).value, math.sqrt(Variance(df.col(i)).value))
-      draw(Plot(xLim = (57, 80)).
+      draw(Plot(xLim = (57, 80), xLab = df.colNames(i)).
         hist(df.col(i), bins = 23, prob = true) // .
         //        add(new Nothing(normal.getPdfFunction).setColorIndex(2)).setBottomLabel(df.getColNames(i)).setXRange(57, 80).setYRange(0, 0.20)
-        , 700, 300)
+        , 600, 250)
     }
 
-    //    heading(2, "About normality")
-    //    p("Looking at both produced histograms we are interested to understand " + "if the data contained in both variables resemble a normal " + "curve. Basically we are interested if the the values of " + "those dimensions are normally distributed.")
-    //    p("An ususal graphical tools which can give us insights about that fact " + "is the quantile-quantile plot. ") {
+    heading(2, "About normality")
+
+    p(
+      """
+        |Looking at both produced histograms we are interested to understand
+        |if the data contained in both variables resemble a normal curve.
+        |Basically we are interested if the the values of those dimensions
+        |are normally distributed.
+        |//
+        |An usual graphical tools which can give us insights about that fact
+        |is the quantile-quantile plot.
+      """.stripMargin)
+
     //      var i: Int = 0
     //      while (i < df.getColCount) {
     //        {
@@ -79,7 +91,7 @@ class PearsonHeight extends TutorialPage {
     //          i - 1
     //        })
     //      }
-    //    }
+    //
     //    summary(new Mean(df.getCol("Father")))
     //    summary(new Variance(df.getCol("Father")))
     //    summary(new Mean(df.getCol("Son")))
