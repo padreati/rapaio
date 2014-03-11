@@ -26,6 +26,7 @@ import rapaio.workspace.Workspace._
 import rapaio.core.distributions.DUniform
 import rapaio.core.stat.StatOnline
 import rapaio.data.Value
+import rapaio.graphics.Plot
 
 
 /**
@@ -37,22 +38,26 @@ class LawOfLargeNumbers extends TutorialPage {
 
   def pageTitle: String = "Explore Law of Large Numbers"
 
-  def render {
+  def render() {
     RandomSource.seed(1)
     heading(2, "Simulation on Law of Large Numbers")
 
     p(
       """
         |In the probability theory the Law of the Large Numbers states that when
-        |do you repeat an experiment a large number of times, the average
-        |of the results of experiment should be close to the expected getValue.
+        |one repeats an experiment a large number of times, the expected
+        |value of the average of the results of experiment
+        |is the same with the expected value of the population.
         |//
-        |The sample average will become closer as more trials are performed.
+        |in plain language it means that the average of the sample averages
+        |will become closer to the population average as more trials are performed.
+        |Additionally, the variance of this statistic decrease with the number of trials.
         |//
         |To illustrate the intuition behind this law we will consider our experiment
         |to be a run of rolls of a dice. A dice has 6 possible outcomes, the integer
         |numbers from 1 to 6, with each output having equal probability. Therefore the
-        |expected value of a single die roll is \( (1+2+3+4+5+6)/6=3.5 \)
+        |expected value of a single die roll is
+        |$$ E(X) = \sum_{i=1}^{6}p(x_i)x_i = \frac{1}{6}(1+2+3+4+5+6)=3.5 $$
         |//
         |We simulate the event of a single die roll to be a draw of a number from
         |the discrete uniform distribution with minimum value of 1 and
@@ -102,10 +107,30 @@ class LawOfLargeNumbers extends TutorialPage {
       """.stripMargin)
 
 
-    //    draw(new Plot().add(new Nothing(0, 3.5).setLwd(1.5f).setColorIndex(1)).add(new Nothing(Vectors.newSeq(1, N, 1), mean).setLwd(1.5f).setColorIndex(2)).setYRange(2.5, 4.5), 800, 300)
-    //    p("Thus we can clearly notice two fact from the plot above. " + "First fact is that the running average gets closer to the " + "expected getValue, as sample size grows. " + "Second fact is that deviation from expected getValue is smaller as " + "the sample size grows aka. smaller variation. ")
-    //    p("The code for drawing the plot follows:")
-    //    code("        draw(new Plot()\n" + "                .add(new ABLine(0, 3.5).setLwd(1.5f).setColorIndex(1))\n" + "                .add(new Lines(new IndexVector(1, N, 1), mean)\n" + "                        .setLwd(1.5f)\n" + "                        .setColorIndex(2))\n" + "                .setYRange(2.5, 4.5), \n" + "                800, 300);\n" + "")
+    draw(Plot(yLim = (2.5, 4.5)).
+      hLine(3.5, lwd = 1.5f, col = 1).
+      lines(x = Value(1, 1000, x => x), y = mean, lwd = 1.5f, col = 2),
+      800, 300)
+
+    p(
+      """
+        |Thus we can clearly notice two fact from the plot above.
+        |First fact is that the running average gets closer to the
+        |expected getValue, as sample size grows.
+        |Second fact is that deviation from expected getValue is smaller as
+        |the sample size grows aka. smaller variation.
+        |//
+        |The code for drawing the plot follows:
+      """.stripMargin)
+
+    code(
+      """
+        |    draw(Plot(yLim = (2.5, 4.5)).
+        |      hLine(3.5, lwd = 1.5f, col = 1).
+        |      lines(x = Value(1, 1000, x => x), y = mean, lwd = 1.5f, col=2),
+        |      800, 300)
+      """.stripMargin)
+
     p(">>>This tutorial is generated with Rapaio document printer facilities.<<<")
   }
 }

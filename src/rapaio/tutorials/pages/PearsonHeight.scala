@@ -20,6 +20,11 @@
 
 package rapaio.tutorials.pages
 
+import rapaio.workspace.Workspace._
+import rapaio.datasets.Datasets
+import rapaio.core.stat.{Variance, Mean}
+import rapaio.graphics.Plot
+import rapaio.core.distributions.Normal
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -29,25 +34,34 @@ class PearsonHeight extends TutorialPage {
 
   def pageTitle: String = "Explore Pearson Father Son Data"
 
-  def render {
-    //    heading(1, "Analysis of Pearson's Height dataset")
-    //    val df: Frame = Datasets.loadPearsonHeightDataset
-    //    p("This exploratory analysis is provided as a sample of analysis produced with Rapaio system.")
-    //    p("The studied data set contains " + df.getRowCount + " observations and has " + df.getColCount + " columns.")
-    //    Summary.summary(df)
-    //    p("First we take a look at the histograms for the two dimensions") {
-    //      var i: Int = 0
-    //      while (i < df.getColCount) {
-    //        {
-    //          val normal: Nothing = new Nothing(new Mean(df.getCol(i)).getValue, sqrt(new Variance(df.getCol(i)).getValue))
-    //          draw(new Plot().add(new Histogram(df.getCol(i), 23, true, 57, 80)).add(new Nothing(normal.getPdfFunction).setColorIndex(2)).setBottomLabel(df.getColNames(i)).setXRange(57, 80).setYRange(0, 0.20), 700, 300)
-    //        }
-    //        ({
-    //          i += 1;
-    //          i - 1
-    //        })
-    //      }
-    //    }
+  def render() {
+
+    heading(1, "Analysis of Pearson's Height data set")
+
+    val df = Datasets.loadPearsonHeightDataset
+
+    p(
+      f"""
+            |This exploratory analysis is provided as a sample of analysis produced with Rapaio system.
+            |//
+            |The studied data set contains ${df.rowCount} observations and has ${df.colCount} columns.
+          """.stripMargin)
+
+    df.summary()
+
+    p(
+      """
+        |First we take a look at the histograms for the two dimensions.
+      """.stripMargin)
+
+    for (i <- 0 until df.colCount) {
+      val normal = new Normal(Mean(df.col(i)).value, math.sqrt(Variance(df.col(i)).value))
+      draw(Plot(xLim = (57, 80)).
+        hist(df.col(i), bins = 23, prob = true) // .
+        //        add(new Nothing(normal.getPdfFunction).setColorIndex(2)).setBottomLabel(df.getColNames(i)).setXRange(57, 80).setYRange(0, 0.20)
+        , 700, 300)
+    }
+
     //    heading(2, "About normality")
     //    p("Looking at both produced histograms we are interested to understand " + "if the data contained in both variables resemble a normal " + "curve. Basically we are interested if the the values of " + "those dimensions are normally distributed.")
     //    p("An ususal graphical tools which can give us insights about that fact " + "is the quantile-quantile plot. ") {

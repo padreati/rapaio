@@ -206,6 +206,19 @@ trait Feature extends Serializable with Printable {
 
     def indexOf(label: String): Option[Int]
 
+    def filter(p: (String) => Boolean): Array[String] = {
+
+      @tailrec
+      def filter(i: Int, list: List[String]): List[String] = {
+        if (i >= rowCount) list
+        else {
+          if (p(labels(i))) filter(i + 1, list ::: List(labels(i)))
+          else filter(i + 1, list)
+        }
+      }
+      filter(0, List.empty).toArray
+    }
+
     def forall(p: (String) => Boolean): Boolean = {
       @tailrec
       def forOne(i: Int): Boolean = {

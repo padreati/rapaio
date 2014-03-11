@@ -22,7 +22,8 @@ package rapaio.data
 
 import rapaio.data.mapping.{MappedFrame, Mapping}
 import java.io.Serializable
-import rapaio.printer.Printable
+import rapaio.printer.{TextTable, Printable}
+import rapaio.workspace.Workspace
 
 /**
  * Random access list of observed values for multiple variables.
@@ -202,10 +203,17 @@ trait Frame extends Serializable with Printable {
     sb.append(">> frame summary\n")
     sb.append("rowCount: %d, colCount: %d\n".format(rowCount, colCount))
 
-    sb.append("cols:\n\t")
-    val slide = colNames.map(colName => "%s[%s]".format(colName, col(colName).typeName)).sliding(5, 2)
-    slide.foreach(s => sb.append(s mkString ",").append("\n\t"))
-
+    val tt = new TextTable(6, colCount)
+    for (i <- 0 until colCount) {
+      val summary = DataSummary.featureSummary(f"${colNames(i)}/${col(i).typeName}", col(i))
+      tt.headers(i) = summary(0)
+      for (j <- 0 until 6) {
+        tt.data(j)(i) = summary(j + 1)
+      }
+      tt.alignHeaders(i) = true
+      tt.alignBody(i) = true
+    }
+    tt.print(sb, Workspace.printer.textWidth)
   }
 }
 
@@ -241,7 +249,7 @@ object Frame {
 
     require(!left.isMappedFrame || !right.isMappedFrame, "operation not available on mapped frames")
     require(rows <= left.rowCount, "rows must be no greater then rowCount of the left frame")
-    require(rows <= right.rowCount, "rows must be no greate then rowCount of the right frame")
+    require(rows <= right.rowCount, "rows must be no greater then rowCount of the right frame")
 
     var pairs = List[(String, Feature)]()
     for (i <- 0 until left.colCount) pairs = List((left.colNames(i), left.col(i))) ::: pairs

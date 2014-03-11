@@ -88,6 +88,33 @@ class Plot extends Figure {
     this
   }
 
+  def vLine(x: Double,
+            lwd: LwdOption = GraphicOptions.DefaultLwd,
+            col: ColorOption = GraphicOptions.DefaultColor): Plot = {
+    val line = new ABLine(x, 0, h = false, v = true)
+    line.options.col = if (col == GraphicOptions.DefaultColor) options.col else col
+    line.options.lwd = if (lwd == GraphicOptions.DefaultLwd) options.lwd else lwd
+    add(line)
+  }
+
+  def hLine(y: Double,
+            lwd: LwdOption = GraphicOptions.DefaultLwd,
+            col: ColorOption = GraphicOptions.DefaultColor): Plot = {
+    val line = new ABLine(0, y, h = true, v = false)
+    line.options.col = if (col == GraphicOptions.DefaultColor) options.col else col
+    line.options.lwd = if (lwd == GraphicOptions.DefaultLwd) options.lwd else lwd
+    add(line)
+  }
+
+  def abLine(a: Double, b: Double,
+             lwd: LwdOption = GraphicOptions.DefaultLwd,
+             col: ColorOption = GraphicOptions.DefaultColor): Plot = {
+    val line = new ABLine(a, b, false, false)
+    line.options.col = if (col == GraphicOptions.DefaultColor) options.col else col
+    line.options.lwd = if (lwd == GraphicOptions.DefaultLwd) options.lwd else lwd
+    add(line)
+  }
+
   def lines(x: Feature = null,
             y: Feature,
             col: ColorOption = GraphicOptions.DefaultColor,

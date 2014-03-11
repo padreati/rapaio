@@ -116,4 +116,6 @@ class MappedFeature(private val _source: Feature,
 }
 
 object MappedFeature {
+
+  def apply(source: Feature, mapping: Mapping): MappedFeature = new MappedFeature(source, mapping)
 }

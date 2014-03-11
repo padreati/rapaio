@@ -20,7 +20,7 @@
 
 package rapaio.tutorials
 
-import rapaio.tutorials.pages.{LawOfLargeNumbers, TutorialPage}
+import rapaio.tutorials.pages.{PearsonHeight, LawOfLargeNumbers, TutorialPage}
 import java.io.File
 import rapaio.workspace.Workspace._
 import rapaio.printer.html.HTMLPrinter
@@ -69,7 +69,7 @@ object TutorialWebsiteGenerator {
     //        pages.get(category).add(new IrisExplore());
     //        pages.get(category).add(new StudentTDistribution());
     val pages = Map(
-      "SampleAnalysis" -> List(new LawOfLargeNumbers())
+      "SampleAnalysis" -> List(new LawOfLargeNumbers(), new PearsonHeight())
     )
 
     makeIndexPage(webRoot, pages)

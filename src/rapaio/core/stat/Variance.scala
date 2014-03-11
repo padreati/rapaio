@@ -55,7 +55,7 @@ class Variance extends Printable {
     this
   }
 
-  def getValue: Double = _value
+  def value: Double = _value
 
   override def buildSummary(sb: StringBuilder): Unit = sb.append("variance\n%.10f\n".format(_value))
 

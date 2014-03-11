@@ -63,8 +63,12 @@ class HTMLPrinter(fileName: String, title: String, backLink: String = "") extend
 
   def print(message: String) = _writer.append(message)
 
-  @SuppressWarnings(Array("deprecation")) def draw(figure: Figure, width: Int, height: Int) {
-    val newImage: BufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR)
+  def draw(figure: Figure, width: Int, height: Int) {
+    var _w = width
+    var _h = height
+    if (width == -1.0) _w = 500
+    if (height == -1.0) _h = 250
+    val newImage: BufferedImage = new BufferedImage(_w, _h, BufferedImage.TYPE_4BYTE_ABGR)
     val g: Graphics = newImage.getGraphics
     val g2d: Graphics2D = g.asInstanceOf[Graphics2D]
     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)

@@ -22,6 +22,7 @@ package rapaio.core.stat
 
 import rapaio.printer.Printable
 import rapaio.data.Feature
+import rapaio.data.mapping.{Mapping, MappedFeature}
 
 /**
  * Estimates quantiles from a numerical feature.
@@ -33,7 +34,6 @@ import rapaio.data.Feature
  * <p/>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@deprecated("Not fully implemented", "1.0")
 class Quantiles(feature: Feature, percentiles: Array[Double]) extends Printable {
 
   private val quantiles: Array[Double] = {
@@ -45,9 +45,8 @@ class Quantiles(feature: Feature, percentiles: Array[Double]) extends Printable 
       values
     }
     else {
-      //      val sorted: Feature = sort(feature)
-      // TODO implement sorting
-      val sorted: Feature = null
+      val map = (0 until feature.rowCount).sortWith((i, j) => feature.values(i) < feature.values(j))
+      val sorted: Feature = MappedFeature(feature, Mapping(map.toList))
       var start: Int = 0
       while (start < sorted.rowCount && sorted.missing(start)) start += 1
 
@@ -74,7 +73,7 @@ class Quantiles(feature: Feature, percentiles: Array[Double]) extends Printable 
     }
   }
 
-  def getValues: Array[Double] = quantiles
+  def values: Array[Double] = quantiles
 
   override def buildSummary(sb: StringBuilder): Unit = {
     sb.append("quantiles - estimated quantiles\n")

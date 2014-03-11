@@ -20,23 +20,37 @@
 
 package rapaio.sandbox
 
+import rapaio.printer.TextTable
+
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 object Sandbox extends App {
 
-  val x =
-    <html>
-      <body>
-        {for (i <- 0 until 100) yield (i + 100) + ","}<p>
-        {math.E}
-      </p>
-      </body>
-    </html>
+  val table = new TextTable(3, 3)
+  table.headers(0) = "column1"
+  table.headers(1) = ""
+  table.headers(2) = "column3"
 
-  println(x)
+  table.alignBody(0) = false
+  table.data(0)(0) = "data 1"
+  table.data(1)(0) = "data 23"
+  table.data(2)(0) = "?"
 
-  println(f"test text ${var b = 10; b / math.E}")
+  table.alignBody(1) = false
+  table.data(0)(1) = ":"
+  table.data(1)(1) = ":"
+  table.data(2)(1) = ":"
+
+  table.alignBody(2) = true
+  table.data(0)(2) = "1.00"
+  table.data(1)(2) = "23.00"
+  table.data(2)(2) = "23242340.01"
+
+  val sb = new StringBuilder
+  table.print(sb, 100)
+  println(sb.toString())
+
 }
 
