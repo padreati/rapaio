@@ -29,7 +29,7 @@ object RandomSource {
 
   def seed(seed: Long): Unit = Random.setSeed(seed)
 
-  def nextDouble(): Double = Random.nextDouble()
+  def nextDouble: Double = Random.nextDouble()
 
   def nextInt(n: Int): Int = Random.nextInt(n)
 }
