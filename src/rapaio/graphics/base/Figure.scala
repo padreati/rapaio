@@ -27,15 +27,15 @@ import scala.collection.mutable
  * @author tutuianu
  */
 object Figure {
-  protected val TITLE_FONT = new Font("Verdana", Font.BOLD, 18)
-  protected val MARKERS_FONT = new Font("Verdana", Font.PLAIN, 13)
-  protected val LABELS_FONT = new Font("Verdana", Font.BOLD, 16)
-  protected val DefaultThickerMinSpace = 50.0
-  protected val ThickerPad = 7
-  protected val MarkerPad = 15
-  protected val LABEL_PAD = 30
-  protected val TITLE_PAD = 40
-  protected val MINIMUM_PAD = 20
+  val TITLE_FONT = new Font("Verdana", Font.BOLD, 18)
+  val MARKERS_FONT = new Font("Verdana", Font.PLAIN, 13)
+  val LABELS_FONT = new Font("Verdana", Font.BOLD, 16)
+  val DefaultThickerMinSpace = 50.0
+  val ThickerPad = 7
+  val MarkerPad = 15
+  val LABEL_PAD = 30
+  val TITLE_PAD = 40
+  val MINIMUM_PAD = 20
 }
 
 trait Figure {
