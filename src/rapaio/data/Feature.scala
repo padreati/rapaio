@@ -106,6 +106,16 @@ trait Feature extends Serializable with Printable {
     def update(row: Int, value: Boolean): Unit
 
     def ++(): Unit
+
+    def count: Double = {
+      def count(i: Int, cnt: Int): Int = {
+        if (i < rowCount)
+          if (missing(i)) count(i + 1, cnt + 1)
+          else count(i + 1, cnt)
+        else cnt
+      }
+      count(0, 0)
+    }
   }
 
   abstract class Values {
@@ -164,6 +174,28 @@ trait Feature extends Serializable with Printable {
         }
       }
       transform(0)
+    }
+
+    def map[B](f: Double => B)(implicit t: scala.reflect.ClassTag[B]): Array[B] = {
+      val b = {
+        val build = Array.newBuilder[B]
+        build.sizeHint(0)
+        build.result()
+      }
+      for (i <- 0 until rowCount) b(i) = f(values(i))
+      b
+    }
+
+    def mapComplete[B](f: Double => B)(implicit t: scala.reflect.ClassTag[B]): Array[B] = {
+      val b = new Array[B](rowCount - missing.count.toInt)
+      var pos = 0
+      for (i <- 0 until rowCount) {
+        if (!missing(i)) {
+          b(pos) = f(values(i))
+          pos += 1
+        }
+      }
+      b
     }
 
     def fill(value: Double) = (0 until rowCount).foreach(i => values(i) = value)

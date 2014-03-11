@@ -26,18 +26,19 @@ import rapaio.data.Feature
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-class KernelDensityEstimator(values: Feature, kernel: KernelFunction, bandwidth: Double) {
+class KDE(feature: Feature, kernel: KernelFunction, bandwidth: Double) {
 
   def pdf(x: Double): Double = {
-    var sum: Double = 0.0
-    var count: Double = 0.0
-    for (i <- 0 until values.rowCount) {
-      if (!values.missing(i)) {
-        count += 1
-        sum += kernel.pdf(x, values.values.apply(i), bandwidth)
-      }
-    }
+    val sum = feature.values.mapComplete[Double](v => kernel.pdf(x, v, bandwidth)).sum
+    val count = feature.rowCount - feature.missing.count
     sum / (count * bandwidth)
+  }
+
+}
+
+object KDE {
+  def apply(feature: Feature): KDE = {
+    new KDE(feature, KernelFunctionGaussian, KDE.silvermanBandwidth(feature))
   }
 
   /**
@@ -53,8 +54,8 @@ class KernelDensityEstimator(values: Feature, kernel: KernelFunction, bandwidth:
    * @param vector sample of values
    * @return teh getValue of the approximation for bandwidth
    */
-  final def getSilvermanBandwidth(vector: Feature): Double = {
-    var sd: Double = Math.sqrt(Variance(vector).value)
+  def silvermanBandwidth(vector: Feature): Double = {
+    var sd = Math.sqrt(Variance(vector).value)
     if (sd == 0) {
       sd = 1
     }

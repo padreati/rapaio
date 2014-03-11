@@ -40,6 +40,7 @@ class Plot extends Figure {
 
   private def mergeRange(a: Range, b: Range): Range = {
     if (a == null) b
+    else if (b == null) a
     else {
       a.union(b)
       a
@@ -86,6 +87,20 @@ class Plot extends Figure {
     pc.initialize()
     components += pc
     this
+  }
+
+  def function(f: Double => Double, points: Int = 1024,
+               col: ColorOption = GraphicOptions.DefaultColor,
+               lwd: LwdOption = GraphicOptions.DefaultLwd): Plot = {
+    val fl = FunctionLine(f, points)
+    fl.options.col = if (col == GraphicOptions.DefaultColor) options.col else col
+    fl.options.lwd = if (lwd == GraphicOptions.DefaultLwd) options.lwd else lwd
+    add(fl)
+  }
+
+  def density(x: Feature): Plot = {
+    val d = DensityLine(x)
+    add(d)
   }
 
   def vLine(x: Double,

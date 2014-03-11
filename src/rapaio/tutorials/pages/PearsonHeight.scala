@@ -58,10 +58,10 @@ class PearsonHeight extends TutorialPage {
 
     for (i <- 0 until df.colCount) {
       val normal = new Normal(Mean(df.col(i)).value, math.sqrt(Variance(df.col(i)).value))
-      draw(Plot(xLim = (57, 80), xLab = df.colNames(i)).
-        hist(df.col(i), bins = 23, prob = true) // .
-        //        add(new Nothing(normal.getPdfFunction).setColorIndex(2)).setBottomLabel(df.getColNames(i)).setXRange(57, 80).setYRange(0, 0.20)
-        , 600, 250)
+      draw(Plot(xLim = (57, 80), yLim = (0.0, 0.2), xLab = df.colNames(i)).
+        hist(df.col(i), bins = 23, min = 57, max = 80, prob = true).
+        function(normal.pdf, col = 2)
+        , 700, 300)
     }
 
     heading(2, "About normality")
