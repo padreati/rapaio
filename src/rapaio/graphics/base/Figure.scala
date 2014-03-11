@@ -38,7 +38,7 @@ object Figure {
   val MINIMUM_PAD = 20
 }
 
-trait Figure {
+abstract class Figure {
 
   protected var view: Rectangle = null
   var range: Range = null

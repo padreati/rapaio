@@ -175,11 +175,11 @@ class Plot extends Figure {
     }
   }
 
-  override def buildLeftMarkers() {
+  protected override def buildLeftMarkers() {
     buildNumericLeftMarkers()
   }
 
-  override def buildBottomMarkers() {
+  protected override def buildBottomMarkers() {
     buildNumericBottomMarkers()
   }
 }

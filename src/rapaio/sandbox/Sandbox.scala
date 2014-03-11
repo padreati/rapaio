@@ -20,7 +20,9 @@
 
 package rapaio.sandbox
 
-import rapaio.printer.TextTable
+import rapaio.workspace.Workspace
+import rapaio.graphics.Plot
+import java.awt.Color
 
 
 /**
@@ -28,29 +30,15 @@ import rapaio.printer.TextTable
  */
 object Sandbox extends App {
 
-  val table = new TextTable(3, 3)
-  table.headers(0) = "column1"
-  table.headers(1) = ""
-  table.headers(2) = "column3"
+  Workspace.draw(Plot(xLim = (0, 10), yLim = (0, 10)).
+    function(x => x * x).
+    function(x => x, col = 1).
+    function(x => math.pow(x, 1.5)).
+    function(x => math.pow(x, 1.0 / 1.5)).
+    function(x => math.pow(x, 1.0 / 2.0)).
+    hLine(1, col = Color.GRAY).vLine(1, col = Color.GRAY)
 
-  table.alignBody(0) = false
-  table.data(0)(0) = "data 1"
-  table.data(1)(0) = "data 23"
-  table.data(2)(0) = "?"
-
-  table.alignBody(1) = false
-  table.data(0)(1) = ":"
-  table.data(1)(1) = ":"
-  table.data(2)(1) = ":"
-
-  table.alignBody(2) = true
-  table.data(0)(2) = "1.00"
-  table.data(1)(2) = "23.00"
-  table.data(2)(2) = "23242340.01"
-
-  val sb = new StringBuilder
-  table.print(sb, 100)
-  println(sb.toString())
+  )
 
 }
 

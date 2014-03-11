@@ -36,13 +36,13 @@ class Legend(x: Double, y: Double, labels: Array[String], col: Array[Int]) exten
       minHeight = math.min(minHeight, g2d.getFontMetrics.getStringBounds(string, g2d).getHeight)
     }
     val size = g2d.getFontMetrics.getStringBounds("aa", g2d).getWidth
-    val x = parent.xScale(x)
-    var y = parent.yScale(y)
+    val xx = parent.xScale(x)
+    var yy = parent.yScale(y)
     for (i <- 0 until labels.length) {
       g2d.setColor(options.col(i))
-      g2d.draw(new Rectangle2D.Double(x, y - minHeight / 3, size, 1))
-      g2d.drawString(labels(i), (x + size + size / 2).asInstanceOf[Int], y.asInstanceOf[Int])
-      y += minHeight + 1
+      g2d.draw(new Rectangle2D.Double(xx, yy - minHeight / 3, size, 1))
+      g2d.drawString(labels(i), (xx + size + size / 2).asInstanceOf[Int], yy.asInstanceOf[Int])
+      yy += minHeight + 1
     }
   }
 
