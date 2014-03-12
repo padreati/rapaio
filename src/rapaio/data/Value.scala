@@ -133,7 +133,7 @@ class Value(protected var rows: Int,
   var missing = new Missing {
     override def apply(row: Int): Boolean = values(row) != values(row)
 
-    override def update(row: Int, value: Boolean): Unit = values(row) = Value.missingValue
+    override def update(row: Int, value: Boolean): Unit = values(row) = if (value) Value.missingValue else 0
 
     override def ++(): Unit = values ++ Value.missingValue
   }

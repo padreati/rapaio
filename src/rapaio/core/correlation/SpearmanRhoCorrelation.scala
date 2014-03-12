@@ -39,6 +39,7 @@ package rapaio.core.correlation
  * <p/>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 class SpearmanRhoCorrelation
 
 //extends Summarizable {

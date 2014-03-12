@@ -24,6 +24,7 @@ import rapaio.data._
 import rapaio.ml.Classifier
 import rapaio.core.stat.{DensityVector, DensityMatrix}
 import rapaio.ml.base.ModeClassifier
+import java.util.function.ToDoubleFunction
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -75,6 +76,7 @@ class DecisionStumpClassifier extends Classifier {
     })
 
     if (_splitCol != null) {
+
       val missingSplit = df.weightedSplit(weights, (df: Frame, row: Int) => df.missing(row, _splitCol))
       val missing = missingSplit._1
       val complete = missingSplit._2
@@ -87,6 +89,8 @@ class DecisionStumpClassifier extends Classifier {
       _leftClassifier.learn(split._1._1, split._1._2, _target)
       _rightClassifier.learn(split._2._1, split._2._2, _target)
       _defaultClassifier.learn(missing._1, missing._2, _target)
+
+
     } else {
       _defaultClassifier.learn(df, weights, _target)
     }
@@ -110,19 +114,20 @@ class DecisionStumpClassifier extends Classifier {
     }
   }
 
+
   private def evaluateNumeric(df: Frame, weights: Value, test: String) {
 
-    val sort = (0 until df.rowCount).sortWith((i, j) => {
-      if (df.missing(i, test)) !df.missing(j, test)
-      else if (df.missing(j, test)) false
-      else df.values(i, test) < df.values(j, test)
-    })
+    val start = System.currentTimeMillis()
+    val sort = (0 until df.rowCount).
+      filter(i => !df.missing(i, test)).
+      sortWith((i, j) => df.values(i, test) < df.values(j, test))
 
     // build an initial density matrix required for computing accuracies
     val dm = DensityMatrix(DensityMatrix.NumericDefaultLabels, df.col(_target).labels.dictionary)
     (0 until df.rowCount).foreach(i => dm.update(2, df.indexes(i, _target), weights.values(i)))
 
-    val missingCount = df.col(test).values.count(x => x.isNaN)
+    val missingCount = df.col(test).rowCount - sort.length
+    //    println("inside " + (System.currentTimeMillis() - start))
 
     // test each split point to find the best numerical split
     for (i <- 0 until sort.length) {
@@ -138,6 +143,8 @@ class DecisionStumpClassifier extends Classifier {
         }
       }
     }
+
+
   }
 
   def predict(df: Frame) {
