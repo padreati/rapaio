@@ -62,6 +62,11 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
 		return new AdaBoostSAMMEClassifier(weak.newInstance(), t);
 	}
 
+    public AdaBoostSAMMEClassifier setT(int t) {
+        this.t = t;
+        return this;
+    }
+
 	@Override
 	public void learn(Frame df, List<Double> weights, String classColName) {
 		dict = df.getCol(classColName).getDictionary();

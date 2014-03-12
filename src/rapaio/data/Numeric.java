@@ -41,7 +41,6 @@ public class Numeric extends AbstractVector {
 	private int rows;
 
 	public Numeric() {
-		super();
 		this.data = EMPTY_DATA;
 	}
 
