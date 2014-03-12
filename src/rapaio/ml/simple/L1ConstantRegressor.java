@@ -45,54 +45,54 @@ import java.util.List;
  */
 public class L1ConstantRegressor extends AbstractRegressor {
 
-	private List<String> targets;
-	private List<Double> medians;
-	private List<Vector> fitValues;
+    private List<String> targets;
+    private List<Double> medians;
+    private List<Vector> fitValues;
 
-	@Override
-	public Regressor newInstance() {
-		return new L1ConstantRegressor();
-	}
+    @Override
+    public Regressor newInstance() {
+        return new L1ConstantRegressor();
+    }
 
-	@Override
-	public void learn(Frame df, List<Double> weights, String targetColName) {
-		throw new RuntimeException("Not implemented");
-	}
+    @Override
+    public void learn(Frame df, List<Double> weights, String targetColName) {
+        throw new RuntimeException("Not implemented");
+    }
 
-	@Override
-	public void learn(Frame df, String targetColNames) {
-		ColRange colRange = new ColRange(targetColNames);
-		List<Integer> colIndexes = colRange.parseColumnIndexes(df);
+    @Override
+    public void learn(Frame df, String targetColNames) {
+        ColRange colRange = new ColRange(targetColNames);
+        List<Integer> colIndexes = colRange.parseColumnIndexes(df);
 
-		targets = new ArrayList<>();
-		for (int i = 0; i < colIndexes.size(); i++) {
-			targets.add(df.getColNames()[colIndexes.get(i)]);
-		}
+        targets = new ArrayList<>();
+        for (int i = 0; i < colIndexes.size(); i++) {
+            targets.add(df.getColNames()[colIndexes.get(i)]);
+        }
 
-		medians = new ArrayList<>();
-		fitValues = new ArrayList<>();
-		for (String target : targets) {
-			double median = new Quantiles(df.getCol(target), new double[]{0.5}).getValues()[0];
-			medians.add(median);
-			fitValues.add(new Numeric(df.getCol(target).getRowCount(), df.getCol(target).getRowCount(), median));
-		}
-	}
+        medians = new ArrayList<>();
+        fitValues = new ArrayList<>();
+        for (String target : targets) {
+            double median = new Quantiles(df.getCol(target), new double[]{0.5}).getValues()[0];
+            medians.add(median);
+            fitValues.add(new Numeric(df.getCol(target).getRowCount(), df.getCol(target).getRowCount(), median));
+        }
+    }
 
-	@Override
-	public void predict(Frame df) {
-		fitValues = new ArrayList<>();
-		for (int i = 0; i < targets.size(); i++) {
-			fitValues.add(new Numeric(df.getRowCount(), df.getRowCount(), medians.get(i)));
-		}
-	}
+    @Override
+    public void predict(Frame df) {
+        fitValues = new ArrayList<>();
+        for (int i = 0; i < targets.size(); i++) {
+            fitValues.add(new Numeric(df.rowCount(), df.rowCount(), medians.get(i)));
+        }
+    }
 
-	@Override
-	public Numeric getFitValues() {
-		return (Numeric) fitValues.get(0);
-	}
+    @Override
+    public Numeric getFitValues() {
+        return (Numeric) fitValues.get(0);
+    }
 
-	@Override
-	public Frame getAllFitValues() {
-		return new SolidFrame(fitValues.get(0).getRowCount(), fitValues, targets);
-	}
+    @Override
+    public Frame getAllFitValues() {
+        return new SolidFrame(fitValues.get(0).getRowCount(), fitValues, targets);
+    }
 }

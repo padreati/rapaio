@@ -34,53 +34,53 @@ import static rapaio.core.MathBase.abs;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 public class MAE implements Summarizable {
-	private final List<Vector> source;
-	private final List<Vector> target;
-	private double value;
+    private final List<Vector> source;
+    private final List<Vector> target;
+    private double value;
 
-	public MAE(Frame dfSource, Frame dfTarget) {
-		source = new ArrayList<>();
-		for (int i = 0; i < dfSource.getColCount(); i++) {
-			if (dfSource.getCol(i).getType().isNumeric()) {
-				source.add(dfSource.getCol(i));
-			}
-		}
-		target = new ArrayList<>();
-		for (int i = 0; i < dfTarget.getColCount(); i++) {
-			if (dfTarget.getCol(i).getType().isNumeric()) {
-				target.add(dfTarget.getCol(i));
-			}
-		}
-		compute();
-	}
+    public MAE(Frame dfSource, Frame dfTarget) {
+        source = new ArrayList<>();
+        for (int i = 0; i < dfSource.colCount(); i++) {
+            if (dfSource.getCol(i).getType().isNumeric()) {
+                source.add(dfSource.getCol(i));
+            }
+        }
+        target = new ArrayList<>();
+        for (int i = 0; i < dfTarget.colCount(); i++) {
+            if (dfTarget.getCol(i).getType().isNumeric()) {
+                target.add(dfTarget.getCol(i));
+            }
+        }
+        compute();
+    }
 
-	public MAE(Vector source, Vector target) {
-		this.source = new ArrayList<>();
-		this.source.add(source);
-		this.target = new ArrayList<>();
-		this.target.add(target);
-		compute();
-	}
+    public MAE(Vector source, Vector target) {
+        this.source = new ArrayList<>();
+        this.source.add(source);
+        this.target = new ArrayList<>();
+        this.target.add(target);
+        compute();
+    }
 
-	private void compute() {
-		double total = 0;
-		double count = 0;
+    private void compute() {
+        double total = 0;
+        double count = 0;
 
-		for (int i = 0; i < source.size(); i++) {
-			for (int j = 0; j < source.get(i).getRowCount(); j++) {
-				count++;
-				total += abs(source.get(i).getValue(j) - target.get(i).getValue(j));
-			}
-		}
-		value = total / count;
-	}
+        for (int i = 0; i < source.size(); i++) {
+            for (int j = 0; j < source.get(i).getRowCount(); j++) {
+                count++;
+                total += abs(source.get(i).getValue(j) - target.get(i).getValue(j));
+            }
+        }
+        value = total / count;
+    }
 
-	public double getValue() {
-		return value;
-	}
+    public double getValue() {
+        return value;
+    }
 
-	@Override
-	public void summary() {
-		Workspace.code(String.format("MAE: %.6f", getValue()));
-	}
+    @Override
+    public void summary() {
+        Workspace.code(String.format("MAE: %.6f", getValue()));
+    }
 }

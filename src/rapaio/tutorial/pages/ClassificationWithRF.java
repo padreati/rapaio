@@ -144,7 +144,7 @@ public class ClassificationWithRF implements TutorialPage {
         code("        List<Frame> frames = StatSampling.randomSample(all, new int[]{all.getRowCount() * 15 / 100});\n"
                 + "        Frame train = frames.get(0);\n"
                 + "        Frame test = frames.get(1);\n");
-        List<Frame> frames = StatSampling.randomSample(all, new int[]{all.getRowCount() * 15 / 100});
+        List<Frame> frames = StatSampling.randomSample(all, new int[]{all.rowCount() * 15 / 100});
         Frame train = frames.get(0);
         Frame test = frames.get(1);
 

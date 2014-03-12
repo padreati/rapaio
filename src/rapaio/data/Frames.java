@@ -30,101 +30,101 @@ import java.util.*;
  */
 public final class Frames {
 
-	/**
-	 * Build a frame which has only numeric columns and values are filled with 0
-	 * (no missing values).
-	 *
-	 * @param rows     number of getRowCount
-	 * @param colNames column names
-	 * @return the new built frame
-	 */
-	public static Frame newMatrixFrame(int rows, String... colNames) {
-		Vector[] vectors = new Vector[colNames.length];
-		for (int i = 0; i < colNames.length; i++) {
-			vectors[i] = new Numeric(new double[rows]);
-		}
-		return new SolidFrame(rows, vectors, colNames);
-	}
+    /**
+     * Build a frame which has only numeric columns and values are filled with 0
+     * (no missing values).
+     *
+     * @param rows     number of getRowCount
+     * @param colNames column names
+     * @return the new built frame
+     */
+    public static Frame newMatrixFrame(int rows, String... colNames) {
+        Vector[] vectors = new Vector[colNames.length];
+        for (int i = 0; i < colNames.length; i++) {
+            vectors[i] = new Numeric(new double[rows]);
+        }
+        return new SolidFrame(rows, vectors, colNames);
+    }
 
-	public static Frame newMatrixFrame(int rows, List<String> colNames) {
-		List<Vector> vectors = new ArrayList<>();
-		for (int i = 0; i < colNames.size(); i++) {
-			vectors.add(new Numeric(new double[rows]));
-		}
-		return new SolidFrame(rows, vectors, colNames);
-	}
+    public static Frame newMatrixFrame(int rows, List<String> colNames) {
+        List<Vector> vectors = new ArrayList<>();
+        for (int i = 0; i < colNames.size(); i++) {
+            vectors.add(new Numeric(new double[rows]));
+        }
+        return new SolidFrame(rows, vectors, colNames);
+    }
 
-	public static Frame solidCopy(Frame df) {
-		int len = df.getRowCount();
-		List<Vector> vectors = new ArrayList<>();
-		List<String> names = new ArrayList<>();
+    public static Frame solidCopy(Frame df) {
+        int len = df.rowCount();
+        List<Vector> vectors = new ArrayList<>();
+        List<String> names = new ArrayList<>();
 
-		for (int i = 0; i < df.getColCount(); i++) {
-			Vector src = df.getCol(i);
-			if (src.getType().isNominal()) {
-				vectors.add(new Nominal(len, df.getCol(i).getDictionary()));
-				names.add(df.getColNames()[i]);
-				for (int j = 0; j < df.getRowCount(); j++) {
-					vectors.get(i).setLabel(j, src.getLabel(j));
-				}
-			}
-			if (src.getType().isNumeric()) {
-				vectors.add(new Numeric(len));
-				names.add(df.getColNames()[i]);
-				for (int j = 0; j < df.getRowCount(); j++) {
-					vectors.get(i).setValue(j, src.getValue(j));
-				}
-			}
-		}
-		return new SolidFrame(len, vectors, names);
-	}
+        for (int i = 0; i < df.colCount(); i++) {
+            Vector src = df.getCol(i);
+            if (src.getType().isNominal()) {
+                vectors.add(new Nominal(len, df.getCol(i).getDictionary()));
+                names.add(df.getColNames()[i]);
+                for (int j = 0; j < df.rowCount(); j++) {
+                    vectors.get(i).setLabel(j, src.getLabel(j));
+                }
+            }
+            if (src.getType().isNumeric()) {
+                vectors.add(new Numeric(len));
+                names.add(df.getColNames()[i]);
+                for (int j = 0; j < df.rowCount(); j++) {
+                    vectors.get(i).setValue(j, src.getValue(j));
+                }
+            }
+        }
+        return new SolidFrame(len, vectors, names);
+    }
 
-	public static Frame addCol(Frame df, Vector col, String name, int position) {
-		if (df.getRowCount() != col.getRowCount()) {
-			throw new IllegalArgumentException("frame and getCol have different row counts");
-		}
-		if (df.isMappedFrame()) {
-			throw new IllegalArgumentException("operation not allowed on mapped frames");
-		}
-		List<Vector> vectors = new ArrayList<>();
-		List<String> names = new ArrayList<>();
-		for (String colName : df.getColNames()) {
-			names.add(colName);
-			vectors.add(df.getCol(colName));
-		}
-		vectors.add(position, col);
-		names.add(position, name);
-		return new SolidFrame(df.getRowCount(), vectors, names);
-	}
+    public static Frame addCol(Frame df, Vector col, String name, int position) {
+        if (df.rowCount() != col.getRowCount()) {
+            throw new IllegalArgumentException("frame and getCol have different row counts");
+        }
+        if (df.isMappedFrame()) {
+            throw new IllegalArgumentException("operation not allowed on mapped frames");
+        }
+        List<Vector> vectors = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        for (String colName : df.getColNames()) {
+            names.add(colName);
+            vectors.add(df.getCol(colName));
+        }
+        vectors.add(position, col);
+        names.add(position, name);
+        return new SolidFrame(df.rowCount(), vectors, names);
+    }
 
-	/**
-	 * Scale all numeric columns by substracting mean and dividing by variance.
-	 * Additionally it replaces missing values with 0.
-	 *
-	 * @param df
-	 */
-	public static void scale(Frame df, String exceptCols) {
-		Set<String> except = new HashSet<>();
-		if (exceptCols != null && !exceptCols.isEmpty())
-			Collections.addAll(except, exceptCols.split(",", -1));
-		for (int i = 0; i < df.getColCount(); i++) {
-			if (df.getCol(i).getType().isNumeric() && !exceptCols.contains(df.getColNames()[i])) {
-				double mean = new Mean(df.getCol(i)).getValue();
-				double sd = StrictMath.sqrt(new Variance(df.getCol(i)).getValue());
+    /**
+     * Scale all numeric columns by substracting mean and dividing by variance.
+     * Additionally it replaces missing values with 0.
+     *
+     * @param df
+     */
+    public static void scale(Frame df, String exceptCols) {
+        Set<String> except = new HashSet<>();
+        if (exceptCols != null && !exceptCols.isEmpty())
+            Collections.addAll(except, exceptCols.split(",", -1));
+        for (int i = 0; i < df.colCount(); i++) {
+            if (df.getCol(i).getType().isNumeric() && !exceptCols.contains(df.getColNames()[i])) {
+                double mean = new Mean(df.getCol(i)).getValue();
+                double sd = StrictMath.sqrt(new Variance(df.getCol(i)).getValue());
 
-				if (mean != mean || sd != sd) {
-					throw new RuntimeException("mean or sd is NaN");
-				}
-				if (sd == 0) continue;
+                if (mean != mean || sd != sd) {
+                    throw new RuntimeException("mean or sd is NaN");
+                }
+                if (sd == 0) continue;
 
-				for (int j = 0; j < df.getRowCount(); j++) {
-					if (df.isMissing(j, i)) {
-						df.setValue(j, i, 0);
-						continue;
-					}
-					df.setValue(j, i, (df.getValue(j, i) - mean) / sd);
-				}
-			}
-		}
-	}
+                for (int j = 0; j < df.rowCount(); j++) {
+                    if (df.isMissing(j, i)) {
+                        df.setValue(j, i, 0);
+                        continue;
+                    }
+                    df.setValue(j, i, (df.getValue(j, i) - mean) / sd);
+                }
+            }
+        }
+    }
 }

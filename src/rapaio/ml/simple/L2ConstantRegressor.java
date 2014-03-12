@@ -37,57 +37,57 @@ import java.util.List;
  */
 public class L2ConstantRegressor extends AbstractRegressor {
 
-	private List<String> targets;
-	private List<Double> means;
-	private List<Vector> fitValues;
+    private List<String> targets;
+    private List<Double> means;
+    private List<Vector> fitValues;
 
-	@Override
-	public Regressor newInstance() {
-		return new L2ConstantRegressor();
-	}
+    @Override
+    public Regressor newInstance() {
+        return new L2ConstantRegressor();
+    }
 
-	@Override
-	public void learn(Frame df, List<Double> weights, String targetColName) {
-		throw new RuntimeException("Not implemented");
-	}
+    @Override
+    public void learn(Frame df, List<Double> weights, String targetColName) {
+        throw new RuntimeException("Not implemented");
+    }
 
-	@Override
-	public void learn(Frame df, String targetColNames) {
-		ColRange colRange = new ColRange(targetColNames);
-		List<Integer> colIndexes = colRange.parseColumnIndexes(df);
+    @Override
+    public void learn(Frame df, String targetColNames) {
+        ColRange colRange = new ColRange(targetColNames);
+        List<Integer> colIndexes = colRange.parseColumnIndexes(df);
 
-		targets = new ArrayList<>();
-		for (int i = 0; i < colIndexes.size(); i++) {
-			targets.add(df.getColNames()[colIndexes.get(i)]);
-		}
+        targets = new ArrayList<>();
+        for (int i = 0; i < colIndexes.size(); i++) {
+            targets.add(df.getColNames()[colIndexes.get(i)]);
+        }
 
-		means = new ArrayList<>();
-		fitValues = new ArrayList<>();
-		for (String target : targets) {
-			double mean = new Mean(df.getCol(target)).getValue();
-			means.add(mean);
-			fitValues.add(new Numeric(df.getCol(target).getRowCount(), df.getCol(target).getRowCount(), mean));
-		}
-	}
+        means = new ArrayList<>();
+        fitValues = new ArrayList<>();
+        for (String target : targets) {
+            double mean = new Mean(df.getCol(target)).getValue();
+            means.add(mean);
+            fitValues.add(new Numeric(df.getCol(target).getRowCount(), df.getCol(target).getRowCount(), mean));
+        }
+    }
 
-	@Override
-	public void predict(Frame df) {
-		fitValues = new ArrayList<>();
-		for (int i = 0; i < targets.size(); i++) {
-			fitValues.add(new Numeric(
-					df.getRowCount(),
-					df.getRowCount(),
-					means.get(i)));
-		}
-	}
+    @Override
+    public void predict(Frame df) {
+        fitValues = new ArrayList<>();
+        for (int i = 0; i < targets.size(); i++) {
+            fitValues.add(new Numeric(
+                    df.rowCount(),
+                    df.rowCount(),
+                    means.get(i)));
+        }
+    }
 
-	@Override
-	public Numeric getFitValues() {
-		return (Numeric) fitValues.get(0);
-	}
+    @Override
+    public Numeric getFitValues() {
+        return (Numeric) fitValues.get(0);
+    }
 
-	@Override
-	public Frame getAllFitValues() {
-		return new SolidFrame(fitValues.get(0).getRowCount(), fitValues, targets);
-	}
+    @Override
+    public Frame getAllFitValues() {
+        return new SolidFrame(fitValues.get(0).getRowCount(), fitValues, targets);
+    }
 }

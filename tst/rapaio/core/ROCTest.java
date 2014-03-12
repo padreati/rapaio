@@ -23,7 +23,7 @@ package rapaio.core;
 import org.junit.Test;
 import rapaio.core.stat.ROC;
 import rapaio.data.Frame;
-import rapaio.io.CsvPersistence;
+import rapaio.io.Csv;
 import rapaio.workspace.Summary;
 
 import java.io.IOException;
@@ -34,21 +34,19 @@ import java.net.URISyntaxException;
  */
 public class ROCTest {
 
-	@Test
-	public void testFawcett() throws URISyntaxException, IOException {
-		CsvPersistence csv = new CsvPersistence();
-		csv.setHasHeader(true);
-		csv.setHasQuotas(false);
-		csv.getNumericFieldHints().add("score");
-		csv.getNominalFieldHints().add("class");
-		Frame df = csv.read(getClass(), "fawcett-roc.csv");
+    @Test
+    public void testFawcett() throws URISyntaxException, IOException {
+        Frame df = new Csv()
+                .withNominalFields("class")
+                .withNumericFields("score")
+                .read(getClass(), "fawcett-roc.csv");
 
-		final ROC roc = new ROC(df.getCol("score"), df.getCol("class"), "p");
-		Summary.head(roc.getData().getRowCount(), roc.getData());
+        final ROC roc = new ROC(df.getCol("score"), df.getCol("class"), "p");
+        Summary.head(roc.getData().rowCount(), roc.getData());
 
 //        Workspace.draw(new Plot()
 //                .add(new ROCCurve(roc))
 //                .add(new Lines(roc.getData().getCol("tpr"), roc.getData().getCol("acc")).setColorIndex(1))
 //                .add(new Lines(roc.getData().getCol("tpr"), roc.getData().getCol("acc")).setColorIndex(1)));
-	}
+    }
 }

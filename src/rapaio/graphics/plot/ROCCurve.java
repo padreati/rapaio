@@ -55,7 +55,7 @@ public class ROCCurve extends PlotComponent {
         g2d.setStroke(new BasicStroke(getLwd()));
         g2d.setBackground(ColorPalette.STANDARD.getColor(255));
 
-        for (int i = 1; i < roc.getData().getRowCount(); i++) {
+        for (int i = 1; i < roc.getData().rowCount(); i++) {
             g2d.setColor(getColor(i));
             double x1 = getParent().xscale(roc.getData().getValue(i - 1, "fpr"));
             double y1 = getParent().yscale(roc.getData().getValue(i - 1, "tpr"));

@@ -39,69 +39,69 @@ import java.util.HashMap;
  */
 public class MappedFrame extends AbstractFrame {
 
-	private final Mapping mapping;
-	private final Frame source;
-	private final HashMap<Integer, Vector> vectors = new HashMap<>();
+    private final Mapping mapping;
+    private final Frame source;
+    private final HashMap<Integer, Vector> vectors = new HashMap<>();
 
-	public MappedFrame(Frame df, Mapping mapping) {
-		if (df.isMappedFrame()) {
-			throw new IllegalArgumentException("Not allowed mapped frames as source");
-		}
-		this.mapping = mapping;
-		this.source = df;
-	}
+    public MappedFrame(Frame df, Mapping mapping) {
+        if (df.isMappedFrame()) {
+            throw new IllegalArgumentException("Not allowed mapped frames as source");
+        }
+        this.mapping = mapping;
+        this.source = df;
+    }
 
-	@Override
-	public int getRowCount() {
-		return mapping.size();
-	}
+    @Override
+    public int rowCount() {
+        return mapping.size();
+    }
 
-	@Override
-	public int getColCount() {
-		return source.getColCount();
-	}
+    @Override
+    public int colCount() {
+        return source.colCount();
+    }
 
-	@Override
-	public int getRowId(int row) {
-		return mapping.get(row);
-	}
+    @Override
+    public int getRowId(int row) {
+        return mapping.get(row);
+    }
 
-	@Override
-	public boolean isMappedFrame() {
-		return true;
-	}
+    @Override
+    public boolean isMappedFrame() {
+        return true;
+    }
 
-	@Override
-	public Frame getSourceFrame() {
-		return source;
-	}
+    @Override
+    public Frame getSourceFrame() {
+        return source;
+    }
 
 
-	@Override
-	public Mapping getMapping() {
-		return mapping;
-	}
+    @Override
+    public Mapping getMapping() {
+        return mapping;
+    }
 
-	@Override
-	public String[] getColNames() {
-		return source.getColNames();
-	}
+    @Override
+    public String[] getColNames() {
+        return source.getColNames();
+    }
 
-	@Override
-	public int getColIndex(String name) {
-		return source.getColIndex(name);
-	}
+    @Override
+    public int getColIndex(String name) {
+        return source.getColIndex(name);
+    }
 
-	@Override
-	public Vector getCol(int col) {
-		if (!vectors.containsKey(col)) {
-			vectors.put(col, new MappedVector(source.getCol(col), mapping));
-		}
-		return vectors.get(col);
-	}
+    @Override
+    public Vector getCol(int col) {
+        if (!vectors.containsKey(col)) {
+            vectors.put(col, new MappedVector(source.getCol(col), mapping));
+        }
+        return vectors.get(col);
+    }
 
-	@Override
-	public Vector getCol(String name) {
-		return getCol(getColIndex(name));
-	}
+    @Override
+    public Vector getCol(String name) {
+        return getCol(getColIndex(name));
+    }
 }

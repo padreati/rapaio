@@ -62,7 +62,7 @@ public class IrisExplore implements TutorialPage {
         Summary.summary(df);
         heading(2, "Distribution of measurements");
         p("Now we will take a look over the distribuition of first two measurements.");
-        for (int i = 0; i < df.getColCount() - 1; i++) {
+        for (int i = 0; i < df.colCount() - 1; i++) {
             final int ii = i;
             draw(new Plot()
                     .add(new Histogram(df.getCol(i)).setBins(30))

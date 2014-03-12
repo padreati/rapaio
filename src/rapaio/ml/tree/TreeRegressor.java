@@ -43,173 +43,173 @@ import java.util.List;
  */
 public class TreeRegressor extends AbstractRegressor {
 
-	double minWeight = 1;
-	TreeRegressorNode root;
-	Vector fitted;
-	ColSelector colSelector;
-	String targetColNames;
+    double minWeight = 1;
+    TreeRegressorNode root;
+    Vector fitted;
+    ColSelector colSelector;
+    String targetColNames;
 
-	public double getMinWeight() {
-		return minWeight;
-	}
+    public double getMinWeight() {
+        return minWeight;
+    }
 
-	public TreeRegressor setMinWeight(double minWeight) {
-		this.minWeight = minWeight;
-		return this;
-	}
+    public TreeRegressor setMinWeight(double minWeight) {
+        this.minWeight = minWeight;
+        return this;
+    }
 
-	public ColSelector getColSelector() {
-		return colSelector;
-	}
+    public ColSelector getColSelector() {
+        return colSelector;
+    }
 
-	public TreeRegressor setColSelector(ColSelector colSelector) {
-		this.colSelector = colSelector;
-		return this;
-	}
+    public TreeRegressor setColSelector(ColSelector colSelector) {
+        this.colSelector = colSelector;
+        return this;
+    }
 
-	@Override
-	public Regressor newInstance() {
-		return new TreeRegressor().setColSelector(colSelector).setMinWeight(minWeight);
-	}
+    @Override
+    public Regressor newInstance() {
+        return new TreeRegressor().setColSelector(colSelector).setMinWeight(minWeight);
+    }
 
-	@Override
-	public void learn(Frame df, List<Double> weights, String targetColName) {
-		this.targetColNames = targetColName;
-		root = new TreeRegressorNode();
-		root.learn(this, df, weights, targetColName);
-		if (colSelector == null) {
-			colSelector = new DefaultColSelector(df, new ColRange(targetColName));
-		}
-	}
+    @Override
+    public void learn(Frame df, List<Double> weights, String targetColName) {
+        this.targetColNames = targetColName;
+        root = new TreeRegressorNode();
+        root.learn(this, df, weights, targetColName);
+        if (colSelector == null) {
+            colSelector = new DefaultColSelector(df, new ColRange(targetColName));
+        }
+    }
 
-	@Override
-	public void predict(Frame df) {
-		fitted = new Numeric(new double[df.getRowCount()]);
-		for (int i = 0; i < df.getRowCount(); i++) {
-			fitted.setValue(i, root.predict(df, i));
-		}
-	}
+    @Override
+    public void predict(Frame df) {
+        fitted = new Numeric(new double[df.rowCount()]);
+        for (int i = 0; i < df.rowCount(); i++) {
+            fitted.setValue(i, root.predict(df, i));
+        }
+    }
 
-	@Override
-	public Numeric getFitValues() {
-		return (Numeric) fitted;
-	}
+    @Override
+    public Numeric getFitValues() {
+        return (Numeric) fitted;
+    }
 
-	@Override
-	public Frame getAllFitValues() {
-		return null;
-	}
+    @Override
+    public Frame getAllFitValues() {
+        return null;
+    }
 }
 
 class TreeRegressorNode {
-	boolean leaf;
-	double pred;
-	double eval = Double.MAX_VALUE;
-	String splitColName;
-	double splitValue;
-	double totalWeight;
-	TreeRegressorNode left;
-	TreeRegressorNode right;
+    boolean leaf;
+    double pred;
+    double eval = Double.MAX_VALUE;
+    String splitColName;
+    double splitValue;
+    double totalWeight;
+    TreeRegressorNode left;
+    TreeRegressorNode right;
 
-	public void learn(TreeRegressor parent, Frame df, List<Double> weights, String targetColNames) {
-		totalWeight = 0;
-		for (int i = 0; i < weights.size(); i++) {
-			totalWeight += weights.get(i);
-		}
+    public void learn(TreeRegressor parent, Frame df, List<Double> weights, String targetColNames) {
+        totalWeight = 0;
+        for (int i = 0; i < weights.size(); i++) {
+            totalWeight += weights.get(i);
+        }
 
-		if (totalWeight < 2 * parent.minWeight) {
-			leaf = true;
-			pred = new Mean(df.getCol(targetColNames)).getValue();
-			return;
-		}
+        if (totalWeight < 2 * parent.minWeight) {
+            leaf = true;
+            pred = new Mean(df.getCol(targetColNames)).getValue();
+            return;
+        }
 
-		String[] colNames = parent.colSelector.nextColNames();
-		for (String testColName : colNames) {
-			if (df.getCol(testColName).getType().isNumeric() && !targetColNames.equals(testColName)) {
-				evaluateNumeric(parent, df, weights, targetColNames, testColName);
-			}
-		}
+        String[] colNames = parent.colSelector.nextColNames();
+        for (String testColName : colNames) {
+            if (df.getCol(testColName).getType().isNumeric() && !targetColNames.equals(testColName)) {
+                evaluateNumeric(parent, df, weights, targetColNames, testColName);
+            }
+        }
 
-		// if we have a split
-		if (splitColName != null) {
-			Mapping leftMapping = new Mapping();
-			Mapping rightMapping = new Mapping();
-			List<Double> leftWeights = new ArrayList<>();
-			List<Double> rightWeights = new ArrayList<>();
+        // if we have a split
+        if (splitColName != null) {
+            Mapping leftMapping = new Mapping();
+            Mapping rightMapping = new Mapping();
+            List<Double> leftWeights = new ArrayList<>();
+            List<Double> rightWeights = new ArrayList<>();
 
-			for (int i = 0; i < df.getRowCount(); i++) {
-				if (df.getValue(i, splitColName) <= splitValue) {
-					leftMapping.add(df.getRowId(i));
-					leftWeights.add(weights.get(i));
-				} else {
-					rightMapping.add(df.getRowId(i));
-					rightWeights.add(weights.get(i));
-				}
-			}
-			left = new TreeRegressorNode();
-			right = new TreeRegressorNode();
-			left.learn(parent, new MappedFrame(df.getSourceFrame(), leftMapping), leftWeights, targetColNames);
-			right.learn(parent, new MappedFrame(df.getSourceFrame(), rightMapping), rightWeights, targetColNames);
-			return;
-		}
+            for (int i = 0; i < df.rowCount(); i++) {
+                if (df.getValue(i, splitColName) <= splitValue) {
+                    leftMapping.add(df.getRowId(i));
+                    leftWeights.add(weights.get(i));
+                } else {
+                    rightMapping.add(df.getRowId(i));
+                    rightWeights.add(weights.get(i));
+                }
+            }
+            left = new TreeRegressorNode();
+            right = new TreeRegressorNode();
+            left.learn(parent, new MappedFrame(df.getSourceFrame(), leftMapping), leftWeights, targetColNames);
+            right.learn(parent, new MappedFrame(df.getSourceFrame(), rightMapping), rightWeights, targetColNames);
+            return;
+        }
 
-		// else do the default
-		leaf = true;
-		pred = new Mean(df.getCol(targetColNames)).getValue();
-	}
+        // else do the default
+        leaf = true;
+        pred = new Mean(df.getCol(targetColNames)).getValue();
+    }
 
-	private void evaluateNumeric(TreeRegressor parent,
-								 Frame df, List<Double> weights,
-								 String targetColName,
-								 String testColNames) {
+    private void evaluateNumeric(TreeRegressor parent,
+                                 Frame df, List<Double> weights,
+                                 String targetColName,
+                                 String testColNames) {
 
-		Vector testCol = df.getCol(testColNames);
-		double[] var = new double[df.getRowCount()];
-		StatOnline so = new StatOnline();
-		Vector sort = Vectors.newSeq(df.getRowCount());
-		sort = BaseFilters.sort(sort, RowComparators.numericComparator(testCol, true));
-		double w = 0;
-		for (int i = 0; i < df.getRowCount(); i++) {
-			int pos = sort.getRowId(i);
-			so.update(testCol.getValue(pos));
-			w += weights.get(pos);
-			if (i > 0) {
-				var[i] = so.getStandardDeviation() * w / totalWeight;
-			}
-		}
-		so.clean();
-		w = 0;
-		for (int i = df.getRowCount() - 1; i >= 0; i--) {
-			int pos = sort.getRowId(i);
-			so.update(testCol.getValue(pos));
-			w += weights.get(pos);
-			if (i < df.getRowCount() - 1) {
-				var[i] += so.getStandardDeviation() * w / totalWeight;
-			}
-		}
-		w = 0;
-		for (int i = 0; i < df.getRowCount(); i++) {
-			int pos = sort.getRowId(i);
-			w += weights.get(pos);
+        Vector testCol = df.getCol(testColNames);
+        double[] var = new double[df.rowCount()];
+        StatOnline so = new StatOnline();
+        Vector sort = Vectors.newSeq(df.rowCount());
+        sort = BaseFilters.sort(sort, RowComparators.numericComparator(testCol, true));
+        double w = 0;
+        for (int i = 0; i < df.rowCount(); i++) {
+            int pos = sort.getRowId(i);
+            so.update(testCol.getValue(pos));
+            w += weights.get(pos);
+            if (i > 0) {
+                var[i] = so.getStandardDeviation() * w / totalWeight;
+            }
+        }
+        so.clean();
+        w = 0;
+        for (int i = df.rowCount() - 1; i >= 0; i--) {
+            int pos = sort.getRowId(i);
+            so.update(testCol.getValue(pos));
+            w += weights.get(pos);
+            if (i < df.rowCount() - 1) {
+                var[i] += so.getStandardDeviation() * w / totalWeight;
+            }
+        }
+        w = 0;
+        for (int i = 0; i < df.rowCount(); i++) {
+            int pos = sort.getRowId(i);
+            w += weights.get(pos);
 
-			if (w >= parent.minWeight && totalWeight - w >= parent.minWeight) {
-				if (var[i] < eval && i > 0 && testCol.getValue(sort.getRowId(i - 1)) != testCol.getValue(sort.getRowId(i))) {
-					eval = var[i];
-					splitColName = testColNames;
-					splitValue = testCol.getValue(pos);
-				}
-			}
-		}
-	}
+            if (w >= parent.minWeight && totalWeight - w >= parent.minWeight) {
+                if (var[i] < eval && i > 0 && testCol.getValue(sort.getRowId(i - 1)) != testCol.getValue(sort.getRowId(i))) {
+                    eval = var[i];
+                    splitColName = testColNames;
+                    splitValue = testCol.getValue(pos);
+                }
+            }
+        }
+    }
 
-	public double predict(Frame df, int row) {
-		if (leaf) {
-			return pred;
-		}
-		if (df.getValue(row, splitColName) <= splitValue) {
-			return left.predict(df, row);
-		} else {
-			return right.predict(df, row);
-		}
-	}
+    public double predict(Frame df, int row) {
+        if (leaf) {
+            return pred;
+        }
+        if (df.getValue(row, splitColName) <= splitValue) {
+            return left.predict(df, row);
+        } else {
+            return right.predict(df, row);
+        }
+    }
 }

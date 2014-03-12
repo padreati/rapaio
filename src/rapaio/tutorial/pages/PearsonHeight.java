@@ -66,13 +66,13 @@ public class PearsonHeight implements TutorialPage {
         final Frame df = Datasets.loadPearsonHeightDataset();
 
         p("This exploratory analysis is provided as a sample of analysis produced with Rapaio system.");
-        p("The studied data set contains " + df.getRowCount() + " observations and has " + df.getColCount() + " columns.");
+        p("The studied data set contains " + df.rowCount() + " observations and has " + df.colCount() + " columns.");
 
         Summary.summary(df);
 
         p("First we take a look at the histograms for the two dimensions");
 
-        for (int i = 0; i < df.getColCount(); i++) {
+        for (int i = 0; i < df.colCount(); i++) {
             Normal normal = new Normal(new Mean(df.getCol(i)).getValue(), sqrt(new Variance(df.getCol(i)).getValue()));
             draw(new Plot()
                     .add(new Histogram(df.getCol(i), 23, true, 57, 80))
@@ -94,7 +94,7 @@ public class PearsonHeight implements TutorialPage {
         p("An ususal graphical tools which can give us insights about that fact "
                 + "is the quantile-quantile plot. ");
 
-        for (int i = 0; i < df.getColCount(); i++) {
+        for (int i = 0; i < df.colCount(); i++) {
             final Vector col = df.getCol(i);
             final int colIndex = i;
             double mu = new Mean(col).getValue();

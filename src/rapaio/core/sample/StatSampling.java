@@ -36,51 +36,51 @@ import static rapaio.data.filters.BaseFilters.shuffle;
  */
 public class StatSampling {
 
-	public static List<Frame> randomSample(Frame frame, int splits) {
-		int[] rowCounts = new int[splits - 1];
-		for (int i = 0; i < splits - 1; i++) {
-			rowCounts[i] = frame.getRowCount() / splits;
-		}
-		return randomSample(frame, rowCounts);
-	}
+    public static List<Frame> randomSample(Frame frame, int splits) {
+        int[] rowCounts = new int[splits - 1];
+        for (int i = 0; i < splits - 1; i++) {
+            rowCounts[i] = frame.rowCount() / splits;
+        }
+        return randomSample(frame, rowCounts);
+    }
 
-	public static List<Frame> randomSample(Frame frame, int[] rowCounts) {
-		int total = 0;
-		for (int i = 0; i < rowCounts.length; i++) {
-			total += rowCounts[i];
-		}
-		if (total > frame.getRowCount()) {
-			throw new IllegalArgumentException("total counts greater than available number of getRowCount");
-		}
-		List<Frame> result = new ArrayList<>();
-		Frame shuffle = shuffle(frame);
-		FIterator it = shuffle.getIterator();
-		for (int i = 0; i < rowCounts.length; i++) {
-			for (int j = 0; j < rowCounts[i]; j++) {
-				it.next();
-				it.appendToMapping(i);
-			}
-			result.add(it.getMappedFrame(i));
-		}
-		while (it.next()) {
-			it.appendToMapping(rowCounts.length);
-		}
-		if (it.getMappingsKeys().contains(String.valueOf(rowCounts.length))) {
-			result.add(it.getMappedFrame(rowCounts.length));
-		}
-		return result;
-	}
+    public static List<Frame> randomSample(Frame frame, int[] rowCounts) {
+        int total = 0;
+        for (int i = 0; i < rowCounts.length; i++) {
+            total += rowCounts[i];
+        }
+        if (total > frame.rowCount()) {
+            throw new IllegalArgumentException("total counts greater than available number of getRowCount");
+        }
+        List<Frame> result = new ArrayList<>();
+        Frame shuffle = shuffle(frame);
+        FIterator it = shuffle.getIterator();
+        for (int i = 0; i < rowCounts.length; i++) {
+            for (int j = 0; j < rowCounts[i]; j++) {
+                it.next();
+                it.appendToMapping(i);
+            }
+            result.add(it.getMappedFrame(i));
+        }
+        while (it.next()) {
+            it.appendToMapping(rowCounts.length);
+        }
+        if (it.getMappingsKeys().contains(String.valueOf(rowCounts.length))) {
+            result.add(it.getMappedFrame(rowCounts.length));
+        }
+        return result;
+    }
 
-	public static Frame randomBootstrap(Frame frame) {
-		return randomBootstrap(frame, frame.getRowCount());
-	}
+    public static Frame randomBootstrap(Frame frame) {
+        return randomBootstrap(frame, frame.rowCount());
+    }
 
-	public static Frame randomBootstrap(Frame frame, int size) {
-		List<Integer> mapping = new ArrayList<>();
-		for (int i = 0; i < size; i++) {
-			int next = RandomSource.nextInt(frame.getRowCount());
-			mapping.add(frame.getRowId(next));
-		}
-		return new MappedFrame(frame.getSourceFrame(), new Mapping(mapping));
-	}
+    public static Frame randomBootstrap(Frame frame, int size) {
+        List<Integer> mapping = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            int next = RandomSource.nextInt(frame.rowCount());
+            mapping.add(frame.getRowId(next));
+        }
+        return new MappedFrame(frame.getSourceFrame(), new Mapping(mapping));
+    }
 }

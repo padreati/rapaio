@@ -24,7 +24,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.io.ArffPersistence;
-import rapaio.io.CsvPersistence;
+import rapaio.io.Csv;
 import rapaio.ml.tools.ModelEvaluation;
 import rapaio.workspace.Summary;
 
@@ -36,39 +36,37 @@ import java.net.URISyntaxException;
  */
 public class RandomForestClassifierTest {
 
-	public static Frame loadFrame(String name) throws IOException {
-		final String path = "/UCI/" + name + ".arff";
-		ArffPersistence arff = new ArffPersistence();
-		return arff.read(name, RandomForestClassifierTest.class.getResourceAsStream(path));
-	}
+    public static Frame loadFrame(String name) throws IOException {
+        final String path = "/UCI/" + name + ".arff";
+        ArffPersistence arff = new ArffPersistence();
+        return arff.read(name, RandomForestClassifierTest.class.getResourceAsStream(path));
+    }
 
-	@Test
-	public void testDummy() {
-		Assert.assertTrue(true);
-	}
+    @Test
+    public void testDummy() {
+        Assert.assertTrue(true);
+    }
 
-	public double test(String name) throws IOException {
-		Frame df = loadFrame(name);
-		String className = df.getColNames()[df.getColCount() - 1];
-		RandomForestClassifier rf = new RandomForestClassifier() {{
-			setMtrees(100);
-		}};
-		ModelEvaluation cv = new ModelEvaluation();
-		return cv.cv(df, className, rf, 10);
-	}
+    public double test(String name) throws IOException {
+        Frame df = loadFrame(name);
+        String className = df.getColNames()[df.colCount() - 1];
+        RandomForestClassifier rf = new RandomForestClassifier() {{
+            setMtrees(100);
+        }};
+        ModelEvaluation cv = new ModelEvaluation();
+        return cv.cv(df, className, rf, 10);
+    }
 
-	//        @Test
-	public void allCompareTest() throws IOException, URISyntaxException {
-		CsvPersistence csv = new CsvPersistence();
-		csv.setHasHeader(true);
-		Frame tests = csv.read(getClass(), "tests.csv");
-		for (int i = 0; i < tests.getRowCount(); i++) {
-			if (tests.getLabel(i, 0).startsWith("#")) {
-				continue;
-			}
-			System.out.println("test for " + tests.getLabel(i, 0));
-			tests.setValue(i, 3, test(tests.getLabel(i, 0)));
-		}
-		Summary.head(tests.getRowCount(), tests);
-	}
+    //        @Test
+    public void allCompareTest() throws IOException, URISyntaxException {
+        Frame tests = new Csv().read(getClass(), "tests.csv");
+        for (int i = 0; i < tests.rowCount(); i++) {
+            if (tests.getLabel(i, 0).startsWith("#")) {
+                continue;
+            }
+            System.out.println("test for " + tests.getLabel(i, 0));
+            tests.setValue(i, 3, test(tests.getLabel(i, 0)));
+        }
+        Summary.head(tests.rowCount(), tests);
+    }
 }

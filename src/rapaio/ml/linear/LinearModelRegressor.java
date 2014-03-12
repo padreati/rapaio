@@ -73,8 +73,8 @@ public class LinearModelRegressor extends AbstractRegressor {
     }
 
     private Vector buildFit(Frame df) {
-        Vector result = Vectors.newNum(df.getRowCount(), 0);
-        for (int i = 0; i < df.getRowCount(); i++) {
+        Vector result = Vectors.newNum(df.rowCount(), 0);
+        for (int i = 0; i < df.rowCount(); i++) {
             double acc = 0;
             for (int k = 0; k < predictors.size(); k++) {
                 acc += coefficients.getValue(k, "Coeff") * df.getValue(i, predictors.get(k));

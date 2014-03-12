@@ -70,7 +70,7 @@ public class ROCCurvesPage implements TutorialPage {
 
         RandomSource.setSeed(2718);
         final Frame spam = BaseFilters.retainCols(Datasets.loadSpamBase(), "0-4,spam");
-        List<Frame> samples = randomSample(spam, new int[]{(int) (spam.getRowCount() * 0.6)});
+        List<Frame> samples = randomSample(spam, new int[]{(int) (spam.rowCount() * 0.6)});
         final Frame train = samples.get(0);
         final Frame test = samples.get(1);
 

@@ -36,84 +36,84 @@ import java.util.List;
 @Deprecated
 public class Bagging extends AbstractClassifier<Bagging> {
 
-	private final double p;
-	private final int bags;
-	private final Classifier provider;
-	private List<Classifier> classifiers = new ArrayList<>();
-	private String[] dict;
-	private String classColName;
-	private Nominal pred;
-	private Frame dist;
+    private final double p;
+    private final int bags;
+    private final Classifier provider;
+    private List<Classifier> classifiers = new ArrayList<>();
+    private String[] dict;
+    private String classColName;
+    private Nominal pred;
+    private Frame dist;
 
-	public Bagging(double p, int bags, Classifier provider) {
-		this.p = p;
-		this.bags = bags;
-		this.provider = provider;
-	}
+    public Bagging(double p, int bags, Classifier provider) {
+        this.p = p;
+        this.bags = bags;
+        this.provider = provider;
+    }
 
-	public Bagging newInstance() {
-		Bagging bag = new Bagging(p, bags, provider);
-		return bag;
-	}
+    public Bagging newInstance() {
+        Bagging bag = new Bagging(p, bags, provider);
+        return bag;
+    }
 
-	@Override
-	public void learn(Frame df, List<Double> weights, String classColName) {
-		this.classColName = classColName;
-		this.dict = df.getCol(classColName).getDictionary();
-		classifiers.clear();
-		for (int i = 0; i < bags; i++) {
-			Frame bootstrap = StatSampling.randomBootstrap(df, (int) Math.rint(df.getRowCount() * p));
-			Classifier c = provider.newInstance();
-			c.learn(bootstrap, classColName);
-			classifiers.add(c);
-		}
-	}
+    @Override
+    public void learn(Frame df, List<Double> weights, String classColName) {
+        this.classColName = classColName;
+        this.dict = df.getCol(classColName).getDictionary();
+        classifiers.clear();
+        for (int i = 0; i < bags; i++) {
+            Frame bootstrap = StatSampling.randomBootstrap(df, (int) Math.rint(df.rowCount() * p));
+            Classifier c = provider.newInstance();
+            c.learn(bootstrap, classColName);
+            classifiers.add(c);
+        }
+    }
 
-	@Override
-	public void predict(final Frame df) {
-		// voting
+    @Override
+    public void predict(final Frame df) {
+        // voting
 
-		pred = new Nominal(df.getRowCount(), dict);
-		dist = Frames.newMatrixFrame(df.getRowCount(), dict);
+        pred = new Nominal(df.rowCount(), dict);
+        dist = Frames.newMatrixFrame(df.rowCount(), dict);
 
-		// collect results from each classifier
-		for (Classifier c : classifiers) {
-			c.predict(df);
-			for (int j = 0; j < df.getRowCount(); j++) {
-				String prediction = c.getPrediction().getLabel(j);
-				double prev = dist.getValue(j, dist.getColIndex(prediction));
-				if (prev != prev) {
-					prev = 0;
-				}
-				dist.setValue(j, dist.getColIndex(prediction), prev + 1);
-			}
-		}
-		for (int i = 0; i < dist.getRowCount(); i++) {
-			int index = -1;
-			double max = -1;
-			for (int j = 0; j < dist.getColCount(); j++) {
-				double freq = dist.getValue(i, j);
-				dist.setValue(i, j, freq / (1. * classifiers.size()));
-				if (max < freq) {
-					max = freq;
-					index = j;
-				}
-			}
-			pred.setLabel(i, pred.getDictionary()[index + 1]);
-		}
-	}
+        // collect results from each classifier
+        for (Classifier c : classifiers) {
+            c.predict(df);
+            for (int j = 0; j < df.rowCount(); j++) {
+                String prediction = c.getPrediction().getLabel(j);
+                double prev = dist.getValue(j, dist.getColIndex(prediction));
+                if (prev != prev) {
+                    prev = 0;
+                }
+                dist.setValue(j, dist.getColIndex(prediction), prev + 1);
+            }
+        }
+        for (int i = 0; i < dist.rowCount(); i++) {
+            int index = -1;
+            double max = -1;
+            for (int j = 0; j < dist.colCount(); j++) {
+                double freq = dist.getValue(i, j);
+                dist.setValue(i, j, freq / (1. * classifiers.size()));
+                if (max < freq) {
+                    max = freq;
+                    index = j;
+                }
+            }
+            pred.setLabel(i, pred.getDictionary()[index + 1]);
+        }
+    }
 
-	@Override
-	public Nominal getPrediction() {
-		return pred;
-	}
+    @Override
+    public Nominal getPrediction() {
+        return pred;
+    }
 
-	@Override
-	public Frame getDistribution() {
-		return dist;
-	}
+    @Override
+    public Frame getDistribution() {
+        return dist;
+    }
 
-	@Override
-	public void summary() {
-	}
+    @Override
+    public void summary() {
+    }
 }

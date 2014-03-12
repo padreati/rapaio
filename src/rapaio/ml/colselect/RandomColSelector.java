@@ -31,36 +31,36 @@ import java.util.List;
  */
 public class RandomColSelector implements ColSelector {
 
-	private int mcols = -1;
-	private String[] candidates;
+    private int mcols = -1;
+    private String[] candidates;
 
-	public RandomColSelector(Frame df, ColRange except, int mcols) {
-		this.mcols = mcols;
-		List<Integer> exceptColumns = except.parseColumnIndexes(df);
-		candidates = new String[df.getColCount() - exceptColumns.size()];
-		int pos = 0;
-		int expos = 0;
-		for (int i = 0; i < df.getColCount(); i++) {
-			if (expos < exceptColumns.size() && i == exceptColumns.get(expos)) {
-				expos++;
-				continue;
-			}
-			candidates[pos++] = df.getColNames()[i];
-		}
-	}
+    public RandomColSelector(Frame df, ColRange except, int mcols) {
+        this.mcols = mcols;
+        List<Integer> exceptColumns = except.parseColumnIndexes(df);
+        candidates = new String[df.colCount() - exceptColumns.size()];
+        int pos = 0;
+        int expos = 0;
+        for (int i = 0; i < df.colCount(); i++) {
+            if (expos < exceptColumns.size() && i == exceptColumns.get(expos)) {
+                expos++;
+                continue;
+            }
+            candidates[pos++] = df.getColNames()[i];
+        }
+    }
 
-	@Override
-	public synchronized String[] nextColNames() {
-		String[] result = new String[mcols];
-		if (mcols < 1) {
-			throw new RuntimeException("Uniform random column selector not initialized");
-		}
-		for (int i = 0; i < mcols; i++) {
-			int next = RandomSource.nextInt(candidates.length - i);
-			result[i] = candidates[next];
-			candidates[next] = candidates[candidates.length - 1 - i];
-			candidates[candidates.length - 1 - i] = result[i];
-		}
-		return result;
-	}
+    @Override
+    public synchronized String[] nextColNames() {
+        String[] result = new String[mcols];
+        if (mcols < 1) {
+            throw new RuntimeException("Uniform random column selector not initialized");
+        }
+        for (int i = 0; i < mcols; i++) {
+            int next = RandomSource.nextInt(candidates.length - i);
+            result[i] = candidates[next];
+            candidates[next] = candidates[candidates.length - 1 - i];
+            candidates[candidates.length - 1 - i] = result[i];
+        }
+        return result;
+    }
 }

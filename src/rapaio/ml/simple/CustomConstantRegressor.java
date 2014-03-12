@@ -36,60 +36,60 @@ import java.util.List;
  */
 public class CustomConstantRegressor extends AbstractRegressor {
 
-	List<String> targets;
-	double customValue;
-	List<Vector> fitValues;
+    List<String> targets;
+    double customValue;
+    List<Vector> fitValues;
 
-	@Override
-	public Regressor newInstance() {
-		return new L2ConstantRegressor();
-	}
+    @Override
+    public Regressor newInstance() {
+        return new L2ConstantRegressor();
+    }
 
-	public double getCustomValue() {
-		return customValue;
-	}
+    public double getCustomValue() {
+        return customValue;
+    }
 
-	public CustomConstantRegressor setCustomValue(double customValue) {
-		this.customValue = customValue;
-		return this;
-	}
+    public CustomConstantRegressor setCustomValue(double customValue) {
+        this.customValue = customValue;
+        return this;
+    }
 
-	@Override
-	public void learn(Frame df, List<Double> weights, String targetColName) {
-		throw new RuntimeException("Not implemented");
-	}
+    @Override
+    public void learn(Frame df, List<Double> weights, String targetColName) {
+        throw new RuntimeException("Not implemented");
+    }
 
-	@Override
-	public void learn(Frame df, String targetColNames) {
-		ColRange colRange = new ColRange(targetColNames);
-		List<Integer> colIndexes = colRange.parseColumnIndexes(df);
+    @Override
+    public void learn(Frame df, String targetColNames) {
+        ColRange colRange = new ColRange(targetColNames);
+        List<Integer> colIndexes = colRange.parseColumnIndexes(df);
 
-		targets = new ArrayList<>();
-		for (int i = 0; i < colIndexes.size(); i++) {
-			targets.add(df.getColNames()[colIndexes.get(i)]);
-		}
+        targets = new ArrayList<>();
+        for (int i = 0; i < colIndexes.size(); i++) {
+            targets.add(df.getColNames()[colIndexes.get(i)]);
+        }
 
-		fitValues = new ArrayList<>();
-		for (String target : targets) {
-			fitValues.add(new Numeric(df.getCol(target).getRowCount(), df.getCol(target).getRowCount(), customValue));
-		}
-	}
+        fitValues = new ArrayList<>();
+        for (String target : targets) {
+            fitValues.add(new Numeric(df.getCol(target).getRowCount(), df.getCol(target).getRowCount(), customValue));
+        }
+    }
 
-	@Override
-	public void predict(Frame df) {
-		fitValues = new ArrayList<>();
-		for (int i = 0; i < targets.size(); i++) {
-			fitValues.add(new Numeric(df.getRowCount(), df.getRowCount(), customValue));
-		}
-	}
+    @Override
+    public void predict(Frame df) {
+        fitValues = new ArrayList<>();
+        for (int i = 0; i < targets.size(); i++) {
+            fitValues.add(new Numeric(df.rowCount(), df.rowCount(), customValue));
+        }
+    }
 
-	@Override
-	public Numeric getFitValues() {
-		return (Numeric) fitValues.get(0);
-	}
+    @Override
+    public Numeric getFitValues() {
+        return (Numeric) fitValues.get(0);
+    }
 
-	@Override
-	public Frame getAllFitValues() {
-		return new SolidFrame(fitValues.get(0).getRowCount(), fitValues, targets);
-	}
+    @Override
+    public Frame getAllFitValues() {
+        return new SolidFrame(fitValues.get(0).getRowCount(), fitValues, targets);
+    }
 }
