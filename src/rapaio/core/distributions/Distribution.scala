@@ -69,7 +69,7 @@ abstract class Distribution {
 
   def sample(n: Int): Value = {
     val samples = new Value(n)
-    samples.values.transform(_ => quantile(RandomSource.nextDouble()))
+    samples.values.transform(_ => quantile(RandomSource.nextDouble))
     samples
   }
 

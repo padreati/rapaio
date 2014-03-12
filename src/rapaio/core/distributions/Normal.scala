@@ -20,28 +20,10 @@
 
 package rapaio.core.distributions
 
-
 /**
  * @author Aurelian Tutuianu
  */
-object Normal {
-  private def cdfMarsaglia(x: Double): Double = {
-    var s: Double = x
-    var t: Double = 0
-    var b: Double = x
-    val q: Double = x * x
-    var i: Double = 1
-    while (s != t) {
-      t = s
-      b *= q
-      i += 2
-      s = t + b / i
-    }
-    0.5 + s * math.exp(-.5 * q - 0.91893853320467274178)
-  }
-}
-
-class Normal(mu: Double = 0.0, sd: Double = 1.0) extends Distribution {
+class Normal(mu: Double, sd: Double) extends Distribution {
 
   def name: String = "Normal"
 
@@ -51,7 +33,28 @@ class Normal(mu: Double = 0.0, sd: Double = 1.0) extends Distribution {
 
   private def cdf(x: Double, mu: Double, sd: Double): Double = {
     require(!x.isNaN && !x.isInfinite, "X is not a real number")
-    Normal.cdfMarsaglia((x - mu) / sd)
+    cdfMarsaglia((x - mu) / sd)
+  }
+
+  private def cdfMarsaglia(x: Double): Double = {
+    /**
+     * Journal of Statistical Software (July 2004, Volume 11, Issue 5),
+     * George Marsaglia Algorithum to compute the cdf of the normal
+     * distribution for some z score
+     */
+    var s: Double = x
+    var t: Double = 0
+    var b: Double = x
+    val q: Double = x * x
+    var i: Double = 1
+
+    while (s != t) {
+      t = s
+      i += 2.0
+      b *= q / i
+      s = t + b
+    }
+    0.5 + s * math.exp(-.5 * q - 0.91893853320467274178)
   }
 
   def quantile(p: Double): Double = {
@@ -103,4 +106,8 @@ class Normal(mu: Double = 0.0, sd: Double = 1.0) extends Distribution {
   def skewness: Double = 0.0
 
   def kurtosis: Double = 0.0
+}
+
+object Normal {
+  def apply(mu: Double = 0.0, sd: Double = 1.0): Normal = new Normal(mu, sd)
 }

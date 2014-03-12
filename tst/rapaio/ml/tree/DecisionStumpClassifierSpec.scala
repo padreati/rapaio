@@ -102,7 +102,7 @@ class DecisionStumpClassifierSpec extends FlatSpec with Matchers {
       val k = i % 3 + 1
       val x = Array.fill(N)(from(RandomSource.nextInt(from.length)))
       val y = Array.fill(N)(from(RandomSource.nextInt(k)))
-      val w = Array.fill(N)(RandomSource.nextDouble())
+      val w = Array.fill(N)(RandomSource.nextDouble)
       val sum = Sum(Value(w)).value
       w.transform(x => x / sum)
 

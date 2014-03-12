@@ -30,7 +30,7 @@ object DataSummary {
   def featureSummary(header: String, feature: Feature): Array[String] = {
     feature.typeName match {
       case "nom" => featureSummaryNom(header, feature)
-      case "val" => featureSummaryVal(header, feature)
+      case _ => featureSummaryVal(header, feature)
     }
   }
 

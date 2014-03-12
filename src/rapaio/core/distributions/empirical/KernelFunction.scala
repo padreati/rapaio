@@ -53,7 +53,7 @@ object KernelFunctionGaussian extends KernelFunction {
 
   def maxValue(x0: Double, bandwidth: Double): Double = x0 + 4 * bandwidth
 
-  private final val normal: Distribution = new Normal
+  private final val normal: Distribution = Normal()
 }
 
 object KernelFunctionBiWeight extends KernelFunction {

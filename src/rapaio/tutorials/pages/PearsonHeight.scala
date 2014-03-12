@@ -22,9 +22,10 @@ package rapaio.tutorials.pages
 
 import rapaio.workspace.Workspace._
 import rapaio.datasets.Datasets
-import rapaio.core.stat.{Variance, Mean}
-import rapaio.graphics.Plot
+import rapaio.core.stat.{Quantiles, Variance, Mean}
 import rapaio.core.distributions.Normal
+import rapaio.graphics._
+import rapaio.core.correlation.PearsonRCorrelation
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -58,10 +59,11 @@ class PearsonHeight extends TutorialPage {
 
     for (i <- 0 until df.colCount) {
       val normal = new Normal(Mean(df.col(i)).value, math.sqrt(Variance(df.col(i)).value))
-      draw(Plot(xLim = (57, 80), yLim = (0.0, 0.2), xLab = df.colNames(i)).
-        hist(df.col(i), bins = 23, min = 57, max = 80, prob = true).
-        function(normal.pdf, col = 2)
-        , 700, 300)
+
+      plot(xLim = (57, 80), yLim = (0.0, 0.2), xLab = df.colNames(i))
+      histogram(df.col(i), bins = 23, min = 57, max = 80, prob = true)
+      function(normal.pdf, col = 2)
+      draw(700, 300)
     }
 
     heading(2, "About normality")
@@ -77,67 +79,40 @@ class PearsonHeight extends TutorialPage {
         |is the quantile-quantile plot.
       """.stripMargin)
 
-    //      var i: Int = 0
-    //      while (i < df.getColCount) {
-    //        {
-    //          val col: Nothing = df.getCol(i)
-    //          val colIndex: Int = i
-    //          val mu: Double = new Mean(col).getValue
-    //          val normal: Nothing = new Nothing
-    //          draw(new Nothing().add(col, normal).setLeftLabel(df.getColNames(colIndex)), 500, 300)
-    //        }
-    //        ({
-    //          i += 1;
-    //          i - 1
-    //        })
-    //      }
-    //
-    //    summary(new Mean(df.getCol("Father")))
-    //    summary(new Variance(df.getCol("Father")))
-    //    summary(new Mean(df.getCol("Son")))
-    //    summary(new Variance(df.getCol("Son")))
-    //    summary(new Nothing(df.getCol("Father"), df.getCol("Son")))
-    //    val perc: Array[Double] = new Array[Double](11) {
-    //      var i: Int = 0
-    //      while (i < perc.length) {
-    //        {
-    //          perc(i) = i / (10.)
-    //        }
-    //        ({
-    //          i += 1;
-    //          i - 1
-    //        })
-    //      }
-    //    }
-    //    val fatherQuantiles: Quantiles = new Quantiles(df.getCol("Father"), perc)
-    //    val sonQuantiles: Quantiles = new Quantiles(df.getCol("Son"), perc)
-    //    summary(fatherQuantiles)
-    //    summary(sonQuantiles)
-    //    val plot: Plot = new Plot().setXRange(55, 80).setYRange(55, 80) {
-    //      var i: Int = 0
-    //      while (i < fatherQuantiles.getValues.length) {
-    //        {
-    //          plot.add(new Nothing(fatherQuantiles.getValues(i), false).setColorIndex(30))
-    //        }
-    //        ({
-    //          i += 1;
-    //          i - 1
-    //        })
-    //      }
-    //    } {
-    //      var i: Int = 0
-    //      while (i < sonQuantiles.getValues.length) {
-    //        {
-    //          plot.add(new Nothing(sonQuantiles.getValues(i), true).setColorIndex(30))
-    //        }
-    //        ({
-    //          i += 1;
-    //          i - 1
-    //        })
-    //      }
-    //    }
-    //    plot.add(new Points(df.getCol("Father"), df.getCol("Son")))
-    //    draw(plot, 600, 600)
-    //    p(">>>This tutorial is generated with Rapaio document printer facilities.<<<")
+    for (i <- 0 until df.colCount) {
+      qqplot(df.col(i), Normal(), yLab = df.colNames(i))
+      draw(500, 300)
+    }
+
+    Mean(df.col("Father")).summary()
+    Variance(df.col("Father")).summary()
+    Mean(df.col("Son")).summary()
+    Variance(df.col("Son")).summary()
+
+    PearsonRCorrelation(Array(df.col("Father"), df.col("Son")), Array("Father", "Son")).summary()
+
+    val perc = new Array[Double](11)
+    for (i <- 0 until perc.length) {
+      perc(i) = i.toDouble / 10.0
+    }
+
+    val fatherQuantiles = Quantiles(df.col("Father"), perc)
+    val sonQuantiles = Quantiles(df.col("Son"), perc)
+    fatherQuantiles.summary()
+    sonQuantiles.summary()
+
+    plot(xLim = (55, 80), yLim = (55, 80))
+    for (i <- 0 until fatherQuantiles.values.length) {
+      hl(fatherQuantiles.values(i), col = 30)
+    }
+
+    for (i <- 0 until sonQuantiles.values.length) {
+      vl(sonQuantiles.values(i), col = 30)
+    }
+    points(df.col("Father"), df.col("Son"))
+
+    draw(600, 600)
+
+    p(">>>This tutorial is generated with Rapaio document printer facilities.<<<")
   }
 }

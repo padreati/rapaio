@@ -21,17 +21,16 @@
 package rapaio.graphics
 
 import rapaio.graphics.base._
-import rapaio.graphics.plot._
 import java.awt._
-import scala.collection.mutable.MutableList
-import rapaio.data.Feature
+import rapaio.graphics.plotc._
+import scala.collection.mutable
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-class Plot extends Figure {
+protected[graphics] class Plot extends Figure {
 
-  private final val components = new MutableList[PlotComponent]
+  private final val components = new mutable.MutableList[PlotComponent]
 
   bottomThicker = true
   bottomMarkers = true
@@ -82,90 +81,10 @@ class Plot extends Figure {
     r
   }
 
-  private def add(pc: PlotComponent): Plot = {
+  protected[graphics] def add(pc: PlotComponent) {
     pc.parent = this
     pc.initialize()
     components += pc
-    this
-  }
-
-  def function(f: Double => Double, points: Int = 1024,
-               col: ColorOption = GraphicOptions.DefaultColor,
-               lwd: LwdOption = GraphicOptions.DefaultLwd): Plot = {
-    val fl = FunctionLine(f, points)
-    fl.options.col = if (col == GraphicOptions.DefaultColor) options.col else col
-    fl.options.lwd = if (lwd == GraphicOptions.DefaultLwd) options.lwd else lwd
-    add(fl)
-  }
-
-  def density(x: Feature): Plot = {
-    val d = DensityLine(x)
-    add(d)
-  }
-
-  def vLine(x: Double,
-            lwd: LwdOption = GraphicOptions.DefaultLwd,
-            col: ColorOption = GraphicOptions.DefaultColor): Plot = {
-    val line = new ABLine(x, 0, h = false, v = true)
-    line.options.col = if (col == GraphicOptions.DefaultColor) options.col else col
-    line.options.lwd = if (lwd == GraphicOptions.DefaultLwd) options.lwd else lwd
-    add(line)
-  }
-
-  def hLine(y: Double,
-            lwd: LwdOption = GraphicOptions.DefaultLwd,
-            col: ColorOption = GraphicOptions.DefaultColor): Plot = {
-    val line = new ABLine(0, y, h = true, v = false)
-    line.options.col = if (col == GraphicOptions.DefaultColor) options.col else col
-    line.options.lwd = if (lwd == GraphicOptions.DefaultLwd) options.lwd else lwd
-    add(line)
-  }
-
-  def abLine(a: Double, b: Double,
-             lwd: LwdOption = GraphicOptions.DefaultLwd,
-             col: ColorOption = GraphicOptions.DefaultColor): Plot = {
-    val line = new ABLine(a, b, false, false)
-    line.options.col = if (col == GraphicOptions.DefaultColor) options.col else col
-    line.options.lwd = if (lwd == GraphicOptions.DefaultLwd) options.lwd else lwd
-    add(line)
-  }
-
-  def lines(x: Feature = null,
-            y: Feature,
-            col: ColorOption = GraphicOptions.DefaultColor,
-            lwd: LwdOption = GraphicOptions.DefaultLwd): Plot = {
-    val lines = new Lines(x, y)
-    lines.options.col = if (col == GraphicOptions.DefaultColor) options.col else col
-    lines.options.lwd = if (lwd == GraphicOptions.DefaultLwd) options.lwd else lwd
-    add(lines)
-  }
-
-
-  def points(x: Feature = null,
-             y: Feature,
-             col: ColorOption = GraphicOptions.DefaultColor,
-             pch: PchOption = GraphicOptions.DefaultPch,
-             sz: SizeOption = GraphicOptions.DefaultSz): Plot = {
-    val points = new Points(x, y)
-    points.options.col = if (col == GraphicOptions.DefaultColor) options.col else col
-    points.options.pch = if (pch == GraphicOptions.DefaultPch) options.pch else pch
-    points.options.sz = if (sz == GraphicOptions.DefaultSz) options.sz else sz
-    add(points)
-  }
-
-  def hist(x: Feature,
-           bins: Int = 30,
-           prob: Boolean = true,
-           min: Double = Double.NaN,
-           max: Double = Double.NaN,
-           col: ColorOption = 7,
-           xLab: String = null,
-           yLab: String = null): Plot = {
-    val hist = new Histogram(x, bins, prob, min, max)
-    hist.options.col = if (col == GraphicOptions.DefaultColor) options.col else col
-    if (xLab != null) bottomLabel = xLab
-    if (yLab != null) leftLabel = yLab
-    add(hist)
   }
 
   override def paint(g2d: Graphics2D, rect: Rectangle) {
@@ -184,15 +103,15 @@ class Plot extends Figure {
   }
 }
 
-object Plot {
-  def apply(col: ColorOption = GraphicOptions.DefaultColor,
-            pch: PchOption = GraphicOptions.DefaultPch,
-            lwd: LwdOption = GraphicOptions.DefaultLwd,
-            sz: SizeOption = GraphicOptions.DefaultSz,
-            xLim: (Double, Double) = (Double.NaN, Double.NaN),
-            yLim: (Double, Double) = (Double.NaN, Double.NaN),
-            xLab: String = null,
-            yLab: String = null): Plot = {
+protected[graphics] object Plot {
+  protected[graphics] def apply(col: ColorOption = GraphicOptions.DefaultColor,
+                                pch: PchOption = GraphicOptions.DefaultPch,
+                                lwd: LwdOption = GraphicOptions.DefaultLwd,
+                                sz: SizeOption = GraphicOptions.DefaultSz,
+                                xLim: (Double, Double) = (Double.NaN, Double.NaN),
+                                yLim: (Double, Double) = (Double.NaN, Double.NaN),
+                                xLab: String = null,
+                                yLab: String = null): Plot = {
     val plot = new Plot()
     plot.options.col = col
     plot.options.pch = pch

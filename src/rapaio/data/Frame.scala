@@ -164,6 +164,10 @@ trait Frame extends Serializable with Printable {
     new MappedFrame(sourceFrame, mapping)
   }
 
+  def foreach(f: (Frame, Int) => Unit) {
+    for (i <- 0 until rowCount) f(this, i)
+  }
+
   def split(f: (Frame, Int) => Boolean): (MappedFrame, MappedFrame) = {
     val left = new Mapping
     val right = new Mapping

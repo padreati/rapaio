@@ -20,9 +20,8 @@
 
 package rapaio.sandbox
 
-import rapaio.workspace.Workspace
-import rapaio.graphics.Plot
-import java.awt.Color
+import rapaio.graphics._
+import rapaio.datasets.Datasets
 
 
 /**
@@ -30,15 +29,25 @@ import java.awt.Color
  */
 object Sandbox extends App {
 
-  Workspace.draw(Plot(xLim = (0, 10), yLim = (0, 10)).
-    function(x => x * x).
-    function(x => x, col = 1).
-    function(x => math.pow(x, 1.5)).
-    function(x => math.pow(x, 1.0 / 1.5)).
-    function(x => math.pow(x, 1.0 / 2.0)).
-    hLine(1, col = Color.GRAY).vLine(1, col = Color.GRAY)
+  //  val df = Datasets.loadIrisDataset
+  //
+  //  df.col(1).values.transform(x=>(RandomSource.nextDouble-0.5)/10000.0)
+  //
+  //  points(
+  //    df.col(0),
+  //    df.col(1),
+  //    col=df.col("class"), pch=1)
+  //  draw()
 
-  )
+  //  val n = Normal(sd = 10)
+  //  plot(xLim = (-20, 20), yLim = (0, 1))
+  //  function(n.pdf)
+  //  function(n.cdf, col = 12)
+  //  draw()
 
+  val df = Datasets.loadPearsonHeightDataset
+
+  boxplot(Array(df.col("Son"), df.col("Father")), Array("Son", "Father"))
+  draw()
 }
 

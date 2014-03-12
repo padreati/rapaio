@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.graphics.plot
+package rapaio.graphics.plotc
 
 import rapaio.data.Value
 import rapaio.graphics.base.Range

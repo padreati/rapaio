@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.graphics.plot
+package rapaio.graphics.plotc
 
 import rapaio.data._
 import rapaio.graphics.base._
@@ -27,7 +27,11 @@ import java.awt._
 /**
  * @author tutuianu
  */
-class Points(private val x: Feature, private var y: Feature) extends PlotComponent {
+class Points(x: Feature,
+             y: Feature,
+             col: ColorOption = GraphicOptions.DefaultColor) extends PlotComponent {
+
+  options.col = col
 
   def buildRange(): Range = {
     if (math.min(x.rowCount, y.rowCount) == 0) null

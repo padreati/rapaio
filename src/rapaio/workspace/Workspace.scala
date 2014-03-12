@@ -20,7 +20,6 @@
 
 package rapaio.workspace
 
-import rapaio.graphics.base.Figure
 import rapaio.printer.Printer
 import rapaio.printer.idea.IdeaPrinter
 
@@ -39,6 +38,4 @@ object Workspace {
   def code(lines: String) = printer.code(lines)
 
   def p(lines: String) = printer.p(lines)
-
-  def draw(figure: Figure, width: Int = -1, height: Int = -1) = printer.draw(figure, width, height)
 }

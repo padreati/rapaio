@@ -24,8 +24,7 @@ import rapaio.data.{Value, Index, Frame}
 import rapaio.core.stat.ConfusionMatrix
 import rapaio.ml.boosting.AdaBoostSAMMEClassifier
 import rapaio.ml.tree.DecisionStumpClassifier
-import rapaio.graphics.Plot
-import rapaio.workspace.Workspace
+import rapaio.graphics._
 import rapaio.io.CsvPersistence
 
 /**
@@ -69,9 +68,8 @@ object CSVSandbox extends App {
     index.values ++ c.times
     accuracy.values ++ acc
 
-    Workspace.draw(
-      Plot().
-        points(x = index, y = accuracy, pch = 1))
+    points(x = index, y = accuracy, pch = 1)
+    draw()
     Console.print(".")
   }
 }

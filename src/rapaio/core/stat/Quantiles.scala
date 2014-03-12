@@ -45,40 +45,49 @@ class Quantiles(feature: Feature, percentiles: Array[Double]) extends Printable 
       values
     }
     else {
-      val map = (0 until feature.rowCount).sortWith((i, j) => feature.values(i) < feature.values(j))
-      val sorted: Feature = MappedFeature(feature, Mapping(map.toList))
-      var start: Int = 0
-      while (start < sorted.rowCount && sorted.missing(start)) start += 1
+      val map = (0 until feature.rowCount).
+        filter(i => !feature.missing(i)).
+        sortWith((i, j) => feature.values(i) < feature.values(j))
+      val idMap = map.map(row => feature.rowId(row))
+      val sorted: Feature = MappedFeature(feature.source, Mapping(idMap.toList))
+      if (sorted.rowCount == 0) {
+        Array.fill(percentiles.length)(Double.NaN)
+      } else {
+        var start: Int = 0
+        while (start < sorted.rowCount && sorted.missing(start)) start += 1
 
-      val values: Array[Double] = new Array[Double](percentiles.length)
-      if (start == sorted.rowCount) {
-        values
-      }
-      for (i <- 0 until percentiles.length) {
-        {
+        val values: Array[Double] = new Array[Double](percentiles.length)
+        if (start == sorted.rowCount) {
+          values
+        }
+        for (i <- 0 until percentiles.length) {
           val N: Double = sorted.rowCount - start
           val h: Double = (N + 1.0 / 3.0) * percentiles(i) + 1.0 / 3.0
-          val hfloor: Int = math.floor(h).asInstanceOf[Int]
+          val hfloor: Int = math.floor(h).toInt
           if (percentiles(i) < (2.0 / 3.0) / (N + 1.0 / 3.0)) {
             values(i) = sorted.values(start)
           } else if (percentiles(i) >= (N - 1.0 / 3.0) / (N + 1.0 / 3.0)) {
             values(i) = sorted.values(sorted.rowCount - 1)
           } else
             values(i) = sorted.values(start + hfloor - 1) +
-              (h - hfloor) * (sorted.values(start + hfloor) -
+              (h - hfloor) * (sorted.values(math.min(start + hfloor, sorted.rowCount - 1)) -
                 sorted.values(start + hfloor - 1))
         }
+        values
       }
-      values
     }
   }
 
   def values: Array[Double] = quantiles
 
   override def buildSummary(sb: StringBuilder): Unit = {
-    sb.append("quantiles - estimated quantiles\n")
+    sb.append("> quantiles\n")
     for (i <- 0 until quantiles.length) {
-      sb.append("quantile[%f = %f\n".format(percentiles(i), quantiles(i)))
+      sb.append("p[%f] -> %f\n".format(percentiles(i), quantiles(i)))
     }
   }
+}
+
+object Quantiles {
+  def apply(feature: Feature, percentiles: Array[Double]): Quantiles = new Quantiles(feature, percentiles)
 }

@@ -60,8 +60,8 @@ object PchPalette {
 
   def draw(g2d: Graphics2D, x: Int, y: Int, size: Double, pch: Int) {
     if (pch < 0) draw(g2d, x, y, size, 0)
-    if (pch >= pchs.size) draw(g2d, x, y, size, pch % pchs.size)
-    pchs(pch).draw(g2d, x, y, size)
+    else if (pch >= pchs.size) draw(g2d, x, y, size, pch % pchs.size)
+    else pchs(pch).draw(g2d, x, y, size)
   }
 
   def apply(ch: Char): Int = {

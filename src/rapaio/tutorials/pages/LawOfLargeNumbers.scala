@@ -26,7 +26,7 @@ import rapaio.workspace.Workspace._
 import rapaio.core.distributions.DUniform
 import rapaio.core.stat.StatOnline
 import rapaio.data.Value
-import rapaio.graphics.Plot
+import rapaio.graphics._
 
 
 /**
@@ -107,10 +107,11 @@ class LawOfLargeNumbers extends TutorialPage {
       """.stripMargin)
 
 
-    draw(Plot(yLim = (2.5, 4.5)).
-      hLine(3.5, lwd = 1.5f, col = 1).
-      lines(x = Value(1, 1000, x => x), y = mean, lwd = 1.5f, col = 2),
-      800, 300)
+
+    plot(yLim = (2.5, 4.5))
+    hl(3.5, lwd = 1.5f, col = 1)
+    lines(x = Value(1, 1000, x => x), y = mean, lwd = 1.5f, col = 2)
+    draw(800, 300)
 
     p(
       """
@@ -125,10 +126,10 @@ class LawOfLargeNumbers extends TutorialPage {
 
     code(
       """
-        |    draw(Plot(yLim = (2.5, 4.5)).
-        |      hLine(3.5, lwd = 1.5f, col = 1).
-        |      lines(x = Value(1, 1000, x => x), y = mean, lwd = 1.5f, col=2),
-        |      800, 300)
+        |    plot(yLim = (2.5, 4.5))
+        |    line(3.5, lwd = 1.5f, col = 1, h = true)
+        |    lines(x = Value(1, 1000, x => x), y = mean, lwd = 1.5f, col = 2)
+        |    draw(800, 300)
       """.stripMargin)
 
     p(">>>This tutorial is generated with Rapaio document printer facilities.<<<")
