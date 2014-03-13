@@ -42,11 +42,11 @@ public class Points extends PlotComponent {
 
     @Override
     public Range buildRange() {
-        if (x.getRowCount() == 0) {
+        if (x.rowCount() == 0) {
             return null;
         }
         Range range = new Range();
-        for (int i = 0; i < x.getRowCount(); i++) {
+        for (int i = 0; i < x.rowCount(); i++) {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
@@ -59,7 +59,7 @@ public class Points extends PlotComponent {
     public void paint(Graphics2D g2d) {
         g2d.setBackground(ColorPalette.STANDARD.getColor(255));
 
-        for (int i = 0; i < x.getRowCount(); i++) {
+        for (int i = 0; i < x.rowCount(); i++) {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }

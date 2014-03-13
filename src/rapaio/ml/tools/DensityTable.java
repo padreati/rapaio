@@ -20,8 +20,9 @@
 
 package rapaio.ml.tools;
 
-import rapaio.data.Frame;
+import rapaio.data.Vector;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static rapaio.core.MathBase.log2;
@@ -36,31 +37,75 @@ public final class DensityTable {
     private final String[] testLabels;
     private final String[] classLabels;
 
+    // table with frequencies
     private final double[][] values;
 
-    public DensityTable(String[] testLabels, String[] classLabels) {
+    /**
+     * Builds a table with given test columns and target columns
+     *
+     * @param testLabels   test labels for rows
+     * @param targetLabels target labels for columns
+     */
+    public DensityTable(String[] testLabels, String[] targetLabels) {
         this.testLabels = testLabels;
-        this.classLabels = classLabels;
-        values = new double[testLabels.length][classLabels.length];
+        this.classLabels = targetLabels;
+        values = new double[testLabels.length][targetLabels.length];
     }
 
-    public DensityTable(Frame df, String testColName, String classColName) {
-        this(df, null, testColName, classColName);
+    public DensityTable(Vector test, Vector target) {
+        this(test, target, null);
     }
 
-    public DensityTable(Frame df, List<Double> weights, String testColName, String classColName) {
-        this(df.getCol(testColName).getDictionary(), df.getCol(classColName).getDictionary());
-        for (int i = 0; i < df.rowCount(); i++) {
-            update(df.getIndex(i, testColName), df.getIndex(i, classColName), weights != null ? weights.get(i) : 1.);
+    /**
+     * Builds a density table from two nominal vectors.
+     * If not null, weights are used instead of counts.
+     *
+     * @param test    test vector
+     * @param target  target vector
+     * @param weights weights used instead of counts, if not null
+     */
+    public DensityTable(Vector test, Vector target, List<Double> weights) {
+        this(test.getDictionary(), target.getDictionary());
+
+        if (!test.type().isNominal()) throw new IllegalArgumentException("test vector must be nominal");
+        if (!target.type().isNominal()) throw new IllegalArgumentException("target vector is not nominal");
+        if (test.rowCount() != target.rowCount())
+            throw new IllegalArgumentException("test and target must have same row count");
+
+        for (int i = 0; i < test.rowCount(); i++) {
+            update(test.getIndex(i), target.getIndex(i), weights != null ? weights.get(i) : 1);
+        }
+    }
+
+    /**
+     * Builds a density table with a binary split, from two nominal vectors.
+     * The first row contains instances which have test label equal with given testLabel,
+     * second row contains frequencies for the rest of the instances.
+     *
+     * @param test      test vector
+     * @param target    target vector
+     * @param weights   if not null, weights used instead of counts
+     * @param testLabel test label used for binary split
+     */
+    public DensityTable(Vector test, Vector target, List<Double> weights, String testLabel) {
+        this(new String[]{testLabel, "other"}, target.getDictionary());
+
+        if (!test.type().isNominal()) throw new IllegalArgumentException("test vector must be nominal");
+        if (!target.type().isNominal()) throw new IllegalArgumentException("target vector is not nominal");
+        if (test.rowCount() != target.rowCount())
+            throw new IllegalArgumentException("test and target must have same row count");
+
+        for (int i = 0; i < test.rowCount(); i++) {
+            int index = 0;
+            if (!test.isMissing(i)) {
+                index = (test.getLabel(i).equals(testLabel)) ? 1 : 2;
+            }
+            update(index, target.getIndex(i), weights != null ? weights.get(i) : 1);
         }
     }
 
     public void reset() {
-        for (int i = 0; i < testLabels.length; i++) {
-            for (int j = 0; j < classLabels.length; j++) {
-                values[i][j] = 0;
-            }
-        }
+        for (double[] line : values) Arrays.fill(line, 0, line.length, 0);
     }
 
     public void update(int row, int col, double weight) {
@@ -72,11 +117,11 @@ public final class DensityTable {
         update(row2, col, weight);
     }
 
-    public double getEntropy() {
-        return getEntropy(false);
+    public double getTargetEntropy() {
+        return getTargetEntropy(false);
     }
 
-    public double getEntropy(boolean useMissing) {
+    public double getTargetEntropy(boolean useMissing) {
         double entropy = 0;
         double[] totals = new double[classLabels.length];
         for (int i = 1; i < testLabels.length; i++) {
@@ -104,11 +149,11 @@ public final class DensityTable {
         return factor * entropy;
     }
 
-    public double getInfoXGain() {
-        return getInfoXGain(false);
+    public double getSplitEntropy() {
+        return getSplitEntropy(false);
     }
 
-    public double getInfoXGain(boolean useMissing) {
+    public double getSplitEntropy(boolean useMissing) {
         double[] totals = new double[testLabels.length];
         for (int i = 1; i < testLabels.length; i++) {
             for (int j = 1; j < classLabels.length; j++) {
@@ -142,7 +187,7 @@ public final class DensityTable {
     }
 
     public double getInfoGain(boolean useMissing) {
-        return getEntropy(useMissing) - getInfoXGain(useMissing);
+        return getTargetEntropy(useMissing) - getSplitEntropy(useMissing);
     }
 
     public double getSplitInfo() {

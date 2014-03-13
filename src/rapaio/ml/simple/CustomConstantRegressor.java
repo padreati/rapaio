@@ -71,7 +71,7 @@ public class CustomConstantRegressor extends AbstractRegressor {
 
         fitValues = new ArrayList<>();
         for (String target : targets) {
-            fitValues.add(new Numeric(df.getCol(target).getRowCount(), df.getCol(target).getRowCount(), customValue));
+            fitValues.add(new Numeric(df.getCol(target).rowCount(), df.getCol(target).rowCount(), customValue));
         }
     }
 
@@ -90,6 +90,6 @@ public class CustomConstantRegressor extends AbstractRegressor {
 
     @Override
     public Frame getAllFitValues() {
-        return new SolidFrame(fitValues.get(0).getRowCount(), fitValues, targets);
+        return new SolidFrame(fitValues.get(0).rowCount(), fitValues, targets);
     }
 }

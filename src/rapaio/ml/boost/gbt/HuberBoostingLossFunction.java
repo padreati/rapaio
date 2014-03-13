@@ -30,83 +30,83 @@ import rapaio.data.Vector;
  */
 public class HuberBoostingLossFunction implements BoostingLossFunction {
 
-	double alpha = 0.25;
+    double alpha = 0.25;
 
-	public double getAlpha() {
-		return alpha;
-	}
+    public double getAlpha() {
+        return alpha;
+    }
 
-	public HuberBoostingLossFunction setAlpha(double alpha) {
-		if (alpha < 0 || alpha > 1)
-			throw new IllegalArgumentException("alpha quantile must be in interval [0, 1]");
-		this.alpha = alpha;
-		return this;
-	}
+    public HuberBoostingLossFunction setAlpha(double alpha) {
+        if (alpha < 0 || alpha > 1)
+            throw new IllegalArgumentException("alpha quantile must be in interval [0, 1]");
+        this.alpha = alpha;
+        return this;
+    }
 
-	@Override
-	public double findMinimum(Vector y, Vector fx) {
+    @Override
+    public double findMinimum(Vector y, Vector fx) {
 
-		// compute residuals
+        // compute residuals
 
-		Numeric residual = new Numeric();
-		for (int i = 0; i < y.getRowCount(); i++) {
-			residual.addValue(y.getValue(i) - fx.getValue(i));
-		}
+        Numeric residual = new Numeric();
+        for (int i = 0; i < y.rowCount(); i++) {
+            residual.addValue(y.getValue(i) - fx.getValue(i));
+        }
 
-		// compute median of residuals
+        // compute median of residuals
 
-		double r_bar = new Quantiles(residual, new double[]{0.5}).getValues()[0];
+        double r_bar = new Quantiles(residual, new double[]{0.5}).getValues()[0];
 
-		// compute absolute residuals
+        // compute absolute residuals
 
-		Numeric absResidual = new Numeric();
-		for (int i = 0; i < y.getRowCount(); i++) {
-			absResidual.addValue(MathBase.abs(y.getValue(i) - fx.getValue(i)));
-		}
+        Numeric absResidual = new Numeric();
+        for (int i = 0; i < y.rowCount(); i++) {
+            absResidual.addValue(MathBase.abs(y.getValue(i) - fx.getValue(i)));
+        }
 
-		// compute rho as an alpha-quantile of absolute residuals
+        // compute rho as an alpha-quantile of absolute residuals
 
-		double rho = new Quantiles(absResidual, new double[]{alpha}).getValues()[0];
+        double rho = new Quantiles(absResidual, new double[]{alpha}).getValues()[0];
 
-		// compute one-iteration approximation
+        // compute one-iteration approximation
 
-		double gamma = r_bar;
-		double count = y.getRowCount();
-		for (int i = 0; i < y.getRowCount(); i++) {
-			gamma += (residual.getValue(i) - r_bar <= 0 ? -1 : 1)
-					* MathBase.min(rho, MathBase.abs(residual.getValue(i) - r_bar))
-					/ count;
-		}
-		return gamma;
-	}
+        double gamma = r_bar;
+        double count = y.rowCount();
+        for (int i = 0; i < y.rowCount(); i++) {
+            gamma += (residual.getValue(i) - r_bar <= 0 ? -1 : 1)
+                    * MathBase.min(rho, MathBase.abs(residual.getValue(i) - r_bar))
+                    / count;
+        }
+        return gamma;
+    }
 
-	@Override
-	public Numeric gradient(Vector y, Vector fx) {
+    @Override
+    public Numeric gradient(Vector y, Vector fx) {
 
-		// compute absolute residuals
+        // compute absolute residuals
 
-		Numeric absResidual = new Numeric();
-		for (int i = 0; i < y.getRowCount(); i++) {
-			absResidual.addValue(MathBase.abs(y.getValue(i) - fx.getValue(i)));
-		}
+        Numeric absResidual = new Numeric();
+        for (int i = 0; i < y.rowCount(); i++) {
+            absResidual.addValue(MathBase.abs(y.getValue(i) - fx.getValue(i)));
+        }
 
-		// compute rho as an alpha-quantile of absolute residuals
+        // compute rho as an alpha-quantile of absolute residuals
 
-		double rho = new Quantiles(absResidual, new double[]{alpha}).getValues()[0];
+        double rho = new Quantiles(absResidual, new double[]{alpha}).getValues()[0];
 
-		// now compute gradient
+        // now compute gradient
 
-		Numeric gradient = new Numeric();
-		for (int i = 0; i < y.getRowCount(); i++) {
-			if (absResidual.getValue(i) <= rho) {
-				gradient.addValue(y.getValue(i) - fx.getValue(i));
-			} else {
-				gradient.addValue(rho * ((y.getValue(i) - fx.getValue(i) <= 0) ? -1 : 1));
-			}
-		}
+        Numeric gradient = new Numeric();
+        for (int i = 0; i < y.rowCount(); i++) {
+            if (absResidual.getValue(i) <= rho) {
+                gradient.addValue(y.getValue(i) - fx.getValue(i));
+            } else {
+                gradient.addValue(rho * ((y.getValue(i) - fx.getValue(i) <= 0) ? -1 : 1));
+            }
+        }
 
-		// return gradient
+        // return gradient
 
-		return gradient;
-	}
+        return gradient;
+    }
 }

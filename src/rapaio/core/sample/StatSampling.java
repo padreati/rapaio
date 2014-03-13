@@ -79,7 +79,7 @@ public class StatSampling {
         List<Integer> mapping = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             int next = RandomSource.nextInt(frame.rowCount());
-            mapping.add(frame.getRowId(next));
+            mapping.add(frame.rowId(next));
         }
         return new MappedFrame(frame.getSourceFrame(), new Mapping(mapping));
     }

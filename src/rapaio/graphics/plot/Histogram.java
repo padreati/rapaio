@@ -84,7 +84,7 @@ public class Histogram extends PlotComponent {
 
     private void rebuild() {
         if (minvalue != minvalue) {
-            for (int i = 0; i < v.getRowCount(); i++) {
+            for (int i = 0; i < v.rowCount(); i++) {
                 if (v.isMissing(i)) {
                     continue;
                 }
@@ -104,7 +104,7 @@ public class Histogram extends PlotComponent {
         double step = (maxvalue - minvalue) / (1. * bins);
         freqtable = new double[bins];
         double total = 0;
-        for (int i = 0; i < v.getRowCount(); i++) {
+        for (int i = 0; i < v.rowCount(); i++) {
             if (v.isMissing(i)) {
                 continue;
             }
@@ -125,7 +125,7 @@ public class Histogram extends PlotComponent {
         }
 
         // defaults
-        if (getColorIndex().getRowCount() == 1 && getColorIndex().getIndex(0) == 0) {
+        if (getColorIndex().rowCount() == 1 && getColorIndex().getIndex(0) == 0) {
             setColorIndex(Vectors.newIdxOne(7));
         }
     }

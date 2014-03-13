@@ -36,39 +36,39 @@ import java.io.IOException;
  */
 public class ID3ClassifierTest {
 
-	@Test
-	public void testBasicID3Entropy() throws IOException {
-		Frame df = Datasets.loadPlay();
-		df = BaseFilters.retainNominal(df);
-		final String className = "class";
+    @Test
+    public void testBasicID3Entropy() throws IOException {
+        Frame df = Datasets.loadPlay();
+        df = BaseFilters.retainNominal(df);
+        final String className = "class";
 
-		ID3Classifier id3 = new ID3Classifier().setSelection(ID3Classifier.SELECTION_ENTROPY);
-		id3.learn(df, className);
-		id3.predict(df);
+        ID3Classifier id3 = new ID3Classifier().setSelection(ID3Classifier.SELECTION_ENTROPY);
+        id3.learn(df, className);
+        id3.predict(df);
 
-		DensityTable dtWindy = new DensityTable(df, "windy", "class");
-		DensityTable dtOutlook = new DensityTable(df, "outlook", "class");
-		String splitCol = (dtWindy.getInfoXGain() < dtOutlook.getInfoXGain()) ? "windy" : "outlook";
-		Assert.assertEquals(splitCol, id3.root.splitCol);
+        DensityTable dtWindy = new DensityTable(df.getCol("windy"), df.getCol("class"));
+        DensityTable dtOutlook = new DensityTable(df.getCol("outlook"), df.getCol("class"));
+        String splitCol = (dtWindy.getSplitEntropy() < dtOutlook.getSplitEntropy()) ? "windy" : "outlook";
+        Assert.assertEquals(splitCol, id3.root.splitCol);
 
-		Summary.summary(id3);
-	}
+        Summary.summary(id3);
+    }
 
-	@Test
-	public void testBasicID3InfoGain() throws IOException {
-		Frame df = Datasets.loadPlay();
-		df = BaseFilters.retainNominal(df);
-		final String className = "class";
+    @Test
+    public void testBasicID3InfoGain() throws IOException {
+        Frame df = Datasets.loadPlay();
+        df = BaseFilters.retainNominal(df);
+        final String className = "class";
 
-		ID3Classifier id3 = new ID3Classifier().setSelection(ID3Classifier.SELECTION_INFOGAIN);
-		id3.learn(df, className);
-		id3.predict(df);
+        ID3Classifier id3 = new ID3Classifier().setSelection(ID3Classifier.SELECTION_INFOGAIN);
+        id3.learn(df, className);
+        id3.predict(df);
 
-		DensityTable dtWindy = new DensityTable(df, "windy", "class");
-		DensityTable dtOutlook = new DensityTable(df, "outlook", "class");
-		String splitCol = (dtWindy.getInfoGain() > dtOutlook.getInfoGain()) ? "windy" : "outlook";
-		Assert.assertEquals(splitCol, id3.root.splitCol);
+        DensityTable dtWindy = new DensityTable(df.getCol("windy"), df.getCol("class"));
+        DensityTable dtOutlook = new DensityTable(df.getCol("outlook"), df.getCol("class"));
+        String splitCol = (dtWindy.getInfoGain() > dtOutlook.getInfoGain()) ? "windy" : "outlook";
+        Assert.assertEquals(splitCol, id3.root.splitCol);
 
-		Summary.summary(id3);
-	}
+        Summary.summary(id3);
+    }
 }

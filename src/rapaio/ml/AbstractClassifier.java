@@ -32,25 +32,25 @@ import java.util.List;
 public abstract class AbstractClassifier<T> implements Classifier<T> {
 
     @Override
-    public void learn(Frame df, String classColName) {
+    public void learn(Frame df, String targetColName) {
         List<Double> weights = new ArrayList<>();
         for (int i = 0; i < df.rowCount(); i++) {
             weights.add(1.);
         }
-        learn(df, weights, classColName);
+        learn(df, weights, targetColName);
     }
 
     @Override
-    public void learnFurther(Frame df, String classColName, T classifier) {
+    public void learnFurther(Frame df, String targetColName, T classifier) {
         List<Double> weights = new ArrayList<>();
         for (int i = 0; i < df.rowCount(); i++) {
             weights.add(1.);
         }
-        learnFurther(df, weights, classColName, classifier);
+        learnFurther(df, weights, targetColName, classifier);
     }
 
     @Override
-    public void learnFurther(Frame df, List<Double> weights, String classColName, T classifier) {
+    public void learnFurther(Frame df, List<Double> weights, String targetColName, T classifier) {
         // default further prediction is not implemented
         throw new NotImplementedException();
     }

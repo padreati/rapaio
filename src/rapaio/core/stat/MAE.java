@@ -41,13 +41,13 @@ public class MAE implements Summarizable {
     public MAE(Frame dfSource, Frame dfTarget) {
         source = new ArrayList<>();
         for (int i = 0; i < dfSource.colCount(); i++) {
-            if (dfSource.getCol(i).getType().isNumeric()) {
+            if (dfSource.getCol(i).type().isNumeric()) {
                 source.add(dfSource.getCol(i));
             }
         }
         target = new ArrayList<>();
         for (int i = 0; i < dfTarget.colCount(); i++) {
-            if (dfTarget.getCol(i).getType().isNumeric()) {
+            if (dfTarget.getCol(i).type().isNumeric()) {
                 target.add(dfTarget.getCol(i));
             }
         }
@@ -67,7 +67,7 @@ public class MAE implements Summarizable {
         double count = 0;
 
         for (int i = 0; i < source.size(); i++) {
-            for (int j = 0; j < source.get(i).getRowCount(); j++) {
+            for (int j = 0; j < source.get(i).rowCount(); j++) {
                 count++;
                 total += abs(source.get(i).getValue(j) - target.get(i).getValue(j));
             }

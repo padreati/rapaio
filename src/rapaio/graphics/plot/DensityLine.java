@@ -63,7 +63,7 @@ public class DensityLine extends PlotComponent {
         double ymin = 0;
         double ymax = Double.NaN;
 
-        for (int i = 0; i < vector.getRowCount(); i++) {
+        for (int i = 0; i < vector.rowCount(); i++) {
             if (vector.isMissing(i))
                 continue;
             if (xmin != xmin) {
@@ -99,12 +99,12 @@ public class DensityLine extends PlotComponent {
         Vector x = new Numeric(points + 1);
         Vector y = new Numeric(points + 1);
         double xstep = (range.getX2() - range.getX1()) / points;
-        for (int i = 0; i < x.getRowCount(); i++) {
+        for (int i = 0; i < x.rowCount(); i++) {
             x.setValue(i, range.getX1() + i * xstep);
             y.setValue(i, kde.getPdfFunction().eval(x.getValue(i)));
         }
 
-        for (int i = 1; i < x.getRowCount(); i++) {
+        for (int i = 1; i < x.rowCount(); i++) {
             if (range.contains(x.getValue(i - 1), y.getValue(i - 1)) && range.contains(x.getValue(i), y.getValue(i))) {
                 g2d.setColor(getColor(i));
                 g2d.setStroke(new BasicStroke(getLwd()));

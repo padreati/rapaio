@@ -86,7 +86,7 @@ public class RandomValueRegressor extends AbstractRegressor {
         fitValues = new ArrayList<>();
         for (String target : targets) {
             double customValue = getRandomValue();
-            fitValues.add(new Numeric(df.getCol(target).getRowCount(), df.getCol(target).getRowCount(), customValue));
+            fitValues.add(new Numeric(df.getCol(target).rowCount(), df.getCol(target).rowCount(), customValue));
         }
     }
 
@@ -108,6 +108,6 @@ public class RandomValueRegressor extends AbstractRegressor {
 
     @Override
     public Frame getAllFitValues() {
-        return new SolidFrame(fitValues.get(0).getRowCount(), fitValues, targets);
+        return new SolidFrame(fitValues.get(0).rowCount(), fitValues, targets);
     }
 }

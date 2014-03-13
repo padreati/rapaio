@@ -58,23 +58,23 @@ public class OneRule extends AbstractClassifier<OneRule> {
     }
 
     @Override
-    public void learn(Frame df, List<Double> weights, String classColName) {
-        classLabels = df.getCol(classColName).getDictionary();
+    public void learn(Frame df, List<Double> weights, String targetColName) {
+        classLabels = df.getCol(targetColName).getDictionary();
 
-        validate(df, classColName);
+        validate(df, targetColName);
 
         bestRuleSet = null;
         for (String sourceColName : df.getColNames()) {
-            if (classColName.equals(sourceColName))
+            if (targetColName.equals(sourceColName))
                 continue;
-            if (df.getCol(sourceColName).getType().isNominal()) {
-                OneRuleSet ruleSet = buildNominal(sourceColName, classColName, df, weights);
+            if (df.getCol(sourceColName).type().isNominal()) {
+                OneRuleSet ruleSet = buildNominal(sourceColName, targetColName, df, weights);
                 if (bestRuleSet == null || ruleSet.getAccuracy() > bestRuleSet.getAccuracy()) {
                     bestRuleSet = ruleSet;
                 }
             }
-            if (df.getCol(sourceColName).getType().isNumeric()) {
-                OneRuleSet ruleSet = buildNumeric(sourceColName, classColName, df, weights);
+            if (df.getCol(sourceColName).type().isNumeric()) {
+                OneRuleSet ruleSet = buildNumeric(sourceColName, targetColName, df, weights);
                 if (bestRuleSet == null || ruleSet.getAccuracy() > bestRuleSet.getAccuracy()) {
                     bestRuleSet = ruleSet;
                 }
@@ -107,7 +107,7 @@ public class OneRule extends AbstractClassifier<OneRule> {
         }
         String colName = bestRuleSet.getColName();
 
-        if (test.getCol(colName).getType().isNominal()) {
+        if (test.getCol(colName).type().isNominal()) {
             String value = test.getLabel(row, test.getColIndex(colName));
             for (GenericOneRule oneRule : bestRuleSet.getRules()) {
                 NominalOneRule nominal = (NominalOneRule) oneRule;
@@ -116,7 +116,7 @@ public class OneRule extends AbstractClassifier<OneRule> {
                 }
             }
         }
-        if (test.getCol(colName).getType().isNumeric()) {
+        if (test.getCol(colName).type().isNumeric()) {
             boolean missing = test.getCol(colName).isMissing(row);
             double value = test.getValue(row, test.getColIndex(colName));
             for (GenericOneRule oneRule : bestRuleSet.getRules()) {
@@ -146,7 +146,7 @@ public class OneRule extends AbstractClassifier<OneRule> {
         if (classIndex >= df.colCount()) {
             throw new IllegalArgumentException("classIndex is invalid");
         }
-        if (!df.getCol(classIndex).getType().isNominal()) {
+        if (!df.getCol(classIndex).type().isNominal()) {
             throw new IllegalArgumentException("classIndex does not denote a isNominal vector");
         }
         if (df.rowCount() == 0) {
@@ -205,7 +205,7 @@ public class OneRule extends AbstractClassifier<OneRule> {
                 RowComparators.numericComparator(df.getCol(sourceName), true),
                 RowComparators.nominalComparator(df.getCol(className), true));
         int pos = 0;
-        while (pos < sort.getRowCount()) {
+        while (pos < sort.rowCount()) {
             if (df.isMissing(sort.getIndex(pos), sourceName)) {
                 pos++;
                 continue;
@@ -244,7 +244,7 @@ public class OneRule extends AbstractClassifier<OneRule> {
         //splits from same getValue
         int i = pos;
         int index;
-        while (i < sort.getRowCount()) {
+        while (i < sort.rowCount()) {
             // start a new bucket
             int startIndex = i;
             double[] hist = new double[classLabels.length];
@@ -253,10 +253,10 @@ public class OneRule extends AbstractClassifier<OneRule> {
                 index = df.getIndex(sort.getIndex(i), className);
                 hist[index] += weights.get(sort.getIndex(i));
                 i++;
-            } while (hist[index] < minCount && i < sort.getRowCount());
+            } while (hist[index] < minCount && i < sort.rowCount());
 
             // while class remains the same, keep on filling
-            while (i < sort.getRowCount()) {
+            while (i < sort.rowCount()) {
                 index = sort.getIndex(i);
                 if (df.getIndex(sort.getIndex(i), className) == index) {
                     hist[index] += weights.get(sort.getIndex(i));
@@ -266,7 +266,7 @@ public class OneRule extends AbstractClassifier<OneRule> {
                 break;
             }
             // keep on while attr getValue is the same
-            while (i < sort.getRowCount()
+            while (i < sort.rowCount()
                     && df.getValue(sort.getIndex(i - 1), sourceName)
                     == df.getValue(sort.getIndex(i), sourceName)) {
                 index = df.getIndex(sort.getIndex(i), className);
@@ -297,7 +297,7 @@ public class OneRule extends AbstractClassifier<OneRule> {
                         + df.getValue(sort.getIndex(startIndex - 1), sourceName)) / 2.;
             }
             double maxValue = Double.POSITIVE_INFINITY;
-            if (i != sort.getRowCount()) {
+            if (i != sort.rowCount()) {
                 maxValue = (df.getValue(sort.getIndex(i - 1), sourceName) + df.getValue(sort.getIndex(i), sourceName)) / 2;
             }
 

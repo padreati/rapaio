@@ -87,7 +87,7 @@ public class ModelEvaluation {
             rowIds[i] = new ArrayList<>();
         }
         for (int i = 0; i < df.rowCount(); i++) {
-            rowIds[df.getIndex(i, df.getColIndex(classColName))].add(df.getRowId(i));
+            rowIds[df.getIndex(i, df.getColIndex(classColName))].add(df.rowId(i));
         }
         List<Integer> shuffle = new ArrayList<>();
         for (int i = 0; i < dict.length; i++) {
@@ -122,16 +122,16 @@ public class ModelEvaluation {
                 testMapping.add(i);
                 for (int j = 0; j < df.rowCount(); j++) {
                     if (j != i) {
-                        trainMapping.add(df.getRowId(j));
+                        trainMapping.add(df.rowId(j));
                     }
                 }
 
             } else {
                 for (int j = 0; j < df.rowCount(); j++) {
                     if (j % folds == i) {
-                        testMapping.add(df.getRowId(j));
+                        testMapping.add(df.rowId(j));
                     } else {
-                        trainMapping.add(df.getRowId(j));
+                        trainMapping.add(df.rowId(j));
                     }
                 }
             }
@@ -144,12 +144,12 @@ public class ModelEvaluation {
                 c.learn(train, classColName);
                 c.predict(test);
                 double acc = 0;
-                for (int j = 0; j < c.getPrediction().getRowCount(); j++) {
+                for (int j = 0; j < c.getPrediction().rowCount(); j++) {
                     if (c.getPrediction().getIndex(j) == test.getCol(classColName).getIndex(j)) {
                         acc++;
                     }
                 }
-                acc /= (1. * c.getPrediction().getRowCount());
+                acc /= (1. * c.getPrediction().rowCount());
                 tacc[k] += acc;
                 print(String.format("CV %d, classifier[%d] - accuracy:%.6f\n", i + 1, k + 1, acc));
             }

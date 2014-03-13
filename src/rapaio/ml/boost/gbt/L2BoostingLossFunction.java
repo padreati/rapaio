@@ -29,17 +29,17 @@ import rapaio.data.Vector;
  */
 public class L2BoostingLossFunction implements BoostingLossFunction {
 
-	@Override
-	public double findMinimum(Vector y, Vector fx) {
-		return new Mean(gradient(y, fx)).getValue();
-	}
+    @Override
+    public double findMinimum(Vector y, Vector fx) {
+        return new Mean(gradient(y, fx)).getValue();
+    }
 
-	@Override
-	public Numeric gradient(Vector y, Vector fx) {
-		Numeric delta = new Numeric();
-		for (int i = 0; i < y.getRowCount(); i++) {
-			delta.addValue(y.getValue(i) - fx.getValue(i));
-		}
-		return delta;
-	}
+    @Override
+    public Numeric gradient(Vector y, Vector fx) {
+        Numeric delta = new Numeric();
+        for (int i = 0; i < y.rowCount(); i++) {
+            delta.addValue(y.getValue(i) - fx.getValue(i));
+        }
+        return delta;
+    }
 }

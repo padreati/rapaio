@@ -68,8 +68,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
     }
 
     @Override
-    public void learn(Frame df, List<Double> weights, String classColName) {
-        dict = df.getCol(classColName).getDictionary();
+    public void learn(Frame df, List<Double> weights, String targetColName) {
+        dict = df.getCol(targetColName).getDictionary();
         k = dict.length - 1;
 
         w = new ArrayList<>(weights);
@@ -84,34 +84,31 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
 
         for (int i = 0; i < t; i++) {
             Classifier hh = weak.newInstance();
-            hh.learn(df, new ArrayList<>(w), classColName);
+            hh.learn(df, new ArrayList<>(w), targetColName);
             hh.predict(df);
             Nominal hpred = hh.getPrediction();
 
             double err = 0;
             for (int j = 0; j < df.rowCount(); j++) {
-                if (hpred.getIndex(j) != df.getCol(classColName).getIndex(j)) {
+                if (hpred.getIndex(j) != df.getCol(targetColName).getIndex(j)) {
                     err += w.get(j);
                 }
             }
             double alpha = log((1. - err) / err) + log(k - 1);
-            if (err == 0) {
+            if (err == 0 || err > (1 - 1 / k)) {
                 if (h.isEmpty()) {
                     h.add(hh);
                     a.add(alpha);
                 }
+                System.out.println("This should not be");
                 break;
-            }
-            if (err > (1 - 1 / k)) {
-                i--;
-                continue;
             }
             h.add(hh);
             a.add(alpha);
 
             // update
             for (int j = 0; j < w.size(); j++) {
-                if (hpred.getIndex(j) != df.getCol(classColName).getIndex(j)) {
+                if (hpred.getIndex(j) != df.getCol(targetColName).getIndex(j)) {
                     w.set(j, w.get(j) * (k - 1) / (k * err));
                 } else {
                     w.set(j, w.get(j) / (k * (1. - err)));
@@ -121,15 +118,15 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
     }
 
     @Override
-    public void learnFurther(Frame df, List<Double> weights, String classColName, AdaBoostSAMMEClassifier classifier) {
+    public void learnFurther(Frame df, List<Double> weights, String targetColName, AdaBoostSAMMEClassifier classifier) {
         // TODO validation for further learning
 
         if (classifier == null) {
-            learn(df, weights, classColName);
+            learn(df, weights, targetColName);
             return;
         }
 
-        dict = df.getCol(classColName).getDictionary();
+        dict = df.getCol(targetColName).getDictionary();
         k = dict.length - 1;
         h = new ArrayList<>(classifier.h);
         a = new ArrayList<>(classifier.a);
@@ -140,13 +137,13 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
         w = classifier.w;
         for (int i = h.size(); i < t; i++) {
             Classifier hh = weak.newInstance();
-            hh.learn(df, new ArrayList<>(w), classColName);
+            hh.learn(df, new ArrayList<>(w), targetColName);
             hh.predict(df);
             Nominal hpred = hh.getPrediction();
 
             double err = 0;
             for (int j = 0; j < df.rowCount(); j++) {
-                if (hpred.getIndex(j) != df.getCol(classColName).getIndex(j)) {
+                if (hpred.getIndex(j) != df.getCol(targetColName).getIndex(j)) {
                     err += w.get(j);
                 }
             }
@@ -167,7 +164,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
 
             // update
             for (int j = 0; j < w.size(); j++) {
-                if (hpred.getIndex(j) != df.getCol(classColName).getIndex(j)) {
+                if (hpred.getIndex(j) != df.getCol(targetColName).getIndex(j)) {
                     w.set(j, w.get(j) * (k - 1) / (k * err));
                 } else {
                     w.set(j, w.get(j) / (k * (1. - err)));

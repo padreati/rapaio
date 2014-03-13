@@ -29,54 +29,54 @@ import static rapaio.workspace.Workspace.code;
 /**
  * Compensated version of the algorithm for calculation of
  * sample variance of values from a {@link rapaio.data.Vector}.
- * <p/>
- * <p/>
+ * <p>
+ * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  * Date: 9/7/13
  * Time: 12:26 PM
  */
 public class Variance implements Summarizable {
 
-	private final Vector vector;
-	private final double value;
+    private final Vector vector;
+    private final double value;
 
-	public Variance(Vector vector) {
-		this.vector = vector;
-		this.value = compute();
-	}
+    public Variance(Vector vector) {
+        this.vector = vector;
+        this.value = compute();
+    }
 
-	private double compute() {
-		double mean = new Mean(vector).getValue();
-		double n = 0;
-		for (int i = 0; i < vector.getRowCount(); i++) {
-			if (vector.isMissing(i)) {
-				continue;
-			}
-			n++;
-		}
-		if (n == 0) {
-			return Double.NaN;
-		}
-		double sum2 = 0;
-		double sum3 = 0;
-		for (int i = 0; i < vector.getRowCount(); i++) {
-			if (vector.isMissing(i)) {
-				continue;
-			}
-			sum2 += pow(vector.getValue(i) - mean, 2);
-			sum3 += vector.getValue(i) - mean;
-		}
-		return (sum2 - pow(sum3, 2) / n) / (n - 1);
+    private double compute() {
+        double mean = new Mean(vector).getValue();
+        double n = 0;
+        for (int i = 0; i < vector.rowCount(); i++) {
+            if (vector.isMissing(i)) {
+                continue;
+            }
+            n++;
+        }
+        if (n == 0) {
+            return Double.NaN;
+        }
+        double sum2 = 0;
+        double sum3 = 0;
+        for (int i = 0; i < vector.rowCount(); i++) {
+            if (vector.isMissing(i)) {
+                continue;
+            }
+            sum2 += pow(vector.getValue(i) - mean, 2);
+            sum3 += vector.getValue(i) - mean;
+        }
+        return (sum2 - pow(sum3, 2) / n) / (n - 1);
 
-	}
+    }
 
-	public double getValue() {
-		return value;
-	}
+    public double getValue() {
+        return value;
+    }
 
-	@Override
-	public void summary() {
-		code(String.format("variance\n%.10f", value));
-	}
+    @Override
+    public void summary() {
+        code(String.format("variance\n%.10f", value));
+    }
 
 }

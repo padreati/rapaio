@@ -125,7 +125,7 @@ class TreeRegressorNode {
 
         String[] colNames = parent.colSelector.nextColNames();
         for (String testColName : colNames) {
-            if (df.getCol(testColName).getType().isNumeric() && !targetColNames.equals(testColName)) {
+            if (df.getCol(testColName).type().isNumeric() && !targetColNames.equals(testColName)) {
                 evaluateNumeric(parent, df, weights, targetColNames, testColName);
             }
         }
@@ -139,10 +139,10 @@ class TreeRegressorNode {
 
             for (int i = 0; i < df.rowCount(); i++) {
                 if (df.getValue(i, splitColName) <= splitValue) {
-                    leftMapping.add(df.getRowId(i));
+                    leftMapping.add(df.rowId(i));
                     leftWeights.add(weights.get(i));
                 } else {
-                    rightMapping.add(df.getRowId(i));
+                    rightMapping.add(df.rowId(i));
                     rightWeights.add(weights.get(i));
                 }
             }
@@ -170,7 +170,7 @@ class TreeRegressorNode {
         sort = BaseFilters.sort(sort, RowComparators.numericComparator(testCol, true));
         double w = 0;
         for (int i = 0; i < df.rowCount(); i++) {
-            int pos = sort.getRowId(i);
+            int pos = sort.rowId(i);
             so.update(testCol.getValue(pos));
             w += weights.get(pos);
             if (i > 0) {
@@ -180,7 +180,7 @@ class TreeRegressorNode {
         so.clean();
         w = 0;
         for (int i = df.rowCount() - 1; i >= 0; i--) {
-            int pos = sort.getRowId(i);
+            int pos = sort.rowId(i);
             so.update(testCol.getValue(pos));
             w += weights.get(pos);
             if (i < df.rowCount() - 1) {
@@ -189,11 +189,11 @@ class TreeRegressorNode {
         }
         w = 0;
         for (int i = 0; i < df.rowCount(); i++) {
-            int pos = sort.getRowId(i);
+            int pos = sort.rowId(i);
             w += weights.get(pos);
 
             if (w >= parent.minWeight && totalWeight - w >= parent.minWeight) {
-                if (var[i] < eval && i > 0 && testCol.getValue(sort.getRowId(i - 1)) != testCol.getValue(sort.getRowId(i))) {
+                if (var[i] < eval && i > 0 && testCol.getValue(sort.rowId(i - 1)) != testCol.getValue(sort.rowId(i))) {
                     eval = var[i];
                     splitColName = testColNames;
                     splitValue = testCol.getValue(pos);

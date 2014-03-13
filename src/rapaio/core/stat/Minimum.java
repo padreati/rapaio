@@ -28,42 +28,42 @@ import static rapaio.workspace.Workspace.code;
 
 /**
  * Finds the minimum getValue from a {@link Vector} of values.
- * <p/>
+ * <p>
  * Ignores missing elements.
- * <p/>
+ * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  * Date: 9/7/13
  * Time: 12:36 PM
  */
 public class Minimum implements Summarizable {
 
-	private final Vector vector;
-	private final double value;
+    private final Vector vector;
+    private final double value;
 
-	public Minimum(Vector vector) {
-		this.vector = vector;
-		this.value = compute();
-	}
+    public Minimum(Vector vector) {
+        this.vector = vector;
+        this.value = compute();
+    }
 
-	private double compute() {
-		double min = Double.MAX_VALUE;
-		boolean valid = false;
-		for (int i = 0; i < vector.getRowCount(); i++) {
-			if (vector.isMissing(i)) {
-				continue;
-			}
-			valid = true;
-			min = MathBase.min(min, vector.getValue(i));
-		}
-		return valid ? min : Double.NaN;
-	}
+    private double compute() {
+        double min = Double.MAX_VALUE;
+        boolean valid = false;
+        for (int i = 0; i < vector.rowCount(); i++) {
+            if (vector.isMissing(i)) {
+                continue;
+            }
+            valid = true;
+            min = MathBase.min(min, vector.getValue(i));
+        }
+        return valid ? min : Double.NaN;
+    }
 
-	public double getValue() {
-		return value;
-	}
+    public double getValue() {
+        return value;
+    }
 
-	@Override
-	public void summary() {
-		code(String.format("minimum\n%.10f", value));
-	}
+    @Override
+    public void summary() {
+        code(String.format("minimum\n%.10f", value));
+    }
 }

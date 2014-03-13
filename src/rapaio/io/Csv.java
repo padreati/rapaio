@@ -178,7 +178,7 @@ public class Csv {
                     }
                     String value = row.get(i);
                     Vector v = vectors.get(i);
-                    switch (v.getType()) {
+                    switch (v.type()) {
                         case INDEX:
                             Integer intValue;
                             try {
@@ -190,7 +190,7 @@ public class Csv {
                                 try {
                                     fallbackNumeric = Double.parseDouble(value);
                                     Numeric num = new Numeric();
-                                    for (int j = 0; j < v.getRowCount(); j++) {
+                                    for (int j = 0; j < v.rowCount(); j++) {
                                         num.addValue(v.getIndex(j));
                                     }
                                     num.addValue(fallbackNumeric);
@@ -200,7 +200,7 @@ public class Csv {
                                 } catch (Throwable ex2) {
                                     // can't parse, use nominal
                                     Nominal nom = new Nominal();
-                                    for (int j = 0; j < v.getRowCount(); j++) {
+                                    for (int j = 0; j < v.rowCount(); j++) {
                                         nom.addLabel(String.valueOf(v.getIndex(j)));
                                     }
                                     nom.addLabel(value);
@@ -217,7 +217,7 @@ public class Csv {
                             } catch (Throwable ex) {
                                 // can't parse, use nominal
                                 Nominal nom = new Nominal();
-                                for (int j = 0; j < v.getRowCount(); j++) {
+                                for (int j = 0; j < v.rowCount(); j++) {
                                     nom.addLabel(String.valueOf(v.getValue(j)));
                                 }
                                 nom.addLabel(value);
@@ -350,7 +350,7 @@ public class Csv {
                         writer.append("?");
                         continue;
                     }
-                    if (df.getCol(j).getType().isNominal()) {
+                    if (df.getCol(j).type().isNominal()) {
                         writer.append(unclean(df.getLabel(i, j)));
                     } else {
                         writer.append(format.format(df.getValue(i, j)));

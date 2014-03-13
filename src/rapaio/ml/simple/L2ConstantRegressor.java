@@ -66,7 +66,7 @@ public class L2ConstantRegressor extends AbstractRegressor {
         for (String target : targets) {
             double mean = new Mean(df.getCol(target)).getValue();
             means.add(mean);
-            fitValues.add(new Numeric(df.getCol(target).getRowCount(), df.getCol(target).getRowCount(), mean));
+            fitValues.add(new Numeric(df.getCol(target).rowCount(), df.getCol(target).rowCount(), mean));
         }
     }
 
@@ -88,6 +88,6 @@ public class L2ConstantRegressor extends AbstractRegressor {
 
     @Override
     public Frame getAllFitValues() {
-        return new SolidFrame(fitValues.get(0).getRowCount(), fitValues, targets);
+        return new SolidFrame(fitValues.get(0).rowCount(), fitValues, targets);
     }
 }

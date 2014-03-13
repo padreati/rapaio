@@ -38,40 +38,40 @@ import static rapaio.data.filters.BaseFilters.toNumeric;
  */
 public class FilterNominalToDoubleTest {
 
-	@Test
-	public void testNormalCase() {
-		int n = 10;
-		HashSet<String> dict = new HashSet<>();
-		for (int i = 0; i < n; i++) {
-			dict.add(String.valueOf(pow(i, 1.5)));
-		}
-		Vector v = new Nominal(10, dict);
-		for (int i = 0; i < v.getRowCount(); i++) {
-			String value = String.valueOf(pow(i, 1.5));
-			v.setLabel(i, value);
-		}
-		Vector filtered = toNumeric(v);
-		for (int i = 0; i < v.getRowCount(); i++) {
-			double value = pow(i, 1.5);
-			assertEquals(value, filtered.getValue(i), 1e-10);
-		}
-	}
+    @Test
+    public void testNormalCase() {
+        int n = 10;
+        HashSet<String> dict = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            dict.add(String.valueOf(pow(i, 1.5)));
+        }
+        Vector v = new Nominal(10, dict);
+        for (int i = 0; i < v.rowCount(); i++) {
+            String value = String.valueOf(pow(i, 1.5));
+            v.setLabel(i, value);
+        }
+        Vector filtered = toNumeric(v);
+        for (int i = 0; i < v.rowCount(); i++) {
+            double value = pow(i, 1.5);
+            assertEquals(value, filtered.getValue(i), 1e-10);
+        }
+    }
 
-	@Test
-	public void testNullVector() {
-		try {
-			sort(null);
-		} catch (Exception ex) {
-			assertTrue(true);
-		}
-	}
+    @Test
+    public void testNullVector() {
+        try {
+            sort(null);
+        } catch (Exception ex) {
+            assertTrue(true);
+        }
+    }
 
-	@Test
-	public void testNFE() {
-		Vector filtered = new Nominal(1, Arrays.asList(new String[]{"abc"}));
-		filtered.setLabel(0, "abc");
-		Vector numeric = toNumeric(filtered);
-		assertEquals(numeric.getValue(0), numeric.getValue(0), 1e-10);
-		assertTrue(numeric.isMissing(0));
-	}
+    @Test
+    public void testNFE() {
+        Vector filtered = new Nominal(1, Arrays.asList(new String[]{"abc"}));
+        filtered.setLabel(0, "abc");
+        Vector numeric = toNumeric(filtered);
+        assertEquals(numeric.getValue(0), numeric.getValue(0), 1e-10);
+        assertTrue(numeric.isMissing(0));
+    }
 }

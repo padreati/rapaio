@@ -118,10 +118,10 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
     }
 
     @Override
-    public void learn(final Frame df, List<Double> weights, final String classColName) {
+    public void learn(final Frame df, List<Double> weights, final String targetColName) {
         long start = System.currentTimeMillis();
         for (int i = 0; i < df.rowCount(); i++) {
-            if (df.getCol(classColName).isMissing(i)) {
+            if (df.getCol(targetColName).isMissing(i)) {
                 throw new IllegalArgumentException("Not allowed missing classes");
             }
         }
@@ -134,10 +134,10 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
             mcols2 = ((int) log2(df.colCount())) + 1;
         }
 
-        this.colSelector = new RandomColSelector(df, new ColRange(classColName), mcols2);
+        this.colSelector = new RandomColSelector(df, new ColRange(targetColName), mcols2);
 
-        this.classColName = classColName;
-        this.dict = df.getCol(classColName).getDictionary();
+        this.classColName = targetColName;
+        this.dict = df.getCol(targetColName).getDictionary();
         this.giniImportanceNames = df.getColNames();
         this.giniImportanceValue = new double[df.getColNames().length];
         this.giniImportanceCount = new double[df.getColNames().length];
@@ -154,7 +154,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
         final List<Frame> bootstraps = new ArrayList<>();
         for (int i = 0; i < mtrees; i++) {
             final RandomTree tree = new RandomTree();
-            tree.setColSelector(new RandomColSelector(df, new ColRange(classColName), mcols2));
+            tree.setColSelector(new RandomColSelector(df, new ColRange(targetColName), mcols2));
             tree.setMinNodeSize(minNodeSize);
             trees.add(tree);
             final Frame bootstrap = StatSampling.randomBootstrap(df);
@@ -162,7 +162,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
             tasks.add(new Callable<Object>() {
                 @Override
                 public Object call() throws Exception {
-                    tree.learn(bootstrap, classColName);
+                    tree.learn(bootstrap, targetColName);
                     double[] vi = tree.getVariableImportance();
                     for (int j = 0; j < vi.length; j++) {
                         giniImportanceValue[j] += vi[j];
@@ -195,7 +195,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
         tree.predict(delta);
         Vector predict = tree.getPrediction();
         for (int i = 0; i < delta.rowCount(); i++) {
-            int rowId = delta.getRowId(i);
+            int rowId = delta.rowId(i);
             oobFreq[rowId][predict.getIndex(i)]++;
         }
     }

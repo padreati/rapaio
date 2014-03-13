@@ -61,14 +61,14 @@ public final class Frames {
 
         for (int i = 0; i < df.colCount(); i++) {
             Vector src = df.getCol(i);
-            if (src.getType().isNominal()) {
+            if (src.type().isNominal()) {
                 vectors.add(new Nominal(len, df.getCol(i).getDictionary()));
                 names.add(df.getColNames()[i]);
                 for (int j = 0; j < df.rowCount(); j++) {
                     vectors.get(i).setLabel(j, src.getLabel(j));
                 }
             }
-            if (src.getType().isNumeric()) {
+            if (src.type().isNumeric()) {
                 vectors.add(new Numeric(len));
                 names.add(df.getColNames()[i]);
                 for (int j = 0; j < df.rowCount(); j++) {
@@ -80,7 +80,7 @@ public final class Frames {
     }
 
     public static Frame addCol(Frame df, Vector col, String name, int position) {
-        if (df.rowCount() != col.getRowCount()) {
+        if (df.rowCount() != col.rowCount()) {
             throw new IllegalArgumentException("frame and getCol have different row counts");
         }
         if (df.isMappedFrame()) {
@@ -108,7 +108,7 @@ public final class Frames {
         if (exceptCols != null && !exceptCols.isEmpty())
             Collections.addAll(except, exceptCols.split(",", -1));
         for (int i = 0; i < df.colCount(); i++) {
-            if (df.getCol(i).getType().isNumeric() && !exceptCols.contains(df.getColNames()[i])) {
+            if (df.getCol(i).type().isNumeric() && !exceptCols.contains(df.getColNames()[i])) {
                 double mean = new Mean(df.getCol(i)).getValue();
                 double sd = StrictMath.sqrt(new Variance(df.getCol(i)).getValue());
 

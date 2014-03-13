@@ -29,21 +29,21 @@ import rapaio.data.Vector;
  */
 public class L1BoostingLossFunction implements BoostingLossFunction {
 
-	@Override
-	public double findMinimum(Vector y, Vector fx) {
-		Numeric values = new Numeric();
-		for (int i = 0; i < y.getRowCount(); i++) {
-			values.addValue(y.getValue(i) - fx.getValue(i));
-		}
-		return new Quantiles(values, new double[]{0.5}).getValues()[0];
-	}
+    @Override
+    public double findMinimum(Vector y, Vector fx) {
+        Numeric values = new Numeric();
+        for (int i = 0; i < y.rowCount(); i++) {
+            values.addValue(y.getValue(i) - fx.getValue(i));
+        }
+        return new Quantiles(values, new double[]{0.5}).getValues()[0];
+    }
 
-	@Override
-	public Numeric gradient(Vector y, Vector fx) {
-		Numeric gradient = new Numeric();
-		for (int i = 0; i < y.getRowCount(); i++) {
-			gradient.addValue(y.getValue(i) - fx.getValue(i) < 0 ? -1. : 1.);
-		}
-		return gradient;
-	}
+    @Override
+    public Numeric gradient(Vector y, Vector fx) {
+        Numeric gradient = new Numeric();
+        for (int i = 0; i < y.rowCount(); i++) {
+            gradient.addValue(y.getValue(i) - fx.getValue(i) < 0 ? -1. : 1.);
+        }
+        return gradient;
+    }
 }

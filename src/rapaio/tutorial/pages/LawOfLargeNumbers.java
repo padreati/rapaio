@@ -80,7 +80,7 @@ public class LawOfLargeNumbers implements TutorialPage {
                 + "        }\n");
         StatOnline ocs = new StatOnline();
         final Vector mean = new Numeric(N);
-        for (int i = 0; i < events.getRowCount(); i++) {
+        for (int i = 0; i < events.rowCount(); i++) {
             ocs.update(events.getValue(i));
             mean.setValue(i, ocs.getMean());
         }

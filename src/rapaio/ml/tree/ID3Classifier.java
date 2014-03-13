@@ -59,11 +59,11 @@ public class ID3Classifier extends AbstractClassifier<ID3Classifier> {
     }
 
     @Override
-    public void learn(Frame df, List<Double> weights, String classColName) {
-        validate(df, classColName);
-        this.dict = df.getCol(classColName).getDictionary();
+    public void learn(Frame df, List<Double> weights, String targetColName) {
+        validate(df, targetColName);
+        this.dict = df.getCol(targetColName).getDictionary();
         this.root = new ID3ClassifierNode();
-        this.root.learn(null, df, weights, classColName, new HashSet<String>(), selection);
+        this.root.learn(null, df, weights, targetColName, new HashSet<String>(), selection);
     }
 
     @Override
@@ -148,7 +148,7 @@ public class ID3Classifier extends AbstractClassifier<ID3Classifier> {
 
     private void validate(Frame df, String classColName) {
         for (int i = 0; i < df.colCount(); i++) {
-            if (!df.getCol(i).getType().isNominal()) {
+            if (!df.getCol(i).type().isNominal()) {
                 throw new IllegalArgumentException("ID3 can handle only isNominal attributes.");
             }
         }
@@ -248,7 +248,7 @@ class ID3ClassifierNode {
 
         for (int i = 0; i < df.rowCount(); i++) {
             int index = df.getIndex(i, df.getColIndex(colName));
-            splitMappings[index].add(df.getRowId(i));
+            splitMappings[index].add(df.rowId(i));
             splitWeights[index].add(weights.get(i));
         }
         Frame[] frames = new Frame[dict.length];
@@ -280,14 +280,14 @@ class ID3ClassifierNode {
         return 0;
     }
 
-    private double computeMetric(Frame df, List<Double> weights, String classColName, String testColName, int selection) {
+    private double computeMetric(Frame df, List<Double> weights, String targetName, String testName, int selection) {
         DensityTable dt;
         switch (selection) {
             case ID3Classifier.SELECTION_ENTROPY:
-                dt = new DensityTable(df, weights, testColName, classColName);
-                return dt.getInfoXGain();
+                dt = new DensityTable(df.getCol(testName), df.getCol(targetName), weights);
+                return dt.getSplitEntropy();
             case ID3Classifier.SELECTION_INFOGAIN:
-                dt = new DensityTable(df, weights, testColName, classColName);
+                dt = new DensityTable(df.getCol(testName), df.getCol(targetName), weights);
                 return dt.getInfoGain();
         }
         return 0;

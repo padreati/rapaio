@@ -20,7 +20,7 @@
 
 package rapaio.tutorial.pages;
 
-import rapaio.core.stat.correlation.PearsonRCorrelation;
+import rapaio.core.correlation.PearsonRCorrelation;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.filters.BaseFilters;

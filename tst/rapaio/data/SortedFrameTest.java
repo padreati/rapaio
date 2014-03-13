@@ -88,10 +88,10 @@ public class SortedFrameTest {
         assertEquals(3, sort.colCount());
         assertEquals(4, sort.rowCount());
 
-        assertEquals(2, sort.getRowId(0));
-        assertEquals(1, sort.getRowId(1));
-        assertEquals(0, sort.getRowId(2));
-        assertEquals(3, sort.getRowId(3));
+        assertEquals(2, sort.rowId(0));
+        assertEquals(1, sort.rowId(1));
+        assertEquals(0, sort.rowId(2));
+        assertEquals(3, sort.rowId(3));
 
         boolean exceptional = false;
         try {
@@ -147,7 +147,7 @@ public class SortedFrameTest {
             assertEquals(df.getColNames()[i], sorted.getColNames()[i]);
             assertEquals(df.getColIndex(df.getColNames()[i]), sorted.getColIndex(sorted.getColNames()[i]));
             assertEquals(df.getColNames()[i], sorted.getColNames()[i]);
-            assertEquals(df.getCol(df.getColNames()[i]).getType().isNominal(), sorted.getCol(sorted.getColNames()[i]).getType().isNominal());
+            assertEquals(df.getCol(df.getColNames()[i]).type().isNominal(), sorted.getCol(sorted.getColNames()[i]).type().isNominal());
         }
     }
 
@@ -158,7 +158,7 @@ public class SortedFrameTest {
         for (int i = 0; i < 10_000; i++) {
             int col = RandomSource.nextInt(sorted.colCount());
             boolean asc = RandomSource.nextDouble() >= .5;
-            Comparator<Integer> comp = sorted.getCol(col).getType().isNominal() ?
+            Comparator<Integer> comp = sorted.getCol(col).type().isNominal() ?
                     nominalComparator(sorted.getCol(0), asc) :
                     numericComparator(sorted.getCol(0), asc);
             sorted = sort(sorted, comp);
@@ -166,10 +166,10 @@ public class SortedFrameTest {
 
         sorted = sort(sorted, nominalComparator(sorted.getCol("x"), true));
 
-        assertEquals(2, sorted.getRowId(0));
-        assertEquals(1, sorted.getRowId(1));
-        assertEquals(0, sorted.getRowId(2));
-        assertEquals(3, sorted.getRowId(3));
+        assertEquals(2, sorted.rowId(0));
+        assertEquals(1, sorted.rowId(1));
+        assertEquals(0, sorted.rowId(2));
+        assertEquals(3, sorted.rowId(3));
 
     }
 }

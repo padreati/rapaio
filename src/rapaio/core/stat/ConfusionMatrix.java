@@ -53,10 +53,10 @@ public class ConfusionMatrix implements Summarizable {
     }
 
     private void validate(Vector actual, Vector predict) {
-        if (!actual.getType().isNominal()) {
+        if (!actual.type().isNominal()) {
             throw new IllegalArgumentException("actual values vector must be nominal");
         }
-        if (!predict.getType().isNominal()) {
+        if (!predict.type().isNominal()) {
             throw new IllegalArgumentException("predict values vector must be nominal");
         }
         if (actual.getDictionary().length != predict.getDictionary().length) {
@@ -70,14 +70,14 @@ public class ConfusionMatrix implements Summarizable {
     }
 
     private void compute() {
-        for (int i = 0; i < actual.getRowCount(); i++) {
+        for (int i = 0; i < actual.rowCount(); i++) {
             if (actual.getIndex(i) != 0 && predict.getIndex(i) != 0) {
                 completeCases++;
                 cmf[actual.getIndex(i) - 1][predict.getIndex(i) - 1]++;
             }
         }
         acc = 0;
-        for (int i = 0; i < actual.getRowCount(); i++) {
+        for (int i = 0; i < actual.rowCount(); i++) {
             if (actual.getIndex(i) == predict.getIndex(i) && actual.getIndex(i) != 0) {
                 acc++;
             }
@@ -101,7 +101,7 @@ public class ConfusionMatrix implements Summarizable {
     }
 
     private void addDetails(StringBuilder sb) {
-        sb.append(String.format("\nComplete cases %d from %d\n", (int) Math.rint(completeCases), actual.getRowCount()));
+        sb.append(String.format("\nComplete cases %d from %d\n", (int) Math.rint(completeCases), actual.rowCount()));
         sb.append(String.format("Accuracy: %.4f\n", acc));
     }
 

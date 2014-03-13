@@ -174,7 +174,7 @@ class FrameIterator implements FIterator {
 
     @Override
     public int getRowId() {
-        return frame.getRowId(cyclePos);
+        return frame.rowId(cyclePos);
     }
 
     @Override

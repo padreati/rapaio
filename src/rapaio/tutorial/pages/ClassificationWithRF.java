@@ -306,8 +306,8 @@ public class ClassificationWithRF implements TutorialPage {
     private double computeAccuracy(Classifier model, Frame test) {
         Vector predict = model.getPrediction();
         double accuracy = 0;
-        double total = predict.getRowCount();
-        for (int i = 0; i < predict.getRowCount(); i++) {
+        double total = predict.rowCount();
+        for (int i = 0; i < predict.rowCount(); i++) {
             if (test.getCol("spam").getIndex(i) == predict.getIndex(i)) {
                 accuracy += 1.;
             }

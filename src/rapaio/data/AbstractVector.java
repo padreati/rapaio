@@ -36,220 +36,220 @@ import java.util.stream.Stream;
  */
 public abstract class AbstractVector implements Vector {
 
-	@Override
-	public String toString() {
-		return "Vector{ size='" + getRowCount() + "\'}";
-	}
+    @Override
+    public String toString() {
+        return "Vector{ size='" + rowCount() + "\'}";
+    }
 
-	@Override
-	public VIterator getIterator() {
-		return getIterator(false);
-	}
+    @Override
+    public VIterator getIterator() {
+        return getIterator(false);
+    }
 
-	@Override
-	public VIterator getIterator(boolean complete) {
-		return new VectorIterator(complete, getRowCount(), this);
-	}
+    @Override
+    public VIterator getIterator(boolean complete) {
+        return new VectorIterator(complete, rowCount(), this);
+    }
 
-	@Override
-	public VIterator getCycleIterator(int size) {
-		return new VectorIterator(true, size, this);
-	}
+    @Override
+    public VIterator getCycleIterator(int size) {
+        return new VectorIterator(true, size, this);
+    }
 
-	@Override
-	public Stream<VInstance> getStream() {
-		List<VInstance> instances = new ArrayList<>();
-		for (int i = 0; i < this.getRowCount(); i++) {
-			instances.add(new VInstanceImpl(i, this));
-		}
-		return instances.stream();
-	}
+    @Override
+    public Stream<VInstance> getStream() {
+        List<VInstance> instances = new ArrayList<>();
+        for (int i = 0; i < this.rowCount(); i++) {
+            instances.add(new VInstanceImpl(i, this));
+        }
+        return instances.stream();
+    }
 
-	@Override
-	public DoubleStream getDoubleStream() {
-		throw new RuntimeException("Not implemented for this type of vector");
-	}
+    @Override
+    public DoubleStream getDoubleStream() {
+        throw new RuntimeException("Not implemented for this type of vector");
+    }
 
-	@Override
-	public double[] toListValue() {
-		double[] list = new double[getRowCount()];
-		for (int i = 0; i < getRowCount(); i++) {
-			list[i] = getValue(i);
-		}
-		return list;
-	}
+    @Override
+    public double[] toListValue() {
+        double[] list = new double[rowCount()];
+        for (int i = 0; i < rowCount(); i++) {
+            list[i] = getValue(i);
+        }
+        return list;
+    }
 }
 
 class VectorIterator implements VIterator {
 
-	private static final String DEFAULT_MAPPING_KEY = "$$DEFAULT$$";
-	final boolean complete;
-	final int size;
-	final Vector vector;
-	private final HashMap<String, Mapping> mappings = new HashMap<>();
+    private static final String DEFAULT_MAPPING_KEY = "$$DEFAULT$$";
+    final boolean complete;
+    final int size;
+    final Vector vector;
+    private final HashMap<String, Mapping> mappings = new HashMap<>();
 
-	int pos = -1;
-	int cyclePos = -1;
+    int pos = -1;
+    int cyclePos = -1;
 
-	VectorIterator(boolean complete, int size, Vector vector) {
-		this.complete = complete;
-		this.size = size;
-		this.vector = vector;
-	}
+    VectorIterator(boolean complete, int size, Vector vector) {
+        this.complete = complete;
+        this.size = size;
+        this.vector = vector;
+    }
 
-	@Override
-	public boolean next() {
-		while (pos < size - 1) {
-			pos++;
-			cyclePos++;
-			if (cyclePos >= vector.getRowCount()) {
-				cyclePos = 0;
-			}
-			if (complete && vector.isMissing(cyclePos)) continue;
-			return true;
-		}
-		return false;
-	}
+    @Override
+    public boolean next() {
+        while (pos < size - 1) {
+            pos++;
+            cyclePos++;
+            if (cyclePos >= vector.rowCount()) {
+                cyclePos = 0;
+            }
+            if (complete && vector.isMissing(cyclePos)) continue;
+            return true;
+        }
+        return false;
+    }
 
-	@Override
-	public void reset() {
-		pos = -1;
-		cyclePos = -1;
-	}
+    @Override
+    public void reset() {
+        pos = -1;
+        cyclePos = -1;
+    }
 
-	@Override
-	public int getRowId() {
-		return vector.getRowId(cyclePos);
-	}
+    @Override
+    public int getRowId() {
+        return vector.rowId(cyclePos);
+    }
 
-	@Override
-	public int getRow() {
-		return cyclePos;
-	}
+    @Override
+    public int getRow() {
+        return cyclePos;
+    }
 
-	@Override
-	public double getValue() {
-		return vector.getValue(cyclePos);
-	}
+    @Override
+    public double getValue() {
+        return vector.getValue(cyclePos);
+    }
 
-	@Override
-	public void setValue(double value) {
-		vector.setValue(cyclePos, value);
-	}
+    @Override
+    public void setValue(double value) {
+        vector.setValue(cyclePos, value);
+    }
 
-	@Override
-	public int getIndex() {
-		return vector.getIndex(cyclePos);
-	}
+    @Override
+    public int getIndex() {
+        return vector.getIndex(cyclePos);
+    }
 
-	@Override
-	public void setIndex(int value) {
-		vector.setIndex(cyclePos, value);
-	}
+    @Override
+    public void setIndex(int value) {
+        vector.setIndex(cyclePos, value);
+    }
 
-	@Override
-	public String getLabel() {
-		return vector.getLabel(cyclePos);
-	}
+    @Override
+    public String getLabel() {
+        return vector.getLabel(cyclePos);
+    }
 
-	@Override
-	public void setLabel(String value) {
-		vector.setLabel(cyclePos, value);
-	}
+    @Override
+    public void setLabel(String value) {
+        vector.setLabel(cyclePos, value);
+    }
 
-	@Override
-	public boolean isMissing() {
-		return vector.isMissing(cyclePos);
-	}
+    @Override
+    public boolean isMissing() {
+        return vector.isMissing(cyclePos);
+    }
 
-	@Override
-	public void setMissing() {
-		vector.setMissing(cyclePos);
-	}
+    @Override
+    public void setMissing() {
+        vector.setMissing(cyclePos);
+    }
 
-	@Override
-	public void appendToMapping() {
-		if (!mappings.containsKey(DEFAULT_MAPPING_KEY)) {
-			mappings.put(DEFAULT_MAPPING_KEY, new Mapping());
-		}
-		mappings.get(DEFAULT_MAPPING_KEY).add(getRowId());
-	}
+    @Override
+    public void appendToMapping() {
+        if (!mappings.containsKey(DEFAULT_MAPPING_KEY)) {
+            mappings.put(DEFAULT_MAPPING_KEY, new Mapping());
+        }
+        mappings.get(DEFAULT_MAPPING_KEY).add(getRowId());
+    }
 
-	@Override
-	public void appendToMapping(String key) {
-		if (!mappings.containsKey(key)) {
-			mappings.put(key, new Mapping());
-		}
-		mappings.get(key).add(getRowId());
-	}
+    @Override
+    public void appendToMapping(String key) {
+        if (!mappings.containsKey(key)) {
+            mappings.put(key, new Mapping());
+        }
+        mappings.get(key).add(getRowId());
+    }
 
-	@Override
-	public int getMappingsCount() {
-		return mappings.keySet().size();
-	}
+    @Override
+    public int getMappingsCount() {
+        return mappings.keySet().size();
+    }
 
-	@Override
-	public Set<String> getMappingsKeys() {
-		return mappings.keySet();
-	}
+    @Override
+    public Set<String> getMappingsKeys() {
+        return mappings.keySet();
+    }
 
-	@Override
-	public Mapping getMapping() {
-		return mappings.get(DEFAULT_MAPPING_KEY);
-	}
+    @Override
+    public Mapping getMapping() {
+        return mappings.get(DEFAULT_MAPPING_KEY);
+    }
 
-	@Override
-	public Mapping getMapping(String key) {
-		return mappings.get(key);
-	}
+    @Override
+    public Mapping getMapping(String key) {
+        return mappings.get(key);
+    }
 
-	@Override
-	public Vector getMappedVector() {
-		return new MappedVector(vector.getSourceVector(), getMapping());
-	}
+    @Override
+    public Vector getMappedVector() {
+        return new MappedVector(vector.getSource(), getMapping());
+    }
 
-	@Override
-	public Vector getMappedVector(String key) {
-		return new MappedVector(vector.getSourceVector(), getMapping(key));
-	}
+    @Override
+    public Vector getMappedVector(String key) {
+        return new MappedVector(vector.getSource(), getMapping(key));
+    }
 
-	@Override
-	public Map<String, Vector> getMappedVectors() {
-		Map<String, Vector> map = new HashMap<>();
-		for (String key : getMappingsKeys()) {
-			map.put(key, getMappedVector(key));
-		}
-		return map;
-	}
+    @Override
+    public Map<String, Vector> getMappedVectors() {
+        Map<String, Vector> map = new HashMap<>();
+        for (String key : getMappingsKeys()) {
+            map.put(key, getMappedVector(key));
+        }
+        return map;
+    }
 }
 
 final class VInstanceImpl implements VInstance {
 
-	final int row;
-	final Vector vector;
+    final int row;
+    final Vector vector;
 
-	VInstanceImpl(int row, Vector vector) {
-		this.row = vector.getRowId(row);
-		this.vector = vector.getSourceVector();
-	}
+    VInstanceImpl(int row, Vector vector) {
+        this.row = vector.rowId(row);
+        this.vector = vector.getSource();
+    }
 
-	@Override
-	public boolean isMissing() {
-		return vector.isMissing(row);
-	}
+    @Override
+    public boolean isMissing() {
+        return vector.isMissing(row);
+    }
 
-	@Override
-	public void setMissing() {
-		vector.setMissing(row);
-	}
+    @Override
+    public void setMissing() {
+        vector.setMissing(row);
+    }
 
-	@Override
-	public double getValue() {
-		return vector.getValue(row);
-	}
+    @Override
+    public double getValue() {
+        return vector.getValue(row);
+    }
 
-	@Override
-	public void setValue(final double value) {
-		vector.setValue(row, value);
-	}
+    @Override
+    public void setValue(final double value) {
+        vector.setValue(row, value);
+    }
 }

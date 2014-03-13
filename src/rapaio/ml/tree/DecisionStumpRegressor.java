@@ -86,7 +86,7 @@ public class DecisionStumpRegressor extends AbstractRegressor implements BTRegre
         for (String colName : df.getColNames()) {
 //			if (RandomSource.nextDouble() > 0.3) continue;
             if (colName.equals(targetColName)) continue;
-            switch (df.getCol(colName).getType()) {
+            switch (df.getCol(colName).type()) {
                 case INDEX:
                 case NUMERIC:
                     evalNumeric(df, colName);
@@ -102,20 +102,20 @@ public class DecisionStumpRegressor extends AbstractRegressor implements BTRegre
     private void evalNumeric(Frame df, String colName) {
 
         Vector sort = sort(completeCases(df.getCol(colName)));
-        double[] var = new double[sort.getRowCount()];
+        double[] var = new double[sort.rowCount()];
         StatOnline so = new StatOnline();
-        for (int i = 0; i < sort.getRowCount(); i++) {
-            so.update(df.getSourceFrame().getValue(sort.getRowId(i), targetColName));
+        for (int i = 0; i < sort.rowCount(); i++) {
+            so.update(df.getSourceFrame().getValue(sort.rowId(i), targetColName));
             var[i] = so.getVariance() * so.getN();
         }
         so = new StatOnline();
-        for (int i = sort.getRowCount() - 1; i >= 0; i--) {
-            so.update(df.getSourceFrame().getValue(sort.getRowId(i), targetColName));
+        for (int i = sort.rowCount() - 1; i >= 0; i--) {
+            so.update(df.getSourceFrame().getValue(sort.rowId(i), targetColName));
             var[i] += so.getVariance() * so.getN();
         }
-        for (int i = minCount + 1; i < sort.getRowCount() - minCount; i++) {
+        for (int i = minCount + 1; i < sort.rowCount() - minCount; i++) {
             if (var[i - 1] < criterion && sort.getValue(i - 1) != sort.getValue(i)
-                    && sort.getValue(i - 1) != sort.getValue(sort.getRowCount() - 1)) {
+                    && sort.getValue(i - 1) != sort.getValue(sort.rowCount() - 1)) {
                 criterion = var[i - 1];
                 testColName = colName;
                 testValue = sort.getValue(i - 1);
@@ -136,23 +136,23 @@ public class DecisionStumpRegressor extends AbstractRegressor implements BTRegre
 
 
         Vector test = x.getCol(testColName);
-        for (int i = 0; i < test.getRowCount(); i++) {
+        for (int i = 0; i < test.rowCount(); i++) {
             if (test.isMissing(i)) continue;
-            if (test.getType().isNominal()) continue;
-            if (test.getType().isNumeric() && (testValue >= test.getValue(i))) {
-                dfLeft.add(test.getRowId(i));
+            if (test.type().isNominal()) continue;
+            if (test.type().isNumeric() && (testValue >= test.getValue(i))) {
+                dfLeft.add(test.rowId(i));
             } else {
-                dfRight.add(test.getRowId(i));
+                dfRight.add(test.rowId(i));
             }
         }
 
         defaultFit = lossFunction.findMinimum(y, fx);
         leftFit = lossFunction.findMinimum(
-                new MappedVector(y.getSourceVector(), dfLeft),
-                new MappedVector(fx.getSourceVector(), dfLeft));
+                new MappedVector(y.getSource(), dfLeft),
+                new MappedVector(fx.getSource(), dfLeft));
         rightFit = lossFunction.findMinimum(
-                new MappedVector(y.getSourceVector(), dfRight),
-                new MappedVector(fx.getSourceVector(), dfRight));
+                new MappedVector(y.getSource(), dfRight),
+                new MappedVector(fx.getSource(), dfRight));
     }
 
     @Override
@@ -169,8 +169,8 @@ public class DecisionStumpRegressor extends AbstractRegressor implements BTRegre
                 fitValues.setValue(i, defaultFit);
                 continue;
             }
-            if ((test.getType().isNominal() && testLabel.equals(test.getLabel(i)))
-                    || (test.getType().isNumeric() && (testValue >= test.getValue(i)))) {
+            if ((test.type().isNominal() && testLabel.equals(test.getLabel(i)))
+                    || (test.type().isNumeric() && (testValue >= test.getValue(i)))) {
                 fitValues.setValue(i, leftFit);
             } else {
                 fitValues.setValue(i, rightFit);

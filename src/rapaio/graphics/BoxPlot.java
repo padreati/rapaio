@@ -60,14 +60,14 @@ public class BoxPlot extends AbstractFigure {
         labels = nominal.getDictionary();
         vectors = new Vector[labels.length];
         int[] count = new int[labels.length];
-        for (int i = 0; i < numeric.getRowCount(); i++) {
+        for (int i = 0; i < numeric.rowCount(); i++) {
             count[nominal.getIndex(i)]++;
         }
         for (int i = 0; i < count.length; i++) {
             vectors[i] = new Numeric(count[i]);
         }
         int[] pos = new int[vectors.length];
-        for (int i = 0; i < nominal.getRowCount(); i++) {
+        for (int i = 0; i < nominal.rowCount(); i++) {
             vectors[nominal.getIndex(i)].setValue(pos[nominal.getIndex(i)], numeric.getValue(i));
             pos[nominal.getIndex(i)]++;
         }
@@ -84,14 +84,14 @@ public class BoxPlot extends AbstractFigure {
         if (colRange == null) {
             int len = 0;
             for (int i = 0; i < df.colCount(); i++) {
-                if (df.getCol(i).getType().isNumeric()) {
+                if (df.getCol(i).type().isNumeric()) {
                     len++;
                 }
             }
             int[] indexes = new int[len];
             len = 0;
             for (int i = 0; i < df.colCount(); i++) {
-                if (df.getCol(i).getType().isNumeric()) {
+                if (df.getCol(i).type().isNumeric()) {
                     indexes[len++] = i;
                 }
             }
@@ -125,7 +125,7 @@ public class BoxPlot extends AbstractFigure {
         range.union(0, Double.NaN);
         range.union(vectors.length, Double.NaN);
         for (Vector v : vectors) {
-            for (int i = 0; i < v.getRowCount(); i++) {
+            for (int i = 0; i < v.rowCount(); i++) {
                 if (v.isMissing(i)) continue;
                 range.union(Double.NaN, v.getValue(i));
             }
@@ -157,7 +157,7 @@ public class BoxPlot extends AbstractFigure {
 
         for (int i = 0; i < vectors.length; i++) {
             Vector v = vectors[i];
-            if (v.getRowCount() == 0) {
+            if (v.rowCount() == 0) {
                 continue;
             }
             double[] p = new double[]{0.25, 0.5, 0.75};
@@ -186,7 +186,7 @@ public class BoxPlot extends AbstractFigure {
             // outliers
             double upperwhisker = q[2];
             double lowerqhisker = q[0];
-            for (int j = 0; j < v.getRowCount(); j++) {
+            for (int j = 0; j < v.rowCount(); j++) {
                 double point = v.getValue(j);
                 if ((point > q[2] + outerfence) || (point < q[0] - outerfence)) {
                     // big outlier

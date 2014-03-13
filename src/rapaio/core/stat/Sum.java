@@ -28,37 +28,37 @@ import static rapaio.workspace.Workspace.code;
 
 /**
  * Computes the sum of elements for a {@link Vector} of values.
- * <p/>
+ * <p>
  * Ignore invalid numeric values. See {@link rapaio.core.MathBase#validNumber(double)}.
- * <p/>
+ * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class Sum implements Summarizable {
 
-	private final Vector vector;
-	private final double value;
+    private final Vector vector;
+    private final double value;
 
-	public Sum(Vector vector) {
-		this.vector = vector;
-		this.value = compute();
-	}
+    public Sum(Vector vector) {
+        this.vector = vector;
+        this.value = compute();
+    }
 
-	private double compute() {
-		double sum = 0;
-		for (int i = 0; i < vector.getRowCount(); i++) {
-			if (validNumber(vector.getValue(i))) {
-				sum += vector.getValue(i);
-			}
-		}
-		return sum;
-	}
+    private double compute() {
+        double sum = 0;
+        for (int i = 0; i < vector.rowCount(); i++) {
+            if (validNumber(vector.getValue(i))) {
+                sum += vector.getValue(i);
+            }
+        }
+        return sum;
+    }
 
-	public double getValue() {
-		return value;
-	}
+    public double getValue() {
+        return value;
+    }
 
-	@Override
-	public void summary() {
-		code(String.format("sum\n%.10f\n", value));
-	}
+    @Override
+    public void summary() {
+        code(String.format("sum\n%.10f\n", value));
+    }
 }

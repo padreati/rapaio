@@ -53,7 +53,7 @@ public class LinearModelRegressor extends AbstractRegressor {
             targets.add(targetColName);
         }
         for (String colName : df.getColNames()) {
-            if (!targetColNames.contains(colName) && df.getCol(colName).getType().isNumeric()) {
+            if (!targetColNames.contains(colName) && df.getCol(colName).type().isNumeric()) {
                 predictors.add(colName);
             }
         }

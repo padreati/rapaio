@@ -20,12 +20,12 @@
 
 package rapaio.tutorial.pages;
 
+import rapaio.core.correlation.PearsonRCorrelation;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
 import rapaio.core.stat.Variance;
-import rapaio.core.stat.correlation.PearsonRCorrelation;
 import rapaio.data.Frame;
 import rapaio.data.Vector;
 import rapaio.datasets.Datasets;

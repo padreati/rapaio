@@ -74,7 +74,7 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public int getRowId(int row) {
+    public int rowId(int row) {
         return row;
     }
 

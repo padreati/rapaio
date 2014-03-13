@@ -123,7 +123,7 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor implements 
         inputCols = new ArrayList<>();
         for (int i = 0; i < df.getColNames().length; i++) {
             if (targetCols.contains(df.getColNames()[i])) continue;
-            if (df.getCol(df.getColNames()[i]).getType().isNominal()) continue;
+            if (df.getCol(df.getColNames()[i]).type().isNominal()) continue;
             inputCols.add(df.getColNames()[i]);
         }
 

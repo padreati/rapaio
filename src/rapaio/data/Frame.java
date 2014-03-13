@@ -88,12 +88,12 @@ public interface Frame extends Serializable {
     Vector getCol(String name);
 
     /**
-     * Returns row identifier for a specific column. See {@link Vector#getRowId(int)} for further reference.
+     * Returns row identifier for a specific column. See {@link Vector#rowId(int)} for further reference.
      *
      * @param row row for which row identifier is returned
      * @return row identifier
      */
-    int getRowId(int row);
+    int rowId(int row);
 
     public boolean isMappedFrame();
 

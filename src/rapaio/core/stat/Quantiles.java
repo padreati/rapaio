@@ -30,74 +30,74 @@ import static rapaio.workspace.Workspace.printfln;
 
 /**
  * Estimates quantiles from a numerical {@link rapaio.data.Vector} of values.
- * <p/>
+ * <p>
  * The estimated quantiles implements R-8, SciPy-(1/3,1/3) version of estimating quantiles.
- * <p/>
+ * <p>
  * For further reference see:
  * http://en.wikipedia.org/wiki/Quantile
- * <p/>
+ * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class Quantiles implements Summarizable {
 
-	private final Vector vector;
-	private final double[] percentiles;
-	private final double[] quantiles;
+    private final Vector vector;
+    private final double[] percentiles;
+    private final double[] quantiles;
 
-	public Quantiles(Vector vector, double[] percentiles) {
-		this.vector = vector;
-		this.percentiles = percentiles;
-		this.quantiles = compute();
-	}
+    public Quantiles(Vector vector, double[] percentiles) {
+        this.vector = vector;
+        this.percentiles = percentiles;
+        this.quantiles = compute();
+    }
 
-	private double[] compute() {
-		if (vector.getRowCount() == 1) {
-			double[] values = new double[percentiles.length];
-			for (int i = 0; i < values.length; i++) {
-				values[i] = vector.getValue(0);
-			}
-			return values;
-		}
-		Vector sorted = sort(vector);
-		int start = 0;
-		while (sorted.isMissing(start)) {
-			start++;
-			if (start == sorted.getRowCount()) {
-				break;
-			}
-		}
-		double[] values = new double[percentiles.length];
-		if (start == sorted.getRowCount()) {
-			return values;
-		}
-		for (int i = 0; i < percentiles.length; i++) {
-			int N = sorted.getRowCount() - start;
-			double h = (N + 1. / 3.) * percentiles[i] + 1. / 3.;
-			int hfloor = (int) floor(h);
+    private double[] compute() {
+        if (vector.rowCount() == 1) {
+            double[] values = new double[percentiles.length];
+            for (int i = 0; i < values.length; i++) {
+                values[i] = vector.getValue(0);
+            }
+            return values;
+        }
+        Vector sorted = sort(vector);
+        int start = 0;
+        while (sorted.isMissing(start)) {
+            start++;
+            if (start == sorted.rowCount()) {
+                break;
+            }
+        }
+        double[] values = new double[percentiles.length];
+        if (start == sorted.rowCount()) {
+            return values;
+        }
+        for (int i = 0; i < percentiles.length; i++) {
+            int N = sorted.rowCount() - start;
+            double h = (N + 1. / 3.) * percentiles[i] + 1. / 3.;
+            int hfloor = (int) floor(h);
 
-			if (percentiles[i] < (2. / 3.) / (N + 1. / 3.)) {
-				values[i] = sorted.getValue(start);
-				continue;
-			}
-			if (percentiles[i] >= (N - 1. / 3.) / (N + 1. / 3.)) {
-				values[i] = sorted.getValue(sorted.getRowCount() - 1);
-				continue;
-			}
-			values[i] = sorted.getValue(start + hfloor - 1)
-					+ (h - hfloor) * (sorted.getValue(start + hfloor) - sorted.getValue(start + hfloor - 1));
-		}
-		return values;
-	}
+            if (percentiles[i] < (2. / 3.) / (N + 1. / 3.)) {
+                values[i] = sorted.getValue(start);
+                continue;
+            }
+            if (percentiles[i] >= (N - 1. / 3.) / (N + 1. / 3.)) {
+                values[i] = sorted.getValue(sorted.rowCount() - 1);
+                continue;
+            }
+            values[i] = sorted.getValue(start + hfloor - 1)
+                    + (h - hfloor) * (sorted.getValue(start + hfloor) - sorted.getValue(start + hfloor - 1));
+        }
+        return values;
+    }
 
-	public double[] getValues() {
-		return quantiles;
-	}
+    public double[] getValues() {
+        return quantiles;
+    }
 
-	@Override
-	public void summary() {
-		printfln("quantiles - estimated quantiles");
-		for (int i = 0; i < quantiles.length; i++) {
-			printfln("quantile[%f = %f\n", percentiles[i], quantiles[i]);
-		}
-	}
+    @Override
+    public void summary() {
+        printfln("quantiles - estimated quantiles");
+        for (int i = 0; i < quantiles.length; i++) {
+            printfln("quantile[%f = %f\n", percentiles[i], quantiles[i]);
+        }
+    }
 }

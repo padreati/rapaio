@@ -20,8 +20,8 @@
 
 package rapaio.tutorial.pages;
 
-import rapaio.core.stat.correlation.PearsonRCorrelation;
-import rapaio.core.stat.correlation.SpearmanRhoCorrelation;
+import rapaio.core.correlation.PearsonRCorrelation;
+import rapaio.core.correlation.SpearmanRhoCorrelation;
 import rapaio.data.Frame;
 import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;

@@ -57,14 +57,14 @@ public class Bagging extends AbstractClassifier<Bagging> {
     }
 
     @Override
-    public void learn(Frame df, List<Double> weights, String classColName) {
-        this.classColName = classColName;
-        this.dict = df.getCol(classColName).getDictionary();
+    public void learn(Frame df, List<Double> weights, String targetColName) {
+        this.classColName = targetColName;
+        this.dict = df.getCol(targetColName).getDictionary();
         classifiers.clear();
         for (int i = 0; i < bags; i++) {
             Frame bootstrap = StatSampling.randomBootstrap(df, (int) Math.rint(df.rowCount() * p));
             Classifier c = provider.newInstance();
-            c.learn(bootstrap, classColName);
+            c.learn(bootstrap, targetColName);
             classifiers.add(c);
         }
     }

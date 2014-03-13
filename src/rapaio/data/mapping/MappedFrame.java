@@ -62,7 +62,7 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public int getRowId(int row) {
+    public int rowId(int row) {
         return mapping.get(row);
     }
 
