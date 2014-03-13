@@ -59,14 +59,14 @@ public class ModelEvaluation {
                     trainMapping.addAll(strata[j]);
                 }
             }
-            Frame train = new MappedFrame(df.getSourceFrame(), new Mapping(trainMapping));
-            Frame test = new MappedFrame(df.getSourceFrame(), new Mapping(testMapping));
+            Frame train = new MappedFrame(df.sourceFrame(), new Mapping(trainMapping));
+            Frame test = new MappedFrame(df.sourceFrame(), new Mapping(testMapping));
 
             c.learn(train, classColName);
             c.predict(test);
             double fcorrect = 0;
             for (int j = 0; j < test.rowCount(); j++) {
-                if (test.getCol(classColName).getIndex(j) == c.getPrediction().getIndex(j)) {
+                if (test.col(classColName).index(j) == c.prediction().index(j)) {
                     fcorrect++;
                 }
             }
@@ -81,13 +81,13 @@ public class ModelEvaluation {
     }
 
     private List<Integer>[] buildStrata(Frame df, int folds, String classColName) {
-        String[] dict = df.getCol(classColName).getDictionary();
+        String[] dict = df.col(classColName).dictionary();
         List<Integer>[] rowIds = new List[dict.length];
         for (int i = 0; i < dict.length; i++) {
             rowIds[i] = new ArrayList<>();
         }
         for (int i = 0; i < df.rowCount(); i++) {
-            rowIds[df.getIndex(i, df.getColIndex(classColName))].add(df.rowId(i));
+            rowIds[df.index(i, df.colIndex(classColName))].add(df.rowId(i));
         }
         List<Integer> shuffle = new ArrayList<>();
         for (int i = 0; i < dict.length; i++) {
@@ -135,8 +135,8 @@ public class ModelEvaluation {
                     }
                 }
             }
-            Frame train = new MappedFrame(df.getSourceFrame(), new Mapping(trainMapping));
-            Frame test = new MappedFrame(df.getSourceFrame(), new Mapping(testMapping));
+            Frame train = new MappedFrame(df.sourceFrame(), new Mapping(trainMapping));
+            Frame test = new MappedFrame(df.sourceFrame(), new Mapping(testMapping));
 
             for (int k = 0; k < classifiers.size(); k++) {
                 Classifier c = classifiers.get(k);
@@ -144,12 +144,12 @@ public class ModelEvaluation {
                 c.learn(train, classColName);
                 c.predict(test);
                 double acc = 0;
-                for (int j = 0; j < c.getPrediction().rowCount(); j++) {
-                    if (c.getPrediction().getIndex(j) == test.getCol(classColName).getIndex(j)) {
+                for (int j = 0; j < c.prediction().rowCount(); j++) {
+                    if (c.prediction().index(j) == test.col(classColName).index(j)) {
                         acc++;
                     }
                 }
-                acc /= (1. * c.getPrediction().rowCount());
+                acc /= (1. * c.prediction().rowCount());
                 tacc[k] += acc;
                 print(String.format("CV %d, classifier[%d] - accuracy:%.6f\n", i + 1, k + 1, acc));
             }
@@ -176,8 +176,8 @@ public class ModelEvaluation {
 
             c.learn(train, classColName);
             c.predict(test);
-            Vector pred = c.getPrediction();
-            double acc = new ConfusionMatrix(test.getCol(classColName), pred).getAccuracy();
+            Vector pred = c.prediction();
+            double acc = new ConfusionMatrix(test.col(classColName), pred).getAccuracy();
 //            System.out.println(String.format("bootstrap(%d) : %.6f", i+1, acc));
             total += acc;
             count++;

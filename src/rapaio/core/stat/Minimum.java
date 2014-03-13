@@ -49,11 +49,11 @@ public class Minimum implements Summarizable {
         double min = Double.MAX_VALUE;
         boolean valid = false;
         for (int i = 0; i < vector.rowCount(); i++) {
-            if (vector.isMissing(i)) {
+            if (vector.missing(i)) {
                 continue;
             }
             valid = true;
-            min = MathBase.min(min, vector.getValue(i));
+            min = MathBase.min(min, vector.value(i));
         }
         return valid ? min : Double.NaN;
     }

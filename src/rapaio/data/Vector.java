@@ -39,9 +39,9 @@ public interface Vector extends Serializable {
 
     boolean isMappedVector();
 
-    Vector getSource();
+    Vector source();
 
-    Mapping getMapping();
+    Mapping mapping();
 
     /**
      * Number of observations contained by the vector.
@@ -74,7 +74,7 @@ public interface Vector extends Serializable {
      * @param row
      * @return numerical setValue
      */
-    double getValue(int row);
+    double value(int row);
 
     /**
      * Set numeric setValue for the observation specified by {@param row} to {@param setValue}.
@@ -98,7 +98,7 @@ public interface Vector extends Serializable {
      * @param row position of the observation
      * @return getIndex setValue
      */
-    int getIndex(int row);
+    int index(int row);
 
     /**
      * Set getIndex setValue for the observation specified by {@param row}.
@@ -118,7 +118,7 @@ public interface Vector extends Serializable {
      * @param row position of the observation
      * @return getLabel setValue for the observation
      */
-    String getLabel(int row);
+    String label(int row);
 
     /**
      * Set nominal getLabel for the observation specified by {@param row}.
@@ -146,7 +146,7 @@ public interface Vector extends Serializable {
      *
      * @return term getDictionary defined by the nominal vector.
      */
-    String[] getDictionary();
+    String[] dictionary();
 
     void setDictionary(String[] dict);
 
@@ -160,7 +160,7 @@ public interface Vector extends Serializable {
      * @param row position of the observation
      * @return true if the observation measurement is not specified
      */
-    boolean isMissing(int row);
+    boolean missing(int row);
 
     /**
      * Set the setValue of the observation specified by {@param row} as missing, not available for analysis.
@@ -181,15 +181,15 @@ public interface Vector extends Serializable {
 
     void ensureCapacity(int minCapacity);
 
-    public VIterator getIterator();
+    public VIterator iterator();
 
-    public VIterator getIterator(boolean complete);
+    public VIterator iterator(boolean complete);
 
-    public VIterator getCycleIterator(int size);
+    public VIterator cycleIterator(int size);
 
-    public Stream<VInstance> getStream();
+    public Stream<VInstance> stream();
 
-    public DoubleStream getDoubleStream();
+    public DoubleStream doubleStream();
 
     public double[] toListValue();
 }

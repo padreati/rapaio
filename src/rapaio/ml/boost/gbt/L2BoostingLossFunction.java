@@ -38,7 +38,7 @@ public class L2BoostingLossFunction implements BoostingLossFunction {
     public Numeric gradient(Vector y, Vector fx) {
         Numeric delta = new Numeric();
         for (int i = 0; i < y.rowCount(); i++) {
-            delta.addValue(y.getValue(i) - fx.getValue(i));
+            delta.addValue(y.value(i) - fx.value(i));
         }
         return delta;
     }

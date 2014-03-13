@@ -36,7 +36,7 @@ public class EuclideanDistance implements Distance {
 
     private ColRange range;
 
-    public EuclideanDistance(ColRange range){
+    public EuclideanDistance(ColRange range) {
         this.range = range;
     }
 
@@ -44,13 +44,13 @@ public class EuclideanDistance implements Distance {
     public double getDistance(Frame from, int fromRow, Frame targetFrame, int targetRow) {
         List<Integer> sourceFields = range.parseColumnIndexes(from);
         List<Integer> targetFields = range.parseColumnIndexes(targetFrame);
-        if(sourceFields.size() != targetFields.size()){
+        if (sourceFields.size() != targetFields.size()) {
             throw new IllegalArgumentException("Source frame and target frame have a different number of columns !");
         }
         double distance = 0;
-        for(int i=0 ; i<sourceFields.size() ; i++){
-            distance += (MathBase.pow(from.getCol(sourceFields.get(i)).getValue(fromRow),2) -
-                    MathBase.pow(targetFrame.getCol(targetFields.get(i)).getValue(targetRow),2));
+        for (int i = 0; i < sourceFields.size(); i++) {
+            distance += (MathBase.pow(from.col(sourceFields.get(i)).value(fromRow), 2) -
+                    MathBase.pow(targetFrame.col(targetFields.get(i)).value(targetRow), 2));
         }
         return MathBase.sqrt(distance);
     }

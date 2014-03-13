@@ -65,7 +65,7 @@ public final class DensityTable {
      * @param weights weights used instead of counts, if not null
      */
     public DensityTable(Vector test, Vector target, List<Double> weights) {
-        this(test.getDictionary(), target.getDictionary());
+        this(test.dictionary(), target.dictionary());
 
         if (!test.type().isNominal()) throw new IllegalArgumentException("test vector must be nominal");
         if (!target.type().isNominal()) throw new IllegalArgumentException("target vector is not nominal");
@@ -73,7 +73,7 @@ public final class DensityTable {
             throw new IllegalArgumentException("test and target must have same row count");
 
         for (int i = 0; i < test.rowCount(); i++) {
-            update(test.getIndex(i), target.getIndex(i), weights != null ? weights.get(i) : 1);
+            update(test.index(i), target.index(i), weights != null ? weights.get(i) : 1);
         }
     }
 
@@ -88,7 +88,7 @@ public final class DensityTable {
      * @param testLabel test label used for binary split
      */
     public DensityTable(Vector test, Vector target, List<Double> weights, String testLabel) {
-        this(new String[]{testLabel, "other"}, target.getDictionary());
+        this(new String[]{testLabel, "other"}, target.dictionary());
 
         if (!test.type().isNominal()) throw new IllegalArgumentException("test vector must be nominal");
         if (!target.type().isNominal()) throw new IllegalArgumentException("target vector is not nominal");
@@ -97,10 +97,10 @@ public final class DensityTable {
 
         for (int i = 0; i < test.rowCount(); i++) {
             int index = 0;
-            if (!test.isMissing(i)) {
-                index = (test.getLabel(i).equals(testLabel)) ? 1 : 2;
+            if (!test.missing(i)) {
+                index = (test.label(i).equals(testLabel)) ? 1 : 2;
             }
-            update(index, target.getIndex(i), weights != null ? weights.get(i) : 1);
+            update(index, target.index(i), weights != null ? weights.get(i) : 1);
         }
     }
 

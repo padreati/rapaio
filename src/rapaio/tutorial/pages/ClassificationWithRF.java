@@ -304,11 +304,11 @@ public class ClassificationWithRF implements TutorialPage {
     }
 
     private double computeAccuracy(Classifier model, Frame test) {
-        Vector predict = model.getPrediction();
+        Vector predict = model.prediction();
         double accuracy = 0;
         double total = predict.rowCount();
         for (int i = 0; i < predict.rowCount(); i++) {
-            if (test.getCol("spam").getIndex(i) == predict.getIndex(i)) {
+            if (test.col("spam").index(i) == predict.index(i)) {
                 accuracy += 1.;
             }
         }

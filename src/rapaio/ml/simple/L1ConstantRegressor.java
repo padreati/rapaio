@@ -66,15 +66,15 @@ public class L1ConstantRegressor extends AbstractRegressor {
 
         targets = new ArrayList<>();
         for (int i = 0; i < colIndexes.size(); i++) {
-            targets.add(df.getColNames()[colIndexes.get(i)]);
+            targets.add(df.colNames()[colIndexes.get(i)]);
         }
 
         medians = new ArrayList<>();
         fitValues = new ArrayList<>();
         for (String target : targets) {
-            double median = new Quantiles(df.getCol(target), new double[]{0.5}).getValues()[0];
+            double median = new Quantiles(df.col(target), new double[]{0.5}).getValues()[0];
             medians.add(median);
-            fitValues.add(new Numeric(df.getCol(target).rowCount(), df.getCol(target).rowCount(), median));
+            fitValues.add(new Numeric(df.col(target).rowCount(), df.col(target).rowCount(), median));
         }
     }
 

@@ -41,7 +41,7 @@ public class ROCTest {
                 .withNumericFields("score")
                 .read(getClass(), "fawcett-roc.csv");
 
-        final ROC roc = new ROC(df.getCol("score"), df.getCol("class"), "p");
+        final ROC roc = new ROC(df.col("score"), df.col("class"), "p");
         Summary.head(roc.getData().rowCount(), roc.getData());
 
 //        Workspace.draw(new Plot()

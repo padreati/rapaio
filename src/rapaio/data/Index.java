@@ -110,12 +110,12 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public Vector getSource() {
+    public Vector source() {
         return this;
     }
 
     @Override
-    public Mapping getMapping() {
+    public Mapping mapping() {
         return null;
     }
 
@@ -130,7 +130,7 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public int getIndex(int row) {
+    public int index(int row) {
         return data[row];
     }
 
@@ -156,8 +156,8 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public double getValue(int row) {
-        return getIndex(row);
+    public double value(int row) {
+        return index(row);
     }
 
     @Override
@@ -176,7 +176,7 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public String getLabel(int row) {
+    public String label(int row) {
         return "";
     }
 
@@ -196,7 +196,7 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public String[] getDictionary() {
+    public String[] dictionary() {
         throw new RuntimeException("Operation not available for getIndex vectors.");
     }
 
@@ -206,8 +206,8 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public boolean isMissing(int row) {
-        return getIndex(row) == MISSING_VALUE;
+    public boolean missing(int row) {
+        return index(row) == MISSING_VALUE;
     }
 
     @Override

@@ -58,15 +58,15 @@ public class L2ConstantRegressor extends AbstractRegressor {
 
         targets = new ArrayList<>();
         for (int i = 0; i < colIndexes.size(); i++) {
-            targets.add(df.getColNames()[colIndexes.get(i)]);
+            targets.add(df.colNames()[colIndexes.get(i)]);
         }
 
         means = new ArrayList<>();
         fitValues = new ArrayList<>();
         for (String target : targets) {
-            double mean = new Mean(df.getCol(target)).getValue();
+            double mean = new Mean(df.col(target)).getValue();
             means.add(mean);
-            fitValues.add(new Numeric(df.getCol(target).rowCount(), df.getCol(target).rowCount(), mean));
+            fitValues.add(new Numeric(df.col(target).rowCount(), df.col(target).rowCount(), mean));
         }
     }
 

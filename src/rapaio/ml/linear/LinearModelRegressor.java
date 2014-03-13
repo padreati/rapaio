@@ -52,8 +52,8 @@ public class LinearModelRegressor extends AbstractRegressor {
         for (String targetColName : targetColNames.split(",", -1)) {
             targets.add(targetColName);
         }
-        for (String colName : df.getColNames()) {
-            if (!targetColNames.contains(colName) && df.getCol(colName).type().isNumeric()) {
+        for (String colName : df.colNames()) {
+            if (!targetColNames.contains(colName) && df.col(colName).type().isNumeric()) {
                 predictors.add(colName);
             }
         }
@@ -77,7 +77,7 @@ public class LinearModelRegressor extends AbstractRegressor {
         for (int i = 0; i < df.rowCount(); i++) {
             double acc = 0;
             for (int k = 0; k < predictors.size(); k++) {
-                acc += coefficients.getValue(k, "Coeff") * df.getValue(i, predictors.get(k));
+                acc += coefficients.value(k, "Coeff") * df.value(i, predictors.get(k));
             }
             result.setValue(i, acc);
         }
@@ -88,7 +88,7 @@ public class LinearModelRegressor extends AbstractRegressor {
         Numeric[] vectors = new Numeric[targets.size()];
         int pos = 0;
         for (String targetColName : targets) {
-            vectors[pos++] = (Numeric) df.getCol(targetColName);
+            vectors[pos++] = (Numeric) df.col(targetColName);
         }
         return new Matrix(vectors);
     }
@@ -97,7 +97,7 @@ public class LinearModelRegressor extends AbstractRegressor {
         Numeric[] vectors = new Numeric[predictors.size()];
         int pos = 0;
         for (String colName : predictors) {
-            vectors[pos++] = (Numeric) df.getCol(colName);
+            vectors[pos++] = (Numeric) df.col(colName);
         }
         return new Matrix(vectors);
     }

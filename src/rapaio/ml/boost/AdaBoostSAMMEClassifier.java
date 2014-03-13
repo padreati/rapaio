@@ -69,7 +69,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
 
     @Override
     public void learn(Frame df, List<Double> weights, String targetColName) {
-        dict = df.getCol(targetColName).getDictionary();
+        dict = df.col(targetColName).dictionary();
         k = dict.length - 1;
 
         if (weights != null) {
@@ -93,11 +93,11 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
             Classifier hh = weak.newInstance();
             hh.learn(df, new ArrayList<>(w), targetColName);
             hh.predict(df);
-            Nominal hpred = hh.getPrediction();
+            Nominal hpred = hh.prediction();
 
             double err = 0;
             for (int j = 0; j < df.rowCount(); j++) {
-                if (hpred.getIndex(j) != df.getCol(targetColName).getIndex(j)) {
+                if (hpred.index(j) != df.col(targetColName).index(j)) {
                     err += w.get(j);
                 }
             }
@@ -115,7 +115,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
 
             // update
             for (int j = 0; j < w.size(); j++) {
-                if (hpred.getIndex(j) != df.getCol(targetColName).getIndex(j)) {
+                if (hpred.index(j) != df.col(targetColName).index(j)) {
                     w.set(j, w.get(j) * (k - 1) / (k * err));
                 } else {
                     w.set(j, w.get(j) / (k * (1. - err)));
@@ -131,7 +131,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
             return;
         }
 
-        dict = df.getCol(targetColName).getDictionary();
+        dict = df.col(targetColName).dictionary();
         k = dict.length - 1;
         if (t == h.size()) {
             return;
@@ -157,11 +157,11 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
             Classifier hh = weak.newInstance();
             hh.learn(df, new ArrayList<>(w), targetColName);
             hh.predict(df);
-            Nominal hpred = hh.getPrediction();
+            Nominal hpred = hh.prediction();
 
             double err = 0;
             for (int j = 0; j < df.rowCount(); j++) {
-                if (hpred.getIndex(j) != df.getCol(targetColName).getIndex(j)) {
+                if (hpred.index(j) != df.col(targetColName).index(j)) {
                     err += w.get(j);
                 }
             }
@@ -182,7 +182,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
 
             // update
             for (int j = 0; j < w.size(); j++) {
-                if (hpred.getIndex(j) != df.getCol(targetColName).getIndex(j)) {
+                if (hpred.index(j) != df.col(targetColName).index(j)) {
                     w.set(j, w.get(j) * (k - 1) / (k * err));
                 } else {
                     w.set(j, w.get(j) / (k * (1. - err)));
@@ -204,8 +204,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
         for (int i = classifier.h.size(); i < min(t, h.size()); i++) {
             h.get(i).predict(df);
             for (int j = 0; j < df.rowCount(); j++) {
-                int index = h.get(i).getPrediction().getIndex(j);
-                dist.setValue(j, index, dist.getValue(j, index) + a.get(i));
+                int index = h.get(i).prediction().index(j);
+                dist.setValue(j, index, dist.value(j, index) + a.get(i));
             }
         }
 
@@ -215,9 +215,9 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
             double max = 0;
             int prediction = 0;
             for (int j = 1; j < dist.colCount(); j++) {
-                if (dist.getValue(i, j) > max) {
+                if (dist.value(i, j) > max) {
                     prediction = j;
-                    max = dist.getValue(i, j);
+                    max = dist.value(i, j);
                 }
             }
             pred.setIndex(i, prediction);
@@ -227,13 +227,13 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
     @Override
     public void predict(Frame df) {
         pred = new Nominal(df.rowCount(), dict);
-        dist = Frames.newMatrixFrame(df.rowCount(), dict);
+        dist = Frames.newMatrix(df.rowCount(), dict);
 
         for (int i = 0; i < min(t, h.size()); i++) {
             h.get(i).predict(df);
             for (int j = 0; j < df.rowCount(); j++) {
-                int index = h.get(i).getPrediction().getIndex(j);
-                dist.setValue(j, index, dist.getValue(j, index) + a.get(i));
+                int index = h.get(i).prediction().index(j);
+                dist.setValue(j, index, dist.value(j, index) + a.get(i));
             }
         }
 
@@ -243,9 +243,9 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
             double max = 0;
             int prediction = 0;
             for (int j = 1; j < dist.colCount(); j++) {
-                if (dist.getValue(i, j) > max) {
+                if (dist.value(i, j) > max) {
                     prediction = j;
-                    max = dist.getValue(i, j);
+                    max = dist.value(i, j);
                 }
             }
             pred.setIndex(i, prediction);
@@ -253,12 +253,12 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
     }
 
     @Override
-    public Nominal getPrediction() {
+    public Nominal prediction() {
         return pred;
     }
 
     @Override
-    public Frame getDistribution() {
+    public Frame distribution() {
         return dist;
     }
 

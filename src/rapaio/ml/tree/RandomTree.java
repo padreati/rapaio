@@ -102,11 +102,11 @@ public class RandomTree extends AbstractClassifier<RandomTree> {
         int[] indexes = new int[df.colCount() - 1];
         int pos = 0;
         for (int i = 0; i < df.colCount(); i++) {
-            if (i != df.getColIndex(targetColName)) {
+            if (i != df.colIndex(targetColName)) {
                 indexes[pos++] = i;
             }
         }
-        this.dict = df.getCol(targetColName).getDictionary();
+        this.dict = df.col(targetColName).dictionary();
         this.root = new TreeNode();
         this.sumVI = new double[df.colCount()];
         this.cntVI = new double[df.colCount()];
@@ -116,7 +116,7 @@ public class RandomTree extends AbstractClassifier<RandomTree> {
     @Override
     public void predict(Frame df) {
         prediction = new Nominal(df.rowCount(), dict);
-        d = Frames.newMatrixFrame(df.rowCount(), dict);
+        d = Frames.newMatrix(df.rowCount(), dict);
         for (int i = 0; i < df.rowCount(); i++) {
             double[] distribution = predict(df, i, root);
             for (int j = 0; j < distribution.length; j++) {
@@ -140,12 +140,12 @@ public class RandomTree extends AbstractClassifier<RandomTree> {
     }
 
     @Override
-    public Nominal getPrediction() {
+    public Nominal prediction() {
         return prediction;
     }
 
     @Override
-    public Frame getDistribution() {
+    public Frame distribution() {
         return d;
     }
 
@@ -153,8 +153,8 @@ public class RandomTree extends AbstractClassifier<RandomTree> {
         if (node.leaf) {
             return node.pd;
         }
-        int col = df.getColIndex(node.splitCol);
-        if (df.getCol(col).isMissing(row)) {
+        int col = df.colIndex(node.splitCol);
+        if (df.col(col).missing(row)) {
             double[] left = predict(df, row, node.leftNode);
             double[] right = predict(df, row, node.rightNode);
             double[] pd = new double[dict.length];
@@ -166,11 +166,11 @@ public class RandomTree extends AbstractClassifier<RandomTree> {
             }
             return pd;
         }
-        if (df.getCol(col).type().isNumeric()) {
-            double value = df.getValue(row, col);
+        if (df.col(col).type().isNumeric()) {
+            double value = df.value(row, col);
             return predict(df, row, value <= node.splitValue ? node.leftNode : node.rightNode);
         } else {
-            String label = df.getLabel(row, col);
+            String label = df.label(row, col);
             return predict(df, row, node.splitLabel.equals(label) ? node.leftNode : node.rightNode);
         }
     }
@@ -198,13 +198,13 @@ class TreeNode {
 
     public void learn(final Frame df, List<Double> weights, int[] indexes, RandomTree tree) {
 
-        Vector classCol = df.getCol(tree.classColName);
-        int classColIndex = df.getColIndex(tree.classColName);
+        Vector classCol = df.col(tree.classColName);
+        int classColIndex = df.colIndex(tree.classColName);
 
         // compute distribution of classes
         fd = new double[tree.dict.length];
         for (int i = 0; i < df.rowCount(); i++) {
-            fd[classCol.getIndex(i)] += weights.get(i);
+            fd[classCol.index(i)] += weights.get(i);
         }
         for (int i = 0; i < fd.length; i++) {
             totalFd += fd[i];
@@ -215,7 +215,7 @@ class TreeNode {
         }
 
         if (df.rowCount() == 1) {
-            predicted = classCol.getLabel(0);
+            predicted = classCol.label(0);
             leaf = true;
             return;
         }
@@ -230,7 +230,7 @@ class TreeNode {
         // leaf on all classes of same getValue
         for (int i = 1; i < fd.length; i++) {
             if (abs(fd[i] - totalFd) <= 1e-30) {
-                predicted = classCol.getLabel(0);
+                predicted = classCol.label(0);
                 leaf = true;
                 return;
             }
@@ -241,9 +241,9 @@ class TreeNode {
         // find best split
         String[] colSel = tree.getColSelector().nextColNames();
         for (String colName : colSel) {
-            int colIndex = df.getColIndex(colName);
+            int colIndex = df.colIndex(colName);
 
-            Vector col = df.getCol(colIndex);
+            Vector col = df.col(colIndex);
             if (col.type().isNumeric()) {
                 evaluateNumericCol(df, weights, classColIndex, classCol, colIndex, col, tree);
             } else {
@@ -259,17 +259,17 @@ class TreeNode {
             double leftWeight = 0;
             double rightWeight = 0;
 
-            Vector col = df.getCol(splitCol);
+            Vector col = df.col(splitCol);
             double missingWeight = 0;
 
             for (int i = 0; i < df.rowCount(); i++) {
                 int id = df.rowId(i);
-                if (col.isMissing(i)) {
+                if (col.missing(i)) {
                     missingWeight += weights.get(i);
                     continue;
                 }
-                if ((col.type().isNominal() && splitLabel.equals(col.getLabel(i)))
-                        || col.type().isNumeric() && col.getValue(i) <= splitValue) {
+                if ((col.type().isNominal() && splitLabel.equals(col.label(i)))
+                        || col.type().isNumeric() && col.value(i) <= splitValue) {
                     leftMap.add(id);
                     leftWeights.add(weights.get(i));
                     leftWeight += weights.get(i);
@@ -283,7 +283,7 @@ class TreeNode {
             double pleft = leftWeight / (leftWeight + rightWeight);
             for (int i = 0; i < df.rowCount(); i++) {
                 int id = df.rowId(i);
-                if (col.isMissing(i)) {
+                if (col.missing(i)) {
                     if (false) {
                         if (RandomSource.nextDouble() > .5) {
                             leftMap.add(id);
@@ -301,13 +301,13 @@ class TreeNode {
                 }
             }
             // sum to variable importance
-            tree.sumVI[df.getColIndex(splitCol)] += metricValue * (1 - missingWeight / totalFd);
-            tree.cntVI[df.getColIndex(splitCol)]++;
+            tree.sumVI[df.colIndex(splitCol)] += metricValue * (1 - missingWeight / totalFd);
+            tree.cntVI[df.colIndex(splitCol)]++;
 
-            Frame leftFrame = new MappedFrame(df.getSourceFrame(), leftMap);
+            Frame leftFrame = new MappedFrame(df.sourceFrame(), leftMap);
             leftNode.learn(leftFrame, leftWeights, indexes, tree);
 
-            Frame rightFrame = new MappedFrame(df.getSourceFrame(), rightMap);
+            Frame rightFrame = new MappedFrame(df.sourceFrame(), rightMap);
             rightNode.learn(rightFrame, rightWeights, indexes, tree);
             return;
         }
@@ -323,9 +323,9 @@ class TreeNode {
 
         Vector sort = BaseFilters.sort(Vectors.newSeq(0, df.rowCount() - 1, 1), RowComparators.numericComparator(col, true));
         for (int i = 0; i < df.rowCount() - 1; i++) {
-            int row = df.getCol(colIndex).isMissing(sort.getIndex(i)) ? 0 : 1;
-            int index = df.getIndex(sort.getIndex(i), classColIndex);
-            p[row][index] += weights.get(sort.getIndex(i));
+            int row = df.col(colIndex).missing(sort.index(i)) ? 0 : 1;
+            int index = df.index(sort.index(i), classColIndex);
+            p[row][index] += weights.get(sort.index(i));
             rowCounts[row]++;
             if (row == 0) {
                 continue;
@@ -336,16 +336,16 @@ class TreeNode {
                 continue;
             if (RandomSource.nextDouble() > tree.getNumericSelectionProb())
                 continue;
-            if (df.getValue(sort.getIndex(i), colIndex) + 1e-30 < df.getValue(sort.getIndex(i + 1), colIndex)) {
+            if (df.value(sort.index(i), colIndex) + 1e-30 < df.value(sort.index(i + 1), colIndex)) {
                 double metric = computeGini(p[0], p[1]);
                 if (!validNumber(metric))
                     continue;
 
                 if ((metricValue != metricValue) || metric > metricValue) {
                     metricValue = metric;
-                    splitCol = df.getColNames()[colIndex];
+                    splitCol = df.colNames()[colIndex];
                     splitLabel = "";
-                    splitValue = df.getCol(colIndex).getValue(sort.getIndex(i));
+                    splitValue = df.col(colIndex).value(sort.index(i));
                     leftNode = new TreeNode();
                     rightNode = new TreeNode();
                 }
@@ -354,22 +354,22 @@ class TreeNode {
     }
 
     private void evaluateNominalCol(Frame df, List<Double> weights, int classColIndex, Vector classCol, int selColIndex, Vector selCol) {
-        if (selCol.getDictionary().length == 2) {
+        if (selCol.dictionary().length == 2) {
             return;
         }
-        double[][] p = new double[selCol.getDictionary().length][classCol.getDictionary().length];
-        int[] rowCounts = new int[selCol.getDictionary().length];
+        double[][] p = new double[selCol.dictionary().length][classCol.dictionary().length];
+        int[] rowCounts = new int[selCol.dictionary().length];
         for (int i = 0; i < df.rowCount(); i++) {
-            p[selCol.getIndex(i)][classCol.getIndex(i)] += weights.get(i);
-            rowCounts[selCol.getIndex(i)]++;
+            p[selCol.index(i)][classCol.index(i)] += weights.get(i);
+            rowCounts[selCol.index(i)]++;
         }
 
-        for (int j = 1; j < selCol.getDictionary().length; j++) {
+        for (int j = 1; j < selCol.dictionary().length; j++) {
             if (rowCounts[j] == 0)
                 continue;
             if (df.rowCount() - rowCounts[j] - rowCounts[0] == 0)
                 continue;
-            if (selCol.getDictionary().length == 3 && j == 2) {
+            if (selCol.dictionary().length == 3 && j == 2) {
                 continue;
             }
             double metric = computeGini(p[0], p[j]);
@@ -377,8 +377,8 @@ class TreeNode {
                 continue;
             if ((metricValue != metricValue) || metric - metricValue > 0) {
                 metricValue = metric;
-                splitCol = df.getColNames()[selColIndex];
-                splitLabel = selCol.getDictionary()[j];
+                splitCol = df.colNames()[selColIndex];
+                splitLabel = selCol.dictionary()[j];
                 splitValue = Double.NaN;
                 leftNode = new TreeNode();
                 rightNode = new TreeNode();

@@ -29,40 +29,40 @@ import static rapaio.workspace.Workspace.code;
 
 /**
  * Finds the maximum getValue from a {@link Vector} of values.
- * <p/>
+ * <p>
  * Ignores missing elements.
- * <p/>
+ * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  * Date: 9/7/13
  * Time: 12:39 PM
  */
 public class Maximum implements Summarizable {
 
-	private final Vector vector;
-	private final double value;
+    private final Vector vector;
+    private final double value;
 
-	public Maximum(Vector vector) {
-		this.vector = vector;
-		this.value = compute();
-	}
+    public Maximum(Vector vector) {
+        this.vector = vector;
+        this.value = compute();
+    }
 
-	private double compute() {
-		double max = Double.MIN_VALUE;
-		boolean valid = false;
-		VIterator it = vector.getIterator(true);
-		while (it.next()) {
-			max = MathBase.max(max, it.getValue());
-			valid = true;
-		}
-		return valid ? max : Double.NaN;
-	}
+    private double compute() {
+        double max = Double.MIN_VALUE;
+        boolean valid = false;
+        VIterator it = vector.iterator(true);
+        while (it.next()) {
+            max = MathBase.max(max, it.getValue());
+            valid = true;
+        }
+        return valid ? max : Double.NaN;
+    }
 
-	public double getValue() {
-		return value;
-	}
+    public double getValue() {
+        return value;
+    }
 
-	@Override
-	public void summary() {
-		code(String.format("maximum\n%.10f", value));
-	}
+    @Override
+    public void summary() {
+        code(String.format("maximum\n%.10f", value));
+    }
 }

@@ -30,25 +30,25 @@ import java.util.List;
  */
 public class DefaultColSelector implements ColSelector {
 
-	private String[] selection;
+    private String[] selection;
 
-	public DefaultColSelector(Frame df, ColRange except) {
-		String[] all = df.getColNames();
-		List<Integer> ex = except.parseColumnIndexes(df);
-		selection = new String[all.length - ex.size()];
-		int pos = 0;
-		int spos = 0;
-		for (int i = 0; i < all.length; i++) {
-			if (pos < ex.size() && i == ex.get(pos)) {
-				pos++;
-				continue;
-			}
-			selection[spos++] = all[i];
-		}
-	}
+    public DefaultColSelector(Frame df, ColRange except) {
+        String[] all = df.colNames();
+        List<Integer> ex = except.parseColumnIndexes(df);
+        selection = new String[all.length - ex.size()];
+        int pos = 0;
+        int spos = 0;
+        for (int i = 0; i < all.length; i++) {
+            if (pos < ex.size() && i == ex.get(pos)) {
+                pos++;
+                continue;
+            }
+            selection[spos++] = all[i];
+        }
+    }
 
-	@Override
-	public String[] nextColNames() {
-		return selection;
-	}
+    @Override
+    public String[] nextColNames() {
+        return selection;
+    }
 }

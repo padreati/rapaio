@@ -38,7 +38,7 @@ public final class Frames {
      * @param colNames column names
      * @return the new built frame
      */
-    public static Frame newMatrixFrame(int rows, String... colNames) {
+    public static Frame newMatrix(int rows, String... colNames) {
         Vector[] vectors = new Vector[colNames.length];
         for (int i = 0; i < colNames.length; i++) {
             vectors[i] = new Numeric(new double[rows]);
@@ -60,19 +60,19 @@ public final class Frames {
         List<String> names = new ArrayList<>();
 
         for (int i = 0; i < df.colCount(); i++) {
-            Vector src = df.getCol(i);
+            Vector src = df.col(i);
             if (src.type().isNominal()) {
-                vectors.add(new Nominal(len, df.getCol(i).getDictionary()));
-                names.add(df.getColNames()[i]);
+                vectors.add(new Nominal(len, df.col(i).dictionary()));
+                names.add(df.colNames()[i]);
                 for (int j = 0; j < df.rowCount(); j++) {
-                    vectors.get(i).setLabel(j, src.getLabel(j));
+                    vectors.get(i).setLabel(j, src.label(j));
                 }
             }
             if (src.type().isNumeric()) {
                 vectors.add(new Numeric(len));
-                names.add(df.getColNames()[i]);
+                names.add(df.colNames()[i]);
                 for (int j = 0; j < df.rowCount(); j++) {
-                    vectors.get(i).setValue(j, src.getValue(j));
+                    vectors.get(i).setValue(j, src.value(j));
                 }
             }
         }
@@ -88,9 +88,9 @@ public final class Frames {
         }
         List<Vector> vectors = new ArrayList<>();
         List<String> names = new ArrayList<>();
-        for (String colName : df.getColNames()) {
+        for (String colName : df.colNames()) {
             names.add(colName);
-            vectors.add(df.getCol(colName));
+            vectors.add(df.col(colName));
         }
         vectors.add(position, col);
         names.add(position, name);
@@ -108,9 +108,9 @@ public final class Frames {
         if (exceptCols != null && !exceptCols.isEmpty())
             Collections.addAll(except, exceptCols.split(",", -1));
         for (int i = 0; i < df.colCount(); i++) {
-            if (df.getCol(i).type().isNumeric() && !exceptCols.contains(df.getColNames()[i])) {
-                double mean = new Mean(df.getCol(i)).getValue();
-                double sd = StrictMath.sqrt(new Variance(df.getCol(i)).getValue());
+            if (df.col(i).type().isNumeric() && !exceptCols.contains(df.colNames()[i])) {
+                double mean = new Mean(df.col(i)).getValue();
+                double sd = StrictMath.sqrt(new Variance(df.col(i)).getValue());
 
                 if (mean != mean || sd != sd) {
                     throw new RuntimeException("mean or sd is NaN");
@@ -118,11 +118,11 @@ public final class Frames {
                 if (sd == 0) continue;
 
                 for (int j = 0; j < df.rowCount(); j++) {
-                    if (df.isMissing(j, i)) {
+                    if (df.missing(j, i)) {
                         df.setValue(j, i, 0);
                         continue;
                     }
-                    df.setValue(j, i, (df.getValue(j, i) - mean) / sd);
+                    df.setValue(j, i, (df.value(j, i) - mean) / sd);
                 }
             }
         }

@@ -52,7 +52,7 @@ public class CsvTest {
             Frame f = persistence.read(getClass(), "csv-test.csv");
             assertNotNull(f);
             assertEquals(5, f.colCount());
-            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, f.getColNames());
+            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, f.colNames());
         } catch (IOException ex) {
             assertTrue("this should not happen.", false);
         }
@@ -96,7 +96,7 @@ public class CsvTest {
             Frame df = persistence.read(getClass(), "csv-test.csv");
             assertNotNull(df);
             assertEquals(5, df.colCount());
-            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, df.getColNames());
+            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, df.colNames());
         } catch (IOException ex) {
             assertTrue("this should not happen.", false);
         }

@@ -68,10 +68,10 @@ public class NeuralNetTest {
 
         Summary.lines(nn.getAllFitValues());
 
-        Assert.assertTrue(nn.getFitValues().getValue(0) < .5);
-        Assert.assertTrue(nn.getFitValues().getValue(1) < .5);
-        Assert.assertTrue(nn.getFitValues().getValue(2) < .5);
-        Assert.assertTrue(nn.getFitValues().getValue(3) > .5);
+        Assert.assertTrue(nn.getFitValues().value(0) < .5);
+        Assert.assertTrue(nn.getFitValues().value(1) < .5);
+        Assert.assertTrue(nn.getFitValues().value(2) < .5);
+        Assert.assertTrue(nn.getFitValues().value(3) > .5);
     }
 
     @Test
@@ -110,10 +110,10 @@ public class NeuralNetTest {
 
         Summary.lines(nn.getAllFitValues());
 
-        Assert.assertTrue(nn.getFitValues().getValue(0) > .5);
-        Assert.assertTrue(nn.getFitValues().getValue(1) < .5);
-        Assert.assertTrue(nn.getFitValues().getValue(2) < .5);
-        Assert.assertTrue(nn.getFitValues().getValue(3) > .5);
+        Assert.assertTrue(nn.getFitValues().value(0) > .5);
+        Assert.assertTrue(nn.getFitValues().value(1) < .5);
+        Assert.assertTrue(nn.getFitValues().value(2) < .5);
+        Assert.assertTrue(nn.getFitValues().value(3) > .5);
     }
 
     @Test
@@ -156,15 +156,15 @@ public class NeuralNetTest {
         }
         nn.predict(df);
 
-        Assert.assertTrue(nn.getAllFitValues().getCol("xorA").getValue(0) < .5);
-        Assert.assertTrue(nn.getAllFitValues().getCol("xorA").getValue(1) > .5);
-        Assert.assertTrue(nn.getAllFitValues().getCol("xorA").getValue(2) > .5);
-        Assert.assertTrue(nn.getAllFitValues().getCol("xorA").getValue(3) < .5);
+        Assert.assertTrue(nn.getAllFitValues().col("xorA").value(0) < .5);
+        Assert.assertTrue(nn.getAllFitValues().col("xorA").value(1) > .5);
+        Assert.assertTrue(nn.getAllFitValues().col("xorA").value(2) > .5);
+        Assert.assertTrue(nn.getAllFitValues().col("xorA").value(3) < .5);
 
-        Assert.assertTrue(nn.getAllFitValues().getCol("xorB").getValue(0) > .5);
-        Assert.assertTrue(nn.getAllFitValues().getCol("xorB").getValue(1) < .5);
-        Assert.assertTrue(nn.getAllFitValues().getCol("xorB").getValue(2) < .5);
-        Assert.assertTrue(nn.getAllFitValues().getCol("xorB").getValue(3) > .5);
+        Assert.assertTrue(nn.getAllFitValues().col("xorB").value(0) > .5);
+        Assert.assertTrue(nn.getAllFitValues().col("xorB").value(1) < .5);
+        Assert.assertTrue(nn.getAllFitValues().col("xorB").value(2) < .5);
+        Assert.assertTrue(nn.getAllFitValues().col("xorB").value(3) > .5);
 
         Summary.lines(nn.getAllFitValues());
     }
@@ -198,7 +198,7 @@ public class NeuralNetTest {
 
         Regressor nn = new MultiLayerPerceptronRegressor(new int[]{2, 2, 1}, 0.1).setRounds(100);
 
-        Frame stat = Frames.newMatrixFrame(100, new String[]{"time", "xor1err", "xor2err", "xor3err", "xor4err"});
+        Frame stat = Frames.newMatrix(100, new String[]{"time", "xor1err", "xor2err", "xor3err", "xor4err"});
         for (int i = 0; i < 100; i++) {
             long start = System.currentTimeMillis();
             for (int j = 0; j < 4 * 2_000; j++) {
@@ -207,16 +207,16 @@ public class NeuralNetTest {
             nn.predict(df);
             long stop = System.currentTimeMillis();
 
-            Assert.assertTrue(nn.getFitValues().getValue(0) > .95);
-            Assert.assertTrue(nn.getFitValues().getValue(1) < .05);
-            Assert.assertTrue(nn.getFitValues().getValue(2) < .05);
-            Assert.assertTrue(nn.getFitValues().getValue(3) > .95);
+            Assert.assertTrue(nn.getFitValues().value(0) > .95);
+            Assert.assertTrue(nn.getFitValues().value(1) < .05);
+            Assert.assertTrue(nn.getFitValues().value(2) < .05);
+            Assert.assertTrue(nn.getFitValues().value(3) > .95);
 
             stat.setValue(i, "time", (stop - start) / 1000.);
-            stat.setValue(i, "xor1err", 1. - nn.getFitValues().getValue(0));
-            stat.setValue(i, "xor2err", nn.getFitValues().getValue(1));
-            stat.setValue(i, "xor3err", nn.getFitValues().getValue(2));
-            stat.setValue(i, "xor4err", 1. - nn.getFitValues().getValue(3));
+            stat.setValue(i, "xor1err", 1. - nn.getFitValues().value(0));
+            stat.setValue(i, "xor2err", nn.getFitValues().value(1));
+            stat.setValue(i, "xor3err", nn.getFitValues().value(2));
+            stat.setValue(i, "xor4err", 1. - nn.getFitValues().value(3));
         }
 
         Summary.summary(stat);

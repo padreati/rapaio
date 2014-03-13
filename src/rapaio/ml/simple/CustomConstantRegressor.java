@@ -66,12 +66,12 @@ public class CustomConstantRegressor extends AbstractRegressor {
 
         targets = new ArrayList<>();
         for (int i = 0; i < colIndexes.size(); i++) {
-            targets.add(df.getColNames()[colIndexes.get(i)]);
+            targets.add(df.colNames()[colIndexes.get(i)]);
         }
 
         fitValues = new ArrayList<>();
         for (String target : targets) {
-            fitValues.add(new Numeric(df.getCol(target).rowCount(), df.getCol(target).rowCount(), customValue));
+            fitValues.add(new Numeric(df.col(target).rowCount(), df.col(target).rowCount(), customValue));
         }
     }
 

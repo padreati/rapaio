@@ -57,10 +57,10 @@ public class SpearmanRhoCorrelation implements Summarizable {
     }
 
     public SpearmanRhoCorrelation(Frame df) {
-        this.names = df.getColNames();
+        this.names = df.colNames();
         this.vectors = new Vector[df.colCount()];
         for (int i = 0; i < df.colCount(); i++) {
-            vectors[i] = df.getCol(i);
+            vectors[i] = df.col(i);
         }
         this.rho = compute();
     }
@@ -78,7 +78,7 @@ public class SpearmanRhoCorrelation implements Summarizable {
             int start = 0;
             while (start < sorted[i].rowCount()) {
                 int end = start;
-                while (end < sorted[i].rowCount() - 1 && sorted[i].getValue(end) == sorted[i].getValue(end + 1)) {
+                while (end < sorted[i].rowCount() - 1 && sorted[i].value(end) == sorted[i].value(end + 1)) {
                     end++;
                 }
                 double value = 1 + (start + end) / 2.;

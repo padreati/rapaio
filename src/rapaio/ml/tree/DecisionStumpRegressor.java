@@ -80,13 +80,13 @@ public class DecisionStumpRegressor extends AbstractRegressor implements BTRegre
 
         this.targetColName = targetColName;
         //
-        defaultFit = new Mean(df.getCol(targetColName)).getValue();
+        defaultFit = new Mean(df.col(targetColName)).getValue();
         //
         criterion = Double.MAX_VALUE;
-        for (String colName : df.getColNames()) {
+        for (String colName : df.colNames()) {
 //			if (RandomSource.nextDouble() > 0.3) continue;
             if (colName.equals(targetColName)) continue;
-            switch (df.getCol(colName).type()) {
+            switch (df.col(colName).type()) {
                 case INDEX:
                 case NUMERIC:
                     evalNumeric(df, colName);
@@ -101,24 +101,24 @@ public class DecisionStumpRegressor extends AbstractRegressor implements BTRegre
 
     private void evalNumeric(Frame df, String colName) {
 
-        Vector sort = sort(completeCases(df.getCol(colName)));
+        Vector sort = sort(completeCases(df.col(colName)));
         double[] var = new double[sort.rowCount()];
         StatOnline so = new StatOnline();
         for (int i = 0; i < sort.rowCount(); i++) {
-            so.update(df.getSourceFrame().getValue(sort.rowId(i), targetColName));
+            so.update(df.sourceFrame().value(sort.rowId(i), targetColName));
             var[i] = so.getVariance() * so.getN();
         }
         so = new StatOnline();
         for (int i = sort.rowCount() - 1; i >= 0; i--) {
-            so.update(df.getSourceFrame().getValue(sort.rowId(i), targetColName));
+            so.update(df.sourceFrame().value(sort.rowId(i), targetColName));
             var[i] += so.getVariance() * so.getN();
         }
         for (int i = minCount + 1; i < sort.rowCount() - minCount; i++) {
-            if (var[i - 1] < criterion && sort.getValue(i - 1) != sort.getValue(i)
-                    && sort.getValue(i - 1) != sort.getValue(sort.rowCount() - 1)) {
+            if (var[i - 1] < criterion && sort.value(i - 1) != sort.value(i)
+                    && sort.value(i - 1) != sort.value(sort.rowCount() - 1)) {
                 criterion = var[i - 1];
                 testColName = colName;
-                testValue = sort.getValue(i - 1);
+                testValue = sort.value(i - 1);
             }
         }
     }
@@ -135,11 +135,11 @@ public class DecisionStumpRegressor extends AbstractRegressor implements BTRegre
         Mapping dfRight = new Mapping();
 
 
-        Vector test = x.getCol(testColName);
+        Vector test = x.col(testColName);
         for (int i = 0; i < test.rowCount(); i++) {
-            if (test.isMissing(i)) continue;
+            if (test.missing(i)) continue;
             if (test.type().isNominal()) continue;
-            if (test.type().isNumeric() && (testValue >= test.getValue(i))) {
+            if (test.type().isNumeric() && (testValue >= test.value(i))) {
                 dfLeft.add(test.rowId(i));
             } else {
                 dfRight.add(test.rowId(i));
@@ -148,11 +148,11 @@ public class DecisionStumpRegressor extends AbstractRegressor implements BTRegre
 
         defaultFit = lossFunction.findMinimum(y, fx);
         leftFit = lossFunction.findMinimum(
-                new MappedVector(y.getSource(), dfLeft),
-                new MappedVector(fx.getSource(), dfLeft));
+                new MappedVector(y.source(), dfLeft),
+                new MappedVector(fx.source(), dfLeft));
         rightFit = lossFunction.findMinimum(
-                new MappedVector(y.getSource(), dfRight),
-                new MappedVector(fx.getSource(), dfRight));
+                new MappedVector(y.source(), dfRight),
+                new MappedVector(fx.source(), dfRight));
     }
 
     @Override
@@ -162,15 +162,15 @@ public class DecisionStumpRegressor extends AbstractRegressor implements BTRegre
             fitValues = new Numeric(df.rowCount(), df.rowCount(), defaultFit);
             return;
         }
-        Vector test = df.getCol(testColName);
+        Vector test = df.col(testColName);
 
         for (int i = 0; i < df.rowCount(); i++) {
-            if (test.isMissing(i)) {
+            if (test.missing(i)) {
                 fitValues.setValue(i, defaultFit);
                 continue;
             }
-            if ((test.type().isNominal() && testLabel.equals(test.getLabel(i)))
-                    || (test.type().isNumeric() && (testValue >= test.getValue(i)))) {
+            if ((test.type().isNominal() && testLabel.equals(test.label(i)))
+                    || (test.type().isNumeric() && (testValue >= test.value(i)))) {
                 fitValues.setValue(i, leftFit);
             } else {
                 fitValues.setValue(i, rightFit);

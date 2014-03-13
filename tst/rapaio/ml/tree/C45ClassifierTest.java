@@ -46,14 +46,14 @@ public class C45ClassifierTest {
         classifier.learn(df, className);
         classifier.predict(df);
 
-        DensityTable dtWindy = new DensityTable(df.getCol("windy"), df.getCol("class"));
-        DensityTable dtOutlook = new DensityTable(df.getCol("outlook"), df.getCol("class"));
+        DensityTable dtWindy = new DensityTable(df.col("windy"), df.col("class"));
+        DensityTable dtOutlook = new DensityTable(df.col("outlook"), df.col("class"));
         String splitCol = (dtWindy.getInfoGain() > dtOutlook.getInfoGain()) ? "windy" : "outlook";
         Assert.assertEquals(splitCol, classifier.root.testName);
 
         Summary.summary(classifier);
 
-        ConfusionMatrix cm = new ConfusionMatrix(df.getCol("class"), classifier.getPrediction());
+        ConfusionMatrix cm = new ConfusionMatrix(df.col("class"), classifier.prediction());
         Summary.summary(cm);
     }
 
@@ -69,7 +69,7 @@ public class C45ClassifierTest {
 
         classifier.predict(df);
 
-        ConfusionMatrix cm = new ConfusionMatrix(df.getCol("class"), classifier.getPrediction());
+        ConfusionMatrix cm = new ConfusionMatrix(df.col("class"), classifier.prediction());
         Summary.summary(cm);
     }
 
@@ -84,7 +84,7 @@ public class C45ClassifierTest {
 
         classifier.predict(df);
 
-        ConfusionMatrix cm = new ConfusionMatrix(df.getCol("class"), classifier.getPrediction());
+        ConfusionMatrix cm = new ConfusionMatrix(df.col("class"), classifier.prediction());
         Summary.summary(cm);
     }
 

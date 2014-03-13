@@ -49,10 +49,10 @@ public class PearsonRCorrelation implements Summarizable {
     private final double[][] pearson;
 
     public PearsonRCorrelation(Frame df) {
-        this.names = df.getColNames();
+        this.names = df.colNames();
         this.vectors = new Vector[df.colCount()];
         for (int i = 0; i < df.colCount(); i++) {
-            vectors[i] = df.getCol(i);
+            vectors[i] = df.col(i);
         }
         this.pearson = new double[vectors.length][vectors.length];
         for (int i = 0; i < vectors.length; i++) {
@@ -88,10 +88,10 @@ public class PearsonRCorrelation implements Summarizable {
         double sdp = sqrt(new Variance(x).getValue()) * sqrt(new Variance(y).getValue());
         double count = 0;
         for (int i = 0; i < len; i++) {
-            if (x.isMissing(i) || y.isMissing(i)) {
+            if (x.missing(i) || y.missing(i)) {
                 continue;
             }
-            sum += ((x.getValue(i) - xMean) * (y.getValue(i) - yMean));
+            sum += ((x.value(i) - xMean) * (y.value(i) - yMean));
             count++;
         }
         return sum / (sdp * (count - 1));

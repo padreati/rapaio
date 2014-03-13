@@ -97,12 +97,12 @@ public class Nominal extends AbstractVector {
     }
 
     @Override
-    public Vector getSource() {
+    public Vector source() {
         return this;
     }
 
     @Override
-    public Mapping getMapping() {
+    public Mapping mapping() {
         return null;
     }
 
@@ -117,7 +117,7 @@ public class Nominal extends AbstractVector {
     }
 
     @Override
-    public int getIndex(int row) {
+    public int index(int row) {
         return data[row];
     }
 
@@ -137,7 +137,7 @@ public class Nominal extends AbstractVector {
     }
 
     @Override
-    public double getValue(int row) {
+    public double value(int row) {
         return data[row];
     }
 
@@ -157,7 +157,7 @@ public class Nominal extends AbstractVector {
     }
 
     @Override
-    public String getLabel(int row) {
+    public String label(int row) {
         return dict.get(data[row]);
     }
 
@@ -200,7 +200,7 @@ public class Nominal extends AbstractVector {
     }
 
     @Override
-    public String[] getDictionary() {
+    public String[] dictionary() {
         return dict.toArray(new String[]{});
     }
 
@@ -235,8 +235,8 @@ public class Nominal extends AbstractVector {
     }
 
     @Override
-    public boolean isMissing(int row) {
-        return missingIndex == getIndex(row);
+    public boolean missing(int row) {
+        return missingIndex == index(row);
     }
 
     @Override

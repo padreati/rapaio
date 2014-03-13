@@ -42,22 +42,22 @@ public abstract class AbstractVector implements Vector {
     }
 
     @Override
-    public VIterator getIterator() {
-        return getIterator(false);
+    public VIterator iterator() {
+        return iterator(false);
     }
 
     @Override
-    public VIterator getIterator(boolean complete) {
+    public VIterator iterator(boolean complete) {
         return new VectorIterator(complete, rowCount(), this);
     }
 
     @Override
-    public VIterator getCycleIterator(int size) {
+    public VIterator cycleIterator(int size) {
         return new VectorIterator(true, size, this);
     }
 
     @Override
-    public Stream<VInstance> getStream() {
+    public Stream<VInstance> stream() {
         List<VInstance> instances = new ArrayList<>();
         for (int i = 0; i < this.rowCount(); i++) {
             instances.add(new VInstanceImpl(i, this));
@@ -66,7 +66,7 @@ public abstract class AbstractVector implements Vector {
     }
 
     @Override
-    public DoubleStream getDoubleStream() {
+    public DoubleStream doubleStream() {
         throw new RuntimeException("Not implemented for this type of vector");
     }
 
@@ -74,7 +74,7 @@ public abstract class AbstractVector implements Vector {
     public double[] toListValue() {
         double[] list = new double[rowCount()];
         for (int i = 0; i < rowCount(); i++) {
-            list[i] = getValue(i);
+            list[i] = value(i);
         }
         return list;
     }
@@ -105,7 +105,7 @@ class VectorIterator implements VIterator {
             if (cyclePos >= vector.rowCount()) {
                 cyclePos = 0;
             }
-            if (complete && vector.isMissing(cyclePos)) continue;
+            if (complete && vector.missing(cyclePos)) continue;
             return true;
         }
         return false;
@@ -129,7 +129,7 @@ class VectorIterator implements VIterator {
 
     @Override
     public double getValue() {
-        return vector.getValue(cyclePos);
+        return vector.value(cyclePos);
     }
 
     @Override
@@ -139,7 +139,7 @@ class VectorIterator implements VIterator {
 
     @Override
     public int getIndex() {
-        return vector.getIndex(cyclePos);
+        return vector.index(cyclePos);
     }
 
     @Override
@@ -149,7 +149,7 @@ class VectorIterator implements VIterator {
 
     @Override
     public String getLabel() {
-        return vector.getLabel(cyclePos);
+        return vector.label(cyclePos);
     }
 
     @Override
@@ -159,7 +159,7 @@ class VectorIterator implements VIterator {
 
     @Override
     public boolean isMissing() {
-        return vector.isMissing(cyclePos);
+        return vector.missing(cyclePos);
     }
 
     @Override
@@ -205,12 +205,12 @@ class VectorIterator implements VIterator {
 
     @Override
     public Vector getMappedVector() {
-        return new MappedVector(vector.getSource(), getMapping());
+        return new MappedVector(vector.source(), getMapping());
     }
 
     @Override
     public Vector getMappedVector(String key) {
-        return new MappedVector(vector.getSource(), getMapping(key));
+        return new MappedVector(vector.source(), getMapping(key));
     }
 
     @Override
@@ -230,12 +230,12 @@ final class VInstanceImpl implements VInstance {
 
     VInstanceImpl(int row, Vector vector) {
         this.row = vector.rowId(row);
-        this.vector = vector.getSource();
+        this.vector = vector.source();
     }
 
     @Override
     public boolean isMissing() {
-        return vector.isMissing(row);
+        return vector.missing(row);
     }
 
     @Override
@@ -245,7 +245,7 @@ final class VInstanceImpl implements VInstance {
 
     @Override
     public double getValue() {
-        return vector.getValue(row);
+        return vector.value(row);
     }
 
     @Override

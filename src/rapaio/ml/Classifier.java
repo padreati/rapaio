@@ -90,7 +90,7 @@ public interface Classifier<T> extends Summarizable {
      *
      * @return nominal vector with predicted classes
      */
-    Nominal getPrediction();
+    Nominal prediction();
 
     /**
      * Returns predicted class distribution if is computed,
@@ -99,6 +99,6 @@ public interface Classifier<T> extends Summarizable {
      * @return predicted class distribution (frame with one
      * column for each target class, including missing getValue)
      */
-    Frame getDistribution();
+    Frame distribution();
 
 }

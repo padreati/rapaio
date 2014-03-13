@@ -162,12 +162,12 @@ public class Numeric extends AbstractVector {
     }
 
     @Override
-    public Vector getSource() {
+    public Vector source() {
         return this;
     }
 
     @Override
-    public Mapping getMapping() {
+    public Mapping mapping() {
         return null;
     }
 
@@ -182,7 +182,7 @@ public class Numeric extends AbstractVector {
     }
 
     @Override
-    public double getValue(int row) {
+    public double value(int row) {
         rangeCheck(row);
         return data[row];
     }
@@ -209,8 +209,8 @@ public class Numeric extends AbstractVector {
     }
 
     @Override
-    public int getIndex(int row) {
-        return (int) Math.rint(getValue(row));
+    public int index(int row) {
+        return (int) Math.rint(value(row));
     }
 
     @Override
@@ -234,7 +234,7 @@ public class Numeric extends AbstractVector {
     }
 
     @Override
-    public String getLabel(int row) {
+    public String label(int row) {
         return "";
     }
 
@@ -254,7 +254,7 @@ public class Numeric extends AbstractVector {
     }
 
     @Override
-    public String[] getDictionary() {
+    public String[] dictionary() {
         throw new RuntimeException("Operation not available for numeric vectors.");
     }
 
@@ -264,8 +264,8 @@ public class Numeric extends AbstractVector {
     }
 
     @Override
-    public boolean isMissing(int row) {
-        return getValue(row) != getValue(row);
+    public boolean missing(int row) {
+        return value(row) != value(row);
     }
 
     @Override
@@ -321,7 +321,7 @@ public class Numeric extends AbstractVector {
     }
 
     @Override
-    public DoubleStream getDoubleStream() {
+    public DoubleStream doubleStream() {
         return Arrays.stream(Arrays.copyOf(data, rowCount()));
     }
 }

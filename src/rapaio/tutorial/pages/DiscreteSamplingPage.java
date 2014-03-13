@@ -195,7 +195,7 @@ public class DiscreteSamplingPage implements TutorialPage {
 
         final Frame df = new SolidFrame(SAMPLE_SIZE * TRIALS, vectors, new String[]{"lottery trial", "winning number"});
         draw(new Plot()
-                .add(new Points(df.getCol(0), df.getCol(1))
+                .add(new Points(df.col(0), df.col(1))
                         .setPchIndex(1)
                         .setColorIndex(34)
                         .setSizeIndex(2)),
@@ -351,7 +351,7 @@ public class DiscreteSamplingPage implements TutorialPage {
 
         final Frame df2 = new SolidFrame(SAMPLE_SIZE * TRIALS, vectors, new String[]{"loaded lottery", "winning number"});
         draw(new Plot()
-                .add(new Points(df2.getCol(0), df2.getCol(1)))
+                .add(new Points(df2.col(0), df2.col(1)))
                 .setPchIndex(Vectors.newIdxOne(1))
                 .setColorIndex(Vectors.newIdxOne(34))
                 .setSizeIndex(Vectors.newNumOne(2)),
@@ -365,7 +365,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                 + "density would help more.");
 
         draw(new Plot()
-                .add(new FunctionLine(new KernelDensityEstimator(df2.getCol("winning number"), 3).getPdfFunction())
+                .add(new FunctionLine(new KernelDensityEstimator(df2.col("winning number"), 3).getPdfFunction())
                         .setXRange(-10, 60)
                         .setYRange(0, .05)
                         .setColorIndex(Vectors.newIdxOne(1)))

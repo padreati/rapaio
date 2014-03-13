@@ -61,9 +61,9 @@ public final class BaseFilters {
     public static Frame toNumeric(Frame df) {
         Vector[] vectors = new Vector[df.colCount()];
         for (int i = 0; i < vectors.length; i++) {
-            vectors[i] = toNumeric(df.getCol(i));
+            vectors[i] = toNumeric(df.col(i));
         }
-        return new SolidFrame(df.rowCount(), vectors, df.getColNames());
+        return new SolidFrame(df.rowCount(), vectors, df.colNames());
     }
 
     /**
@@ -86,15 +86,15 @@ public final class BaseFilters {
                 posIndexes++;
                 continue;
             }
-            vectors[posFinal] = df.getCol(i).getSource();
-            names[posFinal] = df.getColNames()[i];
+            vectors[posFinal] = df.col(i).source();
+            names[posFinal] = df.colNames()[i];
             posFinal++;
         }
         Frame solid = new SolidFrame(df.rowCount(), vectors, names);
         if (!df.isMappedFrame()) {
             return solid;
         }
-        return new MappedFrame(solid, df.getSourceFrame().getMapping());
+        return new MappedFrame(solid, df.sourceFrame().mapping());
     }
 
     /**
@@ -113,8 +113,8 @@ public final class BaseFilters {
         int posIndexes = 0;
         for (int i = 0; i < df.colCount(); i++) {
             if (posIndexes < indexes.size() && i == indexes.get(posIndexes)) {
-                vectors[posIndexes] = df.getCol(i);
-                names[posIndexes] = df.getColNames()[i];
+                vectors[posIndexes] = df.col(i);
+                names[posIndexes] = df.colNames()[i];
                 posIndexes++;
             }
         }
@@ -128,9 +128,9 @@ public final class BaseFilters {
         List<Vector> vectors = new ArrayList<>();
         List<String> names = new ArrayList<>();
         for (int i = 0; i < df.colCount(); i++) {
-            if (df.getCol(i).type().isNumeric()) {
-                vectors.add(df.getCol(i));
-                names.add(df.getColNames()[i]);
+            if (df.col(i).type().isNumeric()) {
+                vectors.add(df.col(i));
+                names.add(df.colNames()[i]);
             }
         }
         return new SolidFrame(df.rowCount(), vectors, names);
@@ -143,9 +143,9 @@ public final class BaseFilters {
         List<Vector> vectors = new ArrayList<>();
         List<String> names = new ArrayList<>();
         for (int i = 0; i < df.colCount(); i++) {
-            if (df.getCol(i).type().isNominal()) {
-                vectors.add(df.getCol(i));
-                names.add(df.getColNames()[i]);
+            if (df.col(i).type().isNominal()) {
+                vectors.add(df.col(i));
+                names.add(df.colNames()[i]);
             }
         }
         return new SolidFrame(df.rowCount(), vectors, names);
@@ -160,7 +160,7 @@ public final class BaseFilters {
         }
         Set<Integer> colSet = new HashSet<>(colRange.parseColumnIndexes(df));
         for (int col : colSet) {
-            if (!df.getCol(col).type().isNumeric()) {
+            if (!df.col(col).type().isNumeric()) {
                 throw new IllegalArgumentException("Non-numeric column found in column range");
             }
         }
@@ -172,19 +172,19 @@ public final class BaseFilters {
         List<String> names = new ArrayList<>();
         for (int i = 0; i < df.colCount(); i++) {
             if (!colSet.contains(i)) {
-                vectors.add(df.getCol(i));
+                vectors.add(df.col(i));
                 continue;
             }
-            Vector origin = df.getCol(i);
+            Vector origin = df.col(i);
             Vector discrete = new Nominal(origin.rowCount(), dict);
             if (!useQuantiles) {
-                Vector sorted = sort(df.getCol(i));
+                Vector sorted = sort(df.col(i));
                 int width = (int) Math.ceil(df.rowCount() / (1. * bins));
                 for (int j = 0; j < bins; j++) {
                     for (int k = 0; k < width; k++) {
                         if (j * width + k >= df.rowCount())
                             break;
-                        if (sorted.isMissing(j * width + k))
+                        if (sorted.missing(j * width + k))
                             continue;
                         int rowId = sorted.rowId(j * width + k);
                         discrete.setLabel(rowId, String.valueOf(j + 1));
@@ -197,9 +197,9 @@ public final class BaseFilters {
                 }
                 double[] q = new Quantiles(origin, p).getValues();
                 for (int j = 0; j < origin.rowCount(); j++) {
-                    if (origin.isMissing(j))
+                    if (origin.missing(j))
                         continue;
-                    double value = origin.getValue(j);
+                    double value = origin.value(j);
                     int index = Arrays.binarySearch(q, value);
                     if (index < 0) {
                         index = -index - 1;
@@ -210,7 +210,7 @@ public final class BaseFilters {
                 }
             }
             vectors.add(discrete);
-            names.add(df.getColNames()[i]);
+            names.add(df.colNames()[i]);
         }
         return new SolidFrame(df.rowCount(), vectors, names);
     }
@@ -227,14 +227,14 @@ public final class BaseFilters {
         HashMap<String, HashSet<String>> dicts = new HashMap<>();
         for (int i = 0; i < source.size(); i++) {
             for (Frame frame : source) {
-                for (String colName : frame.getColNames()) {
-                    if (!frame.getCol(colName).type().isNominal()) {
+                for (String colName : frame.colNames()) {
+                    if (!frame.col(colName).type().isNominal()) {
                         continue;
                     }
                     if (!dicts.containsKey(colName)) {
                         dicts.put(colName, new HashSet<String>());
                     }
-                    dicts.get(colName).addAll(Arrays.asList(frame.getCol(colName).getDictionary()));
+                    dicts.get(colName).addAll(Arrays.asList(frame.col(colName).dictionary()));
                 }
             }
         }
@@ -244,18 +244,18 @@ public final class BaseFilters {
         for (Frame frame : source) {
             Vector[] vectors = new Vector[frame.colCount()];
             for (int i = 0; i < frame.colCount(); i++) {
-                Vector v = frame.getCol(i);
-                String colName = frame.getColNames()[i];
+                Vector v = frame.col(i);
+                String colName = frame.colNames()[i];
                 if (!v.type().isNominal()) {
                     vectors[i] = v;
                 } else {
                     vectors[i] = new Nominal(v.rowCount(), dicts.get(colName));
                     for (int k = 0; k < vectors[i].rowCount(); k++) {
-                        vectors[i].setLabel(k, v.getLabel(k));
+                        vectors[i].setLabel(k, v.label(k));
                     }
                 }
             }
-            dest.add(new SolidFrame(frame.rowCount(), vectors, frame.getColNames()));
+            dest.add(new SolidFrame(frame.rowCount(), vectors, frame.colNames()));
         }
 
         return dest;
@@ -270,10 +270,10 @@ public final class BaseFilters {
      * @return a map of frames, with nominal labels as keys
      */
     public static Map<String, Frame> groupByNominal(final Frame df, final int nominalIndex) {
-        if (!df.getCol(nominalIndex).type().isNominal()) {
+        if (!df.col(nominalIndex).type().isNominal()) {
             throw new IllegalArgumentException("Index does not specify a nominal attribute");
         }
-        FIterator it = df.getIterator();
+        FIterator it = df.iterator();
         while (it.next()) {
             it.appendToMapping(it.getLabel(nominalIndex));
         }
@@ -294,7 +294,7 @@ public final class BaseFilters {
         for (int i = mapping.size(); i > 1; i--) {
             mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
         }
-        return new MappedFrame(df.getSourceFrame(), new Mapping(mapping));
+        return new MappedFrame(df.sourceFrame(), new Mapping(mapping));
     }
 
     public static Frame sort(Frame df, Comparator<Integer>... comparators) {
@@ -307,7 +307,7 @@ public final class BaseFilters {
         for (int i = 0; i < mapping.size(); i++) {
             ids.add(df.rowId(mapping.get(i)));
         }
-        return new MappedFrame(df.getSourceFrame(), new Mapping(ids));
+        return new MappedFrame(df.sourceFrame(), new Mapping(ids));
     }
 
 
@@ -323,7 +323,7 @@ public final class BaseFilters {
                 mapping.add(i);
             }
         }
-        return new MappedFrame(source.getSourceFrame(), new Mapping(mapping));
+        return new MappedFrame(source.sourceFrame(), new Mapping(mapping));
     }
 
     public static List<Frame> combine(String name, List<Frame> frames, String... combined) {
@@ -336,7 +336,7 @@ public final class BaseFilters {
         }
 
         for (int j = 0; j < combined.length; j++) {
-            String[] vdict = frames.get(0).getCol(combined[j]).getDictionary();
+            String[] vdict = frames.get(0).col(combined[j]).dictionary();
             Set<String> newdict = new HashSet<>();
             for (String term : dict) {
                 for (int k = 0; k < vdict.length; k++) {
@@ -350,18 +350,18 @@ public final class BaseFilters {
         for (int i = 0; i < frames.size(); i++) {
             List<Vector> vectors = new ArrayList<>();
             for (int j = 0; j < frames.get(i).colCount(); j++) {
-                vectors.add(frames.get(i).getCol(j));
+                vectors.add(frames.get(i).col(j));
             }
             Vector col = new Nominal(frames.get(i).rowCount(), dict);
             for (int j = 0; j < frames.get(i).rowCount(); j++) {
                 StringBuilder sb = new StringBuilder();
                 for (int k = 0; k < combined.length; k++) {
-                    sb.append(".").append(frames.get(i).getLabel(j, frames.get(i).getColIndex(combined[k])));
+                    sb.append(".").append(frames.get(i).label(j, frames.get(i).colIndex(combined[k])));
                 }
                 col.setLabel(j, sb.toString());
             }
             vectors.add(col);
-            result.add(new SolidFrame(frames.get(i).rowCount(), vectors, frames.get(i).getColNames()));
+            result.add(new SolidFrame(frames.get(i).rowCount(), vectors, frames.get(i).colNames()));
         }
         return result;
 
@@ -370,10 +370,10 @@ public final class BaseFilters {
     public static Vector completeCases(Vector source) {
         Mapping mapping = new Mapping();
         for (int i = 0; i < source.rowCount(); i++) {
-            if (source.isMissing(i)) continue;
+            if (source.missing(i)) continue;
             mapping.add(source.rowId(i));
         }
-        return new MappedVector(source.getSource(), mapping);
+        return new MappedVector(source.source(), mapping);
     }
 
     /**
@@ -393,7 +393,7 @@ public final class BaseFilters {
         for (int i = 0; i < source.rowCount(); i++) {
             boolean complete = true;
             for (int col : selectedCols) {
-                if (source.getCol(col).isMissing(i)) {
+                if (source.col(col).missing(i)) {
                     complete = false;
                     break;
                 }
@@ -402,7 +402,7 @@ public final class BaseFilters {
                 ids.add(source.rowId(i));
             }
         }
-        return new MappedFrame(source.getSourceFrame(), new Mapping(ids));
+        return new MappedFrame(source.sourceFrame(), new Mapping(ids));
     }
 
     /**
@@ -425,7 +425,7 @@ public final class BaseFilters {
             return (Numeric) v;
         }
         Numeric result = new Numeric();
-        VIterator it = v.getIterator();
+        VIterator it = v.iterator();
         while (it.next()) {
             if (it.isMissing()) {
                 result.addMissing();
@@ -461,7 +461,7 @@ public final class BaseFilters {
             return (Index) v;
         }
         Index result = new Index();
-        VIterator it = v.getIterator();
+        VIterator it = v.iterator();
         while (it.next()) {
             if (it.isMissing()) {
                 result.addMissing();
@@ -508,10 +508,10 @@ public final class BaseFilters {
         Numeric result = new Numeric(vector.rowCount());
         Vector jitter = new Normal(0, sd).sample(result.rowCount());
         for (int i = 0; i < result.rowCount(); i++) {
-            if (vector.isMissing(i)) {
+            if (vector.missing(i)) {
                 continue;
             }
-            result.setValue(i, vector.getValue(i) + jitter.getValue(i));
+            result.setValue(i, vector.value(i) + jitter.value(i));
         }
         return result;
     }
@@ -528,7 +528,7 @@ public final class BaseFilters {
         if (!vector.type().isNominal()) {
             throw new IllegalArgumentException("Vector is not isNominal.");
         }
-        VIterator it = vector.getIterator();
+        VIterator it = vector.iterator();
         while (it.next()) {
             if (missingValues.contains(it.getLabel())) {
                 it.setMissing();
@@ -552,7 +552,7 @@ public final class BaseFilters {
         for (int i = mapping.size(); i > 1; i--) {
             mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
         }
-        return new MappedVector(v.getSource(), new Mapping(mapping));
+        return new MappedVector(v.source(), new Mapping(mapping));
     }
 
     public static Vector sort(Vector v) {
@@ -577,6 +577,6 @@ public final class BaseFilters {
         for (int i = 0; i < mapping.size(); i++) {
             ids.add(vector.rowId(mapping.get(i)));
         }
-        return new MappedVector(vector.getSource(), new Mapping(ids));
+        return new MappedVector(vector.source(), new Mapping(ids));
     }
 }

@@ -40,9 +40,9 @@ public abstract class CoreStatTestUtil {
         df = new Csv().withHeader(false).read(getClass(), "core_stat.csv");
         Vector[] vectors = new Vector[df.colCount()];
         for (int i = 0; i < vectors.length; i++) {
-            vectors[i] = BaseFilters.toNumeric(df.getCol(i));
+            vectors[i] = BaseFilters.toNumeric(df.col(i));
         }
-        df = new SolidFrame(df.rowCount(), vectors, df.getColNames());
+        df = new SolidFrame(df.rowCount(), vectors, df.colNames());
     }
 
     public Frame getDataFrame() {

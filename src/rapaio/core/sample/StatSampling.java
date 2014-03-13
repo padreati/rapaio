@@ -54,7 +54,7 @@ public class StatSampling {
         }
         List<Frame> result = new ArrayList<>();
         Frame shuffle = shuffle(frame);
-        FIterator it = shuffle.getIterator();
+        FIterator it = shuffle.iterator();
         for (int i = 0; i < rowCounts.length; i++) {
             for (int j = 0; j < rowCounts[i]; j++) {
                 it.next();
@@ -81,6 +81,6 @@ public class StatSampling {
             int next = RandomSource.nextInt(frame.rowCount());
             mapping.add(frame.rowId(next));
         }
-        return new MappedFrame(frame.getSourceFrame(), new Mapping(mapping));
+        return new MappedFrame(frame.sourceFrame(), new Mapping(mapping));
     }
 }

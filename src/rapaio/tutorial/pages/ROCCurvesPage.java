@@ -120,7 +120,7 @@ public class ROCCurvesPage implements TutorialPage {
 
         code("        new ConfusionMatrix(test.getCol(\"spam\"), oneRule.getPrediction()).summary();\n");
 
-        new ConfusionMatrix(test.getCol("spam"), oneRule.getPrediction()).summary();
+        new ConfusionMatrix(test.col("spam"), oneRule.prediction()).summary();
 
         heading(4, "Random Forest");
 
@@ -134,7 +134,7 @@ public class ROCCurvesPage implements TutorialPage {
                 "        rf.learn(train, \"spam\");\n" +
                 "        rf.predict(test);\n");
 
-        new ConfusionMatrix(test.getCol("spam"), rf.getPrediction()).summary();
+        new ConfusionMatrix(test.col("spam"), rf.prediction()).summary();
 
         heading(4, "AdaBoost.SAMME");
 
@@ -151,7 +151,7 @@ public class ROCCurvesPage implements TutorialPage {
                 "        ab.learn(train, \"spam\");\n" +
                 "        ab.predict(test);\n");
 
-        new ConfusionMatrix(test.getCol("spam"), ab.getPrediction()).summary();
+        new ConfusionMatrix(test.col("spam"), ab.prediction()).summary();
 
         heading(2, "ROC Curves");
 
@@ -170,9 +170,9 @@ public class ROCCurvesPage implements TutorialPage {
                 + "ROCCurve plot component which builds and draws a curve according with "
                 + "a given computed ROC object. The following code does this.");
 
-        ROC rocOR = new ROC(oneRule.getPrediction(), test.getCol("spam"), "1");
-        ROC rocRF = new ROC(rf.getDistribution().getCol("1"), test.getCol("spam"), "1");
-        ROC rocAB = new ROC(ab.getDistribution().getCol("1"), test.getCol("spam"), "1");
+        ROC rocOR = new ROC(oneRule.prediction(), test.col("spam"), "1");
+        ROC rocRF = new ROC(rf.distribution().col("1"), test.col("spam"), "1");
+        ROC rocAB = new ROC(ab.distribution().col("1"), test.col("spam"), "1");
         draw(new Plot()
                 .add(new ROCCurve(rocOR).setColorIndex(1))
                 .add(new ROCCurve(rocRF).setColorIndex(2))

@@ -191,7 +191,7 @@ public class Csv {
                                     fallbackNumeric = Double.parseDouble(value);
                                     Numeric num = new Numeric();
                                     for (int j = 0; j < v.rowCount(); j++) {
-                                        num.addValue(v.getIndex(j));
+                                        num.addValue(v.index(j));
                                     }
                                     num.addValue(fallbackNumeric);
                                     vectors.set(i, num);
@@ -201,7 +201,7 @@ public class Csv {
                                     // can't parse, use nominal
                                     Nominal nom = new Nominal();
                                     for (int j = 0; j < v.rowCount(); j++) {
-                                        nom.addLabel(String.valueOf(v.getIndex(j)));
+                                        nom.addLabel(String.valueOf(v.index(j)));
                                     }
                                     nom.addLabel(value);
                                     vectors.set(i, nom);
@@ -218,7 +218,7 @@ public class Csv {
                                 // can't parse, use nominal
                                 Nominal nom = new Nominal();
                                 for (int j = 0; j < v.rowCount(); j++) {
-                                    nom.addLabel(String.valueOf(v.getValue(j)));
+                                    nom.addLabel(String.valueOf(v.value(j)));
                                 }
                                 nom.addLabel(value);
                                 vectors.set(i, nom);
@@ -332,11 +332,11 @@ public class Csv {
 
         try (PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)))) {
             if (header) {
-                for (int i = 0; i < df.getColNames().length; i++) {
+                for (int i = 0; i < df.colNames().length; i++) {
                     if (i != 0) {
                         writer.append(separatorChar);
                     }
-                    writer.append(df.getColNames()[i]);
+                    writer.append(df.colNames()[i]);
                 }
                 writer.append("\n");
             }
@@ -346,14 +346,14 @@ public class Csv {
                     if (j != 0) {
                         writer.append(separatorChar);
                     }
-                    if (df.getCol(j).isMissing(i)) {
+                    if (df.col(j).missing(i)) {
                         writer.append("?");
                         continue;
                     }
-                    if (df.getCol(j).type().isNominal()) {
-                        writer.append(unclean(df.getLabel(i, j)));
+                    if (df.col(j).type().isNominal()) {
+                        writer.append(unclean(df.label(i, j)));
                     } else {
-                        writer.append(format.format(df.getValue(i, j)));
+                        writer.append(format.format(df.value(i, j)));
                     }
                 }
                 writer.append("\n");

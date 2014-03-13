@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class TreeClassificationTest {
+public class TreeCTest {
 
     public static enum Method {
         ENTROPY {
@@ -106,37 +106,37 @@ public class TreeClassificationTest {
     private final int minCount;
     private String testName = null;
     private double bestValue = Double.NEGATIVE_INFINITY;
-    private String binarySplitLabel;
-    private double binarySplitValue;
+    private String splitLabel;
+    private double splitValue;
 
-    public Method getMethod() {
+    public Method method() {
         return method;
     }
 
-    public String getTestName() {
+    public String testName() {
         return testName;
     }
 
-    public double getBestValue() {
+    public double bestValue() {
         return bestValue;
     }
 
-    public String getBinarySplitLabel() {
-        return binarySplitLabel;
+    public String splitLabel() {
+        return splitLabel;
     }
 
-    public double getBinarySplitValue() {
-        return binarySplitValue;
+    public double splitValue() {
+        return splitValue;
     }
 
-    public TreeClassificationTest(Method method, int minCount) {
+    public TreeCTest(Method method, int minCount) {
         this.method = method;
         this.minCount = minCount;
     }
 
     public void binaryNominalTest(Frame df, String testColName, String targetColName, List<Double> weights, String testLabel) {
-        Vector test = df.getCol(testColName);
-        Vector target = df.getCol(targetColName);
+        Vector test = df.col(testColName);
+        Vector target = df.col(targetColName);
         DensityTable dt = new DensityTable(test, target, weights, testLabel);
         double value = method.compute(dt);
         int comp = method.compare(bestValue, value);
@@ -144,20 +144,20 @@ public class TreeClassificationTest {
         if (comp == 0 && RandomSource.nextDouble() > 0.5) return;
         bestValue = value;
         testName = testColName;
-        binarySplitLabel = testLabel;
-        binarySplitValue = Double.NaN;
+        splitLabel = testLabel;
+        splitValue = Double.NaN;
     }
 
     public void binaryNumericTest(Frame df, String testColName, String targetColName, List<Double> weights) {
-        Vector test = df.getCol(testColName);
-        Vector target = df.getCol(targetColName);
+        Vector test = df.col(testColName);
+        Vector target = df.col(targetColName);
 
-        DensityTable dt = new DensityTable(DensityTable.NUMERIC_DEFAULT_LABELS, target.getDictionary());
+        DensityTable dt = new DensityTable(DensityTable.NUMERIC_DEFAULT_LABELS, target.dictionary());
         int misCount = 0;
         for (int i = 0; i < df.rowCount(); i++) {
-            int row = (test.isMissing(i)) ? 0 : 2;
-            if (test.isMissing(i)) misCount++;
-            dt.update(row, target.getIndex(i), weights.get(i));
+            int row = (test.missing(i)) ? 0 : 2;
+            if (test.missing(i)) misCount++;
+            dt.update(row, target.index(i), weights.get(i));
         }
 
         Vector sort = BaseFilters.sort(
@@ -165,16 +165,16 @@ public class TreeClassificationTest {
                 RowComparators.numericComparator(test, true));
 
         for (int i = 0; i < df.rowCount(); i++) {
-            int row = sort.getIndex(i);
+            int row = sort.index(i);
 
-            if (test.isMissing(row)) continue;
+            if (test.missing(row)) continue;
 
-            dt.update(2, target.getIndex(row), -weights.get(row));
-            dt.update(1, target.getIndex(row), +weights.get(row));
+            dt.update(2, target.index(row), -weights.get(row));
+            dt.update(1, target.index(row), +weights.get(row));
 
             if (i >= misCount + minCount &&
                     i < df.rowCount() - 1 - minCount &&
-                    test.getValue(sort.getIndex(i)) < test.getValue(sort.getIndex(i + 1))) {
+                    test.value(sort.index(i)) < test.value(sort.index(i + 1))) {
 
                 double value = method.compute(dt);
                 int comp = method.compare(bestValue, value);
@@ -182,10 +182,10 @@ public class TreeClassificationTest {
                 if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
                 bestValue = value;
                 testName = testColName;
-                binarySplitLabel = null;
-                binarySplitValue = test.getValue(row);
+                splitLabel = null;
+                splitValue = test.value(row);
 
-//                System.out.println(String.format("best:%.3f, test:%s, splitVal:%.3f", bestValue, testName, binarySplitValue));
+//                System.out.println(String.format("best:%.3f, test:%s, splitVal:%.3f", bestValue, testName, splitValue));
             }
         }
 

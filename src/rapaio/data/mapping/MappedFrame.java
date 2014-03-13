@@ -72,36 +72,36 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public Frame getSourceFrame() {
+    public Frame sourceFrame() {
         return source;
     }
 
 
     @Override
-    public Mapping getMapping() {
+    public Mapping mapping() {
         return mapping;
     }
 
     @Override
-    public String[] getColNames() {
-        return source.getColNames();
+    public String[] colNames() {
+        return source.colNames();
     }
 
     @Override
-    public int getColIndex(String name) {
-        return source.getColIndex(name);
+    public int colIndex(String name) {
+        return source.colIndex(name);
     }
 
     @Override
-    public Vector getCol(int col) {
+    public Vector col(int col) {
         if (!vectors.containsKey(col)) {
-            vectors.put(col, new MappedVector(source.getCol(col), mapping));
+            vectors.put(col, new MappedVector(source.col(col), mapping));
         }
         return vectors.get(col);
     }
 
     @Override
-    public Vector getCol(String name) {
-        return getCol(getColIndex(name));
+    public Vector col(String name) {
+        return col(colIndex(name));
     }
 }

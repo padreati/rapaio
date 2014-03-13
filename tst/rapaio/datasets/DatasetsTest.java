@@ -55,12 +55,12 @@ public class DatasetsTest {
         assertEquals(150, df.rowCount());
 
         final String[] names = new String[]{"sepal-length", "sepal-width", "petal-length", "petal-width", "class"};
-        assertArrayEquals(names, df.getColNames());
+        assertArrayEquals(names, df.colNames());
 
         int nas = 0;
         for (int i = 0; i < df.colCount(); i++) {
             for (int j = 0; j < df.rowCount(); j++) {
-                if (df.getCol(i).isMissing(j)) {
+                if (df.col(i).missing(j)) {
                     nas++;
                 }
             }

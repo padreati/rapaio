@@ -28,7 +28,7 @@ import rapaio.data.collect.FIterator;
 import rapaio.ml.AbstractClassifier;
 import rapaio.ml.Classifier;
 import rapaio.ml.tools.DensityVector;
-import rapaio.ml.tools.TreeClassificationTest;
+import rapaio.ml.tools.TreeCTest;
 
 import java.util.List;
 
@@ -38,11 +38,11 @@ import java.util.List;
 public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpClassifier> {
 
     private int minCount = 1;
-    private TreeClassificationTest.Method method = TreeClassificationTest.Method.INFO_GAIN;
+    private TreeCTest.Method method = TreeCTest.Method.INFO_GAIN;
 
     private String[] dict;
 
-    private TreeClassificationTest test = new TreeClassificationTest(method, minCount);
+    private TreeCTest test = new TreeCTest(method, minCount);
 
     private String leftLabel;
     private String rightLabel;
@@ -61,64 +61,60 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
 
     public DecisionStumpClassifier withMinCount(int minCount) {
         this.minCount = minCount;
-        test = new TreeClassificationTest(method, minCount);
+        test = new TreeCTest(method, minCount);
         return this;
     }
 
-    public DecisionStumpClassifier withMethod(TreeClassificationTest.Method method) {
+    public DecisionStumpClassifier withMethod(TreeCTest.Method method) {
         this.method = method;
-        test = new TreeClassificationTest(method, minCount);
+        test = new TreeCTest(method, minCount);
         return this;
     }
 
     @Override
     public void learn(Frame df, List<Double> weights, String targetColName) {
 
-        dict = df.getCol(targetColName).getDictionary();
+        dict = df.col(targetColName).dictionary();
 
         // find best split test and eventually split point
 
-        for (String colName : df.getColNames()) {
+        for (String colName : df.colNames()) {
             if (targetColName.equals(colName)) continue;
-            if (df.getCol(colName).type().isNumeric()) {
+            if (df.col(colName).type().isNumeric()) {
                 test.binaryNumericTest(df, colName, targetColName, weights);
             } else {
-                for (String testLabel : df.getCol(colName).getDictionary()) {
+                for (String testLabel : df.col(colName).dictionary()) {
                     test.binaryNominalTest(df, colName, targetColName, weights, testLabel);
                 }
             }
         }
 
-        if (test.getTestName() != null) {
+        if (test.testName() != null) {
 
             // we have something, we evaluate both branches
 
-            String testName = test.getTestName();
+            String testName = test.testName();
             DensityVector left = new DensityVector(dict);
             DensityVector right = new DensityVector(dict);
             DensityVector missing = new DensityVector(dict);
 
-            Vector testVector = df.getCol(testName);
+            Vector testVector = df.col(testName);
 
             // update density vectors in order to predict
 
             for (int i = 0; i < df.rowCount(); i++) {
-                if (testVector.isMissing(i)) {
-                    missing.update(df.getCol(targetColName).getIndex(i), weights.get(i));
+                if (testVector.missing(i)) {
+                    missing.update(df.col(targetColName).index(i), weights.get(i));
                     continue;
                 }
                 boolean onLeft = true;
-                if (testVector.type().isNominal() && !test.getBinarySplitLabel().equals(testVector.getLabel(i))) {
+                if (testVector.type().isNominal() && !test.splitLabel().equals(testVector.label(i))) {
                     onLeft = false;
                 }
-                if (testVector.type().isNumeric() && test.getBinarySplitValue() < testVector.getValue(i)) {
+                if (testVector.type().isNumeric() && test.splitValue() < testVector.value(i)) {
                     onLeft = false;
                 }
-                if (onLeft) {
-                    left.update(df.getCol(targetColName).getIndex(i), weights.get(i));
-                } else {
-                    right.update(df.getCol(targetColName).getIndex(i), weights.get(i));
-                }
+                (onLeft ? left : right).update(df.col(targetColName).index(i), weights.get(i));
             }
 
             // now predict
@@ -135,7 +131,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
 
             DensityVector missing = new DensityVector(dict);
             for (int i = 0; i < df.rowCount(); i++) {
-                missing.update(df.getCol(targetColName).getIndex(i), weights.get(i));
+                missing.update(df.col(targetColName).index(i), weights.get(i));
             }
             defaultIndex = missing.findBestIndex(false);
             defaultLabel = dict[defaultIndex];
@@ -145,42 +141,42 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
     @Override
     public void predict(Frame df) {
         pred = new Nominal(df.rowCount(), dict);
-        distr = Frames.newMatrixFrame(df.rowCount(), dict);
+        distr = Frames.newMatrix(df.rowCount(), dict);
 
-        FIterator it = df.getIterator();
+        FIterator it = df.iterator();
         while (it.next()) {
-            if (test.getTestName() == null || it.isMissing(test.getTestName())) {
-                distr.setValue(it.getRow(), defaultIndex, 1.0);
-                pred.setLabel(it.getRow(), defaultLabel);
+            if (test.testName() == null || it.isMissing(test.testName())) {
+                distr.setValue(it.row(), defaultIndex, 1.0);
+                pred.setLabel(it.row(), defaultLabel);
                 continue;
             }
-            if (df.getCol(test.getTestName()).type().isNumeric()) {
-                if (it.getValue(test.getTestName()) <= test.getBinarySplitValue()) {
-                    distr.setValue(it.getRow(), leftIndex, 1.0);
-                    pred.setLabel(it.getRow(), leftLabel);
+            if (df.col(test.testName()).type().isNumeric()) {
+                if (it.value(test.testName()) <= test.splitValue()) {
+                    distr.setValue(it.row(), leftIndex, 1.0);
+                    pred.setLabel(it.row(), leftLabel);
                 } else {
-                    distr.setValue(it.getRow(), rightIndex, 1.0);
-                    pred.setLabel(it.getRow(), rightLabel);
+                    distr.setValue(it.row(), rightIndex, 1.0);
+                    pred.setLabel(it.row(), rightLabel);
                 }
             } else {
-                if (test.getBinarySplitLabel().equals(it.getLabel(test.getTestName()))) {
-                    distr.setValue(it.getRow(), leftIndex, 1.0);
-                    pred.setLabel(it.getRow(), leftLabel);
+                if (test.splitLabel().equals(it.label(test.testName()))) {
+                    distr.setValue(it.row(), leftIndex, 1.0);
+                    pred.setLabel(it.row(), leftLabel);
                 } else {
-                    distr.setValue(it.getRow(), rightIndex, 1.0);
-                    pred.setLabel(it.getRow(), rightLabel);
+                    distr.setValue(it.row(), rightIndex, 1.0);
+                    pred.setLabel(it.row(), rightLabel);
                 }
             }
         }
     }
 
     @Override
-    public Nominal getPrediction() {
+    public Nominal prediction() {
         return pred;
     }
 
     @Override
-    public Frame getDistribution() {
+    public Frame distribution() {
         return distr;
     }
 

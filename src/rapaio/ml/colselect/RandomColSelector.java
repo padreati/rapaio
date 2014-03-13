@@ -45,7 +45,7 @@ public class RandomColSelector implements ColSelector {
                 expos++;
                 continue;
             }
-            candidates[pos++] = df.getColNames()[i];
+            candidates[pos++] = df.colNames()[i];
         }
     }
 

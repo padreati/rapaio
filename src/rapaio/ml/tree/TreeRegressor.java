@@ -119,13 +119,13 @@ class TreeRegressorNode {
 
         if (totalWeight < 2 * parent.minWeight) {
             leaf = true;
-            pred = new Mean(df.getCol(targetColNames)).getValue();
+            pred = new Mean(df.col(targetColNames)).getValue();
             return;
         }
 
         String[] colNames = parent.colSelector.nextColNames();
         for (String testColName : colNames) {
-            if (df.getCol(testColName).type().isNumeric() && !targetColNames.equals(testColName)) {
+            if (df.col(testColName).type().isNumeric() && !targetColNames.equals(testColName)) {
                 evaluateNumeric(parent, df, weights, targetColNames, testColName);
             }
         }
@@ -138,7 +138,7 @@ class TreeRegressorNode {
             List<Double> rightWeights = new ArrayList<>();
 
             for (int i = 0; i < df.rowCount(); i++) {
-                if (df.getValue(i, splitColName) <= splitValue) {
+                if (df.value(i, splitColName) <= splitValue) {
                     leftMapping.add(df.rowId(i));
                     leftWeights.add(weights.get(i));
                 } else {
@@ -148,14 +148,14 @@ class TreeRegressorNode {
             }
             left = new TreeRegressorNode();
             right = new TreeRegressorNode();
-            left.learn(parent, new MappedFrame(df.getSourceFrame(), leftMapping), leftWeights, targetColNames);
-            right.learn(parent, new MappedFrame(df.getSourceFrame(), rightMapping), rightWeights, targetColNames);
+            left.learn(parent, new MappedFrame(df.sourceFrame(), leftMapping), leftWeights, targetColNames);
+            right.learn(parent, new MappedFrame(df.sourceFrame(), rightMapping), rightWeights, targetColNames);
             return;
         }
 
         // else do the default
         leaf = true;
-        pred = new Mean(df.getCol(targetColNames)).getValue();
+        pred = new Mean(df.col(targetColNames)).getValue();
     }
 
     private void evaluateNumeric(TreeRegressor parent,
@@ -163,7 +163,7 @@ class TreeRegressorNode {
                                  String targetColName,
                                  String testColNames) {
 
-        Vector testCol = df.getCol(testColNames);
+        Vector testCol = df.col(testColNames);
         double[] var = new double[df.rowCount()];
         StatOnline so = new StatOnline();
         Vector sort = Vectors.newSeq(df.rowCount());
@@ -171,7 +171,7 @@ class TreeRegressorNode {
         double w = 0;
         for (int i = 0; i < df.rowCount(); i++) {
             int pos = sort.rowId(i);
-            so.update(testCol.getValue(pos));
+            so.update(testCol.value(pos));
             w += weights.get(pos);
             if (i > 0) {
                 var[i] = so.getStandardDeviation() * w / totalWeight;
@@ -181,7 +181,7 @@ class TreeRegressorNode {
         w = 0;
         for (int i = df.rowCount() - 1; i >= 0; i--) {
             int pos = sort.rowId(i);
-            so.update(testCol.getValue(pos));
+            so.update(testCol.value(pos));
             w += weights.get(pos);
             if (i < df.rowCount() - 1) {
                 var[i] += so.getStandardDeviation() * w / totalWeight;
@@ -193,10 +193,10 @@ class TreeRegressorNode {
             w += weights.get(pos);
 
             if (w >= parent.minWeight && totalWeight - w >= parent.minWeight) {
-                if (var[i] < eval && i > 0 && testCol.getValue(sort.rowId(i - 1)) != testCol.getValue(sort.rowId(i))) {
+                if (var[i] < eval && i > 0 && testCol.value(sort.rowId(i - 1)) != testCol.value(sort.rowId(i))) {
                     eval = var[i];
                     splitColName = testColNames;
-                    splitValue = testCol.getValue(pos);
+                    splitValue = testCol.value(pos);
                 }
             }
         }
@@ -206,7 +206,7 @@ class TreeRegressorNode {
         if (leaf) {
             return pred;
         }
-        if (df.getValue(row, splitColName) <= splitValue) {
+        if (df.value(row, splitColName) <= splitValue) {
             return left.predict(df, row);
         } else {
             return right.predict(df, row);

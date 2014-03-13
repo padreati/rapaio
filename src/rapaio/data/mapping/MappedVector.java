@@ -63,12 +63,12 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public Vector getSource() {
+    public Vector source() {
         return source;
     }
 
     @Override
-    public Mapping getMapping() {
+    public Mapping mapping() {
         return mapping;
     }
 
@@ -78,8 +78,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public double getValue(int row) {
-        return source.getValue(mapping.get(row));
+    public double value(int row) {
+        return source.value(mapping.get(row));
     }
 
     @Override
@@ -98,8 +98,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public int getIndex(int row) {
-        return source.getIndex(mapping.get(row));
+    public int index(int row) {
+        return source.index(mapping.get(row));
     }
 
     @Override
@@ -118,8 +118,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public String getLabel(int row) {
-        return source.getLabel(mapping.get(row));
+    public String label(int row) {
+        return source.label(mapping.get(row));
     }
 
     @Override
@@ -138,8 +138,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public String[] getDictionary() {
-        return source.getDictionary();
+    public String[] dictionary() {
+        return source.dictionary();
     }
 
     @Override
@@ -148,8 +148,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public boolean isMissing(int row) {
-        return source.isMissing(mapping.get(row));
+    public boolean missing(int row) {
+        return source.missing(mapping.get(row));
     }
 
     @Override

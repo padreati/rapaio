@@ -64,11 +64,11 @@ public class KernelDensityEstimator {
         double sum = 0;
         double count = 0;
         for (int i = 0; i < values.rowCount(); i++) {
-            if (values.isMissing(i)) {
+            if (values.missing(i)) {
                 continue;
             }
             count++;
-            sum += kernel.pdf(x, values.getValue(i), bandwidth);
+            sum += kernel.pdf(x, values.value(i), bandwidth);
         }
         return sum / (count * bandwidth);
     }
@@ -115,7 +115,7 @@ public class KernelDensityEstimator {
             sd = 1;
         }
         double count = 0;
-        for (int i = 0; i < vector.rowCount(); i++) if (!vector.isMissing(i)) count++;
+        for (int i = 0; i < vector.rowCount(); i++) if (!vector.missing(i)) count++;
         return 1.06 * sd * pow(count, -1. / 5.);
     }
 }

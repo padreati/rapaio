@@ -50,7 +50,7 @@ public class HuberBoostingLossFunction implements BoostingLossFunction {
 
         Numeric residual = new Numeric();
         for (int i = 0; i < y.rowCount(); i++) {
-            residual.addValue(y.getValue(i) - fx.getValue(i));
+            residual.addValue(y.value(i) - fx.value(i));
         }
 
         // compute median of residuals
@@ -61,7 +61,7 @@ public class HuberBoostingLossFunction implements BoostingLossFunction {
 
         Numeric absResidual = new Numeric();
         for (int i = 0; i < y.rowCount(); i++) {
-            absResidual.addValue(MathBase.abs(y.getValue(i) - fx.getValue(i)));
+            absResidual.addValue(MathBase.abs(y.value(i) - fx.value(i)));
         }
 
         // compute rho as an alpha-quantile of absolute residuals
@@ -73,8 +73,8 @@ public class HuberBoostingLossFunction implements BoostingLossFunction {
         double gamma = r_bar;
         double count = y.rowCount();
         for (int i = 0; i < y.rowCount(); i++) {
-            gamma += (residual.getValue(i) - r_bar <= 0 ? -1 : 1)
-                    * MathBase.min(rho, MathBase.abs(residual.getValue(i) - r_bar))
+            gamma += (residual.value(i) - r_bar <= 0 ? -1 : 1)
+                    * MathBase.min(rho, MathBase.abs(residual.value(i) - r_bar))
                     / count;
         }
         return gamma;
@@ -87,7 +87,7 @@ public class HuberBoostingLossFunction implements BoostingLossFunction {
 
         Numeric absResidual = new Numeric();
         for (int i = 0; i < y.rowCount(); i++) {
-            absResidual.addValue(MathBase.abs(y.getValue(i) - fx.getValue(i)));
+            absResidual.addValue(MathBase.abs(y.value(i) - fx.value(i)));
         }
 
         // compute rho as an alpha-quantile of absolute residuals
@@ -98,10 +98,10 @@ public class HuberBoostingLossFunction implements BoostingLossFunction {
 
         Numeric gradient = new Numeric();
         for (int i = 0; i < y.rowCount(); i++) {
-            if (absResidual.getValue(i) <= rho) {
-                gradient.addValue(y.getValue(i) - fx.getValue(i));
+            if (absResidual.value(i) <= rho) {
+                gradient.addValue(y.value(i) - fx.value(i));
             } else {
-                gradient.addValue(rho * ((y.getValue(i) - fx.getValue(i) <= 0) ? -1 : 1));
+                gradient.addValue(rho * ((y.value(i) - fx.value(i) <= 0) ? -1 : 1));
             }
         }
 

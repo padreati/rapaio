@@ -61,7 +61,7 @@ public class ID3Classifier extends AbstractClassifier<ID3Classifier> {
     @Override
     public void learn(Frame df, List<Double> weights, String targetColName) {
         validate(df, targetColName);
-        this.dict = df.getCol(targetColName).getDictionary();
+        this.dict = df.col(targetColName).dictionary();
         this.root = new ID3ClassifierNode();
         this.root.learn(null, df, weights, targetColName, new HashSet<String>(), selection);
     }
@@ -125,12 +125,12 @@ public class ID3Classifier extends AbstractClassifier<ID3Classifier> {
     }
 
     @Override
-    public Nominal getPrediction() {
+    public Nominal prediction() {
         return prediction;
     }
 
     @Override
-    public Frame getDistribution() {
+    public Frame distribution() {
         return null;
     }
 
@@ -138,7 +138,7 @@ public class ID3Classifier extends AbstractClassifier<ID3Classifier> {
         if (root.leaf) {
             return root.predicted;
         }
-        String label = df.getLabel(row, df.getColIndex(root.splitCol));
+        String label = df.label(row, df.colIndex(root.splitCol));
         Map<String, ID3ClassifierNode> map = root.splitMap;
         if (!map.containsKey(label)) {
             throw new RuntimeException("Inconsistency");
@@ -148,11 +148,11 @@ public class ID3Classifier extends AbstractClassifier<ID3Classifier> {
 
     private void validate(Frame df, String classColName) {
         for (int i = 0; i < df.colCount(); i++) {
-            if (!df.getCol(i).type().isNominal()) {
+            if (!df.col(i).type().isNominal()) {
                 throw new IllegalArgumentException("ID3 can handle only isNominal attributes.");
             }
         }
-        FIterator it = df.getIterator();
+        FIterator it = df.iterator();
         while (it.next()) {
             if (it.isMissing())
                 throw new IllegalArgumentException("ID3 can't handle missing values.");
@@ -182,7 +182,7 @@ class ID3ClassifierNode {
             if (parent == null) {
                 throw new IllegalArgumentException("Can't train from an empty frame");
             }
-            String[] modes = new Mode(parent.df.getCol(classColName), false).getModes();
+            String[] modes = new Mode(parent.df.col(classColName), false).getModes();
             if (modes.length == 0) {
                 throw new IllegalArgumentException("Can't train from an empty frame");
             }
@@ -194,13 +194,13 @@ class ID3ClassifierNode {
         // leaf on all classes of same getValue
         boolean same = true;
         for (int i = 1; i < df.rowCount(); i++) {
-            if (df.getIndex(i - 1, df.getColIndex(classColName)) != df.getIndex(i, df.getColIndex(classColName))) {
+            if (df.index(i - 1, df.colIndex(classColName)) != df.index(i, df.colIndex(classColName))) {
                 same = false;
                 break;
             }
         }
         if (same) {
-            predicted = df.getLabel(0, df.getColIndex(classColName));
+            predicted = df.label(0, df.colIndex(classColName));
             leaf = true;
             return;
         }
@@ -209,7 +209,7 @@ class ID3ClassifierNode {
         String colName = null;
         metricValue = Double.NaN;
 
-        for (String testColName : df.getColNames()) {
+        for (String testColName : df.colNames()) {
             if (testColName.equals(classColName) || used.contains(testColName)) {
                 continue;
             }
@@ -227,7 +227,7 @@ class ID3ClassifierNode {
 
         // if none were selected then there are no columns to select
         if (colName == null) {
-            String[] modes = new Mode(df.getCol(classColName), false).getModes();
+            String[] modes = new Mode(df.col(classColName), false).getModes();
             if (modes.length == 0) {
                 throw new IllegalArgumentException("Can't train from an empty frame");
             }
@@ -237,7 +237,7 @@ class ID3ClassifierNode {
         }
 
         // usual case, a split node
-        String[] dict = df.getCol(colName).getDictionary();
+        String[] dict = df.col(colName).dictionary();
         Mapping[] splitMappings = new Mapping[dict.length];
         List<Double>[] splitWeights = new List[dict.length];
 
@@ -247,13 +247,13 @@ class ID3ClassifierNode {
         }
 
         for (int i = 0; i < df.rowCount(); i++) {
-            int index = df.getIndex(i, df.getColIndex(colName));
+            int index = df.index(i, df.colIndex(colName));
             splitMappings[index].add(df.rowId(i));
             splitWeights[index].add(weights.get(i));
         }
         Frame[] frames = new Frame[dict.length];
         for (int i = 1; i < dict.length; i++) {
-            frames[i] = new MappedFrame(df.getSourceFrame(), splitMappings[i]);
+            frames[i] = new MappedFrame(df.sourceFrame(), splitMappings[i]);
         }
 
         splitCol = colName;
@@ -284,10 +284,10 @@ class ID3ClassifierNode {
         DensityTable dt;
         switch (selection) {
             case ID3Classifier.SELECTION_ENTROPY:
-                dt = new DensityTable(df.getCol(testName), df.getCol(targetName), weights);
+                dt = new DensityTable(df.col(testName), df.col(targetName), weights);
                 return dt.getSplitEntropy();
             case ID3Classifier.SELECTION_INFOGAIN:
-                dt = new DensityTable(df.getCol(testName), df.getCol(targetName), weights);
+                dt = new DensityTable(df.col(testName), df.col(targetName), weights);
                 return dt.getInfoGain();
         }
         return 0;

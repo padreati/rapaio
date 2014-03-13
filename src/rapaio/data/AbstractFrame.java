@@ -37,101 +37,101 @@ import java.util.Set;
 public abstract class AbstractFrame implements Frame {
 
     @Override
-    public double getValue(int row, int col) {
-        return getCol(col).getValue(row);
+    public double value(int row, int col) {
+        return col(col).value(row);
     }
 
     @Override
-    public double getValue(int row, String colName) {
-        return getCol(colName).getValue(row);
+    public double value(int row, String colName) {
+        return col(colName).value(row);
     }
 
     @Override
     public void setValue(int row, int col, double value) {
-        getCol(col).setValue(row, value);
+        col(col).setValue(row, value);
     }
 
     @Override
     public void setValue(int row, String colName, double value) {
-        getCol(colName).setValue(row, value);
+        col(colName).setValue(row, value);
     }
 
     @Override
-    public int getIndex(int row, int col) {
-        return getCol(col).getIndex(row);
+    public int index(int row, int col) {
+        return col(col).index(row);
     }
 
     @Override
-    public int getIndex(int row, String colName) {
-        return getCol(colName).getIndex(row);
+    public int index(int row, String colName) {
+        return col(colName).index(row);
     }
 
     @Override
     public void setIndex(int row, int col, int value) {
-        getCol(col).setIndex(row, value);
+        col(col).setIndex(row, value);
     }
 
     @Override
     public void setIndex(int row, String colName, int value) {
-        getCol(colName).setIndex(row, value);
+        col(colName).setIndex(row, value);
     }
 
     @Override
-    public String getLabel(int row, int col) {
-        return getCol(col).getLabel(row);
+    public String label(int row, int col) {
+        return col(col).label(row);
     }
 
     @Override
-    public String getLabel(int row, String colName) {
-        return getCol(colName).getLabel(row);
+    public String label(int row, String colName) {
+        return col(colName).label(row);
     }
 
     @Override
     public void setLabel(int row, int col, String value) {
-        getCol(col).setLabel(row, value);
+        col(col).setLabel(row, value);
     }
 
     @Override
     public void setLabel(int row, String colName, String value) {
-        getCol(colName).setLabel(row, value);
+        col(colName).setLabel(row, value);
     }
 
     @Override
-    public boolean isMissing(int row, int col) {
-        return getCol(col).isMissing(row);
+    public boolean missing(int row, int col) {
+        return col(col).missing(row);
     }
 
     @Override
-    public boolean isMissing(int row, String colName) {
-        return getCol(colName).isMissing(row);
+    public boolean missing(int row, String colName) {
+        return col(colName).missing(row);
     }
 
     @Override
-    public boolean isMissing(int row) {
-        for (String colName : getColNames()) {
-            if (getCol(colName).isMissing(row)) return true;
+    public boolean missing(int row) {
+        for (String colName : colNames()) {
+            if (col(colName).missing(row)) return true;
         }
         return false;
     }
 
     @Override
     public void setMissing(int row, int col) {
-        getCol(col).setMissing(row);
+        col(col).setMissing(row);
     }
 
     @Override
     public void setMissing(int row, String colName) {
-        getCol(colName).setMissing(row);
+        col(colName).setMissing(row);
     }
 
     @Override
-    public FIterator getIterator(boolean complete) {
+    public FIterator iterator(boolean complete) {
         return new FrameIterator(complete, rowCount(), this);
     }
 
     @Override
-    public FIterator getIterator() {
-        return getIterator(false);
+    public FIterator iterator() {
+        return iterator(false);
     }
 }
 
@@ -160,7 +160,7 @@ class FrameIterator implements FIterator {
             if (cyclePos >= frame.rowCount()) {
                 cyclePos = 0;
             }
-            if (complete && frame.isMissing(cyclePos)) continue;
+            if (complete && frame.missing(cyclePos)) continue;
             return true;
         }
         return false;
@@ -178,18 +178,18 @@ class FrameIterator implements FIterator {
     }
 
     @Override
-    public int getRow() {
+    public int row() {
         return cyclePos;
     }
 
     @Override
     public double getValue(int col) {
-        return frame.getValue(cyclePos, col);
+        return frame.value(cyclePos, col);
     }
 
     @Override
-    public double getValue(String colName) {
-        return frame.getValue(cyclePos, colName);
+    public double value(String colName) {
+        return frame.value(cyclePos, colName);
     }
 
     @Override
@@ -204,12 +204,12 @@ class FrameIterator implements FIterator {
 
     @Override
     public int getIndex(int col) {
-        return frame.getIndex(cyclePos, col);
+        return frame.index(cyclePos, col);
     }
 
     @Override
     public int getIndex(String colName) {
-        return frame.getIndex(cyclePos, colName);
+        return frame.index(cyclePos, colName);
     }
 
     @Override
@@ -224,12 +224,12 @@ class FrameIterator implements FIterator {
 
     @Override
     public String getLabel(int col) {
-        return frame.getLabel(cyclePos, col);
+        return frame.label(cyclePos, col);
     }
 
     @Override
-    public String getLabel(String colName) {
-        return frame.getLabel(cyclePos, colName);
+    public String label(String colName) {
+        return frame.label(cyclePos, colName);
     }
 
     @Override
@@ -244,17 +244,17 @@ class FrameIterator implements FIterator {
 
     @Override
     public boolean isMissing(int col) {
-        return frame.isMissing(cyclePos, col);
+        return frame.missing(cyclePos, col);
     }
 
     @Override
     public boolean isMissing(String colName) {
-        return frame.isMissing(cyclePos, colName);
+        return frame.missing(cyclePos, colName);
     }
 
     @Override
     public boolean isMissing() {
-        return frame.isMissing(cyclePos);
+        return frame.missing(cyclePos);
     }
 
     @Override
@@ -315,12 +315,12 @@ class FrameIterator implements FIterator {
 
     @Override
     public Frame getMappedFrame() {
-        return new MappedFrame(frame.getSourceFrame(), getMapping());
+        return new MappedFrame(frame.sourceFrame(), getMapping());
     }
 
     @Override
     public Frame getMappedFrame(String key) {
-        return new MappedFrame(frame.getSourceFrame(), getMapping(key));
+        return new MappedFrame(frame.sourceFrame(), getMapping(key));
     }
 
     @Override

@@ -58,8 +58,8 @@ public class SortSandbox {
             Arrays.sort(sort, new Comparator<Integer>() {
                 @Override
                 public int compare(Integer o1, Integer o2) {
-                    if (num.isMissing(o1)) return num.isMissing(o2) ? 0 : -1;
-                    else return Double.compare(num.getValue(o1), num.getValue(o2));
+                    if (num.missing(o1)) return num.missing(o2) ? 0 : -1;
+                    else return Double.compare(num.value(o1), num.value(o2));
                 }
             });
 

@@ -84,22 +84,22 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public Frame getSourceFrame() {
+    public Frame sourceFrame() {
         return this;
     }
 
     @Override
-    public Mapping getMapping() {
+    public Mapping mapping() {
         return null;
     }
 
     @Override
-    public String[] getColNames() {
+    public String[] colNames() {
         return names;
     }
 
     @Override
-    public int getColIndex(String name) {
+    public int colIndex(String name) {
         if (!colIndex.containsKey(name)) {
             throw new IllegalArgumentException("Column name is invalid");
         }
@@ -107,7 +107,7 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public Vector getCol(int col) {
+    public Vector col(int col) {
         if (col >= 0 && col < vectors.length) {
             return vectors[col];
         }
@@ -115,17 +115,17 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public Vector getCol(String name) {
-        return getCol(getColIndex(name));
+    public Vector col(String name) {
+        return col(colIndex(name));
     }
 
     @Override
-    public boolean isMissing(int row, int col) {
-        return getCol(col).isMissing(row);
+    public boolean missing(int row, int col) {
+        return col(col).missing(row);
     }
 
     @Override
-    public boolean isMissing(int row, String colName) {
-        return getCol(colName).isMissing(row);
+    public boolean missing(int row, String colName) {
+        return col(colName).missing(row);
     }
 }

@@ -139,14 +139,14 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
         }
         this.targetColName = targetColName;
 
-        Vector y = df.getCol(targetColName);
+        Vector y = df.col(targetColName);
         Frame x = BaseFilters.removeCols(this.df, targetColName);
         initialRegressor.learn(this.df, targetColName);
         trees = new ArrayList<>();
 
         fitLearn = new Numeric(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
-            fitLearn.setValue(i, initialRegressor.getFitValues().getValue(i));
+            fitLearn.setValue(i, initialRegressor.getFitValues().value(i));
         }
 
         for (int i = 1; i <= rounds; i++) {
@@ -190,7 +190,7 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
 
             tree.predict(df);
             for (int j = 0; j < df.rowCount(); j++) {
-                fitLearn.setValue(j, fitLearn.getValue(j) + shrinkage * tree.getFitValues().getValue(j));
+                fitLearn.setValue(j, fitLearn.value(j) + shrinkage * tree.getFitValues().value(j));
             }
 
             // add tree in the predictors list
@@ -200,14 +200,14 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
 
         fitValues = new Numeric(df.rowCount());
         for (int i = 0; i < fitLearn.rowCount(); i++) {
-            fitValues.addValue(fitLearn.getValue(i));
+            fitValues.addValue(fitLearn.value(i));
         }
     }
 
     public void learnFurther(int additionalRounds) {
         rounds += additionalRounds;
 
-        Vector y = df.getCol(targetColName);
+        Vector y = df.col(targetColName);
         Frame x = BaseFilters.removeCols(df, targetColName);
 
         for (int i = 0; i < additionalRounds; i++) {
@@ -256,7 +256,7 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
 
             tree.predict(df);
             for (int j = 0; j < df.rowCount(); j++) {
-                fitLearn.setValue(j, fitLearn.getValue(j) + shrinkage * tree.getFitValues().getValue(j));
+                fitLearn.setValue(j, fitLearn.value(j) + shrinkage * tree.getFitValues().value(j));
             }
 
             // add tree to the list of trees
@@ -266,7 +266,7 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
 
         fitValues = new Numeric(df.rowCount());
         for (int i = 0; i < fitLearn.rowCount(); i++) {
-            fitValues.addValue(fitLearn.getValue(i));
+            fitValues.addValue(fitLearn.value(i));
         }
     }
 
@@ -279,13 +279,13 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
         initialRegressor.predict(df);
         fitValues = new Numeric(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
-            fitValues.setValue(i, initialRegressor.getFitValues().getValue(i));
+            fitValues.setValue(i, initialRegressor.getFitValues().value(i));
         }
         for (int m = 0; m < trees.size(); m++) {
             Regressor tree = trees.get(m);
             tree.predict(df);
             for (int i = 0; i < df.rowCount(); i++) {
-                fitValues.setValue(i, fitValues.getValue(i) + shrinkage * tree.getFitValues().getValue(i));
+                fitValues.setValue(i, fitValues.value(i) + shrinkage * tree.getFitValues().value(i));
             }
         }
     }

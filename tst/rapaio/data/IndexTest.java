@@ -38,7 +38,7 @@ public class IndexTest {
         assertEquals(0, index.rowId(0));
 
         try {
-            index.getDictionary();
+            index.dictionary();
             assertTrue(false);
         } catch (RuntimeException ex) {
             assertTrue(true);
@@ -52,7 +52,7 @@ public class IndexTest {
 
         index = Vectors.newIdx(10);
         for (int i = 0; i < 10; i++) {
-            assertEquals(0, index.getIndex(i));
+            assertEquals(0, index.index(i));
         }
     }
 
@@ -61,7 +61,7 @@ public class IndexTest {
         Vector index = Vectors.newNum(10, -1);
         assertEquals(10, index.rowCount());
         for (int i = 0; i < index.rowCount(); i++) {
-            assertEquals(-1, index.getIndex(i));
+            assertEquals(-1, index.index(i));
         }
     }
 
@@ -70,7 +70,7 @@ public class IndexTest {
         Vector index = Vectors.newSeq(1, 10, 1);
         assertEquals(10, index.rowCount());
         for (int i = 0; i < index.rowCount(); i++) {
-            assertEquals(i + 1, index.getIndex(i));
+            assertEquals(i + 1, index.index(i));
         }
 
         boolean exceptional = false;
@@ -96,29 +96,29 @@ public class IndexTest {
 
         Vector index = Vectors.newIdx(3, 0);
 
-        assertEquals(0, index.getIndex(0));
+        assertEquals(0, index.index(0));
         index.setIndex(0, 1);
         index.setIndex(1, 3);
 
-        assertEquals(1, index.getIndex(0));
-        assertEquals(3, index.getIndex(1));
+        assertEquals(1, index.index(0));
+        assertEquals(3, index.index(1));
 
-        assertEquals(1., index.getValue(0), 1e-10);
-        assertEquals(3., index.getValue(1), 1e-10);
+        assertEquals(1., index.value(0), 1e-10);
+        assertEquals(3., index.value(1), 1e-10);
 
         index.setValue(0, 2.5);
         index.setValue(1, 7.8);
         index.setValue(2, 2.51);
 
-        assertEquals(2, index.getIndex(0));
-        assertEquals(2., index.getValue(0), 1e-10);
-        assertEquals(8, index.getIndex(1));
-        assertEquals(8., index.getValue(1), 1e-10);
-        assertEquals(3, index.getIndex(2));
-        assertEquals(3., index.getValue(2), 1e-10);
+        assertEquals(2, index.index(0));
+        assertEquals(2., index.value(0), 1e-10);
+        assertEquals(8, index.index(1));
+        assertEquals(8., index.value(1), 1e-10);
+        assertEquals(3, index.index(2));
+        assertEquals(3., index.value(2), 1e-10);
 
-        assertEquals("", index.getLabel(0));
-        assertEquals("", index.getLabel(1));
+        assertEquals("", index.label(0));
+        assertEquals("", index.label(1));
 
         boolean exceptional = false;
         try {
@@ -133,14 +133,14 @@ public class IndexTest {
     public void testMissing() {
         Vector index = Vectors.newSeq(1, 10, 1);
         for (int i = 0; i < index.rowCount(); i++) {
-            assertTrue(!index.isMissing(i));
+            assertTrue(!index.missing(i));
         }
         for (int i = 0; i < index.rowCount(); i++) {
             if (i % 2 == 0)
                 index.setMissing(i);
         }
         for (int i = 0; i < index.rowCount(); i++) {
-            assertEquals(i % 2 == 0, index.isMissing(i));
+            assertEquals(i % 2 == 0, index.missing(i));
         }
     }
 
@@ -148,10 +148,10 @@ public class IndexTest {
     public void testOneIndex() {
         Vector one = Vectors.newIdxOne(2);
         assertEquals(1, one.rowCount());
-        assertEquals(2, one.getIndex(0));
+        assertEquals(2, one.index(0));
 
         one = Vectors.newIdxOne(3);
         assertEquals(1, one.rowCount());
-        assertEquals(3, one.getIndex(0));
+        assertEquals(3, one.index(0));
     }
 }

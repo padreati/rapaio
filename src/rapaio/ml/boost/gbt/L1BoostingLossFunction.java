@@ -33,7 +33,7 @@ public class L1BoostingLossFunction implements BoostingLossFunction {
     public double findMinimum(Vector y, Vector fx) {
         Numeric values = new Numeric();
         for (int i = 0; i < y.rowCount(); i++) {
-            values.addValue(y.getValue(i) - fx.getValue(i));
+            values.addValue(y.value(i) - fx.value(i));
         }
         return new Quantiles(values, new double[]{0.5}).getValues()[0];
     }
@@ -42,7 +42,7 @@ public class L1BoostingLossFunction implements BoostingLossFunction {
     public Numeric gradient(Vector y, Vector fx) {
         Numeric gradient = new Numeric();
         for (int i = 0; i < y.rowCount(); i++) {
-            gradient.addValue(y.getValue(i) - fx.getValue(i) < 0 ? -1. : 1.);
+            gradient.addValue(y.value(i) - fx.value(i) < 0 ? -1. : 1.);
         }
         return gradient;
     }

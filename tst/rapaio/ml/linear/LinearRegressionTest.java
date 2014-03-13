@@ -84,12 +84,12 @@ public class LinearRegressionTest {
         Summary.lines(lm.getCoeff());
 
         draw(new Plot()
-                .add(new Points(df.getCol("Father"), df.getCol("Son"))
+                .add(new Points(df.col("Father"), df.col("Son"))
                         .setPchIndex(1).setSizeIndex(1)
                 )
                 .add(new ABLine(
-                        lm.getCoeff().getValue(1, 1),
-                        lm.getCoeff().getValue(0, 1)))
+                        lm.getCoeff().value(1, 1),
+                        lm.getCoeff().value(0, 1)))
                 .setXRange(58, 78)
                 .setYRange(58, 78)
                 .setBottomLabel("Father")
@@ -107,11 +107,11 @@ public class LinearRegressionTest {
 
         Frame bf = new SolidFrame(
                 df.rowCount(),
-                new Vector[]{df.getCol(0)},
-                new String[]{df.getColNames()[0]});
+                new Vector[]{df.col(0)},
+                new String[]{df.colNames()[0]});
 
         for (int i = 1; i < df.colCount(); i++) {
-            bf = Frames.addCol(bf, df.getCol(i), df.getColNames()[i], 0);
+            bf = Frames.addCol(bf, df.col(i), df.colNames()[i], 0);
         }
 
         LinearModelRegressor lm1 = new LinearModelRegressor();

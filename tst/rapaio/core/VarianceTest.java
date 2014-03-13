@@ -36,18 +36,18 @@ import static rapaio.core.MathBase.sqrt;
  */
 public class VarianceTest extends CoreStatTestUtil {
 
-	public VarianceTest() throws IOException, URISyntaxException {
-	}
+    public VarianceTest() throws IOException, URISyntaxException {
+    }
 
-	@Test
-	public void testRReferenceVariance() {
-		Frame df = getDataFrame();
-		assertEquals(Double.valueOf("1.0012615815492349469"), sqrt(new Variance(df.getCol(0)).getValue()), 1e-12);
-	}
+    @Test
+    public void testRReferenceVariance() {
+        Frame df = getDataFrame();
+        assertEquals(Double.valueOf("1.0012615815492349469"), sqrt(new Variance(df.col(0)).getValue()), 1e-12);
+    }
 
-	@Test
-	public void testPearsonDSVariance() throws IOException, URISyntaxException {
-		Frame df = Datasets.loadPearsonHeightDataset();
-		assertEquals(Double.valueOf("7.93094884953222").doubleValue(), new Variance(df.getCol("Son")).getValue(), 1e-12);
-	}
+    @Test
+    public void testPearsonDSVariance() throws IOException, URISyntaxException {
+        Frame df = Datasets.loadPearsonHeightDataset();
+        assertEquals(Double.valueOf("7.93094884953222").doubleValue(), new Variance(df.col("Son")).getValue(), 1e-12);
+    }
 }

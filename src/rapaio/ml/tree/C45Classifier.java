@@ -77,9 +77,9 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
 
     @Override
     public void learn(Frame df, List<Double> weights, String targetColName) {
-        dict = df.getCol(targetColName).getDictionary();
+        dict = df.col(targetColName).dictionary();
         Set<String> testColNames = new HashSet<>();
-        for (String colName : df.getColNames()) {
+        for (String colName : df.colNames()) {
             if (colName.equals(targetColName))
                 continue;
             testColNames.add(colName);
@@ -91,7 +91,7 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
     @Override
     public void predict(Frame df) {
         prediction = new Nominal(df.rowCount(), dict);
-        distribution = Frames.newMatrixFrame(df.rowCount(), dict);
+        distribution = Frames.newMatrix(df.rowCount(), dict);
 
         for (int i = 0; i < df.rowCount(); i++) {
             double[] d = root.computeDistribution(df, i);
@@ -116,12 +116,12 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
     }
 
     @Override
-    public Nominal getPrediction() {
+    public Nominal prediction() {
         return prediction;
     }
 
     @Override
-    public Frame getDistribution() {
+    public Frame distribution() {
         return distribution;
     }
 
@@ -198,7 +198,7 @@ class C45ClassifierNode {
         counts = new double[parent.dict.length];
         distribution = new double[parent.dict.length];
         for (int i = 0; i < df.rowCount(); i++) {
-            counts[df.getIndex(i, targetName)] += weights.get(i);
+            counts[df.index(i, targetName)] += weights.get(i);
             totalWeight += weights.get(i);
         }
         for (int i = 0; i < distribution.length; i++) {
@@ -214,7 +214,7 @@ class C45ClassifierNode {
 
         // if there is only one getLabel
         for (int i = 1; i < df.rowCount(); i++) {
-            if (df.getIndex(0, targetName) != df.getIndex(i, targetName)) {
+            if (df.index(0, targetName) != df.index(i, targetName)) {
                 leaf = false;
                 break;
             }
@@ -229,8 +229,8 @@ class C45ClassifierNode {
 
             // for nominal columns
 
-            if (df.getCol(testName).type().isNominal()) {
-                DensityTable id = new DensityTable(df.getCol(testName), df.getCol(targetName), weights);
+            if (df.col(testName).type().isNominal()) {
+                DensityTable id = new DensityTable(df.col(testName), df.col(targetName), weights);
                 int count = id.countWithMinimum(false, parent.getMinWeight());
                 if (count < 2) {
                     continue;
@@ -254,27 +254,27 @@ class C45ClassifierNode {
 
             // for numeric columns
 
-            if (df.getCol(testName).type().isNumeric()) {
+            if (df.col(testName).type().isNumeric()) {
                 DensityTable id = new DensityTable(DensityTable.NUMERIC_DEFAULT_LABELS, parent.dict);
                 Vector sort = Vectors.newSeq(df.rowCount());
-                sort = sort(sort, RowComparators.numericComparator(df.getCol(testName), true));
+                sort = sort(sort, RowComparators.numericComparator(df.col(testName), true));
 
                 // first fill the density table
                 for (int i = 0; i < df.rowCount(); i++) {
-                    if (df.isMissing(sort.getIndex(i), testName)) {
-                        id.update(0, df.getIndex(sort.getIndex(i), targetName), weights.get(sort.getIndex(i)));
+                    if (df.missing(sort.index(i), testName)) {
+                        id.update(0, df.index(sort.index(i), targetName), weights.get(sort.index(i)));
                     } else {
-                        id.update(2, df.getIndex(sort.getIndex(i), targetName), weights.get(sort.getIndex(i)));
+                        id.update(2, df.index(sort.index(i), targetName), weights.get(sort.index(i)));
                     }
                 }
 
                 // process the split points
                 for (int i = 0; i < df.rowCount(); i++) {
-                    if (df.isMissing(sort.getIndex(i), testName)) continue;
-                    id.move(2, 1, df.getIndex(sort.getIndex(i), targetName), weights.get(sort.getIndex(i)));
+                    if (df.missing(sort.index(i), testName)) continue;
+                    id.move(2, 1, df.index(sort.index(i), targetName), weights.get(sort.index(i)));
 
                     if (i < df.rowCount() - 1
-                            && df.getValue(sort.getIndex(i), testName) == df.getValue(sort.getIndex(i + 1), testName)) {
+                            && df.value(sort.index(i), testName) == df.value(sort.index(i + 1), testName)) {
                         continue;
                     }
 
@@ -293,7 +293,7 @@ class C45ClassifierNode {
                     }
                     if (compareCriteria(value, testCriteria, parent.selection) > 0) {
                         this.testName = testName;
-                        testValue = df.getValue(sort.getIndex(i), testName);
+                        testValue = df.value(sort.index(i), testName);
                         testCriteria = value;
                     }
                 }
@@ -306,8 +306,8 @@ class C45ClassifierNode {
 
             // for nominal columns
 
-            if (df.getCol(testName).type().isNominal()) {
-                int childrenCount = df.getCol(testName).getDictionary().length - 1;
+            if (df.col(testName).type().isNominal()) {
+                int childrenCount = df.col(testName).dictionary().length - 1;
 
                 Mapping[] childMappings = new Mapping[childrenCount];
                 List<Double>[] childWeights = new List[childrenCount];
@@ -321,10 +321,10 @@ class C45ClassifierNode {
 
                 // distribute non-missing
                 for (int i = 0; i < df.rowCount(); i++) {
-                    if (df.isMissing(i, testName)) {
+                    if (df.missing(i, testName)) {
                         continue;
                     }
-                    int index = df.getIndex(i, testName) - 1;
+                    int index = df.index(i, testName) - 1;
                     childMappings[index].add(df.rowId(i));
                     childWeights[index].add(weights.get(i));
                     childTotals[index] += weights.get(i);
@@ -337,7 +337,7 @@ class C45ClassifierNode {
 
                 // distribute missing
                 for (int i = 0; i < df.rowCount(); i++) {
-                    if (df.isMissing(i, testName)) {
+                    if (df.missing(i, testName)) {
                         for (int j = 0; j < childrenCount; j++) {
                             if (childTotals[i] == 0) {
                                 continue;
@@ -353,10 +353,10 @@ class C45ClassifierNode {
                 HashSet<String> newTestColNames = new HashSet<>(testNames);
                 newTestColNames.remove(testName);
                 for (int i = 0; i < childrenCount; i++) {
-                    String label = df.getCol(testName).getDictionary()[i + 1];
+                    String label = df.col(testName).dictionary()[i + 1];
                     C45ClassifierNode node = new C45ClassifierNode(parent);
                     children.put(label, node);
-                    node.learn(new MappedFrame(df.getSourceFrame(), childMappings[i]), childWeights[i], testNames, targetName);
+                    node.learn(new MappedFrame(df.sourceFrame(), childMappings[i]), childWeights[i], testNames, targetName);
                 }
                 return;
             }
@@ -377,10 +377,10 @@ class C45ClassifierNode {
 
             // distribute non-missing
             for (int i = 0; i < df.rowCount(); i++) {
-                if (df.isMissing(i, testName)) {
+                if (df.missing(i, testName)) {
                     continue;
                 }
-                int index = df.getValue(i, testName) <= testValue ? 0 : 1;
+                int index = df.value(i, testName) <= testValue ? 0 : 1;
                 childMappings[index].add(df.rowId(i));
                 childWeights[index].add(weights.get(i));
                 childTotals[index] += weights.get(i);
@@ -393,7 +393,7 @@ class C45ClassifierNode {
 
             // distribute missing
             for (int i = 0; i < df.rowCount(); i++) {
-                if (df.isMissing(i, testName)) {
+                if (df.missing(i, testName)) {
                     for (int j = 0; j < childrenCount; j++) {
                         if (childTotals[i] == 0) {
                             continue;
@@ -414,8 +414,8 @@ class C45ClassifierNode {
             children.put("left", left);
             C45ClassifierNode right = new C45ClassifierNode(parent);
             children.put("right", right);
-            left.learn(new MappedFrame(df.getSourceFrame(), childMappings[0]), childWeights[0], newTestColNames, targetName);
-            right.learn(new MappedFrame(df.getSourceFrame(), childMappings[1]), childWeights[1], newTestColNames, targetName);
+            left.learn(new MappedFrame(df.sourceFrame(), childMappings[0]), childWeights[0], newTestColNames, targetName);
+            right.learn(new MappedFrame(df.sourceFrame(), childMappings[1]), childWeights[1], newTestColNames, targetName);
 
         } else {
 
@@ -441,7 +441,7 @@ class C45ClassifierNode {
 
         // if missing aggregate all child nodes
 
-        if (df.getCol(testName).isMissing(row)) {
+        if (df.col(testName).missing(row)) {
             double[] d = new double[parent.dict.length];
             for (Map.Entry<String, C45ClassifierNode> entry : children.entrySet()) {
                 double[] dd = entry.getValue().computeDistribution(df, row);
@@ -453,8 +453,8 @@ class C45ClassifierNode {
         }
 
         // we have a getValue
-        if (df.getCol(testName).type().isNominal()) {
-            String label = df.getLabel(row, testName);
+        if (df.col(testName).type().isNominal()) {
+            String label = df.label(row, testName);
             for (Map.Entry<String, C45ClassifierNode> entry : children.entrySet()) {
                 if (entry.getKey().equals(label)) {
                     return entry.getValue().computeDistribution(df, row);
@@ -462,7 +462,7 @@ class C45ClassifierNode {
             }
             throw new RuntimeException("label value not found in classification tree");
         }
-        if (df.getValue(row, testName) <= testValue) {
+        if (df.value(row, testName) <= testValue) {
             return children.get("left").computeDistribution(df, row);
         } else {
             return children.get("right").computeDistribution(df, row);
