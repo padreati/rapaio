@@ -51,7 +51,7 @@ public class Summary {
             code(buffer.toString());
             return;
         }
-        buffer.append(String.format("getRowCount: %d, getColCount: %d%n", df.rowCount(), df.colCount()));
+        buffer.append(String.format("rowCount: %d, colCount: %d%n", df.rowCount(), df.colCount()));
 
         String[][] first = new String[names.length][7];
         String[][] second = new String[names.length][7];
