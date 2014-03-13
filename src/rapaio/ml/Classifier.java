@@ -63,20 +63,9 @@ public interface Classifier<T> extends Summarizable {
      * Builds a new classifier using artifacts from a previous classifier.
      *
      * @param df            data set instances
-     * @param weights       row weights
      * @param targetColName target column name
-     * @param classifier    previous classifier
      */
-    void learnFurther(Frame df, List<Double> weights, String targetColName, T classifier);
-
-    /**
-     * Builds a new classifier using artifacts from a previous classifier.
-     *
-     * @param df            data set instances
-     * @param targetColName target column name
-     * @param classifier    previous classifier
-     */
-    void learnFurther(Frame df, String targetColName, T classifier);
+    void learnFurther(Frame df, List<Double> weights, String targetColName);
 
     /**
      * Predict classes for new data set instances

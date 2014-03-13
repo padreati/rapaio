@@ -20,9 +20,8 @@
 
 package rapaio.sandbox;
 
+import rapaio.core.stat.Mean;
 import rapaio.data.Numeric;
-import rapaio.graphics.Plot;
-import rapaio.graphics.plot.Histogram;
 import rapaio.printer.LocalPrinter;
 import rapaio.workspace.Workspace;
 
@@ -42,24 +41,34 @@ public class SortSandbox {
         for (int i = 0; i < N; i++) {
             num.setValue(i, (i % 2 == 0) ? Double.NaN : i);
         }
+
         long start = System.currentTimeMillis();
+
         Integer[] sort = new Integer[N];
         for (int i = 0; i < N; i++) {
             sort[i] = i;
         }
-        Arrays.sort(sort, new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                if (num.isMissing(o1)) return num.isMissing(o2) ? 0 : -1;
-                else return Double.compare(num.getValue(o1), num.getValue(o2));
-            }
-        });
+        System.out.println("millis " + (System.currentTimeMillis() - start));
 
-        long stop = System.currentTimeMillis();
+        Numeric avg = new Numeric(0);
 
-        Workspace.draw(new Plot().add(new Histogram(num)));
+        for (int i = 0; i < 10; i++) {
+
+            start = System.currentTimeMillis();
+            Arrays.sort(sort, new Comparator<Integer>() {
+                @Override
+                public int compare(Integer o1, Integer o2) {
+                    if (num.isMissing(o1)) return num.isMissing(o2) ? 0 : -1;
+                    else return Double.compare(num.getValue(o1), num.getValue(o2));
+                }
+            });
+
+            avg.addValue(System.currentTimeMillis() - start);
+        }
+        System.out.println(sort.length);
+
+        new Mean(avg).summary();
 
 
-        System.out.println("millis " + (stop - start));
     }
 }

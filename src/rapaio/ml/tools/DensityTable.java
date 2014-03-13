@@ -35,7 +35,7 @@ public final class DensityTable {
     public static final String[] NUMERIC_DEFAULT_LABELS = new String[]{"?", "less-equals", "greater"};
 
     private final String[] testLabels;
-    private final String[] classLabels;
+    private final String[] targetLabels;
 
     // table with frequencies
     private final double[][] values;
@@ -48,7 +48,7 @@ public final class DensityTable {
      */
     public DensityTable(String[] testLabels, String[] targetLabels) {
         this.testLabels = testLabels;
-        this.classLabels = targetLabels;
+        this.targetLabels = targetLabels;
         values = new double[testLabels.length][targetLabels.length];
     }
 
@@ -122,10 +122,9 @@ public final class DensityTable {
     }
 
     public double getTargetEntropy(boolean useMissing) {
-        double entropy = 0;
-        double[] totals = new double[classLabels.length];
-        for (int i = 1; i < testLabels.length; i++) {
-            for (int j = 1; j < classLabels.length; j++) {
+        double[] totals = new double[targetLabels.length];
+        for (int i = 0; i < testLabels.length; i++) {
+            for (int j = 0; j < targetLabels.length; j++) {
                 totals[j] += values[i][j];
             }
         }
@@ -133,20 +132,20 @@ public final class DensityTable {
         for (int i = 1; i < totals.length; i++) {
             total += totals[i];
         }
+        double entropy = 0;
         for (int i = 1; i < totals.length; i++) {
             if (totals[i] > 0) {
                 entropy += -log2(totals[i] / total) * totals[i] / total;
             }
         }
-        double factor = 1.;
         if (useMissing) {
             double missing = 0;
-            for (int i = 1; i < classLabels.length; i++) {
+            for (int i = 1; i < targetLabels.length; i++) {
                 missing += values[0][i];
             }
-            factor = total / (missing + total);
+            return entropy * total / (missing + total);
         }
-        return factor * entropy;
+        return entropy;
     }
 
     public double getSplitEntropy() {
@@ -155,8 +154,8 @@ public final class DensityTable {
 
     public double getSplitEntropy(boolean useMissing) {
         double[] totals = new double[testLabels.length];
-        for (int i = 1; i < testLabels.length; i++) {
-            for (int j = 1; j < classLabels.length; j++) {
+        for (int i = 0; i < testLabels.length; i++) {
+            for (int j = 0; j < targetLabels.length; j++) {
                 totals[i] += values[i][j];
             }
         }
@@ -166,20 +165,19 @@ public final class DensityTable {
         }
         double gain = 0;
         for (int i = 1; i < testLabels.length; i++) {
-            for (int j = 1; j < classLabels.length; j++) {
+            for (int j = 1; j < targetLabels.length; j++) {
                 if (values[i][j] > 0)
                     gain += -log2(values[i][j] / totals[i]) * values[i][j] / total;
             }
         }
-        double factor = 1.;
         if (useMissing) {
             double missing = 0;
-            for (int i = 0; i < classLabels.length; i++) {
+            for (int i = 0; i < targetLabels.length; i++) {
                 missing += values[0][i];
             }
-            factor = total / (missing + total);
+            return gain * total / (missing + total);
         }
-        return factor * gain;
+        return gain;
     }
 
     public double getInfoGain() {
@@ -198,7 +196,7 @@ public final class DensityTable {
         int start = useMissing ? 0 : 1;
         double[] totals = new double[testLabels.length];
         for (int i = start; i < testLabels.length; i++) {
-            for (int j = 1; j < classLabels.length; j++) {
+            for (int j = 1; j < targetLabels.length; j++) {
                 totals[i] += values[i][j];
             }
         }
@@ -233,7 +231,7 @@ public final class DensityTable {
         int start = useMissing ? 0 : 1;
         double[] totals = new double[testLabels.length];
         for (int i = start; i < testLabels.length; i++) {
-            for (int j = 1; j < classLabels.length; j++) {
+            for (int j = 1; j < targetLabels.length; j++) {
                 totals[i] += values[i][j];
             }
         }

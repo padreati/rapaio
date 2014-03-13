@@ -41,17 +41,7 @@ public abstract class AbstractClassifier<T> implements Classifier<T> {
     }
 
     @Override
-    public void learnFurther(Frame df, String targetColName, T classifier) {
-        List<Double> weights = new ArrayList<>();
-        for (int i = 0; i < df.rowCount(); i++) {
-            weights.add(1.);
-        }
-        learnFurther(df, weights, targetColName, classifier);
-    }
-
-    @Override
-    public void learnFurther(Frame df, List<Double> weights, String targetColName, T classifier) {
-        // default further prediction is not implemented
+    public void learnFurther(Frame df, List<Double> weights, String targetColName) {
         throw new NotImplementedException();
     }
 

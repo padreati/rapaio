@@ -72,7 +72,14 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
         dict = df.getCol(targetColName).getDictionary();
         k = dict.length - 1;
 
-        w = new ArrayList<>(weights);
+        if (weights != null) {
+            w = new ArrayList<>(weights);
+        } else {
+            w = new ArrayList<>(df.rowCount());
+            for (int i = 0; i < df.rowCount(); i++) {
+                w.add(1.0);
+            }
+        }
 
         double total = 0;
         for (int j = 0; j < w.size(); j++) {
@@ -118,23 +125,34 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
     }
 
     @Override
-    public void learnFurther(Frame df, List<Double> weights, String targetColName, AdaBoostSAMMEClassifier classifier) {
-        // TODO validation for further learning
-
-        if (classifier == null) {
+    public void learnFurther(Frame df, List<Double> weights, String targetColName) {
+        if (h.isEmpty()) {
             learn(df, weights, targetColName);
             return;
         }
 
         dict = df.getCol(targetColName).getDictionary();
         k = dict.length - 1;
-        h = new ArrayList<>(classifier.h);
-        a = new ArrayList<>(classifier.a);
-        if (t == classifier.t) {
+        if (t == h.size()) {
             return;
         }
-//        w = (weights == null) ? classifier.w : weights;
-        w = classifier.w;
+        if (weights != null) {
+            w = new ArrayList<>(weights);
+        } else if (w == null) {
+            w = new ArrayList<>(df.rowCount());
+            for (int i = 0; i < df.rowCount(); i++) {
+                w.add(1.0);
+            }
+            double total = 0;
+            for (int j = 0; j < w.size(); j++) {
+                total += w.get(j);
+            }
+            for (int j = 0; j < w.size(); j++) {
+                w.set(j, w.get(j) / total);
+            }
+        }
+
+
         for (int i = h.size(); i < t; i++) {
             Classifier hh = weak.newInstance();
             hh.learn(df, new ArrayList<>(w), targetColName);

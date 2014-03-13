@@ -37,9 +37,13 @@ import java.util.List;
  */
 public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpClassifier> {
 
+    private int minCount = 1;
+    private TreeClassificationTest.Method method = TreeClassificationTest.Method.INFO_GAIN;
+
     private String[] dict;
-    private TreeClassificationTest test = new TreeClassificationTest(
-            TreeClassificationTest.Method.GAIN_RATIO, 1);
+
+    private TreeClassificationTest test = new TreeClassificationTest(method, minCount);
+
     private String leftLabel;
     private String rightLabel;
     private String defaultLabel;
@@ -52,7 +56,19 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
 
     @Override
     public Classifier newInstance() {
-        return new DecisionStumpClassifier();
+        return new DecisionStumpClassifier().withMethod(method).withMinCount(minCount);
+    }
+
+    public DecisionStumpClassifier withMinCount(int minCount) {
+        this.minCount = minCount;
+        test = new TreeClassificationTest(method, minCount);
+        return this;
+    }
+
+    public DecisionStumpClassifier withMethod(TreeClassificationTest.Method method) {
+        this.method = method;
+        test = new TreeClassificationTest(method, minCount);
+        return this;
     }
 
     @Override
@@ -89,6 +105,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
             for (int i = 0; i < df.rowCount(); i++) {
                 if (testVector.isMissing(i)) {
                     missing.update(df.getCol(targetColName).getIndex(i), weights.get(i));
+                    continue;
                 }
                 boolean onLeft = true;
                 if (testVector.type().isNominal() && !test.getBinarySplitLabel().equals(testVector.getLabel(i))) {
