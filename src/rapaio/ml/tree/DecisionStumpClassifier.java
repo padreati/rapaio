@@ -84,6 +84,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
                 test.binaryNumericTest(df, colName, targetColName, weights);
             } else {
                 for (String testLabel : df.col(colName).dictionary()) {
+                    if (testLabel.equals("?")) continue;
                     test.binaryNominalTest(df, colName, targetColName, weights, testLabel);
                 }
             }

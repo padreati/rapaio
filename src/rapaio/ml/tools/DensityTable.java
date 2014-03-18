@@ -88,7 +88,7 @@ public final class DensityTable {
      * @param testLabel test label used for binary split
      */
     public DensityTable(Vector test, Vector target, List<Double> weights, String testLabel) {
-        this(new String[]{testLabel, "other"}, target.dictionary());
+        this(new String[]{"?", testLabel, "other"}, target.dictionary());
 
         if (!test.type().isNominal()) throw new IllegalArgumentException("test vector must be nominal");
         if (!target.type().isNominal()) throw new IllegalArgumentException("target vector is not nominal");

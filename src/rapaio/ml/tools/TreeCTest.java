@@ -30,6 +30,9 @@ import rapaio.data.filters.BaseFilters;
 import java.util.List;
 
 /**
+ * Tree classifier test utility.
+ * Offers various methods for evaluating test attributes
+ *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 public class TreeCTest {

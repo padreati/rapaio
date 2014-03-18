@@ -140,14 +140,14 @@ public class BoxPlot extends AbstractFigure {
 
     @Override
     public void buildBottomMarkers() {
-        getParent().getBottomMarkersPos().clear();
-        getParent().getBottomMarkersMsg().clear();
+        getBottomMarkersPos().clear();
+        getBottomMarkersMsg().clear();
 
-        double xspotwidth = getParent().getViewport().width / vectors.length;
+        double xspotwidth = getViewport().width / vectors.length;
 
         for (int i = 0; i < vectors.length; i++) {
-            getParent().getBottomMarkersPos().add(i * xspotwidth + xspotwidth / 2);
-            getParent().getBottomMarkersMsg().add(labels[i]);
+            getBottomMarkersPos().add(i * xspotwidth + xspotwidth / 2);
+            getBottomMarkersMsg().add(labels[i]);
         }
     }
 

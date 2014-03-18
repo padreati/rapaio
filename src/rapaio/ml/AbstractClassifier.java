@@ -35,7 +35,7 @@ public abstract class AbstractClassifier<T> implements Classifier<T> {
     public void learn(Frame df, String targetColName) {
         List<Double> weights = new ArrayList<>();
         for (int i = 0; i < df.rowCount(); i++) {
-            weights.add(1.);
+            weights.add(1.0);
         }
         learn(df, weights, targetColName);
     }
