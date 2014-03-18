@@ -154,7 +154,7 @@ public class ID3Classifier extends AbstractClassifier<ID3Classifier> {
         }
         FIterator it = df.iterator();
         while (it.next()) {
-            if (it.isMissing())
+            if (it.missing())
                 throw new IllegalArgumentException("ID3 can't handle missing values.");
         }
     }

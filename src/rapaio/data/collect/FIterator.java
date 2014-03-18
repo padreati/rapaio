@@ -41,7 +41,7 @@ public interface FIterator {
 
     public int row();
 
-    public double getValue(int col);
+    public double value(int col);
 
     public double value(String colName);
 
@@ -49,15 +49,15 @@ public interface FIterator {
 
     public void setValue(String colName, double value);
 
-    public int getIndex(int col);
+    public int index(int col);
 
-    public int getIndex(String colName);
+    public int index(String colName);
 
     public void setIndex(int col, int value);
 
     public void setIndex(String colName, int value);
 
-    public String getLabel(int col);
+    public String label(int col);
 
     public String label(String colName);
 
@@ -65,11 +65,11 @@ public interface FIterator {
 
     public void setLabel(String colName, String value);
 
-    public boolean isMissing();
+    public boolean missing();
 
-    public boolean isMissing(int col);
+    public boolean missing(int col);
 
-    public boolean isMissing(String colName);
+    public boolean missing(String colName);
 
     public void setMissing(int col);
 

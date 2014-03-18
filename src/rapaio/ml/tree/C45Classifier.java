@@ -49,8 +49,8 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
     int selection = SELECTION_GAINRATIO;
     String[] dict;
     C45ClassifierNode root;
-    Nominal prediction;
-    Frame distribution;
+    Nominal pred;
+    Frame dist;
 
     public int getSelection() {
         return selection;
@@ -90,13 +90,13 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
 
     @Override
     public void predict(Frame df) {
-        prediction = new Nominal(df.rowCount(), dict);
-        distribution = Frames.newMatrix(df.rowCount(), dict);
+        pred = new Nominal(df.rowCount(), dict);
+        dist = Frames.newMatrix(df.rowCount(), dict);
 
         for (int i = 0; i < df.rowCount(); i++) {
             double[] d = root.computeDistribution(df, i);
             for (int j = 0; j < dict.length; j++) {
-                distribution.setValue(i, j, d[j]);
+                dist.setValue(i, j, d[j]);
             }
             List<Integer> candidates = new ArrayList<>();
             double max = 0;
@@ -111,18 +111,18 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
                     candidates.add(j);
                 }
             }
-            prediction.setLabel(i, dict[candidates.get(RandomSource.nextInt(candidates.size()))]);
+            pred.setLabel(i, dict[candidates.get(RandomSource.nextInt(candidates.size()))]);
         }
     }
 
     @Override
     public Nominal prediction() {
-        return prediction;
+        return pred;
     }
 
     @Override
     public Frame distribution() {
-        return distribution;
+        return dist;
     }
 
     @Override

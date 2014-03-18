@@ -20,6 +20,7 @@
 
 package rapaio.data;
 
+import rapaio.data.collect.FInstance;
 import rapaio.data.collect.FIterator;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
@@ -27,6 +28,7 @@ import rapaio.data.mapping.Mapping;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Base class for a frame, which provides behavior for the utility
@@ -133,6 +135,14 @@ public abstract class AbstractFrame implements Frame {
     public FIterator iterator() {
         return iterator(false);
     }
+
+    public void forEach(Consumer<FInstance> action) {
+        FInstanceImpl inst = new FInstanceImpl(this, 0);
+        for (int i = 0; i < rowCount(); i++) {
+            inst.setRow(i);
+            action.accept(inst);
+        }
+    }
 }
 
 class FrameIterator implements FIterator {
@@ -183,7 +193,7 @@ class FrameIterator implements FIterator {
     }
 
     @Override
-    public double getValue(int col) {
+    public double value(int col) {
         return frame.value(cyclePos, col);
     }
 
@@ -203,12 +213,12 @@ class FrameIterator implements FIterator {
     }
 
     @Override
-    public int getIndex(int col) {
+    public int index(int col) {
         return frame.index(cyclePos, col);
     }
 
     @Override
-    public int getIndex(String colName) {
+    public int index(String colName) {
         return frame.index(cyclePos, colName);
     }
 
@@ -223,7 +233,7 @@ class FrameIterator implements FIterator {
     }
 
     @Override
-    public String getLabel(int col) {
+    public String label(int col) {
         return frame.label(cyclePos, col);
     }
 
@@ -243,17 +253,17 @@ class FrameIterator implements FIterator {
     }
 
     @Override
-    public boolean isMissing(int col) {
+    public boolean missing(int col) {
         return frame.missing(cyclePos, col);
     }
 
     @Override
-    public boolean isMissing(String colName) {
+    public boolean missing(String colName) {
         return frame.missing(cyclePos, colName);
     }
 
     @Override
-    public boolean isMissing() {
+    public boolean missing() {
         return frame.missing(cyclePos);
     }
 
@@ -335,5 +345,119 @@ class FrameIterator implements FIterator {
             map.put(key, getMappedFrame(key));
         }
         return map;
+    }
+}
+
+class FInstanceImpl implements FInstance {
+    public Frame df;
+    public int row;
+
+    FInstanceImpl(Frame df, int row) {
+        this.df = df;
+        this.row = row;
+    }
+
+    @Override
+    public int row() {
+        return row;
+    }
+
+    public void setRow(int row) {
+        this.row = row;
+    }
+
+    @Override
+    public int rowId() {
+        return df.rowId(row);
+    }
+
+    @Override
+    public boolean missing(int colIndex) {
+        return df.missing(row, colIndex);
+    }
+
+    @Override
+    public boolean missing(String colName) {
+        return df.missing(row, colName);
+    }
+
+    @Override
+    public void setMissing(int colIndex) {
+        df.setMissing(row, colIndex);
+    }
+
+    @Override
+    public void setMissing(String colName) {
+        df.setMissing(row, colName);
+    }
+
+    @Override
+    public double value(int colIndex) {
+        return df.value(row, colIndex);
+    }
+
+    @Override
+    public double value(String colName) {
+        return df.value(row, colName);
+    }
+
+    @Override
+    public void setValue(int colIndex, double value) {
+        df.setValue(row, colIndex, value);
+    }
+
+    @Override
+    public void setValue(String colName, double value) {
+        df.setValue(row, colName, value);
+    }
+
+    @Override
+    public int index(int colIndex) {
+        return df.index(row, colIndex);
+    }
+
+    @Override
+    public int index(String colName) {
+        return df.index(row, colName);
+    }
+
+    @Override
+    public void setIndex(int colIndex, int value) {
+        df.setIndex(row, colIndex, value);
+    }
+
+    @Override
+    public void setIndex(String colName, int value) {
+        df.setIndex(row, colName, value);
+    }
+
+    @Override
+    public String label(int colIndex) {
+        return df.label(row, colIndex);
+    }
+
+    @Override
+    public String label(String colName) {
+        return df.label(row, colName);
+    }
+
+    @Override
+    public void setLabel(int colIndex, String value) {
+        df.setLabel(row, colIndex, value);
+    }
+
+    @Override
+    public void setLabel(String colName, String value) {
+        df.setLabel(row, colName, value);
+    }
+
+    @Override
+    public String[] dictionary(int colIndex) {
+        return df.col(colIndex).dictionary();
+    }
+
+    @Override
+    public String[] dictionary(String colName) {
+        return df.col(colName).dictionary();
     }
 }

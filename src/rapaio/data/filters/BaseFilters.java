@@ -275,7 +275,7 @@ public final class BaseFilters {
         }
         FIterator it = df.iterator();
         while (it.next()) {
-            it.appendToMapping(it.getLabel(nominalIndex));
+            it.appendToMapping(it.label(nominalIndex));
         }
         return it.getMappedFrames();
     }

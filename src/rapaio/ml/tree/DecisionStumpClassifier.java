@@ -52,7 +52,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
     private int defaultIndex;
 
     private Nominal pred;
-    private Frame distr;
+    private Frame dist;
 
     @Override
     public Classifier newInstance() {
@@ -141,29 +141,29 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
     @Override
     public void predict(Frame df) {
         pred = new Nominal(df.rowCount(), dict);
-        distr = Frames.newMatrix(df.rowCount(), dict);
+        dist = Frames.newMatrix(df.rowCount(), dict);
 
         FIterator it = df.iterator();
         while (it.next()) {
-            if (test.testName() == null || it.isMissing(test.testName())) {
-                distr.setValue(it.row(), defaultIndex, 1.0);
+            if (test.testName() == null || it.missing(test.testName())) {
+                dist.setValue(it.row(), defaultIndex, 1.0);
                 pred.setLabel(it.row(), defaultLabel);
                 continue;
             }
             if (df.col(test.testName()).type().isNumeric()) {
                 if (it.value(test.testName()) <= test.splitValue()) {
-                    distr.setValue(it.row(), leftIndex, 1.0);
+                    dist.setValue(it.row(), leftIndex, 1.0);
                     pred.setLabel(it.row(), leftLabel);
                 } else {
-                    distr.setValue(it.row(), rightIndex, 1.0);
+                    dist.setValue(it.row(), rightIndex, 1.0);
                     pred.setLabel(it.row(), rightLabel);
                 }
             } else {
                 if (test.splitLabel().equals(it.label(test.testName()))) {
-                    distr.setValue(it.row(), leftIndex, 1.0);
+                    dist.setValue(it.row(), leftIndex, 1.0);
                     pred.setLabel(it.row(), leftLabel);
                 } else {
-                    distr.setValue(it.row(), rightIndex, 1.0);
+                    dist.setValue(it.row(), rightIndex, 1.0);
                     pred.setLabel(it.row(), rightLabel);
                 }
             }
@@ -177,7 +177,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
 
     @Override
     public Frame distribution() {
-        return distr;
+        return dist;
     }
 
     @Override

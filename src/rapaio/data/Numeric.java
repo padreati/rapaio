@@ -24,7 +24,6 @@ package rapaio.data;
 import rapaio.data.mapping.Mapping;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.stream.DoubleStream;
 
 /**
@@ -121,34 +120,6 @@ public class Numeric extends AbstractVector {
         return (minCapacity > MAX_ARRAY_SIZE) ?
                 Integer.MAX_VALUE :
                 MAX_ARRAY_SIZE;
-    }
-
-    // Positional Access Operations
-
-    public boolean addAll(Collection<? extends Double> c) {
-        Object[] a = c.toArray();
-        int numNew = a.length;
-        ensureCapacityInternal(rows + numNew);  // Increments modCount
-        System.arraycopy(a, 0, data, rows, numNew);
-        rows += numNew;
-        return numNew != 0;
-    }
-
-    public boolean addAll(int index, Collection<? extends Double> c) {
-        rangeCheck(index);
-
-        Object[] a = c.toArray();
-        int numNew = a.length;
-        ensureCapacityInternal(rows + numNew);  // Increments modCount
-
-        int numMoved = rows - index;
-        if (numMoved > 0)
-            System.arraycopy(data, index, data, index + numNew,
-                    numMoved);
-
-        System.arraycopy(a, 0, data, index, numNew);
-        rows += numNew;
-        return numNew != 0;
     }
 
     private void rangeCheck(int index) {

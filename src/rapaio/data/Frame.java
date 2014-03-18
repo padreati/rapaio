@@ -20,10 +20,12 @@
 
 package rapaio.data;
 
+import rapaio.data.collect.FInstance;
 import rapaio.data.collect.FIterator;
 import rapaio.data.mapping.Mapping;
 
 import java.io.Serializable;
+import java.util.function.Consumer;
 
 /**
  * Random access list of observed values for multiple variables.
@@ -229,4 +231,9 @@ public interface Frame extends Serializable {
     public FIterator iterator();
 
     public FIterator iterator(boolean complete);
+
+    // some functional constructs
+
+    public void forEach(Consumer<FInstance> action);
+
 }

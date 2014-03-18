@@ -21,10 +21,7 @@
 package rapaio.ml.boost;
 
 import rapaio.core.sample.DiscreteSampling;
-import rapaio.data.Frame;
-import rapaio.data.Frames;
-import rapaio.data.Numeric;
-import rapaio.data.Vector;
+import rapaio.data.*;
 import rapaio.data.filters.BaseFilters;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.MappedVector;
@@ -34,6 +31,7 @@ import rapaio.ml.Regressor;
 import rapaio.ml.boost.gbt.BTRegressor;
 import rapaio.ml.boost.gbt.BoostingLossFunction;
 import rapaio.ml.boost.gbt.L1BoostingLossFunction;
+import rapaio.ml.simple.L2ConstantRegressor;
 import rapaio.ml.tree.DecisionStumpRegressor;
 
 import java.util.ArrayList;
@@ -51,10 +49,10 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
     BoostingLossFunction lossFunction = new L1BoostingLossFunction();
     BTRegressor regressor = new DecisionStumpRegressor();
     double shrinkage = 1.;
-    double bootstrap = 1.;
+    double bootstrap = Double.NaN;
 
     // prediction
-    Regressor initialRegressor;
+    Regressor initialRegressor = new L2ConstantRegressor();
     List<BTRegressor> trees;
     //
     Numeric fitLearn;
@@ -132,16 +130,16 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
     }
 
     @Override
-    public void learn(Frame dfOld, String targetColName) {
-        this.df = dfOld;
-        if (df.isMappedFrame()) {
-            this.df = Frames.solidCopy(dfOld);
+    public void learn(Frame train, String targetColName) {
+        this.df = train;
+        if (train.isMappedFrame()) {
+            this.df = Frames.solidCopy(train);
         }
         this.targetColName = targetColName;
 
         Vector y = df.col(targetColName);
-        Frame x = BaseFilters.removeCols(this.df, targetColName);
-        initialRegressor.learn(this.df, targetColName);
+        Frame x = BaseFilters.removeCols(df, targetColName);
+        initialRegressor.learn(df, targetColName);
         trees = new ArrayList<>();
 
         fitLearn = new Numeric(df.rowCount());
@@ -297,6 +295,6 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
 
     @Override
     public Frame getAllFitValues() {
-        throw new RuntimeException("Not implemented for multiple outputs");
+        return new SolidFrame(fitValues.rowCount(), new Vector[]{fitValues}, new String[]{targetColName});
     }
 }

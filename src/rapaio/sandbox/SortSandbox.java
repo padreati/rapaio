@@ -20,7 +20,6 @@
 
 package rapaio.sandbox;
 
-import rapaio.core.stat.Mean;
 import rapaio.data.Numeric;
 import rapaio.printer.LocalPrinter;
 import rapaio.workspace.Workspace;
@@ -36,7 +35,7 @@ public class SortSandbox {
     public static void main(String[] args) {
 
         Workspace.setPrinter(new LocalPrinter());
-        int N = 1000000;
+        int N = (int) Math.pow(10, 7);
         final Numeric num = new Numeric(N);
         for (int i = 0; i < N; i++) {
             num.setValue(i, (i % 2 == 0) ? Double.NaN : i);
@@ -50,24 +49,15 @@ public class SortSandbox {
         }
         System.out.println("millis " + (System.currentTimeMillis() - start));
 
-        Numeric avg = new Numeric(0);
-
-        for (int i = 0; i < 10; i++) {
-
-            start = System.currentTimeMillis();
-            Arrays.sort(sort, new Comparator<Integer>() {
-                @Override
-                public int compare(Integer o1, Integer o2) {
-                    if (num.missing(o1)) return num.missing(o2) ? 0 : -1;
-                    else return Double.compare(num.value(o1), num.value(o2));
-                }
-            });
-
-            avg.addValue(System.currentTimeMillis() - start);
-        }
-        System.out.println(sort.length);
-
-        new Mean(avg).summary();
+        start = System.currentTimeMillis();
+        Arrays.sort(sort, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                if (num.missing(o1)) return num.missing(o2) ? 0 : -1;
+                else return Double.compare(num.value(o1), num.value(o2));
+            }
+        });
+        System.out.println("millis " + (System.currentTimeMillis() - start));
 
 
     }

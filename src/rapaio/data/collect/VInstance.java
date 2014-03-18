@@ -25,11 +25,11 @@ package rapaio.data.collect;
  */
 public interface VInstance {
 
-	boolean isMissing();
+    boolean missing();
 
-	void setMissing();
+    void setMissing();
 
-	double getValue();
+    double value();
 
-	void setValue(double value);
+    void setValue(double value);
 }
