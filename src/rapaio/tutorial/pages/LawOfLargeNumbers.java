@@ -81,7 +81,7 @@ public class LawOfLargeNumbers implements TutorialPage {
         StatOnline ocs = new StatOnline();
         final Vector mean = new Numeric(N);
         for (int i = 0; i < events.rowCount(); i++) {
-            ocs.update(events.value(i));
+            ocs.update(events.getValue(i));
             mean.setValue(i, ocs.getMean());
         }
         p("Now we have the running mean stored in the vector mean and we can plot "

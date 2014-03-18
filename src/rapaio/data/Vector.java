@@ -25,7 +25,6 @@ import rapaio.data.collect.VIterator;
 import rapaio.data.mapping.Mapping;
 
 import java.io.Serializable;
-import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
 /**
@@ -66,15 +65,15 @@ public interface Vector extends Serializable {
     int rowId(int row);
 
     /**
-     * Returns numeric setValue for the observation specified by {@code row}.
+     * Returns numeric value for the observation specified by row.
      * <p>
      * Returns valid values for numerical vector types, otherwise the method
-     * returns unspeified values.
+     * returns unspecified value.
      *
-     * @param row
+     * @param row position of the observation
      * @return numerical setValue
      */
-    double value(int row);
+    double getValue(int row);
 
     /**
      * Set numeric setValue for the observation specified by {@param row} to {@param setValue}.
@@ -98,7 +97,7 @@ public interface Vector extends Serializable {
      * @param row position of the observation
      * @return getIndex setValue
      */
-    int index(int row);
+    int getIndex(int row);
 
     /**
      * Set getIndex setValue for the observation specified by {@param row}.
@@ -118,7 +117,7 @@ public interface Vector extends Serializable {
      * @param row position of the observation
      * @return getLabel setValue for the observation
      */
-    String label(int row);
+    String getLabel(int row);
 
     /**
      * Set nominal getLabel for the observation specified by {@param row}.
@@ -146,7 +145,7 @@ public interface Vector extends Serializable {
      *
      * @return term getDictionary defined by the nominal vector.
      */
-    String[] dictionary();
+    String[] getDictionary();
 
     void setDictionary(String[] dict);
 
@@ -160,7 +159,7 @@ public interface Vector extends Serializable {
      * @param row position of the observation
      * @return true if the observation measurement is not specified
      */
-    boolean missing(int row);
+    boolean isMissing(int row);
 
     /**
      * Set the setValue of the observation specified by {@param row} as missing, not available for analysis.
@@ -173,11 +172,7 @@ public interface Vector extends Serializable {
 
     void remove(int row);
 
-    void removeRange(int from, int to);
-
     void clear();
-
-    void trimToSize();
 
     void ensureCapacity(int minCapacity);
 
@@ -188,6 +183,4 @@ public interface Vector extends Serializable {
     public VIterator cycleIterator(int size);
 
     public Stream<VInstance> stream();
-
-    public DoubleStream doubleStream();
 }

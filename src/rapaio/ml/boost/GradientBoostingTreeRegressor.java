@@ -144,7 +144,7 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
 
         fitLearn = new Numeric(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
-            fitLearn.setValue(i, initialRegressor.getFitValues().value(i));
+            fitLearn.setValue(i, initialRegressor.getFitValues().getValue(i));
         }
 
         for (int i = 1; i <= rounds; i++) {
@@ -188,7 +188,7 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
 
             tree.predict(df);
             for (int j = 0; j < df.rowCount(); j++) {
-                fitLearn.setValue(j, fitLearn.value(j) + shrinkage * tree.getFitValues().value(j));
+                fitLearn.setValue(j, fitLearn.getValue(j) + shrinkage * tree.getFitValues().getValue(j));
             }
 
             // add tree in the predictors list
@@ -198,7 +198,7 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
 
         fitValues = new Numeric(df.rowCount());
         for (int i = 0; i < fitLearn.rowCount(); i++) {
-            fitValues.addValue(fitLearn.value(i));
+            fitValues.addValue(fitLearn.getValue(i));
         }
     }
 
@@ -254,7 +254,7 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
 
             tree.predict(df);
             for (int j = 0; j < df.rowCount(); j++) {
-                fitLearn.setValue(j, fitLearn.value(j) + shrinkage * tree.getFitValues().value(j));
+                fitLearn.setValue(j, fitLearn.getValue(j) + shrinkage * tree.getFitValues().getValue(j));
             }
 
             // add tree to the list of trees
@@ -264,7 +264,7 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
 
         fitValues = new Numeric(df.rowCount());
         for (int i = 0; i < fitLearn.rowCount(); i++) {
-            fitValues.addValue(fitLearn.value(i));
+            fitValues.addValue(fitLearn.getValue(i));
         }
     }
 
@@ -277,13 +277,13 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
         initialRegressor.predict(df);
         fitValues = new Numeric(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
-            fitValues.setValue(i, initialRegressor.getFitValues().value(i));
+            fitValues.setValue(i, initialRegressor.getFitValues().getValue(i));
         }
         for (int m = 0; m < trees.size(); m++) {
             Regressor tree = trees.get(m);
             tree.predict(df);
             for (int i = 0; i < df.rowCount(); i++) {
-                fitValues.setValue(i, fitValues.value(i) + shrinkage * tree.getFitValues().value(i));
+                fitValues.setValue(i, fitValues.getValue(i) + shrinkage * tree.getFitValues().getValue(i));
             }
         }
     }

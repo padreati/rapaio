@@ -88,10 +88,10 @@ public class PearsonRCorrelation implements Summarizable {
         double sdp = sqrt(new Variance(x).getValue()) * sqrt(new Variance(y).getValue());
         double count = 0;
         for (int i = 0; i < len; i++) {
-            if (x.missing(i) || y.missing(i)) {
+            if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
-            sum += ((x.value(i) - xMean) * (y.value(i) - yMean));
+            sum += ((x.getValue(i) - xMean) * (y.getValue(i) - yMean));
             count++;
         }
         return sum / (sdp * (count - 1));

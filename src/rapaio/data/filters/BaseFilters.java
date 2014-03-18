@@ -184,7 +184,7 @@ public final class BaseFilters {
                     for (int k = 0; k < width; k++) {
                         if (j * width + k >= df.rowCount())
                             break;
-                        if (sorted.missing(j * width + k))
+                        if (sorted.isMissing(j * width + k))
                             continue;
                         int rowId = sorted.rowId(j * width + k);
                         discrete.setLabel(rowId, String.valueOf(j + 1));
@@ -197,9 +197,9 @@ public final class BaseFilters {
                 }
                 double[] q = new Quantiles(origin, p).getValues();
                 for (int j = 0; j < origin.rowCount(); j++) {
-                    if (origin.missing(j))
+                    if (origin.isMissing(j))
                         continue;
-                    double value = origin.value(j);
+                    double value = origin.getValue(j);
                     int index = Arrays.binarySearch(q, value);
                     if (index < 0) {
                         index = -index - 1;
@@ -234,7 +234,7 @@ public final class BaseFilters {
                     if (!dicts.containsKey(colName)) {
                         dicts.put(colName, new HashSet<String>());
                     }
-                    dicts.get(colName).addAll(Arrays.asList(frame.col(colName).dictionary()));
+                    dicts.get(colName).addAll(Arrays.asList(frame.col(colName).getDictionary()));
                 }
             }
         }
@@ -251,7 +251,7 @@ public final class BaseFilters {
                 } else {
                     vectors[i] = new Nominal(v.rowCount(), dicts.get(colName));
                     for (int k = 0; k < vectors[i].rowCount(); k++) {
-                        vectors[i].setLabel(k, v.label(k));
+                        vectors[i].setLabel(k, v.getLabel(k));
                     }
                 }
             }
@@ -336,7 +336,7 @@ public final class BaseFilters {
         }
 
         for (int j = 0; j < combined.length; j++) {
-            String[] vdict = frames.get(0).col(combined[j]).dictionary();
+            String[] vdict = frames.get(0).col(combined[j]).getDictionary();
             Set<String> newdict = new HashSet<>();
             for (String term : dict) {
                 for (int k = 0; k < vdict.length; k++) {
@@ -370,7 +370,7 @@ public final class BaseFilters {
     public static Vector completeCases(Vector source) {
         Mapping mapping = new Mapping();
         for (int i = 0; i < source.rowCount(); i++) {
-            if (source.missing(i)) continue;
+            if (source.isMissing(i)) continue;
             mapping.add(source.rowId(i));
         }
         return new MappedVector(source.source(), mapping);
@@ -393,7 +393,7 @@ public final class BaseFilters {
         for (int i = 0; i < source.rowCount(); i++) {
             boolean complete = true;
             for (int col : selectedCols) {
-                if (source.col(col).missing(i)) {
+                if (source.col(col).isMissing(i)) {
                     complete = false;
                     break;
                 }
@@ -508,10 +508,10 @@ public final class BaseFilters {
         Numeric result = new Numeric(vector.rowCount());
         Vector jitter = new Normal(0, sd).sample(result.rowCount());
         for (int i = 0; i < result.rowCount(); i++) {
-            if (vector.missing(i)) {
+            if (vector.isMissing(i)) {
                 continue;
             }
-            result.setValue(i, vector.value(i) + jitter.value(i));
+            result.setValue(i, vector.getValue(i) + jitter.getValue(i));
         }
         return result;
     }

@@ -24,7 +24,7 @@ package rapaio.data;
 import rapaio.data.mapping.Mapping;
 
 import java.util.Arrays;
-import java.util.stream.DoubleStream;
+import java.util.function.BinaryOperator;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -153,7 +153,7 @@ public class Numeric extends AbstractVector {
     }
 
     @Override
-    public double value(int row) {
+    public double getValue(int row) {
         rangeCheck(row);
         return data[row];
     }
@@ -180,8 +180,8 @@ public class Numeric extends AbstractVector {
     }
 
     @Override
-    public int index(int row) {
-        return (int) Math.rint(value(row));
+    public int getIndex(int row) {
+        return (int) Math.rint(getValue(row));
     }
 
     @Override
@@ -205,7 +205,7 @@ public class Numeric extends AbstractVector {
     }
 
     @Override
-    public String label(int row) {
+    public String getLabel(int row) {
         return "";
     }
 
@@ -225,7 +225,7 @@ public class Numeric extends AbstractVector {
     }
 
     @Override
-    public String[] dictionary() {
+    public String[] getDictionary() {
         throw new RuntimeException("Operation not available for numeric vectors.");
     }
 
@@ -235,8 +235,8 @@ public class Numeric extends AbstractVector {
     }
 
     @Override
-    public boolean missing(int row) {
-        return value(row) != value(row);
+    public boolean isMissing(int row) {
+        return getValue(row) != getValue(row);
     }
 
     @Override
@@ -258,22 +258,8 @@ public class Numeric extends AbstractVector {
     }
 
     @Override
-    public void removeRange(int fromIndex, int toIndex) {
-        int numMoved = rows - toIndex;
-        System.arraycopy(data, toIndex, data, fromIndex, numMoved);
-        rows -= (toIndex - fromIndex);
-    }
-
-    @Override
     public void clear() {
         rows = 0;
-    }
-
-    @Override
-    public void trimToSize() {
-        if (rows < data.length) {
-            data = Arrays.copyOf(data, rows);
-        }
     }
 
     @Override
@@ -286,13 +272,16 @@ public class Numeric extends AbstractVector {
         }
     }
 
-    @Override
-    public String toString() {
-        return "Numeric[" + rowCount() + "]";
+    public double reduceValues(double identity, BinaryOperator<Double> op) {
+        double result = 0;
+        for (int i = 0; i < rowCount(); i++) {
+            result = op.apply(result, getValue(i));
+        }
+        return result;
     }
 
     @Override
-    public DoubleStream doubleStream() {
-        return Arrays.stream(Arrays.copyOf(data, rowCount()));
+    public String toString() {
+        return "Numeric[" + rowCount() + "]";
     }
 }

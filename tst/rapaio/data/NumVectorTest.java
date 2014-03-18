@@ -49,8 +49,8 @@ public class NumVectorTest {
         }
 
         for (int i = 0; i < 10; i++) {
-            assertEquals(log(10 + i), v.value(i), 1e-10);
-            assertEquals((int) Math.rint(log(10 + i)), v.index(i));
+            assertEquals(log(10 + i), v.getValue(i), 1e-10);
+            assertEquals((int) Math.rint(log(10 + i)), v.getIndex(i));
         }
 
         for (int i = 0; i < 10; i++) {
@@ -58,12 +58,12 @@ public class NumVectorTest {
         }
 
         for (int i = 0; i < 10; i++) {
-            assertEquals(i * i, v.index(i));
-            assertEquals(i * i, v.value(i), 1e-10);
+            assertEquals(i * i, v.getIndex(i));
+            assertEquals(i * i, v.getValue(i), 1e-10);
         }
 
         for (int i = 0; i < v.rowCount(); i++) {
-            assertEquals("", v.label(i));
+            assertEquals("", v.getLabel(i));
         }
         boolean exceptional = false;
         try {
@@ -75,7 +75,7 @@ public class NumVectorTest {
 
         exceptional = false;
         try {
-            v.dictionary();
+            v.getDictionary();
         } catch (Throwable ex) {
             exceptional = true;
         }
@@ -87,10 +87,10 @@ public class NumVectorTest {
         Vector one = Vectors.newNumOne(PI);
 
         assertEquals(1, one.rowCount());
-        assertEquals(PI, one.value(0), 1e-10);
+        assertEquals(PI, one.getValue(0), 1e-10);
 
         one = Vectors.newNumOne(E);
         assertEquals(1, one.rowCount());
-        assertEquals(E, one.value(0), 1e-10);
+        assertEquals(E, one.getValue(0), 1e-10);
     }
 }

@@ -61,7 +61,7 @@ public class ID3Classifier extends AbstractClassifier<ID3Classifier> {
     @Override
     public void learn(Frame df, List<Double> weights, String targetColName) {
         validate(df, targetColName);
-        this.dict = df.col(targetColName).dictionary();
+        this.dict = df.col(targetColName).getDictionary();
         this.root = new ID3ClassifierNode();
         this.root.learn(null, df, weights, targetColName, new HashSet<String>(), selection);
     }
@@ -237,7 +237,7 @@ class ID3ClassifierNode {
         }
 
         // usual case, a split node
-        String[] dict = df.col(colName).dictionary();
+        String[] dict = df.col(colName).getDictionary();
         Mapping[] splitMappings = new Mapping[dict.length];
         List<Double>[] splitWeights = new List[dict.length];
 

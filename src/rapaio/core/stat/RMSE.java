@@ -69,7 +69,7 @@ public class RMSE implements Summarizable {
         for (int i = 0; i < source.size(); i++) {
             for (int j = 0; j < source.get(i).rowCount(); j++) {
                 count++;
-                total += MathBase.pow(source.get(i).value(j) - target.get(i).value(j), 2);
+                total += MathBase.pow(source.get(i).getValue(j) - target.get(i).getValue(j), 2);
             }
         }
         value = MathBase.sqrt(total / count);

@@ -26,7 +26,6 @@ import rapaio.data.mapping.MappedVector;
 import rapaio.data.mapping.Mapping;
 
 import java.util.*;
-import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
 /**
@@ -58,16 +57,11 @@ public abstract class AbstractVector implements Vector {
 
     @Override
     public Stream<VInstance> stream() {
-        List<VInstance> instances = new ArrayList<>();
+        List<VInstance> instances = new LinkedList<>();
         for (int i = 0; i < this.rowCount(); i++) {
-            instances.add(new VInstanceImpl(i, this));
+            instances.add(new VInstance(i, this));
         }
         return instances.stream();
-    }
-
-    @Override
-    public DoubleStream doubleStream() {
-        throw new RuntimeException("Not implemented for this type of vector");
     }
 }
 
@@ -96,7 +90,7 @@ class VectorIterator implements VIterator {
             if (cyclePos >= vector.rowCount()) {
                 cyclePos = 0;
             }
-            if (complete && vector.missing(cyclePos)) continue;
+            if (complete && vector.isMissing(cyclePos)) continue;
             return true;
         }
         return false;
@@ -120,7 +114,7 @@ class VectorIterator implements VIterator {
 
     @Override
     public double getValue() {
-        return vector.value(cyclePos);
+        return vector.getValue(cyclePos);
     }
 
     @Override
@@ -130,7 +124,7 @@ class VectorIterator implements VIterator {
 
     @Override
     public int getIndex() {
-        return vector.index(cyclePos);
+        return vector.getIndex(cyclePos);
     }
 
     @Override
@@ -140,7 +134,7 @@ class VectorIterator implements VIterator {
 
     @Override
     public String getLabel() {
-        return vector.label(cyclePos);
+        return vector.getLabel(cyclePos);
     }
 
     @Override
@@ -150,7 +144,7 @@ class VectorIterator implements VIterator {
 
     @Override
     public boolean isMissing() {
-        return vector.missing(cyclePos);
+        return vector.isMissing(cyclePos);
     }
 
     @Override
@@ -211,36 +205,5 @@ class VectorIterator implements VIterator {
             map.put(key, getMappedVector(key));
         }
         return map;
-    }
-}
-
-final class VInstanceImpl implements VInstance {
-
-    final int row;
-    final Vector vector;
-
-    VInstanceImpl(int row, Vector vector) {
-        this.row = vector.rowId(row);
-        this.vector = vector.source();
-    }
-
-    @Override
-    public boolean missing() {
-        return vector.missing(row);
-    }
-
-    @Override
-    public void setMissing() {
-        vector.setMissing(row);
-    }
-
-    @Override
-    public double value() {
-        return vector.value(row);
-    }
-
-    @Override
-    public void setValue(final double value) {
-        vector.setValue(row, value);
     }
 }

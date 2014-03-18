@@ -57,19 +57,19 @@ public class BoxPlot extends AbstractFigure {
     }
 
     public BoxPlot(Vector numeric, Vector nominal) {
-        labels = nominal.dictionary();
+        labels = nominal.getDictionary();
         vectors = new Vector[labels.length];
         int[] count = new int[labels.length];
         for (int i = 0; i < numeric.rowCount(); i++) {
-            count[nominal.index(i)]++;
+            count[nominal.getIndex(i)]++;
         }
         for (int i = 0; i < count.length; i++) {
             vectors[i] = new Numeric(count[i]);
         }
         int[] pos = new int[vectors.length];
         for (int i = 0; i < nominal.rowCount(); i++) {
-            vectors[nominal.index(i)].setValue(pos[nominal.index(i)], numeric.value(i));
-            pos[nominal.index(i)]++;
+            vectors[nominal.getIndex(i)].setValue(pos[nominal.getIndex(i)], numeric.getValue(i));
+            pos[nominal.getIndex(i)]++;
         }
         initialize();
     }
@@ -126,8 +126,8 @@ public class BoxPlot extends AbstractFigure {
         range.union(vectors.length, Double.NaN);
         for (Vector v : vectors) {
             for (int i = 0; i < v.rowCount(); i++) {
-                if (v.missing(i)) continue;
-                range.union(Double.NaN, v.value(i));
+                if (v.isMissing(i)) continue;
+                range.union(Double.NaN, v.getValue(i));
             }
         }
         return range;
@@ -187,7 +187,7 @@ public class BoxPlot extends AbstractFigure {
             double upperwhisker = q[2];
             double lowerqhisker = q[0];
             for (int j = 0; j < v.rowCount(); j++) {
-                double point = v.value(j);
+                double point = v.getValue(j);
                 if ((point > q[2] + outerfence) || (point < q[0] - outerfence)) {
                     // big outlier
                     int width = (int) (3 * getSize(i));

@@ -73,7 +73,7 @@ public class Summary {
 
                 int nas = 0;
                 for (int j = 0; j < df.rowCount(); j++) {
-                    if (v.missing(j)) {
+                    if (v.isMissing(j)) {
                         nas++;
                     }
                 }
@@ -99,11 +99,11 @@ public class Summary {
             }
 
             if (v.type().isNominal()) {
-                int[] hits = new int[v.dictionary().length];
-                int[] indexes = new int[v.dictionary().length];
+                int[] hits = new int[v.getDictionary().length];
+                int[] indexes = new int[v.getDictionary().length];
                 for (int j = 0; j < df.rowCount(); j++) {
-                    hits[v.index(j)]++;
-                    indexes[v.index(j)] = j;
+                    hits[v.getIndex(j)]++;
+                    indexes[v.getIndex(j)] = j;
                 }
                 int[] tophit = new int[6];
                 int[] topindex = new int[6];
@@ -124,7 +124,7 @@ public class Summary {
                 }
                 int nas = 0;
                 for (int j = 0; j < df.rowCount(); j++) {
-                    if (v.missing(j)) {
+                    if (v.isMissing(j)) {
                         nas++;
                     }
                 }
@@ -134,7 +134,7 @@ public class Summary {
                 for (int j = 0; j < 6; j++) {
                     if (tophit[j] != 0) {
                         other -= tophit[j];
-                        first[k][j] = v.label(indexes[topindex[j]]);
+                        first[k][j] = v.getLabel(indexes[topindex[j]]);
                         second[k][j] = String.valueOf(tophit[j]);
                         pos++;
                     }
@@ -252,7 +252,7 @@ public class Summary {
 
             int nas = 0;
             for (int j = 0; j < v.rowCount(); j++) {
-                if (v.missing(j)) {
+                if (v.isMissing(j)) {
                     nas++;
                 }
             }
@@ -281,8 +281,8 @@ public class Summary {
             int[] hits = new int[v.rowCount() + 1];
             int[] indexes = new int[v.rowCount() + 1];
             for (int j = 0; j < v.rowCount(); j++) {
-                hits[v.index(j)]++;
-                indexes[v.index(j)] = j;
+                hits[v.getIndex(j)]++;
+                indexes[v.getIndex(j)] = j;
             }
             int[] tophit = new int[6];
             int[] topindex = new int[6];
@@ -303,7 +303,7 @@ public class Summary {
             }
             int nas = 0;
             for (int j = 0; j < v.rowCount(); j++) {
-                if (v.missing(j)) {
+                if (v.isMissing(j)) {
                     nas++;
                 }
             }
@@ -313,7 +313,7 @@ public class Summary {
             for (int j = 0; j < 6; j++) {
                 if (tophit[j] != 0) {
                     other -= tophit[j];
-                    first[j] = v.label(indexes[topindex[j]]);
+                    first[j] = v.getLabel(indexes[topindex[j]]);
                     second[j] = String.valueOf(tophit[j]);
                     pos++;
                 }
@@ -378,12 +378,12 @@ public class Summary {
         // learn first column
         HashSet<String> labels = new HashSet<>();
         for (int i = 0; i < a.rowCount(); i++) {
-            labels.add(a.label(i));
+            labels.add(a.getLabel(i));
         }
         labels.add("Totals");
         vectors[0] = new Nominal(a.rowCount() + 1, labels);
-        for (int i = 0; i < a.dictionary().length; i++) {
-            vectors[0].setLabel(i, a.dictionary()[i]);
+        for (int i = 0; i < a.getDictionary().length; i++) {
+            vectors[0].setLabel(i, a.getDictionary()[i]);
         }
         vectors[0].setLabel(a.rowCount(), "Totals");
 
@@ -429,11 +429,11 @@ public class Summary {
         for (int i = 0; i < vectors.length; i++) {
             max[i] = names[i].length() + 1;
             for (int j = 0; j < vectors[i].rowCount(); j++) {
-                if (vectors[i].type().isNominal() && max[i] < vectors[i].label(j).length()) {
-                    max[i] = vectors[i].label(j).length();
+                if (vectors[i].type().isNominal() && max[i] < vectors[i].getLabel(j).length()) {
+                    max[i] = vectors[i].getLabel(j).length();
                 }
                 if (vectors[i].type().isNumeric()) {
-                    String value = String.format("%s", String.format("%.10f", vectors[i].value(j)));
+                    String value = String.format("%s", String.format("%.10f", vectors[i].getValue(j)));
                     if (max[i] < value.length()) {
                         max[i] = value.length();
                     }
@@ -465,9 +465,9 @@ public class Summary {
                 for (int j = start; j <= pos; j++) {
                     String value;
                     if (vectors[j].type().isNominal()) {
-                        value = String.format("%" + max[j] + "s", vectors[j].label(i));
+                        value = String.format("%" + max[j] + "s", vectors[j].getLabel(i));
                     } else {
-                        value = String.format("%" + max[j] + "s", String.format("%.10f", vectors[j].value(i)));
+                        value = String.format("%" + max[j] + "s", String.format("%.10f", vectors[j].getValue(i)));
                     }
                     sb.append(value).append(" ");
                 }

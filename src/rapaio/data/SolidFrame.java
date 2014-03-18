@@ -121,11 +121,11 @@ public class SolidFrame extends AbstractFrame {
 
     @Override
     public boolean missing(int row, int col) {
-        return col(col).missing(row);
+        return col(col).isMissing(row);
     }
 
     @Override
     public boolean missing(int row, String colName) {
-        return col(colName).missing(row);
+        return col(colName).isMissing(row);
     }
 }

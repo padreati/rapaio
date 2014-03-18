@@ -59,7 +59,7 @@ public class Bagging extends AbstractClassifier<Bagging> {
     @Override
     public void learn(Frame df, List<Double> weights, String targetColName) {
         this.classColName = targetColName;
-        this.dict = df.col(targetColName).dictionary();
+        this.dict = df.col(targetColName).getDictionary();
         classifiers.clear();
         for (int i = 0; i < bags; i++) {
             Frame bootstrap = StatSampling.randomBootstrap(df, (int) Math.rint(df.rowCount() * p));
@@ -80,7 +80,7 @@ public class Bagging extends AbstractClassifier<Bagging> {
         for (Classifier c : classifiers) {
             c.predict(df);
             for (int j = 0; j < df.rowCount(); j++) {
-                String prediction = c.prediction().label(j);
+                String prediction = c.prediction().getLabel(j);
                 double prev = dist.value(j, dist.colIndex(prediction));
                 if (prev != prev) {
                     prev = 0;
@@ -99,7 +99,7 @@ public class Bagging extends AbstractClassifier<Bagging> {
                     index = j;
                 }
             }
-            pred.setLabel(i, pred.dictionary()[index + 1]);
+            pred.setLabel(i, pred.getDictionary()[index + 1]);
         }
     }
 

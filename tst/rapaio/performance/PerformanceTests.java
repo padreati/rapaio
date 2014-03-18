@@ -65,7 +65,7 @@ public class PerformanceTests {
             }
             time2.addValue(System.currentTimeMillis() - start);
             index.addIndex(i);
-            delta.addValue(time1.value(i) - time2.value(i));
+            delta.addValue(time1.getValue(i) - time2.getValue(i));
         }
 
 //        draw(new Plot()

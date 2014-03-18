@@ -62,17 +62,17 @@ public final class Frames {
         for (int i = 0; i < df.colCount(); i++) {
             Vector src = df.col(i);
             if (src.type().isNominal()) {
-                vectors.add(new Nominal(len, df.col(i).dictionary()));
+                vectors.add(new Nominal(len, df.col(i).getDictionary()));
                 names.add(df.colNames()[i]);
                 for (int j = 0; j < df.rowCount(); j++) {
-                    vectors.get(i).setLabel(j, src.label(j));
+                    vectors.get(i).setLabel(j, src.getLabel(j));
                 }
             }
             if (src.type().isNumeric()) {
                 vectors.add(new Numeric(len));
                 names.add(df.colNames()[i]);
                 for (int j = 0; j < df.rowCount(); j++) {
-                    vectors.get(i).setValue(j, src.value(j));
+                    vectors.get(i).setValue(j, src.getValue(j));
                 }
             }
         }

@@ -80,7 +80,7 @@ public class BarChart extends AbstractFigure {
         setBottomMarkers(true);
 
         int shift = 9;
-        setColorIndex(Vectors.newSeq(shift, condition.dictionary().length + shift - 1, 1));
+        setColorIndex(Vectors.newSeq(shift, condition.getDictionary().length + shift - 1, 1));
     }
 
     private SortType sort = SortType.NONE;
@@ -111,8 +111,8 @@ public class BarChart extends AbstractFigure {
         if (range == null) {
 
             // learn preliminaries
-            int width = category.dictionary().length;
-            int height = condition.dictionary().length;
+            int width = category.getDictionary().length;
+            int height = condition.getDictionary().length;
 
             totals = new double[width];
             hits = new double[width][height];
@@ -123,8 +123,8 @@ public class BarChart extends AbstractFigure {
             len = Math.min(len, numeric.rowCount());
 
             for (int i = 0; i < len; i++) {
-                hits[category.index(i)][condition.index(i)] += numeric.value(i);
-                totals[category.index(i)] += numeric.value(i);
+                hits[category.getIndex(i)][condition.getIndex(i)] += numeric.getValue(i);
+                totals[category.getIndex(i)] += numeric.getValue(i);
             }
 
             if (density) {
@@ -214,7 +214,7 @@ public class BarChart extends AbstractFigure {
             if (totals[sel[i]] == 0)
                 continue;
             getBottomMarkersPos().add(xspotwidth * (0.5 + cnt));
-            getBottomMarkersMsg().add(category.dictionary()[sel[i]]);
+            getBottomMarkersMsg().add(category.getDictionary()[sel[i]]);
             cnt++;
         }
     }
@@ -229,7 +229,7 @@ public class BarChart extends AbstractFigure {
                 continue;
 
             double ystart = 0;
-            for (int j = 0; j < condition.dictionary().length; j++) {
+            for (int j = 0; j < condition.getDictionary().length; j++) {
                 double yend = ystart + hits[sel[i]][j];
 
                 int[] x = {

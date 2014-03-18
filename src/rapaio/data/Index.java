@@ -130,7 +130,7 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public int index(int row) {
+    public int getIndex(int row) {
         return data[row];
     }
 
@@ -156,8 +156,8 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public double value(int row) {
-        return index(row);
+    public double getValue(int row) {
+        return getIndex(row);
     }
 
     @Override
@@ -176,7 +176,7 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public String label(int row) {
+    public String getLabel(int row) {
         return "";
     }
 
@@ -196,7 +196,7 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public String[] dictionary() {
+    public String[] getDictionary() {
         throw new RuntimeException("Operation not available for getIndex vectors.");
     }
 
@@ -206,8 +206,8 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public boolean missing(int row) {
-        return index(row) == MISSING_VALUE;
+    public boolean isMissing(int row) {
+        return getIndex(row) == MISSING_VALUE;
     }
 
     @Override
@@ -229,13 +229,6 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public void removeRange(int fromIndex, int toIndex) {
-        int numMoved = rows - toIndex;
-        System.arraycopy(data, toIndex, data, fromIndex, numMoved);
-        rows -= (toIndex - fromIndex);
-    }
-
-    @Override
     public void clear() {
         rows = 0;
     }
@@ -245,13 +238,6 @@ public class Index extends AbstractVector {
         int minExpand = (data != EMPTY_DATA) ? 0 : DEFAULT_CAPACITY;
         if (minCapacity > minExpand && minCapacity - data.length > 0)
             grow(minCapacity);
-    }
-
-    @Override
-    public void trimToSize() {
-        if (rows < data.length) {
-            data = Arrays.copyOf(data, rows);
-        }
     }
 
     @Override

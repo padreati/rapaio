@@ -58,7 +58,7 @@ public class OneRuleTest {
         oneRule.predict(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
-            Assert.assertEquals(labels[i], oneRule.prediction().label(i));
+            Assert.assertEquals(labels[i], oneRule.prediction().getLabel(i));
         }
 
         oneRule.setMinCount(2);
@@ -66,7 +66,7 @@ public class OneRuleTest {
         oneRule.predict(df);
         labels = new String[]{"True", "True", "TrueFalse", "TrueFalse", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
-            Assert.assertTrue(labels[i].contains(oneRule.prediction().label(i)));
+            Assert.assertTrue(labels[i].contains(oneRule.prediction().getLabel(i)));
         }
 
         oneRule.setMinCount(3);
@@ -74,14 +74,14 @@ public class OneRuleTest {
         oneRule.predict(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
-            Assert.assertTrue(labels[i].equals(oneRule.prediction().label(i)));
+            Assert.assertTrue(labels[i].equals(oneRule.prediction().getLabel(i)));
         }
 
         oneRule.setMinCount(4);
         oneRule.learn(df, "class");
         oneRule.predict(df);
         for (int i = 1; i < SIZE; i++) {
-            Assert.assertTrue(oneRule.prediction().label(i).equals(oneRule.prediction().label(0)));
+            Assert.assertTrue(oneRule.prediction().getLabel(i).equals(oneRule.prediction().getLabel(0)));
         }
     }
 }

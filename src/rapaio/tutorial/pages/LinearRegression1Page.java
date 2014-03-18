@@ -81,8 +81,8 @@ public class LinearRegression1Page implements TutorialPage {
 
         p("We ");
 
-        code("mean: " + mean(sons).value(0));
-        code("variance: " + var(sons).value(0));
-        code("sd: " + sd(sons).value(0));
+        code("mean: " + mean(sons).getValue(0));
+        code("variance: " + var(sons).getValue(0));
+        code("sd: " + sd(sons).getValue(0));
     }
 }

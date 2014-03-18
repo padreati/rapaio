@@ -66,7 +66,7 @@ public class ModelEvaluation {
             c.predict(test);
             double fcorrect = 0;
             for (int j = 0; j < test.rowCount(); j++) {
-                if (test.col(classColName).index(j) == c.prediction().index(j)) {
+                if (test.col(classColName).getIndex(j) == c.prediction().getIndex(j)) {
                     fcorrect++;
                 }
             }
@@ -81,7 +81,7 @@ public class ModelEvaluation {
     }
 
     private List<Integer>[] buildStrata(Frame df, int folds, String classColName) {
-        String[] dict = df.col(classColName).dictionary();
+        String[] dict = df.col(classColName).getDictionary();
         List<Integer>[] rowIds = new List[dict.length];
         for (int i = 0; i < dict.length; i++) {
             rowIds[i] = new ArrayList<>();
@@ -145,7 +145,7 @@ public class ModelEvaluation {
                 c.predict(test);
                 double acc = 0;
                 for (int j = 0; j < c.prediction().rowCount(); j++) {
-                    if (c.prediction().index(j) == test.col(classColName).index(j)) {
+                    if (c.prediction().getIndex(j) == test.col(classColName).getIndex(j)) {
                         acc++;
                     }
                 }

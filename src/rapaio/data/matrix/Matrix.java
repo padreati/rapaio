@@ -117,7 +117,7 @@ public class Matrix {
     }
 
     public double get(int i, int j) {
-        return data.get(j).value(i);
+        return data.get(j).getValue(i);
     }
 
     public void set(int i, int j, double x) {
@@ -173,7 +173,7 @@ public class Matrix {
         output.println();  // start on new line.
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                String s = format.format(data.get(j).value(i)); // format the number
+                String s = format.format(data.get(j).getValue(i)); // format the number
                 int padding = Math.max(1, width - s.length()); // At _least_ 1 space
                 for (int k = 0; k < padding; k++)
                     output.print(' ');

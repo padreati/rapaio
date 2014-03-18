@@ -110,7 +110,7 @@ public interface Frame extends Serializable {
     public Mapping mapping();
 
     /**
-     * Convenient shortcut to call {@link Vector#value(int)} for a given column.
+     * Convenient shortcut to call {@link Vector#getValue(int)} for a given column.
      *
      * @param row row number
      * @param col column number
@@ -119,7 +119,7 @@ public interface Frame extends Serializable {
     double value(int row, int col);
 
     /**
-     * Convenient shortcut to call {@link Vector#value(int)} for a given column.
+     * Convenient shortcut to call {@link Vector#getValue(int)} for a given column.
      *
      * @param row     row number
      * @param colName column name
@@ -147,7 +147,7 @@ public interface Frame extends Serializable {
 
 
     /**
-     * Convenient shortcut method for calling {@link Vector#index(int)} for a given column.
+     * Convenient shortcut method for calling {@link Vector#getIndex(int)} for a given column.
      *
      * @param row row number
      * @param col column number
@@ -156,7 +156,7 @@ public interface Frame extends Serializable {
     int index(int row, int col);
 
     /**
-     * Convenient shortcut method for calling {@link Vector#index(int)} for a given column.
+     * Convenient shortcut method for calling {@link Vector#getIndex(int)} for a given column.
      *
      * @param row     row number
      * @param colName column name
@@ -183,7 +183,7 @@ public interface Frame extends Serializable {
     void setIndex(int row, String colName, int value);
 
     /**
-     * Convenient shortcut method for calling {@link Vector#label(int)} for given column.
+     * Convenient shortcut method for calling {@link Vector#getLabel(int)} for given column.
      *
      * @param row row number
      * @param col column number
@@ -192,7 +192,7 @@ public interface Frame extends Serializable {
     String label(int row, int col);
 
     /**
-     * Convenient shortcut method for calling {@link Vector#label(int)} for given column.
+     * Convenient shortcut method for calling {@link Vector#getLabel(int)} for given column.
      *
      * @param row     row number
      * @param colName column name

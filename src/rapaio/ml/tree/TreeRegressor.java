@@ -171,7 +171,7 @@ class TreeRegressorNode {
         double w = 0;
         for (int i = 0; i < df.rowCount(); i++) {
             int pos = sort.rowId(i);
-            so.update(testCol.value(pos));
+            so.update(testCol.getValue(pos));
             w += weights.get(pos);
             if (i > 0) {
                 var[i] = so.getStandardDeviation() * w / totalWeight;
@@ -181,7 +181,7 @@ class TreeRegressorNode {
         w = 0;
         for (int i = df.rowCount() - 1; i >= 0; i--) {
             int pos = sort.rowId(i);
-            so.update(testCol.value(pos));
+            so.update(testCol.getValue(pos));
             w += weights.get(pos);
             if (i < df.rowCount() - 1) {
                 var[i] += so.getStandardDeviation() * w / totalWeight;
@@ -193,10 +193,10 @@ class TreeRegressorNode {
             w += weights.get(pos);
 
             if (w >= parent.minWeight && totalWeight - w >= parent.minWeight) {
-                if (var[i] < eval && i > 0 && testCol.value(sort.rowId(i - 1)) != testCol.value(sort.rowId(i))) {
+                if (var[i] < eval && i > 0 && testCol.getValue(sort.rowId(i - 1)) != testCol.getValue(sort.rowId(i))) {
                     eval = var[i];
                     splitColName = testColNames;
-                    splitValue = testCol.value(pos);
+                    splitValue = testCol.getValue(pos);
                 }
             }
         }

@@ -20,16 +20,34 @@
 
 package rapaio.data.collect;
 
+import rapaio.data.Vector;
+
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public interface VInstance {
+public class VInstance {
 
-    boolean missing();
+    final int row;
+    final Vector vector;
 
-    void setMissing();
+    public VInstance(int row, Vector vector) {
+        this.row = vector.rowId(row);
+        this.vector = vector.source();
+    }
 
-    double value();
+    public boolean isMissing() {
+        return vector.isMissing(row);
+    }
 
-    void setValue(double value);
+    public void setMissing() {
+        vector.setMissing(row);
+    }
+
+    public double getValue() {
+        return vector.getValue(row);
+    }
+
+    public void setValue(final double value) {
+        vector.setValue(row, value);
+    }
 }

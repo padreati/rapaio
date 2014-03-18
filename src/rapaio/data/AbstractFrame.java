@@ -40,12 +40,12 @@ public abstract class AbstractFrame implements Frame {
 
     @Override
     public double value(int row, int col) {
-        return col(col).value(row);
+        return col(col).getValue(row);
     }
 
     @Override
     public double value(int row, String colName) {
-        return col(colName).value(row);
+        return col(colName).getValue(row);
     }
 
     @Override
@@ -60,12 +60,12 @@ public abstract class AbstractFrame implements Frame {
 
     @Override
     public int index(int row, int col) {
-        return col(col).index(row);
+        return col(col).getIndex(row);
     }
 
     @Override
     public int index(int row, String colName) {
-        return col(colName).index(row);
+        return col(colName).getIndex(row);
     }
 
     @Override
@@ -80,12 +80,12 @@ public abstract class AbstractFrame implements Frame {
 
     @Override
     public String label(int row, int col) {
-        return col(col).label(row);
+        return col(col).getLabel(row);
     }
 
     @Override
     public String label(int row, String colName) {
-        return col(colName).label(row);
+        return col(colName).getLabel(row);
     }
 
     @Override
@@ -100,18 +100,18 @@ public abstract class AbstractFrame implements Frame {
 
     @Override
     public boolean missing(int row, int col) {
-        return col(col).missing(row);
+        return col(col).isMissing(row);
     }
 
     @Override
     public boolean missing(int row, String colName) {
-        return col(colName).missing(row);
+        return col(colName).isMissing(row);
     }
 
     @Override
     public boolean missing(int row) {
         for (String colName : colNames()) {
-            if (col(colName).missing(row)) return true;
+            if (col(colName).isMissing(row)) return true;
         }
         return false;
     }
@@ -453,11 +453,11 @@ class FInstanceImpl implements FInstance {
 
     @Override
     public String[] dictionary(int colIndex) {
-        return df.col(colIndex).dictionary();
+        return df.col(colIndex).getDictionary();
     }
 
     @Override
     public String[] dictionary(String colName) {
-        return df.col(colName).dictionary();
+        return df.col(colName).getDictionary();
     }
 }

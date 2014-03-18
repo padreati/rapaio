@@ -85,18 +85,18 @@ public class Histogram extends PlotComponent {
     private void rebuild() {
         if (minvalue != minvalue) {
             for (int i = 0; i < v.rowCount(); i++) {
-                if (v.missing(i)) {
+                if (v.isMissing(i)) {
                     continue;
                 }
                 if (minvalue != minvalue) {
-                    minvalue = v.value(i);
+                    minvalue = v.getValue(i);
                 } else {
-                    minvalue = Math.min(minvalue, v.value(i));
+                    minvalue = Math.min(minvalue, v.getValue(i));
                 }
                 if (maxvalue != maxvalue) {
-                    maxvalue = v.value(i);
+                    maxvalue = v.getValue(i);
                 } else {
-                    maxvalue = Math.max(maxvalue, v.value(i));
+                    maxvalue = Math.max(maxvalue, v.getValue(i));
                 }
             }
         }
@@ -105,14 +105,14 @@ public class Histogram extends PlotComponent {
         freqtable = new double[bins];
         double total = 0;
         for (int i = 0; i < v.rowCount(); i++) {
-            if (v.missing(i)) {
+            if (v.isMissing(i)) {
                 continue;
             }
             total++;
-            if (v.value(i) < minvalue || v.value(i) > maxvalue) {
+            if (v.getValue(i) < minvalue || v.getValue(i) > maxvalue) {
                 continue;
             }
-            int index = (int) ((v.value(i) - minvalue) / step);
+            int index = (int) ((v.getValue(i) - minvalue) / step);
             if (index == freqtable.length)
                 index--;
             freqtable[index]++;
@@ -125,7 +125,7 @@ public class Histogram extends PlotComponent {
         }
 
         // defaults
-        if (getColorIndex().rowCount() == 1 && getColorIndex().index(0) == 0) {
+        if (getColorIndex().rowCount() == 1 && getColorIndex().getIndex(0) == 0) {
             setColorIndex(Vectors.newIdxOne(7));
         }
     }

@@ -155,12 +155,12 @@ public class TreeCTest {
         Vector test = df.col(testColName);
         Vector target = df.col(targetColName);
 
-        DensityTable dt = new DensityTable(DensityTable.NUMERIC_DEFAULT_LABELS, target.dictionary());
+        DensityTable dt = new DensityTable(DensityTable.NUMERIC_DEFAULT_LABELS, target.getDictionary());
         int misCount = 0;
         for (int i = 0; i < df.rowCount(); i++) {
-            int row = (test.missing(i)) ? 0 : 2;
-            if (test.missing(i)) misCount++;
-            dt.update(row, target.index(i), weights.get(i));
+            int row = (test.isMissing(i)) ? 0 : 2;
+            if (test.isMissing(i)) misCount++;
+            dt.update(row, target.getIndex(i), weights.get(i));
         }
 
         Vector sort = BaseFilters.sort(
@@ -168,16 +168,16 @@ public class TreeCTest {
                 RowComparators.numericComparator(test, true));
 
         for (int i = 0; i < df.rowCount(); i++) {
-            int row = sort.index(i);
+            int row = sort.getIndex(i);
 
-            if (test.missing(row)) continue;
+            if (test.isMissing(row)) continue;
 
-            dt.update(2, target.index(row), -weights.get(row));
-            dt.update(1, target.index(row), +weights.get(row));
+            dt.update(2, target.getIndex(row), -weights.get(row));
+            dt.update(1, target.getIndex(row), +weights.get(row));
 
             if (i >= misCount + minCount &&
                     i < df.rowCount() - 1 - minCount &&
-                    test.value(sort.index(i)) < test.value(sort.index(i + 1))) {
+                    test.getValue(sort.getIndex(i)) < test.getValue(sort.getIndex(i + 1))) {
 
                 double value = method.compute(dt);
                 int comp = method.compare(bestValue, value);
@@ -186,7 +186,7 @@ public class TreeCTest {
                 bestValue = value;
                 testName = testColName;
                 splitLabel = null;
-                splitValue = test.value(row);
+                splitValue = test.getValue(row);
 
 //                System.out.println(String.format("best:%.3f, test:%s, splitVal:%.3f", bestValue, testName, splitValue));
             }

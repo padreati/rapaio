@@ -54,13 +54,13 @@ public class Quantiles implements Summarizable {
         if (vector.rowCount() == 1) {
             double[] values = new double[percentiles.length];
             for (int i = 0; i < values.length; i++) {
-                values[i] = vector.value(0);
+                values[i] = vector.getValue(0);
             }
             return values;
         }
         Vector sorted = sort(vector);
         int start = 0;
-        while (sorted.missing(start)) {
+        while (sorted.isMissing(start)) {
             start++;
             if (start == sorted.rowCount()) {
                 break;
@@ -76,15 +76,15 @@ public class Quantiles implements Summarizable {
             int hfloor = (int) floor(h);
 
             if (percentiles[i] < (2. / 3.) / (N + 1. / 3.)) {
-                values[i] = sorted.value(start);
+                values[i] = sorted.getValue(start);
                 continue;
             }
             if (percentiles[i] >= (N - 1. / 3.) / (N + 1. / 3.)) {
-                values[i] = sorted.value(sorted.rowCount() - 1);
+                values[i] = sorted.getValue(sorted.rowCount() - 1);
                 continue;
             }
-            values[i] = sorted.value(start + hfloor - 1)
-                    + (h - hfloor) * (sorted.value(start + hfloor) - sorted.value(start + hfloor - 1));
+            values[i] = sorted.getValue(start + hfloor - 1)
+                    + (h - hfloor) * (sorted.getValue(start + hfloor) - sorted.getValue(start + hfloor - 1));
         }
         return values;
     }

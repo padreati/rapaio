@@ -53,7 +53,7 @@ public class FilterNominalToDoubleTest {
         Vector filtered = toNumeric(v);
         for (int i = 0; i < v.rowCount(); i++) {
             double value = pow(i, 1.5);
-            assertEquals(value, filtered.value(i), 1e-10);
+            assertEquals(value, filtered.getValue(i), 1e-10);
         }
     }
 
@@ -71,7 +71,7 @@ public class FilterNominalToDoubleTest {
         Vector filtered = new Nominal(1, Arrays.asList(new String[]{"abc"}));
         filtered.setLabel(0, "abc");
         Vector numeric = toNumeric(filtered);
-        assertEquals(numeric.value(0), numeric.value(0), 1e-10);
-        assertTrue(numeric.missing(0));
+        assertEquals(numeric.getValue(0), numeric.getValue(0), 1e-10);
+        assertTrue(numeric.isMissing(0));
     }
 }

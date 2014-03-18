@@ -117,7 +117,7 @@ public class Nominal extends AbstractVector {
     }
 
     @Override
-    public int index(int row) {
+    public int getIndex(int row) {
         return data[row];
     }
 
@@ -137,7 +137,7 @@ public class Nominal extends AbstractVector {
     }
 
     @Override
-    public double value(int row) {
+    public double getValue(int row) {
         return data[row];
     }
 
@@ -157,7 +157,7 @@ public class Nominal extends AbstractVector {
     }
 
     @Override
-    public String label(int row) {
+    public String getLabel(int row) {
         return dict.get(data[row]);
     }
 
@@ -200,8 +200,8 @@ public class Nominal extends AbstractVector {
     }
 
     @Override
-    public String[] dictionary() {
-        return dict.toArray(new String[]{});
+    public String[] getDictionary() {
+        return dict.toArray(new String[dict.size()]);
     }
 
     @Override
@@ -214,10 +214,10 @@ public class Nominal extends AbstractVector {
         this.dict.add("?");
         this.reverse.put("?", 0);
 
-        for (int i = 0; i < dict.length; i++) {
-            if (!reverse.containsKey(dict[i])) {
-                this.dict.add(dict[i]);
-                this.reverse.put(dict[i], this.reverse.size());
+        for (String term : dict) {
+            if (!reverse.containsKey(term)) {
+                this.dict.add(term);
+                this.reverse.put(term, this.reverse.size());
             }
         }
 
@@ -235,8 +235,8 @@ public class Nominal extends AbstractVector {
     }
 
     @Override
-    public boolean missing(int row) {
-        return missingIndex == index(row);
+    public boolean isMissing(int row) {
+        return missingIndex == getIndex(row);
     }
 
     @Override
@@ -256,22 +256,8 @@ public class Nominal extends AbstractVector {
             System.arraycopy(data, index + 1, data, index, numMoved);
     }
 
-    @Override
-    public void removeRange(int fromIndex, int toIndex) {
-        int numMoved = rows - toIndex;
-        System.arraycopy(data, toIndex, data, fromIndex, numMoved);
-        int newSize = rows - (toIndex - fromIndex);
-        rows = newSize;
-    }
-
     public void clear() {
         rows = 0;
-    }
-
-    public void trimToSize() {
-        if (rows < data.length) {
-            data = Arrays.copyOf(data, rows);
-        }
     }
 
     public void ensureCapacity(int minCapacity) {

@@ -121,7 +121,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
     public void learn(final Frame df, List<Double> weights, final String targetColName) {
         long start = System.currentTimeMillis();
         for (int i = 0; i < df.rowCount(); i++) {
-            if (df.col(targetColName).missing(i)) {
+            if (df.col(targetColName).isMissing(i)) {
                 throw new IllegalArgumentException("Not allowed missing classes");
             }
         }
@@ -137,7 +137,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
         this.colSelector = new RandomColSelector(df, new ColRange(targetColName), mcols2);
 
         this.classColName = targetColName;
-        this.dict = df.col(targetColName).dictionary();
+        this.dict = df.col(targetColName).getDictionary();
         this.giniImportanceNames = df.colNames();
         this.giniImportanceValue = new double[df.colNames().length];
         this.giniImportanceCount = new double[df.colNames().length];
@@ -196,7 +196,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
         Vector predict = tree.prediction();
         for (int i = 0; i < delta.rowCount(); i++) {
             int rowId = delta.rowId(i);
-            oobFreq[rowId][predict.index(i)]++;
+            oobFreq[rowId][predict.getIndex(i)]++;
         }
     }
 
@@ -222,7 +222,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
             int next = indexes[RandomSource.nextInt(len)];
             if (oobFreq[i][next] > 0) {
                 count += 1.;
-                if (next != df.sourceFrame().col(classColName).index(i)) {
+                if (next != df.sourceFrame().col(classColName).getIndex(i)) {
                     total += 1.;
                 }
             }

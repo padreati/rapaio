@@ -109,8 +109,8 @@ public class SolidFrameTest {
         }
         assertEquals(17., t, 1e-10);
 
-        assertTrue(df.col("name").missing(0));
-        assertTrue(df.col("name").missing(3));
+        assertTrue(df.col("name").isMissing(0));
+        assertTrue(df.col("name").isMissing(3));
 
         df.setLabel(0, 2, "ana");
         df.setLabel(1, 2, "are");

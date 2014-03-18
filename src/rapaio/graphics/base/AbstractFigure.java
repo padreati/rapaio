@@ -235,7 +235,7 @@ public abstract class AbstractFigure implements Figure {
     }
 
     private boolean isDefaultSize() {
-        return sizeIndex.rowCount() == 1 && sizeIndex.value(0) == 2.5;
+        return sizeIndex.rowCount() == 1 && sizeIndex.getValue(0) == 2.5;
     }
 
     public Vector getSizeIndex() {
@@ -260,11 +260,11 @@ public abstract class AbstractFigure implements Figure {
         if (row >= index.rowCount()) {
             row %= index.rowCount();
         }
-        return index.value(row);
+        return index.getValue(row);
     }
 
     private boolean isDefaultColorIndex() {
-        return colorIndex.rowCount() == 1 && colorIndex.index(0) == 0;
+        return colorIndex.rowCount() == 1 && colorIndex.getIndex(0) == 0;
     }
 
     public Vector getColorIndex() {
@@ -292,11 +292,11 @@ public abstract class AbstractFigure implements Figure {
         if (row >= index.rowCount()) {
             row %= index.rowCount();
         }
-        return ColorPalette.STANDARD.getColor(index.index(row));
+        return ColorPalette.STANDARD.getColor(index.getIndex(row));
     }
 
     private boolean isDefaultPchIndex() {
-        return pchIndex.index(0) == 0 && pchIndex.rowCount() == 1;
+        return pchIndex.getIndex(0) == 0 && pchIndex.rowCount() == 1;
     }
 
     public Vector getPchIndex() {
@@ -321,7 +321,7 @@ public abstract class AbstractFigure implements Figure {
         if (row >= index.rowCount()) {
             row %= index.rowCount();
         }
-        return index.index(row);
+        return index.getIndex(row);
     }
 
     public double getXRangeStart() {

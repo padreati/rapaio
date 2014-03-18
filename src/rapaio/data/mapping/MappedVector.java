@@ -78,8 +78,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public double value(int row) {
-        return source.value(mapping.get(row));
+    public double getValue(int row) {
+        return source.getValue(mapping.get(row));
     }
 
     @Override
@@ -98,8 +98,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public int index(int row) {
-        return source.index(mapping.get(row));
+    public int getIndex(int row) {
+        return source.getIndex(mapping.get(row));
     }
 
     @Override
@@ -118,8 +118,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public String label(int row) {
-        return source.label(mapping.get(row));
+    public String getLabel(int row) {
+        return source.getLabel(mapping.get(row));
     }
 
     @Override
@@ -138,8 +138,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public String[] dictionary() {
-        return source.dictionary();
+    public String[] getDictionary() {
+        return source.getDictionary();
     }
 
     @Override
@@ -148,8 +148,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public boolean missing(int row) {
-        return source.missing(mapping.get(row));
+    public boolean isMissing(int row) {
+        return source.isMissing(mapping.get(row));
     }
 
     @Override
@@ -168,17 +168,7 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public void removeRange(int from, int to) {
-        throw new IllegalArgumentException("operation not available on mapped vectors");
-    }
-
-    @Override
     public void clear() {
-        throw new IllegalArgumentException("operation not available on mapped vectors");
-    }
-
-    @Override
-    public void trimToSize() {
         throw new IllegalArgumentException("operation not available on mapped vectors");
     }
 
