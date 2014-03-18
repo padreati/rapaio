@@ -20,12 +20,12 @@
 
 package rapaio.sandbox;
 
+import rapaio.core.RandomSource;
 import rapaio.data.Numeric;
 import rapaio.printer.LocalPrinter;
 import rapaio.workspace.Workspace;
 
 import java.util.Arrays;
-import java.util.Comparator;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -38,25 +38,27 @@ public class SortSandbox {
         int N = (int) Math.pow(10, 7);
         final Numeric num = new Numeric(N);
         for (int i = 0; i < N; i++) {
-            num.setValue(i, (i % 2 == 0) ? Double.NaN : i);
+//            num.setValue(i, (i % 2 == 0) ? Double.NaN : i);
+            num.setValue(i, RandomSource.nextDouble());
         }
 
         long start = System.currentTimeMillis();
 
-        Integer[] sort = new Integer[N];
+        Double[] sort = new Double[N];
         for (int i = 0; i < N; i++) {
-            sort[i] = i;
+            sort[i] = RandomSource.nextDouble();
         }
         System.out.println("millis " + (System.currentTimeMillis() - start));
 
         start = System.currentTimeMillis();
-        Arrays.sort(sort, new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                if (num.missing(o1)) return num.missing(o2) ? 0 : -1;
-                else return Double.compare(num.value(o1), num.value(o2));
-            }
-        });
+        Arrays.sort(sort);
+//        , new Comparator<Double>() {
+//            @Override
+//            public int compare(Double o1, Double o2) {
+//                if (num.missing(o1)) return num.missing(o2) ? 0 : -1;
+//                else return Double.compare(num.value(o1), num.value(o2));
+//            }
+//        });
         System.out.println("millis " + (System.currentTimeMillis() - start));
 
 
