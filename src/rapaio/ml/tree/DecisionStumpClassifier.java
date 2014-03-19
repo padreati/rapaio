@@ -24,12 +24,13 @@ import rapaio.data.Frame;
 import rapaio.data.Frames;
 import rapaio.data.Nominal;
 import rapaio.data.Vector;
-import rapaio.data.collect.FIterator;
+import rapaio.data.stream.FSpot;
 import rapaio.ml.AbstractClassifier;
 import rapaio.ml.Classifier;
 import rapaio.ml.tools.DensityVector;
 import rapaio.ml.tools.TreeCTest;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -144,28 +145,30 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
         pred = new Nominal(df.rowCount(), dict);
         dist = Frames.newMatrix(df.rowCount(), dict);
 
-        FIterator it = df.iterator();
-        while (it.next()) {
-            if (test.testName() == null || it.missing(test.testName())) {
-                dist.setValue(it.row(), defaultIndex, 1.0);
-                pred.setLabel(it.row(), defaultLabel);
+        Iterator<FSpot> it = df.toStream().iterator();
+        while (it.hasNext()) {
+            FSpot f = it.next();
+
+            if (test.testName() == null || f.isMissing(test.testName())) {
+                dist.setValue(f.row(), defaultIndex, 1.0);
+                pred.setLabel(f.row(), defaultLabel);
                 continue;
             }
             if (df.col(test.testName()).type().isNumeric()) {
-                if (it.value(test.testName()) <= test.splitValue()) {
-                    dist.setValue(it.row(), leftIndex, 1.0);
-                    pred.setLabel(it.row(), leftLabel);
+                if (f.getValue(test.testName()) <= test.splitValue()) {
+                    dist.setValue(f.row(), leftIndex, 1.0);
+                    pred.setLabel(f.row(), leftLabel);
                 } else {
-                    dist.setValue(it.row(), rightIndex, 1.0);
-                    pred.setLabel(it.row(), rightLabel);
+                    dist.setValue(f.row(), rightIndex, 1.0);
+                    pred.setLabel(f.row(), rightLabel);
                 }
             } else {
-                if (test.splitLabel().equals(it.label(test.testName()))) {
-                    dist.setValue(it.row(), leftIndex, 1.0);
-                    pred.setLabel(it.row(), leftLabel);
+                if (test.splitLabel().equals(f.getLabel(test.testName()))) {
+                    dist.setValue(f.row(), leftIndex, 1.0);
+                    pred.setLabel(f.row(), leftLabel);
                 } else {
-                    dist.setValue(it.row(), rightIndex, 1.0);
-                    pred.setLabel(it.row(), rightLabel);
+                    dist.setValue(f.row(), rightIndex, 1.0);
+                    pred.setLabel(f.row(), rightLabel);
                 }
             }
         }

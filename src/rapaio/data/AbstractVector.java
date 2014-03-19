@@ -20,13 +20,11 @@
 
 package rapaio.data;
 
-import rapaio.data.collect.VInstance;
-import rapaio.data.collect.VIterator;
-import rapaio.data.mapping.MappedVector;
-import rapaio.data.mapping.Mapping;
+import rapaio.data.stream.VSpot;
+import rapaio.data.stream.VSpots;
 
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Base class for a vector which enforces to read-only name given at construction time.
@@ -41,169 +39,11 @@ public abstract class AbstractVector implements Vector {
     }
 
     @Override
-    public VIterator iterator() {
-        return iterator(false);
-    }
-
-    @Override
-    public VIterator iterator(boolean complete) {
-        return new VectorIterator(complete, rowCount(), this);
-    }
-
-    @Override
-    public VIterator cycleIterator(int size) {
-        return new VectorIterator(true, size, this);
-    }
-
-    @Override
-    public Stream<VInstance> stream() {
-        List<VInstance> instances = new LinkedList<>();
+    public VSpots toStream() {
+        List<VSpot> instances = new LinkedList<>();
         for (int i = 0; i < this.rowCount(); i++) {
-            instances.add(new VInstance(i, this));
+            instances.add(new VSpot(i, this));
         }
-        return instances.stream();
-    }
-}
-
-class VectorIterator implements VIterator {
-
-    private static final String DEFAULT_MAPPING_KEY = "$$DEFAULT$$";
-    final boolean complete;
-    final int size;
-    final Vector vector;
-    private final HashMap<String, Mapping> mappings = new HashMap<>();
-
-    int pos = -1;
-    int cyclePos = -1;
-
-    VectorIterator(boolean complete, int size, Vector vector) {
-        this.complete = complete;
-        this.size = size;
-        this.vector = vector;
-    }
-
-    @Override
-    public boolean next() {
-        while (pos < size - 1) {
-            pos++;
-            cyclePos++;
-            if (cyclePos >= vector.rowCount()) {
-                cyclePos = 0;
-            }
-            if (complete && vector.isMissing(cyclePos)) continue;
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void reset() {
-        pos = -1;
-        cyclePos = -1;
-    }
-
-    @Override
-    public int getRowId() {
-        return vector.rowId(cyclePos);
-    }
-
-    @Override
-    public int getRow() {
-        return cyclePos;
-    }
-
-    @Override
-    public double getValue() {
-        return vector.getValue(cyclePos);
-    }
-
-    @Override
-    public void setValue(double value) {
-        vector.setValue(cyclePos, value);
-    }
-
-    @Override
-    public int getIndex() {
-        return vector.getIndex(cyclePos);
-    }
-
-    @Override
-    public void setIndex(int value) {
-        vector.setIndex(cyclePos, value);
-    }
-
-    @Override
-    public String getLabel() {
-        return vector.getLabel(cyclePos);
-    }
-
-    @Override
-    public void setLabel(String value) {
-        vector.setLabel(cyclePos, value);
-    }
-
-    @Override
-    public boolean isMissing() {
-        return vector.isMissing(cyclePos);
-    }
-
-    @Override
-    public void setMissing() {
-        vector.setMissing(cyclePos);
-    }
-
-    @Override
-    public void appendToMapping() {
-        if (!mappings.containsKey(DEFAULT_MAPPING_KEY)) {
-            mappings.put(DEFAULT_MAPPING_KEY, new Mapping());
-        }
-        mappings.get(DEFAULT_MAPPING_KEY).add(getRowId());
-    }
-
-    @Override
-    public void appendToMapping(String key) {
-        if (!mappings.containsKey(key)) {
-            mappings.put(key, new Mapping());
-        }
-        mappings.get(key).add(getRowId());
-    }
-
-    @Override
-    public int getMappingsCount() {
-        return mappings.keySet().size();
-    }
-
-    @Override
-    public Set<String> getMappingsKeys() {
-        return mappings.keySet();
-    }
-
-    @Override
-    public Mapping getMapping() {
-        return mappings.get(DEFAULT_MAPPING_KEY);
-    }
-
-    @Override
-    public Mapping getMapping(String key) {
-        return mappings.get(key);
-    }
-
-    @Override
-    public Vector getMappedVector() {
-        return new MappedVector(vector.source(), getMapping());
-    }
-
-    @Override
-    public Vector getMappedVector(String key) {
-        return new MappedVector(vector.source(), getMapping(key));
-    }
-
-    @Override
-    public Map<String, Vector> getMappedVectors() {
-        Map<String, Vector> map = new HashMap<>();
-        for (String key : getMappingsKeys()) {
-            map.put(key, getMappedVector(key));
-        }
-        return map;
+        return new VSpots(instances.stream());
     }
 }

@@ -142,10 +142,10 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor implements 
 
             // set inputs
             for (int i = 0; i < inputCols.size(); i++) {
-                if (df.missing(pos, inputCols.get(i))) {
+                if (df.isMissing(pos, inputCols.get(i))) {
                     throw new RuntimeException("detected NaN in input values");
                 }
-                net[0][i + 1].value = df.value(pos, inputCols.get(i));
+                net[0][i + 1].value = df.getValue(pos, inputCols.get(i));
             }
 
             // feed forward
@@ -171,7 +171,7 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor implements 
 
             int last = net.length - 1;
             for (int i = 0; i < net[last].length; i++) {
-                double expected = df.value(pos, targetCols.get(i));
+                double expected = df.getValue(pos, targetCols.get(i));
                 double actual = net[last][i].value;
                 net[last][i].gamma = sigmoid.differential(actual) * (expected - actual);
             }
@@ -204,7 +204,7 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor implements 
         for (int pos = 0; pos < df.rowCount(); pos++) {
             // set inputs
             for (int i = 0; i < inputCols.size(); i++) {
-                net[0][i + 1].value = df.value(pos, inputCols.get(i));
+                net[0][i + 1].value = df.getValue(pos, inputCols.get(i));
             }
 
             // feed forward

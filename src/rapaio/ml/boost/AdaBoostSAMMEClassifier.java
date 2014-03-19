@@ -205,7 +205,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
             h.get(i).predict(df);
             for (int j = 0; j < df.rowCount(); j++) {
                 int index = h.get(i).prediction().getIndex(j);
-                dist.setValue(j, index, dist.value(j, index) + a.get(i));
+                dist.setValue(j, index, dist.getValue(j, index) + a.get(i));
             }
         }
 
@@ -215,9 +215,9 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
             double max = 0;
             int prediction = 0;
             for (int j = 1; j < dist.colCount(); j++) {
-                if (dist.value(i, j) > max) {
+                if (dist.getValue(i, j) > max) {
                     prediction = j;
-                    max = dist.value(i, j);
+                    max = dist.getValue(i, j);
                 }
             }
             pred.setIndex(i, prediction);
@@ -233,7 +233,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
             h.get(i).predict(df);
             for (int j = 0; j < df.rowCount(); j++) {
                 int index = h.get(i).prediction().getIndex(j);
-                dist.setValue(j, index, dist.value(j, index) + a.get(i));
+                dist.setValue(j, index, dist.getValue(j, index) + a.get(i));
             }
         }
 
@@ -243,9 +243,9 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
             double max = 0;
             int prediction = 0;
             for (int j = 1; j < dist.colCount(); j++) {
-                if (dist.value(i, j) > max) {
+                if (dist.getValue(i, j) > max) {
                     prediction = j;
-                    max = dist.value(i, j);
+                    max = dist.getValue(i, j);
                 }
             }
             pred.setIndex(i, prediction);

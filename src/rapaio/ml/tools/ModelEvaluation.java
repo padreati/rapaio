@@ -87,7 +87,7 @@ public class ModelEvaluation {
             rowIds[i] = new ArrayList<>();
         }
         for (int i = 0; i < df.rowCount(); i++) {
-            rowIds[df.index(i, df.colIndex(classColName))].add(df.rowId(i));
+            rowIds[df.getIndex(i, df.colIndex(classColName))].add(df.rowId(i));
         }
         List<Integer> shuffle = new ArrayList<>();
         for (int i = 0; i < dict.length; i++) {

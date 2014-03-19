@@ -22,7 +22,6 @@ package rapaio.data;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.data.collect.VIterator;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -66,10 +65,8 @@ public final class MathNumeric {
 
     public static Numeric minus(final Numeric a, final Numeric b) {
         Numeric c = new Numeric();
-        VIterator aIt = a.cycleIterator(StrictMath.max(a.rowCount(), b.rowCount()));
-        VIterator bIt = b.cycleIterator(StrictMath.max(a.rowCount(), b.rowCount()));
-        while (aIt.next() && bIt.next()) {
-            c.addValue(aIt.getValue() - bIt.getValue());
+        for (int i = 0; i < StrictMath.max(a.rowCount(), b.rowCount()); i++) {
+            c.addValue(a.getValue(i) - b.getValue(i));
         }
         return c;
     }

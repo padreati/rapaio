@@ -74,7 +74,7 @@ public class SortedFrameTest {
 
         sorted = sort(sorted, numericComparator(sorted.col(0), true));
         for (int i = 1; i < sorted.rowCount(); i++) {
-            assertTrue(sorted.value(i - 1, 0) <= sorted.value(i, 0));
+            assertTrue(sorted.getValue(i - 1, 0) <= sorted.getValue(i, 0));
         }
 
     }
@@ -106,15 +106,15 @@ public class SortedFrameTest {
     public void testSortNominal() {
         Frame sort = sort(df, nominalComparator(df.col(0), true));
         for (int i = 1; i < sort.rowCount(); i++) {
-            String label1 = sort.label(i - 1, 0);
-            String label2 = sort.label(i, 0);
+            String label1 = sort.getLabel(i - 1, 0);
+            String label2 = sort.getLabel(i, 0);
             assertTrue(label1.compareTo(label2) <= 0);
         }
 
         sort = sort(df, nominalComparator(df.col(0), false));
         for (int i = 1; i < sort.rowCount(); i++) {
-            String label1 = sort.label(i - 1, 0);
-            String label2 = sort.label(i, 0);
+            String label1 = sort.getLabel(i - 1, 0);
+            String label2 = sort.getLabel(i, 0);
             assertTrue(label1.compareTo(label2) >= 0);
         }
     }
@@ -124,12 +124,12 @@ public class SortedFrameTest {
         for (int col = 1; col <= 2; col++) {
             Frame sort = sort(df, numericComparator(df.col(col), true));
             for (int i = 1; i < sort.rowCount(); i++) {
-                assertTrue(sort.value(i - 1, col) <= sort.value(i, col));
+                assertTrue(sort.getValue(i - 1, col) <= sort.getValue(i, col));
             }
 
             sort = sort(df, numericComparator(df.col(col), false));
             for (int i = 1; i < sort.rowCount(); i++) {
-                assertTrue(sort.value(i - 1, col) >= sort.value(i, col));
+                assertTrue(sort.getValue(i - 1, col) >= sort.getValue(i, col));
             }
         }
     }

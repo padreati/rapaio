@@ -120,12 +120,12 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public boolean missing(int row, int col) {
+    public boolean isMissing(int row, int col) {
         return col(col).isMissing(row);
     }
 
     @Override
-    public boolean missing(int row, String colName) {
+    public boolean isMissing(int row, String colName) {
         return col(colName).isMissing(row);
     }
 }

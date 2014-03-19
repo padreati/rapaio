@@ -351,9 +351,9 @@ public class Csv {
                         continue;
                     }
                     if (df.col(j).type().isNominal()) {
-                        writer.append(unclean(df.label(i, j)));
+                        writer.append(unclean(df.getLabel(i, j)));
                     } else {
-                        writer.append(format.format(df.value(i, j)));
+                        writer.append(format.format(df.getValue(i, j)));
                     }
                 }
                 writer.append("\n");

@@ -21,8 +21,11 @@
 package rapaio.sandbox;
 
 import rapaio.core.RandomSource;
+import rapaio.data.Frame;
 import rapaio.data.Numeric;
-import rapaio.data.collect.VInstance;
+import rapaio.data.stream.VSpot;
+import rapaio.datasets.Datasets;
+import rapaio.workspace.Summary;
 
 import java.util.function.Supplier;
 
@@ -31,28 +34,34 @@ import java.util.function.Supplier;
  */
 public class Functional {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         new Functional().run();
     }
 
-    public void run() {
+    public void run() throws Exception {
 
         Numeric num = new Numeric();
-        for (int i = 0; i < 10_000_000; i++) {
+        for (int i = 0; i < 10_000; i++) {
             num.addValue(RandomSource.nextDouble());
         }
 
         time(() -> {
-            double cnt = num.stream().parallel().filter((VInstance vi) -> !vi.isMissing()).count();
+            double cnt = num.toStream().parallel().filter((VSpot vi) -> !vi.isMissing()).count();
             System.out.println(cnt);
             return "parallel";
         });
 
         time(() -> {
-            double cnt = num.stream().filter((VInstance vi) -> !vi.isMissing()).count();
+            double cnt = num.toStream().filter((VSpot vi) -> !vi.isMissing()).count();
             System.out.println(cnt);
             return "non-parallel";
         });
+
+        Frame df = Datasets.loadCarMpgDataset();
+        Summary.summary(df);
+
+//        df.toStream().
+
     }
 
     public static void time(Supplier<String> f) {

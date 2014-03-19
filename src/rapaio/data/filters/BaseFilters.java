@@ -26,11 +26,11 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.*;
 import rapaio.data.Vector;
-import rapaio.data.collect.FIterator;
-import rapaio.data.collect.VIterator;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.MappedVector;
 import rapaio.data.mapping.Mapping;
+import rapaio.data.stream.FSpot;
+import rapaio.data.stream.VSpot;
 
 import java.util.*;
 
@@ -273,11 +273,21 @@ public final class BaseFilters {
         if (!df.col(nominalIndex).type().isNominal()) {
             throw new IllegalArgumentException("Index does not specify a nominal attribute");
         }
-        FIterator it = df.iterator();
-        while (it.next()) {
-            it.appendToMapping(it.label(nominalIndex));
+        String[] dict = df.col(nominalIndex).getDictionary();
+        final Mapping[] mappings = new Mapping[dict.length];
+        for (int i = 0; i < dict.length; i++) {
+            mappings[i] = new Mapping();
         }
-        return it.getMappedFrames();
+
+        df.toStream().forEach((FSpot fi) -> {
+            int index = fi.getIndex(nominalIndex);
+            mappings[index].add(fi.rowId());
+        });
+        Map<String, Frame> frames = new HashMap<>();
+        for (int i = 0; i < mappings.length; i++) {
+            frames.put(dict[i], new MappedFrame(df.sourceFrame(), mappings[i]));
+        }
+        return frames;
     }
 
     /**
@@ -356,7 +366,7 @@ public final class BaseFilters {
             for (int j = 0; j < frames.get(i).rowCount(); j++) {
                 StringBuilder sb = new StringBuilder();
                 for (int k = 0; k < combined.length; k++) {
-                    sb.append(".").append(frames.get(i).label(j, frames.get(i).colIndex(combined[k])));
+                    sb.append(".").append(frames.get(i).getLabel(j, frames.get(i).colIndex(combined[k])));
                 }
                 col.setLabel(j, sb.toString());
             }
@@ -424,27 +434,26 @@ public final class BaseFilters {
         if (v.type().equals(VectorType.NUMERIC)) {
             return (Numeric) v;
         }
-        Numeric result = new Numeric();
-        VIterator it = v.iterator();
-        while (it.next()) {
-            if (it.isMissing()) {
+        final Numeric result = new Numeric();
+        v.toStream().forEach((VSpot vi) -> {
+            if (vi.isMissing()) {
                 result.addMissing();
-                continue;
+            } else {
+                switch (v.type()) {
+                    case NOMINAL:
+                        try {
+                            double value = Double.parseDouble(vi.getLabel());
+                            result.addValue(value);
+                        } catch (NumberFormatException nfe) {
+                            result.addMissing();
+                        }
+                        break;
+                    case INDEX:
+                        result.addValue(vi.getIndex());
+                        break;
+                }
             }
-            switch (v.type()) {
-                case NOMINAL:
-                    try {
-                        double value = Double.parseDouble(it.getLabel());
-                        result.addValue(value);
-                    } catch (NumberFormatException nfe) {
-                        result.addMissing();
-                    }
-                    break;
-                case INDEX:
-                    result.addValue(it.getIndex());
-                    break;
-            }
-        }
+        });
         return result;
     }
 
@@ -460,23 +469,22 @@ public final class BaseFilters {
         if (v.type().equals(VectorType.INDEX)) {
             return (Index) v;
         }
-        Index result = new Index();
-        VIterator it = v.iterator();
-        while (it.next()) {
-            if (it.isMissing()) {
+        final Index result = new Index();
+        v.toStream().forEach((VSpot inst) -> {
+            if (inst.isMissing()) {
                 result.addMissing();
-                continue;
+            } else {
+                switch (v.type()) {
+                    case NUMERIC:
+                        result.addIndex((int) Math.rint(inst.getValue()));
+                        break;
+                    case NOMINAL:
+                        int value = Integer.parseInt(inst.getLabel());
+                        result.addIndex(value);
+                        break;
+                }
             }
-            switch (v.type()) {
-                case NUMERIC:
-                    result.addIndex((int) Math.rint(it.getValue()));
-                    break;
-                case NOMINAL:
-                    int value = Integer.parseInt(it.getLabel());
-                    result.addIndex(value);
-                    break;
-            }
-        }
+        });
         return result;
     }
 
@@ -489,6 +497,7 @@ public final class BaseFilters {
      * @param vector input values
      * @return altered values
      */
+
     public static Numeric jitter(Vector vector) {
         return jitter(vector, 0.1);
     }
@@ -528,12 +537,10 @@ public final class BaseFilters {
         if (!vector.type().isNominal()) {
             throw new IllegalArgumentException("Vector is not isNominal.");
         }
-        VIterator it = vector.iterator();
-        while (it.next()) {
-            if (missingValues.contains(it.getLabel())) {
-                it.setMissing();
-            }
-        }
+        vector.toStream().forEach((VSpot inst) -> {
+            if (missingValues.contains(inst.getLabel()))
+                inst.setMissing();
+        });
         return vector;
     }
 

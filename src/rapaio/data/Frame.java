@@ -20,12 +20,10 @@
 
 package rapaio.data;
 
-import rapaio.data.collect.FInstance;
-import rapaio.data.collect.FIterator;
 import rapaio.data.mapping.Mapping;
+import rapaio.data.stream.FSpots;
 
 import java.io.Serializable;
-import java.util.function.Consumer;
 
 /**
  * Random access list of observed values for multiple variables.
@@ -116,7 +114,7 @@ public interface Frame extends Serializable {
      * @param col column number
      * @return numeric setValue
      */
-    double value(int row, int col);
+    double getValue(int row, int col);
 
     /**
      * Convenient shortcut to call {@link Vector#getValue(int)} for a given column.
@@ -125,7 +123,7 @@ public interface Frame extends Serializable {
      * @param colName column name
      * @return numeric setValue
      */
-    double value(int row, String colName);
+    double getValue(int row, String colName);
 
     /**
      * Convenient shortcut method to call {@link Vector#setValue(int, double)} for a given column.
@@ -153,7 +151,7 @@ public interface Frame extends Serializable {
      * @param col column number
      * @return setIndex getValue
      */
-    int index(int row, int col);
+    int getIndex(int row, int col);
 
     /**
      * Convenient shortcut method for calling {@link Vector#getIndex(int)} for a given column.
@@ -162,7 +160,7 @@ public interface Frame extends Serializable {
      * @param colName column name
      * @return setIndex getValue
      */
-    int index(int row, String colName);
+    int getIndex(int row, String colName);
 
     /**
      * Convenient shortcut method for calling {@link Vector#setIndex(int, int)} for given column.
@@ -189,7 +187,7 @@ public interface Frame extends Serializable {
      * @param col column number
      * @return nominal getLabel getValue
      */
-    String label(int row, int col);
+    String getLabel(int row, int col);
 
     /**
      * Convenient shortcut method for calling {@link Vector#getLabel(int)} for given column.
@@ -198,7 +196,7 @@ public interface Frame extends Serializable {
      * @param colName column name
      * @return nominal getLabel getValue
      */
-    String label(int row, String colName);
+    String getLabel(int row, String colName);
 
     /**
      * Convenient shortcut method for calling {@link Vector#setLabel(int, String)} for given column.
@@ -218,22 +216,15 @@ public interface Frame extends Serializable {
      */
     void setLabel(int row, String colName, String value);
 
-    boolean missing(int row, int col);
+    boolean isMissing(int row, int col);
 
-    boolean missing(int row, String colName);
+    boolean isMissing(int row, String colName);
 
-    boolean missing(int row);
+    boolean isMissing(int row);
 
     void setMissing(int row, int col);
 
     void setMissing(int row, String colName);
 
-    public FIterator iterator();
-
-    public FIterator iterator(boolean complete);
-
-    // some functional constructs
-
-    public void forEach(Consumer<FInstance> action);
-
+    public FSpots toStream();
 }

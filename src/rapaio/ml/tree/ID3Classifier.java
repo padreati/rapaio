@@ -24,7 +24,6 @@ import rapaio.core.RandomSource;
 import rapaio.core.stat.Mode;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
-import rapaio.data.collect.FIterator;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
 import rapaio.ml.AbstractClassifier;
@@ -138,7 +137,7 @@ public class ID3Classifier extends AbstractClassifier<ID3Classifier> {
         if (root.leaf) {
             return root.predicted;
         }
-        String label = df.label(row, df.colIndex(root.splitCol));
+        String label = df.getLabel(row, df.colIndex(root.splitCol));
         Map<String, ID3ClassifierNode> map = root.splitMap;
         if (!map.containsKey(label)) {
             throw new RuntimeException("Inconsistency");
@@ -152,11 +151,8 @@ public class ID3Classifier extends AbstractClassifier<ID3Classifier> {
                 throw new IllegalArgumentException("ID3 can handle only isNominal attributes.");
             }
         }
-        FIterator it = df.iterator();
-        while (it.next()) {
-            if (it.missing())
-                throw new IllegalArgumentException("ID3 can't handle missing values.");
-        }
+        if (df.toStream().complete().count() == 0)
+            throw new IllegalArgumentException("ID3 can't handle missing values.");
     }
 }
 
@@ -194,13 +190,13 @@ class ID3ClassifierNode {
         // leaf on all classes of same getValue
         boolean same = true;
         for (int i = 1; i < df.rowCount(); i++) {
-            if (df.index(i - 1, df.colIndex(classColName)) != df.index(i, df.colIndex(classColName))) {
+            if (df.getIndex(i - 1, df.colIndex(classColName)) != df.getIndex(i, df.colIndex(classColName))) {
                 same = false;
                 break;
             }
         }
         if (same) {
-            predicted = df.label(0, df.colIndex(classColName));
+            predicted = df.getLabel(0, df.colIndex(classColName));
             leaf = true;
             return;
         }
@@ -247,7 +243,7 @@ class ID3ClassifierNode {
         }
 
         for (int i = 0; i < df.rowCount(); i++) {
-            int index = df.index(i, df.colIndex(colName));
+            int index = df.getIndex(i, df.colIndex(colName));
             splitMappings[index].add(df.rowId(i));
             splitWeights[index].add(weights.get(i));
         }

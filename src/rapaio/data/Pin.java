@@ -18,50 +18,32 @@
  *    limitations under the License.
  */
 
-package rapaio.data.collect;
+package rapaio.data;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public interface FInstance {
+public class Pin<T> {
 
-    int row();
+    private T value;
 
-    int rowId();
 
-    boolean missing(int colIndex);
+    public Pin() {
+    }
 
-    boolean missing(String colName);
+    public Pin(T value) {
+        this.value = value;
+    }
 
-    void setMissing(int colIndex);
+    public T get() {
+        return value;
+    }
 
-    void setMissing(String colName);
+    public void set(T value) {
+        this.value = value;
+    }
 
-    double value(int colIndex);
-
-    double value(String colName);
-
-    void setValue(int colIndex, double value);
-
-    void setValue(String colName, double value);
-
-    int index(int colIndex);
-
-    int index(String colName);
-
-    void setIndex(int colIndex, int value);
-
-    void setIndex(String colName, int value);
-
-    String label(int colIndex);
-
-    String label(String colName);
-
-    void setLabel(int colIndex, String value);
-
-    void setLabel(String colName, String value);
-
-    String[] dictionary(int colIndex);
-
-    String[] dictionary(String colName);
+    public boolean isEmpty() {
+        return value == null;
+    }
 }

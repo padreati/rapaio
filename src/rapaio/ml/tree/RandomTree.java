@@ -167,10 +167,10 @@ public class RandomTree extends AbstractClassifier<RandomTree> {
             return pd;
         }
         if (df.col(col).type().isNumeric()) {
-            double value = df.value(row, col);
+            double value = df.getValue(row, col);
             return predict(df, row, value <= node.splitValue ? node.leftNode : node.rightNode);
         } else {
-            String label = df.label(row, col);
+            String label = df.getLabel(row, col);
             return predict(df, row, node.splitLabel.equals(label) ? node.leftNode : node.rightNode);
         }
     }
@@ -324,7 +324,7 @@ class TreeNode {
         Vector sort = BaseFilters.sort(Vectors.newSeq(0, df.rowCount() - 1, 1), RowComparators.numericComparator(col, true));
         for (int i = 0; i < df.rowCount() - 1; i++) {
             int row = df.col(colIndex).isMissing(sort.getIndex(i)) ? 0 : 1;
-            int index = df.index(sort.getIndex(i), classColIndex);
+            int index = df.getIndex(sort.getIndex(i), classColIndex);
             p[row][index] += weights.get(sort.getIndex(i));
             rowCounts[row]++;
             if (row == 0) {
@@ -336,7 +336,7 @@ class TreeNode {
                 continue;
             if (RandomSource.nextDouble() > tree.getNumericSelectionProb())
                 continue;
-            if (df.value(sort.getIndex(i), colIndex) + 1e-30 < df.value(sort.getIndex(i + 1), colIndex)) {
+            if (df.getValue(sort.getIndex(i), colIndex) + 1e-30 < df.getValue(sort.getIndex(i + 1), colIndex)) {
                 double metric = computeGini(p[0], p[1]);
                 if (!validNumber(metric))
                     continue;

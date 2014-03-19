@@ -43,7 +43,7 @@ public class TutorialWebsiteGenerator {
 
     private static final Logger logger = Logger.getLogger("rapaio");
 
-    private static final String TUTORIAL_WEB_ROOT = "/home/ati/work/rapaio-tutorial/";
+    private static final String TUTORIAL_WEB_ROOT = "/home/ati/rapaio/rapaio-tutorial/";
 
     public static void main(String[] args) throws IOException, URISyntaxException {
 
@@ -98,7 +98,7 @@ public class TutorialWebsiteGenerator {
             }
             for (TutorialPage page : pages.get(categ)) {
                 File pageFile = new File(categoryRoot, page.getPageName() + ".html");
-                setPrinter(new HTMLPrinter(pageFile.getAbsolutePath(), page.getPageTitle(), "<a href=\"../../iqndex.html\">Back</a>"));
+                setPrinter(new HTMLPrinter(pageFile.getAbsolutePath(), page.getPageTitle(), "<a href=\"../../index.html\">Back</a>"));
                 preparePrinter();
                 page.render();
                 closePrinter();
@@ -111,17 +111,17 @@ public class TutorialWebsiteGenerator {
         setPrinter(new HTMLPrinter(indexPage.getAbsolutePath(), "Rapaio Tutorials"));
         preparePrinter();
 
-        heading(1, "Rapaio Tutorial page");
+        heading(1, "Rapaio Tutorial Pages");
 
         p("This is the home page for Rapaio tutorials.");
 
-        p("A Rapaio tutorial page is a document generated with the Rapaio "
-                + "library documenting facilities in order to exemplify how "
+        p("A rapaio tutorial page is a document generated with rapaio "
+                + "printer in order to exemplify how "
                 + "an analysis could be accomplished using Rapaio statistical,"
                 + "data mining and machine learning toolbox.");
 
         p("Most of the tutorials will be strictly oriented on a small "
-                + "getType of facility Rapaio offers. As a sample how one ca read "
+                + "small rapaio facility. As a sample how one ca read "
                 + "and write data with CVSPersistence. Other tutorials will be oriented "
                 + "on the pieces of output facilities useful in data visualization, "
                 + "either as text or as graphical images. ");

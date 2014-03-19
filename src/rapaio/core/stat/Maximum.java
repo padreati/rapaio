@@ -20,10 +20,9 @@
 
 package rapaio.core.stat;
 
-import rapaio.core.MathBase;
 import rapaio.core.Summarizable;
 import rapaio.data.Vector;
-import rapaio.data.collect.VIterator;
+import rapaio.data.stream.VSpot;
 
 import static rapaio.workspace.Workspace.code;
 
@@ -47,14 +46,10 @@ public class Maximum implements Summarizable {
     }
 
     private double compute() {
-        double max = Double.MIN_VALUE;
-        boolean valid = false;
-        VIterator it = vector.iterator(true);
-        while (it.next()) {
-            max = MathBase.max(max, it.getValue());
-            valid = true;
+        if (vector.toStream().anyMatch((VSpot inst) -> !inst.isMissing())) {
+            return vector.toStream().complete().mapToDouble().count();
         }
-        return valid ? max : Double.NaN;
+        return Double.NaN;
     }
 
     public double getValue() {

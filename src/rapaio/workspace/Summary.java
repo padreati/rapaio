@@ -45,7 +45,7 @@ public class Summary {
     public static void summary(Frame df, String... names) {
 
         StringBuilder buffer = new StringBuilder();
-        buffer.append(String.format(">>summary(frame, %s)\n", Arrays.deepToString(names)));
+        buffer.append(String.format("> summary(frame, %s)\n", Arrays.deepToString(names)));
         if (df == null) {
             buffer.append("null instance of frame.\n");
             code(buffer.toString());
@@ -236,7 +236,7 @@ public class Summary {
     public static void summary(Vector v) {
 
         StringBuilder buffer = new StringBuilder();
-        buffer.append(">>summary(vector)\n");
+        buffer.append("> summary(vector)\n");
 
         String[] first = new String[7];
         String[] second = new String[7];
@@ -365,7 +365,7 @@ public class Summary {
 
     public static void names(Frame df) {
         StringBuilder buffer = new StringBuilder();
-        buffer.append(String.format(">>names(frame)\n"));
+        buffer.append(String.format("> names(frame)\n"));
         for (int i = 0; i < df.colCount(); i++) {
             buffer.append(df.colNames()[i]).append("\n");
         }

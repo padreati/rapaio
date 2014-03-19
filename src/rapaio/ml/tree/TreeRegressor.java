@@ -138,7 +138,7 @@ class TreeRegressorNode {
             List<Double> rightWeights = new ArrayList<>();
 
             for (int i = 0; i < df.rowCount(); i++) {
-                if (df.value(i, splitColName) <= splitValue) {
+                if (df.getValue(i, splitColName) <= splitValue) {
                     leftMapping.add(df.rowId(i));
                     leftWeights.add(weights.get(i));
                 } else {
@@ -206,7 +206,7 @@ class TreeRegressorNode {
         if (leaf) {
             return pred;
         }
-        if (df.value(row, splitColName) <= splitValue) {
+        if (df.getValue(row, splitColName) <= splitValue) {
             return left.predict(df, row);
         } else {
             return right.predict(df, row);

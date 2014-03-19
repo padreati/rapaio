@@ -21,8 +21,9 @@
 package rapaio.core.stat;
 
 import rapaio.core.Summarizable;
+import rapaio.data.Pin;
 import rapaio.data.Vector;
-import rapaio.data.collect.VIterator;
+import rapaio.data.stream.VSpot;
 
 import static rapaio.workspace.Workspace.code;
 
@@ -44,24 +45,14 @@ public final class Mean implements Summarizable {
     }
 
     private double compute() {
-        double sum = 0.;
-        double count = 0;
-        VIterator it = vector.iterator(true);
-        while (it.next()) {
-            sum += it.getValue();
-            count++;
-        }
+        double count = vector.toStream().complete().mapToDouble().count();
         if (count == 0) {
             return Double.NaN;
         }
-        sum /= count;
-        double t = 0;
-        it.reset();
-        while (it.next()) {
-            t += it.getValue() - sum;
-        }
-        sum += t / count;
-        return sum;
+        final double sum = vector.toStream().complete().mapToDouble().sum() / count;
+        final Pin<Double> t = new Pin<>(0.0);
+        vector.toStream().complete().forEach((VSpot inst) -> t.set(t.get() + inst.getValue() - sum));
+        return sum + t.get() / count;
     }
 
     public double getValue() {

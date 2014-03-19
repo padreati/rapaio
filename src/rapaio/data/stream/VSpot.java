@@ -18,21 +18,33 @@
  *    limitations under the License.
  */
 
-package rapaio.data.collect;
+package rapaio.data.stream;
 
 import rapaio.data.Vector;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class VInstance {
+public class VSpot {
 
-    final int row;
-    final Vector vector;
+    private final int row;
+    private final Vector vector;
 
-    public VInstance(int row, Vector vector) {
+    public VSpot(int row, Vector vector) {
         this.row = vector.rowId(row);
         this.vector = vector.source();
+    }
+
+    public int row() {
+        return row;
+    }
+
+    public int rowId() {
+        return vector.rowId(row);
+    }
+
+    public Vector getVector() {
+        return vector;
     }
 
     public boolean isMissing() {
@@ -49,5 +61,25 @@ public class VInstance {
 
     public void setValue(final double value) {
         vector.setValue(row, value);
+    }
+
+    public int getIndex() {
+        return vector.getIndex(row);
+    }
+
+    public void setIndex(final int index) {
+        vector.setIndex(row, index);
+    }
+
+    public String getLabel() {
+        return vector.getLabel(row);
+    }
+
+    public void setLabel(String label) {
+        vector.setLabel(row, label);
+    }
+
+    public String[] getDictionary() {
+        return vector.getDictionary();
     }
 }

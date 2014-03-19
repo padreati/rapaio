@@ -22,9 +22,9 @@ package rapaio.core.sample;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
-import rapaio.data.collect.FIterator;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
+import rapaio.data.stream.FIterator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,19 +54,22 @@ public class StatSampling {
         }
         List<Frame> result = new ArrayList<>();
         Frame shuffle = shuffle(frame);
-        FIterator it = shuffle.iterator();
+
+        FIterator it = shuffle.toStream().iterator();
         for (int i = 0; i < rowCounts.length; i++) {
             for (int j = 0; j < rowCounts[i]; j++) {
                 it.next();
-                it.appendToMapping(i);
+                it.collect(String.valueOf(i));
             }
-            result.add(it.getMappedFrame(i));
+            result.add(it.getMappedFrame(String.valueOf(i)));
         }
-        while (it.next()) {
-            it.appendToMapping(rowCounts.length);
+        while (it.hasNext()) {
+            it.next();
+            it.collect(String.valueOf(rowCounts.length));
         }
-        if (it.getMappingsKeys().contains(String.valueOf(rowCounts.length))) {
-            result.add(it.getMappedFrame(rowCounts.length));
+        Frame last = it.getMappedFrame(String.valueOf(rowCounts.length));
+        if (last != null) {
+            result.add(last);
         }
         return result;
     }

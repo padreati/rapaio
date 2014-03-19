@@ -81,7 +81,7 @@ public class Bagging extends AbstractClassifier<Bagging> {
             c.predict(df);
             for (int j = 0; j < df.rowCount(); j++) {
                 String prediction = c.prediction().getLabel(j);
-                double prev = dist.value(j, dist.colIndex(prediction));
+                double prev = dist.getValue(j, dist.colIndex(prediction));
                 if (prev != prev) {
                     prev = 0;
                 }
@@ -92,7 +92,7 @@ public class Bagging extends AbstractClassifier<Bagging> {
             int index = -1;
             double max = -1;
             for (int j = 0; j < dist.colCount(); j++) {
-                double freq = dist.value(i, j);
+                double freq = dist.getValue(i, j);
                 dist.setValue(i, j, freq / (1. * classifiers.size()));
                 if (max < freq) {
                     max = freq;

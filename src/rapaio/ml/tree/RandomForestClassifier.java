@@ -241,7 +241,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
             tree.predict(df);
             for (int i = 0; i < df.rowCount(); i++) {
                 for (int j = 0; j < tree.distribution().colCount(); j++) {
-                    dist.setValue(i, j, dist.value(i, j) + tree.distribution().value(i, j));
+                    dist.setValue(i, j, dist.getValue(i, j) + tree.distribution().getValue(i, j));
                 }
             }
         }
@@ -250,16 +250,16 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
         for (int i = 0; i < dist.rowCount(); i++) {
             double total = 0;
             for (int j = 0; j < dist.colCount(); j++) {
-                total += dist.value(i, j);
+                total += dist.getValue(i, j);
             }
             for (int j = 0; j < dist.colCount(); j++) {
-                dist.setValue(i, j, dist.value(i, j) / total);
+                dist.setValue(i, j, dist.getValue(i, j) / total);
             }
             double max = 0;
             int col = 0;
             for (int j = 0; j < dist.colCount(); j++) {
-                if (max < dist.value(i, j)) {
-                    max = dist.value(i, j);
+                if (max < dist.getValue(i, j)) {
+                    max = dist.getValue(i, j);
                     col = j;
                 }
             }
@@ -318,7 +318,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
         f = BaseFilters.sort(f, RowComparators.numericComparator(f.col(1), false));
 
         for (int i = 0; i < f.rowCount(); i++) {
-            sb.append(String.format("%" + width + "s : %10.4f\n", f.label(i, 0), f.value(i, 1)));
+            sb.append(String.format("%" + width + "s : %10.4f\n", f.getLabel(i, 0), f.getValue(i, 1)));
         }
     }
 }

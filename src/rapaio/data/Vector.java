@@ -20,12 +20,10 @@
 
 package rapaio.data;
 
-import rapaio.data.collect.VInstance;
-import rapaio.data.collect.VIterator;
 import rapaio.data.mapping.Mapping;
+import rapaio.data.stream.VSpots;
 
 import java.io.Serializable;
-import java.util.stream.Stream;
 
 /**
  * Random access list of observed values (observations) for a specific variable.
@@ -176,11 +174,5 @@ public interface Vector extends Serializable {
 
     void ensureCapacity(int minCapacity);
 
-    public VIterator iterator();
-
-    public VIterator iterator(boolean complete);
-
-    public VIterator cycleIterator(int size);
-
-    public Stream<VInstance> stream();
+    public VSpots toStream();
 }

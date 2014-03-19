@@ -116,7 +116,7 @@ public class PearsonRCorrelation implements Summarizable {
 
     private void summaryOne() {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("pearson[%s] - Pearson product-moment correlation coefficient\n",
+        sb.append(String.format("> pearson[%s] - Pearson product-moment correlation coefficient\n",
                 names[0]));
         sb.append("1\n");
         sb.append("pearson correlation is 1 for identical vectors");
@@ -125,7 +125,7 @@ public class PearsonRCorrelation implements Summarizable {
 
     private void summaryTwo() {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("pearson[%s, %s] - Pearson product-moment correlation coefficient\n",
+        sb.append(String.format("> pearson[%s, %s] - Pearson product-moment correlation coefficient\n",
                 names[0], names[1]));
         sb.append(String.format("%.6f", pearson[0][1]));
         code(sb.toString());
@@ -133,7 +133,7 @@ public class PearsonRCorrelation implements Summarizable {
 
     private void summaryMore() {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("pearson[%s] - Pearson product-moment correlation coefficient\n",
+        sb.append(String.format("> pearson[%s] - Pearson product-moment correlation coefficient\n",
                 Arrays.deepToString(names)));
 
         String[][] table = new String[vectors.length + 1][vectors.length + 1];

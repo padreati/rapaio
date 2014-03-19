@@ -88,8 +88,8 @@ public class LinearRegressionTest {
                         .setPchIndex(1).setSizeIndex(1)
                 )
                 .add(new ABLine(
-                        lm.getCoeff().value(1, 1),
-                        lm.getCoeff().value(0, 1)))
+                        lm.getCoeff().getValue(1, 1),
+                        lm.getCoeff().getValue(0, 1)))
                 .setXRange(58, 78)
                 .setYRange(58, 78)
                 .setBottomLabel("Father")

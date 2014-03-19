@@ -76,7 +76,7 @@ public class Variance implements Summarizable {
 
     @Override
     public void summary() {
-        code(String.format("variance\n%.10f", value));
+        code(String.format("> variance\n%.10f", value));
     }
 
 }

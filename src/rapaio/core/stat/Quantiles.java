@@ -25,7 +25,7 @@ import rapaio.data.Vector;
 
 import static rapaio.core.MathBase.floor;
 import static rapaio.data.filters.BaseFilters.sort;
-import static rapaio.workspace.Workspace.printfln;
+import static rapaio.workspace.Workspace.code;
 
 
 /**
@@ -95,9 +95,11 @@ public class Quantiles implements Summarizable {
 
     @Override
     public void summary() {
-        printfln("quantiles - estimated quantiles");
+        StringBuilder sb = new StringBuilder();
+        sb.append("> quantiles - estimated quantiles\n");
         for (int i = 0; i < quantiles.length; i++) {
-            printfln("quantile[%f = %f\n", percentiles[i], quantiles[i]);
+            sb.append(String.format("quantile[%f = %f\n", percentiles[i], quantiles[i]));
         }
+        code(sb.toString());
     }
 }

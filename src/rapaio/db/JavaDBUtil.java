@@ -86,10 +86,10 @@ public class JavaDBUtil {
                 for (int j = 0; j < types.length; j++) {
                     switch (types[j]) {
                         case "VARCHAR(8000)":
-                            ps.setString(j + 1, df.label(i, j));
+                            ps.setString(j + 1, df.getLabel(i, j));
                             break;
                         case "DOUBLE":
-                            ps.setDouble(j + 1, df.value(i, j));
+                            ps.setDouble(j + 1, df.getValue(i, j));
                             break;
                     }
                 }

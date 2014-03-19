@@ -118,11 +118,11 @@ public final class Frames {
                 if (sd == 0) continue;
 
                 for (int j = 0; j < df.rowCount(); j++) {
-                    if (df.missing(j, i)) {
+                    if (df.isMissing(j, i)) {
                         df.setValue(j, i, 0);
                         continue;
                     }
-                    df.setValue(j, i, (df.value(j, i) - mean) / sd);
+                    df.setValue(j, i, (df.getValue(j, i) - mean) / sd);
                 }
             }
         }
