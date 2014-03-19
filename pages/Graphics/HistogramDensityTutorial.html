@@ -1,154 +1,201 @@
 <!DOCTYPE html>
-<html><head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<title>Histogram and Kernel Density Estimation Tutorial</title>
-<style type="text/css">
-body, td {
-   font-family: sans-serif;
-   background-color: white;
-   font-size: 14px;
-   margin: 8px;
-   width: 800px;
-}
-tt, code, pre {
-   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
-}
-h1 { font-size:2.2em; }
-h2 { font-size:1.8em; }
-h3 { font-size:1.4em; }
-h4 { font-size:1.0em; }
-h5 { font-size:0.9em; }
-h6 { 
-   font-size:0.8em; 
-}
-a:visited {
-   color: rgb(50%, 0%, 50%);
-}
-pre {	
-   font-size: 0.9em;
-   margin-top: 0;
-   max-width: 95%;
-   border: 1px solid #ccc;
-   white-space: pre-wrap;
-}
-pre code {
-   display: block; padding: 0.5em;
-}
-code.r, code.java {
-   background-color: #F8F8F8;
-}
-table, td, th {
-  border: none;
-}
-blockquote {
-   color:#666666;
-   margin:0;
-   padding-left: 1em;
-   border-left: 0.5em #EEE solid;
-}
-hr {
-   height: 0px;
-   border-bottom: none;
-   border-top-width: thin;
-   border-top-style: dotted;
-   border-top-color: #999999;
-}
-@media print {
-   * { 
-      background: transparent !important; 
-      color: black !important; 
-      filter:none !important; 
-      -ms-filter: none !important; 
-   }
-   body { 
-      font-size:12pt; 
-      max-width:100%; 
-   }
-       
-   a, a:visited { 
-      text-decoration: underline; 
-   }
-   hr { 
-      visibility: hidden;
-      page-break-before: always;
-   }
-   pre, blockquote { 
-      padding-right: 1em; 
-      page-break-inside: avoid; 
-   }
-   tr, img { 
-      page-break-inside: avoid; 
-   }
-   img { 
-      max-width: 100% !important; 
-   }
-   @page :left { 
-      margin: 15mm 20mm 15mm 10mm; 
-   }
-     
-   @page :right { 
-      margin: 15mm 10mm 15mm 20mm; 
-   }
-   p, h2, h3 { 
-      orphans: 3; widows: 3; 
-   }
-   h2, h3 { 
-      page-break-after: avoid; 
-   }
-}
-</style>
-<!-- Styles for R syntax highlighter -->
-<style type="text/css">
-   pre .operator,
-   pre .paren {
-     color: rgb(104, 118, 135)
-   }
-   pre .literal {
-     color: rgb(88, 72, 246)
-   }
-   pre .number {
-     color: rgb(0, 0, 205);
-   }
-   pre .comment {
-     color: rgb(76, 136, 107);
-   }
-   pre .keyword {
-     color: rgb(0, 0, 255);
-   }
-   pre .identifier {
-     color: rgb(0, 0, 0);
-   }
-   pre .string {
-     color: rgb(3, 106, 7);
-   }
-</style>
-<!-- R syntax highlighter -->
-<script type="text/javascript">
+<!--
+  ~ Apache License
+  ~ Version 2.0, January 2004
+  ~ http://www.apache.org/licenses/
+  ~
+  ~    Copyright 2013 Aurelian Tutuianu
+  ~
+  ~    Licensed under the Apache License, Version 2.0 (the "License");
+  ~    you may not use this file except in compliance with the License.
+  ~    You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~    Unless required by applicable law or agreed to in writing, software
+  ~    distributed under the License is distributed on an "AS IS" BASIS,
+  ~    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~    See the License for the specific language governing permissions and
+  ~    limitations under the License.
+  -->
+
+<html>
+<lines>
+    <experimental http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Histogram and Kernel Density Estimation Tutorial</title>
+    <style getType="text/css">
+        body, td {
+        font-family: sans-serif;
+        background-color: white;
+        font-size: 14px;
+        margin: 8px;
+        width: 800px;
+        }
+        tt, code, pre {
+        font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+        }
+        h1 { font-size:2.2em; }
+        h2 { font-size:1.8em; }
+        h3 { font-size:1.4em; }
+        h4 { font-size:1.0em; }
+        h5 { font-size:0.9em; }
+        h6 {
+        font-size:0.8em;
+        }
+        a:visited {
+        color: rgb(50%, 0%, 50%);
+        }
+        pre {
+        font-size: 0.9em;
+        margin-top: 0;
+        max-width: 95%;
+        border: 1px solid #ccc;
+        white-space: pre-wrap;
+        }
+        pre code {
+        display: block; padding: 0.5em;
+        }
+        code.r, code.java {
+        background-color: #F8F8F8;
+        }
+        table, td, th {
+        border: none;
+        }
+        blockquote {
+        color:#666666;
+        margin:0;
+        padding-left: 1em;
+        border-left: 0.5em #EEE solid;
+        }
+        hr {
+        height: 0px;
+        border-bottom: none;
+        border-top-width: thin;
+        border-top-style: dotted;
+        border-top-color: #999999;
+        }
+        @media print {
+        * {
+        background: transparent !important;
+        color: black !important;
+        filter:none !important;
+        -ms-filter: none !important;
+        }
+        body {
+        font-size:12pt;
+        max-width:100%;
+        }
+
+        a, a:visited {
+        text-decoration: underline;
+        }
+        hr {
+        visibility: hidden;
+        page-break-before: always;
+        }
+        pre, blockquote {
+        padding-right: 1em;
+        page-break-inside: avoid;
+        }
+        tr, img {
+        page-break-inside: avoid;
+        }
+        img {
+        max-width: 100% !important;
+        }
+        @page :left {
+        margin: 15mm 20mm 15mm 10mm;
+        }
+
+        @page :right {
+        margin: 15mm 10mm 15mm 20mm;
+        }
+        p, h2, h3 {
+        orphans: 3; widows: 3;
+        }
+        h2, h3 {
+        page-break-after: avoid;
+        }
+        }
+    </style>
+    <!-- Styles for R syntax highlighter -->
+    <style getType="text/css">
+        pre .operator,
+        pre .paren {
+        color: rgb(104, 118, 135)
+        }
+        pre .literal {
+        color: rgb(88, 72, 246)
+        }
+        pre .number {
+        color: rgb(0, 0, 205);
+        }
+        pre .comment {
+        color: rgb(76, 136, 107);
+        }
+        pre .keyword {
+        color: rgb(0, 0, 255);
+        }
+        pre .identifier {
+        color: rgb(0, 0, 0);
+        }
+        pre .string {
+        color: rgb(3, 106, 7);
+        }
+    </style>
+    <!-- R syntax highlighter -->
+    <script getType="text/javascript">
 var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.getValue!==undefined&&C.getValue!==false&&C.getValue!==null){A+='="'+m(C.getValue)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.getIndex-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.getIndex-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.getValue}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,getValue:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,getValue:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,getValue:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.getValue;y.getValue=k(q,c(s),x)}y.getValue=i(y.getValue,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.getValue+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.getValue}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.cpp=function(){var a={keyword:{"false":1,"int":1,"float":1,"while":1,"private":1,"char":1,"catch":1,"export":1,virtual:1,operator:2,sizeof:2,dynamic_cast:2,typedef:2,const_cast:2,"const":1,struct:1,"for":1,static_cast:2,union:1,namespace:1,unsigned:1,"long":1,"throw":1,"volatile":2,"static":1,"protected":1,bool:1,template:1,mutable:1,"if":1,"public":1,friend:2,"do":1,"return":1,"goto":1,auto:1,"void":2,"enum":1,"else":1,"break":1,"new":1,extern:1,using:1,"true":1,"class":1,asm:1,"case":1,typeid:1,"short":1,reinterpret_cast:2,"default":1,"double":1,register:1,explicit:1,signed:1,typename:1,"try":1,"this":1,"switch":1,"continue":1,wchar_t:1,inline:1,"delete":1,alignof:1,char16_t:1,char32_t:1,constexpr:1,decltype:1,noexcept:1,nullptr:1,static_assert:1,thread_local:1,restrict:1,_Bool:1,complex:1},built_in:{std:1,string:1,cin:1,cout:1,cerr:1,clog:1,stringstream:1,istringstream:1,ostringstream:1,auto_ptr:1,deque:1,list:1,queue:1,stack:1,vector:1,map:1,set:1,bitset:1,multiset:1,multimap:1,unordered_set:1,unordered_map:1,unordered_multiset:1,unordered_multimap:1,array:1,shared_ptr:1}};return{dM:{k:a,i:"</",c:[hljs.CLCM,hljs.CBLCLM,hljs.QSM,{cN:"string",b:"'\\\\?.",e:"'",i:"."},{cN:"number",b:"\\b(\\d+(\\.\\d*)?|\\.\\d+)(u|U|l|L|ul|UL|f|F)"},hljs.CNM,{cN:"preprocessor",b:"#",e:"$"},{cN:"stl_container",b:"\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",e:">",k:a,r:10,c:["self"]}]}}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
 hljs.initHighlightingOnLoad();
-</script>
-<!-- MathJax scripts -->
-<script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-</head>
+
+    </script>
+    <!-- MathJax scripts -->
+    <script getType="text/javascript"
+            src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+</lines>
 <body>
-<p><a href="../../index.html">Back</a></p><h1>Histogram and Kernel Density Estimation Tutorial</h1>
+<p><a href="../../index.html">Back</a></p>
+
+<h1>Histogram and Kernel Density Estimation Tutorial</h1>
+
 <h3>Data set used</h3>
-<p>First we need to load a frame with data. For convenience we don't use input/output facilities. Instead, we load a set of data already built-in the library.</p><p>We will use the classical Pearson father-son data set. </p><pre><code class="Java">>>summary(frame, [Father, Son])
-rows: 1078, cols: 2
-          Father               Son 
-   Min. : 59.000     Min. : 58.500 
-1st Qu. : 65.800  1st Qu. : 66.900 
- Median : 67.800   Median : 68.600 
-   Mean : 67.687     Mean : 68.684 
-2nd Qu. : 69.600  2nd Qu. : 70.500 
-   Max. : 75.400     Max. : 78.400 
-                                   
+
+<p>First we need to load a frame with data. For convenience we don't use input/output facilities. Instead, we load a set
+    of data already built-in the library.</p>
+
+<p>We will use the classical Pearson father-son data set. </p><pre><code class="Java">> summary(frame, [Father, Son])
+    rowCount: 1078, colCount: 2
+    Father Son
+    Min. : 59.000 Min. : 58.500
+    1st Qu. : 65.800 1st Qu. : 66.900
+    Median : 67.800 Median : 68.600
+    Mean : 67.687 Mean : 68.684
+    2nd Qu. : 69.600 2nd Qu. : 70.500
+    Max. : 75.400 Max. : 78.400
+
 </code></pre>
-<p>We have two continuous random variables which observes height of pairs of father and sons. </p><p>The 5-number summaries gives us some hints on how the distribution of the values for the 2 random variables looks like. We note that the mean and median are very close which leads us to think that the distribution of the values are somehow symmetric. </p><h3>Histograms</h3>
-<p>One of the most important and usual tools to obtain information about the distribution of a random variable is histogram. </p><p>In statistics, a histogram is a graphical representation of the distribution of data. It is an estimate of the probability distribution of a continuous variable and was first introduced by Karl Pearson. A histogram is a representation of tabulated frequencies, shown as adjacent rectangles, erected over discrete intervals (bins), with an area equal to the frequency of the observations in the interval. </p><p>We draw histograms with Rapaio toolbox in the following way:</p><pre><code class="Java">        draw(new Histogram(df.getCol("Father")));
+<p>We have two continuous random variables which observes height of pairs of father and sons. </p>
+
+<p>The 5-number summaries gives us some hints on how the distribution of the values for the 2 random variables looks
+    like. We note that the mean and median are very close which leads us to think that the distribution of the values
+    are somehow symmetric. </p>
+
+<h3>Histograms</h3>
+
+<p>One of the most important and usual tools to obtain information about the distribution of a random variable is
+    histogram. </p>
+
+<p>In statistics, a histogram is a graphical representation of the distribution of data. It is an estimate of the
+    probability distribution of a continuous variable and was first introduced by Karl Pearson. A histogram is a
+    representation of tabulated frequencies, shown as adjacent rectangles, erected over discrete intervals (bins), with
+    an area equal to the frequency of the observations in the interval. </p>
+
+<p>We draw histograms with Rapaio toolbox in the following way:</p><pre><code class="Java"> draw(new
+    Histogram(df.getCol("Father")));
 </code></pre>
-<p><center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAWA0lEQVR42u3db2Rc2f/A8aWioiJK
+<p>
+<center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAWA0lEQVR42u3db2Rc2f/A8aWioiJK
 RVWsWiKqqqJEVa2vKnmwoqrCPqiqirCi1j5YpVbFyoNlrbVq1VL7XVVVZVVVrVXyraiIChF5EBVL
 VEWsChUVVXV/v89lxjRNZvJnZnJv5vXm2JlMuvl87j3nvOece+65nyQAACD3fOIQAABA6AAAgNAB
 AAChAwAAQgcAgNAzzPz8fPLs2bO0LC0tOcsAAELPOiHtY8eOFd9fvXo1+eSTT5J9+/Ylra2t6evb
@@ -247,10 +294,19 @@ yiMv7XwjeVSrnRN6GaKSRMWP6bdo4J9//nm6ErbAt99+W/w8Tlq8z/K33RhVxMKfuBfy7t27xc/i
 delz5Asli429XB6xqKT0fEQnHdNxeTsflepdXvIIYio7PsvDaHCtPPLUzssd7zy183J55Kmdl8uj
 Fu2c0CsQlT2mQtaq9PHzycnJzE6/rYx1eno6k99kq5VHfBbXomJ1ct7zKFfv1Kv6n4+8tPNG6Zfz
 0s634hdCBwCgASF0AAAIHQAAEDoAACB0AABA6AAAEDoAACB0AABA6AAAgNABACB0AABA6AAAgNAB
-AAChAwBA6AAAgNABAAChAwAAQgcAgNABAECW+T8n1RyMfdBl+AAAAABJRU5ErkJggg==" alt="graphics"/></center></p>
-<p>The height of a rectangle is also equal to the frequency density of the interval, i.e., the frequency divided by the width of the interval. The total area of the histogram is equal to the number of data. </p><p>The previous code uses the simplest form of building a histogram. There are some parameters which can help somebody to tune the output. </p><p>One can change the number of bins. </p><pre><code class="Java">        draw(new Histogram(df.getCol("Father"), 100, false));
+AAChAwBA6AAAgNABAAChAwAAQgcAgNABAECW+T8n1RyMfdBl+AAAAABJRU5ErkJggg==" alt="graphics"/></center>
+</p>
+<p>The height of a rectangle is also equal to the frequency density of the interval, i.e., the frequency divided by the
+    width of the interval. The total area of the histogram is equal to the number of data. </p>
+
+<p>The previous code uses the simplest form of building a histogram. There are some parameters which can help somebody
+    to tune the output. </p>
+
+<p>One can change the number of bins. </p><pre><code class="Java"> draw(new Plot().add(new
+    Histogram(df.getCol("Father"), 100, false)));
 </code></pre>
-<p><center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAW6UlEQVR42u3df4RV+f/A8SUjGRlD
+<p>
+<center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAW6UlEQVR42u3df4RV+f/A8SUjGRlD
 MsZIIhnJGLGSJBn6IyvJkrVWVvafrLV/rFhJVn98WFnZP1ZkP1nJWrKS9MfSdyVJhpH+yEiMjDEy
 YoxkJOf7fR3fe83Pe+fO/THnfe/jyVvzuuc2c1/3vN/ned7v8z7v80kGAACS5xNfAQAAhA4AAAgd
 AAAQOgAAIHQAAAgdAAAQOgAAIHQAAEDoAAAQOgAAIHQAAEDoAACgc4T+7t277P379/YwAIDQU+Hx
@@ -353,9 +409,17 @@ VNp5tTxSaee15NGodk7oFYhKEhU/ht+igR8+fDifCVvihx9+KG+PnRZxkc92o1cRE3/iXsg///yz
 vC1+jjPDpaWIjb1SHjGpZOH+iIN0DMeltj+q1btU8ghiKDu2pdAbXC2PlNp5pe87pXZeKY+U2nml
 PJrRzgm9ClHZYyhktUofr4+NjRV2+G3pZ33+/Hkhz2QblUdsi2tRMTs59Twq1Tv1qvX7I5V23inH
 5VTaeT1+IXQAADoQQgcAgNABAAChAwAAQgcAAIQOAAChAwAAQgcAAIQOAAAIHQAAQgcAAIQOAAAI
-HQAAEDoAAIQOAAAIHQAAEDoAACB0AAAIHQAAFJn/Bb2+rvbxiRANAAAAAElFTkSuQmCC" alt="graphics"/></center></p>
-<p>Note that on the vertical axis we found the count of the elements which are held by the bins that are displayed. We can change how the heights of the bins are computed into densities which makes the total area under curve to be 1. That feature is a key property of a probability density function, also.</p><p>        draw(new Histogram(df.getCol("Father"), 30, true));
-</p><p><center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAWA0lEQVR42u3db2Rc2f/A8aWioiJK
+HQAAEDoAAIQOAAAIHQAAEDoAACB0AAAIHQAAFJn/Bb2+rvbxiRANAAAAAElFTkSuQmCC" alt="graphics"/></center>
+</p>
+<p>Note that on the vertical axis we found the count of the elements which are held by the bins that are displayed. We
+    can change how the heights of the bins are computed into densities which makes the total area under curve to be 1.
+    That feature is a key property of a probability density function, also.</p>
+
+<p> draw(new Plot().add(new Histogram(df.getCol("Father"), 30, true)));
+</p>
+
+<p>
+<center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAWA0lEQVR42u3db2Rc2f/A8aWioiJK
 RVWsWiKqqqJEVa2vKnmwoqrCPqiqirCi1j5YpVbFyoNlrbVq1VL7XVVVZVVVrVXyraiIChF5EBVL
 VEWsChUVVXV/v89lxjRNZvJnZnJv5vXm2JlMuvl87j3nvOece+65nyQAACD3fOIQAABA6AAAgNAB
 AAChAwAAQgcAgNAzzPz8fPLs2bO0LC0tOcsAAELPOiHtY8eOFd9fvXo1+eSTT5J9+/Ylra2t6evb
@@ -454,13 +518,28 @@ yiMv7XwjeVSrnRN6GaKSRMWP6bdo4J9//nm6ErbAt99+W/w8Tlq8z/K33RhVxMKfuBfy7t27xc/i
 delz5Asli429XB6xqKT0fEQnHdNxeTsflepdXvIIYio7PsvDaHCtPPLUzssd7zy183J55Kmdl8uj
 Fu2c0CsQlT2mQtaq9PHzycnJzE6/rYx1eno6k99kq5VHfBbXomJ1ct7zKFfv1Kv6n4+8tPNG6Zfz
 0s634hdCBwCgASF0AAAIHQAAEDoAACB0AABA6AAAEDoAACB0AABA6AAAgNABACB0AABA6AAAgNAB
-AAChAwBA6AAAgNABAAChAwAAQgcAgNABAECW+T8n1RyMfdBl+AAAAABJRU5ErkJggg==" alt="graphics"/></center></p>
-<p>The histogram is useful but have a weak point. Its weak point lies into it's flexibility given by the number of bins. There is no "best" number of bins, and different bin sizes can reveal different features of the data. </p><p>Some theoreticians have attempted to determine an optimal number of bins, but these methods generally make strong assumptions about the shape of the distribution. Depending on the actual data distribution and the goals of the analysis, different bin widths may be appropriate, so experimentation is usually needed to determine an appropriate width. </p><p>An alternative to the histogram is kernel density estimation, which uses a kernel to smooth samples. This will construct a smooth probability density function, which will in general more accurately reflect the underlying variable.</p><p>One can draw also the kernel density approximation, over a histogram or as a separate plot.</p><pre><code class="Java">        final Vector col = df.getCol("Father");
-        draw(new Plot()
-                .add(new HistogramBars(col).setColorIndex(new IndexVector(1, 255, 1)))
-                .add(new DensityLine(col)));
+AAChAwBA6AAAgNABAAChAwAAQgcAgNABAECW+T8n1RyMfdBl+AAAAABJRU5ErkJggg==" alt="graphics"/></center>
+</p>
+<p>The histogram is useful but have a weak point. Its weak point lies into it's flexibility given by the number of bins.
+    There is no "best" number of bins, and different bin sizes can reveal different features of the data. </p>
+
+<p>Some theoreticians have attempted to determine an optimal number of bins, but these methods generally make strong
+    assumptions about the shape of the distribution. Depending on the actual data distribution and the goals of the
+    analysis, different bin widths may be appropriate, so experimentation is usually needed to determine an appropriate
+    width. </p>
+
+<p>An alternative to the histogram is kernel density estimation, which uses a kernel to smooth samples. This will
+    construct a smooth probability density function, which will in general more accurately reflect the underlying
+    variable.</p>
+
+<p>One can draw also the kernel density approximation, over a histogram or as a separate plot.</p><pre><code
+        class="Java"> final Vector getCol = df.getCol("Father");
+    draw(new Plot()
+    .add(new HistogramBars(getCol).setColorIndex(new IndexVector(1, 255, 1)))
+    .add(new DensityLine(getCol)));
 </code></pre>
-<p><center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAig0lEQVR42u2dD2wU153HIYAii+N8
+<p>
+<center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAig0lEQVR42u2dD2wU153HIYAii+N8
 JqmhxErcJI7LIaA+dK7L5RJAUAKOQ1HOuqRBQCPqU2VoGqUVV9QaQ0iVNoqISXMkLSo5l0MRScOl
 HCqQxIncHOWMEwuhCiEUBVnIQhVCQogihNC7/T4zy3i9Ozu7nt2dmf18qifvv5J9O++9z/ze33EG
 AAAAIs84fgIAAACEDgAAAAgdAAAAEDoAAAAgdAAAAIQeYoaGhkxfX59Nly9f5ioDAABCDzuS9rx5
@@ -616,8 +695,22 @@ tesRlfqR7XtqbbBmUet1LWHT59zL2MKEhg6Uh3REqX545SNK9cMrH378gtADRoVdXSFehV7vnTx5
 MtTrbbPlQ68PDAyEeilOlH7vseZD72lMLYw7kuV6PaJyvbJ9T43RunuzoLTXKir1Y6x+QegAAABl
 BkIHAABA6AAAAIDQAQAAAKEDAAAAQgcAAEDoAAAAgNABAAAAoQMAAABCBwAAQOgAAACA0AEAAACh
 AwAAAEIHAABA6AAAAIDQAQAAAKEDAAAAQgcAAEDoAAAAEGb+HyNyqPE4RwIsAAAAAElFTkSuQmCC
-" alt="graphics"/></center></p>
-<p>In statistics, kernel density estimation (KDE) is a non-parametric way to estimate the probability density function of a random variable. Kernel density estimation is a fundamental data smoothing problem where inferences about the population are made, based on a finite data sample. In some fields such as signal processing and econometrics it is also termed the Parzen–Rosenblatt window method, after Emanuel Parzen and Murray Rosenblatt, who are usually credited with independently creating it in its current form.</p><p>In it's default implementation, used without parameters, the Rapaio toolbox build a kernel density estimation with Gaussian kernels and with bandwidth approximated by Silverman's rule of thumb.</p><p>However one can use a different value for bandwidth in order to obtain a smooth or less smooth approximation of the density function.</p><p><center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAEsCAYAAAAfPc2WAABVqklEQVR42u29C3RUVZ7/e26M/75c
+" alt="graphics"/></center>
+</p>
+<p>In statistics, kernel density estimation (KDE) is a non-parametric way to estimate the probability density function
+    of a random variable. Kernel density estimation is a fundamental data smoothing problem where inferences about the
+    population are made, based on a finite data sample. In some fields such as signal processing and econometrics it is
+    also termed the Parzen–Rosenblatt window method, after Emanuel Parzen and Murray Rosenblatt, who are usually
+    credited with independently creating it in its current form.</p>
+
+<p>In it's default implementation, used without parameters, the Rapaio toolbox learn a kernel density estimation with
+    Gaussian kernels and with bandwidth approximated by Silverman's rule of thumb.</p>
+
+<p>However one can use a different getValue for bandwidth in order to obtain a smooth or less smooth approximation of
+    the density function.</p>
+
+<p>
+<center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAEsCAYAAAAfPc2WAABVqklEQVR42u29C3RUVZ7/e26M/75c
 LpfF1UWrg/5Z3svl7/jXCCiNDNMDAYWAiDzbBw9FCCRpF4SXtA0hUSCAI8pIQkBARLABR21Iwhuk
 0QEkBTHSQgNjD2I6w9As1njRxc2qKfc9v31qn9rn1HnVM/X4fs/aVKpSnNRv1z57f85v//ZvKwyC
 IAiCIAiKqxRUAQRBEARBEAALgiAIgiAIgAVBEARBEATAgiAIgiAIggBYEARBEARBACwIgiAIgiAA
@@ -1002,8 +1095,16 @@ uXP139OXRs9T+e6D7lYpAJZyf8gBofQzXRTmkooXu5MdVjakqkfOyY506rDc7PBqZ6rbQVNv9Lt0
 FJ+Vsgenel4i2JFZdqSLndnwfaRTf+UmmlZLVbCCMnO8B2BBEARBEAS1sQBYEARBEARBACwIgiAI
 giAAFgRBEARBEAALgiAIgiAIAmBBEARBEAQBsCAIgiAIggBYEARBEARBEAALgiAIgiAIgAVBEARB
 EATAgiAIgiAIggBYEARBEARBACwIgiAIgiAAFgRBEARBEAALgiAIgiAIAmBBEARBEAQBsCAIgiAI
-ggBYEARBEARBEAALgiAIgiAoFfT/A2MPWkGDSjvEAAAAAElFTkSuQmCC" alt="graphics"/></center></p>
-<p>Another thing one can try with kernel density estimator is to change the kernel function, which is the function used to disperse in a small neighborhood around a point the probability mass initially assigned to the points of the discrete sample. The kernel choices are: uniform, triangular, Epanechnikov, biweight, triweight, tricube, Gaussian and cosine. Of course, it is easy to implement your own smoothing method once you implement a custom kernel function. </p><p><center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAxYUlEQVR42u2dCZBU1dXHI4hICCKK
+ggBYEARBEARBEAALgiAIgiAoFfT/A2MPWkGDSjvEAAAAAElFTkSuQmCC" alt="graphics"/></center>
+</p>
+<p>Another thing one can try with kernel density estimator is to change the kernel function, which is the function used
+    to disperse in a small neighborhood around a point the probability mass initially assigned to the points of the
+    discrete sample. The kernel choices are: uniform, triangular, Epanechnikov, biweight, triweight, tricube, Gaussian
+    and cosine. Of course, it is easy to implement your own smoothing method once you implement a custom kernel
+    function. </p>
+
+<p>
+<center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAxYUlEQVR42u2dCZBU1dXHI4hICCKK
 iAYRMUhQQRHDMiSfuARkADcg4gYYcRQRUcAlSgABB1CRHVyRRVb1U0E2WVTEAYZNQMUUUiISirIo
 Ej9FRBzv9/53+jWve3qbvV/371f1qnu6e2b63nff/b9z7rnn/MYAAACA7/kNXQAAAICgAwAAAIIO
 AAAACDoAAAAg6AAAAAh6FL777jtz7Nix4M979uwxO3bsMN9++y29DQAA4AdBb9y4sfnNb35jjwUL
@@ -1225,8 +1326,20 @@ CLpcS7oI5RbUxKOoQgWCJPq+H9ukPem6s5M7R4EvCpzzy523vqsGub67N/BDzzXQw49kn1hjtcmv
 k2qsNvl17GkZQe2JhF/HXqw2+XXsxWtTom1OFuJdL26MlF7XvN+oUaOIBkHaCLrbKXJLR7sA473v
 xza57hnd6cXbB51s7VJmJD99Z9qUGmMPoLyId70cOnSo1ITcd4IOAAAACDoAAACCDgAAAAg6AAAA
 IOgAAACAoAMAACDoAAAAgKADAAAAgg4AAAAIOgAAAIIOAAAACDoAAAAg6AAAAICgAwAAIOgAAACA
-oAMAAACCDgAAAAg6AAAAgg4AAAD+5P8BGmjuVq5i0rIAAAAASUVORK5CYII=" alt="graphics"/></center></p>
-<p>We could agree that my implementation of kernel function is ugly and maybe no so useful, however you have to know that the purpose of Rapaio toolbox is to give you sharp and precise standard tools and, in the same time, the opportunity to experiment with your owns.</p><p>One final graph will show the kernel approximation of density functions for both numerical variables that we have: father's heights and son's heights.</p><p>Blue line represents density approximation of father's heights, red line represents density approximation of son's heights.</p><p><center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAgN0lEQVR42u3dDWhVZ57H8YKEIYiE
+oAMAAACCDgAAAAg6AAAAgg4AAAD+5P8BGmjuVq5i0rIAAAAASUVORK5CYII=" alt="graphics"/></center>
+</p>
+<p>We could agree that my implementation of kernel function is ugly and maybe no so useful, however you have to know
+    that the purpose of Rapaio toolbox is to give you sharp and precise standard tools and, in the same time, the
+    opportunity to experiment with your owns.</p>
+
+<p>One final graph will show the kernel approximation of density functions for both numerical variables that we have:
+    father's heights and son's heights.</p>
+
+<p>Blue line represents density approximation of father's heights, red line represents density approximation of son's
+    heights.</p>
+
+<p>
+<center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAgN0lEQVR42u3dDWhVZ57H8YKEIYiE
 gIShhI5rCTIUkaxLcIZh6k47G4ZBhm43UGbdNikSRqRTysyaMsuU0HWdbrsda19GBmpsndbp2paO
 K/WlKakm0bUxNd5ETbuObbQxXjWN2kyMGZs+e/9Pcm5u4n05r/ee59zvBw4xuWl6n3vPPb/zPOd5
 /uc2BQAAjHcbLwEAAAQ6AAAg0AEAAIEOAAAIdAAACPQMrl27pm7evJn8fmBgQPX19alLly7xagMA
@@ -1371,5 +1484,11 @@ VOXfYT/pytWmVKYMe+Zqk4n7npD2SK8u9bOV2pMybd/L1SYT9z07bbLb5rDI9Xl54okn9FI2a226
 o8/dwn5gzdYmUw+q2dpk6r4nlxGkPemYuu9la5Op+16uNtltc1jk+rxYc6Tk53Lc//a3v522Q1A0
 gW69KDIsnekDmOtxE9tkDc/ImV6uddBha5dURjLpOdOmaOx7QKHk+ryMjIwEFuTGBToAACDQAQAg
 0AEAAIEOAAAIdAAAQKADAECgAwAAAh0AABDoAACAQAcAgEAHAAAEOgAAINABAACBDgAAgQ4AAAh0
-AABAoAMAAAIdAAACHQAAmOn/AUzqAPSEpko4AAAAAElFTkSuQmCC" alt="graphics"/></center></p>
-<p>Note: the sole purpose of this tutorial is to show what and how it can be done with Rapaio toolbox library. </p><p>>>>This tutorial is generated with Rapaio document printer facilities.<<<</p><br/><p><a href="../../index.html">Back</a></p></body></html>
+AABAoAMAAAIdAAACHQAAmOn/AUzqAPSEpko4AAAAAElFTkSuQmCC" alt="graphics"/></center>
+</p>
+<p>Note: the sole purpose of this tutorial is to show what and how it can be done with Rapaio toolbox library. </p>
+
+<p>>>>This tutorial is generated with Rapaio document printer facilities.<<<</p><br/>
+
+<p><a href="../../index.html">Back</a></p></body>
+</html>

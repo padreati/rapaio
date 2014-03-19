@@ -22,7 +22,7 @@
 <html>
 <lines>
     <experimental http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Rapaio Tutorials</title>
+    <title>Linear Regression: predict with a constant</title>
     <style getType="text/css">
         body, td {
         font-family: sans-serif;
@@ -155,52 +155,39 @@ hljs.initHighlightingOnLoad();
     </script>
 </lines>
 <body>
-<p></p>
+<p><a href="../../index.html">Back</a></p>
 
-<h1>Rapaio Tutorial Pages</h1>
+<h3>Linear Regression with vectors and matrices - part 1</h3>
 
-<p>This is the home page for Rapaio tutorials.</p>
+<p>This tutorial aims to present how one can do by hand linear regression using only vectors and matrices operations.
+    For practical purposes it should be used linear regression models. </p><h4>Predict with a constant</h4>
 
-<p>A rapaio tutorial page is a document generated with rapaio printer in order to exemplify how an analysis could be
-    accomplished using Rapaio statistical,data mining and machine learning toolbox.</p>
+<p>We will use the well-known data set Father-Son Heights. This data was collected by Karl Pearson and contains the
+    heights of the fathers and their full-grown sons, in England, circa 1900. </p>
 
-<p>Most of the tutorials will be strictly oriented on a small small rapaio facility. As a sample how one ca read and
-    write data with CVSPersistence. Other tutorials will be oriented on the pieces of output facilities useful in data
-    visualization, either as text or as graphical images. </p>
+<p>This data set is used to study the relation between the fathers and the sons heights. However for the purpose of this
+    tutorial we are interested only in the sons heights. </p><pre><code class="Java">> summary(frame, [Father, Son])
+    rowCount: 1078, colCount: 2
+    Father Son
+    Min. : 59.000 Min. : 58.500
+    1st Qu. : 65.800 1st Qu. : 66.900
+    Median : 67.800 Median : 68.600
+    Mean : 67.687 Mean : 68.684
+    2nd Qu. : 69.600 2nd Qu. : 70.500
+    Max. : 75.400 Max. : 78.400
 
-<p>There are also some tutorials which tries to do an exploration analysis, trying to put together the small pieces into
-    something fluent and understandable as a whole. However, So, these pages does not contain a full exploration
-    analysis or other getType of analysis. Its purpose is to illustrate how Rapaio toolbox could be used. They are not a
-    golden-standard for how an exploration must be conduct.</p>
+</code></pre>
+<h4>Question: Given collected sons heights, can we find a constant which can be used for prediction? </h4>
 
-<p>From time to time the whole tutorials will be regenerated and republished.</p>
+<p>First we get the heights of the sons in a numeric vector. </p><pre><code class="Java"> Frame df =
+    Datasets.loadPearsonHeightDataset();
+    Numeric sons = (Numeric) df.getCol("Son");
+</code></pre>
+<p>We </p>
+<pre><code class="Java">mean: 68.68423005565863</code></pre>
+<pre><code class="Java">variance: 7.930948849532209</code></pre>
+<pre><code class="Java">sd: 2.816194036200668</code></pre>
+<br/>
 
-<p>That happens because they will grow together with the library and its facilities. The tutorials are generated from
-    source code, using Rapaio library documenting facilities. The advantage of writing tutorials in this manner is that
-    they will remain comaptible with the last revision of the library, thus they will be up-to-date and ready for
-    immediate usage.</p>
-
-<p>Have fun on learning and using Rapaio.</p>
-
-<h2>Rapaio Tutorial Gallery</h2>
-
-<h3>Graphics</h3>
-<a href="pages/Graphics/HistogramDensityTutorial.html">Histogram and Kernel Density Estimation Tutorial</a></br><h3>
-    Regression</h3>
-<a href="pages/Regression/LinearRegression1.html">Linear Regression: predict with a constant</a></br><a
-        href="pages/Regression/LinearRegression2.html">Linear Regression: Simple linear regression</a></br><a
-        href="pages/Regression/LinearRegression.html">Linear Regression: Multiple linear regression</a></br><h3>
-    SampleAnalysis</h3>
-<a href="pages/SampleAnalysis/ExplorePearsonFatherSon.html">Explore Pearson Father Son Data</a></br><a
-        href="pages/SampleAnalysis/LawOfLargeNumbers.html">Explore Law of Large Numbers</a></br><h3>
-    StatisticalProcedures</h3>
-<a href="pages/StatisticalProcedures/DiscreteSampling.html">Discrete Sampling Tutorial</a></br><a
-        href="pages/StatisticalProcedures/Correlations.html">Correlations</a></br><a
-        href="pages/StatisticalProcedures/ROCCurves.html">ROC Curves</a></br><h3>SupervisedClassification</h3>
-<a href="pages/SupervisedClassification/ClassificationWithRandomForest.html">Classification with Random Forests</a></br>
-<h3>WorkInProgress</h3>
-<a href="pages/WorkInProgress/IrisExploration.html">Iris Exploration</a></br><a
-        href="pages/WorkInProgress/StudentTDistribution.html">Short story of a distribution: Student's T</a></br><br/>
-
-<p></p></body>
+<p><a href="../../index.html">Back</a></p></body>
 </html>
