@@ -152,7 +152,7 @@ public class HTMLPrinter extends AbstractPrinter {
 
 	@Override
 	public void code(String lines) {
-        writer.append("<pre><code class=\"R\">" + lines + "</code></pre>\n");
+        writer.append("<pre><code class=\"Java\">" + lines + "</code></pre>\n");
     }
 
 	@Override
@@ -174,8 +174,8 @@ class Template {
 			+ "<html><lines>\n"
 			+ "<experimental http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n"
 			+ "<title>#TITLE#</title>\n"
-			+ "<style getType=\"text/css\">\n"
-			+ "body, td {\n"
+            + "<style type=\"text/css\">\n"
+            + "body, td {\n"
 			+ "   font-family: sans-serif;\n"
 			+ "   background-color: white;\n"
 			+ "   font-size: 14px;\n"
