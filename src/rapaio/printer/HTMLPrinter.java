@@ -152,8 +152,8 @@ public class HTMLPrinter extends AbstractPrinter {
 
 	@Override
 	public void code(String lines) {
-		writer.append("<pre><code class=\"Java\">" + lines + "</code></pre>\n");
-	}
+        writer.append("<pre><code class=\"R\">" + lines + "</code></pre>\n");
+    }
 
 	@Override
 	public void p(String lines) {
