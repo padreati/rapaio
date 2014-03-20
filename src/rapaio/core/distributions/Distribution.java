@@ -21,8 +21,9 @@
 package rapaio.core.distributions;
 
 import rapaio.core.RandomSource;
-import rapaio.core.UnivariateFunction;
 import rapaio.data.Numeric;
+
+import java.util.function.Function;
 
 /**
  * @author Aurelian Tutuianu
@@ -60,24 +61,12 @@ public abstract class Distribution {
 
     abstract public double quantile(double p);
 
-    public UnivariateFunction getPdfFunction() {
-        return new UnivariateFunction() {
-
-            @Override
-            public double eval(double value) {
-                return pdf(value);
-            }
-        };
+    public Function<Double, Double> getPdfFunction() {
+        return (value) -> pdf(value);
     }
 
-    public UnivariateFunction getCdfFunction() {
-        return new UnivariateFunction() {
-
-            @Override
-            public double eval(double value) {
-                return cdf(value);
-            }
-        };
+    public Function<Double, Double> getCdfFunction() {
+        return (value) -> cdf(value);
     }
 
     abstract public double min();

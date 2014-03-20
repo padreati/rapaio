@@ -20,13 +20,13 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.core.UnivariateFunction;
 import rapaio.data.Numeric;
 import rapaio.data.Vector;
 import rapaio.graphics.base.Range;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.util.function.Function;
 
 import static rapaio.core.MathBase.validNumber;
 
@@ -35,14 +35,14 @@ import static rapaio.core.MathBase.validNumber;
  */
 public class FunctionLine extends PlotComponent {
 
-    private final UnivariateFunction f;
+    private final Function<Double, Double> f;
     private final int points;
 
-    public FunctionLine(UnivariateFunction f) {
+    public FunctionLine(Function<Double, Double> f) {
         this(f, 1024);
     }
 
-    public FunctionLine(UnivariateFunction f, int points) {
+    public FunctionLine(Function<Double, Double> f, int points) {
         this.f = f;
         this.points = points;
     }
@@ -72,7 +72,7 @@ public class FunctionLine extends PlotComponent {
         double xstep = (range.getX2() - range.getX1()) / points;
         for (int i = 0; i < x.rowCount(); i++) {
             x.setValue(i, range.getX1() + i * xstep);
-            y.setValue(i, f.eval(x.getValue(i)));
+            y.setValue(i, f.apply(x.getValue(i)));
         }
 
         for (int i = 1; i < x.rowCount(); i++) {

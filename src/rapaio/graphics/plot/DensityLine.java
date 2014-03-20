@@ -77,9 +77,9 @@ public class DensityLine extends PlotComponent {
                 xmax = MathBase.min(xmax, kde.getKernel().getMaxValue(vector.getValue(i), bandwidth));
             }
             if (ymax != ymax) {
-                ymax = kde.getPdfFunction().eval(vector.getValue(i));
+                ymax = kde.getPdfFunction().apply(vector.getValue(i));
             } else {
-                ymax = MathBase.min(ymax, kde.getPdfFunction().eval(vector.getValue(i)));
+                ymax = MathBase.min(ymax, kde.getPdfFunction().apply(vector.getValue(i)));
             }
         }
         // give some space
@@ -101,7 +101,7 @@ public class DensityLine extends PlotComponent {
         double xstep = (range.getX2() - range.getX1()) / points;
         for (int i = 0; i < x.rowCount(); i++) {
             x.setValue(i, range.getX1() + i * xstep);
-            y.setValue(i, kde.getPdfFunction().eval(x.getValue(i)));
+            y.setValue(i, kde.getPdfFunction().apply(x.getValue(i)));
         }
 
         for (int i = 1; i < x.rowCount(); i++) {

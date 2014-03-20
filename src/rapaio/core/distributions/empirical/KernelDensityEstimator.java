@@ -20,9 +20,10 @@
 
 package rapaio.core.distributions.empirical;
 
-import rapaio.core.UnivariateFunction;
 import rapaio.core.stat.Variance;
 import rapaio.data.Vector;
+
+import java.util.function.Function;
 
 import static rapaio.core.MathBase.pow;
 import static rapaio.core.MathBase.sqrt;
@@ -73,14 +74,8 @@ public class KernelDensityEstimator {
         return sum / (count * bandwidth);
     }
 
-    public UnivariateFunction getPdfFunction() {
-        return new UnivariateFunction() {
-
-            @Override
-            public double eval(double value) {
-                return pdf(value);
-            }
-        };
+    public Function<Double, Double> getPdfFunction() {
+        return this::pdf;
     }
 
     public KernelFunction getKernel() {
