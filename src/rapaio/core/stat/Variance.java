@@ -20,11 +20,10 @@
 
 package rapaio.core.stat;
 
-import rapaio.core.Summarizable;
+import rapaio.core.Printable;
 import rapaio.data.Vector;
 
 import static rapaio.core.MathBase.pow;
-import static rapaio.workspace.Workspace.code;
 
 /**
  * Compensated version of the algorithm for calculation of
@@ -35,7 +34,7 @@ import static rapaio.workspace.Workspace.code;
  * Date: 9/7/13
  * Time: 12:26 PM
  */
-public class Variance implements Summarizable {
+public class Variance implements Printable {
 
     private final Vector vector;
     private final double value;
@@ -75,8 +74,8 @@ public class Variance implements Summarizable {
     }
 
     @Override
-    public void summary() {
-        code(String.format("> variance\n%.10f", value));
+    public void buildSummary(StringBuilder sb) {
+        sb.append(String.format("> variance\n%.10f", value));
     }
 
 }

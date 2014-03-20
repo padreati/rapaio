@@ -47,7 +47,7 @@ public class Functional {
             weights.add((double) i);
         }
         Summary.summary(df);
-        List<FSpot> spots = df.stream().filter((spot) -> spot.getValue("origin") >= 2).toFSpotList();
+        List<FSpot> spots = df.stream().filter((spot) -> spot.getValue("origin") >= 2).collectFSpotList();
 
         Frame filtered = new FSpots(spots).toMappedFrame();
         Summary.summary(filtered);

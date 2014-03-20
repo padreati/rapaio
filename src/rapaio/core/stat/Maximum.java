@@ -20,11 +20,9 @@
 
 package rapaio.core.stat;
 
-import rapaio.core.Summarizable;
+import rapaio.core.Printable;
 import rapaio.data.Vector;
 import rapaio.data.stream.VSpot;
-
-import static rapaio.workspace.Workspace.code;
 
 /**
  * Finds the maximum getValue from a {@link Vector} of values.
@@ -35,7 +33,7 @@ import static rapaio.workspace.Workspace.code;
  * Date: 9/7/13
  * Time: 12:39 PM
  */
-public class Maximum implements Summarizable {
+public class Maximum implements Printable {
 
     private final Vector vector;
     private final double value;
@@ -46,8 +44,8 @@ public class Maximum implements Summarizable {
     }
 
     private double compute() {
-        if (vector.toStream().anyMatch((VSpot inst) -> !inst.isMissing())) {
-            return vector.toStream().complete().mapToDouble().count();
+        if (vector.stream().anyMatch((VSpot inst) -> !inst.isMissing())) {
+            return vector.stream().complete().mapToDouble().count();
         }
         return Double.NaN;
     }
@@ -57,7 +55,7 @@ public class Maximum implements Summarizable {
     }
 
     @Override
-    public void summary() {
-        code(String.format("maximum\n%.10f", value));
+    public void buildSummary(StringBuilder sb) {
+        sb.append(String.format("> maximum\n%.10f\n", value));
     }
 }

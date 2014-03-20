@@ -257,9 +257,21 @@ public class FSpots implements Stream<FSpot> {
         return filtered;
     }
 
-    public List<FSpot> toFSpotList() {
+    public List<FSpot> collectFSpotList() {
         final List<FSpot> list = new ArrayList<>();
-        forEach((spot) -> list.add(spot));
+        forEach(spot -> list.add(spot));
+        return list;
+    }
+
+    public List<Integer> collectRowList() {
+        final List<Integer> list = new ArrayList<>();
+        forEach(spot -> list.add(spot.row()));
+        return list;
+    }
+
+    public List<Integer> collectRowIdList() {
+        final List<Integer> list = new ArrayList<>();
+        forEach(spot -> list.add(spot.rowId()));
         return list;
     }
 

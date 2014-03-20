@@ -20,18 +20,17 @@
 
 package rapaio.core.stat;
 
-import rapaio.core.Summarizable;
+import rapaio.core.Printable;
 import rapaio.data.*;
 
 import static rapaio.core.MathBase.abs;
 import static rapaio.data.filters.BaseFilters.sort;
-import static rapaio.workspace.Workspace.code;
 
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class ROC implements Summarizable {
+public class ROC implements Printable {
 
     private final Vector score;
     private final Vector classes;
@@ -97,7 +96,7 @@ public class ROC implements Summarizable {
                 len++;
             }
         }
-        data = Frames.newMatrix(len, new String[]{"threshold", "fpr", "tpr", "acc"});
+        data = Frames.newMatrix(len, "threshold", "fpr", "tpr", "acc");
         prev = Double.POSITIVE_INFINITY;
         int pos = 0;
 
@@ -138,11 +137,7 @@ public class ROC implements Summarizable {
     }
 
     @Override
-    public void summary() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("ROC summary");
-
-        code(sb.toString());
+    public void buildSummary(StringBuilder sb) {
+        sb.append("> ROC summary\nnot implemented\n");
     }
 }

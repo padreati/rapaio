@@ -20,7 +20,7 @@
 
 package rapaio.workspace;
 
-import rapaio.core.Summarizable;
+import rapaio.core.Printable;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
@@ -390,7 +390,7 @@ public class Summary {
         // learn numerical columns
     }
 
-    public static void summary(Summarizable result) {
+    public static void summary(Printable result) {
         result.summary();
     }
 

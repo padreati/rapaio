@@ -39,7 +39,6 @@ import java.util.concurrent.Executors;
 
 import static rapaio.core.MathBase.log2;
 import static rapaio.core.MathBase.max;
-import static rapaio.workspace.Workspace.code;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -283,11 +282,9 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
     }
 
     @Override
-    public void summary() {
-        StringBuilder sb = new StringBuilder();
+    public void buildSummary(StringBuilder sb) {
         summaryDetails(sb);
         summaryVariableImportance(sb);
-        code(sb.toString());
     }
 
     private void summaryDetails(StringBuilder sb) {

@@ -31,7 +31,6 @@ import java.util.List;
 
 import static rapaio.core.MathBase.log;
 import static rapaio.core.MathBase.min;
-import static rapaio.workspace.Workspace.code;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -263,11 +262,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier<AdaBoostSAMMECla
     }
 
     @Override
-    public void summary() {
-        StringBuilder sb = new StringBuilder();
-        // title
+    public void buildSummary(StringBuilder sb) {
         sb.append("AdaBoostSAMME [t=").append(t).append("]\n");
         sb.append("weak learners built:").append(h.size()).append("\n");
-        code(sb.toString());
     }
 }

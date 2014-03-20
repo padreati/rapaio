@@ -20,12 +20,10 @@
 
 package rapaio.core.stat;
 
-import rapaio.core.Summarizable;
+import rapaio.core.Printable;
 import rapaio.data.Pin;
 import rapaio.data.Vector;
 import rapaio.data.stream.VSpot;
-
-import static rapaio.workspace.Workspace.code;
 
 /**
  * Compensated version of arithmetic mean of values from a {@code Vector}.
@@ -34,7 +32,7 @@ import static rapaio.workspace.Workspace.code;
  * Date: 9/7/13
  * Time: 12:21 PM
  */
-public final class Mean implements Summarizable {
+public final class Mean implements Printable {
 
     private final Vector vector;
     private final double value;
@@ -45,13 +43,13 @@ public final class Mean implements Summarizable {
     }
 
     private double compute() {
-        double count = vector.toStream().complete().mapToDouble().count();
+        double count = vector.stream().complete().mapToDouble().count();
         if (count == 0) {
             return Double.NaN;
         }
-        final double sum = vector.toStream().complete().mapToDouble().sum() / count;
+        final double sum = vector.stream().complete().mapToDouble().sum() / count;
         final Pin<Double> t = new Pin<>(0.0);
-        vector.toStream().complete().forEach((VSpot inst) -> t.set(t.get() + inst.getValue() - sum));
+        vector.stream().complete().forEach((VSpot inst) -> t.set(t.get() + inst.getValue() - sum));
         return sum + t.get() / count;
     }
 
@@ -60,7 +58,7 @@ public final class Mean implements Summarizable {
     }
 
     @Override
-    public void summary() {
-        code(String.format("> mean\n%.10f", value));
+    public void buildSummary(StringBuilder sb) {
+        sb.append(String.format("> mean\n%.10f\n", value));
     }
 }

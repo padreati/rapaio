@@ -114,6 +114,6 @@ public class Bagging extends AbstractClassifier<Bagging> {
     }
 
     @Override
-    public void summary() {
+    public void buildSummary(StringBuilder sb) {
     }
 }

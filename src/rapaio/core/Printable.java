@@ -20,23 +20,31 @@
 
 package rapaio.core;
 
+import rapaio.workspace.Workspace;
+
 /**
  * Interface implemented by all objects which outputs summaries about themselves
  * for exploratory purposes or for other reasons.
- * <p/>
+ * <p>
  * Implementations of this interface works directly with default printer and
  * does not returns a string format description due to various ways the output
  * is rendered by different printer implementations.
- * <p/>
+ * <p>
  * See also {@link rapaio.printer.Printer}
- * <p/>
+ * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface Summarizable {
+public interface Printable {
 
-	/**
-	 * Prints a summary of the object to the system printer configured
-	 * with {@link rapaio.workspace.Workspace#setPrinter(rapaio.printer.Printer)}.
-	 */
-	void summary();
+    /**
+     * Prints a summary of the object to the system printer configured
+     * with {@link rapaio.workspace.Workspace#setPrinter(rapaio.printer.Printer)}.
+     */
+    default void summary() {
+        StringBuilder sb = new StringBuilder();
+        buildSummary(sb);
+        Workspace.code(sb.toString());
+    }
+
+    void buildSummary(StringBuilder sb);
 }

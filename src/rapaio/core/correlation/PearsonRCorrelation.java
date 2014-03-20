@@ -20,7 +20,7 @@
 
 package rapaio.core.correlation;
 
-import rapaio.core.Summarizable;
+import rapaio.core.Printable;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
@@ -30,7 +30,6 @@ import java.util.Arrays;
 
 import static rapaio.core.MathBase.max;
 import static rapaio.core.MathBase.sqrt;
-import static rapaio.workspace.Workspace.code;
 import static rapaio.workspace.Workspace.getPrinter;
 
 /**
@@ -42,7 +41,7 @@ import static rapaio.workspace.Workspace.getPrinter;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class PearsonRCorrelation implements Summarizable {
+public class PearsonRCorrelation implements Printable {
 
     private final String[] names;
     private final Vector[] vectors;
@@ -102,37 +101,33 @@ public class PearsonRCorrelation implements Summarizable {
     }
 
     @Override
-    public void summary() {
-        if (vectors.length == 1) {
-            summaryOne();
-            return;
+    public void buildSummary(StringBuilder sb) {
+        switch (vectors.length) {
+            case 1:
+                summaryOne(sb);
+                break;
+            case 2:
+                summaryTwo(sb);
+                break;
+            default:
+                summaryMore(sb);
         }
-        if (vectors.length == 2) {
-            summaryTwo();
-            return;
-        }
-        summaryMore();
     }
 
-    private void summaryOne() {
-        StringBuilder sb = new StringBuilder();
+    private void summaryOne(StringBuilder sb) {
         sb.append(String.format("> pearson[%s] - Pearson product-moment correlation coefficient\n",
                 names[0]));
         sb.append("1\n");
-        sb.append("pearson correlation is 1 for identical vectors");
-        code(sb.toString());
+        sb.append("pearson correlation is 1 for identical vectors\n");
     }
 
-    private void summaryTwo() {
-        StringBuilder sb = new StringBuilder();
+    private void summaryTwo(StringBuilder sb) {
         sb.append(String.format("> pearson[%s, %s] - Pearson product-moment correlation coefficient\n",
                 names[0], names[1]));
-        sb.append(String.format("%.6f", pearson[0][1]));
-        code(sb.toString());
+        sb.append(String.format("%.6f\n", pearson[0][1]));
     }
 
-    private void summaryMore() {
-        StringBuilder sb = new StringBuilder();
+    private void summaryMore(StringBuilder sb) {
         sb.append(String.format("> pearson[%s] - Pearson product-moment correlation coefficient\n",
                 Arrays.deepToString(names)));
 
@@ -172,6 +167,5 @@ public class PearsonRCorrelation implements Summarizable {
             }
             start = end + 1;
         }
-        code(sb.toString());
     }
 }

@@ -20,10 +20,9 @@
 
 package rapaio.core.stat;
 
-import rapaio.core.Summarizable;
+import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Vector;
-import rapaio.workspace.Workspace;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,7 @@ import static rapaio.core.MathBase.abs;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class MAE implements Summarizable {
+public class MAE implements Printable {
     private final List<Vector> source;
     private final List<Vector> target;
     private double value;
@@ -80,7 +79,7 @@ public class MAE implements Summarizable {
     }
 
     @Override
-    public void summary() {
-        Workspace.code(String.format("MAE: %.6f", getValue()));
+    public void buildSummary(StringBuilder sb) {
+        sb.append(String.format("> mean absolute error\nMAE: %.6f\n", getValue()));
     }
 }

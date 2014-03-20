@@ -435,7 +435,7 @@ public final class BaseFilters {
             return (Numeric) v;
         }
         final Numeric result = new Numeric();
-        v.toStream().forEach((VSpot vi) -> {
+        v.stream().forEach((VSpot vi) -> {
             if (vi.isMissing()) {
                 result.addMissing();
             } else {
@@ -470,7 +470,7 @@ public final class BaseFilters {
             return (Index) v;
         }
         final Index result = new Index();
-        v.toStream().forEach((VSpot inst) -> {
+        v.stream().forEach((VSpot inst) -> {
             if (inst.isMissing()) {
                 result.addMissing();
             } else {
@@ -537,7 +537,7 @@ public final class BaseFilters {
         if (!vector.type().isNominal()) {
             throw new IllegalArgumentException("Vector is not isNominal.");
         }
-        vector.toStream().forEach((VSpot inst) -> {
+        vector.stream().forEach((VSpot inst) -> {
             if (missingValues.contains(inst.getLabel()))
                 inst.setMissing();
         });

@@ -24,13 +24,11 @@ import rapaio.data.Frame;
 import rapaio.data.Frames;
 import rapaio.data.Nominal;
 import rapaio.data.Vector;
-import rapaio.data.stream.FSpot;
 import rapaio.ml.AbstractClassifier;
 import rapaio.ml.Classifier;
 import rapaio.ml.tools.DensityVector;
 import rapaio.ml.tools.TreeCTest;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -145,32 +143,31 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
         pred = new Nominal(df.rowCount(), dict);
         dist = Frames.newMatrix(df.rowCount(), dict);
 
-        Iterator<FSpot> it = df.stream().iterator();
-        while (it.hasNext()) {
-            FSpot f = it.next();
-
-            if (test.testName() == null || f.isMissing(test.testName())) {
-                dist.setValue(f.row(), defaultIndex, 1.0);
-                pred.setLabel(f.row(), defaultLabel);
-                continue;
-            }
-            if (df.col(test.testName()).type().isNumeric()) {
-                if (f.getValue(test.testName()) <= test.splitValue()) {
-                    dist.setValue(f.row(), leftIndex, 1.0);
-                    pred.setLabel(f.row(), leftLabel);
+        List<Integer> missingRows = df.stream().filter(spot -> spot.isMissing()).collectRowList();
+        for (int row : missingRows) {
+            dist.setValue(row, defaultLabel, 1.0);
+            pred.setLabel(row, defaultLabel);
+        }
+        if (df.col(test.testName()).type().isNumeric()) {
+            df.col(test.testName()).stream().complete().forEach(spot -> {
+                if (spot.getValue() <= test.splitValue()) {
+                    dist.setValue(spot.row(), leftIndex, 1.0);
+                    pred.setLabel(spot.row(), leftLabel);
                 } else {
-                    dist.setValue(f.row(), rightIndex, 1.0);
-                    pred.setLabel(f.row(), rightLabel);
+                    dist.setValue(spot.row(), rightIndex, 1.0);
+                    pred.setLabel(spot.row(), rightLabel);
                 }
-            } else {
-                if (test.splitLabel().equals(f.getLabel(test.testName()))) {
-                    dist.setValue(f.row(), leftIndex, 1.0);
-                    pred.setLabel(f.row(), leftLabel);
+            });
+        } else {
+            df.col(test.testName()).stream().complete().forEach(spot -> {
+                if (test.splitLabel().equals(spot.getLabel())) {
+                    dist.setValue(spot.row(), leftIndex, 1.0);
+                    pred.setLabel(spot.row(), leftLabel);
                 } else {
-                    dist.setValue(f.row(), rightIndex, 1.0);
-                    pred.setLabel(f.row(), rightLabel);
+                    dist.setValue(spot.row(), rightIndex, 1.0);
+                    pred.setLabel(spot.row(), rightLabel);
                 }
-            }
+            });
         }
     }
 
@@ -185,7 +182,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
     }
 
     @Override
-    public void summary() {
+    public void buildSummary(StringBuilder sb) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

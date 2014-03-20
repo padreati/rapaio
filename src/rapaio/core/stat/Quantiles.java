@@ -20,12 +20,11 @@
 
 package rapaio.core.stat;
 
-import rapaio.core.Summarizable;
+import rapaio.core.Printable;
 import rapaio.data.Vector;
 
 import static rapaio.core.MathBase.floor;
 import static rapaio.data.filters.BaseFilters.sort;
-import static rapaio.workspace.Workspace.code;
 
 
 /**
@@ -38,7 +37,7 @@ import static rapaio.workspace.Workspace.code;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Quantiles implements Summarizable {
+public class Quantiles implements Printable {
 
     private final Vector vector;
     private final double[] percentiles;
@@ -94,12 +93,10 @@ public class Quantiles implements Summarizable {
     }
 
     @Override
-    public void summary() {
-        StringBuilder sb = new StringBuilder();
+    public void buildSummary(StringBuilder sb) {
         sb.append("> quantiles - estimated quantiles\n");
         for (int i = 0; i < quantiles.length; i++) {
             sb.append(String.format("quantile[%f = %f\n", percentiles[i], quantiles[i]));
         }
-        code(sb.toString());
     }
 }

@@ -28,7 +28,6 @@ import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
 import rapaio.ml.AbstractClassifier;
 import rapaio.ml.tools.DensityTable;
-import rapaio.workspace.Workspace;
 
 import java.util.*;
 
@@ -66,10 +65,8 @@ public class ID3Classifier extends AbstractClassifier<ID3Classifier> {
     }
 
     @Override
-    public void summary() {
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("\nID3(selection=");
+    public void buildSummary(StringBuilder sb) {
+        sb.append("> ID3(selection=");
         switch (selection) {
             case SELECTION_ENTROPY:
                 sb.append("entropy");
@@ -80,7 +77,6 @@ public class ID3Classifier extends AbstractClassifier<ID3Classifier> {
         }
         sb.append(")\n");
         summary(root, sb, 0);
-        Workspace.code(sb.toString());
     }
 
     private void summary(ID3ClassifierNode root, StringBuilder sb, int level) {

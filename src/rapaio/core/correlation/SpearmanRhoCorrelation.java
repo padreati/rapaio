@@ -20,7 +20,7 @@
 
 package rapaio.core.correlation;
 
-import rapaio.core.Summarizable;
+import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Vector;
@@ -29,7 +29,6 @@ import java.util.Arrays;
 
 import static rapaio.core.MathBase.max;
 import static rapaio.data.filters.BaseFilters.sort;
-import static rapaio.workspace.Workspace.code;
 import static rapaio.workspace.Workspace.getPrinter;
 
 /**
@@ -41,7 +40,7 @@ import static rapaio.workspace.Workspace.getPrinter;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class SpearmanRhoCorrelation implements Summarizable {
+public class SpearmanRhoCorrelation implements Printable {
 
     private final String[] names;
     private final Vector[] vectors;
@@ -98,37 +97,32 @@ public class SpearmanRhoCorrelation implements Summarizable {
     }
 
     @Override
-    public void summary() {
-        if (vectors.length == 1) {
-            summaryOne();
-            return;
+    public void buildSummary(StringBuilder sb) {
+        switch (vectors.length) {
+            case 1:
+                summaryOne(sb);
+                break;
+            case 2:
+                summaryTwo(sb);
+                break;
+            default:
+                summaryMore(sb);
         }
-        if (vectors.length == 2) {
-            summaryTwo();
-            return;
-        }
-        summaryMore();
     }
 
-    private void summaryOne() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("spearman[%s] - Spearman's rank correlation coefficient\n",
-                names[0]));
+    private void summaryOne(StringBuilder sb) {
+        sb.append(String.format("spearman[%s] - Spearman's rank correlation coefficient\n", names[0]));
         sb.append("1\n");
-        sb.append("spearman's rank correlation is 1 for identical vectors");
-        code(sb.toString());
+        sb.append("spearman's rank correlation is 1 for identical vectors\n");
     }
 
-    private void summaryTwo() {
-        StringBuilder sb = new StringBuilder();
+    private void summaryTwo(StringBuilder sb) {
         sb.append(String.format("spearman[%s, %s] - Spearman's rank correlation coefficient\n",
                 names[0], names[1]));
-        sb.append(String.format("%.6f", rho[0][1]));
-        code(sb.toString());
+        sb.append(String.format("%.6f\n", rho[0][1]));
     }
 
-    private void summaryMore() {
-        StringBuilder sb = new StringBuilder();
+    private void summaryMore(StringBuilder sb) {
         sb.append(String.format("spearman[%s] - Spearman's rank correlation coefficient\n",
                 Arrays.deepToString(names)));
 
@@ -168,6 +162,5 @@ public class SpearmanRhoCorrelation implements Summarizable {
             }
             start = end + 1;
         }
-        code(sb.toString());
     }
 }

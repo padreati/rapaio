@@ -174,5 +174,5 @@ public interface Vector extends Serializable {
 
     void ensureCapacity(int minCapacity);
 
-    public VSpots toStream();
+    public VSpots stream();
 }

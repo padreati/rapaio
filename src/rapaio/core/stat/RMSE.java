@@ -21,10 +21,9 @@
 package rapaio.core.stat;
 
 import rapaio.core.MathBase;
-import rapaio.core.Summarizable;
+import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Vector;
-import rapaio.workspace.Workspace;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,7 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class RMSE implements Summarizable {
+public class RMSE implements Printable {
 
     private final List<Vector> source;
     private final List<Vector> target;
@@ -80,8 +79,7 @@ public class RMSE implements Summarizable {
     }
 
     @Override
-    public void summary() {
-        // TODO summary for RMSE not implemented
-        Workspace.code("not implemented");
+    public void buildSummary(StringBuilder sb) {
+        sb.append("> not implemented\n");
     }
 }

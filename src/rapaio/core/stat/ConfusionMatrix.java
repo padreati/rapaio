@@ -21,14 +21,13 @@
 package rapaio.core.stat;
 
 import rapaio.core.MathBase;
-import rapaio.core.Summarizable;
+import rapaio.core.Printable;
 import rapaio.data.Vector;
-import rapaio.workspace.Workspace;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class ConfusionMatrix implements Summarizable {
+public class ConfusionMatrix implements Printable {
 
     private final Vector actual;
     private final Vector predict;
@@ -91,13 +90,9 @@ public class ConfusionMatrix implements Summarizable {
     }
 
     @Override
-    public void summary() {
-        StringBuilder sb = new StringBuilder();
-
+    public void buildSummary(StringBuilder sb) {
         addConfusionMatrix(sb);
         addDetails(sb);
-
-        Workspace.code(sb.toString());
     }
 
     private void addDetails(StringBuilder sb) {
@@ -106,7 +101,7 @@ public class ConfusionMatrix implements Summarizable {
     }
 
     private void addConfusionMatrix(StringBuilder sb) {
-        sb.append("Confusion rapaio.data.matrix\n");
+        sb.append("> confusion matrix\n");
 
         sb.append("\n");
         int maxwidth = "Actual".length();

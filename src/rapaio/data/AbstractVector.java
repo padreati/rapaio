@@ -39,7 +39,7 @@ public abstract class AbstractVector implements Vector {
     }
 
     @Override
-    public VSpots toStream() {
+    public VSpots stream() {
         List<VSpot> instances = new LinkedList<>();
         for (int i = 0; i < this.rowCount(); i++) {
             instances.add(new VSpot(i, this));

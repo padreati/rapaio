@@ -28,7 +28,6 @@ import rapaio.data.mapping.Mapping;
 import rapaio.ml.AbstractClassifier;
 import rapaio.ml.Classifier;
 import rapaio.ml.tools.DensityTable;
-import rapaio.workspace.Workspace;
 
 import java.util.*;
 
@@ -126,9 +125,8 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
     }
 
     @Override
-    public void summary() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\nC45(selection=");
+    public void buildSummary(StringBuilder sb) {
+        sb.append("> C45(selection=");
         switch (selection) {
             case SELECTION_GAINRATIO:
                 sb.append("gainratio");
@@ -140,7 +138,6 @@ public class C45Classifier extends AbstractClassifier<C45Classifier> {
         sb.append(String.format(", minWeight=%.3f", minWeight));
         sb.append(")\n");
         summary(root, sb, 0);
-        Workspace.code(sb.toString());
     }
 
     private void summary(C45ClassifierNode root, StringBuilder sb, int level) {

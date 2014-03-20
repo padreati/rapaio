@@ -20,7 +20,7 @@
 
 package rapaio.ml;
 
-import rapaio.core.Summarizable;
+import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
 
@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface Classifier<T> extends Summarizable {
+public interface Classifier<T> extends Printable {
 
     /**
      * Creates a new classifier instance with the same parameters as the original.

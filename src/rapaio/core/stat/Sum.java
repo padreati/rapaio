@@ -20,11 +20,10 @@
 
 package rapaio.core.stat;
 
-import rapaio.core.Summarizable;
+import rapaio.core.Printable;
 import rapaio.data.Vector;
 
 import static rapaio.core.MathBase.validNumber;
-import static rapaio.workspace.Workspace.code;
 
 /**
  * Computes the sum of elements for a {@link Vector} of values.
@@ -33,7 +32,7 @@ import static rapaio.workspace.Workspace.code;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Sum implements Summarizable {
+public class Sum implements Printable {
 
     private final Vector vector;
     private final double value;
@@ -58,7 +57,7 @@ public class Sum implements Summarizable {
     }
 
     @Override
-    public void summary() {
-        code(String.format("sum\n%.10f\n", value));
+    public void buildSummary(StringBuilder sb) {
+        sb.append(String.format("> sum\n%.10f\n", value));
     }
 }

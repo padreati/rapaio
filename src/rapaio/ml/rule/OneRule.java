@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static rapaio.workspace.Workspace.code;
-
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
@@ -133,12 +131,10 @@ public class OneRule extends AbstractClassifier<OneRule> {
     }
 
     @Override
-    public void summary() {
-        StringBuilder sb = new StringBuilder();
+    public void buildSummary(StringBuilder sb) {
         sb.append("Classification: OneRule\n");
         sb.append("Parameters:{minCount:").append(minCount).append("}\n");
         sb.append("Best one rule:").append(bestRuleSet.toString()).append("\n");
-        code(sb.toString());
     }
 
     private void validate(Frame df, String classColName) {

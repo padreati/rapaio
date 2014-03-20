@@ -176,7 +176,7 @@ public class RandomTree extends AbstractClassifier<RandomTree> {
     }
 
     @Override
-    public void summary() {
+    public void buildSummary(StringBuilder sb) {
         //TODO implement summary of random tree
     }
 }

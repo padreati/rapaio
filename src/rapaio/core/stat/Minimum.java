@@ -21,10 +21,8 @@
 package rapaio.core.stat;
 
 import rapaio.core.MathBase;
-import rapaio.core.Summarizable;
+import rapaio.core.Printable;
 import rapaio.data.Vector;
-
-import static rapaio.workspace.Workspace.code;
 
 /**
  * Finds the minimum getValue from a {@link Vector} of values.
@@ -35,7 +33,7 @@ import static rapaio.workspace.Workspace.code;
  * Date: 9/7/13
  * Time: 12:36 PM
  */
-public class Minimum implements Summarizable {
+public class Minimum implements Printable {
 
     private final Vector vector;
     private final double value;
@@ -63,7 +61,7 @@ public class Minimum implements Summarizable {
     }
 
     @Override
-    public void summary() {
-        code(String.format("minimum\n%.10f", value));
+    public void buildSummary(StringBuilder sb) {
+        sb.append(String.format("minimum\n%.10f", value));
     }
 }

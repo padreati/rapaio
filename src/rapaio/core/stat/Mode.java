@@ -21,17 +21,15 @@
 package rapaio.core.stat;
 
 import rapaio.core.MathBase;
-import rapaio.core.Summarizable;
+import rapaio.core.Printable;
 import rapaio.data.Vector;
 
 import java.util.Arrays;
 
-import static rapaio.workspace.Workspace.code;
-
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Mode implements Summarizable {
+public class Mode implements Printable {
 
     private final Vector vector;
     private final boolean includeMissing;
@@ -80,7 +78,7 @@ public class Mode implements Summarizable {
     }
 
     @Override
-    public void summary() {
-        code(String.format("mode\n%s", Arrays.deepToString(modes)));
+    public void buildSummary(StringBuilder sb) {
+        sb.append(String.format("mode\n%s", Arrays.deepToString(modes)));
     }
 }
