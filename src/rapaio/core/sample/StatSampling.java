@@ -55,7 +55,7 @@ public class StatSampling {
         List<Frame> result = new ArrayList<>();
         Frame shuffle = shuffle(frame);
 
-        FIterator it = shuffle.toStream().iterator();
+        FIterator it = shuffle.stream().iterator();
         for (int i = 0; i < rowCounts.length; i++) {
             for (int j = 0; j < rowCounts[i]; j++) {
                 it.next();

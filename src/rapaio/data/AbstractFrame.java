@@ -122,7 +122,7 @@ public abstract class AbstractFrame implements Frame {
         col(colName).setMissing(row);
     }
 
-    public FSpots toStream() {
+    public FSpots stream() {
         List<FSpot> list = new ArrayList<>();
         for (int i = 0; i < rowCount(); i++) {
             list.add(new FSpot(this, i));

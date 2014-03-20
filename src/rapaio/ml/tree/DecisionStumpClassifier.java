@@ -145,7 +145,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
         pred = new Nominal(df.rowCount(), dict);
         dist = Frames.newMatrix(df.rowCount(), dict);
 
-        Iterator<FSpot> it = df.toStream().iterator();
+        Iterator<FSpot> it = df.stream().iterator();
         while (it.hasNext()) {
             FSpot f = it.next();
 

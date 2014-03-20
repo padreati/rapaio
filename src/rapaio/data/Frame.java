@@ -226,5 +226,5 @@ public interface Frame extends Serializable {
 
     void setMissing(int row, String colName);
 
-    public FSpots toStream();
+    public FSpots stream();
 }

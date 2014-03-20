@@ -151,7 +151,7 @@ public class ID3Classifier extends AbstractClassifier<ID3Classifier> {
                 throw new IllegalArgumentException("ID3 can handle only isNominal attributes.");
             }
         }
-        if (df.toStream().complete().count() == 0)
+        if (df.stream().complete().count() == 0)
             throw new IllegalArgumentException("ID3 can't handle missing values.");
     }
 }

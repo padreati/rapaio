@@ -20,9 +20,12 @@
 
 package rapaio.data.stream;
 
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.Spliterator;
+import rapaio.data.Frame;
+import rapaio.data.Pin;
+import rapaio.data.mapping.MappedFrame;
+import rapaio.data.mapping.Mapping;
+
+import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 
@@ -35,6 +38,10 @@ public class FSpots implements Stream<FSpot> {
 
     public FSpots(Stream<FSpot> stream) {
         this.stream = stream;
+    }
+
+    public FSpots(List<FSpot> list) {
+        this.stream = list.stream();
     }
 
     @Override
@@ -239,5 +246,32 @@ public class FSpots implements Stream<FSpot> {
     @Override
     public void close() {
         stream.close();
+    }
+
+    public <T> List<T> filterByRow(List<T> list) {
+        int[] rows = mapToInt(spot -> spot.row()).toArray();
+        List<T> filtered = new ArrayList<>();
+        for (int i = 0; i < rows.length; i++) {
+            filtered.add(list.get(rows[i]));
+        }
+        return filtered;
+    }
+
+    public List<FSpot> toFSpotList() {
+        final List<FSpot> list = new ArrayList<>();
+        forEach((spot) -> list.add(spot));
+        return list;
+    }
+
+    public Frame toMappedFrame() {
+        final Mapping mapping = new Mapping();
+        final Pin<Frame> dfPin = new Pin<>();
+        forEach(spot -> {
+            mapping.add(spot.rowId());
+            if (dfPin.isEmpty()) {
+                dfPin.set(spot.getFrame());
+            }
+        });
+        return new MappedFrame(dfPin.get().sourceFrame(), mapping);
     }
 }

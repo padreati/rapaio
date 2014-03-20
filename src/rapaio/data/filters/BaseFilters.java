@@ -279,7 +279,7 @@ public final class BaseFilters {
             mappings[i] = new Mapping();
         }
 
-        df.toStream().forEach((FSpot fi) -> {
+        df.stream().forEach((FSpot fi) -> {
             int index = fi.getIndex(nominalIndex);
             mappings[index].add(fi.rowId());
         });
