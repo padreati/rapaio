@@ -169,7 +169,7 @@ public class NeuralNetTest {
         Summary.lines(nn.getAllFitValues());
     }
 
-    @Test
+    //    @Test
     public void testGarciaChallenge() {
 
         Vector a = new Numeric();

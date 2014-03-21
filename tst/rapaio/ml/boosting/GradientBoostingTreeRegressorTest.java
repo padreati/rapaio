@@ -52,8 +52,8 @@ public class GradientBoostingTreeRegressorTest {
         String targetColName = "lpsa";
 
         GradientBoostingTreeRegressor gbt = new GradientBoostingTreeRegressor()
-                .setBootstrap(0.5)
-                .setShrinkage(0.2)
+                .setBootstrap(0.8)
+//                .setShrinkage(0.6)
                 .setLossFunction(new L2BoostingLossFunction())
                 .setRegressor(new DecisionStumpRegressor())
                 .setInitialRegressor(new L2ConstantRegressor())
@@ -66,19 +66,14 @@ public class GradientBoostingTreeRegressorTest {
         gbt.predict(df);
         index.addValue(1);
         mae.addValue(new MAE(gbt.getFitValues(), df.col(targetColName)).getValue());
-        for (int i = 1; i <= 400; i++) {
+        for (int i = 1; i <= 20; i++) {
             gbt.learnFurther(1);
             gbt.predict(df);
 
-            index.addValue(i + 1);
+            index.addValue(i);
             mae.addValue(new MAE(gbt.getFitValues(), df.col(targetColName)).getValue());
 
             Workspace.draw(new Plot().add(new Lines(index, mae)));
-            System.out.println(".");
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException ex) {
-            }
         }
     }
 }

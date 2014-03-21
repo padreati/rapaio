@@ -21,8 +21,6 @@
 package rapaio.sandbox;
 
 import rapaio.data.Frame;
-import rapaio.data.stream.FSpot;
-import rapaio.data.stream.FSpots;
 import rapaio.datasets.Datasets;
 import rapaio.workspace.Summary;
 
@@ -46,22 +44,27 @@ public class Functional {
         for (int i = 0; i < df.rowCount(); i++) {
             weights.add((double) i);
         }
-        Summary.summary(df);
-        List<FSpot> spots = df.stream().filter((spot) -> spot.getValue("origin") >= 2).collectFSpotList();
+        Summary.summary(
+                df.stream().toMappedFrame()
+//                        .filter(spot -> spot.getValue("origin") >= 2)
+//                        .filter(spot -> spot.getValue("cylinders") > 5)
+//                        .toMappedFrame()
+        );
 
-        Frame filtered = new FSpots(spots).toMappedFrame();
-        Summary.summary(filtered);
-        List<Double> filteredWeights = new FSpots(spots).filterByRow(weights);
-
-        for (int i = 0; i < filtered.rowCount(); i++) {
-            System.out.println(String.format("row:%d, weight::%f", filtered.rowId(i), filteredWeights.get(i)));
-        }
+//        Frame filtered = new FSpots(spots).toMappedFrame();
+//        Summary.summary(filtered);
+//        List<Double> filteredWeights = new FSpots(spots).filterByRow(weights);
+//
+//        for (int i = 0; i < filtered.rowCount(); i++) {
+//            System.out.println(String.format("row:%d, weight::%f", filtered.rowId(i), filteredWeights.get(i)));
+//        }
     }
 
-    public static void time(Supplier<String> f) {
+    public static <T> T time(Supplier<T> f) {
         long start = System.currentTimeMillis();
-        String obj = f.get();
+        T obj = f.get();
         long stop = System.currentTimeMillis();
         System.out.println("time for " + obj + " took " + (stop - start) + " millis");
+        return obj;
     }
 }

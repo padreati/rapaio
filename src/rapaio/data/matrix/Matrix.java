@@ -32,8 +32,8 @@ import java.util.List;
  */
 public class Matrix {
 
-    final int m; // getRowCount
-    final int n; // getColCount
+    final int m; // row count
+    final int n; // col count
     final List<Numeric> data; // matrices are stored as column vectors
 
     public Matrix(int m, int n) {

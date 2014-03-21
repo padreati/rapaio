@@ -24,6 +24,7 @@ import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,7 +58,14 @@ public interface Classifier<T> extends Printable {
      * @param df            data set instances
      * @param targetColName target column name
      */
-    void learn(Frame df, String targetColName);
+    default void learn(Frame df, String targetColName) {
+        List<Double> weights = new ArrayList<>();
+        for (int i = 0; i < df.rowCount(); i++) {
+            weights.add(1.0);
+        }
+        learn(df, weights, targetColName);
+    }
+
 
     /**
      * Builds a new classifier using artifacts from a previous classifier.

@@ -122,9 +122,10 @@ public final class DensityTable {
     }
 
     public double getTargetEntropy(boolean useMissing) {
+        double entropy = 0;
         double[] totals = new double[targetLabels.length];
-        for (int i = 0; i < testLabels.length; i++) {
-            for (int j = 0; j < targetLabels.length; j++) {
+        for (int i = 1; i < testLabels.length; i++) {
+            for (int j = 1; j < targetLabels.length; j++) {
                 totals[j] += values[i][j];
             }
         }
@@ -132,20 +133,20 @@ public final class DensityTable {
         for (int i = 1; i < totals.length; i++) {
             total += totals[i];
         }
-        double entropy = 0;
         for (int i = 1; i < totals.length; i++) {
             if (totals[i] > 0) {
                 entropy += -log2(totals[i] / total) * totals[i] / total;
             }
         }
+        double factor = 1.;
         if (useMissing) {
             double missing = 0;
             for (int i = 1; i < targetLabels.length; i++) {
                 missing += values[0][i];
             }
-            return entropy * total / (missing + total);
+            factor = total / (missing + total);
         }
-        return entropy;
+        return factor * entropy;
     }
 
     public double getSplitEntropy() {

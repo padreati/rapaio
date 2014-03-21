@@ -417,7 +417,7 @@ public class Summary {
         for (int i = 0; i < vectors.length; i++) {
             vectors[i] = df.col(i);
         }
-        head(lines, vectors, names);
+        head(Math.min(lines, df.rowCount()), vectors, names);
     }
 
     public static void head(int lines, Vector[] vectors, String[] names) {

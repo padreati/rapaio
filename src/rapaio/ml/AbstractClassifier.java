@@ -23,7 +23,6 @@ package rapaio.ml;
 import rapaio.data.Frame;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,14 +30,6 @@ import java.util.List;
  */
 public abstract class AbstractClassifier<T> implements Classifier<T> {
 
-    @Override
-    public void learn(Frame df, String targetColName) {
-        List<Double> weights = new ArrayList<>();
-        for (int i = 0; i < df.rowCount(); i++) {
-            weights.add(1.0);
-        }
-        learn(df, weights, targetColName);
-    }
 
     @Override
     public void learnFurther(Frame df, List<Double> weights, String targetColName) {

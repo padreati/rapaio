@@ -23,6 +23,7 @@ package rapaio.ml.tools;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
+import rapaio.workspace.Summary;
 
 import java.io.IOException;
 
@@ -31,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class InformationDensityTest {
+public class DensityTableTest {
 
     @Test
     public void testPlayNoMissing() throws IOException {
@@ -60,8 +61,10 @@ public class InformationDensityTest {
 
         Frame df = Datasets.loadPlay();
         df.col("outlook").setMissing(5);
+        Summary.head(10000, df);
 
         DensityTable id = new DensityTable(df.col("outlook"), df.col("class"), null);
+
         assertEquals(0.892, id.getTargetEntropy(true), 1e-3);
         assertEquals(0.693, id.getSplitEntropy(true), 1e-3);
         assertEquals(0.199, id.getInfoGain(true), 1e-3);

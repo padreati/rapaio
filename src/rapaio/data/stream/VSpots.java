@@ -245,4 +245,15 @@ public class VSpots implements Stream<VSpot> {
     public VSpots complete() {
         return new VSpots(stream.filter((VSpot inst) -> !inst.isMissing()));
     }
+
+    public <R> String mkString(Function<VSpot, R> mapper) {
+        StringBuilder sb = new StringBuilder();
+        Iterator<R> it = stream.map(mapper).iterator();
+        while (it.hasNext()) {
+            if (sb.length() != 0) sb.append(",");
+            sb.append(it.next().toString());
+        }
+        return "[" + sb.toString() + "]";
+    }
+
 }
