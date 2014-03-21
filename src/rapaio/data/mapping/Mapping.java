@@ -34,6 +34,13 @@ public class Mapping {
         this.mapping = new ArrayList<>();
     }
 
+    public Mapping(int[] rows) {
+        mapping = new ArrayList<>(rows.length);
+        for (int i = 0; i < rows.length; i++) {
+            mapping.add(rows[i]);
+        }
+    }
+
     public Mapping(List<Integer> mapping) {
         this.mapping = mapping;
     }

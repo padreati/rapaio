@@ -84,6 +84,6 @@ public class StatSampling {
             int next = RandomSource.nextInt(frame.rowCount());
             mapping.add(frame.rowId(next));
         }
-        return new MappedFrame(frame.sourceFrame(), new Mapping(mapping));
+        return new MappedFrame(frame.source(), new Mapping(mapping));
     }
 }

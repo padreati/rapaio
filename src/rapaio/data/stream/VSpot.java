@@ -31,8 +31,8 @@ public class VSpot {
     private final Vector vector;
 
     public VSpot(int row, Vector vector) {
-        this.row = vector.rowId(row);
-        this.vector = vector.source();
+        this.row = row;
+        this.vector = vector;
     }
 
     public int row() {

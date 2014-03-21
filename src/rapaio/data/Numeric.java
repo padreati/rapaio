@@ -284,4 +284,12 @@ public class Numeric extends AbstractVector {
     public String toString() {
         return "Numeric[" + rowCount() + "]";
     }
+
+    public Numeric solidCopy() {
+        Numeric copy = new Numeric(rowCount());
+        for (int i = 0; i < rowCount(); i++) {
+            copy.setValue(i, getValue(i));
+        }
+        return copy;
+    }
 }

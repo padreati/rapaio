@@ -256,4 +256,15 @@ public class VSpots implements Stream<VSpot> {
         return "[" + sb.toString() + "]";
     }
 
+    public void transformValue(Function<Double, Double> trans) {
+        stream.forEach(spot -> spot.getVector().setValue(spot.row(), trans.apply(spot.getValue())));
+    }
+
+    public void transformIndex(Function<Integer, Integer> trans) {
+        stream.forEach(spot -> spot.getVector().setIndex(spot.row(), trans.apply(spot.getIndex())));
+    }
+
+    public void transformLabel(Function<String, String> trans) {
+        stream.forEach(spot -> spot.getVector().setLabel(spot.row(), trans.apply(spot.getLabel())));
+    }
 }

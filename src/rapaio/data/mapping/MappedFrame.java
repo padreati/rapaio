@@ -49,6 +49,9 @@ public class MappedFrame extends AbstractFrame {
         }
         this.mapping = mapping;
         this.source = df;
+        for (int i = 0; i < source.colCount(); i++) {
+            vectors.put(i, new MappedVector(source.col(i), mapping));
+        }
     }
 
     @Override
@@ -72,7 +75,7 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public Frame sourceFrame() {
+    public Frame source() {
         return source;
     }
 
@@ -94,9 +97,6 @@ public class MappedFrame extends AbstractFrame {
 
     @Override
     public Vector col(int col) {
-        if (!vectors.containsKey(col)) {
-            vectors.put(col, new MappedVector(source.col(col), mapping));
-        }
         return vectors.get(col);
     }
 

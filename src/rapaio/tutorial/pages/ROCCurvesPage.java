@@ -20,6 +20,7 @@
 
 package rapaio.tutorial.pages;
 
+import rapaio.classifier.boost.AdaBoostSAMMEClassifier;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.core.stat.ROC;
@@ -29,9 +30,7 @@ import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Legend;
 import rapaio.graphics.plot.ROCCurve;
-import rapaio.ml.boost.AdaBoostSAMMEClassifier;
 import rapaio.ml.rule.OneRule;
-import rapaio.ml.tree.DecisionStumpClassifier;
 import rapaio.ml.tree.RandomForestClassifier;
 
 import java.io.IOException;
@@ -143,7 +142,7 @@ public class ROCCurvesPage implements TutorialPage {
                 "and builds 200 boosting iterations. "
                 + "The following code shows how one can achieve that using rapaio.");
 
-        AdaBoostSAMMEClassifier ab = new AdaBoostSAMMEClassifier(new DecisionStumpClassifier(), 200);
+        AdaBoostSAMMEClassifier ab = new AdaBoostSAMMEClassifier().setT(200);
         ab.learn(train, "spam");
         ab.predict(test);
 
@@ -174,13 +173,14 @@ public class ROCCurvesPage implements TutorialPage {
         ROC rocRF = new ROC(rf.distribution().col("1"), test.col("spam"), "1");
         ROC rocAB = new ROC(ab.distribution().col("1"), test.col("spam"), "1");
         draw(new Plot()
-                .add(new ROCCurve(rocOR).setColorIndex(1))
-                .add(new ROCCurve(rocRF).setColorIndex(2))
-                .add(new ROCCurve(rocAB).setColorIndex(3))
-                .add(new Legend(0.6, 0.33,
-                        new String[]{"onerule", "rf", "adaboost.m1"},
-                        new int[]{1, 2, 3})),
-                600, 400);
+                        .add(new ROCCurve(rocOR).setColorIndex(1))
+                        .add(new ROCCurve(rocRF).setColorIndex(2))
+                        .add(new ROCCurve(rocAB).setColorIndex(3))
+                        .add(new Legend(0.6, 0.33,
+                                new String[]{"onerule", "rf", "adaboost.m1"},
+                                new int[]{1, 2, 3})),
+                600, 400
+        );
 
         code("        ROC rocOR = new ROC(oneRule.getPrediction(), test.getCol(\"spam\"), \"1\");\n" +
                 "        ROC rocRF = new ROC(rf.getDistribution().getCol(\"1\"), test.getCol(\"spam\"), \"1\");\n" +

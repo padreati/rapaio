@@ -20,10 +20,12 @@
 
 package rapaio.sandbox;
 
+import rapaio.core.MathBase;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.workspace.Summary;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -58,6 +60,11 @@ public class Functional {
 //        for (int i = 0; i < filtered.rowCount(); i++) {
 //            System.out.println(String.format("row:%d, weight::%f", filtered.rowId(i), filteredWeights.get(i)));
 //        }
+
+        System.out.println(MathBase.log2(200));
+
+        System.out.println(new BigDecimal("0.0001").multiply(new BigDecimal("2").pow(8))
+                .toPlainString());
     }
 
     public static <T> T time(Supplier<T> f) {

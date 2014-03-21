@@ -148,8 +148,8 @@ class TreeRegressorNode {
             }
             left = new TreeRegressorNode();
             right = new TreeRegressorNode();
-            left.learn(parent, new MappedFrame(df.sourceFrame(), leftMapping), leftWeights, targetColNames);
-            right.learn(parent, new MappedFrame(df.sourceFrame(), rightMapping), rightWeights, targetColNames);
+            left.learn(parent, new MappedFrame(df.source(), leftMapping), leftWeights, targetColNames);
+            right.learn(parent, new MappedFrame(df.source(), rightMapping), rightWeights, targetColNames);
             return;
         }
 

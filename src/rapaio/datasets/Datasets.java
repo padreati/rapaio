@@ -62,7 +62,7 @@ public class Datasets {
                 .read(Datasets.class, "carmpg.csv");
     }
 
-    public static Frame loadSpamBase() throws IOException, URISyntaxException {
+    public static Frame loadSpamBase() throws IOException {
         return new Csv().withDefaultType(VectorType.NUMERIC)
                 .withNominalFields("spam")
                 .read(Datasets.class, "spam-base.csv");

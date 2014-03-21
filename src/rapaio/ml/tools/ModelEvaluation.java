@@ -59,8 +59,8 @@ public class ModelEvaluation {
                     trainMapping.addAll(strata[j]);
                 }
             }
-            Frame train = new MappedFrame(df.sourceFrame(), new Mapping(trainMapping));
-            Frame test = new MappedFrame(df.sourceFrame(), new Mapping(testMapping));
+            Frame train = new MappedFrame(df.source(), new Mapping(trainMapping));
+            Frame test = new MappedFrame(df.source(), new Mapping(testMapping));
 
             c.learn(train, classColName);
             c.predict(test);
@@ -135,8 +135,8 @@ public class ModelEvaluation {
                     }
                 }
             }
-            Frame train = new MappedFrame(df.sourceFrame(), new Mapping(trainMapping));
-            Frame test = new MappedFrame(df.sourceFrame(), new Mapping(testMapping));
+            Frame train = new MappedFrame(df.source(), new Mapping(trainMapping));
+            Frame test = new MappedFrame(df.source(), new Mapping(testMapping));
 
             for (int k = 0; k < classifiers.size(); k++) {
                 Classifier c = classifiers.get(k);

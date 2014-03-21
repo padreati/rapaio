@@ -24,15 +24,17 @@ import org.junit.Test;
 import rapaio.core.stat.MAE;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
-import rapaio.data.filters.BaseFilters;
+import rapaio.data.VectorType;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
+import rapaio.io.Csv;
 import rapaio.ml.boost.GradientBoostingTreeRegressor;
 import rapaio.ml.boost.gbt.L2BoostingLossFunction;
 import rapaio.ml.simple.L2ConstantRegressor;
 import rapaio.ml.tree.DecisionStumpRegressor;
 import rapaio.printer.LocalPrinter;
+import rapaio.workspace.Summary;
 import rapaio.workspace.Workspace;
 
 import java.io.IOException;
@@ -46,14 +48,22 @@ public class GradientBoostingTreeRegressorTest {
     public void testProstate() throws IOException {
 
         Workspace.setPrinter(new LocalPrinter());
-        Frame df = Datasets.loadProstateCancer();
-        df = BaseFilters.removeCols(df, "train");
+//        Frame df = Datasets.loadProstateCancer();
+//        Summary.summary(df);
+//        df = BaseFilters.removeCols(df, "train");
+//        String targetColName = "lpsa";
+        int ROUNDS = 100;
+        int RUN = 2;
+        Frame df = new Csv().withDefaultType(VectorType.NUMERIC)
+                .withNumericFields("spam")
+                .read(Datasets.class, "spam-base.csv");
 
-        String targetColName = "lpsa";
+        Summary.summary(df);
+        String targetColName = "spam";
 
         GradientBoostingTreeRegressor gbt = new GradientBoostingTreeRegressor()
                 .setBootstrap(0.8)
-//                .setShrinkage(0.6)
+                .setShrinkage(0.6)
                 .setLossFunction(new L2BoostingLossFunction())
                 .setRegressor(new DecisionStumpRegressor())
                 .setInitialRegressor(new L2ConstantRegressor())
@@ -66,8 +76,8 @@ public class GradientBoostingTreeRegressorTest {
         gbt.predict(df);
         index.addValue(1);
         mae.addValue(new MAE(gbt.getFitValues(), df.col(targetColName)).getValue());
-        for (int i = 1; i <= 20; i++) {
-            gbt.learnFurther(1);
+        for (int i = 1; i <= ROUNDS; i++) {
+            gbt.learnFurther(RUN);
             gbt.predict(df);
 
             index.addValue(i);

@@ -94,7 +94,7 @@ public final class BaseFilters {
         if (!df.isMappedFrame()) {
             return solid;
         }
-        return new MappedFrame(solid, df.sourceFrame().mapping());
+        return new MappedFrame(solid, df.source().mapping());
     }
 
     /**
@@ -285,7 +285,7 @@ public final class BaseFilters {
         });
         Map<String, Frame> frames = new HashMap<>();
         for (int i = 0; i < mappings.length; i++) {
-            frames.put(dict[i], new MappedFrame(df.sourceFrame(), mappings[i]));
+            frames.put(dict[i], new MappedFrame(df.source(), mappings[i]));
         }
         return frames;
     }
@@ -304,7 +304,7 @@ public final class BaseFilters {
         for (int i = mapping.size(); i > 1; i--) {
             mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
         }
-        return new MappedFrame(df.sourceFrame(), new Mapping(mapping));
+        return new MappedFrame(df.source(), new Mapping(mapping));
     }
 
     public static Frame sort(Frame df, Comparator<Integer>... comparators) {
@@ -317,7 +317,7 @@ public final class BaseFilters {
         for (int i = 0; i < mapping.size(); i++) {
             ids.add(df.rowId(mapping.get(i)));
         }
-        return new MappedFrame(df.sourceFrame(), new Mapping(ids));
+        return new MappedFrame(df.source(), new Mapping(ids));
     }
 
 
@@ -333,7 +333,7 @@ public final class BaseFilters {
                 mapping.add(i);
             }
         }
-        return new MappedFrame(source.sourceFrame(), new Mapping(mapping));
+        return new MappedFrame(source.source(), new Mapping(mapping));
     }
 
     public static List<Frame> combine(String name, List<Frame> frames, String... combined) {
@@ -412,7 +412,7 @@ public final class BaseFilters {
                 ids.add(source.rowId(i));
             }
         }
-        return new MappedFrame(source.sourceFrame(), new Mapping(ids));
+        return new MappedFrame(source.source(), new Mapping(ids));
     }
 
     /**

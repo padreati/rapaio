@@ -245,7 +245,7 @@ class ID3ClassifierNode {
         }
         Frame[] frames = new Frame[dict.length];
         for (int i = 1; i < dict.length; i++) {
-            frames[i] = new MappedFrame(df.sourceFrame(), splitMappings[i]);
+            frames[i] = new MappedFrame(df.source(), splitMappings[i]);
         }
 
         splitCol = colName;

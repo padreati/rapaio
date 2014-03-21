@@ -18,24 +18,27 @@
  *    limitations under the License.
  */
 
-package rapaio.ml;
+package rapaio.classifier;
 
 import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
-
-import java.util.ArrayList;
-import java.util.List;
+import rapaio.data.Numeric;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * Interface for all classification model algorithms.
+ * A classifier is able to classify only one target columns.
+ * If a classifier implements multiple target learning it has to implement
+ * {@link rapaio.classifier.MultiClassifier}
+ * If a classifier implements further learning it has to implement
+ * {@link rapaio.classifier.FurtherClassifier}
+ *
+ * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
-public interface Classifier<T> extends Printable {
+public interface Classifier extends Printable {
 
     /**
      * Creates a new classifier instance with the same parameters as the original.
-     * <p>
      * The fitted model and other artifacts are not replicated.
      *
      * @return new parametrized instance
@@ -44,13 +47,13 @@ public interface Classifier<T> extends Printable {
 
     /**
      * Fit a classifier on instances specified by frame, with row weights
-     * and target as classColName.
+     * and target as targetName.
      *
-     * @param df            data set instances
-     * @param weights       row weights
-     * @param targetColName target column name
+     * @param df         data set instances
+     * @param weights    row weights
+     * @param targetName target column name
      */
-    void learn(Frame df, List<Double> weights, String targetColName);
+    void learn(Frame df, Numeric weights, String targetName);
 
     /**
      * Fit a classifier on instances specified by frame, with row weights
@@ -60,20 +63,10 @@ public interface Classifier<T> extends Printable {
      * @param targetColName target column name
      */
     default void learn(Frame df, String targetColName) {
-        List<Double> weights = new ArrayList<>();
-        for (int i = 0; i < df.rowCount(); i++) {
-            weights.add(1.0);
-        }
+        Numeric weights = new Numeric(df.rowCount());
+        weights.stream().transformValue(x -> 1.0);
         learn(df, weights, targetColName);
     }
-
-    /**
-     * Builds a new classifier using artifacts from a previous classifier.
-     *
-     * @param df            data set instances
-     * @param targetColName target column name
-     */
-    void learnFurther(Frame df, List<Double> weights, String targetColName);
 
     /**
      * Predict classes for new data set instances
@@ -83,18 +76,7 @@ public interface Classifier<T> extends Printable {
     void predict(Frame df);
 
     /**
-     * Predict further classes for new data set instances, using
-     * as much as possible fitted artifacts from previous classifier.
-     * <p>
-     * The frame df is supposed to be the same, otherwise
-     * the result is unpredictable
-     *
-     * @param df data set instances
-     */
-    void predictFurther(Frame df, T classifier);
-
-    /**
-     * Returns predicted classes
+     * Returns predicted target classes as a nominal vector
      *
      * @return nominal vector with predicted classes
      */
@@ -108,5 +90,4 @@ public interface Classifier<T> extends Printable {
      * column for each target class, including missing getValue)
      */
     Frame distribution();
-
 }

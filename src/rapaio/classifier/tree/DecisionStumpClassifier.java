@@ -18,29 +18,22 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.tree;
+package rapaio.classifier.tree;
 
-import rapaio.data.Frame;
-import rapaio.data.Frames;
-import rapaio.data.Nominal;
-import rapaio.data.Vector;
-import rapaio.ml.AbstractClassifier;
-import rapaio.ml.Classifier;
-import rapaio.ml.tools.DensityVector;
-import rapaio.ml.tools.TreeCTest;
-
-import java.util.List;
+import rapaio.classifier.AbstractClassifier;
+import rapaio.classifier.Classifier;
+import rapaio.classifier.tools.DensityVector;
+import rapaio.classifier.tools.TreeCTest;
+import rapaio.data.*;
+import rapaio.data.stream.FSpot;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-@Deprecated
-public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpClassifier> {
+public class DecisionStumpClassifier extends AbstractClassifier {
 
     private int minCount = 1;
     private TreeCTest.Method method = TreeCTest.Method.INFO_GAIN;
-
-    private String[] dict;
 
     private TreeCTest test = new TreeCTest(method, minCount);
 
@@ -50,9 +43,6 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
     private int leftIndex;
     private int rightIndex;
     private int defaultIndex;
-
-    private Nominal pred;
-    private Frame dist;
 
     @Override
     public Classifier newInstance() {
@@ -72,7 +62,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
     }
 
     @Override
-    public void learn(Frame df, List<Double> weights, String targetColName) {
+    public void learn(Frame df, Numeric weights, String targetColName) {
 
         dict = df.col(targetColName).getDictionary();
 
@@ -105,7 +95,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
 
             for (int i = 0; i < df.rowCount(); i++) {
                 if (testVector.isMissing(i)) {
-                    missing.update(df.col(targetColName).getIndex(i), weights.get(i));
+                    missing.update(df.col(targetColName).getIndex(i), weights.getValue(i));
                     continue;
                 }
                 boolean onLeft = true;
@@ -115,7 +105,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
                 if (testVector.type().isNumeric() && test.splitValue() < testVector.getValue(i)) {
                     onLeft = false;
                 }
-                (onLeft ? left : right).update(df.col(targetColName).getIndex(i), weights.get(i));
+                (onLeft ? left : right).update(df.col(targetColName).getIndex(i), weights.getValue(i));
             }
 
             // now predict
@@ -132,7 +122,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
 
             DensityVector missing = new DensityVector(dict);
             for (int i = 0; i < df.rowCount(); i++) {
-                missing.update(df.col(targetColName).getIndex(i), weights.get(i));
+                missing.update(df.col(targetColName).getIndex(i), weights.getValue(i));
             }
             defaultIndex = missing.findBestIndex(false);
             defaultLabel = dict[defaultIndex];
@@ -144,11 +134,11 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
         pred = new Nominal(df.rowCount(), dict);
         dist = Frames.newMatrix(df.rowCount(), dict);
 
-        List<Integer> missingRows = df.stream().filter(spot -> spot.isMissing()).collectRowList();
-        for (int row : missingRows) {
-            dist.setValue(row, defaultLabel, 1.0);
-            pred.setLabel(row, defaultLabel);
-        }
+        df.stream().filter(FSpot::isMissing).forEach(spot -> {
+            dist.setValue(spot.row(), defaultLabel, 1.0);
+            pred.setLabel(spot.row(), defaultLabel);
+        });
+
         if (df.col(test.testName()).type().isNumeric()) {
             df.col(test.testName()).stream().complete().forEach(spot -> {
                 if (spot.getValue() <= test.splitValue()) {
@@ -170,16 +160,6 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
                 }
             });
         }
-    }
-
-    @Override
-    public Nominal prediction() {
-        return pred;
-    }
-
-    @Override
-    public Frame distribution() {
-        return dist;
     }
 
     @Override

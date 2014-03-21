@@ -22,7 +22,9 @@ package rapaio.data.stream;
 
 import rapaio.data.Frame;
 import rapaio.data.Pin;
+import rapaio.data.Vector;
 import rapaio.data.mapping.MappedFrame;
+import rapaio.data.mapping.MappedVector;
 import rapaio.data.mapping.Mapping;
 
 import java.util.*;
@@ -257,6 +259,16 @@ public class FSpots implements Stream<FSpot> {
         return filtered;
     }
 
+    public Vector filterByRow(Vector vector) {
+        Mapping mapping = new Mapping(mapToInt(spot -> spot.row()).toArray());
+        return new MappedVector(vector.source(), mapping);
+    }
+
+    public Frame filterByRow(Frame df) {
+        Mapping mapping = new Mapping(mapToInt(spot -> spot.row()).toArray());
+        return new MappedFrame(df.source(), mapping);
+    }
+
     public List<FSpot> collectFSpotList() {
         final List<FSpot> list = new ArrayList<>();
         forEach(spot -> list.add(spot));
@@ -284,6 +296,6 @@ public class FSpots implements Stream<FSpot> {
                 dfPin.set(spot.getFrame());
             }
         });
-        return new MappedFrame(dfPin.get().sourceFrame(), mapping);
+        return new MappedFrame(dfPin.get().source(), mapping);
     }
 }

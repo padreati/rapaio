@@ -353,7 +353,7 @@ class C45ClassifierNode {
                     String label = df.col(testName).getDictionary()[i + 1];
                     C45ClassifierNode node = new C45ClassifierNode(parent);
                     children.put(label, node);
-                    node.learn(new MappedFrame(df.sourceFrame(), childMappings[i]), childWeights[i], testNames, targetName);
+                    node.learn(new MappedFrame(df.source(), childMappings[i]), childWeights[i], testNames, targetName);
                 }
                 return;
             }
@@ -411,8 +411,8 @@ class C45ClassifierNode {
             children.put("left", left);
             C45ClassifierNode right = new C45ClassifierNode(parent);
             children.put("right", right);
-            left.learn(new MappedFrame(df.sourceFrame(), childMappings[0]), childWeights[0], newTestColNames, targetName);
-            right.learn(new MappedFrame(df.sourceFrame(), childMappings[1]), childWeights[1], newTestColNames, targetName);
+            left.learn(new MappedFrame(df.source(), childMappings[0]), childWeights[0], newTestColNames, targetName);
+            right.learn(new MappedFrame(df.source(), childMappings[1]), childWeights[1], newTestColNames, targetName);
 
         } else {
 
