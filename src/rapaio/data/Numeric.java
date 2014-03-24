@@ -24,7 +24,6 @@ package rapaio.data;
 import rapaio.data.mapping.Mapping;
 
 import java.util.Arrays;
-import java.util.function.BinaryOperator;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -272,24 +271,17 @@ public class Numeric extends AbstractVector {
         }
     }
 
-    public double reduceValues(double identity, BinaryOperator<Double> op) {
-        double result = 0;
-        for (int i = 0; i < rowCount(); i++) {
-            result = op.apply(result, getValue(i));
-        }
-        return result;
-    }
-
     @Override
-    public String toString() {
-        return "Numeric[" + rowCount() + "]";
-    }
-
     public Numeric solidCopy() {
         Numeric copy = new Numeric(rowCount());
         for (int i = 0; i < rowCount(); i++) {
             copy.setValue(i, getValue(i));
         }
         return copy;
+    }
+
+    @Override
+    public String toString() {
+        return "Numeric[" + rowCount() + "]";
     }
 }

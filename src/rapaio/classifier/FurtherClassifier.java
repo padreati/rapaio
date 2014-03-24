@@ -35,30 +35,25 @@ public interface FurtherClassifier<T extends Classifier> extends Classifier {
      * @param df         data set instances
      * @param targetName target column name
      */
-    default void learnFurther(Frame df, String targetName) {
+    default void learnFurther(Frame df, String targetName, T prev) {
         Numeric weights = new Numeric(df.rowCount());
         weights.stream().transformValue(x -> 1.0);
-        learnFurther(df, weights, targetName);
+        learnFurther(df, weights, targetName, prev);
     }
 
     /**
      * Builds a new classifier using artifacts from a previous classifier.
+     * The weights used comes from:
+     * <ul>
+     *     <li>if prev classifier has weights, then these weights are used</li>
+     *     <li>if not, but non-null weights are specified in this method, than
+     *     weights given as parameters are used</li>
+     *     <li>if not than weights equal with one are build and used as parameter</li>
+     * </ul>
      *
      * @param df         data set instances
      * @param weights    weights for each observation
      * @param targetName target column name
      */
-    void learnFurther(Frame df, Numeric weights, String targetName);
-
-    /**
-     * Predict further classes for new data set instances, using
-     * as much as possible fitted artifacts from previous classifier.
-     * <p>
-     * The frame df is supposed to be the same, otherwise
-     * the result is unpredictable
-     *
-     * @param df data set instances
-     */
-    void predictFurther(Frame df, T classifier);
-
+    void learnFurther(Frame df, Numeric weights, String targetName, T prev);
 }

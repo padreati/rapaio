@@ -80,7 +80,7 @@ public interface Classifier extends Printable {
      *
      * @return nominal vector with predicted classes
      */
-    Nominal prediction();
+    Nominal pred();
 
     /**
      * Returns predicted class distribution if is computed,
@@ -89,5 +89,5 @@ public interface Classifier extends Printable {
      * @return predicted class distribution (frame with one
      * column for each target class, including missing getValue)
      */
-    Frame distribution();
+    Frame dist();
 }

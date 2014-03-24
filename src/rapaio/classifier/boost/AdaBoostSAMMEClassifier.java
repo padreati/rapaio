@@ -65,15 +65,16 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier
     }
 
     @Override
-    public Classifier newInstance() {
+    public AdaBoostSAMMEClassifier newInstance() {
         return new AdaBoostSAMMEClassifier()
                 .setWeak(this.weak)
                 .setT(this.t);
     }
 
     @Override
-    public void learn(Frame df, Numeric weights, String targetColName) {
-        dict = df.col(targetColName).getDictionary();
+    public void learn(Frame df, Numeric weights, String targetCol) {
+        this.targetCol = targetCol;
+        dict = df.col(targetCol).getDictionary();
         k = dict.length - 1;
 
         if (weights != null) {
@@ -88,13 +89,13 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier
 
         for (int i = 0; i < t; i++) {
             Classifier hh = weak.newInstance();
-            hh.learn(df, w.solidCopy(), targetColName);
+            hh.learn(df, w.solidCopy(), targetCol);
             hh.predict(df);
-            Nominal hpred = hh.prediction();
+            Nominal hpred = hh.pred();
 
             double err = 0;
             for (int j = 0; j < df.rowCount(); j++) {
-                if (hpred.getIndex(j) != df.col(targetColName).getIndex(j)) {
+                if (hpred.getIndex(j) != df.col(targetCol).getIndex(j)) {
                     err += w.getValue(j);
                 }
             }
@@ -112,7 +113,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier
 
             // update
             for (int j = 0; j < w.rowCount(); j++) {
-                if (hpred.getIndex(j) != df.col(targetColName).getIndex(j)) {
+                if (hpred.getIndex(j) != df.col(targetCol).getIndex(j)) {
                     w.setValue(j, w.getValue(j) * (k - 1) / (k * err));
                 } else {
                     w.setValue(j, w.getValue(j) / (k * (1. - err)));
@@ -122,24 +123,45 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier
     }
 
     @Override
-    public void learnFurther(Frame df, Numeric weights, String targetColName) {
-        if (h.isEmpty()) {
+    public void learnFurther(Frame df, Numeric weights, String targetColName, AdaBoostSAMMEClassifier prev) {
+
+        // if is null than fallback on normal learning
+        if (prev == null) {
             learn(df, weights, targetColName);
             return;
         }
 
-        dict = df.col(targetColName).getDictionary();
-        k = dict.length - 1;
-        if (t == h.size()) {
+        // if prev does not provide something, then fallback on normal learning
+        if (prev.h.isEmpty() || prev.a.isEmpty()) {
+            learn(df, weights, targetColName);
             return;
         }
-        if (weights != null) {
+
+        // should not be the same instance
+        if (this.equals(prev)) {
+            throw new IllegalArgumentException("Previous classifier should be different than current classifier");
+        }
+
+        // if prev trained on something else than we have a problem
+        if (!targetColName.equals(prev.targetCol) ||
+                !(prev.k != df.col(targetColName).getDictionary().length - 2)) {
+            throw new IllegalArgumentException("previous classifier trained on different target");
+        }
+
+        dict = prev.dict;
+        targetCol = prev.targetCol;
+        k = prev.k;
+
+        h = new ArrayList<>(prev.h);
+        a = new ArrayList<>(prev.a);
+
+        if (prev.w != null) {
+            w = prev.w.solidCopy();
+        } else if (weights != null) {
             w = weights.solidCopy();
-        } else if (w == null) {
+        } else {
             w = new Numeric(df.rowCount());
             w.stream().transformValue(x -> 1.0);
-            double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
-            w.stream().transformValue(x -> x / total);
         }
 
 
@@ -147,7 +169,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier
             Classifier hh = weak.newInstance();
             hh.learn(df, w.solidCopy(), targetColName);
             hh.predict(df);
-            Nominal hpred = hh.prediction();
+            Nominal hpred = hh.pred();
 
             double err = 0;
             for (int j = 0; j < df.rowCount(); j++) {
@@ -182,39 +204,6 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier
     }
 
     @Override
-    public void predictFurther(Frame df, AdaBoostSAMMEClassifier classifier) {
-        if (classifier == null) {
-            predict(df);
-            return;
-        }
-
-        pred = classifier.pred;
-        dist = classifier.dist;
-
-        for (int i = classifier.h.size(); i < min(t, h.size()); i++) {
-            h.get(i).predict(df);
-            for (int j = 0; j < df.rowCount(); j++) {
-                int index = h.get(i).prediction().getIndex(j);
-                dist.setValue(j, index, dist.getValue(j, index) + a.get(i));
-            }
-        }
-
-        // simply predict
-        for (int i = 0; i < dist.rowCount(); i++) {
-
-            double max = 0;
-            int prediction = 0;
-            for (int j = 1; j < dist.colCount(); j++) {
-                if (dist.getValue(i, j) > max) {
-                    prediction = j;
-                    max = dist.getValue(i, j);
-                }
-            }
-            pred.setIndex(i, prediction);
-        }
-    }
-
-    @Override
     public void predict(Frame df) {
         pred = new Nominal(df.rowCount(), dict);
         dist = Frames.newMatrix(df.rowCount(), dict);
@@ -222,7 +211,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier
         for (int i = 0; i < min(t, h.size()); i++) {
             h.get(i).predict(df);
             for (int j = 0; j < df.rowCount(); j++) {
-                int index = h.get(i).prediction().getIndex(j);
+                int index = h.get(i).pred().getIndex(j);
                 dist.setValue(j, index, dist.getValue(j, index) + a.get(i));
             }
         }

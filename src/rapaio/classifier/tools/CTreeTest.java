@@ -30,7 +30,7 @@ import rapaio.data.filters.BaseFilters;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class TreeCTest {
+public class CTreeTest {
 
     public static enum Method {
         ENTROPY {
@@ -127,7 +127,7 @@ public class TreeCTest {
         return splitValue;
     }
 
-    public TreeCTest(Method method, int minCount) {
+    public CTreeTest(Method method, int minCount) {
         this.method = method;
         this.minCount = minCount;
     }

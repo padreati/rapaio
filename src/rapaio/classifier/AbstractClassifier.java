@@ -34,12 +34,12 @@ public abstract class AbstractClassifier implements Classifier {
     protected Frame dist;
 
     @Override
-    public Nominal prediction() {
+    public Nominal pred() {
         return pred;
     }
 
     @Override
-    public Frame distribution() {
+    public Frame dist() {
         return dist;
     }
 }

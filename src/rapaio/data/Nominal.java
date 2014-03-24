@@ -266,6 +266,15 @@ public class Nominal extends AbstractVector {
     }
 
     @Override
+    public Nominal solidCopy() {
+        Nominal copy = new Nominal(rowCount(), getDictionary());
+        for (int i = 0; i < rowCount(); i++) {
+            copy.setLabel(i, getLabel(i));
+        }
+        return copy;
+    }
+
+    @Override
     public String toString() {
         return "Nominal[" + rowCount() + "]";
     }

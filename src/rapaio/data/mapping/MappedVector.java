@@ -176,4 +176,13 @@ public class MappedVector extends AbstractVector {
     public void ensureCapacity(int minCapacity) {
         throw new IllegalArgumentException("operation not available on mapped vectors");
     }
+
+    @Override
+    public Vector solidCopy() {
+        Mapping m = new Mapping();
+        for (int i = 0; i < mapping.size(); i++) {
+            m.add(mapping.get(i));
+        }
+        return new MappedVector(source, m);
+    }
 }

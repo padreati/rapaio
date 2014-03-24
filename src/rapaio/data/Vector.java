@@ -172,6 +172,8 @@ public interface Vector extends Serializable {
 
     void clear();
 
+    Vector solidCopy();
+
     void ensureCapacity(int minCapacity);
 
     public VSpots stream();

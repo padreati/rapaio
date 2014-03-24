@@ -22,8 +22,8 @@ package rapaio.classifier.tree;
 
 import rapaio.classifier.AbstractClassifier;
 import rapaio.classifier.Classifier;
+import rapaio.classifier.tools.CTreeTest;
 import rapaio.classifier.tools.DensityVector;
-import rapaio.classifier.tools.TreeCTest;
 import rapaio.data.*;
 import rapaio.data.stream.FSpot;
 
@@ -33,9 +33,8 @@ import rapaio.data.stream.FSpot;
 public class DecisionStumpClassifier extends AbstractClassifier {
 
     private int minCount = 1;
-    private TreeCTest.Method method = TreeCTest.Method.INFO_GAIN;
-
-    private TreeCTest test = new TreeCTest(method, minCount);
+    private CTreeTest.Method method = CTreeTest.Method.INFO_GAIN;
+    private CTreeTest test = new CTreeTest(method, minCount);
 
     private String leftLabel;
     private String rightLabel;
@@ -43,6 +42,9 @@ public class DecisionStumpClassifier extends AbstractClassifier {
     private int leftIndex;
     private int rightIndex;
     private int defaultIndex;
+    private int leftCount;
+    private int rightCount;
+    private int defaultCount;
 
     @Override
     public Classifier newInstance() {
@@ -51,13 +53,13 @@ public class DecisionStumpClassifier extends AbstractClassifier {
 
     public DecisionStumpClassifier withMinCount(int minCount) {
         this.minCount = minCount;
-        test = new TreeCTest(method, minCount);
+        test = new CTreeTest(method, minCount);
         return this;
     }
 
-    public DecisionStumpClassifier withMethod(TreeCTest.Method method) {
+    public DecisionStumpClassifier withMethod(CTreeTest.Method method) {
         this.method = method;
-        test = new TreeCTest(method, minCount);
+        test = new CTreeTest(method, minCount);
         return this;
     }
 
@@ -133,10 +135,14 @@ public class DecisionStumpClassifier extends AbstractClassifier {
     public void predict(Frame df) {
         pred = new Nominal(df.rowCount(), dict);
         dist = Frames.newMatrix(df.rowCount(), dict);
+        leftCount = 0;
+        rightCount = 0;
+        defaultCount = 0;
 
         df.stream().filter(FSpot::isMissing).forEach(spot -> {
             dist.setValue(spot.row(), defaultLabel, 1.0);
             pred.setLabel(spot.row(), defaultLabel);
+            defaultCount++;
         });
 
         if (df.col(test.testName()).type().isNumeric()) {
@@ -144,9 +150,11 @@ public class DecisionStumpClassifier extends AbstractClassifier {
                 if (spot.getValue() <= test.splitValue()) {
                     dist.setValue(spot.row(), leftIndex, 1.0);
                     pred.setLabel(spot.row(), leftLabel);
+                    leftCount++;
                 } else {
                     dist.setValue(spot.row(), rightIndex, 1.0);
                     pred.setLabel(spot.row(), rightLabel);
+                    rightCount++;
                 }
             });
         } else {
@@ -154,9 +162,11 @@ public class DecisionStumpClassifier extends AbstractClassifier {
                 if (test.splitLabel().equals(spot.getLabel())) {
                     dist.setValue(spot.row(), leftIndex, 1.0);
                     pred.setLabel(spot.row(), leftLabel);
+                    leftCount++;
                 } else {
                     dist.setValue(spot.row(), rightIndex, 1.0);
                     pred.setLabel(spot.row(), rightLabel);
+                    rightCount++;
                 }
             });
         }
@@ -164,6 +174,19 @@ public class DecisionStumpClassifier extends AbstractClassifier {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+        sb.append("> DecisionStump(");
+        sb.append("method=" + method.name() + ",");
+        sb.append("minCount=" + minCount);
+        sb.append(")\n");
+
+        sb.append("prediction:\n");
+        sb.append(String.format("- left => label: %s, index: %d, count: %d\n",
+                leftLabel, leftIndex, leftCount));
+        sb.append(String.format("- right => label: %s, index: %d, count: %d\n",
+                rightLabel, rightIndex, rightCount));
+        sb.append(String.format("- default => label: %s, index: %d, count: %d\n",
+                defaultLabel, defaultIndex, defaultCount));
+        sb.append("\n");
     }
 }

@@ -53,7 +53,7 @@ public class GradientBoostingTreeRegressorTest {
 //        df = BaseFilters.removeCols(df, "train");
 //        String targetColName = "lpsa";
         int ROUNDS = 100;
-        int RUN = 2;
+        int RUN = 1;
         Frame df = new Csv().withDefaultType(VectorType.NUMERIC)
                 .withNumericFields("spam")
                 .read(Datasets.class, "spam-base.csv");

@@ -150,7 +150,7 @@ public class ROCCurvesPage implements TutorialPage {
                 "        ab.learn(train, \"spam\");\n" +
                 "        ab.predict(test);\n");
 
-        new ConfusionMatrix(test.col("spam"), ab.prediction()).summary();
+        new ConfusionMatrix(test.col("spam"), ab.pred()).summary();
 
         heading(2, "ROC Curves");
 
@@ -171,7 +171,7 @@ public class ROCCurvesPage implements TutorialPage {
 
         ROC rocOR = new ROC(oneRule.prediction(), test.col("spam"), "1");
         ROC rocRF = new ROC(rf.distribution().col("1"), test.col("spam"), "1");
-        ROC rocAB = new ROC(ab.distribution().col("1"), test.col("spam"), "1");
+        ROC rocAB = new ROC(ab.dist().col("1"), test.col("spam"), "1");
         draw(new Plot()
                         .add(new ROCCurve(rocOR).setColorIndex(1))
                         .add(new ROCCurve(rocRF).setColorIndex(2))

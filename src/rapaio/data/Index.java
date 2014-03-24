@@ -241,6 +241,15 @@ public class Index extends AbstractVector {
     }
 
     @Override
+    public Index solidCopy() {
+        Index copy = new Index(rowCount(), rowCount(), 0);
+        for (int i = 0; i < rowCount(); i++) {
+            copy.setIndex(i, getIndex(i));
+        }
+        return copy;
+    }
+
+    @Override
     public String toString() {
         return "Index[" + rowCount() + "]";
     }
