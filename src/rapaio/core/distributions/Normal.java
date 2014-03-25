@@ -20,6 +20,10 @@
 
 package rapaio.core.distributions;
 
+import rapaio.printer.PrinterUtils;
+
+import java.text.DecimalFormat;
+
 import static rapaio.core.MathBase.*;
 
 /**
@@ -33,7 +37,8 @@ public class Normal extends Distribution {
 
     @Override
     public String getName() {
-        return "Normal Distribution";
+        DecimalFormat f = PrinterUtils.getDecimalFormat();
+        return String.format("Normal(mu=%s, sd=%s)", f.format(mu), f.format(sd));
     }
 
     public Normal() {
@@ -137,7 +142,7 @@ public class Normal extends Distribution {
 
     private static double cdfMarsaglia(double x) {
         /*
-		 * Journal of Statistical Software (July 2004, Volume 11, Issue 5),
+         * Journal of Statistical Software (July 2004, Volume 11, Issue 5),
          * George Marsaglia Algorithum to compute the cdf of the normal
          * distribution for some z score
          */

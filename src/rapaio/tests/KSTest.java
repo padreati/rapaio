@@ -40,6 +40,7 @@ public class KSTest implements Printable {
     private final Vector v2;
     private double D; // maximum distance between ECDF1 and F, or ECDF1 and ECFD2
     private final double pValue;
+    private final String testName;
 
     /**
      * One-sample K-S test.
@@ -52,7 +53,8 @@ public class KSTest implements Printable {
      *
      * @param cdf the distribution to compare against
      */
-    public KSTest(Vector sample, Distribution cdf) {
+    public KSTest(String testName, Vector sample, Distribution cdf) {
+        this.testName = testName;
         this.v1 = BaseFilters.sort(sample);
         this.cdf = cdf;
         this.v2 = null;
@@ -84,7 +86,8 @@ public class KSTest implements Printable {
      * @param sample1 first sample
      * @param sample2 second sample
      */
-    public KSTest(Vector sample1, Vector sample2) {
+    public KSTest(String testName, Vector sample1, Vector sample2) {
+        this.testName = testName;
         this.v1 = BaseFilters.sort(sample1);
         this.v2 = BaseFilters.sort(sample2);
         this.cdf = null;
@@ -108,35 +111,7 @@ public class KSTest implements Printable {
         pValue = probks((n + 0.12 + 0.11 / n) * D);
     }
 
-//    private double pValue(double n) {
-//        return 1 - cdf((Math.sqrt(n) + 0.12 + 0.11 / Math.sqrt(n)) * D);
-//        return cdf((Math.sqrt(n) + 0.12 + 0.11 / Math.sqrt(n)) * D);
-//    }
-
     public double probks(double x) {
-//        if (x < 0)
-//            throw new ArithmeticException("Invalid value of x, x must be > 0, not " + x);
-//        else if (x == 0)
-//            return 0;
-//        else if (x >= 5)
-//            return 1;
-//
-//        /*
-//         * Uses 2 formulas, see http://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test#Kolmogorov_distribution
-//         * Each formula converges very rapidly, interface 3 terms to full
-//         * IEEE precision for one or the other - crossover point is 1.18
-//         * according to Numerical Recipes, 3rd Edition p(334-335)
-//         */
-//        double tmp = 0;
-//        double x2 = x * x;
-//        if (x < 1.18) {
-//            for (int j = 1; j <= 3; j++)
-//                tmp += Math.exp(-Math.pow(2 * j - 1, 2) * Math.PI * Math.PI / (8 * x2));
-//
-//            return Math.sqrt(2 * Math.PI) / x * tmp;
-//        } else {
-//            return 1 - 2 * (Math.exp(-2 * x2) + Math.exp(-18 * x2) - Math.exp(-8 * x2));
-//        }
         final double EPS1 = 0.001;
         final double EPS2 = 1.0e-8;
 
@@ -188,7 +163,13 @@ public class KSTest implements Printable {
     }
 
     private void oneSampleSummary(StringBuilder sb) {
-        sb.append("> Kolmogorov-Smirnoff one-sample test\n");
+        sb.append("> Kolmogorov-Smirnoff 1-sample test: ").append(testName).append("\n");
+
+        int ties = (int) (v1.rowCount() - v1.stream().mapToDouble().distinct().count());
+        sb.append(String.format("sample size: %d, ties: %d\n",
+                v1.rowCount(), ties));
+        if (ties > 0)
+            sb.append(" (warning: p-values will not be exact because of ties)\n");
 
         sb.append(String.format("distribution: %s\n", cdf.getName()));
         sb.append(String.format("D statistic: %.6f\n", D));
@@ -197,7 +178,16 @@ public class KSTest implements Printable {
     }
 
     private void twoSamplesSummary(StringBuilder sb) {
-        sb.append("> Kolmogorov-Smirnoff two-sample test\n");
+        sb.append("> Kolmogorov-Smirnoff 2-sample test: ").append(testName).append("\n");
+
+        int ties1 = (int) (v1.rowCount() - v1.stream().mapToDouble().distinct().count());
+        int ties2 = (int) (v2.rowCount() - v2.stream().mapToDouble().distinct().count());
+        sb.append(String.format("first sample size: %d, ties: %d\n",
+                v1.rowCount(), ties1));
+        sb.append(String.format("second sample size: %d, ties: %d\n",
+                v2.rowCount(), ties2));
+        if (ties1 + ties2 > 0)
+            sb.append(" (warning: p-values will not be exact because of ties)\n");
 
         sb.append(String.format("D statistic: %.6f\n", D));
         sb.append(String.format("p-value: %.16f %s\n", pValue, getPValueStars()));

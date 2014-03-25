@@ -20,6 +20,7 @@
 
 package rapaio.tests;
 
+import junit.framework.Assert;
 import org.junit.Test;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
@@ -40,26 +41,39 @@ public class KSTestTest {
     @Test
     public void testPearson() throws IOException, URISyntaxException {
         Frame df = Datasets.loadPearsonHeightDataset();
-        new KSTest(df.col("Son"), df.col("Father")).summary();
+        KSTest test = new KSTest("2-sample pearson", df.col("Son"), df.col("Father"));
+        test.summary();
+
+        Assert.assertEquals(0.150278, test.getD(), 10e-5);
+        Assert.assertEquals(0.0000000000411316, test.getPValue(), 10e-10);
     }
 
     @Test
     public void testNormal() {
         Distribution d = new Normal(0, 1);
         Numeric sample = d.sample(1000);
-        new KSTest(sample, d).summary();
+        KSTest test = new KSTest("normal sample", sample, d);
+        test.summary();
+        Assert.assertTrue(test.getD() < 0.4);
+        Assert.assertTrue(test.getPValue() > 0.1);
     }
 
     @Test
     public void testUniform() {
         Numeric sample = new Uniform(0, 1).sample(1_000);
-        new KSTest(sample, new Normal(0, 1)).summary();
+        KSTest test = new KSTest("uniform sample", sample, new Normal(0, 1));
+        test.summary();
+        Assert.assertTrue(test.getD() > 0.4);
+        Assert.assertTrue(test.getPValue() < 0.001);
     }
 
-    //    @Test
+    @Test
     public void testStudentT() {
         Distribution d = new StudentT(3, 0, 1);
-        Numeric sample = d.sample(100);
-        new KSTest(sample, new Normal(0, 1)).summary();
+        Numeric sample = d.sample(1000);
+        KSTest test = new KSTest("studentT sample", sample, new Normal(0, 1));
+        test.summary();
+        Assert.assertTrue(test.getD() > 0.04);
+        Assert.assertTrue(test.getPValue() < 0.01);
     }
 }
