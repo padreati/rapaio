@@ -31,7 +31,7 @@ import rapaio.data.Numeric;
  * If a classifier implements multiple target learning it has to implement
  * {@link rapaio.classifier.MultiClassifier}
  * If a classifier implements further learning it has to implement
- * {@link rapaio.classifier.FurtherClassifier}
+ * {@link RunningClassifier}
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
@@ -50,14 +50,14 @@ public interface Classifier extends Printable {
      *
      * @return classifier name
      */
-    String classifierName();
+    String name();
 
     /**
      * Builds a string which contains the classifier instance name and parameters.
      *
      * @return classifier algorithm name and parameters
      */
-    String classifierInstance();
+    String fullName();
 
     /**
      * Fit a classifier on instances specified by frame, with row weights

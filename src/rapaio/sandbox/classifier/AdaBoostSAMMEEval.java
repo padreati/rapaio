@@ -47,9 +47,9 @@ public class AdaBoostSAMMEEval {
 
         Workspace.setPrinter(new LocalPrinter());
 
-//        evalWith(Datasets.loadIrisDataset(), "class");
-//        evalWith(Datasets.loadSpamBase(), "spam");
-//        evalWith(Datasets.loadProstateCancer(), "train");
+        evalWith(Datasets.loadIrisDataset(), "class");
+        evalWith(Datasets.loadSpamBase(), "spam");
+        evalWith(Datasets.loadProstateCancer(), "train");
         evalWith(Datasets.loadMushrooms(), "classes");
     }
 
@@ -61,20 +61,17 @@ public class AdaBoostSAMMEEval {
         AdaBoostSAMMEClassifier c = new AdaBoostSAMMEClassifier()
                 .withClassifier(new DecisionStumpClassifier()
                         .withMethod(CTreeTest.Method.INFO_GAIN)
-                        .withMinCount(1))
-                .withWeakCount(0);
-
-        AdaBoostSAMMEClassifier prev = null;
+                        .withMinCount(1));
 
         Index index = new Index();
         Numeric trainAcc = new Numeric();
         Numeric testAcc = new Numeric();
 
         for (int i = 1; i <= 50; i++) {
-            c.withWeakCount(i * 2);
+            c.withRuns(i * 2);
             index.addIndex(i * 2);
 
-            c.learnFurther(tr, targetName, prev);
+            c.learnFurther(tr, targetName, 2);
 
             c.predict(tr);
             trainAcc.addValue(new ConfusionMatrix(tr.col(targetName), c.pred()).getAccuracy());
@@ -85,19 +82,15 @@ public class AdaBoostSAMMEEval {
             Workspace.draw(new Plot()
                     .add(new Lines(index, trainAcc).setColorIndex(1))
                     .add(new Lines(index, testAcc).setColorIndex(2)));
-
-            prev = c;
-            c = prev.newInstance();
         }
 
-        assert prev != null;
-        prev.predict(tr);
-        prev.summary();
-        new ConfusionMatrix(tr.col(targetName), prev.pred()).summary();
+        c.predict(tr);
+        c.summary();
+        new ConfusionMatrix(tr.col(targetName), c.pred()).summary();
 
 
-        prev.predict(te);
-        prev.summary();
-        new ConfusionMatrix(te.col(targetName), prev.pred()).summary();
+        c.predict(te);
+        c.summary();
+        new ConfusionMatrix(te.col(targetName), c.pred()).summary();
     }
 }

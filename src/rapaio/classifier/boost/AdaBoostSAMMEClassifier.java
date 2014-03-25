@@ -22,7 +22,7 @@ package rapaio.classifier.boost;
 
 import rapaio.classifier.AbstractClassifier;
 import rapaio.classifier.Classifier;
-import rapaio.classifier.FurtherClassifier;
+import rapaio.classifier.RunningClassifier;
 import rapaio.classifier.tree.DecisionStumpClassifier;
 import rapaio.data.Frame;
 import rapaio.data.Frames;
@@ -38,11 +38,10 @@ import static rapaio.core.MathBase.min;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class AdaBoostSAMMEClassifier extends AbstractClassifier
-        implements FurtherClassifier<AdaBoostSAMMEClassifier> {
+public class AdaBoostSAMMEClassifier extends AbstractClassifier implements RunningClassifier {
 
-    Classifier classifier = new DecisionStumpClassifier();
-    int weakCount = 1;
+    Classifier base = new DecisionStumpClassifier();
+    int runs = 0;
 
     List<Double> a;
     List<Classifier> h;
@@ -57,28 +56,28 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier
     @Override
     public AdaBoostSAMMEClassifier newInstance() {
         return new AdaBoostSAMMEClassifier()
-                .withClassifier(this.classifier)
-                .withWeakCount(this.weakCount);
+                .withClassifier(this.base)
+                .withRuns(this.runs);
     }
 
     @Override
-    public String classifierName() {
+    public String name() {
         return "AdaBoost.SAMME";
     }
 
     @Override
-    public String classifierInstance() {
-        return String.format("AdaBoost.SAMME (classifier: %s, weakCount: %d)",
-                classifier.classifierInstance(), weakCount);
+    public String fullName() {
+        return String.format("AdaBoost.SAMME (base: %s, runs: %d)",
+                base.fullName(), runs);
     }
 
     public AdaBoostSAMMEClassifier withClassifier(Classifier weak) {
-        this.classifier = weak;
+        this.base = weak;
         return this;
     }
 
-    public AdaBoostSAMMEClassifier withWeakCount(int weakCount) {
-        this.weakCount = weakCount;
+    public AdaBoostSAMMEClassifier withRuns(int weakCount) {
+        this.runs = weakCount;
         return this;
     }
 
@@ -98,8 +97,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
         w.stream().transformValue(x -> x / total);
 
-        for (int i = 0; i < weakCount; i++) {
-            Classifier hh = classifier.newInstance();
+        for (int i = 0; i < runs; i++) {
+            Classifier hh = base.newInstance();
             hh.learn(df, w.solidCopy(), targetCol);
             hh.predict(df);
             Nominal hpred = hh.pred();
@@ -134,44 +133,47 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier
     }
 
     @Override
-    public void learnFurther(Frame df, Numeric weights, String targetColName, AdaBoostSAMMEClassifier prev) {
+    public void learnFurther(Frame df, Numeric weights, String targetColName, int additionalRuns) {
 
-        // if is null than fallback on normal learning
-        if (prev == null || prev.h.isEmpty() || prev.a.isEmpty()) {
-            learn(df, weights, targetColName);
-            return;
-        }
-
-        // should not be the same instance
-        if (this.equals(prev)) {
-            throw new IllegalArgumentException("Previous classifier should be different than current classifier");
+        boolean prev = false;
+        if (w != null && targetCol != null && dict != null) {
+            prev = true;
         }
 
         // if prev trained on something else than we have a problem
-        if (!targetColName.equals(prev.targetCol) ||
-                !(prev.k != df.col(targetColName).getDictionary().length - 2)) {
-            throw new IllegalArgumentException("previous classifier trained on different target");
+        if (prev) {
+            if ((!targetColName.equals(targetCol) ||
+                    k != df.col(targetColName).getDictionary().length - 1)) {
+                throw new IllegalArgumentException("previous classifier trained on different target");
+            }
         }
 
-        dict = prev.dict;
-        targetCol = prev.targetCol;
-        k = prev.k;
+        if (!prev) {
+            targetCol = targetColName;
+            dict = df.col(targetCol).getDictionary();
+            k = dict.length - 1;
 
-        h = new ArrayList<>(prev.h);
-        a = new ArrayList<>(prev.a);
-
-        if (prev.w != null) {
-            w = prev.w.solidCopy();
-        } else if (weights != null) {
-            w = weights.solidCopy();
+            h = new ArrayList<>();
+            a = new ArrayList<>();
+            runs = additionalRuns;
         } else {
-            w = new Numeric(df.rowCount());
-            w.stream().transformValue(x -> 1.0);
+            runs += additionalRuns;
         }
 
+        if (w == null) {
+            if (weights != null) {
+                w = weights.solidCopy();
+            } else {
+                w = new Numeric(df.rowCount());
+                w.stream().transformValue(x -> 1.0);
+            }
+        }
 
-        for (int i = h.size(); i < weakCount; i++) {
-            Classifier hh = classifier.newInstance();
+        double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
+        w.stream().transformValue(x -> x / total);
+
+        for (int i = 0; i < additionalRuns; i++) {
+            Classifier hh = base.newInstance();
             hh.learn(df, w.solidCopy(), targetColName);
             hh.predict(df);
             Nominal hpred = hh.pred();
@@ -213,7 +215,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier
         pred = new Nominal(df.rowCount(), dict);
         dist = Frames.newMatrix(df.rowCount(), dict);
 
-        for (int i = 0; i < min(weakCount, h.size()); i++) {
+        for (int i = 0; i < min(runs, h.size()); i++) {
             h.get(i).predict(df);
             for (int j = 0; j < df.rowCount(); j++) {
                 int index = h.get(i).pred().getIndex(j);
@@ -238,7 +240,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append("> ").append(classifierInstance()).append("\n");
+        sb.append("> ").append(fullName()).append("\n");
 
         sb.append("prediction:\n");
         sb.append("weak learners built: ").append(h.size()).append("\n");

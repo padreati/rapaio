@@ -52,12 +52,12 @@ public class DecisionStumpClassifier extends AbstractClassifier {
     }
 
     @Override
-    public String classifierName() {
+    public String name() {
         return "DecisionStump";
     }
 
     @Override
-    public String classifierInstance() {
+    public String fullName() {
         return String.format("DecisionStump (method:%s, minCount:%d)",
                 method.name(), minCount);
     }
@@ -186,7 +186,7 @@ public class DecisionStumpClassifier extends AbstractClassifier {
     @Override
     public void buildSummary(StringBuilder sb) {
 
-        sb.append("> ").append(classifierInstance()).append("\n");
+        sb.append("> ").append(fullName()).append("\n");
 
         sb.append("prediction:\n");
         sb.append(String.format("- left => label: %s, index: %d, count: %d\n",

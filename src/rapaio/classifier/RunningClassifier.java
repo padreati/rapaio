@@ -26,7 +26,7 @@ import rapaio.data.Numeric;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public interface FurtherClassifier<T extends Classifier> extends Classifier {
+public interface RunningClassifier extends Classifier {
 
     /**
      * Builds a new classifier using artifacts from a previous classifier, and
@@ -34,26 +34,28 @@ public interface FurtherClassifier<T extends Classifier> extends Classifier {
      *
      * @param df         data set instances
      * @param targetName target column name
+     * @param runs       additional runs to add
      */
-    default void learnFurther(Frame df, String targetName, T prev) {
+    default void learnFurther(Frame df, String targetName, int runs) {
         Numeric weights = new Numeric(df.rowCount());
         weights.stream().transformValue(x -> 1.0);
-        learnFurther(df, weights, targetName, prev);
+        learnFurther(df, weights, targetName, runs);
     }
 
     /**
      * Builds a new classifier using artifacts from a previous classifier.
      * The weights used comes from:
      * <ul>
-     *     <li>if prev classifier has weights, then these weights are used</li>
-     *     <li>if not, but non-null weights are specified in this method, than
-     *     weights given as parameters are used</li>
-     *     <li>if not than weights equal with one are build and used as parameter</li>
+     * <li>if prev classifier has weights, then these weights are used</li>
+     * <li>if not, but non-null weights are specified in this method, than
+     * weights given as parameters are used</li>
+     * <li>if not than weights equal with one are build and used as parameter</li>
      * </ul>
      *
      * @param df         data set instances
      * @param weights    weights for each observation
      * @param targetName target column name
+     * @param runs       additional runs to build
      */
-    void learnFurther(Frame df, Numeric weights, String targetName, T prev);
+    void learnFurther(Frame df, Numeric weights, String targetName, int runs);
 }

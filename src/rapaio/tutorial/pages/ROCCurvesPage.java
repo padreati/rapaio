@@ -142,7 +142,7 @@ public class ROCCurvesPage implements TutorialPage {
                 "and builds 200 boosting iterations. "
                 + "The following code shows how one can achieve that using rapaio.");
 
-        AdaBoostSAMMEClassifier ab = new AdaBoostSAMMEClassifier().withWeakCount(200);
+        AdaBoostSAMMEClassifier ab = new AdaBoostSAMMEClassifier().withRuns(200);
         ab.learn(train, "spam");
         ab.predict(test);
 
