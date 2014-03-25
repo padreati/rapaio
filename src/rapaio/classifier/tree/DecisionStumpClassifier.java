@@ -51,6 +51,17 @@ public class DecisionStumpClassifier extends AbstractClassifier {
         return new DecisionStumpClassifier().withMethod(method).withMinCount(minCount);
     }
 
+    @Override
+    public String classifierName() {
+        return "DecisionStump";
+    }
+
+    @Override
+    public String classifierInstance() {
+        return String.format("DecisionStump (method:%s, minCount:%d)",
+                method.name(), minCount);
+    }
+
     public DecisionStumpClassifier withMinCount(int minCount) {
         this.minCount = minCount;
         test = new CTreeTest(method, minCount);
@@ -175,10 +186,7 @@ public class DecisionStumpClassifier extends AbstractClassifier {
     @Override
     public void buildSummary(StringBuilder sb) {
 
-        sb.append("> DecisionStump(");
-        sb.append("method=" + method.name() + ",");
-        sb.append("minCount=" + minCount);
-        sb.append(")\n");
+        sb.append("> ").append(classifierInstance()).append("\n");
 
         sb.append("prediction:\n");
         sb.append(String.format("- left => label: %s, index: %d, count: %d\n",

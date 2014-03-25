@@ -59,10 +59,10 @@ public class AdaBoostSAMMEEval {
         Frame te = samples.get(1);
 
         AdaBoostSAMMEClassifier c = new AdaBoostSAMMEClassifier()
-                .setWeak(new DecisionStumpClassifier()
+                .withClassifier(new DecisionStumpClassifier()
                         .withMethod(CTreeTest.Method.INFO_GAIN)
                         .withMinCount(1))
-                .setT(0);
+                .withWeakCount(0);
 
         AdaBoostSAMMEClassifier prev = null;
 
@@ -70,12 +70,11 @@ public class AdaBoostSAMMEEval {
         Numeric trainAcc = new Numeric();
         Numeric testAcc = new Numeric();
 
-        for (int i = 1; i <= 500; i++) {
-            c.setT(i);
-            index.addIndex(i);
+        for (int i = 1; i <= 50; i++) {
+            c.withWeakCount(i * 2);
+            index.addIndex(i * 2);
 
             c.learnFurther(tr, targetName, prev);
-//            c.learn(tr, targetName);
 
             c.predict(tr);
             trainAcc.addValue(new ConfusionMatrix(tr.col(targetName), c.pred()).getAccuracy());
@@ -91,6 +90,7 @@ public class AdaBoostSAMMEEval {
             c = prev.newInstance();
         }
 
+        assert prev != null;
         prev.predict(tr);
         prev.summary();
         new ConfusionMatrix(tr.col(targetName), prev.pred()).summary();

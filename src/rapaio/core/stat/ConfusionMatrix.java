@@ -101,7 +101,7 @@ public class ConfusionMatrix implements Printable {
     }
 
     private void addConfusionMatrix(StringBuilder sb) {
-        sb.append("> confusion matrix\n");
+        sb.append("> ConfusionMatrix\n");
 
         sb.append("\n");
         int maxwidth = "Actual".length();

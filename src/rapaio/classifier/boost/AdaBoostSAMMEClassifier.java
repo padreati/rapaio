@@ -41,8 +41,8 @@ import static rapaio.core.MathBase.min;
 public class AdaBoostSAMMEClassifier extends AbstractClassifier
         implements FurtherClassifier<AdaBoostSAMMEClassifier> {
 
-    Classifier weak = new DecisionStumpClassifier();
-    int t = 1;
+    Classifier classifier = new DecisionStumpClassifier();
+    int weakCount = 1;
 
     List<Double> a;
     List<Classifier> h;
@@ -54,21 +54,32 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier
         this.h = new ArrayList<>();
     }
 
-    public AdaBoostSAMMEClassifier setWeak(Classifier weak) {
-        this.weak = weak;
-        return this;
-    }
-
-    public AdaBoostSAMMEClassifier setT(int t) {
-        this.t = t;
-        return this;
-    }
-
     @Override
     public AdaBoostSAMMEClassifier newInstance() {
         return new AdaBoostSAMMEClassifier()
-                .setWeak(this.weak)
-                .setT(this.t);
+                .withClassifier(this.classifier)
+                .withWeakCount(this.weakCount);
+    }
+
+    @Override
+    public String classifierName() {
+        return "AdaBoost.SAMME";
+    }
+
+    @Override
+    public String classifierInstance() {
+        return String.format("AdaBoost.SAMME (classifier: %s, weakCount: %d)",
+                classifier.classifierInstance(), weakCount);
+    }
+
+    public AdaBoostSAMMEClassifier withClassifier(Classifier weak) {
+        this.classifier = weak;
+        return this;
+    }
+
+    public AdaBoostSAMMEClassifier withWeakCount(int weakCount) {
+        this.weakCount = weakCount;
+        return this;
     }
 
     @Override
@@ -87,8 +98,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
         w.stream().transformValue(x -> x / total);
 
-        for (int i = 0; i < t; i++) {
-            Classifier hh = weak.newInstance();
+        for (int i = 0; i < weakCount; i++) {
+            Classifier hh = classifier.newInstance();
             hh.learn(df, w.solidCopy(), targetCol);
             hh.predict(df);
             Nominal hpred = hh.pred();
@@ -126,13 +137,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier
     public void learnFurther(Frame df, Numeric weights, String targetColName, AdaBoostSAMMEClassifier prev) {
 
         // if is null than fallback on normal learning
-        if (prev == null) {
-            learn(df, weights, targetColName);
-            return;
-        }
-
-        // if prev does not provide something, then fallback on normal learning
-        if (prev.h.isEmpty() || prev.a.isEmpty()) {
+        if (prev == null || prev.h.isEmpty() || prev.a.isEmpty()) {
             learn(df, weights, targetColName);
             return;
         }
@@ -165,8 +170,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier
         }
 
 
-        for (int i = h.size(); i < t; i++) {
-            Classifier hh = weak.newInstance();
+        for (int i = h.size(); i < weakCount; i++) {
+            Classifier hh = classifier.newInstance();
             hh.learn(df, w.solidCopy(), targetColName);
             hh.predict(df);
             Nominal hpred = hh.pred();
@@ -208,7 +213,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier
         pred = new Nominal(df.rowCount(), dict);
         dist = Frames.newMatrix(df.rowCount(), dict);
 
-        for (int i = 0; i < min(t, h.size()); i++) {
+        for (int i = 0; i < min(weakCount, h.size()); i++) {
             h.get(i).predict(df);
             for (int j = 0; j < df.rowCount(); j++) {
                 int index = h.get(i).pred().getIndex(j);
@@ -233,7 +238,10 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append("AdaBoostSAMME [t=").append(t).append("]\n");
-        sb.append("weak learners built:").append(h.size()).append("\n");
+        sb.append("> ").append(classifierInstance()).append("\n");
+
+        sb.append("prediction:\n");
+        sb.append("weak learners built: ").append(h.size()).append("\n");
+
     }
 }

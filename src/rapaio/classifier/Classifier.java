@@ -46,6 +46,20 @@ public interface Classifier extends Printable {
     Classifier newInstance();
 
     /**
+     * Returns the classifier name.
+     *
+     * @return classifier name
+     */
+    String classifierName();
+
+    /**
+     * Builds a string which contains the classifier instance name and parameters.
+     *
+     * @return classifier algorithm name and parameters
+     */
+    String classifierInstance();
+
+    /**
      * Fit a classifier on instances specified by frame, with row weights
      * and target as targetName.
      *

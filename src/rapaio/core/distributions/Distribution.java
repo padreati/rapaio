@@ -62,11 +62,11 @@ public abstract class Distribution {
     abstract public double quantile(double p);
 
     public Function<Double, Double> getPdfFunction() {
-        return (value) -> pdf(value);
+        return this::pdf;
     }
 
     public Function<Double, Double> getCdfFunction() {
-        return (value) -> cdf(value);
+        return this::cdf;
     }
 
     abstract public double min();

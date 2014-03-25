@@ -78,7 +78,6 @@ public abstract class AbstractPrinter implements Printer {
 
     @Override
     public void code(String lines) {
-        print("$");
         print(lines);
     }
 

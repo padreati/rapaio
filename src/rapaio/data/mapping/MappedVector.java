@@ -20,9 +20,7 @@
 
 package rapaio.data.mapping;
 
-import rapaio.data.AbstractVector;
-import rapaio.data.Vector;
-import rapaio.data.VectorType;
+import rapaio.data.*;
 
 /**
  * A vector which is learn on the base of another vector and the row selection
@@ -179,10 +177,25 @@ public class MappedVector extends AbstractVector {
 
     @Override
     public Vector solidCopy() {
-        Mapping m = new Mapping();
-        for (int i = 0; i < mapping.size(); i++) {
-            m.add(mapping.get(i));
+        switch (source.type()) {
+            case NOMINAL:
+                Nominal nom = new Nominal(mapping.size(), source.getDictionary());
+                for (int i = 0; i < mapping.size(); i++) {
+                    nom.setLabel(i, getLabel(i));
+                }
+                return nom;
+            case INDEX:
+                Index idx = new Index(rowCount(), rowCount(), 0);
+                for (int i = 0; i < rowCount(); i++) {
+                    idx.setIndex(i, getIndex(i));
+                }
+                return idx;
+            default:
+                Numeric num = new Numeric(rowCount());
+                for (int i = 0; i < rowCount(); i++) {
+                    num.setValue(i, getValue(i));
+                }
+                return num;
         }
-        return new MappedVector(source, m);
     }
 }
