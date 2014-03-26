@@ -28,58 +28,71 @@ import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
-import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
+import rapaio.io.ArffPersistence;
 import rapaio.printer.LocalPrinter;
-import rapaio.workspace.Workspace;
+import rapaio.workspace.Summary;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
+
+import static rapaio.workspace.Workspace.draw;
+import static rapaio.workspace.Workspace.setPrinter;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 public class AdaBoostSAMMEEval {
 
-    public static void main(String[] args) throws IOException, URISyntaxException {
+    public static void main(String[] args) throws Exception {
 
-        Workspace.setPrinter(new LocalPrinter());
+        setPrinter(new LocalPrinter());
 
-        evalWith(Datasets.loadIrisDataset(), "class");
-        evalWith(Datasets.loadSpamBase(), "spam");
-        evalWith(Datasets.loadProstateCancer(), "train");
-        evalWith(Datasets.loadMushrooms(), "classes");
+//        evalWith(Datasets.loadIrisDataset(), "class");
+//        evalWith(Datasets.loadSpamBase(), "spam");
+//        evalWith(Datasets.loadMushrooms(), "classes");
+//        evalWith(loadArff("breast-cancer"), "Class", 1_000, 1);
+//        evalWith(loadArff("letter"), "class", 100, 50);
+//        evalWith(loadArff("mushroom"), "class", 1_000, 1);
+        evalWith(loadArff("vote"), "Class", 1_000, 1);
     }
 
-    private static void evalWith(Frame df, String targetName) {
-        List<Frame> samples = StatSampling.randomSample(df, new int[]{(int) (df.rowCount() * 0.7)});
+    private static Frame loadArff(String name) throws Exception {
+        final String path = "/home/ati/rapaio/rapaio-data/datasets-UCI/UCI/" + name + ".arff";
+        ArffPersistence arff = new ArffPersistence();
+        return arff.read(name, path);
+    }
+
+    private static void evalWith(Frame df, String targetName, int rounds, int step) {
+        Summary.summary(df);
+
+        List<Frame> samples = StatSampling.randomSample(df, new int[]{(int) (df.rowCount() * 0.6)});
         Frame tr = samples.get(0);
         Frame te = samples.get(1);
 
         AdaBoostSAMMEClassifier c = new AdaBoostSAMMEClassifier()
                 .withClassifier(new DecisionStumpClassifier()
                         .withMethod(CTreeTest.Method.INFO_GAIN)
-                        .withMinCount(1));
+                        .withMinCount(5))
+                .withSampling(1);
 
         Index index = new Index();
         Numeric trainAcc = new Numeric();
         Numeric testAcc = new Numeric();
 
-        for (int i = 1; i <= 50; i++) {
-            c.withRuns(i * 2);
-            index.addIndex(i * 2);
+        for (int i = 1; i <= rounds; i++) {
+            c.withRuns(i * step);
+            index.addIndex(i * step);
 
-            c.learnFurther(tr, targetName, 2);
+            c.learnFurther(tr, targetName, step);
 
             c.predict(tr);
-            trainAcc.addValue(new ConfusionMatrix(tr.col(targetName), c.pred()).getAccuracy());
+            trainAcc.addValue(1 - new ConfusionMatrix(tr.col(targetName), c.pred()).getAccuracy());
 
             c.predict(te);
-            testAcc.addValue(new ConfusionMatrix(te.col(targetName), c.pred()).getAccuracy());
+            testAcc.addValue(1 - new ConfusionMatrix(te.col(targetName), c.pred()).getAccuracy());
 
-            Workspace.draw(new Plot()
+            draw(new Plot()
                     .add(new Lines(index, trainAcc).setCol(1))
                     .add(new Lines(index, testAcc).setCol(2)));
         }

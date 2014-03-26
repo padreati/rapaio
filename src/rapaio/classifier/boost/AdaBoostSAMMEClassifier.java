@@ -24,10 +24,13 @@ import rapaio.classifier.AbstractClassifier;
 import rapaio.classifier.Classifier;
 import rapaio.classifier.RunningClassifier;
 import rapaio.classifier.tree.DecisionStumpClassifier;
+import rapaio.core.sample.DiscreteSampling;
 import rapaio.data.Frame;
 import rapaio.data.Frames;
 import rapaio.data.Nominal;
 import rapaio.data.Numeric;
+import rapaio.data.mapping.MappedFrame;
+import rapaio.data.mapping.Mapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +43,13 @@ import static rapaio.core.MathBase.min;
  */
 public class AdaBoostSAMMEClassifier extends AbstractClassifier implements RunningClassifier {
 
+    // parameters
+
     Classifier base = new DecisionStumpClassifier();
     int runs = 0;
+    double sampling = 0.0;
+
+    // model artifacts
 
     List<Double> a;
     List<Classifier> h;
@@ -67,8 +75,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
     @Override
     public String fullName() {
-        return String.format("AdaBoost.SAMME (base: %s, runs: %d)",
-                base.fullName(), runs);
+        return String.format("AdaBoost.SAMME (base: %s, runs: %d, sampling: %.2f)",
+                base.fullName(), runs, sampling);
     }
 
     public AdaBoostSAMMEClassifier withClassifier(Classifier weak) {
@@ -79,6 +87,22 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     public AdaBoostSAMMEClassifier withRuns(int weakCount) {
         this.runs = weakCount;
         return this;
+    }
+
+    public AdaBoostSAMMEClassifier withSampling(double p) {
+        this.sampling = p;
+        return this;
+    }
+
+    private int[] getSamplingRows(Frame df) {
+        if (sampling < 1.0) {
+            return new DiscreteSampling().sampleWOR((int) (df.rowCount() * sampling), df.rowCount());
+        }
+        int[] rows = new int[df.rowCount()];
+        for (int i = 0; i < rows.length; i++) {
+            rows[i] = i;
+        }
+        return rows;
     }
 
     @Override
@@ -98,8 +122,17 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         w.stream().transformValue(x -> x / total);
 
         for (int i = 0; i < runs; i++) {
+            int[] rows = getSamplingRows(df);
+            Mapping mapping = new Mapping();
+            Numeric wCopy = new Numeric();
+            for (int row : rows) {
+                mapping.add(df.rowId(row));
+                wCopy.addValue(w.getValue(row));
+            }
+
             Classifier hh = base.newInstance();
-            hh.learn(df, w.solidCopy(), targetCol);
+            hh.learn(new MappedFrame(df.source(), mapping), wCopy, targetCol);
+
             hh.predict(df);
             Nominal hpred = hh.pred();
 
