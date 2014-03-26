@@ -47,7 +47,7 @@ public class QQPlot extends Plot {
 
         Points pts = new Points(y, x);
         add(pts);
-        pts.setColorIndex(0);
+        pts.setColor(0);
         return this;
     }
 }

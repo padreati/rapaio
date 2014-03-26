@@ -25,8 +25,7 @@ import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Vector;
-import rapaio.data.Vectors;
-import rapaio.graphics.base.AbstractFigure;
+import rapaio.graphics.base.BaseFigure;
 import rapaio.graphics.base.Range;
 
 import java.awt.*;
@@ -39,7 +38,7 @@ import static rapaio.core.MathBase.min;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class BoxPlot extends AbstractFigure {
+public class BoxPlot extends BaseFigure {
 
     private final Vector[] vectors;
     private final String[] labels;
@@ -116,7 +115,7 @@ public class BoxPlot extends AbstractFigure {
         setLeftThicker(true);
         setBottomMarkers(true);
         setBottomThicker(true);
-        setColorIndex(Vectors.newIdxOne(0));
+        setColor(0);
     }
 
     @Override
@@ -174,14 +173,14 @@ public class BoxPlot extends AbstractFigure {
             // median
             g2d.setStroke(new BasicStroke(getLwd() * 2));
             g2d.draw(new Line2D.Double(
-                    xscale(x1), yscale(q[1]), xscale(x3), yscale(q[1])));
+                    xScale(x1), yScale(q[1]), xScale(x3), yScale(q[1])));
 
             // box
             g2d.setStroke(new BasicStroke(getLwd()));
-            g2d.draw(new Line2D.Double(xscale(x1), yscale(q[0]), xscale(x3), yscale(q[0])));
-            g2d.draw(new Line2D.Double(xscale(x1), yscale(q[2]), xscale(x3), yscale(q[2])));
-            g2d.draw(new Line2D.Double(xscale(x1), yscale(q[0]), xscale(x1), yscale(q[2])));
-            g2d.draw(new Line2D.Double(xscale(x3), yscale(q[0]), xscale(x3), yscale(q[2])));
+            g2d.draw(new Line2D.Double(xScale(x1), yScale(q[0]), xScale(x3), yScale(q[0])));
+            g2d.draw(new Line2D.Double(xScale(x1), yScale(q[2]), xScale(x3), yScale(q[2])));
+            g2d.draw(new Line2D.Double(xScale(x1), yScale(q[0]), xScale(x1), yScale(q[2])));
+            g2d.draw(new Line2D.Double(xScale(x3), yScale(q[0]), xScale(x3), yScale(q[2])));
 
             // outliers
             double upperwhisker = q[2];
@@ -192,8 +191,8 @@ public class BoxPlot extends AbstractFigure {
                     // big outlier
                     int width = (int) (3 * getSize(i));
                     g2d.fillOval(
-                            (int) xscale(x2) - width / 2 - 1,
-                            (int) yscale(point) - width / 2 - 1,
+                            (int) xScale(x2) - width / 2 - 1,
+                            (int) yScale(point) - width / 2 - 1,
                             width, width);
                     continue;
                 }
@@ -201,8 +200,8 @@ public class BoxPlot extends AbstractFigure {
                     // outlier
                     int width = (int) (3.5 * getSize(i));
                     g2d.drawOval(
-                            (int) xscale(x2) - width / 2 - 1,
-                            (int) yscale(point) - width / 2 - 1,
+                            (int) xScale(x2) - width / 2 - 1,
+                            (int) yScale(point) - width / 2 - 1,
                             width, width);
                     continue;
                 }
@@ -215,12 +214,12 @@ public class BoxPlot extends AbstractFigure {
             }
 
             // whiskers
-            g2d.draw(new Line2D.Double(xscale(x1), yscale(upperwhisker), xscale(x3), yscale(upperwhisker)));
-            g2d.draw(new Line2D.Double(xscale(x1), yscale(lowerqhisker), xscale(x3), yscale(lowerqhisker)));
+            g2d.draw(new Line2D.Double(xScale(x1), yScale(upperwhisker), xScale(x3), yScale(upperwhisker)));
+            g2d.draw(new Line2D.Double(xScale(x1), yScale(lowerqhisker), xScale(x3), yScale(lowerqhisker)));
 
             g2d.setStroke(new BasicStroke(getLwd(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[]{8}, 0));
-            g2d.draw(new Line2D.Double(xscale(x2), yscale(q[2]), xscale(x2), yscale(upperwhisker)));
-            g2d.draw(new Line2D.Double(xscale(x2), yscale(q[0]), xscale(x2), yscale(lowerqhisker)));
+            g2d.draw(new Line2D.Double(xScale(x2), yScale(q[2]), xScale(x2), yScale(upperwhisker)));
+            g2d.draw(new Line2D.Double(xScale(x2), yScale(q[0]), xScale(x2), yScale(lowerqhisker)));
         }
     }
 

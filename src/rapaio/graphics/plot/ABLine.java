@@ -62,7 +62,7 @@ public class ABLine extends PlotComponent {
 
     @Override
     public void paint(Graphics2D g2d) {
-        Range range = getParent().getRange();
+        Range range = parent.getRange();
         g2d.setColor(getColor(0));
 
         double x1 = 0, x2 = 0, y1 = 0, y2 = 0;
@@ -70,33 +70,33 @@ public class ABLine extends PlotComponent {
             double xx = range.getX1();
             double yy = a * xx + b;
             if (range.contains(xx, yy)) {
-                x1 = (int) getParent().xscale(xx);
-                y1 = (int) getParent().yscale(yy);
+                x1 = (int) getParent().xScale(xx);
+                y1 = (int) getParent().yScale(yy);
             } else {
-                y1 = (int) getParent().yscale(range.getY1());
-                x1 = (int) getParent().xscale((range.getY1() - b) / a);
+                y1 = (int) getParent().yScale(range.getY1());
+                x1 = (int) getParent().xScale((range.getY1() - b) / a);
             }
 
             xx = range.getX2();
             yy = a * xx + b;
             if (range.contains(xx, yy)) {
-                x2 = (int) getParent().xscale(xx);
-                y2 = (int) getParent().yscale(yy);
+                x2 = (int) getParent().xScale(xx);
+                y2 = (int) getParent().yScale(yy);
             } else {
-                y2 = (int) getParent().yscale(range.getY2());
-                x2 = (int) getParent().xscale((range.getY2() - b) / a);
+                y2 = (int) getParent().yScale(range.getY2());
+                x2 = (int) getParent().xScale((range.getY2() - b) / a);
             }
         } else {
             if (h) {
-                x1 = (int) getParent().xscale(range.getX1());
-                y1 = (int) getParent().yscale(a);
-                x2 = (int) getParent().xscale(range.getX2());
-                y2 = (int) getParent().yscale(a);
+                x1 = (int) getParent().xScale(range.getX1());
+                y1 = (int) getParent().yScale(a);
+                x2 = (int) getParent().xScale(range.getX2());
+                y2 = (int) getParent().yScale(a);
             } else {
-                x1 = (int) getParent().xscale(a);
-                y1 = (int) getParent().yscale(range.getY1());
-                x2 = (int) getParent().xscale(a);
-                y2 = (int) getParent().yscale(range.getY2());
+                x1 = (int) getParent().xScale(a);
+                y1 = (int) getParent().yScale(range.getY1());
+                x2 = (int) getParent().xScale(a);
+                y2 = (int) getParent().yScale(range.getY2());
             }
         }
         Stroke oldStroke = g2d.getStroke();

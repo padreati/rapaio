@@ -71,21 +71,21 @@ public class LinearRegression3Page implements TutorialPage {
         Numeric hp = (Numeric) cars.col("horsepower");
 
         draw(new Plot()
-                .add(new Points(mpg, hp).setColorIndex(cars.col("origin")).setPchIndex(1))
-                .setBottomLabel("mpg")
-                .setLeftLabel("horsepower")
+                        .add(new Points(mpg, hp).setColor(cars.col("origin")).setPch(1))
+                        .setBottomLabel("mpg")
+                        .setLeftLabel("horsepower")
         );
 
         draw(new Plot()
-                .add(new Points(mpg, weight))
-                .setBottomLabel("mpg")
-                .setLeftLabel("weight")
+                        .add(new Points(mpg, weight))
+                        .setBottomLabel("mpg")
+                        .setLeftLabel("weight")
         );
 
         draw(new Plot()
-                .add(new Points(hp, weight))
-                .setBottomLabel("horsepower")
-                .setLeftLabel("weight")
+                        .add(new Points(hp, weight))
+                        .setBottomLabel("horsepower")
+                        .setLeftLabel("weight")
         );
     }
 }

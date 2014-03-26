@@ -109,10 +109,10 @@ public class DensityLine extends PlotComponent {
                 g2d.setColor(getColor(i));
                 g2d.setStroke(new BasicStroke(getLwd()));
                 g2d.draw(new Line2D.Double(
-                        getParent().xscale(x.getValue(i - 1)),
-                        getParent().yscale(y.getValue(i - 1)),
-                        getParent().xscale(x.getValue(i)),
-                        getParent().yscale(y.getValue(i))));
+                        getParent().xScale(x.getValue(i - 1)),
+                        getParent().yScale(y.getValue(i - 1)),
+                        getParent().xScale(x.getValue(i)),
+                        getParent().yScale(y.getValue(i))));
 
             }
         }

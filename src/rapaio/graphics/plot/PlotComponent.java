@@ -21,6 +21,7 @@
 package rapaio.graphics.plot;
 
 import rapaio.data.Vector;
+import rapaio.graphics.Plot;
 import rapaio.graphics.base.AbstractFigure;
 
 import java.awt.*;
@@ -30,10 +31,71 @@ import java.awt.*;
  */
 public abstract class PlotComponent extends AbstractFigure {
 
+    protected Plot parent;
+
     public void initialize() {
     }
 
+    public void setParent(Plot parent) {
+        this.parent = parent;
+    }
+
+    public Plot getParent() {
+        return parent;
+    }
+
+
     public abstract void paint(Graphics2D g2d);
+
+    @Override
+    public Color getColor(int row) {
+        if (parent != null && colors == null) {
+            return parent.getColor(row);
+        }
+        return super.getColor(row);
+    }
+
+    @Override
+    public int getPch(int row) {
+        if (parent != null && pchIndex == null) {
+            return parent.getPch(row);
+        }
+        return super.getPch(row);
+    }
+
+    @Override
+    public double getSize(int row) {
+        if (parent != null && sizeIndex == null) {
+            return parent.getSize(row);
+        }
+        return super.getSize(row);
+    }
+
+    @Override
+    public float getLwd() {
+        if (parent != null && lwd == null) {
+            return parent.getLwd();
+        }
+        return super.getLwd();
+    }
+
+    @Override
+    public PlotComponent setColor(int index) {
+        super.setColor(index);
+        return this;
+    }
+
+    @Override
+    public PlotComponent setColor(Color color) {
+        super.setColor(color);
+        return this;
+    }
+
+    @Override
+    public PlotComponent setColor(Vector color) {
+        super.setColor(color);
+        return this;
+    }
 
     @Override
     public PlotComponent setLwd(float lwd) {
@@ -42,50 +104,26 @@ public abstract class PlotComponent extends AbstractFigure {
     }
 
     @Override
-    public PlotComponent setSizeIndex(Vector sizeIndex) {
-        super.setSizeIndex(sizeIndex);
+    public PlotComponent setSize(Vector sizeIndex) {
+        super.setSize(sizeIndex);
         return this;
     }
 
     @Override
-    public PlotComponent setSizeIndex(double size) {
-        super.setSizeIndex(size);
+    public PlotComponent setSize(double size) {
+        super.setSize(size);
         return this;
     }
 
     @Override
-    public PlotComponent setColorIndex(Vector colorIndex) {
-        super.setColorIndex(colorIndex);
+    public PlotComponent setPch(Vector pchIndex) {
+        super.setPch(pchIndex);
         return this;
     }
 
     @Override
-    public PlotComponent setColorIndex(int colorIndex) {
-        super.setColorIndex(colorIndex);
-        return this;
-    }
-
-    @Override
-    public PlotComponent setPchIndex(Vector pchIndex) {
-        super.setPchIndex(pchIndex);
-        return this;
-    }
-
-    @Override
-    public PlotComponent setPchIndex(int pch) {
-        super.setPchIndex(pch);
-        return this;
-    }
-
-    @Override
-    public PlotComponent setXRange(double start, double end) {
-        super.setXRange(start, end);
-        return this;
-    }
-
-    @Override
-    public PlotComponent setYRange(double start, double end) {
-        super.setYRange(start, end);
+    public PlotComponent setPch(int pch) {
+        super.setPch(pch);
         return this;
     }
 }

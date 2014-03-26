@@ -71,11 +71,11 @@ public class StatOnlineTest {
         }
 
         draw(new Plot()
-                .add(new Points(index, varLeft).setColorIndex(1))
-                .add(new Points(index, varRight).setColorIndex(2))
-                .add(new Points(index, varSum).setColorIndex(3))
-                .setSizeIndex(0.4)
-                .setYRange(0.5, 1.5)
+                        .add(new Points(index, varLeft).setColor(1))
+                        .add(new Points(index, varRight).setColor(2))
+                        .add(new Points(index, varSum).setColor(3))
+                        .setYRange(0.5, 1.5)
+                        .setSize(0.4)
         );
     }
 }

@@ -20,7 +20,7 @@
 
 package rapaio.graphics;
 
-import rapaio.graphics.base.AbstractFigure;
+import rapaio.graphics.base.BaseFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.plot.PlotComponent;
 
@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * @author tutuianu
  */
-public class Plot extends AbstractFigure {
+public class Plot extends BaseFigure {
 
     private final List<PlotComponent> components = new LinkedList<>();
 
@@ -41,7 +41,7 @@ public class Plot extends AbstractFigure {
         setLeftThicker(true);
         setLeftMarkers(true);
     }
-    
+
     @Override
     public Range buildRange() {
         Range r = null;
@@ -101,15 +101,5 @@ public class Plot extends AbstractFigure {
         buildNumericBottomMarkers();
     }
 
-    @Override
-    public Plot setXRange(double start, double end) {
-        super.setXRange(start, end);
-        return this;
-    }
 
-    @Override
-    public Plot setYRange(double start, double end) {
-        super.setYRange(start, end);
-        return this;
-    }
 }

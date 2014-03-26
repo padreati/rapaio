@@ -23,7 +23,7 @@ package rapaio.graphics;
 import rapaio.data.Nominal;
 import rapaio.data.Vector;
 import rapaio.data.Vectors;
-import rapaio.graphics.base.AbstractFigure;
+import rapaio.graphics.base.BaseFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
 
@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class BarChart extends AbstractFigure {
+public class BarChart extends BaseFigure {
 
     private final Vector category;
     private final Vector condition;
@@ -80,7 +80,7 @@ public class BarChart extends AbstractFigure {
         setBottomMarkers(true);
 
         int shift = 9;
-        setColorIndex(Vectors.newSeq(shift, condition.getDictionary().length + shift - 1, 1));
+        setColor(Vectors.newSeq(shift, condition.getDictionary().length + shift - 1, 1));
     }
 
     private SortType sort = SortType.NONE;
@@ -233,33 +233,33 @@ public class BarChart extends AbstractFigure {
                 double yend = ystart + hits[sel[i]][j];
 
                 int[] x = {
-                        (int) xscale(col - 0.4),
-                        (int) xscale(col - 0.4),
-                        (int) xscale(col + 0.4),
-                        (int) xscale(col + 0.4),
-                        (int) xscale(col - 0.4)};
+                        (int) xScale(col - 0.4),
+                        (int) xScale(col - 0.4),
+                        (int) xScale(col + 0.4),
+                        (int) xScale(col + 0.4),
+                        (int) xScale(col - 0.4)};
                 int[] y = {
-                        (int) yscale(ystart),
-                        (int) yscale(yend),
-                        (int) yscale(yend),
-                        (int) yscale(ystart),
-                        (int) yscale(ystart)};
+                        (int) yScale(ystart),
+                        (int) yScale(yend),
+                        (int) yScale(yend),
+                        (int) yScale(ystart),
+                        (int) yScale(ystart)};
 
                 g2d.setColor(ColorPalette.STANDARD.getColor(0));
                 g2d.drawPolygon(x, y, 4);
 
                 x = new int[]{
-                        (int) xscale(col - 0.4) + 1,
-                        (int) xscale(col - 0.4) + 1,
-                        (int) xscale(col + 0.4),
-                        (int) xscale(col + 0.4),
-                        (int) xscale(col - 0.4) + 1};
+                        (int) xScale(col - 0.4) + 1,
+                        (int) xScale(col - 0.4) + 1,
+                        (int) xScale(col + 0.4),
+                        (int) xScale(col + 0.4),
+                        (int) xScale(col - 0.4) + 1};
                 y = new int[]{
-                        (int) yscale(ystart),
-                        (int) yscale(yend) + 1,
-                        (int) yscale(yend) + 1,
-                        (int) yscale(ystart),
-                        (int) yscale(ystart)};
+                        (int) yScale(ystart),
+                        (int) yScale(yend) + 1,
+                        (int) yScale(yend) + 1,
+                        (int) yScale(ystart),
+                        (int) yScale(ystart)};
 
                 g2d.setColor(getColor(j));
                 g2d.fillPolygon(x, y, 4);

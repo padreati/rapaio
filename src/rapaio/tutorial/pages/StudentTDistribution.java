@@ -77,7 +77,7 @@ public class StudentTDistribution implements TutorialPage {
         p("The probability density of a standard normal distribution "
                 + "looks like this: ");
 
-        draw(new Plot().add(new FunctionLine(new Normal().getPdfFunction()).setColorIndex(1))
+        draw(new Plot().add(new FunctionLine(new Normal().getPdfFunction()).setColor(1))
                 .setXRange(-4, 4)
                 .setYRange(0, 0.5));
 
@@ -112,7 +112,7 @@ public class StudentTDistribution implements TutorialPage {
                 + "to repeat the experiments enough time. ");
 
         draw(new Plot()
-                .add(new FunctionLine(new Normal().getPdfFunction()).setColorIndex(1))
+                .add(new FunctionLine(new Normal().getPdfFunction()).setColor(1))
                 .add(new FunctionLine(new StudentT(3).getPdfFunction()))
                 .setXRange(-4, 4)
                 .setYRange(0, 0.5));

@@ -195,11 +195,12 @@ public class DiscreteSamplingPage implements TutorialPage {
 
         final Frame df = new SolidFrame(SAMPLE_SIZE * TRIALS, vectors, new String[]{"lottery trial", "winning number"});
         draw(new Plot()
-                .add(new Points(df.col(0), df.col(1))
-                        .setPchIndex(1)
-                        .setColorIndex(34)
-                        .setSizeIndex(2)),
-                600, 300);
+                        .add(new Points(df.col(0), df.col(1))
+                                .setPch(1)
+                                .setColor(34)
+                                .setSize(2)),
+                600, 300
+        );
 
         p("There is random in that plot. Everywhere. A summary on the data, however, "
                 + "can give us enough clues to understand that the distribution "
@@ -262,8 +263,8 @@ public class DiscreteSamplingPage implements TutorialPage {
         draw(new Plot()
                 .add(new ABLine(0.6, true))
                 .add(new Lines(index, value)
-                        .setColorIndex(2)
-                        .setLwd(1.5f)
+                                .setColor(2)
+                                .setLwd(1.5f)
                 )
                 .setYRange(0, 1)
                 .setBottomLabel("experiment no")
@@ -351,11 +352,12 @@ public class DiscreteSamplingPage implements TutorialPage {
 
         final Frame df2 = new SolidFrame(SAMPLE_SIZE * TRIALS, vectors, new String[]{"loaded lottery", "winning number"});
         draw(new Plot()
-                .add(new Points(df2.col(0), df2.col(1)))
-                .setPchIndex(Vectors.newIdxOne(1))
-                .setColorIndex(Vectors.newIdxOne(34))
-                .setSizeIndex(Vectors.newNumOne(2)),
-                600, 300);
+                        .add(new Points(df2.col(0), df2.col(1)))
+                        .setPch(Vectors.newIdxOne(1))
+                        .setSize(Vectors.newNumOne(2))
+                        .setColor(34),
+                600, 300
+        );
 
         p("This time we see more than random there. There is a clear more dense "
                 + "region in the upper side of the graph. Also, we can note, perhaps "
@@ -365,13 +367,13 @@ public class DiscreteSamplingPage implements TutorialPage {
                 + "density would help more.");
 
         draw(new Plot()
-                .add(new FunctionLine(new KernelDensityEstimator(df2.col("winning number"), 3).getPdfFunction())
-                        .setXRange(-10, 60)
-                        .setYRange(0, .05)
-                        .setColorIndex(Vectors.newIdxOne(1)))
-                .setBottomLabel("winning numbers")
-                .setLeftLabel("kernel probability density"),
-                600, 300);
+                        .add(new FunctionLine(new KernelDensityEstimator(df2.col("winning number"), 3).getPdfFunction())
+                                .setColor(Vectors.newIdxOne(1)))
+                        .setBottomLabel("winning numbers")
+                        .setLeftLabel("kernel probability density")
+                        .setXRange(-10, 60).setYRange(0, .05),
+                600, 300
+        );
 
         p("Rapaio implementation of this last algorithm is based on a wonderful algorithm "
                 + "invented by Efraimidis-Spirakis. "

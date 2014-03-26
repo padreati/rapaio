@@ -75,13 +75,13 @@ public class PearsonHeight implements TutorialPage {
         for (int i = 0; i < df.colCount(); i++) {
             Normal normal = new Normal(new Mean(df.col(i)).getValue(), sqrt(new Variance(df.col(i)).getValue()));
             draw(new Plot()
-                    .add(new Histogram(df.col(i), 23, true, 57, 80))
-                    .add(new FunctionLine(normal.getPdfFunction())
-                            .setColorIndex(2))
-                    .setBottomLabel(df.colNames()[i])
-                    .setXRange(57, 80)
-                    .setYRange(0, 0.20),
-                    700, 300);
+                            .add(new Histogram(df.col(i), 23, true, 57, 80))
+                            .add(new FunctionLine(normal.getPdfFunction())
+                                    .setColor(2))
+                            .setBottomLabel(df.colNames()[i])
+                            .setXRange(57, 80).setYRange(0, 0.20),
+                    700, 300
+            );
         }
 
         heading(2, "About normality");
@@ -100,9 +100,10 @@ public class PearsonHeight implements TutorialPage {
             double mu = new Mean(col).getValue();
             Distribution normal = new Normal();
             draw(new QQPlot()
-                    .add(col, normal)
-                    .setLeftLabel(df.colNames()[colIndex]),
-                    500, 300);
+                            .add(col, normal)
+                            .setLeftLabel(df.colNames()[colIndex]),
+                    500, 300
+            );
         }
 
         summary(new Mean(df.col("Father")));
@@ -122,15 +123,13 @@ public class PearsonHeight implements TutorialPage {
         summary(fatherQuantiles);
         summary(sonQuantiles);
 
-        Plot plot = new Plot()
-                .setXRange(55, 80)
-                .setYRange(55, 80);
+        Plot plot = (Plot) new Plot().setXRange(55, 80).setYRange(55, 80);
         for (int i = 0; i < fatherQuantiles.getValues().length; i++) {
             plot.add(new ABLine(fatherQuantiles.getValues()[i], false)
-                    .setColorIndex(30));
+                    .setColor(30));
         }
         for (int i = 0; i < sonQuantiles.getValues().length; i++) {
-            plot.add(new ABLine(sonQuantiles.getValues()[i], true).setColorIndex(30));
+            plot.add(new ABLine(sonQuantiles.getValues()[i], true).setColor(30));
         }
         plot.add(new Points(df.col("Father"), df.col("Son")));
         draw(plot, 600, 600);

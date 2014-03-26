@@ -125,9 +125,7 @@ public class Histogram extends PlotComponent {
         }
 
         // defaults
-        if (getColorIndex().rowCount() == 1 && getColorIndex().getIndex(0) == 0) {
-            setColorIndex(Vectors.newIdxOne(7));
-        }
+        setColor(Vectors.newIdxOne(7));
     }
 
     @Override
@@ -135,22 +133,12 @@ public class Histogram extends PlotComponent {
         rebuild();
 
         Range range = new Range();
-        if (getXRangeStart() != getXRangeStart()) {
-            range.union(minvalue, Double.NaN);
-            range.union(maxvalue, Double.NaN);
-        } else {
-            range.union(getXRangeStart(), Double.NaN);
-            range.union(getXRangeEnd(), Double.NaN);
+        range.union(minvalue, Double.NaN);
+        range.union(maxvalue, Double.NaN);
+        for (int i = 0; i < freqtable.length; i++) {
+            range.union(Double.NaN, freqtable[i]);
         }
-        if (getYRangeStart() != getYRangeStart()) {
-            for (int i = 0; i < freqtable.length; i++) {
-                range.union(Double.NaN, freqtable[i]);
-            }
-            range.union(Double.NaN, 0);
-        } else {
-            range.union(Double.NaN, 0);
-            range.union(Double.NaN, getYRangeEnd());
-        }
+        range.union(Double.NaN, 0);
         return range;
     }
 
@@ -172,33 +160,33 @@ public class Histogram extends PlotComponent {
             int[] y;
             g2d.setColor(ColorPalette.STANDARD.getColor(0));
             x = new int[]{
-                    (int) getParent().xscale(binStart(i)),
-                    (int) getParent().xscale(binStart(i)),
-                    (int) getParent().xscale(binStart(i + 1)),
-                    (int) getParent().xscale(binStart(i + 1)),
-                    (int) getParent().xscale(binStart(i)),};
+                    (int) getParent().xScale(binStart(i)),
+                    (int) getParent().xScale(binStart(i)),
+                    (int) getParent().xScale(binStart(i + 1)),
+                    (int) getParent().xScale(binStart(i + 1)),
+                    (int) getParent().xScale(binStart(i)),};
             y = new int[]{
-                    (int) getParent().yscale(0),
-                    (int) getParent().yscale(mind),
-                    (int) getParent().yscale(mind),
-                    (int) getParent().yscale(0),
-                    (int) getParent().yscale(0)};
+                    (int) getParent().yScale(0),
+                    (int) getParent().yScale(mind),
+                    (int) getParent().yScale(mind),
+                    (int) getParent().yScale(0),
+                    (int) getParent().yScale(0)};
             g2d.drawPolyline(x, y, 5);
 
             if (d != 0) {
                 x = new int[]{
-                        (int) getParent().xscale(binStart(i)) + 1,
-                        (int) getParent().xscale(binStart(i)) + 1,
-                        (int) getParent().xscale(binStart(i + 1)),
-                        (int) getParent().xscale(binStart(i + 1)),
-                        (int) getParent().xscale(binStart(i)) + 1
+                        (int) getParent().xScale(binStart(i)) + 1,
+                        (int) getParent().xScale(binStart(i)) + 1,
+                        (int) getParent().xScale(binStart(i + 1)),
+                        (int) getParent().xScale(binStart(i + 1)),
+                        (int) getParent().xScale(binStart(i)) + 1
                 };
                 y = new int[]{
-                        (int) getParent().yscale(0),
-                        (int) getParent().yscale(mind) + ((d == mind) ? 1 : -2),
-                        (int) getParent().yscale(mind) + ((d == mind) ? 1 : -2),
-                        (int) getParent().yscale(0),
-                        (int) getParent().yscale(0)};
+                        (int) getParent().yScale(0),
+                        (int) getParent().yScale(mind) + ((d == mind) ? 1 : -2),
+                        (int) getParent().yScale(mind) + ((d == mind) ? 1 : -2),
+                        (int) getParent().yScale(0),
+                        (int) getParent().yScale(0)};
                 g2d.setColor(getColor(i));
                 g2d.fillPolygon(x, y, 5);
             }

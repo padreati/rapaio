@@ -20,7 +20,7 @@
 
 package rapaio.graphics;
 
-import rapaio.graphics.base.AbstractFigure;
+import rapaio.graphics.base.BaseFigure;
 import rapaio.graphics.base.Range;
 
 import java.awt.*;
@@ -29,7 +29,7 @@ import java.awt.image.BufferedImage;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class ImageChart extends AbstractFigure {
+public class ImageChart extends BaseFigure {
 
     private final BufferedImage image;
 

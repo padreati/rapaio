@@ -72,13 +72,14 @@ public class IrisExplore implements TutorialPage {
                 + " This is probably a well separation of species, so a plot should clarify "
                 + "that immediately.");
         draw(new Plot()
-                .add(new Points(df.col(2), df.col(3))
-                        .setColorIndex(df.col("class"))
-                        .setPchIndex(1))
-                .setBottomLabel(df.colNames()[2])
-                .setLeftLabel(df.colNames()[3])
-                .setTitle("Iris data points colored by species"),
-                600, 350);
+                        .add(new Points(df.col(2), df.col(3))
+                                .setColor(df.col("class"))
+                                .setPch(1))
+                        .setBottomLabel(df.colNames()[2])
+                        .setLeftLabel(df.colNames()[3])
+                        .setTitle("Iris data points colored by species"),
+                600, 350
+        );
         p(""
                 + "Indeed, we can notice that the red points are clustered closer to the bottom-left corner "
                 + "of the plot. The other getType of points (the blue and the green ones) are "

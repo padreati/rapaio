@@ -84,16 +84,16 @@ public class LinearRegressionTest {
         Summary.lines(lm.getCoeff());
 
         draw(new Plot()
-                .add(new Points(df.col("Father"), df.col("Son"))
-                        .setPchIndex(1).setSizeIndex(1)
-                )
-                .add(new ABLine(
-                        lm.getCoeff().getValue(1, 1),
-                        lm.getCoeff().getValue(0, 1)))
-                .setXRange(58, 78)
-                .setYRange(58, 78)
-                .setBottomLabel("Father")
-                .setLeftLabel("Son")
+                        .add(new Points(df.col("Father"), df.col("Son"))
+                                        .setPch(1).setSize(1)
+                        )
+                        .add(new ABLine(
+                                lm.getCoeff().getValue(1, 1),
+                                lm.getCoeff().getValue(0, 1)))
+                        .setXRange(58, 78)
+                        .setYRange(58, 78)
+                        .setBottomLabel("Father")
+                        .setLeftLabel("Son")
         );
     }
 

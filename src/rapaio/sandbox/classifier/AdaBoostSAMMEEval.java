@@ -80,8 +80,8 @@ public class AdaBoostSAMMEEval {
             testAcc.addValue(new ConfusionMatrix(te.col(targetName), c.pred()).getAccuracy());
 
             Workspace.draw(new Plot()
-                    .add(new Lines(index, trainAcc).setColorIndex(1))
-                    .add(new Lines(index, testAcc).setColorIndex(2)));
+                    .add(new Lines(index, trainAcc).setColor(1))
+                    .add(new Lines(index, testAcc).setColor(2)));
         }
 
         c.predict(tr);

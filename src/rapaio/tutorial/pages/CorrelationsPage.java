@@ -126,30 +126,33 @@ public class CorrelationsPage implements TutorialPage {
                 + "this intuition with a plot:");
 
         draw(new Plot()
-                .add(new Points(
-                        jitter(df.col("petal-length"), 0.01),
-                        jitter(df.col("sepal-length"), 0.01)).setPchIndex(1))
-                .setTitle("p correlation = " + r.getValues()[df.colIndex("petal-length")][df.colIndex("sepal-length")]),
-                400, 300);
+                        .add(new Points(
+                                jitter(df.col("petal-length"), 0.01),
+                                jitter(df.col("sepal-length"), 0.01)).setPch(1))
+                        .setTitle("p correlation = " + r.getValues()[df.colIndex("petal-length")][df.colIndex("sepal-length")]),
+                400, 300
+        );
 
         p("Another \\(r\\) coefficient which have a getValue close to \\(1\\) is between "
                 + "sepal-length and petal-length. Let's check that with a plot, also: ");
 
         draw(new Plot()
-                .add(new Points(jitter(df.col("petal-length"), 0.01), jitter(df.col("petal-width"), 0.01))
-                        .setPchIndex(1))
-                .setTitle("p correlation = " + r.getValues()[df.colIndex("petal-length")][df.colIndex("petal-width")]),
-                400, 300);
+                        .add(new Points(jitter(df.col("petal-length"), 0.01), jitter(df.col("petal-width"), 0.01))
+                                .setPch(1))
+                        .setTitle("p correlation = " + r.getValues()[df.colIndex("petal-length")][df.colIndex("petal-width")]),
+                400, 300
+        );
 
         p("Finally, we plot again, but this time using a coefficient which is closer to 0, "
                 + "which could mean that the variables are not linearly correlated. "
                 + "Such a getValue for correlation we have between sepal-length and sepal-width. ");
 
         draw(new Plot()
-                .add(new Points(jitter(df.col("sepal-length"), 0.01), jitter(df.col("sepal-width"), 0.01))
-                        .setPchIndex(1))
-                .setTitle("p correlation = " + r.getValues()[df.colIndex("sepal-length")][df.colIndex("sepal-width")]),
-                400, 300);
+                        .add(new Points(jitter(df.col("sepal-length"), 0.01), jitter(df.col("sepal-width"), 0.01))
+                                .setPch(1))
+                        .setTitle("p correlation = " + r.getValues()[df.colIndex("sepal-length")][df.colIndex("sepal-width")]),
+                400, 300
+        );
 
         heading(2, "Spearman's rank correlation coefficient");
 

@@ -87,12 +87,13 @@ public class LawOfLargeNumbers implements TutorialPage {
         p("Now we have the running mean stored in the vector mean and we can plot "
                 + "how that running mean evolves as the size of the sample grows.");
         draw(new Plot()
-                .add(new ABLine(0, 3.5).setLwd(1.5f).setColorIndex(1))
-                .add(new Lines(Vectors.newSeq(1, N, 1), mean)
-                        .setLwd(1.5f)
-                        .setColorIndex(2))
-                .setYRange(2.5, 4.5),
-                800, 300);
+                        .add(new ABLine(0, 3.5).setLwd(1.5f).setColor(1))
+                        .add(new Lines(Vectors.newSeq(1, N, 1), mean)
+                                .setLwd(1.5f)
+                                .setColor(2))
+                        .setYRange(2.5, 4.5),
+                800, 300
+        );
         p("Thus we can clearly notice two fact from the plot above. "
                 + "First fact is that the running average gets closer to the "
                 + "expected getValue, as sample size grows. "

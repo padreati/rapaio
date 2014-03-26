@@ -177,14 +177,15 @@ public class ClassificationWithRF implements TutorialPage {
         }
 
         draw(new Plot()
-                .add(new Lines(index, accuracy).setColorIndex(2))
-                .add(new Points(index, accuracy).setColorIndex(2))
+                .add(new Lines(index, accuracy).setColor(2))
+                .add(new Points(index, accuracy).setColor(2))
                 .add(new Lines(index, oob))
                 .add(new Points(index, oob))
+                .setYRange(0, 0.4)
                 .setLeftLabel("test (blue), oob (black)")
                 .setBottomLabel("number of trees")
                 .setTitle("Accuracy errors (% misclassified)")
-                .setYRange(0, 0.4), 600, 400);
+                , 600, 400);
 
         p("Note from the previous plot how both test and oob errors "
                 + "goes down as the number of trained trees grown. "
@@ -251,10 +252,8 @@ public class ClassificationWithRF implements TutorialPage {
             pos++;
         }
         draw(new Plot()
-                .add(new Lines(index1, accuracy1)
-                        .setColorIndex(2))
-                .add(new Points(index1, accuracy1)
-                        .setColorIndex(2))
+                .add(new Lines(index1, accuracy1).setColor(2))
+                .add(new Points(index1, accuracy1).setColor(2))
                 .add(new Lines(index1, oob1))
                 .add(new Points(index1, oob1))
                 .setLeftLabel("test (blue), oob (black")

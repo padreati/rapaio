@@ -147,7 +147,7 @@ public class HistogramDensityTutorial implements TutorialPage {
 
         final Vector col = df.col("Father");
         draw(new Plot()
-                .add(new Histogram(col).setColorIndex(Vectors.newSeq(1, 255, 1)))
+                .add(new Histogram(col).setColor(Vectors.newSeq(1, 255, 1)))
                 .add(new DensityLine(col)));
 
         p("In statistics, kernel density estimation (KDE) is a non-parametric way to "
@@ -168,12 +168,13 @@ public class HistogramDensityTutorial implements TutorialPage {
                 + "a smooth or less smooth approximation of the density function.");
 
         draw(new Plot()
-                .add(new Histogram(col))
-                .add(new FunctionLine(new KernelDensityEstimator(col, 0.1).getPdfFunction()).setColorIndex(1))
-                .add(new FunctionLine(new KernelDensityEstimator(col, 0.5).getPdfFunction()).setColorIndex(2))
-                .add(new FunctionLine(new KernelDensityEstimator(col, 2).getPdfFunction()).setColorIndex(3))
-                .setYRange(0, 0.18),
-                600, 300);
+                        .add(new Histogram(col))
+                        .add(new FunctionLine(new KernelDensityEstimator(col, 0.1).getPdfFunction()).setColor(1))
+                        .add(new FunctionLine(new KernelDensityEstimator(col, 0.5).getPdfFunction()).setColor(2))
+                        .add(new FunctionLine(new KernelDensityEstimator(col, 2).getPdfFunction()).setColor(3))
+                        .setYRange(0, 0.18),
+                600, 300
+        );
 
         p("Another thing one can try with kernel density estimator is to "
                 + "change the kernel function, which is the function used to "
@@ -185,7 +186,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                 + "once you implement a custom kernel function. ");
 
         draw(new Plot()
-                .add(new FunctionLine(new KernelDensityEstimator(col).getPdfFunction()).setColorIndex(1))
+                .add(new FunctionLine(new KernelDensityEstimator(col).getPdfFunction()).setColor(1))
                 .add(new DensityLine(col, new KernelFunction() {
                     @Override
                     public double pdf(double x, double x0, double bandwidth) {
@@ -218,8 +219,8 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("Blue line represents density approximation of father's heights, "
                 + "red line represents density approximation of son's heights.");
 
-        draw(new Plot().add(new DensityLine(df.col("Father")).setColorIndex(6))
-                .add(new DensityLine(df.col("Son")).setColorIndex(9))
+        draw(new Plot().add(new DensityLine(df.col("Father")).setColor(6))
+                .add(new DensityLine(df.col("Son")).setColor(9))
                 .setYRange(0, 0.18)
                 .setXRange(55, 80));
 
