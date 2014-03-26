@@ -43,7 +43,7 @@ public class Plot extends BaseFigure {
     }
 
     @Override
-    public Range buildRange() {
+    protected Range buildRange() {
         Range r = null;
         for (PlotComponent pc : components) {
             Range newrange = pc.getRange();
@@ -92,12 +92,12 @@ public class Plot extends BaseFigure {
     }
 
     @Override
-    public void buildLeftMarkers() {
+    protected void buildLeftMarkers() {
         buildNumericLeftMarkers();
     }
 
     @Override
-    public void buildBottomMarkers() {
+    protected void buildBottomMarkers() {
         buildNumericBottomMarkers();
     }
 

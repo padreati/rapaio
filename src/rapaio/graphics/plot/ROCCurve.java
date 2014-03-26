@@ -45,8 +45,8 @@ public class ROCCurve extends PlotComponent {
 
     @Override
     public void initialize() {
-        getParent().setBottomLabel("fp rate");
-        getParent().setLeftLabel("tp rate");
+        getParent().setXLabel("fp rate");
+        getParent().setYLabel("tp rate");
     }
 
     @Override

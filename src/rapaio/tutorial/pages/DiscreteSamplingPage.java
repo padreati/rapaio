@@ -246,7 +246,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "                )\n" +
                 "                .setYRange(0, 1)\n" +
                 "                .setBottomLabel(\"experiment no\")\n" +
-                "                .setLeftLabel(\"HEAD/TOTAL\"));\n");
+                "                .setYLabel(\"HEAD/TOTAL\"));\n");
 
         RandomSource.setSeed(1);
         final Vector index = Vectors.newSeq(1, 1000, 1);
@@ -267,8 +267,8 @@ public class DiscreteSamplingPage implements TutorialPage {
                                 .setLwd(1.5f)
                 )
                 .setYRange(0, 1)
-                .setBottomLabel("experiment no")
-                .setLeftLabel("HEAD/TOTAL"));
+                .setXLabel("experiment no")
+                .setYLabel("HEAD/TOTAL"));
 
         p("From the previous function line we see that the plugged in estimate "
                 + "of the probability of HEAD has a large variation at the beginning "
@@ -369,8 +369,8 @@ public class DiscreteSamplingPage implements TutorialPage {
         draw(new Plot()
                         .add(new FunctionLine(new KernelDensityEstimator(df2.col("winning number"), 3).getPdfFunction())
                                 .setColor(Vectors.newIdxOne(1)))
-                        .setBottomLabel("winning numbers")
-                        .setLeftLabel("kernel probability density")
+                        .setXLabel("winning numbers")
+                        .setYLabel("kernel probability density")
                         .setXRange(-10, 60).setYRange(0, .05),
                 600, 300
         );

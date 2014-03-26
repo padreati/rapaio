@@ -92,8 +92,8 @@ public class LinearRegressionTest {
                                 lm.getCoeff().getValue(0, 1)))
                         .setXRange(58, 78)
                         .setYRange(58, 78)
-                        .setBottomLabel("Father")
-                        .setLeftLabel("Son")
+                        .setXLabel("Father")
+                        .setYLabel("Son")
         );
     }
 

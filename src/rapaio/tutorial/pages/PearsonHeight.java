@@ -78,7 +78,7 @@ public class PearsonHeight implements TutorialPage {
                             .add(new Histogram(df.col(i), 23, true, 57, 80))
                             .add(new FunctionLine(normal.getPdfFunction())
                                     .setColor(2))
-                            .setBottomLabel(df.colNames()[i])
+                            .setXLabel(df.colNames()[i])
                             .setXRange(57, 80).setYRange(0, 0.20),
                     700, 300
             );
@@ -101,7 +101,7 @@ public class PearsonHeight implements TutorialPage {
             Distribution normal = new Normal();
             draw(new QQPlot()
                             .add(col, normal)
-                            .setLeftLabel(df.colNames()[colIndex]),
+                            .setYLabel(df.colNames()[colIndex]),
                     500, 300
             );
         }

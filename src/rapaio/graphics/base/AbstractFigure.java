@@ -52,7 +52,7 @@ public abstract class AbstractFigure implements Figure {
     //
     private Range range;
 
-    public abstract Range buildRange();
+    protected abstract Range buildRange();
 
     public Range getRange() {
         if (range == null) {

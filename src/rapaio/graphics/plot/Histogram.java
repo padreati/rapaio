@@ -57,7 +57,7 @@ public class Histogram extends PlotComponent {
 
     @Override
     public void initialize() {
-        getParent().setLeftLabel(prob ? "density" : "frequency");
+        getParent().setYLabel(prob ? "density" : "frequency");
         getParent().setLeftThicker(true);
         getParent().setLeftMarkers(true);
         getParent().setBottomThicker(true);

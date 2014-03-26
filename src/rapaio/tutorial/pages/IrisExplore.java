@@ -63,10 +63,9 @@ public class IrisExplore implements TutorialPage {
         heading(2, "Distribution of measurements");
         p("Now we will take a look over the distribuition of first two measurements.");
         for (int i = 0; i < df.colCount() - 1; i++) {
-            final int ii = i;
             draw(new Plot()
                     .add(new Histogram(df.col(i)).setBins(30))
-                    .setBottomLabel(df.colNames()[ii]), 500, 250);
+                    .setXLabel(df.colNames()[i]), 500, 250);
         }
         p("We can see easily that for petal length and width there are two well-separated modes."
                 + " This is probably a well separation of species, so a plot should clarify "
@@ -75,8 +74,8 @@ public class IrisExplore implements TutorialPage {
                         .add(new Points(df.col(2), df.col(3))
                                 .setColor(df.col("class"))
                                 .setPch(1))
-                        .setBottomLabel(df.colNames()[2])
-                        .setLeftLabel(df.colNames()[3])
+                        .setXLabel(df.colNames()[2])
+                        .setYLabel(df.colNames()[3])
                         .setTitle("Iris data points colored by species"),
                 600, 350
         );

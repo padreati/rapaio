@@ -182,8 +182,8 @@ public class ClassificationWithRF implements TutorialPage {
                 .add(new Lines(index, oob))
                 .add(new Points(index, oob))
                 .setYRange(0, 0.4)
-                .setLeftLabel("test (blue), oob (black)")
-                .setBottomLabel("number of trees")
+                .setYLabel("test (blue), oob (black)")
+                .setXLabel("number of trees")
                 .setTitle("Accuracy errors (% misclassified)")
                 , 600, 400);
 
@@ -215,7 +215,7 @@ public class ClassificationWithRF implements TutorialPage {
                 + "        p.add(new Lines(p, getIndex, oob));\n"
                 + "        p.add(new Points(p, getIndex, oob));\n"
                 + "\n"
-                + "        p.setLeftLabel(\"test (blue), oob (black)\");\n"
+                + "        p.setYLabel(\"test (blue), oob (black)\");\n"
                 + "        p.setTitle(\"Accuracy errors (% misclassified)\");\n"
                 + "        p.opt().setYRange(0, 0.4);\n"
                 + "        draw(p, 600, 400);\n");
@@ -256,8 +256,8 @@ public class ClassificationWithRF implements TutorialPage {
                 .add(new Points(index1, accuracy1).setColor(2))
                 .add(new Lines(index1, oob1))
                 .add(new Points(index1, oob1))
-                .setLeftLabel("test (blue), oob (black")
-                .setBottomLabel("mcols - number of features considered")
+                .setYLabel("test (blue), oob (black")
+                .setXLabel("mcols - number of features considered")
                 .setTitle("Accuracy errors (% misclassified)")
                 .setYRange(0, 0.4), 600, 400);
 
@@ -290,7 +290,7 @@ public class ClassificationWithRF implements TutorialPage {
                 + "            }};\n"
                 + "            new Lines(this, index1, oob1);\n"
                 + "            new Points(this, index1, oob1);\n"
-                + "            setLeftLabel(\"test (blue), oob (black\");\n"
+                + "            setYLabel(\"test (blue), oob (black\");\n"
                 + "            setBottomLabel(\"mcols - number of features considered\");\n"
                 + "            setTitle(\"Accuracy errors (% misclassified)\");\n"
                 + "            opt().setYRange(0, 0.4);\n"

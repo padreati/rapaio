@@ -81,7 +81,7 @@ public abstract class BaseFigure extends AbstractFigure {
         return y2;
     }
 
-    public void buildViewport(Rectangle rectangle) {
+    protected void buildViewport(Rectangle rectangle) {
         viewport = new Rectangle(rectangle);
         viewport.x += 2 * THICKER_PAD;
         if (leftMarkers) {
@@ -134,7 +134,7 @@ public abstract class BaseFigure extends AbstractFigure {
         return leftMarkersPos;
     }
 
-    public Rectangle getViewport() {
+    protected Rectangle getViewport() {
         return viewport;
     }
 
@@ -175,7 +175,7 @@ public abstract class BaseFigure extends AbstractFigure {
     }
 
 
-    public double getThickerMinSpace() {
+    protected double getThickerMinSpace() {
         return thickerMinSpace;
     }
 
@@ -193,20 +193,20 @@ public abstract class BaseFigure extends AbstractFigure {
         return this;
     }
 
-    public String getLeftLabel() {
+    public String getYLabel() {
         return leftLabel;
     }
 
-    public BaseFigure setLeftLabel(String leftLabel) {
+    public BaseFigure setYLabel(String leftLabel) {
         this.leftLabel = leftLabel;
         return this;
     }
 
-    public String getBottomLabel() {
+    public String getXLabel() {
         return bottomLabel;
     }
 
-    public BaseFigure setBottomLabel(String bottomLabel) {
+    public BaseFigure setXLabel(String bottomLabel) {
         this.bottomLabel = bottomLabel;
         return this;
     }
@@ -331,9 +331,9 @@ public abstract class BaseFigure extends AbstractFigure {
         }
     }
 
-    public void buildLeftMarkers() {
+    protected void buildLeftMarkers() {
     }
 
-    public void buildBottomMarkers() {
+    protected void buildBottomMarkers() {
     }
 }
