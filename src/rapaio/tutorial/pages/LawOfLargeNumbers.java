@@ -87,11 +87,11 @@ public class LawOfLargeNumbers implements TutorialPage {
         p("Now we have the running mean stored in the vector mean and we can plot "
                 + "how that running mean evolves as the size of the sample grows.");
         draw(new Plot()
-                        .add(new ABLine(0, 3.5).setLwd(1.5f).setColor(1))
+                        .add(new ABLine(0, 3.5).setLwd(1.5f).setCol(1))
                         .add(new Lines(Vectors.newSeq(1, N, 1), mean)
                                 .setLwd(1.5f)
-                                .setColor(2))
-                        .setYRange(2.5, 4.5),
+                                .setCol(2))
+                        .setYLim(2.5, 4.5),
                 800, 300
         );
         p("Thus we can clearly notice two fact from the plot above. "
@@ -105,7 +105,7 @@ public class LawOfLargeNumbers implements TutorialPage {
                 + "                .add(new Lines(new IndexVector(1, N, 1), mean)\n"
                 + "                        .setLwd(1.5f)\n"
                 + "                        .setColorIndex(2))\n"
-                + "                .setYRange(2.5, 4.5), \n"
+                + "                .setYLim(2.5, 4.5), \n"
                 + "                800, 300);\n"
                 + "");
         p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");

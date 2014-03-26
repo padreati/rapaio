@@ -63,7 +63,7 @@ public class Points extends PlotComponent {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
-            g2d.setColor(getColor(i));
+            g2d.setColor(getCol(i));
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f));
             int xx = (int) (getParent().xScale(x.getValue(i)));
             int yy = (int) (getParent().yScale(y.getValue(i)));

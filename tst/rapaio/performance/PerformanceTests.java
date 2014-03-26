@@ -75,10 +75,10 @@ public class PerformanceTests {
 //        );
 
         draw(new Plot()
-                        .add(new Lines(index, time1).setColor(1))
-                        .add(new Lines(index, time2).setColor(2))
-                        .setXLabel("array")
-                        .setYLabel("NumVector")
+                        .add(new Lines(index, time1).setCol(1))
+                        .add(new Lines(index, time2).setCol(2))
+                        .setXLab("array")
+                        .setYLab("NumVector")
         );
 
 //        draw(new Plot()

@@ -20,7 +20,11 @@
 
 package rapaio.graphics.base;
 
+import rapaio.data.Index;
+import rapaio.data.Vector;
+import rapaio.data.Vectors;
 import rapaio.graphics.colors.ColorPalette;
+import rapaio.graphics.colors.StandardColorPalette;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -28,7 +32,7 @@ import java.util.ArrayList;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public abstract class BaseFigure extends AbstractFigure {
+public abstract class BaseFigure implements Figure {
     //
     private Rectangle viewport;
 
@@ -52,32 +56,163 @@ public abstract class BaseFigure extends AbstractFigure {
     private double y1 = Double.NaN;
     private double y2 = Double.NaN;
 
+    //
+    protected static final Font TITLE_FONT = new Font("Verdana", Font.BOLD, 18);
+    protected static final Font MARKERS_FONT = new Font("Verdana", Font.PLAIN, 13);
+    protected static final Font LABELS_FONT = new Font("Verdana", Font.BOLD, 16);
+    protected static final double DEFAULT_THICKER_MIN_SPACE = 50.;
+    protected static final int THICKER_PAD = 7;
+    protected static final int MARKER_PAD = 15;
+    protected static final int LABEL_PAD = 30;
+    protected static final int TITLE_PAD = 40;
+    protected static final int MINIMUM_PAD = 20;
 
-    public BaseFigure setXRange(double start, double end) {
+    //
+    protected Color[] colors;
+    protected Float lwd;
+    protected Vector sizeIndex;
+    protected Vector pchIndex = Vectors.newIdxOne(0);
+
+    //
+    private Range range;
+
+    protected abstract Range buildRange();
+
+    public Range getRange() {
+        if (range == null) {
+            range = buildRange();
+        }
+        return range;
+    }
+
+    protected void setRange(Range range) {
+        this.range = range;
+    }
+
+    // color
+
+    protected Color[] getDefaultCol() {
+        return new Color[]{Color.BLACK};
+    }
+
+    public BaseFigure setCol(int index) {
+        colors = new Color[]{new StandardColorPalette().getColor(index)};
+        return this;
+    }
+
+    public BaseFigure setCol(Color color) {
+        colors = new Color[]{color};
+        return this;
+    }
+
+    public BaseFigure setCol(Vector color) {
+        colors = new Color[color.rowCount()];
+        for (int i = 0; i < color.rowCount(); i++) {
+            colors[i] = new StandardColorPalette().getColor(color.getIndex(i));
+        }
+        return this;
+    }
+
+    public Color getCol(int row) {
+        if (colors == null) {
+            return getDefaultCol()[row % getDefaultCol().length];
+        }
+        return colors[row % colors.length];
+    }
+
+    // lwd
+
+    protected float getDefaultLwd() {
+        return 1.2f;
+    }
+
+    protected boolean isDefaultLwd() {
+        return lwd == null;
+    }
+
+    public float getLwd() {
+        if (lwd == null) {
+            return getDefaultLwd();
+        }
+        return lwd;
+    }
+
+    public BaseFigure setLwd(float lwd) {
+        this.lwd = lwd;
+        return this;
+    }
+
+    // size
+
+    protected Vector getDefaultSize() {
+        return Vectors.newNum(1, 2.5);
+    }
+
+    public BaseFigure setSize(Vector sizeIndex) {
+        this.sizeIndex = sizeIndex;
+        return this;
+    }
+
+    public BaseFigure setSize(double size) {
+        this.sizeIndex = Vectors.newNumOne(size);
+        return this;
+    }
+
+    public double getSize(int row) {
+        if (sizeIndex == null) {
+            return getDefaultSize().getValue(row % getDefaultSize().rowCount());
+        }
+        return sizeIndex.getValue(row % sizeIndex.rowCount());
+    }
+
+    // pch
+
+    protected Index getDefaultPch() {
+        return Vectors.newIdx(1, 0);
+    }
+
+    public BaseFigure setPch(Vector pchIndex) {
+        this.pchIndex = pchIndex;
+        return this;
+    }
+
+    public BaseFigure setPch(int pch) {
+        this.pchIndex = Vectors.newIdxOne(pch);
+        return this;
+    }
+
+    public int getPch(int row) {
+        if (pchIndex == null) {
+            return getDefaultPch().getIndex(row % getDefaultPch().rowCount());
+        }
+        return pchIndex.getIndex(row % pchIndex.rowCount());
+    }
+
+    public BaseFigure setXLim(double start, double end) {
         this.x1 = start;
         this.x2 = end;
         return this;
     }
 
-    public BaseFigure setYRange(double start, double end) {
+    public BaseFigure setYLim(double start, double end) {
         this.y1 = start;
         this.y2 = end;
         return this;
     }
 
-    public double getXRangeStart() {
+    protected double getXRangeStart() {
         return x1;
     }
 
-    public double getXRangeEnd() {
+    protected double getXRangeEnd() {
         return x2;
     }
 
-    public double getYRangeStart() {
+    protected double getYRangeStart() {
         return y1;
     }
 
-    public double getYRangeEnd() {
+    protected double getYRangeEnd() {
         return y2;
     }
 
@@ -197,7 +332,7 @@ public abstract class BaseFigure extends AbstractFigure {
         return leftLabel;
     }
 
-    public BaseFigure setYLabel(String leftLabel) {
+    public BaseFigure setYLab(String leftLabel) {
         this.leftLabel = leftLabel;
         return this;
     }
@@ -206,7 +341,7 @@ public abstract class BaseFigure extends AbstractFigure {
         return bottomLabel;
     }
 
-    public BaseFigure setXLabel(String bottomLabel) {
+    public BaseFigure setXLab(String bottomLabel) {
         this.bottomLabel = bottomLabel;
         return this;
     }

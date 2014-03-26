@@ -63,9 +63,9 @@ public class ABLine extends PlotComponent {
     @Override
     public void paint(Graphics2D g2d) {
         Range range = parent.getRange();
-        g2d.setColor(getColor(0));
+        g2d.setColor(getCol(0));
 
-        double x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+        double x1, x2, y1, y2;
         if (!h && !v) {
             double xx = range.getX1();
             double yy = a * xx + b;

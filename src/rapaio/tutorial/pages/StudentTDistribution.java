@@ -77,9 +77,9 @@ public class StudentTDistribution implements TutorialPage {
         p("The probability density of a standard normal distribution "
                 + "looks like this: ");
 
-        draw(new Plot().add(new FunctionLine(new Normal().getPdfFunction()).setColor(1))
-                .setXRange(-4, 4)
-                .setYRange(0, 0.5));
+        draw(new Plot().add(new FunctionLine(new Normal().getPdfFunction()).setCol(1))
+                .setXLim(-4, 4)
+                .setYLim(0, 0.5));
 
         p("To understand it's mechanics you have to imagine a "
                 + "process, which produces a numeric getValue. "
@@ -112,10 +112,10 @@ public class StudentTDistribution implements TutorialPage {
                 + "to repeat the experiments enough time. ");
 
         draw(new Plot()
-                .add(new FunctionLine(new Normal().getPdfFunction()).setColor(1))
+                .add(new FunctionLine(new Normal().getPdfFunction()).setCol(1))
                 .add(new FunctionLine(new StudentT(3).getPdfFunction()))
-                .setXRange(-4, 4)
-                .setYRange(0, 0.5));
+                .setXLim(-4, 4)
+                .setYLim(0, 0.5));
         p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");
     }
 }

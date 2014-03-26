@@ -45,18 +45,18 @@ public class ROCCurve extends PlotComponent {
 
     @Override
     public void initialize() {
-        getParent().setXLabel("fp rate");
-        getParent().setYLabel("tp rate");
+        getParent().setXLab("fp rate");
+        getParent().setYLab("tp rate");
     }
 
     @Override
     public void paint(Graphics2D g2d) {
-        g2d.setColor(getColor(0));
+        g2d.setColor(getCol(0));
         g2d.setStroke(new BasicStroke(getLwd()));
         g2d.setBackground(ColorPalette.STANDARD.getColor(255));
 
         for (int i = 1; i < roc.getData().rowCount(); i++) {
-            g2d.setColor(getColor(i));
+            g2d.setColor(getCol(i));
             double x1 = getParent().xScale(roc.getData().getValue(i - 1, "fpr"));
             double y1 = getParent().yScale(roc.getData().getValue(i - 1, "tpr"));
             double x2 = getParent().xScale(roc.getData().getValue(i, "fpr"));
@@ -73,6 +73,6 @@ public class ROCCurve extends PlotComponent {
             }
         }
 
-        g2d.setColor(getColor(0));
+        g2d.setColor(getCol(0));
     }
 }

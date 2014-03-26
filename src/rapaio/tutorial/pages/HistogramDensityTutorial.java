@@ -147,7 +147,7 @@ public class HistogramDensityTutorial implements TutorialPage {
 
         final Vector col = df.col("Father");
         draw(new Plot()
-                .add(new Histogram(col).setColor(Vectors.newSeq(1, 255, 1)))
+                .add(new Histogram(col).setCol(Vectors.newSeq(1, 255, 1)))
                 .add(new DensityLine(col)));
 
         p("In statistics, kernel density estimation (KDE) is a non-parametric way to "
@@ -169,10 +169,10 @@ public class HistogramDensityTutorial implements TutorialPage {
 
         draw(new Plot()
                         .add(new Histogram(col))
-                        .add(new FunctionLine(new KernelDensityEstimator(col, 0.1).getPdfFunction()).setColor(1))
-                        .add(new FunctionLine(new KernelDensityEstimator(col, 0.5).getPdfFunction()).setColor(2))
-                        .add(new FunctionLine(new KernelDensityEstimator(col, 2).getPdfFunction()).setColor(3))
-                        .setYRange(0, 0.18),
+                        .add(new FunctionLine(new KernelDensityEstimator(col, 0.1).getPdf()).setCol(1))
+                        .add(new FunctionLine(new KernelDensityEstimator(col, 0.5).getPdf()).setCol(2))
+                        .add(new FunctionLine(new KernelDensityEstimator(col, 2).getPdf()).setCol(3))
+                        .setYLim(0, 0.18),
                 600, 300
         );
 
@@ -186,7 +186,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                 + "once you implement a custom kernel function. ");
 
         draw(new Plot()
-                .add(new FunctionLine(new KernelDensityEstimator(col).getPdfFunction()).setColor(1))
+                .add(new FunctionLine(new KernelDensityEstimator(col).getPdf()).setCol(1))
                 .add(new DensityLine(col, new KernelFunction() {
                     @Override
                     public double pdf(double x, double x0, double bandwidth) {
@@ -203,8 +203,8 @@ public class HistogramDensityTutorial implements TutorialPage {
                         return x0 - bandwidth;
                     }
                 }, 0.5, 256))
-                .setYRange(0, 0.18)
-                .setXRange(55, 80));
+                .setYLim(0, 0.18)
+                .setXLim(55, 80));
 
         p("We could agree that my implementation of kernel function is ugly "
                 + "and maybe no so useful, however you have to know that "
@@ -219,10 +219,10 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("Blue line represents density approximation of father's heights, "
                 + "red line represents density approximation of son's heights.");
 
-        draw(new Plot().add(new DensityLine(df.col("Father")).setColor(6))
-                .add(new DensityLine(df.col("Son")).setColor(9))
-                .setYRange(0, 0.18)
-                .setXRange(55, 80));
+        draw(new Plot().add(new DensityLine(df.col("Father")).setCol(6))
+                .add(new DensityLine(df.col("Son")).setCol(9))
+                .setYLim(0, 0.18)
+                .setXLim(55, 80));
 
         p("Note: the sole purpose of this tutorial is to show what and how it can "
                 + "be done with Rapaio toolbox library. ");

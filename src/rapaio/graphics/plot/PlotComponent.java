@@ -22,14 +22,14 @@ package rapaio.graphics.plot;
 
 import rapaio.data.Vector;
 import rapaio.graphics.Plot;
-import rapaio.graphics.base.AbstractFigure;
+import rapaio.graphics.base.BaseFigure;
 
 import java.awt.*;
 
 /**
  * @author Aurelian Tutuianu
  */
-public abstract class PlotComponent extends AbstractFigure {
+public abstract class PlotComponent extends BaseFigure {
 
     protected Plot parent;
 
@@ -48,11 +48,11 @@ public abstract class PlotComponent extends AbstractFigure {
     public abstract void paint(Graphics2D g2d);
 
     @Override
-    public Color getColor(int row) {
+    public Color getCol(int row) {
         if (parent != null && colors == null) {
-            return parent.getColor(row);
+            return parent.getCol(row);
         }
-        return super.getColor(row);
+        return super.getCol(row);
     }
 
     @Override
@@ -80,20 +80,20 @@ public abstract class PlotComponent extends AbstractFigure {
     }
 
     @Override
-    public PlotComponent setColor(int index) {
-        super.setColor(index);
+    public PlotComponent setCol(int index) {
+        super.setCol(index);
         return this;
     }
 
     @Override
-    public PlotComponent setColor(Color color) {
-        super.setColor(color);
+    public PlotComponent setCol(Color color) {
+        super.setCol(color);
         return this;
     }
 
     @Override
-    public PlotComponent setColor(Vector color) {
-        super.setColor(color);
+    public PlotComponent setCol(Vector color) {
+        super.setCol(color);
         return this;
     }
 

@@ -115,7 +115,7 @@ public class BoxPlot extends BaseFigure {
         setLeftThicker(true);
         setBottomMarkers(true);
         setBottomThicker(true);
-        setColor(0);
+        setCol(0);
     }
 
     @Override
@@ -169,7 +169,7 @@ public class BoxPlot extends BaseFigure {
             double x2 = i + 0.5;
             double x3 = i + 0.5 + 0.3;
 
-            g2d.setColor(getColor(i));
+            g2d.setColor(getCol(i));
             // median
             g2d.setStroke(new BasicStroke(getLwd() * 2));
             g2d.draw(new Line2D.Double(

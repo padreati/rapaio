@@ -21,7 +21,6 @@
 package rapaio.graphics.plot;
 
 import rapaio.data.Vector;
-import rapaio.data.Vectors;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
 
@@ -57,7 +56,7 @@ public class Histogram extends PlotComponent {
 
     @Override
     public void initialize() {
-        getParent().setYLabel(prob ? "density" : "frequency");
+        getParent().setYLab(prob ? "density" : "frequency");
         getParent().setLeftThicker(true);
         getParent().setLeftMarkers(true);
         getParent().setBottomThicker(true);
@@ -123,9 +122,11 @@ public class Histogram extends PlotComponent {
                 freqtable[i] /= (total * step);
             }
         }
+    }
 
-        // defaults
-        setColor(Vectors.newIdxOne(7));
+    @Override
+    protected Color[] getDefaultCol() {
+        return new Color[]{getCol(7)};
     }
 
     @Override
@@ -187,7 +188,7 @@ public class Histogram extends PlotComponent {
                         (int) getParent().yScale(mind) + ((d == mind) ? 1 : -2),
                         (int) getParent().yScale(0),
                         (int) getParent().yScale(0)};
-                g2d.setColor(getColor(i));
+                g2d.setColor(getCol(i));
                 g2d.fillPolygon(x, y, 5);
             }
         }

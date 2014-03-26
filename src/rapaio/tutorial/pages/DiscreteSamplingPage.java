@@ -131,7 +131,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                 + "that each element have equal probability. However the values from sample "
                 + "looks random:");
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 100; i++) {
             sb.append(sample[i]).append(", ");
             if ((i + 1) % 30 == 0)
@@ -197,7 +197,7 @@ public class DiscreteSamplingPage implements TutorialPage {
         draw(new Plot()
                         .add(new Points(df.col(0), df.col(1))
                                 .setPch(1)
-                                .setColor(34)
+                                .setCol(34)
                                 .setSize(2)),
                 600, 300
         );
@@ -244,9 +244,9 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "                        .setColorIndex(2)\n" +
                 "                        .setLwd(1.5f)\n" +
                 "                )\n" +
-                "                .setYRange(0, 1)\n" +
+                "                .setYLim(0, 1)\n" +
                 "                .setBottomLabel(\"experiment no\")\n" +
-                "                .setYLabel(\"HEAD/TOTAL\"));\n");
+                "                .setYLab(\"HEAD/TOTAL\"));\n");
 
         RandomSource.setSeed(1);
         final Vector index = Vectors.newSeq(1, 1000, 1);
@@ -263,12 +263,12 @@ public class DiscreteSamplingPage implements TutorialPage {
         draw(new Plot()
                 .add(new ABLine(0.6, true))
                 .add(new Lines(index, value)
-                                .setColor(2)
+                                .setCol(2)
                                 .setLwd(1.5f)
                 )
-                .setYRange(0, 1)
-                .setXLabel("experiment no")
-                .setYLabel("HEAD/TOTAL"));
+                .setYLim(0, 1)
+                .setXLab("experiment no")
+                .setYLab("HEAD/TOTAL"));
 
         p("From the previous function line we see that the plugged in estimate "
                 + "of the probability of HEAD has a large variation at the beginning "
@@ -355,7 +355,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                         .add(new Points(df2.col(0), df2.col(1)))
                         .setPch(Vectors.newIdxOne(1))
                         .setSize(Vectors.newNumOne(2))
-                        .setColor(34),
+                        .setCol(34),
                 600, 300
         );
 
@@ -367,11 +367,11 @@ public class DiscreteSamplingPage implements TutorialPage {
                 + "density would help more.");
 
         draw(new Plot()
-                        .add(new FunctionLine(new KernelDensityEstimator(df2.col("winning number"), 3).getPdfFunction())
-                                .setColor(Vectors.newIdxOne(1)))
-                        .setXLabel("winning numbers")
-                        .setYLabel("kernel probability density")
-                        .setXRange(-10, 60).setYRange(0, .05),
+                        .add(new FunctionLine(new KernelDensityEstimator(df2.col("winning number"), 3).getPdf())
+                                .setCol(Vectors.newIdxOne(1)))
+                        .setXLab("winning numbers")
+                        .setYLab("kernel probability density")
+                        .setXLim(-10, 60).setYLim(0, .05),
                 600, 300
         );
 

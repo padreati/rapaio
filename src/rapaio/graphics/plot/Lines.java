@@ -62,7 +62,7 @@ public class Lines extends PlotComponent {
         g2d.setBackground(ColorPalette.STANDARD.getColor(255));
 
         for (int i = 1; i < x.rowCount(); i++) {
-            g2d.setColor(getColor(i));
+            g2d.setColor(getCol(i));
             double x1 = getParent().xScale(x.getValue(i - 1));
             double y1 = getParent().yScale(y.getValue(i - 1));
             double x2 = getParent().xScale(x.getValue(i));

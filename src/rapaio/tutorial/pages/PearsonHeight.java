@@ -77,9 +77,9 @@ public class PearsonHeight implements TutorialPage {
             draw(new Plot()
                             .add(new Histogram(df.col(i), 23, true, 57, 80))
                             .add(new FunctionLine(normal.getPdfFunction())
-                                    .setColor(2))
-                            .setXLabel(df.colNames()[i])
-                            .setXRange(57, 80).setYRange(0, 0.20),
+                                    .setCol(2))
+                            .setXLab(df.colNames()[i])
+                            .setXLim(57, 80).setYLim(0, 0.20),
                     700, 300
             );
         }
@@ -101,7 +101,7 @@ public class PearsonHeight implements TutorialPage {
             Distribution normal = new Normal();
             draw(new QQPlot()
                             .add(col, normal)
-                            .setYLabel(df.colNames()[colIndex]),
+                            .setYLab(df.colNames()[colIndex]),
                     500, 300
             );
         }
@@ -123,13 +123,13 @@ public class PearsonHeight implements TutorialPage {
         summary(fatherQuantiles);
         summary(sonQuantiles);
 
-        Plot plot = (Plot) new Plot().setXRange(55, 80).setYRange(55, 80);
+        Plot plot = (Plot) new Plot().setXLim(55, 80).setYLim(55, 80);
         for (int i = 0; i < fatherQuantiles.getValues().length; i++) {
             plot.add(new ABLine(fatherQuantiles.getValues()[i], false)
-                    .setColor(30));
+                    .setCol(30));
         }
         for (int i = 0; i < sonQuantiles.getValues().length; i++) {
-            plot.add(new ABLine(sonQuantiles.getValues()[i], true).setColor(30));
+            plot.add(new ABLine(sonQuantiles.getValues()[i], true).setCol(30));
         }
         plot.add(new Points(df.col("Father"), df.col("Son")));
         draw(plot, 600, 600);

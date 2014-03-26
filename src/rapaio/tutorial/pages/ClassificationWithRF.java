@@ -177,13 +177,13 @@ public class ClassificationWithRF implements TutorialPage {
         }
 
         draw(new Plot()
-                .add(new Lines(index, accuracy).setColor(2))
-                .add(new Points(index, accuracy).setColor(2))
+                .add(new Lines(index, accuracy).setCol(2))
+                .add(new Points(index, accuracy).setCol(2))
                 .add(new Lines(index, oob))
                 .add(new Points(index, oob))
-                .setYRange(0, 0.4)
-                .setYLabel("test (blue), oob (black)")
-                .setXLabel("number of trees")
+                .setYLim(0, 0.4)
+                .setYLab("test (blue), oob (black)")
+                .setXLab("number of trees")
                 .setTitle("Accuracy errors (% misclassified)")
                 , 600, 400);
 
@@ -215,9 +215,9 @@ public class ClassificationWithRF implements TutorialPage {
                 + "        p.add(new Lines(p, getIndex, oob));\n"
                 + "        p.add(new Points(p, getIndex, oob));\n"
                 + "\n"
-                + "        p.setYLabel(\"test (blue), oob (black)\");\n"
+                + "        p.setYLab(\"test (blue), oob (black)\");\n"
                 + "        p.setTitle(\"Accuracy errors (% misclassified)\");\n"
-                + "        p.opt().setYRange(0, 0.4);\n"
+                + "        p.opt().setYLim(0, 0.4);\n"
                 + "        draw(p, 600, 400);\n");
 
         heading(3, "Playing with number of random features");
@@ -252,14 +252,14 @@ public class ClassificationWithRF implements TutorialPage {
             pos++;
         }
         draw(new Plot()
-                .add(new Lines(index1, accuracy1).setColor(2))
-                .add(new Points(index1, accuracy1).setColor(2))
+                .add(new Lines(index1, accuracy1).setCol(2))
+                .add(new Points(index1, accuracy1).setCol(2))
                 .add(new Lines(index1, oob1))
                 .add(new Points(index1, oob1))
-                .setYLabel("test (blue), oob (black")
-                .setXLabel("mcols - number of features considered")
+                .setYLab("test (blue), oob (black")
+                .setXLab("mcols - number of features considered")
                 .setTitle("Accuracy errors (% misclassified)")
-                .setYRange(0, 0.4), 600, 400);
+                .setYLim(0, 0.4), 600, 400);
 
         p("It can be seen here that the best prediction according "
                 + "with oob and the test used is when the number of "
@@ -290,10 +290,10 @@ public class ClassificationWithRF implements TutorialPage {
                 + "            }};\n"
                 + "            new Lines(this, index1, oob1);\n"
                 + "            new Points(this, index1, oob1);\n"
-                + "            setYLabel(\"test (blue), oob (black\");\n"
+                + "            setYLab(\"test (blue), oob (black\");\n"
                 + "            setBottomLabel(\"mcols - number of features considered\");\n"
                 + "            setTitle(\"Accuracy errors (% misclassified)\");\n"
-                + "            opt().setYRange(0, 0.4);\n"
+                + "            opt().setYLim(0, 0.4);\n"
                 + "        }}, 600, 400);\n");
 
         p("Note: the sole purpose of this tutorial is to show what and how it can "

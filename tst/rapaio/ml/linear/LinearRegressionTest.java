@@ -90,10 +90,10 @@ public class LinearRegressionTest {
                         .add(new ABLine(
                                 lm.getCoeff().getValue(1, 1),
                                 lm.getCoeff().getValue(0, 1)))
-                        .setXRange(58, 78)
-                        .setYRange(58, 78)
-                        .setXLabel("Father")
-                        .setYLabel("Son")
+                        .setXLim(58, 78)
+                        .setYLim(58, 78)
+                        .setXLab("Father")
+                        .setYLab("Son")
         );
     }
 

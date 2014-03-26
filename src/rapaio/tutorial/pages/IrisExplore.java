@@ -65,17 +65,17 @@ public class IrisExplore implements TutorialPage {
         for (int i = 0; i < df.colCount() - 1; i++) {
             draw(new Plot()
                     .add(new Histogram(df.col(i)).setBins(30))
-                    .setXLabel(df.colNames()[i]), 500, 250);
+                    .setXLab(df.colNames()[i]), 500, 250);
         }
         p("We can see easily that for petal length and width there are two well-separated modes."
                 + " This is probably a well separation of species, so a plot should clarify "
                 + "that immediately.");
         draw(new Plot()
                         .add(new Points(df.col(2), df.col(3))
-                                .setColor(df.col("class"))
+                                .setCol(df.col("class"))
                                 .setPch(1))
-                        .setXLabel(df.colNames()[2])
-                        .setYLabel(df.colNames()[3])
+                        .setXLab(df.colNames()[2])
+                        .setYLab(df.colNames()[3])
                         .setTitle("Iris data points colored by species"),
                 600, 350
         );

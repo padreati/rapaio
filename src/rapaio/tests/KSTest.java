@@ -128,18 +128,6 @@ public class KSTest implements Printable {
         return 1.0;
     }
 
-    public Distribution getCdf() {
-        return cdf;
-    }
-
-    public Vector getSample1() {
-        return v1;
-    }
-
-    public Vector getSample2() {
-        return v2;
-    }
-
     public double getD() {
         return D;
     }

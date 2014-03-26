@@ -33,8 +33,8 @@ import static rapaio.data.filters.BaseFilters.sort;
 public class QQPlot extends Plot {
 
     public QQPlot() {
-        setYLabel("StatSampling Quantiles");
-        setXLabel("Theoretical Quantiles");
+        setYLab("StatSampling Quantiles");
+        setXLab("Theoretical Quantiles");
     }
 
     public QQPlot add(Vector points, Distribution distribution) {
@@ -47,7 +47,7 @@ public class QQPlot extends Plot {
 
         Points pts = new Points(y, x);
         add(pts);
-        pts.setColor(0);
+        pts.setCol(0);
         return this;
     }
 }

@@ -44,36 +44,32 @@ public class Plot extends BaseFigure {
 
     @Override
     protected Range buildRange() {
-        Range r = null;
+        Range range = null;
         for (PlotComponent pc : components) {
-            Range newrange = pc.getRange();
-            if (newrange != null) {
-                if (r == null) {
-                    r = newrange;
-                } else {
-                    r.union(newrange);
-                }
-            }
+            Range pcRange = pc.getRange();
+            if (pcRange != null)
+                if (range == null) range = pcRange;
+                else range.union(pcRange);
         }
 
-        if (r == null) {
-            r = new Range(0, 0, 1, 1);
+        if (range == null) {
+            range = new Range(0, 0, 1, 1);
         }
 
         if (getXRangeStart() == getXRangeStart() && getXRangeEnd() == getXRangeEnd()) {
-            r.setX1(getXRangeStart());
-            r.setX2(getXRangeEnd());
+            range.setX1(getXRangeStart());
+            range.setX2(getXRangeEnd());
         }
         if (getYRangeStart() == getYRangeStart() && getYRangeEnd() == getYRangeEnd()) {
-            r.setY1(getYRangeStart());
-            r.setY2(getYRangeEnd());
+            range.setY1(getYRangeStart());
+            range.setY2(getYRangeEnd());
         }
 
-        if (r.getY1() == r.getY2()) {
-            r.setY1(r.getY1() - 0.5);
-            r.setY2(r.getY2() + 0.5);
+        if (range.getY1() == range.getY2()) {
+            range.setY1(range.getY1() - 0.5);
+            range.setY2(range.getY2() + 0.5);
         }
-        return r;
+        return range;
     }
 
     public Plot add(PlotComponent pc) {

@@ -63,7 +63,7 @@ public class FunctionLine extends PlotComponent {
 
         for (int i = 1; i < x.rowCount(); i++) {
             if (range.contains(x.getValue(i - 1), y.getValue(i - 1)) && range.contains(x.getValue(i), y.getValue(i))) {
-                g2d.setColor(getColor(i));
+                g2d.setColor(getCol(i));
                 g2d.setStroke(new BasicStroke(getLwd()));
                 g2d.draw(new Line2D.Double(
                         getParent().xScale(x.getValue(i - 1)),

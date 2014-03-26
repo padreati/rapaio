@@ -74,7 +74,7 @@ public class KernelDensityEstimator {
         return sum / (count * bandwidth);
     }
 
-    public Function<Double, Double> getPdfFunction() {
+    public Function<Double, Double> getPdf() {
         return this::pdf;
     }
 

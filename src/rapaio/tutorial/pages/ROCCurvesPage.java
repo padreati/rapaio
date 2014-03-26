@@ -173,9 +173,9 @@ public class ROCCurvesPage implements TutorialPage {
         ROC rocRF = new ROC(rf.distribution().col("1"), test.col("spam"), "1");
         ROC rocAB = new ROC(ab.dist().col("1"), test.col("spam"), "1");
         draw(new Plot()
-                        .add(new ROCCurve(rocOR).setColor(1))
-                        .add(new ROCCurve(rocRF).setColor(2))
-                        .add(new ROCCurve(rocAB).setColor(3))
+                        .add(new ROCCurve(rocOR).setCol(1))
+                        .add(new ROCCurve(rocRF).setCol(2))
+                        .add(new ROCCurve(rocAB).setCol(3))
                         .add(new Legend(0.6, 0.33,
                                 new String[]{"onerule", "rf", "adaboost.m1"},
                                 new int[]{1, 2, 3})),

@@ -80,7 +80,7 @@ public class BarChart extends BaseFigure {
         setBottomMarkers(true);
 
         int shift = 9;
-        setColor(Vectors.newSeq(shift, condition.getDictionary().length + shift - 1, 1));
+        setCol(Vectors.newSeq(shift, condition.getDictionary().length + shift - 1, 1));
     }
 
     private SortType sort = SortType.NONE;
@@ -261,7 +261,7 @@ public class BarChart extends BaseFigure {
                         (int) yScale(ystart),
                         (int) yScale(ystart)};
 
-                g2d.setColor(getColor(j));
+                g2d.setColor(getCol(j));
                 g2d.fillPolygon(x, y, 4);
 
                 ystart = yend;
