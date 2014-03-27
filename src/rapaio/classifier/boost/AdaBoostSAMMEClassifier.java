@@ -47,7 +47,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
     Classifier base = new DecisionStumpClassifier();
     int runs = 0;
-    double sampling = 0.0;
+    double sampling = 0;
+    boolean bootstrap = false;
 
     // model artifacts
 
@@ -75,8 +76,12 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
     @Override
     public String fullName() {
-        return String.format("AdaBoost.SAMME (base: %s, runs: %d, sampling: %.2f)",
-                base.fullName(), runs, sampling);
+        if (sampling != 0) {
+            return String.format("AdaBoost.SAMME (base: %s, runs: %d, sampling: true, sampling ratio: %.2f, bootstrap: %s)",
+                    base.fullName(), runs, sampling, bootstrap);
+        }
+        return String.format("AdaBoost.SAMME (base: %s, runs: %d, sampling: false)",
+                base.fullName(), runs);
     }
 
     public AdaBoostSAMMEClassifier withClassifier(Classifier weak) {
@@ -89,14 +94,24 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         return this;
     }
 
-    public AdaBoostSAMMEClassifier withSampling(double p) {
-        this.sampling = p;
+    public AdaBoostSAMMEClassifier withSampling(double ratio, boolean bootstrap) {
+        this.sampling = ratio;
+        this.bootstrap = bootstrap;
+        return this;
+    }
+
+    public AdaBoostSAMMEClassifier withNoSampling() {
+        this.sampling = 0;
         return this;
     }
 
     private int[] getSamplingRows(Frame df) {
         if (sampling < 1.0) {
-            return new DiscreteSampling().sampleWOR((int) (df.rowCount() * sampling), df.rowCount());
+            if (bootstrap) {
+                return new DiscreteSampling().sampleWR((int) (df.rowCount() * sampling), df.rowCount());
+            } else {
+                return new DiscreteSampling().sampleWOR((int) (df.rowCount() * sampling), df.rowCount());
+            }
         }
         int[] rows = new int[df.rowCount()];
         for (int i = 0; i < rows.length; i++) {
@@ -122,16 +137,25 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         w.stream().transformValue(x -> x / total);
 
         for (int i = 0; i < runs; i++) {
-            int[] rows = getSamplingRows(df);
-            Mapping mapping = new Mapping();
-            Numeric wCopy = new Numeric();
-            for (int row : rows) {
-                mapping.add(df.rowId(row));
-                wCopy.addValue(w.getValue(row));
+
+            Frame dfTrain;
+            Numeric wTrain;
+            if (sampling == 0) {
+                dfTrain = df;
+                wTrain = w.solidCopy();
+            } else {
+                int[] rows = getSamplingRows(df);
+                Mapping mapping = new Mapping();
+                wTrain = new Numeric();
+                for (int row : rows) {
+                    mapping.add(df.rowId(row));
+                    wTrain.addValue(w.getValue(row));
+                }
+                dfTrain = new MappedFrame(df.source(), mapping);
             }
 
             Classifier hh = base.newInstance();
-            hh.learn(new MappedFrame(df.source(), mapping), wCopy, targetCol);
+            hh.learn(dfTrain, wTrain, targetCol);
 
             hh.predict(df);
             Nominal hpred = hh.pred();
@@ -154,7 +178,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
             h.add(hh);
             a.add(alpha);
 
-            // update
+            // out
             for (int j = 0; j < w.rowCount(); j++) {
                 if (hpred.getIndex(j) != df.col(targetCol).getIndex(j)) {
                     w.setValue(j, w.getValue(j) * (k - 1) / (k * err));
@@ -206,8 +230,25 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         w.stream().transformValue(x -> x / total);
 
         for (int i = 0; i < additionalRuns; i++) {
+
+            Frame dfTrain;
+            Numeric wTrain;
+            if (sampling == 0) {
+                dfTrain = df;
+                wTrain = w.solidCopy();
+            } else {
+                int[] rows = getSamplingRows(df);
+                Mapping mapping = new Mapping();
+                wTrain = new Numeric();
+                for (int row : rows) {
+                    mapping.add(df.rowId(row));
+                    wTrain.addValue(w.getValue(row));
+                }
+                dfTrain = new MappedFrame(df.source(), mapping);
+            }
+
             Classifier hh = base.newInstance();
-            hh.learn(df, w.solidCopy(), targetColName);
+            hh.learn(dfTrain, wTrain, targetCol);
             hh.predict(df);
             Nominal hpred = hh.pred();
 
@@ -232,7 +273,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
             h.add(hh);
             a.add(alpha);
 
-            // update
+            // out
             for (int j = 0; j < w.rowCount(); j++) {
                 if (hpred.getIndex(j) != df.col(targetColName).getIndex(j)) {
                     w.setValue(j, w.getValue(j) * (k - 1) / (k * err));

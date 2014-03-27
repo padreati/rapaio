@@ -21,6 +21,8 @@
 package rapaio.classifier.tools;
 
 import rapaio.core.RandomSource;
+import rapaio.data.Numeric;
+import rapaio.data.Vector;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -41,15 +43,27 @@ public class DensityVector {
         this.values = new double[labels.length];
     }
 
-    public void update(int pos, double value) {
+    public DensityVector(Vector vector, Numeric weights) {
+        this.labels = vector.getDictionary();
+        this.values = new double[labels.length];
+        vector.stream().forEach(spot -> {
+            values[spot.getIndex()] += weights.getValue(spot.row());
+        });
+    }
+
+    public void out(int pos, double value) {
         values[pos] += value;
     }
 
-    public int findBestIndex(boolean useMissing) {
+    public double get(int pos) {
+        return values[pos];
+    }
+
+    public int findBestIndex() {
         double n = 0;
         int bestIndex = -1;
         double best = Double.NEGATIVE_INFINITY;
-        for (int i = useMissing ? 0 : 1; i < values.length; i++) {
+        for (int i = 1; i < values.length; i++) {
             if (values[i] > best) {
                 best = values[i];
                 bestIndex = i;
@@ -65,5 +79,15 @@ public class DensityVector {
             }
         }
         return bestIndex;
+    }
+
+    public void normalize() {
+        double total = 0.0;
+        for (double value : values) {
+            total += value;
+        }
+        for (int i = 0; i < values.length; i++) {
+            values[i] /= total;
+        }
     }
 }

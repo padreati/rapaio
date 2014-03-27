@@ -55,7 +55,7 @@ public class Functional {
 
 //        Frame filtered = new FSpots(spots).toMappedFrame();
 //        Summary.summary(filtered);
-//        List<Double> filteredWeights = new FSpots(spots).filterByRow(weights);
+//        List<Double> filteredWeights = new FSpots(spots).filterByRowId(weights);
 //
 //        for (int i = 0; i < filtered.rowCount(); i++) {
 //            System.out.println(String.format("row:%d, weight::%f", filtered.rowId(i), filteredWeights.get(i)));

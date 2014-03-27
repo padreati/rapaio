@@ -111,7 +111,7 @@ public class SolidFrame extends AbstractFrame {
         if (col >= 0 && col < vectors.length) {
             return vectors[col];
         }
-        throw new IllegalArgumentException("Invalid column index");
+        throw new IllegalArgumentException("Invalid column index: " + col);
     }
 
     @Override

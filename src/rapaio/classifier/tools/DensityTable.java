@@ -24,7 +24,6 @@ import rapaio.data.Numeric;
 import rapaio.data.Vector;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static rapaio.core.MathBase.log2;
 
@@ -65,7 +64,7 @@ public final class DensityTable {
      * @param target  target vector
      * @param weights weights used instead of counts, if not null
      */
-    public DensityTable(Vector test, Vector target, List<Double> weights) {
+    public DensityTable(Vector test, Vector target, Numeric weights) {
         this(test.getDictionary(), target.getDictionary());
 
         if (!test.type().isNominal()) throw new IllegalArgumentException("test vector must be nominal");
@@ -74,7 +73,7 @@ public final class DensityTable {
             throw new IllegalArgumentException("test and target must have same row count");
 
         for (int i = 0; i < test.rowCount(); i++) {
-            update(test.getIndex(i), target.getIndex(i), weights != null ? weights.get(i) : 1);
+            update(test.getIndex(i), target.getIndex(i), weights != null ? weights.getValue(i) : 1);
         }
     }
 

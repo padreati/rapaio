@@ -41,6 +41,7 @@ public class CTreeTest {
 
             @Override
             int compare(double previous, double current) {
+                if (previous != previous) return 1;
                 if (previous == current) return 0;
                 return (previous < current) ? -1 : 1;
             }
@@ -53,6 +54,7 @@ public class CTreeTest {
 
             @Override
             int compare(double previous, double current) {
+                if (previous != previous) return 1;
                 if (previous == current) return 0;
                 return previous < current ? 1 : -1;
             }
@@ -65,6 +67,7 @@ public class CTreeTest {
 
             @Override
             int compare(double previous, double current) {
+                if (previous != previous) return 1;
                 if (previous == current) return 0;
                 return previous < current ? 1 : -1;
             }
@@ -103,7 +106,7 @@ public class CTreeTest {
     private final Method method;
     private final int minCount;
     private String testName = null;
-    private double bestValue = Double.NEGATIVE_INFINITY;
+    private double bestValue = Double.NaN;
     private String splitLabel;
     private double splitValue;
 
@@ -130,6 +133,23 @@ public class CTreeTest {
     public CTreeTest(Method method, int minCount) {
         this.method = method;
         this.minCount = minCount;
+    }
+
+    public void fullNominalTest(Frame df, String testColName, String targetColName, Numeric weights, int minCount) {
+        Vector test = df.col(testColName);
+        Vector target = df.col(targetColName);
+
+        if (new DensityTable(test, target).countWithMinimum(false, minCount) < 2) {
+            return;
+        }
+
+        DensityTable dt = new DensityTable(test, target, weights);
+        double value = method.compute(dt);
+        int comp = method.compare(bestValue, value);
+        if (comp < 0) return;
+        if (comp == 0 && RandomSource.nextDouble() > 0.5) return;
+        bestValue = value;
+        testName = testColName;
     }
 
     public void binaryNominalTest(Frame df, String testColName, String targetColName, Numeric weights, String testLabel) {

@@ -104,11 +104,11 @@ public class DecisionStumpClassifier extends AbstractClassifier {
 
             Vector testVector = df.col(testName);
 
-            // update density vectors in order to predict
+            // out density vectors in order to predict
 
             for (int i = 0; i < df.rowCount(); i++) {
                 if (testVector.isMissing(i)) {
-                    missing.update(df.col(targetColName).getIndex(i), weights.getValue(i));
+                    missing.out(df.col(targetColName).getIndex(i), weights.getValue(i));
                     continue;
                 }
                 boolean onLeft = true;
@@ -118,16 +118,16 @@ public class DecisionStumpClassifier extends AbstractClassifier {
                 if (testVector.type().isNumeric() && test.splitValue() < testVector.getValue(i)) {
                     onLeft = false;
                 }
-                (onLeft ? left : right).update(df.col(targetColName).getIndex(i), weights.getValue(i));
+                (onLeft ? left : right).out(df.col(targetColName).getIndex(i), weights.getValue(i));
             }
 
             // now predict
 
-            leftIndex = left.findBestIndex(false);
+            leftIndex = left.findBestIndex();
             leftLabel = dict[leftIndex];
-            rightIndex = right.findBestIndex(false);
+            rightIndex = right.findBestIndex();
             rightLabel = dict[rightIndex];
-            defaultIndex = missing.findBestIndex(false);
+            defaultIndex = missing.findBestIndex();
             defaultLabel = dict[defaultIndex];
         } else {
 
@@ -135,9 +135,9 @@ public class DecisionStumpClassifier extends AbstractClassifier {
 
             DensityVector missing = new DensityVector(dict);
             for (int i = 0; i < df.rowCount(); i++) {
-                missing.update(df.col(targetColName).getIndex(i), weights.getValue(i));
+                missing.out(df.col(targetColName).getIndex(i), weights.getValue(i));
             }
-            defaultIndex = missing.findBestIndex(false);
+            defaultIndex = missing.findBestIndex();
             defaultLabel = dict[defaultIndex];
         }
     }

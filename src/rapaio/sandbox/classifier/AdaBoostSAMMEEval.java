@@ -22,12 +22,13 @@ package rapaio.sandbox.classifier;
 
 import rapaio.classifier.boost.AdaBoostSAMMEClassifier;
 import rapaio.classifier.tools.CTreeTest;
-import rapaio.classifier.tree.DecisionStumpClassifier;
+import rapaio.classifier.tree.ID3Classifier;
 import rapaio.core.sample.StatSampling;
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
+import rapaio.data.filters.BaseFilters;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
 import rapaio.io.ArffPersistence;
@@ -48,12 +49,12 @@ public class AdaBoostSAMMEEval {
 
         setPrinter(new LocalPrinter());
 
-//        evalWith(Datasets.loadIrisDataset(), "class");
-//        evalWith(Datasets.loadSpamBase(), "spam");
+//        evalWith(Datasets.loadIrisDataset(), "class", 500, 1);
+//        evalWith(Datasets.loadSpamBase(), "spam", 500, 1);
 //        evalWith(Datasets.loadMushrooms(), "classes");
-//        evalWith(loadArff("breast-cancer"), "Class", 1_000, 1);
-//        evalWith(loadArff("letter"), "class", 100, 50);
-//        evalWith(loadArff("mushroom"), "class", 1_000, 1);
+        evalWith(loadArff("breast-cancer"), "Class", 1_000, 1);
+        evalWith(loadArff("letter"), "class", 100, 50);
+        evalWith(loadArff("mushroom"), "class", 1_000, 1);
         evalWith(loadArff("vote"), "Class", 1_000, 1);
     }
 
@@ -64,6 +65,8 @@ public class AdaBoostSAMMEEval {
     }
 
     private static void evalWith(Frame df, String targetName, int rounds, int step) {
+        df = BaseFilters.retainNominal(df);
+        df = BaseFilters.completeCases(df);
         Summary.summary(df);
 
         List<Frame> samples = StatSampling.randomSample(df, new int[]{(int) (df.rowCount() * 0.6)});
@@ -71,10 +74,14 @@ public class AdaBoostSAMMEEval {
         Frame te = samples.get(1);
 
         AdaBoostSAMMEClassifier c = new AdaBoostSAMMEClassifier()
-                .withClassifier(new DecisionStumpClassifier()
+//                .withClassifier(new DecisionStumpClassifier()
+//                        .withMethod(CTreeTest.Method.INFO_GAIN)
+//                        .withMinCount(5))
+                .withClassifier(new ID3Classifier()
                         .withMethod(CTreeTest.Method.INFO_GAIN)
-                        .withMinCount(5))
-                .withSampling(1);
+                        .withMinCount(10)
+                        .withMaxSize(20))
+                .withSampling(0.6, true);
 
         Index index = new Index();
         Numeric trainAcc = new Numeric();

@@ -101,7 +101,7 @@ public class DecisionStumpClassifier extends AbstractClassifier<DecisionStumpCla
 
             Vector testVector = df.col(testName);
 
-            // update density vectors in order to predict
+            // out density vectors in order to predict
 
             for (int i = 0; i < df.rowCount(); i++) {
                 if (testVector.isMissing(i)) {
