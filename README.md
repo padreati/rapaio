@@ -42,6 +42,7 @@ is considered to be fully implemented and well tested.
 
 * DecisionStump
 * AdaBoost.SAMME
+* ID3
 
 **Classification and Regression - not final stage**
 
@@ -51,7 +52,6 @@ are considered by default in experimental state.
 * One Rule
 * Random Tree (used in Random Forest)
 * Random Forests uses a variant of tree similar with C45 (in the future will be implemented with CART)
-* ID3 - additional option to use missing values as category
 * C45 Classifier (without pruning)
 
 * Tree Regressor - accept only numerical, non-missing, has no pruning (with this constraints

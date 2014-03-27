@@ -19,10 +19,11 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.tree;
+package rapaio.classifier.tree;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import rapaio.classifier.tools.CTreeTest;
 import rapaio.data.Frame;
 import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
@@ -42,14 +43,14 @@ public class ID3ClassifierTest {
         df = BaseFilters.retainNominal(df);
         final String className = "class";
 
-        ID3Classifier id3 = new ID3Classifier().setSelection(ID3Classifier.SELECTION_ENTROPY);
+        ID3Classifier id3 = new ID3Classifier().withMethod(CTreeTest.Method.ENTROPY);
         id3.learn(df, className);
         id3.predict(df);
 
         DensityTable dtWindy = new DensityTable(df.col("windy"), df.col("class"));
         DensityTable dtOutlook = new DensityTable(df.col("outlook"), df.col("class"));
         String splitCol = (dtWindy.getSplitEntropy() < dtOutlook.getSplitEntropy()) ? "windy" : "outlook";
-        Assert.assertEquals(splitCol, id3.root.splitCol);
+        Assert.assertEquals(splitCol, id3.root.test.testName());
 
         Summary.summary(id3);
     }
@@ -60,14 +61,14 @@ public class ID3ClassifierTest {
         df = BaseFilters.retainNominal(df);
         final String className = "class";
 
-        ID3Classifier id3 = new ID3Classifier().setSelection(ID3Classifier.SELECTION_INFOGAIN);
+        ID3Classifier id3 = new ID3Classifier().withMethod(CTreeTest.Method.INFO_GAIN);
         id3.learn(df, className);
         id3.predict(df);
 
         DensityTable dtWindy = new DensityTable(df.col("windy"), df.col("class"));
         DensityTable dtOutlook = new DensityTable(df.col("outlook"), df.col("class"));
         String splitCol = (dtWindy.getInfoGain() > dtOutlook.getInfoGain()) ? "windy" : "outlook";
-        Assert.assertEquals(splitCol, id3.root.splitCol);
+        Assert.assertEquals(splitCol, id3.root.test.testName());
 
         Summary.summary(id3);
     }
