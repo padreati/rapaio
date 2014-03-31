@@ -108,7 +108,7 @@ public class DecisionStumpClassifier extends AbstractClassifier {
 
             for (int i = 0; i < df.rowCount(); i++) {
                 if (testVector.isMissing(i)) {
-                    missing.out(df.col(targetColName).getIndex(i), weights.getValue(i));
+                    missing.update(df.col(targetColName).getIndex(i), weights.getValue(i));
                     continue;
                 }
                 boolean onLeft = true;
@@ -118,7 +118,7 @@ public class DecisionStumpClassifier extends AbstractClassifier {
                 if (testVector.type().isNumeric() && test.splitValue() < testVector.getValue(i)) {
                     onLeft = false;
                 }
-                (onLeft ? left : right).out(df.col(targetColName).getIndex(i), weights.getValue(i));
+                (onLeft ? left : right).update(df.col(targetColName).getIndex(i), weights.getValue(i));
             }
 
             // now predict
@@ -135,7 +135,7 @@ public class DecisionStumpClassifier extends AbstractClassifier {
 
             DensityVector missing = new DensityVector(dict);
             for (int i = 0; i < df.rowCount(); i++) {
-                missing.out(df.col(targetColName).getIndex(i), weights.getValue(i));
+                missing.update(df.col(targetColName).getIndex(i), weights.getValue(i));
             }
             defaultIndex = missing.findBestIndex();
             defaultLabel = dict[defaultIndex];

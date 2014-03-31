@@ -51,7 +51,7 @@ public class DensityVector {
         });
     }
 
-    public void out(int pos, double value) {
+    public void update(int pos, double value) {
         values[pos] += value;
     }
 
@@ -81,13 +81,21 @@ public class DensityVector {
         return bestIndex;
     }
 
-    public void normalize() {
+    public void normalize(boolean useMissing) {
         double total = 0.0;
-        for (double value : values) {
-            total += value;
+        for (int i = useMissing ? 0 : 1; i < values.length; i++) {
+            total += values[i];
         }
-        for (int i = 0; i < values.length; i++) {
+        for (int i = useMissing ? 0 : 1; i < values.length; i++) {
             values[i] /= total;
         }
+    }
+
+    public double sum(boolean useMissing) {
+        double total = 0;
+        for (int i = useMissing ? 0 : 1; i < values.length; i++) {
+            total += values[i];
+        }
+        return total;
     }
 }

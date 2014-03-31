@@ -265,22 +265,22 @@ public final class BaseFilters {
      * Split a frame into multiple frames, one for each label in
      * the term dictionary of the nominal value given as parameter.
      *
-     * @param df           source frame
-     * @param nominalIndex getIndex fo the nominal column
+     * @param df      source frame
+     * @param colName getIndex fo the nominal column
      * @return a map of frames, with nominal labels as keys
      */
-    public static Map<String, Frame> groupByNominal(final Frame df, final int nominalIndex) {
-        if (!df.col(nominalIndex).type().isNominal()) {
+    public static Map<String, Frame> groupByNominal(final Frame df, final String colName) {
+        if (!df.col(colName).type().isNominal()) {
             throw new IllegalArgumentException("Index does not specify a nominal attribute");
         }
-        String[] dict = df.col(nominalIndex).getDictionary();
+        String[] dict = df.col(colName).getDictionary();
         final Mapping[] mappings = new Mapping[dict.length];
         for (int i = 0; i < dict.length; i++) {
             mappings[i] = new Mapping();
         }
 
         df.stream().forEach((FSpot fi) -> {
-            int index = fi.getIndex(nominalIndex);
+            int index = fi.getIndex(colName);
             mappings[index].add(fi.rowId());
         });
         Map<String, Frame> frames = new HashMap<>();
