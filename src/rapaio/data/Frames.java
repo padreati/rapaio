@@ -108,7 +108,7 @@ public final class Frames {
         if (exceptCols != null && !exceptCols.isEmpty())
             Collections.addAll(except, exceptCols.split(",", -1));
         for (int i = 0; i < df.colCount(); i++) {
-            if (df.col(i).type().isNumeric() && !exceptCols.contains(df.colNames()[i])) {
+            if (df.col(i).type().isNumeric() && !except.contains(df.colNames()[i])) {
                 double mean = new Mean(df.col(i)).getValue();
                 double sd = StrictMath.sqrt(new Variance(df.col(i)).getValue());
 

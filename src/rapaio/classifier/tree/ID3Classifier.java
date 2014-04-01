@@ -204,7 +204,7 @@ class Node {
                final boolean toLeaf) {
 
         density = new DensityVector(df.col(targetCol), weights);
-        density.normalize();
+        density.normalize(true);
         predictedIndex = density.findBestIndex();
 
         // leaf on empty set
@@ -213,7 +213,7 @@ class Node {
                 throw new IllegalArgumentException("Can't train from an empty frame");
             }
             density = new DensityVector(parent.df.col(targetCol), parent.weights);
-            density.normalize();
+            density.normalize(true);
             predictedIndex = density.findBestIndex();
 
             leaf = true;

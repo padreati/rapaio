@@ -57,7 +57,8 @@ public class Points extends PlotComponent {
 
     @Override
     public void paint(Graphics2D g2d) {
-        g2d.setBackground(ColorPalette.STANDARD.getColor(255));
+//        g2d.setBackground(ColorPalette.STANDARD.getColor(255));
+        g2d.setBackground(ColorPalette.GRAYSCALE.getColor(255));
 
         for (int i = 0; i < x.rowCount(); i++) {
             if (x.isMissing(i) || y.isMissing(i)) {
