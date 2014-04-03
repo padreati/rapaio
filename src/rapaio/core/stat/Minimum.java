@@ -20,7 +20,6 @@
 
 package rapaio.core.stat;
 
-import rapaio.core.MathBase;
 import rapaio.core.Printable;
 import rapaio.data.Vector;
 
@@ -51,7 +50,7 @@ public class Minimum implements Printable {
                 continue;
             }
             valid = true;
-            min = MathBase.min(min, vector.getValue(i));
+            min = Math.min(min, vector.getValue(i));
         }
         return valid ? min : Double.NaN;
     }

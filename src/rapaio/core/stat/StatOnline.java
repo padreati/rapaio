@@ -20,8 +20,6 @@
 
 package rapaio.core.stat;
 
-import static rapaio.core.MathBase.*;
-
 /**
  * Class which implements core online statistics. This class does not hold
  * values used for calculations, just the statistics itself and some additional
@@ -87,8 +85,8 @@ public class StatOnline {
         m4 += term1 * delta_n2 * (n * n - 3 * n + 3) + 6 * delta_n2 * m2 - 4 * delta_n * m3;
         m3 += term1 * delta_n * (n - 2) - 3 * delta_n * m2;
         m2 += term1;
-        min = min(min, x);
-        max = max(max, x);
+        min = Math.min(min, x);
+        max = Math.max(max, x);
     }
 
     /**
@@ -115,11 +113,11 @@ public class StatOnline {
     }
 
     public double getStandardDeviation() {
-        return sqrt(getVariance());
+        return Math.sqrt(getVariance());
     }
 
     public double getSkewness() {
-        return sqrt(n) * m3 / pow(m2, 1.5);
+        return Math.sqrt(n) * m3 / Math.pow(m2, 1.5);
     }
 
     public double getKurtosis() {
@@ -143,8 +141,8 @@ public class StatOnline {
                 (combined.n * combined.n * combined.n);
         combined.m4 += 6.0 * delta2 * (a.n * a.n * this.m2 + this.n * this.n * a.m2) / (combined.n * combined.n) +
                 4.0 * delta * (a.n * this.m3 - this.n * a.m3) / combined.n;
-        combined.min = min(this.min, a.min);
-        combined.max = max(this.max, a.max);
+        combined.min = Math.min(this.min, a.min);
+        combined.max = Math.max(this.max, a.max);
 
         n = combined.n;
         m1 = combined.m1;

@@ -18,26 +18,32 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions.empirical;
+package rapaio.feature.transform;
+
+import rapaio.data.Frame;
 
 /**
- * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class KernelFunctionEpanechnikov implements KernelFunction {
+public class ShiftTransform implements Transform {
 
-    @Override
-    public double pdf(double x, double x0, double bandwidth) {
-        double value = Math.abs(x - x0) / bandwidth;
-        return value <= 1 ? 3. * (1 - value * value) / 4. : 0;
+    private final String[] colNames;
+    private final double shift;
+
+    public ShiftTransform(Frame df, String[] colNames, double shift) {
+        this.colNames = colNames;
+        this.shift = shift;
     }
 
-    @Override
-    public double getMinValue(double x0, double bandwidth) {
-        return x0 - bandwidth;
+    public void scale(Frame df) {
+        for (String colName : colNames) {
+            df.col(colName).stream().transformValue(x -> x - shift);
+        }
     }
 
-    @Override
-    public double getMaxValue(double x0, double bandwidth) {
-        return x0 + bandwidth;
+    public void unscale(Frame df) {
+        for (String colName : colNames) {
+            df.col(colName).stream().transformValue(x -> x + shift);
+        }
     }
 }

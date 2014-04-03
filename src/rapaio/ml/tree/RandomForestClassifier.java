@@ -38,7 +38,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static rapaio.core.MathBase.log2;
-import static rapaio.core.MathBase.max;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -303,7 +302,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
         for (int i = 0; i < giniImportanceNames.length; i++) {
             String colName = giniImportanceNames[i];
             if (colName.equals(classColName)) continue;
-            width = max(width, classColName.length() + 1);
+            width = Math.max(width, classColName.length() + 1);
             double decrease = 0;
             if (giniImportanceCount[i] != 0) {
                 decrease = giniImportanceValue[i] / giniImportanceCount[i];

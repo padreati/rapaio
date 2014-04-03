@@ -35,9 +35,6 @@ import rapaio.data.mapping.Mapping;
 import java.util.ArrayList;
 import java.util.List;
 
-import static rapaio.core.MathBase.log;
-import static rapaio.core.MathBase.min;
-
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
@@ -166,7 +163,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
                     err += w.getValue(j);
                 }
             }
-            double alpha = log((1. - err) / err) + log(k - 1);
+            double alpha = Math.log((1. - err) / err) + Math.log(k - 1);
             if (err == 0 || err > (1 - 1 / k)) {
                 if (h.isEmpty()) {
                     h.add(hh);
@@ -258,7 +255,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
                     err += w.getValue(j);
                 }
             }
-            double alpha = log((1. - err) / err) + log(k - 1);
+            double alpha = Math.log((1. - err) / err) + Math.log(k - 1);
             if (err == 0 || err > (1 - 1 / k)) {
                 if (h.isEmpty()) {
                     h.add(hh);
@@ -289,7 +286,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         pred = new Nominal(df.rowCount(), dict);
         dist = Frames.newMatrix(df.rowCount(), dict);
 
-        for (int i = 0; i < min(runs, h.size()); i++) {
+        for (int i = 0; i < Math.min(runs, h.size()); i++) {
             h.get(i).predict(df);
             for (int j = 0; j < df.rowCount(); j++) {
                 int index = h.get(i).pred().getIndex(j);

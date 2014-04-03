@@ -24,8 +24,6 @@ import rapaio.printer.PrinterUtils;
 
 import java.text.DecimalFormat;
 
-import static rapaio.core.MathBase.*;
-
 /**
  * @author Aurelian Tutuianu
  */
@@ -61,7 +59,7 @@ public class Normal extends Distribution {
 
     @Override
     public double pdf(double x) {
-        return 1 / sqrt(2 * PI * var) * exp(-pow(x - mu, 2) / (2 * var));
+        return 1 / Math.sqrt(2 * Math.PI * var) * Math.exp(-Math.pow(x - mu, 2) / (2 * var));
     }
 
     @Override
@@ -115,7 +113,7 @@ public class Normal extends Distribution {
         double result;
 
         if (0 < p && p < p_low) {
-            double q = sqrt(-2 * log(p));
+            double q = Math.sqrt(-2 * Math.log(p));
             result = (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5])
                     / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
         } else if (p_low <= p && p <= p_high) {
@@ -125,7 +123,7 @@ public class Normal extends Distribution {
                     / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
         } else//upper region
         {
-            double q = sqrt(-2 * log(1 - p));
+            double q = Math.sqrt(-2 * Math.log(1 - p));
             result = -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5])
                     / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
         }
@@ -133,10 +131,10 @@ public class Normal extends Distribution {
         //Refining step
 
         double e = cdf(result, 0, 1) - p;
-        double u = e * sqrt(2 * PI) * exp(result * result / 2);
+        double u = e * Math.sqrt(2 * Math.PI) * Math.exp(result * result / 2);
         result = result - u / (1 + result * u / 2);
 
-        return result * sqrt(var) + mu;
+        return result * Math.sqrt(var) + mu;
 
     }
 
@@ -150,7 +148,7 @@ public class Normal extends Distribution {
         while (s != t) {
             s = (t = s) + (b *= q / (i += 2));
         }
-        return 0.5 + s * exp(-.5 * q - 0.91893853320467274178);
+        return 0.5 + s * Math.exp(-.5 * q - 0.91893853320467274178);
     }
 
     @Override

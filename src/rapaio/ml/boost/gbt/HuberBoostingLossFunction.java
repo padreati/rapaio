@@ -20,7 +20,6 @@
 
 package rapaio.ml.boost.gbt;
 
-import rapaio.core.MathBase;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Numeric;
 import rapaio.data.Vector;
@@ -61,7 +60,7 @@ public class HuberBoostingLossFunction implements BoostingLossFunction {
 
         Numeric absResidual = new Numeric();
         for (int i = 0; i < y.rowCount(); i++) {
-            absResidual.addValue(MathBase.abs(y.getValue(i) - fx.getValue(i)));
+            absResidual.addValue(Math.abs(y.getValue(i) - fx.getValue(i)));
         }
 
         // compute rho as an alpha-quantile of absolute residuals
@@ -74,7 +73,7 @@ public class HuberBoostingLossFunction implements BoostingLossFunction {
         double count = y.rowCount();
         for (int i = 0; i < y.rowCount(); i++) {
             gamma += (residual.getValue(i) - r_bar <= 0 ? -1 : 1)
-                    * MathBase.min(rho, MathBase.abs(residual.getValue(i) - r_bar))
+                    * Math.min(rho, Math.abs(residual.getValue(i) - r_bar))
                     / count;
         }
         return gamma;
@@ -87,7 +86,7 @@ public class HuberBoostingLossFunction implements BoostingLossFunction {
 
         Numeric absResidual = new Numeric();
         for (int i = 0; i < y.rowCount(); i++) {
-            absResidual.addValue(MathBase.abs(y.getValue(i) - fx.getValue(i)));
+            absResidual.addValue(Math.abs(y.getValue(i) - fx.getValue(i)));
         }
 
         // compute rho as an alpha-quantile of absolute residuals

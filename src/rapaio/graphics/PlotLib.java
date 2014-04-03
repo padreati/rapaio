@@ -18,31 +18,38 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions.empirical;
+package rapaio.graphics;
 
+import rapaio.data.Vector;
+import rapaio.graphics.base.Figure;
+import rapaio.graphics.plot.Points;
+import rapaio.workspace.Workspace;
 
 /**
- * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class KernelFunctionCosine implements KernelFunction {
+public final class PlotLib {
 
-    @Override
-    public double pdf(double x, double x0, double bandwidth) {
+    private static Figure lastFigure;
 
-        double value = Math.abs(x - x0) / bandwidth;
-        if (value <= 1) {
-            return Math.PI * Math.cos(Math.PI * value / 2) / 4.;
+    public static Plot plot() {
+        Plot p = new Plot();
+        lastFigure = p;
+        return p;
+    }
+
+    public static Points points(final Vector x, final Vector y) {
+        if (!(lastFigure instanceof Plot)) {
+            lastFigure = new Plot();
         }
-        return 0;
+
+        Plot p = (Plot) lastFigure;
+        Points points = new Points(x, y);
+        p.add(points);
+        return points;
     }
 
-    @Override
-    public double getMinValue(double x0, double bandwidth) {
-        return x0 - bandwidth;
-    }
-
-    @Override
-    public double getMaxValue(double x0, double bandwidth) {
-        return x0 + bandwidth;
+    public static void draw() {
+        Workspace.draw(lastFigure);
     }
 }

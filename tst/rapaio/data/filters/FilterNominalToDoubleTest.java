@@ -29,7 +29,6 @@ import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static rapaio.core.MathBase.pow;
 import static rapaio.data.filters.BaseFilters.sort;
 import static rapaio.data.filters.BaseFilters.toNumeric;
 
@@ -43,16 +42,16 @@ public class FilterNominalToDoubleTest {
         int n = 10;
         HashSet<String> dict = new HashSet<>();
         for (int i = 0; i < n; i++) {
-            dict.add(String.valueOf(pow(i, 1.5)));
+            dict.add(String.valueOf(Math.pow(i, 1.5)));
         }
         Vector v = new Nominal(10, dict);
         for (int i = 0; i < v.rowCount(); i++) {
-            String value = String.valueOf(pow(i, 1.5));
+            String value = String.valueOf(Math.pow(i, 1.5));
             v.setLabel(i, value);
         }
         Vector filtered = toNumeric(v);
         for (int i = 0; i < v.rowCount(); i++) {
-            double value = pow(i, 1.5);
+            double value = Math.pow(i, 1.5);
             assertEquals(value, filtered.getValue(i), 1e-10);
         }
     }

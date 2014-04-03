@@ -20,7 +20,6 @@
 
 package rapaio.core.stat;
 
-import rapaio.core.MathBase;
 import rapaio.core.Printable;
 import rapaio.data.Vector;
 
@@ -55,7 +54,7 @@ public class Mode implements Printable {
         int max = 0;
         int start = includeMissing ? 0 : 1;
         for (int i = start; i < freq.length; i++) {
-            max = MathBase.max(max, freq[i]);
+            max = Math.max(max, freq[i]);
         }
         int count = 0;
         for (int i = start; i < freq.length; i++) {

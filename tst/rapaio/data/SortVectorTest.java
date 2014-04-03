@@ -21,7 +21,6 @@
 package rapaio.data;
 
 import org.junit.Test;
-import rapaio.core.MathBase;
 import rapaio.io.Csv;
 
 import java.io.IOException;
@@ -174,12 +173,12 @@ public class SortVectorTest {
 
         sort = sort(numeric, numericComparator(numeric, true));
         for (int i = 0; i < sort.rowCount(); i++) {
-            sort.setValue(i, sort.getValue(i) + MathBase.E);
+            sort.setValue(i, sort.getValue(i) + Math.E);
         }
-        assertEquals(MathBase.E + 1., numeric.getValue(0), 1e-10);
-        assertEquals(MathBase.E + 2.5, numeric.getValue(2), 1e-10);
-        assertEquals(MathBase.E + 4, numeric.getValue(1), 1e-10);
-        assertEquals(MathBase.E + 4., numeric.getValue(3), 1e-10);
+        assertEquals(Math.E + 1., numeric.getValue(0), 1e-10);
+        assertEquals(Math.E + 2.5, numeric.getValue(2), 1e-10);
+        assertEquals(Math.E + 4, numeric.getValue(1), 1e-10);
+        assertEquals(Math.E + 4., numeric.getValue(3), 1e-10);
 
 
         // getIndex

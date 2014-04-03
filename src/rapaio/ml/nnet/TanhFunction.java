@@ -18,26 +18,24 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions.empirical;
+package rapaio.ml.nnet;
 
 /**
- * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class KernelFunctionEpanechnikov implements KernelFunction {
+public class TanhFunction implements TFunction {
 
     @Override
-    public double pdf(double x, double x0, double bandwidth) {
-        double value = Math.abs(x - x0) / bandwidth;
-        return value <= 1 ? 3. * (1 - value * value) / 4. : 0;
+    public double compute(double x) {
+//        return 1.7159 * Math.tanh(0.66666667 * x);
+        return Math.tanh(x);
     }
 
     @Override
-    public double getMinValue(double x0, double bandwidth) {
-        return x0 - bandwidth;
-    }
-
-    @Override
-    public double getMaxValue(double x0, double bandwidth) {
-        return x0 + bandwidth;
+    public double differential(double x) {
+//        double cosh = Math.cosh(0.66666666667 * x);
+//        return 1.14393 / (cosh*cosh);
+        return 1 - x * x;
+//        return 0.66666667 / 1.7159 * (1.7159 + x) * (1.7159 - x);
     }
 }

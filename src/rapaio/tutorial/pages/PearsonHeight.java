@@ -40,7 +40,6 @@ import rapaio.workspace.Summary;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.core.MathBase.sqrt;
 import static rapaio.workspace.Summary.summary;
 import static rapaio.workspace.Workspace.*;
 
@@ -73,7 +72,7 @@ public class PearsonHeight implements TutorialPage {
         p("First we take a look at the histograms for the two dimensions");
 
         for (int i = 0; i < df.colCount(); i++) {
-            Normal normal = new Normal(new Mean(df.col(i)).getValue(), sqrt(new Variance(df.col(i)).getValue()));
+            Normal normal = new Normal(new Mean(df.col(i)).getValue(), Math.sqrt(new Variance(df.col(i)).getValue()));
             draw(new Plot()
                             .add(new Histogram(df.col(i), 23, true, 57, 80))
                             .add(new FunctionLine(normal.getPdfFunction())

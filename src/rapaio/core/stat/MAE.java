@@ -27,8 +27,6 @@ import rapaio.data.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
-import static rapaio.core.MathBase.abs;
-
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
@@ -68,7 +66,7 @@ public class MAE implements Printable {
         for (int i = 0; i < source.size(); i++) {
             for (int j = 0; j < source.get(i).rowCount(); j++) {
                 count++;
-                total += abs(source.get(i).getValue(j) - target.get(i).getValue(j));
+                total += Math.abs(source.get(i).getValue(j) - target.get(i).getValue(j));
             }
         }
         value = total / count;

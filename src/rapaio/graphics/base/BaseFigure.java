@@ -24,7 +24,6 @@ import rapaio.data.Index;
 import rapaio.data.Vector;
 import rapaio.data.Vectors;
 import rapaio.graphics.colors.ColorPalette;
-import rapaio.graphics.colors.GrayColorPallete;
 import rapaio.graphics.colors.StandardColorPalette;
 
 import java.awt.*;
@@ -109,8 +108,8 @@ public abstract class BaseFigure implements Figure {
     public BaseFigure setCol(Vector color) {
         colors = new Color[color.rowCount()];
         for (int i = 0; i < color.rowCount(); i++) {
-//            colors[i] = new StandardColorPalette().getColor(color.getIndex(i));
-            colors[i] = new GrayColorPallete().getColor(color.getIndex(i));
+            colors[i] = new StandardColorPalette().getColor(color.getIndex(i));
+//            colors[i] = new GrayColorPallete().getColor(color.getIndex(i));
         }
         return this;
     }

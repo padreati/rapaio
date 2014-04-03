@@ -20,7 +20,6 @@
 
 package rapaio.core.stat;
 
-import rapaio.core.MathBase;
 import rapaio.core.Printable;
 import rapaio.data.Vector;
 
@@ -106,13 +105,13 @@ public class ConfusionMatrix implements Printable {
         sb.append("\n");
         int maxwidth = "Actual".length();
         for (int i = 1; i < dict.length; i++) {
-            maxwidth = MathBase.max(maxwidth, dict[i].length());
+            maxwidth = Math.max(maxwidth, dict[i].length());
             int total = 0;
             for (int j = 1; j < dict.length; j++) {
-                maxwidth = MathBase.max(maxwidth, String.format("%d", cmf[i - 1][j - 1]).length());
+                maxwidth = Math.max(maxwidth, String.format("%d", cmf[i - 1][j - 1]).length());
                 total += cmf[i - 1][j - 1];
             }
-            maxwidth = MathBase.max(maxwidth, String.format("%d", total).length());
+            maxwidth = Math.max(maxwidth, String.format("%d", total).length());
         }
 
         sb.append(String.format("%" + maxwidth + "s", "")).append("|").append(" Predicted\n");
@@ -192,13 +191,13 @@ public class ConfusionMatrix implements Printable {
         sb.append("\n");
         maxwidth = "Actual".length();
         for (int i = 1; i < dict.length; i++) {
-            maxwidth = MathBase.max(maxwidth, dict[i].length());
+            maxwidth = Math.max(maxwidth, dict[i].length());
             int total = 0;
             for (int j = 1; j < dict.length; j++) {
-                maxwidth = MathBase.max(maxwidth, String.format("%.3f", cmf[i - 1][j - 1] / completeCases).length());
+                maxwidth = Math.max(maxwidth, String.format("%.3f", cmf[i - 1][j - 1] / completeCases).length());
                 total += cmf[i - 1][j - 1];
             }
-            maxwidth = MathBase.max(maxwidth, String.format("%.3f", total / completeCases).length());
+            maxwidth = Math.max(maxwidth, String.format("%.3f", total / completeCases).length());
         }
 
         sb.append(String.format("%" + maxwidth + "s", "")).append("|").append(" Predicted\n");

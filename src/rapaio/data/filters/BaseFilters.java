@@ -76,25 +76,19 @@ public final class BaseFilters {
      */
     public static Frame removeCols(Frame df, String colRange) {
         ColRange range = new ColRange(colRange);
-        final List<Integer> indexes = range.parseColumnIndexes(df);
-        Vector[] vectors = new Vector[df.colCount() - indexes.size()];
-        String[] names = new String[df.colCount() - indexes.size()];
-        int posIndexes = 0;
-        int posFinal = 0;
+        Set<Integer> indexes = new HashSet<>(range.parseColumnIndexes(df));
+        List<Vector> vectors = new ArrayList<>();
+        List<String> names = new ArrayList<>();
         for (int i = 0; i < df.colCount(); i++) {
-            if (posIndexes < indexes.size() && i == indexes.get(posIndexes)) {
-                posIndexes++;
-                continue;
-            }
-            vectors[posFinal] = df.col(i).source();
-            names[posFinal] = df.colNames()[i];
-            posFinal++;
+            if (indexes.contains(i)) continue;
+            vectors.add(df.col(i).source());
+            names.add(df.colNames()[i]);
         }
-        Frame solid = new SolidFrame(df.rowCount(), vectors, names);
+        SolidFrame solid = new SolidFrame(df.rowCount(), vectors, names);
         if (!df.isMappedFrame()) {
             return solid;
         }
-        return new MappedFrame(solid, df.source().mapping());
+        return new MappedFrame(solid, df.mapping());
     }
 
     /**

@@ -20,7 +20,6 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.core.MathBase;
 import rapaio.core.distributions.empirical.KernelDensityEstimator;
 import rapaio.core.distributions.empirical.KernelFunction;
 import rapaio.core.distributions.empirical.KernelFunctionGaussian;
@@ -69,17 +68,17 @@ public class DensityLine extends PlotComponent {
             if (xmin != xmin) {
                 xmin = kde.getKernel().getMinValue(vector.getValue(i), bandwidth);
             } else {
-                xmin = MathBase.min(xmin, kde.getKernel().getMinValue(vector.getValue(i), bandwidth));
+                xmin = Math.min(xmin, kde.getKernel().getMinValue(vector.getValue(i), bandwidth));
             }
             if (xmax != xmax) {
                 xmax = kde.getKernel().getMaxValue(vector.getValue(i), bandwidth);
             } else {
-                xmax = MathBase.min(xmax, kde.getKernel().getMaxValue(vector.getValue(i), bandwidth));
+                xmax = Math.min(xmax, kde.getKernel().getMaxValue(vector.getValue(i), bandwidth));
             }
             if (ymax != ymax) {
                 ymax = kde.getPdf().apply(vector.getValue(i));
             } else {
-                ymax = MathBase.min(ymax, kde.getPdf().apply(vector.getValue(i)));
+                ymax = Math.min(ymax, kde.getPdf().apply(vector.getValue(i)));
             }
         }
         // give some space

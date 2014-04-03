@@ -23,7 +23,6 @@ package rapaio.core.stat;
 import rapaio.core.Printable;
 import rapaio.data.*;
 
-import static rapaio.core.MathBase.abs;
 import static rapaio.data.filters.BaseFilters.sort;
 
 
@@ -104,7 +103,7 @@ public class ROC implements Printable {
             if (sort.isMissing(i) || classes.isMissing(sort.rowId(i))) continue;
 
             if (sort.getValue(i) != prev) {
-                auc += abs(prevfp - fp) * abs(prevtp + tp) / 2.;
+                auc += Math.abs(prevfp - fp) * Math.abs(prevtp + tp) / 2.;
                 double accValue = (tp + n - fp) / (0. + n + p);
                 data.setValue(pos, "threshold", prev);
                 data.setValue(pos, "fpr", fp / (1. * n));
@@ -124,7 +123,7 @@ public class ROC implements Printable {
         data.setValue(pos, "tpr", 1.);
         data.setValue(pos, "acc", p / (0. + n + p));
 
-        auc += abs(n - prevfp) * (p + prevtp) / 2.;
+        auc += Math.abs(n - prevfp) * (p + prevtp) / 2.;
         auc /= (1. * p * n);
     }
 

@@ -23,7 +23,6 @@ package rapaio.core.stat;
 import rapaio.core.Printable;
 import rapaio.data.Vector;
 
-import static rapaio.core.MathBase.floor;
 import static rapaio.data.filters.BaseFilters.sort;
 
 
@@ -72,7 +71,7 @@ public class Quantiles implements Printable {
         for (int i = 0; i < percentiles.length; i++) {
             int N = sorted.rowCount() - start;
             double h = (N + 1. / 3.) * percentiles[i] + 1. / 3.;
-            int hfloor = (int) floor(h);
+            int hfloor = (int) Math.floor(h);
 
             if (percentiles[i] < (2. / 3.) / (N + 1. / 3.)) {
                 values[i] = sorted.getValue(start);

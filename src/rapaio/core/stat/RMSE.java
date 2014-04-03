@@ -20,7 +20,6 @@
 
 package rapaio.core.stat;
 
-import rapaio.core.MathBase;
 import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Vector;
@@ -68,10 +67,10 @@ public class RMSE implements Printable {
         for (int i = 0; i < source.size(); i++) {
             for (int j = 0; j < source.get(i).rowCount(); j++) {
                 count++;
-                total += MathBase.pow(source.get(i).getValue(j) - target.get(i).getValue(j), 2);
+                total += Math.pow(source.get(i).getValue(j) - target.get(i).getValue(j), 2);
             }
         }
-        value = MathBase.sqrt(total / count);
+        value = Math.sqrt(total / count);
     }
 
     public double getValue() {

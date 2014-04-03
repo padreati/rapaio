@@ -25,9 +25,6 @@ import rapaio.data.Vector;
 
 import java.util.function.Function;
 
-import static rapaio.core.MathBase.pow;
-import static rapaio.core.MathBase.sqrt;
-
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
@@ -105,12 +102,12 @@ public class KernelDensityEstimator {
      */
     public final double getSilvermanBandwidth(Vector vector) {
         Variance var = new Variance(vector);
-        double sd = sqrt(var.getValue());
+        double sd = Math.sqrt(var.getValue());
         if (sd == 0) {
             sd = 1;
         }
         double count = 0;
         for (int i = 0; i < vector.rowCount(); i++) if (!vector.isMissing(i)) count++;
-        return 1.06 * sd * pow(count, -1. / 5.);
+        return 1.06 * sd * Math.pow(count, -1. / 5.);
     }
 }

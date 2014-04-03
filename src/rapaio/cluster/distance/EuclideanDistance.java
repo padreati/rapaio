@@ -21,7 +21,6 @@
 package rapaio.cluster.distance;
 
 import rapaio.core.ColRange;
-import rapaio.core.MathBase;
 import rapaio.data.Frame;
 
 import java.util.List;
@@ -49,9 +48,9 @@ public class EuclideanDistance implements Distance {
         }
         double distance = 0;
         for (int i = 0; i < sourceFields.size(); i++) {
-            distance += (MathBase.pow(from.col(sourceFields.get(i)).getValue(fromRow), 2) -
-                    MathBase.pow(targetFrame.col(targetFields.get(i)).getValue(targetRow), 2));
+            distance += (Math.pow(from.col(sourceFields.get(i)).getValue(fromRow), 2) -
+                    Math.pow(targetFrame.col(targetFields.get(i)).getValue(targetRow), 2));
         }
-        return MathBase.sqrt(distance);
+        return Math.sqrt(distance);
     }
 }

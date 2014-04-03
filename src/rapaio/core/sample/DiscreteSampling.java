@@ -24,8 +24,6 @@ import rapaio.core.RandomSource;
 
 import java.util.Arrays;
 
-import static rapaio.core.MathBase.log;
-import static rapaio.core.MathBase.pow;
 import static rapaio.core.RandomSource.nextDouble;
 
 /**
@@ -118,7 +116,7 @@ public class DiscreteSampling {
         // fill heap base
         for (int i = 0; i < sampleSize; i++) {
             heap[i + len / 2] = i;
-            k[i] = pow(nextDouble(), 1. / prob[i]);
+            k[i] = Math.pow(nextDouble(), 1. / prob[i]);
             result[i] = i;
         }
 
@@ -143,7 +141,7 @@ public class DiscreteSampling {
         int pos = sampleSize;
         while (pos < prob.length) {
             double r = nextDouble();
-            double xw = log(r) / log(k[heap[1]]);
+            double xw = Math.log(r) / Math.log(k[heap[1]]);
 
             double acc = 0;
             while (pos < prob.length) {
@@ -157,9 +155,9 @@ public class DiscreteSampling {
             if (pos == prob.length) break;
 
             // min replaced with the new selected getValue
-            double tw = pow(k[heap[1]], prob[pos]);
+            double tw = Math.pow(k[heap[1]], prob[pos]);
             double r2 = nextDouble() * (1. - tw) + tw;
-            double ki = pow(r2, 1 / prob[pos]);
+            double ki = Math.pow(r2, 1 / prob[pos]);
 
             k[heap[1]] = ki;
             result[heap[1]] = pos++;

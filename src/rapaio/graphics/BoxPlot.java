@@ -32,9 +32,6 @@ import java.awt.*;
 import java.awt.geom.Line2D;
 import java.util.List;
 
-import static rapaio.core.MathBase.max;
-import static rapaio.core.MathBase.min;
-
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
@@ -206,10 +203,10 @@ public class BoxPlot extends BaseFigure {
                     continue;
                 }
                 if ((point > upperwhisker) && (point < q[2] + innerfence)) {
-                    upperwhisker = max(upperwhisker, point);
+                    upperwhisker = Math.max(upperwhisker, point);
                 }
                 if ((point < lowerqhisker) && (point >= q[0] - innerfence)) {
-                    lowerqhisker = min(lowerqhisker, point);
+                    lowerqhisker = Math.min(lowerqhisker, point);
                 }
             }
 

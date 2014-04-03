@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
-import static rapaio.core.MathBase.sqrt;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -42,7 +41,7 @@ public class VarianceTest extends CoreStatTestUtil {
     @Test
     public void testRReferenceVariance() {
         Frame df = getDataFrame();
-        assertEquals(Double.valueOf("1.0012615815492349469"), sqrt(new Variance(df.col(0)).getValue()), 1e-12);
+        assertEquals(Double.valueOf("1.0012615815492349469"), Math.sqrt(new Variance(df.col(0)).getValue()), 1e-12);
     }
 
     @Test

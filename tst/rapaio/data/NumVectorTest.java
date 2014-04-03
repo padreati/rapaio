@@ -24,7 +24,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static rapaio.core.MathBase.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -45,12 +44,12 @@ public class NumVectorTest {
     public void testGetterSetter() {
         Vector v = new Numeric(10);
         for (int i = 0; i < 10; i++) {
-            v.setValue(i, log(10 + i));
+            v.setValue(i, Math.log(10 + i));
         }
 
         for (int i = 0; i < 10; i++) {
-            assertEquals(log(10 + i), v.getValue(i), 1e-10);
-            assertEquals((int) Math.rint(log(10 + i)), v.getIndex(i));
+            assertEquals(Math.log(10 + i), v.getValue(i), 1e-10);
+            assertEquals((int) Math.rint(Math.log(10 + i)), v.getIndex(i));
         }
 
         for (int i = 0; i < 10; i++) {
@@ -84,13 +83,13 @@ public class NumVectorTest {
 
     @Test
     public void testOneNumeric() {
-        Vector one = Vectors.newNumOne(PI);
+        Vector one = Vectors.newNumOne(Math.PI);
 
         assertEquals(1, one.rowCount());
-        assertEquals(PI, one.getValue(0), 1e-10);
+        assertEquals(Math.PI, one.getValue(0), 1e-10);
 
-        one = Vectors.newNumOne(E);
+        one = Vectors.newNumOne(Math.E);
         assertEquals(1, one.rowCount());
-        assertEquals(E, one.getValue(0), 1e-10);
+        assertEquals(Math.E, one.getValue(0), 1e-10);
     }
 }

@@ -20,7 +20,6 @@
 
 package rapaio.tutorial.pages;
 
-import rapaio.core.MathBase;
 import rapaio.core.distributions.empirical.KernelDensityEstimator;
 import rapaio.core.distributions.empirical.KernelFunction;
 import rapaio.data.Frame;
@@ -190,7 +189,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                 .add(new DensityLine(col, new KernelFunction() {
                     @Override
                     public double pdf(double x, double x0, double bandwidth) {
-                        return (MathBase.abs(x - x0) / bandwidth >= 0.5) ? 0 : 1.;
+                        return (Math.abs(x - x0) / bandwidth >= 0.5) ? 0 : 1.;
                     }
 
                     @Override

@@ -27,7 +27,6 @@ import rapaio.data.Vector;
 
 import java.util.Arrays;
 
-import static rapaio.core.MathBase.max;
 import static rapaio.data.filters.BaseFilters.sort;
 import static rapaio.workspace.Workspace.getPrinter;
 
@@ -145,7 +144,7 @@ public class SpearmanRhoCorrelation implements Printable {
         int[] ws = new int[table[0].length];
         for (int i = 0; i < table.length; i++) {
             for (int j = 0; j < table[0].length; j++) {
-                ws[i] = max(ws[i], table[i][j].length());
+                ws[i] = Math.max(ws[i], table[i][j].length());
             }
         }
         while (start < vectors.length + 1) {

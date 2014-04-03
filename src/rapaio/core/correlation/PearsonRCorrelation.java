@@ -28,8 +28,6 @@ import rapaio.data.Vector;
 
 import java.util.Arrays;
 
-import static rapaio.core.MathBase.max;
-import static rapaio.core.MathBase.sqrt;
 import static rapaio.workspace.Workspace.getPrinter;
 
 /**
@@ -83,8 +81,8 @@ public class PearsonRCorrelation implements Printable {
         double xMean = new Mean(x).getValue();
         double yMean = new Mean(y).getValue();
         double sum = 0;
-        int len = max(x.rowCount(), y.rowCount());
-        double sdp = sqrt(new Variance(x).getValue()) * sqrt(new Variance(y).getValue());
+        int len = Math.min(x.rowCount(), y.rowCount());
+        double sdp = Math.sqrt(new Variance(x).getValue()) * Math.sqrt(new Variance(y).getValue());
         double count = 0;
         for (int i = 0; i < len; i++) {
             if (x.isMissing(i) || y.isMissing(i)) {
@@ -150,7 +148,7 @@ public class PearsonRCorrelation implements Printable {
         int[] ws = new int[table[0].length];
         for (int i = 0; i < table.length; i++) {
             for (int j = 0; j < table[0].length; j++) {
-                ws[i] = max(ws[i], table[i][j].length());
+                ws[i] = Math.max(ws[i], table[i][j].length());
             }
         }
         while (start < vectors.length + 1) {

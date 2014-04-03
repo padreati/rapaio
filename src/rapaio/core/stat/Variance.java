@@ -23,8 +23,6 @@ package rapaio.core.stat;
 import rapaio.core.Printable;
 import rapaio.data.Vector;
 
-import static rapaio.core.MathBase.pow;
-
 /**
  * Compensated version of the algorithm for calculation of
  * sample variance of values from a {@link rapaio.data.Vector}.
@@ -62,10 +60,10 @@ public class Variance implements Printable {
             if (vector.isMissing(i)) {
                 continue;
             }
-            sum2 += pow(vector.getValue(i) - mean, 2);
+            sum2 += Math.pow(vector.getValue(i) - mean, 2);
             sum3 += vector.getValue(i) - mean;
         }
-        return (sum2 - pow(sum3, 2) / n) / (n - 1);
+        return (sum2 - Math.pow(sum3, 2) / n) / (n - 1);
 
     }
 

@@ -20,7 +20,6 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.core.MathBase;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
 
@@ -50,7 +49,7 @@ public class Legend extends PlotComponent {
         double minHeight = Double.MAX_VALUE;
         for (String string : labels) {
             double height = g2d.getFontMetrics().getStringBounds(string, g2d).getHeight();
-            minHeight = MathBase.min(minHeight, height);
+            minHeight = Math.min(minHeight, height);
         }
         double size = g2d.getFontMetrics().getStringBounds("aa", g2d).getWidth();
         double xstart = getParent().xScale(x);

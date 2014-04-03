@@ -33,7 +33,6 @@ import rapaio.ml.colselect.ColSelector;
 import java.util.ArrayList;
 import java.util.List;
 
-import static rapaio.core.MathBase.abs;
 import static rapaio.core.MathBase.validNumber;
 
 public class RandomTree extends AbstractClassifier<RandomTree> {
@@ -229,7 +228,7 @@ class TreeNode {
 
         // leaf on all classes of same getValue
         for (int i = 1; i < fd.length; i++) {
-            if (abs(fd[i] - totalFd) <= 1e-30) {
+            if (Math.abs(fd[i] - totalFd) <= 1e-30) {
                 predicted = classCol.getLabel(0);
                 leaf = true;
                 return;

@@ -39,7 +39,7 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor implements 
 
     private final double learningRate;
     private final NetNode[][] net;
-    private final SigmoidFunction sigmoid = new SigmoidFunction();
+    private final TFunction sigmoid = new SigmoidFunction();
 
     List<String> inputCols;
     List<String> targetCols;
