@@ -38,6 +38,17 @@ public class QuantileTransform implements Transform {
     private final Map<String, double[]> values;
     private final double width;
 
+    public QuantileTransform(Vector v, String name, int n) {
+        this.width = 1.0 / (1.0 * n);
+        this.colNames = new String[]{name};
+        this.p = new double[n + 1];
+        for (int i = 0; i < n; i++) {
+            p[i + 1] = (i + 1.0) / (1.0 * n);
+        }
+        values = new HashMap<>();
+        values.put(name, new Quantiles(v, p).getValues());
+    }
+
     public QuantileTransform(Frame df, String[] colNames, int n) {
         this.width = 1.0 / (1.0 * n);
         this.colNames = colNames;
@@ -98,4 +109,29 @@ public class QuantileTransform implements Transform {
             }
         }
     }
+
+
+    public Vector scale(Vector v, String name) {
+        double[] vals = values.get(name);
+        for (int i = 0; i < v.rowCount(); i++) {
+            if (v.isMissing(i)) continue;
+            double value = v.getValue(i);
+            if (value <= vals[0]) {
+                v.setValue(i, 0.0);
+                continue;
+            }
+            if (value >= vals[vals.length - 1]) {
+                v.setValue(i, 1.0);
+                continue;
+            }
+            int next = Arrays.binarySearch(vals, value);
+            if (next < 0) next = -next - 1;
+            next--;
+            v.setValue(i, p[next] + (vals[next] != vals[next + 1] ?
+                    width * (value - vals[next]) / (vals[next + 1] - vals[next])
+                    : 0));
+        }
+        return v;
+    }
+
 }

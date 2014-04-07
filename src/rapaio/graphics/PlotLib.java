@@ -22,6 +22,7 @@ package rapaio.graphics;
 
 import rapaio.data.Vector;
 import rapaio.graphics.base.Figure;
+import rapaio.graphics.plot.Histogram;
 import rapaio.graphics.plot.Points;
 import rapaio.workspace.Workspace;
 
@@ -47,6 +48,25 @@ public final class PlotLib {
         Points points = new Points(x, y);
         p.add(points);
         return points;
+    }
+
+    public static Histogram histogram(Vector v) {
+        return histogram(v, 30, true, Double.NaN, Double.NaN);
+    }
+
+    public static Histogram histogram(Vector v, int bins, boolean prob) {
+        return histogram(v, bins, prob, Double.NaN, Double.NaN);
+    }
+
+    public static Histogram histogram(Vector v, int bins, boolean prob, double minValue, double maxValue) {
+        if (!(lastFigure instanceof Plot)) {
+            lastFigure = new Plot();
+        }
+
+        Plot p = (Plot) lastFigure;
+        Histogram h = new Histogram(v, bins, prob, minValue, maxValue);
+        p.add(h);
+        return h;
     }
 
     public static void draw() {

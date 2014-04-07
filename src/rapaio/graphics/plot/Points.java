@@ -46,7 +46,7 @@ public class Points extends PlotComponent {
             return null;
         }
         Range range = new Range();
-        for (int i = 0; i < x.rowCount(); i++) {
+        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
@@ -60,7 +60,7 @@ public class Points extends PlotComponent {
 //        g2d.setBackground(ColorPalette.STANDARD.getColor(255));
         g2d.setBackground(ColorPalette.GRAYSCALE.getColor(255));
 
-        for (int i = 0; i < x.rowCount(); i++) {
+        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }

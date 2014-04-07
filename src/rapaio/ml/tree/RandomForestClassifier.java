@@ -103,8 +103,9 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
         return minNodeSize;
     }
 
-    public void setMinNodeSize(int minNodeSize) {
+    public RandomForestClassifier setMinNodeSize(int minNodeSize) {
         this.minNodeSize = minNodeSize;
+        return this;
     }
 
     public double getNumericSelectionProb() {

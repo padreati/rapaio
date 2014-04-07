@@ -61,6 +61,7 @@ public class Histogram extends PlotComponent {
         getParent().setLeftMarkers(true);
         getParent().setBottomThicker(true);
         getParent().setBottomMarkers(true);
+        setCol(7);
     }
 
     public int getBins() {

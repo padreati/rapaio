@@ -113,7 +113,7 @@ public class KSTest implements Printable {
 
     public double probks(double x) {
         final double EPS1 = 0.001;
-        final double EPS2 = 1.0e-8;
+        final double EPS2 = 1.0e-10;
 
         double a2 = -2.0 * x * x;
         double fac = 2.0;
@@ -121,7 +121,7 @@ public class KSTest implements Printable {
         for (int i = 1; i <= 100; i++) {
             term = fac * Math.exp(a2 * i * i);
             sum += term;
-            if (Math.abs(term) <= EPS1 * bf || Math.abs(term) <= EPS2 * sum) return sum;
+            if (Math.abs(term) <= EPS1 * bf || Math.abs(term) <= EPS2 * sum) return Math.min(1.0, sum);
             fac = -fac;
             bf = Math.abs(term);
         }
