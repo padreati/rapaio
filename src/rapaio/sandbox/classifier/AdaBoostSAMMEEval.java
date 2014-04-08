@@ -48,11 +48,10 @@ public class AdaBoostSAMMEEval {
 
         setPrinter(new LocalPrinter());
 
-//        evalWith(Datasets.loadIrisDataset(), "class", 500, 1);
-//        evalWith(Datasets.loadSpamBase(), "spam", 500, 1);
-//        evalWith(Datasets.loadMushrooms(), "classes");
-//        evalWith(loadArff("breast-cancer"), "Class", 1_000, 1);
-        evalWith(loadArff("letter"), "class", 100, 50);
+//        evalWith(Datasets.loadIrisDataset(), "class", 500, 1, 0.8, true, 1);
+//        evalWith(Datasets.loadSpamBase(), "spam", 100, 5, 1, true, 1);
+        evalWith(loadArff("breast-cancer"), "Class", 1_000, 1, 1, true, 10);
+//        evalWith(loadArff("letter"), "class", 100, 50);
 //        evalWith(loadArff("mushroom"), "class", 1_000, 1);
 //        evalWith(loadArff("vote"), "Class", 1_000, 1);
     }
@@ -63,7 +62,8 @@ public class AdaBoostSAMMEEval {
         return arff.read(name, path);
     }
 
-    private static void evalWith(Frame df, String targetName, int rounds, int step) {
+    private static void evalWith(Frame df, String targetName, int rounds, int step,
+                                 double sampling, boolean bootstrap, int minCount) {
 //        df = BaseFilters.retainNominal(df);
 //        df = BaseFilters.completeCases(df);
         Summary.summary(df);
@@ -75,12 +75,8 @@ public class AdaBoostSAMMEEval {
         AdaBoostSAMMEClassifier c = new AdaBoostSAMMEClassifier()
                 .withClassifier(new DecisionStumpClassifier()
                         .withMethod(CTreeTest.Method.INFO_GAIN)
-                        .withMinCount(5))
-//                .withClassifier(new ID3Classifier()
-//                        .withMethod(CTreeTest.Method.INFO_GAIN)
-//                        .withMinCount(10)
-//                        .withMaxSize(20))
-                .withSampling(0.6, true);
+                        .withMinCount(minCount))
+                .withSampling(sampling, bootstrap);
 
         Index index = new Index();
         Numeric trainAcc = new Numeric();

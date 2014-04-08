@@ -37,18 +37,43 @@ public class SolidFrame extends AbstractFrame {
     private final Vector[] vectors;
     private final HashMap<String, Integer> colIndex;
     private final String[] names;
+    private final Numeric weights;
 
     public SolidFrame(int rows, List<Vector> vectors, List<String> names) {
-        this(rows, vectors, names.toArray(new String[]{}));
+        this(rows, vectors, names.toArray(new String[names.size()]), null);
+    }
+
+    public SolidFrame(int rows, List<Vector> vectors, List<String> names, Numeric weights) {
+        this(rows, vectors, names.toArray(new String[names.size()]), weights);
     }
 
     public SolidFrame(int rows, List<Vector> vectors, String[] names) {
-        for (int i = 0; i < vectors.size(); i++) {
-            if (vectors.get(i).isMappedVector())
+        this(rows, vectors, names, null);
+    }
+
+    public SolidFrame(int rows, Vector[] vectors, String[] names, Numeric weights) {
+        this(rows, Arrays.asList(vectors), names, weights);
+    }
+
+    public SolidFrame(int rows, Vector[] vectors, String[] names) {
+        this(rows, Arrays.asList(vectors), names, null);
+    }
+
+    public SolidFrame(int rows, List<Vector> vectors, String[] names, Numeric weights) {
+        for (Vector vector : vectors) {
+            if (vector.isMappedVector())
                 throw new IllegalArgumentException("Not allowed mapped vectors in solid frame");
         }
         this.rows = rows;
         this.vectors = new Vector[vectors.size()];
+        if (weights != null)
+            this.weights = weights;
+        else {
+            this.weights = new Numeric(rows);
+            for (int i = 0; i < rows; i++) {
+                this.weights.setValue(i, 1.0);
+            }
+        }
         this.colIndex = new HashMap<>();
         this.names = new String[vectors.size()];
 
@@ -57,10 +82,6 @@ public class SolidFrame extends AbstractFrame {
             this.colIndex.put(names[i], i);
             this.names[i] = names[i];
         }
-    }
-
-    public SolidFrame(int rows, Vector[] vectors, String[] names) {
-        this(rows, Arrays.asList(vectors), names);
     }
 
     @Override
@@ -127,5 +148,27 @@ public class SolidFrame extends AbstractFrame {
     @Override
     public boolean isMissing(int row, String colName) {
         return col(colName).isMissing(row);
+    }
+
+    @Override
+    public Numeric getWeights() {
+        return weights;
+    }
+
+    @Override
+    public void setWeights(Numeric weights) {
+        for (int i = 0; i < this.weights.rowCount(); i++) {
+            this.weights.setValue(i, weights.getValue(i));
+        }
+    }
+
+    @Override
+    public double getWeight(int row) {
+        return weights.getValue(row);
+    }
+
+    @Override
+    public void setWeight(int row, double weight) {
+        weights.setValue(row, weight);
     }
 }

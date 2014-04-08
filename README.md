@@ -43,13 +43,13 @@ is considered to be fully implemented and well tested.
 * DecisionStump
 * AdaBoost.SAMME
 * ID3
+* OneRule
 
 **Classification and Regression - not final stage**
 
 An important refactor is in progress. As a consequence, all the algorithm implementations
 are considered by default in experimental state.
 
-* One Rule
 * Random Tree (used in Random Forest)
 * Random Forests uses a variant of tree similar with C45 (in the future will be implemented with CART)
 * C45 Classifier (without pruning)

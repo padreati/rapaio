@@ -24,7 +24,10 @@ import rapaio.classifier.AbstractClassifier;
 import rapaio.classifier.Classifier;
 import rapaio.classifier.tools.CTreeTest;
 import rapaio.classifier.tools.DensityVector;
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.Frames;
+import rapaio.data.Nominal;
+import rapaio.data.Vector;
 import rapaio.data.stream.FSpot;
 
 /**
@@ -75,7 +78,7 @@ public class DecisionStumpClassifier extends AbstractClassifier {
     }
 
     @Override
-    public void learn(Frame df, Numeric weights, String targetColName) {
+    public void learn(Frame df, String targetColName) {
 
         dict = df.col(targetColName).getDictionary();
 
@@ -84,11 +87,11 @@ public class DecisionStumpClassifier extends AbstractClassifier {
         for (String colName : df.colNames()) {
             if (targetColName.equals(colName)) continue;
             if (df.col(colName).type().isNumeric()) {
-                test.binaryNumericTest(df, colName, targetColName, weights);
+                test.binaryNumericTest(df, colName, targetColName);
             } else {
                 for (String testLabel : df.col(colName).getDictionary()) {
                     if (testLabel.equals("?")) continue;
-                    test.binaryNominalTest(df, colName, targetColName, weights, testLabel);
+                    test.binaryNominalTest(df, colName, targetColName, testLabel);
                 }
             }
         }
@@ -108,7 +111,7 @@ public class DecisionStumpClassifier extends AbstractClassifier {
 
             for (int i = 0; i < df.rowCount(); i++) {
                 if (testVector.isMissing(i)) {
-                    missing.update(df.col(targetColName).getIndex(i), weights.getValue(i));
+                    missing.update(df.col(targetColName).getIndex(i), df.getWeight(i));
                     continue;
                 }
                 boolean onLeft = true;
@@ -118,7 +121,7 @@ public class DecisionStumpClassifier extends AbstractClassifier {
                 if (testVector.type().isNumeric() && test.splitValue() < testVector.getValue(i)) {
                     onLeft = false;
                 }
-                (onLeft ? left : right).update(df.col(targetColName).getIndex(i), weights.getValue(i));
+                (onLeft ? left : right).update(df.col(targetColName).getIndex(i), df.getWeight(i));
             }
 
             // now predict
@@ -135,7 +138,7 @@ public class DecisionStumpClassifier extends AbstractClassifier {
 
             DensityVector missing = new DensityVector(dict);
             for (int i = 0; i < df.rowCount(); i++) {
-                missing.update(df.col(targetColName).getIndex(i), weights.getValue(i));
+                missing.update(df.col(targetColName).getIndex(i), df.getWeight(i));
             }
             defaultIndex = missing.findBestIndex();
             defaultLabel = dict[defaultIndex];

@@ -26,7 +26,6 @@ import rapaio.classifier.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Frames;
 import rapaio.data.Nominal;
-import rapaio.data.Numeric;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
 
@@ -80,13 +79,12 @@ public class ID3Classifier extends AbstractClassifier {
     }
 
     @Override
-    public void learn(Frame df, Numeric weights, String targetCol) {
+    public void learn(Frame df, String targetCol) {
         validate(df, targetCol);
         this.dict = df.col(targetCol).getDictionary();
         this.targetCol = targetCol;
         this.root = new Node();
         this.root.df = df;
-        this.root.weights = weights;
 
         LinkedList<Node> queue = new LinkedList<>();
         queue.add(this.root);
@@ -113,7 +111,6 @@ public class ID3Classifier extends AbstractClassifier {
         while (!queue.isEmpty()) {
             Node node = queue.pollFirst();
             node.df = null;
-            node.weights = null;
             node.parent = null;
             if (!node.leaf)
                 queue.addAll(node.splitMap.values());
@@ -184,6 +181,8 @@ public class ID3Classifier extends AbstractClassifier {
         }
         if (df.stream().complete().count() == 0)
             throw new IllegalArgumentException("ID3 can't handle missing values.");
+        if (!df.col(classColName).type().isNominal())
+            throw new IllegalArgumentException("ID3 can handle only nominal targets");
     }
 }
 
@@ -192,7 +191,6 @@ class Node {
     boolean leaf = false;
     HashMap<String, Node> splitMap;
     Frame df;
-    Numeric weights;
     DensityVector density;
     int predictedIndex;
     CTreeTest test;
@@ -203,7 +201,7 @@ class Node {
                final Set<String> used,
                final boolean toLeaf) {
 
-        density = new DensityVector(df.col(targetCol), weights);
+        density = new DensityVector(df.col(targetCol), df.getWeights());
         density.normalize(true);
         predictedIndex = density.findBestIndex();
 
@@ -212,7 +210,7 @@ class Node {
             if (parent == null) {
                 throw new IllegalArgumentException("Can't train from an empty frame");
             }
-            density = new DensityVector(parent.df.col(targetCol), parent.weights);
+            density = new DensityVector(parent.df.col(targetCol), parent.df.getWeights());
             density.normalize(true);
             predictedIndex = density.findBestIndex();
 
@@ -239,7 +237,7 @@ class Node {
             if (testCol.equals(targetCol) || used.contains(testCol)) {
                 continue;
             }
-            test.fullNominalTest(df, testCol, targetCol, weights, id3.minCount);
+            test.fullNominalTest(df, testCol, targetCol, df.getWeights(), id3.minCount);
         }
 
         // if none were selected then there are no columns to select
@@ -252,17 +250,14 @@ class Node {
 
         String[] dict = df.col(test.testName()).getDictionary();
         Mapping[] splitMappings = new Mapping[dict.length];
-        Numeric[] splitWeights = new Numeric[dict.length];
 
         for (int i = 0; i < dict.length; i++) {
             splitMappings[i] = new Mapping();
-            splitWeights[i] = new Numeric();
         }
 
         for (int i = 0; i < df.rowCount(); i++) {
             int index = df.getIndex(i, df.colIndex(test.testName()));
             splitMappings[index].add(df.rowId(i));
-            splitWeights[index].addValue(weights.getValue(i));
         }
         Frame[] frames = new Frame[dict.length];
         for (int i = 0; i < dict.length; i++) {
@@ -273,7 +268,6 @@ class Node {
         for (int i = 0; i < dict.length; i++) {
             Node node = new Node();
             node.df = frames[i];
-            node.weights = splitWeights[i];
             node.parent = this;
             splitMap.put(dict[i], node);
         }

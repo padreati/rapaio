@@ -61,7 +61,7 @@ public class OneRule extends AbstractClassifier {
     }
 
     @Override
-    public void learn(Frame df, Numeric weights, String targetCol) {
+    public void learn(Frame df, String targetCol) {
         this.dict = df.col(targetCol).getDictionary();
         this.targetCol = targetCol;
 
@@ -70,8 +70,8 @@ public class OneRule extends AbstractClassifier {
             if (targetCol.equals(testCol))
                 continue;
             RuleSet ruleSet = df.col(testCol).type().isNominal() ?
-                    buildNominal(testCol, df, weights) :
-                    buildNumeric(testCol, df, weights);
+                    buildNominal(testCol, df) :
+                    buildNumeric(testCol, df);
             if (bestRuleSet == null || ruleSet.getAccuracy() > bestRuleSet.getAccuracy()) {
                 bestRuleSet = ruleSet;
             }
@@ -125,7 +125,7 @@ public class OneRule extends AbstractClassifier {
         sb.append("Best one rule:").append(bestRuleSet.toString()).append("\n");
     }
 
-    private RuleSet buildNominal(String testCol, Frame df, Numeric weights) {
+    private RuleSet buildNominal(String testCol, Frame df) {
         RuleSet set = new RuleSet(testCol);
 
         int len = df.col(testCol).getDictionary().length;
@@ -134,7 +134,7 @@ public class OneRule extends AbstractClassifier {
             dvs[i] = new DensityVector(dict);
         }
         for (int i = 0; i < df.rowCount(); i++) {
-            dvs[df.getIndex(i, testCol)].update(df.getIndex(i, targetCol), weights.getValue(i));
+            dvs[df.getIndex(i, testCol)].update(df.getIndex(i, targetCol), df.getWeight(i));
         }
         for (int i = 0; i < len; i++) {
             DensityVector dv = dvs[i];
@@ -146,9 +146,9 @@ public class OneRule extends AbstractClassifier {
         return set;
     }
 
-    private RuleSet buildNumeric(String testCol, Frame df, Numeric weights) {
+    private RuleSet buildNumeric(String testCol, Frame df) {
         RuleSet set = new RuleSet(testCol);
-        Vector sort = BaseFilters.sort(Vectors.newSeq(weights.rowCount()),
+        Vector sort = BaseFilters.sort(Vectors.newSeq(df.getWeights().rowCount()),
                 RowComparators.numericComparator(df.col(testCol), true),
                 RowComparators.nominalComparator(df.col(targetCol), true));
         int pos = 0;
@@ -164,7 +164,7 @@ public class OneRule extends AbstractClassifier {
         if (pos > 0) {
             double[] hist = new double[dict.length];
             for (int i = 0; i < pos; i++) {
-                hist[df.getIndex(sort.getIndex(i), targetCol)] += weights.getValue(sort.getIndex(i));
+                hist[df.getIndex(sort.getIndex(i), targetCol)] += df.getWeight(sort.getIndex(i));
             }
             List<Integer> best = new ArrayList<>();
             double max = Double.MIN_VALUE;
@@ -198,7 +198,7 @@ public class OneRule extends AbstractClassifier {
 
             do { // fill it until it has enough of the majority class
                 index = df.getIndex(sort.getIndex(i), targetCol);
-                hist[index] += weights.getValue(sort.getIndex(i));
+                hist[index] += df.getWeight(sort.getIndex(i));
                 i++;
             } while (hist[index] < minCount && i < sort.rowCount());
 
@@ -206,7 +206,7 @@ public class OneRule extends AbstractClassifier {
             while (i < sort.rowCount()) {
                 index = sort.getIndex(i);
                 if (df.getIndex(sort.getIndex(i), targetCol) == index) {
-                    hist[index] += weights.getValue(sort.getIndex(i));
+                    hist[index] += df.getWeight(sort.getIndex(i));
                     i++;
                     continue;
                 }
@@ -217,7 +217,7 @@ public class OneRule extends AbstractClassifier {
                     && df.getValue(sort.getIndex(i - 1), testCol)
                     == df.getValue(sort.getIndex(i), testCol)) {
                 index = df.getIndex(sort.getIndex(i), targetCol);
-                hist[index] += weights.getValue(sort.getIndex(i));
+                hist[index] += df.getWeight(sort.getIndex(i));
                 i++;
             }
 

@@ -38,6 +38,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static rapaio.core.MathBase.log2;
+import static rapaio.data.filters.BaseFilters.sort;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -174,7 +175,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
         try {
             es.invokeAll(tasks);
             es.shutdown();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
         }
         if (computeOob) {
             for (int i = 0; i < mtrees; i++) {
@@ -312,7 +313,7 @@ public class RandomForestClassifier extends AbstractClassifier<RandomForestClass
             f.setValue(pos, 1, decrease);
             pos++;
         }
-        f = BaseFilters.sort(f, RowComparators.numericComparator(f.col(1), false));
+        f = sort(f, RowComparators.numericComparator(f.col(1), false));
 
         for (int i = 0; i < f.rowCount(); i++) {
             sb.append(String.format("%" + width + "s : %10.4f\n", f.getLabel(i, 0), f.getValue(i, 1)));

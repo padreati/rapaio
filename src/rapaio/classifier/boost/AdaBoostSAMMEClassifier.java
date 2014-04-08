@@ -103,7 +103,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     }
 
     private int[] getSamplingRows(Frame df) {
-        if (sampling < 1.0) {
+        if (sampling != 0.0) {
             if (bootstrap) {
                 return new DiscreteSampling().sampleWR((int) (df.rowCount() * sampling), df.rowCount());
             } else {
@@ -118,41 +118,28 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     }
 
     @Override
-    public void learn(Frame df, Numeric weights, String targetCol) {
+    public void learn(Frame df, String targetCol) {
         this.targetCol = targetCol;
         dict = df.col(targetCol).getDictionary();
         k = dict.length - 1;
 
-        if (weights != null) {
-            w = weights.solidCopy();
-        } else {
-            w = new Numeric(df.rowCount());
-            w.stream().transformValue(x -> 1.0);
-        }
+        w = df.getWeights().solidCopy();
 
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
         w.stream().transformValue(x -> x / total);
 
         for (int i = 0; i < runs; i++) {
 
-            Frame dfTrain;
-            Numeric wTrain;
-            if (sampling == 0) {
-                dfTrain = df;
-                wTrain = w.solidCopy();
-            } else {
-                int[] rows = getSamplingRows(df);
-                Mapping mapping = new Mapping();
-                wTrain = new Numeric();
-                for (int row : rows) {
-                    mapping.add(df.rowId(row));
-                    wTrain.addValue(w.getValue(row));
-                }
-                dfTrain = new MappedFrame(df.source(), mapping);
+            int[] rows = getSamplingRows(df);
+            Mapping mapping = new Mapping();
+            for (int row : rows) mapping.add(df.rowId(row));
+            Frame dfTrain = new MappedFrame(df.source(), mapping);
+            for (int j = 0; j < rows.length; j++) {
+                dfTrain.setWeight(j, w.getValue(rows[j]));
             }
 
             Classifier hh = base.newInstance();
-            hh.learn(dfTrain, wTrain, targetCol);
+            hh.learn(dfTrain, targetCol);
 
             hh.predict(df);
             Nominal hpred = hh.pred();
@@ -187,7 +174,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     }
 
     @Override
-    public void learnFurther(Frame df, Numeric weights, String targetColName, int additionalRuns) {
+    public void learnFurther(Frame df, String targetColName, int additionalRuns) {
 
         boolean prev = false;
         if (w != null && targetCol != null && dict != null) {
@@ -215,12 +202,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         }
 
         if (w == null) {
-            if (weights != null) {
-                w = weights.solidCopy();
-            } else {
-                w = new Numeric(df.rowCount());
-                w.stream().transformValue(x -> 1.0);
-            }
+            w = df.getWeights().solidCopy();
         }
 
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
@@ -228,24 +210,16 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
         for (int i = 0; i < additionalRuns; i++) {
 
-            Frame dfTrain;
-            Numeric wTrain;
-            if (sampling == 0) {
-                dfTrain = df;
-                wTrain = w.solidCopy();
-            } else {
-                int[] rows = getSamplingRows(df);
-                Mapping mapping = new Mapping();
-                wTrain = new Numeric();
-                for (int row : rows) {
-                    mapping.add(df.rowId(row));
-                    wTrain.addValue(w.getValue(row));
-                }
-                dfTrain = new MappedFrame(df.source(), mapping);
+            int[] rows = getSamplingRows(df);
+            Mapping mapping = new Mapping();
+            for (int row : rows) mapping.add(df.rowId(row));
+            Frame dfTrain = new MappedFrame(df.source(), mapping);
+            for (int j = 0; j < rows.length; j++) {
+                dfTrain.setWeight(j, w.getValue(rows[j]));
             }
 
             Classifier hh = base.newInstance();
-            hh.learn(dfTrain, wTrain, targetCol);
+            hh.learn(dfTrain, targetCol);
             hh.predict(df);
             Nominal hpred = hh.pred();
 

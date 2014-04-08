@@ -220,11 +220,30 @@ public interface Frame extends Serializable {
 
     boolean isMissing(int row, String colName);
 
+    /**
+     * Returns true if there is at least one missing value for the given row, in any column.
+     *
+     * @param row row number
+     * @return
+     */
     boolean isMissing(int row);
 
     void setMissing(int row, int col);
 
     void setMissing(int row, String colName);
 
+    /**
+     * Builds a stream of FSpots
+     *
+     * @return
+     */
     public FSpots stream();
+
+    public Numeric getWeights();
+
+    public void setWeights(Numeric weights);
+
+    public double getWeight(int row);
+
+    public void setWeight(int row, double weight);
 }

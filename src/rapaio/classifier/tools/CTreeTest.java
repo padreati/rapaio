@@ -152,10 +152,10 @@ public class CTreeTest {
         testName = testColName;
     }
 
-    public void binaryNominalTest(Frame df, String testColName, String targetColName, Numeric weights, String testLabel) {
+    public void binaryNominalTest(Frame df, String testColName, String targetColName, String testLabel) {
         Vector test = df.col(testColName);
         Vector target = df.col(targetColName);
-        DensityTable dt = new DensityTable(test, target, weights, testLabel);
+        DensityTable dt = new DensityTable(test, target, df.getWeights(), testLabel);
         double value = method.compute(dt);
         int comp = method.compare(bestValue, value);
         if (comp < 0) return;
@@ -166,7 +166,7 @@ public class CTreeTest {
         splitValue = Double.NaN;
     }
 
-    public void binaryNumericTest(Frame df, String testColName, String targetColName, Numeric weights) {
+    public void binaryNumericTest(Frame df, String testColName, String targetColName) {
         Vector test = df.col(testColName);
         Vector target = df.col(targetColName);
 
@@ -175,7 +175,7 @@ public class CTreeTest {
         for (int i = 0; i < df.rowCount(); i++) {
             int row = (test.isMissing(i)) ? 0 : 2;
             if (test.isMissing(i)) misCount++;
-            dt.update(row, target.getIndex(i), weights.getValue(i));
+            dt.update(row, target.getIndex(i), df.getWeight(i));
         }
 
         Vector sort = BaseFilters.sort(
@@ -187,8 +187,8 @@ public class CTreeTest {
 
             if (test.isMissing(row)) continue;
 
-            dt.update(2, target.getIndex(row), -weights.getValue(row));
-            dt.update(1, target.getIndex(row), +weights.getValue(row));
+            dt.update(2, target.getIndex(row), -df.getWeight(row));
+            dt.update(1, target.getIndex(row), +df.getWeight(row));
 
             if (i >= misCount + minCount &&
                     i < df.rowCount() - 1 - minCount &&

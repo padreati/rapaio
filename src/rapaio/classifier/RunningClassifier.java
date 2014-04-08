@@ -21,26 +21,11 @@
 package rapaio.classifier;
 
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 public interface RunningClassifier extends Classifier {
-
-    /**
-     * Builds a new classifier using artifacts from a previous classifier, and
-     * given weights for current data set.
-     *
-     * @param df         data set instances
-     * @param targetName target column name
-     * @param runs       additional runs to add
-     */
-    default void learnFurther(Frame df, String targetName, int runs) {
-        Numeric weights = new Numeric(df.rowCount());
-        weights.stream().transformValue(x -> 1.0);
-        learnFurther(df, weights, targetName, runs);
-    }
 
     /**
      * Builds a new classifier using artifacts from a previous classifier.
@@ -53,9 +38,8 @@ public interface RunningClassifier extends Classifier {
      * </ul>
      *
      * @param df         data set instances
-     * @param weights    weights for each observation
      * @param targetName target column name
      * @param runs       additional runs to build
      */
-    void learnFurther(Frame df, Numeric weights, String targetName, int runs);
+    void learnFurther(Frame df, String targetName, int runs);
 }

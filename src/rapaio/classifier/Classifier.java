@@ -23,7 +23,6 @@ package rapaio.classifier;
 import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
-import rapaio.data.Numeric;
 
 /**
  * Interface for all classification model algorithms.
@@ -61,25 +60,13 @@ public interface Classifier extends Printable {
 
     /**
      * Fit a classifier on instances specified by frame, with row weights
-     * and target as targetName.
-     *
-     * @param df         data set instances
-     * @param weights    row weights
-     * @param targetName target column name
-     */
-    void learn(Frame df, Numeric weights, String targetName);
-
-    /**
-     * Fit a classifier on instances specified by frame, with row weights
      * equal to 1 and target as classColName.
      *
      * @param df            data set instances
      * @param targetColName target column name
      */
     default void learn(Frame df, String targetColName) {
-        Numeric weights = new Numeric(df.rowCount());
-        weights.stream().transformValue(x -> 1.0);
-        learn(df, weights, targetColName);
+        learn(df, targetColName);
     }
 
     /**

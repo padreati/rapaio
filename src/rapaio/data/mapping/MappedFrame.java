@@ -22,6 +22,7 @@ package rapaio.data.mapping;
 
 import rapaio.data.AbstractFrame;
 import rapaio.data.Frame;
+import rapaio.data.Numeric;
 import rapaio.data.Vector;
 
 import java.util.HashMap;
@@ -42,6 +43,7 @@ public class MappedFrame extends AbstractFrame {
     private final Mapping mapping;
     private final Frame source;
     private final HashMap<Integer, Vector> vectors = new HashMap<>();
+    private final Numeric weights;
 
     public MappedFrame(Frame df, Mapping mapping) {
         if (df.isMappedFrame()) {
@@ -51,6 +53,10 @@ public class MappedFrame extends AbstractFrame {
         this.source = df;
         for (int i = 0; i < source.colCount(); i++) {
             vectors.put(i, new MappedVector(source.col(i), mapping));
+        }
+        this.weights = new Numeric(mapping.size());
+        for (int i = 0; i < mapping.size(); i++) {
+            weights.setValue(i, source.getWeight(mapping.get(i)));
         }
     }
 
@@ -103,5 +109,27 @@ public class MappedFrame extends AbstractFrame {
     @Override
     public Vector col(String name) {
         return col(colIndex(name));
+    }
+
+    @Override
+    public Numeric getWeights() {
+        return weights;
+    }
+
+    @Override
+    public void setWeights(Numeric weights) {
+        for (int i = 0; i < this.weights.rowCount(); i++) {
+            this.weights.setValue(i, weights.getValue(i));
+        }
+    }
+
+    @Override
+    public double getWeight(int row) {
+        return weights.getValue(row);
+    }
+
+    @Override
+    public void setWeight(int row, double weight) {
+        weights.setValue(row, weight);
     }
 }
