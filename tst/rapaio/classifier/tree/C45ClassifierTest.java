@@ -18,15 +18,16 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.tree;
+package rapaio.classifier.tree;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import rapaio.classifier.tools.CTreeTest;
+import rapaio.classifier.tools.DensityTable;
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Frame;
 import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
-import rapaio.ml.tools.DensityTable;
 import rapaio.workspace.Summary;
 
 import java.io.IOException;
@@ -42,34 +43,34 @@ public class C45ClassifierTest {
         df = BaseFilters.retainNominal(df);
         final String className = "class";
 
-        C45Classifier classifier = new C45Classifier().setSelection(C45Classifier.SELECTION_GAINRATIO);
+        C45Classifier classifier = new C45Classifier().withMethod(CTreeTest.Method.GAIN_RATIO);
         classifier.learn(df, className);
         classifier.predict(df);
 
         DensityTable dtWindy = new DensityTable(df.col("windy"), df.col("class"));
         DensityTable dtOutlook = new DensityTable(df.col("outlook"), df.col("class"));
         String splitCol = (dtWindy.getInfoGain() > dtOutlook.getInfoGain()) ? "windy" : "outlook";
-        Assert.assertEquals(splitCol, classifier.root.testName);
+        Assert.assertEquals(splitCol, classifier.root.test.testName());
 
         Summary.summary(classifier);
 
-        ConfusionMatrix cm = new ConfusionMatrix(df.col("class"), classifier.prediction());
+        ConfusionMatrix cm = new ConfusionMatrix(df.col("class"), classifier.pred());
         Summary.summary(cm);
     }
 
-    //	@Test
+    @Test
     public void testNumericInfoGain() throws IOException {
         Frame df = Datasets.loadPlay();
         df = BaseFilters.retainCols(df, "temp,humidity,class");
         final String className = "class";
 
-        C45Classifier classifier = new C45Classifier().setSelection(C45Classifier.SELECTION_INFOGAIN);
+        C45Classifier classifier = new C45Classifier().withMethod(CTreeTest.Method.INFO_GAIN);
         classifier.learn(df, className);
         Summary.summary(classifier);
 
         classifier.predict(df);
 
-        ConfusionMatrix cm = new ConfusionMatrix(df.col("class"), classifier.prediction());
+        ConfusionMatrix cm = new ConfusionMatrix(df.col("class"), classifier.pred());
         Summary.summary(cm);
     }
 
@@ -78,13 +79,13 @@ public class C45ClassifierTest {
         Frame df = Datasets.loadPlay();
         final String className = "class";
 
-        C45Classifier classifier = new C45Classifier().setSelection(C45Classifier.SELECTION_INFOGAIN);
+        C45Classifier classifier = new C45Classifier().withMethod(CTreeTest.Method.INFO_GAIN).withMinCount(1);
         classifier.learn(df, className);
         Summary.summary(classifier);
 
         classifier.predict(df);
 
-        ConfusionMatrix cm = new ConfusionMatrix(df.col("class"), classifier.prediction());
+        ConfusionMatrix cm = new ConfusionMatrix(df.col("class"), classifier.pred());
         Summary.summary(cm);
     }
 

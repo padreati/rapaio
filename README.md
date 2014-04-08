@@ -44,6 +44,7 @@ is considered to be fully implemented and well tested.
 * AdaBoost.SAMME
 * ID3
 * OneRule
+* C45 (without pruning and winnowing)
 
 **Classification and Regression - not final stage**
 
@@ -52,7 +53,6 @@ are considered by default in experimental state.
 
 * Random Tree (used in Random Forest)
 * Random Forests uses a variant of tree similar with C45 (in the future will be implemented with CART)
-* C45 Classifier (without pruning)
 
 * Tree Regressor - accept only numerical, non-missing, has no pruning (with this constraints
 this tree is similar with CART and C45)

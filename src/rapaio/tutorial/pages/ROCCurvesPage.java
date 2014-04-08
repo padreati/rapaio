@@ -21,6 +21,7 @@
 package rapaio.tutorial.pages;
 
 import rapaio.classifier.boost.AdaBoostSAMMEClassifier;
+import rapaio.classifier.rule.OneRule;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.core.stat.ROC;
@@ -30,7 +31,6 @@ import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Legend;
 import rapaio.graphics.plot.ROCCurve;
-import rapaio.ml.rule.OneRule;
 import rapaio.ml.tree.RandomForestClassifier;
 
 import java.io.IOException;
@@ -119,7 +119,7 @@ public class ROCCurvesPage implements TutorialPage {
 
         code("        new ConfusionMatrix(test.getCol(\"spam\"), oneRule.getPrediction()).summary();\n");
 
-        new ConfusionMatrix(test.col("spam"), oneRule.prediction()).summary();
+        new ConfusionMatrix(test.col("spam"), oneRule.pred()).summary();
 
         heading(4, "Random Forest");
 
@@ -169,7 +169,7 @@ public class ROCCurvesPage implements TutorialPage {
                 + "ROCCurve plot component which builds and draws a curve according with "
                 + "a given computed ROC object. The following code does this.");
 
-        ROC rocOR = new ROC(oneRule.prediction(), test.col("spam"), "1");
+        ROC rocOR = new ROC(oneRule.pred(), test.col("spam"), "1");
         ROC rocRF = new ROC(rf.distribution().col("1"), test.col("spam"), "1");
         ROC rocAB = new ROC(ab.dist().col("1"), test.col("spam"), "1");
         draw(new Plot()

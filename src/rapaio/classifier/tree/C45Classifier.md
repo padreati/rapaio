@@ -8,6 +8,7 @@ The main improvements over ID3 are:
 - handles numeric values
 - handles missing values
 - has a pruning procedure
+- maxDepth maximum height of a tree as early stop criterion
 
 There are also some features described in his paper which could be implemented:
 
@@ -31,5 +32,5 @@ These are the features which are **NOT** implemented:
 * pruning procedure
 * windowing option
 * grouping option
-* max nodes option
+* max nodes option - a similar approach is maxDepth
 * column selector option (which can enable C45 to be used in RandomForests)

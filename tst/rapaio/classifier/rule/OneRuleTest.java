@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.rule;
+package rapaio.classifier.rule;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -53,35 +53,35 @@ public class OneRuleTest {
         String[] labels;
         OneRule oneRule = new OneRule();
 
-        oneRule = oneRule.setMinCount(1);
+        oneRule = oneRule.withMinCount(1);
         oneRule.learn(df, "class");
         oneRule.predict(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
-            Assert.assertEquals(labels[i], oneRule.prediction().getLabel(i));
+            Assert.assertEquals(labels[i], oneRule.pred().getLabel(i));
         }
 
-        oneRule.setMinCount(2);
+        oneRule.withMinCount(2);
         oneRule.learn(df, "class");
         oneRule.predict(df);
         labels = new String[]{"True", "True", "TrueFalse", "TrueFalse", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
-            Assert.assertTrue(labels[i].contains(oneRule.prediction().getLabel(i)));
+            Assert.assertTrue(labels[i].contains(oneRule.pred().getLabel(i)));
         }
 
-        oneRule.setMinCount(3);
+        oneRule.withMinCount(3);
         oneRule.learn(df, "class");
         oneRule.predict(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
-            Assert.assertTrue(labels[i].equals(oneRule.prediction().getLabel(i)));
+            Assert.assertTrue(labels[i].equals(oneRule.pred().getLabel(i)));
         }
 
-        oneRule.setMinCount(4);
+        oneRule.withMinCount(4);
         oneRule.learn(df, "class");
         oneRule.predict(df);
         for (int i = 1; i < SIZE; i++) {
-            Assert.assertTrue(oneRule.prediction().getLabel(i).equals(oneRule.prediction().getLabel(0)));
+            Assert.assertTrue(oneRule.pred().getLabel(i).equals(oneRule.pred().getLabel(0)));
         }
     }
 }

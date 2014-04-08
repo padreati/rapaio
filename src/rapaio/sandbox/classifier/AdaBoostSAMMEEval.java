@@ -22,7 +22,7 @@ package rapaio.sandbox.classifier;
 
 import rapaio.classifier.boost.AdaBoostSAMMEClassifier;
 import rapaio.classifier.tools.CTreeTest;
-import rapaio.classifier.tree.DecisionStumpClassifier;
+import rapaio.classifier.tree.C45Classifier;
 import rapaio.core.sample.StatSampling;
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Frame;
@@ -48,12 +48,12 @@ public class AdaBoostSAMMEEval {
 
         setPrinter(new LocalPrinter());
 
-//        evalWith(Datasets.loadIrisDataset(), "class", 500, 1, 0.8, true, 1);
+//        evalWith(Datasets.loadIrisDataset(), "class", 500, 1, 1, true, 4);
 //        evalWith(Datasets.loadSpamBase(), "spam", 100, 5, 1, true, 1);
-        evalWith(loadArff("breast-cancer"), "Class", 1_000, 1, 1, true, 10);
+//        evalWith(loadArff("breast-cancer"), "Class", 1_000, 1, 1, true, 2);
 //        evalWith(loadArff("letter"), "class", 100, 50);
 //        evalWith(loadArff("mushroom"), "class", 1_000, 1);
-//        evalWith(loadArff("vote"), "Class", 1_000, 1);
+        evalWith(loadArff("vote"), "Class", 1_000, 1, 1.0, true, 2);
     }
 
     private static Frame loadArff(String name) throws Exception {
@@ -68,13 +68,17 @@ public class AdaBoostSAMMEEval {
 //        df = BaseFilters.completeCases(df);
         Summary.summary(df);
 
-        List<Frame> samples = StatSampling.randomSample(df, new int[]{(int) (df.rowCount() * 0.6)});
+        List<Frame> samples = StatSampling.randomSample(df, new int[]{(int) (df.rowCount() * 0.7)});
         Frame tr = samples.get(0);
         Frame te = samples.get(1);
 
         AdaBoostSAMMEClassifier c = new AdaBoostSAMMEClassifier()
-                .withClassifier(new DecisionStumpClassifier()
-                        .withMethod(CTreeTest.Method.INFO_GAIN)
+//                .withClassifier(new DecisionStumpClassifier()
+//                        .withMethod(CTreeTest.Method.INFO_GAIN)
+//                        .withMinCount(minCount))
+                .withClassifier(new C45Classifier()
+                        .withMethod(CTreeTest.Method.GAIN_RATIO)
+                        .withMaxDepth(5)
                         .withMinCount(minCount))
                 .withSampling(sampling, bootstrap);
 

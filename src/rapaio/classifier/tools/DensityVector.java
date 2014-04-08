@@ -78,6 +78,9 @@ public class DensityVector {
                 n++;
             }
         }
+        if (bestIndex < 0) {
+            throw new RuntimeException("This should not happen, the best prediction is not found");
+        }
         return bestIndex;
     }
 
@@ -86,6 +89,7 @@ public class DensityVector {
         for (int i = useMissing ? 0 : 1; i < values.length; i++) {
             total += values[i];
         }
+        if (total == 0) return;
         for (int i = useMissing ? 0 : 1; i < values.length; i++) {
             values[i] /= total;
         }

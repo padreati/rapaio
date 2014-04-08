@@ -122,4 +122,8 @@ public class FSpot {
     public String[] getDictionary(String colName) {
         return df.col(colName).getDictionary();
     }
+
+    public double getWeight() {
+        return df.getWeight(row);
+    }
 }
