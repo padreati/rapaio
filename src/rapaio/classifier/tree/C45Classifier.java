@@ -30,6 +30,7 @@ import rapaio.data.Nominal;
 import rapaio.data.Numeric;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
+import rapaio.util.Pair;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -95,7 +96,7 @@ public class C45Classifier extends AbstractClassifier {
                 continue;
             testColNames.add(colName);
         }
-        root = new C45ClassifierNode(this);
+        root = new C45ClassifierNode(this, null);
         root.learn(df, testColNames, targetColName, maxDepth);
     }
 
@@ -105,11 +106,11 @@ public class C45Classifier extends AbstractClassifier {
         dist = Frames.newMatrix(df.rowCount(), dict);
 
         for (int i = 0; i < df.rowCount(); i++) {
-            DensityVector d = root.computeDistribution(df, i);
+            Pair<Integer, DensityVector> d = root.computeDistribution(df, i);
             for (int j = 0; j < dict.length; j++) {
-                dist.setValue(i, j, d.get(j));
+                dist.setValue(i, j, d.getV2().get(j));
             }
-            pred.setIndex(i, d.findBestIndex());
+            pred.setIndex(i, d.getV1());
         }
     }
 
@@ -159,26 +160,29 @@ public class C45Classifier extends AbstractClassifier {
 
 class C45ClassifierNode {
 
-    final C45Classifier parent;
+    final C45Classifier c;
+    final C45ClassifierNode parent;
     boolean leaf = false;
     DensityVector density;
     DensityVector counts;
+    int bestIndex;
     Map<String, C45ClassifierNode> children;
     final CTreeTest test;
 
-    public C45ClassifierNode(C45Classifier parent) {
+    public C45ClassifierNode(C45Classifier c, C45ClassifierNode parent) {
+        this.c = c;
         this.parent = parent;
-        this.test = new CTreeTest(parent.method, parent.minCount);
+        this.test = new CTreeTest(c.method, c.minCount);
     }
 
     public void learn(Frame df, Set<String> testNames, String targetName, int level) {
 
         density = new DensityVector(df.col(targetName), df.getWeights());
-        density.findBestIndex();
+        bestIndex = density.findBestIndex();
         counts = new DensityVector(df.col(targetName), new Numeric(df.rowCount(), df.rowCount(), 1.0));
         leaf = true;
 
-        if (df.rowCount() <= parent.minCount || level == 1 || testNames.size() <= 1) {
+        if (df.rowCount() <= c.minCount || level == 1 || testNames.size() <= 1) {
             return;
         }
 
@@ -196,7 +200,7 @@ class C45ClassifierNode {
         // try to find a good split
         for (String testName : testNames) {
             if (df.col(testName).type().isNominal()) {
-                test.fullNominalTest(df, testName, targetName, df.getWeights(), parent.minCount);
+                test.fullNominalTest(df, testName, targetName, df.getWeights(), c.minCount);
             } else {
                 test.binaryNumericTest(df, testName, targetName);
             }
@@ -260,7 +264,7 @@ class C45ClassifierNode {
                 HashSet<String> newTestColNames = new HashSet<>(testNames);
                 newTestColNames.remove(testName);
                 for (String label : testDict) {
-                    C45ClassifierNode node = new C45ClassifierNode(parent);
+                    C45ClassifierNode node = new C45ClassifierNode(c, this);
                     children.put(label, node);
                     node.learn(frames.get(label), testNames, targetName, level - 1);
                 }
@@ -329,9 +333,9 @@ class C45ClassifierNode {
                 HashSet<String> newTestColNames = new HashSet<>(testNames);
                 newTestColNames.remove(testName);
 
-                C45ClassifierNode left = new C45ClassifierNode(parent);
+                C45ClassifierNode left = new C45ClassifierNode(c, this);
                 children.put("left", left);
-                C45ClassifierNode right = new C45ClassifierNode(parent);
+                C45ClassifierNode right = new C45ClassifierNode(c, this);
                 children.put("right", right);
                 left.learn(leftFrame, newTestColNames, targetName, level - 1);
                 right.learn(rightFrame, newTestColNames, targetName, level - 1);
@@ -344,9 +348,11 @@ class C45ClassifierNode {
         leaf = true;
     }
 
-    public DensityVector computeDistribution(Frame df, int row) {
+    public Pair<Integer, DensityVector> computeDistribution(Frame df, int row) {
         if (leaf) {
-            return density;
+            if (bestIndex <= 0)
+                return new Pair<>(parent.bestIndex, parent.density);
+            return new Pair<>(bestIndex, density);
         }
 
         // if missing aggregate all child nodes
@@ -354,16 +360,16 @@ class C45ClassifierNode {
         String testName = test.testName();
 
         if (df.col(testName).isMissing(row)) {
-            DensityVector dv = new DensityVector(parent.getDict());
+            DensityVector dv = new DensityVector(c.getDict());
             for (Map.Entry<String, C45ClassifierNode> entry : children.entrySet()) {
-                DensityVector d = entry.getValue().computeDistribution(df, row);
-                double sum = d.sum(true);
-                for (int i = 0; i < parent.getDict().length; i++) {
-                    dv.update(i, d.get(i) * sum);
+                Pair<Integer, DensityVector> d = entry.getValue().computeDistribution(df, row);
+                double sum = d.getV2().sum(true);
+                for (int i = 0; i < c.getDict().length; i++) {
+                    dv.update(i, d.getV2().get(i) * sum);
                 }
             }
             dv.normalize(true);
-            return dv;
+            return new Pair<>(dv.findBestIndex(), dv);
         }
 
         // we have a value, get the distribution

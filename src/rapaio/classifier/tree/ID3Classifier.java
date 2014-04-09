@@ -44,7 +44,7 @@ public class ID3Classifier extends AbstractClassifier {
 
     // model
 
-    Node root;
+    ID3ClassifierNode root;
 
     @Override
     public String name() {
@@ -83,17 +83,17 @@ public class ID3Classifier extends AbstractClassifier {
         validate(df, targetCol);
         this.dict = df.col(targetCol).getDictionary();
         this.targetCol = targetCol;
-        this.root = new Node();
+        this.root = new ID3ClassifierNode();
         this.root.df = df;
 
-        LinkedList<Node> queue = new LinkedList<>();
+        LinkedList<ID3ClassifierNode> queue = new LinkedList<>();
         queue.add(this.root);
 
         int remain = maxSize - 1;
         Set<String> usedCols = new HashSet<>();
 
         while (!queue.isEmpty()) {
-            Node node = queue.pollFirst();
+            ID3ClassifierNode node = queue.pollFirst();
             if (remain > 0) {
                 node.learn(this, targetCol, usedCols, false);
                 if (!node.leaf) {
@@ -109,7 +109,7 @@ public class ID3Classifier extends AbstractClassifier {
         // clean pointers
         queue.add(root);
         while (!queue.isEmpty()) {
-            Node node = queue.pollFirst();
+            ID3ClassifierNode node = queue.pollFirst();
             node.df = null;
             node.parent = null;
             if (!node.leaf)
@@ -123,7 +123,7 @@ public class ID3Classifier extends AbstractClassifier {
         summary(root, sb, 0);
     }
 
-    private void summary(Node root, StringBuilder sb, int level) {
+    private void summary(ID3ClassifierNode root, StringBuilder sb, int level) {
         if (root.leaf) {
             for (int i = 0; i < level; i++) {
                 sb.append("   ");
@@ -153,7 +153,7 @@ public class ID3Classifier extends AbstractClassifier {
         df.stream().forEach(spot -> predict(df, spot.row(), root));
     }
 
-    private void predict(Frame df, int row, Node root) {
+    private void predict(Frame df, int row, ID3ClassifierNode root) {
         if (root.leaf) {
             pred.setIndex(row, root.predictedIndex);
             for (int i = 0; i < dict.length; i++) {
@@ -162,7 +162,7 @@ public class ID3Classifier extends AbstractClassifier {
             return;
         }
         String label = df.getLabel(row, root.test.testName());
-        Map<String, Node> map = root.splitMap;
+        Map<String, ID3ClassifierNode> map = root.splitMap;
         if (!map.containsKey(label)) {
             pred.setIndex(row, root.predictedIndex);
             for (int i = 0; i < dict.length; i++) {
@@ -186,15 +186,15 @@ public class ID3Classifier extends AbstractClassifier {
     }
 }
 
-class Node {
+class ID3ClassifierNode {
 
     boolean leaf = false;
-    HashMap<String, Node> splitMap;
+    HashMap<String, ID3ClassifierNode> splitMap;
     Frame df;
     DensityVector density;
     int predictedIndex;
     CTreeTest test;
-    Node parent;
+    ID3ClassifierNode parent;
 
     void learn(final ID3Classifier id3,
                final String targetCol,
@@ -218,7 +218,8 @@ class Node {
             return;
         }
 
-        // leaf on all classes of same getValue
+        // leaf on all classes of same value
+
         boolean same = true;
         for (int i = 1; i < df.rowCount(); i++) {
             if (df.getIndex(i - 1, df.colIndex(targetCol)) != df.getIndex(i, df.colIndex(targetCol))) {
@@ -232,6 +233,7 @@ class Node {
         }
 
         // find best split
+
         test = new CTreeTest(id3.method, id3.minCount);
         for (String testCol : df.colNames()) {
             if (testCol.equals(targetCol) || used.contains(testCol)) {
@@ -241,6 +243,7 @@ class Node {
         }
 
         // if none were selected then there are no columns to select
+
         if (test.testName() == null) {
             leaf = true;
             return;
@@ -266,7 +269,7 @@ class Node {
 
         splitMap = new HashMap<>();
         for (int i = 0; i < dict.length; i++) {
-            Node node = new Node();
+            ID3ClassifierNode node = new ID3ClassifierNode();
             node.df = frames[i];
             node.parent = this;
             splitMap.put(dict[i], node);

@@ -50,10 +50,11 @@ public class AdaBoostSAMMEEval {
 
 //        evalWith(Datasets.loadIrisDataset(), "class", 500, 1, 1, true, 4);
 //        evalWith(Datasets.loadSpamBase(), "spam", 100, 5, 1, true, 1);
-//        evalWith(loadArff("breast-cancer"), "Class", 1_000, 1, 1, true, 2);
+
+        evalWith(loadArff("breast-cancer"), "Class", 1_000, 1, 1.1, true, 5);
 //        evalWith(loadArff("letter"), "class", 100, 50);
 //        evalWith(loadArff("mushroom"), "class", 1_000, 1);
-        evalWith(loadArff("vote"), "Class", 1_000, 1, 1.0, true, 2);
+//        evalWith(loadArff("vote"), "Class", 1_000, 1, 1.0, true, 2);
     }
 
     private static Frame loadArff(String name) throws Exception {
@@ -77,8 +78,8 @@ public class AdaBoostSAMMEEval {
 //                        .withMethod(CTreeTest.Method.INFO_GAIN)
 //                        .withMinCount(minCount))
                 .withClassifier(new C45Classifier()
-                        .withMethod(CTreeTest.Method.GAIN_RATIO)
-                        .withMaxDepth(5)
+                        .withMethod(CTreeTest.Method.INFO_GAIN)
+                        .withMaxDepth(10)
                         .withMinCount(minCount))
                 .withSampling(sampling, bootstrap);
 

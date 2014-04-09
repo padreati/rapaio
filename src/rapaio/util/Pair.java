@@ -18,32 +18,33 @@
  *    limitations under the License.
  */
 
-package rapaio.data;
+package rapaio.util;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class Pin<T> {
+public class Pair<V1, V2> {
+    private V1 v1;
+    private V2 v2;
 
-    private T value;
-
-
-    public Pin() {
+    public Pair(V1 v1, V2 v2) {
+        this.v1 = v1;
+        this.v2 = v2;
     }
 
-    public Pin(T value) {
-        this.value = value;
+    public V1 getV1() {
+        return v1;
     }
 
-    public T get() {
-        return value;
+    public void setV1(V1 v1) {
+        this.v1 = v1;
     }
 
-    public void set(T value) {
-        this.value = value;
+    public V2 getV2() {
+        return v2;
     }
 
-    public boolean isEmpty() {
-        return value == null;
+    public void setV(V2 v2) {
+        this.v2 = v2;
     }
 }

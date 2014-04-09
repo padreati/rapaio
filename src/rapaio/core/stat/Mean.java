@@ -21,9 +21,9 @@
 package rapaio.core.stat;
 
 import rapaio.core.Printable;
-import rapaio.data.Pin;
 import rapaio.data.Vector;
 import rapaio.data.stream.VSpot;
+import rapaio.util.Pin;
 
 /**
  * Compensated version of arithmetic mean of values from a {@code Vector}.

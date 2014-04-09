@@ -527,9 +527,9 @@ public final class BaseFilters {
      * @param missingValues labels for missing values
      * @return original vector with missing getValue on matched positions
      */
-    public static Vector fillMissingValues(Vector vector, Set<String> missingValues) {
+    public static Vector fillMissingValues(Vector vector, Collection<String> missingValues) {
         if (!vector.type().isNominal()) {
-            throw new IllegalArgumentException("Vector is not isNominal.");
+            throw new IllegalArgumentException("Vector is not nominal.");
         }
         vector.stream().forEach((VSpot inst) -> {
             if (missingValues.contains(inst.getLabel()))
