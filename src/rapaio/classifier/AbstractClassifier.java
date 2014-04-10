@@ -34,6 +34,16 @@ public abstract class AbstractClassifier implements Classifier {
     protected Frame dist;
 
     @Override
+    public String getTargetCol() {
+        return targetCol;
+    }
+
+    @Override
+    public String[] getDict() {
+        return dict;
+    }
+
+    @Override
     public Nominal pred() {
         return pred;
     }

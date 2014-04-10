@@ -24,6 +24,8 @@ import rapaio.core.RandomSource;
 import rapaio.data.Numeric;
 import rapaio.data.Vector;
 
+import java.util.function.DoublePredicate;
+
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
@@ -101,5 +103,13 @@ public class DensityVector {
             total += values[i];
         }
         return total;
+    }
+
+    public int countValues(DoublePredicate pred) {
+        int count = 0;
+        for (double value : values) {
+            if (pred.test(value)) count++;
+        }
+        return count;
     }
 }

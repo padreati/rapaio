@@ -152,10 +152,6 @@ public class C45Classifier extends AbstractClassifier {
             summary(root.children.get(label), sb, level + 1);
         }
     }
-
-    String[] getDict() {
-        return dict;
-    }
 }
 
 class C45ClassifierNode {
@@ -182,20 +178,10 @@ class C45ClassifierNode {
         counts = new DensityVector(df.col(targetName), new Numeric(df.rowCount(), df.rowCount(), 1.0));
         leaf = true;
 
-        if (df.rowCount() <= c.minCount || level == 1 || testNames.size() <= 1) {
+        if (df.rowCount() <= c.minCount || level == 1 || testNames.size() <= 1 || counts.countValues(x -> x > 0) <= 1) {
             return;
         }
-
-        // if there is only one getLabel
-        for (int i = 1; i < df.rowCount(); i++) {
-            if (df.getIndex(0, targetName) != df.getIndex(i, targetName)) {
-                leaf = false;
-                break;
-            }
-        }
-        if (leaf) {
-            return;
-        }
+        leaf = false;
 
         // try to find a good split
         for (String testName : testNames) {

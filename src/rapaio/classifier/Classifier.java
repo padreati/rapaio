@@ -65,9 +65,7 @@ public interface Classifier extends Printable {
      * @param df            data set instances
      * @param targetColName target column name
      */
-    default void learn(Frame df, String targetColName) {
-        learn(df, targetColName);
-    }
+    void learn(Frame df, String targetColName);
 
     /**
      * Predict classes for new data set instances
@@ -75,6 +73,10 @@ public interface Classifier extends Printable {
      * @param df data set instances
      */
     void predict(Frame df);
+
+    String getTargetCol();
+
+    String[] getDict();
 
     /**
      * Returns predicted target classes as a nominal vector
