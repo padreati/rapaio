@@ -213,9 +213,8 @@ class CARTNode {
             if (df.col(testCol).type().isNumeric()) {
                 test.binaryNumericTest(df, testCol, c.getTargetCol());
             } else {
-                for (String testLabel : df.col(testCol).getDictionary()) {
-                    if ("?".equals(testLabel)) continue;
-                    test.binaryNominalTest(df, testCol, c.getTargetCol(), testLabel);
+                for (int i = 1; i < df.col(testCol).getDictionary().length; i++) {
+                    test.binaryNominalTest(df, testCol, c.getTargetCol(), df.col(testCol).getDictionary()[i]);
                 }
             }
         }
