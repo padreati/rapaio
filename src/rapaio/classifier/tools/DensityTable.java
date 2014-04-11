@@ -244,4 +244,45 @@ public final class DensityTable {
         }
         return count;
     }
+
+    public double getGiniIndex() {
+        return getGiniIndex(false);
+    }
+
+    private double getGiniIndex(boolean useMissing) {
+        int start = useMissing ? 0 : 1;
+        double[] testTotals = new double[testLabels.length];
+        double[] targetTotals = new double[targetLabels.length];
+        for (int i = start; i < testLabels.length; i++) {
+            for (int j = 0; j < targetLabels.length; j++) {
+                testTotals[i] += values[i][j];
+                targetTotals[j] += values[i][j];
+            }
+        }
+        double testTotal = 0;
+        double targetTotal = 0;
+        for (int i = start; i < testLabels.length; i++) {
+            testTotal += testTotals[i];
+        }
+        for (int i = start; i < targetLabels.length; i++) {
+            targetTotal += targetTotals[i];
+        }
+
+        double gini = 1;
+        for (int i = start; i < targetLabels.length; i++) {
+            if (targetTotal != 0)
+                gini -= Math.pow(targetTotals[i] / targetTotal, 2);
+        }
+
+        for (int i = start; i < testLabels.length; i++) {
+            double gini_k = 1;
+            for (int j = start; j < targetLabels.length; j++) {
+                if (testTotals[i] != 0)
+                    gini_k -= Math.pow(values[i][j] / testTotals[i], 2);
+            }
+            if (testTotal != 0)
+                gini -= gini_k * testTotals[i] / testTotal;
+        }
+        return gini;
+    }
 }

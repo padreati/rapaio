@@ -42,9 +42,15 @@ public class Csv {
     private HashSet<String> numericFieldHints = new HashSet<>();
     private HashSet<String> indexFieldHints = new HashSet<>();
     private HashSet<String> nominalFieldHints = new HashSet<>();
+    private HashSet<String> naValues = new HashSet<>();
     private VectorType defaultType = VectorType.NOMINAL;
     private int startRow = 0;
     private int endRow = Integer.MAX_VALUE;
+
+    public Csv() {
+        naValues.add("?");
+//        naValues.add("N/A");
+    }
 
     public Csv withHeader(boolean hasHeader) {
         this.header = hasHeader;
@@ -98,6 +104,12 @@ public class Csv {
 
     public Csv withDefaultType(VectorType defaultType) {
         this.defaultType = defaultType;
+        return this;
+    }
+
+    public Csv withNAValues(String... values) {
+        this.naValues = new HashSet<>();
+        for (String na : values) naValues.add(na);
         return this;
     }
 
@@ -172,7 +184,7 @@ public class Csv {
                 if (rows == endRow) break;
                 rows++;
                 for (int i = 0; i < names.size(); i++) {
-                    if (row.size() <= i || "?".equals(row.get(i)) || "NA".equals(row.get(i))) {
+                    if (row.size() <= i || naValues.contains(row.get(i))) {
                         vectors.get(i).addMissing();
                         continue;
                     }

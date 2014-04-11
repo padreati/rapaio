@@ -28,7 +28,6 @@ import rapaio.data.Frame;
 import rapaio.data.Frames;
 import rapaio.data.Nominal;
 import rapaio.data.Vector;
-import rapaio.data.stream.FSpot;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -153,7 +152,7 @@ public class DecisionStumpClassifier extends AbstractClassifier {
         rightCount = 0;
         defaultCount = 0;
 
-        df.stream().filter(FSpot::isMissing).forEach(spot -> {
+        df.stream().filter(spot -> spot.isMissing(test.testName())).forEach(spot -> {
             dist.setValue(spot.row(), defaultLabel, 1.0);
             pred.setLabel(spot.row(), defaultLabel);
             defaultCount++;

@@ -105,11 +105,28 @@ public class DensityVector {
         return total;
     }
 
+    public double sumExcept(int except, boolean useMissing) {
+        double total = 0;
+        for (int i = useMissing ? 0 : 1; i < values.length; i++) {
+            if (except == i) continue;
+            total += values[i];
+        }
+        return total;
+    }
+
     public int countValues(DoublePredicate pred) {
         int count = 0;
         for (double value : values) {
             if (pred.test(value)) count++;
         }
         return count;
+    }
+
+    public DensityVector solidCopy() {
+        DensityVector d = new DensityVector(labels);
+        for (int i = 0; i < labels.length; i++) {
+            d.values[i] = values[i];
+        }
+        return d;
     }
 }

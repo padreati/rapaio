@@ -21,8 +21,7 @@
 package rapaio.sandbox.classifier;
 
 import rapaio.classifier.boost.AdaBoostSAMMEClassifier;
-import rapaio.classifier.tools.CTreeTest;
-import rapaio.classifier.tree.DecisionStumpClassifier;
+import rapaio.classifier.tree.CARTClassifier;
 import rapaio.core.sample.StatSampling;
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Frame;
@@ -33,28 +32,29 @@ import rapaio.graphics.plot.Lines;
 import rapaio.io.ArffPersistence;
 import rapaio.printer.LocalPrinter;
 import rapaio.workspace.Summary;
+import rapaio.workspace.Workspace;
 
 import java.util.List;
 
 import static rapaio.workspace.Workspace.draw;
-import static rapaio.workspace.Workspace.setPrinter;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class AdaBoostSAMMEEval {
+public class CARTClassifierEval {
 
     public static void main(String[] args) throws Exception {
 
-        setPrinter(new LocalPrinter());
 
-//        evalWith(Datasets.loadIrisDataset(), "class", 500, 1, 1, true, 4);
-//        evalWith(Datasets.loadSpamBase(), "spam", 100, 5, 1, true, 1);
+//        testCart(Datasets.loadIrisDataset(), "class");
 
-//        evalWith(loadArff("breast-cancer"), "Class", 1_000, 1, 1.1, true, 5);
-        evalWith(loadArff("letter"), "class", 100, 1, 1, true, 5);
-//        evalWith(loadArff("mushroom"), "class", 1_000, 1);
-//        evalWith(loadArff("vote"), "Class", 1_000, 1, 1.0, true, 2);
+//        evalWith(Datasets.loadIrisDataset(), "class", 100, 1, 1, true, 4);
+//        evalWith(Datasets.loadSpamBase(), "spam", 100, 1, 1, true, 10);
+
+//        evalWith(loadArff("breast-cancer"), "Class", 200, 1, 1, true, 40);
+//        evalWith(loadArff("letter"), "class", 50, 1, 1, true, 2);
+//        evalWith(loadArff("mushroom"), "class", 200, 1, 1, true, 2);
+        evalWith(loadArff("vote"), "Class", 200, 1, 1.0, true, 2);
     }
 
     private static Frame loadArff(String name) throws Exception {
@@ -65,8 +65,9 @@ public class AdaBoostSAMMEEval {
 
     private static void evalWith(Frame df, String targetName, int rounds, int step,
                                  double sampling, boolean bootstrap, int minCount) {
-//        df = BaseFilters.retainNominal(df);
-//        df = BaseFilters.completeCases(df);
+
+        Workspace.setPrinter(new LocalPrinter());
+
         Summary.summary(df);
 
         List<Frame> samples = StatSampling.randomSample(df, new int[]{(int) (df.rowCount() * 0.7)});
@@ -74,13 +75,9 @@ public class AdaBoostSAMMEEval {
         Frame te = samples.get(1);
 
         AdaBoostSAMMEClassifier c = new AdaBoostSAMMEClassifier()
-                .withClassifier(new DecisionStumpClassifier()
-                        .withMethod(CTreeTest.Method.INFO_GAIN)
+                .withClassifier(new CARTClassifier()
+                        .withMaxDepth(3)
                         .withMinCount(minCount))
-//                .withClassifier(new C45Classifier()
-//                        .withMethod(CTreeTest.Method.INFO_GAIN)
-//                        .withMaxDepth(10)
-//                        .withMinCount(minCount))
                 .withSampling(sampling, bootstrap);
 
         Index index = new Index();
@@ -112,5 +109,23 @@ public class AdaBoostSAMMEEval {
         c.predict(te);
         c.summary();
         new ConfusionMatrix(te.col(targetName), c.pred()).summary();
+    }
+
+    public static void testCart(Frame df, String targetCol) {
+
+        CARTClassifier c = new CARTClassifier().withMaxDepth(100).withMinCount(2);
+        List<Frame> sets = StatSampling.randomSample(df, new int[]{(int) (df.rowCount() * 0.7)});
+
+        Frame tr = sets.get(0);
+        Frame te = sets.get(1);
+
+        c.learn(tr, targetCol);
+        c.predict(tr);
+        new ConfusionMatrix(tr.col(targetCol), c.pred()).summary();
+        c.summary();
+
+        c.predict(te);
+        new ConfusionMatrix(te.col(targetCol), c.pred()).summary();
+        c.summary();
     }
 }

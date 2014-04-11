@@ -75,13 +75,13 @@ public class CTreeTest {
         GINI {
             @Override
             double compute(DensityTable dt) {
-                throw new IllegalArgumentException("Not yet implemented");
+                return dt.getGiniIndex();
             }
 
             @Override
             int compare(double previous, double current) {
                 if (previous == current) return 0;
-                return previous < current ? 1 : -1;
+                return previous < current ? -1 : 1;
             }
         };
 
@@ -156,6 +156,11 @@ public class CTreeTest {
         Vector test = df.col(testColName);
         Vector target = df.col(targetColName);
         DensityTable dt = new DensityTable(test, target, df.getWeights(), testLabel);
+
+        if (dt.countWithMinimum(false, minCount) < 2) {
+            return;
+        }
+
         double value = method.compute(dt);
         int comp = method.compare(bestValue, value);
         if (comp < 0) return;
