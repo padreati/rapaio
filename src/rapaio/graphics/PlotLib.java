@@ -23,6 +23,7 @@ package rapaio.graphics;
 import rapaio.data.Vector;
 import rapaio.graphics.base.Figure;
 import rapaio.graphics.plot.Histogram;
+import rapaio.graphics.plot.Lines;
 import rapaio.graphics.plot.Points;
 import rapaio.workspace.Workspace;
 
@@ -48,6 +49,17 @@ public final class PlotLib {
         Points points = new Points(x, y);
         p.add(points);
         return points;
+    }
+
+    public static Lines lines(final Vector x, final Vector y) {
+        if (!(lastFigure instanceof Plot)) {
+            lastFigure = new Plot();
+        }
+
+        Plot p = (Plot) lastFigure;
+        Lines lines = new Lines(x, y);
+        p.add(lines);
+        return lines;
     }
 
     public static Histogram histogram(Vector v) {
