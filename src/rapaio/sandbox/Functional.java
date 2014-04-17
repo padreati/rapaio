@@ -75,3 +75,10 @@ public class Functional {
         return obj;
     }
 }
+
+
+interface A {
+    public static class X {
+
+    }
+}

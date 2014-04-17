@@ -24,6 +24,8 @@ import rapaio.classifier.AbstractClassifier;
 import rapaio.classifier.Classifier;
 import rapaio.data.Frame;
 
+import static rapaio.classifier.tree.CTree.*;
+
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
@@ -32,9 +34,9 @@ public class TreeClassifier extends AbstractClassifier {
     // parameters
     private int minCount = 1;
 
-    private CTreeMethodNominal methodNominal = CTreeMethodNominal.FULL;
-    private CTreeMethodNumeric methodNumeric = CTreeMethodNumeric.BINARY;
-    private CTreeFunction function = CTreeFunction.INFO_GAIN;
+    private NominalMethod methodNominal = NominalMethods.FULL;
+    private NumericMethod methodNumeric = NumericMethods.BINARY;
+    private Function function = Functions.INFO_GAIN;
 
     // tree root node
     private CTreeNode root;
@@ -57,29 +59,29 @@ public class TreeClassifier extends AbstractClassifier {
         return this;
     }
 
-    public CTreeMethodNominal getMethodNominal() {
+    public NominalMethod getMethodNominal() {
         return methodNominal;
     }
 
-    public TreeClassifier withMethodNominal(CTreeMethodNominal methodNominal) {
+    public TreeClassifier withMethodNominal(NominalMethod methodNominal) {
         this.methodNominal = methodNominal;
         return this;
     }
 
-    public CTreeMethodNumeric getMethodNumeric() {
+    public NumericMethod getMethodNumeric() {
         return methodNumeric;
     }
 
-    public TreeClassifier withMethodNumeric(CTreeMethodNumeric methodNumeric) {
-        this.methodNumeric = methodNumeric;
+    public TreeClassifier withMethodNumeric(NumericMethod numericMethod) {
+        this.methodNumeric = numericMethod;
         return this;
     }
 
-    public CTreeFunction getFunction() {
+    public Function getFunction() {
         return function;
     }
 
-    public TreeClassifier withFunction(CTreeFunction function) {
+    public TreeClassifier withFunction(Function function) {
         this.function = function;
         return this;
     }
@@ -93,9 +95,10 @@ public class TreeClassifier extends AbstractClassifier {
     public String fullName() {
         StringBuilder sb = new StringBuilder();
         sb.append("TreeClassifier (");
-        sb.append("methodNumeric=").append(methodNumeric.name()).append(",");
-        sb.append("methodNominal=").append(methodNominal.name()).append(",");
+        sb.append("numericMethod=").append(methodNumeric.getMethodName()).append(",");
+        sb.append("nominalMethod=").append(methodNominal.getMethodName()).append(",");
         sb.append("minCount=").append(minCount).append(",");
+        sb.append("function=").append(function.getFunctionName()).append(",");
         sb.append(")");
         return sb.toString();
     }
@@ -103,6 +106,11 @@ public class TreeClassifier extends AbstractClassifier {
     @Override
     public void learn(Frame df, String targetColName) {
 
+        targetCol = targetColName;
+        dict = df.col(targetCol).getDictionary();
+
+        root = new CTreeNode();
+        root.learn(this, df, null);
     }
 
     @Override

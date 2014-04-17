@@ -20,6 +20,9 @@
 
 package rapaio.classifier.tree;
 
+import rapaio.classifier.tools.DensityVector;
+import rapaio.data.Frame;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +32,18 @@ import java.util.List;
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 public class CTreeNode {
+    private final TreeClassifier c;
+    private final CTreeNode parent;
+
     private boolean leaf = false;
     private List<CTreeNode> children = new ArrayList<>();
+    private DensityVector density;
+    private DensityVector counter;
+
+    public CTreeNode(final TreeClassifier c, final CTreeNode parent) {
+        this.parent = parent;
+        this.c = c;
+    }
 
     public boolean isLeaf() {
         return leaf;
@@ -38,5 +51,13 @@ public class CTreeNode {
 
     public List<CTreeNode> getChildren() {
         return children;
+    }
+
+    public void learn(TreeClassifier c, Frame df, CTreeNode parent) {
+        if (df.rowCount() == 0) {
+            return;
+        }
+
+
     }
 }
