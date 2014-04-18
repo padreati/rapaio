@@ -20,6 +20,12 @@
 
 package rapaio.classifier.tree;
 
+import rapaio.data.stream.FSpot;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+
 /**
  * Models a splitting rule candidate.
  *
@@ -29,10 +35,28 @@ public class CTreeCandidate implements Comparable<CTreeCandidate> {
 
     private final double score;
     private final int sign;
+    private List<String> groupNames = new ArrayList<>();
+    private List<Predicate<FSpot>> groupPredicates = new ArrayList<>();
 
     public CTreeCandidate(double score, int sign) {
         this.score = score;
         this.sign = sign;
+    }
+
+    public void addGroup(String name, Predicate<FSpot> predicate) {
+        if (groupNames.contains(name)) {
+            throw new IllegalArgumentException("group name already defined");
+        }
+        groupNames.add(name);
+        groupPredicates.add(predicate);
+    }
+
+    public List<String> getGroupNames() {
+        return groupNames;
+    }
+
+    public List<Predicate<FSpot>> getGroupPredicates() {
+        return groupPredicates;
     }
 
     @Override

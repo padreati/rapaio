@@ -29,51 +29,64 @@ import static rapaio.classifier.tree.CTree.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class TreeClassifier extends AbstractClassifier {
+public class PartitionTreeClassifier extends AbstractClassifier {
 
     // parameters
     private int minCount = 1;
+    private int maxDepth = Integer.MAX_VALUE;
 
-    private NominalMethod methodNominal = NominalMethods.FULL;
-    private NumericMethod methodNumeric = NumericMethods.BINARY;
+    private NominalMethod nominalMethod = NominalMethods.FULL;
+    private NumericMethod numericMethod = NumericMethods.BINARY;
     private Function function = Functions.INFO_GAIN;
+    private Splitter splitter = Splitters.IGNORE_MISSING;
 
     // tree root node
-    private CTreeNode root;
+    private CPartitionTreeNode root;
 
     @Override
     public Classifier newInstance() {
-        return new TreeClassifier()
+        return new PartitionTreeClassifier()
                 .withMinCount(minCount)
-                .withMethodNominal(methodNominal)
-                .withMethodNumeric(methodNumeric)
-                .withFunction(function);
+                .withMaxDepth(maxDepth)
+                .withNominalMethod(nominalMethod)
+                .withNumericMethod(numericMethod)
+                .withFunction(function)
+                .withSplitter(splitter);
     }
 
     public int getMinCount() {
         return minCount;
     }
 
-    public TreeClassifier withMinCount(int minCount) {
+    public PartitionTreeClassifier withMinCount(int minCount) {
         this.minCount = minCount;
         return this;
     }
 
-    public NominalMethod getMethodNominal() {
-        return methodNominal;
+    public int getMaxDepth() {
+        return maxDepth;
     }
 
-    public TreeClassifier withMethodNominal(NominalMethod methodNominal) {
-        this.methodNominal = methodNominal;
+    public PartitionTreeClassifier withMaxDepth(int maxDepth) {
+        this.maxDepth = maxDepth;
         return this;
     }
 
-    public NumericMethod getMethodNumeric() {
-        return methodNumeric;
+    public NominalMethod getNominalMethod() {
+        return nominalMethod;
     }
 
-    public TreeClassifier withMethodNumeric(NumericMethod numericMethod) {
-        this.methodNumeric = numericMethod;
+    public PartitionTreeClassifier withNominalMethod(NominalMethod methodNominal) {
+        this.nominalMethod = methodNominal;
+        return this;
+    }
+
+    public NumericMethod getNumericMethod() {
+        return numericMethod;
+    }
+
+    public PartitionTreeClassifier withNumericMethod(NumericMethod numericMethod) {
+        this.numericMethod = numericMethod;
         return this;
     }
 
@@ -81,24 +94,35 @@ public class TreeClassifier extends AbstractClassifier {
         return function;
     }
 
-    public TreeClassifier withFunction(Function function) {
+    public PartitionTreeClassifier withFunction(Function function) {
         this.function = function;
+        return this;
+    }
+
+    public Splitter getSplitter() {
+        return splitter;
+    }
+
+    public PartitionTreeClassifier withSplitter(Splitter splitter) {
+        this.splitter = splitter;
         return this;
     }
 
     @Override
     public String name() {
-        return "TreeClassifier";
+        return "PartitionTreeClassifier";
     }
 
     @Override
     public String fullName() {
         StringBuilder sb = new StringBuilder();
-        sb.append("TreeClassifier (");
-        sb.append("numericMethod=").append(methodNumeric.getMethodName()).append(",");
-        sb.append("nominalMethod=").append(methodNominal.getMethodName()).append(",");
+        sb.append("PartitionTreeClassifier (");
         sb.append("minCount=").append(minCount).append(",");
+        sb.append("maxDepth=").append(maxDepth).append(",");
+        sb.append("numericMethod=").append(numericMethod.getMethodName()).append(",");
+        sb.append("nominalMethod=").append(nominalMethod.getMethodName()).append(",");
         sb.append("function=").append(function.getFunctionName()).append(",");
+        sb.append("splitter=").append(splitter.getSplitterName()).append(",");
         sb.append(")");
         return sb.toString();
     }
@@ -109,8 +133,8 @@ public class TreeClassifier extends AbstractClassifier {
         targetCol = targetColName;
         dict = df.col(targetCol).getDictionary();
 
-        root = new CTreeNode();
-        root.learn(this, df, null);
+        root = new CPartitionTreeNode(this, null);
+        root.learn(df, maxDepth);
     }
 
     @Override

@@ -27,9 +27,15 @@ import rapaio.data.RowComparators;
 import rapaio.data.Vector;
 import rapaio.data.Vectors;
 import rapaio.data.filters.BaseFilters;
+import rapaio.data.mapping.MappedFrame;
+import rapaio.data.mapping.Mapping;
+import rapaio.data.stream.FSpot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -94,19 +100,19 @@ public class CTree {
     public static interface NominalMethod {
         String getMethodName();
 
-        List<CTreeCandidate> computeCandidates(TreeClassifier c, Frame df, String testColName, String targetColName, Function function);
+        List<CTreeCandidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function);
     }
 
     public static enum NominalMethods implements NominalMethod {
         IGNORE("Ignore") {
             @Override
-            public List<CTreeCandidate> computeCandidates(TreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
+            public List<CTreeCandidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
                 return new ArrayList<>();
             }
         },
         FULL("Full") {
             @Override
-            public List<CTreeCandidate> computeCandidates(TreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
+            public List<CTreeCandidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
                 List<CTreeCandidate> result = new ArrayList<>();
                 Vector test = df.col(testColName);
                 Vector target = df.col(targetColName);
@@ -135,7 +141,7 @@ public class CTree {
     // NUMERIC METHOD
 
     public static interface NumericMethod {
-        List<CTreeCandidate> computeCandidates(TreeClassifier c, Frame df, String testColName, String targetColName, Function function);
+        List<CTreeCandidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function);
 
         String getMethodName();
     }
@@ -143,13 +149,13 @@ public class CTree {
     public static enum NumericMethods implements NumericMethod {
         IGNORE("Ignore") {
             @Override
-            public List<CTreeCandidate> computeCandidates(TreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
+            public List<CTreeCandidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
                 return new ArrayList<CTreeCandidate>();
             }
         },
         BINARY("Binary") {
             @Override
-            public List<CTreeCandidate> computeCandidates(TreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
+            public List<CTreeCandidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
                 Vector test = df.col(testColName);
                 Vector target = df.col(targetColName);
 
@@ -200,10 +206,48 @@ public class CTree {
             this.name = name;
         }
 
-        public abstract List<CTreeCandidate> computeCandidates(TreeClassifier c, Frame df, String testColName, String targetColName, Function function);
+        public abstract List<CTreeCandidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function);
 
         public String getMethodName() {
             return name;
+        }
+    }
+
+    public static interface Splitter {
+        public String getSplitterName();
+
+        public List<Frame> performSplit(Frame df, CTreeCandidate candidate);
+    }
+
+    public static enum Splitters implements Splitter {
+        IGNORE_MISSING("IgnoreMissing") {
+            @Override
+            public String getSplitterName() {
+                return null;
+            }
+
+            @Override
+            public List<Frame> performSplit(Frame df, CTreeCandidate candidate) {
+                List<Mapping> mappings = new ArrayList<>();
+                IntStream.range(0, candidate.getGroupPredicates().size()).forEach(i -> mappings.add(new Mapping()));
+
+                df.stream().forEach(fspot -> {
+                    for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
+                        Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
+                        if (predicate.test(fspot)) {
+                            mappings.get(i).add(fspot.rowId());
+                            break;
+                        }
+                    }
+                });
+                return mappings.stream().map(mapping -> new MappedFrame(df.source(), mapping)).collect(Collectors.toList());
+            }
+        };
+
+        private final String name;
+
+        Splitters(String name) {
+            this.name = name;
         }
     }
 }
