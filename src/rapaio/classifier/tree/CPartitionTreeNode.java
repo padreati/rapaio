@@ -72,6 +72,8 @@ public class CPartitionTreeNode {
         }
 
         candidates = new TreeSet<>();
+
+        // here we have to implement some form of column selector for RF, ID3 and C4.5
         for (String testCol : df.colNames()) {
             if (testCol.equals(c.getTargetCol())) continue;
             if (df.col(testCol).type().isNumeric()) {
