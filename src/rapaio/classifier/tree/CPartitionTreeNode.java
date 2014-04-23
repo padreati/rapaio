@@ -34,16 +34,16 @@ import java.util.TreeSet;
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 public class CPartitionTreeNode {
-    private final PartitionTreeClassifier c;
-    private final CPartitionTreeNode parent;
+    final PartitionTreeClassifier c;
+    final CPartitionTreeNode parent;
 
-    private boolean leaf = true;
-    private List<CPartitionTreeNode> children;
-    private DensityVector density;
-    private DensityVector counter;
-    private int bestIndex;
-    private CTreeCandidate bestCandidate;
-    private TreeSet<CTreeCandidate> candidates;
+    boolean leaf = true;
+    List<CPartitionTreeNode> children;
+    DensityVector density;
+    DensityVector counter;
+    int bestIndex;
+    CTreeCandidate bestCandidate;
+    TreeSet<CTreeCandidate> candidates;
 
     public CPartitionTreeNode(final PartitionTreeClassifier c, final CPartitionTreeNode parent) {
         this.parent = parent;

@@ -21,6 +21,8 @@
 package rapaio.classifier.tree;
 
 import rapaio.classifier.tools.DensityTable;
+import rapaio.classifier.tools.DensityVector;
+import rapaio.cluster.util.Pair;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.RowComparators;
@@ -123,7 +125,17 @@ public class CTree {
 
                 DensityTable dt = new DensityTable(test, target, df.getWeights());
                 double value = function.compute(dt);
-                result.add(new CTreeCandidate(value, function.sign()));
+
+                CTreeCandidate candidate = new CTreeCandidate(value, function.sign());
+                for (int i = 1; i < test.getDictionary().length; i++) {
+
+                    final String label = test.getDictionary()[i];
+                    candidate.addGroup(
+                            String.format("%s == %s", testColName, label),
+                            spot -> !spot.isMissing(testColName) && spot.getLabel(testColName).equals(label));
+                }
+
+                result.add(candidate);
                 return result;
             }
         };
@@ -186,6 +198,15 @@ public class CTree {
                         CTreeCandidate current = new CTreeCandidate(function.compute(dt), function.sign());
                         if (best == null) {
                             best = current;
+
+                            final double testValue = test.getValue(sort.getIndex(i));
+                            current.addGroup(
+                                    String.format("%s <= %.6f", testColName, testValue),
+                                    spot -> !spot.isMissing(testColName) && spot.getValue(testColName) <= testValue);
+                            current.addGroup(
+                                    String.format("%s > %.6f", testColName, testValue),
+                                    spot -> !spot.isMissing(testColName) && spot.getValue(testColName) > testValue);
+
                         } else {
                             int comp = best.compareTo(current);
                             if (comp < 0) continue;
@@ -222,11 +243,6 @@ public class CTree {
     public static enum Splitters implements Splitter {
         IGNORE_MISSING("IgnoreMissing") {
             @Override
-            public String getSplitterName() {
-                return null;
-            }
-
-            @Override
             public List<Frame> performSplit(Frame df, CTreeCandidate candidate) {
                 List<Mapping> mappings = new ArrayList<>();
                 IntStream.range(0, candidate.getGroupPredicates().size()).forEach(i -> mappings.add(new Mapping()));
@@ -248,6 +264,50 @@ public class CTree {
 
         Splitters(String name) {
             this.name = name;
+        }
+
+        @Override
+        public String getSplitterName() {
+            return name;
+        }
+    }
+
+    public static interface Predictor {
+
+        String getPredictorName();
+
+        Pair<Integer, DensityVector> predict(Frame df, int row, CPartitionTreeNode node);
+    }
+
+    public static enum Predictors implements Predictor {
+        STANDARD("standard") {
+            @Override
+            public Pair<Integer, DensityVector> predict(Frame df, int row, CPartitionTreeNode node) {
+                if (node.counter.sum(false) == 0)
+                    return new Pair<>(node.parent.bestIndex, node.parent.density);
+                if (node.leaf)
+                    return new Pair<>(node.bestIndex, node.density);
+
+                String[] dict = node.c.getDict();
+                DensityVector dv = new DensityVector(dict);
+                for (CPartitionTreeNode child : node.children) {
+                    DensityVector d = predict(df, row, child).second;
+                    for (int i = 0; i < dict.length; i++) {
+                        dv.update(i, d.get(i));
+                    }
+                }
+                return new Pair<>(dv.findBestIndex(), dv);
+            }
+        };
+
+        private final String predictorName;
+
+        Predictors(String predictorName) {
+            this.predictorName = predictorName;
+        }
+
+        public String getPredictorName() {
+            return predictorName;
         }
     }
 }
