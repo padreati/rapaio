@@ -32,6 +32,7 @@ import rapaio.data.filters.BaseFilters;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
 import rapaio.data.stream.FSpot;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -322,6 +323,42 @@ public class PartitionTreeClassifier extends AbstractClassifier {
                 result.add(candidate);
                 return result;
             }
+        },
+        BINARY {
+            @Override
+            public List<Candidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
+
+                List<Candidate> result = new ArrayList<>();
+                Candidate best = null;
+                for (int i = 1; i < df.col(testColName).getDictionary().length; i++) {
+                    Vector test = df.col(testColName);
+                    Vector target = df.col(targetColName);
+                    String testLabel = df.col(testColName).getDictionary()[i];
+
+                    if (new DensityTable(test, target).countWithMinimum(false, c.getMinCount()) < 2) {
+                        return result;
+                    }
+
+                    DensityTable dt = new DensityTable(test, target, df.getWeights(), testLabel);
+                    double value = function.compute(dt);
+                    Candidate candidate = new Candidate(value, function.sign());
+                    if (best == null) {
+                        best = candidate;
+                        best.addGroup("== " + testLabel, spot -> spot.getLabel(testColName).equals(testLabel));
+                        best.addGroup("!= " + testLabel, spot -> !spot.getLabel(testColName).equals(testLabel));
+                    } else {
+                        int comp = best.compareTo(candidate);
+                        if (comp < 0) continue;
+                        if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
+                        best = candidate;
+                        best.addGroup("== " + testLabel, spot -> spot.getLabel(testColName).equals(testLabel));
+                        best.addGroup("!= " + testLabel, spot -> !spot.getLabel(testColName).equals(testLabel));
+                    }
+                }
+                if (best != null)
+                    result.add(best);
+                return result;
+            }
         }
     }
 
@@ -503,6 +540,20 @@ public class PartitionTreeClassifier extends AbstractClassifier {
                 }
                 return frames;
             }
+        },
+        REMAINS_TO_RANDOM {
+            @Override
+            public List<Frame> performSplit(Frame df, Candidate candidate) {
+                // TODO partition tree classifier - remains random
+                throw new NotImplementedException();
+            }
+        },
+        REMAINS_WITH_SURROGATES {
+            @Override
+            public List<Frame> performSplit(Frame df, Candidate candidate) {
+                // TODO partition tree classifier - remains surrogates
+                throw new NotImplementedException();
+            }
         }
     }
 
@@ -532,9 +583,10 @@ public class PartitionTreeClassifier extends AbstractClassifier {
                 for (CTreeNode child : node.children) {
                     DensityVector d = predict(spot, child).second;
                     for (int i = 0; i < dict.length; i++) {
-                        dv.update(i, d.get(i));
+                        dv.update(i, d.get(i) * child.density.sum(false));
                     }
                 }
+                dv.normalize(false);
                 return new Pair<>(dv.findBestIndex(), dv);
             }
         }

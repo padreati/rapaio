@@ -27,7 +27,6 @@ import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
-import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
 import rapaio.io.ArffPersistence;
@@ -50,12 +49,12 @@ public class PartitionTreeClassifierEval {
 //        testCart(Datasets.loadIrisDataset(), "class");
 
 //        evalWith(Datasets.loadIrisDataset(), "class", 100, 1, 1, true, 4);
-        evalWith(Datasets.loadSpamBase(), "spam", 100, 1, 1, true, 20);
+//        evalWith(Datasets.loadSpamBase(), "spam", 1000, 300, 0.01, true, 1);
 
-//        evalWith(loadArff("breast-cancer"), "Class", 200, 1, 1, true, 40);
+        evalWith(loadArff("breast-cancer"), "Class", 200, 10, 1, true, 50);
 //        evalWith(loadArff("letter"), "class", 50, 1, 1, true, 50);
 //        evalWith(loadArff("mushroom"), "class", 200, 1, 1, true, 2);
-//        evalWith(loadArff("vote"), "Class", 200, 1, 0.6, true, 1);
+//        evalWith(loadArff("vote"), "Class", 200, 100, 1, true, 1);
     }
 
     private static Frame loadArff(String name) throws Exception {
@@ -76,9 +75,13 @@ public class PartitionTreeClassifierEval {
         Frame te = samples.get(1);
 
         AdaBoostSAMMEClassifier c = new AdaBoostSAMMEClassifier()
+//                .withClassifier(new C45Classifier()
+//                        .withMaxDepth(4)
+//                        .withMinCount(minCount))
                 .withClassifier(new PartitionTreeClassifier()
                         .withSplitter(PartitionTreeClassifier.Splitters.REMAINS_TO_ALL_WEIGHTED)
-                        .withMaxDepth(10)
+                        .withNominalMethod(PartitionTreeClassifier.NominalMethods.BINARY)
+                        .withMaxDepth(3)
                         .withMinCount(minCount))
                 .withSampling(sampling, bootstrap);
 
