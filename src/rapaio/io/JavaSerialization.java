@@ -18,30 +18,25 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions.empirical;
+package rapaio.io;
 
-import rapaio.core.distributions.Distribution;
-import rapaio.core.distributions.Normal;
+import java.io.*;
 
 /**
- * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class KernelFunctionGaussian implements KernelFunction {
+public class JavaSerialization {
 
-    private final Distribution normal = new Normal();
-
-    @Override
-    public double pdf(double x, double x0, double bandwidth) {
-        return normal.pdf((x - x0) / bandwidth);
+    public static Object restoreFromFile(String file) throws IOException, ClassNotFoundException {
+        FileInputStream fileIn = new FileInputStream(file);
+        ObjectInputStream in = new ObjectInputStream(fileIn);
+        return in.readObject();
     }
 
-    @Override
-    public double getMinValue(double x0, double bandwidth) {
-        return x0 - 4 * bandwidth;
+    public static void storeToFile(Object object, String file) throws IOException {
+        FileOutputStream fileOut = new FileOutputStream(file);
+        ObjectOutputStream out = new ObjectOutputStream(fileOut);
+        out.writeObject(object);
     }
 
-    @Override
-    public double getMaxValue(double x0, double bandwidth) {
-        return x0 + 4 * bandwidth;
-    }
 }

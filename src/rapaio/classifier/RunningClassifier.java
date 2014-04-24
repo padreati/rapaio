@@ -22,10 +22,12 @@ package rapaio.classifier;
 
 import rapaio.data.Frame;
 
+import java.io.Serializable;
+
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public interface RunningClassifier extends Classifier {
+public interface RunningClassifier extends Classifier, Serializable {
 
     /**
      * Builds a new classifier using artifacts from a previous classifier.

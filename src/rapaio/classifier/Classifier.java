@@ -24,6 +24,8 @@ import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
 
+import java.io.Serializable;
+
 /**
  * Interface for all classification model algorithms.
  * A classifier is able to classify only one target columns.
@@ -34,7 +36,7 @@ import rapaio.data.Nominal;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public interface Classifier extends Printable {
+public interface Classifier extends Printable, Serializable {
 
     /**
      * Creates a new classifier instance with the same parameters as the original.

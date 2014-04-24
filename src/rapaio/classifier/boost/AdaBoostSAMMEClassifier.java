@@ -154,7 +154,9 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
                 }
             }
             double alpha = Math.log((1. - err) / err) + Math.log(k - 1);
-            if (err == 0 || err > (1 - 1 / k)) {
+            // TODO this delta error should be carefully chosen
+            final double delta_error = 10e-10;
+            if (err == 0 || err > (1 - 1 / k) + delta_error) {
                 if (h.isEmpty()) {
                     h.add(hh);
                     a.add(alpha);

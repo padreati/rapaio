@@ -21,11 +21,10 @@
 package rapaio.workspace;
 
 /**
- *
  * @author Aurelian Tutuianu
  */
 
 
 public interface Storable {
-    
+
 }

@@ -28,7 +28,7 @@ import rapaio.data.Vector;
  */
 public interface BoostingLossFunction {
 
-	double findMinimum(Vector y, Vector fx);
+    double findMinimum(Vector y, Vector fx);
 
-	Numeric gradient(Vector y, Vector fx);
+    Numeric gradient(Vector y, Vector fx);
 }

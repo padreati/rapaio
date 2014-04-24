@@ -20,6 +20,7 @@
 
 package rapaio.data.stream;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Optional;
@@ -30,7 +31,7 @@ import java.util.stream.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class VSpots implements Stream<VSpot> {
+public class VSpots implements Stream<VSpot>, Serializable {
 
     private final Stream<VSpot> stream;
 

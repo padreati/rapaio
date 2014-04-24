@@ -24,13 +24,14 @@ import rapaio.data.Frame;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.Consumer;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class FIterator implements Iterator<FSpot> {
+public class FIterator implements Iterator<FSpot>, Serializable {
     private static final String DEFAULT_KEY = "$$$DEFAULT$$$";
     private final Iterator<FSpot> it;
     private final Map<String, List<FSpot>> map = new HashMap<>();

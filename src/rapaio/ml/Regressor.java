@@ -30,15 +30,15 @@ import java.util.List;
  */
 public interface Regressor {
 
-	Regressor newInstance();
+    Regressor newInstance();
 
-	void learn(Frame df, List<Double> weights, String targetColName);
+    void learn(Frame df, List<Double> weights, String targetColName);
 
-	void learn(Frame df, String targetColName);
+    void learn(Frame df, String targetColName);
 
-	void predict(Frame df);
+    void predict(Frame df);
 
-	Vector getFitValues();
+    Vector getFitValues();
 
-	Frame getAllFitValues();
+    Frame getAllFitValues();
 }

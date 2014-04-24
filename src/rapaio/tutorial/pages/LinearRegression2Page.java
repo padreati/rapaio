@@ -31,27 +31,27 @@ import static rapaio.workspace.Workspace.p;
  */
 public class LinearRegression2Page implements TutorialPage {
 
-	@Override
-	public String getPageName() {
-		return "LinearRegression2";
-	}
+    @Override
+    public String getPageName() {
+        return "LinearRegression2";
+    }
 
-	@Override
-	public String getPageTitle() {
-		return "Linear Regression: Simple linear regression";
-	}
+    @Override
+    public String getPageTitle() {
+        return "Linear Regression: Simple linear regression";
+    }
 
-	@Override
-	public void render() throws IOException, URISyntaxException {
+    @Override
+    public void render() throws IOException, URISyntaxException {
 
-		heading(3, "Linear Regression with vectors and matrices - part 2");
+        heading(3, "Linear Regression with vectors and matrices - part 2");
 
-		p("This tutorial aims to present how one can do by hand " +
-				"linear regression using only vectors and matrices " +
-				"operations. For practical purposes it should be used " +
-				"linear regression models. ");
+        p("This tutorial aims to present how one can do by hand " +
+                "linear regression using only vectors and matrices " +
+                "operations. For practical purposes it should be used " +
+                "linear regression models. ");
 
-		heading(4, "Simple linear regression");
+        heading(4, "Simple linear regression");
 
-	}
+    }
 }

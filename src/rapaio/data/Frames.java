@@ -23,12 +23,13 @@ package rapaio.data;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public final class Frames {
+public final class Frames implements Serializable {
 
     /**
      * Build a frame which has only numeric columns and values are filled with 0

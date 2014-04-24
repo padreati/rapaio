@@ -21,7 +21,6 @@
 package rapaio.workspace;
 
 /**
- *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public interface WorkspaceListener {

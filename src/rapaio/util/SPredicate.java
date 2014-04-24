@@ -18,30 +18,13 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions.empirical;
+package rapaio.util;
 
-import rapaio.core.distributions.Distribution;
-import rapaio.core.distributions.Normal;
+import java.io.Serializable;
+import java.util.function.Predicate;
 
 /**
- * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class KernelFunctionGaussian implements KernelFunction {
-
-    private final Distribution normal = new Normal();
-
-    @Override
-    public double pdf(double x, double x0, double bandwidth) {
-        return normal.pdf((x - x0) / bandwidth);
-    }
-
-    @Override
-    public double getMinValue(double x0, double bandwidth) {
-        return x0 - 4 * bandwidth;
-    }
-
-    @Override
-    public double getMaxValue(double x0, double bandwidth) {
-        return x0 + 4 * bandwidth;
-    }
+public interface SPredicate<T> extends Predicate<T>, Serializable {
 }

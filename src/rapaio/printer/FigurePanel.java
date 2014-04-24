@@ -29,7 +29,6 @@ import java.awt.image.BufferedImage;
 import java.util.concurrent.ExecutionException;
 
 /**
- *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class FigurePanel extends JPanel {
@@ -81,7 +80,7 @@ public class FigurePanel extends JPanel {
         drawWorker = new SwingWorker<BufferedImage, Object>() {
             @Override
             protected BufferedImage doInBackground() throws Exception {
-                if(figure ==null) {
+                if (figure == null) {
                     return currentImage;
                 }
                 return ImageUtility.buildImage(figure, getWidth(), getHeight());

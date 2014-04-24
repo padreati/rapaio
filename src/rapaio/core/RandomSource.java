@@ -20,6 +20,7 @@
 
 package rapaio.core;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -32,7 +33,7 @@ import java.util.Random;
  *
  * @author Aurelian Tutuianu
  */
-public final class RandomSource {
+public final class RandomSource implements Serializable {
 
     private static final Random rand = new Random();
 

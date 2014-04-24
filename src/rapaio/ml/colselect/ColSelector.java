@@ -25,5 +25,5 @@ package rapaio.ml.colselect;
  */
 public interface ColSelector {
 
-	String[] nextColNames();
+    String[] nextColNames();
 }

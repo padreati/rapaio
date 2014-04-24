@@ -157,14 +157,14 @@ public class MathBase {
             return Double.NaN;
         }
         if (ix < 0x3b900000) {	/*
-			 * |x|<2**-70, return -log(|x|)
+             * |x|<2**-70, return -log(|x|)
              */
 
             return -Math.log(x);
         }
 
         /*
-		 * purge off 1 and 2
+         * purge off 1 and 2
          */
         if ((((ix - 0x3ff00000) | lx) == 0) || (((ix - 0x40000000) | lx) == 0)) {
             r = 0;

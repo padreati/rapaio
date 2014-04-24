@@ -29,8 +29,8 @@ import rapaio.ml.Regressor;
  */
 public interface BTRegressor extends Regressor {
 
-	void boostFit(Frame x, Vector y, Vector fx, BoostingLossFunction lossFunction);
+    void boostFit(Frame x, Vector y, Vector fx, BoostingLossFunction lossFunction);
 
-	@Override
-	BTRegressor newInstance();
+    @Override
+    BTRegressor newInstance();
 }

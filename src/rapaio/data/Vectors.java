@@ -20,6 +20,7 @@
 
 package rapaio.data;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ import java.util.List;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public final class Vectors {
+public final class Vectors implements Serializable {
 
     public static Index newSeq(int size) {
         Index result = new Index(size, size, 0);

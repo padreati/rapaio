@@ -22,10 +22,12 @@ package rapaio.data.stream;
 
 import rapaio.data.Frame;
 
+import java.io.Serializable;
+
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class FSpot {
+public class FSpot implements Serializable {
 
     private final Frame df;
     private final int row;

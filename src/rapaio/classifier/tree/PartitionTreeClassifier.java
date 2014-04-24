@@ -32,10 +32,11 @@ import rapaio.data.filters.BaseFilters;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
 import rapaio.data.stream.FSpot;
+import rapaio.util.SPredicate;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.io.Serializable;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -237,7 +238,7 @@ public class PartitionTreeClassifier extends AbstractClassifier {
 
     // components
 
-    public static interface Function {
+    public static interface Function extends Serializable {
         String name();
 
         double compute(DensityTable dt);
@@ -284,7 +285,7 @@ public class PartitionTreeClassifier extends AbstractClassifier {
 
     // NOMINAL METHOD
 
-    public static interface NominalMethod {
+    public static interface NominalMethod extends Serializable {
         String name();
 
         List<Candidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function);
@@ -364,7 +365,7 @@ public class PartitionTreeClassifier extends AbstractClassifier {
 
     // NUMERIC METHOD
 
-    public static interface NumericMethod {
+    public static interface NumericMethod extends Serializable {
         String name();
 
         List<Candidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function);
@@ -443,7 +444,7 @@ public class PartitionTreeClassifier extends AbstractClassifier {
         }
     }
 
-    public static interface Splitter {
+    public static interface Splitter extends Serializable {
         String name();
 
         public List<Frame> performSplit(Frame df, Candidate candidate);
@@ -458,7 +459,7 @@ public class PartitionTreeClassifier extends AbstractClassifier {
 
                 df.stream().forEach(fspot -> {
                     for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                        Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
+                        SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                         if (predicate.test(fspot)) {
                             mappings.get(i).add(fspot.rowId());
                             break;
@@ -477,7 +478,7 @@ public class PartitionTreeClassifier extends AbstractClassifier {
                 List<FSpot> missingSpots = new LinkedList<>();
                 df.stream().forEach(fspot -> {
                     for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                        Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
+                        SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                         if (predicate.test(fspot)) {
                             mappings.get(i).add(fspot.rowId());
                             return;
@@ -509,7 +510,7 @@ public class PartitionTreeClassifier extends AbstractClassifier {
                 final Set<Integer> missingSpots = new HashSet<>();
                 df.stream().forEach(fspot -> {
                     for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                        Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
+                        SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                         if (predicate.test(fspot)) {
                             mappings.get(i).add(fspot.rowId());
                             return;
@@ -557,7 +558,7 @@ public class PartitionTreeClassifier extends AbstractClassifier {
         }
     }
 
-    public static interface Predictor {
+    public static interface Predictor extends Serializable {
         String name();
 
         Pair<Integer, DensityVector> predict(FSpot spot, CTreeNode node);
@@ -593,19 +594,19 @@ public class PartitionTreeClassifier extends AbstractClassifier {
     }
 }
 
-class Candidate implements Comparable<Candidate> {
+class Candidate implements Comparable<Candidate>, Serializable {
 
     private final double score;
     private final int sign;
     private List<String> groupNames = new ArrayList<>();
-    private List<Predicate<FSpot>> groupPredicates = new ArrayList<>();
+    private List<SPredicate<FSpot>> groupPredicates = new ArrayList<>();
 
     public Candidate(double score, int sign) {
         this.score = score;
         this.sign = sign;
     }
 
-    public void addGroup(String name, Predicate<FSpot> predicate) {
+    public void addGroup(String name, SPredicate<FSpot> predicate) {
         if (groupNames.contains(name)) {
             throw new IllegalArgumentException("group name already defined");
         }
@@ -617,7 +618,7 @@ class Candidate implements Comparable<Candidate> {
         return groupNames;
     }
 
-    public List<Predicate<FSpot>> getGroupPredicates() {
+    public List<SPredicate<FSpot>> getGroupPredicates() {
         return groupPredicates;
     }
 
@@ -627,11 +628,11 @@ class Candidate implements Comparable<Candidate> {
     }
 }
 
-class CTreeNode {
+class CTreeNode implements Serializable {
     final PartitionTreeClassifier c;
     final CTreeNode parent;
     final String groupName;
-    final Predicate<FSpot> predicate;
+    final SPredicate<FSpot> predicate;
 
     boolean leaf = true;
     List<CTreeNode> children;
@@ -642,7 +643,7 @@ class CTreeNode {
     TreeSet<Candidate> candidates;
 
     public CTreeNode(final PartitionTreeClassifier c, final CTreeNode parent,
-                     final String groupName, final Predicate<FSpot> predicate) {
+                     final String groupName, final SPredicate<FSpot> predicate) {
         this.parent = parent;
         this.c = c;
         this.groupName = groupName;

@@ -22,10 +22,12 @@ package rapaio.data.stream;
 
 import rapaio.data.Vector;
 
+import java.io.Serializable;
+
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class VSpot {
+public class VSpot implements Serializable {
 
     private final int row;
     private final Vector vector;

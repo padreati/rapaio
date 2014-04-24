@@ -32,6 +32,7 @@ import rapaio.data.mapping.Mapping;
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.VSpot;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -39,7 +40,7 @@ import java.util.*;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public final class BaseFilters {
+public final class BaseFilters implements Serializable {
 
     private BaseFilters() {
     }

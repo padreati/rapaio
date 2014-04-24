@@ -24,12 +24,13 @@ import rapaio.core.RandomSource;
 import rapaio.data.Numeric;
 import rapaio.data.Vector;
 
+import java.io.Serializable;
 import java.util.function.DoublePredicate;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class DensityVector {
+public class DensityVector implements Serializable {
 
     private final String[] labels;
     private final double[] values;

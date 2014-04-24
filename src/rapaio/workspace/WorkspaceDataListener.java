@@ -22,14 +22,14 @@ package rapaio.workspace;
 
 /**
  * Listener interface for workspace data events.
- * 
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public interface WorkspaceDataListener {
-   
-    void onPutFrames(String...name);
-    
-    void onRemoveFrames(String...names);
-    
-    void onChangeFrames(String...names);
+
+    void onPutFrames(String... name);
+
+    void onRemoveFrames(String... names);
+
+    void onChangeFrames(String... names);
 }

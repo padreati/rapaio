@@ -25,6 +25,7 @@ import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
 import rapaio.util.Pin;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
@@ -32,7 +33,7 @@ import java.util.stream.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class FSpots implements Stream<FSpot> {
+public class FSpots implements Stream<FSpot>, Serializable {
 
     private final Stream<FSpot> stream;
 

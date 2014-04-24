@@ -23,6 +23,7 @@ package rapaio.classifier.tools;
 import rapaio.data.Numeric;
 import rapaio.data.Vector;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import static rapaio.core.MathBase.log2;
@@ -30,7 +31,7 @@ import static rapaio.core.MathBase.log2;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public final class DensityTable {
+public final class DensityTable implements Serializable {
 
     public static final String[] NUMERIC_DEFAULT_LABELS = new String[]{"?", "less-equals", "greater"};
 

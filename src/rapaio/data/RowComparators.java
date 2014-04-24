@@ -20,12 +20,13 @@
 
 package rapaio.data;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class RowComparators {
+public class RowComparators implements Serializable {
 
     @SafeVarargs
     public static Comparator<Integer> aggregateComparator(final Comparator<Integer>... comparators) {
