@@ -45,18 +45,18 @@ import java.util.stream.IntStream;
 public class PartitionTreeClassifier extends AbstractClassifier {
 
     // parameters
-    private int minCount = 1;
-    private int maxDepth = Integer.MAX_VALUE;
+    int minCount = 1;
+    int maxDepth = Integer.MAX_VALUE;
 
-    private NominalMethod nominalMethod = NominalMethods.FULL;
-    private NumericMethod numericMethod = NumericMethods.BINARY;
-    private Function function = Functions.INFO_GAIN;
-    private Splitter splitter = Splitters.REMAINS_IGNORED;
-    private Predictor predictor = Predictors.STANDARD;
+    NominalMethod nominalMethod = NominalMethods.FULL;
+    NumericMethod numericMethod = NumericMethods.BINARY;
+    Function function = Functions.INFO_GAIN;
+    Splitter splitter = Splitters.REMAINS_IGNORED;
+    Predictor predictor = Predictors.STANDARD;
 
     // tree root node
-    private CTreeNode root;
-    private int rows;
+    CTreeNode root;
+    int rows;
 
     @Override
     public Classifier newInstance() {
@@ -187,7 +187,7 @@ public class PartitionTreeClassifier extends AbstractClassifier {
 
         sb.append("\n");
         sb.append("description:\n");
-        sb.append("split, n, err, pred (dist) [* - if is leaf]\n\n");
+        sb.append("split, n/err, pred (dist) [* if is leaf]\n\n");
 
         buildSummary(sb, root, 0);
     }

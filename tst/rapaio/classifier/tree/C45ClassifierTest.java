@@ -22,7 +22,6 @@ package rapaio.classifier.tree;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import rapaio.classifier.tools.CTreeTest;
 import rapaio.classifier.tools.DensityTable;
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Frame;
@@ -43,14 +42,18 @@ public class C45ClassifierTest {
         df = BaseFilters.retainNominal(df);
         final String className = "class";
 
-        C45Classifier classifier = new C45Classifier().withMethod(CTreeTest.Method.GAIN_RATIO);
+        PartitionTreeClassifier classifier = new PartitionTreeClassifier()
+                .withNominalMethod(PartitionTreeClassifier.NominalMethods.FULL)
+                .withNumericMethod(PartitionTreeClassifier.NumericMethods.BINARY)
+                .withSplitter(PartitionTreeClassifier.Splitters.REMAINS_TO_ALL_WEIGHTED)
+                .withFunction(PartitionTreeClassifier.Functions.GAIN_RATIO);
         classifier.learn(df, className);
         classifier.predict(df);
 
         DensityTable dtWindy = new DensityTable(df.col("windy"), df.col("class"));
         DensityTable dtOutlook = new DensityTable(df.col("outlook"), df.col("class"));
         String splitCol = (dtWindy.getInfoGain() > dtOutlook.getInfoGain()) ? "windy" : "outlook";
-        Assert.assertEquals(splitCol, classifier.root.test.testName());
+        Assert.assertEquals(splitCol, classifier.root.groupName);
 
         Summary.summary(classifier);
 
@@ -64,7 +67,11 @@ public class C45ClassifierTest {
         df = BaseFilters.retainCols(df, "temp,humidity,class");
         final String className = "class";
 
-        C45Classifier classifier = new C45Classifier().withMethod(CTreeTest.Method.INFO_GAIN);
+        PartitionTreeClassifier classifier = new PartitionTreeClassifier()
+                .withNominalMethod(PartitionTreeClassifier.NominalMethods.FULL)
+                .withNumericMethod(PartitionTreeClassifier.NumericMethods.BINARY)
+                .withSplitter(PartitionTreeClassifier.Splitters.REMAINS_TO_ALL_WEIGHTED)
+                .withFunction(PartitionTreeClassifier.Functions.INFO_GAIN);
         classifier.learn(df, className);
         Summary.summary(classifier);
 
@@ -79,7 +86,12 @@ public class C45ClassifierTest {
         Frame df = Datasets.loadPlay();
         final String className = "class";
 
-        C45Classifier classifier = new C45Classifier().withMethod(CTreeTest.Method.INFO_GAIN).withMinCount(1);
+        PartitionTreeClassifier classifier = new PartitionTreeClassifier()
+                .withNominalMethod(PartitionTreeClassifier.NominalMethods.FULL)
+                .withNumericMethod(PartitionTreeClassifier.NumericMethods.BINARY)
+                .withSplitter(PartitionTreeClassifier.Splitters.REMAINS_IGNORED)
+                .withFunction(PartitionTreeClassifier.Functions.ENTROPY)
+                .withMinCount(1);
         classifier.learn(df, className);
         Summary.summary(classifier);
 

@@ -23,7 +23,6 @@ package rapaio.classifier.tree;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import rapaio.classifier.tools.CTreeTest;
 import rapaio.data.Frame;
 import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
@@ -43,14 +42,19 @@ public class ID3ClassifierTest {
         df = BaseFilters.retainNominal(df);
         final String className = "class";
 
-        ID3Classifier id3 = new ID3Classifier().withMethod(CTreeTest.Method.ENTROPY);
+        PartitionTreeClassifier id3 = new PartitionTreeClassifier()
+                .withNominalMethod(PartitionTreeClassifier.NominalMethods.FULL)
+                .withNumericMethod(PartitionTreeClassifier.NumericMethods.IGNORE)
+                .withSplitter(PartitionTreeClassifier.Splitters.REMAINS_IGNORED)
+                .withFunction(PartitionTreeClassifier.Functions.ENTROPY);
         id3.learn(df, className);
         id3.predict(df);
 
         DensityTable dtWindy = new DensityTable(df.col("windy"), df.col("class"));
         DensityTable dtOutlook = new DensityTable(df.col("outlook"), df.col("class"));
         String splitCol = (dtWindy.getSplitEntropy() < dtOutlook.getSplitEntropy()) ? "windy" : "outlook";
-        Assert.assertEquals(splitCol, id3.root.test.testName());
+        id3.summary();
+        Assert.assertTrue(id3.root.children.get(0).groupName.startsWith(splitCol));
 
         Summary.summary(id3);
     }
@@ -61,14 +65,19 @@ public class ID3ClassifierTest {
         df = BaseFilters.retainNominal(df);
         final String className = "class";
 
-        ID3Classifier id3 = new ID3Classifier().withMethod(CTreeTest.Method.INFO_GAIN);
+        PartitionTreeClassifier id3 = new PartitionTreeClassifier()
+                .withNominalMethod(PartitionTreeClassifier.NominalMethods.FULL)
+                .withNumericMethod(PartitionTreeClassifier.NumericMethods.IGNORE)
+                .withSplitter(PartitionTreeClassifier.Splitters.REMAINS_IGNORED)
+                .withFunction(PartitionTreeClassifier.Functions.INFO_GAIN);
         id3.learn(df, className);
         id3.predict(df);
+        id3.summary();
 
         DensityTable dtWindy = new DensityTable(df.col("windy"), df.col("class"));
         DensityTable dtOutlook = new DensityTable(df.col("outlook"), df.col("class"));
         String splitCol = (dtWindy.getInfoGain() > dtOutlook.getInfoGain()) ? "windy" : "outlook";
-        Assert.assertEquals(splitCol, id3.root.test.testName());
+        Assert.assertTrue(id3.root.children.get(0).groupName.startsWith(splitCol));
 
         Summary.summary(id3);
     }
