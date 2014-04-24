@@ -27,6 +27,7 @@ import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
+import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
 import rapaio.io.ArffPersistence;
@@ -49,9 +50,9 @@ public class PartitionTreeClassifierEval {
 //        testCart(Datasets.loadIrisDataset(), "class");
 
 //        evalWith(Datasets.loadIrisDataset(), "class", 100, 1, 1, true, 4);
-//        evalWith(Datasets.loadSpamBase(), "spam", 100, 1, 1, true, 10);
+        evalWith(Datasets.loadSpamBase(), "spam", 100, 1, 1, true, 20);
 
-        evalWith(loadArff("breast-cancer"), "Class", 200, 1, 1, true, 40);
+//        evalWith(loadArff("breast-cancer"), "Class", 200, 1, 1, true, 40);
 //        evalWith(loadArff("letter"), "class", 50, 1, 1, true, 50);
 //        evalWith(loadArff("mushroom"), "class", 200, 1, 1, true, 2);
 //        evalWith(loadArff("vote"), "Class", 200, 1, 0.6, true, 1);
@@ -76,7 +77,8 @@ public class PartitionTreeClassifierEval {
 
         AdaBoostSAMMEClassifier c = new AdaBoostSAMMEClassifier()
                 .withClassifier(new PartitionTreeClassifier()
-                        .withMaxDepth(3)
+                        .withSplitter(PartitionTreeClassifier.Splitters.REMAINS_TO_ALL_WEIGHTED)
+                        .withMaxDepth(10)
                         .withMinCount(minCount))
                 .withSampling(sampling, bootstrap);
 

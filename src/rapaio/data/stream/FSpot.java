@@ -126,4 +126,8 @@ public class FSpot {
     public double getWeight() {
         return df.getWeight(row);
     }
+
+    public void setWeight(double weight) {
+        df.setWeight(row, weight);
+    }
 }

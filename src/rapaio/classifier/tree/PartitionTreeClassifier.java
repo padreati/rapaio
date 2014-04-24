@@ -27,14 +27,13 @@ import rapaio.classifier.tools.DensityVector;
 import rapaio.cluster.util.Pair;
 import rapaio.core.RandomSource;
 import rapaio.data.*;
+import rapaio.data.Vector;
 import rapaio.data.filters.BaseFilters;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
 import rapaio.data.stream.FSpot;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -51,7 +50,7 @@ public class PartitionTreeClassifier extends AbstractClassifier {
     private NominalMethod nominalMethod = NominalMethods.FULL;
     private NumericMethod numericMethod = NumericMethods.BINARY;
     private Function function = Functions.INFO_GAIN;
-    private Splitter splitter = Splitters.IGNORE_MISSING;
+    private Splitter splitter = Splitters.REMAINS_IGNORED;
     private Predictor predictor = Predictors.STANDARD;
 
     // tree root node
@@ -414,7 +413,7 @@ public class PartitionTreeClassifier extends AbstractClassifier {
     }
 
     public static enum Splitters implements Splitter {
-        IGNORE_MISSING {
+        REMAINS_IGNORED {
             @Override
             public List<Frame> performSplit(Frame df, Candidate candidate) {
                 List<Mapping> mappings = new ArrayList<>();
@@ -430,6 +429,79 @@ public class PartitionTreeClassifier extends AbstractClassifier {
                     }
                 });
                 return mappings.stream().map(mapping -> new MappedFrame(df.source(), mapping)).collect(Collectors.toList());
+            }
+        },
+        REMAINS_TO_MAJORITY {
+            @Override
+            public List<Frame> performSplit(Frame df, Candidate candidate) {
+                List<Mapping> mappings = new ArrayList<>();
+                IntStream.range(0, candidate.getGroupPredicates().size()).forEach(i -> mappings.add(new Mapping()));
+
+                List<FSpot> missingSpots = new LinkedList<>();
+                df.stream().forEach(fspot -> {
+                    for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
+                        Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
+                        if (predicate.test(fspot)) {
+                            mappings.get(i).add(fspot.rowId());
+                            return;
+                        }
+                    }
+                    missingSpots.add(fspot);
+                });
+                int majorityGroup = 0;
+                int majoritySize = 0;
+                for (int i = 0; i < mappings.size(); i++) {
+                    if (mappings.get(i).size() > majoritySize) {
+                        majorityGroup = i;
+                        majoritySize = mappings.get(i).size();
+                    }
+                }
+                final int index = majorityGroup;
+                missingSpots.stream().forEach(spot -> {
+                    mappings.get(index).add(spot.rowId());
+                });
+                return mappings.stream().map(mapping -> new MappedFrame(df.source(), mapping)).collect(Collectors.toList());
+            }
+        },
+        REMAINS_TO_ALL_WEIGHTED {
+            @Override
+            public List<Frame> performSplit(Frame df, Candidate candidate) {
+                List<Mapping> mappings = new ArrayList<>();
+                IntStream.range(0, candidate.getGroupPredicates().size()).forEach(i -> mappings.add(new Mapping()));
+
+                final Set<Integer> missingSpots = new HashSet<>();
+                df.stream().forEach(fspot -> {
+                    for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
+                        Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
+                        if (predicate.test(fspot)) {
+                            mappings.get(i).add(fspot.rowId());
+                            return;
+                        }
+                    }
+                    missingSpots.add(fspot.rowId());
+                });
+                final double[] p = new double[mappings.size()];
+                double n = 0;
+                for (int i = 0; i < mappings.size(); i++) {
+                    p[i] = mappings.get(i).size();
+                    n += p[i];
+                }
+                for (int i = 0; i < p.length; i++) {
+                    p[i] /= n;
+                }
+                mappings.stream().forEach(mapping -> missingSpots.forEach(mapping::add));
+                List<Frame> frames = new ArrayList<>();
+                for (int i = 0; i < mappings.size(); i++) {
+                    final int index = i;
+                    Mapping mapping = mappings.get(i);
+                    Frame f = new MappedFrame(df.source(), mapping);
+                    f.stream().forEach(spot -> {
+                        if (missingSpots.contains(spot.rowId()))
+                            spot.setWeight(spot.getWeight() * p[index]);
+                    });
+                    frames.add(f);
+                }
+                return frames;
             }
         }
     }
