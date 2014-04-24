@@ -51,10 +51,10 @@ public class PartitionTreeClassifierEval {
 //        evalWith(Datasets.loadIrisDataset(), "class", 100, 1, 1, true, 4);
 //        evalWith(Datasets.loadSpamBase(), "spam", 100, 1, 1, true, 10);
 
-//        evalWith(loadArff("breast-cancer"), "Class", 200, 1, 1, true, 40);
-//        evalWith(loadArff("letter"), "class", 50, 1, 1, true, 2);
-        evalWith(loadArff("mushroom"), "class", 200, 1, 1, true, 2);
-//        evalWith(loadArff("vote"), "Class", 200, 1, 1.0, true, 2);
+        evalWith(loadArff("breast-cancer"), "Class", 200, 1, 1, true, 40);
+//        evalWith(loadArff("letter"), "class", 50, 1, 1, true, 50);
+//        evalWith(loadArff("mushroom"), "class", 200, 1, 1, true, 2);
+//        evalWith(loadArff("vote"), "Class", 200, 1, 0.6, true, 1);
     }
 
     private static Frame loadArff(String name) throws Exception {

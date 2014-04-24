@@ -47,52 +47,46 @@ public class CTree {
     // FUNCTION
 
     public static interface Function {
+        String name();
+
         double compute(DensityTable dt);
 
         int sign();
-
-        String getFunctionName();
     }
 
     public static enum Functions implements Function {
-        ENTROPY("Entropy", 1) {
+        ENTROPY(1) {
             @Override
             public double compute(DensityTable dt) {
                 return dt.getSplitEntropy(false);
             }
         },
-        INFO_GAIN("InfoGain", -1) {
+        INFO_GAIN(-1) {
             @Override
             public double compute(DensityTable dt) {
                 return dt.getInfoGain(false);
             }
         },
-        GAIN_RATIO("GainRatio", -1) {
+        GAIN_RATIO(-1) {
             @Override
             public double compute(DensityTable dt) {
                 return dt.getGainRatio();
             }
         },
-        GINI("Gini", -1) {
+        GINI(-1) {
             @Override
             public double compute(DensityTable dt) {
                 return dt.getGiniIndex();
             }
         };
         private final int sign;
-        private final String name;
 
-        private Functions(String name, int sign) {
+        private Functions(int sign) {
             this.sign = sign;
-            this.name = name;
         }
 
         public int sign() {
             return sign;
-        }
-
-        public String getFunctionName() {
-            return name;
         }
     }
 
@@ -100,19 +94,19 @@ public class CTree {
     // NOMINAL METHOD
 
     public static interface NominalMethod {
-        String getMethodName();
+        String name();
 
         List<CTreeCandidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function);
     }
 
     public static enum NominalMethods implements NominalMethod {
-        IGNORE("Ignore") {
+        IGNORE {
             @Override
             public List<CTreeCandidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
                 return new ArrayList<>();
             }
         },
-        FULL("Full") {
+        FULL {
             @Override
             public List<CTreeCandidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
                 List<CTreeCandidate> result = new ArrayList<>();
@@ -138,34 +132,25 @@ public class CTree {
                 result.add(candidate);
                 return result;
             }
-        };
-        private final String name;
-
-        private NominalMethods(String name) {
-            this.name = name;
-        }
-
-        public String getMethodName() {
-            return name;
         }
     }
 
     // NUMERIC METHOD
 
     public static interface NumericMethod {
-        List<CTreeCandidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function);
+        String name();
 
-        String getMethodName();
+        List<CTreeCandidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function);
     }
 
     public static enum NumericMethods implements NumericMethod {
-        IGNORE("Ignore") {
+        IGNORE {
             @Override
             public List<CTreeCandidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
                 return new ArrayList<CTreeCandidate>();
             }
         },
-        BINARY("Binary") {
+        BINARY {
             @Override
             public List<CTreeCandidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
                 Vector test = df.col(testColName);
@@ -206,42 +191,39 @@ public class CTree {
                             current.addGroup(
                                     String.format("%s > %.6f", testColName, testValue),
                                     spot -> !spot.isMissing(testColName) && spot.getValue(testColName) > testValue);
-
                         } else {
                             int comp = best.compareTo(current);
                             if (comp < 0) continue;
                             if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
                             best = current;
+
+                            final double testValue = test.getValue(sort.getIndex(i));
+                            current.addGroup(
+                                    String.format("%s <= %.6f", testColName, testValue),
+                                    spot -> !spot.isMissing(testColName) && spot.getValue(testColName) <= testValue);
+                            current.addGroup(
+                                    String.format("%s > %.6f", testColName, testValue),
+                                    spot -> !spot.isMissing(testColName) && spot.getValue(testColName) > testValue);
                         }
                     }
                 }
 
                 List<CTreeCandidate> result = new ArrayList<>();
-                result.add(best);
+                if (best != null)
+                    result.add(best);
                 return result;
             }
-        };
-        private final String name;
-
-        NumericMethods(String name) {
-            this.name = name;
-        }
-
-        public abstract List<CTreeCandidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function);
-
-        public String getMethodName() {
-            return name;
         }
     }
 
     public static interface Splitter {
-        public String getSplitterName();
+        String name();
 
         public List<Frame> performSplit(Frame df, CTreeCandidate candidate);
     }
 
     public static enum Splitters implements Splitter {
-        IGNORE_MISSING("IgnoreMissing") {
+        IGNORE_MISSING {
             @Override
             public List<Frame> performSplit(Frame df, CTreeCandidate candidate) {
                 List<Mapping> mappings = new ArrayList<>();
@@ -258,56 +240,40 @@ public class CTree {
                 });
                 return mappings.stream().map(mapping -> new MappedFrame(df.source(), mapping)).collect(Collectors.toList());
             }
-        };
-
-        private final String name;
-
-        Splitters(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String getSplitterName() {
-            return name;
         }
     }
 
     public static interface Predictor {
+        String name();
 
-        String getPredictorName();
-
-        Pair<Integer, DensityVector> predict(Frame df, int row, CPartitionTreeNode node);
+        Pair<Integer, DensityVector> predict(FSpot spot, CPartitionTreeNode node);
     }
 
     public static enum Predictors implements Predictor {
-        STANDARD("standard") {
+        STANDARD {
             @Override
-            public Pair<Integer, DensityVector> predict(Frame df, int row, CPartitionTreeNode node) {
+            public Pair<Integer, DensityVector> predict(FSpot spot, CPartitionTreeNode node) {
                 if (node.counter.sum(false) == 0)
                     return new Pair<>(node.parent.bestIndex, node.parent.density);
                 if (node.leaf)
                     return new Pair<>(node.bestIndex, node.density);
 
+                for (CPartitionTreeNode child : node.children) {
+                    if (child.predicate.test(spot)) {
+                        return predict(spot, child);
+                    }
+                }
+
                 String[] dict = node.c.getDict();
                 DensityVector dv = new DensityVector(dict);
                 for (CPartitionTreeNode child : node.children) {
-                    DensityVector d = predict(df, row, child).second;
+                    DensityVector d = predict(spot, child).second;
                     for (int i = 0; i < dict.length; i++) {
                         dv.update(i, d.get(i));
                     }
                 }
                 return new Pair<>(dv.findBestIndex(), dv);
             }
-        };
-
-        private final String predictorName;
-
-        Predictors(String predictorName) {
-            this.predictorName = predictorName;
-        }
-
-        public String getPredictorName() {
-            return predictorName;
         }
     }
 }

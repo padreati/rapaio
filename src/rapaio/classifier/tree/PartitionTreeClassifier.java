@@ -135,11 +135,11 @@ public class PartitionTreeClassifier extends AbstractClassifier {
         sb.append("PartitionTreeClassifier (");
         sb.append("minCount=").append(minCount).append(",");
         sb.append("maxDepth=").append(maxDepth).append(",");
-        sb.append("numericMethod=").append(numericMethod.getMethodName()).append(",");
-        sb.append("nominalMethod=").append(nominalMethod.getMethodName()).append(",");
-        sb.append("function=").append(function.getFunctionName()).append(",");
-        sb.append("splitter=").append(splitter.getSplitterName()).append(",");
-        sb.append("predictor=").append(predictor.getPredictorName());
+        sb.append("numericMethod=").append(numericMethod.name()).append(",");
+        sb.append("nominalMethod=").append(nominalMethod.name()).append(",");
+        sb.append("function=").append(function.name()).append(",");
+        sb.append("splitter=").append(splitter.name()).append(",");
+        sb.append("predictor=").append(predictor.name());
         sb.append(")");
         return sb.toString();
     }
@@ -151,7 +151,7 @@ public class PartitionTreeClassifier extends AbstractClassifier {
         dict = df.col(targetCol).getDictionary();
         rows = df.rowCount();
 
-        root = new CPartitionTreeNode(this, null);
+        root = new CPartitionTreeNode(this, null, "root", spot -> true);
         root.learn(df, maxDepth);
     }
 
@@ -161,13 +161,13 @@ public class PartitionTreeClassifier extends AbstractClassifier {
         pred = new Nominal(df.rowCount(), dict);
         dist = Frames.newMatrix(df.rowCount(), dict);
 
-        for (int i = 0; i < df.rowCount(); i++) {
-            Pair<Integer, DensityVector> result = predictor.predict(df, i, root);
-            pred.setIndex(i, result.first);
+        df.stream().forEach(spot -> {
+            Pair<Integer, DensityVector> result = predictor.predict(spot, root);
+            pred.setIndex(spot.row(), result.first);
             for (int j = 0; j < dict.length; j++) {
-                dist.setValue(i, j, result.second.get(j));
+                dist.setValue(spot.row(), j, result.second.get(j));
             }
-        }
+        });
     }
 
     @Override
@@ -204,39 +204,25 @@ public class PartitionTreeClassifier extends AbstractClassifier {
 
         } else {
 
-//            sb.append(node.parent.test.testName());
-//            boolean left = node.parent.leftNode == node;
-//            if (node.parent.test.splitLabel() == null) {
-//                if (left) {
-//                    sb.append(String.format(" <=%f  ", node.parent.test.splitValue()));
-//                } else {
-//                    sb.append(String.format(" >%f  ", node.parent.test.splitValue()));
-//                }
-//            } else {
-//                if (left) {
-//                    sb.append(" == '").append(node.parent.test.splitLabel()).append("'  ");
-//                } else {
-//                    sb.append(" != '").append(node.parent.test.splitLabel()).append("'  ");
-//                }
-//            }
-//            sb.append(node.density.sum(true)).append("/");
-//            sb.append(node.density.sumExcept(node.bestIndex, true)).append(" ");
-//            sb.append(dict[node.bestIndex]).append(" (");
-//            DensityVector d = node.density.solidCopy();
-//            d.normalize(false);
-//            for (int i = 1; i < dict.length; i++) {
-//                sb.append(String.format("%.6f", d.get(i))).append(" ");
-//            }
-//            sb.append(") ");
-//            if (node.leaf) sb.append("*");
-//            sb.append("\n");
+            sb.append(node.groupName).append("'  ");
+
+            sb.append(node.density.sum(true)).append("/");
+            sb.append(node.density.sumExcept(node.bestIndex, true)).append(" ");
+            sb.append(dict[node.bestIndex]).append(" (");
+            DensityVector d = node.density.solidCopy();
+            d.normalize(false);
+            for (int i = 1; i < dict.length; i++) {
+                sb.append(String.format("%.6f", d.get(i))).append(" ");
+            }
+            sb.append(") ");
+            if (node.leaf) sb.append("*");
+            sb.append("\n");
         }
 
         // children
 
         if (!node.leaf) {
-//            buildSummary(sb, node.leftNode, level + 1);
-//            buildSummary(sb, node.rightNode, level + 1);
+            node.children.stream().forEach(child -> buildSummary(sb, child, level + 1));
         }
     }
 }

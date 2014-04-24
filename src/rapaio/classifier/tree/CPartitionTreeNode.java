@@ -23,10 +23,12 @@ package rapaio.classifier.tree;
 import rapaio.classifier.tools.DensityVector;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
+import rapaio.data.stream.FSpot;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 
 /**
  * Models node of a classification decision tree.
@@ -36,6 +38,8 @@ import java.util.TreeSet;
 public class CPartitionTreeNode {
     final PartitionTreeClassifier c;
     final CPartitionTreeNode parent;
+    final String groupName;
+    final Predicate<FSpot> predicate;
 
     boolean leaf = true;
     List<CPartitionTreeNode> children;
@@ -45,9 +49,12 @@ public class CPartitionTreeNode {
     CTreeCandidate bestCandidate;
     TreeSet<CTreeCandidate> candidates;
 
-    public CPartitionTreeNode(final PartitionTreeClassifier c, final CPartitionTreeNode parent) {
+    public CPartitionTreeNode(final PartitionTreeClassifier c, final CPartitionTreeNode parent,
+                              final String groupName, final Predicate<FSpot> predicate) {
         this.parent = parent;
         this.c = c;
+        this.groupName = groupName;
+        this.predicate = predicate;
     }
 
     public boolean isLeaf() {
@@ -59,13 +66,13 @@ public class CPartitionTreeNode {
     }
 
     public void learn(Frame df, int depth) {
+        density = new DensityVector(df.col(c.getTargetCol()), df.getWeights());
+        counter = new DensityVector(df.col(c.getTargetCol()), new Numeric(df.rowCount(), df.rowCount(), 1));
+        bestIndex = density.findBestIndex();
+
         if (df.rowCount() == 0) {
             return;
         }
-        density = new DensityVector(df.col(c.getTargetCol()), df.getWeights());
-        counter = new DensityVector(df.col(c.getTargetCol()), new Numeric(df.rowCount(), df.rowCount(), 1));
-
-        bestIndex = density.findBestIndex();
 
         if (df.rowCount() <= c.getMinCount() || counter.countValues(x -> x > 0) == 1 || depth < 1) {
             return;
@@ -99,10 +106,11 @@ public class CPartitionTreeNode {
 
         List<Frame> frames = c.getSplitter().performSplit(df, bestCandidate);
         children = new ArrayList<>(frames.size());
-        frames.stream().forEach(frame -> {
-            CPartitionTreeNode child = new CPartitionTreeNode(c, this);
+        for (int i = 0; i < frames.size(); i++) {
+            Frame f = frames.get(i);
+            CPartitionTreeNode child = new CPartitionTreeNode(c, this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
             children.add(child);
-            child.learn(frame, depth - 1);
-        });
+            child.learn(f, depth - 1);
+        }
     }
 }
