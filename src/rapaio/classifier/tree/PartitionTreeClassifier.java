@@ -22,13 +22,22 @@ package rapaio.classifier.tree;
 
 import rapaio.classifier.AbstractClassifier;
 import rapaio.classifier.Classifier;
+import rapaio.classifier.tools.DensityTable;
 import rapaio.classifier.tools.DensityVector;
 import rapaio.cluster.util.Pair;
-import rapaio.data.Frame;
-import rapaio.data.Frames;
-import rapaio.data.Nominal;
+import rapaio.core.RandomSource;
+import rapaio.data.*;
+import rapaio.data.filters.BaseFilters;
+import rapaio.data.mapping.MappedFrame;
+import rapaio.data.mapping.Mapping;
+import rapaio.data.stream.FSpot;
 
-import static rapaio.classifier.tree.CTree.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeSet;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -46,7 +55,7 @@ public class PartitionTreeClassifier extends AbstractClassifier {
     private Predictor predictor = Predictors.STANDARD;
 
     // tree root node
-    private CPartitionTreeNode root;
+    private CTreeNode root;
     private int rows;
 
     @Override
@@ -151,7 +160,7 @@ public class PartitionTreeClassifier extends AbstractClassifier {
         dict = df.col(targetCol).getDictionary();
         rows = df.rowCount();
 
-        root = new CPartitionTreeNode(this, null, "root", spot -> true);
+        root = new CTreeNode(this, null, "root", spot -> true);
         root.learn(df, maxDepth);
     }
 
@@ -183,7 +192,7 @@ public class PartitionTreeClassifier extends AbstractClassifier {
         buildSummary(sb, root, 0);
     }
 
-    private void buildSummary(StringBuilder sb, CPartitionTreeNode node, int level) {
+    private void buildSummary(StringBuilder sb, CTreeNode node, int level) {
         sb.append("|");
         for (int i = 0; i < level; i++) {
             sb.append("   |");
@@ -223,6 +232,353 @@ public class PartitionTreeClassifier extends AbstractClassifier {
 
         if (!node.leaf) {
             node.children.stream().forEach(child -> buildSummary(sb, child, level + 1));
+        }
+    }
+
+    // components
+
+    public static interface Function {
+        String name();
+
+        double compute(DensityTable dt);
+
+        int sign();
+    }
+
+    public static enum Functions implements Function {
+        ENTROPY(1) {
+            @Override
+            public double compute(DensityTable dt) {
+                return dt.getSplitEntropy(false);
+            }
+        },
+        INFO_GAIN(-1) {
+            @Override
+            public double compute(DensityTable dt) {
+                return dt.getInfoGain(false);
+            }
+        },
+        GAIN_RATIO(-1) {
+            @Override
+            public double compute(DensityTable dt) {
+                return dt.getGainRatio();
+            }
+        },
+        GINI(-1) {
+            @Override
+            public double compute(DensityTable dt) {
+                return dt.getGiniIndex();
+            }
+        };
+        private final int sign;
+
+        private Functions(int sign) {
+            this.sign = sign;
+        }
+
+        public int sign() {
+            return sign;
+        }
+    }
+
+
+    // NOMINAL METHOD
+
+    public static interface NominalMethod {
+        String name();
+
+        List<Candidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function);
+    }
+
+    public static enum NominalMethods implements NominalMethod {
+        IGNORE {
+            @Override
+            public List<Candidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
+                return new ArrayList<>();
+            }
+        },
+        FULL {
+            @Override
+            public List<Candidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
+                List<Candidate> result = new ArrayList<>();
+                Vector test = df.col(testColName);
+                Vector target = df.col(targetColName);
+
+                if (new DensityTable(test, target).countWithMinimum(false, c.getMinCount()) < 2) {
+                    return result;
+                }
+
+                DensityTable dt = new DensityTable(test, target, df.getWeights());
+                double value = function.compute(dt);
+
+                Candidate candidate = new Candidate(value, function.sign());
+                for (int i = 1; i < test.getDictionary().length; i++) {
+
+                    final String label = test.getDictionary()[i];
+                    candidate.addGroup(
+                            String.format("%s == %s", testColName, label),
+                            spot -> !spot.isMissing(testColName) && spot.getLabel(testColName).equals(label));
+                }
+
+                result.add(candidate);
+                return result;
+            }
+        }
+    }
+
+    // NUMERIC METHOD
+
+    public static interface NumericMethod {
+        String name();
+
+        List<Candidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function);
+    }
+
+    public static enum NumericMethods implements NumericMethod {
+        IGNORE {
+            @Override
+            public List<Candidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
+                return new ArrayList<Candidate>();
+            }
+        },
+        BINARY {
+            @Override
+            public List<Candidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
+                Vector test = df.col(testColName);
+                Vector target = df.col(targetColName);
+
+                DensityTable dt = new DensityTable(DensityTable.NUMERIC_DEFAULT_LABELS, target.getDictionary());
+                int misCount = 0;
+                for (int i = 0; i < df.rowCount(); i++) {
+                    int row = (test.isMissing(i)) ? 0 : 2;
+                    if (test.isMissing(i)) misCount++;
+                    dt.update(row, target.getIndex(i), df.getWeight(i));
+                }
+
+                Vector sort = BaseFilters.sort(Vectors.newSeq(df.rowCount()), RowComparators.numericComparator(test, true));
+
+                Candidate best = null;
+
+                for (int i = 0; i < df.rowCount(); i++) {
+                    int row = sort.getIndex(i);
+
+                    if (test.isMissing(row)) continue;
+
+                    dt.update(2, target.getIndex(row), -df.getWeight(row));
+                    dt.update(1, target.getIndex(row), +df.getWeight(row));
+
+                    if (i >= misCount + c.getMinCount() &&
+                            i < df.rowCount() - 1 - c.getMinCount() &&
+                            test.getValue(sort.getIndex(i)) < test.getValue(sort.getIndex(i + 1))) {
+
+                        Candidate current = new Candidate(function.compute(dt), function.sign());
+                        if (best == null) {
+                            best = current;
+
+                            final double testValue = test.getValue(sort.getIndex(i));
+                            current.addGroup(
+                                    String.format("%s <= %.6f", testColName, testValue),
+                                    spot -> !spot.isMissing(testColName) && spot.getValue(testColName) <= testValue);
+                            current.addGroup(
+                                    String.format("%s > %.6f", testColName, testValue),
+                                    spot -> !spot.isMissing(testColName) && spot.getValue(testColName) > testValue);
+                        } else {
+                            int comp = best.compareTo(current);
+                            if (comp < 0) continue;
+                            if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
+                            best = current;
+
+                            final double testValue = test.getValue(sort.getIndex(i));
+                            current.addGroup(
+                                    String.format("%s <= %.6f", testColName, testValue),
+                                    spot -> !spot.isMissing(testColName) && spot.getValue(testColName) <= testValue);
+                            current.addGroup(
+                                    String.format("%s > %.6f", testColName, testValue),
+                                    spot -> !spot.isMissing(testColName) && spot.getValue(testColName) > testValue);
+                        }
+                    }
+                }
+
+                List<Candidate> result = new ArrayList<>();
+                if (best != null)
+                    result.add(best);
+                return result;
+            }
+        }
+    }
+
+    public static interface Splitter {
+        String name();
+
+        public List<Frame> performSplit(Frame df, Candidate candidate);
+    }
+
+    public static enum Splitters implements Splitter {
+        IGNORE_MISSING {
+            @Override
+            public List<Frame> performSplit(Frame df, Candidate candidate) {
+                List<Mapping> mappings = new ArrayList<>();
+                IntStream.range(0, candidate.getGroupPredicates().size()).forEach(i -> mappings.add(new Mapping()));
+
+                df.stream().forEach(fspot -> {
+                    for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
+                        Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
+                        if (predicate.test(fspot)) {
+                            mappings.get(i).add(fspot.rowId());
+                            break;
+                        }
+                    }
+                });
+                return mappings.stream().map(mapping -> new MappedFrame(df.source(), mapping)).collect(Collectors.toList());
+            }
+        }
+    }
+
+    public static interface Predictor {
+        String name();
+
+        Pair<Integer, DensityVector> predict(FSpot spot, CTreeNode node);
+    }
+
+    public static enum Predictors implements Predictor {
+        STANDARD {
+            @Override
+            public Pair<Integer, DensityVector> predict(FSpot spot, CTreeNode node) {
+                if (node.counter.sum(false) == 0)
+                    return new Pair<>(node.parent.bestIndex, node.parent.density);
+                if (node.leaf)
+                    return new Pair<>(node.bestIndex, node.density);
+
+                for (CTreeNode child : node.children) {
+                    if (child.predicate.test(spot)) {
+                        return predict(spot, child);
+                    }
+                }
+
+                String[] dict = node.c.getDict();
+                DensityVector dv = new DensityVector(dict);
+                for (CTreeNode child : node.children) {
+                    DensityVector d = predict(spot, child).second;
+                    for (int i = 0; i < dict.length; i++) {
+                        dv.update(i, d.get(i));
+                    }
+                }
+                return new Pair<>(dv.findBestIndex(), dv);
+            }
+        }
+    }
+}
+
+class Candidate implements Comparable<Candidate> {
+
+    private final double score;
+    private final int sign;
+    private List<String> groupNames = new ArrayList<>();
+    private List<Predicate<FSpot>> groupPredicates = new ArrayList<>();
+
+    public Candidate(double score, int sign) {
+        this.score = score;
+        this.sign = sign;
+    }
+
+    public void addGroup(String name, Predicate<FSpot> predicate) {
+        if (groupNames.contains(name)) {
+            throw new IllegalArgumentException("group name already defined");
+        }
+        groupNames.add(name);
+        groupPredicates.add(predicate);
+    }
+
+    public List<String> getGroupNames() {
+        return groupNames;
+    }
+
+    public List<Predicate<FSpot>> getGroupPredicates() {
+        return groupPredicates;
+    }
+
+    @Override
+    public int compareTo(Candidate o) {
+        return new Double(score).compareTo(o.score) * sign;
+    }
+}
+
+class CTreeNode {
+    final PartitionTreeClassifier c;
+    final CTreeNode parent;
+    final String groupName;
+    final Predicate<FSpot> predicate;
+
+    boolean leaf = true;
+    List<CTreeNode> children;
+    DensityVector density;
+    DensityVector counter;
+    int bestIndex;
+    Candidate bestCandidate;
+    TreeSet<Candidate> candidates;
+
+    public CTreeNode(final PartitionTreeClassifier c, final CTreeNode parent,
+                     final String groupName, final Predicate<FSpot> predicate) {
+        this.parent = parent;
+        this.c = c;
+        this.groupName = groupName;
+        this.predicate = predicate;
+    }
+
+    public boolean isLeaf() {
+        return leaf;
+    }
+
+    public List<CTreeNode> getChildren() {
+        return children;
+    }
+
+    public void learn(Frame df, int depth) {
+        density = new DensityVector(df.col(c.getTargetCol()), df.getWeights());
+        counter = new DensityVector(df.col(c.getTargetCol()), new Numeric(df.rowCount(), df.rowCount(), 1));
+        bestIndex = density.findBestIndex();
+
+        if (df.rowCount() == 0) {
+            return;
+        }
+
+        if (df.rowCount() <= c.getMinCount() || counter.countValues(x -> x > 0) == 1 || depth < 1) {
+            return;
+        }
+
+        candidates = new TreeSet<>();
+
+        // here we have to implement some form of column selector for RF, ID3 and C4.5
+        for (String testCol : df.colNames()) {
+            if (testCol.equals(c.getTargetCol())) continue;
+            if (df.col(testCol).type().isNumeric()) {
+                candidates.addAll(c.getNumericMethod().computeCandidates(c, df, testCol, c.getTargetCol(), c.getFunction()));
+            } else {
+                candidates.addAll(c.getNominalMethod().computeCandidates(c, df, testCol, c.getTargetCol(), c.getFunction()));
+            }
+        }
+
+        if (candidates.isEmpty()) {
+            return;
+        }
+        leaf = false;
+
+        bestCandidate = candidates.first();
+
+        // now that we have a best candidate, do the effective split
+
+        if (bestCandidate.getGroupNames().isEmpty()) {
+            leaf = true;
+            return;
+        }
+
+        List<Frame> frames = c.getSplitter().performSplit(df, bestCandidate);
+        children = new ArrayList<>(frames.size());
+        for (int i = 0; i < frames.size(); i++) {
+            Frame f = frames.get(i);
+            CTreeNode child = new CTreeNode(c, this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
+            children.add(child);
+            child.learn(f, depth - 1);
         }
     }
 }
