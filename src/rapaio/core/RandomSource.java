@@ -318,7 +318,6 @@ strictfp class MersenneTwister extends java.util.Random {
         mag01[0] = 0x0;
         mag01[1] = MATRIX_A;
 
-        mt[0] = (int) (seed & 0xffffffff);
         mt[0] = (int) seed;
         for (mti = 1; mti < N; mti++) {
             mt[mti] =

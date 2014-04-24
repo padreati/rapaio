@@ -57,8 +57,8 @@ public class L2ConstantRegressor extends AbstractRegressor {
         List<Integer> colIndexes = colRange.parseColumnIndexes(df);
 
         targets = new ArrayList<>();
-        for (int i = 0; i < colIndexes.size(); i++) {
-            targets.add(df.colNames()[colIndexes.get(i)]);
+        for (Integer colIndexe : colIndexes) {
+            targets.add(df.colNames()[colIndexe]);
         }
 
         means = new ArrayList<>();

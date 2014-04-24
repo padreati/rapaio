@@ -117,8 +117,8 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor implements 
         ColRange targetColRange = new ColRange(targetColNames);
         List<Integer> targets = targetColRange.parseColumnIndexes(df);
         targetCols = new ArrayList<>();
-        for (int i = 0; i < targets.size(); i++) {
-            targetCols.add(df.colNames()[targets.get(i)]);
+        for (Integer target : targets) {
+            targetCols.add(df.colNames()[target]);
         }
         inputCols = new ArrayList<>();
         for (int i = 0; i < df.colNames().length; i++) {
@@ -163,9 +163,9 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor implements 
 
             // back propagate
 
-            for (int i = 0; i < net.length; i++) {
-                for (int j = 0; j < net[i].length; j++) {
-                    net[i][j].gamma = 0;
+            for (NetNode[] aNet : net) {
+                for (int j = 0; j < aNet.length; j++) {
+                    aNet[j].gamma = 0;
                 }
             }
 

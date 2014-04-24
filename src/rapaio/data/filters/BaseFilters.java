@@ -227,7 +227,7 @@ public final class BaseFilters implements Serializable {
                         continue;
                     }
                     if (!dicts.containsKey(colName)) {
-                        dicts.put(colName, new HashSet<String>());
+                        dicts.put(colName, new HashSet<>());
                     }
                     dicts.get(colName).addAll(Arrays.asList(frame.col(colName).getDictionary()));
                 }
@@ -309,8 +309,8 @@ public final class BaseFilters implements Serializable {
         }
         Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
         List<Integer> ids = new ArrayList<>();
-        for (int i = 0; i < mapping.size(); i++) {
-            ids.add(df.rowId(mapping.get(i)));
+        for (Integer aMapping : mapping) {
+            ids.add(df.rowId(aMapping));
         }
         return new MappedFrame(df.source(), new Mapping(ids));
     }
@@ -334,39 +334,39 @@ public final class BaseFilters implements Serializable {
     public static List<Frame> combine(String name, List<Frame> frames, String... combined) {
         Set<String> dict = new HashSet<>();
         dict.add("");
-        for (int i = 0; i < frames.size(); i++) {
-            if (frames.get(i).isMappedFrame()) {
+        for (Frame frame1 : frames) {
+            if (frame1.isMappedFrame()) {
                 throw new IllegalArgumentException("Not allowed mapped frames");
             }
         }
 
-        for (int j = 0; j < combined.length; j++) {
-            String[] vdict = frames.get(0).col(combined[j]).getDictionary();
+        for (String aCombined : combined) {
+            String[] vdict = frames.get(0).col(aCombined).getDictionary();
             Set<String> newdict = new HashSet<>();
             for (String term : dict) {
-                for (int k = 0; k < vdict.length; k++) {
-                    newdict.add(term + "." + vdict[k]);
+                for (String aVdict : vdict) {
+                    newdict.add(term + "." + aVdict);
                 }
             }
             dict = newdict;
         }
 
         List<Frame> result = new ArrayList<>();
-        for (int i = 0; i < frames.size(); i++) {
+        for (Frame frame : frames) {
             List<Vector> vectors = new ArrayList<>();
-            for (int j = 0; j < frames.get(i).colCount(); j++) {
-                vectors.add(frames.get(i).col(j));
+            for (int j = 0; j < frame.colCount(); j++) {
+                vectors.add(frame.col(j));
             }
-            Vector col = new Nominal(frames.get(i).rowCount(), dict);
-            for (int j = 0; j < frames.get(i).rowCount(); j++) {
+            Vector col = new Nominal(frame.rowCount(), dict);
+            for (int j = 0; j < frame.rowCount(); j++) {
                 StringBuilder sb = new StringBuilder();
                 for (int k = 0; k < combined.length; k++) {
-                    sb.append(".").append(frames.get(i).getLabel(j, frames.get(i).colIndex(combined[k])));
+                    sb.append(".").append(frame.getLabel(j, frame.colIndex(combined[k])));
                 }
                 col.setLabel(j, sb.toString());
             }
             vectors.add(col);
-            result.add(new SolidFrame(frames.get(i).rowCount(), vectors, frames.get(i).colNames()));
+            result.add(new SolidFrame(frame.rowCount(), vectors, frame.colNames()));
         }
         return result;
 
@@ -576,8 +576,8 @@ public final class BaseFilters implements Serializable {
         }
         Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
         List<Integer> ids = new ArrayList<>();
-        for (int i = 0; i < mapping.size(); i++) {
-            ids.add(vector.rowId(mapping.get(i)));
+        for (Integer aMapping : mapping) {
+            ids.add(vector.rowId(aMapping));
         }
         return new MappedVector(vector.source(), new Mapping(ids));
     }

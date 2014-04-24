@@ -64,7 +64,7 @@ public class WorkspaceData implements Serializable {
 
     public <T> void put(Class<T> clazz, String name, T value) {
         if (!map.containsKey(clazz)) {
-            map.put(clazz, new HashMap<String, Object>());
+            map.put(clazz, new HashMap<>());
         }
         map.get(clazz).put(name, value);
     }

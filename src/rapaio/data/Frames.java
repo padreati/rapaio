@@ -49,7 +49,7 @@ public final class Frames implements Serializable {
 
     public static Frame newMatrixFrame(int rows, List<String> colNames) {
         List<Vector> vectors = new ArrayList<>();
-        for (int i = 0; i < colNames.size(); i++) {
+        for (String colName : colNames) {
             vectors.add(new Numeric(new double[rows]));
         }
         return new SolidFrame(rows, vectors, colNames);

@@ -25,6 +25,7 @@ import rapaio.data.Numeric;
 import java.io.PrintWriter;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -49,9 +50,7 @@ public class Matrix {
         m = vectors[0].rowCount();
         n = vectors.length;
         data = new ArrayList<>(n);
-        for (int i = 0; i < n; i++) {
-            data.add(vectors[i]);
-        }
+        data.addAll(Arrays.asList(vectors).subList(0, n));
     }
 
     public Matrix(int step, double[] values) {

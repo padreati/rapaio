@@ -514,8 +514,8 @@ public class SingularValueDecomposition implements java.io.Serializable {
         double eps = Math.pow(2.0, -52.0);
         double tol = Math.max(m, n) * s[0] * eps;
         int r = 0;
-        for (int i = 0; i < s.length; i++) {
-            if (s[i] > tol) {
+        for (double value : s) {
+            if (value > tol) {
                 r++;
             }
         }

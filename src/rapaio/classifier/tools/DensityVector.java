@@ -49,9 +49,7 @@ public class DensityVector implements Serializable {
     public DensityVector(Vector vector, Numeric weights) {
         this.labels = vector.getDictionary();
         this.values = new double[labels.length];
-        vector.stream().forEach(spot -> {
-            values[spot.getIndex()] += weights.getValue(spot.row());
-        });
+        vector.stream().forEach(spot -> values[spot.getIndex()] += weights.getValue(spot.row()));
     }
 
     public void update(int pos, double value) {
@@ -125,9 +123,7 @@ public class DensityVector implements Serializable {
 
     public DensityVector solidCopy() {
         DensityVector d = new DensityVector(labels);
-        for (int i = 0; i < labels.length; i++) {
-            d.values[i] = values[i];
-        }
+        System.arraycopy(values, 0, d.values, 0, labels.length);
         return d;
     }
 }

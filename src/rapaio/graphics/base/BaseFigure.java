@@ -46,8 +46,8 @@ public abstract class BaseFigure implements Figure {
     private final ArrayList<String> leftMarkersMsg = new ArrayList<>();
     private final ArrayList<Double> leftMarkersPos = new ArrayList<>();
     private String title;
-    private String leftLabel;
-    private String bottomLabel;
+    private String yLabel;
+    private String xLabel;
     private double thickerMinSpace = DEFAULT_THICKER_MIN_SPACE;
 
     //
@@ -223,7 +223,7 @@ public abstract class BaseFigure implements Figure {
         if (leftMarkers) {
             viewport.x += MARKER_PAD;
         }
-        if (leftLabel != null) {
+        if (yLabel != null) {
             viewport.x += LABEL_PAD;
         }
         viewport.x += MINIMUM_PAD;
@@ -238,7 +238,7 @@ public abstract class BaseFigure implements Figure {
         if (bottomMarkers) {
             height += MARKER_PAD;
         }
-        if (bottomLabel != null) {
+        if (xLabel != null) {
             height += LABEL_PAD;
         }
         height += MINIMUM_PAD;
@@ -330,20 +330,20 @@ public abstract class BaseFigure implements Figure {
     }
 
     public String getYLabel() {
-        return leftLabel;
+        return yLabel;
     }
 
     public BaseFigure setYLab(String leftLabel) {
-        this.leftLabel = leftLabel;
+        this.yLabel = leftLabel;
         return this;
     }
 
     public String getXLabel() {
-        return bottomLabel;
+        return xLabel;
     }
 
     public BaseFigure setXLab(String bottomLabel) {
-        this.bottomLabel = bottomLabel;
+        this.xLabel = bottomLabel;
         return this;
     }
 
@@ -393,14 +393,14 @@ public abstract class BaseFigure implements Figure {
                 g2d.translate(-xx, -yy);
             }
         }
-        if (leftLabel != null) {
+        if (yLabel != null) {
             g2d.setFont(LABELS_FONT);
-            double ywidth = g2d.getFontMetrics().getStringBounds(leftLabel, g2d).getWidth();
+            double ywidth = g2d.getFontMetrics().getStringBounds(yLabel, g2d).getWidth();
             int xx = viewport.x - 5 * THICKER_PAD - MARKER_PAD;
             int yy = (int) ((rect.height + ywidth) / 2);
             g2d.translate(xx, yy);
             g2d.rotate(-Math.PI / 2);
-            g2d.drawString(leftLabel, 0, 0);
+            g2d.drawString(yLabel, 0, 0);
             g2d.rotate(Math.PI / 2);
             g2d.translate(-xx, -yy);
         }
@@ -432,10 +432,10 @@ public abstract class BaseFigure implements Figure {
             }
         }
 
-        if (bottomLabel != null) {
+        if (xLabel != null) {
             g2d.setFont(LABELS_FONT);
-            double xwidth = g2d.getFontMetrics().getStringBounds(bottomLabel, g2d).getWidth();
-            g2d.drawString(bottomLabel,
+            double xwidth = g2d.getFontMetrics().getStringBounds(xLabel, g2d).getWidth();
+            g2d.drawString(xLabel,
                     (int) ((rect.width - xwidth) / 2),
                     viewport.y + viewport.height + 2 * THICKER_PAD + MARKER_PAD + LABEL_PAD);
         }

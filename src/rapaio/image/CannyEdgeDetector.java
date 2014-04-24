@@ -552,8 +552,8 @@ public class CannyEdgeDetector {
 
     private void normalizeContrast() {
         int[] histogram = new int[256];
-        for (int i = 0; i < data.length; i++) {
-            histogram[data[i]]++;
+        for (int aData : data) {
+            histogram[aData]++;
         }
         int[] remap = new int[256];
         int sum = 0;

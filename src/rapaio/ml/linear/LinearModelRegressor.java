@@ -27,6 +27,7 @@ import rapaio.ml.AbstractRegressor;
 import rapaio.ml.Regressor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -49,9 +50,7 @@ public class LinearModelRegressor extends AbstractRegressor {
     public void learn(Frame df, List<Double> weights, String targetColNames) {
         targets.clear();
         predictors.clear();
-        for (String targetColName : targetColNames.split(",", -1)) {
-            targets.add(targetColName);
-        }
+        Collections.addAll(targets, targetColNames.split(",", -1));
         for (String colName : df.colNames()) {
             if (!targetColNames.contains(colName) && df.col(colName).type().isNumeric()) {
                 predictors.add(colName);

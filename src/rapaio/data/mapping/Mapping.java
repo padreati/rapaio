@@ -36,8 +36,8 @@ public class Mapping {
 
     public Mapping(int[] rows) {
         mapping = new ArrayList<>(rows.length);
-        for (int i = 0; i < rows.length; i++) {
-            mapping.add(rows[i]);
+        for (int row : rows) {
+            mapping.add(row);
         }
     }
 

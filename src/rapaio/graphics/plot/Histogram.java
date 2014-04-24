@@ -137,8 +137,8 @@ public class Histogram extends PlotComponent {
         Range range = new Range();
         range.union(minvalue, Double.NaN);
         range.union(maxvalue, Double.NaN);
-        for (int i = 0; i < freqtable.length; i++) {
-            range.union(Double.NaN, freqtable[i]);
+        for (double aFreqtable : freqtable) {
+            range.union(Double.NaN, aFreqtable);
         }
         range.union(Double.NaN, 0);
         return range;

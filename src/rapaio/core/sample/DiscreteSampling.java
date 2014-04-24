@@ -183,11 +183,11 @@ public class DiscreteSampling {
             throw new IllegalArgumentException("required sample size is bigger than population size");
         }
         double total = 0;
-        for (int i = 0; i < p.length; i++) {
-            if (p[i] <= 0) {
+        for (double aP : p) {
+            if (aP <= 0) {
                 throw new IllegalArgumentException("weights must be strict positive.");
             }
-            total += p[i];
+            total += aP;
         }
         if (total != 1.) {
             for (int i = 0; i < p.length; i++) {

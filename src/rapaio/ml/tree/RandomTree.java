@@ -205,8 +205,8 @@ class TreeNode {
         for (int i = 0; i < df.rowCount(); i++) {
             fd[classCol.getIndex(i)] += weights.get(i);
         }
-        for (int i = 0; i < fd.length; i++) {
-            totalFd += fd[i];
+        for (double aFd : fd) {
+            totalFd += aFd;
         }
         pd = new double[fd.length];
         for (int i = 0; i < pd.length; i++) {

@@ -58,7 +58,7 @@ public class BarChart extends BaseFigure {
             throw new IllegalArgumentException("categories are nominal only");
         }
         if (condition == null) {
-            condition = new Nominal(category.rowCount(), new HashSet<String>());
+            condition = new Nominal(category.rowCount(), new HashSet<>());
         }
         if (!condition.type().isNominal()) {
             throw new IllegalArgumentException("conditions are nominal only");
@@ -129,8 +129,8 @@ public class BarChart extends BaseFigure {
 
             if (density) {
                 double t = 0;
-                for (int i = 0; i < totals.length; i++) {
-                    t += totals[i];
+                for (double total : totals) {
+                    t += total;
                 }
                 for (int i = 0; i < hits.length; i++) {
                     for (int j = 0; j < hits[i].length; j++) {
@@ -146,14 +146,11 @@ public class BarChart extends BaseFigure {
                 list.add(i);
             }
 
-            Collections.sort(list, new Comparator<Integer>() {
-                @Override
-                public int compare(Integer o1, Integer o2) {
-                    if (totals[o1] == totals[o2])
-                        return 0;
-                    int sign = (SortType.ASC.equals(sort)) ? 1 : -1;
-                    return totals[o1] < totals[o2] ? -sign : sign;
-                }
+            Collections.sort(list, (o1, o2) -> {
+                if (totals[o1] == totals[o2])
+                    return 0;
+                int sign = (SortType.ASC.equals(sort)) ? 1 : -1;
+                return totals[o1] < totals[o2] ? -sign : sign;
             });
             if (top < list.size()) {
                 list = list.subList(0, top);
@@ -176,13 +173,13 @@ public class BarChart extends BaseFigure {
 
             // now learn range
             range = new Range();
-            for (int i = 0; i < sel.length; i++) {
-                range.union(Double.NaN, totals[sel[i]]);
+            for (int aSel1 : sel) {
+                range.union(Double.NaN, totals[aSel1]);
                 range.union(Double.NaN, 0);
             }
             int cnt = 0;
-            for (int i = 0; i < sel.length; i++) {
-                if (totals[sel[i]] > 0)
+            for (int aSel : sel) {
+                if (totals[aSel] > 0)
                     cnt++;
             }
             range.union(-0.5, 0);
@@ -202,19 +199,19 @@ public class BarChart extends BaseFigure {
         getBottomMarkersMsg().clear();
 
         int cnt = 0;
-        for (int i = 0; i < sel.length; i++) {
-            if (totals[sel[i]] > 0)
+        for (int aSel1 : sel) {
+            if (totals[aSel1] > 0)
                 cnt++;
         }
         int xspots = cnt;
         double xspotwidth = getViewport().width / (1. * xspots);
 
         cnt = 0;
-        for (int i = 0; i < sel.length; i++) {
-            if (totals[sel[i]] == 0)
+        for (int aSel : sel) {
+            if (totals[aSel] == 0)
                 continue;
             getBottomMarkersPos().add(xspotwidth * (0.5 + cnt));
-            getBottomMarkersMsg().add(category.getDictionary()[sel[i]]);
+            getBottomMarkersMsg().add(category.getDictionary()[aSel]);
             cnt++;
         }
     }
@@ -224,13 +221,13 @@ public class BarChart extends BaseFigure {
         super.paint(g2d, rect);
 
         int col = 0;
-        for (int i = 0; i < sel.length; i++) {
-            if (totals[sel[i]] == 0)
+        for (int aSel : sel) {
+            if (totals[aSel] == 0)
                 continue;
 
             double ystart = 0;
             for (int j = 0; j < condition.getDictionary().length; j++) {
-                double yend = ystart + hits[sel[i]][j];
+                double yend = ystart + hits[aSel][j];
 
                 int[] x = {
                         (int) xScale(col - 0.4),

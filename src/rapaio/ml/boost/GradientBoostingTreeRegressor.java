@@ -161,8 +161,8 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
             if (bootstrap != 1) {
                 bootstrapMapping = new Mapping();
                 int[] sample = new DiscreteSampling().sampleWOR((int) (bootstrap * xmLearn.rowCount()), xmLearn.rowCount());
-                for (int j = 0; j < sample.length; j++) {
-                    bootstrapMapping.add(xmLearn.rowId(sample[j]));
+                for (int aSample : sample) {
+                    bootstrapMapping.add(xmLearn.rowId(aSample));
                 }
                 xmLearn = new MappedFrame(xm, bootstrapMapping);
                 xLearn = new MappedFrame(x, bootstrapMapping);
@@ -227,8 +227,8 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
             if (bootstrap != 1) {
                 bootstrapMapping = new Mapping();
                 int[] sample = new DiscreteSampling().sampleWOR((int) (bootstrap * xmLearn.rowCount()), xmLearn.rowCount());
-                for (int j = 0; j < sample.length; j++) {
-                    bootstrapMapping.add(xmLearn.rowId(sample[j]));
+                for (int aSample : sample) {
+                    bootstrapMapping.add(xmLearn.rowId(aSample));
                 }
                 xmLearn = new MappedFrame(xm, bootstrapMapping);
                 xLearn = new MappedFrame(x, bootstrapMapping);
@@ -279,8 +279,8 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
         for (int i = 0; i < df.rowCount(); i++) {
             fitValues.setValue(i, initialRegressor.getFitValues().getValue(i));
         }
-        for (int m = 0; m < trees.size(); m++) {
-            Regressor tree = trees.get(m);
+        for (BTRegressor tree1 : trees) {
+            Regressor tree = tree1;
             tree.predict(df);
             for (int i = 0; i < df.rowCount(); i++) {
                 fitValues.setValue(i, fitValues.getValue(i) + shrinkage * tree.getFitValues().getValue(i));

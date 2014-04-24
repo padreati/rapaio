@@ -31,18 +31,8 @@ public class StandardPchPalette implements PchPalette.Mapping {
     private final ArrayList<Drawer> pchs = new ArrayList<>();
 
     public StandardPchPalette() {
-        pchs.add(new Drawer() {
-            @Override
-            public void draw(Graphics2D g2d, int x, int y, double size) {
-                g2d.drawOval((int) (x - size), (int) (y - size), (int) (size * 2 + 1), (int) (size * 2 + 1));
-            }
-        });
-        pchs.add(new Drawer() {
-            @Override
-            public void draw(Graphics2D g2d, int x, int y, double size) {
-                g2d.fillOval((int) (x - size), (int) (y - size), (int) (size * 2 + 1), (int) (size * 2 + 1));
-            }
-        });
+        pchs.add((g2d, x, y, size) -> g2d.drawOval((int) (x - size), (int) (y - size), (int) (size * 2 + 1), (int) (size * 2 + 1)));
+        pchs.add((g2d, x, y, size) -> g2d.fillOval((int) (x - size), (int) (y - size), (int) (size * 2 + 1), (int) (size * 2 + 1)));
     }
 
     @Override

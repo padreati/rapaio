@@ -21,13 +21,11 @@
 package rapaio.io;
 
 import rapaio.data.*;
+import rapaio.data.Vector;
 
 import java.io.*;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -109,7 +107,7 @@ public class Csv {
 
     public Csv withNAValues(String... values) {
         this.naValues = new HashSet<>();
-        for (String na : values) naValues.add(na);
+        Collections.addAll(naValues, values);
         return this;
     }
 
@@ -148,8 +146,7 @@ public class Csv {
                     for (int i = names.size(); i < row.size(); i++) {
                         names.add("V" + (i + 1));
                     }
-                    for (int i = 0; i < names.size(); i++) {
-                        String colName = names.get(i);
+                    for (String colName : names) {
                         if (indexFieldHints.contains(colName)) {
                             vectors.add(new Index(0, 0, 0));
                             continue;

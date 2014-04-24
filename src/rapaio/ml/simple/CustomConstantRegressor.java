@@ -65,8 +65,8 @@ public class CustomConstantRegressor extends AbstractRegressor {
         List<Integer> colIndexes = colRange.parseColumnIndexes(df);
 
         targets = new ArrayList<>();
-        for (int i = 0; i < colIndexes.size(); i++) {
-            targets.add(df.colNames()[colIndexes.get(i)]);
+        for (Integer colIndexe : colIndexes) {
+            targets.add(df.colNames()[colIndexe]);
         }
 
         fitValues = new ArrayList<>();
@@ -78,7 +78,7 @@ public class CustomConstantRegressor extends AbstractRegressor {
     @Override
     public void predict(Frame df) {
         fitValues = new ArrayList<>();
-        for (int i = 0; i < targets.size(); i++) {
+        for (String target : targets) {
             fitValues.add(new Numeric(df.rowCount(), df.rowCount(), customValue));
         }
     }

@@ -46,8 +46,8 @@ public class StatSampling {
 
     public static List<Frame> randomSample(Frame frame, int[] rowCounts) {
         int total = 0;
-        for (int i = 0; i < rowCounts.length; i++) {
-            total += rowCounts[i];
+        for (int rowCount : rowCounts) {
+            total += rowCount;
         }
         if (total > frame.rowCount()) {
             throw new IllegalArgumentException("total counts greater than available number of getRowCount");

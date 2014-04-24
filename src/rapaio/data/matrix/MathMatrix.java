@@ -51,8 +51,8 @@ public class MathMatrix {
         for (int i = 0; i < C.m; i++) {
             for (int j = 0; j < C.n; j++) {
                 double sum = 0.;
-                for (int k = 0; k < A.length; k++) {
-                    sum += A[k].get(i, j);
+                for (Matrix aA : A) {
+                    sum += aA.get(i, j);
                 }
                 C.set(i, j, sum);
             }

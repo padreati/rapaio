@@ -113,8 +113,8 @@ class TreeRegressorNode {
 
     public void learn(TreeRegressor parent, Frame df, List<Double> weights, String targetColNames) {
         totalWeight = 0;
-        for (int i = 0; i < weights.size(); i++) {
-            totalWeight += weights.get(i);
+        for (Double weight : weights) {
+            totalWeight += weight;
         }
 
         if (totalWeight < 2 * parent.minWeight) {

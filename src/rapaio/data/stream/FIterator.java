@@ -68,7 +68,7 @@ public class FIterator implements Iterator<FSpot>, Serializable {
 
     public void collect(String key) {
         if (!map.containsKey(key)) {
-            map.put(key, new ArrayList<FSpot>());
+            map.put(key, new ArrayList<>());
         }
         map.get(key).add(current);
     }

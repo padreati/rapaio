@@ -89,17 +89,14 @@ public class FigurePanel extends JPanel {
             @Override
             protected void done() {
 
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            currentImage = get();
-                            drawWorker = null;
-                            revalidate();
-                            repaint();
-                        } catch (InterruptedException | ExecutionException ex) {
-                            JOptionPane.showMessageDialog(null, ex.getMessage());
-                        }
+                SwingUtilities.invokeLater(() -> {
+                    try {
+                        currentImage = get();
+                        drawWorker = null;
+                        revalidate();
+                        repaint();
+                    } catch (InterruptedException | ExecutionException ex) {
+                        JOptionPane.showMessageDialog(null, ex.getMessage());
                     }
                 });
 

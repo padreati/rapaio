@@ -265,7 +265,7 @@ public class PartitionTreeClassifier extends AbstractClassifier {
                 return dt.getGainRatio();
             }
         },
-        GINI(-1) {
+        GINI_GAIN(-1) {
             @Override
             public double compute(DensityTable dt) {
                 return dt.getGiniIndex();
@@ -375,7 +375,7 @@ public class PartitionTreeClassifier extends AbstractClassifier {
         IGNORE {
             @Override
             public List<Candidate> computeCandidates(PartitionTreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
-                return new ArrayList<Candidate>();
+                return new ArrayList<>();
             }
         },
         BINARY {
@@ -495,9 +495,7 @@ public class PartitionTreeClassifier extends AbstractClassifier {
                     }
                 }
                 final int index = majorityGroup;
-                missingSpots.stream().forEach(spot -> {
-                    mappings.get(index).add(spot.rowId());
-                });
+                missingSpots.stream().forEach(spot -> mappings.get(index).add(spot.rowId()));
                 return mappings.stream().map(mapping -> new MappedFrame(df.source(), mapping)).collect(Collectors.toList());
             }
         },
@@ -624,6 +622,7 @@ class Candidate implements Comparable<Candidate>, Serializable {
 
     @Override
     public int compareTo(Candidate o) {
+        if (o == null) return -1;
         return new Double(score).compareTo(o.score) * sign;
     }
 }

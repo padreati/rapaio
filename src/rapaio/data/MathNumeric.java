@@ -50,14 +50,14 @@ public final class MathNumeric {
 
     public static Numeric plus(final Numeric... nums) {
         int len = 0;
-        for (int i = 0; i < nums.length; i++) {
-            if (len < nums[i].rowCount())
-                len = nums[i].rowCount();
+        for (Numeric num1 : nums) {
+            if (len < num1.rowCount())
+                len = num1.rowCount();
         }
         Numeric c = new Numeric(len, len, 0);
-        for (int i = 0; i < nums.length; i++) {
+        for (Numeric num : nums) {
             for (int j = 0; j < len; j++) {
-                c.setValue(j, c.getValue(j) + nums[i].getValue(j % nums[i].rowCount()));
+                c.setValue(j, c.getValue(j) + num.getValue(j % num.rowCount()));
             }
         }
         return c;
