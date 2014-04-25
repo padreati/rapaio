@@ -40,11 +40,9 @@ is considered to be fully implemented and well tested.
 
 **Classification**
 
-* DecisionStump
+* TreeClassifier (DecisionStump, ID3, C45, CART)
 * AdaBoost.SAMME
-* ID3
 * OneRule
-* C45 (without pruning and winnowing)
 
 **Classification and Regression - not final stage**
 

@@ -20,6 +20,7 @@
 
 package rapaio.classifier;
 
+import rapaio.classifier.colselect.ColSelector;
 import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
@@ -59,6 +60,11 @@ public interface Classifier extends Printable, Serializable {
      * @return classifier algorithm name and parameters
      */
     String fullName();
+
+
+    ColSelector getColSelector();
+
+    Classifier withColSelector(ColSelector colSelector);
 
     /**
      * Fit a classifier on instances specified by frame, with row weights

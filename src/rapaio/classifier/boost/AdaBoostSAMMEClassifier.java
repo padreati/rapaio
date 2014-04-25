@@ -23,7 +23,7 @@ package rapaio.classifier.boost;
 import rapaio.classifier.AbstractClassifier;
 import rapaio.classifier.Classifier;
 import rapaio.classifier.RunningClassifier;
-import rapaio.classifier.tree.PartitionTreeClassifier;
+import rapaio.classifier.tree.TreeClassifier;
 import rapaio.core.sample.DiscreteSampling;
 import rapaio.data.Frame;
 import rapaio.data.Frames;
@@ -42,10 +42,10 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
     // parameters
 
-    Classifier base = new PartitionTreeClassifier()
+    Classifier base = new TreeClassifier()
             .withMaxDepth(2)
-            .withNominalMethod(PartitionTreeClassifier.NominalMethods.BINARY)
-            .withNumericMethod(PartitionTreeClassifier.NumericMethods.BINARY);
+            .withNominalMethod(TreeClassifier.NominalMethods.BINARY)
+            .withNumericMethod(TreeClassifier.NumericMethods.BINARY);
     int runs = 0;
     double sampling = 0;
     boolean bootstrap = false;

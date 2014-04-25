@@ -21,7 +21,7 @@
 package rapaio.sandbox.classifier;
 
 import rapaio.classifier.boost.AdaBoostSAMMEClassifier;
-import rapaio.classifier.tree.PartitionTreeClassifier;
+import rapaio.classifier.tree.TreeClassifier;
 import rapaio.core.sample.StatSampling;
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Frame;
@@ -41,7 +41,7 @@ import static rapaio.workspace.Workspace.draw;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class PartitionTreeClassifierEval {
+public class TreeClassifierEval {
 
     public static void main(String[] args) throws Exception {
 
@@ -51,8 +51,8 @@ public class PartitionTreeClassifierEval {
 //        evalWith(Datasets.loadIrisDataset(), "class", 100, 1, 1, true, 4);
 //        evalWith(Datasets.loadSpamBase(), "spam", 1000, 300, 0.01, true, 1);
 
-        evalWith(loadArff("breast-cancer"), "Class", 200, 10, 1, true, 50);
-//        evalWith(loadArff("letter"), "class", 50, 1, 1, true, 50);
+//        evalWith(loadArff("breast-cancer"), "Class", 200, 10, 1, true, 20);
+        evalWith(loadArff("letter"), "class", 50, 1, 1, true, 50);
 //        evalWith(loadArff("mushroom"), "class", 200, 1, 1, true, 2);
 //        evalWith(loadArff("vote"), "Class", 200, 100, 1, true, 1);
     }
@@ -78,10 +78,11 @@ public class PartitionTreeClassifierEval {
 //                .withClassifier(new C45Classifier()
 //                        .withMaxDepth(4)
 //                        .withMinCount(minCount))
-                .withClassifier(new PartitionTreeClassifier()
-                        .withSplitter(PartitionTreeClassifier.Splitters.REMAINS_TO_ALL_WEIGHTED)
-                        .withNominalMethod(PartitionTreeClassifier.NominalMethods.BINARY)
-                        .withMaxDepth(3)
+                .withClassifier(new TreeClassifier()
+                        .withSplitter(TreeClassifier.Splitters.REMAINS_TO_ALL_WEIGHTED)
+                        .withNominalMethod(TreeClassifier.NominalMethods.FULL)
+                        .withMaxDepth(5)
+                        .withTestCounter(TreeClassifier.TestCounters.ONE_NOMINAL_ONE_NUMERIC)
                         .withMinCount(minCount))
                 .withSampling(sampling, bootstrap);
 
@@ -101,6 +102,10 @@ public class PartitionTreeClassifierEval {
             c.predict(te);
             testAcc.addValue(1 - new ConfusionMatrix(te.col(targetName), c.pred()).getAccuracy());
 
+//            lines(index, trainAcc).setCol(1);
+//            lines(index, testAcc).setCol(2);
+//            PlotLib.draw();
+
             draw(new Plot()
                     .add(new Lines(index, trainAcc).setCol(1))
                     .add(new Lines(index, testAcc).setCol(2)));
@@ -118,7 +123,7 @@ public class PartitionTreeClassifierEval {
 
     public static void testCart(Frame df, String targetCol) {
 
-        PartitionTreeClassifier c = new PartitionTreeClassifier().withMaxDepth(100).withMinCount(2);
+        TreeClassifier c = new TreeClassifier().withMaxDepth(100).withMinCount(2);
         List<Frame> sets = StatSampling.randomSample(df, new int[]{(int) (df.rowCount() * 0.7)});
 
         Frame tr = sets.get(0);

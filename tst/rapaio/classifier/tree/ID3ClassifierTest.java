@@ -42,11 +42,7 @@ public class ID3ClassifierTest {
         df = BaseFilters.retainNominal(df);
         final String className = "class";
 
-        PartitionTreeClassifier id3 = new PartitionTreeClassifier()
-                .withNominalMethod(PartitionTreeClassifier.NominalMethods.FULL)
-                .withNumericMethod(PartitionTreeClassifier.NumericMethods.IGNORE)
-                .withSplitter(PartitionTreeClassifier.Splitters.REMAINS_IGNORED)
-                .withFunction(PartitionTreeClassifier.Functions.ENTROPY);
+        TreeClassifier id3 = TreeClassifier.buildID3();
         id3.learn(df, className);
         id3.predict(df);
 
@@ -65,11 +61,11 @@ public class ID3ClassifierTest {
         df = BaseFilters.retainNominal(df);
         final String className = "class";
 
-        PartitionTreeClassifier id3 = new PartitionTreeClassifier()
-                .withNominalMethod(PartitionTreeClassifier.NominalMethods.FULL)
-                .withNumericMethod(PartitionTreeClassifier.NumericMethods.IGNORE)
-                .withSplitter(PartitionTreeClassifier.Splitters.REMAINS_IGNORED)
-                .withFunction(PartitionTreeClassifier.Functions.INFO_GAIN);
+        TreeClassifier id3 = new TreeClassifier()
+                .withNominalMethod(TreeClassifier.NominalMethods.FULL)
+                .withNumericMethod(TreeClassifier.NumericMethods.IGNORE)
+                .withSplitter(TreeClassifier.Splitters.REMAINS_IGNORED)
+                .withFunction(TreeClassifier.Functions.INFO_GAIN);
         id3.learn(df, className);
         id3.predict(df);
         id3.summary();

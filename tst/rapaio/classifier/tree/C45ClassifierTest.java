@@ -42,11 +42,7 @@ public class C45ClassifierTest {
         df = BaseFilters.retainNominal(df);
         final String className = "class";
 
-        PartitionTreeClassifier classifier = new PartitionTreeClassifier()
-                .withNominalMethod(PartitionTreeClassifier.NominalMethods.FULL)
-                .withNumericMethod(PartitionTreeClassifier.NumericMethods.BINARY)
-                .withSplitter(PartitionTreeClassifier.Splitters.REMAINS_TO_ALL_WEIGHTED)
-                .withFunction(PartitionTreeClassifier.Functions.GAIN_RATIO);
+        TreeClassifier classifier = TreeClassifier.buildC45();
         classifier.learn(df, className);
         classifier.predict(df);
 
@@ -67,11 +63,7 @@ public class C45ClassifierTest {
         df = BaseFilters.retainCols(df, "temp,humidity,class");
         final String className = "class";
 
-        PartitionTreeClassifier classifier = new PartitionTreeClassifier()
-                .withNominalMethod(PartitionTreeClassifier.NominalMethods.FULL)
-                .withNumericMethod(PartitionTreeClassifier.NumericMethods.BINARY)
-                .withSplitter(PartitionTreeClassifier.Splitters.REMAINS_TO_ALL_WEIGHTED)
-                .withFunction(PartitionTreeClassifier.Functions.INFO_GAIN);
+        TreeClassifier classifier = TreeClassifier.buildC45();
         classifier.learn(df, className);
         Summary.summary(classifier);
 
@@ -86,12 +78,7 @@ public class C45ClassifierTest {
         Frame df = Datasets.loadPlay();
         final String className = "class";
 
-        PartitionTreeClassifier classifier = new PartitionTreeClassifier()
-                .withNominalMethod(PartitionTreeClassifier.NominalMethods.FULL)
-                .withNumericMethod(PartitionTreeClassifier.NumericMethods.BINARY)
-                .withSplitter(PartitionTreeClassifier.Splitters.REMAINS_IGNORED)
-                .withFunction(PartitionTreeClassifier.Functions.ENTROPY)
-                .withMinCount(1);
+        TreeClassifier classifier = TreeClassifier.buildC45().withMinCount(1);
         classifier.learn(df, className);
         Summary.summary(classifier);
 

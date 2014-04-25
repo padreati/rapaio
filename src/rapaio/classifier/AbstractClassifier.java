@@ -20,6 +20,8 @@
 
 package rapaio.classifier;
 
+import rapaio.classifier.colselect.ColSelector;
+import rapaio.classifier.colselect.DefaultColSelector;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
 
@@ -28,10 +30,22 @@ import rapaio.data.Nominal;
  */
 public abstract class AbstractClassifier implements Classifier {
 
+    protected ColSelector colSelector = new DefaultColSelector();
     protected String targetCol;
     protected String[] dict;
     protected Nominal pred;
     protected Frame dist;
+
+    @Override
+    public ColSelector getColSelector() {
+        return colSelector;
+    }
+
+    @Override
+    public Classifier withColSelector(ColSelector colSelector) {
+        this.colSelector = colSelector;
+        return this;
+    }
 
     @Override
     public String getTargetCol() {
