@@ -23,6 +23,7 @@ package rapaio.classifier.colselect;
 import rapaio.core.ColRange;
 import rapaio.data.Frame;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,9 +34,9 @@ public class DefaultColSelector implements ColSelector {
     private String[] selection;
 
     @Override
-    public synchronized void initialize(Frame df, ColRange except, int mCols) {
+    public synchronized void initialize(Frame df, ColRange except) {
         String[] all = df.colNames();
-        List<Integer> ex = except.parseColumnIndexes(df);
+        List<Integer> ex = except==null ? new ArrayList<>() : except.parseColumnIndexes(df);
         selection = new String[all.length - ex.size()];
         int p = 0;
         int s = 0;

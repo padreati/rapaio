@@ -37,8 +37,6 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -503,15 +501,15 @@ public class TreeClassifier extends AbstractClassifier {
                     Candidate candidate = new Candidate(value, function.sign());
                     if (best == null) {
                         best = candidate;
-                        best.addGroup("== " + testLabel, spot -> spot.getLabel(testColName).equals(testLabel));
-                        best.addGroup("!= " + testLabel, spot -> !spot.getLabel(testColName).equals(testLabel));
+                        best.addGroup(testColName + " == " + testLabel, spot -> spot.getLabel(testColName).equals(testLabel));
+                        best.addGroup(testColName + " != " + testLabel, spot -> !spot.getLabel(testColName).equals(testLabel));
                     } else {
                         int comp = best.compareTo(candidate);
                         if (comp < 0) continue;
                         if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
                         best = candidate;
-                        best.addGroup("== " + testLabel, spot -> spot.getLabel(testColName).equals(testLabel));
-                        best.addGroup("!= " + testLabel, spot -> !spot.getLabel(testColName).equals(testLabel));
+                        best.addGroup(testColName + " == " + testLabel, spot -> spot.getLabel(testColName).equals(testLabel));
+                        best.addGroup(testColName + " != " + testLabel, spot -> !spot.getLabel(testColName).equals(testLabel));
                     }
                 }
                 if (best != null)
@@ -613,7 +611,9 @@ public class TreeClassifier extends AbstractClassifier {
             @Override
             public List<Frame> performSplit(Frame df, Candidate candidate) {
                 List<Mapping> mappings = new ArrayList<>();
-                IntStream.range(0, candidate.getGroupPredicates().size()).forEach(i -> mappings.add(new Mapping()));
+                for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
+                    mappings.add(new Mapping());
+                }
 
                 df.stream().forEach(fspot -> {
                     for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
@@ -624,14 +624,20 @@ public class TreeClassifier extends AbstractClassifier {
                         }
                     }
                 });
-                return mappings.stream().map(mapping -> new MappedFrame(df.source(), mapping)).collect(Collectors.toList());
+                List<Frame> frames = new ArrayList<>();
+                mappings.stream().forEach(mapping -> {
+                    frames.add(new MappedFrame(df.source(), mapping));
+                });
+                return frames;
             }
         },
         REMAINS_TO_MAJORITY {
             @Override
             public List<Frame> performSplit(Frame df, Candidate candidate) {
                 List<Mapping> mappings = new ArrayList<>();
-                IntStream.range(0, candidate.getGroupPredicates().size()).forEach(i -> mappings.add(new Mapping()));
+                for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
+                    mappings.add(new Mapping());
+                }
 
                 List<FSpot> missingSpots = new LinkedList<>();
                 df.stream().forEach(fspot -> {
@@ -654,14 +660,20 @@ public class TreeClassifier extends AbstractClassifier {
                 }
                 final int index = majorityGroup;
                 missingSpots.stream().forEach(spot -> mappings.get(index).add(spot.rowId()));
-                return mappings.stream().map(mapping -> new MappedFrame(df.source(), mapping)).collect(Collectors.toList());
+                List<Frame> frames = new ArrayList<>();
+                mappings.stream().forEach(mapping -> {
+                    frames.add(new MappedFrame(df.source(), mapping));
+                });
+                return frames;
             }
         },
         REMAINS_TO_ALL_WEIGHTED {
             @Override
             public List<Frame> performSplit(Frame df, Candidate candidate) {
                 List<Mapping> mappings = new ArrayList<>();
-                IntStream.range(0, candidate.getGroupPredicates().size()).forEach(i -> mappings.add(new Mapping()));
+                for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
+                    mappings.add(new Mapping());
+                }
 
                 final Set<Integer> missingSpots = new HashSet<>();
                 df.stream().forEach(fspot -> {
@@ -702,7 +714,9 @@ public class TreeClassifier extends AbstractClassifier {
             @Override
             public List<Frame> performSplit(Frame df, Candidate candidate) {
                 List<Mapping> mappings = new ArrayList<>();
-                IntStream.range(0, candidate.getGroupPredicates().size()).forEach(i -> mappings.add(new Mapping()));
+                for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
+                    mappings.add(new Mapping());
+                }
 
                 final Set<Integer> missingSpots = new HashSet<>();
                 df.stream().forEach(fspot -> {
@@ -716,7 +730,11 @@ public class TreeClassifier extends AbstractClassifier {
                     missingSpots.add(fspot.rowId());
                 });
                 missingSpots.forEach(rowId -> mappings.get(RandomSource.nextInt(mappings.size())).add(rowId));
-                return mappings.stream().map(mapping -> new MappedFrame(df.source(), mapping)).collect(Collectors.toList());
+                List<Frame> frames = new ArrayList<>();
+                mappings.stream().forEach(mapping -> {
+                    frames.add(new MappedFrame(df.source(), mapping));
+                });
+                return frames;
             }
         },
         REMAINS_WITH_SURROGATES {
@@ -842,9 +860,10 @@ public class TreeClassifier extends AbstractClassifier {
             }
 
             candidates = new TreeMap<>();
+            c.getColSelector().initialize(df, null);
 
             // here we have to implement some form of column selector for RF, ID3 and C4.5
-            for (String testCol : df.colNames()) {
+            for (String testCol : c.getColSelector().nextColNames()) {
                 if (testCol.equals(c.getTargetCol())) continue;
                 if (!c.testCounter.canUse(testCol)) continue;
 

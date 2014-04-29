@@ -131,6 +131,9 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
         w.stream().transformValue(x -> x / total);
 
+        h = new ArrayList<>();
+        a = new ArrayList<>();
+
         for (int i = 0; i < runs; i++) {
 
             int[] rows = getSamplingRows(df);

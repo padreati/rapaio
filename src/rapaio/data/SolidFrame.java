@@ -122,7 +122,7 @@ public class SolidFrame extends AbstractFrame {
     @Override
     public int colIndex(String name) {
         if (!colIndex.containsKey(name)) {
-            throw new IllegalArgumentException("Column name is invalid");
+            throw new IllegalArgumentException("Invalid column name: " + name);
         }
         return colIndex.get(name);
     }

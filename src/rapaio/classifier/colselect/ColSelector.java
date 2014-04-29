@@ -30,7 +30,7 @@ import java.io.Serializable;
  */
 public interface ColSelector extends Serializable {
 
-    void initialize(Frame df, ColRange except, int mCols);
+    void initialize(Frame df, ColRange except);
 
     String[] nextColNames();
 }

@@ -31,11 +31,14 @@ import java.util.List;
  */
 public class RandomColSelector implements ColSelector {
 
-    private int mCols = -1;
+    private final int mCols;
     private String[] candidates;
 
-    public synchronized void initialize(Frame df, ColRange except, int mCols) {
+    public RandomColSelector(int mCols) {
         this.mCols = mCols;
+    }
+
+    public synchronized void initialize(Frame df, ColRange except) {
         List<Integer> exceptColumns = except.parseColumnIndexes(df);
         candidates = new String[df.colCount() - exceptColumns.size()];
         int pos = 0;

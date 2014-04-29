@@ -20,13 +20,14 @@
 
 package rapaio.data.mapping;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Mapping {
+public class Mapping implements Serializable {
 
     private final List<Integer> mapping;
 
