@@ -115,7 +115,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
         classifiers = new ArrayList<>();
         for (int i = 0; i < predicates.size() + 1; i++) {
             Classifier ni = c.newInstance();
-            if (ni instanceof RunningClassifier) ((RunningClassifier) ni).withRuns(runs);
+            if(ni instanceof RunningClassifier) ((RunningClassifier)ni).withRuns(runs);
             classifiers.add(ni);
         }
         for (int i = 0; i < classifiers.size(); i++) {
@@ -193,7 +193,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
 
     public static List<SPredicate<FSpot>> splitByNominal(Frame df, String colName) {
         List<SPredicate<FSpot>> list = new ArrayList<>();
-        Arrays.stream(df.col(colName).getDictionary()).forEach(term -> {
+        Arrays.stream(df.col(colName).getDictionary()).forEach(term ->{
             list.add(spot -> spot.getLabel(colName).equals(term));
         });
         return list;
