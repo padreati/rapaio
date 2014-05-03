@@ -28,8 +28,8 @@ import rapaio.data.Vector;
 import rapaio.data.mapping.MappedVector;
 import rapaio.data.mapping.Mapping;
 import rapaio.ml.AbstractRegressor;
-import rapaio.ml.boost.gbt.BTRegressor;
-import rapaio.ml.boost.gbt.BoostingLossFunction;
+import rapaio.ml.refactor.boost.gbt.BTRegressor;
+import rapaio.ml.refactor.boost.gbt.BoostingLossFunction;
 
 import java.util.List;
 

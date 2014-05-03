@@ -30,8 +30,9 @@ import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
 import rapaio.graphics.plot.Points;
-import rapaio.ml.Classifier;
-import rapaio.ml.tree.RandomForestClassifier;
+import rapaio.ml.classifier.Classifier;
+import rapaio.ml.classifier.colselect.RandomColSelector;
+import rapaio.ml.classifier.tree.ForestClassifier;
 import rapaio.workspace.Summary;
 
 import java.io.IOException;
@@ -159,18 +160,14 @@ public class ClassificationWithRF implements TutorialPage {
         final Vector index = Vectors.newIdx(400);
         final Vector accuracy = new Numeric(400);
         final Vector oob = new Numeric(400);
-        for (int mtree = 1; mtree < 200; mtree += 10) {
-            final int mt = mtree;
-            RandomForestClassifier rf = new RandomForestClassifier() {
-                {
-                    setMtrees(mt);
-                    setMcols(2);
-                    setComputeOob(true);
-                }
-            };
+        for (int mTrees = 1; mTrees < 200; mTrees += 10) {
+            ForestClassifier rf = new ForestClassifier()
+                    .withColSelector(new RandomColSelector(2))
+                    .withRuns(mTrees)
+                    .withOobError(true);
             rf.learn(train, "spam");
             rf.predict(test);
-            index.setIndex(pos, mtree);
+            index.setIndex(pos, mTrees);
             accuracy.setValue(pos, 1 - computeAccuracy(rf, test));
             oob.setValue(pos, rf.getOobError());
             pos++;
@@ -233,19 +230,16 @@ public class ClassificationWithRF implements TutorialPage {
         final Vector index1 = Vectors.newIdx(10);
         final Vector accuracy1 = new Numeric(10);
         final Vector oob1 = new Numeric(10);
-        for (int mcol = 1; mcol <= 10; mcol++) {
+        for (int mCol = 1; mCol <= 10; mCol++) {
 
-            final int mmcol = mcol;
-            RandomForestClassifier rf = new RandomForestClassifier() {
-                {
-                    setMtrees(30);
-                    setMcols(mmcol);
-                    setComputeOob(true);
-                }
-            };
+            ForestClassifier rf = new ForestClassifier()
+                    .withColSelector(new RandomColSelector(mCol))
+                    .withRuns(30)
+                    .withOobError(true);
+
             rf.learn(train, "spam");
             rf.predict(test);
-            index1.setIndex(pos, mcol);
+            index1.setIndex(pos, mCol);
             accuracy1.setValue(pos, 1 - computeAccuracy(rf, test));
             oob1.setValue(pos, rf.getOobError());
 
@@ -303,7 +297,7 @@ public class ClassificationWithRF implements TutorialPage {
     }
 
     private double computeAccuracy(Classifier model, Frame test) {
-        Vector predict = model.prediction();
+        Vector predict = model.pred();
         double accuracy = 0;
         double total = predict.rowCount();
         for (int i = 0; i < predict.rowCount(); i++) {

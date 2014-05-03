@@ -29,8 +29,8 @@ import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
 import rapaio.ml.AbstractRegressor;
 import rapaio.ml.Regressor;
-import rapaio.ml.colselect.ColSelector;
-import rapaio.ml.colselect.DefaultColSelector;
+import rapaio.ml.refactor.colselect.ColSelector;
+import rapaio.ml.refactor.colselect.DefaultColSelector;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -26,8 +26,8 @@ import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
 import rapaio.data.Vectors;
-import rapaio.ml.colselect.ColSelector;
-import rapaio.ml.colselect.RandomColSelector;
+import rapaio.ml.refactor.colselect.ColSelector;
+import rapaio.ml.refactor.colselect.RandomColSelector;
 
 import java.util.HashMap;
 

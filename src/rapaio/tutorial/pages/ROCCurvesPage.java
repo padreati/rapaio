@@ -20,8 +20,8 @@
 
 package rapaio.tutorial.pages;
 
-import rapaio.classifier.boost.AdaBoostSAMMEClassifier;
-import rapaio.classifier.rule.OneRule;
+import rapaio.ml.classifier.boost.AdaBoostSAMMEClassifier;
+import rapaio.ml.classifier.rule.OneRule;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.core.stat.ROC;
@@ -31,7 +31,7 @@ import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Legend;
 import rapaio.graphics.plot.ROCCurve;
-import rapaio.ml.tree.RandomForestClassifier;
+//import rapaio.ml.tree.RandomForestClassifier;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -125,15 +125,15 @@ public class ROCCurvesPage implements TutorialPage {
 
         p("The second prediction model is a random forest with 200 random trees. ");
 
-        RandomForestClassifier rf = new RandomForestClassifier().setMtrees(200);
-        rf.learn(train, "spam");
-        rf.predict(test);
-
-        code("        RandomForestClassifier rf = new RandomForestClassifier().setMtrees(200);\n" +
-                "        rf.learn(train, \"spam\");\n" +
-                "        rf.predict(test);\n");
-
-        new ConfusionMatrix(test.col("spam"), rf.prediction()).summary();
+//        RandomForestClassifier rf = new RandomForestClassifier().setMtrees(200);
+//        rf.learn(train, "spam");
+//        rf.predict(test);
+//
+//        code("        RandomForestClassifier rf = new RandomForestClassifier().setMtrees(200);\n" +
+//                "        rf.learn(train, \"spam\");\n" +
+//                "        rf.predict(test);\n");
+//
+//        new ConfusionMatrix(test.col("spam"), rf.prediction()).summary();
 
         heading(4, "AdaBoost.SAMME");
 
@@ -170,11 +170,11 @@ public class ROCCurvesPage implements TutorialPage {
                 + "a given computed ROC object. The following code does this.");
 
         ROC rocOR = new ROC(oneRule.pred(), test.col("spam"), "1");
-        ROC rocRF = new ROC(rf.distribution().col("1"), test.col("spam"), "1");
+//        ROC rocRF = new ROC(rf.distribution().col("1"), test.col("spam"), "1");
         ROC rocAB = new ROC(ab.dist().col("1"), test.col("spam"), "1");
         draw(new Plot()
                         .add(new ROCCurve(rocOR).setCol(1))
-                        .add(new ROCCurve(rocRF).setCol(2))
+//                        .add(new ROCCurve(rocRF).setCol(2))
                         .add(new ROCCurve(rocAB).setCol(3))
                         .add(new Legend(0.6, 0.33,
                                 new String[]{"onerule", "rf", "adaboost.m1"},

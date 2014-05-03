@@ -21,8 +21,8 @@
 package rapaio.io;
 
 import org.junit.Test;
-import rapaio.classifier.boost.AdaBoostSAMMEClassifier;
-import rapaio.classifier.tree.TreeClassifier;
+import rapaio.ml.classifier.boost.AdaBoostSAMMEClassifier;
+import rapaio.ml.classifier.tree.TreeClassifier;
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;

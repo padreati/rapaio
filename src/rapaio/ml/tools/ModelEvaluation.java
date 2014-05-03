@@ -26,7 +26,7 @@ import rapaio.data.Frame;
 import rapaio.data.Vector;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
-import rapaio.ml.Classifier;
+import rapaio.ml.classifier.Classifier;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,7 +66,7 @@ public class ModelEvaluation {
             c.predict(test);
             double fcorrect = 0;
             for (int j = 0; j < test.rowCount(); j++) {
-                if (test.col(classColName).getIndex(j) == c.prediction().getIndex(j)) {
+                if (test.col(classColName).getIndex(j) == c.pred().getIndex(j)) {
                     fcorrect++;
                 }
             }
@@ -144,12 +144,12 @@ public class ModelEvaluation {
                 c.learn(train, classColName);
                 c.predict(test);
                 double acc = 0;
-                for (int j = 0; j < c.prediction().rowCount(); j++) {
-                    if (c.prediction().getIndex(j) == test.col(classColName).getIndex(j)) {
+                for (int j = 0; j < c.pred().rowCount(); j++) {
+                    if (c.pred().getIndex(j) == test.col(classColName).getIndex(j)) {
                         acc++;
                     }
                 }
-                acc /= (1. * c.prediction().rowCount());
+                acc /= (1. * c.pred().rowCount());
                 tacc[k] += acc;
                 print(String.format("CV %d, classifier[%d] - accuracy:%.6f\n", i + 1, k + 1, acc));
             }
@@ -176,7 +176,7 @@ public class ModelEvaluation {
 
             c.learn(train, classColName);
             c.predict(test);
-            Vector pred = c.prediction();
+            Vector pred = c.pred();
             double acc = new ConfusionMatrix(test.col(classColName), pred).getAccuracy();
 //            System.out.println(String.format("bootstrap(%d) : %.6f", i+1, acc));
             total += acc;

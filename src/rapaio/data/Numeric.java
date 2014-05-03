@@ -24,6 +24,7 @@ package rapaio.data;
 import rapaio.data.mapping.Mapping;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -79,6 +80,11 @@ public class Numeric extends AbstractVector {
             data[i] = values[i];
         }
         this.rows = values.length;
+    }
+
+    public Numeric(Collection<Number> numbers) {
+        this(numbers.size());
+        numbers.forEach(n -> addValue(n.doubleValue()));
     }
 
     @Override

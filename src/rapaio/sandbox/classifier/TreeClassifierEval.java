@@ -20,8 +20,8 @@
 
 package rapaio.sandbox.classifier;
 
-import rapaio.classifier.boost.AdaBoostSAMMEClassifier;
-import rapaio.classifier.tree.TreeClassifier;
+import rapaio.ml.classifier.boost.AdaBoostSAMMEClassifier;
+import rapaio.ml.classifier.tree.TreeClassifier;
 import rapaio.core.sample.StatSampling;
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Frame;
