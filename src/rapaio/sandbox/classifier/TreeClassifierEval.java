@@ -84,7 +84,7 @@ public class TreeClassifierEval {
                         .withMaxDepth(5)
                         .withTestCounter(TreeClassifier.TestCounters.ONE_NOMINAL_ONE_NUMERIC)
                         .withMinCount(minCount))
-                .withSampling(sampling, bootstrap);
+                .withSampling(sampling);
 
         Index index = new Index();
         Numeric trainAcc = new Numeric();

@@ -33,6 +33,7 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
 
     int runs = 0;
     boolean oobCompute = false;
+    Classifier c = TreeClassifier.buildC45();
     //
     double oobError = Double.NaN;
 

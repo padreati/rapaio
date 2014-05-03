@@ -40,7 +40,7 @@ public class SerializationTest {
         AdaBoostSAMMEClassifier c = new AdaBoostSAMMEClassifier()
                 .withRuns(10)
                 .withClassifier(TreeClassifier.buildC45().withMaxDepth(3))
-                .withNoSampling();
+                .withSampling(0);
 
         Frame df = Datasets.loadSpamBase();
         c.learn(df, "spam");

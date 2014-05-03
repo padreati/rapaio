@@ -48,7 +48,6 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
             .withNumericMethod(TreeClassifier.NumericMethods.BINARY);
     int runs = 0;
     double sampling = 0;
-    boolean bootstrap = false;
 
     // model artifacts
 
@@ -77,9 +76,9 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
     @Override
     public String fullName() {
-        if (sampling != 0) {
-            return String.format("AdaBoost.SAMME (base: %s, runs: %d, sampling: true, sampling ratio: %.2f, bootstrap: %s)",
-                    base.fullName(), runs, sampling, bootstrap);
+        if (sampling > 0) {
+            return String.format("AdaBoost.SAMME (base: %s, runs: %d, sampling: true, sampling ratio: %.2f)",
+                    base.fullName(), runs, sampling);
         }
         return String.format("AdaBoost.SAMME (base: %s, runs: %d, sampling: false)",
                 base.fullName(), runs);
@@ -95,24 +94,14 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         return this;
     }
 
-    public AdaBoostSAMMEClassifier withSampling(double ratio, boolean bootstrap) {
+    public AdaBoostSAMMEClassifier withSampling(double ratio) {
         this.sampling = ratio;
-        this.bootstrap = bootstrap;
-        return this;
-    }
-
-    public AdaBoostSAMMEClassifier withNoSampling() {
-        this.sampling = 0;
         return this;
     }
 
     private int[] getSamplingRows(Frame df) {
-        if (sampling != 0.0) {
-            if (bootstrap) {
-                return new DiscreteSampling().sampleWR((int) (df.rowCount() * sampling), df.rowCount());
-            } else {
-                return new DiscreteSampling().sampleWOR((int) (df.rowCount() * sampling), df.rowCount());
-            }
+        if (sampling > 0.0) {
+            return new DiscreteSampling().sampleWR((int) (df.rowCount() * sampling), df.rowCount());
         }
         int[] rows = new int[df.rowCount()];
         for (int i = 0; i < rows.length; i++) {
