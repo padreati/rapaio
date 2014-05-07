@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.tools;
+package rapaio.ml.classifier.tools;
 
 import org.junit.Test;
 import rapaio.core.ColRange;

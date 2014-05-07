@@ -18,9 +18,8 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.colselect;
+package rapaio.ml.regressor;
 
-import rapaio.core.ColRange;
 import rapaio.data.Frame;
 
 import java.util.ArrayList;
@@ -29,33 +28,14 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class DefaultColSelector implements ColSelector {
-
-    private String[] selection;
+public abstract class AbstractRegressor implements Regressor {
 
     @Override
-    public synchronized void initialize(Frame df, ColRange except) {
-        String[] all = df.colNames();
-        List<Integer> ex = except==null ? new ArrayList<>() : except.parseColumnIndexes(df);
-        selection = new String[all.length - ex.size()];
-        int p = 0;
-        int s = 0;
-        for (int i = 0; i < all.length; i++) {
-            if (p < ex.size() && i == ex.get(p)) {
-                p++;
-                continue;
-            }
-            selection[s++] = all[i];
+    public void learn(Frame df, String targetColName) {
+        List<Double> weights = new ArrayList<>();
+        for (int i = 0; i < df.rowCount(); i++) {
+            weights.add(1.);
         }
-    }
-
-    @Override
-    public String[] nextColNames() {
-        return selection;
-    }
-
-    @Override
-    public String toString() {
-        return "STD_COL_SELECTOR";
+        learn(df, weights, targetColName);
     }
 }

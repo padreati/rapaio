@@ -18,13 +18,10 @@
  *    limitations under the License.
  */
 
-package rapaio.ml_experiment;
-
-import rapaio.core.RandomSource;
+package rapaio.ml.ml_experiment;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 

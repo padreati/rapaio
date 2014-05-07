@@ -23,12 +23,15 @@ package rapaio.ml.classifier.tree;
 import rapaio.core.sample.DiscreteSampling;
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Frame;
+import rapaio.data.Frames;
+import rapaio.data.Nominal;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.RunningClassifier;
 import rapaio.ml.classifier.colselect.ColSelector;
+import rapaio.ml.classifier.colselect.RandomColSelector;
 import rapaio.ml.classifier.tools.DensityVector;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -46,15 +49,39 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
     boolean oobCompute = false;
     Classifier c = TreeClassifier.buildC45();
     double sampling = 1;
+    BaggingMethod baggingMethod = BaggingMethods.DISTRIBUTION_SUM;
     //
+    double totalOobInstances = 0;
+    double totalOobError = 0;
     double oobError = Double.NaN;
     List<Classifier> predictors = new ArrayList<>();
+
+    public static ForestClassifier buildRandomForest(int runs, int mcols, double sampling) {
+        return new ForestClassifier()
+                .withClassifier(TreeClassifier.buildCART())
+                .withBaggingMethod(BaggingMethods.DISTRIBUTION_SUM)
+                .withRuns(runs)
+                .withColSelector(new RandomColSelector(mcols))
+                .withSampling(sampling);
+    }
+
+    public static ForestClassifier buildRandomForest(int runs, int mcols, double sampling, Classifier c) {
+        return new ForestClassifier()
+                .withClassifier(c)
+                .withBaggingMethod(BaggingMethods.DISTRIBUTION_SUM)
+                .withRuns(runs)
+                .withColSelector(new RandomColSelector(mcols))
+                .withSampling(sampling);
+    }
+
 
     @Override
     public Classifier newInstance() {
         return new ForestClassifier()
                 .withColSelector(colSelector)
-                .withRuns(runs);
+                .withRuns(runs)
+                .withBaggingMethod(baggingMethod)
+                .withClassifier(c);
     }
 
     @Override
@@ -66,14 +93,17 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
     public String fullName() {
         StringBuilder sb = new StringBuilder();
         sb.append(name()).append("(");
-
+        sb.append("baggingMethod=").append(baggingMethod.name()).append(",");
+        sb.append("colSelector=").append(colSelector.name()).append(",");
+        sb.append("runs=").append(runs).append(",");
+        sb.append("c=").append(c.fullName());
         sb.append(")");
         return sb.toString();
     }
 
     @Override
     public ForestClassifier withColSelector(ColSelector colSelector) {
-        super.withColSelector(colSelector);
+        this.colSelector = colSelector;
         return this;
     }
 
@@ -103,6 +133,24 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
 
     public double getSampling() {
         return sampling;
+    }
+
+    public BaggingMethod getBaggingMethod() {
+        return baggingMethod;
+    }
+
+    public ForestClassifier withBaggingMethod(BaggingMethod baggingMethod) {
+        this.baggingMethod = baggingMethod;
+        return this;
+    }
+
+    public Classifier getClassifier() {
+        return c;
+    }
+
+    public ForestClassifier withClassifier(Classifier c) {
+        this.c = c;
+        return this;
     }
 
     public List<Frame> produceSamples(Frame df) {
@@ -142,24 +190,11 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
 
         predictors.clear();
 
-        double totalOobInstances = 0;
-        double totalOobError = 0;
+        totalOobInstances = 0;
+        totalOobError = 0;
 
         for (int i = 0; i < runs; i++) {
-            Classifier pred = c.newInstance();
-            pred.withColSelector(colSelector);
-
-            List<Frame> samples = produceSamples(df);
-            Frame train = samples.get(0);
-            Frame oob = samples.get(1);
-
-            pred.learn(train, targetCol);
-            if (oobCompute) {
-                pred.predict(oob);
-                totalOobInstances += oob.rowCount();
-                totalOobError += 1 - new ConfusionMatrix(oob.col(targetCol), pred.pred()).getAccuracy();
-            }
-            predictors.add(pred);
+            buildWeakPredictor(df);
         }
 
         if (oobCompute) {
@@ -168,13 +203,50 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
     }
 
     @Override
-    public void learnFurther(Frame df, String targetName, int runs) {
-        throw new NotImplementedException();
+    public void learnFurther(Frame df, String targetName, int additionalRuns) {
+
+        if(targetCol != null && dict != null) {
+            this.runs += additionalRuns;
+        } else {
+            this.runs = additionalRuns;
+            learn(df, targetName);
+            return;
+        }
+
+        for (int i = predictors.size(); i < runs; i++) {
+            buildWeakPredictor(df);
+        }
+    }
+
+    private void buildWeakPredictor(Frame df) {
+        Classifier pred = c.newInstance();
+        pred.withColSelector(colSelector);
+
+        List<Frame> samples = produceSamples(df);
+        Frame train = samples.get(0);
+        Frame oob = samples.get(1);
+
+        pred.learn(train, targetCol);
+        if (oobCompute) {
+            pred.predict(oob);
+            totalOobInstances += oob.rowCount();
+            totalOobError += 1 - new ConfusionMatrix(oob.col(targetCol), pred.pred()).getAccuracy();
+        }
+        predictors.add(pred);
     }
 
     @Override
     public void predict(Frame df) {
-        throw new NotImplementedException();
+        pred = new Nominal(df.rowCount(), dict);
+        dist = Frames.newMatrix(df.rowCount(), dict);
+
+        List<Frame> distributions = new ArrayList<>();
+        predictors.forEach(p -> {
+            p.predict(df);
+            distributions.add(p.dist());
+        });
+
+        baggingMethod.computeDensity(dict, distributions, pred, dist);
     }
 
     @Override
@@ -188,21 +260,50 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
 
         String name();
 
-        Frame computeDensity(String[] dictionary, List<Frame> densities);
+        void computeDensity(String[] dictionary, List<Frame> distributions, Nominal pred, Frame dist);
     }
 
     public static enum BaggingMethods implements BaggingMethod {
 
         VOTING {
             @Override
-            public Frame computeDensity(String[] dictionary, List<Frame> densities) {
-                return null;
+            public void computeDensity(String[] dictionary, List<Frame> distributions, Nominal pred, Frame dist) {
+                distributions.forEach(d -> {
+                    for (int i = 0; i < d.rowCount(); i++) {
+                        DensityVector dv = new DensityVector(dictionary);
+                        for (int j = 0; j < dictionary.length; j++) {
+                            dv.update(j, d.getValue(i, j));
+                        }
+                        int best = dv.findBestIndex();
+                        dist.setValue(i, best, dist.getValue(i, best) + 1);
+                    }
+                });
+                for (int i = 0; i < pred.rowCount(); i++) {
+                    DensityVector dv = new DensityVector(dictionary);
+                    for (int j = 0; j < dictionary.length; j++) {
+                        dv.update(j, dist.getValue(i, j));
+                    }
+                    pred.setValue(i, dv.findBestIndex());
+                }
             }
         },
-        SUM_ON_DISTRIBUTION {
+        DISTRIBUTION_SUM {
             @Override
-            public Frame computeDensity(String[] dictionary, List<Frame> densities) {
-                return null;
+            public void computeDensity(String[] dictionary, List<Frame> distributions, Nominal pred, Frame dist) {
+                distributions.forEach(d -> {
+                    for (int i = 0; i < d.rowCount(); i++) {
+                        for (int j = 0; j < dictionary.length; j++) {
+                            dist.setValue(i, j, dist.getValue(i, j) + d.getValue(i, j));
+                        }
+                    }
+                });
+                for (int i = 0; i < pred.rowCount(); i++) {
+                    DensityVector dv = new DensityVector(dictionary);
+                    for (int j = 0; j < dictionary.length; j++) {
+                        dv.update(j, dist.getValue(i, j));
+                    }
+                    pred.setValue(i, dv.findBestIndex());
+                }
             }
         }
     }

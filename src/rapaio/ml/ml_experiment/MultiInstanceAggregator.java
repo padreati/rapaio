@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.mi;
+package rapaio.ml.ml_experiment;
 
 import rapaio.data.Frame;
 

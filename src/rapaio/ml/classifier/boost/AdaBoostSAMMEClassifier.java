@@ -23,6 +23,7 @@ package rapaio.ml.classifier.boost;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.RunningClassifier;
+import rapaio.ml.classifier.colselect.ColSelector;
 import rapaio.ml.classifier.tree.TreeClassifier;
 import rapaio.core.sample.DiscreteSampling;
 import rapaio.data.Frame;
@@ -40,6 +41,7 @@ import java.util.List;
  */
 public class AdaBoostSAMMEClassifier extends AbstractClassifier implements RunningClassifier {
 
+    final double delta_error = 10e-10;
     // parameters
 
     Classifier base = new TreeClassifier()
@@ -48,6 +50,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
             .withNumericMethod(TreeClassifier.NumericMethods.BINARY);
     int runs = 0;
     double sampling = 0;
+    boolean stopOnError=false;
 
     // model artifacts
 
@@ -66,7 +69,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         return (AdaBoostSAMMEClassifier) new AdaBoostSAMMEClassifier()
                 .withClassifier(this.base)
                 .withRuns(this.runs)
-                .withColSelector(this.colSelector);
+                .withColSelector(this.colSelector)
+                .withStopOnError(stopOnError);
     }
 
     @Override
@@ -77,11 +81,16 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     @Override
     public String fullName() {
         if (sampling > 0) {
-            return String.format("AdaBoost.SAMME (base: %s, runs: %d, sampling: true, sampling ratio: %.2f)",
-                    base.fullName(), runs, sampling);
+            return String.format("AdaBoost.SAMME (base: %s, runs: %d, sampling: true, sampling ratio: %.2f, stopOnError: %s)",
+                    base.fullName(), runs, sampling, String.valueOf(stopOnError));
         }
-        return String.format("AdaBoost.SAMME (base: %s, runs: %d, sampling: false)",
-                base.fullName(), runs);
+        return String.format("AdaBoost.SAMME (base: %s, runs: %d, sampling: false, stopOnError: %s)",
+                base.fullName(), runs, String.valueOf(stopOnError));
+    }
+
+    public AdaBoostSAMMEClassifier withColSelector(ColSelector colSelector) {
+        this.colSelector = colSelector;
+        return this;
     }
 
     public AdaBoostSAMMEClassifier withClassifier(Classifier weak) {
@@ -96,6 +105,11 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
     public AdaBoostSAMMEClassifier withSampling(double ratio) {
         this.sampling = ratio;
+        return this;
+    }
+
+    public AdaBoostSAMMEClassifier withStopOnError(boolean stopOnError) {
+        this.stopOnError = stopOnError;
         return this;
     }
 
@@ -116,57 +130,17 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         dict = df.col(targetCol).getDictionary();
         k = dict.length - 1;
 
+        h = new ArrayList<>();
+        a = new ArrayList<>();
         w = df.getWeights().solidCopy();
 
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
         w.stream().transformValue(x -> x / total);
 
-        h = new ArrayList<>();
-        a = new ArrayList<>();
-
         for (int i = 0; i < runs; i++) {
-
-            int[] rows = getSamplingRows(df);
-            Mapping mapping = new Mapping();
-            for (int row : rows) mapping.add(df.rowId(row));
-            Frame dfTrain = new MappedFrame(df.source(), mapping);
-            for (int j = 0; j < rows.length; j++) {
-                dfTrain.setWeight(j, w.getValue(rows[j]));
-            }
-
-            Classifier hh = base.newInstance();
-            hh.learn(dfTrain, targetCol);
-
-            hh.predict(df);
-            Nominal hpred = hh.pred();
-
-            double err = 0;
-            for (int j = 0; j < df.rowCount(); j++) {
-                if (hpred.getIndex(j) != df.col(targetCol).getIndex(j)) {
-                    err += w.getValue(j);
-                }
-            }
-            double alpha = Math.log((1. - err) / err) + Math.log(k - 1);
-            // TODO this delta error should be carefully chosen
-            final double delta_error = 10e-10;
-            if (err == 0 || err > (1 - 1 / k) + delta_error) {
-                if (h.isEmpty()) {
-                    h.add(hh);
-                    a.add(alpha);
-                }
-                System.out.println("This should not be");
+            boolean success = learnRound(df);
+            if(!success && stopOnError) {
                 break;
-            }
-            h.add(hh);
-            a.add(alpha);
-
-            // out
-            for (int j = 0; j < w.rowCount(); j++) {
-                if (hpred.getIndex(j) != df.col(targetCol).getIndex(j)) {
-                    w.setValue(j, w.getValue(j) * (k - 1) / (k * err));
-                } else {
-                    w.setValue(j, w.getValue(j) / (k * (1. - err)));
-                }
             }
         }
     }
@@ -174,83 +148,74 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     @Override
     public void learnFurther(Frame df, String targetColName, int additionalRuns) {
 
-        boolean prev = false;
         if (w != null && targetCol != null && dict != null) {
-            prev = true;
-        }
-
-        // if prev trained on something else than we have a problem
-        if (prev) {
+            // if prev trained on something else than we have a problem
             if ((!targetColName.equals(targetCol) ||
                     k != df.col(targetColName).getDictionary().length - 1)) {
                 throw new IllegalArgumentException("previous classifier trained on different target");
             }
-        }
-
-        if (!prev) {
-            targetCol = targetColName;
-            dict = df.col(targetCol).getDictionary();
-            k = dict.length - 1;
-
-            h = new ArrayList<>();
-            a = new ArrayList<>();
-            runs = additionalRuns;
-        } else {
             runs += additionalRuns;
-        }
-
-        if (w == null) {
-            w = df.getWeights().solidCopy();
+        } else {
+            runs = additionalRuns;
+            learn(df, targetColName);
+            return;
         }
 
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
         w.stream().transformValue(x -> x / total);
 
-        for (int i = 0; i < additionalRuns; i++) {
-
-            int[] rows = getSamplingRows(df);
-            Mapping mapping = new Mapping();
-            for (int row : rows) mapping.add(df.rowId(row));
-            Frame dfTrain = new MappedFrame(df.source(), mapping);
-            for (int j = 0; j < rows.length; j++) {
-                dfTrain.setWeight(j, w.getValue(rows[j]));
-            }
-
-            Classifier hh = base.newInstance();
-            hh.learn(dfTrain, targetCol);
-            hh.predict(df);
-            Nominal hpred = hh.pred();
-
-            double err = 0;
-            for (int j = 0; j < df.rowCount(); j++) {
-                if (hpred.getIndex(j) != df.col(targetColName).getIndex(j)) {
-                    err += w.getValue(j);
-                }
-            }
-            double alpha = Math.log((1. - err) / err) + Math.log(k - 1);
-            if (err == 0 || err > (1 - 1 / k)) {
-                if (h.isEmpty()) {
-                    h.add(hh);
-                    a.add(alpha);
-                }
+        for (int i = h.size(); i < runs; i++) {
+            boolean success = learnRound(df);
+            if(!success && stopOnError) {
                 break;
             }
-            if (err > (1 - 1 / k)) {
-                i--;
-                continue;
-            }
-            h.add(hh);
-            a.add(alpha);
+        }
+    }
 
-            // out
-            for (int j = 0; j < w.rowCount(); j++) {
-                if (hpred.getIndex(j) != df.col(targetColName).getIndex(j)) {
-                    w.setValue(j, w.getValue(j) * (k - 1) / (k * err));
-                } else {
-                    w.setValue(j, w.getValue(j) / (k * (1. - err)));
-                }
+    private boolean learnRound(Frame df) {
+        int[] rows = getSamplingRows(df);
+        Mapping mapping = new Mapping();
+        for (int row : rows) mapping.add(df.rowId(row));
+        Frame dfTrain = new MappedFrame(df.source(), mapping);
+        for (int j = 0; j < rows.length; j++) {
+            dfTrain.setWeight(j, w.getValue(rows[j]));
+        }
+
+        Classifier hh = base.newInstance();
+        hh.learn(dfTrain, targetCol);
+        hh.predict(df);
+        double err = 0;
+        for (int j = 0; j < df.rowCount(); j++) {
+            if (hh.pred().getIndex(j) != df.col(targetCol).getIndex(j)) {
+                err += w.getValue(j);
             }
         }
+        double alpha = Math.log((1. - err) / err) + Math.log(k - 1);
+        if (err == 0) {
+            if (h.isEmpty()) {
+                h.add(hh);
+                a.add(alpha);
+            }
+            System.out.println("Stop learning weak classifier. Computed err: 0");
+            return false;
+        }
+        if (stopOnError &&  err > (1.0 - 1.0 / k) + delta_error) {
+            System.out.println("Warning computed err: " + err
+                    + ", required threshold: " + (1.0 - 1.0 / k) + delta_error);
+            return false;
+        }
+        h.add(hh);
+        a.add(alpha);
+
+        for (int j = 0; j < w.rowCount(); j++) {
+            if (hh.pred().getIndex(j) != df.col(targetCol).getIndex(j)) {
+                w.setValue(j, w.getValue(j) * Math.exp(alpha));
+            }
+        }
+        double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
+        w.stream().transformValue(x -> x / total);
+
+        return true;
     }
 
     @Override
@@ -258,7 +223,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         pred = new Nominal(df.rowCount(), dict);
         dist = Frames.newMatrix(df.rowCount(), dict);
 
-        for (int i = 0; i < Math.min(runs, h.size()); i++) {
+        for (int i = 0; i < h.size(); i++) {
             h.get(i).predict(df);
             for (int j = 0; j < df.rowCount(); j++) {
                 int index = h.get(i).pred().getIndex(j);

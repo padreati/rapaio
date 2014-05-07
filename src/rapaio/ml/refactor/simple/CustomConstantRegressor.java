@@ -25,8 +25,8 @@ import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
-import rapaio.ml.AbstractRegressor;
-import rapaio.ml.Regressor;
+import rapaio.ml.regressor.AbstractRegressor;
+import rapaio.ml.regressor.Regressor;
 
 import java.util.ArrayList;
 import java.util.List;

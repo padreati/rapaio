@@ -32,7 +32,7 @@ import rapaio.io.Csv;
 import rapaio.ml.refactor.boost.GradientBoostingTreeRegressor;
 import rapaio.ml.refactor.boost.gbt.L2BoostingLossFunction;
 import rapaio.ml.refactor.simple.L2ConstantRegressor;
-import rapaio.ml.tree.DecisionStumpRegressor;
+import rapaio.ml.refactor.tree.DecisionStumpRegressor;
 import rapaio.printer.LocalPrinter;
 import rapaio.workspace.Summary;
 import rapaio.workspace.Workspace;

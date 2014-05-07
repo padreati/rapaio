@@ -23,7 +23,7 @@ package rapaio.ml.classifier.tree;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.tools.DensityTable;
 import rapaio.ml.classifier.tools.DensityVector;
-import rapaio.cluster.util.Pair;
+import rapaio.ml.ml_experiment.cluster.util.Pair;
 import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.data.Vector;

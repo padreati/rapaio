@@ -18,27 +18,17 @@
  *    limitations under the License.
  */
 
-package rapaio.ml;
+package rapaio.ml.ml_experiment.cluster.distance;
 
 import rapaio.data.Frame;
-import rapaio.data.Vector;
-
-import java.util.List;
 
 /**
- * User: Aurelian Tutuianu <paderati@yahoo.com>
+ * Created with IntelliJ IDEA.
+ * User: tincu
+ * Date: 2/4/14
+ * Time: 12:56 PM
+ * To change this template use File | Settings | File Templates.
  */
-public interface Regressor {
-
-    Regressor newInstance();
-
-    void learn(Frame df, List<Double> weights, String targetColName);
-
-    void learn(Frame df, String targetColName);
-
-    void predict(Frame df);
-
-    Vector getFitValues();
-
-    Frame getAllFitValues();
+public interface Distance {
+    public double getDistance(Frame from, int fromRow, Frame targetFrame, int targetRow);
 }

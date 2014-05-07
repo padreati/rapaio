@@ -276,6 +276,10 @@ public class ConfusionMatrix implements Printable {
         return acc;
     }
 
+    public double getError() {
+        return 1.0 - acc;
+    }
+
     public int getCompleteCases() {
         return (int) Math.rint(completeCases);
     }

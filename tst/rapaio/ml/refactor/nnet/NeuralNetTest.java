@@ -23,7 +23,7 @@ package rapaio.ml.refactor.nnet;
 import junit.framework.Assert;
 import org.junit.Test;
 import rapaio.data.*;
-import rapaio.ml.Regressor;
+import rapaio.ml.regressor.Regressor;
 import rapaio.workspace.Summary;
 
 

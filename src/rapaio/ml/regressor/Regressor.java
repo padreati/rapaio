@@ -18,24 +18,30 @@
  *    limitations under the License.
  */
 
-package rapaio.ml;
+package rapaio.ml.regressor;
 
 import rapaio.data.Frame;
+import rapaio.data.Vector;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public abstract class AbstractRegressor implements Regressor {
+public interface Regressor {
 
-    @Override
-    public void learn(Frame df, String targetColName) {
-        List<Double> weights = new ArrayList<>();
-        for (int i = 0; i < df.rowCount(); i++) {
-            weights.add(1.);
-        }
-        learn(df, weights, targetColName);
-    }
+    /**
+     * Builds a new regressor model. It keeps teh same parameters, but
+     * it does not copy all the regression artifacts
+     * @return a new instance
+     */
+    Regressor newInstance();
+
+    void learn(Frame df, String targetNames);
+
+    void predict(Frame df);
+
+    Vector getFitValues();
+
+    Frame getAllFitValues();
 }

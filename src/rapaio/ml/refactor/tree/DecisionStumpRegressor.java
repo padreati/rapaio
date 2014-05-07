@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.tree;
+package rapaio.ml.refactor.tree;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.StatOnline;
@@ -27,7 +27,7 @@ import rapaio.data.Numeric;
 import rapaio.data.Vector;
 import rapaio.data.mapping.MappedVector;
 import rapaio.data.mapping.Mapping;
-import rapaio.ml.AbstractRegressor;
+import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.refactor.boost.gbt.BTRegressor;
 import rapaio.ml.refactor.boost.gbt.BoostingLossFunction;
 

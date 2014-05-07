@@ -23,8 +23,8 @@ package rapaio.ml.refactor.linear;
 import rapaio.data.*;
 import rapaio.data.matrix.Matrix;
 import rapaio.data.matrix.QRDecomposition;
-import rapaio.ml.AbstractRegressor;
-import rapaio.ml.Regressor;
+import rapaio.ml.regressor.AbstractRegressor;
+import rapaio.ml.regressor.Regressor;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.tree;
+package rapaio.ml.refactor.tree;
 
 import rapaio.core.ColRange;
 import rapaio.core.stat.Mean;
@@ -27,8 +27,8 @@ import rapaio.data.*;
 import rapaio.data.filters.BaseFilters;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
-import rapaio.ml.AbstractRegressor;
-import rapaio.ml.Regressor;
+import rapaio.ml.regressor.AbstractRegressor;
+import rapaio.ml.regressor.Regressor;
 import rapaio.ml.refactor.colselect.ColSelector;
 import rapaio.ml.refactor.colselect.DefaultColSelector;
 

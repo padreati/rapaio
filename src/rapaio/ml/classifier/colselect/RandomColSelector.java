@@ -39,8 +39,12 @@ public class RandomColSelector implements ColSelector {
         this.mCols = mCols;
     }
 
+    public String name() {
+        return "Random[" + mCols + "]";
+    }
+
     public synchronized void initialize(Frame df, ColRange except) {
-        List<Integer> exceptColumns = except==null ? new ArrayList<>() : except.parseColumnIndexes(df);
+        List<Integer> exceptColumns = except == null ? new ArrayList<>() : except.parseColumnIndexes(df);
         candidates = new String[df.colCount() - exceptColumns.size()];
         int pos = 0;
         int expos = 0;

@@ -18,17 +18,23 @@
  *    limitations under the License.
  */
 
-package rapaio.cluster.distance;
+package rapaio.ml.ml_experiment.cluster.util;
 
-import rapaio.data.Frame;
+import java.io.Serializable;
 
 /**
  * Created with IntelliJ IDEA.
  * User: tincu
  * Date: 2/4/14
- * Time: 12:56 PM
- * To change this template use File | Settings | File Templates.
+ * Time: 1:40 PM
  */
-public interface Distance {
-    public double getDistance(Frame from, int fromRow, Frame targetFrame, int targetRow);
+public class Pair<T1, T2> implements Serializable {
+
+    public final T1 first;
+    public final T2 second;
+
+    public Pair(T1 first, T2 second) {
+        this.first = first;
+        this.second = second;
+    }
 }

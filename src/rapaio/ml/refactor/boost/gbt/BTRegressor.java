@@ -22,7 +22,7 @@ package rapaio.ml.refactor.boost.gbt;
 
 import rapaio.data.Frame;
 import rapaio.data.Vector;
-import rapaio.ml.Regressor;
+import rapaio.ml.regressor.Regressor;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>

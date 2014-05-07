@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.cluster.distance;
+package rapaio.ml.ml_experiment.cluster.distance;
 
 import rapaio.core.ColRange;
 import rapaio.data.Frame;

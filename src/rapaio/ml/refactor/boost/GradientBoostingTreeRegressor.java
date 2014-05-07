@@ -26,13 +26,13 @@ import rapaio.data.filters.BaseFilters;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.MappedVector;
 import rapaio.data.mapping.Mapping;
-import rapaio.ml.AbstractRegressor;
-import rapaio.ml.Regressor;
+import rapaio.ml.regressor.AbstractRegressor;
+import rapaio.ml.regressor.Regressor;
 import rapaio.ml.refactor.boost.gbt.BTRegressor;
 import rapaio.ml.refactor.boost.gbt.BoostingLossFunction;
 import rapaio.ml.refactor.boost.gbt.L1BoostingLossFunction;
 import rapaio.ml.refactor.simple.L2ConstantRegressor;
-import rapaio.ml.tree.DecisionStumpRegressor;
+import rapaio.ml.refactor.tree.DecisionStumpRegressor;
 
 import java.util.ArrayList;
 import java.util.List;

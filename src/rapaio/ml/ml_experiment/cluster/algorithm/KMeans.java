@@ -18,10 +18,10 @@
  *    limitations under the License.
  */
 
-package rapaio.cluster.algorithm;
+package rapaio.ml.ml_experiment.cluster.algorithm;
 
-import rapaio.cluster.distance.Distance;
-import rapaio.cluster.util.Pair;
+import rapaio.ml.ml_experiment.cluster.distance.Distance;
+import rapaio.ml.ml_experiment.cluster.util.Pair;
 import rapaio.data.Frame;
 
 import java.util.List;

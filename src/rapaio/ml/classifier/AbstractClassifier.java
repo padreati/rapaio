@@ -21,7 +21,7 @@
 package rapaio.ml.classifier;
 
 import rapaio.ml.classifier.colselect.ColSelector;
-import rapaio.ml.classifier.colselect.DefaultColSelector;
+import rapaio.ml.classifier.colselect.StdColSelector;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
 
@@ -30,7 +30,7 @@ import rapaio.data.Nominal;
  */
 public abstract class AbstractClassifier implements Classifier {
 
-    protected ColSelector colSelector = new DefaultColSelector();
+    protected ColSelector colSelector = new StdColSelector();
     protected String targetCol;
     protected String[] dict;
     protected Nominal pred;

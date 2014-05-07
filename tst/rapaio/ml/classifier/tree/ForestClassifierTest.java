@@ -25,8 +25,7 @@ import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.io.ArffPersistence;
 import rapaio.io.Csv;
-import rapaio.ml.classifier.colselect.RandomColSelector;
-import rapaio.ml.tools.ModelEvaluation;
+import rapaio.ml.classifier.tools.ModelEvaluation;
 import rapaio.workspace.Summary;
 
 import java.io.IOException;

@@ -26,7 +26,7 @@ import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
-import rapaio.ml.tools.DensityTable;
+import rapaio.ml.classifier.tools.DensityTable;
 import rapaio.workspace.Summary;
 
 import java.io.IOException;

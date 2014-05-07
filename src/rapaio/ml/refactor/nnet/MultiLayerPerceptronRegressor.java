@@ -25,8 +25,8 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Frames;
 import rapaio.data.Vector;
-import rapaio.ml.AbstractRegressor;
-import rapaio.ml.Regressor;
+import rapaio.ml.regressor.AbstractRegressor;
+import rapaio.ml.regressor.Regressor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
