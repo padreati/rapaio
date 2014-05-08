@@ -43,7 +43,7 @@ is considered to be fully implemented and well tested.
 * TreeClassifier (DecisionStump, ID3, C45, CART)
 * AdaBoost.SAMME
 * OneRule
-* Forests (Random Forests)
+* Forests (Bagging, Random Forests)
 * NaiveBayes (Gaussian estimation, KDE estimation, Multinomial estimator)
 * MIClassifier
 
