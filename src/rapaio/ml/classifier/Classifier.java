@@ -71,9 +71,9 @@ public interface Classifier extends Printable, Serializable {
      * equal to 1 and target as classColName.
      *
      * @param df            data set instances
-     * @param targetColName target column name
+     * @param targetCol target column name
      */
-    void learn(Frame df, String targetColName);
+    void learn(Frame df, String targetCol);
 
     /**
      * Predict classes for new data set instances

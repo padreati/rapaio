@@ -36,6 +36,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -207,13 +208,13 @@ public class TreeClassifier extends AbstractClassifier {
     }
 
     @Override
-    public void learn(Frame df, String targetColName) {
+    public void learn(Frame df, String targetCol) {
 
-        targetCol = targetColName;
-        dict = df.col(targetCol).getDictionary();
+        this.targetCol = targetCol;
+        dict = df.col(this.targetCol).getDictionary();
         rows = df.rowCount();
 
-        testCounter.initialize(df, targetColName);
+        testCounter.initialize(df, targetCol);
 
         root = new CTreeNode(this, null, "root", spot -> true);
         root.learn(df, maxDepth);
@@ -862,19 +863,20 @@ public class TreeClassifier extends AbstractClassifier {
             candidates = new TreeMap<>();
             c.getColSelector().initialize(df, null);
 
-            // here we have to implement some form of column selector for RF, ID3 and C4.5
-            for (String testCol : c.getColSelector().nextColNames()) {
-                if (testCol.equals(c.getTargetCol())) continue;
-                if (!c.testCounter.canUse(testCol)) continue;
+            ConcurrentHashMap<Candidate, String> cand = new ConcurrentHashMap();
+            Arrays.stream(c.getColSelector().nextColNames()).parallel().forEach(testCol -> {
+                if (testCol.equals(c.getTargetCol())) return;
+                if (!c.testCounter.canUse(testCol)) return;
 
                 if (df.col(testCol).type().isNumeric()) {
                     c.getNumericMethod().computeCandidates(c, df, testCol, c.getTargetCol(), c.getFunction())
-                            .forEach(candidate -> candidates.put(candidate, testCol));
+                            .forEach(candidate -> cand.put(candidate, testCol));
                 } else {
                     c.getNominalMethod().computeCandidates(c, df, testCol, c.getTargetCol(), c.getFunction())
-                            .forEach(candidate -> candidates.put(candidate, testCol));
+                            .forEach(candidate -> cand.put(candidate, testCol));
                 }
-            }
+            });
+            candidates.putAll(cand);
 
             if (candidates.isEmpty()) {
                 return;

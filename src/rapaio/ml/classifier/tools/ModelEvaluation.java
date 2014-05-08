@@ -178,7 +178,7 @@ public class ModelEvaluation {
             c.predict(test);
             Vector pred = c.pred();
             double acc = new ConfusionMatrix(test.col(classColName), pred).getAccuracy();
-//            System.out.println(String.format("bootstrap(%d) : %.6f", i+1, acc));
+            System.out.println(String.format("bootstrap(%d) : %.6f", i+1, acc));
             total += acc;
             count++;
         }

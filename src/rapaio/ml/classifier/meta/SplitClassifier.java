@@ -86,9 +86,9 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
     }
 
     @Override
-    public void learn(Frame df, String targetColName) {
-        dict = df.col(targetColName).getDictionary();
-        targetCol = targetColName;
+    public void learn(Frame df, String targetCol) {
+        dict = df.col(targetCol).getDictionary();
+        this.targetCol = targetCol;
 
         if (c == null) {
             throw new IllegalArgumentException("classifier could not be null");
@@ -120,7 +120,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
         }
         for (int i = 0; i < classifiers.size(); i++) {
             if (frames.get(i).rowCount() > 0)
-                classifiers.get(i).learn(frames.get(i), targetColName);
+                classifiers.get(i).learn(frames.get(i), targetCol);
         }
     }
 

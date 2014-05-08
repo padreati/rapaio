@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.tests;
+package rapaio.core.tests;
 
 import junit.framework.Assert;
 import org.junit.Test;

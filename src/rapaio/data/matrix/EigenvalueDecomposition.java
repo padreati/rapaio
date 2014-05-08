@@ -25,7 +25,7 @@ import static java.lang.StrictMath.hypot;
 /**
  * Eigenvalues and eigenvectors of a real rapaio.data.matrix.
  * <p>
- * If A is symmetric, then A = V*D*V' where the eigenvalue rapaio.data.matrix D is diagonal
+ * If A is symmetric, then A = V*D*V' where the eigenvalue .matrix D is diagonal
  * and the eigenvector rapaio.data.matrix V is orthogonal. I.e. A =
  * V.times(D.times(V.transpose())) and V.times(V.transpose()) equals the
  * identity rapaio.data.matrix.

@@ -37,7 +37,9 @@ public interface Regressor {
      */
     Regressor newInstance();
 
-    void learn(Frame df, String targetNames);
+    void learn(Frame df, List<Double> weights, String targetColName);
+
+    void learn(Frame df, String targetColName);
 
     void predict(Frame df);
 

@@ -36,14 +36,6 @@ import static rapaio.data.filters.BaseFilters.shuffle;
  */
 public class StatSampling {
 
-    public static List<Frame> randomSample(Frame frame, int splits) {
-        int[] rowCounts = new int[splits - 1];
-        for (int i = 0; i < splits - 1; i++) {
-            rowCounts[i] = frame.rowCount() / splits;
-        }
-        return randomSample(frame, rowCounts);
-    }
-
     public static List<Frame> randomSample(Frame frame, int[] rowCounts) {
         int total = 0;
         for (int rowCount : rowCounts) {

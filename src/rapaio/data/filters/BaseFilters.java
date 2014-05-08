@@ -34,6 +34,7 @@ import rapaio.data.stream.VSpot;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Provides filters for frames.
@@ -85,7 +86,7 @@ public final class BaseFilters implements Serializable {
             vectors.add(df.col(i).source());
             names.add(df.colNames()[i]);
         }
-        SolidFrame solid = new SolidFrame(df.rowCount(), vectors, names);
+        SolidFrame solid = new SolidFrame(df.source().rowCount(), vectors, names);
         if (!df.isMappedFrame()) {
             return solid;
         }
@@ -95,9 +96,8 @@ public final class BaseFilters implements Serializable {
     /**
      * Remove columns from a frame by specifying which columns to keep.
      *
-     * @param df        frame
-     * @param colRange  column range
-     * @param colRange}
+     * @param df       frame
+     * @param colRange column range
      * @return original frame which has only columns specified in {
      */
     public static Frame retainCols(Frame df, String colRange) {
@@ -317,18 +317,8 @@ public final class BaseFilters implements Serializable {
 
 
     public static Frame delta(Frame source, Frame remove) {
-        HashSet<Integer> existing = new HashSet<>();
-        for (int i = 0; i < remove.rowCount(); i++) {
-            existing.add(remove.rowId(i));
-        }
-        List<Integer> mapping = new ArrayList<>();
-        for (int i = 0; i < source.rowCount(); i++) {
-            int rowId = source.rowId(i);
-            if (!existing.contains(rowId)) {
-                mapping.add(i);
-            }
-        }
-        return new MappedFrame(source.source(), new Mapping(mapping));
+        Set<Integer> existing = remove.stream().map(s -> s.rowId()).collect(Collectors.toSet());
+        return source.stream().filter(s -> !existing.contains(s.rowId())).toMappedFrame();
     }
 
     public static List<Frame> combine(String name, List<Frame> frames, String... combined) {
@@ -394,20 +384,12 @@ public final class BaseFilters implements Serializable {
 
     public static Frame completeCases(Frame source, ColRange colRange) {
         List<Integer> selectedCols = colRange.parseColumnIndexes(source);
-        List<Integer> ids = new ArrayList<>();
-        for (int i = 0; i < source.rowCount(); i++) {
-            boolean complete = true;
+        return source.stream().filter(s -> {
             for (int col : selectedCols) {
-                if (source.col(col).isMissing(i)) {
-                    complete = false;
-                    break;
-                }
+                if (s.isMissing(col)) return false;
             }
-            if (complete) {
-                ids.add(source.rowId(i));
-            }
-        }
-        return new MappedFrame(source.source(), new Mapping(ids));
+            return true;
+        }).toMappedFrame();
     }
 
     /**
