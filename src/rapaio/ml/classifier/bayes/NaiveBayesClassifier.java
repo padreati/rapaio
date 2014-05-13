@@ -311,6 +311,12 @@ public class NaiveBayesClassifier extends AbstractClassifier {
 
         @Override
         public double cpValue(String testLabel, String classLabel) {
+            if (!invTreeTarget.containsKey(classLabel)) {
+                return 1e-10;
+            }
+            if (!invTreeTest.containsKey(testLabel)) {
+                return 1e-10;
+            }
             return density[invTreeTarget.get(classLabel)][invTreeTest.get(testLabel)];
         }
 

@@ -43,30 +43,6 @@ public class MIClassifier extends AbstractClassifier {
     Classifier c = new NaiveBayesClassifier();
 
     @Override
-    public Classifier newInstance() {
-        return new MIClassifier()
-                .withColSelector(colSelector)
-                .withGroupCol(groupCol)
-                .withClassifier(c.newInstance());
-    }
-
-    @Override
-    public String name() {
-        return "MIClassifier";
-    }
-
-    @Override
-    public String fullName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("MIClassifier(");
-        sb.append("colSelector=").append(colSelector.name()).append(",");
-        sb.append("groupCol=").append(groupCol).append(",");
-        sb.append("c=").append(c.fullName()).append(",");
-        sb.append(")");
-        return sb.toString();
-    }
-
-    @Override
     public ColSelector getColSelector() {
         return super.getColSelector();
     }
@@ -92,6 +68,30 @@ public class MIClassifier extends AbstractClassifier {
     public MIClassifier withClassifier(Classifier c) {
         this.c = c;
         return this;
+    }
+
+    @Override
+    public Classifier newInstance() {
+        return new MIClassifier()
+                .withColSelector(colSelector)
+                .withGroupCol(groupCol)
+                .withClassifier(c.newInstance());
+    }
+
+    @Override
+    public String name() {
+        return "MIClassifier";
+    }
+
+    @Override
+    public String fullName() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("MIClassifier(");
+        sb.append("colSelector=").append(colSelector.name()).append(",");
+        sb.append("groupCol=").append(groupCol).append(",");
+        sb.append("c=").append(c.fullName()).append(",");
+        sb.append(")");
+        return sb.toString();
     }
 
     @Override
@@ -129,7 +129,6 @@ public class MIClassifier extends AbstractClassifier {
         dist = Frames.newMatrix(df.rowCount(), dict);
 
         c.pred().stream().forEach(s -> pred.setLabel(s.row(), predictions.get(df.getLabel(s.row(), groupCol))));
-        // TODO what to do with distribution?
         dist = c.dist();
     }
 

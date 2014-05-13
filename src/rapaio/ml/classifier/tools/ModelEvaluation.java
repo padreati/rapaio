@@ -167,18 +167,22 @@ public class ModelEvaluation {
     }
 
     public void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps) {
+        bootstrapValidation(df, classColName, c, bootstraps, 1.0);
+    }
+
+    public void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps, double p) {
         print(bootstraps + " bootstrap evaluation\n");
         double total = 0;
         double count = 0;
         for (int i = 0; i < bootstraps; i++) {
-            Frame train = StatSampling.randomBootstrap(df);
+            Frame train = StatSampling.randomBootstrap(df, ((int) (df.rowCount() * p)));
             Frame test = delta(df, train);
 
             c.learn(train, classColName);
             c.predict(test);
             Vector pred = c.pred();
             double acc = new ConfusionMatrix(test.col(classColName), pred).getAccuracy();
-            System.out.println(String.format("bootstrap(%d) : %.6f", i+1, acc));
+            System.out.println(String.format("bootstrap(%d) : %.6f", i + 1, acc));
             total += acc;
             count++;
         }

@@ -30,8 +30,6 @@ import java.io.Serializable;
 /**
  * Interface for all classification model algorithms.
  * A classifier is able to classify only one target columns.
- * If a classifier implements multiple target learning it has to implement
- * {@link rapaio.ml.classifier.MultiClassifier}
  * If a classifier implements further learning it has to implement
  * {@link RunningClassifier}
  *
