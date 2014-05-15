@@ -1,0 +1,6 @@
+.onLoad <- function(libname, pkgname) {
+  Sys.setenv("LD_LIBRARY_PATH"=paste(Sys.getenv("LD_LIBRARY_PATH"),"@JAVA_LD@",sep=':'))
+  library.dynam("rJava", pkgname, libname)
+  # pass on to the system-independent part
+  .jfirst(libname, pkgname)
+}

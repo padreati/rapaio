@@ -112,12 +112,11 @@ public class MIClassifier extends AbstractClassifier {
         Arrays.stream(groups).forEach(groupLabel -> dvs.put(groupLabel, new DensityVector(dict)));
 
         c.predict(df);
-        c.dist().stream().forEach(s -> {
+        c.pred().stream().forEach(s -> {
             String groupLabel = df.getLabel(s.row(), groupCol);
             DensityVector dv = dvs.get(groupLabel);
-            for (int i = 0; i < dict.length; i++) {
-                dv.update(i, dv.get(i) + s.getValue(i));
-            }
+            int i = s.getIndex();
+            dv.update(i, 1);
         });
 
         Map<String, String> predictions = new HashMap<>();
@@ -126,7 +125,6 @@ public class MIClassifier extends AbstractClassifier {
         });
 
         pred = new Nominal(df.rowCount(), dict);
-        dist = Frames.newMatrix(df.rowCount(), dict);
 
         c.pred().stream().forEach(s -> pred.setLabel(s.row(), predictions.get(df.getLabel(s.row(), groupCol))));
         dist = c.dist();
