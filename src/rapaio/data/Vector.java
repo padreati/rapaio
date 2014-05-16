@@ -87,8 +87,6 @@ public interface Vector extends Serializable {
 
     void addValue(double value);
 
-    void addValue(int row, double value);
-
     /**
      * Returns getIndex setValue for the observation specified by {@param row}
      *
@@ -107,8 +105,6 @@ public interface Vector extends Serializable {
 
     void addIndex(int value);
 
-    void addIndex(int row, int value);
-
     /**
      * Returns nominal getLabel for the observation specified by {@param row}.
      *
@@ -126,8 +122,6 @@ public interface Vector extends Serializable {
     void setLabel(int row, String value);
 
     void addLabel(String value);
-
-    void addLabel(int row, String value);
 
     /**
      * Returns the term getDictionary used by the nominal values.

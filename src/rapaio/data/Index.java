@@ -146,16 +146,6 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public void addIndex(int index, int value) {
-        rangeCheck(index);
-
-        ensureCapacityInternal(rows + 1);
-        System.arraycopy(data, index, data, index + 1, rows - index);
-        data[index] = value;
-        rows++;
-    }
-
-    @Override
     public double getValue(int row) {
         return getIndex(row);
     }
@@ -171,11 +161,6 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public void addValue(int row, double value) {
-        addIndex(row, (int) Math.rint(value));
-    }
-
-    @Override
     public String getLabel(int row) {
         return "";
     }
@@ -187,11 +172,6 @@ public class Index extends AbstractVector {
 
     @Override
     public void addLabel(String value) {
-        throw new RuntimeException("Operation not available for getIndex vectors.");
-    }
-
-    @Override
-    public void addLabel(int row, String value) {
         throw new RuntimeException("Operation not available for getIndex vectors.");
     }
 

@@ -176,15 +176,6 @@ public class Numeric extends AbstractVector {
     }
 
     @Override
-    public void addValue(int row, double value) {
-        rangeCheck(row);
-        ensureCapacityInternal(rows + 1);  // Increments modCount!!
-        System.arraycopy(data, row, data, row + 1, rows - row);
-        data[row] = value;
-        rows++;
-    }
-
-    @Override
     public int getIndex(int row) {
         return (int) Math.rint(getValue(row));
     }
@@ -201,15 +192,6 @@ public class Numeric extends AbstractVector {
     }
 
     @Override
-    public void addIndex(int row, int value) {
-        rangeCheck(row);
-        ensureCapacityInternal(rows + 1);  // Increments modCount!!
-        System.arraycopy(data, row, data, row + 1, rows - row);
-        data[row] = value;
-        rows++;
-    }
-
-    @Override
     public String getLabel(int row) {
         return "";
     }
@@ -221,11 +203,6 @@ public class Numeric extends AbstractVector {
 
     @Override
     public void addLabel(String value) {
-        throw new RuntimeException("Operation not available for numeric vectors.");
-    }
-
-    @Override
-    public void addLabel(int row, String value) {
         throw new RuntimeException("Operation not available for numeric vectors.");
     }
 

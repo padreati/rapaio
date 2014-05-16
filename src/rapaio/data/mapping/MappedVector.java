@@ -91,11 +91,6 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public void addValue(int row, double value) {
-        throw new IllegalArgumentException("operation not available on mapped vectors");
-    }
-
-    @Override
     public int getIndex(int row) {
         return source.getIndex(mapping.get(row));
     }
@@ -111,11 +106,6 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public void addIndex(int row, int value) {
-        throw new IllegalArgumentException("operation not available on mapped vectors");
-    }
-
-    @Override
     public String getLabel(int row) {
         return source.getLabel(mapping.get(row));
     }
@@ -127,11 +117,6 @@ public class MappedVector extends AbstractVector {
 
     @Override
     public void addLabel(String value) {
-        throw new IllegalArgumentException("operation not available on mapped vectors");
-    }
-
-    @Override
-    public void addLabel(int row, String value) {
         throw new IllegalArgumentException("operation not available on mapped vectors");
     }
 

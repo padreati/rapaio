@@ -132,11 +132,6 @@ public class Nominal extends AbstractVector {
     }
 
     @Override
-    public void addIndex(int row, int value) {
-        addLabel(row, dict.get(value));
-    }
-
-    @Override
     public double getValue(int row) {
         return data[row];
     }
@@ -149,11 +144,6 @@ public class Nominal extends AbstractVector {
     @Override
     public void addValue(double value) {
         addIndex((int) Math.rint(value));
-    }
-
-    @Override
-    public void addValue(int row, double value) {
-        addIndex(row, (int) Math.rint(value));
     }
 
     @Override
@@ -184,19 +174,6 @@ public class Nominal extends AbstractVector {
             reverse.put(label, reverse.size());
         }
         data[rows++] = reverse.get(label);
-    }
-
-    @Override
-    public void addLabel(int pos, String label) {
-        ensureCapacity(rows + 1);
-        System.arraycopy(data, pos, data, pos + 1, rows - pos);
-
-        if (!reverse.containsKey(label)) {
-            dict.add(label);
-            reverse.put(label, reverse.size());
-        }
-        data[pos] = reverse.get(label);
-        rows++;
     }
 
     @Override
