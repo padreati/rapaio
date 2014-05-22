@@ -34,11 +34,11 @@ public enum PchPalette {
         this.mapping = mapping;
     }
 
-    public void draw(Graphics2D g2d, int x, int y, double size, int pch) {
+    public void draw(Graphics2D g2d, double x, double y, double size, int pch) {
         mapping.draw(g2d, x, y, size, pch);
     }
 
     public static interface Mapping {
-        void draw(Graphics2D g2d, int x, int y, double size, int pch);
+        void draw(Graphics2D g2d, double x, double y, double size, int pch);
     }
 }

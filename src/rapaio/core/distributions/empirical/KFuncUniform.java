@@ -23,12 +23,13 @@ package rapaio.core.distributions.empirical;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class KernelFunctionEpanechnikov implements KernelFunction {
+public class KFuncUniform implements KFunc {
 
     @Override
     public double pdf(double x, double x0, double bandwidth) {
         double value = Math.abs(x - x0) / bandwidth;
-        return value <= 1 ? 3. * (1 - value * value) / 4. : 0;
+        if (value <= 1) return 0.5;
+        return 0;
     }
 
     @Override

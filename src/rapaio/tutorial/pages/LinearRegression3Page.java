@@ -32,7 +32,7 @@ import rapaio.workspace.Summary;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.workspace.Workspace.*;
+import static rapaio.workspace.W.*;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>

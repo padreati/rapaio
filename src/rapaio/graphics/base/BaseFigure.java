@@ -72,6 +72,7 @@ public abstract class BaseFigure implements Figure {
     protected Float lwd;
     protected Vector sizeIndex;
     protected Vector pchIndex = Vectors.newIdxOne(0);
+    protected Float alpha = 1.0f;
 
     //
     private Range range;
@@ -187,6 +188,15 @@ public abstract class BaseFigure implements Figure {
             return getDefaultPch().getIndex(row % getDefaultPch().rowCount());
         }
         return pchIndex.getIndex(row % pchIndex.rowCount());
+    }
+
+    public BaseFigure setAlpha(float alpha) {
+        this.alpha = alpha;
+        return this;
+    }
+
+    public float getAlpha() {
+        return alpha;
     }
 
     public BaseFigure setXLim(double start, double end) {

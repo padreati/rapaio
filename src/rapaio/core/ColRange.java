@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Builds a list of column indexes from column ranges in string
@@ -127,5 +128,9 @@ public class ColRange {
         }
         Collections.sort(colIndexes);
         return colIndexes;
+    }
+
+    public List<String> parseColumnNames(Frame df) {
+        return parseColumnIndexes(df).stream().map(i -> df.colNames()[i]).collect(Collectors.toList());
     }
 }

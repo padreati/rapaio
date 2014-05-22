@@ -109,7 +109,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
         });
         List<Frame> frames = new ArrayList<>();
         for (Mapping map : maps) {
-            frames.add(new MappedFrame(df.source(), map));
+            frames.add(new MappedFrame(df, map));
         }
 
         classifiers = new ArrayList<>();
@@ -151,7 +151,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
         });
         List<Frame> frames = new ArrayList<>();
         for (Mapping map : maps) {
-            frames.add(new MappedFrame(df.source(), map));
+            frames.add(new MappedFrame(df, map));
         }
 
         for (int i = 0; i < classifiers.size(); i++) {
@@ -168,7 +168,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
         df.stream().forEach(spot -> {
             for (int i = 0; i < predicates.size(); i++) {
                 if (predicates.get(i).test(spot)) {
-                    Frame f = new MappedFrame(df.source(), new Mapping(new int[]{spot.rowId()}));
+                    Frame f = new MappedFrame(df, new Mapping(new int[]{spot.rowId()}));
                     classifiers.get(i).predict(f);
                     pred.setLabel(spot.row(), classifiers.get(i).pred().getLabel(0));
                     for (int j = 0; j < dict.length; j++) {
@@ -177,7 +177,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
                     return;
                 }
             }
-            Frame f = new MappedFrame(df.source(), new Mapping(new int[]{spot.rowId()}));
+            Frame f = new MappedFrame(df, new Mapping(new int[]{spot.rowId()}));
             classifiers.get(classifiers.size() - 1).predict(f);
             pred.setLabel(spot.row(), classifiers.get(classifiers.size() - 1).pred().getLabel(0));
             for (int j = 0; j < dict.length; j++) {

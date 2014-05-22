@@ -25,6 +25,10 @@ import rapaio.data.mapping.Mapping;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * A frame which is not mapped, its values are contained in vectors.
@@ -105,13 +109,13 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public Frame source() {
+    public Frame sourceFrame() {
         return this;
     }
 
     @Override
     public Mapping mapping() {
-        return null;
+        return new Mapping(0, rowCount());
     }
 
     @Override

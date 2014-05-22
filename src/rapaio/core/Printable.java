@@ -20,7 +20,7 @@
 
 package rapaio.core;
 
-import rapaio.workspace.Workspace;
+import rapaio.workspace.W;
 
 /**
  * Interface implemented by all objects which outputs summaries about themselves
@@ -38,12 +38,12 @@ public interface Printable {
 
     /**
      * Prints a summary of the object to the system printer configured
-     * with {@link rapaio.workspace.Workspace#setPrinter(rapaio.printer.Printer)}.
+     * with {@link rapaio.workspace.W#setPrinter(rapaio.printer.Printer)}.
      */
     default void summary() {
         StringBuilder sb = new StringBuilder();
         buildSummary(sb);
-        Workspace.code(sb.toString());
+        W.code(sb.toString());
     }
 
     void buildSummary(StringBuilder sb);

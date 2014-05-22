@@ -158,7 +158,7 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
         if (sampling <= 0) {
             // no sampling
             frames.add(df.stream().toMappedFrame());
-            frames.add(new MappedFrame(df.source(), new Mapping()));
+            frames.add(new MappedFrame(df, new Mapping()));
             return frames;
         }
 
@@ -176,8 +176,8 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
             oob.add(df.rowId(i));
         }
 
-        frames.add(new MappedFrame(df.source(), train));
-        frames.add(new MappedFrame(df.source(), oob));
+        frames.add(new MappedFrame(df, train));
+        frames.add(new MappedFrame(df, oob));
 
         return frames;
     }

@@ -276,6 +276,6 @@ public class FSpots implements Stream<FSpot>, Serializable {
                 dfPin.set(spot.getFrame());
             }
         });
-        return new MappedFrame(dfPin.get().source(), mapping);
+        return new MappedFrame(dfPin.get(), mapping);
     }
 }

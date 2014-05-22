@@ -20,29 +20,14 @@
 
 package rapaio.core.distributions.empirical;
 
-
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class KernelFunctionCosine implements KernelFunction {
+public interface KFunc {
 
-    @Override
-    public double pdf(double x, double x0, double bandwidth) {
+    double pdf(double x, double x0, double bandwidth);
 
-        double value = Math.abs(x - x0) / bandwidth;
-        if (value <= 1) {
-            return Math.PI * Math.cos(Math.PI * value / 2) / 4.;
-        }
-        return 0;
-    }
+    double getMinValue(double x0, double bandwidth);
 
-    @Override
-    public double getMinValue(double x0, double bandwidth) {
-        return x0 - bandwidth;
-    }
-
-    @Override
-    public double getMaxValue(double x0, double bandwidth) {
-        return x0 + bandwidth;
-    }
+    double getMaxValue(double x0, double bandwidth);
 }

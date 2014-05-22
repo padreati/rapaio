@@ -23,6 +23,7 @@ package rapaio.data.mapping;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -33,6 +34,11 @@ public class Mapping implements Serializable {
 
     public Mapping() {
         this.mapping = new ArrayList<>();
+    }
+
+    public Mapping(int start, int rowCount) {
+        this.mapping = new ArrayList<>();
+        IntStream.range(0, rowCount).forEach(mapping::add);
     }
 
     public Mapping(int[] rows) {
@@ -58,5 +64,9 @@ public class Mapping implements Serializable {
 
     public void add(int pos) {
         mapping.add(pos);
+    }
+
+    public IntStream rowStream() {
+        return mapping.stream().mapToInt(i -> i);
     }
 }

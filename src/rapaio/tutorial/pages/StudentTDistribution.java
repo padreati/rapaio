@@ -27,7 +27,7 @@ import rapaio.graphics.plot.FunctionLine;
 
 import java.io.IOException;
 
-import static rapaio.workspace.Workspace.*;
+import static rapaio.workspace.W.*;
 
 /**
  * @author Aurelian Tutuianu

@@ -82,7 +82,7 @@ public class FIterator implements Iterator<FSpot>, Serializable {
         if (spots.isEmpty()) return null;
         final Mapping mapping = new Mapping();
         spots.stream().forEach((spot) -> mapping.add(spot.rowId()));
-        final Frame df = spots.stream().findFirst().get().getFrame().source();
+        final Frame df = spots.stream().findFirst().get().getFrame();
         return new MappedFrame(df, mapping);
     }
 }

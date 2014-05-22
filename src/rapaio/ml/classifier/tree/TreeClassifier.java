@@ -20,10 +20,6 @@
 
 package rapaio.ml.classifier.tree;
 
-import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.tools.DensityTable;
-import rapaio.ml.classifier.tools.DensityVector;
-import rapaio.ml.ml_experiment.cluster.util.Pair;
 import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.data.Vector;
@@ -31,6 +27,10 @@ import rapaio.data.filters.BaseFilters;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
 import rapaio.data.stream.FSpot;
+import rapaio.ml.classifier.AbstractClassifier;
+import rapaio.ml.classifier.tools.DensityTable;
+import rapaio.ml.classifier.tools.DensityVector;
+import rapaio.ml.ml_experiment.cluster.util.Pair;
 import rapaio.util.SPredicate;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -627,7 +627,7 @@ public class TreeClassifier extends AbstractClassifier {
                 });
                 List<Frame> frames = new ArrayList<>();
                 mappings.stream().forEach(mapping -> {
-                    frames.add(new MappedFrame(df.source(), mapping));
+                    frames.add(new MappedFrame(df, mapping));
                 });
                 return frames;
             }
@@ -663,7 +663,7 @@ public class TreeClassifier extends AbstractClassifier {
                 missingSpots.stream().forEach(spot -> mappings.get(index).add(spot.rowId()));
                 List<Frame> frames = new ArrayList<>();
                 mappings.stream().forEach(mapping -> {
-                    frames.add(new MappedFrame(df.source(), mapping));
+                    frames.add(new MappedFrame(df, mapping));
                 });
                 return frames;
             }
@@ -701,7 +701,7 @@ public class TreeClassifier extends AbstractClassifier {
                 for (int i = 0; i < mappings.size(); i++) {
                     final int index = i;
                     Mapping mapping = mappings.get(i);
-                    Frame f = new MappedFrame(df.source(), mapping);
+                    Frame f = new MappedFrame(df, mapping);
                     f.stream().forEach(spot -> {
                         if (missingSpots.contains(spot.rowId()))
                             spot.setWeight(spot.getWeight() * p[index]);
@@ -733,7 +733,7 @@ public class TreeClassifier extends AbstractClassifier {
                 missingSpots.forEach(rowId -> mappings.get(RandomSource.nextInt(mappings.size())).add(rowId));
                 List<Frame> frames = new ArrayList<>();
                 mappings.stream().forEach(mapping -> {
-                    frames.add(new MappedFrame(df.source(), mapping));
+                    frames.add(new MappedFrame(df, mapping));
                 });
                 return frames;
             }

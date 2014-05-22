@@ -18,30 +18,25 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions.empirical;
+package rapaio.session;
 
-import rapaio.core.distributions.Distribution;
-import rapaio.core.distributions.Normal;
+import org.junit.Assert;
+import org.junit.Test;
+import rapaio.workspace.W;
 
 /**
- * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * @author Aurelian Tutuianu
  */
-public class KernelFunctionGaussian implements KernelFunction {
 
-    private final Distribution normal = new Normal();
 
-    @Override
-    public double pdf(double x, double x0, double bandwidth) {
-        return normal.pdf((x - x0) / bandwidth);
-    }
+public class WTest {
 
-    @Override
-    public double getMinValue(double x0, double bandwidth) {
-        return x0 - 4 * bandwidth;
-    }
+	@Test
+	public void testSession() {
 
-    @Override
-    public double getMaxValue(double x0, double bandwidth) {
-        return x0 + 4 * bandwidth;
-    }
+		W.getData().put(String.class, "a", "a getValue");
+		String get = W.getData().get(String.class, "a");
+
+		Assert.assertEquals("a getValue", get);
+	}
 }

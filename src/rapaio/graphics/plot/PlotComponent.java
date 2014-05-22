@@ -126,4 +126,14 @@ public abstract class PlotComponent extends BaseFigure {
         super.setPch(pch);
         return this;
     }
+
+    @Override
+    public PlotComponent setAlpha(float alpha) {
+        return (PlotComponent)super.setAlpha(alpha);
+    }
+
+    @Override
+    public float getAlpha() {
+        return super.getAlpha();
+    }
 }

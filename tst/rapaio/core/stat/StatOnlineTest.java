@@ -29,8 +29,8 @@ import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;
 import rapaio.printer.LocalPrinter;
 
-import static rapaio.workspace.Workspace.draw;
-import static rapaio.workspace.Workspace.setPrinter;
+import static rapaio.workspace.W.draw;
+import static rapaio.workspace.W.setPrinter;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>

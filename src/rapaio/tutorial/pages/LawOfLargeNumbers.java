@@ -32,7 +32,7 @@ import rapaio.graphics.plot.Lines;
 
 import java.io.IOException;
 
-import static rapaio.workspace.Workspace.*;
+import static rapaio.workspace.W.*;
 
 /**
  * @author Aurelian Tutuianu

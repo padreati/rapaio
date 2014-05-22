@@ -35,7 +35,7 @@ import rapaio.ml.refactor.simple.L2ConstantRegressor;
 import rapaio.ml.refactor.tree.DecisionStumpRegressor;
 import rapaio.printer.LocalPrinter;
 import rapaio.workspace.Summary;
-import rapaio.workspace.Workspace;
+import rapaio.workspace.W;
 
 import java.io.IOException;
 
@@ -47,7 +47,7 @@ public class GradientBoostingTreeRegressorTest {
     @Test
     public void testProstate() throws IOException {
 
-        Workspace.setPrinter(new LocalPrinter());
+        W.setPrinter(new LocalPrinter());
 //        Frame df = Datasets.loadProstateCancer();
 //        Summary.summary(df);
 //        df = BaseFilters.removeCols(df, "train");
@@ -83,7 +83,7 @@ public class GradientBoostingTreeRegressorTest {
             index.addValue(i);
             mae.addValue(new MAE(gbt.getFitValues(), df.col(targetColName)).getValue());
 
-            Workspace.draw(new Plot().add(new Lines(index, mae)));
+            W.draw(new Plot().add(new Lines(index, mae)));
         }
     }
 }

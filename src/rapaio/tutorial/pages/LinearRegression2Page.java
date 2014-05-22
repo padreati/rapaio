@@ -23,8 +23,8 @@ package rapaio.tutorial.pages;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.workspace.Workspace.heading;
-import static rapaio.workspace.Workspace.p;
+import static rapaio.workspace.W.heading;
+import static rapaio.workspace.W.p;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>

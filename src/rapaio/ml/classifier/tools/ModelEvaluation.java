@@ -34,7 +34,7 @@ import java.util.List;
 
 import static rapaio.data.filters.BaseFilters.delta;
 import static rapaio.data.filters.BaseFilters.shuffle;
-import static rapaio.workspace.Workspace.print;
+import static rapaio.workspace.W.print;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -59,8 +59,8 @@ public class ModelEvaluation {
                     trainMapping.addAll(strata[j]);
                 }
             }
-            Frame train = new MappedFrame(df.source(), new Mapping(trainMapping));
-            Frame test = new MappedFrame(df.source(), new Mapping(testMapping));
+            Frame train = new MappedFrame(df, new Mapping(trainMapping));
+            Frame test = new MappedFrame(df, new Mapping(testMapping));
 
             c.learn(train, classColName);
             c.predict(test);
@@ -135,8 +135,8 @@ public class ModelEvaluation {
                     }
                 }
             }
-            Frame train = new MappedFrame(df.source(), new Mapping(trainMapping));
-            Frame test = new MappedFrame(df.source(), new Mapping(testMapping));
+            Frame train = new MappedFrame(df, new Mapping(trainMapping));
+            Frame test = new MappedFrame(df, new Mapping(testMapping));
 
             for (int k = 0; k < classifiers.size(); k++) {
                 Classifier c = classifiers.get(k);

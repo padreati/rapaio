@@ -155,9 +155,7 @@ public class Histogram extends PlotComponent {
             if (!getParent().getRange().contains(binStart(i), 0)) {
                 continue;
             }
-//			if (!getParent().getRange().contains(binStart(i + 1), maxd)) {
-//				continue;
-//			}
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getAlpha()));
             int[] x;
             int[] y;
             g2d.setColor(ColorPalette.STANDARD.getColor(0));

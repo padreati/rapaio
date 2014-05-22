@@ -111,7 +111,7 @@ public class MVClassifier extends AbstractClassifier {
     }
 
     public Nominal pred(String targetCol) {
-        return models.get(targetCols[0]).pred();
+        return models.get(targetCol).pred();
     }
 
     public Frame dist(String targetCol) {

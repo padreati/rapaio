@@ -30,7 +30,7 @@ import rapaio.workspace.Summary;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.workspace.Workspace.*;
+import static rapaio.workspace.W.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

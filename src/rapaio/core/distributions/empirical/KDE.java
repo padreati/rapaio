@@ -22,65 +22,58 @@ package rapaio.core.distributions.empirical;
 
 import rapaio.core.stat.Variance;
 import rapaio.data.Vector;
+import rapaio.data.filters.BaseFilters;
 
+import java.util.Arrays;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class KernelDensityEstimator {
+public class KDE {
 
-    private final Vector values;
-    private final KernelFunction kernel;
+    private final double[] values;
+    private final KFunc kernel;
     private final double bandwidth;
 
-    public KernelDensityEstimator(Vector values) {
-        this.values = values;
-        this.kernel = new KernelFunctionGaussian();
+    public KDE(Vector values) {
+        this.values = values.stream().mapToDouble().toArray();
+        this.kernel = new KFuncGaussian();
         this.bandwidth = getSilvermanBandwidth(values);
     }
 
-    public KernelDensityEstimator(Vector values, double bandwidth) {
-        this.values = values;
-        this.kernel = new KernelFunctionGaussian();
-        this.bandwidth = bandwidth;
+    public KDE(Vector values, double bandwidth) {
+        this(values, new KFuncGaussian(), bandwidth);
     }
 
-    public KernelDensityEstimator(Vector values, KernelFunction kernel) {
-        this.values = values;
-        this.kernel = kernel;
-        this.bandwidth = getSilvermanBandwidth(values);
+    public KDE(Vector values, KFunc kernel) {
+        this(values, kernel, getSilvermanBandwidth(values));
     }
 
-    public KernelDensityEstimator(Vector values, KernelFunction kernel, double bandwidth) {
-        this.values = values;
+    public KDE(Vector values, KFunc kernel, double bandwidth) {
+        this.values = BaseFilters.sort(values).stream().filter(s -> !s.isMissing()).mapToDouble().toArray();
         this.kernel = kernel;
         this.bandwidth = bandwidth;
     }
 
     public double pdf(double x) {
-        double sum = 0;
-        double count = 0;
-        for (int i = 0; i < values.rowCount(); i++) {
-            if (values.isMissing(i)) {
-                continue;
-            }
-            count++;
-            sum += kernel.pdf(x, values.getValue(i), bandwidth);
-        }
-        return sum / (count * bandwidth);
+        int from = Arrays.binarySearch(values, kernel.getMinValue(x, bandwidth));
+        if (from < 0) from = -from - 1;
+        int to = Arrays.binarySearch(values, kernel.getMaxValue(x, bandwidth));
+        if (to < 0) to = -to - 1;
+        return IntStream.range(from, to)
+                .parallel()
+                .mapToDouble(i -> kernel.pdf(x, values[i], bandwidth))
+                .sum() / (values.length * bandwidth);
     }
 
     public Function<Double, Double> getPdf() {
         return this::pdf;
     }
 
-    public KernelFunction getKernel() {
+    public KFunc getKernel() {
         return kernel;
-    }
-
-    public Vector getValues() {
-        return values;
     }
 
     public double getBandwidth() {
@@ -100,7 +93,7 @@ public class KernelDensityEstimator {
      * @param vector sample of values
      * @return teh getValue of the approximation for bandwidth
      */
-    public final double getSilvermanBandwidth(Vector vector) {
+    public static double getSilvermanBandwidth(Vector vector) {
         Variance var = new Variance(vector);
         double sd = Math.sqrt(var.getValue());
         if (sd == 0) {

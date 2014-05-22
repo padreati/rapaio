@@ -20,9 +20,9 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.core.distributions.empirical.KernelDensityEstimator;
-import rapaio.core.distributions.empirical.KernelFunction;
-import rapaio.core.distributions.empirical.KernelFunctionGaussian;
+import rapaio.core.distributions.empirical.KDE;
+import rapaio.core.distributions.empirical.KFunc;
+import rapaio.core.distributions.empirical.KFuncGaussian;
 import rapaio.data.Numeric;
 import rapaio.data.Vector;
 import rapaio.graphics.base.Range;
@@ -35,21 +35,21 @@ import java.awt.geom.Line2D;
  */
 public class DensityLine extends PlotComponent {
 
-    private final KernelDensityEstimator kde;
+    private final KDE kde;
     private final int points;
     private final Vector vector;
     private final double bandwidth;
 
     public DensityLine(Vector vector) {
-        this(vector, new KernelFunctionGaussian(), new KernelDensityEstimator(vector).getSilvermanBandwidth(vector), 256);
+        this(vector, new KFuncGaussian(), new KDE(vector).getSilvermanBandwidth(vector), 256);
     }
 
     public DensityLine(Vector vector, double bandwidth) {
-        this(vector, new KernelFunctionGaussian(), bandwidth, 256);
+        this(vector, new KFuncGaussian(), bandwidth, 256);
     }
 
-    public DensityLine(Vector vector, KernelFunction kf, double bandwidth, int points) {
-        this.kde = new KernelDensityEstimator(vector, kf, bandwidth);
+    public DensityLine(Vector vector, KFunc kf, double bandwidth, int points) {
+        this.kde = new KDE(vector, kf, bandwidth);
         this.points = points;
         this.vector = vector;
         this.bandwidth = bandwidth;

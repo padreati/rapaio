@@ -21,7 +21,7 @@
 package rapaio.tutorial.pages;
 
 import rapaio.core.RandomSource;
-import rapaio.core.distributions.empirical.KernelDensityEstimator;
+import rapaio.core.distributions.empirical.KDE;
 import rapaio.core.sample.DiscreteSampling;
 import rapaio.data.*;
 import rapaio.graphics.Plot;
@@ -30,7 +30,7 @@ import rapaio.workspace.Summary;
 
 import java.io.IOException;
 
-import static rapaio.workspace.Workspace.*;
+import static rapaio.workspace.W.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -367,7 +367,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                 + "density would help more.");
 
         draw(new Plot()
-                        .add(new FunctionLine(new KernelDensityEstimator(df2.col("winning number"), 3).getPdf())
+                        .add(new FunctionLine(new KDE(df2.col("winning number"), 3).getPdf())
                                 .setCol(Vectors.newIdxOne(1)))
                         .setXLab("winning numbers")
                         .setYLab("kernel probability density")

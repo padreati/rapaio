@@ -25,7 +25,13 @@ import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Vector;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.StreamSupport;
 
 /**
  * A frame which is learn on the base of another frame with
@@ -42,22 +48,47 @@ public class MappedFrame extends AbstractFrame {
 
     private final Mapping mapping;
     private final Frame source;
-    private final HashMap<Integer, Vector> vectors = new HashMap<>();
     private final Numeric weights;
+    private final String[] names;
+    private final HashMap<String, Integer> colIndex;
+    private final Vector[] vectors;
+
 
     public MappedFrame(Frame df, Mapping mapping) {
-        if (df.isMappedFrame()) {
-            throw new IllegalArgumentException("Not allowed mapped frames as source");
-        }
         this.mapping = mapping;
-        this.source = df;
-        for (int i = 0; i < source.colCount(); i++) {
-            vectors.put(i, new MappedVector(source.col(i), mapping));
+        if (df.isMappedFrame()) {
+            this.source = df.sourceFrame();
+        } else {
+            this.source = df;
         }
-        this.weights = new Numeric(mapping.size());
-        for (int i = 0; i < mapping.size(); i++) {
-            weights.setValue(i, source.getWeight(mapping.get(i)));
+        this.weights = new Numeric(mapping.rowStream().mapToDouble(source::getWeight).toArray());
+        this.names = df.colNames();
+        this.colIndex = new HashMap<>();
+        this.vectors = new Vector[names.length];
+        IntStream.range(0, names.length).forEach(i -> {
+            colIndex.put(names[i], i);
+            vectors[i] = new MappedVector(source.col(names[i]), mapping);
+        });
+    }
+
+    public MappedFrame(Frame df, Mapping mapping, List<String> columns) {
+        this.mapping = mapping;
+        if (df.isMappedFrame()) {
+            this.source = df.sourceFrame();
+        } else {
+            this.source = df;
         }
+        this.weights = new Numeric(mapping.rowStream().mapToDouble(source::getWeight).toArray());
+        this.names = new String[columns.size()];
+        for (int i = 0; i < columns.size(); i++) {
+            names[i] = columns.get(i);
+        }
+        this.colIndex = new HashMap<>();
+        this.vectors = new Vector[names.length];
+        IntStream.range(0, names.length).forEach(i -> {
+            colIndex.put(names[i], i);
+            vectors[i] = new MappedVector(source.col(names[i]), mapping);
+        });
     }
 
     @Override
@@ -67,7 +98,7 @@ public class MappedFrame extends AbstractFrame {
 
     @Override
     public int colCount() {
-        return source.colCount();
+        return names.length;
     }
 
     @Override
@@ -81,7 +112,7 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public Frame source() {
+    public Frame sourceFrame() {
         return source;
     }
 
@@ -93,17 +124,17 @@ public class MappedFrame extends AbstractFrame {
 
     @Override
     public String[] colNames() {
-        return source.colNames();
+        return names;
     }
 
     @Override
     public int colIndex(String name) {
-        return source.colIndex(name);
+        return colIndex.get(name);
     }
 
     @Override
     public Vector col(int col) {
-        return vectors.get(col);
+        return vectors[col];
     }
 
     @Override

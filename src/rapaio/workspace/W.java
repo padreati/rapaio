@@ -33,14 +33,14 @@ import java.util.List;
 /**
  * @author tutuianu
  */
-public class Workspace {
+public class W {
 
     private static WorkspaceData session = new WorkspaceData();
     private static final List<WorkspaceListener> listeners = new LinkedList<>();
     private static Printer printer = new StandardPrinter();
 
     public static void setPrinter(Printer printer) {
-        Workspace.printer = printer;
+        W.printer = printer;
     }
 
     public static Printer getPrinter() {

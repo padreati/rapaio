@@ -21,9 +21,7 @@
 package rapaio.ml.classifier.bayes;
 
 import rapaio.core.distributions.Normal;
-import rapaio.core.distributions.empirical.KernelDensityEstimator;
-import rapaio.core.distributions.empirical.KernelFunctionEpanechnikov;
-import rapaio.core.distributions.empirical.KernelFunctionUniform;
+import rapaio.core.distributions.empirical.*;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
@@ -31,7 +29,6 @@ import rapaio.data.Frames;
 import rapaio.data.Nominal;
 import rapaio.data.Vector;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.colselect.ColSelector;
 import rapaio.ml.classifier.tools.DensityVector;
 
@@ -107,7 +104,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
 
         priors = new HashMap<>();
         DensityVector dv = new DensityVector(dict);
-        df.stream().forEach(s -> dv.update(s.getIndex(targetCol), 1.0));
+        df.stream().forEach(s -> dv.update(s.getIndex(targetCol), s.getWeight()));
         // laplace add-one smoothing
         for (int i = 0; i < dict.length; i++) {
             dv.update(i, 1.0);
@@ -152,9 +149,11 @@ public class NaiveBayesClassifier extends AbstractClassifier {
             for (int j = 1; j < dict.length; j++) {
                 double sumLog = Math.log(priors.get(dict[j]));
                 for (String testCol : cvpEstimatorMap.keySet()) {
+                    if (df.isMissing(i, testCol)) continue;
                     sumLog += cvpEstimatorMap.get(testCol).cpValue(df.getValue(i, testCol), dict[j]);
                 }
                 for (String testCol : dvpEstimatorMap.keySet()) {
+                    if (df.isMissing(i, testCol)) continue;
                     sumLog += dvpEstimatorMap.get(testCol).cpValue(df.getLabel(i, testCol), dict[j]);
                 }
                 dv.update(j, sumLog);
@@ -232,7 +231,17 @@ public class NaiveBayesClassifier extends AbstractClassifier {
 
     public static class CvpEstimatorKDE implements CvpEstimator {
 
-        private Map<String, KernelDensityEstimator> kde = new HashMap<>();
+        private Map<String, KDE> kde = new HashMap<>();
+        private KFunc kfunc = new KFuncGaussian();
+        private double bandwidth = 0;
+
+        public CvpEstimatorKDE() {
+        }
+
+        public CvpEstimatorKDE(KFunc kfunc, double bandwidth) {
+            this.kfunc = kfunc;
+            this.bandwidth = bandwidth;
+        }
 
         @Override
         public String name() {
@@ -247,7 +256,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
                 if ("?".equals(classLabel)) continue;
                 Frame cond = df.stream().filter(s -> classLabel.equals(s.getLabel(targetCol))).toMappedFrame();
                 Vector v = cond.col(testCol);
-                KernelDensityEstimator k = new KernelDensityEstimator(v);
+                KDE k = new KDE(v, kfunc, (bandwidth == 0) ? KDE.getSilvermanBandwidth(v) : bandwidth);
 
                 kde.put(classLabel, k);
             }

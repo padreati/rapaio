@@ -39,7 +39,7 @@ import java.util.List;
 
 import static rapaio.core.sample.StatSampling.randomSample;
 import static rapaio.workspace.Summary.summary;
-import static rapaio.workspace.Workspace.*;
+import static rapaio.workspace.W.*;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>

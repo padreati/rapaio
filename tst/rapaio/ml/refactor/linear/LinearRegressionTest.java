@@ -35,8 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static rapaio.data.Vectors.newNumFrom;
-import static rapaio.workspace.Workspace.draw;
-import static rapaio.workspace.Workspace.setPrinter;
+import static rapaio.workspace.W.draw;
+import static rapaio.workspace.W.setPrinter;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>

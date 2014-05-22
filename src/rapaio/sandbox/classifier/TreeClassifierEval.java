@@ -32,11 +32,11 @@ import rapaio.graphics.plot.Lines;
 import rapaio.io.ArffPersistence;
 import rapaio.printer.LocalPrinter;
 import rapaio.workspace.Summary;
-import rapaio.workspace.Workspace;
+import rapaio.workspace.W;
 
 import java.util.List;
 
-import static rapaio.workspace.Workspace.draw;
+import static rapaio.workspace.W.draw;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -66,7 +66,7 @@ public class TreeClassifierEval {
     private static void evalWith(Frame df, String targetName, int rounds, int step,
                                  double sampling, boolean bootstrap, int minCount) {
 
-        Workspace.setPrinter(new LocalPrinter());
+        W.setPrinter(new LocalPrinter());
 
         Summary.summary(df);
 

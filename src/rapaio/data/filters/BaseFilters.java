@@ -73,24 +73,17 @@ public final class BaseFilters implements Serializable {
      *
      * @param df        frame
      * @param colRange  column range
-     * @param colRange}
      * @return original frame without columns specified in {
      */
     public static Frame removeCols(Frame df, String colRange) {
         ColRange range = new ColRange(colRange);
         Set<Integer> indexes = new HashSet<>(range.parseColumnIndexes(df));
-        List<Vector> vectors = new ArrayList<>();
         List<String> names = new ArrayList<>();
         for (int i = 0; i < df.colCount(); i++) {
             if (indexes.contains(i)) continue;
-            vectors.add(df.col(i).source());
             names.add(df.colNames()[i]);
         }
-        SolidFrame solid = new SolidFrame(df.source().rowCount(), vectors, names);
-        if (!df.isMappedFrame()) {
-            return solid;
-        }
-        return new MappedFrame(solid, df.mapping());
+        return new MappedFrame(df, df.mapping(), names);
     }
 
     /**
@@ -103,17 +96,15 @@ public final class BaseFilters implements Serializable {
     public static Frame retainCols(Frame df, String colRange) {
         ColRange range = new ColRange(colRange);
         final List<Integer> indexes = range.parseColumnIndexes(df);
-        Vector[] vectors = new Vector[indexes.size()];
         String[] names = new String[indexes.size()];
         int posIndexes = 0;
         for (int i = 0; i < df.colCount(); i++) {
             if (posIndexes < indexes.size() && i == indexes.get(posIndexes)) {
-                vectors[posIndexes] = df.col(i);
                 names[posIndexes] = df.colNames()[i];
                 posIndexes++;
             }
         }
-        return new SolidFrame(df.rowCount(), vectors, names);
+        return new MappedFrame(df, df.mapping(), Arrays.asList(names));
     }
 
     /**
@@ -268,6 +259,7 @@ public final class BaseFilters implements Serializable {
         if (!df.col(colName).type().isNominal()) {
             throw new IllegalArgumentException("Index does not specify a nominal attribute");
         }
+        Map<String, Frame> frames = new HashMap<>();
         String[] dict = df.col(colName).getDictionary();
         final Mapping[] mappings = new Mapping[dict.length];
         for (int i = 0; i < dict.length; i++) {
@@ -278,9 +270,8 @@ public final class BaseFilters implements Serializable {
             int index = fi.getIndex(colName);
             mappings[index].add(fi.rowId());
         });
-        Map<String, Frame> frames = new HashMap<>();
         for (int i = 0; i < mappings.length; i++) {
-            frames.put(dict[i], new MappedFrame(df.source(), mappings[i]));
+            frames.put(dict[i], new MappedFrame(df, mappings[i]));
         }
         return frames;
     }
@@ -299,11 +290,11 @@ public final class BaseFilters implements Serializable {
         for (int i = mapping.size(); i > 1; i--) {
             mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
         }
-        return new MappedFrame(df.source(), new Mapping(mapping));
+        return new MappedFrame(df, new Mapping(mapping));
     }
 
     public static Frame sort(Frame df, Comparator<Integer>... comparators) {
-        List<Integer> mapping = new ArrayList();
+        List<Integer> mapping = new ArrayList<>();
         for (int i = 0; i < df.rowCount(); i++) {
             mapping.add(i);
         }
@@ -312,12 +303,12 @@ public final class BaseFilters implements Serializable {
         for (Integer aMapping : mapping) {
             ids.add(df.rowId(aMapping));
         }
-        return new MappedFrame(df.source(), new Mapping(ids));
+        return new MappedFrame(df, new Mapping(ids));
     }
 
 
     public static Frame delta(Frame source, Frame remove) {
-        Set<Integer> existing = remove.stream().map(s -> s.rowId()).collect(Collectors.toSet());
+        Set<Integer> existing = remove.stream().map(FSpot::rowId).collect(Collectors.toSet());
         return source.stream().filter(s -> !existing.contains(s.rowId())).toMappedFrame();
     }
 

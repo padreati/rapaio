@@ -20,8 +20,8 @@
 
 package rapaio.tutorial.pages;
 
-import rapaio.core.distributions.empirical.KernelDensityEstimator;
-import rapaio.core.distributions.empirical.KernelFunction;
+import rapaio.core.distributions.empirical.KDE;
+import rapaio.core.distributions.empirical.KFunc;
 import rapaio.data.Frame;
 import rapaio.data.Vector;
 import rapaio.data.Vectors;
@@ -35,7 +35,7 @@ import rapaio.workspace.Summary;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.workspace.Workspace.*;
+import static rapaio.workspace.W.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -168,9 +168,9 @@ public class HistogramDensityTutorial implements TutorialPage {
 
         draw(new Plot()
                         .add(new Histogram(col))
-                        .add(new FunctionLine(new KernelDensityEstimator(col, 0.1).getPdf()).setCol(1))
-                        .add(new FunctionLine(new KernelDensityEstimator(col, 0.5).getPdf()).setCol(2))
-                        .add(new FunctionLine(new KernelDensityEstimator(col, 2).getPdf()).setCol(3))
+                        .add(new FunctionLine(new KDE(col, 0.1).getPdf()).setCol(1))
+                        .add(new FunctionLine(new KDE(col, 0.5).getPdf()).setCol(2))
+                        .add(new FunctionLine(new KDE(col, 2).getPdf()).setCol(3))
                         .setYLim(0, 0.18),
                 600, 300
         );
@@ -185,8 +185,8 @@ public class HistogramDensityTutorial implements TutorialPage {
                 + "once you implement a custom kernel function. ");
 
         draw(new Plot()
-                .add(new FunctionLine(new KernelDensityEstimator(col).getPdf()).setCol(1))
-                .add(new DensityLine(col, new KernelFunction() {
+                .add(new FunctionLine(new KDE(col).getPdf()).setCol(1))
+                .add(new DensityLine(col, new KFunc() {
                     @Override
                     public double pdf(double x, double x0, double bandwidth) {
                         return (Math.abs(x - x0) / bandwidth >= 0.5) ? 0 : 1.;

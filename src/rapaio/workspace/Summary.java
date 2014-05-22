@@ -30,8 +30,8 @@ import rapaio.data.Vector;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import static rapaio.workspace.Workspace.code;
-import static rapaio.workspace.Workspace.getPrinter;
+import static rapaio.workspace.W.code;
+import static rapaio.workspace.W.getPrinter;
 
 /**
  * @author tutuianu
@@ -207,6 +207,7 @@ public class Summary {
             }
             buffer.append(sb.toString()).append("\n");
             for (int j = 0; j < 7; j++) {
+                sb.append("\n");
                 sb = new StringBuilder();
                 for (int i = pos; i < last; i++) {
                     if (sb.length() != 0) {

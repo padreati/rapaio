@@ -66,11 +66,12 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
     @Override
     public AdaBoostSAMMEClassifier newInstance() {
-        return (AdaBoostSAMMEClassifier) new AdaBoostSAMMEClassifier()
-                .withClassifier(this.base)
+        return new AdaBoostSAMMEClassifier()
+                .withClassifier(this.base.newInstance())
                 .withRuns(this.runs)
                 .withColSelector(this.colSelector)
-                .withStopOnError(stopOnError);
+                .withStopOnError(stopOnError)
+                .withSampling(sampling);
     }
 
     @Override
@@ -176,7 +177,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         int[] rows = getSamplingRows(df);
         Mapping mapping = new Mapping();
         for (int row : rows) mapping.add(df.rowId(row));
-        Frame dfTrain = new MappedFrame(df.source(), mapping);
+        Frame dfTrain = new MappedFrame(df, mapping);
         for (int j = 0; j < rows.length; j++) {
             dfTrain.setWeight(j, w.getValue(rows[j]));
         }

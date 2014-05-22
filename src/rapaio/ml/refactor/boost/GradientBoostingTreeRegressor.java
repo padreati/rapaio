@@ -49,7 +49,7 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
     BoostingLossFunction lossFunction = new L1BoostingLossFunction();
     BTRegressor regressor = new DecisionStumpRegressor();
     double shrinkage = 1.;
-    double bootstrap = Double.NaN;
+    double bootstrap = 1;
 
     // prediction
     Regressor initialRegressor = new L2ConstantRegressor();
@@ -132,13 +132,12 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
     @Override
     public void learn(Frame train, String targetColName) {
         this.df = train;
-        if (train.isMappedFrame()) {
-            this.df = Frames.solidCopy(train);
-        }
         this.targetColName = targetColName;
 
         Vector y = df.col(targetColName);
         Frame x = BaseFilters.removeCols(df, targetColName);
+        x = Frames.solidCopy(x);
+
         initialRegressor.learn(df, targetColName);
         trees = new ArrayList<>();
 
@@ -149,6 +148,7 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
 
         for (int i = 1; i <= rounds; i++) {
             Numeric gradient = lossFunction.gradient(y, fitLearn);
+
 
             Frame xm = Frames.addCol(x, gradient, "target", x.colCount());
             BTRegressor tree = createBTRegressor();

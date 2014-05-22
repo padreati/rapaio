@@ -28,7 +28,7 @@ import rapaio.data.Vector;
 
 import java.util.Arrays;
 
-import static rapaio.workspace.Workspace.getPrinter;
+import static rapaio.workspace.W.getPrinter;
 
 /**
  * /**

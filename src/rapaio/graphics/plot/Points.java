@@ -57,18 +57,17 @@ public class Points extends PlotComponent {
 
     @Override
     public void paint(Graphics2D g2d) {
-//        g2d.setBackground(ColorPalette.STANDARD.getColor(255));
-        g2d.setBackground(ColorPalette.GRAYSCALE.getColor(255));
 
         for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
             if (x.isMissing(i) || y.isMissing(i)) {
                 continue;
             }
             g2d.setColor(getCol(i));
-            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f));
-            int xx = (int) (getParent().xScale(x.getValue(i)));
-            int yy = (int) (getParent().yScale(y.getValue(i)));
-            PchPalette.STANDARD.draw(g2d, xx, yy, getSize(i), getPch(i));
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getAlpha()));
+            PchPalette.STANDARD.draw(g2d,
+                    getParent().xScale(x.getValue(i)),
+                    getParent().yScale(y.getValue(i)),
+                    getSize(i), getPch(i));
         }
     }
 }

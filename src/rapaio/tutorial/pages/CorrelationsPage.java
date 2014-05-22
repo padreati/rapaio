@@ -34,7 +34,7 @@ import java.net.URISyntaxException;
 import static rapaio.data.filters.BaseFilters.jitter;
 import static rapaio.workspace.Summary.names;
 import static rapaio.workspace.Summary.summary;
-import static rapaio.workspace.Workspace.*;
+import static rapaio.workspace.W.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

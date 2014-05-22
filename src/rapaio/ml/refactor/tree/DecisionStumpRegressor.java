@@ -105,12 +105,12 @@ public class DecisionStumpRegressor extends AbstractRegressor implements BTRegre
         double[] var = new double[sort.rowCount()];
         StatOnline so = new StatOnline();
         for (int i = 0; i < sort.rowCount(); i++) {
-            so.update(df.source().getValue(sort.rowId(i), targetColName));
+            so.update(df.sourceFrame().getValue(sort.rowId(i), targetColName));
             var[i] = so.getVariance() * so.getN();
         }
         so = new StatOnline();
         for (int i = sort.rowCount() - 1; i >= 0; i--) {
-            so.update(df.source().getValue(sort.rowId(i), targetColName));
+            so.update(df.sourceFrame().getValue(sort.rowId(i), targetColName));
             var[i] += so.getVariance() * so.getN();
         }
         for (int i = minCount + 1; i < sort.rowCount() - minCount; i++) {

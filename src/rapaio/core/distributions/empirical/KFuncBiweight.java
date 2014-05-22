@@ -23,12 +23,12 @@ package rapaio.core.distributions.empirical;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class KernelFunctionTriangular implements KernelFunction {
+public class KFuncBiweight implements KFunc {
 
     @Override
     public double pdf(double x, double x0, double bandwidth) {
         double value = Math.abs(x - x0) / bandwidth;
-        return value <= 1 ? 1 - value : 0;
+        return value <= 1 ? 15 * (1 - value * value) * (1 - value * value) / 16. : 0;
     }
 
     @Override

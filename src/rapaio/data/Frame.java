@@ -103,7 +103,7 @@ public interface Frame extends Serializable {
      *
      * @return source frame when mapped, itself for solid frame
      */
-    public Frame source();
+    public Frame sourceFrame();
 
     public Mapping mapping();
 

@@ -23,14 +23,14 @@ package rapaio.core.distributions.empirical;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class KernelFunctionTricube implements KernelFunction {
+public class KFuncTriweight implements KFunc {
 
     @Override
     public double pdf(double x, double x0, double bandwidth) {
         double value = Math.abs(x - x0) / bandwidth;
         if (value <= 1) {
-            double weight = 1 - value * value * value;
-            return 70. * weight * weight * weight / 81.;
+            double weight = 1 - value * value;
+            return 35. * weight * weight * weight / 32.;
         }
         return 0;
     }

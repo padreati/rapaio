@@ -21,6 +21,7 @@
 package rapaio.graphics.pch;
 
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 
 /**
@@ -31,12 +32,16 @@ public class StandardPchPalette implements PchPalette.Mapping {
     private final ArrayList<Drawer> pchs = new ArrayList<>();
 
     public StandardPchPalette() {
-        pchs.add((g2d, x, y, size) -> g2d.drawOval((int) (x - size), (int) (y - size), (int) (size * 2 + 1), (int) (size * 2 + 1)));
-        pchs.add((g2d, x, y, size) -> g2d.fillOval((int) (x - size), (int) (y - size), (int) (size * 2 + 1), (int) (size * 2 + 1)));
+        pchs.add((g2d, x, y, size) -> {
+            g2d.draw(new Ellipse2D.Double(x-size, y-size, size*2, size*2));
+        });
+        pchs.add((g2d, x, y, size) -> {
+            g2d.fill(new Ellipse2D.Double(x - size, y - size, size * 2, size * 2));
+        });
     }
 
     @Override
-    public void draw(Graphics2D g2d, int x, int y, double size, int pch) {
+    public void draw(Graphics2D g2d, double x, double y, double size, int pch) {
         if (pch < 0) {
             pch = 0;
         }
@@ -49,5 +54,5 @@ public class StandardPchPalette implements PchPalette.Mapping {
 
 interface Drawer {
 
-    void draw(Graphics2D g2d, int x, int y, double size);
+    void draw(Graphics2D g2d, double x, double y, double size);
 }

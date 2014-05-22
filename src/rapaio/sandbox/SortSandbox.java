@@ -23,7 +23,7 @@ package rapaio.sandbox;
 import rapaio.core.RandomSource;
 import rapaio.data.Numeric;
 import rapaio.printer.LocalPrinter;
-import rapaio.workspace.Workspace;
+import rapaio.workspace.W;
 
 import java.util.Arrays;
 
@@ -34,7 +34,7 @@ public class SortSandbox {
 
     public static void main(String[] args) {
 
-        Workspace.setPrinter(new LocalPrinter());
+        W.setPrinter(new LocalPrinter());
         int N = (int) Math.pow(10, 7);
         final Numeric num = new Numeric(N);
         for (int i = 0; i < N; i++) {
