@@ -71,7 +71,7 @@ public interface Vector extends Serializable {
      * @param row position of the observation
      * @return numerical setValue
      */
-    double getValue(int row);
+    double value(int row);
 
     /**
      * Set numeric setValue for the observation specified by {@param row} to {@param setValue}.
@@ -88,56 +88,56 @@ public interface Vector extends Serializable {
     void addValue(double value);
 
     /**
-     * Returns getIndex setValue for the observation specified by {@param row}
+     * Returns index setValue for the observation specified by {@param row}
      *
      * @param row position of the observation
-     * @return getIndex setValue
+     * @return index setValue
      */
-    int getIndex(int row);
+    int index(int row);
 
     /**
-     * Set getIndex setValue for the observation specified by {@param row}.
+     * Set index setValue for the observation specified by {@param row}.
      *
      * @param row   position of the observation
-     * @param value getIndex setValue for the observation
+     * @param value index setValue for the observation
      */
     void setIndex(int row, int value);
 
     void addIndex(int value);
 
     /**
-     * Returns nominal getLabel for the observation specified by {@param row}.
+     * Returns nominal label for the observation specified by {@param row}.
      *
      * @param row position of the observation
-     * @return getLabel setValue for the observation
+     * @return label setValue for the observation
      */
-    String getLabel(int row);
+    String label(int row);
 
     /**
-     * Set nominal getLabel for the observation specified by {@param row}.
+     * Set nominal label for the observation specified by {@param row}.
      *
      * @param row   position of the observation
-     * @param value getLabel setValue of the observation
+     * @param value label setValue of the observation
      */
     void setLabel(int row, String value);
 
     void addLabel(String value);
 
     /**
-     * Returns the term getDictionary used by the nominal values.
+     * Returns the term dictionary used by the nominal values.
      * <p>
-     * Term getDictionary contains all the nominal labels used by
+     * Term dictionary contains all the nominal labels used by
      * observations and might contain also additional nominal labels.
-     * Term getDictionary defines the domain of the definition for the nominal vector.
+     * Term dictionary defines the domain of the definition for the nominal vector.
      * <p>
-     * The term getDictionary contains nominal labels sorted in lexicografical order,
+     * The term dictionary contains nominal labels sorted in lexicografical order,
      * so binary search techniques may be used on this vector.
      * <p>
      * For other vector types like numerical ones this method returns nothing.
      *
-     * @return term getDictionary defined by the nominal vector.
+     * @return term dictionary defined by the nominal vector.
      */
-    String[] getDictionary();
+    String[] dictionary();
 
     void setDictionary(String[] dict);
 
@@ -151,7 +151,7 @@ public interface Vector extends Serializable {
      * @param row position of the observation
      * @return true if the observation measurement is not specified
      */
-    boolean isMissing(int row);
+    boolean missing(int row);
 
     /**
      * Set the setValue of the observation specified by {@param row} as missing, not available for analysis.

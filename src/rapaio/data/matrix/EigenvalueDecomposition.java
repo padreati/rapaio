@@ -439,7 +439,7 @@ public class EigenvalueDecomposition implements java.io.Serializable {
             }
         }
 
-        // Outer loop over eigenvalue getIndex
+        // Outer loop over eigenvalue index
         int iter = 0;
         while (n >= low) {
 

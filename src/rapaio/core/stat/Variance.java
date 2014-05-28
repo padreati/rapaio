@@ -46,7 +46,7 @@ public class Variance implements Printable {
         double mean = new Mean(vector).getValue();
         double n = 0;
         for (int i = 0; i < vector.rowCount(); i++) {
-            if (vector.isMissing(i)) {
+            if (vector.missing(i)) {
                 continue;
             }
             n++;
@@ -57,11 +57,11 @@ public class Variance implements Printable {
         double sum2 = 0;
         double sum3 = 0;
         for (int i = 0; i < vector.rowCount(); i++) {
-            if (vector.isMissing(i)) {
+            if (vector.missing(i)) {
                 continue;
             }
-            sum2 += Math.pow(vector.getValue(i) - mean, 2);
-            sum3 += vector.getValue(i) - mean;
+            sum2 += Math.pow(vector.value(i) - mean, 2);
+            sum3 += vector.value(i) - mean;
         }
         return (sum2 - Math.pow(sum3, 2) / n) / (n - 1);
 

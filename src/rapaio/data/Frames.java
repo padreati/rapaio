@@ -63,17 +63,17 @@ public final class Frames implements Serializable {
         for (int i = 0; i < df.colCount(); i++) {
             Vector src = df.col(i);
             if (src.type().isNominal()) {
-                vectors.add(new Nominal(len, df.col(i).getDictionary()));
+                vectors.add(new Nominal(len, df.col(i).dictionary()));
                 names.add(df.colNames()[i]);
                 for (int j = 0; j < df.rowCount(); j++) {
-                    vectors.get(i).setLabel(j, src.getLabel(j));
+                    vectors.get(i).setLabel(j, src.label(j));
                 }
             }
             if (src.type().isNumeric()) {
                 vectors.add(new Numeric(len));
                 names.add(df.colNames()[i]);
                 for (int j = 0; j < df.rowCount(); j++) {
-                    vectors.get(i).setValue(j, src.getValue(j));
+                    vectors.get(i).setValue(j, src.value(j));
                 }
             }
         }
@@ -119,11 +119,11 @@ public final class Frames implements Serializable {
                 if (sd == 0) continue;
 
                 for (int j = 0; j < df.rowCount(); j++) {
-                    if (df.isMissing(j, i)) {
+                    if (df.missing(j, i)) {
                         df.setValue(j, i, 0);
                         continue;
                     }
-                    df.setValue(j, i, (df.getValue(j, i) - mean) / sd);
+                    df.setValue(j, i, (df.value(j, i) - mean) / sd);
                 }
             }
         }

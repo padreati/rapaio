@@ -154,7 +154,7 @@ public class DiscreteSampling {
             }
             if (pos == prob.length) break;
 
-            // min replaced with the new selected getValue
+            // min replaced with the new selected value
             double tw = Math.pow(k[heap[1]], prob[pos]);
             double r2 = nextDouble() * (1. - tw) + tw;
             double ki = Math.pow(r2, 1 / prob[pos]);

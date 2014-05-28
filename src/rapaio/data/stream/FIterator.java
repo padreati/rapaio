@@ -73,11 +73,11 @@ public class FIterator implements Iterator<FSpot>, Serializable {
         map.get(key).add(current);
     }
 
-    public Frame getMappedFrame() {
-        return getMappedFrame(DEFAULT_KEY);
+    public Frame mappedFrame() {
+        return mappedFrame(DEFAULT_KEY);
     }
 
-    public Frame getMappedFrame(String key) {
+    public Frame mappedFrame(String key) {
         List<FSpot> spots = map.get(key);
         if (spots.isEmpty()) return null;
         final Mapping mapping = new Mapping();

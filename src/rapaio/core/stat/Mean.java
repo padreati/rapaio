@@ -49,7 +49,7 @@ public final class Mean implements Printable {
         }
         final double sum = vector.stream().complete().mapToDouble().sum() / count;
         final Pin<Double> t = new Pin<>(0.0);
-        vector.stream().complete().forEach((VSpot inst) -> t.set(t.get() + inst.getValue() - sum));
+        vector.stream().complete().forEach((VSpot inst) -> t.set(t.get() + inst.value() - sum));
         return sum + t.get() / count;
     }
 

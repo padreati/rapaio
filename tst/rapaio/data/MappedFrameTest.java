@@ -40,7 +40,7 @@ public class MappedFrameTest {
         Frame sort = BaseFilters.sort(orig, RowComparators.numericComparator(orig.col(1), true));
         sort = BaseFilters.sort(sort, RowComparators.numericComparator(orig.col(2), true));
         for (int i = 0; i < sort.rowCount(); i++) {
-            assertEquals(sort.getValue(i, 0), sort.col(0).getValue(i), 1e-10);
+            assertEquals(sort.value(i, 0), sort.col(0).value(i), 1e-10);
         }
     }
 }

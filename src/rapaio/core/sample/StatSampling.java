@@ -53,13 +53,13 @@ public class StatSampling {
                 it.next();
                 it.collect(String.valueOf(i));
             }
-            result.add(it.getMappedFrame(String.valueOf(i)));
+            result.add(it.mappedFrame(String.valueOf(i)));
         }
         while (it.hasNext()) {
             it.next();
             it.collect(String.valueOf(rowCounts.length));
         }
-        Frame last = it.getMappedFrame(String.valueOf(rowCounts.length));
+        Frame last = it.mappedFrame(String.valueOf(rowCounts.length));
         if (last != null) {
             result.add(last);
         }

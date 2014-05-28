@@ -66,11 +66,11 @@ public class DiscreteSamplingPage implements TutorialPage {
 
         p("A discrete probability distribution function is completely described by "
                 + "the set of possible values the random variable can take and "
-                + "by the probabilities assigned to each getValue.");
+                + "by the probabilities assigned to each value.");
 
         p("An example of discrete distribution is the process of throwing a standard dice. "
                 + "We have a finite set of outcomes of the process (6 possible values) and "
-                + "a probability function getValue associated with each output (for a fair dice we "
+                + "a probability function value associated with each output (for a fair dice we "
                 + "can associate probability \\( p(x_i) = \\frac{1}{6} \\)).");
 
         p("Drawing a sample from a distribution is the process of selecting some values "
@@ -90,7 +90,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                 + "an uniform distribution. A discrete uniform distribution is a distribution "
                 + "which assigns equal probability mass function values to each outcome. "
                 + "The previous example of throwing a fair dice is an example of uniform "
-                + "distribution, since it assigns equal getValue \\(\\frac{1}{6}\\) to each "
+                + "distribution, since it assigns equal value \\(\\frac{1}{6}\\) to each "
                 + "possible outcome \\( x_i \\). ");
 
         p("A sample with replacement is a sample where values of the sample can appear multiple "
@@ -101,7 +101,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                 + "of \\(p(x_i) \\). Take randomly one element from the set, according with "
                 + "their probabilities (denote the taken element with \\(x_k\\)). "
                 + "Replace the element taken from the set with a new element, which has "
-                + "the same getValue as the element previously removed. At this stage we have again "
+                + "the same value as the element previously removed. At this stage we have again "
                 + "a situation identical with the initial situation. Repeat the process of "
                 + "taking elements from the original set, followed by replacing that element "
                 + "with another similar element unit you collect the desired number of elements "
@@ -227,8 +227,8 @@ public class DiscreteSamplingPage implements TutorialPage {
                 + "drawn divided by the number of experiments. ");
 
         code("        RandomSource.setSeed(1);\n" +
-                "        final Vector getIndex = Vectors.newSeq(1, 1000, 1);\n" +
-                "        final Vector getValue = new Numeric(1000);\n" +
+                "        final Vector index = Vectors.newSeq(1, 1000, 1);\n" +
+                "        final Vector value = new Numeric(1000);\n" +
                 "        double count = 0;\n" +
                 "        double total = 0;\n" +
                 "        for (int i = 0; i < 300; i++) {\n" +
@@ -236,11 +236,11 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "            if (samples[0] == 0)\n" +
                 "                count++;\n" +
                 "            total++;\n" +
-                "            getValue.setValue(i, count / total);\n" +
+                "            value.setValue(i, count / total);\n" +
                 "        }\n" +
                 "        draw(new Plot()\n" +
                 "                .add(new ABLine(0.6, true))\n" +
-                "                .add(new Lines(getIndex, getValue)\n" +
+                "                .add(new Lines(index, value)\n" +
                 "                        .setColorIndex(2)\n" +
                 "                        .setLwd(1.5f)\n" +
                 "                )\n" +
@@ -274,7 +274,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                 + "of the probability of HEAD has a large variation at the beginning "
                 + "of our experiment. However, as number of trials increases we have "
                 + "clear reasoning to confirm that the coin is biased, since "
-                + "the variation decrease, the estimator converge to getValue 0.6 which "
+                + "the variation decrease, the estimator converge to value 0.6 which "
                 + "is not what we could expect from a fair coin. ");
 
         p("The sampling algorithm implemented is one of the family of alias method, "

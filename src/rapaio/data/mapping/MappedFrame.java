@@ -25,13 +25,9 @@ import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Vector;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.StreamSupport;
 
 /**
  * A frame which is learn on the base of another frame with
@@ -61,7 +57,7 @@ public class MappedFrame extends AbstractFrame {
         } else {
             this.source = df;
         }
-        this.weights = new Numeric(mapping.rowStream().mapToDouble(source::getWeight).toArray());
+        this.weights = new Numeric(mapping.rowStream().mapToDouble(source::weight).toArray());
         this.names = df.colNames();
         this.colIndex = new HashMap<>();
         this.vectors = new Vector[names.length];
@@ -78,7 +74,7 @@ public class MappedFrame extends AbstractFrame {
         } else {
             this.source = df;
         }
-        this.weights = new Numeric(mapping.rowStream().mapToDouble(source::getWeight).toArray());
+        this.weights = new Numeric(mapping.rowStream().mapToDouble(source::weight).toArray());
         this.names = new String[columns.size()];
         for (int i = 0; i < columns.size(); i++) {
             names[i] = columns.get(i);
@@ -143,20 +139,20 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public Numeric getWeights() {
+    public Numeric weights() {
         return weights;
     }
 
     @Override
     public void setWeights(Numeric weights) {
         for (int i = 0; i < this.weights.rowCount(); i++) {
-            this.weights.setValue(i, weights.getValue(i));
+            this.weights.setValue(i, weights.value(i));
         }
     }
 
     @Override
-    public double getWeight(int row) {
-        return weights.getValue(row);
+    public double weight(int row) {
+        return weights.value(row);
     }
 
     @Override

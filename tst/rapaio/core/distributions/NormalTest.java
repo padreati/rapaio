@@ -63,9 +63,9 @@ public class NormalTest {
                 pos++;
                 break;
             }
-            assertEquals(df.getValue(pos, 0), d.quantile(q), ERROR);
+            assertEquals(df.value(pos, 0), d.quantile(q), ERROR);
             assertEquals(q, d.cdf(d.quantile(q)), ERROR);
-            assertEquals(df.getValue(pos, 1), d.pdf(q), ERROR);
+            assertEquals(df.value(pos, 1), d.pdf(q), ERROR);
             q += step;
             pos++;
         }

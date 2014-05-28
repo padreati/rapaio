@@ -45,8 +45,8 @@ public class Sum implements Printable {
     private double compute() {
         double sum = 0;
         for (int i = 0; i < vector.rowCount(); i++) {
-            if (validNumber(vector.getValue(i))) {
-                sum += vector.getValue(i);
+            if (validNumber(vector.value(i))) {
+                sum += vector.value(i);
             }
         }
         return sum;

@@ -97,38 +97,38 @@ public class SolidFrameTest {
                 new Nominal(4, new String[]{"ana", "are", "mere"}),
                 Vectors.newSeq(1, 4, 1)
         };
-        Frame df = new SolidFrame(4, vectors, new String[]{"x", "y", "name", "getIndex"});
+        Frame df = new SolidFrame(4, vectors, new String[]{"x", "y", "name", "index"});
 
-        assertEquals(1., df.getValue(0, 0), 1e-10);
+        assertEquals(1., df.value(0, 0), 1e-10);
         df.setValue(0, 0, 3.);
-        assertEquals(3., df.getValue(0, 0), 1e-10);
+        assertEquals(3., df.value(0, 0), 1e-10);
 
         double t = 0;
         for (int i = 0; i < df.rowCount(); i++) {
-            t += df.getValue(i, 1) - 3.;
+            t += df.value(i, 1) - 3.;
         }
         assertEquals(17., t, 1e-10);
 
-        assertTrue(df.col("name").isMissing(0));
-        assertTrue(df.col("name").isMissing(3));
+        assertTrue(df.col("name").missing(0));
+        assertTrue(df.col("name").missing(3));
 
         df.setLabel(0, 2, "ana");
         df.setLabel(1, 2, "are");
         df.setLabel(2, 2, "mere");
 
-        assertEquals("ana", df.getLabel(0, 2));
-        assertEquals("are", df.getLabel(1, 2));
-        assertEquals("mere", df.getLabel(2, 2));
+        assertEquals("ana", df.label(0, 2));
+        assertEquals("are", df.label(1, 2));
+        assertEquals("mere", df.label(2, 2));
 
         df.setIndex(1, 2, 3);
-        assertEquals("mere", df.getLabel(1, 2));
+        assertEquals("mere", df.label(1, 2));
 
-        assertEquals(1, df.getIndex(0, 3));
-        assertEquals(2, df.getIndex(1, 3));
-        assertEquals(3, df.getIndex(2, 3));
-        assertEquals(4, df.getIndex(3, 3));
+        assertEquals(1, df.index(0, 3));
+        assertEquals(2, df.index(1, 3));
+        assertEquals(3, df.index(2, 3));
+        assertEquals(4, df.index(3, 3));
 
         df.setIndex(0, 3, 5);
-        assertEquals(5, df.getIndex(0, 3));
+        assertEquals(5, df.index(0, 3));
     }
 }

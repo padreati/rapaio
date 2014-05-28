@@ -76,7 +76,7 @@ public class LinearModelRegressor extends AbstractRegressor {
         for (int i = 0; i < df.rowCount(); i++) {
             double acc = 0;
             for (int k = 0; k < predictors.size(); k++) {
-                acc += coefficients.getValue(k, "Coeff") * df.getValue(i, predictors.get(k));
+                acc += coefficients.value(k, "Coeff") * df.value(i, predictors.get(k));
             }
             result.setValue(i, acc);
         }

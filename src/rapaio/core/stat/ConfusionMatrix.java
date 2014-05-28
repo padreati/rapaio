@@ -44,7 +44,7 @@ public class ConfusionMatrix implements Printable {
         validate(actual, predict);
         this.actual = actual;
         this.predict = predict;
-        this.dict = actual.getDictionary();
+        this.dict = actual.dictionary();
         this.cmf = new int[dict.length - 1][dict.length - 1];
         this.percents = percents;
         compute();
@@ -57,26 +57,26 @@ public class ConfusionMatrix implements Printable {
         if (!predict.type().isNominal()) {
             throw new IllegalArgumentException("predict values vector must be nominal");
         }
-        if (actual.getDictionary().length != predict.getDictionary().length) {
-            throw new IllegalArgumentException("actual and predict does not have the same nominal getDictionary");
+        if (actual.dictionary().length != predict.dictionary().length) {
+            throw new IllegalArgumentException("actual and predict does not have the same nominal dictionary");
         }
-        for (int i = 0; i < actual.getDictionary().length; i++) {
-            if (!actual.getDictionary()[i].equals(predict.getDictionary()[i])) {
-                throw new IllegalArgumentException("actual and predict does not have the same nominal getDictionary");
+        for (int i = 0; i < actual.dictionary().length; i++) {
+            if (!actual.dictionary()[i].equals(predict.dictionary()[i])) {
+                throw new IllegalArgumentException("actual and predict does not have the same nominal dictionary");
             }
         }
     }
 
     private void compute() {
         for (int i = 0; i < actual.rowCount(); i++) {
-            if (actual.getIndex(i) != 0 && predict.getIndex(i) != 0) {
+            if (actual.index(i) != 0 && predict.index(i) != 0) {
                 completeCases++;
-                cmf[actual.getIndex(i) - 1][predict.getIndex(i) - 1]++;
+                cmf[actual.index(i) - 1][predict.index(i) - 1]++;
             }
         }
         acc = 0;
         for (int i = 0; i < actual.rowCount(); i++) {
-            if (actual.getIndex(i) == predict.getIndex(i) && actual.getIndex(i) != 0) {
+            if (actual.index(i) == predict.index(i) && actual.index(i) != 0) {
                 acc++;
             }
         }

@@ -144,7 +144,7 @@ public class LUDecomposition implements java.io.Serializable {
      * used in LINPACK and MATLAB. In Java, we suspect the dot-product, Crout
      * algorithm will be faster. We have temporarily included this constructor
      * until timing experiments confirm this suspicion. <P> @param A Rectangular
-     * matrix @param linpackflag Use Gaussian elimination. Actual getValue ignored.
+     * matrix @param linpackflag Use Gaussian elimination. Actual value ignored.
      * @return Structure to access L, U and piv. \
      *
      * public LUDecomposition (Matrix A, int linpackflag) { // Initialize. LU =

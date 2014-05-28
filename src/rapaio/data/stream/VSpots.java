@@ -65,7 +65,7 @@ public class VSpots implements Stream<VSpot>, Serializable {
     }
 
     public DoubleStream mapToDouble() {
-        return mapToDouble((VSpot inst) -> inst.getValue());
+        return mapToDouble((VSpot inst) -> inst.value());
     }
 
     @Override
@@ -244,7 +244,7 @@ public class VSpots implements Stream<VSpot>, Serializable {
     }
 
     public VSpots complete() {
-        return new VSpots(stream.filter((VSpot inst) -> !inst.isMissing()));
+        return new VSpots(stream.filter((VSpot inst) -> !inst.missing()));
     }
 
     public <R> String mkString(Function<VSpot, R> mapper) {
@@ -258,14 +258,14 @@ public class VSpots implements Stream<VSpot>, Serializable {
     }
 
     public void transformValue(Function<Double, Double> trans) {
-        stream.forEach(spot -> spot.getVector().setValue(spot.row(), trans.apply(spot.getValue())));
+        stream.forEach(spot -> spot.vector().setValue(spot.row(), trans.apply(spot.value())));
     }
 
     public void transformIndex(Function<Integer, Integer> trans) {
-        stream.forEach(spot -> spot.getVector().setIndex(spot.row(), trans.apply(spot.getIndex())));
+        stream.forEach(spot -> spot.vector().setIndex(spot.row(), trans.apply(spot.index())));
     }
 
     public void transformLabel(Function<String, String> trans) {
-        stream.forEach(spot -> spot.getVector().setLabel(spot.row(), trans.apply(spot.getLabel())));
+        stream.forEach(spot -> spot.vector().setLabel(spot.row(), trans.apply(spot.label())));
     }
 }

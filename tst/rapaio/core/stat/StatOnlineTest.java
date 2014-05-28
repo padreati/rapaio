@@ -54,20 +54,20 @@ public class StatOnlineTest {
         Vector varSum = new Numeric(new double[LEN]);
 
         for (int i = 0; i < LEN; i++) {
-            statOnline.update(v.getValue(i));
+            statOnline.update(v.value(i));
             if (i > 0) {
                 varLeft.setValue(i, statOnline.getVariance());
             }
         }
         statOnline.clean();
         for (int i = LEN - 1; i >= 0; i--) {
-            statOnline.update(v.getValue(i));
+            statOnline.update(v.value(i));
             if (i < LEN - 1) {
                 varRight.setValue(i, statOnline.getVariance());
             }
         }
         for (int i = 0; i < LEN; i++) {
-            varSum.setValue(i, (varLeft.getValue(i) + varRight.getValue(i)) / 2);
+            varSum.setValue(i, (varLeft.value(i) + varRight.value(i)) / 2);
         }
 
         draw(new Plot()

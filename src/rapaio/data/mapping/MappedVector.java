@@ -76,8 +76,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public double getValue(int row) {
-        return source.getValue(mapping.get(row));
+    public double value(int row) {
+        return source.value(mapping.get(row));
     }
 
     @Override
@@ -91,8 +91,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public int getIndex(int row) {
-        return source.getIndex(mapping.get(row));
+    public int index(int row) {
+        return source.index(mapping.get(row));
     }
 
     @Override
@@ -106,8 +106,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public String getLabel(int row) {
-        return source.getLabel(mapping.get(row));
+    public String label(int row) {
+        return source.label(mapping.get(row));
     }
 
     @Override
@@ -121,8 +121,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public String[] getDictionary() {
-        return source.getDictionary();
+    public String[] dictionary() {
+        return source.dictionary();
     }
 
     @Override
@@ -131,8 +131,8 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public boolean isMissing(int row) {
-        return source.isMissing(mapping.get(row));
+    public boolean missing(int row) {
+        return source.missing(mapping.get(row));
     }
 
     @Override
@@ -164,21 +164,21 @@ public class MappedVector extends AbstractVector {
     public Vector solidCopy() {
         switch (source.type()) {
             case NOMINAL:
-                Nominal nom = new Nominal(mapping.size(), source.getDictionary());
+                Nominal nom = new Nominal(mapping.size(), source.dictionary());
                 for (int i = 0; i < mapping.size(); i++) {
-                    nom.setLabel(i, getLabel(i));
+                    nom.setLabel(i, label(i));
                 }
                 return nom;
             case INDEX:
                 Index idx = new Index(rowCount(), rowCount(), 0);
                 for (int i = 0; i < rowCount(); i++) {
-                    idx.setIndex(i, getIndex(i));
+                    idx.setIndex(i, index(i));
                 }
                 return idx;
             default:
                 Numeric num = new Numeric(rowCount());
                 for (int i = 0; i < rowCount(); i++) {
-                    num.setValue(i, getValue(i));
+                    num.setValue(i, value(i));
                 }
                 return num;
         }

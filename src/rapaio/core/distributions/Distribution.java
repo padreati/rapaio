@@ -36,7 +36,7 @@ public abstract class Distribution {
     public abstract String getName();
 
     /**
-     * @param x getValue for which it calculates log of probability
+     * @param x value for which it calculates log of probability
      * @return log of probability of x
      */
     public double logpdf(double x) {
@@ -50,9 +50,9 @@ public abstract class Distribution {
     /**
      * Calculates probability mass function (pmf) of a discrete distribution or
      * probability density function (pdf) of a continuous distribution for given
-     * getValue x
+     * value x
      *
-     * @param x getValue for which it calculates
+     * @param x value for which it calculates
      * @return pmf / pdf of x
      */
     abstract public double pdf(double x);

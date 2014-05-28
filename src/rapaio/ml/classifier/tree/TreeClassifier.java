@@ -211,7 +211,7 @@ public class TreeClassifier extends AbstractClassifier {
     public void learn(Frame df, String targetCol) {
 
         this.targetCol = targetCol;
-        dict = df.col(this.targetCol).getDictionary();
+        dict = df.col(this.targetCol).dictionary();
         rows = df.rowCount();
 
         testCounter.initialize(df, targetCol);
@@ -466,16 +466,16 @@ public class TreeClassifier extends AbstractClassifier {
                     return result;
                 }
 
-                DensityTable dt = new DensityTable(test, target, df.getWeights());
+                DensityTable dt = new DensityTable(test, target, df.weights());
                 double value = function.compute(dt);
 
                 Candidate candidate = new Candidate(value, function.sign());
-                for (int i = 1; i < test.getDictionary().length; i++) {
+                for (int i = 1; i < test.dictionary().length; i++) {
 
-                    final String label = test.getDictionary()[i];
+                    final String label = test.dictionary()[i];
                     candidate.addGroup(
                             String.format("%s == %s", testColName, label),
-                            spot -> !spot.isMissing(testColName) && spot.getLabel(testColName).equals(label));
+                            spot -> !spot.missing(testColName) && spot.label(testColName).equals(label));
                 }
 
                 result.add(candidate);
@@ -488,29 +488,29 @@ public class TreeClassifier extends AbstractClassifier {
 
                 List<Candidate> result = new ArrayList<>();
                 Candidate best = null;
-                for (int i = 1; i < df.col(testColName).getDictionary().length; i++) {
+                for (int i = 1; i < df.col(testColName).dictionary().length; i++) {
                     Vector test = df.col(testColName);
                     Vector target = df.col(targetColName);
-                    String testLabel = df.col(testColName).getDictionary()[i];
+                    String testLabel = df.col(testColName).dictionary()[i];
 
                     if (new DensityTable(test, target).countWithMinimum(false, c.getMinCount()) < 2) {
                         return result;
                     }
 
-                    DensityTable dt = new DensityTable(test, target, df.getWeights(), testLabel);
+                    DensityTable dt = new DensityTable(test, target, df.weights(), testLabel);
                     double value = function.compute(dt);
                     Candidate candidate = new Candidate(value, function.sign());
                     if (best == null) {
                         best = candidate;
-                        best.addGroup(testColName + " == " + testLabel, spot -> spot.getLabel(testColName).equals(testLabel));
-                        best.addGroup(testColName + " != " + testLabel, spot -> !spot.getLabel(testColName).equals(testLabel));
+                        best.addGroup(testColName + " == " + testLabel, spot -> spot.label(testColName).equals(testLabel));
+                        best.addGroup(testColName + " != " + testLabel, spot -> !spot.label(testColName).equals(testLabel));
                     } else {
                         int comp = best.compareTo(candidate);
                         if (comp < 0) continue;
                         if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
                         best = candidate;
-                        best.addGroup(testColName + " == " + testLabel, spot -> spot.getLabel(testColName).equals(testLabel));
-                        best.addGroup(testColName + " != " + testLabel, spot -> !spot.getLabel(testColName).equals(testLabel));
+                        best.addGroup(testColName + " == " + testLabel, spot -> spot.label(testColName).equals(testLabel));
+                        best.addGroup(testColName + " != " + testLabel, spot -> !spot.label(testColName).equals(testLabel));
                     }
                 }
                 if (best != null)
@@ -541,12 +541,12 @@ public class TreeClassifier extends AbstractClassifier {
                 Vector test = df.col(testColName);
                 Vector target = df.col(targetColName);
 
-                DensityTable dt = new DensityTable(DensityTable.NUMERIC_DEFAULT_LABELS, target.getDictionary());
+                DensityTable dt = new DensityTable(DensityTable.NUMERIC_DEFAULT_LABELS, target.dictionary());
                 int misCount = 0;
                 for (int i = 0; i < df.rowCount(); i++) {
-                    int row = (test.isMissing(i)) ? 0 : 2;
-                    if (test.isMissing(i)) misCount++;
-                    dt.update(row, target.getIndex(i), df.getWeight(i));
+                    int row = (test.missing(i)) ? 0 : 2;
+                    if (test.missing(i)) misCount++;
+                    dt.update(row, target.index(i), df.weight(i));
                 }
 
                 Vector sort = BaseFilters.sort(Vectors.newSeq(df.rowCount()), RowComparators.numericComparator(test, true));
@@ -554,41 +554,41 @@ public class TreeClassifier extends AbstractClassifier {
                 Candidate best = null;
 
                 for (int i = 0; i < df.rowCount(); i++) {
-                    int row = sort.getIndex(i);
+                    int row = sort.index(i);
 
-                    if (test.isMissing(row)) continue;
+                    if (test.missing(row)) continue;
 
-                    dt.update(2, target.getIndex(row), -df.getWeight(row));
-                    dt.update(1, target.getIndex(row), +df.getWeight(row));
+                    dt.update(2, target.index(row), -df.weight(row));
+                    dt.update(1, target.index(row), +df.weight(row));
 
                     if (i >= misCount + c.getMinCount() &&
                             i < df.rowCount() - 1 - c.getMinCount() &&
-                            test.getValue(sort.getIndex(i)) < test.getValue(sort.getIndex(i + 1))) {
+                            test.value(sort.index(i)) < test.value(sort.index(i + 1))) {
 
                         Candidate current = new Candidate(function.compute(dt), function.sign());
                         if (best == null) {
                             best = current;
 
-                            final double testValue = test.getValue(sort.getIndex(i));
+                            final double testValue = test.value(sort.index(i));
                             current.addGroup(
                                     String.format("%s <= %.6f", testColName, testValue),
-                                    spot -> !spot.isMissing(testColName) && spot.getValue(testColName) <= testValue);
+                                    spot -> !spot.missing(testColName) && spot.value(testColName) <= testValue);
                             current.addGroup(
                                     String.format("%s > %.6f", testColName, testValue),
-                                    spot -> !spot.isMissing(testColName) && spot.getValue(testColName) > testValue);
+                                    spot -> !spot.missing(testColName) && spot.value(testColName) > testValue);
                         } else {
                             int comp = best.compareTo(current);
                             if (comp < 0) continue;
                             if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
                             best = current;
 
-                            final double testValue = test.getValue(sort.getIndex(i));
+                            final double testValue = test.value(sort.index(i));
                             current.addGroup(
                                     String.format("%s <= %.6f", testColName, testValue),
-                                    spot -> !spot.isMissing(testColName) && spot.getValue(testColName) <= testValue);
+                                    spot -> !spot.missing(testColName) && spot.value(testColName) <= testValue);
                             current.addGroup(
                                     String.format("%s > %.6f", testColName, testValue),
-                                    spot -> !spot.isMissing(testColName) && spot.getValue(testColName) > testValue);
+                                    spot -> !spot.missing(testColName) && spot.value(testColName) > testValue);
                         }
                     }
                 }
@@ -704,7 +704,7 @@ public class TreeClassifier extends AbstractClassifier {
                     Frame f = new MappedFrame(df, mapping);
                     f.stream().forEach(spot -> {
                         if (missingSpots.contains(spot.rowId()))
-                            spot.setWeight(spot.getWeight() * p[index]);
+                            spot.setWeight(spot.weight() * p[index]);
                     });
                     frames.add(f);
                 }
@@ -848,7 +848,7 @@ public class TreeClassifier extends AbstractClassifier {
         }
 
         public void learn(Frame df, int depth) {
-            density = new DensityVector(df.col(c.getTargetCol()), df.getWeights());
+            density = new DensityVector(df.col(c.getTargetCol()), df.weights());
             counter = new DensityVector(df.col(c.getTargetCol()), new Numeric(df.rowCount(), df.rowCount(), 1));
             bestIndex = density.findBestIndex();
 

@@ -85,10 +85,10 @@ public class PearsonRCorrelation implements Printable {
         double sdp = Math.sqrt(new Variance(x).getValue()) * Math.sqrt(new Variance(y).getValue());
         double count = 0;
         for (int i = 0; i < len; i++) {
-            if (x.isMissing(i) || y.isMissing(i)) {
+            if (x.missing(i) || y.missing(i)) {
                 continue;
             }
-            sum += ((x.getValue(i) - xMean) * (y.getValue(i) - yMean));
+            sum += ((x.value(i) - xMean) * (y.value(i) - yMean));
             count++;
         }
         return sum / (sdp * (count - 1));

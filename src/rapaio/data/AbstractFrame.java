@@ -35,13 +35,13 @@ import java.util.List;
 public abstract class AbstractFrame implements Frame {
 
     @Override
-    public double getValue(int row, int col) {
-        return col(col).getValue(row);
+    public double value(int row, int col) {
+        return col(col).value(row);
     }
 
     @Override
-    public double getValue(int row, String colName) {
-        return col(colName).getValue(row);
+    public double value(int row, String colName) {
+        return col(colName).value(row);
     }
 
     @Override
@@ -55,13 +55,13 @@ public abstract class AbstractFrame implements Frame {
     }
 
     @Override
-    public int getIndex(int row, int col) {
-        return col(col).getIndex(row);
+    public int index(int row, int col) {
+        return col(col).index(row);
     }
 
     @Override
-    public int getIndex(int row, String colName) {
-        return col(colName).getIndex(row);
+    public int index(int row, String colName) {
+        return col(colName).index(row);
     }
 
     @Override
@@ -75,13 +75,13 @@ public abstract class AbstractFrame implements Frame {
     }
 
     @Override
-    public String getLabel(int row, int col) {
-        return col(col).getLabel(row);
+    public String label(int row, int col) {
+        return col(col).label(row);
     }
 
     @Override
-    public String getLabel(int row, String colName) {
-        return col(colName).getLabel(row);
+    public String label(int row, String colName) {
+        return col(colName).label(row);
     }
 
     @Override
@@ -95,19 +95,19 @@ public abstract class AbstractFrame implements Frame {
     }
 
     @Override
-    public boolean isMissing(int row, int col) {
-        return col(col).isMissing(row);
+    public boolean missing(int row, int col) {
+        return col(col).missing(row);
     }
 
     @Override
-    public boolean isMissing(int row, String colName) {
-        return col(colName).isMissing(row);
+    public boolean missing(int row, String colName) {
+        return col(colName).missing(row);
     }
 
     @Override
-    public boolean isMissing(int row) {
+    public boolean missing(int row) {
         for (String colName : colNames()) {
-            if (col(colName).isMissing(row)) return true;
+            if (col(colName).missing(row)) return true;
         }
         return false;
     }

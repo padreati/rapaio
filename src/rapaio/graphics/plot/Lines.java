@@ -47,10 +47,10 @@ public class Lines extends PlotComponent {
         }
         Range range = new Range();
         for (int i = 0; i < x.rowCount(); i++) {
-            if (x.isMissing(i) || y.isMissing(i)) {
+            if (x.missing(i) || y.missing(i)) {
                 continue;
             }
-            range.union(x.getValue(i), y.getValue(i));
+            range.union(x.value(i), y.value(i));
         }
         return range;
     }
@@ -63,14 +63,14 @@ public class Lines extends PlotComponent {
 
         for (int i = 1; i < x.rowCount(); i++) {
             g2d.setColor(getCol(i));
-            double x1 = getParent().xScale(x.getValue(i - 1));
-            double y1 = getParent().yScale(y.getValue(i - 1));
-            double x2 = getParent().xScale(x.getValue(i));
-            double y2 = getParent().yScale(y.getValue(i));
+            double x1 = getParent().xScale(x.value(i - 1));
+            double y1 = getParent().yScale(y.value(i - 1));
+            double x2 = getParent().xScale(x.value(i));
+            double y2 = getParent().yScale(y.value(i));
 
             //TODO improve this crap to clip only parts of lines outside of the data range
-            if (getParent().getRange().contains(x.getValue(i - 1), y.getValue(i - 1))
-                    && getParent().getRange().contains(x.getValue(i), y.getValue(i))) {
+            if (getParent().getRange().contains(x.value(i - 1), y.value(i - 1))
+                    && getParent().getRange().contains(x.value(i), y.value(i))) {
                 g2d.draw(new Line2D.Double(x1, y1, x2, y2));
             }
         }

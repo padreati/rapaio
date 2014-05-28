@@ -128,12 +128,12 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     @Override
     public void learn(Frame df, String targetCol) {
         this.targetCol = targetCol;
-        dict = df.col(targetCol).getDictionary();
+        dict = df.col(targetCol).dictionary();
         k = dict.length - 1;
 
         h = new ArrayList<>();
         a = new ArrayList<>();
-        w = df.getWeights().solidCopy();
+        w = df.weights().solidCopy();
 
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
         w.stream().transformValue(x -> x / total);
@@ -152,7 +152,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         if (w != null && targetCol != null && dict != null) {
             // if prev trained on something else than we have a problem
             if ((!targetColName.equals(targetCol) ||
-                    k != df.col(targetColName).getDictionary().length - 1)) {
+                    k != df.col(targetColName).dictionary().length - 1)) {
                 throw new IllegalArgumentException("previous classifier trained on different target");
             }
             runs += additionalRuns;
@@ -179,7 +179,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         for (int row : rows) mapping.add(df.rowId(row));
         Frame dfTrain = new MappedFrame(df, mapping);
         for (int j = 0; j < rows.length; j++) {
-            dfTrain.setWeight(j, w.getValue(rows[j]));
+            dfTrain.setWeight(j, w.value(rows[j]));
         }
 
         Classifier hh = base.newInstance();
@@ -187,8 +187,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         hh.predict(df);
         double err = 0;
         for (int j = 0; j < df.rowCount(); j++) {
-            if (hh.pred().getIndex(j) != df.col(targetCol).getIndex(j)) {
-                err += w.getValue(j);
+            if (hh.pred().index(j) != df.col(targetCol).index(j)) {
+                err += w.value(j);
             }
         }
         double alpha = Math.log((1. - err) / err) + Math.log(k - 1);
@@ -209,8 +209,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         a.add(alpha);
 
         for (int j = 0; j < w.rowCount(); j++) {
-            if (hh.pred().getIndex(j) != df.col(targetCol).getIndex(j)) {
-                w.setValue(j, w.getValue(j) * Math.exp(alpha));
+            if (hh.pred().index(j) != df.col(targetCol).index(j)) {
+                w.setValue(j, w.value(j) * Math.exp(alpha));
             }
         }
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
@@ -227,8 +227,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         for (int i = 0; i < h.size(); i++) {
             h.get(i).predict(df);
             for (int j = 0; j < df.rowCount(); j++) {
-                int index = h.get(i).pred().getIndex(j);
-                dist.setValue(j, index, dist.getValue(j, index) + a.get(i));
+                int index = h.get(i).pred().index(j);
+                dist.setValue(j, index, dist.value(j, index) + a.get(i));
             }
         }
 
@@ -238,9 +238,9 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
             double max = 0;
             int prediction = 0;
             for (int j = 1; j < dist.colCount(); j++) {
-                if (dist.getValue(i, j) > max) {
+                if (dist.value(i, j) > max) {
                     prediction = j;
-                    max = dist.getValue(i, j);
+                    max = dist.value(i, j);
                 }
             }
             pred.setIndex(i, prediction);

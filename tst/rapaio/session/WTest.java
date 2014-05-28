@@ -34,9 +34,9 @@ public class WTest {
 	@Test
 	public void testSession() {
 
-		W.getData().put(String.class, "a", "a getValue");
+		W.getData().put(String.class, "a", "a value");
 		String get = W.getData().get(String.class, "a");
 
-		Assert.assertEquals("a getValue", get);
+		Assert.assertEquals("a value", get);
 	}
 }

@@ -32,20 +32,20 @@ public class MathBase {
 
 
     /**
-     * Returns the base 2 logarithm of a {@code double} getValue.
+     * Returns the base 2 logarithm of a {@code double} value.
      *
      * @param x the number from which we take base 2 logarithm
-     * @return the base 2 logarithm of input getValue
+     * @return the base 2 logarithm of input value
      */
     public static double log2(double x) {
         return Math.log(x) / Math.log(2);
     }
 
     /**
-     * Returns {@code boolean} getValue indicating if the number if finite and different than {@code Double.NaN}.
+     * Returns {@code boolean} value indicating if the number if finite and different than {@code Double.NaN}.
      * <p>
      * This function is used to check if a computation can produce finite results or not.
-     * Another situation where is useful is when we test for a default numeric getValue which is usually set to {@code Double.NaN}.
+     * Another situation where is useful is when we test for a default numeric value which is usually set to {@code Double.NaN}.
      *
      * @param x the number which needs to be verified
      * @return true if the number is finite and different than {@code Double.NaN}
@@ -271,7 +271,7 @@ public class MathBase {
     }
 
     /**
-     * Error function of a {@code double} getValue.
+     * Error function of a {@code double} value.
      * <p>
      * erf(x) = 2 * cdf(x sqrt(2)) -1
      * <p>
@@ -287,7 +287,7 @@ public class MathBase {
     }
 
     /**
-     * Inverse error function of a {@code double} getValue.
+     * Inverse error function of a {@code double} value.
      * <p>
      * inverf(x) = invcdf(x/2+1/2)/sqrt(2)
      * <p>
@@ -303,7 +303,7 @@ public class MathBase {
     }
 
     /**
-     * Complementary error function of a {@code double} getValue.
+     * Complementary error function of a {@code double} value.
      * <p>
      * erfc(x) = 1 - erf(x)
      * <p>
@@ -317,7 +317,7 @@ public class MathBase {
     }
 
     /**
-     * Inverse of complementary error function of a {@code double} getValue.
+     * Inverse of complementary error function of a {@code double} value.
      * <p>
      * inverfc(x) = invcdf(x/2)/-sqrt(2)
      * <p>
@@ -337,8 +337,8 @@ public class MathBase {
      * <p>
      * http://en.wikipedia.org/wiki/Beta_function
      *
-     * @param z first argument getValue >= 0
-     * @param w second argument getValue >= 0
+     * @param z first argument value >= 0
+     * @param w second argument value >= 0
      * @return beta function of z and w
      */
     public static double beta(double z, double w) {
@@ -350,8 +350,8 @@ public class MathBase {
      * <p>
      * http://en.wikipedia.org/wiki/Beta_function
      *
-     * @param z first argument getValue >= 0
-     * @param w second argument getValue >= 0
+     * @param z first argument value >= 0
+     * @param w second argument value >= 0
      * @return lnBeta function of z and w
      */
     public static double lnBeta(double z, double w) {
@@ -362,9 +362,9 @@ public class MathBase {
      * Computes the regularized incomplete beta function, I<sub>x</sub>(a, b).
      * The result of which is always in the range [0, 1]
      *
-     * @param x any getValue in the range [0, 1]
-     * @param a any getValue >= 0
-     * @param b any getValue >= 0
+     * @param x any value in the range [0, 1]
+     * @param a any value >= 0
+     * @param b any value >= 0
      * @return the result in a range of [0,1]
      */
     public static double betaIncReg(double x, double a, double b) {
@@ -449,18 +449,18 @@ public class MathBase {
     /**
      * Computes the inverse of the incomplete beta function,
      * I<sub>p</sub><sup>-1</sup>(a,b), such that {@link #betaIncReg(double, double, double) I<sub>x</sub>(a, b)
-     * } = <tt>p</tt>. The returned getValue, x, will always be in the range [0,1].
+     * } = <tt>p</tt>. The returned value, x, will always be in the range [0,1].
      * The input <tt>p</tt>, must also be in the range [0,1].
      *
-     * @param p any getValue in the range [0,1]
-     * @param a any getValue >= 0
-     * @param b any getValue >= 0
-     * @return the getValue x, such that {@link #betaIncReg(double, double, double) I<sub>x</sub>(a, b)
+     * @param p any value in the range [0,1]
+     * @param a any value >= 0
+     * @param b any value >= 0
+     * @return the value x, such that {@link #betaIncReg(double, double, double) I<sub>x</sub>(a, b)
      * } will return p.
      */
     public static double invBetaIncReg(double p, double a, double b) {
         if (p < 0 || p > 1) {
-            throw new ArithmeticException("The getValue p must be in the range [0,1], not" + p);
+            throw new ArithmeticException("The value p must be in the range [0,1], not" + p);
         }
 
         double eps = 1e-15;
@@ -497,7 +497,7 @@ public class MathBase {
                 fx2 = fx4;
             } else if (fx1 * fx4 < 0) {
                 dif = Math.abs(x4 - x2);
-                if (dif <= halfEps)//WE are no longer updating, return the getValue
+                if (dif <= halfEps)//WE are no longer updating, return the value
                 {
                     return x4;
                 }
@@ -505,7 +505,7 @@ public class MathBase {
                 fx2 = fx4;
             } else {
                 dif = Math.abs(x4 - x1);
-                if (dif <= halfEps)//WE are no longer updating, return the getValue
+                if (dif <= halfEps)//WE are no longer updating, return the value
                 {
                     return x4;
                 }

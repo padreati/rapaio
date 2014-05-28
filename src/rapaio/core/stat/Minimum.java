@@ -24,7 +24,7 @@ import rapaio.core.Printable;
 import rapaio.data.Vector;
 
 /**
- * Finds the minimum getValue from a {@link Vector} of values.
+ * Finds the minimum value from a {@link Vector} of values.
  * <p>
  * Ignores missing elements.
  * <p>
@@ -46,11 +46,11 @@ public class Minimum implements Printable {
         double min = Double.MAX_VALUE;
         boolean valid = false;
         for (int i = 0; i < vector.rowCount(); i++) {
-            if (vector.isMissing(i)) {
+            if (vector.missing(i)) {
                 continue;
             }
             valid = true;
-            min = Math.min(min, vector.getValue(i));
+            min = Math.min(min, vector.value(i));
         }
         return valid ? min : Double.NaN;
     }

@@ -22,7 +22,6 @@ package rapaio.graphics.plot;
 
 import rapaio.data.Vector;
 import rapaio.graphics.base.Range;
-import rapaio.graphics.colors.ColorPalette;
 import rapaio.graphics.pch.PchPalette;
 
 import java.awt.*;
@@ -47,10 +46,10 @@ public class Points extends PlotComponent {
         }
         Range range = new Range();
         for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
-            if (x.isMissing(i) || y.isMissing(i)) {
+            if (x.missing(i) || y.missing(i)) {
                 continue;
             }
-            range.union(x.getValue(i), y.getValue(i));
+            range.union(x.value(i), y.value(i));
         }
         return range;
     }
@@ -59,14 +58,14 @@ public class Points extends PlotComponent {
     public void paint(Graphics2D g2d) {
 
         for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
-            if (x.isMissing(i) || y.isMissing(i)) {
+            if (x.missing(i) || y.missing(i)) {
                 continue;
             }
             g2d.setColor(getCol(i));
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getAlpha()));
             PchPalette.STANDARD.draw(g2d,
-                    getParent().xScale(x.getValue(i)),
-                    getParent().yScale(y.getValue(i)),
+                    getParent().xScale(x.value(i)),
+                    getParent().yScale(y.value(i)),
                     getSize(i), getPch(i));
         }
     }

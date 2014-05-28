@@ -115,7 +115,7 @@ public class CholeskyDecomposition implements java.io.Serializable {
      * private transient double[][] R;
      *
      * \** Cholesky algorithm for symmetric and positive definite rapaio.data.matrix. @param
-     * A Square, symmetric rapaio.data.matrix. @param rightflag Actual getValue ignored.
+     * A Square, symmetric rapaio.data.matrix. @param rightflag Actual value ignored.
      * @return Structure to access R and isspd flag. \
      *
      * public CholeskyDecomposition (Matrix Arg, int rightflag) { // Initialize.

@@ -109,7 +109,7 @@ public class MathMatrix {
      *
      * @param A     given matrix
      * @param value given scalar
-     * @return getValue*A
+     * @return value*A
      */
     public static Matrix times(Matrix A, double value) {
         Matrix C = new Matrix(A.m, A.n);
@@ -206,7 +206,7 @@ public class MathMatrix {
     /**
      * Two norm
      *
-     * @return maximum singular getValue.
+     * @return maximum singular value.
      */
     public double norm2(Matrix A) {
         return (new SingularValueDecomposition(A).norm2());
@@ -277,7 +277,7 @@ public class MathMatrix {
     /**
      * Matrix condition (2 norm)
      *
-     * @return ratio of largest to smallest singular getValue.
+     * @return ratio of largest to smallest singular value.
      */
     public double cond(Matrix A) {
         return new SingularValueDecomposition(A).cond();

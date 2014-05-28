@@ -80,7 +80,7 @@ public class BarChart extends BaseFigure {
         setBottomMarkers(true);
 
         int shift = 9;
-        setCol(Vectors.newSeq(shift, condition.getDictionary().length + shift - 1, 1));
+        setCol(Vectors.newSeq(shift, condition.dictionary().length + shift - 1, 1));
     }
 
     private SortType sort = SortType.NONE;
@@ -111,8 +111,8 @@ public class BarChart extends BaseFigure {
         if (range == null) {
 
             // learn preliminaries
-            int width = category.getDictionary().length;
-            int height = condition.getDictionary().length;
+            int width = category.dictionary().length;
+            int height = condition.dictionary().length;
 
             totals = new double[width];
             hits = new double[width][height];
@@ -123,8 +123,8 @@ public class BarChart extends BaseFigure {
             len = Math.min(len, numeric.rowCount());
 
             for (int i = 0; i < len; i++) {
-                hits[category.getIndex(i)][condition.getIndex(i)] += numeric.getValue(i);
-                totals[category.getIndex(i)] += numeric.getValue(i);
+                hits[category.index(i)][condition.index(i)] += numeric.value(i);
+                totals[category.index(i)] += numeric.value(i);
             }
 
             if (density) {
@@ -211,7 +211,7 @@ public class BarChart extends BaseFigure {
             if (totals[aSel] == 0)
                 continue;
             getBottomMarkersPos().add(xspotwidth * (0.5 + cnt));
-            getBottomMarkersMsg().add(category.getDictionary()[aSel]);
+            getBottomMarkersMsg().add(category.dictionary()[aSel]);
             cnt++;
         }
     }
@@ -226,7 +226,7 @@ public class BarChart extends BaseFigure {
                 continue;
 
             double ystart = 0;
-            for (int j = 0; j < condition.getDictionary().length; j++) {
+            for (int j = 0; j < condition.dictionary().length; j++) {
                 double yend = ystart + hits[aSel][j];
 
                 int[] x = {

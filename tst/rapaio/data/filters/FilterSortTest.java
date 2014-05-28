@@ -41,7 +41,7 @@ public class FilterSortTest {
         Vector unsorted = new Numeric(new double[]{0., 1., 2., 3., 4., 5., 6.});
         Vector sorted = sort(unsorted, true);
         for (int i = 1; i < sorted.rowCount(); i++) {
-            assertTrue(sorted.getValue(i - 1) <= sorted.getValue(i));
+            assertTrue(sorted.value(i - 1) <= sorted.value(i));
         }
     }
 
@@ -50,7 +50,7 @@ public class FilterSortTest {
         Vector unsorted = new Numeric(new double[]{Double.NaN, 0., Double.NaN, 1., Double.NaN, 2.});
         Vector sorted = sort(unsorted);
         for (int i = 0; i < 3; i++) {
-            assert (sorted.isMissing(i));
+            assert (sorted.missing(i));
         }
     }
 
@@ -63,21 +63,21 @@ public class FilterSortTest {
 
         Vector sorted = sort(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
-        assertEquals("ana", sorted.getLabel(0));
-        assertEquals("ion", sorted.getLabel(1));
-        assertEquals("vasile", sorted.getLabel(2));
+        assertEquals("ana", sorted.label(0));
+        assertEquals("ion", sorted.label(1));
+        assertEquals("vasile", sorted.label(2));
 
         sorted = sort(unsorted, true);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
-        assertEquals("ana", sorted.getLabel(0));
-        assertEquals("ion", sorted.getLabel(1));
-        assertEquals("vasile", sorted.getLabel(2));
+        assertEquals("ana", sorted.label(0));
+        assertEquals("ion", sorted.label(1));
+        assertEquals("vasile", sorted.label(2));
 
         sorted = sort(unsorted, false);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
-        assertEquals("vasile", sorted.getLabel(0));
-        assertEquals("ion", sorted.getLabel(1));
-        assertEquals("ana", sorted.getLabel(2));
+        assertEquals("vasile", sorted.label(0));
+        assertEquals("ion", sorted.label(1));
+        assertEquals("ana", sorted.label(2));
     }
 
     @Test
@@ -89,14 +89,14 @@ public class FilterSortTest {
 
         Vector sorted = sort(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
-        assertEquals("?", sorted.getLabel(0));
-        assertEquals("ana", sorted.getLabel(1));
-        assertEquals("vasile", sorted.getLabel(2));
+        assertEquals("?", sorted.label(0));
+        assertEquals("ana", sorted.label(1));
+        assertEquals("vasile", sorted.label(2));
 
         sorted = sort(unsorted, false);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
-        assertEquals("vasile", sorted.getLabel(0));
-        assertEquals("ana", sorted.getLabel(1));
-        assertEquals("?", sorted.getLabel(2));
+        assertEquals("vasile", sorted.label(0));
+        assertEquals("ana", sorted.label(1));
+        assertEquals("?", sorted.label(2));
     }
 }

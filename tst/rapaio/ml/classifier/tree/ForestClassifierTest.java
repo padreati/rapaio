@@ -59,11 +59,11 @@ public class ForestClassifierTest {
     public void allCompareTest() throws IOException, URISyntaxException {
         Frame tests = new Csv().read(getClass(), "tests.csv");
         for (int i = 0; i < tests.rowCount(); i++) {
-            if (tests.getLabel(i, 0).startsWith("#")) {
+            if (tests.label(i, 0).startsWith("#")) {
                 continue;
             }
-            System.out.println("test for " + tests.getLabel(i, 0));
-            tests.setValue(i, 3, test(tests.getLabel(i, 0)));
+            System.out.println("test for " + tests.label(i, 0));
+            tests.setValue(i, 3, test(tests.label(i, 0)));
         }
         Summary.head(tests.rowCount(), tests);
     }

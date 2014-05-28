@@ -40,7 +40,7 @@ public class ROC implements Printable {
         this.score = score;
         this.classes = Vectors.newIdx(actual.rowCount());
         for (int i = 0; i < actual.rowCount(); i++) {
-            if (actual.getLabel(i).equals(predict.getLabel(i))) {
+            if (actual.label(i).equals(predict.label(i))) {
                 classes.setIndex(i, 1);
             } else {
                 classes.setIndex(i, 0);
@@ -50,14 +50,14 @@ public class ROC implements Printable {
     }
 
     public ROC(Vector score, Vector actual, int index) {
-        this(score, actual, actual.getDictionary()[index]);
+        this(score, actual, actual.dictionary()[index]);
     }
 
     public ROC(Vector score, Vector actual, String label) {
         this.score = score;
         this.classes = Vectors.newIdx(actual.rowCount());
         for (int i = 0; i < actual.rowCount(); i++) {
-            if (actual.getLabel(i).equals(label)) {
+            if (actual.label(i).equals(label)) {
                 classes.setIndex(i, 1);
             } else {
                 classes.setIndex(i, 0);
@@ -73,10 +73,10 @@ public class ROC implements Printable {
         double prevfp = 0;
         auc = 0;
         for (int i = 0; i < classes.rowCount(); i++) {
-            if (classes.isMissing(i)) {
+            if (classes.missing(i)) {
                 continue;
             }
-            if (classes.getIndex(i) > 0) p++;
+            if (classes.index(i) > 0) p++;
             else n++;
         }
 
@@ -89,9 +89,9 @@ public class ROC implements Printable {
         int len = 1;
         double prev = Double.MIN_VALUE;
         for (int i = 0; i < sort.rowCount(); i++) {
-            if (sort.isMissing(i) || classes.isMissing(sort.rowId(i))) continue;
-            if (sort.getValue(i) != prev) {
-                prev = sort.getValue(i);
+            if (sort.missing(i) || classes.missing(sort.rowId(i))) continue;
+            if (sort.value(i) != prev) {
+                prev = sort.value(i);
                 len++;
             }
         }
@@ -100,9 +100,9 @@ public class ROC implements Printable {
         int pos = 0;
 
         for (int i = 0; i < sort.rowCount(); i++) {
-            if (sort.isMissing(i) || classes.isMissing(sort.rowId(i))) continue;
+            if (sort.missing(i) || classes.missing(sort.rowId(i))) continue;
 
-            if (sort.getValue(i) != prev) {
+            if (sort.value(i) != prev) {
                 auc += Math.abs(prevfp - fp) * Math.abs(prevtp + tp) / 2.;
                 double accValue = (tp + n - fp) / (0. + n + p);
                 data.setValue(pos, "threshold", prev);
@@ -111,11 +111,11 @@ public class ROC implements Printable {
                 data.setValue(pos, "acc", accValue);
                 prevfp = fp;
                 prevtp = tp;
-                prev = sort.getValue(i);
+                prev = sort.value(i);
                 pos++;
             }
 
-            if (classes.getIndex(sort.rowId(i)) > 0) tp++;
+            if (classes.index(sort.rowId(i)) > 0) tp++;
             else fp++;
         }
         data.setValue(pos, "threshold", prev);

@@ -44,12 +44,12 @@ public class Mode implements Printable {
         if (!vector.type().isNominal()) {
             throw new IllegalArgumentException("Can't compute mode for other than nominal vectors");
         }
-        int[] freq = new int[vector.getDictionary().length];
+        int[] freq = new int[vector.dictionary().length];
         for (int i = 0; i < vector.rowCount(); i++) {
-            if (vector.isMissing(i)) {
+            if (vector.missing(i)) {
                 continue;
             }
-            freq[vector.getIndex(i)]++;
+            freq[vector.index(i)]++;
         }
         int max = 0;
         int start = includeMissing ? 0 : 1;
@@ -66,7 +66,7 @@ public class Mode implements Printable {
         String[] modes = new String[count];
         for (int i = start; i < freq.length; i++) {
             if (freq[i] == max) {
-                modes[pos++] = vector.getDictionary()[i];
+                modes[pos++] = vector.dictionary()[i];
             }
         }
         return modes;

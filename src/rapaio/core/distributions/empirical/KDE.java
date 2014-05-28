@@ -52,7 +52,7 @@ public class KDE {
     }
 
     public KDE(Vector values, KFunc kernel, double bandwidth) {
-        this.values = BaseFilters.sort(values).stream().filter(s -> !s.isMissing()).mapToDouble().toArray();
+        this.values = BaseFilters.sort(values).stream().filter(s -> !s.missing()).mapToDouble().toArray();
         this.kernel = kernel;
         this.bandwidth = bandwidth;
     }
@@ -91,7 +91,7 @@ public class KDE {
      * http://en.wikipedia.org/wiki/Kernel_density_estimation
      *
      * @param vector sample of values
-     * @return teh getValue of the approximation for bandwidth
+     * @return teh value of the approximation for bandwidth
      */
     public static double getSilvermanBandwidth(Vector vector) {
         Variance var = new Variance(vector);
@@ -100,7 +100,7 @@ public class KDE {
             sd = 1;
         }
         double count = 0;
-        for (int i = 0; i < vector.rowCount(); i++) if (!vector.isMissing(i)) count++;
+        for (int i = 0; i < vector.rowCount(); i++) if (!vector.missing(i)) count++;
         return 1.06 * sd * Math.pow(count, -1. / 5.);
     }
 }

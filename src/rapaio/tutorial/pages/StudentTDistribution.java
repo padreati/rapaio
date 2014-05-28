@@ -82,8 +82,8 @@ public class StudentTDistribution implements TutorialPage {
                 .setYLim(0, 0.5));
 
         p("To understand it's mechanics you have to imagine a "
-                + "process, which produces a numeric getValue. "
-                + "If the only thing you would know about the getValue of the "
+                + "process, which produces a numeric value. "
+                + "If the only thing you would know about the value of the "
                 + "number to be produces is it's range, than you don't know "
                 + "much. ");
 
@@ -92,9 +92,9 @@ public class StudentTDistribution implements TutorialPage {
                 + "a high probability, and which not\". ");
 
         p("The standard normal distribution from the above tells us, for example, "
-                + "that we expect that the getValue produced by our process to be very close "
+                + "that we expect that the value produced by our process to be very close "
                 + "to 0. It might variate but only around 0. There is many information contained "
-                + "in this density function like we expect that the getValue produced to be "
+                + "in this density function like we expect that the value produced to be "
                 + "in interval [-2,+2] in most of the cases. ");
 
         p("Central Limit Theorem "

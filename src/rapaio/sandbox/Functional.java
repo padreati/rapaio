@@ -48,8 +48,8 @@ public class Functional {
         }
         Summary.summary(
                 df.stream().toMappedFrame()
-//                        .filter(spot -> spot.getValue("origin") >= 2)
-//                        .filter(spot -> spot.getValue("cylinders") > 5)
+//                        .filter(spot -> spot.value("origin") >= 2)
+//                        .filter(spot -> spot.value("cylinders") > 5)
 //                        .toMappedFrame()
         );
 

@@ -65,13 +65,13 @@ public class PerformanceTests {
             }
             time2.addValue(System.currentTimeMillis() - start);
             index.addIndex(i);
-            delta.addValue(time1.getValue(i) - time2.getValue(i));
+            delta.addValue(time1.value(i) - time2.value(i));
         }
 
 //        draw(new Plot()
-//                .add(new Lines(getIndex, time1).setColorIndex(1))
-//                .add(new Lines(getIndex, time2).setColorIndex(2))
-//                .add(new Lines(getIndex, delta).setColorIndex(3))
+//                .add(new Lines(index, time1).setColorIndex(1))
+//                .add(new Lines(index, time2).setColorIndex(2))
+//                .add(new Lines(index, delta).setColorIndex(3))
 //        );
 
         draw(new Plot()

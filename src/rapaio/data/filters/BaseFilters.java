@@ -58,7 +58,7 @@ public final class BaseFilters implements Serializable {
      * All the other columns remain the same.
      *
      * @param df input frame
-     * @return frame with getValue converted columns
+     * @return frame with value converted columns
      */
     public static Frame toNumeric(Frame df) {
         Vector[] vectors = new Vector[df.colCount()];
@@ -170,7 +170,7 @@ public final class BaseFilters implements Serializable {
                     for (int k = 0; k < width; k++) {
                         if (j * width + k >= df.rowCount())
                             break;
-                        if (sorted.isMissing(j * width + k))
+                        if (sorted.missing(j * width + k))
                             continue;
                         int rowId = sorted.rowId(j * width + k);
                         discrete.setLabel(rowId, String.valueOf(j + 1));
@@ -183,9 +183,9 @@ public final class BaseFilters implements Serializable {
                 }
                 double[] q = new Quantiles(origin, p).getValues();
                 for (int j = 0; j < origin.rowCount(); j++) {
-                    if (origin.isMissing(j))
+                    if (origin.missing(j))
                         continue;
-                    double value = origin.getValue(j);
+                    double value = origin.value(j);
                     int index = Arrays.binarySearch(q, value);
                     if (index < 0) {
                         index = -index - 1;
@@ -220,7 +220,7 @@ public final class BaseFilters implements Serializable {
                     if (!dicts.containsKey(colName)) {
                         dicts.put(colName, new HashSet<>());
                     }
-                    dicts.get(colName).addAll(Arrays.asList(frame.col(colName).getDictionary()));
+                    dicts.get(colName).addAll(Arrays.asList(frame.col(colName).dictionary()));
                 }
             }
         }
@@ -237,7 +237,7 @@ public final class BaseFilters implements Serializable {
                 } else {
                     vectors[i] = new Nominal(v.rowCount(), dicts.get(colName));
                     for (int k = 0; k < vectors[i].rowCount(); k++) {
-                        vectors[i].setLabel(k, v.getLabel(k));
+                        vectors[i].setLabel(k, v.label(k));
                     }
                 }
             }
@@ -252,7 +252,7 @@ public final class BaseFilters implements Serializable {
      * the term dictionary of the nominal value given as parameter.
      *
      * @param df      source frame
-     * @param colName getIndex fo the nominal column
+     * @param colName index fo the nominal column
      * @return a map of frames, with nominal labels as keys
      */
     public static Map<String, Frame> groupByNominal(final Frame df, final String colName) {
@@ -260,14 +260,14 @@ public final class BaseFilters implements Serializable {
             throw new IllegalArgumentException("Index does not specify a nominal attribute");
         }
         Map<String, Frame> frames = new HashMap<>();
-        String[] dict = df.col(colName).getDictionary();
+        String[] dict = df.col(colName).dictionary();
         final Mapping[] mappings = new Mapping[dict.length];
         for (int i = 0; i < dict.length; i++) {
             mappings[i] = new Mapping();
         }
 
         df.stream().forEach((FSpot fi) -> {
-            int index = fi.getIndex(colName);
+            int index = fi.index(colName);
             mappings[index].add(fi.rowId());
         });
         for (int i = 0; i < mappings.length; i++) {
@@ -322,7 +322,7 @@ public final class BaseFilters implements Serializable {
         }
 
         for (String aCombined : combined) {
-            String[] vdict = frames.get(0).col(aCombined).getDictionary();
+            String[] vdict = frames.get(0).col(aCombined).dictionary();
             Set<String> newdict = new HashSet<>();
             for (String term : dict) {
                 for (String aVdict : vdict) {
@@ -342,7 +342,7 @@ public final class BaseFilters implements Serializable {
             for (int j = 0; j < frame.rowCount(); j++) {
                 StringBuilder sb = new StringBuilder();
                 for (int k = 0; k < combined.length; k++) {
-                    sb.append(".").append(frame.getLabel(j, frame.colIndex(combined[k])));
+                    sb.append(".").append(frame.label(j, frame.colIndex(combined[k])));
                 }
                 col.setLabel(j, sb.toString());
             }
@@ -356,7 +356,7 @@ public final class BaseFilters implements Serializable {
     public static Vector completeCases(Vector source) {
         Mapping mapping = new Mapping();
         for (int i = 0; i < source.rowCount(); i++) {
-            if (source.isMissing(i)) continue;
+            if (source.missing(i)) continue;
             mapping.add(source.rowId(i));
         }
         return new MappedVector(source.source(), mapping);
@@ -377,7 +377,7 @@ public final class BaseFilters implements Serializable {
         List<Integer> selectedCols = colRange.parseColumnIndexes(source);
         return source.stream().filter(s -> {
             for (int col : selectedCols) {
-                if (s.isMissing(col)) return false;
+                if (s.missing(col)) return false;
             }
             return true;
         }).toMappedFrame();
@@ -396,7 +396,7 @@ public final class BaseFilters implements Serializable {
      * returned untouched.
      *
      * @param v input vector
-     * @return converted getValue vector
+     * @return converted value vector
      */
     public static Numeric toNumeric(Vector v) {
         if (v.type().equals(VectorType.NUMERIC)) {
@@ -404,20 +404,20 @@ public final class BaseFilters implements Serializable {
         }
         final Numeric result = new Numeric();
         v.stream().forEach((VSpot vi) -> {
-            if (vi.isMissing()) {
+            if (vi.missing()) {
                 result.addMissing();
             } else {
                 switch (v.type()) {
                     case NOMINAL:
                         try {
-                            double value = Double.parseDouble(vi.getLabel());
+                            double value = Double.parseDouble(vi.label());
                             result.addValue(value);
                         } catch (NumberFormatException nfe) {
                             result.addMissing();
                         }
                         break;
                     case INDEX:
-                        result.addValue(vi.getIndex());
+                        result.addValue(vi.index());
                         break;
                 }
             }
@@ -439,15 +439,15 @@ public final class BaseFilters implements Serializable {
         }
         final Index result = new Index();
         v.stream().forEach((VSpot inst) -> {
-            if (inst.isMissing()) {
+            if (inst.missing()) {
                 result.addMissing();
             } else {
                 switch (v.type()) {
                     case NUMERIC:
-                        result.addIndex((int) Math.rint(inst.getValue()));
+                        result.addIndex((int) Math.rint(inst.value()));
                         break;
                     case NOMINAL:
-                        int value = Integer.parseInt(inst.getLabel());
+                        int value = Integer.parseInt(inst.label());
                         result.addIndex(value);
                         break;
                 }
@@ -485,10 +485,10 @@ public final class BaseFilters implements Serializable {
         Numeric result = new Numeric(vector.rowCount());
         Vector jitter = new Normal(0, sd).sample(result.rowCount());
         for (int i = 0; i < result.rowCount(); i++) {
-            if (vector.isMissing(i)) {
+            if (vector.missing(i)) {
                 continue;
             }
-            result.setValue(i, vector.getValue(i) + jitter.getValue(i));
+            result.setValue(i, vector.value(i) + jitter.value(i));
         }
         return result;
     }
@@ -499,14 +499,14 @@ public final class BaseFilters implements Serializable {
      *
      * @param vector        source vector
      * @param missingValues labels for missing values
-     * @return original vector with missing getValue on matched positions
+     * @return original vector with missing value on matched positions
      */
     public static Vector fillMissingValues(Vector vector, Collection<String> missingValues) {
         if (!vector.type().isNominal()) {
             throw new IllegalArgumentException("Vector is not nominal.");
         }
         vector.stream().forEach((VSpot inst) -> {
-            if (missingValues.contains(inst.getLabel()))
+            if (missingValues.contains(inst.label()))
                 inst.setMissing();
         });
         return vector;

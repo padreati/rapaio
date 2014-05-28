@@ -71,7 +71,7 @@ public class Uniform extends Distribution {
     @Override
     public double quantile(double p) {
         if (p < 0 || p > 1) {
-            throw new ArithmeticException("probability getValue should lie in [0,1] interval");
+            throw new ArithmeticException("probability value should lie in [0,1] interval");
         }
         return a + p * (b - a);
     }

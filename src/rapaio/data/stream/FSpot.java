@@ -49,16 +49,16 @@ public class FSpot implements Serializable {
         return df.rowId(row);
     }
 
-    public boolean isMissing() {
-        return df.isMissing(row);
+    public boolean missing() {
+        return df.missing(row);
     }
 
-    public boolean isMissing(int colIndex) {
-        return df.isMissing(row, colIndex);
+    public boolean missing(int colIndex) {
+        return df.missing(row, colIndex);
     }
 
-    public boolean isMissing(String colName) {
-        return df.isMissing(row, colName);
+    public boolean missing(String colName) {
+        return df.missing(row, colName);
     }
 
     public void setMissing(int colIndex) {
@@ -69,12 +69,12 @@ public class FSpot implements Serializable {
         df.setMissing(row, colName);
     }
 
-    public double getValue(int colIndex) {
-        return df.getValue(row, colIndex);
+    public double value(int colIndex) {
+        return df.value(row, colIndex);
     }
 
-    public double getValue(String colName) {
-        return df.getValue(row, colName);
+    public double value(String colName) {
+        return df.value(row, colName);
     }
 
     public void setValue(int colIndex, double value) {
@@ -85,12 +85,12 @@ public class FSpot implements Serializable {
         df.setValue(row, colName, value);
     }
 
-    public int getIndex(int colIndex) {
-        return df.getIndex(row, colIndex);
+    public int index(int colIndex) {
+        return df.index(row, colIndex);
     }
 
-    public int getIndex(String colName) {
-        return df.getIndex(row, colName);
+    public int index(String colName) {
+        return df.index(row, colName);
     }
 
     public void setIndex(int colIndex, int value) {
@@ -101,12 +101,12 @@ public class FSpot implements Serializable {
         df.setIndex(row, colName, value);
     }
 
-    public String getLabel(int colIndex) {
-        return df.getLabel(row, colIndex);
+    public String label(int colIndex) {
+        return df.label(row, colIndex);
     }
 
-    public String getLabel(String colName) {
-        return df.getLabel(row, colName);
+    public String label(String colName) {
+        return df.label(row, colName);
     }
 
     public void setLabel(int colIndex, String value) {
@@ -117,16 +117,16 @@ public class FSpot implements Serializable {
         df.setLabel(row, colName, value);
     }
 
-    public String[] getDictionary(int colIndex) {
-        return df.col(colIndex).getDictionary();
+    public String[] dictionary(int colIndex) {
+        return df.col(colIndex).dictionary();
     }
 
-    public String[] getDictionary(String colName) {
-        return df.col(colName).getDictionary();
+    public String[] dictionary(String colName) {
+        return df.col(colName).dictionary();
     }
 
-    public double getWeight() {
-        return df.getWeight(row);
+    public double weight() {
+        return df.weight(row);
     }
 
     public void setWeight(double weight) {

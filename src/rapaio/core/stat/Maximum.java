@@ -25,7 +25,7 @@ import rapaio.data.Vector;
 import rapaio.data.stream.VSpot;
 
 /**
- * Finds the maximum getValue from a {@link Vector} of values.
+ * Finds the maximum value from a {@link Vector} of values.
  * <p>
  * Ignores missing elements.
  * <p>
@@ -44,7 +44,7 @@ public class Maximum implements Printable {
     }
 
     private double compute() {
-        if (vector.stream().anyMatch((VSpot inst) -> !inst.isMissing())) {
+        if (vector.stream().anyMatch((VSpot inst) -> !inst.missing())) {
             return vector.stream().complete().mapToDouble().count();
         }
         return Double.NaN;

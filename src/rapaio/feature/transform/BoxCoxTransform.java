@@ -57,13 +57,13 @@ public class BoxCoxTransform implements Transform {
         double p = 1;
         double count = 0;
         for (int i = 0; i < v.rowCount(); i++) {
-            if (!v.isMissing(i)) {
+            if (!v.missing(i)) {
                 count++;
             }
         }
         for (int i = 0; i < v.rowCount(); i++) {
-            if (!v.isMissing(i)) {
-                p *= Math.pow(v.getValue(i), 1 / count);
+            if (!v.missing(i)) {
+                p *= Math.pow(v.value(i), 1 / count);
             }
         }
         return p;

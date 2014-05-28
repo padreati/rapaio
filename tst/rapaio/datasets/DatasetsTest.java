@@ -60,7 +60,7 @@ public class DatasetsTest {
         int nas = 0;
         for (int i = 0; i < df.colCount(); i++) {
             for (int j = 0; j < df.rowCount(); j++) {
-                if (df.col(i).isMissing(j)) {
+                if (df.col(i).missing(j)) {
                     nas++;
                 }
             }

@@ -76,7 +76,7 @@ public class RhoCorr implements Printable {
             int start = 0;
             while (start < sorted[i].rowCount()) {
                 int end = start;
-                while (end < sorted[i].rowCount() - 1 && sorted[i].getValue(end) == sorted[i].getValue(end + 1)) {
+                while (end < sorted[i].rowCount() - 1 && sorted[i].value(end) == sorted[i].value(end + 1)) {
                     end++;
                 }
                 double value = 1 + (start + end) / 2.;

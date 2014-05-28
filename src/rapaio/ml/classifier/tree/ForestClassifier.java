@@ -186,7 +186,7 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
     public void learn(Frame df, String targetCol) {
 
         this.targetCol = targetCol;
-        this.dict = df.col(targetCol).getDictionary();
+        this.dict = df.col(targetCol).dictionary();
 
         predictors.clear();
 
@@ -272,16 +272,16 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
                     for (int i = 0; i < d.rowCount(); i++) {
                         DensityVector dv = new DensityVector(dictionary);
                         for (int j = 0; j < dictionary.length; j++) {
-                            dv.update(j, d.getValue(i, j));
+                            dv.update(j, d.value(i, j));
                         }
                         int best = dv.findBestIndex();
-                        dist.setValue(i, best, dist.getValue(i, best) + 1);
+                        dist.setValue(i, best, dist.value(i, best) + 1);
                     }
                 });
                 for (int i = 0; i < pred.rowCount(); i++) {
                     DensityVector dv = new DensityVector(dictionary);
                     for (int j = 0; j < dictionary.length; j++) {
-                        dv.update(j, dist.getValue(i, j));
+                        dv.update(j, dist.value(i, j));
                     }
                     pred.setValue(i, dv.findBestIndex());
                 }
@@ -293,14 +293,14 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
                 distributions.forEach(d -> {
                     for (int i = 0; i < d.rowCount(); i++) {
                         for (int j = 0; j < dictionary.length; j++) {
-                            dist.setValue(i, j, dist.getValue(i, j) + d.getValue(i, j));
+                            dist.setValue(i, j, dist.value(i, j) + d.value(i, j));
                         }
                     }
                 });
                 for (int i = 0; i < pred.rowCount(); i++) {
                     DensityVector dv = new DensityVector(dictionary);
                     for (int j = 0; j < dictionary.length; j++) {
-                        dv.update(j, dist.getValue(i, j));
+                        dv.update(j, dist.value(i, j));
                     }
                     pred.setValue(i, dv.findBestIndex());
                 }

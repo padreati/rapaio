@@ -96,7 +96,7 @@ public interface Classifier extends Printable, Serializable {
      * otherwise returns null.
      *
      * @return predicted class distribution (frame with one
-     * column for each target class, including missing getValue)
+     * column for each target class, including missing value)
      */
     Frame dist();
 }

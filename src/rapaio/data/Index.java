@@ -130,7 +130,7 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public int getIndex(int row) {
+    public int index(int row) {
         return data[row];
     }
 
@@ -146,8 +146,8 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public double getValue(int row) {
-        return getIndex(row);
+    public double value(int row) {
+        return index(row);
     }
 
     @Override
@@ -161,33 +161,33 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public String getLabel(int row) {
+    public String label(int row) {
         return "";
     }
 
     @Override
     public void setLabel(int row, String value) {
-        throw new RuntimeException("Operation not available for getIndex vectors.");
+        throw new RuntimeException("Operation not available for index vectors.");
     }
 
     @Override
     public void addLabel(String value) {
-        throw new RuntimeException("Operation not available for getIndex vectors.");
+        throw new RuntimeException("Operation not available for index vectors.");
     }
 
     @Override
-    public String[] getDictionary() {
-        throw new RuntimeException("Operation not available for getIndex vectors.");
+    public String[] dictionary() {
+        throw new RuntimeException("Operation not available for index vectors.");
     }
 
     @Override
     public void setDictionary(String[] dict) {
-        throw new RuntimeException("Operation not available for getIndex vectors.");
+        throw new RuntimeException("Operation not available for index vectors.");
     }
 
     @Override
-    public boolean isMissing(int row) {
-        return getIndex(row) == MISSING_VALUE;
+    public boolean missing(int row) {
+        return index(row) == MISSING_VALUE;
     }
 
     @Override
@@ -224,7 +224,7 @@ public class Index extends AbstractVector {
     public Index solidCopy() {
         Index copy = new Index(rowCount(), rowCount(), 0);
         for (int i = 0; i < rowCount(); i++) {
-            copy.setIndex(i, getIndex(i));
+            copy.setIndex(i, index(i));
         }
         return copy;
     }

@@ -105,20 +105,20 @@ public class DecisionStumpRegressor extends AbstractRegressor implements BTRegre
         double[] var = new double[sort.rowCount()];
         StatOnline so = new StatOnline();
         for (int i = 0; i < sort.rowCount(); i++) {
-            so.update(df.sourceFrame().getValue(sort.rowId(i), targetColName));
+            so.update(df.sourceFrame().value(sort.rowId(i), targetColName));
             var[i] = so.getVariance() * so.getN();
         }
         so = new StatOnline();
         for (int i = sort.rowCount() - 1; i >= 0; i--) {
-            so.update(df.sourceFrame().getValue(sort.rowId(i), targetColName));
+            so.update(df.sourceFrame().value(sort.rowId(i), targetColName));
             var[i] += so.getVariance() * so.getN();
         }
         for (int i = minCount + 1; i < sort.rowCount() - minCount; i++) {
-            if (var[i - 1] < criterion && sort.getValue(i - 1) != sort.getValue(i)
-                    && sort.getValue(i - 1) != sort.getValue(sort.rowCount() - 1)) {
+            if (var[i - 1] < criterion && sort.value(i - 1) != sort.value(i)
+                    && sort.value(i - 1) != sort.value(sort.rowCount() - 1)) {
                 criterion = var[i - 1];
                 testColName = colName;
-                testValue = sort.getValue(i - 1);
+                testValue = sort.value(i - 1);
             }
         }
     }
@@ -137,9 +137,9 @@ public class DecisionStumpRegressor extends AbstractRegressor implements BTRegre
 
         Vector test = x.col(testColName);
         for (int i = 0; i < test.rowCount(); i++) {
-            if (test.isMissing(i)) continue;
+            if (test.missing(i)) continue;
             if (test.type().isNominal()) continue;
-            if (test.type().isNumeric() && (testValue >= test.getValue(i))) {
+            if (test.type().isNumeric() && (testValue >= test.value(i))) {
                 dfLeft.add(test.rowId(i));
             } else {
                 dfRight.add(test.rowId(i));
@@ -165,12 +165,12 @@ public class DecisionStumpRegressor extends AbstractRegressor implements BTRegre
         Vector test = df.col(testColName);
 
         for (int i = 0; i < df.rowCount(); i++) {
-            if (test.isMissing(i)) {
+            if (test.missing(i)) {
                 fitValues.setValue(i, defaultFit);
                 continue;
             }
-            if ((test.type().isNominal() && testLabel.equals(test.getLabel(i)))
-                    || (test.type().isNumeric() && (testValue >= test.getValue(i)))) {
+            if ((test.type().isNominal() && testLabel.equals(test.label(i)))
+                    || (test.type().isNumeric() && (testValue >= test.value(i)))) {
                 fitValues.setValue(i, leftFit);
             } else {
                 fitValues.setValue(i, rightFit);

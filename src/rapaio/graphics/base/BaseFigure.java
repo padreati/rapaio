@@ -109,8 +109,8 @@ public abstract class BaseFigure implements Figure {
     public BaseFigure setCol(Vector color) {
         colors = new Color[color.rowCount()];
         for (int i = 0; i < color.rowCount(); i++) {
-            colors[i] = new StandardColorPalette().getColor(color.getIndex(i));
-//            colors[i] = new GrayColorPallete().getColor(color.getIndex(i));
+            colors[i] = new StandardColorPalette().getColor(color.index(i));
+//            colors[i] = new GrayColorPallete().getColor(color.index(i));
         }
         return this;
     }
@@ -162,9 +162,9 @@ public abstract class BaseFigure implements Figure {
 
     public double getSize(int row) {
         if (sizeIndex == null) {
-            return getDefaultSize().getValue(row % getDefaultSize().rowCount());
+            return getDefaultSize().value(row % getDefaultSize().rowCount());
         }
-        return sizeIndex.getValue(row % sizeIndex.rowCount());
+        return sizeIndex.value(row % sizeIndex.rowCount());
     }
 
     // pch
@@ -185,9 +185,9 @@ public abstract class BaseFigure implements Figure {
 
     public int getPch(int row) {
         if (pchIndex == null) {
-            return getDefaultPch().getIndex(row % getDefaultPch().rowCount());
+            return getDefaultPch().index(row % getDefaultPch().rowCount());
         }
-        return pchIndex.getIndex(row % pchIndex.rowCount());
+        return pchIndex.index(row % pchIndex.rowCount());
     }
 
     public BaseFigure setAlpha(float alpha) {

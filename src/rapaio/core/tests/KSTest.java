@@ -65,7 +65,7 @@ public class KSTest implements Printable {
 
         for (int i = 0; i < v1.rowCount(); i++) {
             //ECDF(x) - F(x)
-            double ff = cdf.cdf(v1.getValue(i));
+            double ff = cdf.cdf(v1.value(i));
             double fn = (i + 1) / n;
             D = Math.max(D, Math.abs(fo - ff));
             D = Math.max(D, Math.abs(fn - ff));
@@ -100,8 +100,8 @@ public class KSTest implements Printable {
         double n1 = v1.rowCount();
         double n2 = v2.rowCount();
         while (i1 < n1 && i2 < n2) {
-            double d1 = v1.getValue(i1);
-            double d2 = v2.getValue(i2);
+            double d1 = v1.value(i1);
+            double d2 = v2.value(i2);
             if (d1 <= d2) fn1 = i1++ / n1;
             if (d2 <= d1) fn2 = i2++ / n2;
             D = Math.max(D, Math.abs(fn1 - fn2));

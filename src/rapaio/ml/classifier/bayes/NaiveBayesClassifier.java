@@ -98,13 +98,13 @@ public class NaiveBayesClassifier extends AbstractClassifier {
     @Override
     public void learn(Frame df, String targetCol) {
         this.targetCol = targetCol;
-        this.dict = df.col(targetCol).getDictionary();
+        this.dict = df.col(targetCol).dictionary();
 
         // build priors
 
         priors = new HashMap<>();
         DensityVector dv = new DensityVector(dict);
-        df.stream().forEach(s -> dv.update(s.getIndex(targetCol), s.getWeight()));
+        df.stream().forEach(s -> dv.update(s.index(targetCol), s.weight()));
         // laplace add-one smoothing
         for (int i = 0; i < dict.length; i++) {
             dv.update(i, 1.0);
@@ -149,12 +149,12 @@ public class NaiveBayesClassifier extends AbstractClassifier {
             for (int j = 1; j < dict.length; j++) {
                 double sumLog = Math.log(priors.get(dict[j]));
                 for (String testCol : cvpEstimatorMap.keySet()) {
-                    if (df.isMissing(i, testCol)) continue;
-                    sumLog += cvpEstimatorMap.get(testCol).cpValue(df.getValue(i, testCol), dict[j]);
+                    if (df.missing(i, testCol)) continue;
+                    sumLog += cvpEstimatorMap.get(testCol).cpValue(df.value(i, testCol), dict[j]);
                 }
                 for (String testCol : dvpEstimatorMap.keySet()) {
-                    if (df.isMissing(i, testCol)) continue;
-                    sumLog += dvpEstimatorMap.get(testCol).cpValue(df.getLabel(i, testCol), dict[j]);
+                    if (df.missing(i, testCol)) continue;
+                    sumLog += dvpEstimatorMap.get(testCol).cpValue(df.label(i, testCol), dict[j]);
                 }
                 dv.update(j, sumLog);
             }
@@ -205,12 +205,12 @@ public class NaiveBayesClassifier extends AbstractClassifier {
 
         @Override
         public void learn(Frame df, String targetCol, String testCol) {
-            String[] dict = df.col(targetCol).getDictionary();
+            String[] dict = df.col(targetCol).dictionary();
             normals.clear();
 
             for (String classLabel : dict) {
                 if ("?".equals(classLabel)) continue;
-                Frame cond = df.stream().filter(s -> classLabel.equals(s.getLabel(targetCol))).toMappedFrame();
+                Frame cond = df.stream().filter(s -> classLabel.equals(s.label(targetCol))).toMappedFrame();
                 Vector v = cond.col(testCol);
                 double mu = new Mean(v).getValue();
                 double sd = Math.sqrt(new Variance(v).getValue());
@@ -252,9 +252,9 @@ public class NaiveBayesClassifier extends AbstractClassifier {
         public void learn(Frame df, String targetCol, String testCol) {
             kde.clear();
 
-            for (String classLabel : df.col(targetCol).getDictionary()) {
+            for (String classLabel : df.col(targetCol).dictionary()) {
                 if ("?".equals(classLabel)) continue;
-                Frame cond = df.stream().filter(s -> classLabel.equals(s.getLabel(targetCol))).toMappedFrame();
+                Frame cond = df.stream().filter(s -> classLabel.equals(s.label(targetCol))).toMappedFrame();
                 Vector v = cond.col(testCol);
                 KDE k = new KDE(v, kfunc, (bandwidth == 0) ? KDE.getSilvermanBandwidth(v) : bandwidth);
 
@@ -287,8 +287,8 @@ public class NaiveBayesClassifier extends AbstractClassifier {
         @Override
         public void learn(Frame df, String targetCol, String testCol) {
 
-            String[] targetDict = df.col(targetCol).getDictionary();
-            String[] testDict = df.col(testCol).getDictionary();
+            String[] targetDict = df.col(targetCol).dictionary();
+            String[] testDict = df.col(testCol).dictionary();
 
             invTreeTarget = new HashMap<>();
             invTreeTest = new HashMap<>();
@@ -306,7 +306,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
                     density[i][j] = 1.0;
                 }
             }
-            df.stream().forEach(s -> density[s.getIndex(targetCol)][s.getIndex(testCol)]++);
+            df.stream().forEach(s -> density[s.index(targetCol)][s.index(testCol)]++);
             for (int i = 0; i < targetDict.length; i++) {
                 double t = 0;
                 for (int j = 0; j < testDict.length; j++) {

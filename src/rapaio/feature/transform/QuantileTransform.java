@@ -67,8 +67,8 @@ public class QuantileTransform implements Transform {
             Vector col = df.col(colName);
             double[] vals = values.get(colName);
             for (int i = 0; i < df.rowCount(); i++) {
-                if (col.isMissing(i)) continue;
-                double value = col.getValue(i);
+                if (col.missing(i)) continue;
+                double value = col.value(i);
                 if (value <= vals[0]) {
                     col.setValue(i, 0.0);
                     continue;
@@ -92,8 +92,8 @@ public class QuantileTransform implements Transform {
             Vector col = df.col(colName);
             double[] vals = values.get(colName);
             for (int i = 0; i < df.rowCount(); i++) {
-                if (col.isMissing(i)) continue;
-                double value = col.getValue(i);
+                if (col.missing(i)) continue;
+                double value = col.value(i);
                 if (value <= 0) {
                     col.setValue(i, vals[0]);
                     continue;
@@ -114,8 +114,8 @@ public class QuantileTransform implements Transform {
     public Vector scale(Vector v, String name) {
         double[] vals = values.get(name);
         for (int i = 0; i < v.rowCount(); i++) {
-            if (v.isMissing(i)) continue;
-            double value = v.getValue(i);
+            if (v.missing(i)) continue;
+            double value = v.value(i);
             if (value <= vals[0]) {
                 v.setValue(i, 0.0);
                 continue;

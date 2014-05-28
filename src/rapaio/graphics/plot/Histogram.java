@@ -85,18 +85,18 @@ public class Histogram extends PlotComponent {
     private void rebuild() {
         if (minvalue != minvalue) {
             for (int i = 0; i < v.rowCount(); i++) {
-                if (v.isMissing(i)) {
+                if (v.missing(i)) {
                     continue;
                 }
                 if (minvalue != minvalue) {
-                    minvalue = v.getValue(i);
+                    minvalue = v.value(i);
                 } else {
-                    minvalue = Math.min(minvalue, v.getValue(i));
+                    minvalue = Math.min(minvalue, v.value(i));
                 }
                 if (maxvalue != maxvalue) {
-                    maxvalue = v.getValue(i);
+                    maxvalue = v.value(i);
                 } else {
-                    maxvalue = Math.max(maxvalue, v.getValue(i));
+                    maxvalue = Math.max(maxvalue, v.value(i));
                 }
             }
         }
@@ -105,14 +105,14 @@ public class Histogram extends PlotComponent {
         freqtable = new double[bins];
         double total = 0;
         for (int i = 0; i < v.rowCount(); i++) {
-            if (v.isMissing(i)) {
+            if (v.missing(i)) {
                 continue;
             }
             total++;
-            if (v.getValue(i) < minvalue || v.getValue(i) > maxvalue) {
+            if (v.value(i) < minvalue || v.value(i) > maxvalue) {
                 continue;
             }
-            int index = (int) ((v.getValue(i) - minvalue) / step);
+            int index = (int) ((v.value(i) - minvalue) / step);
             if (index == freqtable.length)
                 index--;
             freqtable[index]++;

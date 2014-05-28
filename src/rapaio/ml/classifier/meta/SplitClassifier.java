@@ -87,7 +87,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
 
     @Override
     public void learn(Frame df, String targetCol) {
-        dict = df.col(targetCol).getDictionary();
+        dict = df.col(targetCol).dictionary();
         this.targetCol = targetCol;
 
         if (c == null) {
@@ -126,7 +126,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
 
     @Override
     public void learnFurther(Frame df, String targetName, int runs) {
-        dict = df.col(targetName).getDictionary();
+        dict = df.col(targetName).dictionary();
         targetCol = targetName;
 
         if (c == null) {
@@ -170,18 +170,18 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
                 if (predicates.get(i).test(spot)) {
                     Frame f = new MappedFrame(df, new Mapping(new int[]{spot.rowId()}));
                     classifiers.get(i).predict(f);
-                    pred.setLabel(spot.row(), classifiers.get(i).pred().getLabel(0));
+                    pred.setLabel(spot.row(), classifiers.get(i).pred().label(0));
                     for (int j = 0; j < dict.length; j++) {
-                        dist.setValue(spot.row(), dict[j], classifiers.get(i).dist().getValue(0, dict[j]));
+                        dist.setValue(spot.row(), dict[j], classifiers.get(i).dist().value(0, dict[j]));
                     }
                     return;
                 }
             }
             Frame f = new MappedFrame(df, new Mapping(new int[]{spot.rowId()}));
             classifiers.get(classifiers.size() - 1).predict(f);
-            pred.setLabel(spot.row(), classifiers.get(classifiers.size() - 1).pred().getLabel(0));
+            pred.setLabel(spot.row(), classifiers.get(classifiers.size() - 1).pred().label(0));
             for (int j = 0; j < dict.length; j++) {
-                dist.setValue(spot.row(), dict[j], classifiers.get(classifiers.size() - 1).dist().getValue(0, dict[j]));
+                dist.setValue(spot.row(), dict[j], classifiers.get(classifiers.size() - 1).dist().value(0, dict[j]));
             }
         });
     }
@@ -193,8 +193,8 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
 
     public static List<SPredicate<FSpot>> splitByNominal(Frame df, String colName) {
         List<SPredicate<FSpot>> list = new ArrayList<>();
-        Arrays.stream(df.col(colName).getDictionary()).forEach(term ->{
-            list.add(spot -> spot.getLabel(colName).equals(term));
+        Arrays.stream(df.col(colName).dictionary()).forEach(term ->{
+            list.add(spot -> spot.label(colName).equals(term));
         });
         return list;
     }

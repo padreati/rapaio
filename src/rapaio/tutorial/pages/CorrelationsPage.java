@@ -76,7 +76,7 @@ public class CorrelationsPage implements TutorialPage {
 
         p("Pearson product-moment coefficient measures the linear correlation "
                 + "between two random variables \\(X\\) and \\(Y\\), "
-                + "giving a getValue between +1 and −1 inclusive, "
+                + "giving a value between +1 and −1 inclusive, "
                 + "where 1 is total positive correlation, "
                 + "0 is no correlation, and −1 is negative correlation.");
 
@@ -112,7 +112,7 @@ public class CorrelationsPage implements TutorialPage {
 
         p("Rapaio library allows one to compute Pearson \\(r\\) for more then one vector at a time. "
                 + "Thus the result will be a rapaio.data.matrix with computed \\(r\\) values between vectors,"
-                + "using vectors getIndex position as indexes in resulted rapaio.data.matrix. ");
+                + "using vectors index position as indexes in resulted rapaio.data.matrix. ");
 
         code("        PearsonRCorrelation corr = new PearsonRCorrelation(df);\n"
                 + "        summary(corr);\n");
@@ -133,7 +133,7 @@ public class CorrelationsPage implements TutorialPage {
                 400, 300
         );
 
-        p("Another \\(r\\) coefficient which have a getValue close to \\(1\\) is between "
+        p("Another \\(r\\) coefficient which have a value close to \\(1\\) is between "
                 + "sepal-length and petal-length. Let's check that with a plot, also: ");
 
         draw(new Plot()
@@ -145,7 +145,7 @@ public class CorrelationsPage implements TutorialPage {
 
         p("Finally, we plot again, but this time using a coefficient which is closer to 0, "
                 + "which could mean that the variables are not linearly correlated. "
-                + "Such a getValue for correlation we have between sepal-length and sepal-width. ");
+                + "Such a value for correlation we have between sepal-length and sepal-width. ");
 
         draw(new Plot()
                         .add(new Points(jitter(df.col("sepal-length"), 0.01), jitter(df.col("sepal-width"), 0.01))
@@ -171,7 +171,7 @@ public class CorrelationsPage implements TutorialPage {
                 + "the \\(n\\) raw scores \\(X_i\\), \\(Y_i\\) are converted to ranks "
                 + "\\(x_i\\), \\(y_i\\), and \\(\\rho\\) is computed from these:");
         eqn("\\rho = \\frac{\\sum_i(x_i-\\bar{x})(y_i-\\bar{y})}{\\sqrt{\\sum_i (x_i-\\bar{x})^2 \\sum_i(y_i-\\bar{y})^2}}");
-        p("Identical values (rank ties or getValue duplicates) are assigned a "
+        p("Identical values (rank ties or value duplicates) are assigned a "
                 + "rank equal to the average of their positions in the ascending "
                 + "order of the values.");
 
@@ -179,7 +179,7 @@ public class CorrelationsPage implements TutorialPage {
 
         p("Rapaio library allows one to compute Spearman \\(\\rho\\) for more then one vector at a time. "
                 + "Thus the result will be a rapaio.data.matrix with computed \\(\\rho\\) values between vectors,"
-                + "using vectors getIndex position as indexes in resulted rapaio.data.matrix. ");
+                + "using vectors index position as indexes in resulted rapaio.data.matrix. ");
 
         RhoCorr rho = new RhoCorr(df);
         summary(rho);

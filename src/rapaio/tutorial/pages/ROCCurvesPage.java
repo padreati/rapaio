@@ -83,7 +83,7 @@ public class ROCCurvesPage implements TutorialPage {
                 + "that it consists of many numerical attributes used to predict a nominal "
                 + "attribute called \\(spam\\)");
 
-        p("Thus we know there are 2788 instances classified as \\(ham\\), codified by getValue 0 (\\(not spam\\)), "
+        p("Thus we know there are 2788 instances classified as \\(ham\\), codified by value 0 (\\(not spam\\)), "
                 + "and 1813 instances codified by 1, which denotes spam emails. There are a lot of "
                 + "numeric features in this data set. We use "
                 + "only the first 5 numerical features for prediction.");

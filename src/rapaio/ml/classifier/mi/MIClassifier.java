@@ -21,7 +21,6 @@
 package rapaio.ml.classifier.mi;
 
 import rapaio.data.Frame;
-import rapaio.data.Frames;
 import rapaio.data.Nominal;
 import rapaio.data.filters.BaseFilters;
 import rapaio.ml.classifier.AbstractClassifier;
@@ -97,7 +96,7 @@ public class MIClassifier extends AbstractClassifier {
     @Override
     public void learn(Frame df, String targetCol) {
         this.targetCol = targetCol;
-        this.dict = df.col(targetCol).getDictionary();
+        this.dict = df.col(targetCol).dictionary();
 
         if (!groupCol.isEmpty()) {
             df = BaseFilters.removeCols(df, groupCol);
@@ -107,15 +106,15 @@ public class MIClassifier extends AbstractClassifier {
 
     @Override
     public void predict(Frame df) {
-        String[] groups = df.col(groupCol).getDictionary();
+        String[] groups = df.col(groupCol).dictionary();
         Map<String, DensityVector> dvs = new HashMap<>();
         Arrays.stream(groups).forEach(groupLabel -> dvs.put(groupLabel, new DensityVector(dict)));
 
         c.predict(df);
         c.pred().stream().forEach(s -> {
-            String groupLabel = df.getLabel(s.row(), groupCol);
+            String groupLabel = df.label(s.row(), groupCol);
             DensityVector dv = dvs.get(groupLabel);
-            int i = s.getIndex();
+            int i = s.index();
             dv.update(i, 1);
         });
 
@@ -126,7 +125,7 @@ public class MIClassifier extends AbstractClassifier {
 
         pred = new Nominal(df.rowCount(), dict);
 
-        c.pred().stream().forEach(s -> pred.setLabel(s.row(), predictions.get(df.getLabel(s.row(), groupCol))));
+        c.pred().stream().forEach(s -> pred.setLabel(s.row(), predictions.get(df.label(s.row(), groupCol))));
         dist = c.dist();
     }
 

@@ -190,27 +190,27 @@ public class ClassificationWithRF implements TutorialPage {
                 + "become useless to add new trees.");
 
         code("        int pos = 0;\n"
-                + "        Vector getIndex = new IndexVector(\"number of trees\", 1000);\n"
+                + "        Vector index = new IndexVector(\"number of trees\", 1000);\n"
                 + "        Vector accuracy = new NumericVector(\"test error\", 1000);\n"
                 + "        Vector oob = new NumericVector(\"oob error\", 1000);\n"
                 + "        for (int mtree = 1; mtree < 100; mtree += 5) {\n"
                 + "            RandomForestClassifier rf = new RandomForestClassifier(mtree, 3, true);\n"
                 + "            rf.learn(train, \"spam\");\n"
                 + "            ClassifierModel model = rf.predict(test);\n"
-                + "            getIndex.setIndex(pos, mtree);\n"
+                + "            index.setIndex(pos, mtree);\n"
                 + "            accuracy.setValue(pos, 1 - computeAccuracy(model, test));\n"
                 + "            oob.setValue(pos, rf.getOobError());\n"
                 + "            pos++;\n"
                 + "        }\n"
                 + "        Plot p = new Plot();\n"
-                + "        Lines lines = new Lines(p, getIndex, accuracy);\n"
+                + "        Lines lines = new Lines(p, index, accuracy);\n"
                 + "        lines.opt().setColorIndex(new OneIndexVector(2));\n"
                 + "        p.add(lines);\n"
-                + "        Points pts = new Points(p, getIndex, accuracy);\n"
+                + "        Points pts = new Points(p, index, accuracy);\n"
                 + "        pts.opt().setColorIndex(new OneIndexVector(2));\n"
                 + "        p.add(pts);\n"
-                + "        p.add(new Lines(p, getIndex, oob));\n"
-                + "        p.add(new Points(p, getIndex, oob));\n"
+                + "        p.add(new Lines(p, index, oob));\n"
+                + "        p.add(new Points(p, index, oob));\n"
                 + "\n"
                 + "        p.setYLab(\"test (blue), oob (black)\");\n"
                 + "        p.setTitle(\"Accuracy errors (% misclassified)\");\n"
@@ -301,7 +301,7 @@ public class ClassificationWithRF implements TutorialPage {
         double accuracy = 0;
         double total = predict.rowCount();
         for (int i = 0; i < predict.rowCount(); i++) {
-            if (test.col("spam").getIndex(i) == predict.getIndex(i)) {
+            if (test.col("spam").index(i) == predict.index(i)) {
                 accuracy += 1.;
             }
         }

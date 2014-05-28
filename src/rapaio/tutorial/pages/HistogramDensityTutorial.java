@@ -163,7 +163,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                 + "kernels and with bandwidth approximated by Silverman's rule "
                 + "of thumb.");
 
-        p("However one can use a different getValue for bandwidth in order to obtain "
+        p("However one can use a different value for bandwidth in order to obtain "
                 + "a smooth or less smooth approximation of the density function.");
 
         draw(new Plot()

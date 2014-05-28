@@ -25,10 +25,6 @@ import rapaio.data.mapping.Mapping;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static java.util.stream.Collectors.*;
 
 /**
  * A frame which is not mapped, its values are contained in vectors.
@@ -145,30 +141,30 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public boolean isMissing(int row, int col) {
-        return col(col).isMissing(row);
+    public boolean missing(int row, int col) {
+        return col(col).missing(row);
     }
 
     @Override
-    public boolean isMissing(int row, String colName) {
-        return col(colName).isMissing(row);
+    public boolean missing(int row, String colName) {
+        return col(colName).missing(row);
     }
 
     @Override
-    public Numeric getWeights() {
+    public Numeric weights() {
         return weights;
     }
 
     @Override
     public void setWeights(Numeric weights) {
         for (int i = 0; i < this.weights.rowCount(); i++) {
-            this.weights.setValue(i, weights.getValue(i));
+            this.weights.setValue(i, weights.value(i));
         }
     }
 
     @Override
-    public double getWeight(int row) {
-        return weights.getValue(row);
+    public double weight(int row) {
+        return weights.value(row);
     }
 
     @Override

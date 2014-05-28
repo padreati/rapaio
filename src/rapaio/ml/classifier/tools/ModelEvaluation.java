@@ -66,7 +66,7 @@ public class ModelEvaluation {
             c.predict(test);
             double fcorrect = 0;
             for (int j = 0; j < test.rowCount(); j++) {
-                if (test.col(classColName).getIndex(j) == c.pred().getIndex(j)) {
+                if (test.col(classColName).index(j) == c.pred().index(j)) {
                     fcorrect++;
                 }
             }
@@ -81,13 +81,13 @@ public class ModelEvaluation {
     }
 
     private List<Integer>[] buildStrata(Frame df, int folds, String classColName) {
-        String[] dict = df.col(classColName).getDictionary();
+        String[] dict = df.col(classColName).dictionary();
         List<Integer>[] rowIds = new List[dict.length];
         for (int i = 0; i < dict.length; i++) {
             rowIds[i] = new ArrayList<>();
         }
         for (int i = 0; i < df.rowCount(); i++) {
-            rowIds[df.getIndex(i, df.colIndex(classColName))].add(df.rowId(i));
+            rowIds[df.index(i, df.colIndex(classColName))].add(df.rowId(i));
         }
         List<Integer> shuffle = new ArrayList<>();
         for (int i = 0; i < dict.length; i++) {
@@ -145,7 +145,7 @@ public class ModelEvaluation {
                 c.predict(test);
                 double acc = 0;
                 for (int j = 0; j < c.pred().rowCount(); j++) {
-                    if (c.pred().getIndex(j) == test.col(classColName).getIndex(j)) {
+                    if (c.pred().index(j) == test.col(classColName).index(j)) {
                         acc++;
                     }
                 }

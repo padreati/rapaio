@@ -51,7 +51,7 @@ public class FSpots implements Stream<FSpot>, Serializable {
     }
 
     public FSpots complete() {
-        return filter((FSpot fi) -> !fi.isMissing());
+        return filter((FSpot fi) -> !fi.missing());
     }
 
     @Override

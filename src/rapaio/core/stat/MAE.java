@@ -66,7 +66,7 @@ public class MAE implements Printable {
         for (int i = 0; i < source.size(); i++) {
             for (int j = 0; j < source.get(i).rowCount(); j++) {
                 count++;
-                total += Math.abs(source.get(i).getValue(j) - target.get(i).getValue(j));
+                total += Math.abs(source.get(i).value(j) - target.get(i).value(j));
             }
         }
         value = total / count;

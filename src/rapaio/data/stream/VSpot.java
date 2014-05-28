@@ -45,43 +45,43 @@ public class VSpot implements Serializable {
         return vector.rowId(row);
     }
 
-    public Vector getVector() {
+    public Vector vector() {
         return vector;
     }
 
-    public boolean isMissing() {
-        return vector.isMissing(row);
+    public boolean missing() {
+        return vector.missing(row);
     }
 
     public void setMissing() {
         vector.setMissing(row);
     }
 
-    public double getValue() {
-        return vector.getValue(row);
+    public double value() {
+        return vector.value(row);
     }
 
     public void setValue(final double value) {
         vector.setValue(row, value);
     }
 
-    public int getIndex() {
-        return vector.getIndex(row);
+    public int index() {
+        return vector.index(row);
     }
 
     public void setIndex(final int index) {
         vector.setIndex(row, index);
     }
 
-    public String getLabel() {
-        return vector.getLabel(row);
+    public String label() {
+        return vector.label(row);
     }
 
     public void setLabel(String label) {
         vector.setLabel(row, label);
     }
 
-    public String[] getDictionary() {
-        return vector.getDictionary();
+    public String[] dictionary() {
+        return vector.dictionary();
     }
 }
