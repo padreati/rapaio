@@ -39,13 +39,13 @@ import static rapaio.workspace.W.getPrinter;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class SpearmanRhoCorrelation implements Printable {
+public class RhoCorr implements Printable {
 
     private final String[] names;
     private final Vector[] vectors;
     private final double[][] rho;
 
-    public SpearmanRhoCorrelation(Vector... vectors) {
+    public RhoCorr(Vector... vectors) {
         this.names = new String[vectors.length];
         for (int i = 0; i < names.length; i++) {
             names[i] = "V" + i;
@@ -54,7 +54,7 @@ public class SpearmanRhoCorrelation implements Printable {
         this.rho = compute();
     }
 
-    public SpearmanRhoCorrelation(Frame df) {
+    public RhoCorr(Frame df) {
         this.names = df.colNames();
         this.vectors = new Vector[df.colCount()];
         for (int i = 0; i < df.colCount(); i++) {

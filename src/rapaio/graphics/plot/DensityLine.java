@@ -26,6 +26,7 @@ import rapaio.core.distributions.empirical.KFuncGaussian;
 import rapaio.data.Numeric;
 import rapaio.data.Vector;
 import rapaio.graphics.base.Range;
+import rapaio.util.Pin;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -57,37 +58,26 @@ public class DensityLine extends PlotComponent {
 
     @Override
     public Range buildRange() {
-        double xmin = Double.NaN;
-        double xmax = Double.NaN;
-        double ymin = 0;
-        double ymax = Double.NaN;
+        Pin<Double> xmin = new Pin<>(Double.NaN);
+        Pin<Double> xmax = new Pin<>(Double.NaN);
+        Pin<Double> ymin = new Pin<>(0.0);
+        Pin<Double> ymax = new Pin<>(Double.NaN);
 
-        for (int i = 0; i < vector.rowCount(); i++) {
-            if (vector.isMissing(i))
-                continue;
-            if (xmin != xmin) {
-                xmin = kde.getKernel().getMinValue(vector.getValue(i), bandwidth);
-            } else {
-                xmin = Math.min(xmin, kde.getKernel().getMinValue(vector.getValue(i), bandwidth));
-            }
-            if (xmax != xmax) {
-                xmax = kde.getKernel().getMaxValue(vector.getValue(i), bandwidth);
-            } else {
-                xmax = Math.min(xmax, kde.getKernel().getMaxValue(vector.getValue(i), bandwidth));
-            }
-            if (ymax != ymax) {
-                ymax = kde.getPdf().apply(vector.getValue(i));
-            } else {
-                ymax = Math.min(ymax, kde.getPdf().apply(vector.getValue(i)));
-            }
-        }
+        vector.stream().filter(s -> !s.isMissing()).forEach(s -> {
+            double xMin = kde.getKernel().getMinValue(s.getValue(), bandwidth);
+            double xMax = kde.getKernel().getMaxValue(s.getValue(), bandwidth);
+            double yMax = kde.getPdf().apply(s.getValue());
+            xmin.set(Double.isNaN(xmin.get()) ? xMin : Math.min(xmin.get(), xMin));
+            xmax.set(Double.isNaN(xmax.get()) ? xMax : Math.max(xmax.get(), xMax));
+            ymax.set(Double.isNaN(ymax.get()) ? yMax : Math.max(ymax.get(), yMax));
+        });
         // give some space
-        ymax *= 1.05;
+        ymax.set(ymax.get() * 1.05);
         Range range = new Range();
-        range.setX1(xmin);
-        range.setX2(xmax);
-        range.setY1(ymin);
-        range.setY2(ymax);
+        range.setX1(xmin.get());
+        range.setX2(xmax.get());
+        range.setY1(ymin.get());
+        range.setY2(ymax.get());
         return range;
     }
 

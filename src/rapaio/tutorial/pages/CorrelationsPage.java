@@ -21,7 +21,7 @@
 package rapaio.tutorial.pages;
 
 import rapaio.core.correlation.PearsonRCorrelation;
-import rapaio.core.correlation.SpearmanRhoCorrelation;
+import rapaio.core.correlation.RhoCorr;
 import rapaio.data.Frame;
 import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
@@ -181,7 +181,7 @@ public class CorrelationsPage implements TutorialPage {
                 + "Thus the result will be a rapaio.data.matrix with computed \\(\\rho\\) values between vectors,"
                 + "using vectors getIndex position as indexes in resulted rapaio.data.matrix. ");
 
-        SpearmanRhoCorrelation rho = new SpearmanRhoCorrelation(df);
+        RhoCorr rho = new RhoCorr(df);
         summary(rho);
         summary(r);
 
