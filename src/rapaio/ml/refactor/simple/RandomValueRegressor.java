@@ -26,7 +26,6 @@ import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
-import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.Regressor;
 
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class RandomValueRegressor extends AbstractRegressor {
+public class RandomValueRegressor implements Regressor {
     List<String> targets;
     double startValue;
     double stopValue;
@@ -74,8 +73,8 @@ public class RandomValueRegressor extends AbstractRegressor {
     }
 
     @Override
-    public void learn(Frame df, String targetColNames) {
-        ColRange colRange = new ColRange(targetColNames);
+    public void learn(Frame df, String targetCols) {
+        ColRange colRange = new ColRange(targetCols);
         List<Integer> colIndexes = colRange.parseColumnIndexes(df);
 
         targets = new ArrayList<>();

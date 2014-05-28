@@ -23,11 +23,11 @@ package rapaio.ml.refactor.tree;
 import rapaio.core.ColRange;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.StatOnline;
+import rapaio.core.stat.Sum;
 import rapaio.data.*;
 import rapaio.data.filters.BaseFilters;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
-import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.Regressor;
 import rapaio.ml.refactor.colselect.ColSelector;
 import rapaio.ml.refactor.colselect.DefaultColSelector;
@@ -41,7 +41,7 @@ import java.util.List;
  * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class TreeRegressor extends AbstractRegressor {
+public class TreeRegressor implements Regressor {
 
     double minWeight = 1;
     TreeRegressorNode root;
@@ -73,10 +73,10 @@ public class TreeRegressor extends AbstractRegressor {
     }
 
     @Override
-    public void learn(Frame df, List<Double> weights, String targetColName) {
+    public void learn(Frame df, String targetColName) {
         this.targetColNames = targetColName;
         root = new TreeRegressorNode();
-        root.learn(this, df, weights, targetColName);
+        root.learn(this, df, df.weights(), targetColName);
         if (colSelector == null) {
             colSelector = new DefaultColSelector(df, new ColRange(targetColName));
         }
@@ -111,11 +111,8 @@ class TreeRegressorNode {
     TreeRegressorNode left;
     TreeRegressorNode right;
 
-    public void learn(TreeRegressor parent, Frame df, List<Double> weights, String targetColNames) {
-        totalWeight = 0;
-        for (Double weight : weights) {
-            totalWeight += weight;
-        }
+    public void learn(TreeRegressor parent, Frame df, Numeric weights, String targetColNames) {
+        totalWeight = new Sum(weights).getValue();
 
         if (totalWeight < 2 * parent.minWeight) {
             leaf = true;
@@ -134,16 +131,16 @@ class TreeRegressorNode {
         if (splitColName != null) {
             Mapping leftMapping = new Mapping();
             Mapping rightMapping = new Mapping();
-            List<Double> leftWeights = new ArrayList<>();
-            List<Double> rightWeights = new ArrayList<>();
+            Numeric leftWeights = new Numeric();
+            Numeric rightWeights = new Numeric();
 
             for (int i = 0; i < df.rowCount(); i++) {
                 if (df.value(i, splitColName) <= splitValue) {
                     leftMapping.add(df.rowId(i));
-                    leftWeights.add(weights.get(i));
+                    leftWeights.addValue(weights.value(i));
                 } else {
                     rightMapping.add(df.rowId(i));
-                    rightWeights.add(weights.get(i));
+                    rightWeights.addValue(weights.value(i));
                 }
             }
             left = new TreeRegressorNode();
@@ -159,7 +156,7 @@ class TreeRegressorNode {
     }
 
     private void evaluateNumeric(TreeRegressor parent,
-                                 Frame df, List<Double> weights,
+                                 Frame df, Numeric weights,
                                  String targetColName,
                                  String testColNames) {
 
@@ -172,7 +169,7 @@ class TreeRegressorNode {
         for (int i = 0; i < df.rowCount(); i++) {
             int pos = sort.rowId(i);
             so.update(testCol.value(pos));
-            w += weights.get(pos);
+            w += weights.value(pos);
             if (i > 0) {
                 var[i] = so.getStandardDeviation() * w / totalWeight;
             }
@@ -182,7 +179,7 @@ class TreeRegressorNode {
         for (int i = df.rowCount() - 1; i >= 0; i--) {
             int pos = sort.rowId(i);
             so.update(testCol.value(pos));
-            w += weights.get(pos);
+            w += weights.value(pos);
             if (i < df.rowCount() - 1) {
                 var[i] += so.getStandardDeviation() * w / totalWeight;
             }
@@ -190,7 +187,7 @@ class TreeRegressorNode {
         w = 0;
         for (int i = 0; i < df.rowCount(); i++) {
             int pos = sort.rowId(i);
-            w += weights.get(pos);
+            w += weights.value(pos);
 
             if (w >= parent.minWeight && totalWeight - w >= parent.minWeight) {
                 if (var[i] < eval && i > 0 && testCol.value(sort.rowId(i - 1)) != testCol.value(sort.rowId(i))) {

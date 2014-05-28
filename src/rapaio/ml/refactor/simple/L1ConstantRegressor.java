@@ -26,7 +26,6 @@ import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.data.Vector;
-import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.Regressor;
 
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ import java.util.List;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class L1ConstantRegressor extends AbstractRegressor {
+public class L1ConstantRegressor implements Regressor {
 
     private List<String> targets;
     private List<Double> medians;
@@ -60,8 +59,8 @@ public class L1ConstantRegressor extends AbstractRegressor {
     }
 
     @Override
-    public void learn(Frame df, String targetColNames) {
-        ColRange colRange = new ColRange(targetColNames);
+    public void learn(Frame df, String targetCols) {
+        ColRange colRange = new ColRange(targetCols);
         List<Integer> colIndexes = colRange.parseColumnIndexes(df);
 
         targets = new ArrayList<>();

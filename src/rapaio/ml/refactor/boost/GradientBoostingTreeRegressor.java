@@ -26,13 +26,12 @@ import rapaio.data.filters.BaseFilters;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.MappedVector;
 import rapaio.data.mapping.Mapping;
-import rapaio.ml.regressor.AbstractRegressor;
-import rapaio.ml.regressor.Regressor;
 import rapaio.ml.refactor.boost.gbt.BTRegressor;
 import rapaio.ml.refactor.boost.gbt.BoostingLossFunction;
 import rapaio.ml.refactor.boost.gbt.L1BoostingLossFunction;
 import rapaio.ml.refactor.simple.L2ConstantRegressor;
 import rapaio.ml.refactor.tree.DecisionStumpRegressor;
+import rapaio.ml.regressor.Regressor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +41,7 @@ import java.util.List;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class GradientBoostingTreeRegressor extends AbstractRegressor {
+public class GradientBoostingTreeRegressor implements Regressor {
 
     // parameters
     int rounds = 10; // number of rounds
@@ -130,15 +129,15 @@ public class GradientBoostingTreeRegressor extends AbstractRegressor {
     }
 
     @Override
-    public void learn(Frame train, String targetColName) {
+    public void learn(Frame train, String targetCols) {
         this.df = train;
-        this.targetColName = targetColName;
+        this.targetColName = targetCols;
 
-        Vector y = df.col(targetColName);
-        Frame x = BaseFilters.removeCols(df, targetColName);
+        Vector y = df.col(targetCols);
+        Frame x = BaseFilters.removeCols(df, targetCols);
         x = Frames.solidCopy(x);
 
-        initialRegressor.learn(df, targetColName);
+        initialRegressor.learn(df, targetCols);
         trees = new ArrayList<>();
 
         fitLearn = new Numeric(df.rowCount());

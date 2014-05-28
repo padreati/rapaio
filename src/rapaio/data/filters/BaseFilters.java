@@ -476,7 +476,6 @@ public final class BaseFilters implements Serializable {
      * Noise comes from a normal distribution with mean 0 and standard deviation
      * specified by {
      *
-     * @param sd}
      * @param vector input values
      * @param sd     standard deviation of the normally distributed noise
      * @return altered values

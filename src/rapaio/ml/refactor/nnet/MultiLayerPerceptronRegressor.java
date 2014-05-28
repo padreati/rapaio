@@ -25,7 +25,6 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Frames;
 import rapaio.data.Vector;
-import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.Regressor;
 
 import java.io.Serializable;
@@ -35,7 +34,7 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class MultiLayerPerceptronRegressor extends AbstractRegressor implements Serializable {
+public class MultiLayerPerceptronRegressor implements Regressor, Serializable {
 
     private final double learningRate;
     private final NetNode[][] net;
@@ -113,22 +112,22 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor implements 
     }
 
     @Override
-    public void learn(Frame df, String targetColNames) {
-        ColRange targetColRange = new ColRange(targetColNames);
+    public void learn(Frame df, String targetCols) {
+        ColRange targetColRange = new ColRange(targetCols);
         List<Integer> targets = targetColRange.parseColumnIndexes(df);
-        targetCols = new ArrayList<>();
+        this.targetCols = new ArrayList<>();
         for (Integer target : targets) {
-            targetCols.add(df.colNames()[target]);
+            this.targetCols.add(df.colNames()[target]);
         }
         inputCols = new ArrayList<>();
         for (int i = 0; i < df.colNames().length; i++) {
-            if (targetCols.contains(df.colNames()[i])) continue;
+            if (this.targetCols.contains(df.colNames()[i])) continue;
             if (df.col(df.colNames()[i]).type().isNominal()) continue;
             inputCols.add(df.colNames()[i]);
         }
 
         // validate
-        if (targetCols.size() != net[net.length - 1].length) {
+        if (this.targetCols.size() != net[net.length - 1].length) {
             throw new IllegalArgumentException("target columns does not fit output nodes");
         }
         if (inputCols.size() != net[0].length - 1) {
@@ -171,7 +170,7 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor implements 
 
             int last = net.length - 1;
             for (int i = 0; i < net[last].length; i++) {
-                double expected = df.value(pos, targetCols.get(i));
+                double expected = df.value(pos, this.targetCols.get(i));
                 double actual = net[last][i].value;
                 net[last][i].gamma = sigmoid.differential(actual) * (expected - actual);
             }

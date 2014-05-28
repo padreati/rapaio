@@ -23,17 +23,15 @@ package rapaio.data;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 
+import java.util.Arrays;
+
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 public final class MathNumeric {
 
     public static Numeric sum(final Numeric num) {
-        double sum = 0;
-        for (int i = 0; i < num.rowCount(); i++) {
-            sum += num.value(i);
-        }
-        return new Numeric(1, 1, sum);
+        return new Numeric(1, 1, num.stream().mapToDouble().sum());
     }
 
     public static Numeric mean(final Numeric num) {
@@ -49,15 +47,11 @@ public final class MathNumeric {
     }
 
     public static Numeric plus(final Numeric... nums) {
-        int len = 0;
-        for (Numeric num1 : nums) {
-            if (len < num1.rowCount())
-                len = num1.rowCount();
-        }
+        int len = Arrays.stream(nums).mapToInt(Numeric::rowCount).min().getAsInt();
         Numeric c = new Numeric(len, len, 0);
         for (Numeric num : nums) {
             for (int j = 0; j < len; j++) {
-                c.setValue(j, c.value(j) + num.value(j % num.rowCount()));
+                c.setValue(j, c.value(j) + num.value(j));
             }
         }
         return c;

@@ -27,9 +27,9 @@ import rapaio.data.Numeric;
 import rapaio.data.Vector;
 import rapaio.data.mapping.MappedVector;
 import rapaio.data.mapping.Mapping;
-import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.refactor.boost.gbt.BTRegressor;
 import rapaio.ml.refactor.boost.gbt.BoostingLossFunction;
+import rapaio.ml.regressor.Regressor;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ import static rapaio.data.filters.BaseFilters.sort;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class DecisionStumpRegressor extends AbstractRegressor implements BTRegressor {
+public class DecisionStumpRegressor implements Regressor, BTRegressor {
 
     // parameters
     int minCount = 2;
@@ -76,16 +76,16 @@ public class DecisionStumpRegressor extends AbstractRegressor implements BTRegre
     }
 
     @Override
-    public void learn(final Frame df, String targetColName) {
+    public void learn(final Frame df, String targetCols) {
 
-        this.targetColName = targetColName;
+        this.targetColName = targetCols;
         //
-        defaultFit = new Mean(df.col(targetColName)).getValue();
+        defaultFit = new Mean(df.col(targetCols)).getValue();
         //
         criterion = Double.MAX_VALUE;
         for (String colName : df.colNames()) {
 //			if (RandomSource.nextDouble() > 0.3) continue;
-            if (colName.equals(targetColName)) continue;
+            if (colName.equals(targetCols)) continue;
             switch (df.col(colName).type()) {
                 case INDEX:
                 case NUMERIC:

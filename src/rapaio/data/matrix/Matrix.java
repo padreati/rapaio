@@ -49,8 +49,13 @@ public class Matrix {
     public Matrix(Numeric... vectors) {
         m = vectors[0].rowCount();
         n = vectors.length;
-        data = new ArrayList<>(n);
-        data.addAll(Arrays.asList(vectors).subList(0, n));
+        data = new ArrayList<>(Arrays.asList(vectors).subList(0, n));
+    }
+
+    public Matrix(List<Numeric> vectors) {
+        m = vectors.get(0).rowCount();
+        n = vectors.size();
+        data = new ArrayList<>(vectors);
     }
 
     public Matrix(int step, double[] values) {

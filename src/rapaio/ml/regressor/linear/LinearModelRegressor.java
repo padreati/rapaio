@@ -18,23 +18,25 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.refactor.linear;
+package rapaio.ml.regressor.linear;
 
+import rapaio.core.ColRange;
 import rapaio.data.*;
 import rapaio.data.matrix.Matrix;
 import rapaio.data.matrix.QRDecomposition;
-import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.Regressor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 //@Deprecated
-public class LinearModelRegressor extends AbstractRegressor {
+public class LinearModelRegressor implements Regressor {
 
     List<String> predictors = new ArrayList<>();
     List<String> targets = new ArrayList<>();
@@ -47,26 +49,23 @@ public class LinearModelRegressor extends AbstractRegressor {
     }
 
     @Override
-    public void learn(Frame df, List<Double> weights, String targetColNames) {
-        targets.clear();
-        predictors.clear();
-        Collections.addAll(targets, targetColNames.split(",", -1));
-        for (String colName : df.colNames()) {
-            if (!targetColNames.contains(colName) && df.col(colName).type().isNumeric()) {
-                predictors.add(colName);
-            }
-        }
+    public void learn(Frame df, String targetCols) {
+        targets = new ColRange(targetCols).parseColumnNames(df);
+
+        predictors = Arrays.stream(df.colNames())
+                .filter(c -> !targetCols.contains(c) && df.col(c).type().isNumeric())
+                .collect(Collectors.toList());
 
         Matrix X = buildX(df);
         Matrix Y = buildY(df);
         Matrix beta = new QRDecomposition(X).solve(Y);
-        Vector bcoeff = new Numeric();
-        Vector bnames = new Nominal();
+        Vector betaC = new Numeric();
+        Vector betaN = new Nominal();
         for (int i = 0; i < predictors.size(); i++) {
-            bnames.addLabel(predictors.get(i));
-            bcoeff.addValue(beta.get(i, 0));
+            betaN.addLabel(predictors.get(i));
+            betaC.addValue(beta.get(i, 0));
         }
-        coefficients = new SolidFrame(predictors.size(), new Vector[]{bnames, bcoeff}, new String[]{"Term", "Coeff"});
+        coefficients = new SolidFrame(predictors.size(), new Vector[]{betaN, betaC}, new String[]{"Term", "Coefficients"});
 
         fittedValues = buildFit(df);
     }
@@ -76,7 +75,7 @@ public class LinearModelRegressor extends AbstractRegressor {
         for (int i = 0; i < df.rowCount(); i++) {
             double acc = 0;
             for (int k = 0; k < predictors.size(); k++) {
-                acc += coefficients.value(k, "Coeff") * df.value(i, predictors.get(k));
+                acc += coefficients.value(k, "Coefficients") * df.value(i, predictors.get(k));
             }
             result.setValue(i, acc);
         }
@@ -84,21 +83,17 @@ public class LinearModelRegressor extends AbstractRegressor {
     }
 
     private Matrix buildY(Frame df) {
-        Numeric[] vectors = new Numeric[targets.size()];
-        int pos = 0;
-        for (String targetColName : targets) {
-            vectors[pos++] = (Numeric) df.col(targetColName);
-        }
-        return new Matrix(vectors);
+        return new Matrix(targets.stream()
+                .map(colName -> (Numeric) df.col(colName))
+                .collect(Collectors.toList())
+        );
     }
 
     private Matrix buildX(Frame df) {
-        Numeric[] vectors = new Numeric[predictors.size()];
-        int pos = 0;
-        for (String colName : predictors) {
-            vectors[pos++] = (Numeric) df.col(colName);
-        }
-        return new Matrix(vectors);
+        return new Matrix(predictors.stream()
+                .map(colName -> (Numeric) df.col(colName))
+                .collect(Collectors.toList())
+        );
     }
 
     @Override
@@ -106,7 +101,7 @@ public class LinearModelRegressor extends AbstractRegressor {
         fittedValues = buildFit(df);
     }
 
-    public Frame getCoeff() {
+    public Frame getCoefficients() {
         return coefficients;
     }
 
