@@ -70,7 +70,7 @@ public class LinearModelRegressor implements Regressor {
     }
 
     private Var buildFit(Frame df) {
-        Var result = Vectors.newNum(df.rowCount(), 0);
+        Var result = Vars.newNum(df.rowCount(), 0);
         for (int i = 0; i < df.rowCount(); i++) {
             double acc = 0;
             for (int k = 0; k < predictors.size(); k++) {

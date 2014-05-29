@@ -52,10 +52,10 @@ public class ConfusionMatrix implements Printable {
 
     private void validate(Var actual, Var predict) {
         if (!actual.type().isNominal()) {
-            throw new IllegalArgumentException("actual values vector must be nominal");
+            throw new IllegalArgumentException("actual values var must be nominal");
         }
         if (!predict.type().isNominal()) {
-            throw new IllegalArgumentException("predict values vector must be nominal");
+            throw new IllegalArgumentException("predict values var must be nominal");
         }
         if (actual.dictionary().length != predict.dictionary().length) {
             throw new IllegalArgumentException("actual and predict does not have the same nominal dictionary");

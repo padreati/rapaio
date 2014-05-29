@@ -549,7 +549,7 @@ public class TreeClassifier extends AbstractClassifier {
                     dt.update(row, target.index(i), df.weight(i));
                 }
 
-                Var sort = BaseFilters.sort(Vectors.newSeq(df.rowCount()), RowComparators.numericComparator(test, true));
+                Var sort = BaseFilters.sort(Vars.newSeq(df.rowCount()), RowComparators.numericComparator(test, true));
 
                 Candidate best = null;
 

@@ -224,7 +224,7 @@ strictfp class MersenneTwister extends java.util.Random {
     // Period parameters
     private static final int N = 624;
     private static final int M = 397;
-    private static final int MATRIX_A = 0x9908b0df;   //    private static final * constant vector a
+    private static final int MATRIX_A = 0x9908b0df;   //    private static final * constant var a
     private static final int UPPER_MASK = 0x80000000; // most significant w-r bits
     private static final int LOWER_MASK = 0x7fffffff; // least significant r bits
 
@@ -232,7 +232,7 @@ strictfp class MersenneTwister extends java.util.Random {
     private static final int TEMPERING_MASK_B = 0x9d2c5680;
     private static final int TEMPERING_MASK_C = 0xefc60000;
 
-    private int mt[]; // the array for the state vector
+    private int mt[]; // the array for the state var
     private int mti; // mti==N+1 means mt[N] is not initialized
     private int mag01[];
 

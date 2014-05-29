@@ -160,7 +160,7 @@ class TreeRegressorNode {
         Var testCol = df.col(testColNames);
         double[] var = new double[df.rowCount()];
         StatOnline so = new StatOnline();
-        Var sort = Vectors.newSeq(df.rowCount());
+        Var sort = Vars.newSeq(df.rowCount());
         sort = BaseFilters.sort(sort, RowComparators.numericComparator(testCol, true));
         double w = 0;
         for (int i = 0; i < df.rowCount(); i++) {

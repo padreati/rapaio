@@ -22,7 +22,7 @@ package rapaio.graphics;
 
 import rapaio.data.Nominal;
 import rapaio.data.Var;
-import rapaio.data.Vectors;
+import rapaio.data.Vars;
 import rapaio.graphics.base.BaseFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
@@ -64,10 +64,10 @@ public class BarChart extends BaseFigure {
             throw new IllegalArgumentException("conditions are nominal only");
         }
         if (numeric == null) {
-            numeric = Vectors.newNum(category.rowCount(), 1);
+            numeric = Vars.newNum(category.rowCount(), 1);
         }
         if (!numeric.type().isNumeric()) {
-            throw new IllegalArgumentException("Numeric vector must be .. isNumeric");
+            throw new IllegalArgumentException("Numeric var must be .. isNumeric");
         }
 
         this.category = category;
@@ -80,7 +80,7 @@ public class BarChart extends BaseFigure {
         setBottomMarkers(true);
 
         int shift = 9;
-        setCol(Vectors.newSeq(shift, condition.dictionary().length + shift - 1, 1));
+        setCol(Vars.newSeq(shift, condition.dictionary().length + shift - 1, 1));
     }
 
     private SortType sort = SortType.NONE;

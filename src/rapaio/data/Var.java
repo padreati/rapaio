@@ -48,18 +48,18 @@ public interface Var extends Serializable {
     Mapping mapping();
 
     /**
-     * Number of observations contained by the vector.
+     * Number of observations contained by the var.
      *
-     * @return size of vector
+     * @return size of var
      */
     int rowCount();
 
     /**
      * Returns observation identifier which is an integer.
      * <p>
-     * When a vector or frame is created from scratch as a solid vector/frame then
-     * row identifiers are the row numbers. When the vector/frame wraps other
-     * vector/frame then row identifier is the wrapped row identifier.
+     * When a var or frame is created from scratch as a solid var/frame then
+     * row identifiers are the row numbers. When the var/frame wraps other
+     * var/frame then row identifier is the wrapped row identifier.
      * <p>
      * This is mostly used to keep track of the original row numbers even after a series
      * of transformations which use wrapped vectors/frames.
@@ -72,7 +72,7 @@ public interface Var extends Serializable {
     /**
      * Returns numeric value for the observation specified by row.
      * <p>
-     * Returns valid values for numerical vector types, otherwise the method
+     * Returns valid values for numerical var types, otherwise the method
      * returns unspecified value.
      *
      * @param row position of the observation
@@ -83,7 +83,7 @@ public interface Var extends Serializable {
     /**
      * Set numeric setValue for the observation specified by {@param row} to {@param setValue}.
      * <p>
-     * Returns valid values for numerical vector types, otherwise the method
+     * Returns valid values for numerical var types, otherwise the method
      * returns unspeified values.
      *
      * @param row   position of the observation
@@ -135,14 +135,14 @@ public interface Var extends Serializable {
      * <p>
      * Term dictionary contains all the nominal labels used by
      * observations and might contain also additional nominal labels.
-     * Term dictionary defines the domain of the definition for the nominal vector.
+     * Term dictionary defines the domain of the definition for the nominal var.
      * <p>
      * The term dictionary contains nominal labels sorted in lexicografical order,
-     * so binary search techniques may be used on this vector.
+     * so binary search techniques may be used on this var.
      * <p>
-     * For other vector types like numerical ones this method returns nothing.
+     * For other var types like numerical ones this method returns nothing.
      *
-     * @return term dictionary defined by the nominal vector.
+     * @return term dictionary defined by the nominal var.
      */
     String[] dictionary();
 

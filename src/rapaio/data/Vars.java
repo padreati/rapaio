@@ -25,11 +25,11 @@ import java.util.List;
 
 /**
  * Utility class factory which offers methods for creating vectors of various
- * forms. Used to shorted the syntax for creating common vector constructs.
+ * forms. Used to shorted the syntax for creating common var constructs.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public final class Vectors implements Serializable {
+public final class Vars implements Serializable {
 
     public static Index newSeq(int size) {
         Index result = new Index(size, size, 0);

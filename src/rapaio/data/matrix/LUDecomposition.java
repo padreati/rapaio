@@ -25,7 +25,7 @@ package rapaio.data.matrix;
  * <p>
  * For an m-by-n rapaio.data.matrix A with m >= n, the LU decomposition is an m-by-n unit
  * lower triangular rapaio.data.matrix L, an n-by-n upper triangular rapaio.data.matrix U, and a
- * permutation vector piv of length m so that A(piv,:) = L*U. If m < n, then L
+ * permutation var piv of length m so that A(piv,:) = L*U. If m < n, then L
  * is m-by-m and U is m-by-n. <P>
  * The LU decompostion with pivoting always exists, even if the matrix is
  * singular, so the constructor will never fail. The primary use of the LU
@@ -56,9 +56,9 @@ public class LUDecomposition implements java.io.Serializable {
     private int m, n, pivsign;
 
     /**
-     * Internal storage of pivot vector.
+     * Internal storage of pivot var.
      *
-     * @serial pivot vector.
+     * @serial pivot var.
      */
     private int[] piv;
 
@@ -218,7 +218,7 @@ public class LUDecomposition implements java.io.Serializable {
     }
 
     /**
-     * Return pivot permutation vector
+     * Return pivot permutation var
      *
      * @return piv
      */
@@ -229,7 +229,7 @@ public class LUDecomposition implements java.io.Serializable {
     }
 
     /**
-     * Return pivot permutation vector as a one-dimensional double array
+     * Return pivot permutation var as a one-dimensional double array
      *
      * @return (double) piv
      */

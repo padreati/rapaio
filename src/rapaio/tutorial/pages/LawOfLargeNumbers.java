@@ -25,7 +25,7 @@ import rapaio.core.distributions.DUniform;
 import rapaio.core.stat.StatOnline;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.data.Vectors;
+import rapaio.data.Vars;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.ABLine;
 import rapaio.graphics.plot.Lines;
@@ -70,7 +70,7 @@ public class LawOfLargeNumbers implements TutorialPage {
                 + "        Vector dice = new DUniform(1, 6).sample(N);\n");
         final int N = 1_000;
         Var events = new DUniform(1, 6).sample(N);
-        p("Thus we have stored in a vector N (1000) outputs of those events. "
+        p("Thus we have stored in a var N (1000) outputs of those events. "
                 + "We compute the running mean using StatOnline:");
         code("        StatOnline ocs = new StatOnline();\n"
                 + "        Vector mean = new NumericVector(\"mean\", N);\n"
@@ -84,11 +84,11 @@ public class LawOfLargeNumbers implements TutorialPage {
             ocs.update(events.value(i));
             mean.setValue(i, ocs.getMean());
         }
-        p("Now we have the running mean stored in the vector mean and we can plot "
+        p("Now we have the running mean stored in the var mean and we can plot "
                 + "how that running mean evolves as the size of the sample grows.");
         draw(new Plot()
                         .add(new ABLine(0, 3.5).setLwd(1.5f).setCol(1))
-                        .add(new Lines(Vectors.newSeq(1, N, 1), mean)
+                        .add(new Lines(Vars.newSeq(1, N, 1), mean)
                                 .setLwd(1.5f)
                                 .setCol(2))
                         .setYLim(2.5, 4.5),

@@ -237,7 +237,7 @@ public class Summary {
     public static void summary(Var v) {
 
         StringBuilder buffer = new StringBuilder();
-        buffer.append("> summary(vector)\n");
+        buffer.append("> summary(var)\n");
 
         String[] first = new String[7];
         String[] second = new String[7];

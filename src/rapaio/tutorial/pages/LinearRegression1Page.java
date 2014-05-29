@@ -72,7 +72,7 @@ public class LinearRegression1Page implements TutorialPage {
         heading(4, "Question: Given collected sons heights, can we find a constant which " +
                 "can be used for prediction? ");
 
-        p("First we get the heights of the sons in a numeric vector. ");
+        p("First we get the heights of the sons in a numeric var. ");
 
         Numeric sons = (Numeric) df.col("Son");
 

@@ -46,7 +46,7 @@ public interface Frame extends Serializable {
     /**
      * Number of vectors contained in frame. Vector references could be obtained by name or by position.
      * <p>
-     * Each vector corresponds to a column in tabular format, thus in the frame terminology
+     * Each var corresponds to a column in tabular format, thus in the frame terminology
      * this is denoted as getCol (short form of column).
      *
      * @return number of vectors
@@ -54,36 +54,36 @@ public interface Frame extends Serializable {
     int colCount();
 
     /**
-     * Returns an array of vector names, the names are ordered by the position of the vectors.
+     * Returns an array of var names, the names are ordered by the position of the vectors.
      * <p>
-     * Each vector has it's own name. Inside a frame a specific vector could be named differently.
-     * However, the default name for a vector inside a frame is the vector's name.
+     * Each var has it's own name. Inside a frame a specific var could be named differently.
+     * However, the default name for a var inside a frame is the var's name.
      *
-     * @return array of vector names
+     * @return array of var names
      */
     String[] colNames();
 
     /**
-     * Returns the index (position) of the vector inside the frame given the vector's name as parameter.
+     * Returns the index (position) of the var inside the frame given the var's name as parameter.
      *
-     * @param name vector's name
-     * @return column position inside the frame corresponding to the vector with the specified name
+     * @param name var's name
+     * @return column position inside the frame corresponding to the var with the specified name
      */
     int colIndex(String name);
 
     /**
-     * Returns a vector reference for column at given position
+     * Returns a var reference for column at given position
      *
      * @param col position of the column inside the frame
-     * @return a vector getType reference
+     * @return a var getType reference
      */
     Var col(int col);
 
     /**
-     * Returns a vector reference for column with given name
+     * Returns a var reference for column with given name
      *
      * @param name name of the column inside the frame
-     * @return a vector getType reference
+     * @return a var getType reference
      */
     Var col(String name);
 

@@ -110,7 +110,7 @@ public class CorrelationsPage implements TutorialPage {
 
         heading(2, "Usa Rapaio for Pearson correlation");
 
-        p("Rapaio library allows one to compute Pearson \\(r\\) for more then one vector at a time. "
+        p("Rapaio library allows one to compute Pearson \\(r\\) for more then one var at a time. "
                 + "Thus the result will be a rapaio.data.matrix with computed \\(r\\) values between vectors,"
                 + "using vectors index position as indexes in resulted rapaio.data.matrix. ");
 
@@ -177,7 +177,7 @@ public class CorrelationsPage implements TutorialPage {
 
         heading(2, "Use Rapaio to compute Spearman's rank correlation");
 
-        p("Rapaio library allows one to compute Spearman \\(\\rho\\) for more then one vector at a time. "
+        p("Rapaio library allows one to compute Spearman \\(\\rho\\) for more then one var at a time. "
                 + "Thus the result will be a rapaio.data.matrix with computed \\(\\rho\\) values between vectors,"
                 + "using vectors index position as indexes in resulted rapaio.data.matrix. ");
 

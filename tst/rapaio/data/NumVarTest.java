@@ -83,12 +83,12 @@ public class NumVarTest {
 
     @Test
     public void testOneNumeric() {
-        Var one = Vectors.newNumOne(Math.PI);
+        Var one = Vars.newNumOne(Math.PI);
 
         assertEquals(1, one.rowCount());
         assertEquals(Math.PI, one.value(0), 1e-10);
 
-        one = Vectors.newNumOne(Math.E);
+        one = Vars.newNumOne(Math.E);
         assertEquals(1, one.rowCount());
         assertEquals(Math.E, one.value(0), 1e-10);
     }

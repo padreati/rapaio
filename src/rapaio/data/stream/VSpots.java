@@ -20,6 +20,11 @@
 
 package rapaio.data.stream;
 
+import rapaio.data.Var;
+import rapaio.data.mapping.MappedVar;
+import rapaio.data.mapping.Mapping;
+import rapaio.util.Pin;
+
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -258,14 +263,26 @@ public class VSpots implements Stream<VSpot>, Serializable {
     }
 
     public void transformValue(Function<Double, Double> trans) {
-        stream.forEach(spot -> spot.vector().setValue(spot.row(), trans.apply(spot.value())));
+        stream.forEach(spot -> spot.var().setValue(spot.row(), trans.apply(spot.value())));
     }
 
     public void transformIndex(Function<Integer, Integer> trans) {
-        stream.forEach(spot -> spot.vector().setIndex(spot.row(), trans.apply(spot.index())));
+        stream.forEach(spot -> spot.var().setIndex(spot.row(), trans.apply(spot.index())));
     }
 
     public void transformLabel(Function<String, String> trans) {
-        stream.forEach(spot -> spot.vector().setLabel(spot.row(), trans.apply(spot.label())));
+        stream.forEach(spot -> spot.var().setLabel(spot.row(), trans.apply(spot.label())));
+    }
+
+    public MappedVar toMappedVar() {
+        Mapping map = new Mapping();
+        Pin<Var> var = new Pin<>();
+        stream.forEach(s -> {
+            map.add(s.rowId());
+            if (var.isEmpty()) {
+                var.set(s.var());
+            }
+        });
+        return new MappedVar(var.get(), map);
     }
 }

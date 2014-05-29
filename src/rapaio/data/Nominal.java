@@ -25,12 +25,12 @@ import rapaio.data.mapping.Mapping;
 import java.util.*;
 
 /**
- * Nominal vector contains values for nominal or categorical observations.
+ * Nominal var contains values for nominal or categorical observations.
  * <p>
  * The domain of the definition is called dictionary and is
  * given at construction time.
  * <p>
- * This vector accepts two value representation: as labels and as indexes.
+ * This var accepts two value representation: as labels and as indexes.
  * <p>
  * Label representation is the natural representation since in experiments
  * the nominal vectors are given as string values.

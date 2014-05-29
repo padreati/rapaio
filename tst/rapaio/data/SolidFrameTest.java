@@ -95,7 +95,7 @@ public class SolidFrameTest {
                 new Numeric(new double[]{1., 2., 3., 4.}),
                 new Numeric(new double[]{3., 5., 9., 12.}),
                 new Nominal(4, new String[]{"ana", "are", "mere"}),
-                Vectors.newSeq(1, 4, 1)
+                Vars.newSeq(1, 4, 1)
         };
         Frame df = new SolidFrame(4, vars, new String[]{"x", "y", "name", "index"});
 

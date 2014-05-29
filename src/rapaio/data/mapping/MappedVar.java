@@ -23,11 +23,11 @@ package rapaio.data.mapping;
 import rapaio.data.*;
 
 /**
- * A vector which is learn on the base of another vector and the row selection
+ * A var which is learn on the base of another var and the row selection
  * and order is specified by a getMapping give at construction time.
  * <p>
- * This vector does not hold actual values, it delegate the behavior to the
- * wrapped vector, thus the wrapping affects only the getRowCount selected anf the
+ * This var does not hold actual values, it delegate the behavior to the
+ * wrapped var, thus the wrapping affects only the getRowCount selected anf the
  * order of these getRowCount.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -39,7 +39,7 @@ public class MappedVar extends AbstractVar {
 
     public MappedVar(Var source, Mapping mapping) {
         if (source.isMappedVector()) {
-            throw new IllegalArgumentException("Now allowed mapped vector as source");
+            throw new IllegalArgumentException("Now allowed mapped var as source");
         }
         this.source = source;
         this.mapping = mapping;

@@ -57,7 +57,7 @@ public class QRDecomposition implements java.io.Serializable {
             }
 
             if (nrm != 0.0) {
-                // Form k-th Householder vector.
+                // Form k-th Householder var.
                 if (QR[k][k] < 0) {
                     nrm = -nrm;
                 }

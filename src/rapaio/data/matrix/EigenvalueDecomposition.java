@@ -116,7 +116,7 @@ public class EigenvalueDecomposition implements java.io.Serializable {
                 }
             } else {
 
-                // Generate Householder vector.
+                // Generate Householder var.
                 for (int k = 0; k < i; k++) {
                     d[k] /= scale;
                     h += d[k] * d[k];
@@ -681,7 +681,7 @@ public class EigenvalueDecomposition implements java.io.Serializable {
             p = d[n];
             q = e[n];
 
-            // Real vector
+            // Real var
             if (q == 0) {
                 int l = n;
                 H[n][n] = 1.0;
@@ -727,11 +727,11 @@ public class EigenvalueDecomposition implements java.io.Serializable {
                     }
                 }
 
-                // Complex vector
+                // Complex var
             } else if (q < 0) {
                 int l = n - 1;
 
-                // Last vector component imaginary so rapaio.data.matrix is triangular
+                // Last var component imaginary so rapaio.data.matrix is triangular
                 if (Math.abs(H[n][n - 1]) > Math.abs(H[n - 1][n])) {
                     H[n - 1][n - 1] = q / H[n][n - 1];
                     H[n - 1][n] = -(H[n][n] - p) / H[n][n - 1];

@@ -22,7 +22,7 @@ package rapaio.graphics.base;
 
 import rapaio.data.Index;
 import rapaio.data.Var;
-import rapaio.data.Vectors;
+import rapaio.data.Vars;
 import rapaio.graphics.colors.ColorPalette;
 import rapaio.graphics.colors.StandardColorPalette;
 
@@ -71,7 +71,7 @@ public abstract class BaseFigure implements Figure {
     protected Color[] colors;
     protected Float lwd;
     protected Var sizeIndex;
-    protected Var pchIndex = Vectors.newIdxOne(0);
+    protected Var pchIndex = Vars.newIdxOne(0);
     protected Float alpha = 1.0f;
 
     //
@@ -147,7 +147,7 @@ public abstract class BaseFigure implements Figure {
     // size
 
     protected Var getDefaultSize() {
-        return Vectors.newNum(1, 2.5);
+        return Vars.newNum(1, 2.5);
     }
 
     public BaseFigure setSize(Var sizeIndex) {
@@ -156,7 +156,7 @@ public abstract class BaseFigure implements Figure {
     }
 
     public BaseFigure setSize(double size) {
-        this.sizeIndex = Vectors.newNumOne(size);
+        this.sizeIndex = Vars.newNumOne(size);
         return this;
     }
 
@@ -170,7 +170,7 @@ public abstract class BaseFigure implements Figure {
     // pch
 
     protected Index getDefaultPch() {
-        return Vectors.newIdx(1, 0);
+        return Vars.newIdx(1, 0);
     }
 
     public BaseFigure setPch(Var pchIndex) {
@@ -179,7 +179,7 @@ public abstract class BaseFigure implements Figure {
     }
 
     public BaseFigure setPch(int pch) {
-        this.pchIndex = Vectors.newIdxOne(pch);
+        this.pchIndex = Vars.newIdxOne(pch);
         return this;
     }
 

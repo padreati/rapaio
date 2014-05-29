@@ -117,12 +117,12 @@ public class DiscreteSamplingPage implements TutorialPage {
                 + "Java language (<code>java.util.Random.nextInt(int n);</code>)");
 
         code("        int[] sample = new DiscreteSamplingWR(6).sample(1000);\n"
-                + "        Vector vector = new NumericVector(\"fair-dice\", sample);\n"
-                + "        draw(new Histogram(vector, 6, false), 500, 200);\n");
+                + "        Vector var = new NumericVector(\"fair-dice\", sample);\n"
+                + "        draw(new Histogram(var, 6, false), 500, 200);\n");
 
         DiscreteSampling ds = new DiscreteSampling();
         int[] sample = ds.sampleWR(1000, 6);
-        Var var = Vectors.newIdxFrom(sample);
+        Var var = Vars.newIdxFrom(sample);
         draw(new Plot().add(new Histogram(var, 6, false)), 500, 200);
 
         p("In the presented histogram we see frequencies obtained be taking a sample "
@@ -249,7 +249,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "                .setYLab(\"HEAD/TOTAL\"));\n");
 
         RandomSource.setSeed(1);
-        final Var index = Vectors.newSeq(1, 1000, 1);
+        final Var index = Vars.newSeq(1, 1000, 1);
         final Var value = new Numeric(1000);
         double count = 0;
         double total = 0;
@@ -353,8 +353,8 @@ public class DiscreteSamplingPage implements TutorialPage {
         final Frame df2 = new SolidFrame(SAMPLE_SIZE * TRIALS, vars, new String[]{"loaded lottery", "winning number"});
         draw(new Plot()
                         .add(new Points(df2.col(0), df2.col(1)))
-                        .setPch(Vectors.newIdxOne(1))
-                        .setSize(Vectors.newNumOne(2))
+                        .setPch(Vars.newIdxOne(1))
+                        .setSize(Vars.newNumOne(2))
                         .setCol(34),
                 600, 300
         );
@@ -368,7 +368,7 @@ public class DiscreteSamplingPage implements TutorialPage {
 
         draw(new Plot()
                         .add(new FunctionLine(new KDE(df2.col("winning number"), 3).getPdf())
-                                .setCol(Vectors.newIdxOne(1)))
+                                .setCol(Vars.newIdxOne(1)))
                         .setXLab("winning numbers")
                         .setYLab("kernel probability density")
                         .setXLim(-10, 60).setYLim(0, .05),

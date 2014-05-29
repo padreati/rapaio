@@ -354,12 +354,7 @@ public final class BaseFilters implements Serializable {
     }
 
     public static Var completeCases(Var source) {
-        Mapping mapping = new Mapping();
-        for (int i = 0; i < source.rowCount(); i++) {
-            if (source.missing(i)) continue;
-            mapping.add(source.rowId(i));
-        }
-        return new MappedVar(source.source(), mapping);
+        return source.stream().filter(s -> !s.missing()).toMappedVar();
     }
 
     /**
@@ -375,12 +370,7 @@ public final class BaseFilters implements Serializable {
 
     public static Frame completeCases(Frame source, ColRange colRange) {
         List<Integer> selectedCols = colRange.parseColumnIndexes(source);
-        return source.stream().filter(s -> {
-            for (int col : selectedCols) {
-                if (s.missing(col)) return false;
-            }
-            return true;
-        }).toMappedFrame();
+        return source.stream().filter(s -> !selectedCols.stream().anyMatch(s::missing)).toMappedFrame();
     }
 
     /**
@@ -389,14 +379,14 @@ public final class BaseFilters implements Serializable {
     //=================================================================================
 
     /**
-     * Convert a vector to numeric by parsing as numbers the nominal
+     * Convert a var to numeric by parsing as numbers the nominal
      * labels, or promoting to double the numeric values.
      * <p>
-     * If the input value is already a numeric vector, the input vector is
+     * If the input value is already a numeric var, the input var is
      * returned untouched.
      *
-     * @param v input vector
-     * @return converted value vector
+     * @param v input var
+     * @return converted value var
      */
     public static Numeric toNumeric(Var v) {
         if (v.type().equals(VarType.NUMERIC)) {
@@ -426,12 +416,12 @@ public final class BaseFilters implements Serializable {
     }
 
     /**
-     * Converts a given vector to index, either by parsing nominal labels,
+     * Converts a given var to index, either by parsing nominal labels,
      * either by rounding the numeric values.
      * Any error produces a missing value.
      *
-     * @param v input vector
-     * @return resulted index vector
+     * @param v input var
+     * @return resulted index var
      */
     public static Index toIndex(Var v) {
         if (v.type().equals(VarType.INDEX)) {
@@ -492,9 +482,9 @@ public final class BaseFilters implements Serializable {
      * Set missing values for all nominal values included
      * in missing values array {@param missingValues}.
      *
-     * @param var           source vector
+     * @param var           source var
      * @param missingValues labels for missing values
-     * @return original vector with missing value on matched positions
+     * @return original var with missing value on matched positions
      */
     public static Var fillMissingValues(Var var, Collection<String> missingValues) {
         if (!var.type().isNominal()) {
@@ -509,10 +499,10 @@ public final class BaseFilters implements Serializable {
 
 
     /**
-     * Builds a mapped vector with shuffled rowIds
+     * Builds a mapped var with shuffled rowIds
      *
-     * @param v source vector
-     * @return shuffled vector
+     * @param v source var
+     * @return shuffled var
      */
     public static Var shuffle(Var v) {
         ArrayList<Integer> mapping = new ArrayList<>();

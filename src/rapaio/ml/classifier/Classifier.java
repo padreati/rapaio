@@ -85,9 +85,9 @@ public interface Classifier extends Printable, Serializable {
     String[] getDict();
 
     /**
-     * Returns predicted target classes as a nominal vector
+     * Returns predicted target classes as a nominal var
      *
-     * @return nominal vector with predicted classes
+     * @return nominal var with predicted classes
      */
     Nominal pred();
 

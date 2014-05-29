@@ -83,8 +83,8 @@ public class DiscreteSampling {
      * Implements Efraimidis-Spirakis method.
      *
      * @param sampleSize number of samples
-     * @param prob       vector of probabilities
-     * @return vector with m indices in [0,weights.length-1]
+     * @param prob       var of probabilities
+     * @return var with m indices in [0,weights.length-1]
      * @See: http://link.springer.com/content/pdf/10.1007/978-0-387-30162-4_478.pdf
      */
     public int[] sampleWeightedWOR(final int sampleSize, final double[] prob) {
@@ -241,7 +241,7 @@ public class DiscreteSampling {
      */
     private void makeAliasWR(double[] p, double[] prob, int[] alias) {
         if (p.length == 0)
-            throw new IllegalArgumentException("Probability vector must be nonempty.");
+            throw new IllegalArgumentException("Probability var must be nonempty.");
 
 
         int[] dq = new int[p.length];

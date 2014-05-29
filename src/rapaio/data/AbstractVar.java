@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
- * Base class for a vector which enforces to read-only name given at construction time.
+ * Base class for a var which enforces to read-only name given at construction time.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */

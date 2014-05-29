@@ -24,7 +24,7 @@ import rapaio.core.sample.StatSampling;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.data.Vectors;
+import rapaio.data.Vars;
 import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
@@ -157,7 +157,7 @@ public class ClassificationWithRF implements TutorialPage {
                 + "You can check how well you predict as the number of trees grows. ");
 
         int pos = 0;
-        final Var index = Vectors.newIdx(400);
+        final Var index = Vars.newIdx(400);
         final Var accuracy = new Numeric(400);
         final Var oob = new Numeric(400);
         for (int mTrees = 1; mTrees < 200; mTrees += 10) {
@@ -227,7 +227,7 @@ public class ClassificationWithRF implements TutorialPage {
                 + "prediction and the compensation is better accuracy.");
 
         pos = 0;
-        final Var index1 = Vectors.newIdx(10);
+        final Var index1 = Vars.newIdx(10);
         final Var accuracy1 = new Numeric(10);
         final Var oob1 = new Numeric(10);
         for (int mCol = 1; mCol <= 10; mCol++) {

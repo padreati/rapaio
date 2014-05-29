@@ -61,15 +61,15 @@ public final class DensityTable implements Serializable {
      * Builds a density table from two nominal vectors.
      * If not null, weights are used instead of counts.
      *
-     * @param test    test vector
-     * @param target  target vector
+     * @param test    test var
+     * @param target  target var
      * @param weights weights used instead of counts, if not null
      */
     public DensityTable(Var test, Var target, Numeric weights) {
         this(test.dictionary(), target.dictionary());
 
-        if (!test.type().isNominal()) throw new IllegalArgumentException("test vector must be nominal");
-        if (!target.type().isNominal()) throw new IllegalArgumentException("target vector is not nominal");
+        if (!test.type().isNominal()) throw new IllegalArgumentException("test var must be nominal");
+        if (!target.type().isNominal()) throw new IllegalArgumentException("target var is not nominal");
         if (test.rowCount() != target.rowCount())
             throw new IllegalArgumentException("test and target must have same row count");
 
@@ -83,16 +83,16 @@ public final class DensityTable implements Serializable {
      * The first row contains instances which have test label equal with given testLabel,
      * second row contains frequencies for the rest of the instances.
      *
-     * @param test      test vector
-     * @param target    target vector
+     * @param test      test var
+     * @param target    target var
      * @param weights   if not null, weights used instead of counts
      * @param testLabel test label used for binary split
      */
     public DensityTable(Var test, Var target, Numeric weights, String testLabel) {
         this(new String[]{"?", testLabel, "other"}, target.dictionary());
 
-        if (!test.type().isNominal()) throw new IllegalArgumentException("test vector must be nominal");
-        if (!target.type().isNominal()) throw new IllegalArgumentException("target vector is not nominal");
+        if (!test.type().isNominal()) throw new IllegalArgumentException("test var must be nominal");
+        if (!target.type().isNominal()) throw new IllegalArgumentException("target var is not nominal");
         if (test.rowCount() != target.rowCount())
             throw new IllegalArgumentException("test and target must have same row count");
 

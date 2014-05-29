@@ -38,7 +38,7 @@ public class SortVarTest {
 
     @Test
     public void smokeTest() {
-        Var v = Vectors.newIdx(0);
+        Var v = Vars.newIdx(0);
         Var sorted = sort(v, indexComparator(v, true));
         assertTrue(sorted.type().isNumeric());
         assertFalse(sorted.type().isNominal());
@@ -56,7 +56,7 @@ public class SortVarTest {
 
     @Test
     public void testSortIndex() {
-        Var index = Vectors.newSeq(10, 1, -1);
+        Var index = Vars.newSeq(10, 1, -1);
         index.setMissing(2);
         index.setMissing(5);
         index.setIndex(0, 1);
@@ -195,7 +195,7 @@ public class SortVarTest {
 
     @Test
     public void testMissing() {
-        Var v = Vectors.newSeq(1, 10, 1);
+        Var v = Vars.newSeq(1, 10, 1);
         v = sort(v, indexComparator(v, true));
         for (int i = 0; i < 10; i += 3) {
             v.setMissing(i);
