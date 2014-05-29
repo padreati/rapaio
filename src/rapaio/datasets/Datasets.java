@@ -21,7 +21,7 @@
 package rapaio.datasets;
 
 import rapaio.data.Frame;
-import rapaio.data.VectorType;
+import rapaio.data.VarType;
 import rapaio.io.Csv;
 
 import java.io.IOException;
@@ -34,14 +34,14 @@ public class Datasets {
 
     public static Frame loadIrisDataset() throws IOException, URISyntaxException {
         return new Csv()
-                .withDefaultType(VectorType.NUMERIC)
+                .withDefaultType(VarType.NUMERIC)
                 .withNominalFields("class")
                 .read(Datasets.class, "iris.csv");
     }
 
     public static Frame loadPearsonHeightDataset() throws IOException, URISyntaxException {
         return new Csv()
-                .withDefaultType(VectorType.NUMERIC)
+                .withDefaultType(VarType.NUMERIC)
                 .read(Datasets.class, "pearsonheight.csv");
     }
 
@@ -49,7 +49,7 @@ public class Datasets {
         return new Csv()
                 .withSeparatorChar(',')
                 .withQuotas(true)
-                .withDefaultType(VectorType.NUMERIC)
+                .withDefaultType(VarType.NUMERIC)
                 .read(Datasets.class, "chest.csv");
     }
 
@@ -58,12 +58,12 @@ public class Datasets {
                 .withSeparatorChar(',')
                 .withHeader(true)
                 .withQuotas(true)
-                .withDefaultType(VectorType.NUMERIC)
+                .withDefaultType(VarType.NUMERIC)
                 .read(Datasets.class, "carmpg.csv");
     }
 
     public static Frame loadSpamBase() throws IOException {
-        return new Csv().withDefaultType(VectorType.NUMERIC)
+        return new Csv().withDefaultType(VarType.NUMERIC)
                 .withNominalFields("spam")
                 .read(Datasets.class, "spam-base.csv");
     }
@@ -95,7 +95,7 @@ public class Datasets {
     public static Frame loadProstateCancer() throws IOException {
         return new Csv()
                 .withSeparatorChar('\t')
-                .withDefaultType(VectorType.NUMERIC)
+                .withDefaultType(VarType.NUMERIC)
                 .read(Datasets.class, "prostate.csv");
     }
 }

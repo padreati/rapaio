@@ -25,7 +25,7 @@ import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.ml.regressor.Regressor;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class L1ConstantRegressor implements Regressor {
 
     private List<String> targets;
     private List<Double> medians;
-    private List<Vector> fitValues;
+    private List<Var> fitValues;
 
     @Override
     public Regressor newInstance() {

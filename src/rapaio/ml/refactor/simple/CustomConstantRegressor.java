@@ -24,7 +24,7 @@ import rapaio.core.ColRange;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.ml.regressor.Regressor;
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class CustomConstantRegressor implements Regressor {
 
     List<String> targets;
     double customValue;
-    List<Vector> fitValues;
+    List<Var> fitValues;
 
     @Override
     public Regressor newInstance() {

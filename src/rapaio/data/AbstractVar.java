@@ -23,15 +23,22 @@ package rapaio.data;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 
 /**
  * Base class for a vector which enforces to read-only name given at construction time.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public abstract class AbstractVector implements Vector {
+public abstract class AbstractVar implements Var {
 
     @Override
     public String toString() {

@@ -55,16 +55,16 @@ public class SortedFrameTest {
     @Test
     public void testMultipleStressSortedLayers() {
         RandomSource.setSeed(1);
-        Vector[] vectors = new Vector[1_000];
+        Var[] vars = new Var[1_000];
         String[] names = new String[1_000];
         for (int i = 0; i < 1_000; i++) {
-            vectors[i] = new Numeric(10_000);
+            vars[i] = new Numeric(10_000);
             for (int j = 0; j < 10_000; j++) {
-                vectors[i].setValue(j, RandomSource.nextDouble());
+                vars[i].setValue(j, RandomSource.nextDouble());
             }
             names[i] = "v" + i;
         }
-        Frame sorted = new SolidFrame(10_000, vectors, names);
+        Frame sorted = new SolidFrame(10_000, vars, names);
 
         for (int i = 0; i < 100; i++) {
             int col = RandomSource.nextInt(sorted.colCount());

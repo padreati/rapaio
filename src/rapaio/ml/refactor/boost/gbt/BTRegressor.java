@@ -21,7 +21,7 @@
 package rapaio.ml.refactor.boost.gbt;
 
 import rapaio.data.Frame;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.ml.regressor.Regressor;
 
 /**
@@ -29,7 +29,7 @@ import rapaio.ml.regressor.Regressor;
  */
 public interface BTRegressor extends Regressor {
 
-    void boostFit(Frame x, Vector y, Vector fx, BoostingLossFunction lossFunction);
+    void boostFit(Frame x, Var y, Var fx, BoostingLossFunction lossFunction);
 
     @Override
     BTRegressor newInstance();

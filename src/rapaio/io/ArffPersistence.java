@@ -59,7 +59,7 @@ public class ArffPersistence {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(stream))) {
             String line;
 
-            ArrayList<Vector> vectors = new ArrayList<>();
+            ArrayList<Var> vars = new ArrayList<>();
             ArrayList<String> names = new ArrayList<>();
             HashMap<String, List<String>> nomValueMap = new HashMap<>();
             ArrayList<String> data = new ArrayList<>();
@@ -100,7 +100,7 @@ public class ArffPersistence {
 
                         String[] tmp = line.split("\\s+", 2);
                         if (tmp[1].trim().equalsIgnoreCase("real") || tmp[1].trim().equals("isNumeric") || tmp[1].trim().startsWith("integer")) {
-                            vectors.add(new Numeric(0));
+                            vars.add(new Numeric(0));
                         } else//Not correct, but we arent supporting anything other than real and categorical right now
                         {
                             String cats = tmp[1].replace("{", "").replace("}", "").trim();
@@ -113,7 +113,7 @@ public class ArffPersistence {
                                 tempMap.add(fullTrim(catVal));
                             }
                             nomValueMap.put(variableName, tempMap);
-                            vectors.add(new Nominal(0, tempMap));
+                            vars.add(new Nominal(0, tempMap));
                         }
                         continue;
                     }
@@ -121,12 +121,12 @@ public class ArffPersistence {
                 data.add(line.trim());
             }
 
-            List<Vector> newvectors = new ArrayList();
-            for (int i = 0; i < vectors.size(); i++) {
-                if (vectors.get(i) instanceof Numeric) {
+            List<Var> newvectors = new ArrayList();
+            for (int i = 0; i < vars.size(); i++) {
+                if (vars.get(i) instanceof Numeric) {
                     newvectors.add(new Numeric(data.size()));
                 }
-                if (vectors.get(i) instanceof Nominal) {
+                if (vars.get(i) instanceof Nominal) {
                     newvectors.add(new Nominal(data.size(), nomValueMap.get(names.get(i))));
                 }
             }

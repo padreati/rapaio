@@ -20,7 +20,7 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.graphics.Plot;
 import rapaio.graphics.base.BaseFigure;
 
@@ -92,7 +92,7 @@ public abstract class PlotComponent extends BaseFigure {
     }
 
     @Override
-    public PlotComponent setCol(Vector color) {
+    public PlotComponent setCol(Var color) {
         super.setCol(color);
         return this;
     }
@@ -104,7 +104,7 @@ public abstract class PlotComponent extends BaseFigure {
     }
 
     @Override
-    public PlotComponent setSize(Vector sizeIndex) {
+    public PlotComponent setSize(Var sizeIndex) {
         super.setSize(sizeIndex);
         return this;
     }
@@ -116,7 +116,7 @@ public abstract class PlotComponent extends BaseFigure {
     }
 
     @Override
-    public PlotComponent setPch(Vector pchIndex) {
+    public PlotComponent setPch(Var pchIndex) {
         super.setPch(pchIndex);
         return this;
     }

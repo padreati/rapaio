@@ -24,7 +24,7 @@ import rapaio.core.ColRange;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Frames;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.ml.regressor.Regressor;
 
 import java.io.Serializable;
@@ -225,7 +225,7 @@ public class MultiLayerPerceptronRegressor implements Regressor, Serializable {
     }
 
     @Override
-    public Vector getFitValues() {
+    public Var getFitValues() {
         return prediction.col(0);
     }
 

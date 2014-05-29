@@ -23,7 +23,7 @@ package rapaio.data.filters;
 import org.junit.Test;
 import rapaio.data.Nominal;
 import rapaio.data.Numeric;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import java.util.Arrays;
 
@@ -38,8 +38,8 @@ public class FilterSortTest {
 
     @Test
     public void testValueVector() {
-        Vector unsorted = new Numeric(new double[]{0., 1., 2., 3., 4., 5., 6.});
-        Vector sorted = sort(unsorted, true);
+        Var unsorted = new Numeric(new double[]{0., 1., 2., 3., 4., 5., 6.});
+        Var sorted = sort(unsorted, true);
         for (int i = 1; i < sorted.rowCount(); i++) {
             assertTrue(sorted.value(i - 1) <= sorted.value(i));
         }
@@ -47,8 +47,8 @@ public class FilterSortTest {
 
     @Test
     public void testValueVectorWithNA() {
-        Vector unsorted = new Numeric(new double[]{Double.NaN, 0., Double.NaN, 1., Double.NaN, 2.});
-        Vector sorted = sort(unsorted);
+        Var unsorted = new Numeric(new double[]{Double.NaN, 0., Double.NaN, 1., Double.NaN, 2.});
+        Var sorted = sort(unsorted);
         for (int i = 0; i < 3; i++) {
             assert (sorted.missing(i));
         }
@@ -56,12 +56,12 @@ public class FilterSortTest {
 
     @Test
     public void testNominalVector() {
-        Vector unsorted = new Nominal(3, Arrays.asList(new String[]{"ana", "vasile", "ion"}));
+        Var unsorted = new Nominal(3, Arrays.asList(new String[]{"ana", "vasile", "ion"}));
         unsorted.setLabel(0, "ana");
         unsorted.setLabel(1, "vasile");
         unsorted.setLabel(2, "ion");
 
-        Vector sorted = sort(unsorted);
+        Var sorted = sort(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
         assertEquals("ana", sorted.label(0));
         assertEquals("ion", sorted.label(1));
@@ -82,12 +82,12 @@ public class FilterSortTest {
 
     @Test
     public void testNominalVectorWithNA() {
-        Vector unsorted = new Nominal(3, Arrays.asList(new String[]{"ana", "vasile", "ion"}));
+        Var unsorted = new Nominal(3, Arrays.asList(new String[]{"ana", "vasile", "ion"}));
         unsorted.setLabel(0, "ana");
         unsorted.setLabel(1, "vasile");
         unsorted.setLabel(2, "?");
 
-        Vector sorted = sort(unsorted);
+        Var sorted = sort(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
         assertEquals("?", sorted.label(0));
         assertEquals("ana", sorted.label(1));

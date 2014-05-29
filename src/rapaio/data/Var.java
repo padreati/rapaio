@@ -24,19 +24,26 @@ import rapaio.data.mapping.Mapping;
 import rapaio.data.stream.VSpots;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 
 /**
  * Random access list of observed values (observations) for a specific variable.
  *
  * @author Aurelian Tutuianu
  */
-public interface Vector extends Serializable {
+public interface Var extends Serializable {
 
-    VectorType type();
+    VarType type();
 
     boolean isMappedVector();
 
-    Vector source();
+    Var source();
 
     Mapping mapping();
 
@@ -166,9 +173,74 @@ public interface Vector extends Serializable {
 
     void clear();
 
-    Vector solidCopy();
+    Var solidCopy();
 
     void ensureCapacity(int minCapacity);
 
     public VSpots stream();
+
+    public static Collector<Double, Numeric, Numeric> numericCollector() {
+        return new Collector<Double, Numeric, Numeric>() {
+            @Override
+            public Supplier<Numeric> supplier() {
+                return Numeric::new;
+            }
+
+            @Override
+            public BiConsumer<Numeric, Double> accumulator() {
+                return Numeric::addValue;
+            }
+
+            @Override
+            public BinaryOperator<Numeric> combiner() {
+                return (x, y) -> {
+                    y.stream().forEach(s -> y.addValue(s.value()));
+                    return x;
+                };
+            }
+
+            @Override
+            public Function<Numeric, Numeric> finisher() {
+                return x -> x;
+            }
+
+            @Override
+            public Set<Characteristics> characteristics() {
+                return new HashSet<>();
+            }
+        };
+    }
+
+    public static Collector<Integer, Index, Index> indexCollector() {
+        return new Collector<Integer, Index, Index>() {
+            @Override
+            public Supplier<Index> supplier() {
+                return Index::new;
+            }
+
+            @Override
+            public BiConsumer<Index, Integer> accumulator() {
+                return Index::addIndex;
+            }
+
+            @Override
+            public BinaryOperator<Index> combiner() {
+                return (x, y) -> {
+                    y.stream().forEach(s -> y.addValue(s.value()));
+                    return x;
+                };
+            }
+
+            @Override
+            public Function<Index, Index> finisher() {
+                return x -> x;
+            }
+
+            @Override
+            public Set<Characteristics> characteristics() {
+                return new HashSet<>();
+            }
+        };
+    }
+
 }

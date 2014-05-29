@@ -22,7 +22,7 @@ package rapaio.ml.refactor.boost.gbt;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Numeric;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -43,7 +43,7 @@ public class HuberBoostingLossFunction implements BoostingLossFunction {
     }
 
     @Override
-    public double findMinimum(Vector y, Vector fx) {
+    public double findMinimum(Var y, Var fx) {
 
         // compute residuals
 
@@ -80,7 +80,7 @@ public class HuberBoostingLossFunction implements BoostingLossFunction {
     }
 
     @Override
-    public Numeric gradient(Vector y, Vector fx) {
+    public Numeric gradient(Var y, Var fx) {
 
         // compute absolute residuals
 

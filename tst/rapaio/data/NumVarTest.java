@@ -28,11 +28,11 @@ import static org.junit.Assert.assertTrue;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class NumVectorTest {
+public class NumVarTest {
 
     @Test
     public void smokeTest() {
-        Vector v = new Numeric(0);
+        Var v = new Numeric(0);
         boolean flag = v.type().isNumeric();
         assertEquals(true, flag);
         assertEquals(false, v.type().isNominal());
@@ -42,7 +42,7 @@ public class NumVectorTest {
 
     @Test
     public void testGetterSetter() {
-        Vector v = new Numeric(10);
+        Var v = new Numeric(10);
         for (int i = 0; i < 10; i++) {
             v.setValue(i, Math.log(10 + i));
         }
@@ -83,7 +83,7 @@ public class NumVectorTest {
 
     @Test
     public void testOneNumeric() {
-        Vector one = Vectors.newNumOne(Math.PI);
+        Var one = Vectors.newNumOne(Math.PI);
 
         assertEquals(1, one.rowCount());
         assertEquals(Math.PI, one.value(0), 1e-10);

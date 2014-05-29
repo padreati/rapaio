@@ -22,7 +22,7 @@ package rapaio.graphics;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Numeric;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.graphics.plot.Points;
 
 import static rapaio.data.filters.BaseFilters.sort;
@@ -37,9 +37,9 @@ public class QQPlot extends Plot {
         setXLab("Theoretical Quantiles");
     }
 
-    public QQPlot add(Vector points, Distribution distribution) {
-        Vector x = sort(points);
-        Vector y = new Numeric(x.rowCount());
+    public QQPlot add(Var points, Distribution distribution) {
+        Var x = sort(points);
+        Var y = new Numeric(x.rowCount());
         for (int i = 0; i < y.rowCount(); i++) {
             double p = (i + 1) / (y.rowCount() + 1.);
             y.setValue(i, distribution.quantile(p));

@@ -25,9 +25,9 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.*;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.data.mapping.MappedFrame;
-import rapaio.data.mapping.MappedVector;
+import rapaio.data.mapping.MappedVar;
 import rapaio.data.mapping.Mapping;
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.VSpot;
@@ -61,18 +61,18 @@ public final class BaseFilters implements Serializable {
      * @return frame with value converted columns
      */
     public static Frame toNumeric(Frame df) {
-        Vector[] vectors = new Vector[df.colCount()];
-        for (int i = 0; i < vectors.length; i++) {
-            vectors[i] = toNumeric(df.col(i));
+        Var[] vars = new Var[df.colCount()];
+        for (int i = 0; i < vars.length; i++) {
+            vars[i] = toNumeric(df.col(i));
         }
-        return new SolidFrame(df.rowCount(), vectors, df.colNames());
+        return new SolidFrame(df.rowCount(), vars, df.colNames());
     }
 
     /**
      * Remove columns specified in a column range from a frame.
      *
-     * @param df        frame
-     * @param colRange  column range
+     * @param df       frame
+     * @param colRange column range
      * @return original frame without columns specified in {
      */
     public static Frame removeCols(Frame df, String colRange) {
@@ -111,30 +111,30 @@ public final class BaseFilters implements Serializable {
      * Retain only numeric columns from a frame.
      */
     public static Frame retainNumeric(Frame df) {
-        List<Vector> vectors = new ArrayList<>();
+        List<Var> vars = new ArrayList<>();
         List<String> names = new ArrayList<>();
         for (int i = 0; i < df.colCount(); i++) {
             if (df.col(i).type().isNumeric()) {
-                vectors.add(df.col(i));
+                vars.add(df.col(i));
                 names.add(df.colNames()[i]);
             }
         }
-        return new SolidFrame(df.rowCount(), vectors, names);
+        return new SolidFrame(df.rowCount(), vars, names);
     }
 
     /**
      * Retain only nominal columns from a frame.
      */
     public static Frame retainNominal(Frame df) {
-        List<Vector> vectors = new ArrayList<>();
+        List<Var> vars = new ArrayList<>();
         List<String> names = new ArrayList<>();
         for (int i = 0; i < df.colCount(); i++) {
             if (df.col(i).type().isNominal()) {
-                vectors.add(df.col(i));
+                vars.add(df.col(i));
                 names.add(df.colNames()[i]);
             }
         }
-        return new SolidFrame(df.rowCount(), vectors, names);
+        return new SolidFrame(df.rowCount(), vars, names);
     }
 
     public static Frame discretize(Frame df, ColRange colRange, int bins, boolean useQuantiles) {
@@ -154,17 +154,17 @@ public final class BaseFilters implements Serializable {
         for (int i = 0; i < bins; i++) {
             dict.add(String.valueOf(i + 1));
         }
-        List<Vector> vectors = new ArrayList<>();
+        List<Var> vars = new ArrayList<>();
         List<String> names = new ArrayList<>();
         for (int i = 0; i < df.colCount(); i++) {
             if (!colSet.contains(i)) {
-                vectors.add(df.col(i));
+                vars.add(df.col(i));
                 continue;
             }
-            Vector origin = df.col(i);
-            Vector discrete = new Nominal(origin.rowCount(), dict);
+            Var origin = df.col(i);
+            Var discrete = new Nominal(origin.rowCount(), dict);
             if (!useQuantiles) {
-                Vector sorted = sort(df.col(i));
+                Var sorted = sort(df.col(i));
                 int width = (int) Math.ceil(df.rowCount() / (1. * bins));
                 for (int j = 0; j < bins; j++) {
                     for (int k = 0; k < width; k++) {
@@ -195,10 +195,10 @@ public final class BaseFilters implements Serializable {
                     discrete.setLabel(j, String.valueOf(index));
                 }
             }
-            vectors.add(discrete);
+            vars.add(discrete);
             names.add(df.colNames()[i]);
         }
-        return new SolidFrame(df.rowCount(), vectors, names);
+        return new SolidFrame(df.rowCount(), vars, names);
     }
 
     /**
@@ -228,20 +228,20 @@ public final class BaseFilters implements Serializable {
         // rebuild each frame according with the new consolidated data
         List<Frame> dest = new ArrayList<>();
         for (Frame frame : source) {
-            Vector[] vectors = new Vector[frame.colCount()];
+            Var[] vars = new Var[frame.colCount()];
             for (int i = 0; i < frame.colCount(); i++) {
-                Vector v = frame.col(i);
+                Var v = frame.col(i);
                 String colName = frame.colNames()[i];
                 if (!v.type().isNominal()) {
-                    vectors[i] = v;
+                    vars[i] = v;
                 } else {
-                    vectors[i] = new Nominal(v.rowCount(), dicts.get(colName));
-                    for (int k = 0; k < vectors[i].rowCount(); k++) {
-                        vectors[i].setLabel(k, v.label(k));
+                    vars[i] = new Nominal(v.rowCount(), dicts.get(colName));
+                    for (int k = 0; k < vars[i].rowCount(); k++) {
+                        vars[i].setLabel(k, v.label(k));
                     }
                 }
             }
-            dest.add(new SolidFrame(frame.rowCount(), vectors, frame.colNames()));
+            dest.add(new SolidFrame(frame.rowCount(), vars, frame.colNames()));
         }
 
         return dest;
@@ -334,11 +334,11 @@ public final class BaseFilters implements Serializable {
 
         List<Frame> result = new ArrayList<>();
         for (Frame frame : frames) {
-            List<Vector> vectors = new ArrayList<>();
+            List<Var> vars = new ArrayList<>();
             for (int j = 0; j < frame.colCount(); j++) {
-                vectors.add(frame.col(j));
+                vars.add(frame.col(j));
             }
-            Vector col = new Nominal(frame.rowCount(), dict);
+            Var col = new Nominal(frame.rowCount(), dict);
             for (int j = 0; j < frame.rowCount(); j++) {
                 StringBuilder sb = new StringBuilder();
                 for (int k = 0; k < combined.length; k++) {
@@ -346,20 +346,20 @@ public final class BaseFilters implements Serializable {
                 }
                 col.setLabel(j, sb.toString());
             }
-            vectors.add(col);
-            result.add(new SolidFrame(frame.rowCount(), vectors, frame.colNames()));
+            vars.add(col);
+            result.add(new SolidFrame(frame.rowCount(), vars, frame.colNames()));
         }
         return result;
 
     }
 
-    public static Vector completeCases(Vector source) {
+    public static Var completeCases(Var source) {
         Mapping mapping = new Mapping();
         for (int i = 0; i < source.rowCount(); i++) {
             if (source.missing(i)) continue;
             mapping.add(source.rowId(i));
         }
-        return new MappedVector(source.source(), mapping);
+        return new MappedVar(source.source(), mapping);
     }
 
     /**
@@ -398,8 +398,8 @@ public final class BaseFilters implements Serializable {
      * @param v input vector
      * @return converted value vector
      */
-    public static Numeric toNumeric(Vector v) {
-        if (v.type().equals(VectorType.NUMERIC)) {
+    public static Numeric toNumeric(Var v) {
+        if (v.type().equals(VarType.NUMERIC)) {
             return (Numeric) v;
         }
         final Numeric result = new Numeric();
@@ -433,8 +433,8 @@ public final class BaseFilters implements Serializable {
      * @param v input vector
      * @return resulted index vector
      */
-    public static Index toIndex(Vector v) {
-        if (v.type().equals(VectorType.INDEX)) {
+    public static Index toIndex(Var v) {
+        if (v.type().equals(VarType.INDEX)) {
             return (Index) v;
         }
         final Index result = new Index();
@@ -462,12 +462,12 @@ public final class BaseFilters implements Serializable {
      * Noise comes from a normal distribution with mean 0 and standard deviation
      * 0.1
      *
-     * @param vector input values
+     * @param var input values
      * @return altered values
      */
 
-    public static Numeric jitter(Vector vector) {
-        return jitter(vector, 0.1);
+    public static Numeric jitter(Var var) {
+        return jitter(var, 0.1);
     }
 
     /**
@@ -476,19 +476,15 @@ public final class BaseFilters implements Serializable {
      * Noise comes from a normal distribution with mean 0 and standard deviation
      * specified by {
      *
-     * @param vector input values
-     * @param sd     standard deviation of the normally distributed noise
+     * @param var input values
+     * @param sd  standard deviation of the normally distributed noise
      * @return altered values
      */
-    public static Numeric jitter(Vector vector, double sd) {
-        Numeric result = new Numeric(vector.rowCount());
-        Vector jitter = new Normal(0, sd).sample(result.rowCount());
-        for (int i = 0; i < result.rowCount(); i++) {
-            if (vector.missing(i)) {
-                continue;
-            }
-            result.setValue(i, vector.value(i) + jitter.value(i));
-        }
+    public static Numeric jitter(Var var, double sd) {
+        Normal normal = new Normal(0, sd);
+        Numeric result = new Numeric(var.rowCount());
+        result.stream().forEach(s -> result.setValue(s.row(),
+                var.value(s.row()) + normal.quantile(RandomSource.nextDouble())));
         return result;
     }
 
@@ -496,19 +492,19 @@ public final class BaseFilters implements Serializable {
      * Set missing values for all nominal values included
      * in missing values array {@param missingValues}.
      *
-     * @param vector        source vector
+     * @param var           source vector
      * @param missingValues labels for missing values
      * @return original vector with missing value on matched positions
      */
-    public static Vector fillMissingValues(Vector vector, Collection<String> missingValues) {
-        if (!vector.type().isNominal()) {
+    public static Var fillMissingValues(Var var, Collection<String> missingValues) {
+        if (!var.type().isNominal()) {
             throw new IllegalArgumentException("Vector is not nominal.");
         }
-        vector.stream().forEach((VSpot inst) -> {
+        var.stream().forEach((VSpot inst) -> {
             if (missingValues.contains(inst.label()))
                 inst.setMissing();
         });
-        return vector;
+        return var;
     }
 
 
@@ -518,7 +514,7 @@ public final class BaseFilters implements Serializable {
      * @param v source vector
      * @return shuffled vector
      */
-    public static Vector shuffle(Vector v) {
+    public static Var shuffle(Var v) {
         ArrayList<Integer> mapping = new ArrayList<>();
         for (int i = 0; i < v.rowCount(); i++) {
             mapping.add(v.rowId(i));
@@ -526,14 +522,14 @@ public final class BaseFilters implements Serializable {
         for (int i = mapping.size(); i > 1; i--) {
             mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
         }
-        return new MappedVector(v.source(), new Mapping(mapping));
+        return new MappedVar(v.source(), new Mapping(mapping));
     }
 
-    public static Vector sort(Vector v) {
+    public static Var sort(Var v) {
         return sort(v, true);
     }
 
-    public static Vector sort(Vector v, boolean asc) {
+    public static Var sort(Var v, boolean asc) {
         if (v.type().isNumeric()) {
             return sort(v, RowComparators.numericComparator(v, asc));
         }
@@ -541,16 +537,16 @@ public final class BaseFilters implements Serializable {
     }
 
     @SafeVarargs
-    public static Vector sort(Vector vector, Comparator<Integer>... comparators) {
+    public static Var sort(Var var, Comparator<Integer>... comparators) {
         List<Integer> mapping = new ArrayList<>();
-        for (int i = 0; i < vector.rowCount(); i++) {
+        for (int i = 0; i < var.rowCount(); i++) {
             mapping.add(i);
         }
         Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
         List<Integer> ids = new ArrayList<>();
         for (Integer aMapping : mapping) {
-            ids.add(vector.rowId(aMapping));
+            ids.add(var.rowId(aMapping));
         }
-        return new MappedVector(vector.source(), new Mapping(ids));
+        return new MappedVar(var.source(), new Mapping(ids));
     }
 }

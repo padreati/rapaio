@@ -23,7 +23,7 @@ package rapaio.tutorial.pages;
 import rapaio.core.distributions.empirical.KDE;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.data.Frame;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.data.Vectors;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
@@ -144,7 +144,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                 + "                .add(new DensityLine(getCol)));\n"
                 + "");
 
-        final Vector col = df.col("Father");
+        final Var col = df.col("Father");
         draw(new Plot()
                 .add(new Histogram(col).setCol(Vectors.newSeq(1, 255, 1)))
                 .add(new DensityLine(col)));

@@ -22,7 +22,7 @@ package rapaio.ml.classifier.tree;
 
 import rapaio.core.RandomSource;
 import rapaio.data.*;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.data.filters.BaseFilters;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
@@ -459,8 +459,8 @@ public class TreeClassifier extends AbstractClassifier {
             @Override
             public List<Candidate> computeCandidates(TreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
                 List<Candidate> result = new ArrayList<>();
-                Vector test = df.col(testColName);
-                Vector target = df.col(targetColName);
+                Var test = df.col(testColName);
+                Var target = df.col(targetColName);
 
                 if (new DensityTable(test, target).countWithMinimum(false, c.getMinCount()) < 2) {
                     return result;
@@ -489,8 +489,8 @@ public class TreeClassifier extends AbstractClassifier {
                 List<Candidate> result = new ArrayList<>();
                 Candidate best = null;
                 for (int i = 1; i < df.col(testColName).dictionary().length; i++) {
-                    Vector test = df.col(testColName);
-                    Vector target = df.col(targetColName);
+                    Var test = df.col(testColName);
+                    Var target = df.col(targetColName);
                     String testLabel = df.col(testColName).dictionary()[i];
 
                     if (new DensityTable(test, target).countWithMinimum(false, c.getMinCount()) < 2) {
@@ -538,8 +538,8 @@ public class TreeClassifier extends AbstractClassifier {
         BINARY {
             @Override
             public List<Candidate> computeCandidates(TreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
-                Vector test = df.col(testColName);
-                Vector target = df.col(targetColName);
+                Var test = df.col(testColName);
+                Var target = df.col(targetColName);
 
                 DensityTable dt = new DensityTable(DensityTable.NUMERIC_DEFAULT_LABELS, target.dictionary());
                 int misCount = 0;
@@ -549,7 +549,7 @@ public class TreeClassifier extends AbstractClassifier {
                     dt.update(row, target.index(i), df.weight(i));
                 }
 
-                Vector sort = BaseFilters.sort(Vectors.newSeq(df.rowCount()), RowComparators.numericComparator(test, true));
+                Var sort = BaseFilters.sort(Vectors.newSeq(df.rowCount()), RowComparators.numericComparator(test, true));
 
                 Candidate best = null;
 

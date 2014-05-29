@@ -27,7 +27,7 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.QQPlot;
@@ -94,7 +94,7 @@ public class PearsonHeight implements TutorialPage {
                 + "is the quantile-quantile plot. ");
 
         for (int i = 0; i < df.colCount(); i++) {
-            final Vector col = df.col(i);
+            final Var col = df.col(i);
             final int colIndex = i;
             double mu = new Mean(col).getValue();
             Distribution normal = new Normal();

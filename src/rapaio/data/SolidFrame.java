@@ -34,38 +34,38 @@ import java.util.List;
 public class SolidFrame extends AbstractFrame {
 
     private final int rows;
-    private final Vector[] vectors;
+    private final Var[] vars;
     private final HashMap<String, Integer> colIndex;
     private final String[] names;
     private final Numeric weights;
 
-    public SolidFrame(int rows, List<Vector> vectors, List<String> names) {
-        this(rows, vectors, names.toArray(new String[names.size()]), null);
+    public SolidFrame(int rows, List<Var> vars, List<String> names) {
+        this(rows, vars, names.toArray(new String[names.size()]), null);
     }
 
-    public SolidFrame(int rows, List<Vector> vectors, List<String> names, Numeric weights) {
-        this(rows, vectors, names.toArray(new String[names.size()]), weights);
+    public SolidFrame(int rows, List<Var> vars, List<String> names, Numeric weights) {
+        this(rows, vars, names.toArray(new String[names.size()]), weights);
     }
 
-    public SolidFrame(int rows, List<Vector> vectors, String[] names) {
-        this(rows, vectors, names, null);
+    public SolidFrame(int rows, List<Var> vars, String[] names) {
+        this(rows, vars, names, null);
     }
 
-    public SolidFrame(int rows, Vector[] vectors, String[] names, Numeric weights) {
-        this(rows, Arrays.asList(vectors), names, weights);
+    public SolidFrame(int rows, Var[] vars, String[] names, Numeric weights) {
+        this(rows, Arrays.asList(vars), names, weights);
     }
 
-    public SolidFrame(int rows, Vector[] vectors, String[] names) {
-        this(rows, Arrays.asList(vectors), names, null);
+    public SolidFrame(int rows, Var[] vars, String[] names) {
+        this(rows, Arrays.asList(vars), names, null);
     }
 
-    public SolidFrame(int rows, List<Vector> vectors, String[] names, Numeric weights) {
-        for (Vector vector : vectors) {
-            if (vector.isMappedVector())
+    public SolidFrame(int rows, List<Var> vars, String[] names, Numeric weights) {
+        for (Var var : vars) {
+            if (var.isMappedVector())
                 throw new IllegalArgumentException("Not allowed mapped vectors in solid frame");
         }
         this.rows = rows;
-        this.vectors = new Vector[vectors.size()];
+        this.vars = new Var[vars.size()];
         if (weights != null)
             this.weights = weights;
         else {
@@ -75,10 +75,10 @@ public class SolidFrame extends AbstractFrame {
             }
         }
         this.colIndex = new HashMap<>();
-        this.names = new String[vectors.size()];
+        this.names = new String[vars.size()];
 
-        for (int i = 0; i < vectors.size(); i++) {
-            this.vectors[i] = vectors.get(i);
+        for (int i = 0; i < vars.size(); i++) {
+            this.vars[i] = vars.get(i);
             this.colIndex.put(names[i], i);
             this.names[i] = names[i];
         }
@@ -91,7 +91,7 @@ public class SolidFrame extends AbstractFrame {
 
     @Override
     public int colCount() {
-        return vectors.length;
+        return vars.length;
     }
 
     @Override
@@ -128,15 +128,15 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public Vector col(int col) {
-        if (col >= 0 && col < vectors.length) {
-            return vectors[col];
+    public Var col(int col) {
+        if (col >= 0 && col < vars.length) {
+            return vars[col];
         }
         throw new IllegalArgumentException("Invalid column index: " + col);
     }
 
     @Override
-    public Vector col(String name) {
+    public Var col(String name) {
         return col(colIndex(name));
     }
 

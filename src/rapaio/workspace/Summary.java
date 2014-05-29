@@ -25,7 +25,7 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -65,7 +65,7 @@ public class Summary {
         for (int k = 0; k < names.length; k++) {
             int i = df.colIndex(names[k]);
 
-            Vector v = df.col(i);
+            Var v = df.col(i);
             if (v.type().isNumeric()) {
                 double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
                 double[] perc = new Quantiles(v, p).getValues();
@@ -234,7 +234,7 @@ public class Summary {
         code(buffer.toString());
     }
 
-    public static void summary(Vector v) {
+    public static void summary(Var v) {
 
         StringBuilder buffer = new StringBuilder();
         buffer.append("> summary(vector)\n");
@@ -373,8 +373,8 @@ public class Summary {
         code(buffer.toString());
     }
 
-    public static void contingencyTable(Vector a, Vector b) {
-        Vector[] vectors = new Vector[b.rowCount() + 1];
+    public static void contingencyTable(Var a, Var b) {
+        Var[] vars = new Var[b.rowCount() + 1];
 
         // learn first column
         HashSet<String> labels = new HashSet<>();
@@ -382,11 +382,11 @@ public class Summary {
             labels.add(a.label(i));
         }
         labels.add("Totals");
-        vectors[0] = new Nominal(a.rowCount() + 1, labels);
+        vars[0] = new Nominal(a.rowCount() + 1, labels);
         for (int i = 0; i < a.dictionary().length; i++) {
-            vectors[0].setLabel(i, a.dictionary()[i]);
+            vars[0].setLabel(i, a.dictionary()[i]);
         }
-        vectors[0].setLabel(a.rowCount(), "Totals");
+        vars[0].setLabel(a.rowCount(), "Totals");
 
         // learn numerical columns
     }
@@ -395,46 +395,46 @@ public class Summary {
         result.summary();
     }
 
-    public static void lines(Vector v) {
-        head(v.rowCount(), new Vector[]{v}, new String[]{""});
+    public static void lines(Var v) {
+        head(v.rowCount(), new Var[]{v}, new String[]{""});
     }
 
-    public static void head(int lines, Vector v) {
-        head(lines, new Vector[]{v}, new String[]{""});
+    public static void head(int lines, Var v) {
+        head(lines, new Var[]{v}, new String[]{""});
     }
 
     public static void lines(Frame df) {
-        Vector[] vectors = new Vector[df.colCount()];
+        Var[] vars = new Var[df.colCount()];
         String[] names = df.colNames();
-        for (int i = 0; i < vectors.length; i++) {
-            vectors[i] = df.col(i);
+        for (int i = 0; i < vars.length; i++) {
+            vars[i] = df.col(i);
         }
-        head(df.rowCount(), vectors, names);
+        head(df.rowCount(), vars, names);
     }
 
     public static void head(int lines, Frame df) {
-        Vector[] vectors = new Vector[df.colCount()];
+        Var[] vars = new Var[df.colCount()];
         String[] names = df.colNames();
-        for (int i = 0; i < vectors.length; i++) {
-            vectors[i] = df.col(i);
+        for (int i = 0; i < vars.length; i++) {
+            vars[i] = df.col(i);
         }
-        head(Math.min(lines, df.rowCount()), vectors, names);
+        head(Math.min(lines, df.rowCount()), vars, names);
     }
 
-    public static void head(int lines, Vector[] vectors, String[] names) {
+    public static void head(int lines, Var[] vars, String[] names) {
         if (lines == -1) {
-            lines = vectors[0].rowCount();
+            lines = vars[0].rowCount();
         }
 
-        int[] max = new int[vectors.length];
-        for (int i = 0; i < vectors.length; i++) {
+        int[] max = new int[vars.length];
+        for (int i = 0; i < vars.length; i++) {
             max[i] = names[i].length() + 1;
-            for (int j = 0; j < vectors[i].rowCount(); j++) {
-                if (vectors[i].type().isNominal() && max[i] < vectors[i].label(j).length()) {
-                    max[i] = vectors[i].label(j).length();
+            for (int j = 0; j < vars[i].rowCount(); j++) {
+                if (vars[i].type().isNominal() && max[i] < vars[i].label(j).length()) {
+                    max[i] = vars[i].label(j).length();
                 }
-                if (vectors[i].type().isNumeric()) {
-                    String value = String.format("%s", String.format("%.10f", vectors[i].value(j)));
+                if (vars[i].type().isNumeric()) {
+                    String value = String.format("%s", String.format("%.10f", vars[i].value(j)));
                     if (max[i] < value.length()) {
                         max[i] = value.length();
                     }
@@ -447,11 +447,11 @@ public class Summary {
         sb.append("\n");
 
         int pos = 0;
-        while (pos < vectors.length) {
+        while (pos < vars.length) {
             int maxWidth = getPrinter().getTextWidth();
             int width = 0;
             int start = pos;
-            while ((pos < vectors.length - 1) && (width + max[pos + 1] + 1 < maxWidth)) {
+            while ((pos < vars.length - 1) && (width + max[pos + 1] + 1 < maxWidth)) {
                 width += max[pos + 1] + 1;
                 pos++;
             }
@@ -465,10 +465,10 @@ public class Summary {
             for (int i = 0; i < lines; i++) {
                 for (int j = start; j <= pos; j++) {
                     String value;
-                    if (vectors[j].type().isNominal()) {
-                        value = String.format("%" + max[j] + "s", vectors[j].label(i));
+                    if (vars[j].type().isNominal()) {
+                        value = String.format("%" + max[j] + "s", vars[j].label(i));
                     } else {
-                        value = String.format("%" + max[j] + "s", String.format("%.10f", vectors[j].value(i)));
+                        value = String.format("%" + max[j] + "s", String.format("%.10f", vars[j].value(i)));
                     }
                     sb.append(value).append(" ");
                 }

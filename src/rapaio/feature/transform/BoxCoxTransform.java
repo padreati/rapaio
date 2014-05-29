@@ -21,7 +21,7 @@
 package rapaio.feature.transform;
 
 import rapaio.data.Frame;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -53,7 +53,7 @@ public class BoxCoxTransform implements Transform {
 
     }
 
-    private double gm(Vector v) {
+    private double gm(Var v) {
         double p = 1;
         double count = 0;
         for (int i = 0; i < v.rowCount(); i++) {

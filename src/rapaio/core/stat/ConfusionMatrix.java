@@ -21,26 +21,26 @@
 package rapaio.core.stat;
 
 import rapaio.core.Printable;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class ConfusionMatrix implements Printable {
 
-    private final Vector actual;
-    private final Vector predict;
+    private final Var actual;
+    private final Var predict;
     private final String[] dict;
     private final int[][] cmf;
     private final boolean percents;
     private double acc;
     private double completeCases = 0;
 
-    public ConfusionMatrix(Vector actual, Vector predict) {
+    public ConfusionMatrix(Var actual, Var predict) {
         this(actual, predict, false);
     }
 
-    public ConfusionMatrix(Vector actual, Vector predict, boolean percents) {
+    public ConfusionMatrix(Var actual, Var predict, boolean percents) {
         validate(actual, predict);
         this.actual = actual;
         this.predict = predict;
@@ -50,7 +50,7 @@ public class ConfusionMatrix implements Printable {
         compute();
     }
 
-    private void validate(Vector actual, Vector predict) {
+    private void validate(Var actual, Var predict) {
         if (!actual.type().isNominal()) {
             throw new IllegalArgumentException("actual values vector must be nominal");
         }

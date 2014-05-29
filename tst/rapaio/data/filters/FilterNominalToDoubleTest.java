@@ -22,7 +22,7 @@ package rapaio.data.filters;
 
 import org.junit.Test;
 import rapaio.data.Nominal;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -44,12 +44,12 @@ public class FilterNominalToDoubleTest {
         for (int i = 0; i < n; i++) {
             dict.add(String.valueOf(Math.pow(i, 1.5)));
         }
-        Vector v = new Nominal(10, dict);
+        Var v = new Nominal(10, dict);
         for (int i = 0; i < v.rowCount(); i++) {
             String value = String.valueOf(Math.pow(i, 1.5));
             v.setLabel(i, value);
         }
-        Vector filtered = toNumeric(v);
+        Var filtered = toNumeric(v);
         for (int i = 0; i < v.rowCount(); i++) {
             double value = Math.pow(i, 1.5);
             assertEquals(value, filtered.value(i), 1e-10);
@@ -67,9 +67,9 @@ public class FilterNominalToDoubleTest {
 
     @Test
     public void testNFE() {
-        Vector filtered = new Nominal(1, Arrays.asList(new String[]{"abc"}));
+        Var filtered = new Nominal(1, Arrays.asList(new String[]{"abc"}));
         filtered.setLabel(0, "abc");
-        Vector numeric = toNumeric(filtered);
+        Var numeric = toNumeric(filtered);
         assertEquals(numeric.value(0), numeric.value(0), 1e-10);
         assertTrue(numeric.missing(0));
     }

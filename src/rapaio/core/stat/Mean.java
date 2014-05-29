@@ -21,7 +21,7 @@
 package rapaio.core.stat;
 
 import rapaio.core.Printable;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.data.stream.VSpot;
 import rapaio.util.Pin;
 
@@ -34,22 +34,22 @@ import rapaio.util.Pin;
  */
 public final class Mean implements Printable {
 
-    private final Vector vector;
+    private final Var var;
     private final double value;
 
-    public Mean(Vector vector) {
-        this.vector = vector;
+    public Mean(Var var) {
+        this.var = var;
         this.value = compute();
     }
 
     private double compute() {
-        double count = vector.stream().complete().mapToDouble().count();
+        double count = var.stream().complete().mapToDouble().count();
         if (count == 0) {
             return Double.NaN;
         }
-        final double sum = vector.stream().complete().mapToDouble().sum() / count;
+        final double sum = var.stream().complete().mapToDouble().sum() / count;
         final Pin<Double> t = new Pin<>(0.0);
-        vector.stream().complete().forEach((VSpot inst) -> t.set(t.get() + inst.value() - sum));
+        var.stream().complete().forEach((VSpot inst) -> t.set(t.get() + inst.value() - sum));
         return sum + t.get() / count;
     }
 

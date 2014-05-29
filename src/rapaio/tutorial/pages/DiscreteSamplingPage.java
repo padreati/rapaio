@@ -122,8 +122,8 @@ public class DiscreteSamplingPage implements TutorialPage {
 
         DiscreteSampling ds = new DiscreteSampling();
         int[] sample = ds.sampleWR(1000, 6);
-        Vector vector = Vectors.newIdxFrom(sample);
-        draw(new Plot().add(new Histogram(vector, 6, false)), 500, 200);
+        Var var = Vectors.newIdxFrom(sample);
+        draw(new Plot().add(new Histogram(var, 6, false)), 500, 200);
 
         p("In the presented histogram we see frequencies obtained be taking a sample "
                 + "of size 1000 of the fair-dice process outcomes. We note that the "
@@ -181,19 +181,19 @@ public class DiscreteSamplingPage implements TutorialPage {
         final int TRIALS = 100;
         final int SAMPLE_SIZE = 6;
         final int POPULATION_SIZE = 49;
-        Vector[] vectors = new Vector[2];
-        vectors[0] = new Numeric(SAMPLE_SIZE * TRIALS);
-        vectors[1] = new Numeric(SAMPLE_SIZE * TRIALS);
+        Var[] vars = new Var[2];
+        vars[0] = new Numeric(SAMPLE_SIZE * TRIALS);
+        vars[1] = new Numeric(SAMPLE_SIZE * TRIALS);
 
         for (int i = 0; i < TRIALS; i++) {
             int[] numbers = ds.sampleWOR(SAMPLE_SIZE, POPULATION_SIZE);
             for (int j = 0; j < numbers.length; j++) {
-                vectors[0].setValue(i * SAMPLE_SIZE + j, i + 1);
-                vectors[1].setValue(i * SAMPLE_SIZE + j, numbers[j] + 1);
+                vars[0].setValue(i * SAMPLE_SIZE + j, i + 1);
+                vars[1].setValue(i * SAMPLE_SIZE + j, numbers[j] + 1);
             }
         }
 
-        final Frame df = new SolidFrame(SAMPLE_SIZE * TRIALS, vectors, new String[]{"lottery trial", "winning number"});
+        final Frame df = new SolidFrame(SAMPLE_SIZE * TRIALS, vars, new String[]{"lottery trial", "winning number"});
         draw(new Plot()
                         .add(new Points(df.col(0), df.col(1))
                                 .setPch(1)
@@ -249,8 +249,8 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "                .setYLab(\"HEAD/TOTAL\"));\n");
 
         RandomSource.setSeed(1);
-        final Vector index = Vectors.newSeq(1, 1000, 1);
-        final Vector value = new Numeric(1000);
+        final Var index = Vectors.newSeq(1, 1000, 1);
+        final Var value = new Numeric(1000);
         double count = 0;
         double total = 0;
         for (int i = 0; i < 300; i++) {
@@ -327,8 +327,8 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "                .setSizeIndex(Vectors.newNumOne(2)),\n" +
                 "                600, 300);\n");
 
-        vectors[0] = new Numeric(SAMPLE_SIZE * TRIALS);
-        vectors[1] = new Numeric(SAMPLE_SIZE * TRIALS);
+        vars[0] = new Numeric(SAMPLE_SIZE * TRIALS);
+        vars[1] = new Numeric(SAMPLE_SIZE * TRIALS);
 
         double[] prob = new double[49];
         for (int i = 0; i < prob.length; i++) {
@@ -345,12 +345,12 @@ public class DiscreteSamplingPage implements TutorialPage {
         for (int i = 0; i < TRIALS; i++) {
             int[] numbers = ds.sampleWeightedWOR(SAMPLE_SIZE, prob);
             for (int j = 0; j < numbers.length; j++) {
-                vectors[0].setValue(i * SAMPLE_SIZE + j, i + 1);
-                vectors[1].setValue(i * SAMPLE_SIZE + j, numbers[j] + 1);
+                vars[0].setValue(i * SAMPLE_SIZE + j, i + 1);
+                vars[1].setValue(i * SAMPLE_SIZE + j, numbers[j] + 1);
             }
         }
 
-        final Frame df2 = new SolidFrame(SAMPLE_SIZE * TRIALS, vectors, new String[]{"loaded lottery", "winning number"});
+        final Frame df2 = new SolidFrame(SAMPLE_SIZE * TRIALS, vars, new String[]{"loaded lottery", "winning number"});
         draw(new Plot()
                         .add(new Points(df2.col(0), df2.col(1)))
                         .setPch(Vectors.newIdxOne(1))

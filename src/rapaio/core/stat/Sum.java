@@ -21,12 +21,12 @@
 package rapaio.core.stat;
 
 import rapaio.core.Printable;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import static rapaio.core.MathBase.validNumber;
 
 /**
- * Computes the sum of elements for a {@link Vector} of values.
+ * Computes the sum of elements for a {@link rapaio.data.Var} of values.
  * <p>
  * Ignore invalid numeric values. See {@link rapaio.core.MathBase#validNumber(double)}.
  * <p>
@@ -34,19 +34,19 @@ import static rapaio.core.MathBase.validNumber;
  */
 public class Sum implements Printable {
 
-    private final Vector vector;
+    private final Var var;
     private final double value;
 
-    public Sum(Vector vector) {
-        this.vector = vector;
+    public Sum(Var var) {
+        this.var = var;
         this.value = compute();
     }
 
     private double compute() {
         double sum = 0;
-        for (int i = 0; i < vector.rowCount(); i++) {
-            if (validNumber(vector.value(i))) {
-                sum += vector.value(i);
+        for (int i = 0; i < var.rowCount(); i++) {
+            if (validNumber(var.value(i))) {
+                sum += var.value(i);
             }
         }
         return sum;

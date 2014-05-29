@@ -41,7 +41,7 @@ import java.util.*;
  *
  * @author Aurelian Tutuianu
  */
-public class Nominal extends AbstractVector {
+public class Nominal extends AbstractVar {
 
     private static final String missingValue = "?";
     private static final int missingIndex = 0;
@@ -77,8 +77,8 @@ public class Nominal extends AbstractVector {
     }
 
     @Override
-    public VectorType type() {
-        return VectorType.NOMINAL;
+    public VarType type() {
+        return VarType.NOMINAL;
     }
 
     private void grow(int minCapacity) {
@@ -97,7 +97,7 @@ public class Nominal extends AbstractVector {
     }
 
     @Override
-    public Vector source() {
+    public Var source() {
         return this;
     }
 

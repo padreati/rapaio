@@ -121,7 +121,7 @@ public class JavaDBUtil {
                 }
             }
         }
-        List<Vector> vectors = new ArrayList<>();
+        List<Var> vars = new ArrayList<>();
         for (int i = 0; i < md.getColumnCount(); i++) {
             String sqlTypeName = md.getColumnTypeName(i + 1);
             switch (sqlTypeName) {
@@ -131,7 +131,7 @@ public class JavaDBUtil {
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         v1.setValue(j, (Double) lists.get(i).get(j));
                     }
-                    vectors.add(v1);
+                    vars.add(v1);
                     break;
                 default:
                     HashSet<String> dict = new HashSet<>();
@@ -142,9 +142,9 @@ public class JavaDBUtil {
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         v2.setLabel(j, (String) lists.get(i).get(j));
                     }
-                    vectors.add(v2);
+                    vars.add(v2);
             }
         }
-        return new SolidFrame(lists.get(0).size(), vectors, colNames);
+        return new SolidFrame(lists.get(0).size(), vars, colNames);
     }
 }

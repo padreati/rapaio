@@ -21,14 +21,14 @@
 package rapaio.ml.refactor.boost.gbt;
 
 import rapaio.data.Numeric;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 public interface BoostingLossFunction {
 
-    double findMinimum(Vector y, Vector fx);
+    double findMinimum(Var y, Var fx);
 
-    Numeric gradient(Vector y, Vector fx);
+    Numeric gradient(Var y, Var fx);
 }

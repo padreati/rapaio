@@ -20,7 +20,7 @@
 
 package rapaio.data.stream;
 
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import java.io.Serializable;
 
@@ -30,11 +30,11 @@ import java.io.Serializable;
 public class VSpot implements Serializable {
 
     private final int row;
-    private final Vector vector;
+    private final Var var;
 
-    public VSpot(int row, Vector vector) {
+    public VSpot(int row, Var var) {
         this.row = row;
-        this.vector = vector;
+        this.var = var;
     }
 
     public int row() {
@@ -42,46 +42,46 @@ public class VSpot implements Serializable {
     }
 
     public int rowId() {
-        return vector.rowId(row);
+        return var.rowId(row);
     }
 
-    public Vector vector() {
-        return vector;
+    public Var vector() {
+        return var;
     }
 
     public boolean missing() {
-        return vector.missing(row);
+        return var.missing(row);
     }
 
     public void setMissing() {
-        vector.setMissing(row);
+        var.setMissing(row);
     }
 
     public double value() {
-        return vector.value(row);
+        return var.value(row);
     }
 
     public void setValue(final double value) {
-        vector.setValue(row, value);
+        var.setValue(row, value);
     }
 
     public int index() {
-        return vector.index(row);
+        return var.index(row);
     }
 
     public void setIndex(final int index) {
-        vector.setIndex(row, index);
+        var.setIndex(row, index);
     }
 
     public String label() {
-        return vector.label(row);
+        return var.label(row);
     }
 
     public void setLabel(String label) {
-        vector.setLabel(row, label);
+        var.setLabel(row, label);
     }
 
     public String[] dictionary() {
-        return vector.dictionary();
+        return var.dictionary();
     }
 }

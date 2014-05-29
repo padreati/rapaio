@@ -41,8 +41,8 @@ public class PerformanceTests {
 
         setPrinter(new LocalPrinter());
 
-        final int TESTS = 500;
-        final int LEN = 100_000;
+        final int TESTS = 100;
+        final int LEN = 1_000_000;
 
         Numeric index = new Numeric();
         Numeric time1 = new Numeric();
@@ -59,13 +59,13 @@ public class PerformanceTests {
             time1.addValue(System.currentTimeMillis() - start);
 
             start = System.currentTimeMillis();
-            Numeric numeric = new Numeric(LEN);
+            Numeric numeric = new Numeric();
             for (int j = 0; j < LEN; j++) {
                 numeric.addValue(j * Math.sin(j));
             }
             time2.addValue(System.currentTimeMillis() - start);
             index.addIndex(i);
-            delta.addValue(time1.value(i) - time2.value(i));
+            delta.addValue(time2.value(i) - time1.value(i));
         }
 
 //        draw(new Plot()

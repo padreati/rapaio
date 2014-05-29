@@ -22,7 +22,7 @@ package rapaio.core;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.data.filters.BaseFilters;
 import rapaio.io.Csv;
 
@@ -38,11 +38,11 @@ public abstract class CoreStatTestUtil {
 
     public CoreStatTestUtil() throws IOException, URISyntaxException {
         df = new Csv().withHeader(false).read(getClass(), "core_stat.csv");
-        Vector[] vectors = new Vector[df.colCount()];
-        for (int i = 0; i < vectors.length; i++) {
-            vectors[i] = BaseFilters.toNumeric(df.col(i));
+        Var[] vars = new Var[df.colCount()];
+        for (int i = 0; i < vars.length; i++) {
+            vars[i] = BaseFilters.toNumeric(df.col(i));
         }
-        df = new SolidFrame(df.rowCount(), vectors, df.colNames());
+        df = new SolidFrame(df.rowCount(), vars, df.colNames());
     }
 
     public Frame getDataFrame() {

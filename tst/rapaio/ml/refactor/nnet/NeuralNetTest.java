@@ -35,9 +35,9 @@ public class NeuralNetTest {
     @Test
     public void testAnd() {
 
-        Vector a = new Numeric();
-        Vector b = new Numeric();
-        Vector and = new Numeric();
+        Var a = new Numeric();
+        Var b = new Numeric();
+        Var and = new Numeric();
 
         a.addValue(0);
         b.addValue(0);
@@ -55,7 +55,7 @@ public class NeuralNetTest {
         b.addValue(1.);
         and.addValue(1.);
 
-        Frame df = new SolidFrame(and.rowCount(), new Vector[]{and}, new String[]{"and"});
+        Frame df = new SolidFrame(and.rowCount(), new Var[]{and}, new String[]{"and"});
         df = Frames.addCol(df, b, "b", 0);
         df = Frames.addCol(df, a, "a", 0);
 
@@ -77,9 +77,9 @@ public class NeuralNetTest {
     @Test
     public void testXor() {
 
-        Vector a = new Numeric();
-        Vector b = new Numeric();
-        Vector xor = new Numeric();
+        Var a = new Numeric();
+        Var b = new Numeric();
+        Var xor = new Numeric();
 
         a.addValue(0);
         b.addValue(0);
@@ -97,7 +97,7 @@ public class NeuralNetTest {
         b.addValue(1.);
         xor.addValue(1.);
 
-        Frame df = new SolidFrame(xor.rowCount(), new Vector[]{xor}, new String[]{"xor"});
+        Frame df = new SolidFrame(xor.rowCount(), new Var[]{xor}, new String[]{"xor"});
         df = Frames.addCol(df, b, "b", 0);
         df = Frames.addCol(df, a, "a", 0);
 
@@ -119,10 +119,10 @@ public class NeuralNetTest {
     @Test
     public void testXorTwoOutputs() {
 
-        Vector a = new Numeric();
-        Vector b = new Numeric();
-        Vector xorA = new Numeric();
-        Vector xorB = new Numeric();
+        Var a = new Numeric();
+        Var b = new Numeric();
+        Var xorA = new Numeric();
+        Var xorB = new Numeric();
 
         a.addValue(0);
         b.addValue(0);
@@ -146,7 +146,7 @@ public class NeuralNetTest {
 
         Frame df = new SolidFrame(
                 xorA.rowCount(),
-                new Vector[]{a, b, xorA, xorB},
+                new Var[]{a, b, xorA, xorB},
                 new String[]{"a", "b", "xorA", "xorB"});
 
         Regressor nn = new MultiLayerPerceptronRegressor(new int[]{2, 4, 2}, 0.1).setRounds(100);
@@ -172,9 +172,9 @@ public class NeuralNetTest {
     //    @Test
     public void testGarciaChallenge() {
 
-        Vector a = new Numeric();
-        Vector b = new Numeric();
-        Vector xor = new Numeric();
+        Var a = new Numeric();
+        Var b = new Numeric();
+        Var xor = new Numeric();
 
         a.addValue(0);
         b.addValue(0);
@@ -192,7 +192,7 @@ public class NeuralNetTest {
         b.addValue(1.);
         xor.addValue(1.);
 
-        Frame df = new SolidFrame(xor.rowCount(), new Vector[]{xor}, new String[]{"xor"});
+        Frame df = new SolidFrame(xor.rowCount(), new Var[]{xor}, new String[]{"xor"});
         df = Frames.addCol(df, b, "b", 0);
         df = Frames.addCol(df, a, "a", 0);
 

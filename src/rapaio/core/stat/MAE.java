@@ -22,7 +22,7 @@ package rapaio.core.stat;
 
 import rapaio.core.Printable;
 import rapaio.data.Frame;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +31,8 @@ import java.util.List;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 public class MAE implements Printable {
-    private final List<Vector> source;
-    private final List<Vector> target;
+    private final List<Var> source;
+    private final List<Var> target;
     private double value;
 
     public MAE(Frame dfSource, Frame dfTarget) {
@@ -51,7 +51,7 @@ public class MAE implements Printable {
         compute();
     }
 
-    public MAE(Vector source, Vector target) {
+    public MAE(Var source, Var target) {
         this.source = new ArrayList<>();
         this.source.add(source);
         this.target = new ArrayList<>();

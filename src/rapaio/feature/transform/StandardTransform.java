@@ -23,7 +23,7 @@ package rapaio.feature.transform;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +43,7 @@ public class StandardTransform implements Transform {
         this.sd = new HashMap<>();
 
         for (String colName : colNames) {
-            Vector col = df.col(colName);
+            Var col = df.col(colName);
             mean.put(colName, new Mean(col).getValue());
             sd.put(colName, Math.sqrt(new Variance(col).getValue()));
         }

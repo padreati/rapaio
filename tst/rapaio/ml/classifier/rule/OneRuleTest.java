@@ -31,24 +31,24 @@ public class OneRuleTest {
 
     private static final int SIZE = 6;
 
-    private final Vector classVector;
-    private final Vector heightVector;
+    private final Var classVar;
+    private final Var heightVar;
 
     public OneRuleTest() {
-        classVector = new Nominal(SIZE, new String[]{"False", "True"});
-        classVector.setLabel(0, "True");
-        classVector.setLabel(1, "True");
-        classVector.setLabel(2, "True");
-        classVector.setLabel(3, "False");
-        classVector.setLabel(4, "False");
-        classVector.setLabel(5, "False");
+        classVar = new Nominal(SIZE, new String[]{"False", "True"});
+        classVar.setLabel(0, "True");
+        classVar.setLabel(1, "True");
+        classVar.setLabel(2, "True");
+        classVar.setLabel(3, "False");
+        classVar.setLabel(4, "False");
+        classVar.setLabel(5, "False");
 
-        heightVector = new Numeric(new double[]{0.1, 0.3, 0.5, 10, 10.3, 10.5});
+        heightVar = new Numeric(new double[]{0.1, 0.3, 0.5, 10, 10.3, 10.5});
     }
 
     @Test
     public void testSimpleNumeric() {
-        Frame df = new SolidFrame(SIZE, new Vector[]{heightVector, classVector}, new String[]{"height", "class"});
+        Frame df = new SolidFrame(SIZE, new Var[]{heightVar, classVar}, new String[]{"height", "class"});
 
         String[] labels;
         OneRule oneRule = new OneRule();

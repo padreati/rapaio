@@ -21,7 +21,7 @@
 package rapaio.core.distributions.empirical;
 
 import rapaio.core.stat.Variance;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.data.filters.BaseFilters;
 
 import java.util.Arrays;
@@ -37,21 +37,21 @@ public class KDE {
     private final KFunc kernel;
     private final double bandwidth;
 
-    public KDE(Vector values) {
+    public KDE(Var values) {
         this.values = values.stream().mapToDouble().toArray();
         this.kernel = new KFuncGaussian();
         this.bandwidth = getSilvermanBandwidth(values);
     }
 
-    public KDE(Vector values, double bandwidth) {
+    public KDE(Var values, double bandwidth) {
         this(values, new KFuncGaussian(), bandwidth);
     }
 
-    public KDE(Vector values, KFunc kernel) {
+    public KDE(Var values, KFunc kernel) {
         this(values, kernel, getSilvermanBandwidth(values));
     }
 
-    public KDE(Vector values, KFunc kernel, double bandwidth) {
+    public KDE(Var values, KFunc kernel, double bandwidth) {
         this.values = BaseFilters.sort(values).stream().filter(s -> !s.missing()).mapToDouble().toArray();
         this.kernel = kernel;
         this.bandwidth = bandwidth;
@@ -93,7 +93,7 @@ public class KDE {
      * @param vector sample of values
      * @return teh value of the approximation for bandwidth
      */
-    public static double getSilvermanBandwidth(Vector vector) {
+    public static double getSilvermanBandwidth(Var vector) {
         Variance var = new Variance(vector);
         double sd = Math.sqrt(var.getValue());
         if (sd == 0) {

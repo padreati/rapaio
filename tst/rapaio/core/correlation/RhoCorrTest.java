@@ -22,7 +22,7 @@ package rapaio.core.correlation;
 
 import org.junit.Test;
 import rapaio.data.Numeric;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import static org.junit.Assert.assertEquals;
 
@@ -32,8 +32,8 @@ import static org.junit.Assert.assertEquals;
 
 public class RhoCorrTest {
 
-    private final Vector iq = new Numeric(new double[]{106, 86, 100, 101, 99, 103, 97, 113, 112, 110});
-    private final Vector tvHours = new Numeric(new double[]{7, 0, 27, 50, 28, 29, 20, 12, 6, 17});
+    private final Var iq = new Numeric(new double[]{106, 86, 100, 101, 99, 103, 97, 113, 112, 110});
+    private final Var tvHours = new Numeric(new double[]{7, 0, 27, 50, 28, 29, 20, 12, 6, 17});
 
     @Test
     public void testFromWikipedia() {

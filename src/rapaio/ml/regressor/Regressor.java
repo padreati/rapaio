@@ -21,7 +21,7 @@
 package rapaio.ml.regressor;
 
 import rapaio.data.Frame;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import java.util.List;
 
@@ -44,7 +44,7 @@ public interface Regressor {
 
     void predict(Frame df);
 
-    Vector getFitValues();
+    Var getFitValues();
 
     Frame getAllFitValues();
 }

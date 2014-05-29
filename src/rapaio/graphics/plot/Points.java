@@ -20,7 +20,7 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.pch.PchPalette;
 
@@ -31,10 +31,10 @@ import java.awt.*;
  */
 public class Points extends PlotComponent {
 
-    private final Vector x;
-    private final Vector y;
+    private final Var x;
+    private final Var y;
 
-    public Points(Vector x, Vector y) {
+    public Points(Var x, Var y) {
         this.x = x;
         this.y = y;
     }

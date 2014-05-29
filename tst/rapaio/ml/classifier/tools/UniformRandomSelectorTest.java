@@ -24,7 +24,7 @@ import org.junit.Test;
 import rapaio.core.ColRange;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.data.Vectors;
 import rapaio.ml.refactor.colselect.ColSelector;
 import rapaio.ml.refactor.colselect.RandomColSelector;
@@ -40,7 +40,7 @@ public class UniformRandomSelectorTest {
 	public void testNaive() {
 		Frame df = new SolidFrame(
 				0,
-				new Vector[]{
+				new Var[]{
 						Vectors.newIdxOne(1),
 						Vectors.newIdxOne(1),
 						Vectors.newIdxOne(1),

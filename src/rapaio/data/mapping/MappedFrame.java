@@ -23,7 +23,7 @@ package rapaio.data.mapping;
 import rapaio.data.AbstractFrame;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +47,7 @@ public class MappedFrame extends AbstractFrame {
     private final Numeric weights;
     private final String[] names;
     private final HashMap<String, Integer> colIndex;
-    private final Vector[] vectors;
+    private final Var[] vars;
 
 
     public MappedFrame(Frame df, Mapping mapping) {
@@ -60,10 +60,10 @@ public class MappedFrame extends AbstractFrame {
         this.weights = new Numeric(mapping.rowStream().mapToDouble(source::weight).toArray());
         this.names = df.colNames();
         this.colIndex = new HashMap<>();
-        this.vectors = new Vector[names.length];
+        this.vars = new Var[names.length];
         IntStream.range(0, names.length).forEach(i -> {
             colIndex.put(names[i], i);
-            vectors[i] = new MappedVector(source.col(names[i]), mapping);
+            vars[i] = new MappedVar(source.col(names[i]), mapping);
         });
     }
 
@@ -80,10 +80,10 @@ public class MappedFrame extends AbstractFrame {
             names[i] = columns.get(i);
         }
         this.colIndex = new HashMap<>();
-        this.vectors = new Vector[names.length];
+        this.vars = new Var[names.length];
         IntStream.range(0, names.length).forEach(i -> {
             colIndex.put(names[i], i);
-            vectors[i] = new MappedVector(source.col(names[i]), mapping);
+            vars[i] = new MappedVar(source.col(names[i]), mapping);
         });
     }
 
@@ -129,12 +129,12 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public Vector col(int col) {
-        return vectors[col];
+    public Var col(int col) {
+        return vars[col];
     }
 
     @Override
-    public Vector col(String name) {
+    public Var col(String name) {
         return col(colIndex(name));
     }
 

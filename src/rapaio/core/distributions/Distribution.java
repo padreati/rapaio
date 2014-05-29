@@ -22,8 +22,10 @@ package rapaio.core.distributions;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Numeric;
+import rapaio.data.Var;
 
 import java.util.function.Function;
+import java.util.stream.IntStream;
 
 /**
  * @author Aurelian Tutuianu
@@ -74,11 +76,9 @@ public abstract class Distribution {
     abstract public double max();
 
     public Numeric sample(int n) {
-        Numeric samples = new Numeric(n);
-        for (int i = 0; i < samples.rowCount(); i++) {
-            samples.setValue(i, quantile(RandomSource.nextDouble()));
-        }
-        return samples;
+        return IntStream.range(0, n)
+                .mapToObj(i -> quantile(RandomSource.nextDouble()))
+                .collect(Var.numericCollector());
     }
 
     abstract public double mean();

@@ -24,7 +24,7 @@ import rapaio.core.sample.DiscreteSampling;
 import rapaio.data.*;
 import rapaio.data.filters.BaseFilters;
 import rapaio.data.mapping.MappedFrame;
-import rapaio.data.mapping.MappedVector;
+import rapaio.data.mapping.MappedVar;
 import rapaio.data.mapping.Mapping;
 import rapaio.ml.refactor.boost.gbt.BTRegressor;
 import rapaio.ml.refactor.boost.gbt.BoostingLossFunction;
@@ -133,7 +133,7 @@ public class GradientBoostingTreeRegressor implements Regressor {
         this.df = train;
         this.targetColName = targetCols;
 
-        Vector y = df.col(targetCols);
+        Var y = df.col(targetCols);
         Frame x = BaseFilters.removeCols(df, targetCols);
         x = Frames.solidCopy(x);
 
@@ -178,8 +178,8 @@ public class GradientBoostingTreeRegressor implements Regressor {
             } else {
                 tree.boostFit(
                         xLearn,
-                        new MappedVector(y, bootstrapMapping),
-                        new MappedVector(fitLearn, bootstrapMapping),
+                        new MappedVar(y, bootstrapMapping),
+                        new MappedVar(fitLearn, bootstrapMapping),
                         lossFunction);
             }
 
@@ -204,7 +204,7 @@ public class GradientBoostingTreeRegressor implements Regressor {
     public void learnFurther(int additionalRounds) {
         rounds += additionalRounds;
 
-        Vector y = df.col(targetColName);
+        Var y = df.col(targetColName);
         Frame x = BaseFilters.removeCols(df, targetColName);
 
         for (int i = 0; i < additionalRounds; i++) {
@@ -244,8 +244,8 @@ public class GradientBoostingTreeRegressor implements Regressor {
             } else {
                 tree.boostFit(
                         xLearn,
-                        new MappedVector(y, bootstrapMapping),
-                        new MappedVector(fitLearn, bootstrapMapping),
+                        new MappedVar(y, bootstrapMapping),
+                        new MappedVar(fitLearn, bootstrapMapping),
                         lossFunction);
             }
 
@@ -294,6 +294,6 @@ public class GradientBoostingTreeRegressor implements Regressor {
 
     @Override
     public Frame getAllFitValues() {
-        return new SolidFrame(fitValues.rowCount(), new Vector[]{fitValues}, new String[]{targetColName});
+        return new SolidFrame(fitValues.rowCount(), new Var[]{fitValues}, new String[]{targetColName});
     }
 }

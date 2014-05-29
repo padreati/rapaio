@@ -27,7 +27,7 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.Frames;
 import rapaio.data.Nominal;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.colselect.ColSelector;
 import rapaio.ml.classifier.tools.DensityVector;
@@ -211,7 +211,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
             for (String classLabel : dict) {
                 if ("?".equals(classLabel)) continue;
                 Frame cond = df.stream().filter(s -> classLabel.equals(s.label(targetCol))).toMappedFrame();
-                Vector v = cond.col(testCol);
+                Var v = cond.col(testCol);
                 double mu = new Mean(v).getValue();
                 double sd = Math.sqrt(new Variance(v).getValue());
                 normals.put(classLabel, new Normal(mu, sd));
@@ -255,7 +255,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
             for (String classLabel : df.col(targetCol).dictionary()) {
                 if ("?".equals(classLabel)) continue;
                 Frame cond = df.stream().filter(s -> classLabel.equals(s.label(targetCol))).toMappedFrame();
-                Vector v = cond.col(testCol);
+                Var v = cond.col(testCol);
                 KDE k = new KDE(v, kfunc, (bandwidth == 0) ? KDE.getSilvermanBandwidth(v) : bandwidth);
 
                 kde.put(classLabel, k);

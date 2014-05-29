@@ -33,7 +33,7 @@ public class NominalTest {
 
     @Test
     public void testSmoke() {
-        Vector v = new Nominal(0, new String[]{});
+        Var v = new Nominal(0, new String[]{});
         assertEquals(0, v.rowCount());
         assertEquals(1, v.dictionary().length);
         assertEquals("?", v.dictionary()[0]);
@@ -50,7 +50,7 @@ public class NominalTest {
 
     @Test
     public void testDictionary() {
-        Vector v = new Nominal(0, new String[]{"a", "a", "v", "a"});
+        Var v = new Nominal(0, new String[]{"a", "a", "v", "a"});
         assertEquals(3, v.dictionary().length);
         assertEquals("?", v.dictionary()[0]);
         assertEquals("a", v.dictionary()[1]);
@@ -70,7 +70,7 @@ public class NominalTest {
 
     @Test
     public void testSetterGetter() {
-        Vector v = new Nominal(4, new String[]{"a", "b", "c"});
+        Var v = new Nominal(4, new String[]{"a", "b", "c"});
         for (int i = 0; i < 4; i++) {
             assertTrue(v.missing(i));
             assertEquals(0, v.index(i));
@@ -123,7 +123,7 @@ public class NominalTest {
 
     @Test
     public void testLabel() {
-        Vector v = new Nominal(1, new String[]{"a", "b", "c"});
+        Var v = new Nominal(1, new String[]{"a", "b", "c"});
 
         boolean exceptional = false;
         try {
@@ -152,7 +152,7 @@ public class NominalTest {
 
     @Test
     public void testMissing() {
-        Vector v = new Nominal(1, new String[]{"a", "b"});
+        Var v = new Nominal(1, new String[]{"a", "b"});
         assertTrue(v.missing(0));
 
         v.setLabel(0, "a");

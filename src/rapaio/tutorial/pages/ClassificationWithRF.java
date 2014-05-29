@@ -23,7 +23,7 @@ package rapaio.tutorial.pages;
 import rapaio.core.sample.StatSampling;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.data.Vectors;
 import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
@@ -157,9 +157,9 @@ public class ClassificationWithRF implements TutorialPage {
                 + "You can check how well you predict as the number of trees grows. ");
 
         int pos = 0;
-        final Vector index = Vectors.newIdx(400);
-        final Vector accuracy = new Numeric(400);
-        final Vector oob = new Numeric(400);
+        final Var index = Vectors.newIdx(400);
+        final Var accuracy = new Numeric(400);
+        final Var oob = new Numeric(400);
         for (int mTrees = 1; mTrees < 200; mTrees += 10) {
             ForestClassifier rf = new ForestClassifier()
                     .withColSelector(new RandomColSelector(2))
@@ -227,9 +227,9 @@ public class ClassificationWithRF implements TutorialPage {
                 + "prediction and the compensation is better accuracy.");
 
         pos = 0;
-        final Vector index1 = Vectors.newIdx(10);
-        final Vector accuracy1 = new Numeric(10);
-        final Vector oob1 = new Numeric(10);
+        final Var index1 = Vectors.newIdx(10);
+        final Var accuracy1 = new Numeric(10);
+        final Var oob1 = new Numeric(10);
         for (int mCol = 1; mCol <= 10; mCol++) {
 
             ForestClassifier rf = new ForestClassifier()
@@ -297,7 +297,7 @@ public class ClassificationWithRF implements TutorialPage {
     }
 
     private double computeAccuracy(Classifier model, Frame test) {
-        Vector predict = model.pred();
+        Var predict = model.pred();
         double accuracy = 0;
         double total = predict.rowCount();
         for (int i = 0; i < predict.rowCount(); i++) {

@@ -32,14 +32,14 @@ public class SolidFrameTest {
 
     @Test
     public void testEmptySolidFrame() {
-        Frame df = new SolidFrame(0, new Vector[0], new String[]{});
+        Frame df = new SolidFrame(0, new Var[0], new String[]{});
         assertEquals(0, df.rowCount());
         assertEquals(0, df.colCount());
     }
 
     @Test
     public void testRowId() {
-        Frame df = new SolidFrame(10, new Vector[]{new Numeric(10)}, new String[]{"x"});
+        Frame df = new SolidFrame(10, new Var[]{new Numeric(10)}, new String[]{"x"});
         for (int i = 0; i < df.rowCount(); i++) {
             assertEquals(i, df.rowId(i));
         }
@@ -47,12 +47,12 @@ public class SolidFrameTest {
 
     @Test
     public void testColIndexes() {
-        Vector[] vectors = new Vector[]{
+        Var[] vars = new Var[]{
                 new Numeric(0),
                 new Numeric(0),
                 new Numeric(0)
         };
-        Frame df = new SolidFrame(0, vectors, new String[]{"x", "y", "z"});
+        Frame df = new SolidFrame(0, vars, new String[]{"x", "y", "z"});
 
         assertEquals(3, df.colCount());
         assertEquals("x", df.colNames()[0]);
@@ -91,13 +91,13 @@ public class SolidFrameTest {
 
     @Test
     public void testConvenientMethods() {
-        Vector[] vectors = new Vector[]{
+        Var[] vars = new Var[]{
                 new Numeric(new double[]{1., 2., 3., 4.}),
                 new Numeric(new double[]{3., 5., 9., 12.}),
                 new Nominal(4, new String[]{"ana", "are", "mere"}),
                 Vectors.newSeq(1, 4, 1)
         };
-        Frame df = new SolidFrame(4, vectors, new String[]{"x", "y", "name", "index"});
+        Frame df = new SolidFrame(4, vars, new String[]{"x", "y", "name", "index"});
 
         assertEquals(1., df.value(0, 0), 1e-10);
         df.setValue(0, 0, 3.);

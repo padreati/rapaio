@@ -27,7 +27,7 @@ import java.util.Arrays;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class Index extends AbstractVector {
+public class Index extends AbstractVar {
 
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
     private static final int DEFAULT_CAPACITY = 10;
@@ -73,8 +73,8 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public VectorType type() {
-        return VectorType.INDEX;
+    public VarType type() {
+        return VarType.INDEX;
     }
 
     private void grow(int minCapacity) {
@@ -110,7 +110,7 @@ public class Index extends AbstractVector {
     }
 
     @Override
-    public Vector source() {
+    public Var source() {
         return this;
     }
 

@@ -44,59 +44,59 @@ public class RowComparators implements Serializable {
         };
     }
 
-    public static Comparator<Integer> nominalComparator(final Vector vector, final boolean asc) {
+    public static Comparator<Integer> nominalComparator(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
 
         return (row1, row2) -> {
-            if (vector.missing(row1) && vector.missing(row2)) {
+            if (var.missing(row1) && var.missing(row2)) {
                 return 0;
             }
-            if (vector.missing(row1)) {
+            if (var.missing(row1)) {
                 return -sign;
             }
-            if (vector.missing(row2)) {
+            if (var.missing(row2)) {
                 return sign;
             }
-            return sign * vector.label(row1).compareTo(vector.label(row2));
+            return sign * var.label(row1).compareTo(var.label(row2));
         };
     }
 
-    public static Comparator<Integer> numericComparator(final Vector vector, final boolean asc) {
+    public static Comparator<Integer> numericComparator(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
         return (row1, row2) -> {
-            if (vector.missing(row1) && vector.missing(row2)) {
+            if (var.missing(row1) && var.missing(row2)) {
                 return 0;
             }
-            if (vector.missing(row1)) {
+            if (var.missing(row1)) {
                 return -sign;
             }
-            if (vector.missing(row2)) {
+            if (var.missing(row2)) {
                 return sign;
             }
-            if (vector.value(row1) == vector.value(row2)) {
+            if (var.value(row1) == var.value(row2)) {
                 return 0;
             }
-            return sign * (vector.value(row1) < vector.value(row2) ? -1 : 1);
+            return sign * (var.value(row1) < var.value(row2) ? -1 : 1);
         };
     }
 
-    public static Comparator<Integer> indexComparator(final Vector vector, final boolean asc) {
+    public static Comparator<Integer> indexComparator(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
 
         return (row1, row2) -> {
-            if (vector.missing(row1) && vector.missing(row2)) {
+            if (var.missing(row1) && var.missing(row2)) {
                 return 0;
             }
-            if (vector.missing(row1)) {
+            if (var.missing(row1)) {
                 return -1 * sign;
             }
-            if (vector.missing(row2)) {
+            if (var.missing(row2)) {
                 return sign;
             }
-            if (vector.index(row1) == vector.index(row2)) {
+            if (var.index(row1) == var.index(row2)) {
                 return 0;
             }
-            return sign * (vector.index(row1) < vector.index(row2) ? -1 : 1);
+            return sign * (var.index(row1) < var.index(row2) ? -1 : 1);
         };
     }
 }

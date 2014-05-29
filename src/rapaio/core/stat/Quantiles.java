@@ -21,13 +21,13 @@
 package rapaio.core.stat;
 
 import rapaio.core.Printable;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import static rapaio.data.filters.BaseFilters.sort;
 
 
 /**
- * Estimates quantiles from a numerical {@link rapaio.data.Vector} of values.
+ * Estimates quantiles from a numerical {@link rapaio.data.Var} of values.
  * <p>
  * The estimated quantiles implements R-8, SciPy-(1/3,1/3) version of estimating quantiles.
  * <p>
@@ -38,25 +38,25 @@ import static rapaio.data.filters.BaseFilters.sort;
  */
 public class Quantiles implements Printable {
 
-    private final Vector vector;
+    private final Var var;
     private final double[] percentiles;
     private final double[] quantiles;
 
-    public Quantiles(Vector vector, double[] percentiles) {
-        this.vector = vector;
+    public Quantiles(Var var, double[] percentiles) {
+        this.var = var;
         this.percentiles = percentiles;
         this.quantiles = compute();
     }
 
     private double[] compute() {
-        if (vector.rowCount() == 1) {
+        if (var.rowCount() == 1) {
             double[] values = new double[percentiles.length];
             for (int i = 0; i < values.length; i++) {
-                values[i] = vector.value(0);
+                values[i] = var.value(0);
             }
             return values;
         }
-        Vector sorted = sort(vector);
+        Var sorted = sort(var);
         int start = 0;
         while (sorted.missing(start)) {
             start++;

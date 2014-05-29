@@ -22,7 +22,7 @@ package rapaio.ml.classifier.tools;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Numeric;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import java.io.Serializable;
 import java.util.function.DoublePredicate;
@@ -46,10 +46,10 @@ public class DensityVector implements Serializable {
         this.values = new double[labels.length];
     }
 
-    public DensityVector(Vector vector, Numeric weights) {
-        this.labels = vector.dictionary();
+    public DensityVector(Var var, Numeric weights) {
+        this.labels = var.dictionary();
         this.values = new double[labels.length];
-        vector.stream().forEach(spot -> values[spot.index()] += weights.value(spot.row()));
+        var.stream().forEach(spot -> values[spot.index()] += weights.value(spot.row()));
     }
 
     public void update(int pos, double value) {

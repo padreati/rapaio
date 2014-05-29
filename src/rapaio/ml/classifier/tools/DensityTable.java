@@ -21,7 +21,7 @@
 package rapaio.ml.classifier.tools;
 
 import rapaio.data.Numeric;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -53,7 +53,7 @@ public final class DensityTable implements Serializable {
         values = new double[testLabels.length][targetLabels.length];
     }
 
-    public DensityTable(Vector test, Vector target) {
+    public DensityTable(Var test, Var target) {
         this(test, target, null);
     }
 
@@ -65,7 +65,7 @@ public final class DensityTable implements Serializable {
      * @param target  target vector
      * @param weights weights used instead of counts, if not null
      */
-    public DensityTable(Vector test, Vector target, Numeric weights) {
+    public DensityTable(Var test, Var target, Numeric weights) {
         this(test.dictionary(), target.dictionary());
 
         if (!test.type().isNominal()) throw new IllegalArgumentException("test vector must be nominal");
@@ -88,7 +88,7 @@ public final class DensityTable implements Serializable {
      * @param weights   if not null, weights used instead of counts
      * @param testLabel test label used for binary split
      */
-    public DensityTable(Vector test, Vector target, Numeric weights, String testLabel) {
+    public DensityTable(Var test, Var target, Numeric weights, String testLabel) {
         this(new String[]{"?", testLabel, "other"}, target.dictionary());
 
         if (!test.type().isNominal()) throw new IllegalArgumentException("test vector must be nominal");

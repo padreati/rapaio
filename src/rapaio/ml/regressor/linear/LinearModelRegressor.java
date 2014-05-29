@@ -28,7 +28,6 @@ import rapaio.ml.regressor.Regressor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,7 +40,7 @@ public class LinearModelRegressor implements Regressor {
     List<String> predictors = new ArrayList<>();
     List<String> targets = new ArrayList<>();
     Frame coefficients;
-    Vector fittedValues;
+    Var fittedValues;
 
     @Override
     public Regressor newInstance() {
@@ -59,19 +58,19 @@ public class LinearModelRegressor implements Regressor {
         Matrix X = buildX(df);
         Matrix Y = buildY(df);
         Matrix beta = new QRDecomposition(X).solve(Y);
-        Vector betaC = new Numeric();
-        Vector betaN = new Nominal();
+        Var betaC = new Numeric();
+        Var betaN = new Nominal();
         for (int i = 0; i < predictors.size(); i++) {
             betaN.addLabel(predictors.get(i));
             betaC.addValue(beta.get(i, 0));
         }
-        coefficients = new SolidFrame(predictors.size(), new Vector[]{betaN, betaC}, new String[]{"Term", "Coefficients"});
+        coefficients = new SolidFrame(predictors.size(), new Var[]{betaN, betaC}, new String[]{"Term", "Coefficients"});
 
         fittedValues = buildFit(df);
     }
 
-    private Vector buildFit(Frame df) {
-        Vector result = Vectors.newNum(df.rowCount(), 0);
+    private Var buildFit(Frame df) {
+        Var result = Vectors.newNum(df.rowCount(), 0);
         for (int i = 0; i < df.rowCount(); i++) {
             double acc = 0;
             for (int k = 0; k < predictors.size(); k++) {
@@ -106,7 +105,7 @@ public class LinearModelRegressor implements Regressor {
     }
 
     @Override
-    public Vector getFitValues() {
+    public Var getFitValues() {
         return fittedValues;
     }
 

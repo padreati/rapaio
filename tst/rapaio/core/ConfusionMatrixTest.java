@@ -23,7 +23,7 @@ package rapaio.core;
 import org.junit.Test;
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Nominal;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 /**
  * @author tutuianu
@@ -32,8 +32,8 @@ public class ConfusionMatrixTest {
 
     @Test
     public void hello() {
-        Vector actual = new Nominal(11, new String[]{"cat", "dog", "mouse"});
-        Vector predict = new Nominal(11, new String[]{"cat", "dog", "mouse"});
+        Var actual = new Nominal(11, new String[]{"cat", "dog", "mouse"});
+        Var predict = new Nominal(11, new String[]{"cat", "dog", "mouse"});
 
         actual.setLabel(0, "cat");
         predict.setLabel(0, "cat");

@@ -21,11 +21,11 @@
 package rapaio.core.stat;
 
 import rapaio.core.Printable;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 /**
  * Compensated version of the algorithm for calculation of
- * sample variance of values from a {@link rapaio.data.Vector}.
+ * sample variance of values from a {@link rapaio.data.Var}.
  * <p>
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -34,19 +34,19 @@ import rapaio.data.Vector;
  */
 public class Variance implements Printable {
 
-    private final Vector vector;
+    private final Var var;
     private final double value;
 
-    public Variance(Vector vector) {
-        this.vector = vector;
+    public Variance(Var var) {
+        this.var = var;
         this.value = compute();
     }
 
     private double compute() {
-        double mean = new Mean(vector).getValue();
+        double mean = new Mean(var).getValue();
         double n = 0;
-        for (int i = 0; i < vector.rowCount(); i++) {
-            if (vector.missing(i)) {
+        for (int i = 0; i < var.rowCount(); i++) {
+            if (var.missing(i)) {
                 continue;
             }
             n++;
@@ -56,12 +56,12 @@ public class Variance implements Printable {
         }
         double sum2 = 0;
         double sum3 = 0;
-        for (int i = 0; i < vector.rowCount(); i++) {
-            if (vector.missing(i)) {
+        for (int i = 0; i < var.rowCount(); i++) {
+            if (var.missing(i)) {
                 continue;
             }
-            sum2 += Math.pow(vector.value(i) - mean, 2);
-            sum3 += vector.value(i) - mean;
+            sum2 += Math.pow(var.value(i) - mean, 2);
+            sum3 += var.value(i) - mean;
         }
         return (sum2 - Math.pow(sum3, 2) / n) / (n - 1);
 

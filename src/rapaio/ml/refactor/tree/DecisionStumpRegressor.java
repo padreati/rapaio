@@ -24,8 +24,8 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.StatOnline;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
-import rapaio.data.Vector;
-import rapaio.data.mapping.MappedVector;
+import rapaio.data.Var;
+import rapaio.data.mapping.MappedVar;
 import rapaio.data.mapping.Mapping;
 import rapaio.ml.refactor.boost.gbt.BTRegressor;
 import rapaio.ml.refactor.boost.gbt.BoostingLossFunction;
@@ -101,7 +101,7 @@ public class DecisionStumpRegressor implements Regressor, BTRegressor {
 
     private void evalNumeric(Frame df, String colName) {
 
-        Vector sort = sort(completeCases(df.col(colName)));
+        Var sort = sort(completeCases(df.col(colName)));
         double[] var = new double[sort.rowCount()];
         StatOnline so = new StatOnline();
         for (int i = 0; i < sort.rowCount(); i++) {
@@ -124,7 +124,7 @@ public class DecisionStumpRegressor implements Regressor, BTRegressor {
     }
 
     @Override
-    public void boostFit(Frame x, Vector y, Vector fx, BoostingLossFunction lossFunction) {
+    public void boostFit(Frame x, Var y, Var fx, BoostingLossFunction lossFunction) {
 
         if (testColName == null) {
             fitValues = new Numeric(x.rowCount(), x.rowCount(), defaultFit);
@@ -135,7 +135,7 @@ public class DecisionStumpRegressor implements Regressor, BTRegressor {
         Mapping dfRight = new Mapping();
 
 
-        Vector test = x.col(testColName);
+        Var test = x.col(testColName);
         for (int i = 0; i < test.rowCount(); i++) {
             if (test.missing(i)) continue;
             if (test.type().isNominal()) continue;
@@ -148,11 +148,11 @@ public class DecisionStumpRegressor implements Regressor, BTRegressor {
 
         defaultFit = lossFunction.findMinimum(y, fx);
         leftFit = lossFunction.findMinimum(
-                new MappedVector(y.source(), dfLeft),
-                new MappedVector(fx.source(), dfLeft));
+                new MappedVar(y.source(), dfLeft),
+                new MappedVar(fx.source(), dfLeft));
         rightFit = lossFunction.findMinimum(
-                new MappedVector(y.source(), dfRight),
-                new MappedVector(fx.source(), dfRight));
+                new MappedVar(y.source(), dfRight),
+                new MappedVar(fx.source(), dfRight));
     }
 
     @Override
@@ -162,7 +162,7 @@ public class DecisionStumpRegressor implements Regressor, BTRegressor {
             fitValues = new Numeric(df.rowCount(), df.rowCount(), defaultFit);
             return;
         }
-        Vector test = df.col(testColName);
+        Var test = df.col(testColName);
 
         for (int i = 0; i < df.rowCount(); i++) {
             if (test.missing(i)) {
@@ -179,7 +179,7 @@ public class DecisionStumpRegressor implements Regressor, BTRegressor {
     }
 
     @Override
-    public Vector getFitValues() {
+    public Var getFitValues() {
         return fitValues;
     }
 

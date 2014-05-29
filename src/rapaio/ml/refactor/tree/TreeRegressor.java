@@ -32,9 +32,6 @@ import rapaio.ml.regressor.Regressor;
 import rapaio.ml.refactor.colselect.ColSelector;
 import rapaio.ml.refactor.colselect.DefaultColSelector;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This works for numeric attributes only with no missing values.
  * With this restriction it works like CART or C45Classifier regression trees.
@@ -45,7 +42,7 @@ public class TreeRegressor implements Regressor {
 
     double minWeight = 1;
     TreeRegressorNode root;
-    Vector fitted;
+    Var fitted;
     ColSelector colSelector;
     String targetColNames;
 
@@ -160,10 +157,10 @@ class TreeRegressorNode {
                                  String targetColName,
                                  String testColNames) {
 
-        Vector testCol = df.col(testColNames);
+        Var testCol = df.col(testColNames);
         double[] var = new double[df.rowCount()];
         StatOnline so = new StatOnline();
-        Vector sort = Vectors.newSeq(df.rowCount());
+        Var sort = Vectors.newSeq(df.rowCount());
         sort = BaseFilters.sort(sort, RowComparators.numericComparator(testCol, true));
         double w = 0;
         for (int i = 0; i < df.rowCount(); i++) {

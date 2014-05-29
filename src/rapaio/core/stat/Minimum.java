@@ -21,10 +21,10 @@
 package rapaio.core.stat;
 
 import rapaio.core.Printable;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 /**
- * Finds the minimum value from a {@link Vector} of values.
+ * Finds the minimum value from a {@link rapaio.data.Var} of values.
  * <p>
  * Ignores missing elements.
  * <p>
@@ -34,23 +34,23 @@ import rapaio.data.Vector;
  */
 public class Minimum implements Printable {
 
-    private final Vector vector;
+    private final Var var;
     private final double value;
 
-    public Minimum(Vector vector) {
-        this.vector = vector;
+    public Minimum(Var var) {
+        this.var = var;
         this.value = compute();
     }
 
     private double compute() {
         double min = Double.MAX_VALUE;
         boolean valid = false;
-        for (int i = 0; i < vector.rowCount(); i++) {
-            if (vector.missing(i)) {
+        for (int i = 0; i < var.rowCount(); i++) {
+            if (var.missing(i)) {
                 continue;
             }
             valid = true;
-            min = Math.min(min, vector.value(i));
+            min = Math.min(min, var.value(i));
         }
         return valid ? min : Double.NaN;
     }

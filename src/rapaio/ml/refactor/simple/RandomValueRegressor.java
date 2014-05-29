@@ -25,7 +25,7 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.ml.regressor.Regressor;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class RandomValueRegressor implements Regressor {
     List<String> targets;
     double startValue;
     double stopValue;
-    List<Vector> fitValues;
+    List<Var> fitValues;
 
     @Override
     public Regressor newInstance() {

@@ -22,7 +22,7 @@ package rapaio.feature.transform;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,7 +38,7 @@ public class QuantileTransform implements Transform {
     private final Map<String, double[]> values;
     private final double width;
 
-    public QuantileTransform(Vector v, String name, int n) {
+    public QuantileTransform(Var v, String name, int n) {
         this.width = 1.0 / (1.0 * n);
         this.colNames = new String[]{name};
         this.p = new double[n + 1];
@@ -64,7 +64,7 @@ public class QuantileTransform implements Transform {
 
     public void scale(Frame df) {
         for (String colName : colNames) {
-            Vector col = df.col(colName);
+            Var col = df.col(colName);
             double[] vals = values.get(colName);
             for (int i = 0; i < df.rowCount(); i++) {
                 if (col.missing(i)) continue;
@@ -89,7 +89,7 @@ public class QuantileTransform implements Transform {
 
     public void unscale(Frame df) {
         for (String colName : colNames) {
-            Vector col = df.col(colName);
+            Var col = df.col(colName);
             double[] vals = values.get(colName);
             for (int i = 0; i < df.rowCount(); i++) {
                 if (col.missing(i)) continue;
@@ -111,7 +111,7 @@ public class QuantileTransform implements Transform {
     }
 
 
-    public Vector scale(Vector v, String name) {
+    public Var scale(Var v, String name) {
         double[] vals = values.get(name);
         for (int i = 0; i < v.rowCount(); i++) {
             if (v.missing(i)) continue;

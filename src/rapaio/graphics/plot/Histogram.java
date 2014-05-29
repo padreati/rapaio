@@ -20,7 +20,7 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
 
@@ -31,22 +31,22 @@ import java.awt.*;
  */
 public class Histogram extends PlotComponent {
 
-    private final Vector v;
+    private final Var v;
     int bins = 20;
     boolean prob = false;
     double[] freqtable;
     double minvalue = Double.NaN;
     double maxvalue = Double.NaN;
 
-    public Histogram(Vector v) {
+    public Histogram(Var v) {
         this(v, 30, true);
     }
 
-    public Histogram(Vector v, int bins, boolean prob) {
+    public Histogram(Var v, int bins, boolean prob) {
         this(v, bins, prob, Double.NaN, Double.NaN);
     }
 
-    public Histogram(Vector v, int bins, boolean prob, double minvalue, double maxvalue) {
+    public Histogram(Var v, int bins, boolean prob, double minvalue, double maxvalue) {
         this.v = v;
         this.bins = bins;
         this.prob = prob;

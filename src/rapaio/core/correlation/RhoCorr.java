@@ -23,7 +23,7 @@ package rapaio.core.correlation;
 import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import java.util.Arrays;
 
@@ -42,33 +42,33 @@ import static rapaio.workspace.W.getPrinter;
 public class RhoCorr implements Printable {
 
     private final String[] names;
-    private final Vector[] vectors;
+    private final Var[] vars;
     private final double[][] rho;
 
-    public RhoCorr(Vector... vectors) {
-        this.names = new String[vectors.length];
+    public RhoCorr(Var... vars) {
+        this.names = new String[vars.length];
         for (int i = 0; i < names.length; i++) {
             names[i] = "V" + i;
         }
-        this.vectors = vectors;
+        this.vars = vars;
         this.rho = compute();
     }
 
     public RhoCorr(Frame df) {
         this.names = df.colNames();
-        this.vectors = new Vector[df.colCount()];
+        this.vars = new Var[df.colCount()];
         for (int i = 0; i < df.colCount(); i++) {
-            vectors[i] = df.col(i);
+            vars[i] = df.col(i);
         }
         this.rho = compute();
     }
 
     private double[][] compute() {
-        Vector[] sorted = new Vector[vectors.length];
-        Vector[] ranks = new Vector[vectors.length];
+        Var[] sorted = new Var[vars.length];
+        Var[] ranks = new Var[vars.length];
         for (int i = 0; i < sorted.length; i++) {
-            sorted[i] = sort(vectors[i]);
-            ranks[i] = new Numeric(vectors[i].rowCount());
+            sorted[i] = sort(vars[i]);
+            ranks[i] = new Numeric(vars[i].rowCount());
         }
 
         // compute ranks
@@ -97,7 +97,7 @@ public class RhoCorr implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        switch (vectors.length) {
+        switch (vars.length) {
             case 1:
                 summaryOne(sb);
                 break;
@@ -125,12 +125,12 @@ public class RhoCorr implements Printable {
         sb.append(String.format("spearman[%s] - Spearman's rank correlation coefficient\n",
                 Arrays.deepToString(names)));
 
-        String[][] table = new String[vectors.length + 1][vectors.length + 1];
+        String[][] table = new String[vars.length + 1][vars.length + 1];
         table[0][0] = "";
-        for (int i = 1; i < vectors.length + 1; i++) {
+        for (int i = 1; i < vars.length + 1; i++) {
             table[0][i] = i + ".";
             table[i][0] = i + "." + names[i - 1];
-            for (int j = 1; j < vectors.length + 1; j++) {
+            for (int j = 1; j < vars.length + 1; j++) {
                 table[i][j] = String.format("%.6f", rho[i - 1][j - 1]);
                 if (i == j) {
                     table[i][j] = "x";
@@ -147,7 +147,7 @@ public class RhoCorr implements Printable {
                 ws[i] = Math.max(ws[i], table[i][j].length());
             }
         }
-        while (start < vectors.length + 1) {
+        while (start < vars.length + 1) {
             int w = 0;
             while ((end < (table[0].length - 1)) && ws[end + 1] + w + 1 < width) {
                 w += ws[end + 1] + 1;

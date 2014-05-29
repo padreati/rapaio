@@ -21,7 +21,7 @@
 package rapaio.io;
 
 import rapaio.data.*;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import java.io.*;
 import java.text.DecimalFormat;
@@ -41,7 +41,7 @@ public class Csv {
     private HashSet<String> indexFieldHints = new HashSet<>();
     private HashSet<String> nominalFieldHints = new HashSet<>();
     private HashSet<String> naValues = new HashSet<>();
-    private VectorType defaultType = VectorType.NOMINAL;
+    private VarType defaultType = VarType.NOMINAL;
     private int startRow = 0;
     private int endRow = Integer.MAX_VALUE;
 
@@ -100,7 +100,7 @@ public class Csv {
         return this;
     }
 
-    public Csv withDefaultType(VectorType defaultType) {
+    public Csv withDefaultType(VarType defaultType) {
         this.defaultType = defaultType;
         return this;
     }
@@ -122,7 +122,7 @@ public class Csv {
     public Frame read(InputStream inputStream) throws IOException {
         int rows = 0;
         List<String> names = new ArrayList<>();
-        List<Vector> vectors = new ArrayList<>();
+        List<Var> vars = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
             if (header) {
@@ -148,27 +148,27 @@ public class Csv {
                     }
                     for (String colName : names) {
                         if (indexFieldHints.contains(colName)) {
-                            vectors.add(new Index(0, 0, 0));
+                            vars.add(new Index(0, 0, 0));
                             continue;
                         }
                         if (numericFieldHints.contains(colName)) {
-                            vectors.add(new Numeric());
+                            vars.add(new Numeric());
                             continue;
                         }
                         if (nominalFieldHints.contains(colName)) {
-                            vectors.add(new Nominal());
+                            vars.add(new Nominal());
                             continue;
                         }
                         // default getType
                         switch (defaultType) {
                             case NOMINAL:
-                                vectors.add(new Nominal());
+                                vars.add(new Nominal());
                                 break;
                             case NUMERIC:
-                                vectors.add(new Numeric());
+                                vars.add(new Numeric());
                                 break;
                             case INDEX:
-                                vectors.add(new Index());
+                                vars.add(new Index());
                                 break;
                         }
                     }
@@ -182,11 +182,11 @@ public class Csv {
                 rows++;
                 for (int i = 0; i < names.size(); i++) {
                     if (row.size() <= i || naValues.contains(row.get(i))) {
-                        vectors.get(i).addMissing();
+                        vars.get(i).addMissing();
                         continue;
                     }
                     String value = row.get(i);
-                    Vector v = vectors.get(i);
+                    Var v = vars.get(i);
                     switch (v.type()) {
                         case INDEX:
                             Integer intValue;
@@ -203,7 +203,7 @@ public class Csv {
                                         num.addValue(v.index(j));
                                     }
                                     num.addValue(fallbackNumeric);
-                                    vectors.set(i, num);
+                                    vars.set(i, num);
                                     continue;
 
                                 } catch (Throwable ex2) {
@@ -213,7 +213,7 @@ public class Csv {
                                         nom.addLabel(String.valueOf(v.index(j)));
                                     }
                                     nom.addLabel(value);
-                                    vectors.set(i, nom);
+                                    vars.set(i, nom);
                                     continue;
                                 }
                             }
@@ -230,7 +230,7 @@ public class Csv {
                                     nom.addLabel(String.valueOf(v.value(j)));
                                 }
                                 nom.addLabel(value);
-                                vectors.set(i, nom);
+                                vars.set(i, nom);
                                 continue;
                             }
                             break;
@@ -241,7 +241,7 @@ public class Csv {
                 }
             }
         }
-        return new SolidFrame(rows - startRow, vectors, names);
+        return new SolidFrame(rows - startRow, vars, names);
     }
 
     /**

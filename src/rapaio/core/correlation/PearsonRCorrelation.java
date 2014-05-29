@@ -24,7 +24,7 @@ import rapaio.core.Printable;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import java.util.Arrays;
 
@@ -42,42 +42,42 @@ import static rapaio.workspace.W.getPrinter;
 public class PearsonRCorrelation implements Printable {
 
     private final String[] names;
-    private final Vector[] vectors;
+    private final Var[] vars;
     private final double[][] pearson;
 
     public PearsonRCorrelation(Frame df) {
         this.names = df.colNames();
-        this.vectors = new Vector[df.colCount()];
+        this.vars = new Var[df.colCount()];
         for (int i = 0; i < df.colCount(); i++) {
-            vectors[i] = df.col(i);
+            vars[i] = df.col(i);
         }
-        this.pearson = new double[vectors.length][vectors.length];
-        for (int i = 0; i < vectors.length; i++) {
+        this.pearson = new double[vars.length][vars.length];
+        for (int i = 0; i < vars.length; i++) {
             pearson[i][i] = 1;
-            for (int j = i + 1; j < vectors.length; j++) {
-                pearson[i][j] = compute(vectors[i], vectors[j]);
+            for (int j = i + 1; j < vars.length; j++) {
+                pearson[i][j] = compute(vars[i], vars[j]);
                 pearson[j][i] = pearson[i][j];
             }
         }
     }
 
-    public PearsonRCorrelation(Vector... vectors) {
-        this.names = new String[vectors.length];
+    public PearsonRCorrelation(Var... vars) {
+        this.names = new String[vars.length];
         for (int i = 0; i < names.length; i++) {
             names[i] = "V" + i;
         }
-        this.vectors = vectors;
-        this.pearson = new double[vectors.length][vectors.length];
-        for (int i = 0; i < vectors.length; i++) {
+        this.vars = vars;
+        this.pearson = new double[vars.length][vars.length];
+        for (int i = 0; i < vars.length; i++) {
             pearson[i][i] = 1;
-            for (int j = i + 1; j < vectors.length; j++) {
-                pearson[i][j] = compute(vectors[i], vectors[j]);
+            for (int j = i + 1; j < vars.length; j++) {
+                pearson[i][j] = compute(vars[i], vars[j]);
                 pearson[j][i] = pearson[i][j];
             }
         }
     }
 
-    private double compute(Vector x, Vector y) {
+    private double compute(Var x, Var y) {
         double xMean = new Mean(x).getValue();
         double yMean = new Mean(y).getValue();
         double sum = 0;
@@ -100,7 +100,7 @@ public class PearsonRCorrelation implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        switch (vectors.length) {
+        switch (vars.length) {
             case 1:
                 summaryOne(sb);
                 break;
@@ -129,12 +129,12 @@ public class PearsonRCorrelation implements Printable {
         sb.append(String.format("> pearson[%s] - Pearson product-moment correlation coefficient\n",
                 Arrays.deepToString(names)));
 
-        String[][] table = new String[vectors.length + 1][vectors.length + 1];
+        String[][] table = new String[vars.length + 1][vars.length + 1];
         table[0][0] = "";
-        for (int i = 1; i < vectors.length + 1; i++) {
+        for (int i = 1; i < vars.length + 1; i++) {
             table[0][i] = i + ".";
             table[i][0] = i + "." + names[i - 1];
-            for (int j = 1; j < vectors.length + 1; j++) {
+            for (int j = 1; j < vars.length + 1; j++) {
                 table[i][j] = String.format("%.2f", pearson[i - 1][j - 1]);
                 if (i == j) {
                     table[i][j] = "x";
@@ -151,7 +151,7 @@ public class PearsonRCorrelation implements Printable {
                 ws[i] = Math.max(ws[i], table[i][j].length());
             }
         }
-        while (start < vectors.length + 1) {
+        while (start < vars.length + 1) {
             int w = 0;
             while ((end < (table[0].length - 1)) && ws[end + 1] + w + 1 < width) {
                 w += ws[end + 1] + 1;

@@ -34,12 +34,12 @@ import static rapaio.data.filters.BaseFilters.sort;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class SortVectorTest {
+public class SortVarTest {
 
     @Test
     public void smokeTest() {
-        Vector v = Vectors.newIdx(0);
-        Vector sorted = sort(v, indexComparator(v, true));
+        Var v = Vectors.newIdx(0);
+        Var sorted = sort(v, indexComparator(v, true));
         assertTrue(sorted.type().isNumeric());
         assertFalse(sorted.type().isNominal());
 
@@ -56,13 +56,13 @@ public class SortVectorTest {
 
     @Test
     public void testSortIndex() {
-        Vector index = Vectors.newSeq(10, 1, -1);
+        Var index = Vectors.newSeq(10, 1, -1);
         index.setMissing(2);
         index.setMissing(5);
         index.setIndex(0, 1);
 
         assertEquals(10, index.rowCount());
-        Vector sort = sort(index, indexComparator(index, true));
+        Var sort = sort(index, indexComparator(index, true));
         for (int i = 1; i < sort.rowCount(); i++) {
             assertTrue(sort.index(i - 1) <= sort.index(i));
         }
@@ -72,7 +72,7 @@ public class SortVectorTest {
             assertTrue(sort.index(i - 1) >= sort.index(i));
         }
 
-        Vector second = sort(sort, indexComparator(sort, true));
+        Var second = sort(sort, indexComparator(sort, true));
         for (int i = 1; i < second.rowCount(); i++) {
             assertTrue(second.index(i - 1) <= second.index(i));
         }
@@ -80,10 +80,10 @@ public class SortVectorTest {
 
     @Test
     public void testSortNumeric() {
-        Vector numeric = new Numeric(new double[]{2., 4., 1.2, 1.3, 1.2, 0., 100.});
+        Var numeric = new Numeric(new double[]{2., 4., 1.2, 1.3, 1.2, 0., 100.});
 
         assertEquals(7, numeric.rowCount());
-        Vector sort = sort(numeric, numericComparator(numeric, true));
+        Var sort = sort(numeric, numericComparator(numeric, true));
         for (int i = 1; i < sort.rowCount(); i++) {
             assertTrue(sort.value(i - 1) <= sort.value(i));
         }
@@ -93,7 +93,7 @@ public class SortVectorTest {
             assertTrue(sort.value(i - 1) >= sort.value(i));
         }
 
-        Vector second = sort(sort, numericComparator(sort, true));
+        Var second = sort(sort, numericComparator(sort, true));
         for (int i = 1; i < second.rowCount(); i++) {
             assertTrue(second.index(i - 1) <= second.index(i));
         }
@@ -102,7 +102,7 @@ public class SortVectorTest {
     @Test
     public void testSortNominal() {
         String[] dict = new String[]{"a", "Aa", "b", "c", "Cc"};
-        Vector nominal = new Nominal(10, dict);
+        Var nominal = new Nominal(10, dict);
 
         for (int i = 0; i < 10; i++) {
             nominal.setLabel(i, dict[i % dict.length]);
@@ -112,7 +112,7 @@ public class SortVectorTest {
         nominal.setMissing(4);
         nominal.setMissing(5);
 
-        Vector sort = sort(nominal, nominalComparator(nominal, true));
+        Var sort = sort(nominal, nominalComparator(nominal, true));
         for (int i = 1; i < sort.rowCount(); i++) {
             assertTrue(sort.label(i - 1).compareTo(sort.label(i)) <= 0);
         }
@@ -122,7 +122,7 @@ public class SortVectorTest {
             assertTrue(sort.label(i - 1).compareTo(sort.label(i)) >= 0);
         }
 
-        Vector second = sort(sort, nominalComparator(sort, true));
+        Var second = sort(sort, nominalComparator(sort, true));
         for (int i = 1; i < second.rowCount(); i++) {
             assertTrue(second.label(i - 1).compareTo(second.label(i)) <= 0);
         }
@@ -135,11 +135,11 @@ public class SortVectorTest {
                 .withQuotas(false)
                 .withNumericFields("z")
                 .withIndexFields("y")
-                .read(SortVectorTest.class, "sorted-frame.csv");
+                .read(SortVarTest.class, "sorted-frame.csv");
 
-        Vector nominal = df.col(0);
-        Vector index = df.col(1);
-        Vector numeric = df.col(2);
+        Var nominal = df.col(0);
+        Var index = df.col(1);
+        Var numeric = df.col(2);
 
         // nominal
 
@@ -148,7 +148,7 @@ public class SortVectorTest {
         transform.put("b", "a");
         transform.put("c", "b");
         transform.put("d", "d");
-        Vector sort = sort(nominal);
+        Var sort = sort(nominal);
         for (int i = 0; i < sort.rowCount(); i++) {
             sort.setLabel(i, transform.get(sort.label(i)));
         }
@@ -195,7 +195,7 @@ public class SortVectorTest {
 
     @Test
     public void testMissing() {
-        Vector v = Vectors.newSeq(1, 10, 1);
+        Var v = Vectors.newSeq(1, 10, 1);
         v = sort(v, indexComparator(v, true));
         for (int i = 0; i < 10; i += 3) {
             v.setMissing(i);

@@ -21,7 +21,7 @@
 package rapaio.graphics.plot;
 
 import rapaio.data.Numeric;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 
 import java.awt.*;
@@ -53,8 +53,8 @@ public class FunctionLine extends PlotComponent {
     @Override
     public void paint(Graphics2D g2d) {
         Range range = getParent().getRange();
-        Vector x = new Numeric(points + 1);
-        Vector y = new Numeric(points + 1);
+        Var x = new Numeric(points + 1);
+        Var y = new Numeric(points + 1);
         double xstep = (range.getX2() - range.getX1()) / points;
         for (int i = 0; i < x.rowCount(); i++) {
             x.setValue(i, range.getX1() + i * xstep);

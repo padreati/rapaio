@@ -24,7 +24,7 @@ import rapaio.core.ColRange;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.graphics.base.BaseFigure;
 import rapaio.graphics.base.Range;
 
@@ -37,41 +37,41 @@ import java.util.List;
  */
 public class BoxPlot extends BaseFigure {
 
-    private final Vector[] vectors;
+    private final Var[] vars;
     private final String[] labels;
 
     public BoxPlot(Frame df) {
         this(df, null);
     }
 
-    public BoxPlot(Vector v, String label) {
-        vectors = new Vector[1];
-        vectors[0] = v;
+    public BoxPlot(Var v, String label) {
+        vars = new Var[1];
+        vars[0] = v;
         labels = new String[1];
         labels[0] = label;
         initialize();
     }
 
-    public BoxPlot(Vector numeric, Vector nominal) {
+    public BoxPlot(Var numeric, Var nominal) {
         labels = nominal.dictionary();
-        vectors = new Vector[labels.length];
+        vars = new Var[labels.length];
         int[] count = new int[labels.length];
         for (int i = 0; i < numeric.rowCount(); i++) {
             count[nominal.index(i)]++;
         }
         for (int i = 0; i < count.length; i++) {
-            vectors[i] = new Numeric(count[i]);
+            vars[i] = new Numeric(count[i]);
         }
-        int[] pos = new int[vectors.length];
+        int[] pos = new int[vars.length];
         for (int i = 0; i < nominal.rowCount(); i++) {
-            vectors[nominal.index(i)].setValue(pos[nominal.index(i)], numeric.value(i));
+            vars[nominal.index(i)].setValue(pos[nominal.index(i)], numeric.value(i));
             pos[nominal.index(i)]++;
         }
         initialize();
     }
 
-    public BoxPlot(Vector[] vectors, String[] labels) {
-        this.vectors = vectors;
+    public BoxPlot(Var[] vars, String[] labels) {
+        this.vars = vars;
         this.labels = labels;
         initialize();
     }
@@ -94,12 +94,12 @@ public class BoxPlot extends BaseFigure {
             colRange = new ColRange(indexes);
         }
         List<Integer> indexes = colRange.parseColumnIndexes(df);
-        vectors = new Vector[indexes.size()];
+        vars = new Var[indexes.size()];
         labels = new String[indexes.size()];
 
         int pos = 0;
         for (int index : indexes) {
-            vectors[pos] = df.col(index);
+            vars[pos] = df.col(index);
             labels[pos] = df.colNames()[index];
             pos++;
         }
@@ -119,8 +119,8 @@ public class BoxPlot extends BaseFigure {
     public Range buildRange() {
         Range range = new Range();
         range.union(0, Double.NaN);
-        range.union(vectors.length, Double.NaN);
-        for (Vector v : vectors) {
+        range.union(vars.length, Double.NaN);
+        for (Var v : vars) {
             for (int i = 0; i < v.rowCount(); i++) {
                 if (v.missing(i)) continue;
                 range.union(Double.NaN, v.value(i));
@@ -139,9 +139,9 @@ public class BoxPlot extends BaseFigure {
         getBottomMarkersPos().clear();
         getBottomMarkersMsg().clear();
 
-        double xspotwidth = getViewport().width / vectors.length;
+        double xspotwidth = getViewport().width / vars.length;
 
-        for (int i = 0; i < vectors.length; i++) {
+        for (int i = 0; i < vars.length; i++) {
             getBottomMarkersPos().add(i * xspotwidth + xspotwidth / 2);
             getBottomMarkersMsg().add(labels[i]);
         }
@@ -151,8 +151,8 @@ public class BoxPlot extends BaseFigure {
     public void paint(Graphics2D g2d, Rectangle rect) {
         super.paint(g2d, rect);
 
-        for (int i = 0; i < vectors.length; i++) {
-            Vector v = vectors[i];
+        for (int i = 0; i < vars.length; i++) {
+            Var v = vars[i];
             if (v.rowCount() == 0) {
                 continue;
             }

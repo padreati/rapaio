@@ -32,12 +32,12 @@ import rapaio.data.*;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class MappedVector extends AbstractVector {
+public class MappedVar extends AbstractVar {
 
-    private final Vector source;
+    private final Var source;
     private final Mapping mapping;
 
-    public MappedVector(Vector source, Mapping mapping) {
+    public MappedVar(Var source, Mapping mapping) {
         if (source.isMappedVector()) {
             throw new IllegalArgumentException("Now allowed mapped vector as source");
         }
@@ -46,7 +46,7 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public VectorType type() {
+    public VarType type() {
         return source.type();
     }
 
@@ -61,7 +61,7 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public Vector source() {
+    public Var source() {
         return source;
     }
 
@@ -161,7 +161,7 @@ public class MappedVector extends AbstractVector {
     }
 
     @Override
-    public Vector solidCopy() {
+    public Var solidCopy() {
         switch (source.type()) {
             case NOMINAL:
                 Nominal nom = new Nominal(mapping.size(), source.dictionary());

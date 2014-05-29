@@ -24,7 +24,7 @@ import rapaio.core.distributions.empirical.KDE;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.core.distributions.empirical.KFuncGaussian;
 import rapaio.data.Numeric;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.util.Pin;
 
@@ -38,21 +38,21 @@ public class DensityLine extends PlotComponent {
 
     private final KDE kde;
     private final int points;
-    private final Vector vector;
+    private final Var var;
     private final double bandwidth;
 
-    public DensityLine(Vector vector) {
-        this(vector, new KFuncGaussian(), new KDE(vector).getSilvermanBandwidth(vector), 256);
+    public DensityLine(Var var) {
+        this(var, new KFuncGaussian(), new KDE(var).getSilvermanBandwidth(var), 256);
     }
 
-    public DensityLine(Vector vector, double bandwidth) {
-        this(vector, new KFuncGaussian(), bandwidth, 256);
+    public DensityLine(Var var, double bandwidth) {
+        this(var, new KFuncGaussian(), bandwidth, 256);
     }
 
-    public DensityLine(Vector vector, KFunc kf, double bandwidth, int points) {
-        this.kde = new KDE(vector, kf, bandwidth);
+    public DensityLine(Var var, KFunc kf, double bandwidth, int points) {
+        this.kde = new KDE(var, kf, bandwidth);
         this.points = points;
-        this.vector = vector;
+        this.var = var;
         this.bandwidth = bandwidth;
     }
 
@@ -63,7 +63,7 @@ public class DensityLine extends PlotComponent {
         Pin<Double> ymin = new Pin<>(0.0);
         Pin<Double> ymax = new Pin<>(Double.NaN);
 
-        vector.stream().filter(s -> !s.missing()).forEach(s -> {
+        var.stream().filter(s -> !s.missing()).forEach(s -> {
             double xMin = kde.getKernel().getMinValue(s.value(), bandwidth);
             double xMax = kde.getKernel().getMaxValue(s.value(), bandwidth);
             double yMax = kde.getPdf().apply(s.value());
@@ -85,8 +85,8 @@ public class DensityLine extends PlotComponent {
     public void paint(Graphics2D g2d) {
         buildRange();
         Range range = getParent().getRange();
-        Vector x = new Numeric(points + 1);
-        Vector y = new Numeric(points + 1);
+        Var x = new Numeric(points + 1);
+        Var y = new Numeric(points + 1);
         double xstep = (range.getX2() - range.getX1()) / points;
         for (int i = 0; i < x.rowCount(); i++) {
             x.setValue(i, range.getX1() + i * xstep);

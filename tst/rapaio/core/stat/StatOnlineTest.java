@@ -23,7 +23,7 @@ package rapaio.core.stat;
 import org.junit.Test;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Numeric;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.data.Vectors;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;
@@ -44,14 +44,14 @@ public class StatOnlineTest {
         setPrinter(new LocalPrinter());
 
         int LEN = 1_000;
-        Vector v = new Normal(0, 1).sample(LEN);
+        Var v = new Normal(0, 1).sample(LEN);
 
         StatOnline statOnline = new StatOnline();
 
-        Vector index = Vectors.newSeq(LEN);
-        Vector varLeft = new Numeric(new double[LEN]);
-        Vector varRight = new Numeric(new double[LEN]);
-        Vector varSum = new Numeric(new double[LEN]);
+        Var index = Vectors.newSeq(LEN);
+        Var varLeft = new Numeric(new double[LEN]);
+        Var varRight = new Numeric(new double[LEN]);
+        Var varSum = new Numeric(new double[LEN]);
 
         for (int i = 0; i < LEN; i++) {
             statOnline.update(v.value(i));

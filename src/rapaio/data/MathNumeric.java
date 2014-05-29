@@ -104,7 +104,7 @@ public final class MathNumeric {
         return v;
     }
 
-    public static Numeric pow(final Vector a, double pow) {
+    public static Numeric pow(final Var a, double pow) {
         Numeric v = new Numeric();
         for (int i = 0; i < a.rowCount(); i++) {
             v.addValue(StrictMath.pow(a.value(i), pow));
@@ -112,7 +112,7 @@ public final class MathNumeric {
         return v;
     }
 
-    public static Numeric ln(final Vector a, double shift) {
+    public static Numeric ln(final Var a, double shift) {
         Numeric v = new Numeric();
         for (int i = 0; i < a.rowCount(); i++) {
             v.addValue(StrictMath.log(a.value(i) + shift));

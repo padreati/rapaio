@@ -22,7 +22,7 @@ package rapaio.core.tests;
 
 import rapaio.core.Printable;
 import rapaio.core.distributions.Distribution;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.data.filters.BaseFilters;
 
 /**
@@ -36,8 +36,8 @@ import rapaio.data.filters.BaseFilters;
 public class KSTest implements Printable {
 
     private final Distribution cdf;
-    private final Vector v1;
-    private final Vector v2;
+    private final Var v1;
+    private final Var v2;
     private double D; // maximum distance between ECDF1 and F, or ECDF1 and ECFD2
     private final double pValue;
     private final String testName;
@@ -53,7 +53,7 @@ public class KSTest implements Printable {
      *
      * @param cdf the distribution to compare against
      */
-    public KSTest(String testName, Vector sample, Distribution cdf) {
+    public KSTest(String testName, Var sample, Distribution cdf) {
         this.testName = testName;
         this.v1 = BaseFilters.sort(sample);
         this.cdf = cdf;
@@ -86,7 +86,7 @@ public class KSTest implements Printable {
      * @param sample1 first sample
      * @param sample2 second sample
      */
-    public KSTest(String testName, Vector sample1, Vector sample2) {
+    public KSTest(String testName, Var sample1, Var sample2) {
         this.testName = testName;
         this.v1 = BaseFilters.sort(sample1);
         this.v2 = BaseFilters.sort(sample2);

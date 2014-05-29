@@ -21,11 +21,11 @@
 package rapaio.core.stat;
 
 import rapaio.core.Printable;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.data.stream.VSpot;
 
 /**
- * Finds the maximum value from a {@link Vector} of values.
+ * Finds the maximum value from a {@link rapaio.data.Var} of values.
  * <p>
  * Ignores missing elements.
  * <p>
@@ -35,17 +35,17 @@ import rapaio.data.stream.VSpot;
  */
 public class Maximum implements Printable {
 
-    private final Vector vector;
+    private final Var var;
     private final double value;
 
-    public Maximum(Vector vector) {
-        this.vector = vector;
+    public Maximum(Var var) {
+        this.var = var;
         this.value = compute();
     }
 
     private double compute() {
-        if (vector.stream().anyMatch((VSpot inst) -> !inst.missing())) {
-            return vector.stream().complete().mapToDouble().count();
+        if (var.stream().anyMatch((VSpot inst) -> !inst.missing())) {
+            return var.stream().complete().mapToDouble().count();
         }
         return Double.NaN;
     }

@@ -21,7 +21,7 @@
 package rapaio.graphics;
 
 import rapaio.data.Nominal;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.data.Vectors;
 import rapaio.graphics.base.BaseFigure;
 import rapaio.graphics.base.Range;
@@ -36,24 +36,24 @@ import java.util.List;
  */
 public class BarChart extends BaseFigure {
 
-    private final Vector category;
-    private final Vector condition;
-    private final Vector numeric;
+    private final Var category;
+    private final Var condition;
+    private final Var numeric;
     private boolean density = false;
     private Range range;
     private int[] sel;
     private double[][] hits;
     private double[] totals;
 
-    public BarChart(Vector category) {
+    public BarChart(Var category) {
         this(category, null);
     }
 
-    public BarChart(Vector category, Vector condition) {
+    public BarChart(Var category, Var condition) {
         this(category, condition, null);
     }
 
-    public BarChart(Vector category, Vector condition, Vector numeric) {
+    public BarChart(Var category, Var condition, Var numeric) {
         if (!category.type().isNominal()) {
             throw new IllegalArgumentException("categories are nominal only");
         }

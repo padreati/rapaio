@@ -20,7 +20,7 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
 
@@ -32,10 +32,10 @@ import java.awt.geom.Line2D;
  */
 public class Lines extends PlotComponent {
 
-    private final Vector x;
-    private final Vector y;
+    private final Var x;
+    private final Var y;
 
-    public Lines(Vector x, Vector y) {
+    public Lines(Var x, Var y) {
         this.x = x;
         this.y = y;
     }

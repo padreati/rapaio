@@ -31,12 +31,12 @@ import static rapaio.data.filters.BaseFilters.sort;
  */
 public class ROC implements Printable {
 
-    private final Vector score;
-    private final Vector classes;
+    private final Var score;
+    private final Var classes;
     private Frame data;
     private double auc;
 
-    public ROC(Vector score, Vector actual, Vector predict) {
+    public ROC(Var score, Var actual, Var predict) {
         this.score = score;
         this.classes = Vectors.newIdx(actual.rowCount());
         for (int i = 0; i < actual.rowCount(); i++) {
@@ -49,11 +49,11 @@ public class ROC implements Printable {
         compute();
     }
 
-    public ROC(Vector score, Vector actual, int index) {
+    public ROC(Var score, Var actual, int index) {
         this(score, actual, actual.dictionary()[index]);
     }
 
-    public ROC(Vector score, Vector actual, String label) {
+    public ROC(Var score, Var actual, String label) {
         this.score = score;
         this.classes = Vectors.newIdx(actual.rowCount());
         for (int i = 0; i < actual.rowCount(); i++) {
@@ -85,7 +85,7 @@ public class ROC implements Printable {
         double tp = 0;
         auc = 0;
 
-        Vector sort = sort(score, RowComparators.numericComparator(score, false));
+        Var sort = sort(score, RowComparators.numericComparator(score, false));
         int len = 1;
         double prev = Double.MIN_VALUE;
         for (int i = 0; i < sort.rowCount(); i++) {

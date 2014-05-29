@@ -23,7 +23,7 @@ package rapaio.ml.classifier.tools;
 import rapaio.core.sample.StatSampling;
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Frame;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
 import rapaio.ml.classifier.Classifier;
@@ -180,7 +180,7 @@ public class ModelEvaluation {
 
             c.learn(train, classColName);
             c.predict(test);
-            Vector pred = c.pred();
+            Var pred = c.pred();
             double acc = new ConfusionMatrix(test.col(classColName), pred).getAccuracy();
             System.out.println(String.format("bootstrap(%d) : %.6f", i + 1, acc));
             total += acc;

@@ -23,9 +23,7 @@ package rapaio.data;
 
 import rapaio.data.mapping.Mapping;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -35,9 +33,8 @@ import java.util.stream.Collector;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class Numeric extends AbstractVector {
+public class Numeric extends AbstractVar {
 
-    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
     private static final int DEFAULT_CAPACITY = 10;
     private static final double[] EMPTY_DATA = {};
 
@@ -94,8 +91,8 @@ public class Numeric extends AbstractVector {
     }
 
     @Override
-    public VectorType type() {
-        return VectorType.NUMERIC;
+    public VarType type() {
+        return VarType.NUMERIC;
     }
 
     private void ensureCapacityInternal(int minCapacity) {
@@ -116,21 +113,12 @@ public class Numeric extends AbstractVector {
     private void grow(int minCapacity) {
         // overflow-conscious code
         int oldCapacity = data.length;
-        int newCapacity = oldCapacity + (oldCapacity >> 1);
+        int newCapacity = oldCapacity > 0xFFFF ? oldCapacity << 1 : oldCapacity + (oldCapacity >> 1);
         if (newCapacity - minCapacity < 0)
             newCapacity = minCapacity;
-        if (newCapacity - MAX_ARRAY_SIZE > 0)
-            newCapacity = hugeCapacity(minCapacity);
-        // minCapacity is usually close to size, so this is a win:
-        data = Arrays.copyOf(data, newCapacity);
-    }
-
-    private static int hugeCapacity(int minCapacity) {
-        if (minCapacity < 0) // overflow
+        if (newCapacity < 0 || minCapacity < 0)
             throw new OutOfMemoryError();
-        return (minCapacity > MAX_ARRAY_SIZE) ?
-                Integer.MAX_VALUE :
-                MAX_ARRAY_SIZE;
+        data = Arrays.copyOf(data, newCapacity);
     }
 
     private void rangeCheck(int index) {
@@ -144,7 +132,7 @@ public class Numeric extends AbstractVector {
     }
 
     @Override
-    public Vector source() {
+    public Var source() {
         return this;
     }
 
@@ -165,13 +153,11 @@ public class Numeric extends AbstractVector {
 
     @Override
     public double value(int row) {
-        rangeCheck(row);
         return data[row];
     }
 
     @Override
     public void setValue(int row, double value) {
-        rangeCheck(row);
         data[row] = value;
     }
 
@@ -239,7 +225,6 @@ public class Numeric extends AbstractVector {
 
     @Override
     public void remove(int index) {
-        rangeCheck(index);
         int numMoved = rows - index - 1;
         if (numMoved > 0)
             System.arraycopy(data, index + 1, data, index, numMoved);
@@ -263,9 +248,7 @@ public class Numeric extends AbstractVector {
     @Override
     public Numeric solidCopy() {
         Numeric copy = new Numeric(rowCount());
-        for (int i = 0; i < rowCount(); i++) {
-            copy.setValue(i, value(i));
-        }
+        copy.data = Arrays.copyOf(data, rowCount());
         return copy;
     }
 

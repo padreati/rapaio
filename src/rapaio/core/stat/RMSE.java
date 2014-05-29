@@ -22,7 +22,7 @@ package rapaio.core.stat;
 
 import rapaio.core.Printable;
 import rapaio.data.Frame;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +32,8 @@ import java.util.List;
  */
 public class RMSE implements Printable {
 
-    private final List<Vector> source;
-    private final List<Vector> target;
+    private final List<Var> source;
+    private final List<Var> target;
     private double value;
 
     public RMSE(Frame dfSource, Frame dfTarget) {
@@ -52,7 +52,7 @@ public class RMSE implements Printable {
         compute();
     }
 
-    public RMSE(Vector source, Vector target) {
+    public RMSE(Var source, Var target) {
         this.source = new ArrayList<>();
         this.source.add(source);
         this.target = new ArrayList<>();

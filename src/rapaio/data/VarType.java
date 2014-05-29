@@ -23,14 +23,14 @@ package rapaio.data;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public enum VectorType {
+public enum VarType {
     NUMERIC(true, false, 0), INDEX(true, false, 1), NOMINAL(false, true, 2);
 
     private final boolean numeric;
     private final boolean nominal;
     private final int code;
 
-    VectorType(boolean numeric, boolean nominal, int code) {
+    VarType(boolean numeric, boolean nominal, int code) {
         this.numeric = numeric;
         this.nominal = nominal;
         this.code = code;
@@ -48,8 +48,8 @@ public enum VectorType {
         return code;
     }
 
-    public static VectorType fromCode(int code) {
-        for (VectorType t : values()) {
+    public static VarType fromCode(int code) {
+        for (VarType t : values()) {
             if (t.getCode() == code) return t;
         }
         return null;

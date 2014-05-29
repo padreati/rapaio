@@ -21,7 +21,7 @@
 package rapaio.core.stat;
 
 import rapaio.core.Printable;
-import rapaio.data.Vector;
+import rapaio.data.Var;
 
 import java.util.Arrays;
 
@@ -30,26 +30,26 @@ import java.util.Arrays;
  */
 public class Mode implements Printable {
 
-    private final Vector vector;
+    private final Var var;
     private final boolean includeMissing;
     private final String[] modes;
 
-    public Mode(Vector vector, boolean includeMissing) {
-        this.vector = vector;
+    public Mode(Var var, boolean includeMissing) {
+        this.var = var;
         this.includeMissing = includeMissing;
         this.modes = compute();
     }
 
     private String[] compute() {
-        if (!vector.type().isNominal()) {
+        if (!var.type().isNominal()) {
             throw new IllegalArgumentException("Can't compute mode for other than nominal vectors");
         }
-        int[] freq = new int[vector.dictionary().length];
-        for (int i = 0; i < vector.rowCount(); i++) {
-            if (vector.missing(i)) {
+        int[] freq = new int[var.dictionary().length];
+        for (int i = 0; i < var.rowCount(); i++) {
+            if (var.missing(i)) {
                 continue;
             }
-            freq[vector.index(i)]++;
+            freq[var.index(i)]++;
         }
         int max = 0;
         int start = includeMissing ? 0 : 1;
@@ -66,7 +66,7 @@ public class Mode implements Printable {
         String[] modes = new String[count];
         for (int i = start; i < freq.length; i++) {
             if (freq[i] == max) {
-                modes[pos++] = vector.dictionary()[i];
+                modes[pos++] = var.dictionary()[i];
             }
         }
         return modes;
