@@ -18,24 +18,11 @@
  *    limitations under the License.
  */
 
-package rapaio.datasets;
-
-import rapaio.data.Frame;
+package rapaio.datasets.UCI;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public interface CBenchmarkTask {
+public class UCI {
 
-    String getName();
-
-    boolean allowSampling();
-
-    void withSampling(double p, String colRangeStrata);
-
-    Frame getTrain();
-
-    Frame getTest();
-
-    Frame getFull();
 }

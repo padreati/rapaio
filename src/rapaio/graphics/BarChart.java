@@ -74,13 +74,13 @@ public class BarChart extends BaseFigure {
         this.condition = condition;
         this.numeric = numeric;
 
-        setLeftThicker(true);
-        setLeftMarkers(true);
-        setBottomThicker(true);
-        setBottomMarkers(true);
+        leftThick(true);
+        leftMarkers(true);
+        bottomThick(true);
+        bottomMarkers(true);
 
         int shift = 9;
-        setCol(Vars.newSeq(shift, condition.dictionary().length + shift - 1, 1));
+        color(Vars.newSeq(shift, condition.dictionary().length + shift - 1, 1));
     }
 
     private SortType sort = SortType.NONE;

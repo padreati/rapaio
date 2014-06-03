@@ -20,7 +20,7 @@
 
 package rapaio.io;
 
-import rapaio.workspace.WorkspaceData;
+import rapaio.ws.WorkspaceData;
 
 import java.io.*;
 

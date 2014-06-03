@@ -38,8 +38,8 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import static rapaio.core.sample.StatSampling.randomSample;
-import static rapaio.workspace.Summary.summary;
-import static rapaio.workspace.W.*;
+import static rapaio.ws.Summary.summary;
+import static rapaio.WS.*;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -173,9 +173,9 @@ public class ROCCurvesPage implements TutorialPage {
 //        ROC rocRF = new ROC(rf.distribution().col("1"), test.col("spam"), "1");
         ROC rocAB = new ROC(ab.dist().col("1"), test.col("spam"), "1");
         draw(new Plot()
-                        .add(new ROCCurve(rocOR).setCol(1))
-//                        .add(new ROCCurve(rocRF).setCol(2))
-                        .add(new ROCCurve(rocAB).setCol(3))
+                        .add(new ROCCurve(rocOR).color(1))
+//                        .add(new ROCCurve(rocRF).color(2))
+                        .add(new ROCCurve(rocAB).color(3))
                         .add(new Legend(0.6, 0.33,
                                 new String[]{"onerule", "rf", "adaboost.m1"},
                                 new int[]{1, 2, 3})),

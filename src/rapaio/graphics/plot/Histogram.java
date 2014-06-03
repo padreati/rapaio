@@ -25,6 +25,7 @@ import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
 
 import java.awt.*;
+import java.util.Arrays;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -32,43 +33,31 @@ import java.awt.*;
 public class Histogram extends PlotComponent {
 
     private final Var v;
-    int bins = 20;
-    boolean prob = false;
-    double[] freqtable;
-    double minvalue = Double.NaN;
-    double maxvalue = Double.NaN;
+    int bins = 30;
+    boolean prob = true;
+    double[] freqTable;
+    double minValue = Double.NaN;
+    double maxValue = Double.NaN;
 
     public Histogram(Var v) {
-        this(v, 30, true);
-    }
-
-    public Histogram(Var v, int bins, boolean prob) {
-        this(v, bins, prob, Double.NaN, Double.NaN);
-    }
-
-    public Histogram(Var v, int bins, boolean prob, double minvalue, double maxvalue) {
         this.v = v;
-        this.bins = bins;
-        this.prob = prob;
-        this.minvalue = minvalue;
-        this.maxvalue = maxvalue;
     }
 
     @Override
     public void initialize() {
-        getParent().setYLab(prob ? "density" : "frequency");
-        getParent().setLeftThicker(true);
-        getParent().setLeftMarkers(true);
-        getParent().setBottomThicker(true);
-        getParent().setBottomMarkers(true);
-        setCol(7);
+        getParent().yLab(prob ? "density" : "frequency");
+        getParent().leftThick(true);
+        getParent().leftMarkers(true);
+        getParent().bottomThick(true);
+        getParent().bottomMarkers(true);
+        color(7);
     }
 
     public int getBins() {
         return bins;
     }
 
-    public Histogram setBins(int bins) {
+    public Histogram bins(int bins) {
         this.bins = bins;
         return this;
     }
@@ -77,50 +66,60 @@ public class Histogram extends PlotComponent {
         return prob;
     }
 
-    public Histogram setProb(boolean prob) {
+    public Histogram prob(boolean prob) {
         this.prob = prob;
         return this;
     }
 
+    public Histogram minValue(double minValue) {
+        this.minValue = minValue;
+        return this;
+    }
+
+    public Histogram maxValue(double maxValue) {
+        this.maxValue = maxValue;
+        return this;
+    }
+
     private void rebuild() {
-        if (minvalue != minvalue) {
+        if (minValue != minValue) {
             for (int i = 0; i < v.rowCount(); i++) {
                 if (v.missing(i)) {
                     continue;
                 }
-                if (minvalue != minvalue) {
-                    minvalue = v.value(i);
+                if (minValue != minValue) {
+                    minValue = v.value(i);
                 } else {
-                    minvalue = Math.min(minvalue, v.value(i));
+                    minValue = Math.min(minValue, v.value(i));
                 }
-                if (maxvalue != maxvalue) {
-                    maxvalue = v.value(i);
+                if (maxValue != maxValue) {
+                    maxValue = v.value(i);
                 } else {
-                    maxvalue = Math.max(maxvalue, v.value(i));
+                    maxValue = Math.max(maxValue, v.value(i));
                 }
             }
         }
 
-        double step = (maxvalue - minvalue) / (1. * bins);
-        freqtable = new double[bins];
+        double step = (maxValue - minValue) / (1. * bins);
+        freqTable = new double[bins];
         double total = 0;
         for (int i = 0; i < v.rowCount(); i++) {
             if (v.missing(i)) {
                 continue;
             }
             total++;
-            if (v.value(i) < minvalue || v.value(i) > maxvalue) {
+            if (v.value(i) < minValue || v.value(i) > maxValue) {
                 continue;
             }
-            int index = (int) ((v.value(i) - minvalue) / step);
-            if (index == freqtable.length)
+            int index = (int) ((v.value(i) - minValue) / step);
+            if (index == freqTable.length)
                 index--;
-            freqtable[index]++;
+            freqTable[index]++;
         }
 
         if (prob && (total != 0)) {
-            for (int i = 0; i < freqtable.length; i++) {
-                freqtable[i] /= (total * step);
+            for (int i = 0; i < freqTable.length; i++) {
+                freqTable[i] /= (total * step);
             }
         }
     }
@@ -135,11 +134,9 @@ public class Histogram extends PlotComponent {
         rebuild();
 
         Range range = new Range();
-        range.union(minvalue, Double.NaN);
-        range.union(maxvalue, Double.NaN);
-        for (double aFreqtable : freqtable) {
-            range.union(Double.NaN, aFreqtable);
-        }
+        range.union(minValue, Double.NaN);
+        range.union(maxValue, Double.NaN);
+        Arrays.stream(freqTable).sequential().forEach(t -> range.union(Double.NaN, t));
         range.union(Double.NaN, 0);
         return range;
     }
@@ -149,8 +146,8 @@ public class Histogram extends PlotComponent {
         rebuild();
 
         g2d.setColor(ColorPalette.STANDARD.getColor(0));
-        for (int i = 0; i < freqtable.length; i++) {
-            double d = freqtable[i];
+        for (int i = 0; i < freqTable.length; i++) {
+            double d = freqTable[i];
             double mind = Math.min(d, getParent().getRange().getY2());
             if (!getParent().getRange().contains(binStart(i), 0)) {
                 continue;
@@ -194,8 +191,8 @@ public class Histogram extends PlotComponent {
     }
 
     private double binStart(int i) {
-        double value = minvalue;
-        double fraction = 1. * (maxvalue - minvalue) / (1. * bins);
+        double value = minValue;
+        double fraction = 1. * (maxValue - minValue) / (1. * bins);
         return value + fraction * (i);
     }
 }

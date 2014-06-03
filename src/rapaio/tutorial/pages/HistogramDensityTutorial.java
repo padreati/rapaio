@@ -30,12 +30,12 @@ import rapaio.graphics.Plot;
 import rapaio.graphics.plot.DensityLine;
 import rapaio.graphics.plot.FunctionLine;
 import rapaio.graphics.plot.Histogram;
-import rapaio.workspace.Summary;
+import rapaio.ws.Summary;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.workspace.W.*;
+import static rapaio.WS.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -108,7 +108,7 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("One can change the number of bins. ");
 
         code("        draw(new Plot().add(new Histogram(df.getCol(\"Father\"), 100, false)));\n");
-        draw(new Plot().add(new Histogram(df.col("Father"), 100, false)));
+        draw(new Plot().add(new Histogram(df.col("Father")).bins(100).prob(false)));
 
         p("Note that on the vertical axis we found the count of the elements which "
                 + "are held by the bins that are displayed. We can "
@@ -117,7 +117,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                 + "That feature is a key property of a probability density function, also.");
 
         p("        draw(new Plot().add(new Histogram(df.getCol(\"Father\"), 30, true)));\n");
-        draw(new Plot().add(new Histogram(df.col("Father"), 30, true)));
+        draw(new Plot().add(new Histogram(df.col("Father")).bins(30).prob(true)));
 
         p("The histogram is useful but have a weak point. Its weak point lies "
                 + "into it's flexibility given by the number of bins. "
@@ -146,7 +146,7 @@ public class HistogramDensityTutorial implements TutorialPage {
 
         final Var col = df.col("Father");
         draw(new Plot()
-                .add(new Histogram(col).setCol(Vars.newSeq(1, 255, 1)))
+                .add(new Histogram(col).color(Vars.newSeq(1, 255, 1)))
                 .add(new DensityLine(col)));
 
         p("In statistics, kernel density estimation (KDE) is a non-parametric way to "
@@ -168,10 +168,10 @@ public class HistogramDensityTutorial implements TutorialPage {
 
         draw(new Plot()
                         .add(new Histogram(col))
-                        .add(new FunctionLine(new KDE(col, 0.1).getPdf()).setCol(1))
-                        .add(new FunctionLine(new KDE(col, 0.5).getPdf()).setCol(2))
-                        .add(new FunctionLine(new KDE(col, 2).getPdf()).setCol(3))
-                        .setYLim(0, 0.18),
+                        .add(new FunctionLine(new KDE(col, 0.1).getPdf()).color(1))
+                        .add(new FunctionLine(new KDE(col, 0.5).getPdf()).color(2))
+                        .add(new FunctionLine(new KDE(col, 2).getPdf()).color(3))
+                        .yLim(0, 0.18),
                 600, 300
         );
 
@@ -185,25 +185,28 @@ public class HistogramDensityTutorial implements TutorialPage {
                 + "once you implement a custom kernel function. ");
 
         draw(new Plot()
-                .add(new FunctionLine(new KDE(col).getPdf()).setCol(1))
-                .add(new DensityLine(col, new KFunc() {
-                    @Override
-                    public double pdf(double x, double x0, double bandwidth) {
-                        return (Math.abs(x - x0) / bandwidth >= 0.5) ? 0 : 1.;
-                    }
+                .add(new FunctionLine(new KDE(col).getPdf()).color(1))
+                .add(new DensityLine(col)
+                        .kfunc(new KFunc() {
+                            @Override
+                            public double pdf(double x, double x0, double bandwidth) {
+                                return (Math.abs(x - x0) / bandwidth >= 0.5) ? 0 : 1.;
+                            }
 
-                    @Override
-                    public double getMinValue(double x0, double bandwidth) {
-                        return x0 + bandwidth;
-                    }
+                            @Override
+                            public double getMinValue(double x0, double bandwidth) {
+                                return x0 + bandwidth;
+                            }
 
-                    @Override
-                    public double getMaxValue(double x0, double bandwidth) {
-                        return x0 - bandwidth;
-                    }
-                }, 0.5, 256))
-                .setYLim(0, 0.18)
-                .setXLim(55, 80));
+                            @Override
+                            public double getMaxValue(double x0, double bandwidth) {
+                                return x0 - bandwidth;
+                            }
+                        })
+                        .points(256)
+                        .bandwidth(0.5))
+                .yLim(0, 0.18)
+                .xLim(55, 80));
 
         p("We could agree that my implementation of kernel function is ugly "
                 + "and maybe no so useful, however you have to know that "
@@ -218,10 +221,10 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("Blue line represents density approximation of father's heights, "
                 + "red line represents density approximation of son's heights.");
 
-        draw(new Plot().add(new DensityLine(df.col("Father")).setCol(6))
-                .add(new DensityLine(df.col("Son")).setCol(9))
-                .setYLim(0, 0.18)
-                .setXLim(55, 80));
+        draw(new Plot().add(new DensityLine(df.col("Father")).color(6))
+                .add(new DensityLine(df.col("Son")).color(9))
+                .yLim(0, 0.18)
+                .xLim(55, 80));
 
         p("Note: the sole purpose of this tutorial is to show what and how it can "
                 + "be done with Rapaio toolbox library. ");

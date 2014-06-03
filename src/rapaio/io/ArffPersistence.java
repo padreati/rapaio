@@ -38,8 +38,8 @@ import java.util.regex.Pattern;
  */
 public class ArffPersistence {
 
-    public final Frame read(String name, String fileName) throws IOException {
-        return read(name, new File(fileName));
+    public final Frame read(String fileName) throws IOException {
+        return read(new File(fileName));
     }
 
     /**
@@ -50,11 +50,11 @@ public class ArffPersistence {
      * loaded.
      * @throws java.io.IOException
      */
-    public final Frame read(String name, File file) throws IOException {
-        return read(name, new FileInputStream(file));
+    public final Frame read(File file) throws IOException {
+        return read(new FileInputStream(file));
     }
 
-    public final Frame read(String name, InputStream stream) throws IOException {
+    public final Frame read(InputStream stream) throws IOException {
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(stream))) {
             String line;

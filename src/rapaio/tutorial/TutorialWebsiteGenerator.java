@@ -34,7 +34,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import static rapaio.workspace.W.*;
+import static rapaio.WS.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -66,28 +66,34 @@ public class TutorialWebsiteGenerator {
         TreeMap<String, List<TutorialPage>> pages = new TreeMap<>();
 
         pages.put("Graphics", Arrays.asList(
-                new HistogramDensityTutorial()));
+//                new HistogramDensityTutorial()
+                ));
 
         pages.put("StatisticalProcedures", Arrays.asList(
-                new DiscreteSamplingPage(),
-                new CorrelationsPage(),
-                new ROCCurvesPage()));
+//                new DiscreteSamplingPage(),
+//                new CorrelationsPage(),
+//                new ROCCurvesPage()
+        ));
 
         pages.put("SampleAnalysis", Arrays.asList(
-                new PearsonHeight(),
-                new LawOfLargeNumbers()));
+//                new PearsonHeight(),
+//                new LawOfLargeNumbers()
+        ));
 
         pages.put("SupervisedClassification", Arrays.asList(
-                new ClassificationWithRF()));
+//                new ClassificationWithRF()
+        ));
 
         pages.put("Regression", Arrays.asList(
-                new LinearRegression1Page(),
-                new LinearRegression2Page(),
-                new LinearRegression3Page()));
+                new LinearModel1Page()//,
+//                new LinearRegression2Page(),
+//                new LinearRegression3Page()
+        ));
 
         pages.put("WorkInProgress", Arrays.asList(
-                new IrisExplore(),
-                new StudentTDistribution()));
+//                new IrisExplore(),
+//                new StudentTDistribution()
+        ));
 
         makeIndexPage(webRoot, pages);
 

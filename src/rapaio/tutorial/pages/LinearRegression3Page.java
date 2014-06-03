@@ -27,12 +27,12 @@ import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;
-import rapaio.workspace.Summary;
+import rapaio.ws.Summary;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.workspace.W.*;
+import static rapaio.WS.*;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -71,21 +71,21 @@ public class LinearRegression3Page implements TutorialPage {
         Numeric hp = (Numeric) cars.col("horsepower");
 
         draw(new Plot()
-                        .add(new Points(mpg, hp).setCol(cars.col("origin")).setPch(1))
-                        .setXLab("mpg")
-                        .setYLab("horsepower")
+                        .add(new Points(mpg, hp).color(cars.col("origin")).pch(1))
+                        .xLab("mpg")
+                        .yLab("horsepower")
         );
 
         draw(new Plot()
                         .add(new Points(mpg, weight))
-                        .setXLab("mpg")
-                        .setYLab("weight")
+                        .xLab("mpg")
+                        .yLab("weight")
         );
 
         draw(new Plot()
                         .add(new Points(hp, weight))
-                        .setXLab("horsepower")
-                        .setYLab("weight")
+                        .xLab("horsepower")
+                        .yLab("weight")
         );
     }
 }

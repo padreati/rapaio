@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.feature.transform;
+package rapaio.core.transform;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;

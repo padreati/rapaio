@@ -29,8 +29,8 @@ import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;
 import rapaio.printer.LocalPrinter;
 
-import static rapaio.workspace.W.draw;
-import static rapaio.workspace.W.setPrinter;
+import static rapaio.WS.draw;
+import static rapaio.WS.setPrinter;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -71,11 +71,11 @@ public class StatOnlineTest {
         }
 
         draw(new Plot()
-                        .add(new Points(index, varLeft).setCol(1))
-                        .add(new Points(index, varRight).setCol(2))
-                        .add(new Points(index, varSum).setCol(3))
-                        .setYLim(0.5, 1.5)
-                        .setSize(0.4)
+                        .add(new Points(index, varLeft).color(1))
+                        .add(new Points(index, varRight).color(2))
+                        .add(new Points(index, varSum).color(3))
+                        .yLim(0.5, 1.5)
+                        .sz(0.4)
         );
     }
 }

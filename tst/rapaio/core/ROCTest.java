@@ -24,7 +24,7 @@ import org.junit.Test;
 import rapaio.core.stat.ROC;
 import rapaio.data.Frame;
 import rapaio.io.Csv;
-import rapaio.workspace.Summary;
+import rapaio.ws.Summary;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

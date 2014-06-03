@@ -18,16 +18,25 @@
  *    limitations under the License.
  */
 
-package rapaio.feature.transform;
-
-import rapaio.data.Frame;
+package rapaio.ws;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * Default implementation of {@link WorkspaceDataListener} which does nothing by
+ * default.
+ *
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface Transform {
+public class DefaultWorkspaceDataListener implements WorkspaceDataListener {
 
-    void scale(Frame df);
+    @Override
+    public void onPutFrames(String... names) {
+    }
 
-    void unscale(Frame df);
+    @Override
+    public void onRemoveFrames(String... names) {
+    }
+
+    @Override
+    public void onChangeFrames(String... names) {
+    }
 }

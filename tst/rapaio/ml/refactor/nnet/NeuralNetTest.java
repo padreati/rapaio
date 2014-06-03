@@ -24,7 +24,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 import rapaio.data.*;
 import rapaio.ml.regressor.Regressor;
-import rapaio.workspace.Summary;
+import rapaio.ws.Summary;
 
 
 /**

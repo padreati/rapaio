@@ -29,7 +29,7 @@ import java.util.ArrayList;
  */
 public class StandardPchPalette implements PchPalette.Mapping {
 
-    private final ArrayList<Drawer> pchs = new ArrayList<Drawer>() {{
+    private final java.util.List<Drawer> pchs = new ArrayList<Drawer>() {{
         add((g2d, x, y, sz) -> g2d.draw(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2)));
         add((g2d, x, y, sz) -> g2d.fill(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2)));
     }};

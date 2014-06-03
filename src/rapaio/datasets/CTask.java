@@ -18,16 +18,22 @@
  *    limitations under the License.
  */
 
-package rapaio.workspace;
+package rapaio.datasets;
+
+import rapaio.data.Frame;
+
+import java.io.IOException;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public interface WorkspaceListener {
+public abstract class CTask {
 
-    void onNewWorkspaceData();
+    public abstract String getName();
 
-    void onLoadWorkspaceData(String file);
+    public abstract Frame getTrain() throws IOException;
 
-    void onWriteWorkspaceData(String file);
+    public abstract Frame getTest();
+
+    public abstract Frame getFull();
 }

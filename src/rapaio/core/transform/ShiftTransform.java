@@ -18,25 +18,32 @@
  *    limitations under the License.
  */
 
-package rapaio.workspace;
+package rapaio.core.transform;
+
+import rapaio.data.Frame;
 
 /**
- * Default implementation of {@link WorkspaceDataListener} which does nothing by
- * default.
- *
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class DefaultWorkspaceDataListener implements WorkspaceDataListener {
+public class ShiftTransform implements Transform {
 
-    @Override
-    public void onPutFrames(String... names) {
+    private final String[] colNames;
+    private final double shift;
+
+    public ShiftTransform(Frame df, String[] colNames, double shift) {
+        this.colNames = colNames;
+        this.shift = shift;
     }
 
-    @Override
-    public void onRemoveFrames(String... names) {
+    public void scale(Frame df) {
+        for (String colName : colNames) {
+            df.col(colName).stream().transformValue(x -> x - shift);
+        }
     }
 
-    @Override
-    public void onChangeFrames(String... names) {
+    public void unscale(Frame df) {
+        for (String colName : colNames) {
+            df.col(colName).stream().transformValue(x -> x + shift);
+        }
     }
 }

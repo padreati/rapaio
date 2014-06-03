@@ -26,11 +26,11 @@ import rapaio.core.sample.DiscreteSampling;
 import rapaio.data.*;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.*;
-import rapaio.workspace.Summary;
+import rapaio.ws.Summary;
 
 import java.io.IOException;
 
-import static rapaio.workspace.W.*;
+import static rapaio.WS.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -123,7 +123,7 @@ public class DiscreteSamplingPage implements TutorialPage {
         DiscreteSampling ds = new DiscreteSampling();
         int[] sample = ds.sampleWR(1000, 6);
         Var var = Vars.newIdxFrom(sample);
-        draw(new Plot().add(new Histogram(var, 6, false)), 500, 200);
+        draw(new Plot().add(new Histogram(var).bins(6).prob(false)), 500, 200);
 
         p("In the presented histogram we see frequencies obtained be taking a sample "
                 + "of size 1000 of the fair-dice process outcomes. We note that the "
@@ -196,9 +196,9 @@ public class DiscreteSamplingPage implements TutorialPage {
         final Frame df = new SolidFrame(SAMPLE_SIZE * TRIALS, vars, new String[]{"lottery trial", "winning number"});
         draw(new Plot()
                         .add(new Points(df.col(0), df.col(1))
-                                .setPch(1)
-                                .setCol(34)
-                                .setSize(2)),
+                                .pch(1)
+                                .color(34)
+                                .sz(2)),
                 600, 300
         );
 
@@ -242,11 +242,11 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "                .add(new ABLine(0.6, true))\n" +
                 "                .add(new Lines(index, value)\n" +
                 "                        .setColorIndex(2)\n" +
-                "                        .setLwd(1.5f)\n" +
+                "                        .lwd(1.5f)\n" +
                 "                )\n" +
-                "                .setYLim(0, 1)\n" +
+                "                .yLim(0, 1)\n" +
                 "                .setBottomLabel(\"experiment no\")\n" +
-                "                .setYLab(\"HEAD/TOTAL\"));\n");
+                "                .yLab(\"HEAD/TOTAL\"));\n");
 
         RandomSource.setSeed(1);
         final Var index = Vars.newSeq(1, 1000, 1);
@@ -262,13 +262,11 @@ public class DiscreteSamplingPage implements TutorialPage {
         }
         draw(new Plot()
                 .add(new ABLine(0.6, true))
-                .add(new Lines(index, value)
-                                .setCol(2)
-                                .setLwd(1.5f)
+                .add(new Lines(index, value).color(2).lwd(1.5f)
                 )
-                .setYLim(0, 1)
-                .setXLab("experiment no")
-                .setYLab("HEAD/TOTAL"));
+                .yLim(0, 1)
+                .xLab("experiment no")
+                .yLab("HEAD/TOTAL"));
 
         p("From the previous function line we see that the plugged in estimate "
                 + "of the probability of HEAD has a large variation at the beginning "
@@ -353,9 +351,9 @@ public class DiscreteSamplingPage implements TutorialPage {
         final Frame df2 = new SolidFrame(SAMPLE_SIZE * TRIALS, vars, new String[]{"loaded lottery", "winning number"});
         draw(new Plot()
                         .add(new Points(df2.col(0), df2.col(1)))
-                        .setPch(Vars.newIdxOne(1))
-                        .setSize(Vars.newNumOne(2))
-                        .setCol(34),
+                        .pch(Vars.newIdxOne(1))
+                        .sz(Vars.newNumOne(2))
+                        .color(34),
                 600, 300
         );
 
@@ -368,10 +366,10 @@ public class DiscreteSamplingPage implements TutorialPage {
 
         draw(new Plot()
                         .add(new FunctionLine(new KDE(df2.col("winning number"), 3).getPdf())
-                                .setCol(Vars.newIdxOne(1)))
-                        .setXLab("winning numbers")
-                        .setYLab("kernel probability density")
-                        .setXLim(-10, 60).setYLim(0, .05),
+                                .color(Vars.newIdxOne(1)))
+                        .xLab("winning numbers")
+                        .yLab("kernel probability density")
+                        .xLim(-10, 60).yLim(0, .05),
                 600, 300
         );
 

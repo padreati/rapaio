@@ -36,24 +36,35 @@ import java.awt.geom.Line2D;
  */
 public class DensityLine extends PlotComponent {
 
-    private final KDE kde;
-    private final int points;
     private final Var var;
-    private final double bandwidth;
+    private int points;
+    private double bandwidth;
+    private KFunc kfunc;
+    private KDE kde;
 
     public DensityLine(Var var) {
-        this(var, new KFuncGaussian(), new KDE(var).getSilvermanBandwidth(var), 256);
-    }
-
-    public DensityLine(Var var, double bandwidth) {
-        this(var, new KFuncGaussian(), bandwidth, 256);
-    }
-
-    public DensityLine(Var var, KFunc kf, double bandwidth, int points) {
-        this.kde = new KDE(var, kf, bandwidth);
-        this.points = points;
         this.var = var;
+        this.points = 256;
+        this.bandwidth = KDE.getSilvermanBandwidth(var);
+        this.kfunc = new KFuncGaussian();
+        this.kde = new KDE(var, kfunc, bandwidth);
+    }
+
+    public DensityLine points(int points) {
+        this.points = points;
+        return this;
+    }
+
+    public DensityLine kfunc(KFunc kfunc) {
+        this.kfunc = kfunc;
+        this.kde = new KDE(var, kfunc, bandwidth);
+        return this;
+    }
+
+    public DensityLine bandwidth(double bandwidth) {
         this.bandwidth = bandwidth;
+        this.kde = new KDE(var, kfunc, bandwidth);
+        return this;
     }
 
     @Override

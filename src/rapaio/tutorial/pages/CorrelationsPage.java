@@ -32,9 +32,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static rapaio.data.filters.BaseFilters.jitter;
-import static rapaio.workspace.Summary.names;
-import static rapaio.workspace.Summary.summary;
-import static rapaio.workspace.W.*;
+import static rapaio.ws.Summary.names;
+import static rapaio.ws.Summary.summary;
+import static rapaio.WS.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -128,8 +128,8 @@ public class CorrelationsPage implements TutorialPage {
         draw(new Plot()
                         .add(new Points(
                                 jitter(df.col("petal-length"), 0.01),
-                                jitter(df.col("sepal-length"), 0.01)).setPch(1))
-                        .setTitle("p correlation = " + r.getValues()[df.colIndex("petal-length")][df.colIndex("sepal-length")]),
+                                jitter(df.col("sepal-length"), 0.01)).pch(1))
+                        .title("p correlation = " + r.getValues()[df.colIndex("petal-length")][df.colIndex("sepal-length")]),
                 400, 300
         );
 
@@ -138,8 +138,8 @@ public class CorrelationsPage implements TutorialPage {
 
         draw(new Plot()
                         .add(new Points(jitter(df.col("petal-length"), 0.01), jitter(df.col("petal-width"), 0.01))
-                                .setPch(1))
-                        .setTitle("p correlation = " + r.getValues()[df.colIndex("petal-length")][df.colIndex("petal-width")]),
+                                .pch(1))
+                        .title("p correlation = " + r.getValues()[df.colIndex("petal-length")][df.colIndex("petal-width")]),
                 400, 300
         );
 
@@ -149,8 +149,8 @@ public class CorrelationsPage implements TutorialPage {
 
         draw(new Plot()
                         .add(new Points(jitter(df.col("sepal-length"), 0.01), jitter(df.col("sepal-width"), 0.01))
-                                .setPch(1))
-                        .setTitle("p correlation = " + r.getValues()[df.colIndex("sepal-length")][df.colIndex("sepal-width")]),
+                                .pch(1))
+                        .title("p correlation = " + r.getValues()[df.colIndex("sepal-length")][df.colIndex("sepal-width")]),
                 400, 300
         );
 

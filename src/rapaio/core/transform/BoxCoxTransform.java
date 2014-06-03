@@ -18,32 +18,54 @@
  *    limitations under the License.
  */
 
-package rapaio.feature.transform;
+package rapaio.core.transform;
 
 import rapaio.data.Frame;
+import rapaio.data.Var;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class ShiftTransform implements Transform {
+public class BoxCoxTransform implements Transform {
 
     private final String[] colNames;
-    private final double shift;
+    private final double lambda;
 
-    public ShiftTransform(Frame df, String[] colNames, double shift) {
+    public BoxCoxTransform(Frame df, String[] colNames, double lambda) {
         this.colNames = colNames;
-        this.shift = shift;
+        this.lambda = lambda;
     }
 
+    @Override
     public void scale(Frame df) {
         for (String colName : colNames) {
-            df.col(colName).stream().transformValue(x -> x - shift);
+            double gm = gm(df.col(colName));
+            df.col(colName).stream().transformValue(
+                    x -> (lambda == 0) ?
+                            gm * Math.log(x) :
+                            (Math.pow(x, lambda) - 1.0) / (lambda * Math.pow(gm, lambda - 1))
+            );
         }
     }
 
+    @Override
     public void unscale(Frame df) {
-        for (String colName : colNames) {
-            df.col(colName).stream().transformValue(x -> x + shift);
+
+    }
+
+    private double gm(Var v) {
+        double p = 1;
+        double count = 0;
+        for (int i = 0; i < v.rowCount(); i++) {
+            if (!v.missing(i)) {
+                count++;
+            }
         }
+        for (int i = 0; i < v.rowCount(); i++) {
+            if (!v.missing(i)) {
+                p *= Math.pow(v.value(i), 1 / count);
+            }
+        }
+        return p;
     }
 }

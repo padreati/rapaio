@@ -18,12 +18,14 @@
  *    limitations under the License.
  */
 
-package rapaio.workspace;
+package rapaio;
 
 import rapaio.graphics.base.Figure;
 import rapaio.io.WorkspaceDataPersistence;
 import rapaio.printer.Printer;
 import rapaio.printer.StandardPrinter;
+import rapaio.ws.WorkspaceData;
+import rapaio.ws.WorkspaceListener;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -33,14 +35,14 @@ import java.util.List;
 /**
  * @author tutuianu
  */
-public class W {
+public class WS {
 
     private static WorkspaceData session = new WorkspaceData();
     private static final List<WorkspaceListener> listeners = new LinkedList<>();
     private static Printer printer = new StandardPrinter();
 
     public static void setPrinter(Printer printer) {
-        W.printer = printer;
+        WS.printer = printer;
     }
 
     public static Printer getPrinter() {

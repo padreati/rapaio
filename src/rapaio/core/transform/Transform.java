@@ -18,18 +18,16 @@
  *    limitations under the License.
  */
 
-package rapaio.workspace;
+package rapaio.core.transform;
+
+import rapaio.data.Frame;
 
 /**
- * Listener interface for workspace data events.
- *
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public interface WorkspaceDataListener {
+public interface Transform {
 
-    void onPutFrames(String... name);
+    void scale(Frame df);
 
-    void onRemoveFrames(String... names);
-
-    void onChangeFrames(String... names);
+    void unscale(Frame df);
 }

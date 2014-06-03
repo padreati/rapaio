@@ -108,11 +108,11 @@ public class BoxPlot extends BaseFigure {
     }
 
     private void initialize() {
-        setLeftMarkers(true);
-        setLeftThicker(true);
-        setBottomMarkers(true);
-        setBottomThicker(true);
-        setCol(0);
+        leftMarkers(true);
+        leftThick(true);
+        bottomMarkers(true);
+        bottomThick(true);
+        color(0);
     }
 
     @Override

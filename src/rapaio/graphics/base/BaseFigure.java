@@ -96,21 +96,20 @@ public abstract class BaseFigure implements Figure {
         return new Color[]{Color.BLACK};
     }
 
-    public BaseFigure setCol(int index) {
+    public BaseFigure color(int index) {
         colors = new Color[]{new StandardColorPalette().getColor(index)};
         return this;
     }
 
-    public BaseFigure setCol(Color color) {
+    public BaseFigure color(Color color) {
         colors = new Color[]{color};
         return this;
     }
 
-    public BaseFigure setCol(Var color) {
+    public BaseFigure color(Var color) {
         colors = new Color[color.rowCount()];
         for (int i = 0; i < color.rowCount(); i++) {
             colors[i] = new StandardColorPalette().getColor(color.index(i));
-//            colors[i] = new GrayColorPallete().getColor(color.index(i));
         }
         return this;
     }
@@ -139,7 +138,7 @@ public abstract class BaseFigure implements Figure {
         return lwd;
     }
 
-    public BaseFigure setLwd(float lwd) {
+    public BaseFigure lwd(float lwd) {
         this.lwd = lwd;
         return this;
     }
@@ -150,12 +149,12 @@ public abstract class BaseFigure implements Figure {
         return Vars.newNum(1, 2.5);
     }
 
-    public BaseFigure setSize(Var sizeIndex) {
+    public BaseFigure sz(Var sizeIndex) {
         this.sizeIndex = sizeIndex;
         return this;
     }
 
-    public BaseFigure setSize(double size) {
+    public BaseFigure sz(double size) {
         this.sizeIndex = Vars.newNumOne(size);
         return this;
     }
@@ -173,12 +172,12 @@ public abstract class BaseFigure implements Figure {
         return Vars.newIdx(1, 0);
     }
 
-    public BaseFigure setPch(Var pchIndex) {
+    public BaseFigure pch(Var pchIndex) {
         this.pchIndex = pchIndex;
         return this;
     }
 
-    public BaseFigure setPch(int pch) {
+    public BaseFigure pch(int pch) {
         this.pchIndex = Vars.newIdxOne(pch);
         return this;
     }
@@ -190,7 +189,7 @@ public abstract class BaseFigure implements Figure {
         return pchIndex.index(row % pchIndex.rowCount());
     }
 
-    public BaseFigure setAlpha(float alpha) {
+    public BaseFigure alpha(float alpha) {
         this.alpha = alpha;
         return this;
     }
@@ -199,13 +198,13 @@ public abstract class BaseFigure implements Figure {
         return alpha;
     }
 
-    public BaseFigure setXLim(double start, double end) {
+    public BaseFigure xLim(double start, double end) {
         this.x1 = start;
         this.x2 = end;
         return this;
     }
 
-    public BaseFigure setYLim(double start, double end) {
+    public BaseFigure yLim(double start, double end) {
         this.y1 = start;
         this.y2 = end;
         return this;
@@ -284,20 +283,20 @@ public abstract class BaseFigure implements Figure {
         return viewport;
     }
 
-    protected boolean isLeftThicker() {
+    protected boolean isLeftThick() {
         return leftThicker;
     }
 
-    public BaseFigure setLeftThicker(boolean leftThicker) {
+    public BaseFigure leftThick(boolean leftThicker) {
         this.leftThicker = leftThicker;
         return this;
     }
 
-    public boolean isBottomThicker() {
+    public boolean isBottomThick() {
         return bottomThicker;
     }
 
-    public BaseFigure setBottomThicker(boolean bottomThicker) {
+    public BaseFigure bottomThick(boolean bottomThicker) {
         this.bottomThicker = bottomThicker;
         return this;
     }
@@ -306,7 +305,7 @@ public abstract class BaseFigure implements Figure {
         return leftMarkers;
     }
 
-    public BaseFigure setLeftMarkers(boolean leftMarkers) {
+    public BaseFigure leftMarkers(boolean leftMarkers) {
         this.leftMarkers = leftMarkers;
         return this;
     }
@@ -315,17 +314,17 @@ public abstract class BaseFigure implements Figure {
         return bottomMarkers;
     }
 
-    public BaseFigure setBottomMarkers(boolean bottomMarkers) {
+    public BaseFigure bottomMarkers(boolean bottomMarkers) {
         this.bottomMarkers = bottomMarkers;
         return this;
     }
 
 
-    protected double getThickerMinSpace() {
+    protected double getThickMinSpace() {
         return thickerMinSpace;
     }
 
-    public BaseFigure setThickerMinSpace(double minSpace) {
+    public BaseFigure thickMinSpace(double minSpace) {
         thickerMinSpace = minSpace;
         return this;
     }
@@ -334,26 +333,26 @@ public abstract class BaseFigure implements Figure {
         return title;
     }
 
-    public BaseFigure setTitle(String title) {
+    public BaseFigure title(String title) {
         this.title = title;
         return this;
     }
 
-    public String getYLabel() {
+    public String getYLab() {
         return yLabel;
     }
 
-    public BaseFigure setYLab(String leftLabel) {
-        this.yLabel = leftLabel;
+    public BaseFigure yLab(String yLabel) {
+        this.yLabel = yLabel;
         return this;
     }
 
-    public String getXLabel() {
+    public String getXLab() {
         return xLabel;
     }
 
-    public BaseFigure setXLab(String bottomLabel) {
-        this.xLabel = bottomLabel;
+    public BaseFigure xLab(String xLabel) {
+        this.xLabel = xLabel;
         return this;
     }
 
@@ -455,7 +454,7 @@ public abstract class BaseFigure implements Figure {
         bottomMarkersPos.clear();
         bottomMarkersMsg.clear();
 
-        int xspots = (int) Math.floor(viewport.width / getThickerMinSpace());
+        int xspots = (int) Math.floor(viewport.width / getThickMinSpace());
         double xspotwidth = viewport.width / xspots;
 
         for (int i = 0; i <= xspots; i++) {
@@ -468,7 +467,7 @@ public abstract class BaseFigure implements Figure {
         leftMarkersPos.clear();
         leftMarkersMsg.clear();
 
-        int yspots = (int) Math.floor(viewport.height / getThickerMinSpace());
+        int yspots = (int) Math.floor(viewport.height / getThickMinSpace());
         double yspotwidth = viewport.height / yspots;
 
         for (int i = 0; i <= yspots; i++) {

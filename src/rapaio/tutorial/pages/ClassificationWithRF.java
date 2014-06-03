@@ -33,13 +33,13 @@ import rapaio.graphics.plot.Points;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.colselect.RandomColSelector;
 import rapaio.ml.classifier.tree.ForestClassifier;
-import rapaio.workspace.Summary;
+import rapaio.ws.Summary;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import static rapaio.workspace.W.*;
+import static rapaio.WS.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -174,14 +174,14 @@ public class ClassificationWithRF implements TutorialPage {
         }
 
         draw(new Plot()
-                .add(new Lines(index, accuracy).setCol(2))
-                .add(new Points(index, accuracy).setCol(2))
+                .add(new Lines(index, accuracy).color(2))
+                .add(new Points(index, accuracy).color(2))
                 .add(new Lines(index, oob))
                 .add(new Points(index, oob))
-                .setYLim(0, 0.4)
-                .setYLab("test (blue), oob (black)")
-                .setXLab("number of trees")
-                .setTitle("Accuracy errors (% misclassified)")
+                .yLim(0, 0.4)
+                .yLab("test (blue), oob (black)")
+                .xLab("number of trees")
+                .title("Accuracy errors (% misclassified)")
                 , 600, 400);
 
         p("Note from the previous plot how both test and oob errors "
@@ -212,9 +212,9 @@ public class ClassificationWithRF implements TutorialPage {
                 + "        p.add(new Lines(p, index, oob));\n"
                 + "        p.add(new Points(p, index, oob));\n"
                 + "\n"
-                + "        p.setYLab(\"test (blue), oob (black)\");\n"
-                + "        p.setTitle(\"Accuracy errors (% misclassified)\");\n"
-                + "        p.opt().setYLim(0, 0.4);\n"
+                + "        p.yLab(\"test (blue), oob (black)\");\n"
+                + "        p.title(\"Accuracy errors (% misclassified)\");\n"
+                + "        p.opt().yLim(0, 0.4);\n"
                 + "        draw(p, 600, 400);\n");
 
         heading(3, "Playing with number of random features");
@@ -246,14 +246,14 @@ public class ClassificationWithRF implements TutorialPage {
             pos++;
         }
         draw(new Plot()
-                .add(new Lines(index1, accuracy1).setCol(2))
-                .add(new Points(index1, accuracy1).setCol(2))
+                .add(new Lines(index1, accuracy1).color(2))
+                .add(new Points(index1, accuracy1).color(2))
                 .add(new Lines(index1, oob1))
                 .add(new Points(index1, oob1))
-                .setYLab("test (blue), oob (black")
-                .setXLab("mcols - number of features considered")
-                .setTitle("Accuracy errors (% misclassified)")
-                .setYLim(0, 0.4), 600, 400);
+                .yLab("test (blue), oob (black")
+                .xLab("mcols - number of features considered")
+                .title("Accuracy errors (% misclassified)")
+                .yLim(0, 0.4), 600, 400);
 
         p("It can be seen here that the best prediction according "
                 + "with oob and the test used is when the number of "
@@ -284,10 +284,10 @@ public class ClassificationWithRF implements TutorialPage {
                 + "            }};\n"
                 + "            new Lines(this, index1, oob1);\n"
                 + "            new Points(this, index1, oob1);\n"
-                + "            setYLab(\"test (blue), oob (black\");\n"
+                + "            yLab(\"test (blue), oob (black\");\n"
                 + "            setBottomLabel(\"mcols - number of features considered\");\n"
-                + "            setTitle(\"Accuracy errors (% misclassified)\");\n"
-                + "            opt().setYLim(0, 0.4);\n"
+                + "            title(\"Accuracy errors (% misclassified)\");\n"
+                + "            opt().yLim(0, 0.4);\n"
                 + "        }}, 600, 400);\n");
 
         p("Note: the sole purpose of this tutorial is to show what and how it can "

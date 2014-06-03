@@ -23,7 +23,7 @@ package rapaio.ml.classifier.tools;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.workspace.Summary;
+import rapaio.ws.Summary;
 
 import java.io.IOException;
 

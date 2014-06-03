@@ -32,7 +32,7 @@ import rapaio.graphics.plot.Lines;
 
 import java.io.IOException;
 
-import static rapaio.workspace.W.*;
+import static rapaio.WS.*;
 
 /**
  * @author Aurelian Tutuianu
@@ -87,11 +87,11 @@ public class LawOfLargeNumbers implements TutorialPage {
         p("Now we have the running mean stored in the var mean and we can plot "
                 + "how that running mean evolves as the size of the sample grows.");
         draw(new Plot()
-                        .add(new ABLine(0, 3.5).setLwd(1.5f).setCol(1))
+                        .add(new ABLine(0, 3.5).lwd(1.5f).color(1))
                         .add(new Lines(Vars.newSeq(1, N, 1), mean)
-                                .setLwd(1.5f)
-                                .setCol(2))
-                        .setYLim(2.5, 4.5),
+                                .lwd(1.5f)
+                                .color(2))
+                        .yLim(2.5, 4.5),
                 800, 300
         );
         p("Thus we can clearly notice two fact from the plot above. "
@@ -101,11 +101,11 @@ public class LawOfLargeNumbers implements TutorialPage {
                 + "the sample size grows aka. smaller variation. ");
         p("The code for drawing the plot follows:");
         code("        draw(new Plot()\n"
-                + "                .add(new ABLine(0, 3.5).setLwd(1.5f).setColorIndex(1))\n"
+                + "                .add(new ABLine(0, 3.5).lwd(1.5f).setColorIndex(1))\n"
                 + "                .add(new Lines(new IndexVector(1, N, 1), mean)\n"
-                + "                        .setLwd(1.5f)\n"
+                + "                        .lwd(1.5f)\n"
                 + "                        .setColorIndex(2))\n"
-                + "                .setYLim(2.5, 4.5), \n"
+                + "                .yLim(2.5, 4.5), \n"
                 + "                800, 300);\n"
                 + "");
         p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");

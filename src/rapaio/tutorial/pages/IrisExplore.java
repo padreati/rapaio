@@ -25,12 +25,12 @@ import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Histogram;
 import rapaio.graphics.plot.Points;
-import rapaio.workspace.Summary;
+import rapaio.ws.Summary;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.workspace.W.*;
+import static rapaio.WS.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -64,19 +64,19 @@ public class IrisExplore implements TutorialPage {
         p("Now we will take a look over the distribuition of first two measurements.");
         for (int i = 0; i < df.colCount() - 1; i++) {
             draw(new Plot()
-                    .add(new Histogram(df.col(i)).setBins(30))
-                    .setXLab(df.colNames()[i]), 500, 250);
+                    .add(new Histogram(df.col(i)).bins(30))
+                    .xLab(df.colNames()[i]), 500, 250);
         }
         p("We can see easily that for petal length and width there are two well-separated modes."
                 + " This is probably a well separation of species, so a plot should clarify "
                 + "that immediately.");
         draw(new Plot()
                         .add(new Points(df.col(2), df.col(3))
-                                .setCol(df.col("class"))
-                                .setPch(1))
-                        .setXLab(df.colNames()[2])
-                        .setYLab(df.colNames()[3])
-                        .setTitle("Iris data points colored by species"),
+                                .color(df.col("class"))
+                                .pch(1))
+                        .xLab(df.colNames()[2])
+                        .yLab(df.colNames()[3])
+                        .title("Iris data points colored by species"),
                 600, 350
         );
         p(""

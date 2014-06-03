@@ -20,10 +20,15 @@
 
 package rapaio.datasets;
 
+import rapaio.core.RandomSource;
+import rapaio.core.sample.StatSampling;
 import rapaio.data.Frame;
+import rapaio.data.filters.BaseFilters;
+import rapaio.datasets.UCI.UCI;
+import rapaio.io.ArffPersistence;
 
-import java.util.Arrays;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Utility class which provides data sets for classification task.
@@ -32,4 +37,43 @@ import java.util.List;
  */
 public class CBenchmark {
 
+    private List<CTask> tasks = new ArrayList<>();
+
+    public CBenchmark() throws IOException {
+        RandomSource.setSeed(1);
+
+        tasks.add(new CTask() {
+            private final Frame full = new ArffPersistence().read(UCI.class.getResourceAsStream("iris.arff"));
+            private final Frame train = StatSampling.randomSample(full, new int[]{(int) (full.rowCount() * 0.7)}).get(0);
+            private final Frame test = BaseFilters.delta(full, train);
+
+            @Override
+            public String getName() {
+                return "iris";
+            }
+
+            @Override
+            public Frame getTrain() throws IOException {
+                return train;
+            }
+
+            @Override
+            public Frame getTest() {
+                return test;
+            }
+
+            @Override
+            public Frame getFull() {
+                return full;
+            }
+        });
+    }
+
+    public List<CTask> getDefaultTasks() {
+        return new ArrayList<>(tasks);
+    }
+
+    public CTask getTask(String name) {
+        return tasks.stream().filter(t -> t.getName().equals(name)).findFirst().get();
+    }
 }

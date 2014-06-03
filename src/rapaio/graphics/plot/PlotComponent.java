@@ -80,56 +80,56 @@ public abstract class PlotComponent extends BaseFigure {
     }
 
     @Override
-    public PlotComponent setCol(int index) {
-        super.setCol(index);
+    public PlotComponent color(int index) {
+        super.color(index);
         return this;
     }
 
     @Override
-    public PlotComponent setCol(Color color) {
-        super.setCol(color);
+    public PlotComponent color(Color color) {
+        super.color(color);
         return this;
     }
 
     @Override
-    public PlotComponent setCol(Var color) {
-        super.setCol(color);
+    public PlotComponent color(Var color) {
+        super.color(color);
         return this;
     }
 
     @Override
-    public PlotComponent setLwd(float lwd) {
-        super.setLwd(lwd);
+    public PlotComponent lwd(float lwd) {
+        super.lwd(lwd);
         return this;
     }
 
     @Override
-    public PlotComponent setSize(Var sizeIndex) {
-        super.setSize(sizeIndex);
+    public PlotComponent sz(Var sizeIndex) {
+        super.sz(sizeIndex);
         return this;
     }
 
     @Override
-    public PlotComponent setSize(double size) {
-        super.setSize(size);
+    public PlotComponent sz(double size) {
+        super.sz(size);
         return this;
     }
 
     @Override
-    public PlotComponent setPch(Var pchIndex) {
-        super.setPch(pchIndex);
+    public PlotComponent pch(Var pchIndex) {
+        super.pch(pchIndex);
         return this;
     }
 
     @Override
-    public PlotComponent setPch(int pch) {
-        super.setPch(pch);
+    public PlotComponent pch(int pch) {
+        super.pch(pch);
         return this;
     }
 
     @Override
-    public PlotComponent setAlpha(float alpha) {
-        return (PlotComponent)super.setAlpha(alpha);
+    public PlotComponent alpha(float alpha) {
+        return (PlotComponent)super.alpha(alpha);
     }
 
     @Override

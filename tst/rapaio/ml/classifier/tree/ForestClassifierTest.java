@@ -26,7 +26,7 @@ import rapaio.data.Frame;
 import rapaio.io.ArffPersistence;
 import rapaio.io.Csv;
 import rapaio.ml.classifier.tools.ModelEvaluation;
-import rapaio.workspace.Summary;
+import rapaio.ws.Summary;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -39,7 +39,7 @@ public class ForestClassifierTest {
     public static Frame loadFrame(String name) throws IOException {
         final String path = "/UCI/" + name + ".arff";
         ArffPersistence arff = new ArffPersistence();
-        return arff.read(name, ForestClassifierTest.class.getResourceAsStream(path));
+        return arff.read(ForestClassifierTest.class.getResourceAsStream(path));
     }
 
     @Test

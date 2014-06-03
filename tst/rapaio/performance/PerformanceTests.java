@@ -28,8 +28,8 @@ import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
 import rapaio.printer.LocalPrinter;
 
-import static rapaio.workspace.W.draw;
-import static rapaio.workspace.W.setPrinter;
+import static rapaio.WS.draw;
+import static rapaio.WS.setPrinter;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -75,14 +75,14 @@ public class PerformanceTests {
 //        );
 
         draw(new Plot()
-                        .add(new Lines(index, time1).setCol(1))
-                        .add(new Lines(index, time2).setCol(2))
-                        .setXLab("array")
-                        .setYLab("NumVector")
+                        .add(new Lines(index, time1).color(1))
+                        .add(new Lines(index, time2).color(2))
+                        .xLab("array")
+                        .yLab("NumVector")
         );
 
 //        draw(new Plot()
-//                .add(new Histogram(delta).setBins(30))
+//                .add(new Histogram(delta).bins(30))
 //        );
 
         new Mean(delta).summary();

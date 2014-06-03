@@ -35,13 +35,13 @@ import rapaio.graphics.plot.ABLine;
 import rapaio.graphics.plot.FunctionLine;
 import rapaio.graphics.plot.Histogram;
 import rapaio.graphics.plot.Points;
-import rapaio.workspace.Summary;
+import rapaio.ws.Summary;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.workspace.Summary.summary;
-import static rapaio.workspace.W.*;
+import static rapaio.ws.Summary.summary;
+import static rapaio.WS.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -74,11 +74,11 @@ public class PearsonHeight implements TutorialPage {
         for (int i = 0; i < df.colCount(); i++) {
             Normal normal = new Normal(new Mean(df.col(i)).getValue(), Math.sqrt(new Variance(df.col(i)).getValue()));
             draw(new Plot()
-                            .add(new Histogram(df.col(i), 23, true, 57, 80))
+                            .add(new Histogram(df.col(i)).bins(23).prob(true).minValue(57).maxValue(80))
                             .add(new FunctionLine(normal.getPdfFunction())
-                                    .setCol(2))
-                            .setXLab(df.colNames()[i])
-                            .setXLim(57, 80).setYLim(0, 0.20),
+                                    .color(2))
+                            .xLab(df.colNames()[i])
+                            .xLim(57, 80).yLim(0, 0.20),
                     700, 300
             );
         }
@@ -100,7 +100,7 @@ public class PearsonHeight implements TutorialPage {
             Distribution normal = new Normal();
             draw(new QQPlot()
                             .add(col, normal)
-                            .setYLab(df.colNames()[colIndex]),
+                            .yLab(df.colNames()[colIndex]),
                     500, 300
             );
         }
@@ -122,13 +122,13 @@ public class PearsonHeight implements TutorialPage {
         summary(fatherQuantiles);
         summary(sonQuantiles);
 
-        Plot plot = (Plot) new Plot().setXLim(55, 80).setYLim(55, 80);
+        Plot plot = (Plot) new Plot().xLim(55, 80).yLim(55, 80);
         for (int i = 0; i < fatherQuantiles.getValues().length; i++) {
             plot.add(new ABLine(fatherQuantiles.getValues()[i], false)
-                    .setCol(30));
+                    .color(30));
         }
         for (int i = 0; i < sonQuantiles.getValues().length; i++) {
-            plot.add(new ABLine(sonQuantiles.getValues()[i], true).setCol(30));
+            plot.add(new ABLine(sonQuantiles.getValues()[i], true).color(30));
         }
         plot.add(new Points(df.col("Father"), df.col("Son")));
         draw(plot, 600, 600);

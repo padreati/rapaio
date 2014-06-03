@@ -36,10 +36,10 @@ public class Plot extends BaseFigure {
     private final List<PlotComponent> components = new LinkedList<>();
 
     public Plot() {
-        setBottomThicker(true);
-        setBottomMarkers(true);
-        setLeftThicker(true);
-        setLeftMarkers(true);
+        bottomThick(true);
+        bottomMarkers(true);
+        leftThick(true);
+        leftMarkers(true);
     }
 
     @Override

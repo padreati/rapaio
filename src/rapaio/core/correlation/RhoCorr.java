@@ -28,7 +28,7 @@ import rapaio.data.Var;
 import java.util.Arrays;
 
 import static rapaio.data.filters.BaseFilters.sort;
-import static rapaio.workspace.W.getPrinter;
+import static rapaio.WS.getPrinter;
 
 /**
  * Spearman's rank correlation coefficient.

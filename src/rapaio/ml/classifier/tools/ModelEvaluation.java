@@ -34,7 +34,7 @@ import java.util.List;
 
 import static rapaio.data.filters.BaseFilters.delta;
 import static rapaio.data.filters.BaseFilters.shuffle;
-import static rapaio.workspace.W.print;
+import static rapaio.WS.print;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.workspace;
+package rapaio.ws;
 
 import rapaio.data.Frame;
 

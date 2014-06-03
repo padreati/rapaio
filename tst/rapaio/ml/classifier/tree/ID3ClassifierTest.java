@@ -27,7 +27,7 @@ import rapaio.data.Frame;
 import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.tools.DensityTable;
-import rapaio.workspace.Summary;
+import rapaio.ws.Summary;
 
 import java.io.IOException;
 

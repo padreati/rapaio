@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.workspace;
+package rapaio.ws;
 
 import rapaio.core.Printable;
 import rapaio.core.stat.Mean;
@@ -30,8 +30,8 @@ import rapaio.data.Var;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import static rapaio.workspace.W.code;
-import static rapaio.workspace.W.getPrinter;
+import static rapaio.WS.code;
+import static rapaio.WS.getPrinter;
 
 /**
  * @author tutuianu

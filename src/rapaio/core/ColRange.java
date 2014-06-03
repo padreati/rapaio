@@ -85,7 +85,7 @@ public class ColRange {
      */
     public List<Integer> parseColumnIndexes(Frame df) {
         List<Integer> colIndexes = new ArrayList<>();
-        if ("all".equals(rawColumnRange)) {
+        if (COL_ALL.equals(rawColumnRange)) {
             for (int i = 0; i < df.colCount(); i++) {
                 colIndexes.add(i);
             }
