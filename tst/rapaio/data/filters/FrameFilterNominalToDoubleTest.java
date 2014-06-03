@@ -35,7 +35,7 @@ import static rapaio.data.filters.BaseFilters.toNumeric;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class FilterNominalToDoubleTest {
+public class FrameFilterNominalToDoubleTest {
 
     @Test
     public void testNormalCase() {

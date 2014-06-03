@@ -34,7 +34,7 @@ import static rapaio.data.filters.BaseFilters.sort;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class FilterSortTest {
+public class FrameFilterSortTest {
 
     @Test
     public void testValueVector() {
