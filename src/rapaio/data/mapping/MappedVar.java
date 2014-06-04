@@ -38,10 +38,7 @@ public class MappedVar extends AbstractVar {
     private final Mapping mapping;
 
     public MappedVar(Var source, Mapping mapping) {
-        if (source.isMappedVector()) {
-            throw new IllegalArgumentException("Now allowed mapped var as source");
-        }
-        this.source = source;
+        this.source = source.isMappedVector() ? source.source() : source;
         this.mapping = mapping;
     }
 

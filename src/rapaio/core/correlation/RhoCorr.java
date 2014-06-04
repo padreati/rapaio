@@ -21,9 +21,7 @@
 package rapaio.core.correlation;
 
 import rapaio.core.Printable;
-import rapaio.data.Frame;
-import rapaio.data.Numeric;
-import rapaio.data.Var;
+import rapaio.data.*;
 
 import java.util.Arrays;
 
@@ -67,7 +65,11 @@ public class RhoCorr implements Printable {
         Var[] sorted = new Var[vars.length];
         Var[] ranks = new Var[vars.length];
         for (int i = 0; i < sorted.length; i++) {
-            sorted[i] = sort(vars[i]);
+            Index index = new Index();
+            for (int j = 0; j < vars[i].rowCount(); j++) {
+                index.addIndex(j);
+            }
+            sorted[i] = sort(index, RowComparators.numericComparator(vars[i], true));
             ranks[i] = new Numeric(vars[i].rowCount());
         }
 
@@ -81,7 +83,7 @@ public class RhoCorr implements Printable {
                 }
                 double value = 1 + (start + end) / 2.;
                 for (int j = start; j <= end; j++) {
-                    ranks[i].setValue(sorted[i].rowId(j), value);
+                    ranks[i].setValue(sorted[i].index(j), value);
                 }
                 start = end + 1;
             }

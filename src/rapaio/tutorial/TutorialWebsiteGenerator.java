@@ -151,12 +151,14 @@ public class TutorialWebsiteGenerator {
 
         heading(2, "Rapaio Tutorial Gallery");
 
-        for (String category : pages.keySet()) {
+        pages.keySet().stream().map((category) -> {
             heading(3, category);
-            for (TutorialPage page : pages.get(category)) {
+            return category;
+        }).forEach((category) -> {
+            pages.get(category).stream().forEach((page) -> {
                 print("<a href=\"pages/" + category + "/" + page.getPageName() + ".html\">" + page.getPageTitle() + "</a></br>");
-            }
-        }
+            });
+        });
 
         closePrinter();
     }

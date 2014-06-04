@@ -121,11 +121,6 @@ public class Numeric extends AbstractVar {
         data = Arrays.copyOf(data, newCapacity);
     }
 
-    private void rangeCheck(int index) {
-        if (index >= rows || index < 0)
-            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + rows);
-    }
-
     @Override
     public boolean isMappedVector() {
         return false;

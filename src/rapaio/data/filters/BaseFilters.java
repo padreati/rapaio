@@ -528,15 +528,15 @@ public final class BaseFilters implements Serializable {
 
     @SafeVarargs
     public static Var sort(Var var, Comparator<Integer>... comparators) {
-        List<Integer> mapping = new ArrayList<>();
+        List<Integer> mapping = new ArrayList<>(var.rowCount());
         for (int i = 0; i < var.rowCount(); i++) {
             mapping.add(i);
         }
         Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
-        List<Integer> ids = new ArrayList<>();
+        Mapping ids = new Mapping();
         for (Integer aMapping : mapping) {
             ids.add(var.rowId(aMapping));
         }
-        return new MappedVar(var.source(), new Mapping(ids));
+        return new MappedVar(var, ids);
     }
 }
