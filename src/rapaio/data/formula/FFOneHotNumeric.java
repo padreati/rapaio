@@ -44,11 +44,11 @@ import java.util.Set;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class FFNomToOneHotNum implements FrameFilter {
+public class FFOneHotNumeric implements FrameFilter {
 
     private final ColRange colRange;
 
-    public FFNomToOneHotNum(ColRange colRange) {
+    public FFOneHotNumeric(ColRange colRange) {
         this.colRange = colRange;
     }
 
@@ -82,6 +82,6 @@ public class FFNomToOneHotNum implements FrameFilter {
                 names.add(varName);
             }
         }
-        return new SolidFrame(df.rowCount(), vars, names);
+        return new SolidFrame(df.rowCount(), vars, names, df.weights());
     }
 }

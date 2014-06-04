@@ -52,7 +52,8 @@ public class UniformRandomSelectorTest {
 						Vars.newIdxOne(1)},
 				new String[]{
 						"a", "b", "c", "d", "e", "f", "g", "h", "class"
-				});
+				},
+                null);
 		String classColName = "class";
 		int mcols = 4;
 

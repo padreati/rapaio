@@ -241,7 +241,7 @@ public class Csv {
                 }
             }
         }
-        return new SolidFrame(rows - startRow, vars, names);
+        return new SolidFrame(rows - startRow, vars, names, null);
     }
 
     /**

@@ -193,7 +193,7 @@ public class DiscreteSamplingPage implements TutorialPage {
             }
         }
 
-        final Frame df = new SolidFrame(SAMPLE_SIZE * TRIALS, vars, new String[]{"lottery trial", "winning number"});
+        final Frame df = new SolidFrame(SAMPLE_SIZE * TRIALS, vars, new String[]{"lottery trial", "winning number"}, null);
         draw(new Plot()
                         .add(new Points(df.col(0), df.col(1))
                                 .pch(1)
@@ -348,7 +348,7 @@ public class DiscreteSamplingPage implements TutorialPage {
             }
         }
 
-        final Frame df2 = new SolidFrame(SAMPLE_SIZE * TRIALS, vars, new String[]{"loaded lottery", "winning number"});
+        final Frame df2 = new SolidFrame(SAMPLE_SIZE * TRIALS, vars, new String[]{"loaded lottery", "winning number"}, null);
         draw(new Plot()
                         .add(new Points(df2.col(0), df2.col(1)))
                         .pch(Vars.newIdxOne(1))

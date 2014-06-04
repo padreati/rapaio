@@ -64,7 +64,7 @@ public class SortedFrameTest {
             }
             names[i] = "v" + i;
         }
-        Frame sorted = new SolidFrame(10_000, vars, names);
+        Frame sorted = new SolidFrame(10_000, vars, names, null);
 
         for (int i = 0; i < 100; i++) {
             int col = RandomSource.nextInt(sorted.colCount());

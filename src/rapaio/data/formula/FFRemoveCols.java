@@ -20,41 +20,39 @@
 
 package rapaio.data.formula;
 
+import rapaio.core.ColRange;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
-import rapaio.data.Vars;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
- * Adds an intercept column: a numeric column with all values equal with 1.0,
- * used in general for linear regression like setups.
- *
- * In case there is already a column called intercept on the
- * first position, nothing will happen.
- *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class FFAddIntercept implements FrameFilter {
+public class FFRemoveCols implements FrameFilter {
+
+    private final ColRange colRange;
+
+    public FFRemoveCols(ColRange colRange) {
+        this.colRange = colRange;
+    }
 
     @Override
     public Frame apply(Frame df) {
-        if(df.colNames()[0].equals("intercept")) {
-            return df;
-        }
+        Set<String> remove = new HashSet<>(colRange.parseColumnNames(df));
         List<Var> vars = new ArrayList<>();
         List<String> names = new ArrayList<>();
-
-        vars.add(Vars.newNum(df.rowCount(), 1.0));
-        names.add("intercept");
-
-        Arrays.stream(df.colNames()).forEach(varName -> {
+        for (String varName : df.colNames()) {
+            if (remove.contains(varName)) {
+                continue;
+            }
             vars.add(df.col(varName));
             names.add(varName);
-        });
+        }
         return new SolidFrame(df.rowCount(), vars, names, df.weights());
     }
 }

@@ -32,14 +32,14 @@ public class SolidFrameTest {
 
     @Test
     public void testEmptySolidFrame() {
-        Frame df = new SolidFrame(0, new Var[0], new String[]{});
+        Frame df = new SolidFrame(0, new Var[0], new String[]{}, null);
         assertEquals(0, df.rowCount());
         assertEquals(0, df.colCount());
     }
 
     @Test
     public void testRowId() {
-        Frame df = new SolidFrame(10, new Var[]{new Numeric(10)}, new String[]{"x"});
+        Frame df = new SolidFrame(10, new Var[]{new Numeric(10)}, new String[]{"x"}, null);
         for (int i = 0; i < df.rowCount(); i++) {
             assertEquals(i, df.rowId(i));
         }
@@ -52,7 +52,7 @@ public class SolidFrameTest {
                 new Numeric(0),
                 new Numeric(0)
         };
-        Frame df = new SolidFrame(0, vars, new String[]{"x", "y", "z"});
+        Frame df = new SolidFrame(0, vars, new String[]{"x", "y", "z"}, null);
 
         assertEquals(3, df.colCount());
         assertEquals("x", df.colNames()[0]);
@@ -97,7 +97,7 @@ public class SolidFrameTest {
                 new Nominal(4, new String[]{"ana", "are", "mere"}),
                 Vars.newSeq(1, 4, 1)
         };
-        Frame df = new SolidFrame(4, vars, new String[]{"x", "y", "name", "index"});
+        Frame df = new SolidFrame(4, vars, new String[]{"x", "y", "name", "index"}, null);
 
         assertEquals(1., df.value(0, 0), 1e-10);
         df.setValue(0, 0, 3.);

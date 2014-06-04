@@ -92,6 +92,6 @@ public class L1ConstantRegressor implements Regressor {
 
     @Override
     public Frame getAllFitValues() {
-        return new SolidFrame(fitValues.get(0).rowCount(), fitValues, targets);
+        return new SolidFrame(fitValues.get(0).rowCount(), fitValues, targets, null);
     }
 }

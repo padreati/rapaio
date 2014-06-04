@@ -55,7 +55,7 @@ public class NeuralNetTest {
         b.addValue(1.);
         and.addValue(1.);
 
-        Frame df = new SolidFrame(and.rowCount(), new Var[]{and}, new String[]{"and"});
+        Frame df = new SolidFrame(and.rowCount(), new Var[]{and}, new String[]{"and"}, null);
         df = Frames.addCol(df, b, "b", 0);
         df = Frames.addCol(df, a, "a", 0);
 
@@ -97,7 +97,7 @@ public class NeuralNetTest {
         b.addValue(1.);
         xor.addValue(1.);
 
-        Frame df = new SolidFrame(xor.rowCount(), new Var[]{xor}, new String[]{"xor"});
+        Frame df = new SolidFrame(xor.rowCount(), new Var[]{xor}, new String[]{"xor"}, null);
         df = Frames.addCol(df, b, "b", 0);
         df = Frames.addCol(df, a, "a", 0);
 
@@ -144,10 +144,9 @@ public class NeuralNetTest {
         xorA.addValue(0);
         xorB.addValue(1);
 
-        Frame df = new SolidFrame(
-                xorA.rowCount(),
+        Frame df = new SolidFrame(xorA.rowCount(),
                 new Var[]{a, b, xorA, xorB},
-                new String[]{"a", "b", "xorA", "xorB"});
+                new String[]{"a", "b", "xorA", "xorB"}, null);
 
         Regressor nn = new MultiLayerPerceptronRegressor(new int[]{2, 4, 2}, 0.1).setRounds(100);
 
@@ -192,7 +191,7 @@ public class NeuralNetTest {
         b.addValue(1.);
         xor.addValue(1.);
 
-        Frame df = new SolidFrame(xor.rowCount(), new Var[]{xor}, new String[]{"xor"});
+        Frame df = new SolidFrame(xor.rowCount(), new Var[]{xor}, new String[]{"xor"}, null);
         df = Frames.addCol(df, b, "b", 0);
         df = Frames.addCol(df, a, "a", 0);
 

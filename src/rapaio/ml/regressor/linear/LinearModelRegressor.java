@@ -64,7 +64,7 @@ public class LinearModelRegressor implements Regressor {
             betaN.addLabel(predictors.get(i));
             betaC.addValue(beta.get(i, 0));
         }
-        coefficients = new SolidFrame(predictors.size(), new Var[]{betaN, betaC}, new String[]{"Term", "Coefficients"});
+        coefficients = new SolidFrame(predictors.size(), new Var[]{betaN, betaC}, new String[]{"Term", "Coefficients"}, null);
 
         fittedValues = buildFit(df);
     }

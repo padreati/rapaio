@@ -39,24 +39,12 @@ public class SolidFrame extends AbstractFrame {
     private final String[] names;
     private final Numeric weights;
 
-    public SolidFrame(int rows, List<Var> vars, List<String> names) {
-        this(rows, vars, names.toArray(new String[names.size()]), null);
-    }
-
     public SolidFrame(int rows, List<Var> vars, List<String> names, Numeric weights) {
         this(rows, vars, names.toArray(new String[names.size()]), weights);
     }
 
-    public SolidFrame(int rows, List<Var> vars, String[] names) {
-        this(rows, vars, names, null);
-    }
-
     public SolidFrame(int rows, Var[] vars, String[] names, Numeric weights) {
         this(rows, Arrays.asList(vars), names, weights);
-    }
-
-    public SolidFrame(int rows, Var[] vars, String[] names) {
-        this(rows, Arrays.asList(vars), names, null);
     }
 
     public SolidFrame(int rows, List<Var> vars, String[] names, Numeric weights) {
@@ -66,14 +54,7 @@ public class SolidFrame extends AbstractFrame {
         }
         this.rows = rows;
         this.vars = new Var[vars.size()];
-        if (weights != null)
-            this.weights = weights;
-        else {
-            this.weights = new Numeric(rows);
-            for (int i = 0; i < rows; i++) {
-                this.weights.setValue(i, 1.0);
-            }
-        }
+        this.weights = (weights != null) ? weights : new Numeric(rows, rows, 1.0);
         this.colIndex = new HashMap<>();
         this.names = new String[vars.size()];
 

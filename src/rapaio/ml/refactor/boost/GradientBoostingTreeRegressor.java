@@ -294,6 +294,6 @@ public class GradientBoostingTreeRegressor implements Regressor {
 
     @Override
     public Frame getAllFitValues() {
-        return new SolidFrame(fitValues.rowCount(), new Var[]{fitValues}, new String[]{targetColName});
+        return new SolidFrame(fitValues.rowCount(), new Var[]{fitValues}, new String[]{targetColName}, null);
     }
 }

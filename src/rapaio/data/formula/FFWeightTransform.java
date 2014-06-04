@@ -18,23 +18,29 @@
  *    limitations under the License.
  */
 
-package rapaio.core;
+package rapaio.data.formula;
 
 import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.filters.BaseFilters;
-import rapaio.io.Csv;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public abstract class CoreStatTestUtil {
+public class FFWeightTransform implements FrameFilter {
 
-    public Frame getDataFrame() throws IOException {
-        return BaseFilters.toNumeric(new Csv().withHeader(false).read(getClass(), "core_stat.csv"));
+    private final BiFunction<Frame, Integer, Double> func;
+
+    public FFWeightTransform(BiFunction<Frame, Integer, Double> func) {
+        this.func = func;
+    }
+
+    @Override
+    public Frame apply(Frame df) {
+        for (int i = 0; i < df.rowCount(); i++) {
+            df.setWeight(i, func.apply(df, i));
+        }
+        return df;
     }
 }

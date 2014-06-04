@@ -65,7 +65,7 @@ public final class BaseFilters implements Serializable {
         for (int i = 0; i < vars.length; i++) {
             vars[i] = toNumeric(df.col(i));
         }
-        return new SolidFrame(df.rowCount(), vars, df.colNames());
+        return new SolidFrame(df.rowCount(), vars, df.colNames(), df.weights());
     }
 
     /**
@@ -119,7 +119,7 @@ public final class BaseFilters implements Serializable {
                 names.add(df.colNames()[i]);
             }
         }
-        return new SolidFrame(df.rowCount(), vars, names);
+        return new SolidFrame(df.rowCount(), vars, names, df.weights());
     }
 
     /**
@@ -134,7 +134,7 @@ public final class BaseFilters implements Serializable {
                 names.add(df.colNames()[i]);
             }
         }
-        return new SolidFrame(df.rowCount(), vars, names);
+        return new SolidFrame(df.rowCount(), vars, names, df.weights());
     }
 
     public static Frame discretize(Frame df, ColRange colRange, int bins, boolean useQuantiles) {
@@ -198,7 +198,7 @@ public final class BaseFilters implements Serializable {
             vars.add(discrete);
             names.add(df.colNames()[i]);
         }
-        return new SolidFrame(df.rowCount(), vars, names);
+        return new SolidFrame(df.rowCount(), vars, names, df.weights());
     }
 
     /**
@@ -241,7 +241,7 @@ public final class BaseFilters implements Serializable {
                     }
                 }
             }
-            dest.add(new SolidFrame(frame.rowCount(), vars, frame.colNames()));
+            dest.add(new SolidFrame(frame.rowCount(), vars, frame.colNames(), frame.weights()));
         }
 
         return dest;
@@ -347,7 +347,7 @@ public final class BaseFilters implements Serializable {
                 col.setLabel(j, sb.toString());
             }
             vars.add(col);
-            result.add(new SolidFrame(frame.rowCount(), vars, frame.colNames()));
+            result.add(new SolidFrame(frame.rowCount(), vars, frame.colNames(), frame.weights()));
         }
         return result;
 

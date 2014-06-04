@@ -44,15 +44,13 @@ public final class Frames implements Serializable {
         for (int i = 0; i < colNames.length; i++) {
             vars[i] = new Numeric(new double[rows]);
         }
-        return new SolidFrame(rows, vars, colNames);
+        return new SolidFrame(rows, vars, colNames, null);
     }
 
     public static Frame newMatrixFrame(int rows, List<String> colNames) {
         List<Var> vars = new ArrayList<>();
-        for (String colName : colNames) {
-            vars.add(new Numeric(new double[rows]));
-        }
-        return new SolidFrame(rows, vars, colNames);
+        colNames.stream().forEach(n -> vars.add(new Numeric(rows, rows, 0)));
+        return new SolidFrame(rows, vars, colNames, null);
     }
 
     public static Frame solidCopy(Frame df) {
@@ -77,7 +75,7 @@ public final class Frames implements Serializable {
                 }
             }
         }
-        return new SolidFrame(len, vars, names);
+        return new SolidFrame(len, vars, names, df.weights());
     }
 
     public static Frame addCol(Frame df, Var col, String name, int position) {
@@ -95,7 +93,7 @@ public final class Frames implements Serializable {
         }
         vars.add(position, col);
         names.add(position, name);
-        return new SolidFrame(df.rowCount(), vars, names);
+        return new SolidFrame(df.rowCount(), vars, names, df.weights());
     }
 
     /**

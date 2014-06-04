@@ -22,10 +22,7 @@ package rapaio.ml.refactor.simple;
 
 import rapaio.core.ColRange;
 import rapaio.core.stat.Mean;
-import rapaio.data.Frame;
-import rapaio.data.Numeric;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
+import rapaio.data.*;
 import rapaio.ml.regressor.Regressor;
 
 import java.util.ArrayList;
@@ -87,6 +84,6 @@ public class L2ConstantRegressor implements Regressor {
 
     @Override
     public Frame getAllFitValues() {
-        return new SolidFrame(fitValues.get(0).rowCount(), fitValues, targets);
+        return new SolidFrame(fitValues.get(0).rowCount(), fitValues, targets, null);
     }
 }

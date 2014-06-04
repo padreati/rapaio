@@ -52,10 +52,10 @@ public class ABLine extends PlotComponent {
     @Override
     public Range buildRange() {
         if (h) {
-            return new Range(a, Double.NaN, a, Double.NaN);
+            return new Range(Double.NaN, a, Double.NaN, a);
         }
         if (v) {
-            return new Range(Double.NaN, a, Double.NaN, a);
+            return new Range(a, Double.NaN, a, Double.NaN);
         }
         return null;
     }
