@@ -133,15 +133,8 @@ hljs.initHighlightingOnLoad();
 </lines>
 <body>
 <p><a href="../../index.html">Back</a></p><h3>Linear Regression with vectors and matrices - part 1</h3>
-<p>This tutorial aims to present how one can do by hand
-linear regression using only vectors and matrices
-operations. For practical purposes it should be used
-linear regression models. </p><h4>Predict with a constant</h4>
-<p>We will use the well-known data set Father-Son Heights. This
-data was collected by Karl Pearson and contains the heights
-of the fathers and their full-grown sons, in England, circa 1900. </p><p>This data set is used to study the relation between the fathers
-and the sons heights. However for the purpose of this tutorial
-we are interested only in the sons heights. </p><pre><code class="Java">> summary(frame, [Father, Son])
+<p>This tutorial aims to present how one can do by hand linear regression using only vectors and matrices operations. For practical purposes it should be used linear regression models. </p><h4>Predict with a constant</h4>
+<p>We will use the well-known data set Father-Son Heights. This data was collected by Karl Pearson and contains the heights of the fathers and their full-grown sons, in England, circa 1900. </p><p>This data set is used to study the relation between the fathers and the sons heights. However for the purpose of this tutorial we are interested only in the sons heights. </p><pre><code class="Java">> summary(frame, [Father, Son])
 rowCount: 1078, colCount: 2
           Father               Son 
    Min. : 59.000     Min. : 58.500 
@@ -154,7 +147,8 @@ rowCount: 1078, colCount: 2
 </code></pre>
 <h4>Question: Given collected sons heights, can we find a constant which can be used for prediction? </h4>
 <p>First we get the heights of the sons in a numeric var. </p><pre><code class="Java">        Frame df = Datasets.loadPearsonHeightDataset();
-        Summary.summary(df);</code></pre>
+        Summary.summary(df);
+</code></pre>
 <p>We </p><pre><code class="Java">mean: 68.68423005565863</code></pre>
 <pre><code class="Java">variance: 7.930948849532209</code></pre>
 <pre><code class="Java">sd: 2.816194036200668</code></pre>
