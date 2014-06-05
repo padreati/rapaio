@@ -20,11 +20,15 @@
 
 package rapaio.graphics.plot;
 
+import rapaio.core.sample.DiscreteSampling;
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.pch.PchPalette;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author tutuianu
@@ -57,7 +61,14 @@ public class Points extends PlotComponent {
     @Override
     public void paint(Graphics2D g2d) {
 
-        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
+        int len = Math.min(x.rowCount(), y.rowCount());
+        List<Integer> pos = new ArrayList<>(len);
+        for (int i = 0; i < len; i++) {
+            pos.add(i);
+        }
+        Collections.shuffle(pos);
+        for (int j = 0; j < len; j++) {
+            int i = pos.get(j);
             if (x.missing(i) || y.missing(i)) {
                 continue;
             }

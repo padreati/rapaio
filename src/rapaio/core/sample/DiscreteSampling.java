@@ -23,6 +23,7 @@ package rapaio.core.sample;
 import rapaio.core.RandomSource;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static rapaio.core.RandomSource.nextDouble;
 

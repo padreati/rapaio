@@ -23,6 +23,8 @@ package rapaio.core;
 import org.junit.Test;
 import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
+import rapaio.data.Numeric;
+import rapaio.data.Var;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -42,4 +44,15 @@ public class MeanTest extends CoreStatTestUtil {
         Frame df = getDataFrame();
         assertEquals(Double.valueOf("999.98132402093892779"), new Mean(df.col(0)).getValue(), 1e-12);
     }
+
+    @Test
+    public void testWithEmptyValues() {
+        Var num = new Numeric(10);
+        num.setValue(0, 1);
+        assertEquals(1.0, new Mean(num).getValue(), 10e-10);
+
+        num.setValue(7, 5);
+        assertEquals(3.0, new Mean(num).getValue(), 10e-10);
+    }
+
 }

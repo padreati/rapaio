@@ -22,10 +22,11 @@ package rapaio.ml.clustering;
 
 import rapaio.core.ColRange;
 import rapaio.core.sample.DiscreteSampling;
-import rapaio.data.Frame;
-import rapaio.data.Frames;
+import rapaio.core.stat.Mean;
+import rapaio.data.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -54,6 +55,18 @@ public class KMeansClustering {
         return this;
     }
 
+    public Var getClusterAssignement() {
+        List<String> names = new ArrayList<>();
+        for (int i = 0; i < k; i++) {
+            names.add("c" + (i + 1));
+        }
+        Var var = new Nominal(arrows.length, names);
+        for (int i = 0; i < arrows.length; i++) {
+            var.setIndex(i, arrows[i] + 1);
+        }
+        return var;
+    }
+
     public void cluster(Frame df, String varNames) {
         validate(df, varNames);
         targets = new ColRange(varNames).parseColumnNames(df);
@@ -61,21 +74,61 @@ public class KMeansClustering {
         arrows = new int[df.rowCount()];
 
         startMethod.init(df, centroids);
+        assignToCentroid(df);
 
         int rounds = runs;
         while (rounds-- > 0) {
-            assignToCentroid();
-            boolean progress = refineCentroid();
+            refineCentroid(df);
+            boolean progress = assignToCentroid(df);
             if (!progress) break;
         }
     }
 
-    private void assignToCentroid() {
-
+    private boolean assignToCentroid(Frame df) {
+        boolean changed = false;
+        for (int i = 0; i < df.rowCount(); i++) {
+            double d = Double.NaN;
+            int cluster = -1;
+            for (int j = 0; j < centroids.rowCount(); j++) {
+                double dd = distance.distance(df, i, centroids, j, targets);
+                if (!Double.isFinite(dd)) continue;
+                if (Double.isFinite(d)) {
+                    if (dd < d) {
+                        d = dd;
+                        cluster = j;
+                    }
+                } else {
+                    d = dd;
+                    cluster = j;
+                }
+            }
+            if (cluster == -1) {
+                throw new RuntimeException("cluster could not be computed");
+            }
+            if (arrows[i] != cluster) {
+                changed = true;
+            }
+            arrows[i] = cluster;
+        }
+        return changed;
     }
 
-    private boolean refineCentroid() {
-        return false;
+    private void refineCentroid(Frame df) {
+        Var[] means = new Var[k];
+        for (int i = 0; i < k; i++) {
+            means[i] = new Numeric(df.rowCount());
+        }
+        for (int i = 0; i < targets.size(); i++) {
+            for (int j = 0; j < k; j++) {
+                means[j].clear();
+            }
+            for (int j = 0; j < df.rowCount(); j++) {
+                means[arrows[j]].addValue(df.value(j, targets.get(i)));
+            }
+            for (int j = 0; j < k; j++) {
+                centroids.setValue(j, targets.get(i), new Mean(means[j]).getValue());
+            }
+        }
     }
 
 
