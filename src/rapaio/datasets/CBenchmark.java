@@ -40,31 +40,24 @@ public class CBenchmark {
     private List<CTask> tasks = new ArrayList<>();
 
     public CBenchmark() throws IOException {
-        RandomSource.setSeed(1);
 
         tasks.add(new CTask() {
-            private final Frame full = new ArffPersistence().read(UCI.class.getResourceAsStream("iris.arff"));
-            private final Frame train = StatSampling.randomSample(full, new int[]{(int) (full.rowCount() * 0.7)}).get(0);
-            private final Frame test = BaseFilters.delta(full, train);
 
-            @Override
-            public String getName() {
-                return "iris";
+            {
+                name = "iris";
+                targetName = "class";
+                full = new ArffPersistence().read(UCI.class.getResourceAsStream("iris.arff"));
+                reSample(0.7, false);
             }
 
             @Override
-            public Frame getTrain() throws IOException {
-                return train;
-            }
-
-            @Override
-            public Frame getTest() {
-                return test;
-            }
-
-            @Override
-            public Frame getFull() {
-                return full;
+            public boolean reSample(double p, boolean replacement) {
+                if (replacement)
+                    train = StatSampling.randomBootstrap(full, (int) (full.rowCount() * p));
+                else
+                    train = StatSampling.randomSample(full, new int[]{(int) (full.rowCount() * p)}).get(0);
+                test = BaseFilters.delta(full, train);
+                return true;
             }
         });
     }

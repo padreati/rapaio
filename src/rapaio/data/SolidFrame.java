@@ -92,7 +92,7 @@ public class SolidFrame extends AbstractFrame {
 
     @Override
     public Mapping mapping() {
-        return new Mapping(0, rowCount());
+        return new Mapping(rowCount());
     }
 
     @Override

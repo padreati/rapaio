@@ -18,42 +18,32 @@
  *    limitations under the License.
  */
 
-package rapaio.datasets;
+package rapaio.printer;
 
 import rapaio.data.Frame;
 
-import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Arrays;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public abstract class CTask {
+public class PrintTable {
 
-    protected String name;
-    protected Frame full;
-    protected Frame train;
-    protected Frame test;
-    protected String targetName;
+    final String[][] values;
+    final String[] headers;
 
-    public String getName() {
-        return name;
+    private NumberFormat valueFormat = new DecimalFormat("0.######");
+    private NumberFormat indexFormat = new DecimalFormat("0");
+
+    public PrintTable(int rows, String[] headers) {
+        this.headers = Arrays.copyOf(headers, headers.length);
+        this.values = new String[rows][headers.length];
     }
 
-    public Frame getFullFrame() {
-        return full;
+    public PrintTable(Frame df) {
+        this.headers = df.colNames();
+        this.values = new String[df.rowCount()][df.colCount()];
     }
-
-    public Frame getTrainFrame() {
-        return train;
-    }
-
-    public Frame getTestFrame() {
-        return test;
-    }
-
-    public String getTargetName() {
-        return targetName;
-    }
-
-    public abstract boolean reSample(double p, boolean replacement);
 }

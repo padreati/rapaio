@@ -20,8 +20,12 @@
 
 package rapaio.data.mapping;
 
+import rapaio.data.RowComparators;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -36,7 +40,7 @@ public class Mapping implements Serializable {
         this.mapping = new ArrayList<>();
     }
 
-    public Mapping(int start, int rowCount) {
+    public Mapping(int rowCount) {
         this.mapping = new ArrayList<>();
         IntStream.range(0, rowCount).forEach(mapping::add);
     }
@@ -64,6 +68,12 @@ public class Mapping implements Serializable {
 
     public void add(int pos) {
         mapping.add(pos);
+    }
+
+    public Mapping sort(final Comparator<Integer>... comparators) {
+        Mapping copy = new Mapping(new ArrayList<>(mapping));
+        Collections.sort(copy.mapping, RowComparators.aggregateComparator(comparators));
+        return copy;
     }
 
     public IntStream rowStream() {

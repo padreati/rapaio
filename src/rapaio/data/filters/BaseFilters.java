@@ -25,7 +25,6 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.*;
-import rapaio.data.Var;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.MappedVar;
 import rapaio.data.mapping.Mapping;
@@ -294,25 +293,34 @@ public final class BaseFilters implements Serializable {
     }
 
     public static Frame sort(Frame df, Comparator<Integer>... comparators) {
-        List<Integer> mapping = new ArrayList<>();
+        List<Integer> mapping = new ArrayList<>(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
             mapping.add(i);
         }
         Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
-        List<Integer> ids = new ArrayList<>();
-        for (Integer aMapping : mapping) {
-            ids.add(df.rowId(aMapping));
-        }
+        List<Integer> ids = mapping.stream().map(df::rowId).collect(Collectors.toList());
         return new MappedFrame(df, new Mapping(ids));
+//        Mapping mapping = df.isMappedFrame() ? df.mapping() : new Mapping(df.rowCount());
+//        return new MappedFrame(df, mapping.sort(comparators));
+
     }
 
 
     public static Frame delta(Frame source, Frame remove) {
-        Set<Integer> existing = remove.stream().map(FSpot::rowId).collect(Collectors.toSet());
-        return source.stream().filter(s -> !existing.contains(s.rowId())).toMappedFrame();
+        Set<Integer> existing = new HashSet<>();
+        for (int i = 0; i < remove.rowCount(); i++) {
+            existing.add(remove.rowId(i));
+        }
+        Mapping mapping = new Mapping();
+        for (int i = 0; i < source.rowCount(); i++) {
+            if (!existing.contains(source.rowId(i))) {
+                mapping.add(source.rowId(i));
+            }
+        }
+        return new MappedFrame(source, mapping);
     }
 
-    public static List<Frame> combine(String name, List<Frame> frames, String... combined) {
+    public static List<Frame> combine(List<Frame> frames, String... combined) {
         Set<String> dict = new HashSet<>();
         dict.add("");
         for (Frame frame1 : frames) {
@@ -341,8 +349,8 @@ public final class BaseFilters implements Serializable {
             Var col = new Nominal(frame.rowCount(), dict);
             for (int j = 0; j < frame.rowCount(); j++) {
                 StringBuilder sb = new StringBuilder();
-                for (int k = 0; k < combined.length; k++) {
-                    sb.append(".").append(frame.label(j, frame.colIndex(combined[k])));
+                for (String c : combined) {
+                    sb.append(".").append(frame.label(j, frame.colIndex(c)));
                 }
                 col.setLabel(j, sb.toString());
             }
@@ -354,7 +362,13 @@ public final class BaseFilters implements Serializable {
     }
 
     public static Var completeCases(Var source) {
-        return source.stream().filter(s -> !s.missing()).toMappedVar();
+        Mapping mapping = new Mapping();
+        for (int i = 0; i < source.rowCount(); i++) {
+            if (!source.missing(i)) {
+                mapping.add(source.rowId(i));
+            }
+        }
+        return new MappedVar(source, mapping);
     }
 
     /**

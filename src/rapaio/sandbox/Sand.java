@@ -14,12 +14,12 @@ import java.io.IOException;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class GroovySand {
+public class Sand {
     public static void main(String[] args) throws IOException {
 
         WS.setPrinter(new LocalPrinter());
         CTask bench = new CBenchmark().getTask("iris");
-        Frame tr = bench.getTrain();
+        Frame tr = bench.getTrainFrame();
         Summary.summary(tr);
 
 //        draw(new Plot().add(new Histogram(tr.col("sepallength"))))

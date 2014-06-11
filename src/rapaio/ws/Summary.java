@@ -468,7 +468,7 @@ public class Summary {
                     if (vars[j].type().isNominal()) {
                         value = String.format("%" + max[j] + "s", vars[j].label(i));
                     } else {
-                        value = String.format("%" + max[j] + "s", String.format("%.10f", vars[j].value(i)));
+                        value = String.format("%" + max[j] + "s", String.format("%.6f", vars[j].value(i)));
                     }
                     sb.append(value).append(" ");
                 }

@@ -198,7 +198,7 @@ public class MultiLayerPerceptronRegressor implements Regressor, Serializable {
     }
 
     public void predict(Frame df) {
-        prediction = Frames.newMatrixFrame(df.rowCount(), targetCols);
+        prediction = Frames.newMatrix(df.rowCount(), targetCols);
 
         for (int pos = 0; pos < df.rowCount(); pos++) {
             // set inputs

@@ -47,7 +47,7 @@ public final class Frames implements Serializable {
         return new SolidFrame(rows, vars, colNames, null);
     }
 
-    public static Frame newMatrixFrame(int rows, List<String> colNames) {
+    public static Frame newMatrix(int rows, List<String> colNames) {
         List<Var> vars = new ArrayList<>();
         colNames.stream().forEach(n -> vars.add(new Numeric(rows, rows, 0)));
         return new SolidFrame(rows, vars, colNames, null);
