@@ -38,12 +38,12 @@ public class SortVarTest {
 
     @Test
     public void smokeTest() {
-        Var v = Vars.newIdx(0);
+        Var v = Index.newEmpty();
         Var sorted = sort(v, indexComparator(v, true));
         assertTrue(sorted.type().isNumeric());
         assertFalse(sorted.type().isNominal());
 
-        v = new Numeric(0);
+        v = Numeric.newEmpty();
         sorted = sort(v, numericComparator(v, true));
         assertTrue(sorted.type().isNumeric());
         assertFalse(sorted.type().isNominal());
@@ -56,7 +56,7 @@ public class SortVarTest {
 
     @Test
     public void testSortIndex() {
-        Var index = Vars.newSeq(10, 1, -1);
+        Var index = Index.newSeq(10, 10, -1);
         index.setMissing(2);
         index.setMissing(5);
         index.setIndex(0, 1);
@@ -80,7 +80,7 @@ public class SortVarTest {
 
     @Test
     public void testSortNumeric() {
-        Var numeric = new Numeric(new double[]{2., 4., 1.2, 1.3, 1.2, 0., 100.});
+        Var numeric = Numeric.newCopyOf(2., 4., 1.2, 1.3, 1.2, 0., 100.);
 
         assertEquals(7, numeric.rowCount());
         Var sort = sort(numeric, numericComparator(numeric, true));
@@ -195,14 +195,14 @@ public class SortVarTest {
 
     @Test
     public void testMissing() {
-        Var v = Vars.newSeq(1, 10, 1);
+        Var v = Index.newSeq(1, 10);
         v = sort(v, indexComparator(v, true));
         for (int i = 0; i < 10; i += 3) {
             v.setMissing(i);
         }
 
         for (int i = 0; i < 10; i++) {
-            assertEquals(i % 3 == 0 ? true : false, v.missing(i));
+            assertEquals(i % 3 == 0, v.missing(i));
         }
     }
 }

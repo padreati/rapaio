@@ -29,19 +29,63 @@ import java.util.Arrays;
  */
 public class Index extends AbstractVar {
 
-    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
-    private static final int DEFAULT_CAPACITY = 10;
-    private static final int[] EMPTY_DATA = {};
-
     private static final int MISSING_VALUE = Integer.MIN_VALUE;
     private int[] data;
     private int rows;
 
-    public Index() {
-        this(0, 0, 0);
+    // static builders
+
+    public static Index newEmpty() {
+        return new Index(0, 0, 0);
     }
 
-    public Index(int rows, int capacity, int fill) {
+    public static Index newEmpty(int rows) {
+        return new Index(rows, rows, 0);
+    }
+
+    public static Index newScalar(int value) {
+        return new Index(1, 1, value);
+    }
+
+    public static Index newFill(int rows, int value) {
+        return new Index(rows, rows, value);
+    }
+
+    public static Index newCopyOf(int[] values) {
+        Index index = new Index(0, 0, 0);
+        index.data = Arrays.copyOf(values, values.length);
+        index.rows = values.length;
+        return index;
+    }
+
+    public static Index newWrapOf(int[] values) {
+        Index index = new Index(0, 0, 0);
+        index.data = values;
+        index.rows = values.length;
+        return index;
+    }
+
+    public static Index newSeq(int len) {
+        return newSeq(0, len, 1);
+    }
+
+    public static Index newSeq(int start, int len) {
+        return newSeq(start, len, 1);
+    }
+
+    public static Index newSeq(final int start, final int len, final int step) {
+        Index index = new Index(len, len, 0);
+        int s = start;
+        for (int i = 0; i < len; i++) {
+            index.data[i] = s;
+            s = s + step;
+        }
+        return index;
+    }
+
+    // private constructor, only public static builders available
+
+    private Index(int rows, int capacity, int fill) {
         super();
         if (capacity < 0) {
             throw new IllegalArgumentException("Illegal capacity: " + capacity);
@@ -59,40 +103,19 @@ public class Index extends AbstractVar {
             Arrays.fill(data, 0, rows, fill);
     }
 
-    public Index(int[] values) {
-        data = Arrays.copyOf(values, values.length);
-        this.rows = values.length;
-    }
-
     private void ensureCapacityInternal(int minCapacity) {
-        if (data == EMPTY_DATA) {
-            minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
-        }
-        if (minCapacity - data.length > 0)
-            grow(minCapacity);
-    }
-
-    @Override
-    public VarType type() {
-        return VarType.INDEX;
-    }
-
-    private void grow(int minCapacity) {
         // overflow-conscious code
         int oldCapacity = data.length;
         int newCapacity = oldCapacity + (oldCapacity >> 1);
         if (newCapacity - minCapacity < 0)
             newCapacity = minCapacity;
-        if (newCapacity - MAX_ARRAY_SIZE > 0)
-            newCapacity = hugeCapacity(minCapacity);
         // minCapacity is usually close to size, so this is a win:
         data = Arrays.copyOf(data, newCapacity);
     }
 
-    private static int hugeCapacity(int minCapacity) {
-        if (minCapacity < 0) // overflow
-            throw new OutOfMemoryError();
-        return (minCapacity > MAX_ARRAY_SIZE) ? Integer.MAX_VALUE : MAX_ARRAY_SIZE;
+    @Override
+    public VarType type() {
+        return VarType.INDEX;
     }
 
     private void rangeCheck(int index) {
@@ -211,13 +234,6 @@ public class Index extends AbstractVar {
     @Override
     public void clear() {
         rows = 0;
-    }
-
-    @Override
-    public void ensureCapacity(int minCapacity) {
-        int minExpand = (data != EMPTY_DATA) ? 0 : DEFAULT_CAPACITY;
-        if (minCapacity > minExpand && minCapacity - data.length > 0)
-            grow(minCapacity);
     }
 
     @Override

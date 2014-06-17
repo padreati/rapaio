@@ -35,9 +35,9 @@ public class NeuralNetTest {
     @Test
     public void testAnd() {
 
-        Var a = new Numeric();
-        Var b = new Numeric();
-        Var and = new Numeric();
+        Var a = Numeric.newEmpty();
+        Var b = Numeric.newEmpty();
+        Var and = Numeric.newEmpty();
 
         a.addValue(0);
         b.addValue(0);
@@ -77,9 +77,9 @@ public class NeuralNetTest {
     @Test
     public void testXor() {
 
-        Var a = new Numeric();
-        Var b = new Numeric();
-        Var xor = new Numeric();
+        Var a = Numeric.newEmpty();
+        Var b = Numeric.newEmpty();
+        Var xor = Numeric.newEmpty();
 
         a.addValue(0);
         b.addValue(0);
@@ -119,10 +119,10 @@ public class NeuralNetTest {
     @Test
     public void testXorTwoOutputs() {
 
-        Var a = new Numeric();
-        Var b = new Numeric();
-        Var xorA = new Numeric();
-        Var xorB = new Numeric();
+        Var a = Numeric.newEmpty();
+        Var b = Numeric.newEmpty();
+        Var xorA = Numeric.newEmpty();
+        Var xorB = Numeric.newEmpty();
 
         a.addValue(0);
         b.addValue(0);
@@ -171,9 +171,9 @@ public class NeuralNetTest {
     //    @Test
     public void testGarciaChallenge() {
 
-        Var a = new Numeric();
-        Var b = new Numeric();
-        Var xor = new Numeric();
+        Var a = Numeric.newEmpty();
+        Var b = Numeric.newEmpty();
+        Var xor = Numeric.newEmpty();
 
         a.addValue(0);
         b.addValue(0);

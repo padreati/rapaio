@@ -23,9 +23,9 @@ package rapaio.tutorial.pages;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.DUniform;
 import rapaio.core.stat.StatOnline;
+import rapaio.data.Index;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.data.Vars;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.ABLine;
 import rapaio.graphics.plot.Lines;
@@ -79,7 +79,7 @@ public class LawOfLargeNumbers implements TutorialPage {
                 + "            mean.setValue(i, ocs.getMean());\n"
                 + "        }\n");
         StatOnline ocs = new StatOnline();
-        final Var mean = new Numeric(N);
+        final Var mean = Numeric.newEmpty(N);
         for (int i = 0; i < events.rowCount(); i++) {
             ocs.update(events.value(i));
             mean.setValue(i, ocs.getMean());
@@ -88,7 +88,7 @@ public class LawOfLargeNumbers implements TutorialPage {
                 + "how that running mean evolves as the size of the sample grows.");
         draw(new Plot()
                         .add(new ABLine(0, 3.5).lwd(1.5f).color(1))
-                        .add(new Lines(Vars.newSeq(1, N, 1), mean)
+                        .add(new Lines(Index.newSeq(1, N), mean)
                                 .lwd(1.5f)
                                 .color(2))
                         .yLim(2.5, 4.5),

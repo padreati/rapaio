@@ -444,8 +444,6 @@ public class Summary {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("\n");
-
         int pos = 0;
         while (pos < vars.length) {
             int maxWidth = getPrinter().getTextWidth();

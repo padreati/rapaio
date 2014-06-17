@@ -42,7 +42,7 @@ public class Matrix {
         this.n = n;
         data = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
-            data.add(new Numeric(m, m, 0));
+            data.add(Numeric.newFill(m));
         }
     }
 
@@ -68,7 +68,7 @@ public class Matrix {
 
         data = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            data.add(new Numeric());
+            data.add(Numeric.newEmpty());
         }
         int pos = 0;
         for (int i = 0; i < m; i++) {
@@ -87,7 +87,7 @@ public class Matrix {
         n = nLast - nFirst + 1;
         data = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
-            data.add(new Numeric(m, m, 0));
+            data.add(Numeric.newFill(m));
         }
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {

@@ -153,11 +153,6 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public void ensureCapacity(int minCapacity) {
-        throw new IllegalArgumentException("operation not available on mapped vectors");
-    }
-
-    @Override
     public Var solidCopy() {
         switch (source.type()) {
             case NOMINAL:
@@ -167,13 +162,13 @@ public class MappedVar extends AbstractVar {
                 }
                 return nom;
             case INDEX:
-                Index idx = new Index(rowCount(), rowCount(), 0);
+                Index idx = Index.newEmpty(rowCount());
                 for (int i = 0; i < rowCount(); i++) {
                     idx.setIndex(i, index(i));
                 }
                 return idx;
             default:
-                Numeric num = new Numeric(rowCount());
+                Numeric num = Numeric.newFill(rowCount());
                 for (int i = 0; i < rowCount(); i++) {
                     num.setValue(i, value(i));
                 }

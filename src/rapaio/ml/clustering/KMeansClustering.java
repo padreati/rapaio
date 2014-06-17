@@ -116,7 +116,7 @@ public class KMeansClustering {
     private void refineCentroid(Frame df) {
         Var[] means = new Var[k];
         for (int i = 0; i < k; i++) {
-            means[i] = new Numeric(df.rowCount());
+            means[i] = Numeric.newFill(df.rowCount(), 0);
         }
         for (int i = 0; i < targets.size(); i++) {
             for (int j = 0; j < k; j++) {

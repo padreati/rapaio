@@ -127,7 +127,7 @@ public class DecisionStumpRegressor implements Regressor, BTRegressor {
     public void boostFit(Frame x, Var y, Var fx, BoostingLossFunction lossFunction) {
 
         if (testColName == null) {
-            fitValues = new Numeric(x.rowCount(), x.rowCount(), defaultFit);
+            fitValues = Numeric.newFill(x.rowCount(), defaultFit);
             return;
         }
 
@@ -157,9 +157,9 @@ public class DecisionStumpRegressor implements Regressor, BTRegressor {
 
     @Override
     public void predict(Frame df) {
-        fitValues = new Numeric(df.rowCount());
+        fitValues = Numeric.newFill(df.rowCount());
         if (testColName == null) {
-            fitValues = new Numeric(df.rowCount(), df.rowCount(), defaultFit);
+            fitValues = Numeric.newFill(df.rowCount(), defaultFit);
             return;
         }
         Var test = df.col(testColName);

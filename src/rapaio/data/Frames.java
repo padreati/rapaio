@@ -42,7 +42,7 @@ public final class Frames implements Serializable {
     public static Frame newMatrix(int rows, String... colNames) {
         Var[] vars = new Var[colNames.length];
         for (int i = 0; i < colNames.length; i++) {
-            vars[i] = new Numeric(new double[rows]);
+            vars[i] = Numeric.newFill(rows, 0);
         }
         return new SolidFrame(rows, vars, colNames, null);
     }
@@ -68,7 +68,7 @@ public final class Frames implements Serializable {
                 }
             }
             if (src.type().isNumeric()) {
-                vars.add(new Numeric(len));
+                vars.add(Numeric.newFill(len, 0));
                 names.add(df.colNames()[i]);
                 for (int j = 0; j < df.rowCount(); j++) {
                     vars.get(i).setValue(j, src.value(j));

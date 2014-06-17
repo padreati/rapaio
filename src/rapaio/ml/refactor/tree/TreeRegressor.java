@@ -81,7 +81,7 @@ public class TreeRegressor implements Regressor {
 
     @Override
     public void predict(Frame df) {
-        fitted = new Numeric(new double[df.rowCount()]);
+        fitted = Numeric.newFill(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
             fitted.setValue(i, root.predict(df, i));
         }
@@ -128,8 +128,8 @@ class TreeRegressorNode {
         if (splitColName != null) {
             Mapping leftMapping = new Mapping();
             Mapping rightMapping = new Mapping();
-            Numeric leftWeights = new Numeric();
-            Numeric rightWeights = new Numeric();
+            Numeric leftWeights = Numeric.newEmpty();
+            Numeric rightWeights = Numeric.newEmpty();
 
             for (int i = 0; i < df.rowCount(); i++) {
                 if (df.value(i, splitColName) <= splitValue) {
@@ -160,7 +160,7 @@ class TreeRegressorNode {
         Var testCol = df.col(testColNames);
         double[] var = new double[df.rowCount()];
         StatOnline so = new StatOnline();
-        Var sort = Vars.newSeq(df.rowCount());
+        Var sort = Index.newSeq(df.rowCount());
         sort = BaseFilters.sort(sort, RowComparators.numericComparator(testCol, true));
         double w = 0;
         for (int i = 0; i < df.rowCount(); i++) {

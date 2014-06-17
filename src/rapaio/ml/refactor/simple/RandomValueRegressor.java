@@ -85,7 +85,7 @@ public class RandomValueRegressor implements Regressor {
         fitValues = new ArrayList<>();
         for (String target : targets) {
             double customValue = getRandomValue();
-            fitValues.add(new Numeric(df.col(target).rowCount(), df.col(target).rowCount(), customValue));
+            fitValues.add(Numeric.newFill(df.col(target).rowCount(), customValue));
         }
     }
 
@@ -93,7 +93,7 @@ public class RandomValueRegressor implements Regressor {
     public void predict(Frame df) {
         fitValues = new ArrayList<>();
         for (int i = 0; i < targets.size(); i++) {
-            fitValues.add(new Numeric(df.rowCount()));
+            fitValues.add(Numeric.newFill(df.rowCount()));
             for (int j = 0; j < df.rowCount(); j++) {
                 fitValues.get(i).setValue(j, getRandomValue());
             }

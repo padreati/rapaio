@@ -148,7 +148,7 @@ public class OneRule extends AbstractClassifier {
 
     private RuleSet buildNumeric(String testCol, Frame df) {
         RuleSet set = new RuleSet(testCol);
-        Var sort = BaseFilters.sort(Vars.newSeq(df.weights().rowCount()),
+        Var sort = BaseFilters.sort(Index.newSeq(df.weights().rowCount()),
                 RowComparators.numericComparator(df.col(testCol), true),
                 RowComparators.nominalComparator(df.col(targetCol), true));
         int pos = 0;

@@ -47,7 +47,7 @@ public class HuberBoostingLossFunction implements BoostingLossFunction {
 
         // compute residuals
 
-        Numeric residual = new Numeric();
+        Numeric residual = Numeric.newEmpty();
         for (int i = 0; i < y.rowCount(); i++) {
             residual.addValue(y.value(i) - fx.value(i));
         }
@@ -58,7 +58,7 @@ public class HuberBoostingLossFunction implements BoostingLossFunction {
 
         // compute absolute residuals
 
-        Numeric absResidual = new Numeric();
+        Numeric absResidual = Numeric.newEmpty();
         for (int i = 0; i < y.rowCount(); i++) {
             absResidual.addValue(Math.abs(y.value(i) - fx.value(i)));
         }
@@ -84,7 +84,7 @@ public class HuberBoostingLossFunction implements BoostingLossFunction {
 
         // compute absolute residuals
 
-        Numeric absResidual = new Numeric();
+        Numeric absResidual = Numeric.newEmpty();
         for (int i = 0; i < y.rowCount(); i++) {
             absResidual.addValue(Math.abs(y.value(i) - fx.value(i)));
         }
@@ -95,7 +95,7 @@ public class HuberBoostingLossFunction implements BoostingLossFunction {
 
         // now compute gradient
 
-        Numeric gradient = new Numeric();
+        Numeric gradient = Numeric.newEmpty();
         for (int i = 0; i < y.rowCount(); i++) {
             if (absResidual.value(i) <= rho) {
                 gradient.addValue(y.value(i) - fx.value(i));

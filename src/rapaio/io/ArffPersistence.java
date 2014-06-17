@@ -100,8 +100,8 @@ public class ArffPersistence {
 
                         String[] tmp = line.split("\\s+", 2);
                         if (tmp[1].trim().equalsIgnoreCase("real") || tmp[1].trim().equals("isNumeric") || tmp[1].trim().startsWith("integer")) {
-                            vars.add(new Numeric(0));
-                        } else//Not correct, but we arent supporting anything other than real and categorical right now
+                            vars.add(Numeric.newEmpty());
+                        } else//Not correct, but we aren't supporting anything other than real and categorical right now
                         {
                             String cats = tmp[1].replace("{", "").replace("}", "").trim();
                             if (cats.endsWith(",")) {
@@ -121,10 +121,10 @@ public class ArffPersistence {
                 data.add(line.trim());
             }
 
-            List<Var> newvectors = new ArrayList();
+            List<Var> newvectors = new ArrayList<>();
             for (int i = 0; i < vars.size(); i++) {
                 if (vars.get(i) instanceof Numeric) {
-                    newvectors.add(new Numeric(data.size()));
+                    newvectors.add(Numeric.newEmpty(data.size()));
                 }
                 if (vars.get(i) instanceof Nominal) {
                     newvectors.add(new Nominal(data.size(), nomValueMap.get(names.get(i))));

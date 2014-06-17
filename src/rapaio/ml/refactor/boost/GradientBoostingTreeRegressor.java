@@ -140,7 +140,7 @@ public class GradientBoostingTreeRegressor implements Regressor {
         initialRegressor.learn(df, targetCols);
         trees = new ArrayList<>();
 
-        fitLearn = new Numeric(df.rowCount());
+        fitLearn = Numeric.newFill(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
             fitLearn.setValue(i, initialRegressor.getFitValues().value(i));
         }
@@ -195,7 +195,7 @@ public class GradientBoostingTreeRegressor implements Regressor {
             trees.add(tree);
         }
 
-        fitValues = new Numeric(df.rowCount());
+        fitValues = Numeric.newEmpty();
         for (int i = 0; i < fitLearn.rowCount(); i++) {
             fitValues.addValue(fitLearn.value(i));
         }
@@ -261,7 +261,7 @@ public class GradientBoostingTreeRegressor implements Regressor {
             trees.add(tree);
         }
 
-        fitValues = new Numeric(df.rowCount());
+        fitValues = Numeric.newEmpty();
         for (int i = 0; i < fitLearn.rowCount(); i++) {
             fitValues.addValue(fitLearn.value(i));
         }
@@ -274,7 +274,7 @@ public class GradientBoostingTreeRegressor implements Regressor {
     @Override
     public void predict(Frame df) {
         initialRegressor.predict(df);
-        fitValues = new Numeric(df.rowCount());
+        fitValues = Numeric.newFill(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
             fitValues.setValue(i, initialRegressor.getFitValues().value(i));
         }

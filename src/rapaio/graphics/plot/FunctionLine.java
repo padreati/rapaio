@@ -53,8 +53,8 @@ public class FunctionLine extends PlotComponent {
     @Override
     public void paint(Graphics2D g2d) {
         Range range = getParent().getRange();
-        Var x = new Numeric(points + 1);
-        Var y = new Numeric(points + 1);
+        Var x = Numeric.newFill(points + 1, 0);
+        Var y = Numeric.newFill(points + 1, 0);
         double xstep = (range.getX2() - range.getX1()) / points;
         for (int i = 0; i < x.rowCount(); i++) {
             x.setValue(i, range.getX1() + i * xstep);

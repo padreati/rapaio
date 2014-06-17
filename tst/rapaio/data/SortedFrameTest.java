@@ -58,7 +58,7 @@ public class SortedFrameTest {
         Var[] vars = new Var[1_000];
         String[] names = new String[1_000];
         for (int i = 0; i < 1_000; i++) {
-            vars[i] = new Numeric(10_000);
+            vars[i] = Numeric.newFill(10_000);
             for (int j = 0; j < 10_000; j++) {
                 vars[i].setValue(j, RandomSource.nextDouble());
             }

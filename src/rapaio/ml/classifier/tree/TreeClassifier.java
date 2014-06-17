@@ -549,7 +549,7 @@ public class TreeClassifier extends AbstractClassifier {
                     dt.update(row, target.index(i), df.weight(i));
                 }
 
-                Var sort = BaseFilters.sort(Vars.newSeq(df.rowCount()), RowComparators.numericComparator(test, true));
+                Var sort = BaseFilters.sort(Index.newSeq(df.rowCount()), RowComparators.numericComparator(test, true));
 
                 Candidate best = null;
 
@@ -849,7 +849,7 @@ public class TreeClassifier extends AbstractClassifier {
 
         public void learn(Frame df, int depth) {
             density = new DensityVector(df.col(c.getTargetCol()), df.weights());
-            counter = new DensityVector(df.col(c.getTargetCol()), new Numeric(df.rowCount(), df.rowCount(), 1));
+            counter = new DensityVector(df.col(c.getTargetCol()), Numeric.newFill(df.rowCount(), 1));
             bestIndex = density.findBestIndex();
 
             if (df.rowCount() == 0) {

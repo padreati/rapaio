@@ -48,16 +48,16 @@ public class Nominal extends AbstractVar {
 
     int rows = 0;
     List<String> dict;
-    int[] data;
-    Map<String, Integer> reverse;
+    short[] data;
+    Map<String, Short> reverse;
 
     public Nominal() {
         // set the missing value
         this.reverse = new HashMap<>();
-        this.reverse.put("?", 0);
+        this.reverse.put("?", (short) 0);
         this.dict = new ArrayList<>();
         this.dict.add("?");
-        data = new int[0];
+        data = new short[0];
         rows = 0;
     }
 
@@ -70,9 +70,9 @@ public class Nominal extends AbstractVar {
         for (String next : dict) {
             if (this.dict.contains(next)) continue;
             this.dict.add(next);
-            this.reverse.put(next, reverse.size());
+            this.reverse.put(next, (short) reverse.size());
         }
-        data = new int[size];
+        data = new short[size];
         rows = size;
     }
 
@@ -82,6 +82,8 @@ public class Nominal extends AbstractVar {
     }
 
     private void grow(int minCapacity) {
+        if (minCapacity - data.length <= 0) return;
+
         // overflow-conscious code
         int oldCapacity = data.length;
         int newCapacity = oldCapacity + (oldCapacity >> 1);
@@ -123,7 +125,7 @@ public class Nominal extends AbstractVar {
 
     @Override
     public void setIndex(int row, int value) {
-        data[row] = value;
+        data[row] = (short) value;
     }
 
     @Override
@@ -157,21 +159,21 @@ public class Nominal extends AbstractVar {
             data[row] = missingIndex;
             return;
         }
-        Integer idx = reverse.get(value);
+        Short idx = reverse.get(value);
         if (idx == null) {
             dict.add(value);
-            reverse.put(value, reverse.size());
-            idx = reverse.size() - 1;
+            reverse.put(value, (short) reverse.size());
+            idx = (short) (reverse.size() - 1);
         }
         data[row] = idx;
     }
 
     @Override
     public void addLabel(String label) {
-        ensureCapacity(rows + 1);
+        grow(rows + 1);
         if (!reverse.containsKey(label)) {
             dict.add(label);
-            reverse.put(label, reverse.size());
+            reverse.put(label, (short) (reverse.size()));
         }
         data[rows++] = reverse.get(label);
     }
@@ -184,17 +186,17 @@ public class Nominal extends AbstractVar {
     @Override
     public void setDictionary(String[] dict) {
         List<String> oldDict = this.dict;
-        Map<String, Integer> oldReverse = this.reverse;
+        Map<String, Short> oldReverse = this.reverse;
 
         this.dict = new ArrayList<>();
         this.reverse = new HashMap<>();
         this.dict.add("?");
-        this.reverse.put("?", 0);
+        this.reverse.put("?", (short) 0);
 
         for (String term : dict) {
             if (!reverse.containsKey(term)) {
                 this.dict.add(term);
-                this.reverse.put(term, this.reverse.size());
+                this.reverse.put(term, (short) this.reverse.size());
             }
         }
 
@@ -235,11 +237,6 @@ public class Nominal extends AbstractVar {
 
     public void clear() {
         rows = 0;
-    }
-
-    public void ensureCapacity(int minCapacity) {
-        if (minCapacity - data.length > 0)
-            grow(minCapacity);
     }
 
     @Override

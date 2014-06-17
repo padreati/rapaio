@@ -38,7 +38,7 @@ public class FrameFilterSortTest {
 
     @Test
     public void testValueVector() {
-        Var unsorted = new Numeric(new double[]{0., 1., 2., 3., 4., 5., 6.});
+        Var unsorted = Numeric.newCopyOf(0., 1., 2., 3., 4., 5., 6.);
         Var sorted = sort(unsorted, true);
         for (int i = 1; i < sorted.rowCount(); i++) {
             assertTrue(sorted.value(i - 1) <= sorted.value(i));
@@ -47,7 +47,7 @@ public class FrameFilterSortTest {
 
     @Test
     public void testValueVectorWithNA() {
-        Var unsorted = new Numeric(new double[]{Double.NaN, 0., Double.NaN, 1., Double.NaN, 2.});
+        Var unsorted = Numeric.newCopyOf(Double.NaN, 0., Double.NaN, 1., Double.NaN, 2.);
         Var sorted = sort(unsorted);
         for (int i = 0; i < 3; i++) {
             assert (sorted.missing(i));

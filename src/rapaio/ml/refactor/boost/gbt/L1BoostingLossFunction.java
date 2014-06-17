@@ -31,7 +31,7 @@ public class L1BoostingLossFunction implements BoostingLossFunction {
 
     @Override
     public double findMinimum(Var y, Var fx) {
-        Numeric values = new Numeric();
+        Numeric values = Numeric.newEmpty();
         for (int i = 0; i < y.rowCount(); i++) {
             values.addValue(y.value(i) - fx.value(i));
         }
@@ -40,7 +40,7 @@ public class L1BoostingLossFunction implements BoostingLossFunction {
 
     @Override
     public Numeric gradient(Var y, Var fx) {
-        Numeric gradient = new Numeric();
+        Numeric gradient = Numeric.newEmpty();
         for (int i = 0; i < y.rowCount(); i++) {
             gradient.addValue(y.value(i) - fx.value(i) < 0 ? -1. : 1.);
         }

@@ -23,38 +23,96 @@ package rapaio.data;
 
 import rapaio.data.mapping.Mapping;
 
-import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 public class Numeric extends AbstractVar {
 
-    private static final int DEFAULT_CAPACITY = 10;
-    private static final double[] EMPTY_DATA = {};
-
     private static final double missingValue = Double.NaN;
     private double[] data;
     private int rows;
 
-    public Numeric() {
-        this.data = EMPTY_DATA;
+    // public static builders
+
+    public static Numeric newEmpty() {
+        return new Numeric(0, 0, Double.NaN);
     }
 
-    public Numeric(int rows) {
-        this(rows, rows, Double.NaN);
+    public static Numeric newEmpty(int rows) {
+        return new Numeric(rows, rows, Double.NaN);
     }
 
-    public Numeric(int rows, int capacity) {
-        this(rows, capacity, Double.NaN);
+    public static Numeric newCopyOf(Collection<Number> values) {
+        final Numeric numeric = new Numeric(0, 0, Double.NaN);
+        values.forEach(n -> numeric.addValue(n.doubleValue()));
+        return numeric;
     }
 
-    public Numeric(int rows, int capacity, double fill) {
+    public static Numeric newCopyOf(int... values) {
+        Numeric numeric = new Numeric(0, 0, 0);
+        numeric.data = new double[values.length];
+        for (int i = 0; i < values.length; i++) {
+            numeric.data[i] = values[i];
+        }
+        numeric.rows = values.length;
+        return numeric;
+    }
+
+    public static Numeric newCopyOf(double... values) {
+        Numeric numeric = new Numeric(values.length, values.length, 0);
+        numeric.data = Arrays.copyOf(values, values.length);
+        return numeric;
+    }
+
+    public static Numeric newCopyOf(Var source) {
+        Numeric numeric = new Numeric(source.rowCount(), source.rowCount(), 0);
+        if (source.isMappedVector() || source.type() != VarType.NUMERIC) {
+            for (int i = 0; i < source.rowCount(); i++) {
+                numeric.setValue(i, source.value(i));
+            }
+        } else {
+            numeric.data = Arrays.copyOf(((Numeric) source).data, source.rowCount());
+        }
+        return numeric;
+    }
+
+    public static Numeric newWrapOf(double... values) {
+        Numeric numeric = new Numeric(0, 0, 0);
+        numeric.data = values;
+        numeric.rows = values.length;
+        return numeric;
+    }
+
+//    public static Numeric newWrapOf(Numeric source) {
+//        Numeric numeric = new Numeric(source.rowCount(), source.rowCount(), 0);
+//        if (source.isMappedVector()) {
+//            for (int i = 0; i < source.rowCount(); i++) {
+//                numeric.setValue(i, source.value(i));
+//            }
+//        } else {
+//            numeric.data = Arrays.copyOf(source.data, source.rowCount());
+//        }
+//        return numeric;
+//    }
+
+    public static Numeric newFill(int rows) {
+        return new Numeric(rows, rows, 0);
+    }
+
+    public static Numeric newFill(int rows, double fill) {
+        return new Numeric(rows, rows, fill);
+    }
+
+    public static Numeric newScalar(double value) {
+        return new Numeric(1, 1, value);
+    }
+
+    // private constructor
+
+    protected Numeric(int rows, int capacity, double fill) {
         super();
         if (capacity < 0) {
             throw new IllegalArgumentException("Illegal capacity: " + capacity);
@@ -72,33 +130,13 @@ public class Numeric extends AbstractVar {
             Arrays.fill(data, 0, rows, fill);
     }
 
-    public Numeric(double[] values) {
-        data = Arrays.copyOf(values, values.length);
-        this.rows = values.length;
-    }
-
-    public Numeric(int[] values) {
-        data = new double[values.length];
-        for (int i = 0; i < values.length; i++) {
-            data[i] = values[i];
-        }
-        this.rows = values.length;
-    }
-
-    public Numeric(Collection<Number> numbers) {
-        this(numbers.size());
-        numbers.forEach(n -> addValue(n.doubleValue()));
-    }
-
     @Override
     public VarType type() {
         return VarType.NUMERIC;
     }
 
     private void ensureCapacityInternal(int minCapacity) {
-        if (data == EMPTY_DATA) {
-            minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
-        }
+        minCapacity = Math.max(10, minCapacity);
         // overflow-conscious code
         if (minCapacity - data.length > 0)
             grow(minCapacity);
@@ -231,20 +269,8 @@ public class Numeric extends AbstractVar {
     }
 
     @Override
-    public void ensureCapacity(int minCapacity) {
-        int minExpand = (data != EMPTY_DATA) ? 0 : DEFAULT_CAPACITY;
-        if (minCapacity > minExpand) {
-            // overflow-conscious code
-            if (minCapacity - data.length > 0)
-                grow(minCapacity);
-        }
-    }
-
-    @Override
     public Numeric solidCopy() {
-        Numeric copy = new Numeric(rowCount());
-        copy.data = Arrays.copyOf(data, rowCount());
-        return copy;
+        return Numeric.newCopyOf(this);
     }
 
     @Override

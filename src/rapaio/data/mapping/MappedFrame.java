@@ -57,7 +57,7 @@ public class MappedFrame extends AbstractFrame {
         } else {
             this.source = df;
         }
-        this.weights = new Numeric(mapping.rowStream().mapToDouble(source::weight).toArray());
+        this.weights = Numeric.newCopyOf(mapping.rowStream().mapToDouble(source::weight).toArray());
         this.names = df.colNames();
         this.colIndex = new HashMap<>();
         this.vars = new Var[names.length];
@@ -74,7 +74,7 @@ public class MappedFrame extends AbstractFrame {
         } else {
             this.source = df;
         }
-        this.weights = new Numeric(mapping.rowStream().mapToDouble(source::weight).toArray());
+        this.weights = Numeric.newCopyOf(mapping.rowStream().mapToDouble(source::weight).toArray());
         this.names = new String[columns.size()];
         for (int i = 0; i < columns.size(); i++) {
             names[i] = columns.get(i);

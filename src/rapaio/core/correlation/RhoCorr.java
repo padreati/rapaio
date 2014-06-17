@@ -65,12 +65,12 @@ public class RhoCorr implements Printable {
         Var[] sorted = new Var[vars.length];
         Var[] ranks = new Var[vars.length];
         for (int i = 0; i < sorted.length; i++) {
-            Index index = new Index();
+            Index index = Index.newEmpty();
             for (int j = 0; j < vars[i].rowCount(); j++) {
                 index.addIndex(j);
             }
             sorted[i] = sort(index, RowComparators.numericComparator(vars[i], true));
-            ranks[i] = new Numeric(vars[i].rowCount());
+            ranks[i] = Numeric.newFill(vars[i].rowCount());
         }
 
         // compute ranks

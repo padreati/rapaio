@@ -42,12 +42,13 @@ public class QRTest {
 				{1, 5, 25}
 		});
 
-		Matrix y = new Matrix(
-				new Numeric(new double[]{2.8, 3.2, 7.1, 6.8, 8.8}),
-				new Numeric(new double[]{2.8, 3.2, 7.1, 6.8, 8.9})
-		);
+		Matrix y;
+        y = new Matrix(
+                Numeric.newCopyOf(2.8, 3.2, 7.1, 6.8, 8.8),
+                Numeric.newCopyOf(2.8, 3.2, 7.1, 6.8, 8.9)
+        );
 
-		QRDecomposition qr = new QRDecomposition(x);
+        QRDecomposition qr = new QRDecomposition(x);
 //        System.out.println("Q");
 //        qr.getQ().print(new DecimalFormat("0.000000000"), 14);
 //        System.out.println("R");

@@ -38,7 +38,7 @@ public class ROC implements Printable {
 
     public ROC(Var score, Var actual, Var predict) {
         this.score = score;
-        this.classes = Vars.newIdx(actual.rowCount());
+        this.classes = Index.newEmpty(actual.rowCount());
         for (int i = 0; i < actual.rowCount(); i++) {
             if (actual.label(i).equals(predict.label(i))) {
                 classes.setIndex(i, 1);
@@ -55,7 +55,7 @@ public class ROC implements Printable {
 
     public ROC(Var score, Var actual, String label) {
         this.score = score;
-        this.classes = Vars.newIdx(actual.rowCount());
+        this.classes = Index.newEmpty(actual.rowCount());
         for (int i = 0; i < actual.rowCount(); i++) {
             if (actual.label(i).equals(label)) {
                 classes.setIndex(i, 1);

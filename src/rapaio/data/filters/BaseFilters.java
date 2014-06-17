@@ -406,7 +406,7 @@ public final class BaseFilters implements Serializable {
         if (v.type().equals(VarType.NUMERIC)) {
             return (Numeric) v;
         }
-        final Numeric result = new Numeric();
+        final Numeric result = Numeric.newEmpty();
         v.stream().forEach((VSpot vi) -> {
             if (vi.missing()) {
                 result.addMissing();
@@ -441,7 +441,7 @@ public final class BaseFilters implements Serializable {
         if (v.type().equals(VarType.INDEX)) {
             return (Index) v;
         }
-        final Index result = new Index();
+        final Index result = Index.newEmpty();
         v.stream().forEach((VSpot inst) -> {
             if (inst.missing()) {
                 result.addMissing();
@@ -486,7 +486,7 @@ public final class BaseFilters implements Serializable {
      */
     public static Numeric jitter(Var var, double sd) {
         Normal normal = new Normal(0, sd);
-        Numeric result = new Numeric(var.rowCount());
+        Numeric result = Numeric.newEmpty(var.rowCount());
         result.stream().forEach(s -> result.setValue(s.row(),
                 var.value(s.row()) + normal.quantile(RandomSource.nextDouble())));
         return result;

@@ -122,7 +122,7 @@ public class DiscreteSamplingPage implements TutorialPage {
 
         DiscreteSampling ds = new DiscreteSampling();
         int[] sample = ds.sampleWR(1000, 6);
-        Var var = Vars.newIdxFrom(sample);
+        Var var = Index.newWrapOf(sample);
         draw(new Plot().add(new Histogram(var).bins(6).prob(false)), 500, 200);
 
         p("In the presented histogram we see frequencies obtained be taking a sample "
@@ -182,8 +182,8 @@ public class DiscreteSamplingPage implements TutorialPage {
         final int SAMPLE_SIZE = 6;
         final int POPULATION_SIZE = 49;
         Var[] vars = new Var[2];
-        vars[0] = new Numeric(SAMPLE_SIZE * TRIALS);
-        vars[1] = new Numeric(SAMPLE_SIZE * TRIALS);
+        vars[0] = Numeric.newEmpty(SAMPLE_SIZE * TRIALS);
+        vars[1] = Numeric.newEmpty(SAMPLE_SIZE * TRIALS);
 
         for (int i = 0; i < TRIALS; i++) {
             int[] numbers = ds.sampleWOR(SAMPLE_SIZE, POPULATION_SIZE);
@@ -249,8 +249,8 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "                .yLab(\"HEAD/TOTAL\"));\n");
 
         RandomSource.setSeed(1);
-        final Var index = Vars.newSeq(1, 1000, 1);
-        final Var value = new Numeric(1000);
+        final Var index = Index.newSeq(1, 1000);
+        final Var value = Numeric.newEmpty(1000);
         double count = 0;
         double total = 0;
         for (int i = 0; i < 300; i++) {
@@ -325,8 +325,8 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "                .setSizeIndex(Vectors.newNumOne(2)),\n" +
                 "                600, 300);\n");
 
-        vars[0] = new Numeric(SAMPLE_SIZE * TRIALS);
-        vars[1] = new Numeric(SAMPLE_SIZE * TRIALS);
+        vars[0] = Numeric.newEmpty(SAMPLE_SIZE * TRIALS);
+        vars[1] = Numeric.newEmpty(SAMPLE_SIZE * TRIALS);
 
         double[] prob = new double[49];
         for (int i = 0; i < prob.length; i++) {
@@ -351,8 +351,8 @@ public class DiscreteSamplingPage implements TutorialPage {
         final Frame df2 = new SolidFrame(SAMPLE_SIZE * TRIALS, vars, new String[]{"loaded lottery", "winning number"}, null);
         draw(new Plot()
                         .add(new Points(df2.col(0), df2.col(1)))
-                        .pch(Vars.newIdxOne(1))
-                        .sz(Vars.newNumOne(2))
+                        .pch(Index.newScalar(1))
+                        .sz(Numeric.newScalar(2))
                         .color(34),
                 600, 300
         );
@@ -366,7 +366,7 @@ public class DiscreteSamplingPage implements TutorialPage {
 
         draw(new Plot()
                         .add(new FunctionLine(new KDE(df2.col("winning number"), 3).getPdf())
-                                .color(Vars.newIdxOne(1)))
+                                .color(Index.newScalar(1)))
                         .xLab("winning numbers")
                         .yLab("kernel probability density")
                         .xLim(-10, 60).yLim(0, .05),

@@ -197,12 +197,12 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
                 h.add(hh);
                 a.add(alpha);
             }
-            System.out.println("Stop learning weak classifier. Computed err: 0");
+//            System.out.println("Stop learning weak classifier. Computed err: 0");
             return false;
         }
         if (stopOnError &&  err > (1.0 - 1.0 / k) + delta_error) {
-            System.out.println("Warning computed err: " + err
-                    + ", required threshold: " + (1.0 - 1.0 / k) + delta_error);
+//            System.out.println("Warning computed err: " + err
+//                    + ", required threshold: " + (1.0 - 1.0 / k) + delta_error);
             return false;
         }
         h.add(hh);

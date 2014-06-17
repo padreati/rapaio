@@ -21,9 +21,9 @@
 package rapaio.data.formula;
 
 import rapaio.data.Frame;
+import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
-import rapaio.data.Vars;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Adds an intercept column: a numeric column with all values equal with 1.0,
  * used in general for linear regression like setups.
- *
+ * <p>
  * In case there is already a column called intercept on the
  * first position, nothing will happen.
  *
@@ -42,13 +42,13 @@ public class FFAddIntercept implements FrameFilter {
 
     @Override
     public Frame apply(Frame df) {
-        if(df.colNames()[0].equals("intercept")) {
+        if (df.colNames()[0].equals("intercept")) {
             return df;
         }
         List<Var> vars = new ArrayList<>();
         List<String> names = new ArrayList<>();
 
-        vars.add(Vars.newNum(df.rowCount(), 1.0));
+        vars.add(Numeric.newFill(df.rowCount(), 1.0));
         names.add("intercept");
 
         Arrays.stream(df.colNames()).forEach(varName -> {

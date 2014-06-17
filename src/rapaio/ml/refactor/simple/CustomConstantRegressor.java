@@ -70,16 +70,14 @@ public class CustomConstantRegressor implements Regressor {
 
         fitValues = new ArrayList<>();
         for (String target : targets) {
-            fitValues.add(new Numeric(df.col(target).rowCount(), df.col(target).rowCount(), customValue));
+            fitValues.add(Numeric.newFill(df.col(target).rowCount(), customValue));
         }
     }
 
     @Override
     public void predict(Frame df) {
         fitValues = new ArrayList<>();
-        for (String target : targets) {
-            fitValues.add(new Numeric(df.rowCount(), df.rowCount(), customValue));
-        }
+        targets.stream().forEach(s -> fitValues.add(Numeric.newFill(df.rowCount(), customValue)));
     }
 
     @Override

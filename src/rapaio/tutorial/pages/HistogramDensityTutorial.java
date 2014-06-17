@@ -23,8 +23,8 @@ package rapaio.tutorial.pages;
 import rapaio.core.distributions.empirical.KDE;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.data.Frame;
+import rapaio.data.Index;
 import rapaio.data.Var;
-import rapaio.data.Vars;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.DensityLine;
@@ -146,7 +146,7 @@ public class HistogramDensityTutorial implements TutorialPage {
 
         final Var col = df.col("Father");
         draw(new Plot()
-                .add(new Histogram(col).color(Vars.newSeq(1, 255, 1)))
+                .add(new Histogram(col).color(Index.newSeq(1, 255)))
                 .add(new DensityLine(col)));
 
         p("In statistics, kernel density estimation (KDE) is a non-parametric way to "

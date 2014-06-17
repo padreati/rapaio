@@ -31,7 +31,7 @@ public class IndexTest {
 
     @Test
     public void smokeTest() {
-        Var index = Vars.newIdx(1);
+        Var index = Index.newEmpty(1);
         assertTrue(index.type().isNumeric());
         assertFalse(index.type().isNominal());
 
@@ -47,10 +47,10 @@ public class IndexTest {
 
     @Test
     public void testEmptyIndex() {
-        Var index = Vars.newIdx(0);
+        Var index = Index.newEmpty();
         assertEquals(0, index.rowCount());
 
-        index = Vars.newIdx(10);
+        index = Index.newEmpty(10);
         for (int i = 0; i < 10; i++) {
             assertEquals(0, index.index(i));
         }
@@ -58,7 +58,7 @@ public class IndexTest {
 
     @Test
     public void testFillVector() {
-        Var index = Vars.newNum(10, -1);
+        Var index = Numeric.newFill(10, -1);
         assertEquals(10, index.rowCount());
         for (int i = 0; i < index.rowCount(); i++) {
             assertEquals(-1, index.index(i));
@@ -67,34 +67,17 @@ public class IndexTest {
 
     @Test
     public void testSequenceVector() {
-        Var index = Vars.newSeq(1, 10, 1);
+        Var index = Index.newSeq(1, 10);
         assertEquals(10, index.rowCount());
         for (int i = 0; i < index.rowCount(); i++) {
             assertEquals(i + 1, index.index(i));
         }
-
-        boolean exceptional = false;
-        try {
-            index = Vars.newSeq(1, 1, 0);
-        } catch (Throwable ex) {
-            exceptional = true;
-        }
-        assertEquals(true, exceptional);
-
-        exceptional = false;
-        try {
-            Vars.newSeq(1, 2, 0);
-        } catch (Throwable ex) {
-            exceptional = true;
-        }
-        assertEquals(true, exceptional);
-
     }
 
     @Test
     public void testSetterGetter() {
 
-        Var index = Vars.newIdx(3, 0);
+        Var index = Index.newFill(3, 0);
 
         assertEquals(0, index.index(0));
         index.setIndex(0, 1);
@@ -131,7 +114,7 @@ public class IndexTest {
 
     @Test
     public void testMissing() {
-        Var index = Vars.newSeq(1, 10, 1);
+        Var index = Index.newSeq(1, 10, 1);
         for (int i = 0; i < index.rowCount(); i++) {
             assertTrue(!index.missing(i));
         }
@@ -146,11 +129,11 @@ public class IndexTest {
 
     @Test
     public void testOneIndex() {
-        Var one = Vars.newIdxOne(2);
+        Var one = Index.newScalar(2);
         assertEquals(1, one.rowCount());
         assertEquals(2, one.index(0));
 
-        one = Vars.newIdxOne(3);
+        one = Index.newScalar(3);
         assertEquals(1, one.rowCount());
         assertEquals(3, one.index(0));
     }

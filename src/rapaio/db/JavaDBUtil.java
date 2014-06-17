@@ -102,7 +102,7 @@ public class JavaDBUtil {
         ResultSet rs = stmt.executeQuery(query);
 
         ResultSetMetaData md = rs.getMetaData();
-        List<String> colNames = new ArrayList();
+        List<String> colNames = new ArrayList<>();
         List<List> lists = new ArrayList<>();
         for (int i = 0; i < md.getColumnCount(); i++) {
             colNames.add(md.getColumnLabel(i + 1));
@@ -127,7 +127,7 @@ public class JavaDBUtil {
             switch (sqlTypeName) {
                 case "DOUBLE":
                 case "INTEGER":
-                    Numeric v1 = new Numeric(lists.get(i).size());
+                    Numeric v1 = Numeric.newEmpty(lists.get(i).size());
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         v1.setValue(j, (Double) lists.get(i).get(j));
                     }

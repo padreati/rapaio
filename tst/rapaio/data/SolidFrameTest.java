@@ -39,7 +39,7 @@ public class SolidFrameTest {
 
     @Test
     public void testRowId() {
-        Frame df = new SolidFrame(10, new Var[]{new Numeric(10)}, new String[]{"x"}, null);
+        Frame df = new SolidFrame(10, new Var[]{Numeric.newEmpty(10)}, new String[]{"x"}, null);
         for (int i = 0; i < df.rowCount(); i++) {
             assertEquals(i, df.rowId(i));
         }
@@ -47,11 +47,7 @@ public class SolidFrameTest {
 
     @Test
     public void testColIndexes() {
-        Var[] vars = new Var[]{
-                new Numeric(0),
-                new Numeric(0),
-                new Numeric(0)
-        };
+        Var[] vars = new Var[]{Numeric.newEmpty(), Numeric.newEmpty(), Numeric.newEmpty()};
         Frame df = new SolidFrame(0, vars, new String[]{"x", "y", "z"}, null);
 
         assertEquals(3, df.colCount());
@@ -92,10 +88,10 @@ public class SolidFrameTest {
     @Test
     public void testConvenientMethods() {
         Var[] vars = new Var[]{
-                new Numeric(new double[]{1., 2., 3., 4.}),
-                new Numeric(new double[]{3., 5., 9., 12.}),
+                Numeric.newCopyOf(1., 2., 3., 4.),
+                Numeric.newCopyOf(3., 5., 9., 12.),
                 new Nominal(4, new String[]{"ana", "are", "mere"}),
-                Vars.newSeq(1, 4, 1)
+                Index.newSeq(1, 4)
         };
         Frame df = new SolidFrame(4, vars, new String[]{"x", "y", "name", "index"}, null);
 

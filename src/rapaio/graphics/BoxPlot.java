@@ -60,7 +60,7 @@ public class BoxPlot extends BaseFigure {
             count[nominal.index(i)]++;
         }
         for (int i = 0; i < count.length; i++) {
-            vars[i] = new Numeric(count[i]);
+            vars[i] = Numeric.newFill(count[i], 0);
         }
         int[] pos = new int[vars.length];
         for (int i = 0; i < nominal.rowCount(); i++) {

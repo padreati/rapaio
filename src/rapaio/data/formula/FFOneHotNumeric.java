@@ -66,7 +66,7 @@ public class FFOneHotNumeric implements FrameFilter {
                 List<Var> oneHotVars = new ArrayList<>();
                 List<String> oneHotNames = new ArrayList<>();
                 for (int i = 1; i < dict.length; i++) {
-                    oneHotVars.add(new Numeric(df.rowCount()));
+                    oneHotVars.add(Numeric.newFill(df.rowCount()));
                     oneHotNames.add(varName + "." + dict[i]);
                 }
                 for (int i = 0; i < df.rowCount(); i++) {

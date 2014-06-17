@@ -20,9 +20,10 @@
 
 package rapaio.graphics;
 
+import rapaio.data.Index;
 import rapaio.data.Nominal;
+import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.data.Vars;
 import rapaio.graphics.base.BaseFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
@@ -64,7 +65,7 @@ public class BarChart extends BaseFigure {
             throw new IllegalArgumentException("conditions are nominal only");
         }
         if (numeric == null) {
-            numeric = Vars.newNum(category.rowCount(), 1);
+            numeric = Numeric.newFill(category.rowCount(), 1);
         }
         if (!numeric.type().isNumeric()) {
             throw new IllegalArgumentException("Numeric var must be .. isNumeric");
@@ -80,7 +81,7 @@ public class BarChart extends BaseFigure {
         bottomMarkers(true);
 
         int shift = 9;
-        color(Vars.newSeq(shift, condition.dictionary().length + shift - 1, 1));
+        color(Index.newSeq(shift, condition.dictionary().length));
     }
 
     private SortType sort = SortType.NONE;
@@ -158,7 +159,7 @@ public class BarChart extends BaseFigure {
 
             sel = new int[list.size()];
             if (SortType.NONE.equals(sort)) {
-                Set<Integer> set = new HashSet(list);
+                Set<Integer> set = new HashSet<>(list);
                 int pos = 0;
                 for (int i = 0; i < totals.length; i++) {
                     if (set.contains(i)) {

@@ -62,7 +62,7 @@ public class L2ConstantRegressor implements Regressor {
         for (String target : targets) {
             double mean = new Mean(df.col(target)).getValue();
             means.add(mean);
-            fitValues.add(new Numeric(df.col(target).rowCount(), df.col(target).rowCount(), mean));
+            fitValues.add(Numeric.newFill(df.col(target).rowCount(), mean));
         }
     }
 
@@ -70,10 +70,7 @@ public class L2ConstantRegressor implements Regressor {
     public void predict(Frame df) {
         fitValues = new ArrayList<>();
         for (int i = 0; i < targets.size(); i++) {
-            fitValues.add(new Numeric(
-                    df.rowCount(),
-                    df.rowCount(),
-                    means.get(i)));
+            fitValues.add(Numeric.newFill(df.rowCount(),means.get(i)));
         }
     }
 

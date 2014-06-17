@@ -32,7 +32,7 @@ public class NumVarTest {
 
     @Test
     public void smokeTest() {
-        Var v = new Numeric(0);
+        Var v = Numeric.newEmpty();
         boolean flag = v.type().isNumeric();
         assertEquals(true, flag);
         assertEquals(false, v.type().isNominal());
@@ -42,7 +42,7 @@ public class NumVarTest {
 
     @Test
     public void testGetterSetter() {
-        Var v = new Numeric(10);
+        Var v = Numeric.newEmpty(10);
         for (int i = 0; i < 10; i++) {
             v.setValue(i, Math.log(10 + i));
         }
@@ -83,12 +83,12 @@ public class NumVarTest {
 
     @Test
     public void testOneNumeric() {
-        Var one = Vars.newNumOne(Math.PI);
+        Var one = Numeric.newScalar(Math.PI);
 
         assertEquals(1, one.rowCount());
         assertEquals(Math.PI, one.value(0), 1e-10);
 
-        one = Vars.newNumOne(Math.E);
+        one = Numeric.newScalar(Math.E);
         assertEquals(1, one.rowCount());
         assertEquals(Math.E, one.value(0), 1e-10);
     }

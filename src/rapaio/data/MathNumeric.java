@@ -58,7 +58,7 @@ public final class MathNumeric {
     }
 
     public static Numeric minus(final Numeric a, final Numeric b) {
-        Numeric c = new Numeric();
+        Numeric c = Numeric.newEmpty();
         for (int i = 0; i < StrictMath.max(a.rowCount(), b.rowCount()); i++) {
             c.addValue(a.value(i) - b.value(i));
         }
@@ -67,7 +67,7 @@ public final class MathNumeric {
 
     public static Numeric dot(final Numeric a, final Numeric b) {
         final int len = StrictMath.max(a.rowCount(), b.rowCount());
-        Numeric c = new Numeric(len);
+        Numeric c = Numeric.newEmpty(len);
         for (int i = 0; i < len; i++) {
             c.setValue(i, a.value(i % a.rowCount()) * b.value(i % b.rowCount()));
         }
@@ -80,14 +80,14 @@ public final class MathNumeric {
         for (int i = 0; i < len; i++) {
             sum += a.value(i % a.rowCount()) * b.value(i % b.rowCount());
         }
-        Numeric c = new Numeric();
+        Numeric c = Numeric.newEmpty();
         c.addValue(sum);
         return c;
     }
 
     public static Numeric div(final Numeric a, final Numeric b) {
         final int len = StrictMath.max(a.rowCount(), b.rowCount());
-        Numeric c = new Numeric(len);
+        Numeric c = Numeric.newEmpty(len);
         for (int i = 0; i < len; i++) {
             c.setValue(i, a.value(i % a.rowCount()) / b.value(i % b.rowCount()));
         }
@@ -95,7 +95,7 @@ public final class MathNumeric {
     }
 
     public static Numeric scale(final Numeric a) {
-        final Numeric v = new Numeric(a.rowCount());
+        final Numeric v = Numeric.newEmpty(a.rowCount());
         double mean = mean(a).value(0);
         double sd = sd(a).value(0);
         for (int i = 0; i < v.rowCount(); i++) {
@@ -105,7 +105,7 @@ public final class MathNumeric {
     }
 
     public static Numeric pow(final Var a, double pow) {
-        Numeric v = new Numeric();
+        Numeric v = Numeric.newEmpty();
         for (int i = 0; i < a.rowCount(); i++) {
             v.addValue(StrictMath.pow(a.value(i), pow));
         }
@@ -113,7 +113,7 @@ public final class MathNumeric {
     }
 
     public static Numeric ln(final Var a, double shift) {
-        Numeric v = new Numeric();
+        Numeric v = Numeric.newEmpty();
         for (int i = 0; i < a.rowCount(); i++) {
             v.addValue(StrictMath.log(a.value(i) + shift));
         }

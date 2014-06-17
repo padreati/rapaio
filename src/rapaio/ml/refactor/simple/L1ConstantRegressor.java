@@ -73,7 +73,7 @@ public class L1ConstantRegressor implements Regressor {
         for (String target : targets) {
             double median = new Quantiles(df.col(target), new double[]{0.5}).getValues()[0];
             medians.add(median);
-            fitValues.add(new Numeric(df.col(target).rowCount(), df.col(target).rowCount(), median));
+            fitValues.add(Numeric.newFill(df.col(target).rowCount(), median));
         }
     }
 
@@ -81,7 +81,7 @@ public class L1ConstantRegressor implements Regressor {
     public void predict(Frame df) {
         fitValues = new ArrayList<>();
         for (int i = 0; i < targets.size(); i++) {
-            fitValues.add(new Numeric(df.rowCount(), df.rowCount(), medians.get(i)));
+            fitValues.add(Numeric.newFill(df.rowCount(), medians.get(i)));
         }
     }
 

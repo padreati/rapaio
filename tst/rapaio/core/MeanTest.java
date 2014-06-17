@@ -47,7 +47,7 @@ public class MeanTest extends CoreStatTestUtil {
 
     @Test
     public void testWithEmptyValues() {
-        Var num = new Numeric(10);
+        Var num = Numeric.newEmpty(10);
         num.setValue(0, 1);
         assertEquals(1.0, new Mean(num).getValue(), 10e-10);
 

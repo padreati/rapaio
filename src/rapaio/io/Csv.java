@@ -148,11 +148,11 @@ public class Csv {
                     }
                     for (String colName : names) {
                         if (indexFieldHints.contains(colName)) {
-                            vars.add(new Index(0, 0, 0));
+                            vars.add(Index.newEmpty());
                             continue;
                         }
                         if (numericFieldHints.contains(colName)) {
-                            vars.add(new Numeric());
+                            vars.add(Numeric.newEmpty());
                             continue;
                         }
                         if (nominalFieldHints.contains(colName)) {
@@ -165,10 +165,10 @@ public class Csv {
                                 vars.add(new Nominal());
                                 break;
                             case NUMERIC:
-                                vars.add(new Numeric());
+                                vars.add(Numeric.newEmpty());
                                 break;
                             case INDEX:
-                                vars.add(new Index());
+                                vars.add(Index.newEmpty());
                                 break;
                         }
                     }
@@ -198,7 +198,7 @@ public class Csv {
                                 Double fallbackNumeric;
                                 try {
                                     fallbackNumeric = Double.parseDouble(value);
-                                    Numeric num = new Numeric();
+                                    Numeric num = Numeric.newEmpty();
                                     for (int j = 0; j < v.rowCount(); j++) {
                                         num.addValue(v.index(j));
                                     }
@@ -244,14 +244,6 @@ public class Csv {
         return new SolidFrame(rows - startRow, vars, names, null);
     }
 
-    /**
-     * Parses a line from csv file according with the configured setting for the
-     * parse. E.g. separates columns by getCol separator, but not by the getColCount
-     * separators inside quotas, if quota is configured.
-     *
-     * @param line
-     * @return
-     */
     public List<String> parseLine(String line) {
         List<String> data = new ArrayList<>();
         int start = 0;

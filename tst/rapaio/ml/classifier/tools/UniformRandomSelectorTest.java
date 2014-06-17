@@ -22,10 +22,7 @@ package rapaio.ml.classifier.tools;
 
 import org.junit.Test;
 import rapaio.core.ColRange;
-import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.Vars;
+import rapaio.data.*;
 import rapaio.ml.refactor.colselect.ColSelector;
 import rapaio.ml.refactor.colselect.RandomColSelector;
 
@@ -41,15 +38,15 @@ public class UniformRandomSelectorTest {
 		Frame df = new SolidFrame(
 				0,
 				new Var[]{
-						Vars.newIdxOne(1),
-						Vars.newIdxOne(1),
-						Vars.newIdxOne(1),
-						Vars.newIdxOne(1),
-						Vars.newIdxOne(1),
-						Vars.newIdxOne(1),
-						Vars.newIdxOne(1),
-						Vars.newIdxOne(1),
-						Vars.newIdxOne(1)},
+						Index.newScalar(1),
+                        Index.newScalar(1),
+                        Index.newScalar(1),
+                        Index.newScalar(1),
+						Index.newScalar(1),
+                        Index.newScalar(1),
+                        Index.newScalar(1),
+                        Index.newScalar(1),
+                        Index.newScalar(1)},
 				new String[]{
 						"a", "b", "c", "d", "e", "f", "g", "h", "class"
 				},

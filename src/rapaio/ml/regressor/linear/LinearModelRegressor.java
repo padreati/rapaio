@@ -58,7 +58,7 @@ public class LinearModelRegressor implements Regressor {
         Matrix X = buildX(df);
         Matrix Y = buildY(df);
         Matrix beta = new QRDecomposition(X).solve(Y);
-        Var betaC = new Numeric();
+        Var betaC = Numeric.newEmpty();
         Var betaN = new Nominal();
         for (int i = 0; i < predictors.size(); i++) {
             betaN.addLabel(predictors.get(i));
@@ -70,7 +70,7 @@ public class LinearModelRegressor implements Regressor {
     }
 
     private Var buildFit(Frame df) {
-        Var result = Vars.newNum(df.rowCount(), 0);
+        Var result = Numeric.newFill(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
             double acc = 0;
             for (int k = 0; k < predictors.size(); k++) {

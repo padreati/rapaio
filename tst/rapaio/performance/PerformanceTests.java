@@ -44,10 +44,10 @@ public class PerformanceTests {
         final int TESTS = 100;
         final int LEN = 1_000_000;
 
-        Numeric index = new Numeric();
-        Numeric time1 = new Numeric();
-        Numeric time2 = new Numeric();
-        Numeric delta = new Numeric();
+        Numeric index = Numeric.newEmpty();
+        Numeric time1 = Numeric.newEmpty();
+        Numeric time2 = Numeric.newEmpty();
+        Numeric delta = Numeric.newEmpty();
 
         for (int i = 0; i < TESTS; i++) {
 
@@ -59,7 +59,7 @@ public class PerformanceTests {
             time1.addValue(System.currentTimeMillis() - start);
 
             start = System.currentTimeMillis();
-            Numeric numeric = new Numeric();
+            Numeric numeric = Numeric.newEmpty();
             for (int j = 0; j < LEN; j++) {
                 numeric.addValue(j * Math.sin(j));
             }

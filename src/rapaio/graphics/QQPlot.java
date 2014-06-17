@@ -39,7 +39,7 @@ public class QQPlot extends Plot {
 
     public QQPlot add(Var points, Distribution distribution) {
         Var x = sort(points);
-        Var y = new Numeric(x.rowCount());
+        Var y = Numeric.newEmpty(x.rowCount());
         for (int i = 0; i < y.rowCount(); i++) {
             double p = (i + 1) / (y.rowCount() + 1.);
             y.setValue(i, distribution.quantile(p));

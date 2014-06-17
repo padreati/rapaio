@@ -43,7 +43,7 @@ public class OneRuleTest {
         classVar.setLabel(4, "False");
         classVar.setLabel(5, "False");
 
-        heightVar = new Numeric(new double[]{0.1, 0.3, 0.5, 10, 10.3, 10.5});
+        heightVar = Numeric.newCopyOf(0.1, 0.3, 0.5, 10, 10.3, 10.5);
     }
 
     @Test

@@ -175,15 +175,13 @@ public interface Var extends Serializable {
 
     Var solidCopy();
 
-    void ensureCapacity(int minCapacity);
-
     public VSpots stream();
 
     public static Collector<Double, Numeric, Numeric> numericCollector() {
         return new Collector<Double, Numeric, Numeric>() {
             @Override
             public Supplier<Numeric> supplier() {
-                return Numeric::new;
+                return Numeric::newEmpty;
             }
 
             @Override
@@ -215,7 +213,7 @@ public interface Var extends Serializable {
         return new Collector<Integer, Index, Index>() {
             @Override
             public Supplier<Index> supplier() {
-                return Index::new;
+                return Index::newEmpty;
             }
 
             @Override
