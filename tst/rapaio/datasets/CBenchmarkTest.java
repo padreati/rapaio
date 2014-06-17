@@ -61,7 +61,7 @@ public class CBenchmarkTest {
         List<Var> resultCols = new ArrayList<>();
         List<String> resultNames = new ArrayList<>();
 
-        resultCols.add(new Nominal(tasks.size(), Collections.<String>emptyList()));
+        resultCols.add(Nominal.newEmpty(tasks.size(), Collections.<String>emptyList()));
         resultNames.add("data set");
 
         for (String cName : cNames) {

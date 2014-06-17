@@ -123,7 +123,7 @@ public class MIClassifier extends AbstractClassifier {
             predictions.put(groupLabel, dict[dv.findBestIndex()]);
         });
 
-        pred = new Nominal(df.rowCount(), dict);
+        pred = Nominal.newEmpty(df.rowCount(), dict);
 
         c.pred().stream().forEach(s -> pred.setLabel(s.row(), predictions.get(df.label(s.row(), groupCol))));
         dist = c.dist();

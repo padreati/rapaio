@@ -33,7 +33,7 @@ public class NominalTest {
 
     @Test
     public void testSmoke() {
-        Var v = new Nominal(0, new String[]{});
+        Var v = Nominal.newEmpty(0);
         assertEquals(0, v.rowCount());
         assertEquals(1, v.dictionary().length);
         assertEquals("?", v.dictionary()[0]);
@@ -41,7 +41,7 @@ public class NominalTest {
         assertTrue(v.type().isNominal());
         assertFalse(v.type().isNumeric());
 
-        v = new Nominal(1, new String[]{"a"});
+        v = Nominal.newEmpty(1, "a");
         assertEquals(1, v.rowCount());
         assertEquals("?", v.label(0));
 
@@ -50,7 +50,7 @@ public class NominalTest {
 
     @Test
     public void testDictionary() {
-        Var v = new Nominal(0, new String[]{"a", "a", "v", "a"});
+        Var v = Nominal.newEmpty(0, "a", "a", "v", "a");
         assertEquals(3, v.dictionary().length);
         assertEquals("?", v.dictionary()[0]);
         assertEquals("a", v.dictionary()[1]);
@@ -61,7 +61,7 @@ public class NominalTest {
         set.add("v");
         set.add("a");
 
-        v = new Nominal(0, set);
+        v = Nominal.newEmpty(0, set);
         assertEquals(3, v.dictionary().length);
         assertEquals("?", v.dictionary()[0]);
         assertEquals("a", v.dictionary()[1]);
@@ -70,7 +70,7 @@ public class NominalTest {
 
     @Test
     public void testSetterGetter() {
-        Var v = new Nominal(4, new String[]{"a", "b", "c"});
+        Var v = Nominal.newEmpty(4, "a", "b", "c");
         for (int i = 0; i < 4; i++) {
             assertTrue(v.missing(i));
             assertEquals(0, v.index(i));
@@ -123,7 +123,7 @@ public class NominalTest {
 
     @Test
     public void testLabel() {
-        Var v = new Nominal(1, new String[]{"a", "b", "c"});
+        Var v = Nominal.newEmpty(1, "a", "b", "c");
 
         boolean exceptional = false;
         try {
@@ -152,7 +152,7 @@ public class NominalTest {
 
     @Test
     public void testMissing() {
-        Var v = new Nominal(1, new String[]{"a", "b"});
+        Var v = Nominal.newEmpty(1, "a", "b");
         assertTrue(v.missing(0));
 
         v.setLabel(0, "a");

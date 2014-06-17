@@ -161,7 +161,7 @@ public final class BaseFilters implements Serializable {
                 continue;
             }
             Var origin = df.col(i);
-            Var discrete = new Nominal(origin.rowCount(), dict);
+            Var discrete = Nominal.newEmpty(origin.rowCount(), dict);
             if (!useQuantiles) {
                 Var sorted = sort(df.col(i));
                 int width = (int) Math.ceil(df.rowCount() / (1. * bins));
@@ -234,7 +234,7 @@ public final class BaseFilters implements Serializable {
                 if (!v.type().isNominal()) {
                     vars[i] = v;
                 } else {
-                    vars[i] = new Nominal(v.rowCount(), dicts.get(colName));
+                    vars[i] = Nominal.newEmpty(v.rowCount(), dicts.get(colName));
                     for (int k = 0; k < vars[i].rowCount(); k++) {
                         vars[i].setLabel(k, v.label(k));
                     }
@@ -346,7 +346,7 @@ public final class BaseFilters implements Serializable {
             for (int j = 0; j < frame.colCount(); j++) {
                 vars.add(frame.col(j));
             }
-            Var col = new Nominal(frame.rowCount(), dict);
+            Var col = Nominal.newEmpty(frame.rowCount(), dict);
             for (int j = 0; j < frame.rowCount(); j++) {
                 StringBuilder sb = new StringBuilder();
                 for (String c : combined) {

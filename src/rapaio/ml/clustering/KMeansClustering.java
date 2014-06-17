@@ -60,7 +60,7 @@ public class KMeansClustering {
         for (int i = 0; i < k; i++) {
             names.add("c" + (i + 1));
         }
-        Var var = new Nominal(arrows.length, names);
+        Var var = Nominal.newEmpty(arrows.length, names);
         for (int i = 0; i < arrows.length; i++) {
             var.setIndex(i, arrows[i] + 1);
         }

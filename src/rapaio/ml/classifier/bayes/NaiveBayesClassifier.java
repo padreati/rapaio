@@ -141,7 +141,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
     @Override
     public void predict(Frame df) {
 
-        pred = new Nominal(df.rowCount(), dict);
+        pred = Nominal.newEmpty(df.rowCount(), dict);
         dist = Frames.newMatrix(df.rowCount(), dict);
 
         for (int i = 0; i < df.rowCount(); i++) {

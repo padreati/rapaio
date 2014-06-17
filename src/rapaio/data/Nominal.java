@@ -51,7 +51,27 @@ public class Nominal extends AbstractVar {
     short[] data;
     Map<String, Short> reverse;
 
-    public Nominal() {
+    public static Nominal newEmpty() {
+        return new Nominal();
+    }
+
+    public static Nominal newEmpty(int rows, String... dict) {
+        return Nominal.newEmpty(rows, Arrays.asList(dict));
+    }
+
+    public static Nominal newEmpty(int rows, Collection<String> dict) {
+        Nominal nominal = new Nominal();
+        for (String next : dict) {
+            if (nominal.dict.contains(next)) continue;
+            nominal.dict.add(next);
+            nominal.reverse.put(next, (short) nominal.reverse.size());
+        }
+        nominal.data = new short[rows];
+        nominal.rows = rows;
+        return nominal;
+    }
+
+    protected Nominal() {
         // set the missing value
         this.reverse = new HashMap<>();
         this.reverse.put("?", (short) 0);
@@ -59,21 +79,6 @@ public class Nominal extends AbstractVar {
         this.dict.add("?");
         data = new short[0];
         rows = 0;
-    }
-
-    public Nominal(int size, String[] dict) {
-        this(size, Arrays.asList(dict));
-    }
-
-    public Nominal(int size, Collection<String> dict) {
-        this();
-        for (String next : dict) {
-            if (this.dict.contains(next)) continue;
-            this.dict.add(next);
-            this.reverse.put(next, (short) reverse.size());
-        }
-        data = new short[size];
-        rows = size;
     }
 
     @Override
@@ -241,7 +246,7 @@ public class Nominal extends AbstractVar {
 
     @Override
     public Nominal solidCopy() {
-        Nominal copy = new Nominal(rowCount(), dictionary());
+        Nominal copy = Nominal.newEmpty(rowCount(), dictionary());
         for (int i = 0; i < rowCount(); i++) {
             copy.setLabel(i, label(i));
         }

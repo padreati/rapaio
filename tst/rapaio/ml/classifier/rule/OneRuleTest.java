@@ -35,7 +35,7 @@ public class OneRuleTest {
     private final Var heightVar;
 
     public OneRuleTest() {
-        classVar = new Nominal(SIZE, new String[]{"False", "True"});
+        classVar = Nominal.newEmpty(SIZE, "False", "True");
         classVar.setLabel(0, "True");
         classVar.setLabel(1, "True");
         classVar.setLabel(2, "True");

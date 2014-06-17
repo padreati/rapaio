@@ -156,13 +156,13 @@ public class Csv {
                             continue;
                         }
                         if (nominalFieldHints.contains(colName)) {
-                            vars.add(new Nominal());
+                            vars.add(Nominal.newEmpty());
                             continue;
                         }
                         // default getType
                         switch (defaultType) {
                             case NOMINAL:
-                                vars.add(new Nominal());
+                                vars.add(Nominal.newEmpty());
                                 break;
                             case NUMERIC:
                                 vars.add(Numeric.newEmpty());
@@ -208,7 +208,7 @@ public class Csv {
 
                                 } catch (Throwable ex2) {
                                     // can't parse, use nominal
-                                    Nominal nom = new Nominal();
+                                    Nominal nom = Nominal.newEmpty();
                                     for (int j = 0; j < v.rowCount(); j++) {
                                         nom.addLabel(String.valueOf(v.index(j)));
                                     }
@@ -225,7 +225,7 @@ public class Csv {
                                 v.addValue(numValue);
                             } catch (Throwable ex) {
                                 // can't parse, use nominal
-                                Nominal nom = new Nominal();
+                                Nominal nom = Nominal.newEmpty();
                                 for (int j = 0; j < v.rowCount(); j++) {
                                     nom.addLabel(String.valueOf(v.value(j)));
                                 }

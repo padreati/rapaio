@@ -221,7 +221,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
     @Override
     public void predict(Frame df) {
-        pred = new Nominal(df.rowCount(), dict);
+        pred = Nominal.newEmpty(df.rowCount(), dict);
         dist = Frames.newMatrix(df.rowCount(), dict);
 
         for (int i = 0; i < h.size(); i++) {

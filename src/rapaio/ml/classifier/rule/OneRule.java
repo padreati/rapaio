@@ -80,7 +80,7 @@ public class OneRule extends AbstractClassifier {
 
     @Override
     public void predict(Frame test) {
-        pred = new Nominal(test.rowCount(), dict);
+        pred = Nominal.newEmpty(test.rowCount(), dict);
         for (int i = 0; i < test.rowCount(); i++) {
             pred.setLabel(i, predict(test, i));
         }

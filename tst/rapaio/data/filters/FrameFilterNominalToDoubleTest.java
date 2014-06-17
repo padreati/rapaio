@@ -44,7 +44,7 @@ public class FrameFilterNominalToDoubleTest {
         for (int i = 0; i < n; i++) {
             dict.add(String.valueOf(Math.pow(i, 1.5)));
         }
-        Var v = new Nominal(10, dict);
+        Var v = Nominal.newEmpty(10, dict);
         for (int i = 0; i < v.rowCount(); i++) {
             String value = String.valueOf(Math.pow(i, 1.5));
             v.setLabel(i, value);
@@ -67,7 +67,7 @@ public class FrameFilterNominalToDoubleTest {
 
     @Test
     public void testNFE() {
-        Var filtered = new Nominal(1, Arrays.asList(new String[]{"abc"}));
+        Var filtered = Nominal.newEmpty(1, "abc");
         filtered.setLabel(0, "abc");
         Var numeric = toNumeric(filtered);
         assertEquals(numeric.value(0), numeric.value(0), 1e-10);

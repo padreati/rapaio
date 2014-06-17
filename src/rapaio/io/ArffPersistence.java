@@ -113,7 +113,7 @@ public class ArffPersistence {
                                 tempMap.add(fullTrim(catVal));
                             }
                             nomValueMap.put(variableName, tempMap);
-                            vars.add(new Nominal(0, tempMap));
+                            vars.add(Nominal.newEmpty(0, tempMap));
                         }
                         continue;
                     }
@@ -127,7 +127,7 @@ public class ArffPersistence {
                     newvectors.add(Numeric.newEmpty(data.size()));
                 }
                 if (vars.get(i) instanceof Nominal) {
-                    newvectors.add(new Nominal(data.size(), nomValueMap.get(names.get(i))));
+                    newvectors.add(Nominal.newEmpty(data.size(), nomValueMap.get(names.get(i))));
                 }
             }
             Frame df = new SolidFrame(data.size(), newvectors, names, null);

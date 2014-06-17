@@ -90,7 +90,7 @@ public class SolidFrameTest {
         Var[] vars = new Var[]{
                 Numeric.newCopyOf(1., 2., 3., 4.),
                 Numeric.newCopyOf(3., 5., 9., 12.),
-                new Nominal(4, new String[]{"ana", "are", "mere"}),
+                Nominal.newEmpty(4, "ana", "are", "mere"),
                 Index.newSeq(1, 4)
         };
         Frame df = new SolidFrame(4, vars, new String[]{"x", "y", "name", "index"}, null);

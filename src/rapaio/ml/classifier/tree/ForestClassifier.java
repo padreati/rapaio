@@ -237,7 +237,7 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
 
     @Override
     public void predict(Frame df) {
-        pred = new Nominal(df.rowCount(), dict);
+        pred = Nominal.newEmpty(df.rowCount(), dict);
         dist = Frames.newMatrix(df.rowCount(), dict);
 
         List<Frame> distributions = new ArrayList<>();

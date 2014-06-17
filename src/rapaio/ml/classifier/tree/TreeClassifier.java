@@ -22,7 +22,6 @@ package rapaio.ml.classifier.tree;
 
 import rapaio.core.RandomSource;
 import rapaio.data.*;
-import rapaio.data.Var;
 import rapaio.data.filters.BaseFilters;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
@@ -223,7 +222,7 @@ public class TreeClassifier extends AbstractClassifier {
     @Override
     public void predict(Frame df) {
 
-        pred = new Nominal(df.rowCount(), dict);
+        pred = Nominal.newEmpty(df.rowCount(), dict);
         dist = Frames.newMatrix(df.rowCount(), dict);
 
         df.stream().forEach(spot -> {

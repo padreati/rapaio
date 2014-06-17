@@ -59,7 +59,7 @@ public class LinearModelRegressor implements Regressor {
         Matrix Y = buildY(df);
         Matrix beta = new QRDecomposition(X).solve(Y);
         Var betaC = Numeric.newEmpty();
-        Var betaN = new Nominal();
+        Var betaN = Nominal.newEmpty();
         for (int i = 0; i < predictors.size(); i++) {
             betaN.addLabel(predictors.get(i));
             betaC.addValue(beta.get(i, 0));

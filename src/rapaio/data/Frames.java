@@ -61,7 +61,7 @@ public final class Frames implements Serializable {
         for (int i = 0; i < df.colCount(); i++) {
             Var src = df.col(i);
             if (src.type().isNominal()) {
-                vars.add(new Nominal(len, df.col(i).dictionary()));
+                vars.add(Nominal.newEmpty(len, df.col(i).dictionary()));
                 names.add(df.colNames()[i]);
                 for (int j = 0; j < df.rowCount(); j++) {
                     vars.get(i).setLabel(j, src.label(j));

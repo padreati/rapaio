@@ -59,7 +59,7 @@ public class BarChart extends BaseFigure {
             throw new IllegalArgumentException("categories are nominal only");
         }
         if (condition == null) {
-            condition = new Nominal(category.rowCount(), new HashSet<>());
+            condition = Nominal.newEmpty(category.rowCount(), new HashSet<>());
         }
         if (!condition.type().isNominal()) {
             throw new IllegalArgumentException("conditions are nominal only");

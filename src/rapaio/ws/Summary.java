@@ -382,7 +382,7 @@ public class Summary {
             labels.add(a.label(i));
         }
         labels.add("Totals");
-        vars[0] = new Nominal(a.rowCount() + 1, labels);
+        vars[0] = Nominal.newEmpty(a.rowCount() + 1, labels);
         for (int i = 0; i < a.dictionary().length; i++) {
             vars[0].setLabel(i, a.dictionary()[i]);
         }

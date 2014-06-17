@@ -56,7 +56,7 @@ public class FrameFilterSortTest {
 
     @Test
     public void testNominalVector() {
-        Var unsorted = new Nominal(3, Arrays.asList(new String[]{"ana", "vasile", "ion"}));
+        Var unsorted = Nominal.newEmpty(3, "ana", "vasile", "ion");
         unsorted.setLabel(0, "ana");
         unsorted.setLabel(1, "vasile");
         unsorted.setLabel(2, "ion");
@@ -82,7 +82,7 @@ public class FrameFilterSortTest {
 
     @Test
     public void testNominalVectorWithNA() {
-        Var unsorted = new Nominal(3, Arrays.asList(new String[]{"ana", "vasile", "ion"}));
+        Var unsorted = Nominal.newEmpty(3, "ana", "vasile", "ion");
         unsorted.setLabel(0, "ana");
         unsorted.setLabel(1, "vasile");
         unsorted.setLabel(2, "?");

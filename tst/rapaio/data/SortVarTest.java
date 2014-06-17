@@ -48,7 +48,7 @@ public class SortVarTest {
         assertTrue(sorted.type().isNumeric());
         assertFalse(sorted.type().isNominal());
 
-        v = new Nominal(0, new String[]{});
+        v = Nominal.newEmpty(0);
         sorted = sort(v, nominalComparator(v, true));
         assertFalse(sorted.type().isNumeric());
         assertTrue(sorted.type().isNominal());
@@ -102,7 +102,7 @@ public class SortVarTest {
     @Test
     public void testSortNominal() {
         String[] dict = new String[]{"a", "Aa", "b", "c", "Cc"};
-        Var nominal = new Nominal(10, dict);
+        Var nominal = Nominal.newEmpty(10, dict);
 
         for (int i = 0; i < 10; i++) {
             nominal.setLabel(i, dict[i % dict.length]);

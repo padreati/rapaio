@@ -156,7 +156,7 @@ public class MappedVar extends AbstractVar {
     public Var solidCopy() {
         switch (source.type()) {
             case NOMINAL:
-                Nominal nom = new Nominal(mapping.size(), source.dictionary());
+                Nominal nom = Nominal.newEmpty(mapping.size(), source.dictionary());
                 for (int i = 0; i < mapping.size(); i++) {
                     nom.setLabel(i, label(i));
                 }

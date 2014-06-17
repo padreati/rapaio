@@ -32,8 +32,8 @@ public class ConfusionMatrixTest {
 
     @Test
     public void hello() {
-        Var actual = new Nominal(11, new String[]{"cat", "dog", "mouse"});
-        Var predict = new Nominal(11, new String[]{"cat", "dog", "mouse"});
+        Var actual = Nominal.newEmpty(11, "cat", "dog", "mouse");
+        Var predict = Nominal.newEmpty(11, "cat", "dog", "mouse");
 
         actual.setLabel(0, "cat");
         predict.setLabel(0, "cat");
