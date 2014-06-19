@@ -27,7 +27,7 @@ import java.text.DecimalFormat;
 /**
  * @author Aurelian Tutuianu
  */
-public class Normal extends Distribution {
+public class Norm extends Distribution {
 
     private final double mu;
     private final double sd;
@@ -36,17 +36,22 @@ public class Normal extends Distribution {
     @Override
     public String getName() {
         DecimalFormat f = PrinterUtils.getDecimalFormat();
-        return String.format("Normal(mu=%s, sd=%s)", f.format(mu), f.format(sd));
+        return String.format("Norm(mu=%s, sd=%s)", f.format(mu), f.format(sd));
     }
 
-    public Normal() {
+    public Norm() {
         this(0, 1);
     }
 
-    public Normal(double mu, double sd) {
+    public Norm(double mu, double sd) {
         this.mu = mu;
         this.sd = sd;
         this.var = sd * sd;
+    }
+
+    @Override
+    public boolean isDiscrete() {
+        return false;
     }
 
     public double getMu() {

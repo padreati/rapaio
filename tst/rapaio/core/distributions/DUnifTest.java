@@ -27,9 +27,9 @@ import org.junit.Test;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class DUniformTest {
+public class DUnifTest {
 
-	public DUniformTest() {
+	public DUnifTest() {
 	}
 
 	@Before

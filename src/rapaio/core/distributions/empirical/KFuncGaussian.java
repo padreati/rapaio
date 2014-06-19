@@ -21,14 +21,14 @@
 package rapaio.core.distributions.empirical;
 
 import rapaio.core.distributions.Distribution;
-import rapaio.core.distributions.Normal;
+import rapaio.core.distributions.Norm;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class KFuncGaussian implements KFunc {
 
-    private final Distribution normal = new Normal();
+    private final Distribution normal = new Norm();
 
     @Override
     public double pdf(double x, double x0, double bandwidth) {

@@ -37,6 +37,12 @@ public abstract class Distribution {
      */
     public abstract String getName();
 
+    public abstract boolean isDiscrete();
+
+    public boolean isContinuous() {
+        return !isDiscrete();
+    }
+
     /**
      * @param x value for which it calculates log of probability
      * @return log of probability of x

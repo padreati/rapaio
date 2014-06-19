@@ -21,72 +21,98 @@
 package rapaio.core.distributions;
 
 /**
- * @author Aurelian Tutuianu
+ * @author tutuianu
  */
-@Deprecated
-public class Poisson extends Distribution {
+public class Unif extends Distribution {
 
-    private final double lambda;
+    private final double a;
+    private final double b;
 
-    public Poisson(double lambda) {
-        if (lambda <= 0.) {
-            throw new IllegalArgumentException("Lambda parameter for Poisson distribution must have positive value.");
-        }
-        this.lambda = lambda;
+    public Unif(double a, double b) {
+        this.a = a;
+        this.b = b;
+    }
+
+    public double getA() {
+        return a;
+    }
+
+    public double getB() {
+        return b;
     }
 
     @Override
     public String getName() {
-        return "Poisson Distribution";
+        return "Continuous Uniform Distribution";
+    }
+
+    @Override
+    public boolean isDiscrete() {
+        return false;
     }
 
     @Override
     public double pdf(double x) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (x < a || x > b) {
+            return 0;
+        }
+        if (a == b) {
+            return 0;
+        }
+        return 1 / (b - a);
     }
 
     @Override
     public double cdf(double x) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (x < a) {
+            return 0;
+        }
+        if (x > b) {
+            return 1;
+        }
+        return (x - a) / (b - a);
     }
 
     @Override
     public double quantile(double p) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (p < 0 || p > 1) {
+            throw new ArithmeticException("probability value should lie in [0,1] interval");
+        }
+        return a + p * (b - a);
     }
 
     @Override
     public double min() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return a;
     }
 
     @Override
     public double max() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return b;
     }
 
     @Override
     public double mean() {
-        return lambda;
+        return a + (b - a) / 2.;
     }
 
     @Override
     public double mode() {
-        return lambda;
+        return mean();
     }
 
     @Override
     public double variance() {
-        return lambda;
+        return Math.pow(b - a, 2) / 12.;
     }
 
     @Override
     public double skewness() {
-        return Math.pow(lambda, -0.5);
+        return 0;
     }
 
     @Override
     public double kurtosis() {
-        return Math.pow(lambda, -1);
+        return -6. / 5.;
     }
 }

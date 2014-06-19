@@ -20,7 +20,7 @@
 
 package rapaio.ml.classifier.bayes;
 
-import rapaio.core.distributions.Normal;
+import rapaio.core.distributions.Norm;
 import rapaio.core.distributions.empirical.*;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
@@ -196,7 +196,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
 
     public static class CvpEstimatorGaussianEmpiric implements CvpEstimator {
 
-        private final Map<String, Normal> normals = new HashMap<>();
+        private final Map<String, Norm> normals = new HashMap<>();
 
         @Override
         public String name() {
@@ -214,7 +214,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
                 Var v = cond.col(testCol);
                 double mu = new Mean(v).getValue();
                 double sd = Math.sqrt(new Variance(v).getValue());
-                normals.put(classLabel, new Normal(mu, sd));
+                normals.put(classLabel, new Norm(mu, sd));
             }
         }
 

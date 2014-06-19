@@ -31,7 +31,7 @@ import java.util.HashMap;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class UniformRandomSelectorTest {
+public class UnifRandomSelectorTest {
 
 	@Test
 	public void testNaive() {

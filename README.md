@@ -27,6 +27,8 @@ is considered to be fully implemented and well tested.
 * StudentT - not tested
 * Continuous Uniform
 * Discrete Uniform
+* Bernoulli - not tested
+* Binomial - not tested
 
 **Correlations**
 
@@ -81,3 +83,9 @@ further improvements in order to make the utilization easier.
 * QQPlot
 * BarChart
 * BoxPlot
+
+
+** Other notes **
+
+Check JDistLib for distribution function implementations
+Added links to rcaller in order to test against R implementations.

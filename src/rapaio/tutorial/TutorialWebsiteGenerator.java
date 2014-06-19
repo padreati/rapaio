@@ -82,10 +82,11 @@ public class TutorialWebsiteGenerator {
 
         pages.put("SupervisedClassification", Arrays.asList(
 //                new ClassificationWithRF()
+                new ClassificationWithNaiveBayesPage()
         ));
 
         pages.put("Regression", Arrays.asList(
-                new LinearModel1Page()//,
+//                new LinearModel1Page()//,
 //                new LinearRegression2Page(),
 //                new LinearRegression3Page()
         ));

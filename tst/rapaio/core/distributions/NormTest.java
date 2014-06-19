@@ -34,19 +34,19 @@ import static org.junit.Assert.assertFalse;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class NormalTest {
+public class NormTest {
 
     private static final double ERROR = 1e-9;
     private Frame df;
 
-    public NormalTest() throws IOException, URISyntaxException {
+    public NormTest() throws IOException, URISyntaxException {
         df = new Csv().withHeader(false).withSeparatorChar(' ').read(this.getClass(), "standard_normal.csv");
         df = BaseFilters.toNumeric(df);
     }
 
     @Test
     public void testStandardQuantile() {
-        Normal d = new Normal();
+        Norm d = new Norm();
         double step = 0.0001;
         double q = 0;
         int pos = 0;
@@ -73,7 +73,7 @@ public class NormalTest {
 
     @Test
     public void testExceptions() {
-        Normal dist = new Normal();
+        Norm dist = new Norm();
         try {
             dist.cdf(Double.NaN);
             assertFalse(true);
@@ -98,7 +98,7 @@ public class NormalTest {
 
     @Test
     public void testAttributes() {
-        Normal distr = new Normal(1, 1);
+        Norm distr = new Norm(1, 1);
         assertEquals(1., distr.getMu(), ERROR);
         assertEquals(1., distr.getVar(), ERROR);
     }

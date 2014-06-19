@@ -47,6 +47,11 @@ public class StudentT extends Distribution {
     }
 
     @Override
+    public boolean isDiscrete() {
+        return false;
+    }
+
+    @Override
     public double pdf(double t) {
         return Math.exp(lnGamma((df + 1) / 2) - lnGamma(df / 2) - Math.log(df * Math.PI) / 2 - Math.log(sigma)
                 - (df + 1) / 2 * Math.log(1 + Math.pow((t - mu) / sigma, 2) / df));

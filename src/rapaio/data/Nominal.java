@@ -48,8 +48,8 @@ public class Nominal extends AbstractVar {
 
     int rows = 0;
     List<String> dict;
-    short[] data;
-    Map<String, Short> reverse;
+    int[] data;
+    Map<String, Integer> reverse;
 
     public static Nominal newEmpty() {
         return new Nominal();
@@ -64,9 +64,9 @@ public class Nominal extends AbstractVar {
         for (String next : dict) {
             if (nominal.dict.contains(next)) continue;
             nominal.dict.add(next);
-            nominal.reverse.put(next, (short) nominal.reverse.size());
+            nominal.reverse.put(next, nominal.reverse.size());
         }
-        nominal.data = new short[rows];
+        nominal.data = new int[rows];
         nominal.rows = rows;
         return nominal;
     }
@@ -74,10 +74,10 @@ public class Nominal extends AbstractVar {
     protected Nominal() {
         // set the missing value
         this.reverse = new HashMap<>();
-        this.reverse.put("?", (short) 0);
+        this.reverse.put("?", 0);
         this.dict = new ArrayList<>();
         this.dict.add("?");
-        data = new short[0];
+        data = new int[0];
         rows = 0;
     }
 
@@ -164,11 +164,11 @@ public class Nominal extends AbstractVar {
             data[row] = missingIndex;
             return;
         }
-        Short idx = reverse.get(value);
+        Integer idx = reverse.get(value);
         if (idx == null) {
             dict.add(value);
-            reverse.put(value, (short) reverse.size());
-            idx = (short) (reverse.size() - 1);
+            reverse.put(value, reverse.size());
+            idx = reverse.size() - 1;
         }
         data[row] = idx;
     }
@@ -178,7 +178,7 @@ public class Nominal extends AbstractVar {
         grow(rows + 1);
         if (!reverse.containsKey(label)) {
             dict.add(label);
-            reverse.put(label, (short) (reverse.size()));
+            reverse.put(label, reverse.size());
         }
         data[rows++] = reverse.get(label);
     }
@@ -191,17 +191,17 @@ public class Nominal extends AbstractVar {
     @Override
     public void setDictionary(String[] dict) {
         List<String> oldDict = this.dict;
-        Map<String, Short> oldReverse = this.reverse;
+        Map<String, Integer> oldReverse = this.reverse;
 
         this.dict = new ArrayList<>();
         this.reverse = new HashMap<>();
         this.dict.add("?");
-        this.reverse.put("?", (short) 0);
+        this.reverse.put("?", 0);
 
         for (String term : dict) {
             if (!reverse.containsKey(term)) {
                 this.dict.add(term);
-                this.reverse.put(term, (short) this.reverse.size());
+                this.reverse.put(term, this.reverse.size());
             }
         }
 

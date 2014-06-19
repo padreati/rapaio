@@ -22,7 +22,7 @@ package rapaio.data.filters;
 
 import rapaio.core.ColRange;
 import rapaio.core.RandomSource;
-import rapaio.core.distributions.Normal;
+import rapaio.core.distributions.Norm;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.*;
 import rapaio.data.mapping.MappedFrame;
@@ -485,10 +485,10 @@ public final class BaseFilters implements Serializable {
      * @return altered values
      */
     public static Numeric jitter(Var var, double sd) {
-        Normal normal = new Normal(0, sd);
+        Norm norm = new Norm(0, sd);
         Numeric result = Numeric.newEmpty(var.rowCount());
         result.stream().forEach(s -> result.setValue(s.row(),
-                var.value(s.row()) + normal.quantile(RandomSource.nextDouble())));
+                var.value(s.row()) + norm.quantile(RandomSource.nextDouble())));
         return result;
     }
 

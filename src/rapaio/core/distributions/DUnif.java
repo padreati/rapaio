@@ -23,14 +23,19 @@ package rapaio.core.distributions;
 /**
  * @author tutuianu
  */
-public class DUniform extends Distribution {
+public class DUnif extends Distribution {
 
     private final int a;
     private final int b;
 
-    public DUniform(int a, int b) {
+    public DUnif(int a, int b) {
         this.a = a;
         this.b = b;
+    }
+
+    @Override
+    public boolean isDiscrete() {
+        return true;
     }
 
     public int getA() {

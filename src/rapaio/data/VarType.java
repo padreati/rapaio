@@ -24,16 +24,16 @@ package rapaio.data;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 public enum VarType {
-    NUMERIC(true, false, 0), INDEX(true, false, 1), NOMINAL(false, true, 2);
+    NUMERIC(true, false),
+    INDEX(true, false),
+    NOMINAL(false, true);
 
     private final boolean numeric;
     private final boolean nominal;
-    private final int code;
 
-    VarType(boolean numeric, boolean nominal, int code) {
+    VarType(boolean numeric, boolean nominal) {
         this.numeric = numeric;
         this.nominal = nominal;
-        this.code = code;
     }
 
     public boolean isNumeric() {
@@ -44,14 +44,4 @@ public enum VarType {
         return nominal;
     }
 
-    public int getCode() {
-        return code;
-    }
-
-    public static VarType fromCode(int code) {
-        for (VarType t : values()) {
-            if (t.getCode() == code) return t;
-        }
-        return null;
-    }
 }
