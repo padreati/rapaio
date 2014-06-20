@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions;
+package rapaio.core.distributions.cu;
 
 import rapaio.printer.PrinterUtils;
 
@@ -27,7 +27,7 @@ import java.text.DecimalFormat;
 /**
  * @author Aurelian Tutuianu
  */
-public class Norm extends Distribution {
+public class Norm implements CUDistribution {
 
     private final double mu;
     private final double sd;
@@ -47,11 +47,6 @@ public class Norm extends Distribution {
         this.mu = mu;
         this.sd = sd;
         this.var = sd * sd;
-    }
-
-    @Override
-    public boolean isDiscrete() {
-        return false;
     }
 
     public double getMu() {

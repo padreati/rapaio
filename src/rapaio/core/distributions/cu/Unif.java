@@ -18,85 +18,96 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions;
+package rapaio.core.distributions.cu;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * @author tutuianu
  */
-public class Ber extends Distribution {
+public class Unif implements CUDistribution {
 
-    private final double theta;
+    private final double a;
+    private final double b;
 
-    public Ber(double theta) {
-        this.theta = theta;
+    public Unif(double a, double b) {
+        this.a = a;
+        this.b = b;
+    }
+
+    public double getA() {
+        return a;
+    }
+
+    public double getB() {
+        return b;
     }
 
     @Override
     public String getName() {
-        return "Ber(theta=" + theta + ")";
-    }
-
-    @Override
-    public boolean isDiscrete() {
-        return true;
+        return "Continuous Uniform Distribution";
     }
 
     @Override
     public double pdf(double x) {
-        return x < 1 ? 1 - theta : theta;
+        if (x < a || x > b) {
+            return 0;
+        }
+        if (a == b) {
+            return 0;
+        }
+        return 1 / (b - a);
     }
 
     @Override
     public double cdf(double x) {
-        if (x < 0)
+        if (x < a) {
             return 0;
-        if (x < 1)
-            return 1 - theta;
-        return 1;
+        }
+        if (x > b) {
+            return 1;
+        }
+        return (x - a) / (b - a);
     }
 
     @Override
     public double quantile(double p) {
-        return (p <= 1 - theta) ? 0 : 1;
+        if (p < 0 || p > 1) {
+            throw new ArithmeticException("probability value should lie in [0,1] interval");
+        }
+        return a + p * (b - a);
     }
 
     @Override
     public double min() {
-        return 0;
+        return a;
     }
 
     @Override
     public double max() {
-        return 1;
+        return b;
     }
 
     @Override
     public double mean() {
-        return theta;
+        return a + (b - a) / 2.;
     }
 
     @Override
     public double mode() {
-        if ((1 - theta) > theta)
-            return 0;
-        if ((1 - theta) < theta)
-            return 1;
-        return 0.5; // this is possible?
+        return mean();
     }
 
     @Override
     public double variance() {
-        return theta * (1 - theta);
+        return Math.pow(b - a, 2) / 12.;
     }
 
     @Override
     public double skewness() {
-        return 1 / Math.sqrt((1 - theta) * theta);
+        return 0;
     }
 
     @Override
     public double kurtosis() {
-        double prod = (1 - theta) * theta;
-        return (1 - 6 * prod) / prod;
+        return -6. / 5.;
     }
 }

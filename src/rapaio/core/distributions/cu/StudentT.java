@@ -18,14 +18,14 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions;
+package rapaio.core.distributions.cu;
 
 import static rapaio.core.MathBase.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class StudentT extends Distribution {
+public class StudentT implements CUDistribution {
 
     private final double df;
     private final double mu;
@@ -44,11 +44,6 @@ public class StudentT extends Distribution {
     @Override
     public String getName() {
         return "Student-T(df=" + df + ", mu=" + mu + ", sigma=" + sigma + ")";
-    }
-
-    @Override
-    public boolean isDiscrete() {
-        return false;
     }
 
     @Override

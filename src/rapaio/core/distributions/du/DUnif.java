@@ -18,48 +18,44 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions;
+package rapaio.core.distributions.du;
 
 /**
  * @author tutuianu
  */
-public class Unif extends Distribution {
+public class DUnif implements DUDistribution {
 
-    private final double a;
-    private final double b;
+    private final int a;
+    private final int b;
 
-    public Unif(double a, double b) {
+    public DUnif(int a, int b) {
         this.a = a;
         this.b = b;
     }
 
-    public double getA() {
+    public int getA() {
         return a;
     }
 
-    public double getB() {
+    public int getB() {
         return b;
     }
 
     @Override
     public String getName() {
-        return "Continuous Uniform Distribution";
+        return String.format("DUnif(a=%d,b=%d)", a, b);
     }
 
     @Override
-    public boolean isDiscrete() {
-        return false;
-    }
-
-    @Override
-    public double pdf(double x) {
-        if (x < a || x > b) {
-            return 0;
+    public double pmf(double x) {
+        double rint = Math.rint(x);
+        if (!Double.isNaN(x) && !Double.isInfinite(x) && x == rint) {
+            if (x < a || x > b) {
+                return 0;
+            }
+            return 1 / (b - a + 1.);
         }
-        if (a == b) {
-            return 0;
-        }
-        return 1 / (b - a);
+        return 0;
     }
 
     @Override
@@ -70,15 +66,18 @@ public class Unif extends Distribution {
         if (x > b) {
             return 1;
         }
-        return (x - a) / (b - a);
+        return (Math.floor(x) - a + 1) / (b - a + 1);
     }
 
     @Override
     public double quantile(double p) {
         if (p < 0 || p > 1) {
-            throw new ArithmeticException("probability value should lie in [0,1] interval");
+            throw new ArithmeticException("Probability must be interface the range [0,1], not " + p);
         }
-        return a + p * (b - a);
+        if (a == b && p == 1) {
+            return a;
+        }
+        return (int) (a + p * (b - a + 1));
     }
 
     @Override
@@ -93,7 +92,7 @@ public class Unif extends Distribution {
 
     @Override
     public double mean() {
-        return a + (b - a) / 2.;
+        return (b - a) / 2.;
     }
 
     @Override
@@ -103,7 +102,8 @@ public class Unif extends Distribution {
 
     @Override
     public double variance() {
-        return Math.pow(b - a, 2) / 12.;
+        double n = b - a + 1;
+        return (n * 2 - 1) / 12.;
     }
 
     @Override
@@ -113,6 +113,7 @@ public class Unif extends Distribution {
 
     @Override
     public double kurtosis() {
-        return -6. / 5.;
+        double len = (b - a);
+        return -6. * (Math.pow(len, 2) + 1) / (5. * (Math.pow(len, 2) - 1));
     }
 }

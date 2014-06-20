@@ -18,9 +18,10 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions;
+package rapaio.core.distributions.du;
 
 import rapaio.core.MathBase;
+import rapaio.core.distributions.cu.Norm;
 
 import static java.lang.Math.*;
 import static java.lang.Math.max;
@@ -30,7 +31,7 @@ import static rapaio.core.Constants.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class Binom extends Distribution {
+public class Binom implements DUDistribution {
 
 
     private final double p;
@@ -47,12 +48,8 @@ public class Binom extends Distribution {
     }
 
     @Override
-    public boolean isDiscrete() {
-        return true;
-    }
-
-    @Override
-    public double pdf(double x) {
+    public double pmf(double x) {
+        if (x < min() || x > max()) return 0;
         return Math.exp(MathBase.logBinomial(x, n, p));
     }
 
@@ -64,8 +61,6 @@ public class Binom extends Distribution {
     @Override
     public double quantile(double p) {
         double pr = this.p;
-        boolean lower_tail = true;
-        boolean log_p = false;
         double q, mu, sigma, gamma, z, y;
 
         if (Double.isNaN(p) || Double.isNaN(n) || Double.isNaN(pr)) return p + n + pr;
@@ -127,7 +122,7 @@ public class Binom extends Distribution {
 
     private static double do_search(double y, double[] z, double p, double n, double pr, double incr) {
         if (z[0] >= p) {
-			/* search to the left */
+            /* search to the left */
             while (true) {
                 double newz = new Binom(pr, n).cdf(y - incr);
                 if (y == 0 || newz < p)
@@ -163,8 +158,8 @@ public class Binom extends Distribution {
     @Override
     public double mode() {
         double low = Math.floor((n + 1) * p);
-        double p1 = pdf(low - 1);
-        double p2 = pdf(low);
+        double p1 = pmf(low - 1);
+        double p2 = pmf(low);
         return (p1 > p2) ? low - 1 : low;
     }
 

@@ -22,10 +22,9 @@ package rapaio.core.tests;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import rapaio.core.distributions.Distribution;
-import rapaio.core.distributions.Norm;
-import rapaio.core.distributions.StudentT;
-import rapaio.core.distributions.Unif;
+import rapaio.core.distributions.cu.Norm;
+import rapaio.core.distributions.cu.StudentT;
+import rapaio.core.distributions.cu.Unif;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.datasets.Datasets;
@@ -50,7 +49,7 @@ public class KSTestTest {
 
     @Test
     public void testNormal() {
-        Distribution d = new Norm(0, 1);
+        Norm d = new Norm(0, 1);
         Numeric sample = d.sample(1000);
         KSTest test = new KSTest("normal sample", sample, d);
         test.summary();
@@ -69,7 +68,7 @@ public class KSTestTest {
 
     @Test
     public void testStudentT() {
-        Distribution d = new StudentT(3, 0, 1);
+        StudentT d = new StudentT(3, 0, 1);
         Numeric sample = d.sample(1000);
         KSTest test = new KSTest("studentT sample", sample, new Norm(0, 1));
         test.summary();

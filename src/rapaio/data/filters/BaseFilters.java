@@ -22,7 +22,7 @@ package rapaio.data.filters;
 
 import rapaio.core.ColRange;
 import rapaio.core.RandomSource;
-import rapaio.core.distributions.Norm;
+import rapaio.core.distributions.cu.Norm;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.*;
 import rapaio.data.mapping.MappedFrame;

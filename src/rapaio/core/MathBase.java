@@ -20,7 +20,7 @@
 
 package rapaio.core;
 
-import rapaio.core.distributions.Norm;
+import rapaio.core.distributions.cu.Norm;
 
 /**
  * Utility class which simplifies access to common java math utilities and also
@@ -642,12 +642,11 @@ public class MathBase {
      *
      * @param x     the value at which the probability is evaluated.
      * @param n     the number of trials.
-     * @param theta the probability of success.
+     * @param p the probability of success.
      * @return log(p(x)).
      */
-    public static double logBinomial(double x, double n, double theta) {
-        final double p = theta;
-        final double q = 1 - theta;
+    public static double logBinomial(double x, double n, double p) {
+        final double q = 1 - p;
         double ret;
         if (x == 0) {
             if (p < 0.1) {

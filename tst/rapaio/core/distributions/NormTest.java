@@ -21,6 +21,7 @@
 package rapaio.core.distributions;
 
 import org.junit.Test;
+import rapaio.core.distributions.cu.Norm;
 import rapaio.data.Frame;
 import rapaio.data.filters.BaseFilters;
 import rapaio.io.Csv;
@@ -59,7 +60,6 @@ public class NormTest {
             }
             if (pos == 10000) {
                 assertEquals(Double.POSITIVE_INFINITY, d.quantile(1.), ERROR);
-                q += step;
                 pos++;
                 break;
             }

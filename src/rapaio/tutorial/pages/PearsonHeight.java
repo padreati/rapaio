@@ -21,8 +21,7 @@
 package rapaio.tutorial.pages;
 
 import rapaio.core.correlation.PearsonRCorrelation;
-import rapaio.core.distributions.Distribution;
-import rapaio.core.distributions.Norm;
+import rapaio.core.distributions.cu.Norm;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
 import rapaio.core.stat.Variance;
@@ -40,8 +39,8 @@ import rapaio.ws.Summary;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.ws.Summary.summary;
 import static rapaio.WS.*;
+import static rapaio.ws.Summary.summary;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -75,8 +74,7 @@ public class PearsonHeight implements TutorialPage {
             Norm norm = new Norm(new Mean(df.col(i)).getValue(), Math.sqrt(new Variance(df.col(i)).getValue()));
             draw(new Plot()
                             .add(new Histogram(df.col(i)).bins(23).prob(true).minValue(57).maxValue(80))
-                            .add(new FunctionLine(norm.getPdfFunction())
-                                    .color(2))
+                            .add(new FunctionLine(norm::pdf).color(2))
                             .xLab(df.colNames()[i])
                             .xLim(57, 80).yLim(0, 0.20),
                     700, 300
@@ -90,19 +88,13 @@ public class PearsonHeight implements TutorialPage {
                 + "curve. Basically we are interested if the the values of "
                 + "those dimensions are normally distributed.");
 
-        p("An ususal graphical tools which can give us insights about that fact "
+        p("An usual graphical tools which can give us insights about that fact "
                 + "is the quantile-quantile plot. ");
 
         for (int i = 0; i < df.colCount(); i++) {
             final Var col = df.col(i);
-            final int colIndex = i;
-            double mu = new Mean(col).getValue();
-            Distribution normal = new Norm();
-            draw(new QQPlot()
-                            .add(col, normal)
-                            .yLab(df.colNames()[colIndex]),
-                    500, 300
-            );
+            Norm normal = new Norm();
+            draw(new QQPlot().add(col, normal).yLab(df.colNames()[i]), 500, 300);
         }
 
         summary(new Mean(df.col("Father")));

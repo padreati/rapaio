@@ -20,7 +20,7 @@
 
 package rapaio.ml.classifier.bayes;
 
-import rapaio.core.distributions.Norm;
+import rapaio.core.distributions.cu.Norm;
 import rapaio.core.distributions.empirical.*;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;

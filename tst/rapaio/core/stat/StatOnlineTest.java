@@ -21,7 +21,7 @@
 package rapaio.core.stat;
 
 import org.junit.Test;
-import rapaio.core.distributions.Norm;
+import rapaio.core.distributions.cu.Norm;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
 import rapaio.data.Var;

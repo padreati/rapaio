@@ -21,7 +21,7 @@
 package rapaio.tutorial.pages;
 
 import rapaio.core.RandomSource;
-import rapaio.core.distributions.DUnif;
+import rapaio.core.distributions.du.DUnif;
 import rapaio.core.stat.StatOnline;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
