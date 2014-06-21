@@ -21,28 +21,8 @@
 package rapaio.data;
 
 /**
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public enum VarType {
-    NUMERIC(true, false),
-    INDEX(true, false),
-    NOMINAL(false, true),
-    ;
-
-    private final boolean numeric;
-    private final boolean nominal;
-
-    VarType(boolean numeric, boolean nominal) {
-        this.numeric = numeric;
-        this.nominal = nominal;
-    }
-
-    public boolean isNumeric() {
-        return numeric;
-    }
-
-    public boolean isNominal() {
-        return nominal;
-    }
-
+@Deprecated
+public class Stamp {
 }

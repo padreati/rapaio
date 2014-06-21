@@ -32,13 +32,13 @@ import rapaio.data.*;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class MappedVar extends AbstractVar {
+public class MappedVar implements Var {
 
     private final Var source;
     private final Mapping mapping;
 
     public MappedVar(Var source, Mapping mapping) {
-        this.source = source.isMappedVector() ? source.source() : source;
+        this.source = source.isMapped() ? source.source() : source;
         this.mapping = mapping;
     }
 
@@ -53,7 +53,7 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public boolean isMappedVector() {
+    public boolean isMapped() {
         return true;
     }
 
@@ -125,6 +125,36 @@ public class MappedVar extends AbstractVar {
     @Override
     public void setDictionary(String[] dict) {
         source.setDictionary(dict);
+    }
+
+    @Override
+    public boolean binary(int row) {
+        return source.binary(mapping.get(row));
+    }
+
+    @Override
+    public void setBinary(int row, boolean value) {
+        source.setBinary(mapping.get(row), value);
+    }
+
+    @Override
+    public void addBinary(boolean value) {
+        throw new IllegalArgumentException("operation not available on mapped vectors");
+    }
+
+    @Override
+    public long stamp(int row) {
+        return source.stamp(mapping.get(row));
+    }
+
+    @Override
+    public void setStamp(int row, long value) {
+        source.setStamp(mapping.get(row), value);
+    }
+
+    @Override
+    public void addStamp(long value) {
+        throw new IllegalArgumentException("operation not available on mapped vectors");
     }
 
     @Override

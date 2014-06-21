@@ -21,10 +21,13 @@
 package rapaio.data;
 
 import rapaio.data.mapping.Mapping;
+import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -39,12 +42,29 @@ import java.util.stream.Collector;
  */
 public interface Var extends Serializable {
 
+    /**
+     * @return variable type
+     */
     VarType type();
 
-    boolean isMappedVector();
+    /**
+     * A variable implementation might be solid os mapped.
+     * A mapped variable is a variable which hold only row indexes and maps over a solid variable.
+     *
+     * @return true if it is a mapped variable
+     */
+    boolean isMapped();
 
+    /**
+     * Solid variable source
+     *
+     * @return solid variable source, self if it is not mapped
+     */
     Var source();
 
+    /**
+     * @return mapping of rows, null is variable is not mapped
+     */
     Mapping mapping();
 
     /**
@@ -149,6 +169,50 @@ public interface Var extends Serializable {
     void setDictionary(String[] dict);
 
     /**
+     * @param row position of the observation
+     * @return boolean binary value
+     */
+    boolean binary(int row);
+
+    /**
+     * Set a binary/boolean value
+     *
+     * @param row position of the observation
+     * @param value boolean binary value
+     */
+    void setBinary(int row, boolean value);
+
+    /**
+     * Adds a binary/boolean value
+     *
+     * @param value boolean binary value to be added
+     */
+    void addBinary(boolean value);
+
+    /**
+     * Gets long integer (stamp) value.
+     *
+     * @param row position of the observation
+     * @return long integer value
+     */
+    long stamp(int row);
+
+    /**
+     * Set long integer (stamp) value
+     *
+     * @param row position of the observation
+     * @param value long integer value to be set
+     */
+    void setStamp(int row, long value);
+
+    /**
+     * Adds a long integer (stump) value
+     *
+     * @param value long integer value to be added
+     */
+    void addStamp(long value);
+
+    /**
      * Returns true if the setValue for the observation specified by {@param row} is missing, not available.
      * <p>
      * A missing setValue for the observation means taht the measurement
@@ -175,7 +239,13 @@ public interface Var extends Serializable {
 
     Var solidCopy();
 
-    public VSpots stream();
+    default VSpots stream() {
+        List<VSpot> instances = new LinkedList<>();
+        for (int i = 0; i < this.rowCount(); i++) {
+            instances.add(new VSpot(i, this));
+        }
+        return new VSpots(instances.stream());
+    }
 
     public static Collector<Double, Numeric, Numeric> numericCollector() {
         return new Collector<Double, Numeric, Numeric>() {

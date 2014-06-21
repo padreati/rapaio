@@ -29,7 +29,7 @@ import java.util.Collection;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class Numeric extends AbstractVar {
+public class Numeric implements Var {
 
     private static final double missingValue = Double.NaN;
     private double[] data;
@@ -69,7 +69,7 @@ public class Numeric extends AbstractVar {
 
     public static Numeric newCopyOf(Var source) {
         Numeric numeric = new Numeric(source.rowCount(), source.rowCount(), 0);
-        if (source.isMappedVector() || source.type() != VarType.NUMERIC) {
+        if (source.isMapped() || source.type() != VarType.NUMERIC) {
             for (int i = 0; i < source.rowCount(); i++) {
                 numeric.setValue(i, source.value(i));
             }
@@ -86,17 +86,17 @@ public class Numeric extends AbstractVar {
         return numeric;
     }
 
-//    public static Numeric newWrapOf(Numeric source) {
-//        Numeric numeric = new Numeric(source.rowCount(), source.rowCount(), 0);
-//        if (source.isMappedVector()) {
-//            for (int i = 0; i < source.rowCount(); i++) {
-//                numeric.setValue(i, source.value(i));
-//            }
-//        } else {
-//            numeric.data = Arrays.copyOf(source.data, source.rowCount());
-//        }
-//        return numeric;
-//    }
+    public static Numeric newWrapOf(Var source) {
+        Numeric numeric = new Numeric(source.rowCount(), source.rowCount(), 0);
+        if (source.isMapped() || source.type() != VarType.NUMERIC) {
+            for (int i = 0; i < source.rowCount(); i++) {
+                numeric.setValue(i, source.value(i));
+            }
+        } else {
+            numeric.data = Arrays.copyOf(((Numeric) source).data, source.rowCount());
+        }
+        return numeric;
+    }
 
     public static Numeric newFill(int rows) {
         return new Numeric(rows, rows, 0);
@@ -160,7 +160,7 @@ public class Numeric extends AbstractVar {
     }
 
     @Override
-    public boolean isMappedVector() {
+    public boolean isMapped() {
         return false;
     }
 
@@ -239,6 +239,36 @@ public class Numeric extends AbstractVar {
     @Override
     public void setDictionary(String[] dict) {
         throw new RuntimeException("Operation not available for numeric vectors.");
+    }
+
+    @Override
+    public boolean binary(int row) {
+        return value(row) == 0;
+    }
+
+    @Override
+    public void setBinary(int row, boolean value) {
+        setValue(row, value ? 1 : 0);
+    }
+
+    @Override
+    public void addBinary(boolean value) {
+        addValue(value ? 1 : 0);
+    }
+
+    @Override
+    public long stamp(int row) {
+        return (long) Math.rint(value(row));
+    }
+
+    @Override
+    public void setStamp(int row, long value) {
+        setValue(row, Double.valueOf(String.valueOf(value)));
+    }
+
+    @Override
+    public void addStamp(long value) {
+        addValue(Double.valueOf(String.valueOf(value)));
     }
 
     @Override

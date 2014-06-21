@@ -49,7 +49,7 @@ public class SolidFrame extends AbstractFrame {
 
     public SolidFrame(int rows, List<Var> vars, String[] names, Numeric weights) {
         for (Var var : vars) {
-            if (var.isMappedVector())
+            if (var.isMapped())
                 throw new IllegalArgumentException("Not allowed mapped vectors in solid frame");
         }
         this.rows = rows;

@@ -41,7 +41,7 @@ import java.util.*;
  *
  * @author Aurelian Tutuianu
  */
-public class Nominal extends AbstractVar {
+public class Nominal implements Var {
 
     private static final String missingValue = "?";
     private static final int missingIndex = 0;
@@ -99,7 +99,7 @@ public class Nominal extends AbstractVar {
     }
 
     @Override
-    public boolean isMappedVector() {
+    public boolean isMapped() {
         return false;
     }
 
@@ -216,6 +216,36 @@ public class Nominal extends AbstractVar {
         for (int i = 0; i < rows; i++) {
             data[i] = this.reverse.get(oldDict.get(data[i]));
         }
+    }
+
+    @Override
+    public boolean binary(int row) {
+        throw new IllegalArgumentException("This call is not allowed");
+    }
+
+    @Override
+    public void setBinary(int row, boolean value) {
+        throw new IllegalArgumentException("This call is not allowed");
+    }
+
+    @Override
+    public void addBinary(boolean value) {
+        throw new IllegalArgumentException("This call is not allowed");
+    }
+
+    @Override
+    public long stamp(int row) {
+        throw new IllegalArgumentException("This call is not allowed");
+    }
+
+    @Override
+    public void setStamp(int row, long value) {
+        throw new IllegalArgumentException("This call is not allowed");
+    }
+
+    @Override
+    public void addStamp(long value) {
+        throw new IllegalArgumentException("This call is not allowed");
     }
 
     @Override

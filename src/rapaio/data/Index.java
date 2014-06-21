@@ -27,7 +27,7 @@ import java.util.Arrays;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class Index extends AbstractVar {
+public class Index implements Var {
 
     private static final int MISSING_VALUE = Integer.MIN_VALUE;
     private int[] data;
@@ -128,7 +128,7 @@ public class Index extends AbstractVar {
     }
 
     @Override
-    public boolean isMappedVector() {
+    public boolean isMapped() {
         return false;
     }
 
@@ -206,6 +206,36 @@ public class Index extends AbstractVar {
     @Override
     public void setDictionary(String[] dict) {
         throw new RuntimeException("Operation not available for index vectors.");
+    }
+
+    @Override
+    public boolean binary(int row) {
+        return index(row) == 0;
+    }
+
+    @Override
+    public void setBinary(int row, boolean value) {
+        setIndex(row, value ? 1 : 0);
+    }
+
+    @Override
+    public void addBinary(boolean value) {
+        addIndex(value ? 1 : 0);
+    }
+
+    @Override
+    public long stamp(int row) {
+        return index(row);
+    }
+
+    @Override
+    public void setStamp(int row, long value) {
+        setIndex(row, Integer.valueOf(String.valueOf(value)));
+    }
+
+    @Override
+    public void addStamp(long value) {
+        addIndex(Integer.valueOf(String.valueOf(value)));
     }
 
     @Override
