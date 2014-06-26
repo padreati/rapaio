@@ -230,7 +230,7 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
         if (oobCompute) {
             pred.predict(oob);
             totalOobInstances += oob.rowCount();
-            totalOobError += 1 - new ConfusionMatrix(oob.col(targetCol), pred.pred()).getAccuracy();
+            totalOobError += 1 - new ConfusionMatrix(oob.col(targetCol), pred.pred()).accuracy();
         }
         predictors.add(pred);
     }

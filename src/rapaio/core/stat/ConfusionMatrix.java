@@ -272,23 +272,19 @@ public class ConfusionMatrix implements Printable {
 
     }
 
-    public double getAccuracy() {
+    public double accuracy() {
         return acc;
     }
 
-    public double getError() {
+    public double error() {
         return 1.0 - acc;
     }
 
-    public int getCompleteCases() {
+    public int completeCases() {
         return (int) Math.rint(completeCases);
     }
 
-    public void setCompleteCases(double completeCases) {
-        this.completeCases = completeCases;
-    }
-
-    public int[][] getMatrix() {
+    public int[][] matrix() {
         return cmf;
     }
 }

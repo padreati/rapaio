@@ -109,11 +109,11 @@ class TreeRegressorNode {
     TreeRegressorNode right;
 
     public void learn(TreeRegressor parent, Frame df, Numeric weights, String targetColNames) {
-        totalWeight = new Sum(weights).getValue();
+        totalWeight = new Sum(weights).value();
 
         if (totalWeight < 2 * parent.minWeight) {
             leaf = true;
-            pred = new Mean(df.col(targetColNames)).getValue();
+            pred = new Mean(df.col(targetColNames)).value();
             return;
         }
 
@@ -149,7 +149,7 @@ class TreeRegressorNode {
 
         // else do the default
         leaf = true;
-        pred = new Mean(df.col(targetColNames)).getValue();
+        pred = new Mean(df.col(targetColNames)).value();
     }
 
     private void evaluateNumeric(TreeRegressor parent,
@@ -168,7 +168,7 @@ class TreeRegressorNode {
             so.update(testCol.value(pos));
             w += weights.value(pos);
             if (i > 0) {
-                var[i] = so.getStandardDeviation() * w / totalWeight;
+                var[i] = so.sd() * w / totalWeight;
             }
         }
         so.clean();
@@ -178,7 +178,7 @@ class TreeRegressorNode {
             so.update(testCol.value(pos));
             w += weights.value(pos);
             if (i < df.rowCount() - 1) {
-                var[i] += so.getStandardDeviation() * w / totalWeight;
+                var[i] += so.sd() * w / totalWeight;
             }
         }
         w = 0;

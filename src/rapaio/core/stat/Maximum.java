@@ -50,7 +50,7 @@ public class Maximum implements Printable {
         return Double.NaN;
     }
 
-    public double getValue() {
+    public double value() {
         return value;
     }
 

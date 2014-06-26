@@ -72,12 +72,12 @@ public class MAE implements Printable {
         value = total / count;
     }
 
-    public double getValue() {
+    public double value() {
         return value;
     }
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append(String.format("> mean absolute error\nMAE: %.6f\n", getValue()));
+        sb.append(String.format("> mean absolute error\nMAE: %.6f\n", value()));
     }
 }

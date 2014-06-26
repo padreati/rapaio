@@ -35,7 +35,7 @@ public class L1BoostingLossFunction implements BoostingLossFunction {
         for (int i = 0; i < y.rowCount(); i++) {
             values.addValue(y.value(i) - fx.value(i));
         }
-        return new Quantiles(values, new double[]{0.5}).getValues()[0];
+        return new Quantiles(values, new double[]{0.5}).values()[0];
     }
 
     @Override

@@ -180,7 +180,7 @@ public final class BaseFilters implements Serializable {
                 for (int j = 0; j < p.length; j++) {
                     p[j] = j / (1. * bins);
                 }
-                double[] q = new Quantiles(origin, p).getValues();
+                double[] q = new Quantiles(origin, p).values();
                 for (int j = 0; j < origin.rowCount(); j++) {
                     if (origin.missing(j))
                         continue;

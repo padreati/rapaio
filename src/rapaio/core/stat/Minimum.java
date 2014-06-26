@@ -55,7 +55,7 @@ public class Minimum implements Printable {
         return valid ? min : Double.NaN;
     }
 
-    public double getValue() {
+    public double value() {
         return value;
     }
 

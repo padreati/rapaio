@@ -92,35 +92,35 @@ public class StatOnline {
     /**
      * @return the number of elements seen so far and used in calculation
      */
-    public double getN() {
+    public double n() {
         return n;
     }
 
-    public double getMin() {
+    public double min() {
         return min;
     }
 
-    public double getMax() {
+    public double max() {
         return max;
     }
 
-    public double getMean() {
+    public double mean() {
         return m1;
     }
 
-    public double getVariance() {
+    public double variance() {
         return m2 / (n - 1.0);
     }
 
-    public double getStandardDeviation() {
-        return Math.sqrt(getVariance());
+    public double sd() {
+        return Math.sqrt(variance());
     }
 
-    public double getSkewness() {
+    public double skewness() {
         return Math.sqrt(n) * m3 / Math.pow(m2, 1.5);
     }
 
-    public double getKurtosis() {
+    public double kurtosis() {
         return n * m4 / (m2 * m2) - 3.0;
     }
 

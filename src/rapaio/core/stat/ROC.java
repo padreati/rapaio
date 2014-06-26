@@ -131,7 +131,7 @@ public class ROC implements Printable {
         return data;
     }
 
-    public double getAuc() {
+    public double auc() {
         return auc;
     }
 

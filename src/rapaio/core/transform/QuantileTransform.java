@@ -46,7 +46,7 @@ public class QuantileTransform implements Transform {
             p[i + 1] = (i + 1.0) / (1.0 * n);
         }
         values = new HashMap<>();
-        values.put(name, new Quantiles(v, p).getValues());
+        values.put(name, new Quantiles(v, p).values());
     }
 
     public QuantileTransform(Frame df, String[] colNames, int n) {
@@ -58,7 +58,7 @@ public class QuantileTransform implements Transform {
         }
         values = new HashMap<>();
         for (String colName : colNames) {
-            values.put(colName, new Quantiles(df.col(colName), p).getValues());
+            values.put(colName, new Quantiles(df.col(colName), p).values());
         }
     }
 

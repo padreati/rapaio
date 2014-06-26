@@ -157,7 +157,7 @@ public class BoxPlot extends BaseFigure {
                 continue;
             }
             double[] p = new double[]{0.25, 0.5, 0.75};
-            double[] q = new Quantiles(v, p).getValues();
+            double[] q = new Quantiles(v, p).values();
             double iqr = q[2] - q[0];
             double innerfence = 1.5 * iqr;
             double outerfence = 3 * iqr;

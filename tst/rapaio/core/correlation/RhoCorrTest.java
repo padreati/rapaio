@@ -39,15 +39,15 @@ public class RhoCorrTest {
     public void testFromWikipedia() {
         RhoCorr sc = new RhoCorr(iq, tvHours);
         // according with wikipedia article rho must be −0.175757575
-        assertEquals(-0.175757575, sc.getValues()[0][1], 1e-8);
+        assertEquals(-0.175757575, sc.values()[0][1], 1e-8);
     }
 
     @Test
     public void testSameVector() {
         RhoCorr same = new RhoCorr(iq, iq);
-        assertEquals(1., same.getValues()[0][1], 1e-10);
+        assertEquals(1., same.values()[0][1], 1e-10);
 
         same = new RhoCorr(tvHours, tvHours);
-        assertEquals(1., same.getValues()[0][1], 1e-10);
+        assertEquals(1., same.values()[0][1], 1e-10);
     }
 }

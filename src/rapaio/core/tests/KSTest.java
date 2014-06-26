@@ -128,11 +128,22 @@ public class KSTest implements Printable {
         return 1.0;
     }
 
-    public double getD() {
+    /**
+     * Returns maximum distance between ECDF and given cdf, for 1-sample test,
+     * and returns maximum distance between the two given ECDFs for 2-sample test
+     *
+     * @return maximum distance between distributions
+     */
+    public double d() {
         return D;
     }
 
-    public double getPValue() {
+    /**
+     * Gets pValue for the given test
+     *
+     * @return p-value
+     */
+    public double pValue() {
         return pValue;
     }
 

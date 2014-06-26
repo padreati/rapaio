@@ -53,7 +53,7 @@ public final class Mean implements Printable {
         return sum + t.get() / count;
     }
 
-    public double getValue() {
+    public double value() {
         return value;
     }
 

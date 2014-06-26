@@ -54,7 +54,7 @@ public class HuberBoostingLossFunction implements BoostingLossFunction {
 
         // compute median of residuals
 
-        double r_bar = new Quantiles(residual, new double[]{0.5}).getValues()[0];
+        double r_bar = new Quantiles(residual, new double[]{0.5}).values()[0];
 
         // compute absolute residuals
 
@@ -65,7 +65,7 @@ public class HuberBoostingLossFunction implements BoostingLossFunction {
 
         // compute rho as an alpha-quantile of absolute residuals
 
-        double rho = new Quantiles(absResidual, new double[]{alpha}).getValues()[0];
+        double rho = new Quantiles(absResidual, new double[]{alpha}).values()[0];
 
         // compute one-iteration approximation
 
@@ -91,7 +91,7 @@ public class HuberBoostingLossFunction implements BoostingLossFunction {
 
         // compute rho as an alpha-quantile of absolute residuals
 
-        double rho = new Quantiles(absResidual, new double[]{alpha}).getValues()[0];
+        double rho = new Quantiles(absResidual, new double[]{alpha}).values()[0];
 
         // now compute gradient
 

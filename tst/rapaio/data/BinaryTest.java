@@ -23,6 +23,7 @@ package rapaio.data;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import rapaio.core.stat.Mean;
 import rapaio.data.stream.VSpot;
 import rapaio.ws.Summary;
 
@@ -62,5 +63,12 @@ public class BinaryTest {
         assertEquals(0, b.stream().incomplete().count());
         assertEquals(0, b.stream().complete().filter(s -> !s.binary()).count());
         assertEquals(10, b.stream().complete().filter(VSpot::binary).count());
+    }
+
+    @Test
+    public void testNumericStats() {
+        Binary b = Binary.copyOf(1, 1, 0, 0, 1, 0, 1, 1);
+        Summary.summary(b);
+        assertEquals(0.625, new Mean(b).value(), 10e-10);
     }
 }

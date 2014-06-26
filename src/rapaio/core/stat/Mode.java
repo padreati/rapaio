@@ -72,7 +72,7 @@ public class Mode implements Printable {
         return modes;
     }
 
-    public String[] getModes() {
+    public String[] values() {
         return modes;
     }
 

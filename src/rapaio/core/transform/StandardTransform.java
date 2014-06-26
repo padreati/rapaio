@@ -44,7 +44,7 @@ public class StandardTransform implements Transform {
 
         for (String colName : colNames) {
             Var col = df.col(colName);
-            mean.put(colName, new Mean(col).getValue());
+            mean.put(colName, new Mean(col).value());
             sd.put(colName, Math.sqrt(new Variance(col).getValue()));
         }
     }

@@ -93,7 +93,7 @@ public class CBenchmarkTest {
                     results.setValue(i, cName,
                             new ConfusionMatrix(
                                     task.getTestFrame().col(task.getTargetName()),
-                                    c.pred()).getAccuracy());
+                                    c.pred()).accuracy());
                 }
             }
             Summary.lines(results);

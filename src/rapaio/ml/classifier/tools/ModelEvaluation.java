@@ -181,7 +181,7 @@ public class ModelEvaluation {
             c.learn(train, classColName);
             c.predict(test);
             Var pred = c.pred();
-            double acc = new ConfusionMatrix(test.col(classColName), pred).getAccuracy();
+            double acc = new ConfusionMatrix(test.col(classColName), pred).accuracy();
             System.out.println(String.format("bootstrap(%d) : %.6f", i + 1, acc));
             total += acc;
             count++;

@@ -87,7 +87,7 @@ public class Quantiles implements Printable {
         return values;
     }
 
-    public double[] getValues() {
+    public double[] values() {
         return quantiles;
     }
 

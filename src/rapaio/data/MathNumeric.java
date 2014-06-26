@@ -35,7 +35,7 @@ public final class MathNumeric {
     }
 
     public static Numeric mean(final Numeric num) {
-        return new Numeric(1, 1, new Mean(num).getValue());
+        return new Numeric(1, 1, new Mean(num).value());
     }
 
     public static Numeric sd(final Numeric num) {

@@ -78,8 +78,8 @@ public class PearsonRCorrelation implements Printable {
     }
 
     private double compute(Var x, Var y) {
-        double xMean = new Mean(x).getValue();
-        double yMean = new Mean(y).getValue();
+        double xMean = new Mean(x).value();
+        double yMean = new Mean(y).value();
         double sum = 0;
         int len = Math.min(x.rowCount(), y.rowCount());
         double sdp = Math.sqrt(new Variance(x).getValue()) * Math.sqrt(new Variance(y).getValue());
@@ -94,7 +94,7 @@ public class PearsonRCorrelation implements Printable {
         return sum / (sdp * (count - 1));
     }
 
-    public double[][] getValues() {
+    public double[][] values() {
         return pearson;
     }
 

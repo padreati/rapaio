@@ -76,13 +76,13 @@ public class LawOfLargeNumbers implements TutorialPage {
                 + "        Vector mean = new NumericVector(\"mean\", N);\n"
                 + "        for (int i = 0; i < events.getRowCount(); i++) {\n"
                 + "            ocs.update(events.value(i), 1);\n"
-                + "            mean.setValue(i, ocs.getMean());\n"
+                + "            mean.setValue(i, ocs.mean());\n"
                 + "        }\n");
         StatOnline ocs = new StatOnline();
         final Var mean = Numeric.newEmpty(N);
         for (int i = 0; i < events.rowCount(); i++) {
             ocs.update(events.value(i));
-            mean.setValue(i, ocs.getMean());
+            mean.setValue(i, ocs.mean());
         }
         p("Now we have the running mean stored in the var mean and we can plot "
                 + "how that running mean evolves as the size of the sample grows.");

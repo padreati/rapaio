@@ -31,7 +31,7 @@ public class L2BoostingLossFunction implements BoostingLossFunction {
 
     @Override
     public double findMinimum(Var y, Var fx) {
-        return new Mean(gradient(y, fx)).getValue();
+        return new Mean(gradient(y, fx)).value();
     }
 
     @Override

@@ -55,6 +55,29 @@ public final class Binary implements Var {
         return new Binary(rows, false, fillValue);
     }
 
+    public static Binary copyOf(int... values) {
+        final Binary b = new Binary(values.length, false, false);
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] == 0) continue;
+            if (values[i] == 1) {
+                b.setBinary(i, true);
+                continue;
+            }
+            b.setMissing(i);
+        }
+        return b;
+    }
+
+    public static Binary copyOf(boolean... values) {
+        final Binary b = new Binary(values.length, false, false);
+        for (int i = 0; i < values.length; i++) {
+            if (values[i]) {
+                b.setBinary(i, true);
+            }
+        }
+        return b;
+    }
+
     /**
      * Private constructor to avoid instantiation from outside, other than statical builders.
      */

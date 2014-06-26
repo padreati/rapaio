@@ -52,7 +52,7 @@ public class Sum implements Printable {
         return sum;
     }
 
-    public double getValue() {
+    public double value() {
         return value;
     }
 

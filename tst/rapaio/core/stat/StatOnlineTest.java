@@ -56,14 +56,14 @@ public class StatOnlineTest {
         for (int i = 0; i < LEN; i++) {
             statOnline.update(v.value(i));
             if (i > 0) {
-                varLeft.setValue(i, statOnline.getVariance());
+                varLeft.setValue(i, statOnline.variance());
             }
         }
         statOnline.clean();
         for (int i = LEN - 1; i >= 0; i--) {
             statOnline.update(v.value(i));
             if (i < LEN - 1) {
-                varRight.setValue(i, statOnline.getVariance());
+                varRight.setValue(i, statOnline.variance());
             }
         }
         for (int i = 0; i < LEN; i++) {

@@ -43,7 +43,7 @@ public class Variance implements Printable {
     }
 
     private double compute() {
-        double mean = new Mean(var).getValue();
+        double mean = new Mean(var).value();
         double n = 0;
         for (int i = 0; i < var.rowCount(); i++) {
             if (var.missing(i)) {

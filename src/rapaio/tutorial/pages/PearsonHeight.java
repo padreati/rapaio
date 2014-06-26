@@ -71,7 +71,7 @@ public class PearsonHeight implements TutorialPage {
         p("First we take a look at the histograms for the two dimensions");
 
         for (int i = 0; i < df.colCount(); i++) {
-            Norm norm = new Norm(new Mean(df.col(i)).getValue(), Math.sqrt(new Variance(df.col(i)).getValue()));
+            Norm norm = new Norm(new Mean(df.col(i)).value(), Math.sqrt(new Variance(df.col(i)).getValue()));
             draw(new Plot()
                             .add(new Histogram(df.col(i)).bins(23).prob(true).minValue(57).maxValue(80))
                             .add(new FunctionLine(norm::pdf).color(2))
@@ -115,12 +115,12 @@ public class PearsonHeight implements TutorialPage {
         summary(sonQuantiles);
 
         Plot plot = (Plot) new Plot().xLim(55, 80).yLim(55, 80);
-        for (int i = 0; i < fatherQuantiles.getValues().length; i++) {
-            plot.add(new ABLine(fatherQuantiles.getValues()[i], false)
+        for (int i = 0; i < fatherQuantiles.values().length; i++) {
+            plot.add(new ABLine(fatherQuantiles.values()[i], false)
                     .color(30));
         }
-        for (int i = 0; i < sonQuantiles.getValues().length; i++) {
-            plot.add(new ABLine(sonQuantiles.getValues()[i], true).color(30));
+        for (int i = 0; i < sonQuantiles.values().length; i++) {
+            plot.add(new ABLine(sonQuantiles.values()[i], true).color(30));
         }
         plot.add(new Points(df.col("Father"), df.col("Son")));
         draw(plot, 600, 600);

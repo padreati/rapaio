@@ -212,7 +212,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
                 if ("?".equals(classLabel)) continue;
                 Frame cond = df.stream().filter(s -> classLabel.equals(s.label(targetCol))).toMappedFrame();
                 Var v = cond.col(testCol);
-                double mu = new Mean(v).getValue();
+                double mu = new Mean(v).value();
                 double sd = Math.sqrt(new Variance(v).getValue());
                 normals.put(classLabel, new Norm(mu, sd));
             }

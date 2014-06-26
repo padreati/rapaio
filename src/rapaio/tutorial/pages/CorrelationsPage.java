@@ -129,7 +129,7 @@ public class CorrelationsPage implements TutorialPage {
                         .add(new Points(
                                 jitter(df.col("petal-length"), 0.01),
                                 jitter(df.col("sepal-length"), 0.01)).pch(1))
-                        .title("p correlation = " + r.getValues()[df.colIndex("petal-length")][df.colIndex("sepal-length")]),
+                        .title("p correlation = " + r.values()[df.colIndex("petal-length")][df.colIndex("sepal-length")]),
                 400, 300
         );
 
@@ -139,7 +139,7 @@ public class CorrelationsPage implements TutorialPage {
         draw(new Plot()
                         .add(new Points(jitter(df.col("petal-length"), 0.01), jitter(df.col("petal-width"), 0.01))
                                 .pch(1))
-                        .title("p correlation = " + r.getValues()[df.colIndex("petal-length")][df.colIndex("petal-width")]),
+                        .title("p correlation = " + r.values()[df.colIndex("petal-length")][df.colIndex("petal-width")]),
                 400, 300
         );
 
@@ -150,7 +150,7 @@ public class CorrelationsPage implements TutorialPage {
         draw(new Plot()
                         .add(new Points(jitter(df.col("sepal-length"), 0.01), jitter(df.col("sepal-width"), 0.01))
                                 .pch(1))
-                        .title("p correlation = " + r.getValues()[df.colIndex("sepal-length")][df.colIndex("sepal-width")]),
+                        .title("p correlation = " + r.values()[df.colIndex("sepal-length")][df.colIndex("sepal-width")]),
                 400, 300
         );
 

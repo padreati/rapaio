@@ -80,7 +80,7 @@ public class DecisionStumpRegressor implements Regressor, BTRegressor {
 
         this.targetColName = targetCols;
         //
-        defaultFit = new Mean(df.col(targetCols)).getValue();
+        defaultFit = new Mean(df.col(targetCols)).value();
         //
         criterion = Double.MAX_VALUE;
         for (String colName : df.colNames()) {
@@ -106,12 +106,12 @@ public class DecisionStumpRegressor implements Regressor, BTRegressor {
         StatOnline so = new StatOnline();
         for (int i = 0; i < sort.rowCount(); i++) {
             so.update(df.sourceFrame().value(sort.rowId(i), targetColName));
-            var[i] = so.getVariance() * so.getN();
+            var[i] = so.variance() * so.n();
         }
         so = new StatOnline();
         for (int i = sort.rowCount() - 1; i >= 0; i--) {
             so.update(df.sourceFrame().value(sort.rowId(i), targetColName));
-            var[i] += so.getVariance() * so.getN();
+            var[i] += so.variance() * so.n();
         }
         for (int i = minCount + 1; i < sort.rowCount() - minCount; i++) {
             if (var[i - 1] < criterion && sort.value(i - 1) != sort.value(i)

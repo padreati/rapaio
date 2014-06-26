@@ -42,17 +42,17 @@ public class MeanTest extends CoreStatTestUtil {
     @Test
     public void testRReferenceMean() throws IOException {
         Frame df = getDataFrame();
-        assertEquals(Double.valueOf("999.98132402093892779"), new Mean(df.col(0)).getValue(), 1e-12);
+        assertEquals(Double.valueOf("999.98132402093892779"), new Mean(df.col(0)).value(), 1e-12);
     }
 
     @Test
     public void testWithEmptyValues() {
         Var num = Numeric.newEmpty(10);
         num.setValue(0, 1);
-        assertEquals(1.0, new Mean(num).getValue(), 10e-10);
+        assertEquals(1.0, new Mean(num).value(), 10e-10);
 
         num.setValue(7, 5);
-        assertEquals(3.0, new Mean(num).getValue(), 10e-10);
+        assertEquals(3.0, new Mean(num).value(), 10e-10);
     }
 
 }

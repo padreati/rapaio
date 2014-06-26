@@ -90,10 +90,10 @@ public class RhoCorr implements Printable {
         }
 
         // compute Pearson on ranks
-        return new PearsonRCorrelation(ranks).getValues();
+        return new PearsonRCorrelation(ranks).values();
     }
 
-    public double[][] getValues() {
+    public double[][] values() {
         return rho;
     }
 

@@ -43,8 +43,8 @@ public class KSTestTest {
         KSTest test = new KSTest("2-sample pearson", df.col("Son"), df.col("Father"));
         test.summary();
 
-        Assert.assertEquals(0.150278, test.getD(), 10e-5);
-        Assert.assertEquals(0.0000000000411316, test.getPValue(), 10e-10);
+        Assert.assertEquals(0.150278, test.d(), 10e-5);
+        Assert.assertEquals(0.0000000000411316, test.pValue(), 10e-10);
     }
 
     @Test
@@ -53,8 +53,8 @@ public class KSTestTest {
         Numeric sample = d.sample(1000);
         KSTest test = new KSTest("normal sample", sample, d);
         test.summary();
-        Assert.assertTrue(test.getD() < 0.4);
-        Assert.assertTrue(test.getPValue() > 0.1);
+        Assert.assertTrue(test.d() < 0.4);
+        Assert.assertTrue(test.pValue() > 0.1);
     }
 
     @Test
@@ -62,8 +62,8 @@ public class KSTestTest {
         Numeric sample = new Unif(0, 1).sample(1_000);
         KSTest test = new KSTest("uniform sample", sample, new Norm(0, 1));
         test.summary();
-        Assert.assertTrue(test.getD() > 0.4);
-        Assert.assertTrue(test.getPValue() < 0.001);
+        Assert.assertTrue(test.d() > 0.4);
+        Assert.assertTrue(test.pValue() < 0.001);
     }
 
     @Test
@@ -72,7 +72,7 @@ public class KSTestTest {
         Numeric sample = d.sample(1000);
         KSTest test = new KSTest("studentT sample", sample, new Norm(0, 1));
         test.summary();
-        Assert.assertTrue(test.getD() > 0.04);
-        Assert.assertTrue(test.getPValue() < 0.01);
+        Assert.assertTrue(test.d() > 0.04);
+        Assert.assertTrue(test.pValue() < 0.01);
     }
 }

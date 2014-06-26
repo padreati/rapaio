@@ -126,7 +126,7 @@ public class KMeansClustering {
                 means[arrows[j]].addValue(df.value(j, targets.get(i)));
             }
             for (int j = 0; j < k; j++) {
-                centroids.setValue(j, targets.get(i), new Mean(means[j]).getValue());
+                centroids.setValue(j, targets.get(i), new Mean(means[j]).value());
             }
         }
     }
