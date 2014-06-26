@@ -81,6 +81,14 @@ public class VSpot implements Serializable {
         var.setLabel(row, label);
     }
 
+    public boolean binary() {
+        return var.binary(row);
+    }
+
+    public void setBinary(boolean value) {
+        var.setBinary(row, value);
+    }
+
     public String[] dictionary() {
         return var.dictionary();
     }

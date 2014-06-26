@@ -27,7 +27,7 @@ import java.util.Arrays;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class Index implements Var {
+public final class Index implements Var {
 
     private static final int MISSING_VALUE = Integer.MIN_VALUE;
     private int[] data;

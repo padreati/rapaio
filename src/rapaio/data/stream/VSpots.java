@@ -249,7 +249,11 @@ public class VSpots implements Stream<VSpot>, Serializable {
     }
 
     public VSpots complete() {
-        return new VSpots(stream.filter((VSpot inst) -> !inst.missing()));
+        return new VSpots(stream.filter(s -> !s.missing()));
+    }
+
+    public VSpots incomplete() {
+        return new VSpots(stream.filter(s -> s.missing()));
     }
 
     public <R> String mkString(Function<VSpot, R> mapper) {

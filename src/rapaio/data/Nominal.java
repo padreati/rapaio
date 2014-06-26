@@ -41,7 +41,7 @@ import java.util.*;
  *
  * @author Aurelian Tutuianu
  */
-public class Nominal implements Var {
+public final class Nominal implements Var {
 
     private static final String missingValue = "?";
     private static final int missingIndex = 0;

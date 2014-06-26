@@ -27,7 +27,7 @@ public enum VarType {
     NUMERIC(true, false),
     INDEX(true, false),
     NOMINAL(false, true),
-    ;
+    BINARY(true, false);
 
     private final boolean numeric;
     private final boolean nominal;

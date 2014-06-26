@@ -29,7 +29,7 @@ import java.util.Collection;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class Numeric implements Var {
+public final class Numeric implements Var {
 
     private static final double missingValue = Double.NaN;
     private double[] data;

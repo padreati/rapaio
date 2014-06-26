@@ -26,6 +26,7 @@ import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -246,7 +247,30 @@ public class Summary {
             second[i] = " ";
         }
 
-        if (v.type().isNumeric()) {
+        if (v.type() == VarType.BINARY) {
+            first[0] = "0";
+            first[1] = "1";
+            first[2] = "NA's";
+
+            int ones = 0;
+            int zeros = 0;
+            int missing = 0;
+            for (int i = 0; i < v.rowCount(); i++) {
+                if (v.missing(i)) {
+                    missing++;
+                } else {
+                    if (v.binary(i))
+                        ones++;
+                    else
+                        zeros++;
+                }
+            }
+            second[0] = String.valueOf(zeros);
+            second[1] = String.valueOf(ones);
+            second[2] = String.valueOf(missing);
+        }
+
+        if (v.type() == VarType.INDEX || v.type() == VarType.NUMERIC) {
             double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
             double[] perc = new Quantiles(v, p).getValues();
             double mean = new Mean(v).getValue();
