@@ -20,39 +20,25 @@
 
 package rapaio.data;
 
-import rapaio.data.mapping.Mapping;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 
 /**
- * Nominal var contains values for nominal or categorical observations.
- * <p>
- * The domain of the definition is called dictionary and is
- * given at construction time.
- * <p>
- * This var accepts two value representation: as labels and as indexes.
- * <p>
- * Label representation is the natural representation since in experiments
- * the nominal vectors are given as string values.
- * <p>
- * The index representation is learn based on the canonical form of the
- * term dictionary and is used often for performance reasons instead of
- * label representation, where the actual label value does not matter.
- *
- * @author Aurelian Tutuianu
+ * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public final class Nominal extends FactorBase {
-
-    public static Nominal newEmpty() {
-        return new Nominal();
+public final class Ordinal extends FactorBase {
+    public static Ordinal newEmpty() {
+        return new Ordinal();
     }
 
-    public static Nominal newEmpty(int rows, String... dict) {
-        return Nominal.newEmpty(rows, Arrays.asList(dict));
+    public static Ordinal newEmpty(int rows, String... dict) {
+        return Ordinal.newEmpty(rows, Arrays.asList(dict));
     }
 
-    public static Nominal newEmpty(int rows, Collection<String> dict) {
-        Nominal nominal = new Nominal();
+    public static Ordinal newEmpty(int rows, Collection<String> dict) {
+        Ordinal nominal = new Ordinal();
         for (String next : dict) {
             if (nominal.dict.contains(next)) continue;
             nominal.dict.add(next);
@@ -63,7 +49,8 @@ public final class Nominal extends FactorBase {
         return nominal;
     }
 
-    protected Nominal() {
+    protected Ordinal() {
+        super();
         // set the missing value
         this.reverse = new HashMap<>();
         this.reverse.put("?", 0);
@@ -75,12 +62,12 @@ public final class Nominal extends FactorBase {
 
     @Override
     public VarType type() {
-        return VarType.NOMINAL;
+        return VarType.ORDINAL;
     }
 
     @Override
-    public Nominal solidCopy() {
-        Nominal copy = Nominal.newEmpty(rowCount(), dictionary());
+    public Ordinal solidCopy() {
+        Ordinal copy = Ordinal.newEmpty(rowCount(), dictionary());
         for (int i = 0; i < rowCount(); i++) {
             copy.setLabel(i, label(i));
         }
@@ -89,6 +76,6 @@ public final class Nominal extends FactorBase {
 
     @Override
     public String toString() {
-        return "Nominal[" + rowCount() + "]";
+        return "Ordinal[" + rowCount() + "]";
     }
 }
