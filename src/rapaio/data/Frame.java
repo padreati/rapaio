@@ -114,7 +114,9 @@ public interface Frame extends Serializable {
      * @param col column number
      * @return numeric setValue
      */
-    double value(int row, int col);
+    default double value(int row, int col) {
+        return col(col).value(row);
+    }
 
     /**
      * Convenient shortcut to call {@link Var#value(int)} for a given column.
@@ -123,7 +125,9 @@ public interface Frame extends Serializable {
      * @param colName column name
      * @return numeric setValue
      */
-    double value(int row, String colName);
+    default double value(int row, String colName) {
+        return col(colName).value(row);
+    }
 
     /**
      * Convenient shortcut method to call {@link Var#setValue(int, double)} for a given column.
@@ -132,7 +136,9 @@ public interface Frame extends Serializable {
      * @param col   column number
      * @param value numeric value
      */
-    void setValue(int row, int col, double value);
+    default void setValue(int row, int col, double value) {
+        col(col).setValue(row, value);
+    }
 
     /**
      * Convenient shortcut method to call {@link Var#setValue(int, double)} for a given column.
@@ -141,7 +147,9 @@ public interface Frame extends Serializable {
      * @param colName column name
      * @param value   numeric value
      */
-    void setValue(int row, String colName, double value);
+    default void setValue(int row, String colName, double value) {
+        col(colName).setValue(row, value);
+    }
 
 
     /**
@@ -151,7 +159,9 @@ public interface Frame extends Serializable {
      * @param col column number
      * @return setIndex value
      */
-    int index(int row, int col);
+    default int index(int row, int col) {
+        return col(col).index(row);
+    }
 
     /**
      * Convenient shortcut method for calling {@link Var#index(int)} for a given column.
@@ -160,7 +170,9 @@ public interface Frame extends Serializable {
      * @param colName column name
      * @return setIndex value
      */
-    int index(int row, String colName);
+    default int index(int row, String colName) {
+        return col(colName).index(row);
+    }
 
     /**
      * Convenient shortcut method for calling {@link Var#setIndex(int, int)} for given column.
@@ -169,7 +181,9 @@ public interface Frame extends Serializable {
      * @param col   column number
      * @param value setIndex value
      */
-    void setIndex(int row, int col, int value);
+    default void setIndex(int row, int col, int value) {
+        col(col).setIndex(row, value);
+    }
 
     /**
      * Convenient shortcut method for calling {@link Var#setIndex(int, int)} for given column.
@@ -178,7 +192,9 @@ public interface Frame extends Serializable {
      * @param colName column name
      * @param value   setIndex value
      */
-    void setIndex(int row, String colName, int value);
+    default void setIndex(int row, String colName, int value) {
+        col(colName).setIndex(row, value);
+    }
 
     /**
      * Convenient shortcut method for calling {@link Var#label(int)} for given column.
@@ -187,7 +203,9 @@ public interface Frame extends Serializable {
      * @param col column number
      * @return nominal label value
      */
-    String label(int row, int col);
+    default String label(int row, int col) {
+        return col(col).label(row);
+    }
 
     /**
      * Convenient shortcut method for calling {@link Var#label(int)} for given column.
@@ -196,7 +214,9 @@ public interface Frame extends Serializable {
      * @param colName column name
      * @return nominal label value
      */
-    String label(int row, String colName);
+    default String label(int row, String colName) {
+        return col(colName).label(row);
+    }
 
     /**
      * Convenient shortcut method for calling {@link Var#setLabel(int, String)} for given column.
@@ -205,7 +225,9 @@ public interface Frame extends Serializable {
      * @param col   column number
      * @param value nominal label value
      */
-    void setLabel(int row, int col, String value);
+    default void setLabel(int row, int col, String value) {
+        col(col).setLabel(row, value);
+    }
 
     /**
      * Convenient shortcut method for calling {@link Var#setLabel(int, String)} for given column.
@@ -214,11 +236,17 @@ public interface Frame extends Serializable {
      * @param colName column name
      * @param value   nominal label value
      */
-    void setLabel(int row, String colName, String value);
+    default void setLabel(int row, String colName, String value) {
+        col(colName).setLabel(row, value);
+    }
 
-    boolean missing(int row, int col);
+    default boolean missing(int row, int col) {
+        return col(col).missing(row);
+    }
 
-    boolean missing(int row, String colName);
+    default boolean missing(int row, String colName) {
+        return col(colName).missing(row);
+    }
 
     /**
      * Returns true if there is at least one missing value for the given row, in any column.
@@ -226,11 +254,20 @@ public interface Frame extends Serializable {
      * @param row row number
      * @return
      */
-    boolean missing(int row);
+    default boolean missing(int row) {
+        for (String colName : colNames()) {
+            if (col(colName).missing(row)) return true;
+        }
+        return false;
+    }
 
-    void setMissing(int row, int col);
+    default void setMissing(int row, int col) {
+        col(col).setMissing(row);
+    }
 
-    void setMissing(int row, String colName);
+    default void setMissing(int row, String colName) {
+        col(colName).setMissing(row);
+    }
 
     /**
      * Builds a stream of FSpots
