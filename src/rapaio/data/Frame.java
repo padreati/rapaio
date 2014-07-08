@@ -24,6 +24,7 @@ import rapaio.data.mapping.Mapping;
 import rapaio.data.stream.FSpots;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Random access list of observed values for multiple variables.
@@ -86,14 +87,6 @@ public interface Frame extends Serializable {
      * @return a var getType reference
      */
     Var col(String name);
-
-    /**
-     * Returns row identifier for a specific column. See {@link Var#rowId(int)} for further reference.
-     *
-     * @param row row for which row identifier is returned
-     * @return row identifier
-     */
-    int rowId(int row);
 
     public boolean isMappedFrame();
 

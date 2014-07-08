@@ -20,12 +20,15 @@
 
 package rapaio.core.distributions.du;
 
+import jdistlib.Normal;
 import rapaio.core.MathBase;
 import rapaio.core.distributions.cu.Norm;
 
 import static java.lang.Math.*;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static jdistlib.math.Constants.DBL_EPSILON;
+import static jdistlib.math.MathFunctions.isInfinite;
 import static rapaio.core.Constants.*;
 
 /**
@@ -55,7 +58,8 @@ public class Binom implements DUDistribution {
 
     @Override
     public double cdf(double x) {
-        return MathBase.betaIncReg(p, x + 1, n - x);
+        if (x == n) return 1.0;
+        return MathBase.betaIncReg(1 - p, n - x, x + 1);
     }
 
     @Override

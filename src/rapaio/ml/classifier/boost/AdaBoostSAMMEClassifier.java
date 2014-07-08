@@ -20,18 +20,17 @@
 
 package rapaio.ml.classifier.boost;
 
-import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.Classifier;
-import rapaio.ml.classifier.RunningClassifier;
-import rapaio.ml.classifier.colselect.ColSelector;
-import rapaio.ml.classifier.tree.TreeClassifier;
 import rapaio.core.sample.DiscreteSampling;
 import rapaio.data.Frame;
 import rapaio.data.Frames;
 import rapaio.data.Nominal;
 import rapaio.data.Numeric;
 import rapaio.data.mapping.MappedFrame;
-import rapaio.data.mapping.Mapping;
+import rapaio.ml.classifier.AbstractClassifier;
+import rapaio.ml.classifier.Classifier;
+import rapaio.ml.classifier.RunningClassifier;
+import rapaio.ml.classifier.colselect.ColSelector;
+import rapaio.ml.classifier.tree.TreeClassifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +49,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
             .withNumericMethod(TreeClassifier.NumericMethods.BINARY);
     int runs = 0;
     double sampling = 0;
-    boolean stopOnError=false;
+    boolean stopOnError = false;
 
     // model artifacts
 
@@ -140,7 +139,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
         for (int i = 0; i < runs; i++) {
             boolean success = learnRound(df);
-            if(!success && stopOnError) {
+            if (!success && stopOnError) {
                 break;
             }
         }
@@ -167,7 +166,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
         for (int i = h.size(); i < runs; i++) {
             boolean success = learnRound(df);
-            if(!success && stopOnError) {
+            if (!success && stopOnError) {
                 break;
             }
         }
@@ -175,9 +174,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
     private boolean learnRound(Frame df) {
         int[] rows = getSamplingRows(df);
-        Mapping mapping = new Mapping();
-        for (int row : rows) mapping.add(df.rowId(row));
-        Frame dfTrain = new MappedFrame(df, mapping);
+        Frame dfTrain = MappedFrame.newByRow(df, rows);
         for (int j = 0; j < rows.length; j++) {
             dfTrain.setWeight(j, w.value(rows[j]));
         }
@@ -200,7 +197,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 //            System.out.println("Stop learning weak classifier. Computed err: 0");
             return false;
         }
-        if (stopOnError &&  err > (1.0 - 1.0 / k) + delta_error) {
+        if (stopOnError && err > (1.0 - 1.0 / k) + delta_error) {
 //            System.out.println("Warning computed err: " + err
 //                    + ", required threshold: " + (1.0 - 1.0 / k) + delta_error);
             return false;

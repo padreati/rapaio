@@ -35,8 +35,6 @@ public class IndexTest {
         assertTrue(index.type().isNumeric());
         assertFalse(index.type().isNominal());
 
-        assertEquals(0, index.rowId(0));
-
         try {
             index.dictionary();
             assertTrue(false);

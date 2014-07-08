@@ -27,6 +27,7 @@ import rapaio.data.mapping.Mapping;
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -80,9 +81,8 @@ public class FIterator implements Iterator<FSpot>, Serializable {
     public Frame mappedFrame(String key) {
         List<FSpot> spots = map.get(key);
         if (spots.isEmpty()) return null;
-        final Mapping mapping = new Mapping();
-        spots.stream().forEach((spot) -> mapping.add(spot.rowId()));
+        final Mapping mapping = Mapping.newCopyOf(spots.stream().map(FSpot::row).mapToInt(row -> row).toArray());
         final Frame df = spots.stream().findFirst().get().getFrame();
-        return new MappedFrame(df, mapping);
+        return MappedFrame.newByRow(df, mapping);
     }
 }

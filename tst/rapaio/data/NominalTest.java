@@ -44,8 +44,6 @@ public class NominalTest {
         v = Nominal.newEmpty(1, "a");
         assertEquals(1, v.rowCount());
         assertEquals("?", v.label(0));
-
-        assertEquals(0, v.rowId(0));
     }
 
     @Test

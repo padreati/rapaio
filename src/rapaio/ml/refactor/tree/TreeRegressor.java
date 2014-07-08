@@ -28,9 +28,12 @@ import rapaio.data.*;
 import rapaio.data.filters.BaseFilters;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
-import rapaio.ml.regressor.Regressor;
 import rapaio.ml.refactor.colselect.ColSelector;
 import rapaio.ml.refactor.colselect.DefaultColSelector;
+import rapaio.ml.regressor.Regressor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This works for numeric attributes only with no missing values.
@@ -126,24 +129,24 @@ class TreeRegressorNode {
 
         // if we have a split
         if (splitColName != null) {
-            Mapping leftMapping = new Mapping();
-            Mapping rightMapping = new Mapping();
+            Mapping leftMapping = Mapping.newEmpty();
+            Mapping rightMapping = Mapping.newEmpty();
             Numeric leftWeights = Numeric.newEmpty();
             Numeric rightWeights = Numeric.newEmpty();
 
             for (int i = 0; i < df.rowCount(); i++) {
                 if (df.value(i, splitColName) <= splitValue) {
-                    leftMapping.add(df.rowId(i));
+                    leftMapping.add(i);
                     leftWeights.addValue(weights.value(i));
                 } else {
-                    rightMapping.add(df.rowId(i));
+                    rightMapping.add(i);
                     rightWeights.addValue(weights.value(i));
                 }
             }
             left = new TreeRegressorNode();
             right = new TreeRegressorNode();
-            left.learn(parent, new MappedFrame(df, leftMapping), leftWeights, targetColNames);
-            right.learn(parent, new MappedFrame(df, rightMapping), rightWeights, targetColNames);
+            left.learn(parent, MappedFrame.newByRow(df, leftMapping), leftWeights, targetColNames);
+            right.learn(parent, MappedFrame.newByRow(df, rightMapping), rightWeights, targetColNames);
             return;
         }
 
@@ -164,7 +167,7 @@ class TreeRegressorNode {
         sort = BaseFilters.sort(sort, RowComparators.numericComparator(testCol, true));
         double w = 0;
         for (int i = 0; i < df.rowCount(); i++) {
-            int pos = sort.rowId(i);
+            int pos = sort.index(i);
             so.update(testCol.value(pos));
             w += weights.value(pos);
             if (i > 0) {
@@ -174,7 +177,7 @@ class TreeRegressorNode {
         so.clean();
         w = 0;
         for (int i = df.rowCount() - 1; i >= 0; i--) {
-            int pos = sort.rowId(i);
+            int pos = sort.index(i);
             so.update(testCol.value(pos));
             w += weights.value(pos);
             if (i < df.rowCount() - 1) {
@@ -183,11 +186,11 @@ class TreeRegressorNode {
         }
         w = 0;
         for (int i = 0; i < df.rowCount(); i++) {
-            int pos = sort.rowId(i);
+            int pos = sort.index(i);
             w += weights.value(pos);
 
             if (w >= parent.minWeight && totalWeight - w >= parent.minWeight) {
-                if (var[i] < eval && i > 0 && testCol.value(sort.rowId(i - 1)) != testCol.value(sort.rowId(i))) {
+                if (var[i] < eval && i > 0 && testCol.value(sort.index(i - 1)) != testCol.value(sort.index(i))) {
                     eval = var[i];
                     splitColName = testColNames;
                     splitValue = testCol.value(pos);

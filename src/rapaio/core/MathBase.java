@@ -369,8 +369,8 @@ public class MathBase {
      * @return the result in a range of [0,1]
      */
     public static double betaIncReg(double x, double a, double b) {
-        if (a <= 0 || b <= 0) {
-            throw new IllegalArgumentException("a and b must be positive");
+        if (a < 0 || b < 0) {
+            throw new IllegalArgumentException("a and b must be positive or zero");
         }
         if (x == 0 || x == 1) {
             return x;

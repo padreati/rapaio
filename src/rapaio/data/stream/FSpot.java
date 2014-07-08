@@ -45,10 +45,6 @@ public class FSpot implements Serializable {
         return row;
     }
 
-    public int rowId() {
-        return df.rowId(row);
-    }
-
     public boolean missing() {
         return df.missing(row);
     }

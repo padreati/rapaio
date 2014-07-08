@@ -261,21 +261,15 @@ public class FSpots implements Stream<FSpot>, Serializable {
         return list;
     }
 
-    public List<Integer> collectRowIdList() {
-        final List<Integer> list = new ArrayList<>();
-        forEach(spot -> list.add(spot.rowId()));
-        return list;
-    }
-
     public Frame toMappedFrame() {
-        final Mapping mapping = new Mapping();
+        final Mapping mapping = Mapping.newEmpty();
         final Pin<Frame> dfPin = new Pin<>();
         forEach(spot -> {
-            mapping.add(spot.rowId());
+            mapping.add(spot.row());
             if (dfPin.isEmpty()) {
                 dfPin.set(spot.getFrame());
             }
         });
-        return new MappedFrame(dfPin.get(), mapping);
+        return MappedFrame.newByRow(dfPin.get(), mapping);
     }
 }

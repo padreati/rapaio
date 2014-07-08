@@ -20,13 +20,14 @@
 
 package rapaio.data.mapping;
 
-import rapaio.data.AbstractFrame;
-import rapaio.data.Frame;
-import rapaio.data.Numeric;
-import rapaio.data.Var;
+import rapaio.data.*;
+import rapaio.data.stream.VSpot;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -49,32 +50,31 @@ public class MappedFrame extends AbstractFrame {
     private final HashMap<String, Integer> colIndex;
     private final Var[] vars;
 
-
-    public MappedFrame(Frame df, Mapping mapping) {
-        this.mapping = mapping;
-        if (df.isMappedFrame()) {
-            this.source = df.sourceFrame();
-        } else {
-            this.source = df;
-        }
-        this.weights = Numeric.newCopyOf(mapping.rowStream().mapToDouble(source::weight).toArray());
-        this.names = df.colNames();
-        this.colIndex = new HashMap<>();
-        this.vars = new Var[names.length];
-        IntStream.range(0, names.length).forEach(i -> {
-            colIndex.put(names[i], i);
-            vars[i] = new MappedVar(source.col(names[i]), mapping);
-        });
+    public static MappedFrame newByRow(Frame df, int... mapping) {
+        return new MappedFrame(df, Mapping.newCopyOf(mapping));
     }
 
-    public MappedFrame(Frame df, Mapping mapping, List<String> columns) {
-        this.mapping = mapping;
+    public static MappedFrame newByRow(Frame df, Mapping mapping) {
+        return new MappedFrame(df, mapping);
+    }
+
+    public static MappedFrame newByRow(Frame df, Mapping mapping, List<String> columns) {
+        return new MappedFrame(df, mapping, columns);
+    }
+
+    private MappedFrame(Frame df, Mapping mapping) {
+        this(df, mapping, Arrays.asList(df.colNames()));
+    }
+
+    private MappedFrame(Frame df, Mapping mapping, List<String> columns) {
         if (df.isMappedFrame()) {
             this.source = df.sourceFrame();
+            this.mapping = Mapping.newWrapOf(mapping.rowStream().map(row -> df.mapping().get(row)).mapToObj(row -> row).collect(Collectors.toList()));
         } else {
             this.source = df;
+            this.mapping = mapping;
         }
-        this.weights = Numeric.newCopyOf(mapping.rowStream().mapToDouble(source::weight).toArray());
+        this.weights = Numeric.newWrapOf(this.mapping.rowStream().mapToDouble(this.source::weight).toArray());
         this.names = new String[columns.size()];
         for (int i = 0; i < columns.size(); i++) {
             names[i] = columns.get(i);
@@ -83,7 +83,7 @@ public class MappedFrame extends AbstractFrame {
         this.vars = new Var[names.length];
         IntStream.range(0, names.length).forEach(i -> {
             colIndex.put(names[i], i);
-            vars[i] = new MappedVar(source.col(names[i]), mapping);
+            vars[i] = MappedVar.newByRows(this.source.col(names[i]), this.mapping);
         });
     }
 
@@ -95,11 +95,6 @@ public class MappedFrame extends AbstractFrame {
     @Override
     public int colCount() {
         return names.length;
-    }
-
-    @Override
-    public int rowId(int row) {
-        return mapping.get(row);
     }
 
     @Override

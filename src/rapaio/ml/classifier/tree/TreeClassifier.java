@@ -36,6 +36,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -612,21 +613,21 @@ public class TreeClassifier extends AbstractClassifier {
             public List<Frame> performSplit(Frame df, Candidate candidate) {
                 List<Mapping> mappings = new ArrayList<>();
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                    mappings.add(new Mapping());
+                    mappings.add(Mapping.newEmpty());
                 }
 
                 df.stream().forEach(fspot -> {
                     for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                         SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                         if (predicate.test(fspot)) {
-                            mappings.get(i).add(fspot.rowId());
+                            mappings.get(i).add(fspot.row());
                             break;
                         }
                     }
                 });
                 List<Frame> frames = new ArrayList<>();
                 mappings.stream().forEach(mapping -> {
-                    frames.add(new MappedFrame(df, mapping));
+                    frames.add(MappedFrame.newByRow(df, mapping));
                 });
                 return frames;
             }
@@ -636,7 +637,7 @@ public class TreeClassifier extends AbstractClassifier {
             public List<Frame> performSplit(Frame df, Candidate candidate) {
                 List<Mapping> mappings = new ArrayList<>();
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                    mappings.add(new Mapping());
+                    mappings.add(Mapping.newEmpty());
                 }
 
                 List<FSpot> missingSpots = new LinkedList<>();
@@ -644,7 +645,7 @@ public class TreeClassifier extends AbstractClassifier {
                     for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                         SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                         if (predicate.test(fspot)) {
-                            mappings.get(i).add(fspot.rowId());
+                            mappings.get(i).add(fspot.row());
                             return;
                         }
                     }
@@ -659,10 +660,10 @@ public class TreeClassifier extends AbstractClassifier {
                     }
                 }
                 final int index = majorityGroup;
-                missingSpots.stream().forEach(spot -> mappings.get(index).add(spot.rowId()));
+                missingSpots.stream().forEach(spot -> mappings.get(index).add(spot.row()));
                 List<Frame> frames = new ArrayList<>();
                 mappings.stream().forEach(mapping -> {
-                    frames.add(new MappedFrame(df, mapping));
+                    frames.add(MappedFrame.newByRow(df, mapping));
                 });
                 return frames;
             }
@@ -672,7 +673,7 @@ public class TreeClassifier extends AbstractClassifier {
             public List<Frame> performSplit(Frame df, Candidate candidate) {
                 List<Mapping> mappings = new ArrayList<>();
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                    mappings.add(new Mapping());
+                    mappings.add(Mapping.newEmpty());
                 }
 
                 final Set<Integer> missingSpots = new HashSet<>();
@@ -680,11 +681,11 @@ public class TreeClassifier extends AbstractClassifier {
                     for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                         SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                         if (predicate.test(fspot)) {
-                            mappings.get(i).add(fspot.rowId());
+                            mappings.get(i).add(fspot.row());
                             return;
                         }
                     }
-                    missingSpots.add(fspot.rowId());
+                    missingSpots.add(fspot.row());
                 });
                 final double[] p = new double[mappings.size()];
                 double n = 0;
@@ -699,10 +700,9 @@ public class TreeClassifier extends AbstractClassifier {
                 List<Frame> frames = new ArrayList<>();
                 for (int i = 0; i < mappings.size(); i++) {
                     final int index = i;
-                    Mapping mapping = mappings.get(i);
-                    Frame f = new MappedFrame(df, mapping);
+                    Frame f = MappedFrame.newByRow(df, mappings.get(i));
                     f.stream().forEach(spot -> {
-                        if (missingSpots.contains(spot.rowId()))
+                        if (missingSpots.contains(spot.row()))
                             spot.setWeight(spot.weight() * p[index]);
                     });
                     frames.add(f);
@@ -715,7 +715,7 @@ public class TreeClassifier extends AbstractClassifier {
             public List<Frame> performSplit(Frame df, Candidate candidate) {
                 List<Mapping> mappings = new ArrayList<>();
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                    mappings.add(new Mapping());
+                    mappings.add(Mapping.newEmpty());
                 }
 
                 final Set<Integer> missingSpots = new HashSet<>();
@@ -723,18 +723,14 @@ public class TreeClassifier extends AbstractClassifier {
                     for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                         SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                         if (predicate.test(fspot)) {
-                            mappings.get(i).add(fspot.rowId());
+                            mappings.get(i).add(fspot.row());
                             return;
                         }
                     }
-                    missingSpots.add(fspot.rowId());
+                    missingSpots.add(fspot.row());
                 });
                 missingSpots.forEach(rowId -> mappings.get(RandomSource.nextInt(mappings.size())).add(rowId));
-                List<Frame> frames = new ArrayList<>();
-                mappings.stream().forEach(mapping -> {
-                    frames.add(new MappedFrame(df, mapping));
-                });
-                return frames;
+                return mappings.stream().map(mapping -> MappedFrame.newByRow(df, mapping)).collect(Collectors.toList());
             }
         },
         REMAINS_WITH_SURROGATES {

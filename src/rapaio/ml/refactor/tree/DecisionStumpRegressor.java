@@ -24,17 +24,19 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.StatOnline;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
+import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.mapping.MappedVar;
 import rapaio.data.mapping.Mapping;
+import rapaio.data.stream.VSpot;
 import rapaio.ml.refactor.boost.gbt.BTRegressor;
 import rapaio.ml.refactor.boost.gbt.BoostingLossFunction;
 import rapaio.ml.regressor.Regressor;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import static rapaio.data.filters.BaseFilters.completeCases;
-import static rapaio.data.filters.BaseFilters.sort;
+import java.util.stream.Collectors;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -101,24 +103,25 @@ public class DecisionStumpRegressor implements Regressor, BTRegressor {
 
     private void evalNumeric(Frame df, String colName) {
 
-        Var sort = sort(completeCases(df.col(colName)));
-        double[] var = new double[sort.rowCount()];
+        List<Integer> rows = df.col(colName).stream().complete().map(VSpot::row).collect(Collectors.toList());
+        Collections.sort(rows, RowComparators.numericComparator(df.col(colName), true));
+        double[] var = new double[rows.size()];
         StatOnline so = new StatOnline();
-        for (int i = 0; i < sort.rowCount(); i++) {
-            so.update(df.sourceFrame().value(sort.rowId(i), targetColName));
+        for (int i = 0; i < rows.size(); i++) {
+            so.update(df.value(rows.get(i), targetColName));
             var[i] = so.variance() * so.n();
         }
         so = new StatOnline();
-        for (int i = sort.rowCount() - 1; i >= 0; i--) {
-            so.update(df.sourceFrame().value(sort.rowId(i), targetColName));
+        for (int i = rows.size() - 1; i >= 0; i--) {
+            so.update(df.value(rows.get(i), targetColName));
             var[i] += so.variance() * so.n();
         }
-        for (int i = minCount + 1; i < sort.rowCount() - minCount; i++) {
-            if (var[i - 1] < criterion && sort.value(i - 1) != sort.value(i)
-                    && sort.value(i - 1) != sort.value(sort.rowCount() - 1)) {
+        for (int i = minCount + 1; i < rows.size() - minCount; i++) {
+            if (var[i - 1] < criterion && df.value(rows.get(i - 1), colName) != df.value(rows.get(i), colName)
+                    && df.value(rows.get(i - 1), colName) != df.value(rows.get(rows.size() - 1), colName)) {
                 criterion = var[i - 1];
                 testColName = colName;
-                testValue = sort.value(i - 1);
+                testValue = rows.get(i - 1);
             }
         }
     }
@@ -131,28 +134,27 @@ public class DecisionStumpRegressor implements Regressor, BTRegressor {
             return;
         }
 
-        Mapping dfLeft = new Mapping();
-        Mapping dfRight = new Mapping();
-
+        Mapping dfLeft = Mapping.newEmpty();
+        Mapping dfRight = Mapping.newEmpty();
 
         Var test = x.col(testColName);
         for (int i = 0; i < test.rowCount(); i++) {
             if (test.missing(i)) continue;
             if (test.type().isNominal()) continue;
             if (test.type().isNumeric() && (testValue >= test.value(i))) {
-                dfLeft.add(test.rowId(i));
+                dfLeft.add(i);
             } else {
-                dfRight.add(test.rowId(i));
+                dfRight.add(i);
             }
         }
 
         defaultFit = lossFunction.findMinimum(y, fx);
         leftFit = lossFunction.findMinimum(
-                new MappedVar(y.source(), dfLeft),
-                new MappedVar(fx.source(), dfLeft));
+                MappedVar.newByRows(y.source(), dfLeft),
+                MappedVar.newByRows(fx.source(), dfLeft));
         rightFit = lossFunction.findMinimum(
-                new MappedVar(y.source(), dfRight),
-                new MappedVar(fx.source(), dfRight));
+                MappedVar.newByRows(y.source(), dfRight),
+                MappedVar.newByRows(fx.source(), dfRight));
     }
 
     @Override

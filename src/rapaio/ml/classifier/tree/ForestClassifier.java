@@ -158,26 +158,26 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
         if (sampling <= 0) {
             // no sampling
             frames.add(df.stream().toMappedFrame());
-            frames.add(new MappedFrame(df, new Mapping()));
+            frames.add(MappedFrame.newByRow(df));
             return frames;
         }
 
-        Mapping train = new Mapping();
-        Mapping oob = new Mapping();
+        Mapping train = Mapping.newEmpty();
+        Mapping oob = Mapping.newEmpty();
 
         int[] sample = new DiscreteSampling().sampleWR((int) (df.rowCount() * sampling), df.rowCount());
         HashSet<Integer> rows = new HashSet<>();
         for (int row : sample) {
             rows.add(row);
-            train.add(df.rowId(row));
+            train.add(row);
         }
         for (int i = 0; i < df.rowCount(); i++) {
             if (rows.contains(i)) continue;
-            oob.add(df.rowId(i));
+            oob.add(i);
         }
 
-        frames.add(new MappedFrame(df, train));
-        frames.add(new MappedFrame(df, oob));
+        frames.add(MappedFrame.newByRow(df, train));
+        frames.add(MappedFrame.newByRow(df, oob));
 
         return frames;
     }
@@ -205,7 +205,7 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
     @Override
     public void learnFurther(Frame df, String targetName, int additionalRuns) {
 
-        if(targetCol != null && dict != null) {
+        if (targetCol != null && dict != null) {
             this.runs += additionalRuns;
         } else {
             this.runs = additionalRuns;

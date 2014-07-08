@@ -25,6 +25,7 @@ import rapaio.data.mapping.Mapping;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -171,17 +172,12 @@ public final class Numeric implements Var {
 
     @Override
     public Mapping mapping() {
-        return null;
+        return Mapping.newSeqRO(rowCount());
     }
 
     @Override
     public int rowCount() {
         return rows;
-    }
-
-    @Override
-    public int rowId(int row) {
-        return row;
     }
 
     @Override

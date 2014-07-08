@@ -41,10 +41,6 @@ public class VSpot implements Serializable {
         return row;
     }
 
-    public int rowId() {
-        return var.rowId(row);
-    }
-
     public Var var() {
         return var;
     }

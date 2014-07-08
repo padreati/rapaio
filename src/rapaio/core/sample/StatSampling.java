@@ -71,11 +71,11 @@ public class StatSampling {
     }
 
     public static Frame randomBootstrap(Frame frame, int size) {
-        List<Integer> mapping = new ArrayList<>();
+        Mapping mapping = Mapping.newEmpty();
         for (int i = 0; i < size; i++) {
             int next = RandomSource.nextInt(frame.rowCount());
-            mapping.add(frame.rowId(next));
+            mapping.add(next);
         }
-        return new MappedFrame(frame, new Mapping(mapping));
+        return MappedFrame.newByRow(frame, mapping);
     }
 }

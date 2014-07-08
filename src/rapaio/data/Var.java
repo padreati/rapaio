@@ -75,21 +75,6 @@ public interface Var extends Serializable {
     int rowCount();
 
     /**
-     * Returns observation identifier which is an integer.
-     * <p>
-     * When a var or frame is created from scratch as a solid var/frame then
-     * row identifiers are the row numbers. When the var/frame wraps other
-     * var/frame then row identifier is the wrapped row identifier.
-     * <p>
-     * This is mostly used to keep track of the original row numbers even after a series
-     * of transformations which use wrapped vectors/frames.
-     *
-     * @param row row for which row identifier is returned
-     * @return row identifier
-     */
-    int rowId(int row);
-
-    /**
      * Returns numeric value for the observation specified by row.
      * <p>
      * Returns valid values for numerical var types, otherwise the method

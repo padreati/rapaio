@@ -76,17 +76,12 @@ public abstract class FactorBase implements Var {
 
     @Override
     public Mapping mapping() {
-        return null;
+        return Mapping.newSeqRO(rowCount());
     }
 
     @Override
     public int rowCount() {
         return rows;
-    }
-
-    @Override
-    public int rowId(int row) {
-        return row;
     }
 
     @Override

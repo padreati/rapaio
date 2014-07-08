@@ -21,14 +21,19 @@
 package rapaio.datasets;
 
 import rapaio.core.RandomSource;
+import rapaio.core.sample.DiscreteSampling;
 import rapaio.core.sample.StatSampling;
 import rapaio.data.Frame;
 import rapaio.data.filters.BaseFilters;
+import rapaio.data.mapping.MappedFrame;
+import rapaio.data.mapping.Mapping;
 import rapaio.datasets.UCI.UCI;
 import rapaio.io.ArffPersistence;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Utility class which provides data sets for classification task.
@@ -52,11 +57,13 @@ public class CBenchmark {
 
             @Override
             public boolean reSample(double p, boolean replacement) {
-                if (replacement)
-                    train = StatSampling.randomBootstrap(full, (int) (full.rowCount() * p));
-                else
-                    train = StatSampling.randomSample(full, new int[]{(int) (full.rowCount() * p)}).get(0);
-                test = BaseFilters.delta(full, train);
+                int[] rows = replacement
+                        ? new DiscreteSampling().sampleWR((int) (full.rowCount() * p), full.rowCount())
+                        : new DiscreteSampling().sampleWOR((int) (full.rowCount() * p), full.rowCount());
+                train = MappedFrame.newByRow(full, rows);
+                Set<Integer> used = Arrays.stream(rows).mapToObj(row -> row).collect(Collectors.toSet());
+                Mapping diff = Mapping.newCopyOf(IntStream.range(0, full.rowCount()).filter(row -> !used.contains(row)).toArray());
+                test = MappedFrame.newByRow(full, diff);
                 return true;
             }
         });

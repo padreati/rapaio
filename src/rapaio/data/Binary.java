@@ -24,6 +24,7 @@ import rapaio.data.mapping.Mapping;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.BitSet;
+import java.util.List;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -118,17 +119,12 @@ public final class Binary implements Var {
 
     @Override
     public Mapping mapping() {
-        return null;
+        return Mapping.newSeqRO(rowCount());
     }
 
     @Override
     public int rowCount() {
         return rows;
-    }
-
-    @Override
-    public int rowId(int row) {
-        return row;
     }
 
     @Override

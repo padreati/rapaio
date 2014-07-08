@@ -23,17 +23,14 @@ package rapaio.data.filters;
 import rapaio.core.ColRange;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.cu.Norm;
-import rapaio.core.stat.Quantiles;
 import rapaio.data.*;
 import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.MappedVar;
 import rapaio.data.mapping.Mapping;
-import rapaio.data.stream.FSpot;
 import rapaio.data.stream.VSpot;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Provides filters for frames.
@@ -82,7 +79,7 @@ public final class BaseFilters implements Serializable {
             if (indexes.contains(i)) continue;
             names.add(df.colNames()[i]);
         }
-        return new MappedFrame(df, df.mapping(), names);
+        return MappedFrame.newByRow(df, df.mapping(), names);
     }
 
     /**
@@ -103,7 +100,7 @@ public final class BaseFilters implements Serializable {
                 posIndexes++;
             }
         }
-        return new MappedFrame(df, df.mapping(), Arrays.asList(names));
+        return MappedFrame.newByRow(df, df.mapping(), Arrays.asList(names));
     }
 
     /**
@@ -132,70 +129,6 @@ public final class BaseFilters implements Serializable {
                 vars.add(df.col(i));
                 names.add(df.colNames()[i]);
             }
-        }
-        return new SolidFrame(df.rowCount(), vars, names, df.weights());
-    }
-
-    public static Frame discretize(Frame df, ColRange colRange, int bins, boolean useQuantiles) {
-        if (df.isMappedFrame()) {
-            throw new IllegalArgumentException("Not allowed for mapped frame");
-        }
-        if (df.rowCount() < bins) {
-            throw new IllegalArgumentException("Number of bins greater than number of getRowCount");
-        }
-        Set<Integer> colSet = new HashSet<>(colRange.parseColumnIndexes(df));
-        for (int col : colSet) {
-            if (!df.col(col).type().isNumeric()) {
-                throw new IllegalArgumentException("Non-numeric column found in column range");
-            }
-        }
-        Set<String> dict = new HashSet<>();
-        for (int i = 0; i < bins; i++) {
-            dict.add(String.valueOf(i + 1));
-        }
-        List<Var> vars = new ArrayList<>();
-        List<String> names = new ArrayList<>();
-        for (int i = 0; i < df.colCount(); i++) {
-            if (!colSet.contains(i)) {
-                vars.add(df.col(i));
-                continue;
-            }
-            Var origin = df.col(i);
-            Var discrete = Nominal.newEmpty(origin.rowCount(), dict);
-            if (!useQuantiles) {
-                Var sorted = sort(df.col(i));
-                int width = (int) Math.ceil(df.rowCount() / (1. * bins));
-                for (int j = 0; j < bins; j++) {
-                    for (int k = 0; k < width; k++) {
-                        if (j * width + k >= df.rowCount())
-                            break;
-                        if (sorted.missing(j * width + k))
-                            continue;
-                        int rowId = sorted.rowId(j * width + k);
-                        discrete.setLabel(rowId, String.valueOf(j + 1));
-                    }
-                }
-            } else {
-                double[] p = new double[bins];
-                for (int j = 0; j < p.length; j++) {
-                    p[j] = j / (1. * bins);
-                }
-                double[] q = new Quantiles(origin, p).values();
-                for (int j = 0; j < origin.rowCount(); j++) {
-                    if (origin.missing(j))
-                        continue;
-                    double value = origin.value(j);
-                    int index = Arrays.binarySearch(q, value);
-                    if (index < 0) {
-                        index = -index - 1;
-                    } else {
-                        index++;
-                    }
-                    discrete.setLabel(j, String.valueOf(index));
-                }
-            }
-            vars.add(discrete);
-            names.add(df.colNames()[i]);
         }
         return new SolidFrame(df.rowCount(), vars, names, df.weights());
     }
@@ -247,49 +180,20 @@ public final class BaseFilters implements Serializable {
     }
 
     /**
-     * Split a frame into multiple frames, one for each label in
-     * the term dictionary of the nominal value given as parameter.
-     *
-     * @param df      source frame
-     * @param colName index fo the nominal column
-     * @return a map of frames, with nominal labels as keys
-     */
-    public static Map<String, Frame> groupByNominal(final Frame df, final String colName) {
-        if (!df.col(colName).type().isNominal()) {
-            throw new IllegalArgumentException("Index does not specify a nominal attribute");
-        }
-        Map<String, Frame> frames = new HashMap<>();
-        String[] dict = df.col(colName).dictionary();
-        final Mapping[] mappings = new Mapping[dict.length];
-        for (int i = 0; i < dict.length; i++) {
-            mappings[i] = new Mapping();
-        }
-
-        df.stream().forEach((FSpot fi) -> {
-            int index = fi.index(colName);
-            mappings[index].add(fi.rowId());
-        });
-        for (int i = 0; i < mappings.length; i++) {
-            frames.put(dict[i], new MappedFrame(df, mappings[i]));
-        }
-        return frames;
-    }
-
-    /**
      * Shuffle the order of getRowCount from specified frame.
      *
      * @param df source frame
      * @return shuffled frame
      */
     public static Frame shuffle(Frame df) {
-        ArrayList<Integer> mapping = new ArrayList<>();
+        List<Integer> mapping = new ArrayList<>();
         for (int i = 0; i < df.rowCount(); i++) {
-            mapping.add(df.rowId(i));
+            mapping.add(i);
         }
         for (int i = mapping.size(); i > 1; i--) {
             mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
         }
-        return new MappedFrame(df, new Mapping(mapping));
+        return MappedFrame.newByRow(df, Mapping.newWrapOf(mapping));
     }
 
     public static Frame sort(Frame df, Comparator<Integer>... comparators) {
@@ -298,26 +202,7 @@ public final class BaseFilters implements Serializable {
             mapping.add(i);
         }
         Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
-        List<Integer> ids = mapping.stream().map(df::rowId).collect(Collectors.toList());
-        return new MappedFrame(df, new Mapping(ids));
-//        Mapping mapping = df.isMappedFrame() ? df.mapping() : new Mapping(df.rowCount());
-//        return new MappedFrame(df, mapping.sort(comparators));
-
-    }
-
-
-    public static Frame delta(Frame source, Frame remove) {
-        Set<Integer> existing = new HashSet<>();
-        for (int i = 0; i < remove.rowCount(); i++) {
-            existing.add(remove.rowId(i));
-        }
-        Mapping mapping = new Mapping();
-        for (int i = 0; i < source.rowCount(); i++) {
-            if (!existing.contains(source.rowId(i))) {
-                mapping.add(source.rowId(i));
-            }
-        }
-        return new MappedFrame(source, mapping);
+        return MappedFrame.newByRow(df, Mapping.newWrapOf(mapping));
     }
 
     public static List<Frame> combine(List<Frame> frames, String... combined) {
@@ -362,13 +247,7 @@ public final class BaseFilters implements Serializable {
     }
 
     public static Var completeCases(Var source) {
-        Mapping mapping = new Mapping();
-        for (int i = 0; i < source.rowCount(); i++) {
-            if (!source.missing(i)) {
-                mapping.add(source.rowId(i));
-            }
-        }
-        return new MappedVar(source, mapping);
+        return source.stream().complete().toMappedVar();
     }
 
     /**
@@ -519,14 +398,14 @@ public final class BaseFilters implements Serializable {
      * @return shuffled var
      */
     public static Var shuffle(Var v) {
-        ArrayList<Integer> mapping = new ArrayList<>();
+        List<Integer> mapping = new ArrayList<>();
         for (int i = 0; i < v.rowCount(); i++) {
-            mapping.add(v.rowId(i));
+            mapping.add(i);
         }
         for (int i = mapping.size(); i > 1; i--) {
             mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
         }
-        return new MappedVar(v.source(), new Mapping(mapping));
+        return MappedVar.newByRows(v.source(), Mapping.newWrapOf(mapping));
     }
 
     public static Var sort(Var v) {
@@ -547,10 +426,6 @@ public final class BaseFilters implements Serializable {
             mapping.add(i);
         }
         Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
-        Mapping ids = new Mapping();
-        for (Integer aMapping : mapping) {
-            ids.add(var.rowId(aMapping));
-        }
-        return new MappedVar(var, ids);
+        return MappedVar.newByRows(var, Mapping.newWrapOf(mapping));
     }
 }

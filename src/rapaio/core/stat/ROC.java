@@ -85,13 +85,13 @@ public class ROC implements Printable {
         double tp = 0;
         auc = 0;
 
-        Var sort = sort(score, RowComparators.numericComparator(score, false));
+        Var rows = sort(Index.newSeq(score.rowCount()), RowComparators.numericComparator(score, false));
         int len = 1;
         double prev = Double.MIN_VALUE;
-        for (int i = 0; i < sort.rowCount(); i++) {
-            if (sort.missing(i) || classes.missing(sort.rowId(i))) continue;
-            if (sort.value(i) != prev) {
-                prev = sort.value(i);
+        for (int i = 0; i < rows.rowCount(); i++) {
+            if (score.missing(rows.index(i)) || classes.missing(rows.index(i))) continue;
+            if (score.value(rows.index(i)) != prev) {
+                prev = score.value(rows.index(i));
                 len++;
             }
         }
@@ -99,10 +99,9 @@ public class ROC implements Printable {
         prev = Double.POSITIVE_INFINITY;
         int pos = 0;
 
-        for (int i = 0; i < sort.rowCount(); i++) {
-            if (sort.missing(i) || classes.missing(sort.rowId(i))) continue;
-
-            if (sort.value(i) != prev) {
+        for (int i = 0; i < rows.rowCount(); i++) {
+            if (score.missing(rows.index(i)) || classes.missing(rows.index(i))) continue;
+            if (score.value(rows.index(i)) != prev) {
                 auc += Math.abs(prevfp - fp) * Math.abs(prevtp + tp) / 2.;
                 double accValue = (tp + n - fp) / (0. + n + p);
                 data.setValue(pos, "threshold", prev);
@@ -111,11 +110,10 @@ public class ROC implements Printable {
                 data.setValue(pos, "acc", accValue);
                 prevfp = fp;
                 prevtp = tp;
-                prev = sort.value(i);
+                prev = score.value(rows.index(i));
                 pos++;
             }
-
-            if (classes.index(sort.rowId(i)) > 0) tp++;
+            if (classes.index(rows.index(i)) > 0) tp++;
             else fp++;
         }
         data.setValue(pos, "threshold", prev);

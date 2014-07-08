@@ -158,13 +158,13 @@ public class GradientBoostingTreeRegressor implements Regressor {
             Frame xLearn = x;
             Mapping bootstrapMapping = null;
             if (bootstrap != 1) {
-                bootstrapMapping = new Mapping();
+                bootstrapMapping = Mapping.newEmpty();
                 int[] sample = new DiscreteSampling().sampleWOR((int) (bootstrap * xmLearn.rowCount()), xmLearn.rowCount());
                 for (int aSample : sample) {
-                    bootstrapMapping.add(xmLearn.rowId(aSample));
+                    bootstrapMapping.add(aSample);
                 }
-                xmLearn = new MappedFrame(xm, bootstrapMapping);
-                xLearn = new MappedFrame(x, bootstrapMapping);
+                xmLearn = MappedFrame.newByRow(xm, bootstrapMapping);
+                xLearn = MappedFrame.newByRow(x, bootstrapMapping);
             }
 
             // build regions
@@ -178,8 +178,8 @@ public class GradientBoostingTreeRegressor implements Regressor {
             } else {
                 tree.boostFit(
                         xLearn,
-                        new MappedVar(y, bootstrapMapping),
-                        new MappedVar(fitLearn, bootstrapMapping),
+                        MappedVar.newByRows(y, bootstrapMapping),
+                        MappedVar.newByRows(fitLearn, bootstrapMapping),
                         lossFunction);
             }
 
@@ -224,13 +224,13 @@ public class GradientBoostingTreeRegressor implements Regressor {
             Frame xLearn = x;
             Mapping bootstrapMapping = null;
             if (bootstrap != 1) {
-                bootstrapMapping = new Mapping();
+                bootstrapMapping = Mapping.newEmpty();
                 int[] sample = new DiscreteSampling().sampleWOR((int) (bootstrap * xmLearn.rowCount()), xmLearn.rowCount());
                 for (int aSample : sample) {
-                    bootstrapMapping.add(xmLearn.rowId(aSample));
+                    bootstrapMapping.add(aSample);
                 }
-                xmLearn = new MappedFrame(xm, bootstrapMapping);
-                xLearn = new MappedFrame(x, bootstrapMapping);
+                xmLearn = MappedFrame.newByRow(xm, bootstrapMapping);
+                xLearn = MappedFrame.newByRow(x, bootstrapMapping);
             }
 
             // learn regions from gradients
@@ -244,8 +244,8 @@ public class GradientBoostingTreeRegressor implements Regressor {
             } else {
                 tree.boostFit(
                         xLearn,
-                        new MappedVar(y, bootstrapMapping),
-                        new MappedVar(fitLearn, bootstrapMapping),
+                        MappedVar.newByRows(y, bootstrapMapping),
+                        MappedVar.newByRows(fitLearn, bootstrapMapping),
                         lossFunction);
             }
 

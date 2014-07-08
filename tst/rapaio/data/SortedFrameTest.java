@@ -88,11 +88,6 @@ public class SortedFrameTest {
         assertEquals(3, sort.colCount());
         assertEquals(4, sort.rowCount());
 
-        assertEquals(2, sort.rowId(0));
-        assertEquals(1, sort.rowId(1));
-        assertEquals(0, sort.rowId(2));
-        assertEquals(3, sort.rowId(3));
-
         boolean exceptional = false;
         try {
             sort.col("wrong-getCol-name");
@@ -166,10 +161,8 @@ public class SortedFrameTest {
 
         sorted = sort(sorted, nominalComparator(sorted.col("x"), true));
 
-        assertEquals(2, sorted.rowId(0));
-        assertEquals(1, sorted.rowId(1));
-        assertEquals(0, sorted.rowId(2));
-        assertEquals(3, sorted.rowId(3));
-
+        for (int i = 0; i < sorted.rowCount() - 1; i++) {
+            assertTrue(sorted.label(i, "x").compareTo(sorted.label(i + 1, "x"))<=0);
+        }
     }
 }

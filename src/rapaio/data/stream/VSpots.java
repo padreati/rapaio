@@ -26,10 +26,7 @@ import rapaio.data.mapping.Mapping;
 import rapaio.util.Pin;
 
 import java.io.Serializable;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Optional;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 
@@ -253,7 +250,7 @@ public class VSpots implements Stream<VSpot>, Serializable {
     }
 
     public VSpots incomplete() {
-        return new VSpots(stream.filter(s -> s.missing()));
+        return new VSpots(stream.filter(VSpot::missing));
     }
 
     public <R> String mkString(Function<VSpot, R> mapper) {
@@ -279,14 +276,14 @@ public class VSpots implements Stream<VSpot>, Serializable {
     }
 
     public MappedVar toMappedVar() {
-        Mapping map = new Mapping();
+        Mapping map = Mapping.newEmpty();
         Pin<Var> var = new Pin<>();
         stream.forEach(s -> {
-            map.add(s.rowId());
+            map.add(s.row());
             if (var.isEmpty()) {
                 var.set(s.var());
             }
         });
-        return new MappedVar(var.get(), map);
+        return MappedVar.newByRows(var.get(), map);
     }
 }

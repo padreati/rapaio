@@ -20,7 +20,7 @@
 
 package rapaio.ml.classifier.tools;
 
-import rapaio.core.sample.StatSampling;
+import rapaio.core.sample.DiscreteSampling;
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -28,13 +28,10 @@ import rapaio.data.mapping.MappedFrame;
 import rapaio.data.mapping.Mapping;
 import rapaio.ml.classifier.Classifier;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-import static rapaio.data.filters.BaseFilters.delta;
-import static rapaio.data.filters.BaseFilters.shuffle;
 import static rapaio.WS.print;
+import static rapaio.data.filters.BaseFilters.shuffle;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -50,8 +47,8 @@ public class ModelEvaluation {
         double correct = 0;
 
         for (int i = 0; i < folds; i++) {
-            List<Integer> trainMapping = new ArrayList<>();
-            List<Integer> testMapping = new ArrayList<>();
+            Mapping trainMapping = Mapping.newEmpty();
+            Mapping testMapping = Mapping.newEmpty();
             for (int j = 0; j < folds; j++) {
                 if (j == i) {
                     testMapping.addAll(strata[j]);
@@ -59,8 +56,8 @@ public class ModelEvaluation {
                     trainMapping.addAll(strata[j]);
                 }
             }
-            Frame train = new MappedFrame(df, new Mapping(trainMapping));
-            Frame test = new MappedFrame(df, new Mapping(testMapping));
+            Frame train = MappedFrame.newByRow(df, trainMapping);
+            Frame test = MappedFrame.newByRow(df, testMapping);
 
             c.learn(train, classColName);
             c.predict(test);
@@ -82,17 +79,17 @@ public class ModelEvaluation {
 
     private List<Integer>[] buildStrata(Frame df, int folds, String classColName) {
         String[] dict = df.col(classColName).dictionary();
-        List<Integer>[] rowIds = new List[dict.length];
+        List<Integer>[] rows = new List[dict.length];
         for (int i = 0; i < dict.length; i++) {
-            rowIds[i] = new ArrayList<>();
+            rows[i] = new ArrayList<>();
         }
         for (int i = 0; i < df.rowCount(); i++) {
-            rowIds[df.index(i, df.colIndex(classColName))].add(df.rowId(i));
+            rows[df.index(i, df.colIndex(classColName))].add(i);
         }
         List<Integer> shuffle = new ArrayList<>();
         for (int i = 0; i < dict.length; i++) {
-            Collections.shuffle(rowIds[i]);
-            shuffle.addAll(rowIds[i]);
+            Collections.shuffle(rows[i]);
+            shuffle.addAll(rows[i]);
         }
         List<Integer>[] strata = new List[folds];
         for (int i = 0; i < strata.length; i++) {
@@ -116,27 +113,27 @@ public class ModelEvaluation {
         double[] tacc = new double[classifiers.size()];
 
         for (int i = 0; i < folds; i++) {
-            List<Integer> trainMapping = new ArrayList<>();
-            List<Integer> testMapping = new ArrayList<>();
+            Mapping trainMapping = Mapping.newEmpty();
+            Mapping testMapping = Mapping.newEmpty();
             if (folds >= df.rowCount() - 1) {
                 testMapping.add(i);
                 for (int j = 0; j < df.rowCount(); j++) {
                     if (j != i) {
-                        trainMapping.add(df.rowId(j));
+                        trainMapping.add(j);
                     }
                 }
 
             } else {
                 for (int j = 0; j < df.rowCount(); j++) {
                     if (j % folds == i) {
-                        testMapping.add(df.rowId(j));
+                        testMapping.add(j);
                     } else {
-                        trainMapping.add(df.rowId(j));
+                        trainMapping.add(j);
                     }
                 }
             }
-            Frame train = new MappedFrame(df, new Mapping(trainMapping));
-            Frame test = new MappedFrame(df, new Mapping(testMapping));
+            Frame train = MappedFrame.newByRow(df, trainMapping);
+            Frame test = MappedFrame.newByRow(df, testMapping);
 
             for (int k = 0; k < classifiers.size(); k++) {
                 Classifier c = classifiers.get(k);
@@ -175,8 +172,17 @@ public class ModelEvaluation {
         double total = 0;
         double count = 0;
         for (int i = 0; i < bootstraps; i++) {
-            Frame train = StatSampling.randomBootstrap(df, ((int) (df.rowCount() * p)));
-            Frame test = delta(df, train);
+            int[] rows = new DiscreteSampling().sampleWR(((int) (df.rowCount() * p)), df.rowCount());
+            Frame train = MappedFrame.newByRow(df, rows);
+            Mapping others = Mapping.newEmpty();
+            Set<Integer> set = new HashSet<>();
+            for (int j = 0; j < rows.length; j++) {
+                set.add(rows[i]);
+            }
+            for (int j = 0; j < df.rowCount(); j++) {
+                if (!set.contains(j)) others.add(j);
+            }
+            Frame test = MappedFrame.newByRow(df, others);
 
             c.learn(train, classColName);
             c.predict(test);

@@ -80,8 +80,8 @@ public class BinomTest {
     public void testCdf() throws Exception {
         BiConsumer<Integer, Double> f = (n, p) -> {
             double[] r = compute("pbinom", n, p, 1);
-            double[] j = IntStream.rangeClosed(0, n).mapToDouble(new Binom(p, n)::pmf).toArray();
-            Assert.assertArrayEquals(r, j, 1e-14);
+            double[] j = IntStream.rangeClosed(0, n).mapToDouble(new Binom(p, n)::cdf).toArray();
+            Assert.assertArrayEquals(r, j, 1e-12);
         };
         f.accept(10, 0.01);
         f.accept(10, 0.1);
@@ -106,7 +106,7 @@ public class BinomTest {
     public void testQuantile() throws Exception {
         BiConsumer<Integer, Double> f = (n, p) -> {
             double[] r = compute("qbinom", n, p, n);
-            double[] j = IntStream.rangeClosed(0, n).mapToDouble(new Binom(p, n)::quantile).toArray();
+            double[] j = IntStream.rangeClosed(0, n).mapToDouble(i -> i/(1.0*n)).map(new Binom(p, n)::quantile).toArray();
             Assert.assertArrayEquals(r, j, 1e-14);
         };
         f.accept(10, 0.01);

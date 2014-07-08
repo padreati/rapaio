@@ -22,6 +22,9 @@ package rapaio.data.mapping;
 
 import rapaio.data.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * A var which is learn on the base of another var and the row selection
  * and order is specified by a getMapping give at construction time.
@@ -37,9 +40,18 @@ public class MappedVar implements Var {
     private final Var source;
     private final Mapping mapping;
 
-    public MappedVar(Var source, Mapping mapping) {
-        this.source = source.isMapped() ? source.source() : source;
-        this.mapping = mapping;
+    public static MappedVar newByRows(Var source, Mapping mapping) {
+        return new MappedVar(source, mapping);
+    }
+
+    private MappedVar(Var source, Mapping mapping) {
+        if(source.isMapped()) {
+            this.source = source.source();
+            this.mapping = Mapping.newWrapOf(mapping.rowStream().map(row -> source.mapping().get(row)).mapToObj(row->row).collect(Collectors.toList()));
+        } else {
+            this.source = source;
+            this.mapping = mapping;
+        }
     }
 
     @Override
@@ -65,11 +77,6 @@ public class MappedVar implements Var {
     @Override
     public Mapping mapping() {
         return mapping;
-    }
-
-    @Override
-    public int rowId(int row) {
-        return source.rowId(mapping.get(row));
     }
 
     @Override

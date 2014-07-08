@@ -20,63 +20,109 @@
 
 package rapaio.data.mapping;
 
+import rapaio.data.Index;
 import rapaio.data.RowComparators;
+import rapaio.data.stream.VSpot;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class Mapping implements Serializable {
+public final class Mapping implements Serializable {
 
     private final List<Integer> mapping;
+    private final int rowCountRO;
 
-    public Mapping() {
-        this.mapping = new ArrayList<>();
+    public static Mapping newEmpty() {
+        return new Mapping();
     }
 
-    public Mapping(int rowCount) {
-        this.mapping = new ArrayList<>();
-        IntStream.range(0, rowCount).forEach(mapping::add);
+    public static Mapping newSeqRO(int rowCount) {
+        return new Mapping(rowCount, true);
     }
 
-    public Mapping(int[] rows) {
+    public static Mapping newSeq(int rowCount) {
+        return new Mapping(rowCount, false);
+    }
+
+    public static Mapping newWrapOf(List<Integer> mapping) {
+        return new Mapping(mapping);
+    }
+
+    public static Mapping newCopyOf(int[] rows) {
+        return new Mapping(rows);
+    }
+
+    private Mapping() {
+        this.mapping = new ArrayList<>();
+        this.rowCountRO = -1;
+    }
+
+    private Mapping(int rowCount, boolean readOnly) {
+        if (readOnly) {
+            this.mapping = null;
+            this.rowCountRO = rowCount;
+        } else {
+            this.mapping = IntStream.range(0, rowCount).mapToObj(row -> row).collect(Collectors.toList());
+            this.rowCountRO = -1;
+        }
+    }
+
+    private Mapping(int[] rows) {
         mapping = new ArrayList<>(rows.length);
+        rowCountRO = -1;
         for (int row : rows) {
             mapping.add(row);
         }
     }
 
-    public Mapping(List<Integer> mapping) {
+    private Mapping(List<Integer> mapping) {
         this.mapping = mapping;
+        this.rowCountRO = -1;
     }
 
     public int size() {
-        return mapping.size();
+        return mapping != null ? mapping.size() : rowCountRO;
     }
 
     public int get(int pos) {
-        if (mapping.size() > pos)
-            return mapping.get(pos);
-        throw new IllegalArgumentException("Value at pos " + pos + " does not exists");
+        if (mapping != null) {
+            if (mapping.size() > pos)
+                return mapping.get(pos);
+            throw new IllegalArgumentException("Value at pos " + pos + " does not exists");
+        }
+        if (rowCountRO <= pos)
+            throw new IllegalArgumentException("Illegal value " + pos + " for read only metadata");
+        return pos;
     }
 
     public void add(int pos) {
-        mapping.add(pos);
+        if (mapping != null)
+            mapping.add(pos);
+        else
+            throw new NotImplementedException();
+    }
+
+    public void addAll(Collection<Integer> pos) {
+        if (mapping != null)
+            mapping.addAll(pos);
+        else throw new NotImplementedException();
     }
 
     public Mapping sort(final Comparator<Integer>... comparators) {
-        Mapping copy = new Mapping(new ArrayList<>(mapping));
+        Mapping copy = mapping != null
+                ? new Mapping(new ArrayList<>(mapping))
+                : new Mapping(Index.newSeq(rowCountRO).stream().map(VSpot::index).collect(Collectors.toList()));
         Collections.sort(copy.mapping, RowComparators.aggregateComparator(comparators));
         return copy;
     }
 
     public IntStream rowStream() {
-        return mapping.stream().mapToInt(i -> i);
+        return mapping != null ? mapping.stream().mapToInt(i -> i) : IntStream.range(0, rowCountRO);
     }
 }

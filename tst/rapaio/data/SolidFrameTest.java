@@ -38,14 +38,6 @@ public class SolidFrameTest {
     }
 
     @Test
-    public void testRowId() {
-        Frame df = new SolidFrame(10, new Var[]{Numeric.newEmpty(10)}, new String[]{"x"}, null);
-        for (int i = 0; i < df.rowCount(); i++) {
-            assertEquals(i, df.rowId(i));
-        }
-    }
-
-    @Test
     public void testColIndexes() {
         Var[] vars = new Var[]{Numeric.newEmpty(), Numeric.newEmpty(), Numeric.newEmpty()};
         Frame df = new SolidFrame(0, vars, new String[]{"x", "y", "z"}, null);

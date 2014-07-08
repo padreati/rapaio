@@ -22,6 +22,7 @@ package rapaio.data;
 
 import rapaio.data.mapping.Mapping;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -76,11 +77,6 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public int rowId(int row) {
-        return row;
-    }
-
-    @Override
     public boolean isMappedFrame() {
         return false;
     }
@@ -92,7 +88,7 @@ public class SolidFrame extends AbstractFrame {
 
     @Override
     public Mapping mapping() {
-        return new Mapping(rowCount());
+        return Mapping.newSeqRO(rowCount());
     }
 
     @Override

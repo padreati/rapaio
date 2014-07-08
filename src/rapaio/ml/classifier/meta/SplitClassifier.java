@@ -20,6 +20,7 @@
 
 package rapaio.ml.classifier.meta;
 
+import rapaio.data.mapping.Mapping;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.RunningClassifier;
@@ -27,7 +28,6 @@ import rapaio.data.Frame;
 import rapaio.data.Frames;
 import rapaio.data.Nominal;
 import rapaio.data.mapping.MappedFrame;
-import rapaio.data.mapping.Mapping;
 import rapaio.data.stream.FSpot;
 import rapaio.util.SPredicate;
 
@@ -96,20 +96,20 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
 
         List<Mapping> maps = new ArrayList<>();
         for (int i = 0; i < predicates.size() + 1; i++) {
-            maps.add(new Mapping());
+            maps.add(Mapping.newEmpty());
         }
         df.stream().forEach(spot -> {
             for (int i = 0; i < predicates.size(); i++) {
                 if (predicates.get(i).test(spot)) {
-                    maps.get(i).add(spot.rowId());
+                    maps.get(i).add(spot.row());
                     return;
                 }
             }
-            maps.get(maps.size() - 1).add(spot.rowId());
+            maps.get(maps.size() - 1).add(spot.row());
         });
         List<Frame> frames = new ArrayList<>();
         for (Mapping map : maps) {
-            frames.add(new MappedFrame(df, map));
+            frames.add(MappedFrame.newByRow(df, map));
         }
 
         classifiers = new ArrayList<>();
@@ -138,20 +138,20 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
 
         List<Mapping> maps = new ArrayList<>();
         for (int i = 0; i < predicates.size() + 1; i++) {
-            maps.add(new Mapping());
+            maps.add(Mapping.newEmpty());
         }
         df.stream().forEach(spot -> {
             for (int i = 0; i < predicates.size(); i++) {
                 if (predicates.get(i).test(spot)) {
-                    maps.get(i).add(spot.rowId());
+                    maps.get(i).add(spot.row());
                     return;
                 }
-                maps.get(maps.size() - 1).add(spot.rowId());
+                maps.get(maps.size() - 1).add(spot.row());
             }
         });
         List<Frame> frames = new ArrayList<>();
         for (Mapping map : maps) {
-            frames.add(new MappedFrame(df, map));
+            frames.add(MappedFrame.newByRow(df, map));
         }
 
         for (int i = 0; i < classifiers.size(); i++) {
@@ -168,7 +168,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
         df.stream().forEach(spot -> {
             for (int i = 0; i < predicates.size(); i++) {
                 if (predicates.get(i).test(spot)) {
-                    Frame f = new MappedFrame(df, new Mapping(new int[]{spot.rowId()}));
+                    Frame f = MappedFrame.newByRow(df, spot.row());
                     classifiers.get(i).predict(f);
                     pred.setLabel(spot.row(), classifiers.get(i).pred().label(0));
                     for (int j = 0; j < dict.length; j++) {
@@ -177,7 +177,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
                     return;
                 }
             }
-            Frame f = new MappedFrame(df, new Mapping(new int[]{spot.rowId()}));
+            Frame f = MappedFrame.newByRow(df, spot.row());
             classifiers.get(classifiers.size() - 1).predict(f);
             pred.setLabel(spot.row(), classifiers.get(classifiers.size() - 1).pred().label(0));
             for (int j = 0; j < dict.length; j++) {
