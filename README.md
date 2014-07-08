@@ -27,8 +27,8 @@ is considered to be fully implemented and well tested.
 * StudentT - not tested
 * Continuous Uniform
 * Discrete Uniform
-* Bernoulli - not tested
-* Binomial - not tested
+* Bernoulli
+* Binomial
 
 **Correlations**
 

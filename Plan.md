@@ -22,8 +22,9 @@ build formulas.
 Tasks
 ------
 
-* Binary implementation
-* Ordered implementation
-* Stamp implementation
+* Binary implementation - ok
+* Ordered implementation - ok
+* Stamp implementation - postponed/really needed?
+
 
 

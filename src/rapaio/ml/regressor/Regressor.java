@@ -31,7 +31,7 @@ import java.util.List;
 public interface Regressor {
 
     /**
-     * Builds a new regressor model. It keeps teh same parameters, but
+     * Builds a new regressor model. It keeps the same parameters, but
      * it does not copy all the regression artifacts
      * @return a new instance
      */
