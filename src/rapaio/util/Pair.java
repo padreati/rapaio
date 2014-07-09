@@ -23,6 +23,7 @@ package rapaio.util;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class Pair<V1, V2> {
     private V1 v1;
     private V2 v2;

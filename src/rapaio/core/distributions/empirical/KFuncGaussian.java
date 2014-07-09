@@ -25,6 +25,7 @@ import rapaio.core.distributions.cu.Norm;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class KFuncGaussian implements KFunc {
 
     private final Norm normal = new Norm();

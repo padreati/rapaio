@@ -37,6 +37,7 @@ import static rapaio.WS.getPrinter;
 /**
  * @author tutuianu
  */
+@Deprecated
 public class Summary {
 
     public static void summary(Frame df) {

@@ -32,6 +32,7 @@ import java.util.List;
  *
  * @author Aurelian Tutuianu
  */
+@Deprecated
 public class SolidFrame extends AbstractFrame {
 
     private final int rows;

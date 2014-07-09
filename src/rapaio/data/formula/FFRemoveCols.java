@@ -33,6 +33,7 @@ import java.util.Set;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class FFRemoveCols implements FrameFilter {
 
     private final ColRange colRange;

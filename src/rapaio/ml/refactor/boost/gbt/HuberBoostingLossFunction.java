@@ -27,6 +27,7 @@ import rapaio.data.Var;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public class HuberBoostingLossFunction implements BoostingLossFunction {
 
     double alpha = 0.25;

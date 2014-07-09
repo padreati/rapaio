@@ -25,6 +25,7 @@ package rapaio.printer.idea;
  */
 
 
+@Deprecated
 public interface RapaioCmd {
 
     void runRemote() throws Exception;

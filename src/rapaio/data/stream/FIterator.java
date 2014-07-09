@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class FIterator implements Iterator<FSpot>, Serializable {
     private static final String DEFAULT_KEY = "$$$DEFAULT$$$";
     private final Iterator<FSpot> it;

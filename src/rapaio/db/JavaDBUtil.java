@@ -30,6 +30,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class JavaDBUtil {
 
     private Connection conn;

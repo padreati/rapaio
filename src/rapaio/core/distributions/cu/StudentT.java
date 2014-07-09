@@ -25,6 +25,7 @@ import static rapaio.core.MathBase.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class StudentT implements CUDistribution {
 
     private final double df;

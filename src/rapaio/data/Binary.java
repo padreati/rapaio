@@ -29,6 +29,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public final class Binary implements Var {
 
     private int rows;

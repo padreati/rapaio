@@ -23,6 +23,7 @@ package rapaio.ml.refactor.colselect;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
+@Deprecated
 public interface ColSelector {
 
     String[] nextColNames();

@@ -23,6 +23,7 @@ package rapaio.data;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public enum VarType {
     NUMERIC(true, false),
     INDEX(true, false),

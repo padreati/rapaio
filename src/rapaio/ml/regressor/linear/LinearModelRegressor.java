@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 //@Deprecated
+@Deprecated
 public class LinearModelRegressor implements Regressor {
 
     List<String> predictors = new ArrayList<>();

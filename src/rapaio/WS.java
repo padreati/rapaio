@@ -35,6 +35,7 @@ import java.util.List;
 /**
  * @author tutuianu
  */
+@Deprecated
 public class WS {
 
     private static WorkspaceData session = new WorkspaceData();

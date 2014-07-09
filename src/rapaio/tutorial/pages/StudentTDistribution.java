@@ -32,6 +32,7 @@ import static rapaio.WS.*;
 /**
  * @author Aurelian Tutuianu
  */
+@Deprecated
 public class StudentTDistribution implements TutorialPage {
 
     @Override

@@ -29,6 +29,7 @@ import java.util.Arrays;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class PrintTable {
 
     final String[][] values;

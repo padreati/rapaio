@@ -35,6 +35,7 @@ import java.util.List;
  *
  * @author Aurelian Tutuianu
  */
+@Deprecated
 public interface Frame extends Serializable {
 
     /**

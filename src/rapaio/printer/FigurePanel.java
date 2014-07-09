@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class FigurePanel extends JPanel {
 
     private final Figure figure;

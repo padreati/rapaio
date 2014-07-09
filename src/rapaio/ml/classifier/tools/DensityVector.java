@@ -30,6 +30,7 @@ import java.util.function.DoublePredicate;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class DensityVector implements Serializable {
 
     private final String[] labels;

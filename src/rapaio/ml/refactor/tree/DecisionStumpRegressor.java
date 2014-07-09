@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public class DecisionStumpRegressor implements Regressor, BTRegressor {
 
     // parameters

@@ -27,6 +27,7 @@ import java.text.DecimalFormat;
 /**
  * @author Aurelian Tutuianu
  */
+@Deprecated
 public class Norm implements CUDistribution {
 
     private final double mu;

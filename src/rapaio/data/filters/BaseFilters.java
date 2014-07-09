@@ -37,6 +37,7 @@ import java.util.*;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public final class BaseFilters implements Serializable {
 
     private BaseFilters() {

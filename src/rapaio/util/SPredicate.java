@@ -26,5 +26,6 @@ import java.util.function.Predicate;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public interface SPredicate<T> extends Predicate<T>, Serializable {
 }

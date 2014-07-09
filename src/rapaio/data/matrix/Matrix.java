@@ -31,6 +31,7 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public class Matrix {
 
     final int m; // row count

@@ -30,6 +30,7 @@ import static rapaio.core.RandomSource.nextDouble;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public class DiscreteSampling {
 
     /**

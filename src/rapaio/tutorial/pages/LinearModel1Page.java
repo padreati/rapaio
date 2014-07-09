@@ -31,6 +31,7 @@ import rapaio.ws.Summary;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class LinearModel1Page implements TutorialPage {
 
     @Override

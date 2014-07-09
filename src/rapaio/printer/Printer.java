@@ -25,6 +25,7 @@ import rapaio.graphics.base.Figure;
 /**
  * @author tutuianu
  */
+@Deprecated
 public interface Printer {
 
     int getTextWidth();

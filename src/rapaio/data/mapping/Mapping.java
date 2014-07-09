@@ -33,6 +33,7 @@ import java.util.stream.IntStream;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public final class Mapping implements Serializable {
 
     private final List<Integer> mapping;

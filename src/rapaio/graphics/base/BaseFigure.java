@@ -32,6 +32,7 @@ import java.util.ArrayList;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public abstract class BaseFigure implements Figure {
     //
     private Rectangle viewport;

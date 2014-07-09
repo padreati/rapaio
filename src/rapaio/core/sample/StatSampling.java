@@ -34,6 +34,7 @@ import static rapaio.data.filters.BaseFilters.shuffle;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class StatSampling {
 
     public static List<Frame> randomSample(Frame frame, int[] rowCounts) {

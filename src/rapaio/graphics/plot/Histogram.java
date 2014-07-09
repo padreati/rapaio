@@ -30,6 +30,7 @@ import java.util.Arrays;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class Histogram extends PlotComponent {
 
     private final Var v;

@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class TreeClassifier extends AbstractClassifier {
 
     // parameters

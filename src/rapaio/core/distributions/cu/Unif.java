@@ -23,6 +23,7 @@ package rapaio.core.distributions.cu;
 /**
  * @author tutuianu
  */
+@Deprecated
 public class Unif implements CUDistribution {
 
     private final double a;

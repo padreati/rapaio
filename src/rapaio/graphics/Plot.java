@@ -31,6 +31,7 @@ import java.util.List;
 /**
  * @author tutuianu
  */
+@Deprecated
 public class Plot extends BaseFigure {
 
     private final List<PlotComponent> components = new LinkedList<>();

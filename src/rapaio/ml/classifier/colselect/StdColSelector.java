@@ -29,6 +29,7 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
+@Deprecated
 public class StdColSelector implements ColSelector {
 
     private String[] selection;

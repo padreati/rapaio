@@ -29,6 +29,7 @@ import java.util.*;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
+@Deprecated
 public final class Frames implements Serializable {
 
     /**

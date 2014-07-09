@@ -26,6 +26,7 @@ import java.util.Comparator;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class RowComparators implements Serializable {
 
     @SafeVarargs

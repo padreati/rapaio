@@ -45,6 +45,7 @@ import static rapaio.ws.Summary.summary;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class PearsonHeight implements TutorialPage {
 
     @Override

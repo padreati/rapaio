@@ -37,6 +37,7 @@ import static rapaio.WS.*;
 /**
  * @author Aurelian Tutuianu
  */
+@Deprecated
 public class LawOfLargeNumbers implements TutorialPage {
 
     @Override

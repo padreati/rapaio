@@ -31,6 +31,7 @@ import java.util.List;
  * Date: 2/4/14
  * Time: 12:58 PM
  */
+@Deprecated
 public class EuclideanDistance implements Distance {
 
     private ColRange range;

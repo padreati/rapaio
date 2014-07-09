@@ -38,6 +38,7 @@ import static java.util.stream.Collectors.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class MVClassifier extends AbstractClassifier {
 
     Classifier c;

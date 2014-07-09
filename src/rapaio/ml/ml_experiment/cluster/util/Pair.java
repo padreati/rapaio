@@ -28,6 +28,7 @@ import java.io.Serializable;
  * Date: 2/4/14
  * Time: 1:40 PM
  */
+@Deprecated
 public class Pair<T1, T2> implements Serializable {
 
     public final T1 first;

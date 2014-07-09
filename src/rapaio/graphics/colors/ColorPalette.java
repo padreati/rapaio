@@ -26,6 +26,7 @@ import java.io.Serializable;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public enum ColorPalette {
 
     STANDARD(new StandardColorPalette()),

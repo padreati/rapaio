@@ -29,6 +29,7 @@ import static rapaio.WS.p;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public class LinearRegression2Page implements TutorialPage {
 
     @Override

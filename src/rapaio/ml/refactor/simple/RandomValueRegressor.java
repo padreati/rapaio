@@ -34,6 +34,7 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public class RandomValueRegressor implements Regressor {
     List<String> targets;
     double startValue;

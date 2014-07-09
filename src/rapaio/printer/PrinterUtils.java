@@ -25,6 +25,7 @@ import java.text.DecimalFormat;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class PrinterUtils {
 
     public static DecimalFormat getDecimalFormat() {

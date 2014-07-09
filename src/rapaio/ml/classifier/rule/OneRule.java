@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class OneRule extends AbstractClassifier {
 
     private static final Logger log = Logger.getLogger(OneRule.class.getName());

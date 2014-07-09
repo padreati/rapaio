@@ -36,6 +36,7 @@ import java.util.Map;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class MIClassifier extends AbstractClassifier {
 
     String groupCol = "";

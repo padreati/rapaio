@@ -27,6 +27,7 @@ import rapaio.ml.regressor.Regressor;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public interface BTRegressor extends Regressor {
 
     void boostFit(Frame x, Var y, Var fx, BoostingLossFunction lossFunction);

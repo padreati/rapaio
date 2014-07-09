@@ -35,6 +35,7 @@ package rapaio.data.matrix;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public class QRDecomposition implements java.io.Serializable {
 
     private double[][] QR;

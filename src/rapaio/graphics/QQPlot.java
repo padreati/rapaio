@@ -30,6 +30,7 @@ import static rapaio.data.filters.BaseFilters.sort;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class QQPlot extends Plot {
 
     public QQPlot() {

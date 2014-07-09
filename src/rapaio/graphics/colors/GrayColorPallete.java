@@ -25,6 +25,7 @@ import java.awt.*;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public class GrayColorPallete implements ColorPalette.Mapping {
 
     @Override

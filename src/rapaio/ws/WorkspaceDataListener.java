@@ -25,6 +25,7 @@ package rapaio.ws;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public interface WorkspaceDataListener {
 
     void onPutFrames(String... name);

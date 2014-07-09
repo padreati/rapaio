@@ -27,6 +27,7 @@ import java.util.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public abstract class FactorBase implements Var {
 
     protected static final String missingValue = "?";

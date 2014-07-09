@@ -23,6 +23,7 @@ package rapaio.graphics.base;
 /**
  * @author tutuianu
  */
+@Deprecated
 public class Range {
 
     private double x1 = Double.NaN;

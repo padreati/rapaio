@@ -40,6 +40,7 @@ import java.util.stream.Collector;
  *
  * @author Aurelian Tutuianu
  */
+@Deprecated
 public interface Var extends Serializable {
 
     /**

@@ -27,6 +27,7 @@ import java.io.*;
 /**
  * @author Aurelian Tutuianu
  */
+@Deprecated
 public class WorkspaceDataPersistence {
 
     public WorkspaceData restoreFromFile(String file) throws IOException, ClassNotFoundException {

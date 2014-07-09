@@ -30,6 +30,7 @@ import java.util.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class Csv {
 
     private boolean trimSpaces = true;

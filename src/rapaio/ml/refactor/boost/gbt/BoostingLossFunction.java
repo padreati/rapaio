@@ -26,6 +26,7 @@ import rapaio.data.Var;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public interface BoostingLossFunction {
 
     double findMinimum(Var y, Var fx);

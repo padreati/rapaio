@@ -34,6 +34,7 @@ import static rapaio.core.Constants.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class Binom implements DUDistribution {
 
 

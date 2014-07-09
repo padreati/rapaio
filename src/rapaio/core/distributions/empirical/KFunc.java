@@ -23,6 +23,7 @@ package rapaio.core.distributions.empirical;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public interface KFunc {
 
     double pdf(double x, double x0, double bandwidth);

@@ -23,6 +23,7 @@ package rapaio.core.distributions.du;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class Ber implements DUDistribution {
 
     private final double theta;

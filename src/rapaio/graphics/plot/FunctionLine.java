@@ -31,6 +31,7 @@ import java.util.function.Function;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class FunctionLine extends PlotComponent {
 
     private final Function<Double, Double> f;

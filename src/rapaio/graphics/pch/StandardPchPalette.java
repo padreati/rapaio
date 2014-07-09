@@ -27,6 +27,7 @@ import java.util.ArrayList;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class StandardPchPalette implements PchPalette.Mapping {
 
     private final java.util.List<Drawer> pchs = new ArrayList<Drawer>() {{

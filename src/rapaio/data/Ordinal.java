@@ -28,6 +28,7 @@ import java.util.HashMap;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public final class Ordinal extends FactorBase {
     public static Ordinal newEmpty() {
         return new Ordinal();

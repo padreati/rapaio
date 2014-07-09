@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public interface TutorialPage {
 
     String getPageName();

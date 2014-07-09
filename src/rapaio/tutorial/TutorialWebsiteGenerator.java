@@ -39,6 +39,7 @@ import static rapaio.WS.*;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class TutorialWebsiteGenerator {
 
     private static final Logger logger = Logger.getLogger("rapaio");

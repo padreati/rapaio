@@ -30,6 +30,7 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public final class Numeric implements Var {
 
     private static final double missingValue = Double.NaN;

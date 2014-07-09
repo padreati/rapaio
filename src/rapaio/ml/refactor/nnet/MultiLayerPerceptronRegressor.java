@@ -34,6 +34,7 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public class MultiLayerPerceptronRegressor implements Regressor, Serializable {
 
     private final double learningRate;

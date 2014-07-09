@@ -28,6 +28,7 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public final class Index implements Var {
 
     private static final int MISSING_VALUE = Integer.MIN_VALUE;

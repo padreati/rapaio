@@ -41,6 +41,7 @@ import java.util.List;
  * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
+@Deprecated
 public class TreeRegressor implements Regressor {
 
     double minWeight = 1;

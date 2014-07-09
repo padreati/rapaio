@@ -33,6 +33,7 @@ import java.util.Random;
  * Date: 2/4/14
  * Time: 12:53 PM
  */
+@Deprecated
 public class KMeans {
     private int clusterNumber;
     private Distance distance;

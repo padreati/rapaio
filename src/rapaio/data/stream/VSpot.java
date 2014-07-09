@@ -27,6 +27,7 @@ import java.io.Serializable;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public class VSpot implements Serializable {
 
     private final int row;

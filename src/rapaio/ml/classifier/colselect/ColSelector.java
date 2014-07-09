@@ -28,6 +28,7 @@ import java.io.Serializable;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
+@Deprecated
 public interface ColSelector extends Serializable {
 
     String name();

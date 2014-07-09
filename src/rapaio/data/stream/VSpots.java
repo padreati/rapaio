@@ -33,6 +33,7 @@ import java.util.stream.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class VSpots implements Stream<VSpot>, Serializable {
 
     private final Stream<VSpot> stream;

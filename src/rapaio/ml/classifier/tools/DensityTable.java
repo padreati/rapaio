@@ -31,6 +31,7 @@ import static rapaio.core.MathBase.log2;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public final class DensityTable implements Serializable {
 
     public static final String[] NUMERIC_DEFAULT_LABELS = new String[]{"?", "less-equals", "greater"};

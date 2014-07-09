@@ -28,6 +28,7 @@ import java.awt.geom.Line2D;
 /**
  * @author Aurelian Tutuianu
  */
+@Deprecated
 public class ABLine extends PlotComponent {
 
     private final double a;

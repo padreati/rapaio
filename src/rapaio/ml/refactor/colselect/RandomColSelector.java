@@ -29,6 +29,7 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
+@Deprecated
 public class RandomColSelector implements ColSelector {
 
     private int mcols = -1;

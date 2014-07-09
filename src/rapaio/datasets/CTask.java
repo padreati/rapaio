@@ -27,6 +27,7 @@ import java.io.IOException;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public abstract class CTask {
 
     protected String name;

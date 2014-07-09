@@ -29,6 +29,7 @@ import rapaio.data.Frame;
  * Time: 12:56 PM
  * To change this template use File | Settings | File Templates.
  */
+@Deprecated
 public interface Distance {
     public double getDistance(Frame from, int fromRow, Frame targetFrame, int targetRow);
 }

@@ -35,6 +35,7 @@ import static rapaio.WS.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class IrisExplore implements TutorialPage {
 
     @Override

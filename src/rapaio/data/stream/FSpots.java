@@ -33,6 +33,7 @@ import java.util.stream.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class FSpots implements Stream<FSpot>, Serializable {
 
     private final Stream<FSpot> stream;

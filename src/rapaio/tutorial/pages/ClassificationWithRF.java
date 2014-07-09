@@ -44,6 +44,7 @@ import static rapaio.WS.*;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class ClassificationWithRF implements TutorialPage {
 
     @Override

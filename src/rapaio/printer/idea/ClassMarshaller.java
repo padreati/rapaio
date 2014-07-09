@@ -27,6 +27,7 @@ import java.io.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class ClassMarshaller {
 
     public void marshallDraw(OutputStream out, BufferedImage image, int width, int height) throws IOException {

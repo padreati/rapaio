@@ -25,6 +25,7 @@ package rapaio.ws;
  */
 
 
+@Deprecated
 public interface Storable {
 
 }

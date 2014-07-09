@@ -27,6 +27,7 @@ import java.io.Serializable;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public interface RunningClassifier extends Classifier, Serializable {
 
 

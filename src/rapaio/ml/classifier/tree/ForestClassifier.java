@@ -43,6 +43,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class ForestClassifier extends AbstractClassifier implements RunningClassifier {
 
     int runs = 0;

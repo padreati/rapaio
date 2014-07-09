@@ -29,6 +29,7 @@ import java.io.IOException;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class RJavaTest {
 
     public static void main(String[] args) throws IOException {

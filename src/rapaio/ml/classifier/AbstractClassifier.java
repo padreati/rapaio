@@ -28,6 +28,7 @@ import rapaio.data.Nominal;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public abstract class AbstractClassifier implements Classifier {
 
     protected ColSelector colSelector = new StdColSelector();

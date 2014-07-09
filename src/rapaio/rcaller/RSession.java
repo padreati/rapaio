@@ -31,6 +31,7 @@ import java.io.IOException;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class RSession {
     private final RCode code;
     private final RCaller caller;

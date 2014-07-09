@@ -44,6 +44,7 @@ import static rapaio.WS.*;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
+@Deprecated
 public class ROCCurvesPage implements TutorialPage {
 
     @Override

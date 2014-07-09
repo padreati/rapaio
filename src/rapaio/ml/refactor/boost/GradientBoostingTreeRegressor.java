@@ -41,6 +41,7 @@ import java.util.List;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public class GradientBoostingTreeRegressor implements Regressor {
 
     // parameters

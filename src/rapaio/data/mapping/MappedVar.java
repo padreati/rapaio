@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class MappedVar implements Var {
 
     private final Var source;

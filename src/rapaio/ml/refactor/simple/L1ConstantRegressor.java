@@ -42,6 +42,7 @@ import java.util.List;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public class L1ConstantRegressor implements Regressor {
 
     private List<String> targets;

@@ -25,6 +25,7 @@ import java.awt.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class StandardColorPalette implements ColorPalette.Mapping {
 
     private static final Color[] colors;

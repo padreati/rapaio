@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
  *
  * @author Aurelian Tutuianu
  */
+@Deprecated
 public class ArffPersistence {
 
     public final Frame read(String fileName) throws IOException {

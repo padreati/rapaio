@@ -35,6 +35,7 @@ import java.io.Serializable;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public interface Classifier extends Printable, Serializable {
 
     /**

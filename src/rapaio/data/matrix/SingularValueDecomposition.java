@@ -38,6 +38,7 @@ import static java.lang.StrictMath.hypot;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public class SingularValueDecomposition implements java.io.Serializable {
 
     private double[][] U, V;

@@ -34,6 +34,7 @@ package rapaio.data.matrix;
  */
 
 
+@Deprecated
 public class LUDecomposition implements java.io.Serializable {
 
     /*

@@ -35,6 +35,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class BarChart extends BaseFigure {
 
     private final Var category;

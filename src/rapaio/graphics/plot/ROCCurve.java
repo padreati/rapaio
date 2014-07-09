@@ -30,6 +30,7 @@ import java.awt.geom.Line2D;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
+@Deprecated
 public class ROCCurve extends PlotComponent {
 
     private final ROC roc;

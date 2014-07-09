@@ -32,6 +32,7 @@ import java.util.List;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public abstract class AbstractFrame implements Frame {
 
     private List<FSpot> streamList;

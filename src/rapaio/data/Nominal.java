@@ -42,6 +42,7 @@ import java.util.HashMap;
  *
  * @author Aurelian Tutuianu
  */
+@Deprecated
 public final class Nominal extends FactorBase {
 
     public static Nominal newEmpty() {

@@ -37,6 +37,7 @@ import static rapaio.WS.getPrinter;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class RhoCorr implements Printable {
 
     private final String[] names;

@@ -28,6 +28,7 @@ import java.util.function.Function;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class FFWeightTransform implements FrameFilter {
 
     private final BiFunction<Frame, Integer, Double> func;

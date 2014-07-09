@@ -38,6 +38,7 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
+@Deprecated
 public class AdaBoostSAMMEClassifier extends AbstractClassifier implements RunningClassifier {
 
     final double delta_error = 10e-10;

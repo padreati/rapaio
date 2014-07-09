@@ -23,6 +23,7 @@ package rapaio.core.distributions.du;
 /**
  * @author tutuianu
  */
+@Deprecated
 public class DUnif implements DUDistribution {
 
     private final int a;

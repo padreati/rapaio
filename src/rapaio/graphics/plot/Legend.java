@@ -29,6 +29,7 @@ import java.awt.geom.Rectangle2D;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class Legend extends PlotComponent {
 
     private final double x;
