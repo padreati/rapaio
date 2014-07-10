@@ -21,30 +21,118 @@
 package rapaio.data;
 
 /**
+ * Represents the type of variable and some accepted categories.
+ * <p>
+ * A variable holds data of a certain Java type. However, the type of the stored data
+ * does not characterize completely the behavior of the variable. This happens because
+ * the statistical procedures and machine learning algorithms uses variable values
+ * in different ways, depending on the meaning of the data.
+ * <p>
+ * Suppose a given variable X has 3 possible values: 1, 2, 3. All these values
+ * are integer numbers. As a consequence, one can consider a numerical
+ * representation to be a best fit for this variable. However, it is not
+ * possible that these values to be the result of an encoding of a category
+ * where the textual corresponding labels are: low, medium and high.
+ * Thus values like 1.5 are not possible under this meaning. And even if we
+ * consider that there is an order on those values, a possible set of
+ * categories could have labels for red, green and blue. In the latter case
+ * no ordering makes sense so operations like average are meaningless.
+ * <p>
+ * Thus a variable has a type which defines also the Java types used for
+ * storing values and operations allowed on the values of that variable.
+ * What operations are allowed depends on the programs which uses variables,
+ * however some hints are provided also by type class.
+ * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public enum VarType {
-    NUMERIC(true, false),
-    INDEX(true, false),
-    NOMINAL(false, true),
-    ORDINAL(true, true),
-    BINARY(true, false);
+    /**
+     * Numeric values stored in double precision
+     */
+    NUMERIC {
+        @Override
+        public boolean isNumeric() {
+            return true;
+        }
 
-    private final boolean numeric;
-    private final boolean nominal;
+        @Override
+        public boolean isNominal() {
+            return false;
+        }
+    },
+    /**
+     * Integer values on 32 bits
+     */
+    INDEX {
+        @Override
+        public boolean isNumeric() {
+            return true;
+        }
 
-    VarType(boolean numeric, boolean nominal) {
-        this.numeric = numeric;
-        this.nominal = nominal;
-    }
+        @Override
+        public boolean isNominal() {
+            return false;
+        }
+    },
+    STAMP {
+        @Override
+        public boolean isNumeric() {
+            return false;
+        }
 
-    public boolean isNumeric() {
-        return numeric;
-    }
+        @Override
+        public boolean isNominal() {
+            return false;
+        }
+    },
+    /**
+     * Unordered categories: has label representation and
+     * also positive integer representation.
+     */
+    NOMINAL {
+        @Override
+        public boolean isNumeric() {
+            return false;
+        }
 
-    public boolean isNominal() {
-        return nominal;
-    }
+        @Override
+        public boolean isNominal() {
+            return true;
+        }
+    },
+    /**
+     * Ordered categories: has label representation and
+     * also positive integer representation, comparison
+     * on numeric representation is allowed
+     */
+    ORDINAL {
+        @Override
+        public boolean isNumeric() {
+            return false;
+        }
 
+        @Override
+        public boolean isNominal() {
+            return true;
+        }
+    },
+    /**
+     * Numeric values stored on 1 bit, encodes also
+     * boolean values. Possible values are 0,1 or true,false.
+     */
+    BINARY {
+        @Override
+        public boolean isNumeric() {
+            return true;
+        }
+
+        @Override
+        public boolean isNominal() {
+            return false;
+        }
+    };
+
+    public abstract boolean isNumeric();
+
+    public abstract boolean isNominal();
 }

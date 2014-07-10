@@ -21,37 +21,67 @@
 package rapaio.data.mapping;
 
 import rapaio.data.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
- * A var which is learn on the base of another var and the row selection
- * and order is specified by a getMapping give at construction time.
+ * A variable which wraps another variable and the row selection
+ * and order is specified by a mapping given at construction time.
  * <p>
- * This var does not hold actual values, it delegate the behavior to the
- * wrapped var, thus the wrapping affects only the getRowCount selected anf the
- * order of these getRowCount.
+ * This variable does not hold actual values, it delegates the behavior to the
+ * wrapped variable, thus the wrapping affects only the rows selected and the
+ * order of these rows.
+ * <p>
+ * Mapped variables does not allows adding new values
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
-public class MappedVar implements Var {
+public class MappedVar extends AbstractVar {
 
     private final Var source;
     private final Mapping mapping;
 
+    /**
+     * Builds a mapped variable specifying selected positions through a mapping
+     *
+     * @param source  wrapped variable
+     * @param mapping mapping of indexed values
+     * @return mapped variable
+     */
     public static MappedVar newByRows(Var source, Mapping mapping) {
         return new MappedVar(source, mapping);
     }
 
-    private MappedVar(Var source, Mapping mapping) {
-        if(source.isMapped()) {
-            this.source = source.source();
-            this.mapping = Mapping.newWrapOf(mapping.rowStream().map(row -> source.mapping().get(row)).mapToObj(row->row).collect(Collectors.toList()));
+    /**
+     * Build a mapped variable specifying the selected positions through a variable array
+     *
+     * @param source wrapped variable
+     * @param rows   variable array of indexed values
+     * @return mapped variable
+     */
+    public static MappedVar newByRows(Var source, int... rows) {
+        return new MappedVar(source, rows);
+    }
+
+    private MappedVar(Var var, Mapping mapping) {
+        withName(var.name());
+        this.source = var.source();
+        if (var.isMapped()) {
+            this.mapping = Mapping.newWrapOf(mapping.rowStream().map(row -> var.mapping().get(row)).mapToObj(row -> row).collect(Collectors.toList()));
         } else {
-            this.source = source;
             this.mapping = mapping;
+        }
+    }
+
+    private MappedVar(Var var, int... rows) {
+        withName(var.name());
+        this.source = var.source();
+        if (var.isMapped()) {
+            this.mapping = Mapping.newWrapOf(Arrays.stream(rows).map(row -> var.mapping().get(row)).mapToObj(row -> row).collect(Collectors.toList()));
+        } else {
+            this.mapping = Mapping.newCopyOf(rows);
         }
     }
 
@@ -195,22 +225,35 @@ public class MappedVar implements Var {
         switch (source.type()) {
             case NOMINAL:
                 Nominal nom = Nominal.newEmpty(mapping.size(), source.dictionary());
-                for (int i = 0; i < mapping.size(); i++) {
-                    nom.setLabel(i, label(i));
+                for (int i = 0; i < rowCount(); i++) {
+                    nom.setLabel(i, label(mapping.get(i)));
                 }
                 return nom;
+            case ORDINAL:
+                Ordinal ord = Ordinal.newEmpty(mapping().size(), source.dictionary());
+                for (int i = 0; i < rowCount(); i++) {
+                    ord.setLabel(i, label(mapping.get(i)));
+                }
             case INDEX:
                 Index idx = Index.newEmpty(rowCount());
                 for (int i = 0; i < rowCount(); i++) {
-                    idx.setIndex(i, index(i));
+                    idx.setIndex(i, index(mapping.get(i)));
                 }
                 return idx;
-            default:
-                Numeric num = Numeric.newFill(rowCount());
+            case NUMERIC:
+                Numeric num = Numeric.newEmpty(rowCount());
                 for (int i = 0; i < rowCount(); i++) {
-                    num.setValue(i, value(i));
+                    num.setValue(i, value(mapping.get(i)));
                 }
                 return num;
+            case BINARY:
+                Binary bin = Binary.newEmpty(rowCount());
+                for (int i = 0; i < rowCount(); i++) {
+                    bin.setIndex(i, index(mapping.get(i)));
+                }
+                return bin;
+            default:
+                throw new NotImplementedException();
         }
     }
 }

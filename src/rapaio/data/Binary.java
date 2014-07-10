@@ -24,13 +24,12 @@ import rapaio.data.mapping.Mapping;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.BitSet;
-import java.util.List;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 @Deprecated
-public final class Binary implements Var {
+public final class Binary extends AbstractVar {
 
     private int rows;
     private BitSet missing;
@@ -120,7 +119,7 @@ public final class Binary implements Var {
 
     @Override
     public Mapping mapping() {
-        return Mapping.newSeqRO(rowCount());
+        return Mapping.newSolidMap(rowCount());
     }
 
     @Override
@@ -130,6 +129,7 @@ public final class Binary implements Var {
 
     @Override
     public double value(int row) {
+        if (missing(row)) return -1.0;
         return values.get(row) ? 1.0 : 0.0;
     }
 
@@ -139,6 +139,9 @@ public final class Binary implements Var {
             setBinary(row, true);
         if (value == 0.0)
             setBinary(row, false);
+        if (value == -1.0)
+            setMissing(row);
+
         throw new IllegalArgumentException(String.format("Value %f is not a valid binary value", value));
     }
 
@@ -148,11 +151,15 @@ public final class Binary implements Var {
             addBinary(true);
         if (value == 0.0)
             addBinary(false);
+        if (value == -1.0)
+            addMissing();
         throw new IllegalArgumentException(String.format("Value %f is not a valid binary value", value));
     }
 
     @Override
     public int index(int row) {
+        if (missing(row))
+            return -1;
         return binary(row) ? 1 : 0;
     }
 
@@ -162,6 +169,8 @@ public final class Binary implements Var {
             setBinary(row, true);
         if (value == 0)
             setBinary(row, false);
+        if (value == -1)
+            setMissing(row);
         throw new IllegalArgumentException(String.format("Value %d is not a valid binary value", value));
     }
 
@@ -171,6 +180,8 @@ public final class Binary implements Var {
             addBinary(true);
         if (value == 0)
             addBinary(false);
+        if(value==-1)
+            addMissing();
         throw new IllegalArgumentException(String.format("Value %d is not a valid binary value", value));
     }
 

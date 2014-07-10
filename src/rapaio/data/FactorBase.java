@@ -28,7 +28,7 @@ import java.util.*;
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 @Deprecated
-public abstract class FactorBase implements Var {
+public abstract class FactorBase extends AbstractVar {
 
     protected static final String missingValue = "?";
     protected static final int missingIndex = 0;
@@ -77,7 +77,7 @@ public abstract class FactorBase implements Var {
 
     @Override
     public Mapping mapping() {
-        return Mapping.newSeqRO(rowCount());
+        return Mapping.newSolidMap(rowCount());
     }
 
     @Override

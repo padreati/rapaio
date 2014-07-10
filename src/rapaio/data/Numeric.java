@@ -25,13 +25,17 @@ import rapaio.data.mapping.Mapping;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 /**
+ * Builds a numeric variable. Numeric variables stores data as double values
+ * and allows modelling of any type of continuous or discrete numeric variable.
+ * <p>
+ * The placeholder for missing value is Double.NaN. Any form of usage of this variable
+ * on set/add value will result in a missing value.
+ * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
-public final class Numeric implements Var {
+public final class Numeric extends AbstractVar {
 
     private static final double missingValue = Double.NaN;
     private double[] data;
@@ -39,20 +43,41 @@ public final class Numeric implements Var {
 
     // public static builders
 
+    /**
+     * @return new empty numeric variable of size 0
+     */
     public static Numeric newEmpty() {
         return new Numeric(0, 0, Double.NaN);
     }
 
+    /**
+     * Builds an empty numeric var wil all values set missing
+     *
+     * @param rows size of the variable
+     * @return new instance of numeric var
+     */
     public static Numeric newEmpty(int rows) {
         return new Numeric(rows, rows, Double.NaN);
     }
 
-    public static Numeric newCopyOf(Collection<Number> values) {
+    /**
+     * Builds a numeric variable with values copied from given collection
+     *
+     * @param values given values
+     * @return new instance of numeric variable
+     */
+    public static Numeric newCopyOf(Collection<? extends Number> values) {
         final Numeric numeric = new Numeric(0, 0, Double.NaN);
         values.forEach(n -> numeric.addValue(n.doubleValue()));
         return numeric;
     }
 
+    /**
+     * Builds a numeric variable with values copied from given array of integer values
+     *
+     * @param values given numeric values
+     * @return new instance of numeric variable
+     */
     public static Numeric newCopyOf(int... values) {
         Numeric numeric = new Numeric(0, 0, 0);
         numeric.data = new double[values.length];
@@ -63,12 +88,24 @@ public final class Numeric implements Var {
         return numeric;
     }
 
+    /**
+     * Builds new instance of numeric var with values copied from given array of doubles
+     *
+     * @param values given numeric values
+     * @return new instance of numeric variable
+     */
     public static Numeric newCopyOf(double... values) {
         Numeric numeric = new Numeric(values.length, values.length, 0);
         numeric.data = Arrays.copyOf(values, values.length);
         return numeric;
     }
 
+    /**
+     * Builds new numeric variable with values copied from another numeric variable
+     *
+     * @param source source numeric var
+     * @return new instance of numeric variable
+     */
     public static Numeric newCopyOf(Var source) {
         Numeric numeric = new Numeric(source.rowCount(), source.rowCount(), 0);
         if (source.isMapped() || source.type() != VarType.NUMERIC) {
@@ -81,6 +118,12 @@ public final class Numeric implements Var {
         return numeric;
     }
 
+    /**
+     * Builds new numeric variable as a wrapper around an array of doubles
+     *
+     * @param values wrapped array of doubles
+     * @return new instance of numeric variable
+     */
     public static Numeric newWrapOf(double... values) {
         Numeric numeric = new Numeric(0, 0, 0);
         numeric.data = values;
@@ -88,43 +131,47 @@ public final class Numeric implements Var {
         return numeric;
     }
 
-    public static Numeric newWrapOf(Var source) {
-        Numeric numeric = new Numeric(source.rowCount(), source.rowCount(), 0);
-        if (source.isMapped() || source.type() != VarType.NUMERIC) {
-            for (int i = 0; i < source.rowCount(); i++) {
-                numeric.setValue(i, source.value(i));
-            }
-        } else {
-            numeric.data = Arrays.copyOf(((Numeric) source).data, source.rowCount());
-        }
-        return numeric;
-    }
-
+    /**
+     * Builds new numeric variable filled with 0
+     *
+     * @param rows size of the variable
+     * @return new instance of numeric variable of given size and filled with 0
+     */
     public static Numeric newFill(int rows) {
         return new Numeric(rows, rows, 0);
     }
 
+    /**
+     * Builds new numeric variable filled with given fill value
+     *
+     * @param rows size of the variable
+     * @param fill fill value used to set all the values
+     * @return new instance of numeric variable of given size and filled with given value
+     */
     public static Numeric newFill(int rows, double fill) {
         return new Numeric(rows, rows, fill);
     }
 
+    /**
+     * Builds a numeric variable of size 1 filled with given value
+     *
+     * @param value fill value
+     * @return new instance of numeric variable of size 1 and filled with given fill value
+     */
     public static Numeric newScalar(double value) {
         return new Numeric(1, 1, value);
     }
 
     // private constructor
 
-    protected Numeric(int rows, int capacity, double fill) {
-        super();
-        if (capacity < 0) {
-            throw new IllegalArgumentException("Illegal capacity: " + capacity);
-        }
+    @Override
+    public Numeric withName(String name) {
+        return (Numeric) super.withName(name);
+    }
+
+    private Numeric(int rows, int capacity, double fill) {
         if (rows < 0) {
             throw new IllegalArgumentException("Illegal row count: " + rows);
-        }
-        if (rows > capacity) {
-            throw new IllegalArgumentException(
-                    "Illegal row count" + rows + " less than capacity:" + capacity);
         }
         this.data = new double[capacity];
         this.rows = rows;
@@ -137,28 +184,19 @@ public final class Numeric implements Var {
         return VarType.NUMERIC;
     }
 
-    private void ensureCapacityInternal(int minCapacity) {
+    private void ensureCapacity(int minCapacity) {
         minCapacity = Math.max(10, minCapacity);
         // overflow-conscious code
-        if (minCapacity - data.length > 0)
-            grow(minCapacity);
-    }
-
-    /**
-     * Increases the capacity to ensure that it can hold at least the
-     * number of elements specified by the minimum capacity argument.
-     *
-     * @param minCapacity the desired minimum capacity
-     */
-    private void grow(int minCapacity) {
-        // overflow-conscious code
-        int oldCapacity = data.length;
-        int newCapacity = oldCapacity > 0xFFFF ? oldCapacity << 1 : oldCapacity + (oldCapacity >> 1);
-        if (newCapacity - minCapacity < 0)
-            newCapacity = minCapacity;
-        if (newCapacity < 0 || minCapacity < 0)
-            throw new OutOfMemoryError();
-        data = Arrays.copyOf(data, newCapacity);
+        if (minCapacity - data.length > 0) {
+            // overflow-conscious code
+            int oldCapacity = data.length;
+            int newCapacity = oldCapacity > 0xFFFF ? oldCapacity << 1 : oldCapacity + (oldCapacity >> 1);
+            if (newCapacity - minCapacity < 0)
+                newCapacity = minCapacity;
+            if (newCapacity < 0 || minCapacity < 0)
+                throw new OutOfMemoryError();
+            data = Arrays.copyOf(data, newCapacity);
+        }
     }
 
     @Override
@@ -173,7 +211,7 @@ public final class Numeric implements Var {
 
     @Override
     public Mapping mapping() {
-        return Mapping.newSeqRO(rowCount());
+        return Mapping.newSolidMap(rowCount());
     }
 
     @Override
@@ -193,7 +231,7 @@ public final class Numeric implements Var {
 
     @Override
     public void addValue(double value) {
-        ensureCapacityInternal(rows + 1);
+        ensureCapacity(rows + 1);
         data[rows++] = value;
     }
 
@@ -209,7 +247,7 @@ public final class Numeric implements Var {
 
     @Override
     public void addIndex(int value) {
-        ensureCapacityInternal(rows + 1);
+        ensureCapacity(rows + 1);
         data[rows++] = value;
     }
 
@@ -240,7 +278,7 @@ public final class Numeric implements Var {
 
     @Override
     public boolean binary(int row) {
-        return value(row) == 0;
+        return value(row) == 1.0;
     }
 
     @Override
@@ -286,8 +324,10 @@ public final class Numeric implements Var {
     @Override
     public void remove(int index) {
         int numMoved = rows - index - 1;
-        if (numMoved > 0)
+        if (numMoved > 0) {
             System.arraycopy(data, index + 1, data, index, numMoved);
+            rows--;
+        }
     }
 
     @Override

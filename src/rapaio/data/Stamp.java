@@ -25,80 +25,73 @@ import rapaio.data.mapping.Mapping;
 import java.util.Arrays;
 
 /**
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * Created by tutuianu on 7/10/14.
  */
 @Deprecated
-public final class Index extends AbstractVar {
+public class Stamp extends AbstractVar {
 
-    private static final int MISSING_VALUE = Integer.MIN_VALUE;
-    private int[] data;
+    private static final long MISSING_VALUE = Long.MIN_VALUE;
+    private long[] data;
     private int rows;
 
     // static builders
 
-    public static Index newEmpty() {
-        return new Index(0, 0, 0);
+    public static Stamp newEmpty() {
+        return new Stamp(0, 0, 0);
     }
 
-    public static Index newEmpty(int rows) {
-        return new Index(rows, rows, 0);
+    public static Stamp newEmpty(int rows) {
+        return new Stamp(rows, rows, 0);
     }
 
-    public static Index newScalar(int value) {
-        return new Index(1, 1, value);
+    public static Stamp newScalar(long value) {
+        return new Stamp(1, 1, value);
     }
 
-    public static Index newFill(int rows, int value) {
-        return new Index(rows, rows, value);
+    public static Stamp newFill(int rows, long value) {
+        return new Stamp(rows, rows, value);
     }
 
-    public static Index newCopyOf(int[] values) {
-        Index index = new Index(0, 0, 0);
-        index.data = Arrays.copyOf(values, values.length);
-        index.rows = values.length;
-        return index;
+    public static Stamp newCopyOf(long[] values) {
+        Stamp stamp = new Stamp(0, 0, 0);
+        stamp.data = Arrays.copyOf(values, values.length);
+        stamp.rows = values.length;
+        return stamp;
     }
 
-    public static Index newWrapOf(int[] values) {
-        Index index = new Index(0, 0, 0);
-        index.data = values;
-        index.rows = values.length;
-        return index;
+    public static Stamp newWrapOf(long[] values) {
+        Stamp stamp = new Stamp(0, 0, 0);
+        stamp.data = values;
+        stamp.rows = values.length;
+        return stamp;
     }
 
-    public static Index newSeq(int len) {
+    public static Stamp newSeq(int len) {
         return newSeq(0, len, 1);
     }
 
-    public static Index newSeq(int start, int len) {
+    public static Stamp newSeq(long start, int len) {
         return newSeq(start, len, 1);
     }
 
-    public static Index newSeq(final int start, final int len, final int step) {
-        Index index = new Index(len, len, 0);
-        int s = start;
+    public static Stamp newSeq(final long start, final int len, final long step) {
+        Stamp stamp = new Stamp(len, len, 0);
+        long s = start;
         for (int i = 0; i < len; i++) {
-            index.data[i] = s;
+            stamp.data[i] = s;
             s = s + step;
         }
-        return index;
+        return stamp;
     }
 
     // private constructor, only public static builders available
 
-    private Index(int rows, int capacity, int fill) {
+    private Stamp(int rows, int capacity, long fill) {
         super();
-        if (capacity < 0) {
-            throw new IllegalArgumentException("Illegal capacity: " + capacity);
-        }
         if (rows < 0) {
             throw new IllegalArgumentException("Illegal row count: " + rows);
         }
-        if (rows > capacity) {
-            throw new IllegalArgumentException(
-                    "Illegal row count" + rows + " less than capacity:" + capacity);
-        }
-        this.data = new int[capacity];
+        this.data = new long[capacity];
         this.rows = rows;
         if (fill != 0)
             Arrays.fill(data, 0, rows, fill);
@@ -116,7 +109,7 @@ public final class Index extends AbstractVar {
 
     @Override
     public VarType type() {
-        return VarType.INDEX;
+        return VarType.STAMP;
     }
 
     private void rangeCheck(int index) {
@@ -125,7 +118,7 @@ public final class Index extends AbstractVar {
     }
 
     private String outOfBoundsMsg(int index) {
-        return "Index: " + index + ", Size: " + rows;
+        return "Stamp: " + index + ", Size: " + rows;
     }
 
     @Override
@@ -150,111 +143,112 @@ public final class Index extends AbstractVar {
 
     @Override
     public int index(int row) {
-        return data[row];
+        throw new IllegalArgumentException("Operation not available for stamp variable");
     }
 
     @Override
     public void setIndex(int row, int value) {
-        data[row] = value;
+        throw new IllegalArgumentException("Operation not available for stamp variable");
     }
 
     @Override
     public void addIndex(int value) {
-        ensureCapacityInternal(rows + 1);
-        data[rows++] = value;
+        throw new IllegalArgumentException("Operation not available for stamp variable");
     }
 
     @Override
     public double value(int row) {
-        return index(row);
+        throw new IllegalArgumentException("Operation not available for stamp variable");
     }
 
     @Override
     public void setValue(int row, double value) {
-        setIndex(row, (int) Math.rint(value));
+        throw new IllegalArgumentException("Operation not available for stamp variable");
     }
 
     @Override
     public void addValue(double value) {
-        addIndex((int) Math.rint(value));
+        throw new IllegalArgumentException("Operation not available for stamp variable");
     }
 
     @Override
     public String label(int row) {
-        return "";
+        throw new IllegalArgumentException("Operation not available for stamp variable");
     }
 
     @Override
     public void setLabel(int row, String value) {
-        throw new RuntimeException("Operation not available for index vectors.");
+        throw new IllegalArgumentException("Operation not available for stamp variable");
     }
 
     @Override
     public void addLabel(String value) {
-        throw new RuntimeException("Operation not available for index vectors.");
+        throw new IllegalArgumentException("Operation not available for stamp variable");
     }
 
     @Override
     public String[] dictionary() {
-        throw new RuntimeException("Operation not available for index vectors.");
+        throw new IllegalArgumentException("Operation not available for stamp variable");
     }
 
     @Override
     public void setDictionary(String[] dict) {
-        throw new RuntimeException("Operation not available for index vectors.");
+        throw new IllegalArgumentException("Operation not available for stamp variable");
     }
 
     @Override
     public boolean binary(int row) {
-        return index(row) == 0;
+        throw new IllegalArgumentException("Operation not available for stamp variable");
     }
 
     @Override
     public void setBinary(int row, boolean value) {
-        setIndex(row, value ? 1 : 0);
+        throw new IllegalArgumentException("Operation not available for stamp variable");
     }
 
     @Override
     public void addBinary(boolean value) {
-        addIndex(value ? 1 : 0);
+        throw new IllegalArgumentException("Operation not available for stamp variable");
     }
 
     @Override
     public long stamp(int row) {
-        return index(row);
+        return data[row];
     }
 
     @Override
     public void setStamp(int row, long value) {
-        setIndex(row, Integer.valueOf(String.valueOf(value)));
+        data[row] = value;
     }
 
     @Override
     public void addStamp(long value) {
-        addIndex(Integer.valueOf(String.valueOf(value)));
+        ensureCapacityInternal(rows + 1);
+        data[rows] = value;
+        rows++;
     }
 
     @Override
     public boolean missing(int row) {
-        return index(row) == MISSING_VALUE;
+        return stamp(row) == MISSING_VALUE;
     }
 
     @Override
     public void setMissing(int row) {
-        setIndex(row, MISSING_VALUE);
+        setStamp(row, MISSING_VALUE);
     }
 
     @Override
     public void addMissing() {
-        addIndex(MISSING_VALUE);
+        addStamp(MISSING_VALUE);
     }
 
     @Override
-    public void remove(int index) {
-        rangeCheck(index);
-        int numMoved = rows - index - 1;
+    public void remove(int row) {
+        rangeCheck(row);
+        int numMoved = rows - row - 1;
         if (numMoved > 0)
-            System.arraycopy(data, index + 1, data, index, numMoved);
+            System.arraycopy(data, row + 1, data, row, numMoved);
     }
 
     @Override
@@ -263,16 +257,16 @@ public final class Index extends AbstractVar {
     }
 
     @Override
-    public Index solidCopy() {
-        Index copy = new Index(rowCount(), rowCount(), 0);
+    public Stamp solidCopy() {
+        Stamp copy = new Stamp(rowCount(), rowCount(), 0);
         for (int i = 0; i < rowCount(); i++) {
-            copy.setIndex(i, index(i));
+            copy.setStamp(i, index(i));
         }
         return copy;
     }
 
     @Override
     public String toString() {
-        return "Index[" + rowCount() + "]";
+        return "Stamp[" + rowCount() + "]";
     }
 }

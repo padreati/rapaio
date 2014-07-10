@@ -40,8 +40,18 @@ import java.util.stream.Collector;
  *
  * @author Aurelian Tutuianu
  */
-@Deprecated
 public interface Var extends Serializable {
+
+    /**
+     * @return name of the variable
+     */
+    String name();
+
+    /**
+     * Sets the variable name
+     * @param name future name of the variable
+     */
+    Var withName(String name);
 
     /**
      * @return variable type
@@ -49,8 +59,15 @@ public interface Var extends Serializable {
     VarType type();
 
     /**
-     * A variable implementation might be solid os mapped.
-     * A mapped variable is a variable which hold only row indexes and maps over a solid variable.
+     * A variable implementation might be solid or mapped.
+     * A mapped variable is a variable which hold only row/column
+     * indexes and maps over a solid variable. Any change in the
+     * values of the variable would change the values from the
+     * referenced solid variables.
+     *
+     * There are no possible mapped variable over other
+     * mapped variables. So any reference of a mapped variable is
+     * made over a solid variable.
      *
      * @return true if it is a mapped variable
      */
@@ -64,12 +81,17 @@ public interface Var extends Serializable {
     Var source();
 
     /**
-     * @return mapping of rows, null is variable is not mapped
+     * A mapping is a collection of row numbers which is
+     * used to map the row indexes from the mapped frame to the row
+     * indexed of the wrapped frame. For solid variables, the mapping
+     * is the identity function.
+     *
+     * @return mapping of rows
      */
     Mapping mapping();
 
     /**
-     * Number of observations contained by the var.
+     * Number of observations contained by the variable.
      *
      * @return size of var
      */
@@ -152,6 +174,13 @@ public interface Var extends Serializable {
      */
     String[] dictionary();
 
+    /**
+     * Replace the used dictionary with a new one. A mapping between the
+     * old values of the dictionary with the new values is done. The mapping
+     * is done based on position.
+     *
+     * @param dict array fo terms which comprises the new dictionary
+     */
     void setDictionary(String[] dict);
 
     /**
@@ -199,39 +228,52 @@ public interface Var extends Serializable {
     void addStamp(long value);
 
     /**
-     * Returns true if the setValue for the observation specified by {@param row} is missing, not available.
+     * Returns true if the value for the observation specified by {@param row} is missing, not available.
      * <p>
-     * A missing setValue for the observation means taht the measurement
+     * A missing value for the observation means that the measurement
      * was not completed or the result of the measurement was not documented,
-     * thus the setValue is not available for analysis.
+     * thus the value is not available for analysis.
      *
      * @param row position of the observation
-     * @return true if the observation measurement is not specified
+     * @return true if the observation measurement is not specified or not assigned
      */
     boolean missing(int row);
 
     /**
-     * Set the setValue of the observation specified by {@param row} as missing, not available for analysis.
-     *
+     * Set the value of the observation specified by {@param row} as missing, not available for analysis.
      * @param row position of the observation.
      */
     void setMissing(int row);
 
+    /**
+     * Adds a new observation unspecified observation value
+     */
     void addMissing();
 
+    /**
+     * Removes the observation value at a given position.
+     * The new size of the variable is the old size decremented by 1
+     *
+     * @param row position of the observation to be removed
+     */
     void remove(int row);
 
+    /**
+     * Removes all the observation values specified by the variable.
+     * The new size of the variable is 0.
+     */
     void clear();
 
+    /**
+     * Creates a solid copy of the variable, even if the variable is mapped or not.
+     * @return a solid copy of the current variable
+     */
     Var solidCopy();
 
-    default VSpots stream() {
-        List<VSpot> instances = new LinkedList<>();
-        for (int i = 0; i < this.rowCount(); i++) {
-            instances.add(new VSpot(i, this));
-        }
-        return new VSpots(instances.stream());
-    }
+    /**
+     * @return a stream of variables spots
+     */
+    VSpots stream();
 
     public static Collector<Double, Numeric, Numeric> numericCollector() {
         return new Collector<Double, Numeric, Numeric>() {

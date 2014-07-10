@@ -21,8 +21,13 @@
 package rapaio.data;
 
 import org.junit.Test;
+import rapaio.data.mapping.MappedVar;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -91,5 +96,135 @@ public class NumVarTest {
         one = Numeric.newScalar(Math.E);
         assertEquals(1, one.rowCount());
         assertEquals(Math.E, one.value(0), 1e-10);
+    }
+
+    @Test
+    public void testWithName() {
+        Numeric x = Numeric.newCopyOf(1, 2, 3, 5).withName("X");
+        assertEquals("X", x.name());
+
+        Var y = MappedVar.newByRows(x, 1, 2);
+        assertEquals("X", y.name());
+        y.withName("y");
+        assertEquals("y", y.name());
+
+        assertEquals(2.0, y.value(0), 10e-10);
+        assertEquals(3.0, y.value(1), 10e-10);
+    }
+
+    @Test
+    public void testBuilders() {
+        List<Integer> intList = new ArrayList<>();
+        List<Double> doubleList = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            intList.add(i + 1);
+            doubleList.add(i + 1.0);
+        }
+
+        Numeric x1 = Numeric.newCopyOf(1, 2, 3);
+        Numeric x2 = Numeric.newCopyOf(1.0, 2.0, 3.0);
+        Numeric x3 = Numeric.newCopyOf(intList);
+        Numeric x4 = Numeric.newCopyOf(doubleList);
+
+        for (int i = 0; i < 3; i++) {
+            assertEquals(x1.value(i), x2.value(i), 10e-10);
+            assertEquals(x3.value(i), x4.value(i), 10e-10);
+            assertEquals(x1.value(i), x3.value(i), 10e-10);
+        }
+
+        double[] y1v = new double[3];
+        y1v[0] = 10;
+        y1v[1] = 20;
+        y1v[2] = 30;
+        Numeric y1 = Numeric.newWrapOf(y1v);
+        y1v[1] = Double.NaN;
+        y1v[2] = 100;
+        for (int i = 0; i < 3; i++) {
+            assertEquals(y1v[i], y1.value(i), 10e-10);
+        }
+
+        Numeric y2 = Numeric.newCopyOf(x2);
+        for (int i = 0; i < 3; i++) {
+            assertEquals(x1.value(i), y2.value(i), 10e-10);
+        }
+
+        Numeric y3 = Numeric.newCopyOf(1, 2, 3, 4, 5);
+        Var y4 = MappedVar.newByRows(y3, 3, 1, 2);
+        Var y5 = Numeric.newCopyOf(y4);
+
+        for (int i = 0; i < 3; i++) {
+            assertEquals(y4.value(i), y5.value(i), 10e-10);
+        }
+
+        Numeric z1 = Numeric.newFill(10);
+        Numeric z2 = Numeric.newFill(10, Math.PI);
+
+        for (int i = 0; i < 10; i++) {
+            assertEquals(0, z1.value(i), 10e-10);
+            assertEquals(Math.PI, z2.value(i), 10e-10);
+        }
+    }
+
+    @Test
+    public void testOtherValues() {
+        Numeric x = Numeric.newCopyOf(1, 2, 3, 4).withName("x");
+
+        x.addIndex(10);
+        assertEquals(10, x.value(x.rowCount()-1), 10e-10);
+
+        Numeric b = Numeric.newEmpty();
+        b.addBinary(true);
+        b.addBinary(false);
+
+        assertEquals(true, b.binary(0));
+        assertEquals(false, b.binary(1));
+
+        assertEquals(1, b.value(0), 10e-10);
+        assertEquals(0, b.value(1), 10e-10);
+
+        b.setBinary(1, true);
+        assertEquals(1, b.value(1), 10e-10);
+        assertEquals(true, b.binary(1));
+
+        Numeric s = Numeric.newEmpty();
+        s.addStamp(1);
+        s.addStamp(-100000000000L);
+        assertEquals(1L, s.stamp(0));
+        assertEquals(-100000000000d, s.stamp(1), 10e-10);
+
+        s.setStamp(1, 15);
+        assertEquals(15, s.stamp(1));
+
+
+        Numeric mis = Numeric.newEmpty();
+        mis.addMissing();
+        mis.addValue(1);
+        mis.addMissing();
+        mis.addValue(2);
+        mis.setMissing(3);
+
+        assertTrue(mis.missing(0));
+        assertTrue(mis.missing(2));
+        assertTrue(mis.missing(3));
+        assertFalse(mis.missing(1));
+    }
+
+    @Test
+    public void testClearRemove() {
+        Numeric x = Numeric.newCopyOf(1, 2, 3);
+        x.remove(1);
+
+        assertEquals(1, x.index(0));
+        assertEquals(3, x.index(1));
+
+        Numeric y = x.solidCopy();
+
+        x.clear();
+
+        assertEquals(0, x.rowCount());
+
+        assertEquals(2, y.rowCount());
+        assertEquals(1, y.index(0));
+        assertEquals(3, y.index(1));
     }
 }

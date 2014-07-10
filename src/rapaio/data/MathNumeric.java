@@ -32,24 +32,24 @@ import java.util.Arrays;
 public final class MathNumeric {
 
     public static Numeric sum(final Numeric num) {
-        return new Numeric(1, 1, num.stream().mapToDouble().sum());
+        return Numeric.newFill(1, num.stream().mapToDouble().sum());
     }
 
     public static Numeric mean(final Numeric num) {
-        return new Numeric(1, 1, new Mean(num).value());
+        return Numeric.newFill(1, new Mean(num).value());
     }
 
     public static Numeric sd(final Numeric num) {
-        return new Numeric(1, 1, StrictMath.sqrt(new Variance(num).getValue()));
+        return Numeric.newFill(1, StrictMath.sqrt(new Variance(num).getValue()));
     }
 
     public static Numeric var(final Numeric num) {
-        return new Numeric(1, 1, new Variance(num).getValue());
+        return Numeric.newFill(1, new Variance(num).getValue());
     }
 
     public static Numeric plus(final Numeric... nums) {
         int len = Arrays.stream(nums).mapToInt(Numeric::rowCount).min().getAsInt();
-        Numeric c = new Numeric(len, len, 0);
+        Numeric c = Numeric.newFill(len, 0);
         for (Numeric num : nums) {
             for (int j = 0; j < len; j++) {
                 c.setValue(j, c.value(j) + num.value(j));

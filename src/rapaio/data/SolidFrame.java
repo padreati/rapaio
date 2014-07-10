@@ -22,7 +22,6 @@ package rapaio.data;
 
 import rapaio.data.mapping.Mapping;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +55,7 @@ public class SolidFrame extends AbstractFrame {
         }
         this.rows = rows;
         this.vars = new Var[vars.size()];
-        this.weights = (weights != null) ? weights : new Numeric(rows, rows, 1.0);
+        this.weights = (weights != null) ? weights : Numeric.newFill(rows, 1.0);
         this.colIndex = new HashMap<>();
         this.names = new String[vars.size()];
 
@@ -89,7 +88,7 @@ public class SolidFrame extends AbstractFrame {
 
     @Override
     public Mapping mapping() {
-        return Mapping.newSeqRO(rowCount());
+        return Mapping.newSolidMap(rowCount());
     }
 
     @Override
