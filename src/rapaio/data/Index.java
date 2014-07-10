@@ -25,9 +25,13 @@ import rapaio.data.mapping.Mapping;
 import java.util.Arrays;
 
 /**
+ * Builds a numeric variable which stores values as 32-bit integers.
+ * There are two general usage scenarios: use variable as an
+ * positive integer index and save storage for numeric
+ * variables from Z loosing decimal precision.
+ * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public final class Index extends AbstractVar {
 
     private static final int MISSING_VALUE = Integer.MIN_VALUE;
@@ -36,44 +40,101 @@ public final class Index extends AbstractVar {
 
     // static builders
 
+    /**
+     * Builds an empty index var of size 0
+     *
+     * @return new instance of index var
+     */
     public static Index newEmpty() {
         return new Index(0, 0, 0);
     }
 
+    /**
+     * Builds an index of given size filled with missing values
+     *
+     * @param rows index size
+     * @return new instance of index var
+     */
     public static Index newEmpty(int rows) {
         return new Index(rows, rows, 0);
     }
 
+    /**
+     * Builds an index of size 1 filled with the given value
+     *
+     * @param value fill value
+     * @return new instance of index var
+     */
     public static Index newScalar(int value) {
         return new Index(1, 1, value);
     }
 
+    /**
+     * Builds an index var of given size with given fill value
+     *
+     * @param rows  index size
+     * @param value fill value
+     * @return new instance of index var
+     */
     public static Index newFill(int rows, int value) {
         return new Index(rows, rows, value);
     }
 
-    public static Index newCopyOf(int[] values) {
+    /**
+     * Builds an index with values copied from a given array
+     *
+     * @param values given array of values
+     * @return new instance of index var
+     */
+    public static Index newCopyOf(int... values) {
         Index index = new Index(0, 0, 0);
         index.data = Arrays.copyOf(values, values.length);
         index.rows = values.length;
         return index;
     }
 
-    public static Index newWrapOf(int[] values) {
+    /**
+     * Builds an index as a wrapper over a given array of index values
+     *
+     * @param values given array of values
+     * @return new instance of index var
+     */
+    public static Index newWrapOf(int... values) {
         Index index = new Index(0, 0, 0);
         index.data = values;
         index.rows = values.length;
         return index;
     }
 
+    /**
+     * Builds an index of given size as a ascending sequence starting with 0
+     *
+     * @param len size of the index
+     * @return new instance of index var
+     */
     public static Index newSeq(int len) {
         return newSeq(0, len, 1);
     }
 
+    /**
+     * Builds an index of given size as ascending sequence with a given start value
+     *
+     * @param start start value
+     * @param len   size of the index
+     * @return new instance of index var
+     */
     public static Index newSeq(int start, int len) {
         return newSeq(start, len, 1);
     }
 
+    /**
+     * Builds an index of given size as ascending sequence with a given start value and a given step
+     *
+     * @param start start value
+     * @param len   size of the index
+     * @param step  increment value
+     * @return new instance of index var
+     */
     public static Index newSeq(final int start, final int len, final int step) {
         Index index = new Index(len, len, 0);
         int s = start;
@@ -87,16 +148,8 @@ public final class Index extends AbstractVar {
     // private constructor, only public static builders available
 
     private Index(int rows, int capacity, int fill) {
-        super();
-        if (capacity < 0) {
-            throw new IllegalArgumentException("Illegal capacity: " + capacity);
-        }
         if (rows < 0) {
             throw new IllegalArgumentException("Illegal row count: " + rows);
-        }
-        if (rows > capacity) {
-            throw new IllegalArgumentException(
-                    "Illegal row count" + rows + " less than capacity:" + capacity);
         }
         this.data = new int[capacity];
         this.rows = rows;
@@ -181,27 +234,27 @@ public final class Index extends AbstractVar {
 
     @Override
     public String label(int row) {
-        return "";
+        throw new IllegalArgumentException("Operation not available for index vectors.");
     }
 
     @Override
     public void setLabel(int row, String value) {
-        throw new RuntimeException("Operation not available for index vectors.");
+        throw new IllegalArgumentException("Operation not available for index vectors.");
     }
 
     @Override
     public void addLabel(String value) {
-        throw new RuntimeException("Operation not available for index vectors.");
+        throw new IllegalArgumentException("Operation not available for index vectors.");
     }
 
     @Override
     public String[] dictionary() {
-        throw new RuntimeException("Operation not available for index vectors.");
+        throw new IllegalArgumentException("Operation not available for index vectors.");
     }
 
     @Override
     public void setDictionary(String[] dict) {
-        throw new RuntimeException("Operation not available for index vectors.");
+        throw new IllegalArgumentException("Operation not available for index vectors.");
     }
 
     @Override

@@ -35,6 +35,11 @@ public class IndexTest {
         assertTrue(index.type().isNumeric());
         assertFalse(index.type().isNominal());
 
+        assertEquals(false, index.isMapped());
+        assertEquals(1, index.mapping().size());
+        assertEquals(0, index.mapping().get(0));
+        assertEquals(index, index.source());
+
         try {
             index.dictionary();
             assertTrue(false);
@@ -98,9 +103,6 @@ public class IndexTest {
         assertEquals(3, index.index(2));
         assertEquals(3., index.value(2), 1e-10);
 
-        assertEquals("", index.label(0));
-        assertEquals("", index.label(1));
-
         boolean exceptional = false;
         try {
             index.setLabel(0, "Test");
@@ -134,5 +136,33 @@ public class IndexTest {
         one = Index.newScalar(3);
         assertEquals(1, one.rowCount());
         assertEquals(3, one.index(0));
+    }
+
+    @Test
+    public void testBuilders() {
+        Index x1 = Index.newCopyOf(1, 2, 3, 4);
+        int[] wrap = new int[] {1, 2, 3, 4};
+        Index x2 = Index.newWrapOf(wrap);
+        Index x3 = Index.newSeq(4);
+        Index x4 = Index.newSeq(1, 4);
+        Index x5 = Index.newSeq(1, 4, 2);
+        Index x6 = Index.newEmpty();
+        x6.addIndex(1);
+        x6.addIndex(2);
+        x6.addIndex(3);
+        x6.addIndex(4);
+
+        for (int i = 0; i < 4; i++) {
+            assertEquals(i+1, x1.index(i));
+            assertEquals(i+1, x2.index(i));
+            assertEquals(i, x3.index(i));
+            assertEquals(i+1, x4.index(i));
+            assertEquals(i*2+1, x5.index(i));
+            assertEquals(i+1, x6.index(i));
+        }
+
+        wrap[2]=10;
+
+        assertEquals(10, x2.index(2));
     }
 }
