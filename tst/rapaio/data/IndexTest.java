@@ -67,7 +67,7 @@ public class IndexTest {
 
     @Test
     public void testFillVector() {
-        Var index = Numeric.newFill(10, -1);
+        Var index = Index.newFill(10, -1);
         assertEquals(10, index.rowCount());
         for (int i = 0; i < index.rowCount(); i++) {
             assertEquals(-1, index.index(i));

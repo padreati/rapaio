@@ -25,9 +25,15 @@ import rapaio.data.mapping.Mapping;
 import java.util.Arrays;
 
 /**
- * Created by tutuianu on 7/10/14.
+ * Variable which stores long 64-bit integer values.
+ * Basically the algorithms uses double for computations, so any
+ * usage of stamps would fail to work. However, for some certain
+ * necessary and specific usage scenarios this type of variable
+ * is useful. One plausible scenario is the representation on
+ * time stamps.
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Stamp extends AbstractVar {
 
     private static final long MISSING_VALUE = Long.MIN_VALUE;
@@ -36,29 +42,65 @@ public class Stamp extends AbstractVar {
 
     // static builders
 
+    /**
+     * Builds an empty stamp var of size 0
+     *
+     * @return new instance of stamp var
+     */
     public static Stamp newEmpty() {
         return new Stamp(0, 0, 0);
     }
 
+    /**
+     * Builds a stamp var of given size with missing values
+     *
+     * @param rows var size
+     * @return new instance of stamp var
+     */
     public static Stamp newEmpty(int rows) {
         return new Stamp(rows, rows, 0);
     }
 
+    /**
+     * Builds a stamp var of size 1 with given fill value
+     *
+     * @param value fill value
+     * @return new instance of stamp var
+     */
     public static Stamp newScalar(long value) {
         return new Stamp(1, 1, value);
     }
 
+    /**
+     * Builds a stamp var of given size with given fill value
+     *
+     * @param rows  var size
+     * @param value fill value
+     * @return new instance of stamp var
+     */
     public static Stamp newFill(int rows, long value) {
         return new Stamp(rows, rows, value);
     }
 
-    public static Stamp newCopyOf(long[] values) {
+    /**
+     * Builds a stamp var with values copied from given array
+     *
+     * @param values array of value
+     * @return new instance of stamp var
+     */
+    public static Stamp newCopyOf(long... values) {
         Stamp stamp = new Stamp(0, 0, 0);
         stamp.data = Arrays.copyOf(values, values.length);
         stamp.rows = values.length;
         return stamp;
     }
 
+    /**
+     * Builds a stamp var as a wrapper over the arrat of long values
+     *
+     * @param values wrapped array of values
+     * @return new instance of stamp var
+     */
     public static Stamp newWrapOf(long[] values) {
         Stamp stamp = new Stamp(0, 0, 0);
         stamp.data = values;
@@ -66,14 +108,36 @@ public class Stamp extends AbstractVar {
         return stamp;
     }
 
+    /**
+     * Builds a stamp var with values as a sequence in increasing order starting with 0 and of given length
+     *
+     * @param len size of the var
+     * @return new instance of stamp var
+     */
     public static Stamp newSeq(int len) {
         return newSeq(0, len, 1);
     }
 
+    /**
+     * Builds a stamp var with values as an increasing sequence starting with a given start point and of given length
+     *
+     * @param start start value
+     * @param len   size of the var
+     * @return new instance of stamp var
+     */
     public static Stamp newSeq(long start, int len) {
         return newSeq(start, len, 1);
     }
 
+    /**
+     * Builds a stamp var with values as an increasing sequence of values with a given start,
+     * of a given length and with a given step increment value
+     *
+     * @param start start of the sequence
+     * @param len   size of the sequence
+     * @param step  step/increment value
+     * @return new instance of stamp var
+     */
     public static Stamp newSeq(final long start, final int len, final long step) {
         Stamp stamp = new Stamp(len, len, 0);
         long s = start;
@@ -143,32 +207,32 @@ public class Stamp extends AbstractVar {
 
     @Override
     public int index(int row) {
-        throw new IllegalArgumentException("Operation not available for stamp variable");
+        return (int) stamp(row);
     }
 
     @Override
     public void setIndex(int row, int value) {
-        throw new IllegalArgumentException("Operation not available for stamp variable");
+        setStamp(row, value);
     }
 
     @Override
     public void addIndex(int value) {
-        throw new IllegalArgumentException("Operation not available for stamp variable");
+        addStamp(value);
     }
 
     @Override
     public double value(int row) {
-        throw new IllegalArgumentException("Operation not available for stamp variable");
+        return stamp(row);
     }
 
     @Override
     public void setValue(int row, double value) {
-        throw new IllegalArgumentException("Operation not available for stamp variable");
+        setStamp(row, (long) Math.rint(value));
     }
 
     @Override
     public void addValue(double value) {
-        throw new IllegalArgumentException("Operation not available for stamp variable");
+        addStamp((long) Math.rint(value));
     }
 
     @Override
@@ -198,17 +262,19 @@ public class Stamp extends AbstractVar {
 
     @Override
     public boolean binary(int row) {
-        throw new IllegalArgumentException("Operation not available for stamp variable");
+        if (stamp(row) == 1) return true;
+        if (stamp(row) == 0) return false;
+        throw new IllegalArgumentException("Stamp value could not be represented as binary value");
     }
 
     @Override
     public void setBinary(int row, boolean value) {
-        throw new IllegalArgumentException("Operation not available for stamp variable");
+        setStamp(row, value ? 1 : 0);
     }
 
     @Override
     public void addBinary(boolean value) {
-        throw new IllegalArgumentException("Operation not available for stamp variable");
+        addStamp(value ? 1 : 0);
     }
 
     @Override
@@ -247,8 +313,10 @@ public class Stamp extends AbstractVar {
     public void remove(int row) {
         rangeCheck(row);
         int numMoved = rows - row - 1;
-        if (numMoved > 0)
+        if (numMoved > 0) {
             System.arraycopy(data, row + 1, data, row, numMoved);
+            rows--;
+        }
     }
 
     @Override

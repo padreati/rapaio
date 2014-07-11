@@ -240,6 +240,12 @@ public class MappedVar extends AbstractVar {
                     idx.setIndex(i, index(mapping.get(i)));
                 }
                 return idx;
+            case STAMP:
+                Stamp stamp = Stamp.newEmpty(rowCount());
+                for (int i = 0; i < rowCount(); i++) {
+                    stamp.setStamp(i, stamp(mapping.get(i)));
+                }
+                return stamp;
             case NUMERIC:
                 Numeric num = Numeric.newEmpty(rowCount());
                 for (int i = 0; i < rowCount(); i++) {
