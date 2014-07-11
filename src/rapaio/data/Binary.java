@@ -26,9 +26,11 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.util.BitSet;
 
 /**
+ * Numerical variable which store only 1,0 and missing values.
+ * This is a storage-optimized version of a binary variable
+ *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public final class Binary extends AbstractVar {
 
     private int rows;
@@ -44,19 +46,43 @@ public final class Binary extends AbstractVar {
      * Static builders
      */
 
+    /**
+     * Builds an empty binary var
+     *
+     * @return new instance of binary var
+     */
     public static Binary newEmpty() {
         return new Binary(0, false, false);
     }
 
+    /**
+     * Builds a binary variable of given size with filled missing values
+     *
+     * @param rows size of variable
+     * @return new instance of binary var
+     */
     public static Binary newEmpty(int rows) {
         return new Binary(rows, true, false);
     }
 
+    /**
+     * Builds a new binary variable of given size filled with given value
+     *
+     * @param rows      size of variable
+     * @param fillValue fill value
+     * @return new instance of binary var
+     */
     public static Binary newFill(int rows, boolean fillValue) {
         return new Binary(rows, false, fillValue);
     }
 
-    public static Binary copyOf(int... values) {
+    /**
+     * Builds a new binary variable with values copied from given array of values
+     *
+     * @param values given array of values
+     * @return new instance of binary var
+     */
+    public static Binary newCopyOf(int... values) {
         final Binary b = new Binary(values.length, false, false);
         for (int i = 0; i < values.length; i++) {
             if (values[i] == 0) continue;
@@ -69,7 +95,13 @@ public final class Binary extends AbstractVar {
         return b;
     }
 
-    public static Binary copyOf(boolean... values) {
+    /**
+     * Builds a new binary variable with values copied from the given array of boolean values
+     *
+     * @param values source values
+     * @return new instance of binary var
+     */
+    public static Binary newCopyOf(boolean... values) {
         final Binary b = new Binary(values.length, false, false);
         for (int i = 0; i < values.length; i++) {
             if (values[i]) {
@@ -135,24 +167,35 @@ public final class Binary extends AbstractVar {
 
     @Override
     public void setValue(int row, double value) {
-        if (value == 1.0)
+        if (value == 1.0) {
             setBinary(row, true);
-        if (value == 0.0)
+            return;
+        }
+        if (value == 0.0) {
             setBinary(row, false);
-        if (value == -1.0)
+            return;
+        }
+        if (value == -1.0) {
             setMissing(row);
-
+            return;
+        }
         throw new IllegalArgumentException(String.format("Value %f is not a valid binary value", value));
     }
 
     @Override
     public void addValue(double value) {
-        if (value == 1.0)
+        if (Math.abs(value - 1.0) <= 10e-3) {
             addBinary(true);
-        if (value == 0.0)
+            return;
+        }
+        if (Math.abs(value) <= 10e-3) {
             addBinary(false);
-        if (value == -1.0)
+            return;
+        }
+        if (Math.abs(value + 1.0) <= 10e-3) {
             addMissing();
+            return;
+        }
         throw new IllegalArgumentException(String.format("Value %f is not a valid binary value", value));
     }
 
@@ -165,23 +208,35 @@ public final class Binary extends AbstractVar {
 
     @Override
     public void setIndex(int row, int value) {
-        if (value == 1)
+        if (value == 1) {
             setBinary(row, true);
-        if (value == 0)
+            return;
+        }
+        if (value == 0) {
             setBinary(row, false);
-        if (value == -1)
+            return;
+        }
+        if (value == -1) {
             setMissing(row);
+            return;
+        }
         throw new IllegalArgumentException(String.format("Value %d is not a valid binary value", value));
     }
 
     @Override
     public void addIndex(int value) {
-        if (value == 1)
+        if (value == 1) {
             addBinary(true);
-        if (value == 0)
+            return;
+        }
+        if (value == 0) {
             addBinary(false);
-        if(value==-1)
+            return;
+        }
+        if (value == -1) {
             addMissing();
+            return;
+        }
         throw new IllegalArgumentException(String.format("Value %d is not a valid binary value", value));
     }
 
@@ -236,19 +291,35 @@ public final class Binary extends AbstractVar {
 
     @Override
     public void setStamp(int row, long value) {
-        if (value == 1)
+        if (value == 1) {
             setBinary(row, true);
-        if (value == 0)
+            return;
+        }
+        if (value == 0) {
             setBinary(row, false);
+            return;
+        }
+        if(value==-1) {
+            setMissing(row);
+            return;
+        }
         throw new IllegalArgumentException(String.format("This value %d is not a valid binary value", value));
     }
 
     @Override
     public void addStamp(long value) {
-        if (value == 1)
+        if (value == 1) {
             addBinary(true);
-        if (value == 0)
+            return;
+        }
+        if (value == 0) {
             addBinary(false);
+            return;
+        }
+        if(value==-1) {
+            addMissing();
+            return;
+        }
         throw new IllegalArgumentException(String.format("This value %d is not a valid binary value", value));
     }
 
@@ -271,6 +342,9 @@ public final class Binary extends AbstractVar {
 
     @Override
     public void remove(int row) {
+        if(row<0 || row>=rows) {
+            throw new IllegalArgumentException();
+        }
         throw new NotImplementedException();
     }
 
@@ -280,7 +354,12 @@ public final class Binary extends AbstractVar {
     }
 
     @Override
-    public Var solidCopy() {
-        throw new NotImplementedException();
+    public Binary solidCopy() {
+        Binary copy = Binary.newEmpty(rowCount());
+        for (int i = 0; i < rowCount(); i++) {
+            if(!missing(i))
+                copy.setBinary(i, binary(i));
+        }
+        return copy;
     }
 }
