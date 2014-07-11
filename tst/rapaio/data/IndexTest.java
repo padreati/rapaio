@@ -20,7 +20,10 @@
 
 package rapaio.data;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import rapaio.data.mapping.MappedVar;
 
 import static junit.framework.Assert.*;
 
@@ -28,6 +31,9 @@ import static junit.framework.Assert.*;
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class IndexTest {
+
+    @Rule
+    public ExpectedException expected = ExpectedException.none();
 
     @Test
     public void smokeTest() {
@@ -165,4 +171,94 @@ public class IndexTest {
 
         assertEquals(10, x2.index(2));
     }
+
+    @Test
+    public void testLabel() {
+        Index x = Index.newCopyOf(1, 2, 3);
+        expected.expect(IllegalArgumentException.class);
+        x.label(0);
+    }
+
+    @Test
+    public void testAddLabel() {
+        Index x = Index.newCopyOf(1, 2, 3);
+        expected.expect(IllegalArgumentException.class);
+        x.addLabel("10");
+    }
+
+    @Test
+    public void testSetLabel() {
+        Index x = Index.newCopyOf(1, 2, 3);
+        expected.expect(IllegalArgumentException.class);
+        x.setLabel(0, "10");
+    }
+
+    @Test
+    public void testSetDictionary() {
+        Index x = Index.newCopyOf(1, 2, 3);
+        expected.expect(IllegalArgumentException.class);
+        x.setDictionary(new String[]{"x"});
+    }
+
+    @Test
+    public void testBinary() {
+        Index x = Index.newEmpty();
+        x.addBinary(true);
+        x.addBinary(false);
+        x.addMissing();
+        x.setBinary(2, true);
+
+        assertEquals(1, x.index(0));
+        assertEquals(0, x.index(1));
+        assertEquals(1, x.index(2));
+
+        assertEquals(true, x.binary(0));
+        assertEquals(false, x.binary(1));
+        assertEquals(true, x.binary(2));
+    }
+
+    @Test
+    public void testStamp() {
+        Index x = Index.newEmpty();
+        x.addStamp(0);
+        x.addMissing();
+        x.setStamp(1, 100);
+
+        assertEquals(0, x.stamp(0));
+        assertEquals(100, x.stamp(1));
+    }
+
+    @Test
+    public void testRemoveClear() {
+
+        Index x = Index.newCopyOf(1, 3, 6, 7, 9);
+        x.remove(0);
+
+        assertEquals(4, x.rowCount());
+        assertEquals(3, x.index(0));
+        assertEquals(9, x.index(3));
+
+        x.clear();
+        assertEquals(0, x.rowCount());
+
+
+        expected.expect(IndexOutOfBoundsException.class);
+        x.remove(-1);
+    }
+
+    @Test
+    public void testSolidCopy() {
+
+        Index x1 = Index.newCopyOf(1, 2, 3, 4, 5);
+        Var x2 = MappedVar.newByRows(x1, 0, 1, 2);
+        Var x3 = x2.solidCopy();
+        Var x4 = x3.solidCopy();
+        x4.addValue(8);
+
+        assertEquals(4, x4.rowCount());
+        assertEquals(1, x4.index(0));
+        assertEquals(3, x4.index(2));
+        assertEquals(8, x4.index(3));
+    }
+
 }

@@ -172,15 +172,6 @@ public final class Index extends AbstractVar {
         return VarType.INDEX;
     }
 
-    private void rangeCheck(int index) {
-        if (index > rows || index < 0)
-            throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
-    }
-
-    private String outOfBoundsMsg(int index) {
-        return "Index: " + index + ", Size: " + rows;
-    }
-
     @Override
     public boolean isMapped() {
         return false;
@@ -259,7 +250,7 @@ public final class Index extends AbstractVar {
 
     @Override
     public boolean binary(int row) {
-        return index(row) == 0;
+        return index(row) == 1;
     }
 
     @Override
@@ -304,10 +295,13 @@ public final class Index extends AbstractVar {
 
     @Override
     public void remove(int index) {
-        rangeCheck(index);
+        if (index > rows || index < 0)
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + rows);
         int numMoved = rows - index - 1;
-        if (numMoved > 0)
+        if (numMoved > 0) {
             System.arraycopy(data, index + 1, data, index, numMoved);
+            rows--;
+        }
     }
 
     @Override
