@@ -26,33 +26,51 @@ import java.util.Collection;
 import java.util.HashMap;
 
 /**
- * Nominal var contains values for nominal or categorical observations.
+ * Nominal var contains values for categorical observations where order of labels is not important.
  * <p>
- * The domain of the definition is called dictionary and is
- * given at construction time.
+ * The domain of the definition is called dictionary and is given at construction time or can be changed latter.
  * <p>
- * This var accepts two value representation: as labels and as indexes.
+ * This type of variable accepts two value representation: as labels and as indexes.
  * <p>
  * Label representation is the natural representation since in experiments
  * the nominal vectors are given as string values.
  * <p>
- * The index representation is learn based on the canonical form of the
- * term dictionary and is used often for performance reasons instead of
- * label representation, where the actual label value does not matter.
+ * The index representation is learn based on the term dictionary and is used often for performance
+ * reasons instead of label representation, where the actual label value does not matter.
+ * <p>
+ * Even if index values is an integer number the order of the indexes for
+ * nominal variables is irrelevant.
  *
  * @author Aurelian Tutuianu
  */
-@Deprecated
 public final class Nominal extends FactorBase {
 
+    /**
+     * Builds a new empty nominal variable
+     * @return new variable instance of nominal type
+     */
     public static Nominal newEmpty() {
         return new Nominal();
     }
 
+    /**
+     * Builds a new nominal variable of given size, with given term dictionary, filled with missing values.
+     *
+     * @param rows variable size
+     * @param dict term dictionary
+     * @return new variable instance of nominal type
+     */
     public static Nominal newEmpty(int rows, String... dict) {
         return Nominal.newEmpty(rows, Arrays.asList(dict));
     }
 
+    /**
+     * Builds a new nominal variable of given size, with given term dictionary, filled with missing values.
+     *
+     * @param rows variable size
+     * @param dict term dictionary
+     * @return new variable instance of nominal type
+     */
     public static Nominal newEmpty(int rows, Collection<String> dict) {
         Nominal nominal = new Nominal();
         for (String next : dict) {
@@ -65,7 +83,7 @@ public final class Nominal extends FactorBase {
         return nominal;
     }
 
-    protected Nominal() {
+    private Nominal() {
         // set the missing value
         this.reverse = new HashMap<>();
         this.reverse.put("?", 0);

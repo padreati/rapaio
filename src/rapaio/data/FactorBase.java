@@ -25,9 +25,12 @@ import rapaio.data.mapping.Mapping;
 import java.util.*;
 
 /**
+ * Base class used to implement categorical variable types: nominal and ordinal.
+ * From the implementation point of view the only difference between nominal and ordinal is
+ * the fact that ordinal variables assigns a meaning to the order of the labels.
+ *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public abstract class FactorBase extends AbstractVar {
 
     protected static final String missingValue = "?";
@@ -46,11 +49,6 @@ public abstract class FactorBase extends AbstractVar {
         this.dict.add("?");
         data = new int[0];
         rows = 0;
-    }
-
-    @Override
-    public VarType type() {
-        return VarType.NOMINAL;
     }
 
     private void grow(int minCapacity) {
@@ -151,32 +149,39 @@ public abstract class FactorBase extends AbstractVar {
     }
 
     @Override
-    public void setDictionary(String[] dict) {
+    public void setDictionary(String... dict) {
         List<String> oldDict = this.dict;
-        Map<String, Integer> oldReverse = this.reverse;
+        if (dict.length > 0 && !dict[0].equals("?")) {
+            String[] newDict = new String[dict.length + 1];
+            newDict[0] = "?";
+            for (int i = 0; i < dict.length; i++) {
+                newDict[i + 1] = dict[i];
+            }
+            dict = newDict;
+        }
+
+        if (this.dict.size() > dict.length) {
+            throw new IllegalArgumentException("new dictionary does not contains all old labels");
+        }
 
         this.dict = new ArrayList<>();
         this.reverse = new HashMap<>();
         this.dict.add("?");
         this.reverse.put("?", 0);
 
-        for (String term : dict) {
+        int[] pos = new int[oldDict.size()];
+        for (int i = 0; i < dict.length; i++) {
+            String term = dict[i];
             if (!reverse.containsKey(term)) {
                 this.dict.add(term);
                 this.reverse.put(term, this.reverse.size());
             }
+            if (i < oldDict.size())
+                pos[i] = this.reverse.get(term);
         }
 
         for (int i = 0; i < rows; i++) {
-            if (!this.reverse.containsKey(oldDict.get(data[i]))) {
-                this.dict = oldDict;
-                this.reverse = oldReverse;
-                throw new IllegalArgumentException("new dictionary does not contains all old labels");
-            }
-        }
-
-        for (int i = 0; i < rows; i++) {
-            data[i] = this.reverse.get(oldDict.get(data[i]));
+            data[i] = pos[data[i]];
         }
     }
 
@@ -228,8 +233,10 @@ public abstract class FactorBase extends AbstractVar {
     @Override
     public void remove(int index) {
         int numMoved = rows - index - 1;
-        if (numMoved > 0)
+        if (numMoved > 0) {
             System.arraycopy(data, index + 1, data, index, numMoved);
+            rows--;
+        }
     }
 
     public void clear() {

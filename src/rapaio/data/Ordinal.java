@@ -26,18 +26,54 @@ import java.util.Collection;
 import java.util.HashMap;
 
 /**
+ * Ordinal variables contains values for categorical observations where order of labels is important.
+ * <p>
+ * The domain of the definition is called dictionary and is given at construction time or can be changed latter.
+ * <p>
+ * This type of variable accepts two value representation: as labels and as indexes.
+ * <p>
+ * Label representation is the natural representation since in experiments
+ * the nominal vectors are given as string values.
+ * <p>
+ * The index representation is learn based on the term dictionary and is used often for performance
+ * reasons instead of label representation, where the actual label value does not matter.
+ * <p>
+ * Index values can be used to compare to values, however other numeric statistics such as mean
+ * does not apply since there are meaningless. The reason why the index mean is meaningless is
+ * that there are no guarantees that the difference between index i and i-1 is the same between
+ * index i and i+1. Indexes specify only order, but not numerical quantities.
+ *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public final class Ordinal extends FactorBase {
+
+    /**
+     * Builds a new empty ordinal variable.
+     *
+     * @return new variable instance of ordinal type
+     */
     public static Ordinal newEmpty() {
         return new Ordinal();
     }
 
+    /**
+     * Builds a new ordinal variable with given dictionary and of give size filled with missing values.
+     *
+     * @param rows variable size
+     * @param dict term dictionary
+     * @return new variable instance of ordinal type
+     */
     public static Ordinal newEmpty(int rows, String... dict) {
         return Ordinal.newEmpty(rows, Arrays.asList(dict));
     }
 
+    /**
+     * Builds a new  ordinal variable with given dictionary and of given size filled with missing values.
+     *
+     * @param rows variable size
+     * @param dict term dictionary
+     * @return new variable instance of ordinal type
+     */
     public static Ordinal newEmpty(int rows, Collection<String> dict) {
         Ordinal nominal = new Ordinal();
         for (String next : dict) {
@@ -50,7 +86,7 @@ public final class Ordinal extends FactorBase {
         return nominal;
     }
 
-    protected Ordinal() {
+    private Ordinal() {
         super();
         // set the missing value
         this.reverse = new HashMap<>();

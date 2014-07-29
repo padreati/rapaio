@@ -179,9 +179,24 @@ public interface Var extends Serializable {
      * old values of the dictionary with the new values is done. The mapping
      * is done based on position.
      *
+     * The new dictionary can have repeated terms. This feature can be used
+     * to unite multiple old labels with new ones. However the actual new
+     * dictionary used will have only unique terms and indexed accordingly.
+     * Thus a nominal with labels a,b,a,c,a,c which will have dictionary a,b,c,
+     * when replaced with dictionary x,y,x will have as a result the following
+     * labels: x,y,x,x,x,x and indexes 1,2,1,1,1,1
+     *
      * @param dict array fo terms which comprises the new dictionary
      */
     void setDictionary(String[] dict);
+
+    default void setDictionary(List<String> dict) {
+        String[] vector = new String[dict.size()];
+        for (int i = 0; i < vector.length; i++) {
+            vector[i]=dict.get(i);
+        }
+        setDictionary(vector);
+    }
 
     /**
      * @param row position of the observation
