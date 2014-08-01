@@ -80,7 +80,7 @@ public final class BaseFilters implements Serializable {
             if (indexes.contains(i)) continue;
             names.add(df.colNames()[i]);
         }
-        return MappedFrame.newByRow(df, df.mapping(), names);
+        return MappedFrame.newByRow(df.sourceFrame(), df.mapping(), names);
     }
 
     /**

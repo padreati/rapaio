@@ -74,7 +74,7 @@ public abstract class AbstractPrinter implements Printer {
 
     @Override
     public void heading(int h, String lines) {
-        print("*" + lines + "*");
+        print("*" + lines + "*\n");
     }
 
     @Override
