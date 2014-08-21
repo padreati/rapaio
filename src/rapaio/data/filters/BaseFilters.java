@@ -20,13 +20,13 @@
 
 package rapaio.data.filters;
 
-import rapaio.core.ColRange;
+import rapaio.core.VarRange;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.cu.Norm;
 import rapaio.data.*;
-import rapaio.data.mapping.MappedFrame;
-import rapaio.data.mapping.MappedVar;
-import rapaio.data.mapping.Mapping;
+import rapaio.data.MappedFrame;
+import rapaio.data.MappedVar;
+import rapaio.data.Mapping;
 import rapaio.data.stream.VSpot;
 
 import java.io.Serializable;
@@ -58,50 +58,11 @@ public final class BaseFilters implements Serializable {
      * @return frame with value converted columns
      */
     public static Frame toNumeric(Frame df) {
-        Var[] vars = new Var[df.colCount()];
+        Var[] vars = new Var[df.varCount()];
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = toNumeric(df.col(i));
+            vars[i] = toNumeric(df.var(i));
         }
-        return new SolidFrame(df.rowCount(), vars, df.colNames(), df.weights());
-    }
-
-    /**
-     * Remove columns specified in a column range from a frame.
-     *
-     * @param df       frame
-     * @param colRange column range
-     * @return original frame without columns specified in {
-     */
-    public static Frame removeCols(Frame df, String colRange) {
-        ColRange range = new ColRange(colRange);
-        Set<Integer> indexes = new HashSet<>(range.parseColumnIndexes(df));
-        List<String> names = new ArrayList<>();
-        for (int i = 0; i < df.colCount(); i++) {
-            if (indexes.contains(i)) continue;
-            names.add(df.colNames()[i]);
-        }
-        return MappedFrame.newByRow(df.sourceFrame(), df.mapping(), names);
-    }
-
-    /**
-     * Remove columns from a frame by specifying which columns to keep.
-     *
-     * @param df       frame
-     * @param colRange column range
-     * @return original frame which has only columns specified in {
-     */
-    public static Frame retainCols(Frame df, String colRange) {
-        ColRange range = new ColRange(colRange);
-        final List<Integer> indexes = range.parseColumnIndexes(df);
-        String[] names = new String[indexes.size()];
-        int posIndexes = 0;
-        for (int i = 0; i < df.colCount(); i++) {
-            if (posIndexes < indexes.size() && i == indexes.get(posIndexes)) {
-                names[posIndexes] = df.colNames()[i];
-                posIndexes++;
-            }
-        }
-        return MappedFrame.newByRow(df, df.mapping(), Arrays.asList(names));
+        return new SolidFrame(df.rowCount(), vars, df.varNames());
     }
 
     /**
@@ -110,13 +71,13 @@ public final class BaseFilters implements Serializable {
     public static Frame retainNumeric(Frame df) {
         List<Var> vars = new ArrayList<>();
         List<String> names = new ArrayList<>();
-        for (int i = 0; i < df.colCount(); i++) {
-            if (df.col(i).type().isNumeric()) {
-                vars.add(df.col(i));
-                names.add(df.colNames()[i]);
+        for (int i = 0; i < df.varCount(); i++) {
+            if (df.var(i).type().isNumeric()) {
+                vars.add(df.var(i));
+                names.add(df.varNames()[i]);
             }
         }
-        return new SolidFrame(df.rowCount(), vars, names, df.weights());
+        return new SolidFrame(df.rowCount(), vars, names);
     }
 
     /**
@@ -125,13 +86,13 @@ public final class BaseFilters implements Serializable {
     public static Frame retainNominal(Frame df) {
         List<Var> vars = new ArrayList<>();
         List<String> names = new ArrayList<>();
-        for (int i = 0; i < df.colCount(); i++) {
-            if (df.col(i).type().isNominal()) {
-                vars.add(df.col(i));
-                names.add(df.colNames()[i]);
+        for (int i = 0; i < df.varCount(); i++) {
+            if (df.var(i).type().isNominal()) {
+                vars.add(df.var(i));
+                names.add(df.varNames()[i]);
             }
         }
-        return new SolidFrame(df.rowCount(), vars, names, df.weights());
+        return new SolidFrame(df.rowCount(), vars, names);
     }
 
     /**
@@ -146,14 +107,14 @@ public final class BaseFilters implements Serializable {
         HashMap<String, HashSet<String>> dicts = new HashMap<>();
         for (int i = 0; i < source.size(); i++) {
             for (Frame frame : source) {
-                for (String colName : frame.colNames()) {
-                    if (!frame.col(colName).type().isNominal()) {
+                for (String colName : frame.varNames()) {
+                    if (!frame.var(colName).type().isNominal()) {
                         continue;
                     }
                     if (!dicts.containsKey(colName)) {
                         dicts.put(colName, new HashSet<>());
                     }
-                    dicts.get(colName).addAll(Arrays.asList(frame.col(colName).dictionary()));
+                    dicts.get(colName).addAll(Arrays.asList(frame.var(colName).dictionary()));
                 }
             }
         }
@@ -161,10 +122,10 @@ public final class BaseFilters implements Serializable {
         // rebuild each frame according with the new consolidated data
         List<Frame> dest = new ArrayList<>();
         for (Frame frame : source) {
-            Var[] vars = new Var[frame.colCount()];
-            for (int i = 0; i < frame.colCount(); i++) {
-                Var v = frame.col(i);
-                String colName = frame.colNames()[i];
+            Var[] vars = new Var[frame.varCount()];
+            for (int i = 0; i < frame.varCount(); i++) {
+                Var v = frame.var(i);
+                String colName = frame.varNames()[i];
                 if (!v.type().isNominal()) {
                     vars[i] = v;
                 } else {
@@ -174,7 +135,7 @@ public final class BaseFilters implements Serializable {
                     }
                 }
             }
-            dest.add(new SolidFrame(frame.rowCount(), vars, frame.colNames(), frame.weights()));
+            dest.add(new SolidFrame(frame.rowCount(), vars, frame.varNames()));
         }
 
         return dest;
@@ -210,13 +171,13 @@ public final class BaseFilters implements Serializable {
         Set<String> dict = new HashSet<>();
         dict.add("");
         for (Frame frame1 : frames) {
-            if (frame1.isMappedFrame()) {
+            if (frame1 instanceof MappedFrame) {
                 throw new IllegalArgumentException("Not allowed mapped frames");
             }
         }
 
         for (String aCombined : combined) {
-            String[] vdict = frames.get(0).col(aCombined).dictionary();
+            String[] vdict = frames.get(0).var(aCombined).dictionary();
             Set<String> newdict = new HashSet<>();
             for (String term : dict) {
                 for (String aVdict : vdict) {
@@ -229,19 +190,19 @@ public final class BaseFilters implements Serializable {
         List<Frame> result = new ArrayList<>();
         for (Frame frame : frames) {
             List<Var> vars = new ArrayList<>();
-            for (int j = 0; j < frame.colCount(); j++) {
-                vars.add(frame.col(j));
+            for (int j = 0; j < frame.varCount(); j++) {
+                vars.add(frame.var(j));
             }
             Var col = Nominal.newEmpty(frame.rowCount(), dict);
             for (int j = 0; j < frame.rowCount(); j++) {
                 StringBuilder sb = new StringBuilder();
                 for (String c : combined) {
-                    sb.append(".").append(frame.label(j, frame.colIndex(c)));
+                    sb.append(".").append(frame.label(j, frame.varIndex(c)));
                 }
                 col.setLabel(j, sb.toString());
             }
             vars.add(col);
-            result.add(new SolidFrame(frame.rowCount(), vars, frame.colNames(), frame.weights()));
+            result.add(new SolidFrame(frame.rowCount(), vars, frame.varNames()));
         }
         return result;
 
@@ -259,11 +220,11 @@ public final class BaseFilters implements Serializable {
      * @return mapped frame with complete cases
      */
     public static Frame completeCases(Frame source) {
-        return completeCases(source, new ColRange("all"));
+        return completeCases(source, new VarRange("all"));
     }
 
-    public static Frame completeCases(Frame source, ColRange colRange) {
-        List<Integer> selectedCols = colRange.parseColumnIndexes(source);
+    public static Frame completeCases(Frame source, VarRange varRange) {
+        List<Integer> selectedCols = varRange.parseColumnIndexes(source);
         return source.stream().filter(s -> !selectedCols.stream().anyMatch(s::missing)).toMappedFrame();
     }
 
@@ -406,7 +367,7 @@ public final class BaseFilters implements Serializable {
         for (int i = mapping.size(); i > 1; i--) {
             mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
         }
-        return MappedVar.newByRows(v.source(), Mapping.newWrapOf(mapping));
+        return MappedVar.newByRows(v, Mapping.newWrapOf(mapping));
     }
 
     public static Var sort(Var v) {

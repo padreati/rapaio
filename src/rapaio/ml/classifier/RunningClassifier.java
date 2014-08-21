@@ -21,6 +21,7 @@
 package rapaio.ml.classifier;
 
 import rapaio.data.Frame;
+import rapaio.data.Numeric;
 
 import java.io.Serializable;
 
@@ -47,5 +48,9 @@ public interface RunningClassifier extends Classifier, Serializable {
      * @param targetName target column name
      * @param runs       additional runs to build
      */
-    void learnFurther(Frame df, String targetName, int runs);
+    default void learnFurther(Frame df, String targetName, int runs) {
+        learnFurther(df, Numeric.newFill(df.rowCount(), 1.0), targetName, runs);
+    }
+
+    void learnFurther(Frame df, Numeric weights, String targetName, int runs);
 }

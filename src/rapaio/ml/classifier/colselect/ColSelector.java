@@ -20,7 +20,7 @@
 
 package rapaio.ml.classifier.colselect;
 
-import rapaio.core.ColRange;
+import rapaio.core.VarRange;
 import rapaio.data.Frame;
 
 import java.io.Serializable;
@@ -33,7 +33,7 @@ public interface ColSelector extends Serializable {
 
     String name();
 
-    void initialize(Frame df, ColRange except);
+    void initialize(Frame df, VarRange except);
 
     String[] nextColNames();
 }

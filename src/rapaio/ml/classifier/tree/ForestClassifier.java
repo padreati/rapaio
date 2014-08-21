@@ -22,17 +22,14 @@ package rapaio.ml.classifier.tree;
 
 import rapaio.core.sample.DiscreteSampling;
 import rapaio.core.stat.ConfusionMatrix;
-import rapaio.data.Frame;
-import rapaio.data.Frames;
-import rapaio.data.Nominal;
-import rapaio.data.mapping.MappedFrame;
-import rapaio.data.mapping.Mapping;
+import rapaio.data.*;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.RunningClassifier;
 import rapaio.ml.classifier.colselect.ColSelector;
 import rapaio.ml.classifier.colselect.RandomColSelector;
 import rapaio.ml.classifier.tools.DensityVector;
+import rapaio.util.Pair;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.Serializable;
@@ -154,40 +151,51 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
         return this;
     }
 
-    public List<Frame> produceSamples(Frame df) {
+    public Pair<List<Frame>, List<Numeric>> produceSamples(Frame df, Numeric weights) {
         List<Frame> frames = new ArrayList<>();
+        List<Numeric> weightsList = new ArrayList<>();
+
         if (sampling <= 0) {
             // no sampling
             frames.add(df.stream().toMappedFrame());
             frames.add(MappedFrame.newByRow(df));
-            return frames;
+
+            weightsList.add(weights);
+            weightsList.add(Numeric.newEmpty());
+
+            return new Pair<>(frames, weightsList);
         }
 
         Mapping train = Mapping.newEmpty();
         Mapping oob = Mapping.newEmpty();
+
+        weightsList.add(Numeric.newEmpty());
+        weightsList.add(Numeric.newEmpty());
 
         int[] sample = new DiscreteSampling().sampleWR((int) (df.rowCount() * sampling), df.rowCount());
         HashSet<Integer> rows = new HashSet<>();
         for (int row : sample) {
             rows.add(row);
             train.add(row);
+            weightsList.get(0).addValue(weights.value(row));
         }
         for (int i = 0; i < df.rowCount(); i++) {
             if (rows.contains(i)) continue;
             oob.add(i);
+            weightsList.get(1).addValue(weights.value(i));
         }
 
         frames.add(MappedFrame.newByRow(df, train));
         frames.add(MappedFrame.newByRow(df, oob));
 
-        return frames;
+        return new Pair<>(frames, weightsList);
     }
 
     @Override
-    public void learn(Frame df, String targetCol) {
+    public void learn(Frame df, Numeric weights, String targetCol) {
 
         this.targetCol = targetCol;
-        this.dict = df.col(targetCol).dictionary();
+        this.dict = df.var(targetCol).dictionary();
 
         predictors.clear();
 
@@ -195,7 +203,7 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
         totalOobError = 0;
 
         for (int i = 0; i < runs; i++) {
-            buildWeakPredictor(df);
+            buildWeakPredictor(df, weights);
         }
 
         if (oobCompute) {
@@ -204,7 +212,7 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
     }
 
     @Override
-    public void learnFurther(Frame df, String targetName, int additionalRuns) {
+    public void learnFurther(Frame df, Numeric weights, String targetName, int additionalRuns) {
 
         if (targetCol != null && dict != null) {
             this.runs += additionalRuns;
@@ -215,23 +223,23 @@ public class ForestClassifier extends AbstractClassifier implements RunningClass
         }
 
         for (int i = predictors.size(); i < runs; i++) {
-            buildWeakPredictor(df);
+            buildWeakPredictor(df, weights);
         }
     }
 
-    private void buildWeakPredictor(Frame df) {
+    private void buildWeakPredictor(Frame df, Numeric weights) {
         Classifier pred = c.newInstance();
         pred.withColSelector(colSelector);
 
-        List<Frame> samples = produceSamples(df);
-        Frame train = samples.get(0);
-        Frame oob = samples.get(1);
+        Pair<List<Frame>, List<Numeric>> samples = produceSamples(df, weights);
+        Frame train = samples.first.get(0);
+        Frame oob = samples.first.get(1);
 
-        pred.learn(train, targetCol);
+        pred.learn(train, samples.second.get(0), targetCol);
         if (oobCompute) {
             pred.predict(oob);
             totalOobInstances += oob.rowCount();
-            totalOobError += 1 - new ConfusionMatrix(oob.col(targetCol), pred.pred()).accuracy();
+            totalOobError += 1 - new ConfusionMatrix(oob.var(targetCol), pred.pred()).accuracy();
         }
         predictors.add(pred);
     }

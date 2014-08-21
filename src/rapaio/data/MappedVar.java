@@ -18,9 +18,8 @@
  *    limitations under the License.
  */
 
-package rapaio.data.mapping;
+package rapaio.data;
 
-import rapaio.data.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Arrays;
@@ -67,21 +66,23 @@ public class MappedVar extends AbstractVar {
 
     private MappedVar(Var var, Mapping mapping) {
         withName(var.name());
-        this.source = var.source();
-        if (var.isMapped()) {
-            this.mapping = Mapping.newWrapOf(mapping.rowStream().map(row -> var.mapping().get(row)).mapToObj(row -> row).collect(Collectors.toList()));
+        if (var instanceof MappedVar) {
+            this.mapping = Mapping.newWrapOf(mapping.rowStream().map(row -> ((MappedVar)var).mapping().get(row)).mapToObj(row -> row).collect(Collectors.toList()));
+            this.source = ((MappedVar)var).source();
         } else {
             this.mapping = mapping;
+            this.source = var;
         }
     }
 
     private MappedVar(Var var, int... rows) {
         withName(var.name());
-        this.source = var.source();
-        if (var.isMapped()) {
-            this.mapping = Mapping.newWrapOf(Arrays.stream(rows).map(row -> var.mapping().get(row)).mapToObj(row -> row).collect(Collectors.toList()));
+        if (var instanceof MappedVar) {
+            this.mapping = Mapping.newWrapOf(Arrays.stream(rows).map(row -> ((MappedVar)var).mapping().get(row)).mapToObj(row -> row).collect(Collectors.toList()));
+            this.source = ((MappedVar)var).source();
         } else {
             this.mapping = Mapping.newCopyOf(rows);
+            this.source = var;
         }
     }
 
@@ -95,19 +96,22 @@ public class MappedVar extends AbstractVar {
         return mapping.size();
     }
 
-    @Override
-    public boolean isMapped() {
-        return true;
-    }
-
-    @Override
     public Var source() {
         return source;
     }
 
-    @Override
     public Mapping mapping() {
         return mapping;
+    }
+
+    @Override
+    public Var bindRows(Var var) {
+        return BoundVar.newFrom(this, var);
+    }
+
+    @Override
+    public Var mapRows(Mapping mapping) {
+        return MappedVar.newByRows(this, mapping);
     }
 
     @Override
@@ -218,48 +222,5 @@ public class MappedVar extends AbstractVar {
     @Override
     public void clear() {
         throw new IllegalArgumentException("operation not available on mapped vectors");
-    }
-
-    @Override
-    public Var solidCopy() {
-        switch (source.type()) {
-            case NOMINAL:
-                Nominal nom = Nominal.newEmpty(mapping.size(), source.dictionary());
-                for (int i = 0; i < rowCount(); i++) {
-                    nom.setLabel(i, label(mapping.get(i)));
-                }
-                return nom;
-            case ORDINAL:
-                Ordinal ord = Ordinal.newEmpty(mapping().size(), source.dictionary());
-                for (int i = 0; i < rowCount(); i++) {
-                    ord.setLabel(i, label(mapping.get(i)));
-                }
-            case INDEX:
-                Index idx = Index.newEmpty(rowCount());
-                for (int i = 0; i < rowCount(); i++) {
-                    idx.setIndex(i, index(mapping.get(i)));
-                }
-                return idx;
-            case STAMP:
-                Stamp stamp = Stamp.newEmpty(rowCount());
-                for (int i = 0; i < rowCount(); i++) {
-                    stamp.setStamp(i, stamp(mapping.get(i)));
-                }
-                return stamp;
-            case NUMERIC:
-                Numeric num = Numeric.newEmpty(rowCount());
-                for (int i = 0; i < rowCount(); i++) {
-                    num.setValue(i, value(mapping.get(i)));
-                }
-                return num;
-            case BINARY:
-                Binary bin = Binary.newEmpty(rowCount());
-                for (int i = 0; i < rowCount(); i++) {
-                    bin.setIndex(i, index(mapping.get(i)));
-                }
-                return bin;
-            default:
-                throw new NotImplementedException();
-        }
     }
 }

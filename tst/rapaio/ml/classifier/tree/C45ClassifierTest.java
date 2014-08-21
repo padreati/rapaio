@@ -46,21 +46,21 @@ public class C45ClassifierTest {
         classifier.learn(df, className);
         classifier.predict(df);
 
-        DensityTable dtWindy = new DensityTable(df.col("windy"), df.col("class"));
-        DensityTable dtOutlook = new DensityTable(df.col("outlook"), df.col("class"));
+        DensityTable dtWindy = new DensityTable(df.var("windy"), df.var("class"));
+        DensityTable dtOutlook = new DensityTable(df.var("outlook"), df.var("class"));
         String splitCol = (dtWindy.getInfoGain() > dtOutlook.getInfoGain()) ? "windy" : "outlook";
         Assert.assertEquals(splitCol, classifier.root.groupName);
 
         Summary.summary(classifier);
 
-        ConfusionMatrix cm = new ConfusionMatrix(df.col("class"), classifier.pred());
+        ConfusionMatrix cm = new ConfusionMatrix(df.var("class"), classifier.pred());
         Summary.summary(cm);
     }
 
     @Test
     public void testNumericInfoGain() throws IOException {
         Frame df = Datasets.loadPlay();
-        df = BaseFilters.retainCols(df, "temp,humidity,class");
+        df = df.mapVars("temp,humidity,class");
         final String className = "class";
 
         TreeClassifier classifier = TreeClassifier.buildC45();
@@ -69,7 +69,7 @@ public class C45ClassifierTest {
 
         classifier.predict(df);
 
-        ConfusionMatrix cm = new ConfusionMatrix(df.col("class"), classifier.pred());
+        ConfusionMatrix cm = new ConfusionMatrix(df.var("class"), classifier.pred());
         Summary.summary(cm);
     }
 
@@ -84,7 +84,7 @@ public class C45ClassifierTest {
 
         classifier.predict(df);
 
-        ConfusionMatrix cm = new ConfusionMatrix(df.col("class"), classifier.pred());
+        ConfusionMatrix cm = new ConfusionMatrix(df.var("class"), classifier.pred());
         Summary.summary(cm);
     }
 

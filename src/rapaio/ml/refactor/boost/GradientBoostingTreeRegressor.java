@@ -20,12 +20,12 @@
 
 package rapaio.ml.refactor.boost;
 
+import rapaio.core.VarRange;
 import rapaio.core.sample.DiscreteSampling;
 import rapaio.data.*;
-import rapaio.data.filters.BaseFilters;
-import rapaio.data.mapping.MappedFrame;
-import rapaio.data.mapping.MappedVar;
-import rapaio.data.mapping.Mapping;
+import rapaio.data.MappedFrame;
+import rapaio.data.MappedVar;
+import rapaio.data.Mapping;
 import rapaio.ml.refactor.boost.gbt.BTRegressor;
 import rapaio.ml.refactor.boost.gbt.BoostingLossFunction;
 import rapaio.ml.refactor.boost.gbt.L1BoostingLossFunction;
@@ -134,8 +134,8 @@ public class GradientBoostingTreeRegressor implements Regressor {
         this.df = train;
         this.targetColName = targetCols;
 
-        Var y = df.col(targetCols);
-        Frame x = BaseFilters.removeCols(df, targetCols);
+        Var y = df.var(targetCols);
+        Frame x = df.removeVars(new VarRange(targetCols));
         x = Frames.solidCopy(x);
 
         initialRegressor.learn(df, targetCols);
@@ -150,7 +150,7 @@ public class GradientBoostingTreeRegressor implements Regressor {
             Numeric gradient = lossFunction.gradient(y, fitLearn);
 
 
-            Frame xm = Frames.addCol(x, gradient, "target", x.colCount());
+            Frame xm = Frames.addCol(x, gradient, "target", x.varCount());
             BTRegressor tree = createBTRegressor();
 
             // bootstrap samples
@@ -205,8 +205,8 @@ public class GradientBoostingTreeRegressor implements Regressor {
     public void learnFurther(int additionalRounds) {
         rounds += additionalRounds;
 
-        Var y = df.col(targetColName);
-        Frame x = BaseFilters.removeCols(df, targetColName);
+        Var y = df.var(targetColName);
+        Frame x = df.removeVars(new VarRange(targetColName));
 
         for (int i = 0; i < additionalRounds; i++) {
 
@@ -216,7 +216,7 @@ public class GradientBoostingTreeRegressor implements Regressor {
 
             // build next tree and gradient learning data set
 
-            Frame xm = Frames.addCol(x, gradient, "target", x.colCount());
+            Frame xm = Frames.addCol(x, gradient, "target", x.varCount());
             BTRegressor tree = createBTRegressor();
 
             // bootstrap samples if is the case
@@ -295,6 +295,6 @@ public class GradientBoostingTreeRegressor implements Regressor {
 
     @Override
     public Frame getAllFitValues() {
-        return new SolidFrame(fitValues.rowCount(), new Var[]{fitValues}, new String[]{targetColName}, null);
+        return new SolidFrame(fitValues.rowCount(), new Var[]{fitValues}, new String[]{targetColName});
     }
 }

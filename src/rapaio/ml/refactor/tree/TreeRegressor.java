@@ -20,20 +20,16 @@
 
 package rapaio.ml.refactor.tree;
 
-import rapaio.core.ColRange;
+import rapaio.core.VarRange;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.StatOnline;
 import rapaio.core.stat.Sum;
 import rapaio.data.*;
 import rapaio.data.filters.BaseFilters;
-import rapaio.data.mapping.MappedFrame;
-import rapaio.data.mapping.Mapping;
 import rapaio.ml.refactor.colselect.ColSelector;
 import rapaio.ml.refactor.colselect.DefaultColSelector;
 import rapaio.ml.regressor.Regressor;
-
-import java.util.ArrayList;
-import java.util.List;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * This works for numeric attributes only with no missing values.
@@ -75,11 +71,15 @@ public class TreeRegressor implements Regressor {
 
     @Override
     public void learn(Frame df, String targetColName) {
+        throw new NotImplementedException();
+    }
+
+    public void learn(Frame df, Numeric weights, String targetColName) {
         this.targetColNames = targetColName;
         root = new TreeRegressorNode();
-        root.learn(this, df, df.weights(), targetColName);
+        root.learn(this, df, weights, targetColName);
         if (colSelector == null) {
-            colSelector = new DefaultColSelector(df, new ColRange(targetColName));
+            colSelector = new DefaultColSelector(df, new VarRange(targetColName));
         }
     }
 
@@ -117,13 +117,13 @@ class TreeRegressorNode {
 
         if (totalWeight < 2 * parent.minWeight) {
             leaf = true;
-            pred = new Mean(df.col(targetColNames)).value();
+            pred = new Mean(df.var(targetColNames)).value();
             return;
         }
 
         String[] colNames = parent.colSelector.nextColNames();
         for (String testColName : colNames) {
-            if (df.col(testColName).type().isNumeric() && !targetColNames.equals(testColName)) {
+            if (df.var(testColName).type().isNumeric() && !targetColNames.equals(testColName)) {
                 evaluateNumeric(parent, df, weights, targetColNames, testColName);
             }
         }
@@ -153,7 +153,7 @@ class TreeRegressorNode {
 
         // else do the default
         leaf = true;
-        pred = new Mean(df.col(targetColNames)).value();
+        pred = new Mean(df.var(targetColNames)).value();
     }
 
     private void evaluateNumeric(TreeRegressor parent,
@@ -161,7 +161,7 @@ class TreeRegressorNode {
                                  String targetColName,
                                  String testColNames) {
 
-        Var testCol = df.col(testColNames);
+        Var testCol = df.var(testColNames);
         double[] var = new double[df.rowCount()];
         StatOnline so = new StatOnline();
         Var sort = Index.newSeq(df.rowCount());

@@ -20,7 +20,7 @@
 
 package rapaio.ml.refactor.simple;
 
-import rapaio.core.ColRange;
+import rapaio.core.VarRange;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
@@ -61,20 +61,20 @@ public class L1ConstantRegressor implements Regressor {
 
     @Override
     public void learn(Frame df, String targetCols) {
-        ColRange colRange = new ColRange(targetCols);
-        List<Integer> colIndexes = colRange.parseColumnIndexes(df);
+        VarRange varRange = new VarRange(targetCols);
+        List<Integer> colIndexes = varRange.parseColumnIndexes(df);
 
         targets = new ArrayList<>();
         for (Integer colIndexe : colIndexes) {
-            targets.add(df.colNames()[colIndexe]);
+            targets.add(df.varNames()[colIndexe]);
         }
 
         medians = new ArrayList<>();
         fitValues = new ArrayList<>();
         for (String target : targets) {
-            double median = new Quantiles(df.col(target), new double[]{0.5}).values()[0];
+            double median = new Quantiles(df.var(target), new double[]{0.5}).values()[0];
             medians.add(median);
-            fitValues.add(Numeric.newFill(df.col(target).rowCount(), median));
+            fitValues.add(Numeric.newFill(df.var(target).rowCount(), median));
         }
     }
 
@@ -93,6 +93,6 @@ public class L1ConstantRegressor implements Regressor {
 
     @Override
     public Frame getAllFitValues() {
-        return new SolidFrame(fitValues.get(0).rowCount(), fitValues, targets, null);
+        return new SolidFrame(fitValues.get(0).rowCount(), fitValues, targets);
     }
 }

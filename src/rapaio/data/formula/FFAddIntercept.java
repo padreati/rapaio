@@ -43,7 +43,7 @@ public class FFAddIntercept implements FrameFilter {
 
     @Override
     public Frame apply(Frame df) {
-        if (df.colNames()[0].equals("intercept")) {
+        if (df.varNames()[0].equals("intercept")) {
             return df;
         }
         List<Var> vars = new ArrayList<>();
@@ -52,10 +52,10 @@ public class FFAddIntercept implements FrameFilter {
         vars.add(Numeric.newFill(df.rowCount(), 1.0));
         names.add("intercept");
 
-        Arrays.stream(df.colNames()).forEach(varName -> {
-            vars.add(df.col(varName));
+        Arrays.stream(df.varNames()).forEach(varName -> {
+            vars.add(df.var(varName));
             names.add(varName);
         });
-        return new SolidFrame(df.rowCount(), vars, names, df.weights());
+        return new SolidFrame(df.rowCount(), vars, names);
     }
 }

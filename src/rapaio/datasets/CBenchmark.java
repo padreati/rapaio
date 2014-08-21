@@ -20,13 +20,9 @@
 
 package rapaio.datasets;
 
-import rapaio.core.RandomSource;
 import rapaio.core.sample.DiscreteSampling;
-import rapaio.core.sample.StatSampling;
-import rapaio.data.Frame;
-import rapaio.data.filters.BaseFilters;
-import rapaio.data.mapping.MappedFrame;
-import rapaio.data.mapping.Mapping;
+import rapaio.data.MappedFrame;
+import rapaio.data.Mapping;
 import rapaio.datasets.UCI.UCI;
 import rapaio.io.ArffPersistence;
 

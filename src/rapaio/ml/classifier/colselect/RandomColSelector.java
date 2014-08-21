@@ -20,7 +20,7 @@
 
 package rapaio.ml.classifier.colselect;
 
-import rapaio.core.ColRange;
+import rapaio.core.VarRange;
 import rapaio.core.sample.DiscreteSampling;
 import rapaio.data.Frame;
 
@@ -44,17 +44,17 @@ public class RandomColSelector implements ColSelector {
         return "Random[" + mCols + "]";
     }
 
-    public synchronized void initialize(Frame df, ColRange except) {
+    public synchronized void initialize(Frame df, VarRange except) {
         List<Integer> exceptColumns = except == null ? new ArrayList<>() : except.parseColumnIndexes(df);
-        candidates = new String[df.colCount() - exceptColumns.size()];
+        candidates = new String[df.varCount() - exceptColumns.size()];
         int pos = 0;
         int expos = 0;
-        for (int i = 0; i < df.colCount(); i++) {
+        for (int i = 0; i < df.varCount(); i++) {
             if (expos < exceptColumns.size() && i == exceptColumns.get(expos)) {
                 expos++;
                 continue;
             }
-            candidates[pos++] = df.colNames()[i];
+            candidates[pos++] = df.varNames()[i];
         }
     }
 

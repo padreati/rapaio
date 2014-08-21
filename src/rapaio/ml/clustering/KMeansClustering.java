@@ -20,7 +20,7 @@
 
 package rapaio.ml.clustering;
 
-import rapaio.core.ColRange;
+import rapaio.core.VarRange;
 import rapaio.core.sample.DiscreteSampling;
 import rapaio.core.stat.Mean;
 import rapaio.data.*;
@@ -70,7 +70,7 @@ public class KMeansClustering {
 
     public void cluster(Frame df, String varNames) {
         validate(df, varNames);
-        targets = new ColRange(varNames).parseColumnNames(df);
+        targets = new VarRange(varNames).parseColumnNames(df);
         centroids = Frames.newMatrix(k, targets.toArray(new String[targets.size()]));
         arrows = new int[df.rowCount()];
 
@@ -134,11 +134,11 @@ public class KMeansClustering {
 
 
     private void validate(Frame df, String varNames) {
-        List<String> nameList = new ColRange(varNames).parseColumnNames(df);
+        List<String> nameList = new VarRange(varNames).parseColumnNames(df);
         for (String varName : nameList) {
-            if (!df.col(varName).type().isNumeric())
+            if (!df.var(varName).type().isNumeric())
                 throw new IllegalArgumentException("all matched vars must be numeric: check var " + varName);
-            if (df.col(varName).stream().complete().count() != df.rowCount()) {
+            if (df.var(varName).stream().complete().count() != df.rowCount()) {
                 throw new IllegalArgumentException("all matched vars must have non-missing values: check var " + varName);
             }
         }
@@ -150,8 +150,8 @@ public class KMeansClustering {
             public void init(Frame df, Frame centroids) {
                 int[] indexes = new DiscreteSampling().sampleWOR(centroids.rowCount(), df.rowCount());
                 for (int i = 0; i < indexes.length; i++) {
-                    for (int j = 0; j < centroids.colNames().length; j++) {
-                        centroids.setValue(i, j, df.value(indexes[i], centroids.colNames()[j]));
+                    for (int j = 0; j < centroids.varNames().length; j++) {
+                        centroids.setValue(i, j, df.value(indexes[i], centroids.varNames()[j]));
                     }
                 }
 

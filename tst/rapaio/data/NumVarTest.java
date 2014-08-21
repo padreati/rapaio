@@ -21,7 +21,6 @@
 package rapaio.data;
 
 import org.junit.Test;
-import rapaio.data.mapping.MappedVar;
 
 import java.util.ArrayList;
 import java.util.List;

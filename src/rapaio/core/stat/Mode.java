@@ -28,6 +28,7 @@ import java.util.Arrays;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class Mode implements Printable {
 
     private final Var var;

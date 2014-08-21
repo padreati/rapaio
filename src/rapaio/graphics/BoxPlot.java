@@ -20,7 +20,7 @@
 
 package rapaio.graphics;
 
-import rapaio.core.ColRange;
+import rapaio.core.VarRange;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
@@ -77,31 +77,31 @@ public class BoxPlot extends BaseFigure {
         initialize();
     }
 
-    public BoxPlot(Frame df, ColRange colRange) {
-        if (colRange == null) {
+    public BoxPlot(Frame df, VarRange varRange) {
+        if (varRange == null) {
             int len = 0;
-            for (int i = 0; i < df.colCount(); i++) {
-                if (df.col(i).type().isNumeric()) {
+            for (int i = 0; i < df.varCount(); i++) {
+                if (df.var(i).type().isNumeric()) {
                     len++;
                 }
             }
             int[] indexes = new int[len];
             len = 0;
-            for (int i = 0; i < df.colCount(); i++) {
-                if (df.col(i).type().isNumeric()) {
+            for (int i = 0; i < df.varCount(); i++) {
+                if (df.var(i).type().isNumeric()) {
                     indexes[len++] = i;
                 }
             }
-            colRange = new ColRange(indexes);
+            varRange = new VarRange(indexes);
         }
-        List<Integer> indexes = colRange.parseColumnIndexes(df);
+        List<Integer> indexes = varRange.parseColumnIndexes(df);
         vars = new Var[indexes.size()];
         labels = new String[indexes.size()];
 
         int pos = 0;
         for (int index : indexes) {
-            vars[pos] = df.col(index);
-            labels[pos] = df.colNames()[index];
+            vars[pos] = df.var(index);
+            labels[pos] = df.varNames()[index];
             pos++;
         }
 

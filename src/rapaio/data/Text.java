@@ -20,7 +20,6 @@
 
 package rapaio.data;
 
-import rapaio.data.mapping.Mapping;
 import rapaio.data.stream.VSpots;
 
 import java.util.ArrayList;
@@ -46,23 +45,18 @@ public class Text extends AbstractVar {
     }
 
     @Override
-    public boolean isMapped() {
-        return false;
-    }
-
-    @Override
-    public Var source() {
-        return this;
-    }
-
-    @Override
-    public Mapping mapping() {
-        return Mapping.newSolidMap(rowCount());
-    }
-
-    @Override
     public int rowCount() {
         return rows;
+    }
+
+    @Override
+    public Var bindRows(Var var) {
+        return BoundVar.newFrom(this, var);
+    }
+
+    @Override
+    public Var mapRows(Mapping mapping) {
+        return MappedVar.newByRows(this, mapping);
     }
 
     @Override

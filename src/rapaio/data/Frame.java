@@ -20,22 +20,25 @@
 
 package rapaio.data;
 
-import rapaio.data.mapping.Mapping;
+import rapaio.core.VarRange;
 import rapaio.data.stream.FSpots;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Random access list of observed values for multiple variables.
  * <p>
  * The observed values are represented in a tabular format.
  * Rows corresponds to observations and columns corresponds to
- * observed (measured) statstical variables.
+ * observed (measured) statistical variables.
  *
  * @author Aurelian Tutuianu
  */
-@Deprecated
 public interface Frame extends Serializable {
 
     /**
@@ -46,40 +49,40 @@ public interface Frame extends Serializable {
     int rowCount();
 
     /**
-     * Number of vectors contained in frame. Vector references could be obtained by name or by position.
+     * Number of variables contained in frame. Variable references could be obtained by name or by position.
      * <p>
-     * Each var corresponds to a column in tabular format, thus in the frame terminology
-     * this is denoted as getCol (short form of column).
+     * Each variable corresponds to a column in tabular format, thus in the frame terminology
+     * this is denoted as getVar (short form of column).
      *
-     * @return number of vectors
+     * @return number of variables
      */
-    int colCount();
+    int varCount();
 
     /**
-     * Returns an array of var names, the names are ordered by the position of the vectors.
+     * Returns an array of variable names. The names are ordered by the position of the variables.
      * <p>
-     * Each var has it's own name. Inside a frame a specific var could be named differently.
-     * However, the default name for a var inside a frame is the var's name.
+     * Each variable has it's own name. Inside a frame a specific variable could be named differently.
+     * However, the default name for a variable inside a frame is own variable name.
      *
      * @return array of var names
      */
-    String[] colNames();
+    String[] varNames();
 
     /**
-     * Returns the index (position) of the var inside the frame given the var's name as parameter.
+     * Returns the index (position) of the var inside the frame given the var name as parameter.
      *
-     * @param name var's name
+     * @param name var name
      * @return column position inside the frame corresponding to the var with the specified name
      */
-    int colIndex(String name);
+    int varIndex(String name);
 
     /**
      * Returns a var reference for column at given position
      *
-     * @param col position of the column inside the frame
+     * @param pos position of the column inside the frame
      * @return a var getType reference
      */
-    Var col(int col);
+    Var var(int pos);
 
     /**
      * Returns a var reference for column with given name
@@ -87,51 +90,125 @@ public interface Frame extends Serializable {
      * @param name name of the column inside the frame
      * @return a var getType reference
      */
-    Var col(String name);
-
-    public boolean isMappedFrame();
+    Var var(String name);
 
     /**
-     * Returns the solid frame which contains the data. Solid frames return themselves,
-     * mapped frames returns the solid frame which contains the data.
+     * Adds the given variables to the variables of the current frame to build a new frame.
      *
-     * @return source frame when mapped, itself for solid frame
+     * @param vars variables added to the current frame variables
+     * @return new frame with current frame variables and given variables added
      */
-    public Frame sourceFrame();
-
-    public Mapping mapping();
+    Frame bindVars(Var... vars);
 
     /**
-     * Convenient shortcut to call {@link Var#value(int)} for a given column.
+     * Adds the variables from the given frame to the variables of the current frame to build a new frame.
+     *
+     * @param df given frame with variables which will be added
+     * @return new frame with the current frame variables and given frame variables
+     */
+    Frame bindVars(Frame df);
+
+    /**
+     * Builds a new frame which has only the variables specified in variable range
+     *
+     * @param range given variable range
+     * @return new frame with only given variables
+     */
+    Frame mapVars(VarRange range);
+
+    /**
+     * Builds a new frame which has only the variables specified in the variable range string
+     *
+     * @param varRange variable range as string
+     * @return new frame with only the given variables
+     */
+    default Frame mapVars(String varRange) {
+        return mapVars(new VarRange(varRange));
+    }
+
+    /**
+     * Builds a new frame with all columns except the ones specified in variable range
+     *
+     * @param range given variable range which will be deleted
+     * @return new frame with the non-deleted variables
+     */
+    default Frame removeVars(VarRange range) {
+        Set<String> remove = new HashSet<>(range.parseColumnNames(this));
+        int[] retain = new int[varNames().length - remove.size()];
+        int pos = 0;
+        for (String varName : varNames()) {
+            if (remove.contains(varName)) continue;
+            retain[pos++] = varIndex(varName);
+        }
+        return mapVars(new VarRange(retain));
+    }
+
+    /**
+     * Builds a new frame with all variables except ones specified in variable range string
+     *
+     * @param varRange variable range as string
+     * @return new frame with the non-deleted variables
+     */
+    default Frame removeVars(String varRange) {
+        return removeVars(new VarRange(varRange));
+    }
+
+    /**
+     * Builds a new frame having rows of the current frame, followed by the rows of the binded frame.
+     *
+     * @param df given frame with additional rows
+     * @return new frame with additional rows
+     */
+    public Frame bindRows(Frame df);
+
+    /**
+     * Builds a new frame only with rows specified in mapping.
+     *
+     * @param mapping a list of rows from a frame
+     * @return new frame with selected rows
+     */
+    public Frame mapRows(Mapping mapping);
+
+    /**
+     * Builds a new frame only with rows not specified in mapping.
+     */
+    default Frame removeRows(Mapping mapping) {
+        Set<Integer> remove = mapping.rowStream().mapToObj(i -> i).collect(Collectors.toSet());
+        List<Integer> map = IntStream.range(0, rowCount()).filter(row -> !remove.contains(row)).mapToObj(i -> i).collect(Collectors.toList());
+        return mapRows(Mapping.newWrapOf(map));
+    }
+
+    /**
+     * Returns double value corresponding to given row and column number
      *
      * @param row row number
      * @param col column number
      * @return numeric setValue
      */
     default double value(int row, int col) {
-        return col(col).value(row);
+        return var(col).value(row);
     }
 
     /**
-     * Convenient shortcut to call {@link Var#value(int)} for a given column.
+     * Returns double value from given row and column
      *
      * @param row     row number
      * @param colName column name
      * @return numeric setValue
      */
     default double value(int row, String colName) {
-        return col(colName).value(row);
+        return var(colName).value(row);
     }
 
     /**
-     * Convenient shortcut method to call {@link Var#setValue(int, double)} for a given column.
+     * Set double value for given row and column
      *
      * @param row   row number
      * @param col   column number
      * @param value numeric value
      */
     default void setValue(int row, int col, double value) {
-        col(col).setValue(row, value);
+        var(col).setValue(row, value);
     }
 
     /**
@@ -142,7 +219,7 @@ public interface Frame extends Serializable {
      * @param value   numeric value
      */
     default void setValue(int row, String colName, double value) {
-        col(colName).setValue(row, value);
+        var(colName).setValue(row, value);
     }
 
 
@@ -154,7 +231,7 @@ public interface Frame extends Serializable {
      * @return setIndex value
      */
     default int index(int row, int col) {
-        return col(col).index(row);
+        return var(col).index(row);
     }
 
     /**
@@ -165,7 +242,7 @@ public interface Frame extends Serializable {
      * @return setIndex value
      */
     default int index(int row, String colName) {
-        return col(colName).index(row);
+        return var(colName).index(row);
     }
 
     /**
@@ -176,7 +253,7 @@ public interface Frame extends Serializable {
      * @param value setIndex value
      */
     default void setIndex(int row, int col, int value) {
-        col(col).setIndex(row, value);
+        var(col).setIndex(row, value);
     }
 
     /**
@@ -187,7 +264,7 @@ public interface Frame extends Serializable {
      * @param value   setIndex value
      */
     default void setIndex(int row, String colName, int value) {
-        col(colName).setIndex(row, value);
+        var(colName).setIndex(row, value);
     }
 
     /**
@@ -198,7 +275,7 @@ public interface Frame extends Serializable {
      * @return nominal label value
      */
     default String label(int row, int col) {
-        return col(col).label(row);
+        return var(col).label(row);
     }
 
     /**
@@ -209,7 +286,7 @@ public interface Frame extends Serializable {
      * @return nominal label value
      */
     default String label(int row, String colName) {
-        return col(colName).label(row);
+        return var(colName).label(row);
     }
 
     /**
@@ -220,7 +297,7 @@ public interface Frame extends Serializable {
      * @param value nominal label value
      */
     default void setLabel(int row, int col, String value) {
-        col(col).setLabel(row, value);
+        var(col).setLabel(row, value);
     }
 
     /**
@@ -231,15 +308,15 @@ public interface Frame extends Serializable {
      * @param value   nominal label value
      */
     default void setLabel(int row, String colName, String value) {
-        col(colName).setLabel(row, value);
+        var(colName).setLabel(row, value);
     }
 
     default boolean missing(int row, int col) {
-        return col(col).missing(row);
+        return var(col).missing(row);
     }
 
     default boolean missing(int row, String colName) {
-        return col(colName).missing(row);
+        return var(colName).missing(row);
     }
 
     /**
@@ -249,18 +326,18 @@ public interface Frame extends Serializable {
      * @return
      */
     default boolean missing(int row) {
-        for (String colName : colNames()) {
-            if (col(colName).missing(row)) return true;
+        for (String colName : varNames()) {
+            if (var(colName).missing(row)) return true;
         }
         return false;
     }
 
     default void setMissing(int row, int col) {
-        col(col).setMissing(row);
+        var(col).setMissing(row);
     }
 
     default void setMissing(int row, String colName) {
-        col(colName).setMissing(row);
+        var(colName).setMissing(row);
     }
 
     /**
@@ -269,12 +346,4 @@ public interface Frame extends Serializable {
      * @return
      */
     public FSpots stream();
-
-    public Numeric weights();
-
-    public void setWeights(Numeric weights);
-
-    public double weight(int row);
-
-    public void setWeight(int row, double weight);
 }

@@ -24,10 +24,7 @@ import rapaio.core.distributions.cu.Norm;
 import rapaio.core.distributions.empirical.*;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
-import rapaio.data.Frame;
-import rapaio.data.Frames;
-import rapaio.data.Nominal;
-import rapaio.data.Var;
+import rapaio.data.*;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.colselect.ColSelector;
 import rapaio.ml.classifier.tools.DensityVector;
@@ -97,15 +94,15 @@ public class NaiveBayesClassifier extends AbstractClassifier {
     }
 
     @Override
-    public void learn(Frame df, String targetCol) {
+    public void learn(Frame df, Numeric weights, String targetCol) {
         this.targetCol = targetCol;
-        this.dict = df.col(targetCol).dictionary();
+        this.dict = df.var(targetCol).dictionary();
 
         // build priors
 
         priors = new HashMap<>();
         DensityVector dv = new DensityVector(dict);
-        df.stream().forEach(s -> dv.update(s.index(targetCol), s.weight()));
+        df.stream().forEach(s -> dv.update(s.index(targetCol), weights.value(s.row())));
         // laplace add-one smoothing
         for (int i = 0; i < dict.length; i++) {
             dv.update(i, 1.0);
@@ -120,9 +117,9 @@ public class NaiveBayesClassifier extends AbstractClassifier {
         dvpEstimatorMap = new HashMap<>();
         cvpEstimatorMap = new HashMap<>();
 
-        for (String testCol : df.colNames()) {
+        for (String testCol : df.varNames()) {
             if (targetCol.equals(testCol)) continue;
-            if (df.col(testCol).type().isNumeric()) {
+            if (df.var(testCol).type().isNumeric()) {
 
                 CvpEstimator estimator = cvpEstimator.newInstance();
                 estimator.learn(df, targetCol, testCol);
@@ -130,7 +127,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
                 continue;
             }
 
-            if (df.col(testCol).type().isNominal()) {
+            if (df.var(testCol).type().isNominal()) {
 
                 DvpEstimator estimator = dvpEstimator.newInstance();
                 estimator.learn(df, targetCol, testCol);
@@ -206,13 +203,13 @@ public class NaiveBayesClassifier extends AbstractClassifier {
 
         @Override
         public void learn(Frame df, String targetCol, String testCol) {
-            String[] dict = df.col(targetCol).dictionary();
+            String[] dict = df.var(targetCol).dictionary();
             normals.clear();
 
             for (String classLabel : dict) {
                 if ("?".equals(classLabel)) continue;
                 Frame cond = df.stream().filter(s -> classLabel.equals(s.label(targetCol))).toMappedFrame();
-                Var v = cond.col(testCol);
+                Var v = cond.var(testCol);
                 double mu = new Mean(v).value();
                 double sd = Math.sqrt(new Variance(v).getValue());
                 normals.put(classLabel, new Norm(mu, sd));
@@ -253,10 +250,10 @@ public class NaiveBayesClassifier extends AbstractClassifier {
         public void learn(Frame df, String targetCol, String testCol) {
             kde.clear();
 
-            for (String classLabel : df.col(targetCol).dictionary()) {
+            for (String classLabel : df.var(targetCol).dictionary()) {
                 if ("?".equals(classLabel)) continue;
                 Frame cond = df.stream().filter(s -> classLabel.equals(s.label(targetCol))).toMappedFrame();
-                Var v = cond.col(testCol);
+                Var v = cond.var(testCol);
                 KDE k = new KDE(v, kfunc, (bandwidth == 0) ? KDE.getSilvermanBandwidth(v) : bandwidth);
 
                 kde.put(classLabel, k);
@@ -288,8 +285,8 @@ public class NaiveBayesClassifier extends AbstractClassifier {
         @Override
         public void learn(Frame df, String targetCol, String testCol) {
 
-            String[] targetDict = df.col(targetCol).dictionary();
-            String[] testDict = df.col(testCol).dictionary();
+            String[] targetDict = df.var(targetCol).dictionary();
+            String[] testDict = df.var(testCol).dictionary();
 
             invTreeTarget = new HashMap<>();
             invTreeTest = new HashMap<>();

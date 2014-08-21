@@ -18,30 +18,27 @@
  *    limitations under the License.
  */
 
-package rapaio.data.formula;
+package rapaio.data;
 
-import rapaio.data.Frame;
+import org.junit.Assert;
+import org.junit.Test;
+import rapaio.datasets.Datasets;
 
-import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import static org.junit.Assert.assertEquals;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
-@Deprecated
-public class FFWeightTransform implements FrameFilter {
+public class AbstractFrameTest {
 
-    private final BiFunction<Frame, Integer, Double> func;
+    @Test
+    public void testStreamOnAbstractFrame() throws IOException, URISyntaxException {
 
-    public FFWeightTransform(BiFunction<Frame, Integer, Double> func) {
-        this.func = func;
-    }
-
-    @Override
-    public Frame apply(Frame df) {
-        for (int i = 0; i < df.rowCount(); i++) {
-            df.setWeight(i, func.apply(df, i));
-        }
-        return df;
+        Frame df = Datasets.loadIrisDataset();
+        int count = (int) df.stream().count();
+        assertEquals(150, count);
     }
 }

@@ -33,6 +33,7 @@ import rapaio.data.stream.VSpot;
  * Date: 9/7/13
  * Time: 12:39 PM
  */
+@Deprecated
 public class Maximum implements Printable {
 
     private final Var var;

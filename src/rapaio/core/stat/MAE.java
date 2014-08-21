@@ -30,6 +30,7 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public class MAE implements Printable {
     private final List<Var> source;
     private final List<Var> target;
@@ -37,15 +38,15 @@ public class MAE implements Printable {
 
     public MAE(Frame dfSource, Frame dfTarget) {
         source = new ArrayList<>();
-        for (int i = 0; i < dfSource.colCount(); i++) {
-            if (dfSource.col(i).type().isNumeric()) {
-                source.add(dfSource.col(i));
+        for (int i = 0; i < dfSource.varCount(); i++) {
+            if (dfSource.var(i).type().isNumeric()) {
+                source.add(dfSource.var(i));
             }
         }
         target = new ArrayList<>();
-        for (int i = 0; i < dfTarget.colCount(); i++) {
-            if (dfTarget.col(i).type().isNumeric()) {
-                target.add(dfTarget.col(i));
+        for (int i = 0; i < dfTarget.varCount(); i++) {
+            if (dfTarget.var(i).type().isNumeric()) {
+                target.add(dfTarget.var(i));
             }
         }
         compute();

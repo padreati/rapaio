@@ -46,8 +46,8 @@ public class ID3ClassifierTest {
         id3.learn(df, className);
         id3.predict(df);
 
-        DensityTable dtWindy = new DensityTable(df.col("windy"), df.col("class"));
-        DensityTable dtOutlook = new DensityTable(df.col("outlook"), df.col("class"));
+        DensityTable dtWindy = new DensityTable(df.var("windy"), df.var("class"));
+        DensityTable dtOutlook = new DensityTable(df.var("outlook"), df.var("class"));
         String splitCol = (dtWindy.getSplitEntropy() < dtOutlook.getSplitEntropy()) ? "windy" : "outlook";
         id3.summary();
         Assert.assertTrue(id3.root.children.get(0).groupName.startsWith(splitCol));
@@ -70,8 +70,8 @@ public class ID3ClassifierTest {
         id3.predict(df);
         id3.summary();
 
-        DensityTable dtWindy = new DensityTable(df.col("windy"), df.col("class"));
-        DensityTable dtOutlook = new DensityTable(df.col("outlook"), df.col("class"));
+        DensityTable dtWindy = new DensityTable(df.var("windy"), df.var("class"));
+        DensityTable dtOutlook = new DensityTable(df.var("outlook"), df.var("class"));
         String splitCol = (dtWindy.getInfoGain() > dtOutlook.getInfoGain()) ? "windy" : "outlook";
         Assert.assertTrue(id3.root.children.get(0).groupName.startsWith(splitCol));
 

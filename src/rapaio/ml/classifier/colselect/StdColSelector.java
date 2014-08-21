@@ -20,7 +20,7 @@
 
 package rapaio.ml.classifier.colselect;
 
-import rapaio.core.ColRange;
+import rapaio.core.VarRange;
 import rapaio.data.Frame;
 
 import java.util.ArrayList;
@@ -39,8 +39,8 @@ public class StdColSelector implements ColSelector {
     }
 
     @Override
-    public synchronized void initialize(Frame df, ColRange except) {
-        String[] all = df.colNames();
+    public synchronized void initialize(Frame df, VarRange except) {
+        String[] all = df.varNames();
         List<Integer> ex = except==null ? new ArrayList<>() : except.parseColumnIndexes(df);
         selection = new String[all.length - ex.size()];
         int p = 0;

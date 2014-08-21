@@ -21,8 +21,6 @@
 package rapaio.data;
 
 
-import rapaio.data.mapping.Mapping;
-
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -108,7 +106,7 @@ public final class Numeric extends AbstractVar {
      */
     public static Numeric newCopyOf(Var source) {
         Numeric numeric = new Numeric(source.rowCount(), source.rowCount(), 0);
-        if (source.isMapped() || source.type() != VarType.NUMERIC) {
+        if (source instanceof MappedVar || source.type() != VarType.NUMERIC) {
             for (int i = 0; i < source.rowCount(); i++) {
                 numeric.setValue(i, source.value(i));
             }
@@ -197,21 +195,6 @@ public final class Numeric extends AbstractVar {
                 throw new OutOfMemoryError();
             data = Arrays.copyOf(data, newCapacity);
         }
-    }
-
-    @Override
-    public boolean isMapped() {
-        return false;
-    }
-
-    @Override
-    public Var source() {
-        return this;
-    }
-
-    @Override
-    public Mapping mapping() {
-        return Mapping.newSolidMap(rowCount());
     }
 
     @Override

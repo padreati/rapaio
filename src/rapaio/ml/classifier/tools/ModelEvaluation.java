@@ -24,8 +24,8 @@ import rapaio.core.sample.DiscreteSampling;
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.mapping.MappedFrame;
-import rapaio.data.mapping.Mapping;
+import rapaio.data.MappedFrame;
+import rapaio.data.Mapping;
 import rapaio.ml.classifier.Classifier;
 
 import java.util.*;
@@ -64,7 +64,7 @@ public class ModelEvaluation {
             c.predict(test);
             double fcorrect = 0;
             for (int j = 0; j < test.rowCount(); j++) {
-                if (test.col(classColName).index(j) == c.pred().index(j)) {
+                if (test.var(classColName).index(j) == c.pred().index(j)) {
                     fcorrect++;
                 }
             }
@@ -79,13 +79,13 @@ public class ModelEvaluation {
     }
 
     private List<Integer>[] buildStrata(Frame df, int folds, String classColName) {
-        String[] dict = df.col(classColName).dictionary();
+        String[] dict = df.var(classColName).dictionary();
         List<Integer>[] rows = new List[dict.length];
         for (int i = 0; i < dict.length; i++) {
             rows[i] = new ArrayList<>();
         }
         for (int i = 0; i < df.rowCount(); i++) {
-            rows[df.index(i, df.colIndex(classColName))].add(i);
+            rows[df.index(i, df.varIndex(classColName))].add(i);
         }
         List<Integer> shuffle = new ArrayList<>();
         for (int i = 0; i < dict.length; i++) {
@@ -143,7 +143,7 @@ public class ModelEvaluation {
                 c.predict(test);
                 double acc = 0;
                 for (int j = 0; j < c.pred().rowCount(); j++) {
-                    if (c.pred().index(j) == test.col(classColName).index(j)) {
+                    if (c.pred().index(j) == test.var(classColName).index(j)) {
                         acc++;
                     }
                 }
@@ -188,7 +188,7 @@ public class ModelEvaluation {
             c.learn(train, classColName);
             c.predict(test);
             Var pred = c.pred();
-            double acc = new ConfusionMatrix(test.col(classColName), pred).accuracy();
+            double acc = new ConfusionMatrix(test.var(classColName), pred).accuracy();
             System.out.println(String.format("bootstrap(%d) : %.6f", i + 1, acc));
             total += acc;
             count++;

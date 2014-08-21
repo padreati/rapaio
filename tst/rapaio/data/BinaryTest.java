@@ -20,12 +20,14 @@
 
 package rapaio.data;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 import rapaio.core.stat.Mean;
 import rapaio.data.stream.VSpot;
 import rapaio.ws.Summary;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -96,9 +98,7 @@ public class BinaryTest {
         assertEquals(true, bin.binary(0));
         assertEquals(false, bin.binary(3));
 
-        assertEquals(false, bin.isMapped());
-        assertEquals(bin, bin.source());
-        assertEquals(4, bin.mapping().size());
+        assertEquals(4, bin.rowCount());
     }
 
     @Test
@@ -117,7 +117,149 @@ public class BinaryTest {
         assertEquals(false, copy.binary(1));
         assertEquals(2, copy.rowCount());
 
+        copy.remove(0);
+        assertEquals(1, copy.rowCount());
+        assertEquals(false, copy.binary(0));
+
         copy.clear();
         assertEquals(0, copy.rowCount());
+
+        try {
+            copy.remove(10);
+            assertTrue("This should raise an exception", false);
+        }catch(Throwable ignored){}
+    }
+
+    @Test
+    public void testValueManipulation() {
+
+        Binary bin = Binary.newEmpty();
+        bin.addValue(1);
+        bin.addValue(0);
+        bin.addValue(-1);
+
+        assertEquals(3, bin.rowCount());
+        assertEquals(true, bin.binary(0));
+        assertEquals(false, bin.binary(1));
+        assertEquals(true, bin.missing(2));
+
+        try {
+            bin.addValue(2);
+            assertFalse("This should raise an exception", true);
+        } catch (Throwable ignored) {
+        }
+
+        try {
+            bin.setValue(0, 2);
+            assertFalse("This should raise an exception", true);
+        } catch (Throwable ignored) {
+        }
+
+        bin.setValue(0, -1);
+        bin.setValue(1, 0);
+        bin.setValue(2, 1);
+
+        assertEquals(true, bin.missing(0));
+        assertEquals(false, bin.binary(1));
+        assertEquals(true, bin.binary(2));
+    }
+
+    @Test
+    public void testIndexManipulation() {
+
+        Binary bin = Binary.newEmpty();
+        bin.addIndex(1);
+        bin.addIndex(0);
+        bin.addIndex(-1);
+
+        assertEquals(3, bin.rowCount());
+        assertEquals(true, bin.binary(0));
+        assertEquals(false, bin.binary(1));
+        assertEquals(true, bin.missing(2));
+
+        try {
+            bin.addIndex(2);
+            assertFalse("This should raise an exception", true);
+        } catch (Throwable ignored) {
+        }
+
+        try {
+            bin.setIndex(0, 2);
+            assertFalse("This should raise an exception", true);
+        } catch (Throwable ignored) {
+        }
+
+        bin.setIndex(0, -1);
+        bin.setIndex(1, 0);
+        bin.setIndex(2, 1);
+
+        assertEquals(true, bin.missing(0));
+        assertEquals(false, bin.binary(1));
+        assertEquals(true, bin.binary(2));
+    }
+
+    @Test
+    public void testStampManipulation() {
+
+        Binary bin = Binary.newEmpty();
+        bin.addStamp(1);
+        bin.addStamp(0);
+        bin.addStamp(-1);
+
+        assertEquals(3, bin.rowCount());
+        assertEquals(true, bin.binary(0));
+        assertEquals(false, bin.binary(1));
+        assertEquals(true, bin.missing(2));
+
+        try {
+            bin.addStamp(2);
+            assertFalse("This should raise an exception", true);
+        } catch (Throwable ignored) {
+        }
+
+        try {
+            bin.setStamp(0, 2);
+            assertFalse("This should raise an exception", true);
+        } catch (Throwable ignored) {
+        }
+
+        bin.setStamp(0, -1);
+        bin.setStamp(1, 0);
+        bin.setStamp(2, 1);
+
+        assertEquals(true, bin.missing(0));
+        assertEquals(false, bin.binary(1));
+        assertEquals(true, bin.binary(2));
+
+        assertEquals(1L, bin.stamp(0));
+    }
+
+    @Test
+    public void testLabelManipulation() {
+        Binary bin = Binary.newCopyOf(true, false, true);
+        bin.addMissing();
+        assertEquals("true", bin.label(0));
+        assertEquals("false", bin.label(1));
+        assertEquals("true", bin.label(2));
+        assertEquals("?", bin.label(3));
+
+        try {
+            bin.addLabel("x");
+            assertTrue("This should raise an exception", false);
+        } catch(Throwable ignored) {}
+        try {
+            bin.setLabel(0, "x");
+            assertTrue("This should raise an exception", false);
+        } catch(Throwable ignored) {}
+
+        try {
+            bin.setDictionary("a");
+            assertTrue("This should raise an exception", false);
+        } catch(Throwable ignored) {}
+
+        try {
+            bin.dictionary();
+            assertTrue("This should raise an exception", false);
+        } catch(Throwable ignored) {}
     }
 }

@@ -40,7 +40,8 @@ import java.util.stream.Collectors;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class ColRange {
+@Deprecated
+public class VarRange {
 
     private static final String COL_DELIMITER = ",";
     private static final String COL_RANGE = "-";
@@ -52,7 +53,7 @@ public class ColRange {
      *
      * @param colIndexes list of column indexes
      */
-    public ColRange(int... colIndexes) {
+    public VarRange(int... colIndexes) {
         if (colIndexes.length == 0) {
             throw new IllegalArgumentException("No column indexes specified.");
         }
@@ -72,7 +73,7 @@ public class ColRange {
      *
      * @param rawColumnRange column ranges specified in string format
      */
-    public ColRange(String rawColumnRange) {
+    public VarRange(String rawColumnRange) {
         this.rawColumnRange = rawColumnRange;
     }
 
@@ -86,7 +87,7 @@ public class ColRange {
     public List<Integer> parseColumnIndexes(Frame df) {
         List<Integer> colIndexes = new ArrayList<>();
         if (COL_ALL.equals(rawColumnRange)) {
-            for (int i = 0; i < df.colCount(); i++) {
+            for (int i = 0; i < df.varCount(); i++) {
                 colIndexes.add(i);
             }
             return colIndexes;
@@ -94,8 +95,8 @@ public class ColRange {
         String[] ranges = rawColumnRange.split(COL_DELIMITER);
 
         HashSet<String> colNames = new HashSet<>();
-        for (int i = 0; i < df.colNames().length; i++) {
-            colNames.add(df.colNames()[i]);
+        for (int i = 0; i < df.varNames().length; i++) {
+            colNames.add(df.varNames()[i]);
         }
 
         for (String range : ranges) {
@@ -106,18 +107,18 @@ public class ColRange {
                 if (!colNames.contains(parts[0])) {
                     start = Integer.parseInt(parts[0]);
                 } else {
-                    start = df.colIndex(parts[0]);
+                    start = df.varIndex(parts[0]);
                 }
                 if (!colNames.contains(parts[1])) {
                     end = Integer.parseInt(parts[1]);
                 } else {
-                    end = df.colIndex(parts[1]);
+                    end = df.varIndex(parts[1]);
                 }
             } else {
                 if (!colNames.contains(range)) {
                     start = Integer.parseInt(range);
                 } else {
-                    start = df.colIndex(range);
+                    start = df.varIndex(range);
                 }
                 end = start;
             }
@@ -131,6 +132,6 @@ public class ColRange {
     }
 
     public List<String> parseColumnNames(Frame df) {
-        return parseColumnIndexes(df).stream().map(i -> df.colNames()[i]).collect(Collectors.toList());
+        return parseColumnIndexes(df).stream().map(i -> df.varNames()[i]).collect(Collectors.toList());
     }
 }

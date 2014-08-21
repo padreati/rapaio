@@ -18,12 +18,11 @@
  *    limitations under the License.
  */
 
-package rapaio.data.mapping;
+package rapaio.data;
 
-import rapaio.data.*;
-import rapaio.data.stream.VSpot;
+import rapaio.core.VarRange;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -31,22 +30,19 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * A frame which is learn on the base of another frame with
- * the row order and row selection specified by a
- * getMapping give at construction time.
+ * A frame which is build on the base of another frame with
+ * the row order and row selection specified by a mapping given at construction time.
  * <p>
- * This frame does not hold actual values, it delegate the behavior
- * to the wrapped frame, thus the wrapping affects only the getRowCount
- * selected anf the order of these getRowCount.
+ * This frame does not hold actual values, it delegates the behavior
+ * to the wrapped frame, thus the wrapping affects only the rows
+ * selected anf the order of these rows.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class MappedFrame extends AbstractFrame {
 
     private final Mapping mapping;
     private final Frame source;
-    private final Numeric weights;
     private final String[] names;
     private final HashMap<String, Integer> colIndex;
     private final Var[] vars;
@@ -64,18 +60,19 @@ public class MappedFrame extends AbstractFrame {
     }
 
     private MappedFrame(Frame df, Mapping mapping) {
-        this(df, mapping, Arrays.asList(df.colNames()));
+        this(df, mapping, Arrays.asList(df.varNames()));
     }
 
     private MappedFrame(Frame df, Mapping mapping, List<String> columns) {
-        if (df.isMappedFrame()) {
-            this.source = df.sourceFrame();
-            this.mapping = Mapping.newWrapOf(mapping.rowStream().map(row -> df.mapping().get(row)).mapToObj(row -> row).collect(Collectors.toList()));
+        if (df instanceof MappedFrame) {
+            this.source = ((MappedFrame) df).sourceFrame();
+            this.mapping = Mapping.newWrapOf(mapping.rowStream()
+                    .map(row -> ((MappedFrame) df).mapping().get(row))
+                    .mapToObj(row -> row).collect(Collectors.toList()));
         } else {
             this.source = df;
             this.mapping = mapping;
         }
-        this.weights = Numeric.newWrapOf(this.mapping.rowStream().mapToDouble(this.source::weight).toArray());
         this.names = new String[columns.size()];
         for (int i = 0; i < columns.size(); i++) {
             names[i] = columns.get(i);
@@ -84,7 +81,7 @@ public class MappedFrame extends AbstractFrame {
         this.vars = new Var[names.length];
         IntStream.range(0, names.length).forEach(i -> {
             colIndex.put(names[i], i);
-            vars[i] = MappedVar.newByRows(this.source.col(names[i]), this.mapping);
+            vars[i] = MappedVar.newByRows(this.source.var(names[i]), this.mapping);
         });
     }
 
@@ -94,65 +91,60 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public int colCount() {
+    public int varCount() {
         return names.length;
     }
 
-    @Override
-    public boolean isMappedFrame() {
-        return true;
-    }
-
-    @Override
-    public Frame sourceFrame() {
+    protected Frame sourceFrame() {
         return source;
     }
 
-
-    @Override
-    public Mapping mapping() {
+    protected Mapping mapping() {
         return mapping;
     }
 
     @Override
-    public String[] colNames() {
+    public String[] varNames() {
         return names;
     }
 
     @Override
-    public int colIndex(String name) {
+    public int varIndex(String name) {
         return colIndex.get(name);
     }
 
     @Override
-    public Var col(int col) {
+    public Var var(int col) {
         return vars[col];
     }
 
     @Override
-    public Var col(String name) {
-        return col(colIndex(name));
+    public Var var(String name) {
+        return var(varIndex(name));
     }
 
     @Override
-    public Numeric weights() {
-        return weights;
+    public Frame bindVars(Var... vars) {
+        throw new NotImplementedException();
     }
 
     @Override
-    public void setWeights(Numeric weights) {
-        for (int i = 0; i < this.weights.rowCount(); i++) {
-            this.weights.setValue(i, weights.value(i));
-        }
+    public Frame bindVars(Frame df) {
+        throw new NotImplementedException();
     }
 
     @Override
-    public double weight(int row) {
-        return weights.value(row);
+    public Frame mapVars(VarRange range) {
+        throw new NotImplementedException();
     }
 
     @Override
-    public void setWeight(int row, double weight) {
-        weights.setValue(row, weight);
+    public Frame bindRows(Frame df) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Frame mapRows(Mapping mapping) {
+        throw new NotImplementedException();
     }
 }

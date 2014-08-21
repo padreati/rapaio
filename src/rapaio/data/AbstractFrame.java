@@ -23,16 +23,14 @@ package rapaio.data;
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
- * Base class for a frame, which provides behavior for the utility
+ * Base abstract class for a frame, which provides behavior for the utility
  * access methods based on row and column indexes.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public abstract class AbstractFrame implements Frame {
 
     private List<FSpot> streamList;

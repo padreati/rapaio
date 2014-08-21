@@ -20,14 +20,10 @@
 
 package rapaio.ml.classifier.meta;
 
-import rapaio.data.mapping.Mapping;
+import rapaio.data.*;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.RunningClassifier;
-import rapaio.data.Frame;
-import rapaio.data.Frames;
-import rapaio.data.Nominal;
-import rapaio.data.mapping.MappedFrame;
 import rapaio.data.stream.FSpot;
 import rapaio.util.SPredicate;
 
@@ -87,8 +83,8 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
     }
 
     @Override
-    public void learn(Frame df, String targetCol) {
-        dict = df.col(targetCol).dictionary();
+    public void learn(Frame df, Numeric weights, String targetCol) {
+        dict = df.var(targetCol).dictionary();
         this.targetCol = targetCol;
 
         if (c == null) {
@@ -126,8 +122,8 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
     }
 
     @Override
-    public void learnFurther(Frame df, String targetName, int runs) {
-        dict = df.col(targetName).dictionary();
+    public void learnFurther(Frame df, Numeric weights, String targetName, int runs) {
+        dict = df.var(targetName).dictionary();
         targetCol = targetName;
 
         if (c == null) {
@@ -138,16 +134,20 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
         }
 
         List<Mapping> maps = new ArrayList<>();
+        List<Numeric> w = new ArrayList<>();
         for (int i = 0; i < predicates.size() + 1; i++) {
             maps.add(Mapping.newEmpty());
+            w.add(Numeric.newEmpty());
         }
         df.stream().forEach(spot -> {
             for (int i = 0; i < predicates.size(); i++) {
                 if (predicates.get(i).test(spot)) {
                     maps.get(i).add(spot.row());
+                    w.get(i).addValue(weights.value(spot.row()));
                     return;
                 }
                 maps.get(maps.size() - 1).add(spot.row());
+                w.get(maps.size()-1).addValue(weights.value(spot.row()));
             }
         });
         List<Frame> frames = new ArrayList<>();
@@ -157,7 +157,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
 
         for (int i = 0; i < classifiers.size(); i++) {
             if (frames.get(i).rowCount() > 0)
-                ((RunningClassifier) classifiers.get(i)).learnFurther(frames.get(i), targetName, runs);
+                ((RunningClassifier) classifiers.get(i)).learnFurther(frames.get(i), w.get(i), targetName, runs);
         }
     }
 
@@ -194,7 +194,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
 
     public static List<SPredicate<FSpot>> splitByNominal(Frame df, String colName) {
         List<SPredicate<FSpot>> list = new ArrayList<>();
-        Arrays.stream(df.col(colName).dictionary()).forEach(term ->{
+        Arrays.stream(df.var(colName).dictionary()).forEach(term ->{
             list.add(spot -> spot.label(colName).equals(term));
         });
         return list;

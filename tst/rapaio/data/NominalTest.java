@@ -21,7 +21,6 @@
 package rapaio.data;
 
 import org.junit.Test;
-import rapaio.data.mapping.Mapping;
 
 import java.util.TreeSet;
 
@@ -181,15 +180,6 @@ public class NominalTest {
 
         assertEquals(2, b.rowCount());
         assertEquals(3, a.rowCount());
-    }
-
-    @Test
-    public void testFactorBaseSmoke() {
-        Nominal var = Nominal.newEmpty(10);
-        Mapping mapping = var.mapping();
-        assertEquals(10, mapping.size());
-        assertEquals(false, var.isMapped());
-        assertEquals(var, var.source());
     }
 
     @Test

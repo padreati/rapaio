@@ -66,13 +66,13 @@ public class LinearRegression3Page implements TutorialPage {
         Summary.summary(cars);
         new PearsonRCorrelation(cars).summary();
 
-        Numeric mpg = (Numeric) cars.col("mpg");
-        Numeric disp = (Numeric) cars.col("displacement");
-        Numeric weight = (Numeric) cars.col("weight");
-        Numeric hp = (Numeric) cars.col("horsepower");
+        Numeric mpg = (Numeric) cars.var("mpg");
+        Numeric disp = (Numeric) cars.var("displacement");
+        Numeric weight = (Numeric) cars.var("weight");
+        Numeric hp = (Numeric) cars.var("horsepower");
 
         draw(new Plot()
-                        .add(new Points(mpg, hp).color(cars.col("origin")).pch(1))
+                        .add(new Points(mpg, hp).color(cars.var("origin")).pch(1))
                         .xLab("mpg")
                         .yLab("horsepower")
         );

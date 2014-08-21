@@ -21,6 +21,7 @@
 package rapaio.data.formula;
 
 import rapaio.data.Frame;
+import rapaio.data.MappedFrame;
 import rapaio.util.Pin;
 
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class Formula {
     }
 
     public Frame apply(Frame frame) {
-        if (frame.isMappedFrame()) {
+        if (frame instanceof MappedFrame) {
             throw new IllegalArgumentException("Cannot apply filters on mapped frames");
         }
         Pin<Frame> df = new Pin<>(frame);

@@ -20,8 +20,6 @@
 
 package rapaio.data;
 
-import rapaio.data.mapping.Mapping;
-
 import java.util.*;
 
 /**
@@ -61,21 +59,6 @@ public abstract class FactorBase extends AbstractVar {
             newCapacity = minCapacity;
         // minCapacity is usually close to size, so this is a win:
         data = Arrays.copyOf(data, newCapacity);
-    }
-
-    @Override
-    public boolean isMapped() {
-        return false;
-    }
-
-    @Override
-    public Var source() {
-        return this;
-    }
-
-    @Override
-    public Mapping mapping() {
-        return Mapping.newSolidMap(rowCount());
     }
 
     @Override
@@ -154,9 +137,7 @@ public abstract class FactorBase extends AbstractVar {
         if (dict.length > 0 && !dict[0].equals("?")) {
             String[] newDict = new String[dict.length + 1];
             newDict[0] = "?";
-            for (int i = 0; i < dict.length; i++) {
-                newDict[i + 1] = dict[i];
-            }
+            System.arraycopy(dict, 0, newDict, 1, dict.length);
             dict = newDict;
         }
 

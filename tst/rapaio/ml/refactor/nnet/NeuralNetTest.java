@@ -55,7 +55,7 @@ public class NeuralNetTest {
         b.addValue(1.);
         and.addValue(1.);
 
-        Frame df = new SolidFrame(and.rowCount(), new Var[]{and}, new String[]{"and"}, null);
+        Frame df = new SolidFrame(and.rowCount(), new Var[]{and}, new String[]{"and"});
         df = Frames.addCol(df, b, "b", 0);
         df = Frames.addCol(df, a, "a", 0);
 
@@ -97,7 +97,7 @@ public class NeuralNetTest {
         b.addValue(1.);
         xor.addValue(1.);
 
-        Frame df = new SolidFrame(xor.rowCount(), new Var[]{xor}, new String[]{"xor"}, null);
+        Frame df = new SolidFrame(xor.rowCount(), new Var[]{xor}, new String[]{"xor"});
         df = Frames.addCol(df, b, "b", 0);
         df = Frames.addCol(df, a, "a", 0);
 
@@ -146,7 +146,7 @@ public class NeuralNetTest {
 
         Frame df = new SolidFrame(xorA.rowCount(),
                 new Var[]{a, b, xorA, xorB},
-                new String[]{"a", "b", "xorA", "xorB"}, null);
+                new String[]{"a", "b", "xorA", "xorB"});
 
         Regressor nn = new MultiLayerPerceptronRegressor(new int[]{2, 4, 2}, 0.1).setRounds(100);
 
@@ -155,15 +155,15 @@ public class NeuralNetTest {
         }
         nn.predict(df);
 
-        Assert.assertTrue(nn.getAllFitValues().col("xorA").value(0) < .5);
-        Assert.assertTrue(nn.getAllFitValues().col("xorA").value(1) > .5);
-        Assert.assertTrue(nn.getAllFitValues().col("xorA").value(2) > .5);
-        Assert.assertTrue(nn.getAllFitValues().col("xorA").value(3) < .5);
+        Assert.assertTrue(nn.getAllFitValues().var("xorA").value(0) < .5);
+        Assert.assertTrue(nn.getAllFitValues().var("xorA").value(1) > .5);
+        Assert.assertTrue(nn.getAllFitValues().var("xorA").value(2) > .5);
+        Assert.assertTrue(nn.getAllFitValues().var("xorA").value(3) < .5);
 
-        Assert.assertTrue(nn.getAllFitValues().col("xorB").value(0) > .5);
-        Assert.assertTrue(nn.getAllFitValues().col("xorB").value(1) < .5);
-        Assert.assertTrue(nn.getAllFitValues().col("xorB").value(2) < .5);
-        Assert.assertTrue(nn.getAllFitValues().col("xorB").value(3) > .5);
+        Assert.assertTrue(nn.getAllFitValues().var("xorB").value(0) > .5);
+        Assert.assertTrue(nn.getAllFitValues().var("xorB").value(1) < .5);
+        Assert.assertTrue(nn.getAllFitValues().var("xorB").value(2) < .5);
+        Assert.assertTrue(nn.getAllFitValues().var("xorB").value(3) > .5);
 
         Summary.lines(nn.getAllFitValues());
     }
@@ -191,7 +191,7 @@ public class NeuralNetTest {
         b.addValue(1.);
         xor.addValue(1.);
 
-        Frame df = new SolidFrame(xor.rowCount(), new Var[]{xor}, new String[]{"xor"}, null);
+        Frame df = new SolidFrame(xor.rowCount(), new Var[]{xor}, new String[]{"xor"});
         df = Frames.addCol(df, b, "b", 0);
         df = Frames.addCol(df, a, "a", 0);
 

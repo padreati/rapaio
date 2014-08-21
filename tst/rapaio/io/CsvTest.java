@@ -51,8 +51,8 @@ public class CsvTest {
         try {
             Frame f = persistence.read(getClass(), "csv-test.csv");
             assertNotNull(f);
-            assertEquals(5, f.colCount());
-            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, f.colNames());
+            assertEquals(5, f.varCount());
+            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, f.varNames());
         } catch (IOException ex) {
             assertTrue("this should not happen.", false);
         }
@@ -95,8 +95,8 @@ public class CsvTest {
             persistence.withQuotas(true);
             Frame df = persistence.read(getClass(), "csv-test.csv");
             assertNotNull(df);
-            assertEquals(5, df.colCount());
-            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, df.colNames());
+            assertEquals(5, df.varCount());
+            assertArrayEquals(new String[]{"Year", "Make", "Model", "Description", "Price"}, df.varNames());
         } catch (IOException ex) {
             assertTrue("this should not happen.", false);
         }

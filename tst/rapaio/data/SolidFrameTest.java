@@ -32,25 +32,25 @@ public class SolidFrameTest {
 
     @Test
     public void testEmptySolidFrame() {
-        Frame df = new SolidFrame(0, new Var[0], new String[]{}, null);
+        Frame df = new SolidFrame(0, new Var[0], new String[]{});
         assertEquals(0, df.rowCount());
-        assertEquals(0, df.colCount());
+        assertEquals(0, df.varCount());
     }
 
     @Test
     public void testColIndexes() {
         Var[] vars = new Var[]{Numeric.newEmpty(), Numeric.newEmpty(), Numeric.newEmpty()};
-        Frame df = new SolidFrame(0, vars, new String[]{"x", "y", "z"}, null);
+        Frame df = new SolidFrame(0, vars, new String[]{"x", "y", "z"});
 
-        assertEquals(3, df.colCount());
-        assertEquals("x", df.colNames()[0]);
-        assertEquals("z", df.colNames()[2]);
-        assertEquals(0, df.colIndex("x"));
-        assertEquals(2, df.colIndex("z"));
+        assertEquals(3, df.varCount());
+        assertEquals("x", df.varNames()[0]);
+        assertEquals("z", df.varNames()[2]);
+        assertEquals(0, df.varIndex("x"));
+        assertEquals(2, df.varIndex("z"));
 
         boolean exceptional = false;
         try {
-            df.colIndex("q");
+            df.varIndex("q");
         } catch (IllegalArgumentException ex) {
             exceptional = true;
         }
@@ -58,7 +58,7 @@ public class SolidFrameTest {
 
         exceptional = false;
         try {
-            df.col(10);
+            df.var(10);
         } catch (IllegalArgumentException ex) {
             exceptional = true;
         }
@@ -66,15 +66,15 @@ public class SolidFrameTest {
 
         exceptional = false;
         try {
-            df.col(-1);
+            df.var(-1);
         } catch (IllegalArgumentException ex) {
             exceptional = true;
         }
         assertEquals(true, exceptional);
 
-        assertEquals("x", df.colNames()[0]);
-        assertEquals("y", df.colNames()[1]);
-        assertEquals("z", df.colNames()[2]);
+        assertEquals("x", df.varNames()[0]);
+        assertEquals("y", df.varNames()[1]);
+        assertEquals("z", df.varNames()[2]);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class SolidFrameTest {
                 Nominal.newEmpty(4, "ana", "are", "mere"),
                 Index.newSeq(1, 4)
         };
-        Frame df = new SolidFrame(4, vars, new String[]{"x", "y", "name", "index"}, null);
+        Frame df = new SolidFrame(4, vars, new String[]{"x", "y", "name", "index"});
 
         assertEquals(1., df.value(0, 0), 1e-10);
         df.setValue(0, 0, 3.);
@@ -97,8 +97,8 @@ public class SolidFrameTest {
         }
         assertEquals(17., t, 1e-10);
 
-        assertTrue(df.col("name").missing(0));
-        assertTrue(df.col("name").missing(3));
+        assertTrue(df.var("name").missing(0));
+        assertTrue(df.var("name").missing(3));
 
         df.setLabel(0, 2, "ana");
         df.setLabel(1, 2, "are");

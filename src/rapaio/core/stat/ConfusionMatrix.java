@@ -26,6 +26,7 @@ import rapaio.data.Var;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class ConfusionMatrix implements Printable {
 
     private final Var actual;

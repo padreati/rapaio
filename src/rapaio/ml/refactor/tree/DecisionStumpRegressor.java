@@ -26,14 +26,13 @@ import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
-import rapaio.data.mapping.MappedVar;
-import rapaio.data.mapping.Mapping;
+import rapaio.data.MappedVar;
+import rapaio.data.Mapping;
 import rapaio.data.stream.VSpot;
 import rapaio.ml.refactor.boost.gbt.BTRegressor;
 import rapaio.ml.refactor.boost.gbt.BoostingLossFunction;
 import rapaio.ml.regressor.Regressor;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -83,13 +82,13 @@ public class DecisionStumpRegressor implements Regressor, BTRegressor {
 
         this.targetColName = targetCols;
         //
-        defaultFit = new Mean(df.col(targetCols)).value();
+        defaultFit = new Mean(df.var(targetCols)).value();
         //
         criterion = Double.MAX_VALUE;
-        for (String colName : df.colNames()) {
+        for (String colName : df.varNames()) {
 //			if (RandomSource.nextDouble() > 0.3) continue;
             if (colName.equals(targetCols)) continue;
-            switch (df.col(colName).type()) {
+            switch (df.var(colName).type()) {
                 case INDEX:
                 case NUMERIC:
                     evalNumeric(df, colName);
@@ -104,8 +103,8 @@ public class DecisionStumpRegressor implements Regressor, BTRegressor {
 
     private void evalNumeric(Frame df, String colName) {
 
-        List<Integer> rows = df.col(colName).stream().complete().map(VSpot::row).collect(Collectors.toList());
-        Collections.sort(rows, RowComparators.numericComparator(df.col(colName), true));
+        List<Integer> rows = df.var(colName).stream().complete().map(VSpot::row).collect(Collectors.toList());
+        Collections.sort(rows, RowComparators.numericComparator(df.var(colName), true));
         double[] var = new double[rows.size()];
         StatOnline so = new StatOnline();
         for (int i = 0; i < rows.size(); i++) {
@@ -138,7 +137,7 @@ public class DecisionStumpRegressor implements Regressor, BTRegressor {
         Mapping dfLeft = Mapping.newEmpty();
         Mapping dfRight = Mapping.newEmpty();
 
-        Var test = x.col(testColName);
+        Var test = x.var(testColName);
         for (int i = 0; i < test.rowCount(); i++) {
             if (test.missing(i)) continue;
             if (test.type().isNominal()) continue;
@@ -151,11 +150,11 @@ public class DecisionStumpRegressor implements Regressor, BTRegressor {
 
         defaultFit = lossFunction.findMinimum(y, fx);
         leftFit = lossFunction.findMinimum(
-                MappedVar.newByRows(y.source(), dfLeft),
-                MappedVar.newByRows(fx.source(), dfLeft));
+                MappedVar.newByRows(y, dfLeft),
+                MappedVar.newByRows(fx, dfLeft));
         rightFit = lossFunction.findMinimum(
-                MappedVar.newByRows(y.source(), dfRight),
-                MappedVar.newByRows(fx.source(), dfRight));
+                MappedVar.newByRows(y, dfRight),
+                MappedVar.newByRows(fx, dfRight));
     }
 
     @Override
@@ -165,7 +164,7 @@ public class DecisionStumpRegressor implements Regressor, BTRegressor {
             fitValues = Numeric.newFill(df.rowCount(), defaultFit);
             return;
         }
-        Var test = df.col(testColName);
+        Var test = df.var(testColName);
 
         for (int i = 0; i < df.rowCount(); i++) {
             if (test.missing(i)) {

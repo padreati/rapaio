@@ -23,7 +23,6 @@ package rapaio.data;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.data.mapping.MappedVar;
 
 import static junit.framework.Assert.*;
 
@@ -41,10 +40,7 @@ public class IndexTest {
         assertTrue(index.type().isNumeric());
         assertFalse(index.type().isNominal());
 
-        assertEquals(false, index.isMapped());
-        assertEquals(1, index.mapping().size());
-        assertEquals(0, index.mapping().get(0));
-        assertEquals(index, index.source());
+        assertEquals(1, index.rowCount());
 
         try {
             index.dictionary();

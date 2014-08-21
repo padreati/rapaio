@@ -20,32 +20,19 @@
 
 package rapaio.util;
 
+import java.io.Serializable;
+
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 @Deprecated
-public class Pair<V1, V2> {
-    private V1 v1;
-    private V2 v2;
+public class Pair<T1, T2> implements Serializable {
 
-    public Pair(V1 v1, V2 v2) {
-        this.v1 = v1;
-        this.v2 = v2;
-    }
+    public final T1 first;
+    public final T2 second;
 
-    public V1 getV1() {
-        return v1;
-    }
-
-    public void setV1(V1 v1) {
-        this.v1 = v1;
-    }
-
-    public V2 getV2() {
-        return v2;
-    }
-
-    public void setV(V2 v2) {
-        this.v2 = v2;
+    public Pair(T1 first, T2 second) {
+        this.first = first;
+        this.second = second;
     }
 }

@@ -128,9 +128,9 @@ public class CorrelationsPage implements TutorialPage {
 
         draw(new Plot()
                         .add(new Points(
-                                jitter(df.col("petal-length"), 0.01),
-                                jitter(df.col("sepal-length"), 0.01)).pch(1))
-                        .title("p correlation = " + r.values()[df.colIndex("petal-length")][df.colIndex("sepal-length")]),
+                                jitter(df.var("petal-length"), 0.01),
+                                jitter(df.var("sepal-length"), 0.01)).pch(1))
+                        .title("p correlation = " + r.values()[df.varIndex("petal-length")][df.varIndex("sepal-length")]),
                 400, 300
         );
 
@@ -138,9 +138,9 @@ public class CorrelationsPage implements TutorialPage {
                 + "sepal-length and petal-length. Let's check that with a plot, also: ");
 
         draw(new Plot()
-                        .add(new Points(jitter(df.col("petal-length"), 0.01), jitter(df.col("petal-width"), 0.01))
+                        .add(new Points(jitter(df.var("petal-length"), 0.01), jitter(df.var("petal-width"), 0.01))
                                 .pch(1))
-                        .title("p correlation = " + r.values()[df.colIndex("petal-length")][df.colIndex("petal-width")]),
+                        .title("p correlation = " + r.values()[df.varIndex("petal-length")][df.varIndex("petal-width")]),
                 400, 300
         );
 
@@ -149,9 +149,9 @@ public class CorrelationsPage implements TutorialPage {
                 + "Such a value for correlation we have between sepal-length and sepal-width. ");
 
         draw(new Plot()
-                        .add(new Points(jitter(df.col("sepal-length"), 0.01), jitter(df.col("sepal-width"), 0.01))
+                        .add(new Points(jitter(df.var("sepal-length"), 0.01), jitter(df.var("sepal-width"), 0.01))
                                 .pch(1))
-                        .title("p correlation = " + r.values()[df.colIndex("sepal-length")][df.colIndex("sepal-width")]),
+                        .title("p correlation = " + r.values()[df.varIndex("sepal-length")][df.varIndex("sepal-width")]),
                 400, 300
         );
 

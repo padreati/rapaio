@@ -62,17 +62,17 @@ public class OneRule extends AbstractClassifier {
     }
 
     @Override
-    public void learn(Frame df, String targetCol) {
-        this.dict = df.col(targetCol).dictionary();
+    public void learn(Frame df, Numeric weights, String targetCol) {
+        this.dict = df.var(targetCol).dictionary();
         this.targetCol = targetCol;
 
         bestRuleSet = null;
-        for (String testCol : df.colNames()) {
+        for (String testCol : df.varNames()) {
             if (targetCol.equals(testCol))
                 continue;
-            RuleSet ruleSet = df.col(testCol).type().isNominal() ?
-                    buildNominal(testCol, df) :
-                    buildNumeric(testCol, df);
+            RuleSet ruleSet = df.var(testCol).type().isNominal() ?
+                    buildNominal(testCol, df, weights) :
+                    buildNumeric(testCol, df, weights);
             if (bestRuleSet == null || ruleSet.getAccuracy() > bestRuleSet.getAccuracy()) {
                 bestRuleSet = ruleSet;
             }
@@ -94,8 +94,8 @@ public class OneRule extends AbstractClassifier {
         }
         String colName = bestRuleSet.colName;
 
-        if (test.col(colName).type().isNominal()) {
-            String value = test.label(row, test.colIndex(colName));
+        if (test.var(colName).type().isNominal()) {
+            String value = test.label(row, test.varIndex(colName));
             for (Rule oneRule : bestRuleSet.rules) {
                 NominalRule nominal = (NominalRule) oneRule;
                 if (nominal.getColValue().equals(value)) {
@@ -103,9 +103,9 @@ public class OneRule extends AbstractClassifier {
                 }
             }
         }
-        if (test.col(colName).type().isNumeric()) {
-            boolean missing = test.col(colName).missing(row);
-            double value = test.value(row, test.colIndex(colName));
+        if (test.var(colName).type().isNumeric()) {
+            boolean missing = test.var(colName).missing(row);
+            double value = test.value(row, test.varIndex(colName));
             for (Rule oneRule : bestRuleSet.rules) {
                 NumericRule numeric = (NumericRule) oneRule;
                 if (missing && numeric.isMissingValue()) {
@@ -126,32 +126,32 @@ public class OneRule extends AbstractClassifier {
         sb.append("Best one rule:").append(bestRuleSet.toString()).append("\n");
     }
 
-    private RuleSet buildNominal(String testCol, Frame df) {
+    private RuleSet buildNominal(String testCol, Frame df, Numeric weights) {
         RuleSet set = new RuleSet(testCol);
 
-        int len = df.col(testCol).dictionary().length;
+        int len = df.var(testCol).dictionary().length;
         DensityVector[] dvs = new DensityVector[len];
         for (int i = 0; i < len; i++) {
             dvs[i] = new DensityVector(dict);
         }
         for (int i = 0; i < df.rowCount(); i++) {
-            dvs[df.index(i, testCol)].update(df.index(i, targetCol), df.weight(i));
+            dvs[df.index(i, testCol)].update(df.index(i, targetCol), weights.value(i));
         }
         for (int i = 0; i < len; i++) {
             DensityVector dv = dvs[i];
             dv.normalize(true);
             int j = dv.findBestIndex();
-            String[] colValues = df.col(testCol).dictionary();
+            String[] colValues = df.var(testCol).dictionary();
             set.rules.add(new NominalRule(colValues[i], dict[j], dv.sum(true), dv.sum(true) - dv.get(j)));
         }
         return set;
     }
 
-    private RuleSet buildNumeric(String testCol, Frame df) {
+    private RuleSet buildNumeric(String testCol, Frame df, Numeric weights) {
         RuleSet set = new RuleSet(testCol);
-        Var sort = BaseFilters.sort(Index.newSeq(df.weights().rowCount()),
-                RowComparators.numericComparator(df.col(testCol), true),
-                RowComparators.nominalComparator(df.col(targetCol), true));
+        Var sort = BaseFilters.sort(Index.newSeq(weights.rowCount()),
+                RowComparators.numericComparator(df.var(testCol), true),
+                RowComparators.nominalComparator(df.var(targetCol), true));
         int pos = 0;
         while (pos < sort.rowCount()) {
             if (df.missing(sort.index(pos), testCol)) {
@@ -165,7 +165,7 @@ public class OneRule extends AbstractClassifier {
         if (pos > 0) {
             double[] hist = new double[dict.length];
             for (int i = 0; i < pos; i++) {
-                hist[df.index(sort.index(i), targetCol)] += df.weight(sort.index(i));
+                hist[df.index(sort.index(i), targetCol)] += weights.value(sort.index(i));
             }
             List<Integer> best = new ArrayList<>();
             double max = Double.MIN_VALUE;
@@ -199,7 +199,7 @@ public class OneRule extends AbstractClassifier {
 
             do { // fill it until it has enough of the majority class
                 index = df.index(sort.index(i), targetCol);
-                hist[index] += df.weight(sort.index(i));
+                hist[index] += weights.value(sort.index(i));
                 i++;
             } while (hist[index] < minCount && i < sort.rowCount());
 
@@ -207,7 +207,7 @@ public class OneRule extends AbstractClassifier {
             while (i < sort.rowCount()) {
                 index = sort.index(i);
                 if (df.index(sort.index(i), targetCol) == index) {
-                    hist[index] += df.weight(sort.index(i));
+                    hist[index] += weights.value(sort.index(i));
                     i++;
                     continue;
                 }
@@ -218,7 +218,7 @@ public class OneRule extends AbstractClassifier {
                     && df.value(sort.index(i - 1), testCol)
                     == df.value(sort.index(i), testCol)) {
                 index = df.index(sort.index(i), targetCol);
-                hist[index] += df.weight(sort.index(i));
+                hist[index] += weights.value(sort.index(i));
                 i++;
             }
 

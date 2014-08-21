@@ -52,6 +52,6 @@ public class SerializationTest {
         AdaBoostSAMMEClassifier restored = (AdaBoostSAMMEClassifier) JavaSerialization.restoreFromFile(file.getAbsolutePath());
         restored.predict(df);
 
-        new ConfusionMatrix(df.col("spam"), restored.pred()).summary();
+        new ConfusionMatrix(df.var("spam"), restored.pred()).summary();
     }
 }

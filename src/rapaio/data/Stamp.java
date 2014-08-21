@@ -20,8 +20,6 @@
 
 package rapaio.data;
 
-import rapaio.data.mapping.Mapping;
-
 import java.util.Arrays;
 
 /**
@@ -101,7 +99,7 @@ public class Stamp extends AbstractVar {
      * @param values wrapped array of values
      * @return new instance of stamp var
      */
-    public static Stamp newWrapOf(long[] values) {
+    public static Stamp newWrapOf(long... values) {
         Stamp stamp = new Stamp(0, 0, 0);
         stamp.data = values;
         stamp.rows = values.length;
@@ -186,23 +184,18 @@ public class Stamp extends AbstractVar {
     }
 
     @Override
-    public boolean isMapped() {
-        return false;
-    }
-
-    @Override
-    public Var source() {
-        return this;
-    }
-
-    @Override
-    public Mapping mapping() {
-        return Mapping.newSolidMap(rowCount());
-    }
-
-    @Override
     public int rowCount() {
         return rows;
+    }
+
+    @Override
+    public Var bindRows(Var var) {
+        return BoundVar.newFrom(this, var);
+    }
+
+    @Override
+    public Var mapRows(Mapping mapping) {
+        return MappedVar.newByRows(this, mapping);
     }
 
     @Override

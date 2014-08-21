@@ -20,6 +20,7 @@
 
 package rapaio.ml.classifier;
 
+import rapaio.data.Numeric;
 import rapaio.ml.classifier.colselect.ColSelector;
 import rapaio.core.Printable;
 import rapaio.data.Frame;
@@ -70,9 +71,14 @@ public interface Classifier extends Printable, Serializable {
      * equal to 1 and target as classColName.
      *
      * @param df            data set instances
-     * @param targetCol target column name
+     * @param targetVar target variable name
      */
-    void learn(Frame df, String targetCol);
+    default void learn(Frame df, String targetVar) {
+        Numeric weights = Numeric.newFill(df.rowCount(), 1);
+        learn(df, weights, targetVar);
+    }
+
+    void learn(Frame df, Numeric weights, String targetVar);
 
     /**
      * Predict classes for new data set instances

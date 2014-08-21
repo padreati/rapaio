@@ -21,13 +21,12 @@
 package rapaio.data.stream;
 
 import rapaio.data.Frame;
-import rapaio.data.mapping.MappedFrame;
-import rapaio.data.mapping.Mapping;
+import rapaio.data.MappedFrame;
+import rapaio.data.Mapping;
 
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>

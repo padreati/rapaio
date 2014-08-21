@@ -20,7 +20,7 @@
 
 package rapaio.ml.regressor.linear;
 
-import rapaio.core.ColRange;
+import rapaio.core.VarRange;
 import rapaio.data.*;
 import rapaio.data.matrix.Matrix;
 import rapaio.data.matrix.QRDecomposition;
@@ -50,10 +50,10 @@ public class LinearModelRegressor implements Regressor {
 
     @Override
     public void learn(Frame df, String targetCols) {
-        targets = new ColRange(targetCols).parseColumnNames(df);
+        targets = new VarRange(targetCols).parseColumnNames(df);
 
-        predictors = Arrays.stream(df.colNames())
-                .filter(c -> !targetCols.contains(c) && df.col(c).type().isNumeric())
+        predictors = Arrays.stream(df.varNames())
+                .filter(c -> !targetCols.contains(c) && df.var(c).type().isNumeric())
                 .collect(Collectors.toList());
 
         Matrix X = buildX(df);
@@ -65,7 +65,7 @@ public class LinearModelRegressor implements Regressor {
             betaN.addLabel(predictors.get(i));
             betaC.addValue(beta.get(i, 0));
         }
-        coefficients = new SolidFrame(predictors.size(), new Var[]{betaN, betaC}, new String[]{"Term", "Coefficients"}, null);
+        coefficients = new SolidFrame(predictors.size(), new Var[]{betaN, betaC}, new String[]{"Term", "Coefficients"});
 
         fittedValues = buildFit(df);
     }
@@ -84,14 +84,14 @@ public class LinearModelRegressor implements Regressor {
 
     private Matrix buildY(Frame df) {
         return new Matrix(targets.stream()
-                .map(colName -> (Numeric) df.col(colName))
+                .map(colName -> (Numeric) df.var(colName))
                 .collect(Collectors.toList())
         );
     }
 
     private Matrix buildX(Frame df) {
         return new Matrix(predictors.stream()
-                .map(colName -> (Numeric) df.col(colName))
+                .map(colName -> (Numeric) df.var(colName))
                 .collect(Collectors.toList())
         );
     }

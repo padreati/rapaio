@@ -36,6 +36,7 @@ import static rapaio.data.filters.BaseFilters.sort;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class Quantiles implements Printable {
 
     private final Var var;

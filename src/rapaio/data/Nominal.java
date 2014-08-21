@@ -83,6 +83,13 @@ public final class Nominal extends FactorBase {
         return nominal;
     }
 
+    public static Nominal newCopyOf(String...values) {
+        Nominal nominal = Nominal.newEmpty();
+        for(String value : values)
+            nominal.addLabel(value);
+        return nominal;
+    }
+
     private Nominal() {
         // set the missing value
         this.reverse = new HashMap<>();

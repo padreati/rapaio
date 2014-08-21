@@ -45,13 +45,13 @@ public final class Frames implements Serializable {
         for (int i = 0; i < colNames.length; i++) {
             vars[i] = Numeric.newFill(rows, 0);
         }
-        return new SolidFrame(rows, vars, colNames, null);
+        return new SolidFrame(rows, vars, colNames);
     }
 
     public static Frame newMatrix(int rows, List<String> colNames) {
         List<Var> vars = new ArrayList<>();
         colNames.stream().forEach(n -> vars.add(Numeric.newFill(rows, 0)));
-        return new SolidFrame(rows, vars, colNames, null);
+        return new SolidFrame(rows, vars, colNames);
     }
 
     public static Frame solidCopy(Frame df) {
@@ -59,42 +59,42 @@ public final class Frames implements Serializable {
         List<Var> vars = new ArrayList<>();
         List<String> names = new ArrayList<>();
 
-        for (int i = 0; i < df.colCount(); i++) {
-            Var src = df.col(i);
+        for (int i = 0; i < df.varCount(); i++) {
+            Var src = df.var(i);
             if (src.type().isNominal()) {
-                vars.add(Nominal.newEmpty(len, df.col(i).dictionary()));
-                names.add(df.colNames()[i]);
+                vars.add(Nominal.newEmpty(len, df.var(i).dictionary()));
+                names.add(df.varNames()[i]);
                 for (int j = 0; j < df.rowCount(); j++) {
                     vars.get(i).setLabel(j, src.label(j));
                 }
             }
             if (src.type().isNumeric()) {
                 vars.add(Numeric.newFill(len, 0));
-                names.add(df.colNames()[i]);
+                names.add(df.varNames()[i]);
                 for (int j = 0; j < df.rowCount(); j++) {
                     vars.get(i).setValue(j, src.value(j));
                 }
             }
         }
-        return new SolidFrame(len, vars, names, df.weights());
+        return new SolidFrame(len, vars, names);
     }
 
     public static Frame addCol(Frame df, Var col, String name, int position) {
         if (df.rowCount() != col.rowCount()) {
             throw new IllegalArgumentException("frame and getCol have different row counts");
         }
-        if (df.isMappedFrame()) {
+        if (df instanceof MappedFrame) {
             throw new IllegalArgumentException("operation not allowed on mapped frames");
         }
         List<Var> vars = new ArrayList<>();
         List<String> names = new ArrayList<>();
-        for (String colName : df.colNames()) {
+        for (String colName : df.varNames()) {
             names.add(colName);
-            vars.add(df.col(colName));
+            vars.add(df.var(colName));
         }
         vars.add(position, col);
         names.add(position, name);
-        return new SolidFrame(df.rowCount(), vars, names, df.weights());
+        return new SolidFrame(df.rowCount(), vars, names);
     }
 
     /**
@@ -107,10 +107,10 @@ public final class Frames implements Serializable {
         Set<String> except = new HashSet<>();
         if (exceptCols != null && !exceptCols.isEmpty())
             Collections.addAll(except, exceptCols.split(",", -1));
-        for (int i = 0; i < df.colCount(); i++) {
-            if (df.col(i).type().isNumeric() && !except.contains(df.colNames()[i])) {
-                double mean = new Mean(df.col(i)).value();
-                double sd = StrictMath.sqrt(new Variance(df.col(i)).getValue());
+        for (int i = 0; i < df.varCount(); i++) {
+            if (df.var(i).type().isNumeric() && !except.contains(df.varNames()[i])) {
+                double mean = new Mean(df.var(i)).value();
+                double sd = StrictMath.sqrt(new Variance(df.var(i)).getValue());
 
                 if (mean != mean || sd != sd) {
                     throw new RuntimeException("mean or sd is NaN");

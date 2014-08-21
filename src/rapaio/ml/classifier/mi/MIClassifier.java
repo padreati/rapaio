@@ -22,6 +22,7 @@ package rapaio.ml.classifier.mi;
 
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
+import rapaio.data.Numeric;
 import rapaio.data.filters.BaseFilters;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.Classifier;
@@ -95,19 +96,19 @@ public class MIClassifier extends AbstractClassifier {
     }
 
     @Override
-    public void learn(Frame df, String targetCol) {
+    public void learn(Frame df, Numeric weights, String targetCol) {
         this.targetCol = targetCol;
-        this.dict = df.col(targetCol).dictionary();
+        this.dict = df.var(targetCol).dictionary();
 
         if (!groupCol.isEmpty()) {
-            df = BaseFilters.removeCols(df, groupCol);
+            df = df.removeVars(groupCol);
         }
-        c.learn(df, targetCol);
+        c.learn(df, weights, targetCol);
     }
 
     @Override
     public void predict(Frame df) {
-        String[] groups = df.col(groupCol).dictionary();
+        String[] groups = df.var(groupCol).dictionary();
         Map<String, DensityVector> dvs = new HashMap<>();
         Arrays.stream(groups).forEach(groupLabel -> dvs.put(groupLabel, new DensityVector(dict)));
 

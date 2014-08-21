@@ -41,7 +41,7 @@ import static rapaio.WS.getPrinter;
 public class Summary {
 
     public static void summary(Frame df) {
-        summary(df, df.colNames());
+        summary(df, df.varNames());
     }
 
     public static void summary(Frame df, String... names) {
@@ -53,7 +53,7 @@ public class Summary {
             code(buffer.toString());
             return;
         }
-        buffer.append(String.format("rowCount: %d, colCount: %d%n", df.rowCount(), df.colCount()));
+        buffer.append(String.format("rowCount: %d, colCount: %d%n", df.rowCount(), df.varCount()));
 
         String[][] first = new String[names.length][7];
         String[][] second = new String[names.length][7];
@@ -65,9 +65,9 @@ public class Summary {
         }
 
         for (int k = 0; k < names.length; k++) {
-            int i = df.colIndex(names[k]);
+            int i = df.varIndex(names[k]);
 
-            Var v = df.col(i);
+            Var v = df.var(i);
             if (v.type().isNumeric()) {
                 double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
                 double[] perc = new Quantiles(v, p).values();
@@ -392,8 +392,8 @@ public class Summary {
     public static void names(Frame df) {
         StringBuilder buffer = new StringBuilder();
         buffer.append(String.format("> names(frame)\n"));
-        for (int i = 0; i < df.colCount(); i++) {
-            buffer.append(df.colNames()[i]).append("\n");
+        for (int i = 0; i < df.varCount(); i++) {
+            buffer.append(df.varNames()[i]).append("\n");
         }
         code(buffer.toString());
     }
@@ -429,19 +429,19 @@ public class Summary {
     }
 
     public static void lines(Frame df) {
-        Var[] vars = new Var[df.colCount()];
-        String[] names = df.colNames();
+        Var[] vars = new Var[df.varCount()];
+        String[] names = df.varNames();
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = df.col(i);
+            vars[i] = df.var(i);
         }
         head(df.rowCount(), vars, names);
     }
 
     public static void head(int lines, Frame df) {
-        Var[] vars = new Var[df.colCount()];
-        String[] names = df.colNames();
+        Var[] vars = new Var[df.varCount()];
+        String[] names = df.varNames();
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = df.col(i);
+            vars[i] = df.var(i);
         }
         head(Math.min(lines, df.rowCount()), vars, names);
     }

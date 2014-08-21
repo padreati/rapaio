@@ -20,16 +20,15 @@
 
 package rapaio.ml.classifier.meta;
 
-import rapaio.core.ColRange;
+import rapaio.core.VarRange;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
-import rapaio.data.filters.BaseFilters;
+import rapaio.data.Numeric;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.colselect.ColSelector;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -82,12 +81,12 @@ public class MVClassifier extends AbstractClassifier {
     }
 
     @Override
-    public void learn(Frame df, String targetCol) {
+    public void learn(Frame df, Numeric weights, String targetCol) {
         this.targetCol = targetCol;
-        List<Integer> colIndexes = new ColRange(targetCol).parseColumnIndexes(df);
+        List<Integer> colIndexes = new VarRange(targetCol).parseColumnIndexes(df);
         this.targetCols = new String[colIndexes.size()];
         for (int i = 0; i < colIndexes.size(); i++) {
-            this.targetCols[i] = df.colNames()[colIndexes.get(i)];
+            this.targetCols[i] = df.varNames()[colIndexes.get(i)];
         }
 
         models = Arrays.stream(this.targetCols).collect(
@@ -96,9 +95,9 @@ public class MVClassifier extends AbstractClassifier {
                     Frame train = df;
                     for (String col : targetCols) {
                         if (s.equals(col)) continue;
-                        train = BaseFilters.removeCols(train, col);
+                        train = train.removeVars(new VarRange(col));
                     }
-                    model.learn(train, s);
+                    model.learn(train, weights, s);
                     return model;
                 })
         );

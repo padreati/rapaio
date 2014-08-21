@@ -20,7 +20,7 @@
 
 package rapaio.ml.refactor.nnet;
 
-import rapaio.core.ColRange;
+import rapaio.core.VarRange;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Frames;
@@ -114,17 +114,17 @@ public class MultiLayerPerceptronRegressor implements Regressor, Serializable {
 
     @Override
     public void learn(Frame df, String targetCols) {
-        ColRange targetColRange = new ColRange(targetCols);
-        List<Integer> targets = targetColRange.parseColumnIndexes(df);
+        VarRange targetVarRange = new VarRange(targetCols);
+        List<Integer> targets = targetVarRange.parseColumnIndexes(df);
         this.targetCols = new ArrayList<>();
         for (Integer target : targets) {
-            this.targetCols.add(df.colNames()[target]);
+            this.targetCols.add(df.varNames()[target]);
         }
         inputCols = new ArrayList<>();
-        for (int i = 0; i < df.colNames().length; i++) {
-            if (this.targetCols.contains(df.colNames()[i])) continue;
-            if (df.col(df.colNames()[i]).type().isNominal()) continue;
-            inputCols.add(df.colNames()[i]);
+        for (int i = 0; i < df.varNames().length; i++) {
+            if (this.targetCols.contains(df.varNames()[i])) continue;
+            if (df.var(df.varNames()[i]).type().isNominal()) continue;
+            inputCols.add(df.varNames()[i]);
         }
 
         // validate
@@ -227,7 +227,7 @@ public class MultiLayerPerceptronRegressor implements Regressor, Serializable {
 
     @Override
     public Var getFitValues() {
-        return prediction.col(0);
+        return prediction.var(0);
     }
 
     @Override

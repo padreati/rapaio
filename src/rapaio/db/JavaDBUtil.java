@@ -41,14 +41,14 @@ public class JavaDBUtil {
     }
 
     public void putFrame(Frame df, String tableName) throws SQLException {
-        String[] columns = df.colNames();
+        String[] columns = df.varNames();
         String[] types = new String[columns.length];
         for (int i = 0; i < types.length; i++) {
-            if (df.col(i).type().isNumeric()) {
+            if (df.var(i).type().isNumeric()) {
                 types[i] = "DOUBLE";
                 continue;
             }
-            if (df.col(i).type().isNominal()) {
+            if (df.var(i).type().isNominal()) {
                 types[i] = "VARCHAR(8000)";
             }
         }
@@ -146,6 +146,6 @@ public class JavaDBUtil {
                     vars.add(v2);
             }
         }
-        return new SolidFrame(lists.get(0).size(), vars, colNames, null);
+        return new SolidFrame(lists.get(0).size(), vars, colNames);
     }
 }

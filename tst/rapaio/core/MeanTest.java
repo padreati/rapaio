@@ -42,7 +42,7 @@ public class MeanTest extends CoreStatTestUtil {
     @Test
     public void testRReferenceMean() throws IOException {
         Frame df = getDataFrame();
-        assertEquals(Double.valueOf("999.98132402093892779"), new Mean(df.col(0)).value(), 1e-12);
+        assertEquals(Double.valueOf("999.98132402093892779"), new Mean(df.var(0)).value(), 1e-12);
     }
 
     @Test

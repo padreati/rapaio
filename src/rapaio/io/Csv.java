@@ -242,7 +242,7 @@ public class Csv {
                 }
             }
         }
-        return new SolidFrame(rows - startRow, vars, names, null);
+        return new SolidFrame(rows - startRow, vars, names);
     }
 
     public List<String> parseLine(String line) {
@@ -334,25 +334,25 @@ public class Csv {
 
         try (PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)))) {
             if (header) {
-                for (int i = 0; i < df.colNames().length; i++) {
+                for (int i = 0; i < df.varNames().length; i++) {
                     if (i != 0) {
                         writer.append(separatorChar);
                     }
-                    writer.append(df.colNames()[i]);
+                    writer.append(df.varNames()[i]);
                 }
                 writer.append("\n");
             }
             DecimalFormat format = new DecimalFormat("0.###############################");
             for (int i = 0; i < df.rowCount(); i++) {
-                for (int j = 0; j < df.colCount(); j++) {
+                for (int j = 0; j < df.varCount(); j++) {
                     if (j != 0) {
                         writer.append(separatorChar);
                     }
-                    if (df.col(j).missing(i)) {
+                    if (df.var(j).missing(i)) {
                         writer.append("?");
                         continue;
                     }
-                    if (df.col(j).type().isNominal()) {
+                    if (df.var(j).type().isNominal()) {
                         writer.append(unclean(df.label(i, j)));
                     } else {
                         writer.append(format.format(df.value(i, j)));

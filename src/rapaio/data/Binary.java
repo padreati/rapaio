@@ -20,9 +20,6 @@
 
 package rapaio.data;
 
-import rapaio.data.mapping.Mapping;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.util.BitSet;
 
 /**
@@ -140,21 +137,6 @@ public final class Binary extends AbstractVar {
     }
 
     @Override
-    public boolean isMapped() {
-        return false;
-    }
-
-    @Override
-    public Var source() {
-        return this;
-    }
-
-    @Override
-    public Mapping mapping() {
-        return Mapping.newSolidMap(rowCount());
-    }
-
-    @Override
     public int rowCount() {
         return rows;
     }
@@ -261,7 +243,7 @@ public final class Binary extends AbstractVar {
     }
 
     @Override
-    public void setDictionary(String[] dict) {
+    public void setDictionary(String... dict) {
         throw new IllegalArgumentException("Operation not implemented on binary variables");
     }
 
@@ -299,7 +281,7 @@ public final class Binary extends AbstractVar {
             setBinary(row, false);
             return;
         }
-        if(value==-1) {
+        if (value == -1) {
             setMissing(row);
             return;
         }
@@ -316,7 +298,7 @@ public final class Binary extends AbstractVar {
             addBinary(false);
             return;
         }
-        if(value==-1) {
+        if (value == -1) {
             addMissing();
             return;
         }
@@ -342,10 +324,14 @@ public final class Binary extends AbstractVar {
 
     @Override
     public void remove(int row) {
-        if(row<0 || row>=rows) {
+        if (row < 0 || row >= rows) {
             throw new IllegalArgumentException();
         }
-        throw new NotImplementedException();
+        for (int i = row + 1; i < rows; i++) {
+            values.set(i-1, values.get(i));
+            missing.set(i-1, missing.get(i));
+        }
+        rows--;
     }
 
     @Override
@@ -357,7 +343,7 @@ public final class Binary extends AbstractVar {
     public Binary solidCopy() {
         Binary copy = Binary.newEmpty(rowCount());
         for (int i = 0; i < rowCount(); i++) {
-            if(!missing(i))
+            if (!missing(i))
                 copy.setBinary(i, binary(i));
         }
         return copy;

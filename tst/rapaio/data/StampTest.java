@@ -23,7 +23,6 @@ package rapaio.data;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import rapaio.data.mapping.MappedVar;
 
 import static junit.framework.Assert.*;
 
@@ -40,11 +39,6 @@ public class StampTest {
         Var stamp = Stamp.newEmpty(1);
         assertFalse(stamp.type().isNumeric());
         assertFalse(stamp.type().isNominal());
-
-        assertEquals(false, stamp.isMapped());
-        assertEquals(1, stamp.mapping().size());
-        assertEquals(0, stamp.mapping().get(0));
-        assertEquals(stamp, stamp.source());
 
         try {
             stamp.dictionary();

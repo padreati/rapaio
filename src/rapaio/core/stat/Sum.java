@@ -32,6 +32,7 @@ import static rapaio.core.MathBase.validNumber;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class Sum implements Printable {
 
     private final Var var;

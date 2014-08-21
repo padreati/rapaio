@@ -20,7 +20,7 @@
 
 package rapaio.data.formula;
 
-import rapaio.core.ColRange;
+import rapaio.core.VarRange;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
@@ -47,23 +47,23 @@ import java.util.Set;
 @Deprecated
 public class FFOneHotNumeric implements FrameFilter {
 
-    private final ColRange colRange;
+    private final VarRange varRange;
 
-    public FFOneHotNumeric(ColRange colRange) {
-        this.colRange = colRange;
+    public FFOneHotNumeric(VarRange varRange) {
+        this.varRange = varRange;
     }
 
     @Override
     public Frame apply(Frame df) {
-        Set<String> nameSet = new HashSet<>(colRange.parseColumnNames(df));
+        Set<String> nameSet = new HashSet<>(varRange.parseColumnNames(df));
 
         List<Var> vars = new ArrayList<>();
         List<String> names = new ArrayList<>();
 
-        for (String varName : df.colNames()) {
-            if (nameSet.contains(varName) && df.col(varName).type().isNominal()) {
+        for (String varName : df.varNames()) {
+            if (nameSet.contains(varName) && df.var(varName).type().isNominal()) {
                 // process one hot encoding
-                String[] dict = df.col(varName).dictionary();
+                String[] dict = df.var(varName).dictionary();
                 List<Var> oneHotVars = new ArrayList<>();
                 List<String> oneHotNames = new ArrayList<>();
                 for (int i = 1; i < dict.length; i++) {
@@ -79,10 +79,10 @@ public class FFOneHotNumeric implements FrameFilter {
                 vars.addAll(oneHotVars);
                 names.addAll(oneHotNames);
             } else {
-                vars.add(df.col(varName));
+                vars.add(df.var(varName));
                 names.add(varName);
             }
         }
-        return new SolidFrame(df.rowCount(), vars, names, df.weights());
+        return new SolidFrame(df.rowCount(), vars, names);
     }
 }

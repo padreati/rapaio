@@ -31,6 +31,7 @@ import java.util.Map;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class StandardTransform implements Transform {
 
     private final String[] colNames;
@@ -43,7 +44,7 @@ public class StandardTransform implements Transform {
         this.sd = new HashMap<>();
 
         for (String colName : colNames) {
-            Var col = df.col(colName);
+            Var col = df.var(colName);
             mean.put(colName, new Mean(col).value());
             sd.put(colName, Math.sqrt(new Variance(col).getValue()));
         }
@@ -52,7 +53,7 @@ public class StandardTransform implements Transform {
     @Override
     public void scale(Frame df) {
         for (String colName : colNames) {
-            df.col(colName).stream().transformValue(
+            df.var(colName).stream().transformValue(
                     x -> (x - mean.get(colName)) / sd.get(colName));
         }
     }
@@ -60,7 +61,7 @@ public class StandardTransform implements Transform {
     @Override
     public void unscale(Frame df) {
         for (String colName : colNames) {
-            df.col(colName).stream().transformValue(
+            df.var(colName).stream().transformValue(
                     x -> x * sd.get(colName) + mean.get(colName)
             );
         }

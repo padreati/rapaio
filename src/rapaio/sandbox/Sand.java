@@ -22,8 +22,8 @@ public class Sand {
         Frame tr = bench.getTrainFrame();
         Summary.summary(tr);
 
-//        draw(new Plot().add(new Histogram(tr.col("sepallength"))))
-        WS.draw(new Plot().add(new Points(tr.col("sepallength"), tr.col("petallength")).sz(3).color(tr.col("class")).pch(1)));
+//        draw(new Plot().add(new Histogram(tr.var("sepallength"))))
+        WS.draw(new Plot().add(new Points(tr.var("sepallength"), tr.var("petallength")).sz(3).color(tr.var("class")).pch(1)));
     }
 
 }

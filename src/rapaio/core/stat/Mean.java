@@ -32,6 +32,7 @@ import rapaio.util.Pin;
  * Date: 9/7/13
  * Time: 12:21 PM
  */
+@Deprecated
 public final class Mean implements Printable {
 
     private final Var var;

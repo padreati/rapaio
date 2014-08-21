@@ -21,8 +21,8 @@
 package rapaio.data.stream;
 
 import rapaio.data.Frame;
-import rapaio.data.mapping.MappedFrame;
-import rapaio.data.mapping.Mapping;
+import rapaio.data.MappedFrame;
+import rapaio.data.Mapping;
 import rapaio.util.Pin;
 
 import java.io.Serializable;

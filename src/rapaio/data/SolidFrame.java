@@ -20,11 +20,13 @@
 
 package rapaio.data;
 
-import rapaio.data.mapping.Mapping;
+import rapaio.core.VarRange;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A frame which is not mapped, its values are contained in vectors.
@@ -38,24 +40,22 @@ public class SolidFrame extends AbstractFrame {
     private final Var[] vars;
     private final HashMap<String, Integer> colIndex;
     private final String[] names;
-    private final Numeric weights;
 
-    public SolidFrame(int rows, List<Var> vars, List<String> names, Numeric weights) {
-        this(rows, vars, names.toArray(new String[names.size()]), weights);
+    public SolidFrame(int rows, List<Var> vars, List<String> names) {
+        this(rows, vars, names.toArray(new String[names.size()]));
     }
 
-    public SolidFrame(int rows, Var[] vars, String[] names, Numeric weights) {
-        this(rows, Arrays.asList(vars), names, weights);
+    public SolidFrame(int rows, Var[] vars, String[] names) {
+        this(rows, Arrays.asList(vars), names);
     }
 
-    public SolidFrame(int rows, List<Var> vars, String[] names, Numeric weights) {
+    public SolidFrame(int rows, List<Var> vars, String[] names) {
         for (Var var : vars) {
-            if (var.isMapped())
+            if (var instanceof MappedVar)
                 throw new IllegalArgumentException("Not allowed mapped vectors in solid frame");
         }
         this.rows = rows;
         this.vars = new Var[vars.size()];
-        this.weights = (weights != null) ? weights : Numeric.newFill(rows, 1.0);
         this.colIndex = new HashMap<>();
         this.names = new String[vars.size()];
 
@@ -72,32 +72,17 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public int colCount() {
+    public int varCount() {
         return vars.length;
     }
 
     @Override
-    public boolean isMappedFrame() {
-        return false;
-    }
-
-    @Override
-    public Frame sourceFrame() {
-        return this;
-    }
-
-    @Override
-    public Mapping mapping() {
-        return Mapping.newSolidMap(rowCount());
-    }
-
-    @Override
-    public String[] colNames() {
+    public String[] varNames() {
         return names;
     }
 
     @Override
-    public int colIndex(String name) {
+    public int varIndex(String name) {
         if (!colIndex.containsKey(name)) {
             throw new IllegalArgumentException("Invalid column name: " + name);
         }
@@ -105,7 +90,7 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public Var col(int col) {
+    public Var var(int col) {
         if (col >= 0 && col < vars.length) {
             return vars[col];
         }
@@ -113,39 +98,44 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public Var col(String name) {
-        return col(colIndex(name));
+    public Var var(String name) {
+        return var(varIndex(name));
+    }
+
+    @Override
+    public Frame bindVars(Var... vars) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Frame bindVars(Frame df) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Frame mapVars(VarRange range) {
+        List<String> varNames = range.parseColumnNames(this);
+        List<Var> vars = varNames.stream().map(this::var).collect(Collectors.toList());
+        return new SolidFrame(rowCount(), vars, varNames);
+    }
+
+    @Override
+    public Frame bindRows(Frame df) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Frame mapRows(Mapping mapping) {
+        throw new NotImplementedException();
     }
 
     @Override
     public boolean missing(int row, int col) {
-        return col(col).missing(row);
+        return var(col).missing(row);
     }
 
     @Override
     public boolean missing(int row, String colName) {
-        return col(colName).missing(row);
-    }
-
-    @Override
-    public Numeric weights() {
-        return weights;
-    }
-
-    @Override
-    public void setWeights(Numeric weights) {
-        for (int i = 0; i < this.weights.rowCount(); i++) {
-            this.weights.setValue(i, weights.value(i));
-        }
-    }
-
-    @Override
-    public double weight(int row) {
-        return weights.value(row);
-    }
-
-    @Override
-    public void setWeight(int row, double weight) {
-        weights.setValue(row, weight);
+        return var(colName).missing(row);
     }
 }

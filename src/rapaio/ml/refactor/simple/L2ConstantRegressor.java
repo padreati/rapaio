@@ -20,7 +20,7 @@
 
 package rapaio.ml.refactor.simple;
 
-import rapaio.core.ColRange;
+import rapaio.core.VarRange;
 import rapaio.core.stat.Mean;
 import rapaio.data.*;
 import rapaio.ml.regressor.Regressor;
@@ -50,20 +50,20 @@ public class L2ConstantRegressor implements Regressor {
 
     @Override
     public void learn(Frame df, String targetCols) {
-        ColRange colRange = new ColRange(targetCols);
-        List<Integer> colIndexes = colRange.parseColumnIndexes(df);
+        VarRange varRange = new VarRange(targetCols);
+        List<Integer> colIndexes = varRange.parseColumnIndexes(df);
 
         targets = new ArrayList<>();
         for (Integer colIndexe : colIndexes) {
-            targets.add(df.colNames()[colIndexe]);
+            targets.add(df.varNames()[colIndexe]);
         }
 
         means = new ArrayList<>();
         fitValues = new ArrayList<>();
         for (String target : targets) {
-            double mean = new Mean(df.col(target)).value();
+            double mean = new Mean(df.var(target)).value();
             means.add(mean);
-            fitValues.add(Numeric.newFill(df.col(target).rowCount(), mean));
+            fitValues.add(Numeric.newFill(df.var(target).rowCount(), mean));
         }
     }
 
@@ -82,6 +82,6 @@ public class L2ConstantRegressor implements Regressor {
 
     @Override
     public Frame getAllFitValues() {
-        return new SolidFrame(fitValues.get(0).rowCount(), fitValues, targets, null);
+        return new SolidFrame(fitValues.get(0).rowCount(), fitValues, targets);
     }
 }

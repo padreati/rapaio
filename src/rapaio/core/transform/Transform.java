@@ -25,6 +25,7 @@ import rapaio.data.Frame;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public interface Transform {
 
     void scale(Frame df);

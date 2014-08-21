@@ -25,6 +25,7 @@ import rapaio.data.Frame;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class ShiftTransform implements Transform {
 
     private final String[] colNames;
@@ -37,13 +38,13 @@ public class ShiftTransform implements Transform {
 
     public void scale(Frame df) {
         for (String colName : colNames) {
-            df.col(colName).stream().transformValue(x -> x - shift);
+            df.var(colName).stream().transformValue(x -> x - shift);
         }
     }
 
     public void unscale(Frame df) {
         for (String colName : colNames) {
-            df.col(colName).stream().transformValue(x -> x + shift);
+            df.var(colName).stream().transformValue(x -> x + shift);
         }
     }
 }

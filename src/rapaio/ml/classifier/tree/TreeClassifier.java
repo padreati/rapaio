@@ -23,13 +23,11 @@ package rapaio.ml.classifier.tree;
 import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.data.filters.BaseFilters;
-import rapaio.data.mapping.MappedFrame;
-import rapaio.data.mapping.Mapping;
 import rapaio.data.stream.FSpot;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.tools.DensityTable;
 import rapaio.ml.classifier.tools.DensityVector;
-import rapaio.ml.ml_experiment.cluster.util.Pair;
+import rapaio.util.Pair;
 import rapaio.util.SPredicate;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -209,16 +207,16 @@ public class TreeClassifier extends AbstractClassifier {
     }
 
     @Override
-    public void learn(Frame df, String targetCol) {
+    public void learn(Frame df, Numeric weights, String targetCol) {
 
         this.targetCol = targetCol;
-        dict = df.col(this.targetCol).dictionary();
+        dict = df.var(this.targetCol).dictionary();
         rows = df.rowCount();
 
         testCounter.initialize(df, targetCol);
 
         root = new CTreeNode(this, null, "root", spot -> true);
-        root.learn(df, maxDepth);
+        root.learn(df, weights, maxDepth);
     }
 
     @Override
@@ -314,7 +312,7 @@ public class TreeClassifier extends AbstractClassifier {
             @Override
             public void initialize(Frame df, String targetName) {
                 counters = new HashMap<>();
-                Arrays.stream(df.colNames()).forEach(colName -> {
+                Arrays.stream(df.varNames()).forEach(colName -> {
                     if (targetName.equals(colName))
                         return;
                     counters.put(colName, -1);
@@ -339,10 +337,10 @@ public class TreeClassifier extends AbstractClassifier {
             @Override
             public void initialize(Frame df, String targetName) {
                 counters = new HashMap<>();
-                Arrays.stream(df.colNames()).forEach(colName -> {
+                Arrays.stream(df.varNames()).forEach(colName -> {
                     if (targetName.equals(colName))
                         return;
-                    if (df.col(colName).type().isNominal()) {
+                    if (df.var(colName).type().isNominal()) {
                         counters.put(colName, 1);
                     } else {
                         counters.put(colName, -1);
@@ -371,7 +369,7 @@ public class TreeClassifier extends AbstractClassifier {
             @Override
             public void initialize(Frame df, String targetName) {
                 counters = new HashMap<>();
-                Arrays.stream(df.colNames()).forEach(colName -> {
+                Arrays.stream(df.varNames()).forEach(colName -> {
                     if (targetName.equals(colName))
                         return;
                     counters.put(colName, 1);
@@ -446,28 +444,28 @@ public class TreeClassifier extends AbstractClassifier {
     public static interface NominalMethod extends Serializable {
         String name();
 
-        List<Candidate> computeCandidates(TreeClassifier c, Frame df, String testColName, String targetColName, Function function);
+        List<Candidate> computeCandidates(TreeClassifier c, Frame df, Numeric weights, String testColName, String targetColName, Function function);
     }
 
     public static enum NominalMethods implements NominalMethod {
         IGNORE {
             @Override
-            public List<Candidate> computeCandidates(TreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
+            public List<Candidate> computeCandidates(TreeClassifier c, Frame df, Numeric weights, String testColName, String targetColName, Function function) {
                 return new ArrayList<>();
             }
         },
         FULL {
             @Override
-            public List<Candidate> computeCandidates(TreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
+            public List<Candidate> computeCandidates(TreeClassifier c, Frame df, Numeric weights, String testColName, String targetColName, Function function) {
                 List<Candidate> result = new ArrayList<>();
-                Var test = df.col(testColName);
-                Var target = df.col(targetColName);
+                Var test = df.var(testColName);
+                Var target = df.var(targetColName);
 
                 if (new DensityTable(test, target).countWithMinimum(false, c.getMinCount()) < 2) {
                     return result;
                 }
 
-                DensityTable dt = new DensityTable(test, target, df.weights());
+                DensityTable dt = new DensityTable(test, target, weights);
                 double value = function.compute(dt);
 
                 Candidate candidate = new Candidate(value, function.sign());
@@ -485,20 +483,20 @@ public class TreeClassifier extends AbstractClassifier {
         },
         BINARY {
             @Override
-            public List<Candidate> computeCandidates(TreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
+            public List<Candidate> computeCandidates(TreeClassifier c, Frame df, Numeric weights, String testColName, String targetColName, Function function) {
 
                 List<Candidate> result = new ArrayList<>();
                 Candidate best = null;
-                for (int i = 1; i < df.col(testColName).dictionary().length; i++) {
-                    Var test = df.col(testColName);
-                    Var target = df.col(targetColName);
-                    String testLabel = df.col(testColName).dictionary()[i];
+                for (int i = 1; i < df.var(testColName).dictionary().length; i++) {
+                    Var test = df.var(testColName);
+                    Var target = df.var(targetColName);
+                    String testLabel = df.var(testColName).dictionary()[i];
 
                     if (new DensityTable(test, target).countWithMinimum(false, c.getMinCount()) < 2) {
                         return result;
                     }
 
-                    DensityTable dt = new DensityTable(test, target, df.weights(), testLabel);
+                    DensityTable dt = new DensityTable(test, target, weights, testLabel);
                     double value = function.compute(dt);
                     Candidate candidate = new Candidate(value, function.sign());
                     if (best == null) {
@@ -526,28 +524,28 @@ public class TreeClassifier extends AbstractClassifier {
     public static interface NumericMethod extends Serializable {
         String name();
 
-        List<Candidate> computeCandidates(TreeClassifier c, Frame df, String testColName, String targetColName, Function function);
+        List<Candidate> computeCandidates(TreeClassifier c, Frame df, Numeric weights, String testColName, String targetColName, Function function);
     }
 
     public static enum NumericMethods implements NumericMethod {
         IGNORE {
             @Override
-            public List<Candidate> computeCandidates(TreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
+            public List<Candidate> computeCandidates(TreeClassifier c, Frame df, Numeric weights, String testColName, String targetColName, Function function) {
                 return new ArrayList<>();
             }
         },
         BINARY {
             @Override
-            public List<Candidate> computeCandidates(TreeClassifier c, Frame df, String testColName, String targetColName, Function function) {
-                Var test = df.col(testColName);
-                Var target = df.col(targetColName);
+            public List<Candidate> computeCandidates(TreeClassifier c, Frame df, Numeric weights, String testColName, String targetColName, Function function) {
+                Var test = df.var(testColName);
+                Var target = df.var(targetColName);
 
                 DensityTable dt = new DensityTable(DensityTable.NUMERIC_DEFAULT_LABELS, target.dictionary());
                 int misCount = 0;
                 for (int i = 0; i < df.rowCount(); i++) {
                     int row = (test.missing(i)) ? 0 : 2;
                     if (test.missing(i)) misCount++;
-                    dt.update(row, target.index(i), df.weight(i));
+                    dt.update(row, target.index(i), weights.value(i));
                 }
 
                 Var sort = BaseFilters.sort(Index.newSeq(df.rowCount()), RowComparators.numericComparator(test, true));
@@ -559,8 +557,8 @@ public class TreeClassifier extends AbstractClassifier {
 
                     if (test.missing(row)) continue;
 
-                    dt.update(2, target.index(row), -df.weight(row));
-                    dt.update(1, target.index(row), +df.weight(row));
+                    dt.update(2, target.index(row), -weights.value(row));
+                    dt.update(1, target.index(row), +weights.value(row));
 
                     if (i >= misCount + c.getMinCount() &&
                             i < df.rowCount() - 1 - c.getMinCount() &&
@@ -605,16 +603,18 @@ public class TreeClassifier extends AbstractClassifier {
     public static interface Splitter extends Serializable {
         String name();
 
-        public List<Frame> performSplit(Frame df, Candidate candidate);
+        public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Numeric weights, Candidate candidate);
     }
 
     public static enum Splitters implements Splitter {
         REMAINS_IGNORED {
             @Override
-            public List<Frame> performSplit(Frame df, Candidate candidate) {
+            public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Numeric weights, Candidate candidate) {
                 List<Mapping> mappings = new ArrayList<>();
+                List<Numeric> weightsList = new ArrayList<>();
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                     mappings.add(Mapping.newEmpty());
+                    weightsList.add(Numeric.newEmpty());
                 }
 
                 df.stream().forEach(fspot -> {
@@ -622,6 +622,7 @@ public class TreeClassifier extends AbstractClassifier {
                         SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                         if (predicate.test(fspot)) {
                             mappings.get(i).add(fspot.row());
+                            weightsList.get(i).addValue(weights.value(fspot.row()));
                             break;
                         }
                     }
@@ -630,15 +631,17 @@ public class TreeClassifier extends AbstractClassifier {
                 mappings.stream().forEach(mapping -> {
                     frames.add(MappedFrame.newByRow(df, mapping));
                 });
-                return frames;
+                return new Pair<>(frames, weightsList);
             }
         },
         REMAINS_TO_MAJORITY {
             @Override
-            public List<Frame> performSplit(Frame df, Candidate candidate) {
+            public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Numeric weights, Candidate candidate) {
                 List<Mapping> mappings = new ArrayList<>();
+                List<Numeric> weightsList = new ArrayList<>();
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                     mappings.add(Mapping.newEmpty());
+                    weightsList.add(Numeric.newEmpty());
                 }
 
                 List<FSpot> missingSpots = new LinkedList<>();
@@ -647,6 +650,7 @@ public class TreeClassifier extends AbstractClassifier {
                         SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                         if (predicate.test(fspot)) {
                             mappings.get(i).add(fspot.row());
+                            weightsList.get(i).addValue(weights.value(fspot.row()));
                             return;
                         }
                     }
@@ -661,20 +665,26 @@ public class TreeClassifier extends AbstractClassifier {
                     }
                 }
                 final int index = majorityGroup;
-                missingSpots.stream().forEach(spot -> mappings.get(index).add(spot.row()));
+
+                missingSpots.stream().forEach(spot -> {
+                    mappings.get(index).add(spot.row());
+                    weightsList.get(index).addValue(weights.value(spot.row()));
+                });
                 List<Frame> frames = new ArrayList<>();
                 mappings.stream().forEach(mapping -> {
                     frames.add(MappedFrame.newByRow(df, mapping));
                 });
-                return frames;
+                return new Pair<>(frames, weightsList);
             }
         },
         REMAINS_TO_ALL_WEIGHTED {
             @Override
-            public List<Frame> performSplit(Frame df, Candidate candidate) {
+            public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Numeric weights, Candidate candidate) {
                 List<Mapping> mappings = new ArrayList<>();
+                List<Numeric> weightsList = new ArrayList<>();
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                     mappings.add(Mapping.newEmpty());
+                    weightsList.add(Numeric.newEmpty());
                 }
 
                 final Set<Integer> missingSpots = new HashSet<>();
@@ -683,6 +693,7 @@ public class TreeClassifier extends AbstractClassifier {
                         SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                         if (predicate.test(fspot)) {
                             mappings.get(i).add(fspot.row());
+                            weightsList.get(i).addValue(weights.value(fspot.row()));
                             return;
                         }
                     }
@@ -697,26 +708,28 @@ public class TreeClassifier extends AbstractClassifier {
                 for (int i = 0; i < p.length; i++) {
                     p[i] /= n;
                 }
-                mappings.stream().forEach(mapping -> missingSpots.forEach(mapping::add));
+                for (int i = 0; i < mappings.size(); i++) {
+                    final int ii = i;
+                    missingSpots.forEach(missingRow -> {
+                        mappings.get(ii).add(missingRow);
+                        weightsList.get(ii).addValue(weights.value(missingRow)*p[ii]);
+                    });
+                }
                 List<Frame> frames = new ArrayList<>();
                 for (int i = 0; i < mappings.size(); i++) {
-                    final int index = i;
-                    Frame f = MappedFrame.newByRow(df, mappings.get(i));
-                    f.stream().forEach(spot -> {
-                        if (missingSpots.contains(spot.row()))
-                            spot.setWeight(spot.weight() * p[index]);
-                    });
-                    frames.add(f);
+                    frames.add(MappedFrame.newByRow(df, mappings.get(i)));
                 }
-                return frames;
+                return new Pair<>(frames, weightsList);
             }
         },
         REMAINS_TO_RANDOM {
             @Override
-            public List<Frame> performSplit(Frame df, Candidate candidate) {
+            public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Numeric weights, Candidate candidate) {
                 List<Mapping> mappings = new ArrayList<>();
+                List<Numeric> weightList = new ArrayList<>();
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                     mappings.add(Mapping.newEmpty());
+                    weightList.add(Numeric.newEmpty());
                 }
 
                 final Set<Integer> missingSpots = new HashSet<>();
@@ -725,18 +738,20 @@ public class TreeClassifier extends AbstractClassifier {
                         SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                         if (predicate.test(fspot)) {
                             mappings.get(i).add(fspot.row());
+                            weightList.get(i).addValue(weights.value(fspot.row()));
                             return;
                         }
                     }
                     missingSpots.add(fspot.row());
                 });
                 missingSpots.forEach(rowId -> mappings.get(RandomSource.nextInt(mappings.size())).add(rowId));
-                return mappings.stream().map(mapping -> MappedFrame.newByRow(df, mapping)).collect(Collectors.toList());
+                List<Frame> frames = mappings.stream().map(mapping -> MappedFrame.newByRow(df, mapping)).collect(Collectors.toList());
+                return new Pair<>(frames, weightList);
             }
         },
         REMAINS_WITH_SURROGATES {
             @Override
-            public List<Frame> performSplit(Frame df, Candidate candidate) {
+            public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Numeric weights, Candidate candidate) {
                 // TODO partition tree classifier - remains surrogates
                 throw new NotImplementedException();
             }
@@ -843,9 +858,9 @@ public class TreeClassifier extends AbstractClassifier {
             return children;
         }
 
-        public void learn(Frame df, int depth) {
-            density = new DensityVector(df.col(c.getTargetCol()), df.weights());
-            counter = new DensityVector(df.col(c.getTargetCol()), Numeric.newFill(df.rowCount(), 1));
+        public void learn(Frame df, Numeric weights, int depth) {
+            density = new DensityVector(df.var(c.getTargetCol()), weights);
+            counter = new DensityVector(df.var(c.getTargetCol()), Numeric.newFill(df.rowCount(), 1));
             bestIndex = density.findBestIndex();
 
             if (df.rowCount() == 0) {
@@ -859,16 +874,16 @@ public class TreeClassifier extends AbstractClassifier {
             candidates = new TreeMap<>();
             c.getColSelector().initialize(df, null);
 
-            ConcurrentHashMap<Candidate, String> cand = new ConcurrentHashMap();
+            ConcurrentHashMap<Candidate, String> cand = new ConcurrentHashMap<>();
             Arrays.stream(c.getColSelector().nextColNames()).parallel().forEach(testCol -> {
                 if (testCol.equals(c.getTargetCol())) return;
                 if (!c.testCounter.canUse(testCol)) return;
 
-                if (df.col(testCol).type().isNumeric()) {
-                    c.getNumericMethod().computeCandidates(c, df, testCol, c.getTargetCol(), c.getFunction())
+                if (df.var(testCol).type().isNumeric()) {
+                    c.getNumericMethod().computeCandidates(c, df, weights, testCol, c.getTargetCol(), c.getFunction())
                             .forEach(candidate -> cand.put(candidate, testCol));
                 } else {
-                    c.getNominalMethod().computeCandidates(c, df, testCol, c.getTargetCol(), c.getFunction())
+                    c.getNominalMethod().computeCandidates(c, df, weights, testCol, c.getTargetCol(), c.getFunction())
                             .forEach(candidate -> cand.put(candidate, testCol));
                 }
             });
@@ -889,13 +904,12 @@ public class TreeClassifier extends AbstractClassifier {
                 return;
             }
 
-            List<Frame> frames = c.getSplitter().performSplit(df, bestCandidate);
-            children = new ArrayList<>(frames.size());
-            for (int i = 0; i < frames.size(); i++) {
-                Frame f = frames.get(i);
+            Pair<List<Frame>, List<Numeric>> frames = c.getSplitter().performSplit(df, weights, bestCandidate);
+            children = new ArrayList<>(frames.first.size());
+            for (int i = 0; i < frames.first.size(); i++) {
                 CTreeNode child = new CTreeNode(c, this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
                 children.add(child);
-                child.learn(f, depth - 1);
+                child.learn(frames.first.get(i), frames.second.get(i), depth - 1);
             }
         }
     }

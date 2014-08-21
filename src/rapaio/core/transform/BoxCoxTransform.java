@@ -26,6 +26,7 @@ import rapaio.data.Var;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class BoxCoxTransform implements Transform {
 
     private final String[] colNames;
@@ -39,8 +40,8 @@ public class BoxCoxTransform implements Transform {
     @Override
     public void scale(Frame df) {
         for (String colName : colNames) {
-            double gm = gm(df.col(colName));
-            df.col(colName).stream().transformValue(
+            double gm = gm(df.var(colName));
+            df.var(colName).stream().transformValue(
                     x -> (lambda == 0) ?
                             gm * Math.log(x) :
                             (Math.pow(x, lambda) - 1.0) / (lambda * Math.pow(gm, lambda - 1))

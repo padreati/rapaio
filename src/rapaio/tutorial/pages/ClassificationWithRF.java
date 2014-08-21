@@ -25,7 +25,6 @@ import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
@@ -131,10 +130,10 @@ public class ClassificationWithRF implements TutorialPage {
                 + "        Summary.summary(ColFilters.retainCols(all, \"spam\"));\n");
 
         Frame all = Datasets.loadSpamBase();
-        all = BaseFilters.retainCols(all, "1-20,spam"); // keep only some columns
+        all = all.mapVars("1-20,spam"); // keep only some columns
 
-        Summary.summary(BaseFilters.retainCols(all, "1-5")); // summary of first 5 columsn
-        Summary.summary(BaseFilters.retainCols(all, "spam"));
+        Summary.summary(all.mapVars("1-5")); // summary of first 5 columsn
+        Summary.summary(all.mapVars("spam"));
 
         p("Above you see some 5-number information on the data. It is not exhaustive "
                 + "since it is not the purpose of this tutorial.");
@@ -302,7 +301,7 @@ public class ClassificationWithRF implements TutorialPage {
         double accuracy = 0;
         double total = predict.rowCount();
         for (int i = 0; i < predict.rowCount(); i++) {
-            if (test.col("spam").index(i) == predict.index(i)) {
+            if (test.var("spam").index(i) == predict.index(i)) {
                 accuracy += 1.;
             }
         }

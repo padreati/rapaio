@@ -33,6 +33,7 @@ import java.util.Random;
  *
  * @author Aurelian Tutuianu
  */
+@Deprecated
 public final class RandomSource implements Serializable {
 
     private static final Random rand = new Random();
@@ -217,6 +218,7 @@ public final class RandomSource implements Serializable {
  * @version 20
  */
 
+@Deprecated
 strictfp class MersenneTwister extends java.util.Random {
     // Serialization
     private static final long serialVersionUID = -4035832775130174188L;  // locked as of Version 15

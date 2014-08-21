@@ -69,7 +69,7 @@ public class CBenchmarkTest {
             resultNames.add(cName);
         }
 
-        Frame totalResults = Frames.solidCopy(new SolidFrame(tasks.size(), resultCols, resultNames, null));
+        Frame totalResults = Frames.solidCopy(new SolidFrame(tasks.size(), resultCols, resultNames));
         for (int i = 0; i < tasks.size(); i++) {
             CTask task = tasks.get(i);
             totalResults.setLabel(i, "data set", task.getName());
@@ -77,7 +77,7 @@ public class CBenchmarkTest {
 
         final double ROUNDS = 5;
         for (int r = 0; r < ROUNDS; r++) {
-            Frame results = new SolidFrame(tasks.size(), resultCols, resultNames, null);
+            Frame results = new SolidFrame(tasks.size(), resultCols, resultNames);
 
             for (int i = 0; i < tasks.size(); i++) {
                 CTask task = tasks.get(i);
@@ -92,13 +92,13 @@ public class CBenchmarkTest {
 
                     results.setValue(i, cName,
                             new ConfusionMatrix(
-                                    task.getTestFrame().col(task.getTargetName()),
+                                    task.getTestFrame().var(task.getTargetName()),
                                     c.pred()).accuracy());
                 }
             }
             Summary.lines(results);
 
-            for (int i = 1; i < totalResults.colCount(); i++) {
+            for (int i = 1; i < totalResults.varCount(); i++) {
                 for (int j = 0; j < totalResults.rowCount(); j++) {
                     double v = totalResults.value(j, i);
                     if (Double.isNaN(v)) v = 0.0;
@@ -107,7 +107,7 @@ public class CBenchmarkTest {
             }
 
         }
-        for (int i = 1; i < totalResults.colCount(); i++) {
+        for (int i = 1; i < totalResults.varCount(); i++) {
             for (int j = 0; j < totalResults.rowCount(); j++) {
                 totalResults.setValue(j, i, totalResults.value(j, i) / ROUNDS);
             }

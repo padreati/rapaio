@@ -21,7 +21,7 @@
 package rapaio.ml.ml_experiment.cluster.algorithm;
 
 import rapaio.ml.ml_experiment.cluster.distance.Distance;
-import rapaio.ml.ml_experiment.cluster.util.Pair;
+import rapaio.util.Pair;
 import rapaio.data.Frame;
 
 import java.util.List;

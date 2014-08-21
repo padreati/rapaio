@@ -20,13 +20,10 @@
 
 package rapaio.data;
 
-import rapaio.data.mapping.Mapping;
-import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -49,6 +46,7 @@ public interface Var extends Serializable {
 
     /**
      * Sets the variable name
+     *
      * @param name future name of the variable
      */
     Var withName(String name);
@@ -59,43 +57,28 @@ public interface Var extends Serializable {
     VarType type();
 
     /**
-     * A variable implementation might be solid or mapped.
-     * A mapped variable is a variable which hold only row/column
-     * indexes and maps over a solid variable. Any change in the
-     * values of the variable would change the values from the
-     * referenced solid variables.
-     *
-     * There are no possible mapped variable over other
-     * mapped variables. So any reference of a mapped variable is
-     * made over a solid variable.
-     *
-     * @return true if it is a mapped variable
-     */
-    boolean isMapped();
-
-    /**
-     * Solid variable source
-     *
-     * @return solid variable source, self if it is not mapped
-     */
-    Var source();
-
-    /**
-     * A mapping is a collection of row numbers which is
-     * used to map the row indexes from the mapped frame to the row
-     * indexed of the wrapped frame. For solid variables, the mapping
-     * is the identity function.
-     *
-     * @return mapping of rows
-     */
-    Mapping mapping();
-
-    /**
      * Number of observations contained by the variable.
      *
      * @return size of var
      */
     int rowCount();
+
+    /**
+     * Builds a new variable having rows of the current variable,
+     * followed by the rows of the bounded frame.
+     *
+     * @param var given var with additional rows
+     * @return new var with all union of rows
+     */
+    public Var bindRows(Var var);
+
+    /**
+     * Builds a new frame only with rows specified in mapping.
+     *
+     * @param mapping a list of rows from a frame
+     * @return new frame with selected rows
+     */
+    public Var mapRows(Mapping mapping);
 
     /**
      * Returns numeric value for the observation specified by row.
@@ -178,7 +161,7 @@ public interface Var extends Serializable {
      * Replace the used dictionary with a new one. A mapping between the
      * old values of the dictionary with the new values is done. The mapping
      * is done based on position.
-     *
+     * <p>
      * The new dictionary can have repeated terms. This feature can be used
      * to unite multiple old labels with new ones. However the actual new
      * dictionary used will have only unique terms and indexed accordingly.
@@ -188,12 +171,12 @@ public interface Var extends Serializable {
      *
      * @param dict array fo terms which comprises the new dictionary
      */
-    void setDictionary(String[] dict);
+    void setDictionary(String... dict);
 
     default void setDictionary(List<String> dict) {
         String[] vector = new String[dict.size()];
         for (int i = 0; i < vector.length; i++) {
-            vector[i]=dict.get(i);
+            vector[i] = dict.get(i);
         }
         setDictionary(vector);
     }
@@ -207,7 +190,7 @@ public interface Var extends Serializable {
     /**
      * Set a binary/boolean value
      *
-     * @param row position of the observation
+     * @param row   position of the observation
      * @param value boolean binary value
      */
     void setBinary(int row, boolean value);
@@ -230,7 +213,7 @@ public interface Var extends Serializable {
     /**
      * Set long integer (stamp) value
      *
-     * @param row position of the observation
+     * @param row   position of the observation
      * @param value long integer value to be set
      */
     void setStamp(int row, long value);
@@ -256,6 +239,7 @@ public interface Var extends Serializable {
 
     /**
      * Set the value of the observation specified by {@param row} as missing, not available for analysis.
+     *
      * @param row position of the observation.
      */
     void setMissing(int row);
@@ -281,6 +265,7 @@ public interface Var extends Serializable {
 
     /**
      * Creates a solid copy of the variable, even if the variable is mapped or not.
+     *
      * @return a solid copy of the current variable
      */
     Var solidCopy();

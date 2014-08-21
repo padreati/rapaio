@@ -29,6 +29,7 @@ import static rapaio.data.filters.BaseFilters.sort;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
+@Deprecated
 public class ROC implements Printable {
 
     private final Var score;

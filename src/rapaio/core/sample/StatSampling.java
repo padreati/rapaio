@@ -22,8 +22,8 @@ package rapaio.core.sample;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
-import rapaio.data.mapping.MappedFrame;
-import rapaio.data.mapping.Mapping;
+import rapaio.data.MappedFrame;
+import rapaio.data.Mapping;
 import rapaio.data.stream.FIterator;
 
 import java.util.ArrayList;

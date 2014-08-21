@@ -58,21 +58,21 @@ public class SortedFrameTest {
         Var[] vars = new Var[1_000];
         String[] names = new String[1_000];
         for (int i = 0; i < 1_000; i++) {
-            vars[i] = Numeric.newFill(10_000);
-            for (int j = 0; j < 10_000; j++) {
+            vars[i] = Numeric.newFill(1_000);
+            for (int j = 0; j < 1_000; j++) {
                 vars[i].setValue(j, RandomSource.nextDouble());
             }
             names[i] = "v" + i;
         }
-        Frame sorted = new SolidFrame(10_000, vars, names, null);
+        Frame sorted = new SolidFrame(1_000, vars, names);
 
         for (int i = 0; i < 100; i++) {
-            int col = RandomSource.nextInt(sorted.colCount());
+            int col = RandomSource.nextInt(sorted.varCount());
             boolean asc = RandomSource.nextDouble() >= .5;
-            sorted = sort(sorted, numericComparator(sorted.col(col), asc));
+            sorted = sort(sorted, numericComparator(sorted.var(col), asc));
         }
 
-        sorted = sort(sorted, numericComparator(sorted.col(0), true));
+        sorted = sort(sorted, numericComparator(sorted.var(0), true));
         for (int i = 1; i < sorted.rowCount(); i++) {
             assertTrue(sorted.value(i - 1, 0) <= sorted.value(i, 0));
         }
@@ -81,16 +81,16 @@ public class SortedFrameTest {
 
     @Test
     public void smokeTest() {
-        assertEquals(3, df.colCount());
+        assertEquals(3, df.varCount());
         assertEquals(4, df.rowCount());
 
-        Frame sort = sort(df, nominalComparator(df.col(0), true));
-        assertEquals(3, sort.colCount());
+        Frame sort = sort(df, nominalComparator(df.var(0), true));
+        assertEquals(3, sort.varCount());
         assertEquals(4, sort.rowCount());
 
         boolean exceptional = false;
         try {
-            sort.col("wrong-getCol-name");
+            sort.var("wrong-getCol-name");
         } catch (Throwable ex) {
             exceptional = true;
         }
@@ -99,14 +99,14 @@ public class SortedFrameTest {
 
     @Test
     public void testSortNominal() {
-        Frame sort = sort(df, nominalComparator(df.col(0), true));
+        Frame sort = sort(df, nominalComparator(df.var(0), true));
         for (int i = 1; i < sort.rowCount(); i++) {
             String label1 = sort.label(i - 1, 0);
             String label2 = sort.label(i, 0);
             assertTrue(label1.compareTo(label2) <= 0);
         }
 
-        sort = sort(df, nominalComparator(df.col(0), false));
+        sort = sort(df, nominalComparator(df.var(0), false));
         for (int i = 1; i < sort.rowCount(); i++) {
             String label1 = sort.label(i - 1, 0);
             String label2 = sort.label(i, 0);
@@ -117,12 +117,12 @@ public class SortedFrameTest {
     @Test
     public void testSortNumeric() {
         for (int col = 1; col <= 2; col++) {
-            Frame sort = sort(df, numericComparator(df.col(col), true));
+            Frame sort = sort(df, numericComparator(df.var(col), true));
             for (int i = 1; i < sort.rowCount(); i++) {
                 assertTrue(sort.value(i - 1, col) <= sort.value(i, col));
             }
 
-            sort = sort(df, numericComparator(df.col(col), false));
+            sort = sort(df, numericComparator(df.var(col), false));
             for (int i = 1; i < sort.rowCount(); i++) {
                 assertTrue(sort.value(i - 1, col) >= sort.value(i, col));
             }
@@ -131,18 +131,18 @@ public class SortedFrameTest {
 
     @Test
     public void testCols() {
-        Frame sorted = sort(df, nominalComparator(df.col(0), true));
+        Frame sorted = sort(df, nominalComparator(df.var(0), true));
 
-        assertEquals(df.colCount(), sorted.colCount());
-        for (int i = 0; i < df.colCount(); i++) {
-            assertEquals(df.colNames()[i], sorted.colNames()[i]);
+        assertEquals(df.varCount(), sorted.varCount());
+        for (int i = 0; i < df.varCount(); i++) {
+            assertEquals(df.varNames()[i], sorted.varNames()[i]);
         }
-        assertEquals(df.colNames().length, sorted.colNames().length);
-        for (int i = 0; i < df.colNames().length; i++) {
-            assertEquals(df.colNames()[i], sorted.colNames()[i]);
-            assertEquals(df.colIndex(df.colNames()[i]), sorted.colIndex(sorted.colNames()[i]));
-            assertEquals(df.colNames()[i], sorted.colNames()[i]);
-            assertEquals(df.col(df.colNames()[i]).type().isNominal(), sorted.col(sorted.colNames()[i]).type().isNominal());
+        assertEquals(df.varNames().length, sorted.varNames().length);
+        for (int i = 0; i < df.varNames().length; i++) {
+            assertEquals(df.varNames()[i], sorted.varNames()[i]);
+            assertEquals(df.varIndex(df.varNames()[i]), sorted.varIndex(sorted.varNames()[i]));
+            assertEquals(df.varNames()[i], sorted.varNames()[i]);
+            assertEquals(df.var(df.varNames()[i]).type().isNominal(), sorted.var(sorted.varNames()[i]).type().isNominal());
         }
     }
 
@@ -151,15 +151,15 @@ public class SortedFrameTest {
         Frame sorted = df;
 
         for (int i = 0; i < 10_000; i++) {
-            int col = RandomSource.nextInt(sorted.colCount());
+            int col = RandomSource.nextInt(sorted.varCount());
             boolean asc = RandomSource.nextDouble() >= .5;
-            Comparator<Integer> comp = sorted.col(col).type().isNominal() ?
-                    nominalComparator(sorted.col(0), asc) :
-                    numericComparator(sorted.col(0), asc);
+            Comparator<Integer> comp = sorted.var(col).type().isNominal() ?
+                    nominalComparator(sorted.var(0), asc) :
+                    numericComparator(sorted.var(0), asc);
             sorted = sort(sorted, comp);
         }
 
-        sorted = sort(sorted, nominalComparator(sorted.col("x"), true));
+        sorted = sort(sorted, nominalComparator(sorted.var("x"), true));
 
         for (int i = 0; i < sorted.rowCount() - 1; i++) {
             assertTrue(sorted.label(i, "x").compareTo(sorted.label(i + 1, "x"))<=0);

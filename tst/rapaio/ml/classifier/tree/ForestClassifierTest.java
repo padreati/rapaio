@@ -49,7 +49,7 @@ public class ForestClassifierTest {
 
     public double test(String name) throws IOException {
         Frame df = loadFrame(name);
-        String className = df.colNames()[df.colCount() - 1];
+        String className = df.varNames()[df.varCount() - 1];
         ForestClassifier rf = new ForestClassifier().withRuns(100);
         ModelEvaluation cv = new ModelEvaluation();
         return cv.cv(df, className, rf, 10);

@@ -44,7 +44,7 @@ public class PrintTable {
     }
 
     public PrintTable(Frame df) {
-        this.headers = df.colNames();
-        this.values = new String[df.rowCount()][df.colCount()];
+        this.headers = df.varNames();
+        this.values = new String[df.rowCount()][df.varCount()];
     }
 }

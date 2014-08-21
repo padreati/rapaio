@@ -32,6 +32,7 @@ import rapaio.data.Var;
  * Date: 9/7/13
  * Time: 12:26 PM
  */
+@Deprecated
 public class Variance implements Printable {
 
     private final Var var;

@@ -26,7 +26,6 @@ import rapaio.core.RandomSource;
 import rapaio.core.stat.ConfusionMatrix;
 import rapaio.core.stat.ROC;
 import rapaio.data.Frame;
-import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Legend;
@@ -69,7 +68,7 @@ public class ROCCurvesPage implements TutorialPage {
                 + "testing our model. ");
 
         RandomSource.setSeed(2718);
-        final Frame spam = BaseFilters.retainCols(Datasets.loadSpamBase(), "0-4,spam");
+        final Frame spam = Datasets.loadSpamBase().mapVars("0-4,spam");
         List<Frame> samples = randomSample(spam, new int[]{(int) (spam.rowCount() * 0.6)});
         final Frame train = samples.get(0);
         final Frame test = samples.get(1);
@@ -120,7 +119,7 @@ public class ROCCurvesPage implements TutorialPage {
 
         code("        new ConfusionMatrix(test.getCol(\"spam\"), oneRule.getPrediction()).summary();\n");
 
-        new ConfusionMatrix(test.col("spam"), oneRule.pred()).summary();
+        new ConfusionMatrix(test.var("spam"), oneRule.pred()).summary();
 
         heading(4, "Random Forest");
 
@@ -134,7 +133,7 @@ public class ROCCurvesPage implements TutorialPage {
 //                "        rf.learn(train, \"spam\");\n" +
 //                "        rf.predict(test);\n");
 //
-//        new ConfusionMatrix(test.col("spam"), rf.prediction()).summary();
+//        new ConfusionMatrix(test.var("spam"), rf.prediction()).summary();
 
         heading(4, "AdaBoost.SAMME");
 
@@ -151,7 +150,7 @@ public class ROCCurvesPage implements TutorialPage {
                 "        ab.learn(train, \"spam\");\n" +
                 "        ab.predict(test);\n");
 
-        new ConfusionMatrix(test.col("spam"), ab.pred()).summary();
+        new ConfusionMatrix(test.var("spam"), ab.pred()).summary();
 
         heading(2, "ROC Curves");
 
@@ -170,9 +169,9 @@ public class ROCCurvesPage implements TutorialPage {
                 + "ROCCurve plot component which builds and draws a curve according with "
                 + "a given computed ROC object. The following code does this.");
 
-        ROC rocOR = new ROC(oneRule.pred(), test.col("spam"), "1");
-//        ROC rocRF = new ROC(rf.distribution().col("1"), test.col("spam"), "1");
-        ROC rocAB = new ROC(ab.dist().col("1"), test.col("spam"), "1");
+        ROC rocOR = new ROC(oneRule.pred(), test.var("spam"), "1");
+//        ROC rocRF = new ROC(rf.distribution().var("1"), test.var("spam"), "1");
+        ROC rocAB = new ROC(ab.dist().var("1"), test.var("spam"), "1");
         draw(new Plot()
                         .add(new ROCCurve(rocOR).color(1))
 //                        .add(new ROCCurve(rocRF).color(2))

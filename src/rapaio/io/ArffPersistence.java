@@ -131,7 +131,7 @@ public class ArffPersistence {
                     newvectors.add(Nominal.newEmpty(data.size(), nomValueMap.get(names.get(i))));
                 }
             }
-            Frame df = new SolidFrame(data.size(), newvectors, names, null);
+            Frame df = new SolidFrame(data.size(), newvectors, names);
 
             // process data
             for (int i = 0; i < data.size(); i++) {
@@ -140,11 +140,11 @@ public class ArffPersistence {
                     if ("?".equals(tmp[j])) {
                         continue;
                     }
-                    if (df.col(j).type().isNumeric()) {
-                        df.col(j).setValue(i, Double.parseDouble(tmp[j]));
+                    if (df.var(j).type().isNumeric()) {
+                        df.var(j).setValue(i, Double.parseDouble(tmp[j]));
                     }
-                    if (df.col(j).type().isNominal()) {
-                        df.col(j).setLabel(i, fullTrim(tmp[j]));
+                    if (df.var(j).type().isNominal()) {
+                        df.var(j).setLabel(i, fullTrim(tmp[j]));
                     }
                 }
             }

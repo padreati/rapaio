@@ -41,12 +41,12 @@ public class VarianceTest extends CoreStatTestUtil {
     @Test
     public void testRReferenceVariance() throws IOException {
         Frame df = getDataFrame();
-        assertEquals(Double.valueOf("1.0012615815492349469"), Math.sqrt(new Variance(df.col(0)).getValue()), 1e-12);
+        assertEquals(Double.valueOf("1.0012615815492349469"), Math.sqrt(new Variance(df.var(0)).getValue()), 1e-12);
     }
 
     @Test
     public void testPearsonDSVariance() throws IOException, URISyntaxException {
         Frame df = Datasets.loadPearsonHeightDataset();
-        assertEquals(Double.valueOf("7.93094884953222"), new Variance(df.col("Son")).getValue(), 1e-12);
+        assertEquals(Double.valueOf("7.93094884953222"), new Variance(df.var("Son")).getValue(), 1e-12);
     }
 }

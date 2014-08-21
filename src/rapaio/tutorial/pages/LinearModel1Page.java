@@ -72,7 +72,7 @@ public class LinearModel1Page implements TutorialPage {
 
         p("First we get the heights of the sons in a numeric var. ");
 
-        Numeric sons = (Numeric) df.col("Son");
+        Numeric sons = (Numeric) df.var("Son");
 
         code(""
                 + "        Frame df = Datasets.loadPearsonHeightDataset();\n"

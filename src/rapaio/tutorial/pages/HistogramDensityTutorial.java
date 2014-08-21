@@ -96,7 +96,7 @@ public class HistogramDensityTutorial implements TutorialPage {
 
         code("        draw(new Histogram(df.getCol(\"Father\")));\n");
 
-        draw(new Plot().add(new Histogram(df.col("Father"))));
+        draw(new Plot().add(new Histogram(df.var("Father"))));
 
         p("The height of a rectangle is also equal to the frequency density of "
                 + "the interval, i.e., the frequency divided by the width of the interval. "
@@ -109,7 +109,7 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("One can change the number of bins. ");
 
         code("        draw(new Plot().add(new Histogram(df.getCol(\"Father\"), 100, false)));\n");
-        draw(new Plot().add(new Histogram(df.col("Father")).bins(100).prob(false)));
+        draw(new Plot().add(new Histogram(df.var("Father")).bins(100).prob(false)));
 
         p("Note that on the vertical axis we found the count of the elements which "
                 + "are held by the bins that are displayed. We can "
@@ -118,7 +118,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                 + "That feature is a key property of a probability density function, also.");
 
         p("        draw(new Plot().add(new Histogram(df.getCol(\"Father\"), 30, true)));\n");
-        draw(new Plot().add(new Histogram(df.col("Father")).bins(30).prob(true)));
+        draw(new Plot().add(new Histogram(df.var("Father")).bins(30).prob(true)));
 
         p("The histogram is useful but have a weak point. Its weak point lies "
                 + "into it's flexibility given by the number of bins. "
@@ -145,7 +145,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                 + "                .add(new DensityLine(getCol)));\n"
                 + "");
 
-        final Var col = df.col("Father");
+        final Var col = df.var("Father");
         draw(new Plot()
                 .add(new Histogram(col).color(Index.newSeq(1, 255)))
                 .add(new DensityLine(col)));
@@ -222,8 +222,8 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("Blue line represents density approximation of father's heights, "
                 + "red line represents density approximation of son's heights.");
 
-        draw(new Plot().add(new DensityLine(df.col("Father")).color(6))
-                .add(new DensityLine(df.col("Son")).color(9))
+        draw(new Plot().add(new DensityLine(df.var("Father")).color(6))
+                .add(new DensityLine(df.var("Son")).color(9))
                 .yLim(0, 0.18)
                 .xLim(55, 80));
 

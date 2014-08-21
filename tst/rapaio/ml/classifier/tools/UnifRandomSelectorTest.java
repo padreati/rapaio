@@ -21,7 +21,7 @@
 package rapaio.ml.classifier.tools;
 
 import org.junit.Test;
-import rapaio.core.ColRange;
+import rapaio.core.VarRange;
 import rapaio.data.*;
 import rapaio.ml.refactor.colselect.ColSelector;
 import rapaio.ml.refactor.colselect.RandomColSelector;
@@ -49,12 +49,11 @@ public class UnifRandomSelectorTest {
                         Index.newScalar(1)},
 				new String[]{
 						"a", "b", "c", "d", "e", "f", "g", "h", "class"
-				},
-                null);
+				});
 		String classColName = "class";
 		int mcols = 4;
 
-		ColSelector colSelector = new RandomColSelector(df, new ColRange(classColName), mcols);
+		ColSelector colSelector = new RandomColSelector(df, new VarRange(classColName), mcols);
 
 		final int TESTS = 10_000;
 		HashMap<String, Integer> counter = new HashMap<>();

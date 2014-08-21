@@ -37,10 +37,10 @@ public class MappedFrameTest {
     @Test
     public void colsSortedTest() throws IOException, URISyntaxException {
         Frame orig = Datasets.loadIrisDataset();
-        Frame sort = BaseFilters.sort(orig, RowComparators.numericComparator(orig.col(1), true));
-        sort = BaseFilters.sort(sort, RowComparators.numericComparator(orig.col(2), true));
+        Frame sort = BaseFilters.sort(orig, RowComparators.numericComparator(orig.var(1), true));
+        sort = BaseFilters.sort(sort, RowComparators.numericComparator(orig.var(2), true));
         for (int i = 0; i < sort.rowCount(); i++) {
-            assertEquals(sort.value(i, 0), sort.col(0).value(i), 1e-10);
+            assertEquals(sort.value(i, 0), sort.var(0).value(i), 1e-10);
         }
     }
 }

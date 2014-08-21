@@ -20,7 +20,7 @@
 
 package rapaio.ml.refactor.colselect;
 
-import rapaio.core.ColRange;
+import rapaio.core.VarRange;
 import rapaio.data.Frame;
 
 import java.util.List;
@@ -33,8 +33,8 @@ public class DefaultColSelector implements ColSelector {
 
     private String[] selection;
 
-    public DefaultColSelector(Frame df, ColRange except) {
-        String[] all = df.colNames();
+    public DefaultColSelector(Frame df, VarRange except) {
+        String[] all = df.varNames();
         List<Integer> ex = except.parseColumnIndexes(df);
         selection = new String[all.length - ex.size()];
         int pos = 0;

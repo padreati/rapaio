@@ -47,10 +47,10 @@ public class PearsonRCorrelation implements Printable {
     private final double[][] pearson;
 
     public PearsonRCorrelation(Frame df) {
-        this.names = df.colNames();
-        this.vars = new Var[df.colCount()];
-        for (int i = 0; i < df.colCount(); i++) {
-            vars[i] = df.col(i);
+        this.names = df.varNames();
+        this.vars = new Var[df.varCount()];
+        for (int i = 0; i < df.varCount(); i++) {
+            vars[i] = df.var(i);
         }
         this.pearson = new double[vars.length][vars.length];
         for (int i = 0; i < vars.length; i++) {

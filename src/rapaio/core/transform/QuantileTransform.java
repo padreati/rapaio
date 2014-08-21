@@ -31,6 +31,7 @@ import java.util.Map;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class QuantileTransform implements Transform {
 
     private final String[] colNames;
@@ -58,13 +59,13 @@ public class QuantileTransform implements Transform {
         }
         values = new HashMap<>();
         for (String colName : colNames) {
-            values.put(colName, new Quantiles(df.col(colName), p).values());
+            values.put(colName, new Quantiles(df.var(colName), p).values());
         }
     }
 
     public void scale(Frame df) {
         for (String colName : colNames) {
-            Var col = df.col(colName);
+            Var col = df.var(colName);
             double[] vals = values.get(colName);
             for (int i = 0; i < df.rowCount(); i++) {
                 if (col.missing(i)) continue;
@@ -89,7 +90,7 @@ public class QuantileTransform implements Transform {
 
     public void unscale(Frame df) {
         for (String colName : colNames) {
-            Var col = df.col(colName);
+            Var col = df.var(colName);
             double[] vals = values.get(colName);
             for (int i = 0; i < df.rowCount(); i++) {
                 if (col.missing(i)) continue;

@@ -115,18 +115,10 @@ public class FSpot implements Serializable {
     }
 
     public String[] dictionary(int colIndex) {
-        return df.col(colIndex).dictionary();
+        return df.var(colIndex).dictionary();
     }
 
     public String[] dictionary(String colName) {
-        return df.col(colName).dictionary();
-    }
-
-    public double weight() {
-        return df.weight(row);
-    }
-
-    public void setWeight(double weight) {
-        df.setWeight(row, weight);
+        return df.var(colName).dictionary();
     }
 }

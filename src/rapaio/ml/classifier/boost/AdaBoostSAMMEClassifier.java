@@ -25,7 +25,7 @@ import rapaio.data.Frame;
 import rapaio.data.Frames;
 import rapaio.data.Nominal;
 import rapaio.data.Numeric;
-import rapaio.data.mapping.MappedFrame;
+import rapaio.data.MappedFrame;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.RunningClassifier;
@@ -126,14 +126,14 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     }
 
     @Override
-    public void learn(Frame df, String targetCol) {
+    public void learn(Frame df, Numeric weights, String targetCol) {
         this.targetCol = targetCol;
-        dict = df.col(targetCol).dictionary();
+        dict = df.var(targetCol).dictionary();
         k = dict.length - 1;
 
         h = new ArrayList<>();
         a = new ArrayList<>();
-        w = df.weights().solidCopy();
+        w = weights.solidCopy();
 
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
         w.stream().transformValue(x -> x / total);
@@ -147,18 +147,18 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     }
 
     @Override
-    public void learnFurther(Frame df, String targetColName, int additionalRuns) {
+    public void learnFurther(Frame df, Numeric weights, String targetColName, int additionalRuns) {
 
         if (w != null && targetCol != null && dict != null) {
             // if prev trained on something else than we have a problem
             if ((!targetColName.equals(targetCol) ||
-                    k != df.col(targetColName).dictionary().length - 1)) {
+                    k != df.var(targetColName).dictionary().length - 1)) {
                 throw new IllegalArgumentException("previous classifier trained on different target");
             }
             runs += additionalRuns;
         } else {
             runs = additionalRuns;
-            learn(df, targetColName);
+            learn(df, weights, targetColName);
             return;
         }
 
@@ -176,16 +176,17 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     private boolean learnRound(Frame df) {
         int[] rows = getSamplingRows(df);
         Frame dfTrain = MappedFrame.newByRow(df, rows);
+        Numeric dfWeights = Numeric.newEmpty(rows.length);
         for (int j = 0; j < rows.length; j++) {
-            dfTrain.setWeight(j, w.value(rows[j]));
+            dfWeights.setValue(j, w.value(rows[j]));
         }
 
         Classifier hh = base.newInstance();
-        hh.learn(dfTrain, targetCol);
+        hh.learn(dfTrain, dfWeights, targetCol);
         hh.predict(df);
         double err = 0;
         for (int j = 0; j < df.rowCount(); j++) {
-            if (hh.pred().index(j) != df.col(targetCol).index(j)) {
+            if (hh.pred().index(j) != df.var(targetCol).index(j)) {
                 err += w.value(j);
             }
         }
@@ -207,7 +208,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         a.add(alpha);
 
         for (int j = 0; j < w.rowCount(); j++) {
-            if (hh.pred().index(j) != df.col(targetCol).index(j)) {
+            if (hh.pred().index(j) != df.var(targetCol).index(j)) {
                 w.setValue(j, w.value(j) * Math.exp(alpha));
             }
         }
@@ -235,7 +236,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
             double max = 0;
             int prediction = 0;
-            for (int j = 1; j < dist.colCount(); j++) {
+            for (int j = 1; j < dist.varCount(); j++) {
                 if (dist.value(i, j) > max) {
                     prediction = j;
                     max = dist.value(i, j);

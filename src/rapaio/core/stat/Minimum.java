@@ -32,6 +32,7 @@ import rapaio.data.Var;
  * Date: 9/7/13
  * Time: 12:36 PM
  */
+@Deprecated
 public class Minimum implements Printable {
 
     private final Var var;
