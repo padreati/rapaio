@@ -300,7 +300,7 @@ public interface Var extends Serializable {
             @Override
             public BinaryOperator<Numeric> combiner() {
                 return (x, y) -> {
-                    y.stream().forEach(s -> y.addValue(s.value()));
+                    y.stream().forEach(s -> x.addValue(s.value()));
                     return x;
                 };
             }
@@ -332,7 +332,7 @@ public interface Var extends Serializable {
             @Override
             public BinaryOperator<Index> combiner() {
                 return (x, y) -> {
-                    y.stream().forEach(s -> y.addValue(s.value()));
+                    y.stream().forEach(s -> x.addValue(s.value()));
                     return x;
                 };
             }
