@@ -25,9 +25,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -42,6 +40,14 @@ public class NumVarTest {
         assertEquals(false, v.type().isNominal());
 
         assertEquals(0, v.rowCount());
+
+        try {
+            Numeric.newEmpty(-1);
+            assertTrue("should raise an exception", false);
+        } catch (Throwable ignored) {
+        }
+
+        assertEquals("Numeric[1]", Numeric.newEmpty(1).toString());
     }
 
     @Test
@@ -68,21 +74,29 @@ public class NumVarTest {
         for (int i = 0; i < v.rowCount(); i++) {
             assertEquals("", v.label(i));
         }
-        boolean exceptional = false;
         try {
             v.setLabel(0, "test");
-        } catch (Throwable ex) {
-            exceptional = true;
+            assertTrue("should raise an exception", false);
+        } catch (Throwable ignored) {
         }
-        assertTrue(exceptional);
 
-        exceptional = false;
+        try {
+            v.addLabel("x");
+            assertTrue("should raise an exception", false);
+        } catch (Throwable ignored) {
+        }
+
         try {
             v.dictionary();
-        } catch (Throwable ex) {
-            exceptional = true;
+            assertTrue("should raise an exception", false);
+        } catch (Throwable ignored) {
         }
-        assertTrue(exceptional);
+
+        try {
+            v.setDictionary();
+            assertTrue("should raise an exception", false);
+        } catch (Throwable ignored) {
+        }
     }
 
     @Test
@@ -169,7 +183,7 @@ public class NumVarTest {
         Numeric x = Numeric.newCopyOf(1, 2, 3, 4).withName("x");
 
         x.addIndex(10);
-        assertEquals(10, x.value(x.rowCount()-1), 10e-10);
+        assertEquals(10, x.value(x.rowCount() - 1), 10e-10);
 
         Numeric b = Numeric.newEmpty();
         b.addBinary(true);

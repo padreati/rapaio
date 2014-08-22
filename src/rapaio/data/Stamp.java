@@ -34,7 +34,7 @@ import java.util.Arrays;
  */
 public class Stamp extends AbstractVar {
 
-    private static final long MISSING_VALUE = Long.MIN_VALUE;
+    public static final long MISSING_VALUE = Long.MIN_VALUE;
     private long[] data;
     private int rows;
 
@@ -46,7 +46,7 @@ public class Stamp extends AbstractVar {
      * @return new instance of stamp var
      */
     public static Stamp newEmpty() {
-        return new Stamp(0, 0, 0);
+        return new Stamp(0, 0, MISSING_VALUE);
     }
 
     /**
@@ -56,7 +56,7 @@ public class Stamp extends AbstractVar {
      * @return new instance of stamp var
      */
     public static Stamp newEmpty(int rows) {
-        return new Stamp(rows, rows, 0);
+        return new Stamp(rows, rows, MISSING_VALUE);
     }
 
     /**

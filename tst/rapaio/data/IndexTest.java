@@ -48,6 +48,14 @@ public class IndexTest {
         } catch (RuntimeException ex) {
             assertTrue(true);
         }
+
+        try {
+            Index.newEmpty(-1);
+            assertTrue("should raise an exception", false);
+        } catch (Throwable ignored) {
+        }
+
+        assertEquals("Index[1]", Index.newEmpty(1).toString());
     }
 
     @Test
@@ -143,7 +151,7 @@ public class IndexTest {
     @Test
     public void testBuilders() {
         Index x1 = Index.newCopyOf(1, 2, 3, 4);
-        int[] wrap = new int[] {1, 2, 3, 4};
+        int[] wrap = new int[]{1, 2, 3, 4};
         Index x2 = Index.newWrapOf(wrap);
         Index x3 = Index.newSeq(4);
         Index x4 = Index.newSeq(1, 4);
@@ -155,15 +163,15 @@ public class IndexTest {
         x6.addIndex(4);
 
         for (int i = 0; i < 4; i++) {
-            assertEquals(i+1, x1.index(i));
-            assertEquals(i+1, x2.index(i));
+            assertEquals(i + 1, x1.index(i));
+            assertEquals(i + 1, x2.index(i));
             assertEquals(i, x3.index(i));
-            assertEquals(i+1, x4.index(i));
-            assertEquals(i*2+1, x5.index(i));
-            assertEquals(i+1, x6.index(i));
+            assertEquals(i + 1, x4.index(i));
+            assertEquals(i * 2 + 1, x5.index(i));
+            assertEquals(i + 1, x6.index(i));
         }
 
-        wrap[2]=10;
+        wrap[2] = 10;
 
         assertEquals(10, x2.index(2));
     }

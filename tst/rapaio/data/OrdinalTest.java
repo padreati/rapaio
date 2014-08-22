@@ -49,6 +49,8 @@ public class OrdinalTest {
         v = Ordinal.newEmpty(1, "a");
         assertEquals(1, v.rowCount());
         assertEquals("?", v.label(0));
+
+        assertEquals("Ordinal[10]", Ordinal.newEmpty(10).toString());
     }
 
     @Test

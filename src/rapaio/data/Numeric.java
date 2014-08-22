@@ -191,8 +191,6 @@ public final class Numeric extends AbstractVar {
             int newCapacity = oldCapacity > 0xFFFF ? oldCapacity << 1 : oldCapacity + (oldCapacity >> 1);
             if (newCapacity - minCapacity < 0)
                 newCapacity = minCapacity;
-            if (newCapacity < 0 || minCapacity < 0)
-                throw new OutOfMemoryError();
             data = Arrays.copyOf(data, newCapacity);
         }
     }

@@ -61,7 +61,7 @@ public class MappedVar extends AbstractVar {
      * @return mapped variable
      */
     public static MappedVar newByRows(Var source, int... rows) {
-        return new MappedVar(source, rows);
+        return new MappedVar(source, Mapping.newCopyOf(rows));
     }
 
     private MappedVar(Var var, Mapping mapping) {
@@ -71,17 +71,6 @@ public class MappedVar extends AbstractVar {
             this.source = ((MappedVar)var).source();
         } else {
             this.mapping = mapping;
-            this.source = var;
-        }
-    }
-
-    private MappedVar(Var var, int... rows) {
-        withName(var.name());
-        if (var instanceof MappedVar) {
-            this.mapping = Mapping.newWrapOf(Arrays.stream(rows).map(row -> ((MappedVar)var).mapping().get(row)).mapToObj(row -> row).collect(Collectors.toList()));
-            this.source = ((MappedVar)var).source();
-        } else {
-            this.mapping = Mapping.newCopyOf(rows);
             this.source = var;
         }
     }

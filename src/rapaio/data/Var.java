@@ -70,7 +70,7 @@ public interface Var extends Serializable {
      * @param var given var with additional rows
      * @return new var with all union of rows
      */
-    public Var bindRows(Var var);
+    Var bindRows(Var var);
 
     /**
      * Builds a new frame only with rows specified in mapping.
@@ -78,7 +78,17 @@ public interface Var extends Serializable {
      * @param mapping a list of rows from a frame
      * @return new frame with selected rows
      */
-    public Var mapRows(Mapping mapping);
+    Var mapRows(Mapping mapping);
+
+    /**
+     * Builds a new variable only with rows specified in mapping.
+     *
+     * @param rows a list of rows
+     * @return new frame with selected rows
+     */
+    default Var mapRows(int... rows) {
+        return mapRows(Mapping.newCopyOf(rows));
+    }
 
     /**
      * Returns numeric value for the observation specified by row.

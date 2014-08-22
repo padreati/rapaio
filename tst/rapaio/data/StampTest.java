@@ -46,6 +46,25 @@ public class StampTest {
         } catch (RuntimeException ex) {
             assertTrue(true);
         }
+
+        try {
+            Stamp.newEmpty(-1);
+            assertTrue("should raise an exception", false);
+        } catch (Throwable ignored) {
+        }
+
+        stamp.addIndex(1);
+        assertEquals(2, stamp.rowCount());
+        assertEquals(true, stamp.missing(0));
+        assertEquals(1, stamp.stamp(1));
+
+        try {
+            Stamp.newCopyOf(10).binary(0);
+            assertTrue("should raise an exception", false);
+        } catch (Throwable ignored) {
+        }
+
+        assertEquals("Stamp[1]", Stamp.newEmpty(1).toString());
     }
 
     @Test
@@ -55,7 +74,7 @@ public class StampTest {
 
         stamp = Stamp.newEmpty(10);
         for (int i = 0; i < 10; i++) {
-            assertEquals(0, stamp.stamp(i));
+            assertEquals(Stamp.MISSING_VALUE, stamp.stamp(i));
         }
     }
 
@@ -141,7 +160,7 @@ public class StampTest {
     @Test
     public void testBuilders() {
         Stamp x1 = Stamp.newCopyOf(1L, 2L, 3L, 4L);
-        long[] wrap = new long[] {1, 2, 3, 4};
+        long[] wrap = new long[]{1, 2, 3, 4};
         Stamp x2 = Stamp.newWrapOf(wrap);
         Stamp x3 = Stamp.newSeq(4);
         Stamp x4 = Stamp.newSeq(1, 4);
@@ -153,15 +172,15 @@ public class StampTest {
         x6.addStamp(4);
 
         for (int i = 0; i < 4; i++) {
-            assertEquals(i+1, x1.stamp(i));
-            assertEquals(i+1, x2.stamp(i));
+            assertEquals(i + 1, x1.stamp(i));
+            assertEquals(i + 1, x2.stamp(i));
             assertEquals(i, x3.stamp(i));
-            assertEquals(i+1, x4.stamp(i));
-            assertEquals(i*2+1, x5.stamp(i));
-            assertEquals(i+1, x6.stamp(i));
+            assertEquals(i + 1, x4.stamp(i));
+            assertEquals(i * 2 + 1, x5.stamp(i));
+            assertEquals(i + 1, x6.stamp(i));
         }
 
-        wrap[2]=10;
+        wrap[2] = 10;
 
         assertEquals(10, x2.stamp(2));
     }
