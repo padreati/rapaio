@@ -131,7 +131,7 @@ public class VarRange {
         return colIndexes;
     }
 
-    public List<String> parseColumnNames(Frame df) {
+    public List<String> parseVarNames(Frame df) {
         return parseColumnIndexes(df).stream().map(i -> df.varNames()[i]).collect(Collectors.toList());
     }
 }

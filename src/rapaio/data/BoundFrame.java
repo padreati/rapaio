@@ -23,14 +23,142 @@ package rapaio.data;
 import rapaio.core.VarRange;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.*;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class BoundFrame extends AbstractFrame {
 
-    private int rowCount;
-    private int varCount;
+    private final int rowCount;
+    private final List<Var> vars;
+    private final String[] names;
+    private final Map<String, Integer> indexes;
 
+    /**
+     * Builds a new bound frame by binding variables of multiple given frames.
+     * All variable names must be unique among all the given frames.
+     * The row count is the minimum of the row counts from all the given frames.
+     *
+     * @param dfs given data frames
+     * @return new frame bound frame by binding variables
+     */
+    public static BoundFrame newByVars(Frame... dfs) {
+        if (dfs.length == 0) {
+            return new BoundFrame(0, new ArrayList<>(), new String[]{}, new HashMap<>());
+        }
+        int _rowCount = 0;
+        List<Var> _vars = new ArrayList<>();
+        List<String> _names = new ArrayList<>();
+        Map<String, Integer> _indexes = new HashMap<>();
+        Set<String> _namesSet = new HashSet<>();
+
+        int pos = 0;
+        for (int i = 0; i < dfs.length; i++) {
+            if (i == 0) {
+                _rowCount = dfs[i].rowCount();
+            } else {
+                _rowCount = Math.min(_rowCount, dfs[i].rowCount());
+            }
+            for (int j = 0; j < dfs[i].varCount(); j++) {
+                if (_namesSet.contains(dfs[i].var(j).name())) {
+                    throw new IllegalArgumentException("bound frame does not allow variables with the same name");
+                }
+                _vars.add(dfs[i].var(j));
+                _names.add(dfs[i].var(j).name());
+                _namesSet.add(dfs[i].var(j).name());
+                _indexes.put(dfs[i].var(j).name(), pos++);
+            }
+        }
+        return new BoundFrame(_rowCount, _vars, _names.toArray(new String[_names.size()]), _indexes);
+    }
+
+    /**
+     * Builds a new bound frame by binding given variables.
+     * All variable names must be unique.
+     * The row count is the minimum of the row counts from all the given variables.
+     *
+     * @param varList given data variables
+     * @return new frame bound frame by binding variables
+     */
+    public static BoundFrame newByVars(Var... varList) {
+        if (varList.length == 0) {
+            return new BoundFrame(0, new ArrayList<>(), new String[]{}, new HashMap<>());
+        }
+        int _rowCount = 0;
+        List<Var> _vars = new ArrayList<>();
+        List<String> _names = new ArrayList<>();
+        Map<String, Integer> _indexes = new HashMap<>();
+        Set<String> _namesSet = new HashSet<>();
+
+        int pos = 0;
+        for (int i = 0; i < varList.length; i++) {
+            if (i == 0) {
+                _rowCount = varList[i].rowCount();
+            } else {
+                _rowCount = Math.min(_rowCount, varList[i].rowCount());
+            }
+            if (_namesSet.contains(varList[i].name())) {
+                throw new IllegalArgumentException("bound frame does not allow variables with the same name");
+            }
+            _vars.add(varList[i]);
+            _names.add(varList[i].name());
+            _namesSet.add(varList[i].name());
+            _indexes.put(varList[i].name(), pos++);
+        }
+        return new BoundFrame(_rowCount, _vars, _names.toArray(new String[_names.size()]), _indexes);
+    }
+
+    public static BoundFrame newByRows(Frame... dfs) {
+        if (dfs.length == 0) {
+            return new BoundFrame(0, new ArrayList<>(), new String[]{}, new HashMap<>());
+        }
+        String[] _names = dfs[0].varNames();
+
+        // check that in each frame to exist all the variables and to have the same type
+        // otherwise throw an exception
+
+        for (int i = 1; i < dfs.length; i++) {
+            for (int j = 0; j < _names.length; j++) {
+                // throw an exception if the column does not exists
+                if (!dfs[i].var(_names[j]).type().equals(dfs[0].var(_names[j]).type())) {
+                    // column exists but does not have the same type
+                    throw new IllegalArgumentException("can't bind by rows columns of different types");
+                }
+            }
+        }
+
+        List<Var> _vars = new ArrayList<>();
+        Map<String, Integer> _indexes = new HashMap<>();
+
+        // for each var name build a bounded var from all the rows from all the frames
+
+        for (int i = 0; i < _names.length; i++) {
+
+            List<Integer> counts = new ArrayList<>();
+            List<Var> boundVars = new ArrayList<>();
+
+            for (int j = 0; j < dfs.length; j++) {
+                counts.add(dfs[j].rowCount()); // avoid to take rowCount from variable, but from frame
+                boundVars.add(dfs[j].var(_names[i]));
+            }
+
+            Var boundedVar = BoundVar.newFrom(counts, boundVars);
+            _vars.add(boundedVar);
+            _indexes.put(_names[i], i);
+        }
+
+        int _rowCount = Arrays.stream(dfs).mapToInt(Frame::rowCount).sum();
+
+        return new BoundFrame(_rowCount, _vars, _names, _indexes);
+    }
+
+    private BoundFrame(int rowCount, List<Var> vars, String[] names, Map<String, Integer> indexes) {
+        this.rowCount = rowCount;
+        this.vars = vars;
+        this.names = names;
+        this.indexes = indexes;
+    }
 
     @Override
     public int rowCount() {
@@ -39,51 +167,60 @@ public class BoundFrame extends AbstractFrame {
 
     @Override
     public int varCount() {
-        return varCount;
+        return vars.size();
     }
 
     @Override
     public String[] varNames() {
-        throw new NotImplementedException();
+        return names;
     }
 
     @Override
     public int varIndex(String name) {
-        throw new NotImplementedException();
+        return indexes.get(name);
     }
 
     @Override
     public Var var(int pos) {
-        throw new NotImplementedException();
+        return vars.get(pos);
     }
 
     @Override
     public Var var(String name) {
-        throw new NotImplementedException();
+        return vars.get(indexes.get(name));
     }
 
     @Override
     public Frame bindVars(Var... vars) {
-        throw new NotImplementedException();
+        return BoundFrame.newByVars(this, BoundFrame.newByVars(vars));
     }
 
     @Override
     public Frame bindVars(Frame df) {
-        throw new NotImplementedException();
+        return BoundFrame.newByVars(df);
     }
 
     @Override
     public Frame mapVars(VarRange range) {
-        throw new NotImplementedException();
+        List<String> parseVarNames = range.parseVarNames(this);
+        String[] _names = new String[parseVarNames.size()];
+        List<Var> _vars = new ArrayList<>();
+        Map<String, Integer> _indexes = new HashMap<>();
+        for (int i = 0; i < parseVarNames.size(); i++) {
+            _names[i] = parseVarNames.get(i);
+            _vars.add(var(parseVarNames.get(i)));
+            _indexes.put(parseVarNames.get(i), i);
+        }
+        return new BoundFrame(rowCount, _vars, _names, _indexes);
     }
 
     @Override
     public Frame bindRows(Frame df) {
-        throw new NotImplementedException();
+        return BoundFrame.newByRows(this, df);
     }
 
     @Override
     public Frame mapRows(Mapping mapping) {
-        throw new NotImplementedException();
+        return MappedFrame.newByRow(this, mapping);
     }
 }

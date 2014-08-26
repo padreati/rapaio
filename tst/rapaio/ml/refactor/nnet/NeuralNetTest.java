@@ -55,7 +55,7 @@ public class NeuralNetTest {
         b.addValue(1.);
         and.addValue(1.);
 
-        Frame df = new SolidFrame(and.rowCount(), new Var[]{and}, new String[]{"and"});
+        Frame df = SolidFrame.newWrapOf(and.rowCount(), new Var[]{and}, new String[]{"and"});
         df = Frames.addCol(df, b, "b", 0);
         df = Frames.addCol(df, a, "a", 0);
 
@@ -97,7 +97,7 @@ public class NeuralNetTest {
         b.addValue(1.);
         xor.addValue(1.);
 
-        Frame df = new SolidFrame(xor.rowCount(), new Var[]{xor}, new String[]{"xor"});
+        Frame df = SolidFrame.newWrapOf(xor.rowCount(), new Var[]{xor}, new String[]{"xor"});
         df = Frames.addCol(df, b, "b", 0);
         df = Frames.addCol(df, a, "a", 0);
 
@@ -144,7 +144,7 @@ public class NeuralNetTest {
         xorA.addValue(0);
         xorB.addValue(1);
 
-        Frame df = new SolidFrame(xorA.rowCount(),
+        Frame df = SolidFrame.newWrapOf(xorA.rowCount(),
                 new Var[]{a, b, xorA, xorB},
                 new String[]{"a", "b", "xorA", "xorB"});
 
@@ -191,7 +191,7 @@ public class NeuralNetTest {
         b.addValue(1.);
         xor.addValue(1.);
 
-        Frame df = new SolidFrame(xor.rowCount(), new Var[]{xor}, new String[]{"xor"});
+        Frame df = SolidFrame.newWrapOf(xor.rowCount(), new Var[]{xor}, new String[]{"xor"});
         df = Frames.addCol(df, b, "b", 0);
         df = Frames.addCol(df, a, "a", 0);
 

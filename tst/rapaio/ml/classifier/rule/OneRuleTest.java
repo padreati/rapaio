@@ -48,7 +48,7 @@ public class OneRuleTest {
 
     @Test
     public void testSimpleNumeric() {
-        Frame df = new SolidFrame(SIZE, new Var[]{heightVar, classVar}, new String[]{"height", "class"});
+        Frame df = SolidFrame.newWrapOf(SIZE, new Var[]{heightVar, classVar}, new String[]{"height", "class"});
 
         String[] labels;
         OneRule oneRule = new OneRule();

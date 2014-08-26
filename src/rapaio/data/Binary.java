@@ -123,10 +123,7 @@ public final class Binary extends AbstractVar {
 
     void increaseCapacity(int minCapacity) {
         if (minCapacity > rows) {
-            final int r = rows + rows >> 1;
-            if (minCapacity < r) {
-                minCapacity = r;
-            }
+            minCapacity = Math.max(minCapacity, rows + rows >> 1);
             BitSet missingCopy = new BitSet(minCapacity);
             BitSet valuesCopy = new BitSet(minCapacity);
             missingCopy.or(missing);
@@ -328,8 +325,8 @@ public final class Binary extends AbstractVar {
             throw new IllegalArgumentException();
         }
         for (int i = row + 1; i < rows; i++) {
-            values.set(i-1, values.get(i));
-            missing.set(i-1, missing.get(i));
+            values.set(i - 1, values.get(i));
+            missing.set(i - 1, missing.get(i));
         }
         rows--;
     }

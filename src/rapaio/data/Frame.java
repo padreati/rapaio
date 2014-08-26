@@ -133,7 +133,7 @@ public interface Frame extends Serializable {
      * @return new frame with the non-deleted variables
      */
     default Frame removeVars(VarRange range) {
-        Set<String> remove = new HashSet<>(range.parseColumnNames(this));
+        Set<String> remove = new HashSet<>(range.parseVarNames(this));
         int[] retain = new int[varNames().length - remove.size()];
         int pos = 0;
         for (String varName : varNames()) {

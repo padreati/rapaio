@@ -35,7 +35,7 @@ public class UnifRandomSelectorTest {
 
 	@Test
 	public void testNaive() {
-		Frame df = new SolidFrame(
+		Frame df = SolidFrame.newWrapOf(
 				0,
 				new Var[]{
 						Index.newScalar(1),

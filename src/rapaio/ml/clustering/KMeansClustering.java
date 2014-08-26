@@ -70,7 +70,7 @@ public class KMeansClustering {
 
     public void cluster(Frame df, String varNames) {
         validate(df, varNames);
-        targets = new VarRange(varNames).parseColumnNames(df);
+        targets = new VarRange(varNames).parseVarNames(df);
         centroids = Frames.newMatrix(k, targets.toArray(new String[targets.size()]));
         arrows = new int[df.rowCount()];
 
@@ -134,7 +134,7 @@ public class KMeansClustering {
 
 
     private void validate(Frame df, String varNames) {
-        List<String> nameList = new VarRange(varNames).parseColumnNames(df);
+        List<String> nameList = new VarRange(varNames).parseVarNames(df);
         for (String varName : nameList) {
             if (!df.var(varName).type().isNumeric())
                 throw new IllegalArgumentException("all matched vars must be numeric: check var " + varName);

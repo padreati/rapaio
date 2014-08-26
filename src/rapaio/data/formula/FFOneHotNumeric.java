@@ -55,7 +55,7 @@ public class FFOneHotNumeric implements FrameFilter {
 
     @Override
     public Frame apply(Frame df) {
-        Set<String> nameSet = new HashSet<>(varRange.parseColumnNames(df));
+        Set<String> nameSet = new HashSet<>(varRange.parseVarNames(df));
 
         List<Var> vars = new ArrayList<>();
         List<String> names = new ArrayList<>();
@@ -83,6 +83,6 @@ public class FFOneHotNumeric implements FrameFilter {
                 names.add(varName);
             }
         }
-        return new SolidFrame(df.rowCount(), vars, names);
+        return SolidFrame.newWrapOf(df.rowCount(), vars, names);
     }
 }

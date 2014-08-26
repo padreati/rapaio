@@ -44,7 +44,7 @@ public class FFRemoveCols implements FrameFilter {
 
     @Override
     public Frame apply(Frame df) {
-        Set<String> remove = new HashSet<>(varRange.parseColumnNames(df));
+        Set<String> remove = new HashSet<>(varRange.parseVarNames(df));
         List<Var> vars = new ArrayList<>();
         List<String> names = new ArrayList<>();
         for (String varName : df.varNames()) {
@@ -54,6 +54,6 @@ public class FFRemoveCols implements FrameFilter {
             vars.add(df.var(varName));
             names.add(varName);
         }
-        return new SolidFrame(df.rowCount(), vars, names);
+        return SolidFrame.newWrapOf(df.rowCount(), vars, names);
     }
 }

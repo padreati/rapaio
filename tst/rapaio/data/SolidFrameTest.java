@@ -22,6 +22,9 @@ package rapaio.data;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -32,15 +35,17 @@ public class SolidFrameTest {
 
     @Test
     public void testEmptySolidFrame() {
-        Frame df = new SolidFrame(0, new Var[0], new String[]{});
+        Frame df = SolidFrame.newWrapOf();
         assertEquals(0, df.rowCount());
         assertEquals(0, df.varCount());
     }
 
     @Test
     public void testColIndexes() {
-        Var[] vars = new Var[]{Numeric.newEmpty(), Numeric.newEmpty(), Numeric.newEmpty()};
-        Frame df = new SolidFrame(0, vars, new String[]{"x", "y", "z"});
+        Frame df = SolidFrame.newWrapOf(
+                Numeric.newEmpty().withName("x"),
+                Numeric.newEmpty().withName("y"),
+                Numeric.newEmpty().withName("z"));
 
         assertEquals(3, df.varCount());
         assertEquals("x", df.varNames()[0]);
@@ -48,29 +53,23 @@ public class SolidFrameTest {
         assertEquals(0, df.varIndex("x"));
         assertEquals(2, df.varIndex("z"));
 
-        boolean exceptional = false;
         try {
             df.varIndex("q");
-        } catch (IllegalArgumentException ex) {
-            exceptional = true;
+            assertTrue("should raise an exception", false);
+        } catch (IllegalArgumentException ignored) {
         }
-        assertEquals(true, exceptional);
 
-        exceptional = false;
         try {
             df.var(10);
-        } catch (IllegalArgumentException ex) {
-            exceptional = true;
+            assertTrue("should raise an exception", false);
+        } catch (IllegalArgumentException ignored) {
         }
-        assertEquals(true, exceptional);
 
-        exceptional = false;
         try {
             df.var(-1);
-        } catch (IllegalArgumentException ex) {
-            exceptional = true;
+            assertTrue("should raise an exception", false);
+        } catch (IllegalArgumentException ignored) {
         }
-        assertEquals(true, exceptional);
 
         assertEquals("x", df.varNames()[0]);
         assertEquals("y", df.varNames()[1]);
@@ -79,13 +78,12 @@ public class SolidFrameTest {
 
     @Test
     public void testConvenientMethods() {
-        Var[] vars = new Var[]{
-                Numeric.newCopyOf(1., 2., 3., 4.),
-                Numeric.newCopyOf(3., 5., 9., 12.),
-                Nominal.newEmpty(4, "ana", "are", "mere"),
-                Index.newSeq(1, 4)
-        };
-        Frame df = new SolidFrame(4, vars, new String[]{"x", "y", "name", "index"});
+        List<Var> vars = new ArrayList<>();
+        vars.add(Numeric.newCopyOf(1., 2., 3., 4.).withName("x"));
+        vars.add(Numeric.newCopyOf(3., 5., 9., 12.).withName("y"));
+        vars.add(Nominal.newEmpty(4, "ana", "are", "mere").withName("name"));
+        vars.add(Index.newSeq(1, 4).withName("index"));
+        Frame df = SolidFrame.newWrapOf(vars);
 
         assertEquals(1., df.value(0, 0), 1e-10);
         df.setValue(0, 0, 3.);

@@ -69,7 +69,7 @@ public class CBenchmarkTest {
             resultNames.add(cName);
         }
 
-        Frame totalResults = Frames.solidCopy(new SolidFrame(tasks.size(), resultCols, resultNames));
+        Frame totalResults = Frames.solidCopy(SolidFrame.newWrapOf(tasks.size(), resultCols, resultNames));
         for (int i = 0; i < tasks.size(); i++) {
             CTask task = tasks.get(i);
             totalResults.setLabel(i, "data set", task.getName());
@@ -77,7 +77,7 @@ public class CBenchmarkTest {
 
         final double ROUNDS = 5;
         for (int r = 0; r < ROUNDS; r++) {
-            Frame results = new SolidFrame(tasks.size(), resultCols, resultNames);
+            Frame results = SolidFrame.newWrapOf(tasks.size(), resultCols, resultNames);
 
             for (int i = 0; i < tasks.size(); i++) {
                 CTask task = tasks.get(i);

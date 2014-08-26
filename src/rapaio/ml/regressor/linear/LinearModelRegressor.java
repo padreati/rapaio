@@ -50,7 +50,7 @@ public class LinearModelRegressor implements Regressor {
 
     @Override
     public void learn(Frame df, String targetCols) {
-        targets = new VarRange(targetCols).parseColumnNames(df);
+        targets = new VarRange(targetCols).parseVarNames(df);
 
         predictors = Arrays.stream(df.varNames())
                 .filter(c -> !targetCols.contains(c) && df.var(c).type().isNumeric())
@@ -65,7 +65,7 @@ public class LinearModelRegressor implements Regressor {
             betaN.addLabel(predictors.get(i));
             betaC.addValue(beta.get(i, 0));
         }
-        coefficients = new SolidFrame(predictors.size(), new Var[]{betaN, betaC}, new String[]{"Term", "Coefficients"});
+        coefficients = SolidFrame.newWrapOf(predictors.size(), new Var[]{betaN, betaC}, new String[]{"Term", "Coefficients"});
 
         fittedValues = buildFit(df);
     }

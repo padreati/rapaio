@@ -56,6 +56,6 @@ public class FFAddIntercept implements FrameFilter {
             vars.add(df.var(varName));
             names.add(varName);
         });
-        return new SolidFrame(df.rowCount(), vars, names);
+        return SolidFrame.newWrapOf(df.rowCount(), vars, names);
     }
 }

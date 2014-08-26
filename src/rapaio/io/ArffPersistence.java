@@ -131,7 +131,7 @@ public class ArffPersistence {
                     newvectors.add(Nominal.newEmpty(data.size(), nomValueMap.get(names.get(i))));
                 }
             }
-            Frame df = new SolidFrame(data.size(), newvectors, names);
+            Frame df = SolidFrame.newWrapOf(data.size(), newvectors, names);
 
             // process data
             for (int i = 0; i < data.size(); i++) {

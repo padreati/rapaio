@@ -242,7 +242,7 @@ public class Csv {
                 }
             }
         }
-        return new SolidFrame(rows - startRow, vars, names);
+        return SolidFrame.newWrapOf(rows - startRow, vars, names);
     }
 
     public List<String> parseLine(String line) {

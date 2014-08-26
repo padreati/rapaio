@@ -23,6 +23,7 @@ package rapaio.data;
 import rapaio.core.VarRange;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +34,6 @@ import java.util.stream.Collectors;
  *
  * @author Aurelian Tutuianu
  */
-@Deprecated
 public class SolidFrame extends AbstractFrame {
 
     private final int rows;
@@ -41,17 +41,49 @@ public class SolidFrame extends AbstractFrame {
     private final HashMap<String, Integer> colIndex;
     private final String[] names;
 
-    public SolidFrame(int rows, List<Var> vars, List<String> names) {
-        this(rows, vars, names.toArray(new String[names.size()]));
+    // public builders
+
+    public static SolidFrame newWrapOf(List<Var> vars) {
+        List<String> names = new ArrayList<>();
+        int rows = Integer.MAX_VALUE;
+        for (int i = 0; i < vars.size(); i++) {
+            names.add(vars.get(i).name());
+            rows = Math.min(rows, vars.get(i).rowCount());
+        }
+        if (rows == Integer.MAX_VALUE) rows = 0;
+        return newWrapOf(rows, vars, names);
     }
 
-    public SolidFrame(int rows, Var[] vars, String[] names) {
-        this(rows, Arrays.asList(vars), names);
+    public static SolidFrame newWrapOf(Var... vars) {
+        String[] names = new String[vars.length];
+        int rows = Integer.MAX_VALUE;
+        for (int i = 0; i < vars.length; i++) {
+            names[i] = vars[i].name();
+            rows = Math.min(rows, vars[i].rowCount());
+        }
+        if (rows == Integer.MAX_VALUE) rows = 0;
+        return newWrapOf(rows, vars, names);
     }
 
-    public SolidFrame(int rows, List<Var> vars, String[] names) {
+    public static SolidFrame newWrapOf(int rows, List<Var> vars, List<String> names) {
+        return newWrapOf(rows, vars, names.toArray(new String[names.size()]));
+    }
+
+    public static SolidFrame newWrapOf(int rows, Var[] vars, String[] names) {
+        return new SolidFrame(rows, Arrays.asList(vars), names);
+    }
+
+    public static SolidFrame newWrapOf(int rows, List<Var> vars, String[] names) {
+        return new SolidFrame(rows, vars, names);
+    }
+
+    // private constructor
+
+    private SolidFrame(int rows, List<Var> vars, String[] names) {
         for (Var var : vars) {
             if (var instanceof MappedVar)
+                throw new IllegalArgumentException("Not allowed mapped vectors in solid frame");
+            if (var instanceof BoundVar)
                 throw new IllegalArgumentException("Not allowed mapped vectors in solid frame");
         }
         this.rows = rows;
@@ -114,9 +146,9 @@ public class SolidFrame extends AbstractFrame {
 
     @Override
     public Frame mapVars(VarRange range) {
-        List<String> varNames = range.parseColumnNames(this);
+        List<String> varNames = range.parseVarNames(this);
         List<Var> vars = varNames.stream().map(this::var).collect(Collectors.toList());
-        return new SolidFrame(rowCount(), vars, varNames);
+        return SolidFrame.newWrapOf(rowCount(), vars, varNames);
     }
 
     @Override
@@ -127,15 +159,5 @@ public class SolidFrame extends AbstractFrame {
     @Override
     public Frame mapRows(Mapping mapping) {
         throw new NotImplementedException();
-    }
-
-    @Override
-    public boolean missing(int row, int col) {
-        return var(col).missing(row);
-    }
-
-    @Override
-    public boolean missing(int row, String colName) {
-        return var(colName).missing(row);
     }
 }

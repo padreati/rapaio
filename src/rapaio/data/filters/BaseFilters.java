@@ -62,7 +62,7 @@ public final class BaseFilters implements Serializable {
         for (int i = 0; i < vars.length; i++) {
             vars[i] = toNumeric(df.var(i));
         }
-        return new SolidFrame(df.rowCount(), vars, df.varNames());
+        return SolidFrame.newWrapOf(df.rowCount(), vars, df.varNames());
     }
 
     /**
@@ -77,7 +77,7 @@ public final class BaseFilters implements Serializable {
                 names.add(df.varNames()[i]);
             }
         }
-        return new SolidFrame(df.rowCount(), vars, names);
+        return SolidFrame.newWrapOf(df.rowCount(), vars, names);
     }
 
     /**
@@ -92,7 +92,7 @@ public final class BaseFilters implements Serializable {
                 names.add(df.varNames()[i]);
             }
         }
-        return new SolidFrame(df.rowCount(), vars, names);
+        return SolidFrame.newWrapOf(df.rowCount(), vars, names);
     }
 
     /**
@@ -135,7 +135,7 @@ public final class BaseFilters implements Serializable {
                     }
                 }
             }
-            dest.add(new SolidFrame(frame.rowCount(), vars, frame.varNames()));
+            dest.add(SolidFrame.newWrapOf(frame.rowCount(), vars, frame.varNames()));
         }
 
         return dest;
@@ -202,7 +202,7 @@ public final class BaseFilters implements Serializable {
                 col.setLabel(j, sb.toString());
             }
             vars.add(col);
-            result.add(new SolidFrame(frame.rowCount(), vars, frame.varNames()));
+            result.add(SolidFrame.newWrapOf(frame.rowCount(), vars, frame.varNames()));
         }
         return result;
 
