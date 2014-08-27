@@ -21,6 +21,7 @@
 package rapaio.core.stat;
 
 import org.junit.Test;
+import rapaio.WS;
 import rapaio.core.distributions.cu.Norm;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
@@ -77,5 +78,21 @@ public class StatOnlineTest {
                         .yLim(0.5, 1.5)
                         .sz(0.4)
         );
+    }
+
+    @Test
+    public void testParallelStat() {
+        Var a = Numeric.newWrapOf(1, 2, 3, 13, 17, 30);
+        Var b = Numeric.newWrapOf(44, 5, 234, 12, 33, 1);
+        Var ab = a.bindRows(b);
+        StatOnline soA = new StatOnline();
+        StatOnline soB = new StatOnline();
+        a.stream().forEach(s -> soA.update(s.value()));
+        b.stream().forEach(s -> soB.update(s.value()));
+
+        soA.apply(soB);
+
+        WS.p(String.format("%12f", soA.variance()));
+        WS.p(String.format("%12f", new Variance(ab).getValue()));
     }
 }

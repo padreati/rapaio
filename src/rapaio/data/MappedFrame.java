@@ -21,7 +21,6 @@
 package rapaio.data;
 
 import rapaio.core.VarRange;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -125,26 +124,26 @@ public class MappedFrame extends AbstractFrame {
 
     @Override
     public Frame bindVars(Var... vars) {
-        throw new NotImplementedException();
+        return BoundFrame.newByVars(this, BoundFrame.newByVars(vars));
     }
 
     @Override
     public Frame bindVars(Frame df) {
-        throw new NotImplementedException();
+        return BoundFrame.newByVars(this, df);
     }
 
     @Override
     public Frame mapVars(VarRange range) {
-        throw new NotImplementedException();
+        return MappedFrame.newByRow(this, Mapping.newRangeOf(0, this.rowCount()), range.parseVarNames(this));
     }
 
     @Override
     public Frame bindRows(Frame df) {
-        throw new NotImplementedException();
+        return BoundFrame.newByRows(this, df);
     }
 
     @Override
     public Frame mapRows(Mapping mapping) {
-        throw new NotImplementedException();
+        return MappedFrame.newByRow(this, mapping);
     }
 }

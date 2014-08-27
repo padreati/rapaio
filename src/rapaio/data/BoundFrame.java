@@ -21,7 +21,6 @@
 package rapaio.data;
 
 import rapaio.core.VarRange;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 
@@ -119,11 +118,21 @@ public class BoundFrame extends AbstractFrame {
         // otherwise throw an exception
 
         for (int i = 1; i < dfs.length; i++) {
+            String[] compNames = dfs[i].varNames();
+            if (compNames.length != _names.length) {
+                throw new IllegalArgumentException("can't bind by rows frames with different variable count");
+            }
             for (int j = 0; j < _names.length; j++) {
+                if (!_names[j].equals(compNames[j])) {
+                    throw new IllegalArgumentException("can't bind by rows frames with different variable " +
+                            "names or with different order of the variables");
+                }
+            }
+            for (String _name : _names) {
                 // throw an exception if the column does not exists
-                if (!dfs[i].var(_names[j]).type().equals(dfs[0].var(_names[j]).type())) {
+                if (!dfs[i].var(_name).type().equals(dfs[0].var(_name).type())) {
                     // column exists but does not have the same type
-                    throw new IllegalArgumentException("can't bind by rows columns of different types");
+                    throw new IllegalArgumentException("can't bind by rows variable of different types");
                 }
             }
         }
@@ -197,7 +206,7 @@ public class BoundFrame extends AbstractFrame {
 
     @Override
     public Frame bindVars(Frame df) {
-        return BoundFrame.newByVars(df);
+        return BoundFrame.newByVars(this, df);
     }
 
     @Override
