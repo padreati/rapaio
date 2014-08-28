@@ -84,7 +84,7 @@ public class SolidFrame extends AbstractFrame {
             if (var instanceof MappedVar)
                 throw new IllegalArgumentException("Not allowed mapped vectors in solid frame");
             if (var instanceof BoundVar)
-                throw new IllegalArgumentException("Not allowed mapped vectors in solid frame");
+                throw new IllegalArgumentException("Not allowed bounded vectors in solid frame");
         }
         this.rows = rows;
         this.vars = new Var[vars.size()];
@@ -136,12 +136,12 @@ public class SolidFrame extends AbstractFrame {
 
     @Override
     public Frame bindVars(Var... vars) {
-        throw new NotImplementedException();
+        return BoundFrame.newByVars(this, BoundFrame.newByVars(vars));
     }
 
     @Override
     public Frame bindVars(Frame df) {
-        throw new NotImplementedException();
+        return BoundFrame.newByVars(this, df);
     }
 
     @Override
@@ -153,11 +153,11 @@ public class SolidFrame extends AbstractFrame {
 
     @Override
     public Frame bindRows(Frame df) {
-        throw new NotImplementedException();
+        return BoundFrame.newByRows(this, df);
     }
 
     @Override
     public Frame mapRows(Mapping mapping) {
-        throw new NotImplementedException();
+        return MappedFrame.newByRow(this, mapping);
     }
 }

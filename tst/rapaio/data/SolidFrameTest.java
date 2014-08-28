@@ -117,4 +117,65 @@ public class SolidFrameTest {
         df.setIndex(0, 3, 5);
         assertEquals(5, df.index(0, 3));
     }
+
+    @Test
+    public void testBuilders() {
+        Var x = Numeric.newWrapOf(1, 2, 3, 4).withName("x");
+        Var y = Nominal.newCopyOf("a", "c", "b", "a").withName("y");
+
+        Frame df1 = SolidFrame.newWrapOf(x, y);
+
+        assertEquals(2, df1.varCount());
+        assertEquals(4, df1.rowCount());
+
+        try {
+            SolidFrame.newWrapOf(x, y.mapRows(Mapping.newRangeOf(0, 4)));
+            assertTrue("should raise an exception", false);
+        } catch (IllegalArgumentException ignored) {
+        }
+
+        Frame df2 = SolidFrame.newWrapOf(x).bindVars(y);
+        assertEquals(2, df2.varCount());
+        assertEquals(4, df2.rowCount());
+        for (int i = 0; i < df1.rowCount(); i++) {
+            assertEquals(df1.value(i, "x"), df2.value(i, "x"), 1e-12);
+            assertEquals(df1.label(i, "y"), df2.label(i, "y"));
+        }
+
+        df2 = SolidFrame.newWrapOf(x).bindVars(SolidFrame.newWrapOf(y));
+        assertEquals(2, df2.varCount());
+        assertEquals(4, df2.rowCount());
+        for (int i = 0; i < df1.rowCount(); i++) {
+            assertEquals(df1.value(i, "x"), df2.value(i, "x"), 1e-12);
+            assertEquals(df1.label(i, "y"), df2.label(i, "y"));
+        }
+
+        df2 = df1.mapVars("x").bindVars(df1.mapVars("y"));
+        assertEquals(2, df2.varCount());
+        assertEquals(4, df2.rowCount());
+        for (int i = 0; i < df1.rowCount(); i++) {
+            assertEquals(df1.value(i, "x"), df2.value(i, "x"), 1e-12);
+            assertEquals(df1.label(i, "y"), df2.label(i, "y"));
+        }
+
+        df2 = SolidFrame.newWrapOf(y).bindVars(
+                SolidFrame.newWrapOf(Numeric.newWrapOf(1, 2).withName("x"))
+                        .bindRows(SolidFrame.newWrapOf(Numeric.newWrapOf(3, 4).withName("x")))
+        );
+        assertEquals(2, df2.varCount());
+        assertEquals(4, df2.rowCount());
+        for (int i = 0; i < df1.rowCount(); i++) {
+            assertEquals(df1.value(i, "x"), df2.value(i, "x"), 1e-12);
+            assertEquals(df1.label(i, "y"), df2.label(i, "y"));
+        }
+
+        try {
+            SolidFrame.newWrapOf(
+                    Numeric.newWrapOf(1, 2).withName("x"),
+                    BoundVar.newFrom(Numeric.newWrapOf(3, 4).withName("y"))
+            );
+            assertTrue("should raise an exception", false);
+        } catch (IllegalArgumentException ignored) {
+        }
+    }
 }

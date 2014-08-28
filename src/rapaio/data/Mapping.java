@@ -20,8 +20,6 @@
 
 package rapaio.data;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -154,25 +152,17 @@ final class ListMapping implements Mapping {
     }
 
     public int get(int pos) {
-        if (mapping != null) {
-            if (mapping.size() > pos)
-                return mapping.get(pos);
-            throw new IllegalArgumentException("Value at pos " + pos + " does not exists");
-        }
-        return pos;
+        if (mapping.size() > pos)
+            return mapping.get(pos);
+        throw new IllegalArgumentException("Value at pos " + pos + " does not exists");
     }
 
     public void add(int pos) {
-        if (mapping != null)
-            mapping.add(pos);
-        else
-            throw new NotImplementedException();
+        mapping.add(pos);
     }
 
     public void addAll(Collection<Integer> pos) {
-        if (mapping != null)
-            mapping.addAll(pos);
-        else throw new NotImplementedException();
+        mapping.addAll(pos);
     }
 
     public Mapping sort(final Comparator<Integer>... comparators) {
@@ -203,7 +193,7 @@ final class IntervalMapping implements Mapping {
 
     @Override
     public int get(int pos) {
-        return pos - start;
+        return pos + start;
     }
 
     @Override
@@ -218,7 +208,7 @@ final class IntervalMapping implements Mapping {
 
     @Override
     public Mapping sort(Comparator<Integer>... comparators) {
-        List<Integer> range = rowStream().mapToObj(i->i).collect(Collectors.toList());
+        List<Integer> range = rowStream().mapToObj(i -> i).collect(Collectors.toList());
         Collections.sort(range, RowComparators.aggregateComparator(comparators));
         return new ListMapping(range, false);
     }

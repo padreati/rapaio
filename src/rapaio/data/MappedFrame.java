@@ -54,8 +54,12 @@ public class MappedFrame extends AbstractFrame {
         return new MappedFrame(df, mapping);
     }
 
-    public static MappedFrame newByRow(Frame df, Mapping mapping, List<String> columns) {
-        return new MappedFrame(df, mapping, columns);
+    public static MappedFrame newByRow(Frame df, Mapping mapping, String varRange) {
+        return MappedFrame.newByRow(df, mapping, new VarRange(varRange));
+    }
+
+    public static MappedFrame newByRow(Frame df, Mapping mapping, VarRange varRange) {
+        return new MappedFrame(df, mapping, varRange.parseVarNames(df));
     }
 
     private MappedFrame(Frame df, Mapping mapping) {
@@ -64,9 +68,10 @@ public class MappedFrame extends AbstractFrame {
 
     private MappedFrame(Frame df, Mapping mapping, List<String> columns) {
         if (df instanceof MappedFrame) {
-            this.source = ((MappedFrame) df).sourceFrame();
+            MappedFrame mappedFrame = (MappedFrame) df;
+            this.source = mappedFrame.sourceFrame();
             this.mapping = Mapping.newWrapOf(mapping.rowStream()
-                    .map(row -> ((MappedFrame) df).mapping().get(row))
+                    .map(row -> mappedFrame.mapping().get(row))
                     .mapToObj(row -> row).collect(Collectors.toList()));
         } else {
             this.source = df;
@@ -134,7 +139,7 @@ public class MappedFrame extends AbstractFrame {
 
     @Override
     public Frame mapVars(VarRange range) {
-        return MappedFrame.newByRow(this, Mapping.newRangeOf(0, this.rowCount()), range.parseVarNames(this));
+        return MappedFrame.newByRow(this, Mapping.newRangeOf(0, this.rowCount()), range);
     }
 
     @Override
