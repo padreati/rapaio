@@ -52,7 +52,7 @@ public interface Frame extends Serializable {
      * Number of variables contained in frame. Variable references could be obtained by name or by position.
      * <p>
      * Each variable corresponds to a column in tabular format, thus in the frame terminology
-     * this is denoted as getVar (short form of column).
+     * this is denoted as var (short form of column).
      *
      * @return number of variables
      */
@@ -77,7 +77,7 @@ public interface Frame extends Serializable {
     int varIndex(String name);
 
     /**
-     * Returns a var reference for column at given position
+     * Returns a var object from the given position
      *
      * @param pos position of the column inside the frame
      * @return a var getType reference
@@ -85,7 +85,7 @@ public interface Frame extends Serializable {
     Var var(int pos);
 
     /**
-     * Returns a var reference for column with given name
+     * Returns a var object with given name
      *
      * @param name name of the column inside the frame
      * @return a var getType reference
@@ -172,6 +172,13 @@ public interface Frame extends Serializable {
     /**
      * Builds a new frame only with rows not specified in mapping.
      */
+    default Frame removeRows(int... rows) {
+        return removeRows(Mapping.newCopyOf(rows));
+    }
+
+    /**
+     * Builds a new frame only with rows not specified in mapping.
+     */
     default Frame removeRows(Mapping mapping) {
         Set<Integer> remove = mapping.rowStream().mapToObj(i -> i).collect(Collectors.toSet());
         List<Integer> map = IntStream.range(0, rowCount()).filter(row -> !remove.contains(row)).mapToObj(i -> i).collect(Collectors.toList());
@@ -179,7 +186,7 @@ public interface Frame extends Serializable {
     }
 
     /**
-     * Returns double value corresponding to given row and column number
+     * Returns double value corresponding to given row and var number
      *
      * @param row row number
      * @param col column number
@@ -190,14 +197,14 @@ public interface Frame extends Serializable {
     }
 
     /**
-     * Returns double value from given row and column
+     * Returns double value from given row and varName
      *
      * @param row     row number
-     * @param colName column name
-     * @return numeric setValue
+     * @param varName column name
+     * @return numeric value
      */
-    default double value(int row, String colName) {
-        return var(colName).value(row);
+    default double value(int row, String varName) {
+        return var(varName).value(row);
     }
 
     /**
@@ -215,11 +222,11 @@ public interface Frame extends Serializable {
      * Convenient shortcut method to call {@link Var#setValue(int, double)} for a given column.
      *
      * @param row     row number
-     * @param colName column name
+     * @param varName var name
      * @param value   numeric value
      */
-    default void setValue(int row, String colName, double value) {
-        var(colName).setValue(row, value);
+    default void setValue(int row, String varName, double value) {
+        var(varName).setValue(row, value);
     }
 
 
@@ -238,11 +245,11 @@ public interface Frame extends Serializable {
      * Convenient shortcut method for calling {@link Var#index(int)} for a given column.
      *
      * @param row     row number
-     * @param colName column name
+     * @param varName var name
      * @return setIndex value
      */
-    default int index(int row, String colName) {
-        return var(colName).index(row);
+    default int index(int row, String varName) {
+        return var(varName).index(row);
     }
 
     /**
@@ -260,11 +267,11 @@ public interface Frame extends Serializable {
      * Convenient shortcut method for calling {@link Var#setIndex(int, int)} for given column.
      *
      * @param row     row number
-     * @param colName column name
+     * @param varName var name
      * @param value   setIndex value
      */
-    default void setIndex(int row, String colName, int value) {
-        var(colName).setIndex(row, value);
+    default void setIndex(int row, String varName, int value) {
+        var(varName).setIndex(row, value);
     }
 
     /**
@@ -282,11 +289,11 @@ public interface Frame extends Serializable {
      * Convenient shortcut method for calling {@link Var#label(int)} for given column.
      *
      * @param row     row number
-     * @param colName column name
+     * @param varName column name
      * @return nominal label value
      */
-    default String label(int row, String colName) {
-        return var(colName).label(row);
+    default String label(int row, String varName) {
+        return var(varName).label(row);
     }
 
     /**
@@ -304,26 +311,40 @@ public interface Frame extends Serializable {
      * Convenient shortcut method for calling {@link Var#setLabel(int, String)} for given column.
      *
      * @param row     row number
-     * @param colName column name
+     * @param varName column name
      * @param value   nominal label value
      */
-    default void setLabel(int row, String colName, String value) {
-        var(colName).setLabel(row, value);
+    default void setLabel(int row, String varName, String value) {
+        var(varName).setLabel(row, value);
     }
 
+    /**
+     * Convenient shortcut method for calling {@link Var#missing(int)} for given column
+     *
+     * @param row row number
+     * @param col column number
+     * @return true if missing, false otherwise
+     */
     default boolean missing(int row, int col) {
         return var(col).missing(row);
     }
 
-    default boolean missing(int row, String colName) {
-        return var(colName).missing(row);
+    /**
+     * Convenient shortcut method for calling {@link Var#missing(int)} for given column
+     *
+     * @param row     row number
+     * @param varName var name
+     * @return true if missing, false otherwise
+     */
+    default boolean missing(int row, String varName) {
+        return var(varName).missing(row);
     }
 
     /**
      * Returns true if there is at least one missing value for the given row, in any column.
      *
      * @param row row number
-     * @return
+     * @return true if there is a missing value for any variable at the given row
      */
     default boolean missing(int row) {
         for (String colName : varNames()) {
@@ -332,18 +353,30 @@ public interface Frame extends Serializable {
         return false;
     }
 
+    /**
+     * Convenient shortcut method for calling {@link Var#setMissing(int)} for given column
+     *
+     * @param row row number
+     * @param col column number
+     */
     default void setMissing(int row, int col) {
         var(col).setMissing(row);
     }
 
-    default void setMissing(int row, String colName) {
-        var(colName).setMissing(row);
+    /**
+     * Convenient shortcut method for calling {@link Var#setMissing(int)} for given column
+     *
+     * @param row     row number
+     * @param varName var name
+     */
+    default void setMissing(int row, String varName) {
+        var(varName).setMissing(row);
     }
 
     /**
      * Builds a stream of FSpots
      *
-     * @return
+     * @return a stream of FSpot
      */
     public FSpots stream();
 }
