@@ -71,7 +71,7 @@ public class KMeansClustering {
     public void cluster(Frame df, String varNames) {
         validate(df, varNames);
         targets = new VarRange(varNames).parseVarNames(df);
-        centroids = Frames.newMatrix(k, targets.toArray(new String[targets.size()]));
+        centroids = SolidFrame.newMatrix(k, targets.toArray(new String[targets.size()]));
         arrows = new int[df.rowCount()];
 
         startMethod.init(df, centroids);

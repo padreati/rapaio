@@ -22,7 +22,10 @@ package rapaio.ml.refactor.nnet;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.Numeric;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
 import rapaio.ml.regressor.Regressor;
 import rapaio.ws.Summary;
 
@@ -35,9 +38,9 @@ public class NeuralNetTest {
     @Test
     public void testAnd() {
 
-        Var a = Numeric.newEmpty();
-        Var b = Numeric.newEmpty();
-        Var and = Numeric.newEmpty();
+        Var a = Numeric.newEmpty().withName("a");
+        Var b = Numeric.newEmpty().withName("b");
+        Var and = Numeric.newEmpty().withName("and");
 
         a.addValue(0);
         b.addValue(0);
@@ -55,9 +58,7 @@ public class NeuralNetTest {
         b.addValue(1.);
         and.addValue(1.);
 
-        Frame df = SolidFrame.newWrapOf(and.rowCount(), new Var[]{and}, new String[]{"and"});
-        df = Frames.addCol(df, b, "b", 0);
-        df = Frames.addCol(df, a, "a", 0);
+        Frame df = SolidFrame.newWrapOf(a, b, and);
 
         Regressor nn = new MultiLayerPerceptronRegressor(new int[]{2, 1}, 0.1).setRounds(100);
 
@@ -77,29 +78,11 @@ public class NeuralNetTest {
     @Test
     public void testXor() {
 
-        Var a = Numeric.newEmpty();
-        Var b = Numeric.newEmpty();
-        Var xor = Numeric.newEmpty();
+        Var a = Numeric.newWrapOf(0, 1, 0, 1).withName("a");
+        Var b = Numeric.newWrapOf(0, 0, 1, 1).withName("b");
+        Var xor = Numeric.newWrapOf(1, 0, 0, 1).withName("xor");
 
-        a.addValue(0);
-        b.addValue(0);
-        xor.addValue(1);
-
-        a.addValue(1.);
-        b.addValue(0.);
-        xor.addValue(0.);
-
-        a.addValue(0.);
-        b.addValue(1.);
-        xor.addValue(0.);
-
-        a.addValue(1.);
-        b.addValue(1.);
-        xor.addValue(1.);
-
-        Frame df = SolidFrame.newWrapOf(xor.rowCount(), new Var[]{xor}, new String[]{"xor"});
-        df = Frames.addCol(df, b, "b", 0);
-        df = Frames.addCol(df, a, "a", 0);
+        Frame df = SolidFrame.newWrapOf(a, b, xor);
 
         Regressor nn = new MultiLayerPerceptronRegressor(new int[]{2, 2, 1}, 0.1).setRounds(100);
 
@@ -171,33 +154,15 @@ public class NeuralNetTest {
     //    @Test
     public void testGarciaChallenge() {
 
-        Var a = Numeric.newEmpty();
-        Var b = Numeric.newEmpty();
-        Var xor = Numeric.newEmpty();
+        Var a = Numeric.newWrapOf(0, 1, 0, 1).withName("a");
+        Var b = Numeric.newWrapOf(0, 0, 1, 1).withName("b");
+        Var xor = Numeric.newWrapOf(1, 0, 0, 1).withName("xor");
 
-        a.addValue(0);
-        b.addValue(0);
-        xor.addValue(1);
-
-        a.addValue(1.);
-        b.addValue(0.);
-        xor.addValue(0.);
-
-        a.addValue(0.);
-        b.addValue(1.);
-        xor.addValue(0.);
-
-        a.addValue(1.);
-        b.addValue(1.);
-        xor.addValue(1.);
-
-        Frame df = SolidFrame.newWrapOf(xor.rowCount(), new Var[]{xor}, new String[]{"xor"});
-        df = Frames.addCol(df, b, "b", 0);
-        df = Frames.addCol(df, a, "a", 0);
+        Frame df = SolidFrame.newWrapOf(a, b, xor);
 
         Regressor nn = new MultiLayerPerceptronRegressor(new int[]{2, 2, 1}, 0.1).setRounds(100);
 
-        Frame stat = Frames.newMatrix(100, new String[]{"time", "xor1err", "xor2err", "xor3err", "xor4err"});
+        Frame stat = SolidFrame.newMatrix(100, new String[]{"time", "xor1err", "xor2err", "xor3err", "xor4err"});
         for (int i = 0; i < 100; i++) {
             long start = System.currentTimeMillis();
             for (int j = 0; j < 4 * 2_000; j++) {

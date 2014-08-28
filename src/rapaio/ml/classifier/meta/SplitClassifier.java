@@ -164,7 +164,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
     @Override
     public void predict(Frame df) {
         pred = Nominal.newEmpty(df.rowCount(), dict);
-        dist = Frames.newMatrix(df.rowCount(), dict);
+        dist = SolidFrame.newMatrix(df.rowCount(), dict);
 
         df.stream().forEach(spot -> {
             for (int i = 0; i < predicates.size(); i++) {

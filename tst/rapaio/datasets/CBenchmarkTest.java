@@ -59,17 +59,14 @@ public class CBenchmarkTest {
         List<CTask> tasks = bench.getDefaultTasks();
 
         List<Var> resultCols = new ArrayList<>();
-        List<String> resultNames = new ArrayList<>();
 
-        resultCols.add(Nominal.newEmpty(tasks.size(), Collections.<String>emptyList()));
-        resultNames.add("data set");
+        resultCols.add(Nominal.newEmpty(tasks.size(), Collections.<String>emptyList()).withName("data set"));
 
         for (String cName : cNames) {
-            resultCols.add(Numeric.newEmpty(tasks.size()));
-            resultNames.add(cName);
+            resultCols.add(Numeric.newEmpty(tasks.size()).withName(cName));
         }
 
-        Frame totalResults = Frames.solidCopy(SolidFrame.newWrapOf(tasks.size(), resultCols, resultNames));
+        Frame totalResults = SolidFrame.newWrapOf(resultCols);
         for (int i = 0; i < tasks.size(); i++) {
             CTask task = tasks.get(i);
             totalResults.setLabel(i, "data set", task.getName());
@@ -77,7 +74,7 @@ public class CBenchmarkTest {
 
         final double ROUNDS = 5;
         for (int r = 0; r < ROUNDS; r++) {
-            Frame results = SolidFrame.newWrapOf(tasks.size(), resultCols, resultNames);
+            Frame results = SolidFrame.newWrapOf(resultCols);
 
             for (int i = 0; i < tasks.size(); i++) {
                 CTask task = tasks.get(i);

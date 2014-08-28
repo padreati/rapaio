@@ -96,7 +96,7 @@ public class ROC implements Printable {
                 len++;
             }
         }
-        data = Frames.newMatrix(len, "threshold", "fpr", "tpr", "acc");
+        data = SolidFrame.newMatrix(len, "threshold", "fpr", "tpr", "acc");
         prev = Double.POSITIVE_INFINITY;
         int pos = 0;
 

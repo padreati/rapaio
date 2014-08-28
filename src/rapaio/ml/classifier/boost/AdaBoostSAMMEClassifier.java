@@ -21,11 +21,7 @@
 package rapaio.ml.classifier.boost;
 
 import rapaio.core.sample.DiscreteSampling;
-import rapaio.data.Frame;
-import rapaio.data.Frames;
-import rapaio.data.Nominal;
-import rapaio.data.Numeric;
-import rapaio.data.MappedFrame;
+import rapaio.data.*;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.RunningClassifier;
@@ -221,7 +217,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     @Override
     public void predict(Frame df) {
         pred = Nominal.newEmpty(df.rowCount(), dict);
-        dist = Frames.newMatrix(df.rowCount(), dict);
+        dist = SolidFrame.newMatrix(df.rowCount(), dict);
 
         for (int i = 0; i < h.size(); i++) {
             h.get(i).predict(df);

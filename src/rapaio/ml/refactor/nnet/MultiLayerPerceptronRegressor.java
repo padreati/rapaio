@@ -23,7 +23,7 @@ package rapaio.ml.refactor.nnet;
 import rapaio.core.VarRange;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
-import rapaio.data.Frames;
+import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.ml.regressor.Regressor;
 
@@ -199,7 +199,7 @@ public class MultiLayerPerceptronRegressor implements Regressor, Serializable {
     }
 
     public void predict(Frame df) {
-        prediction = Frames.newMatrix(df.rowCount(), targetCols);
+        prediction = SolidFrame.newMatrix(df.rowCount(), targetCols);
 
         for (int pos = 0; pos < df.rowCount(); pos++) {
             // set inputs

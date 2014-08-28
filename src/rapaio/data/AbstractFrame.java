@@ -22,8 +22,10 @@ package rapaio.data;
 
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base abstract class for a frame, which provides behavior for the utility
@@ -34,6 +36,11 @@ import java.util.*;
 public abstract class AbstractFrame implements Frame {
 
     private List<FSpot> streamList;
+
+    @Override
+    public SolidFrame solidCopy() {
+        throw new NotImplementedException();
+    }
 
     public FSpots stream() {
         if (streamList == null || streamList.size() != rowCount()) {

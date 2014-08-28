@@ -223,7 +223,7 @@ public class TreeClassifier extends AbstractClassifier {
     public void predict(Frame df) {
 
         pred = Nominal.newEmpty(df.rowCount(), dict);
-        dist = Frames.newMatrix(df.rowCount(), dict);
+        dist = SolidFrame.newMatrix(df.rowCount(), dict);
 
         df.stream().forEach(spot -> {
             Pair<Integer, DensityVector> result = predictor.predict(spot, root);

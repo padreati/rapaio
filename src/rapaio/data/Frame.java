@@ -373,6 +373,8 @@ public interface Frame extends Serializable {
         var(varName).setMissing(row);
     }
 
+    SolidFrame solidCopy();
+
     /**
      * Builds a stream of FSpots
      *

@@ -136,7 +136,6 @@ public class GradientBoostingTreeRegressor implements Regressor {
 
         Var y = df.var(targetCols);
         Frame x = df.removeVars(new VarRange(targetCols));
-        x = Frames.solidCopy(x);
 
         initialRegressor.learn(df, targetCols);
         trees = new ArrayList<>();
@@ -147,10 +146,9 @@ public class GradientBoostingTreeRegressor implements Regressor {
         }
 
         for (int i = 1; i <= rounds; i++) {
-            Numeric gradient = lossFunction.gradient(y, fitLearn);
+            Numeric gradient = lossFunction.gradient(y, fitLearn).withName("target");
 
-
-            Frame xm = Frames.addCol(x, gradient, "target", x.varCount());
+            Frame xm = x.bindVars(gradient);
             BTRegressor tree = createBTRegressor();
 
             // bootstrap samples
@@ -212,11 +210,11 @@ public class GradientBoostingTreeRegressor implements Regressor {
 
             // build gradient
 
-            Numeric gradient = lossFunction.gradient(y, fitLearn);
+            Numeric gradient = lossFunction.gradient(y, fitLearn).withName("target");
 
             // build next tree and gradient learning data set
 
-            Frame xm = Frames.addCol(x, gradient, "target", x.varCount());
+            Frame xm = x.bindVars(gradient);
             BTRegressor tree = createBTRegressor();
 
             // bootstrap samples if is the case

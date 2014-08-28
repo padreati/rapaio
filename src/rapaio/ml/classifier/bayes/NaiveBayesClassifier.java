@@ -140,7 +140,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
     public void predict(Frame df) {
 
         pred = Nominal.newEmpty(df.rowCount(), dict);
-        dist = Frames.newMatrix(df.rowCount(), dict);
+        dist = SolidFrame.newMatrix(df.rowCount(), dict);
 
         for (int i = 0; i < df.rowCount(); i++) {
             DensityVector dv = new DensityVector(dict);

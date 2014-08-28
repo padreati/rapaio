@@ -21,7 +21,6 @@
 package rapaio.data;
 
 import rapaio.core.VarRange;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,6 +74,32 @@ public class SolidFrame extends AbstractFrame {
 
     public static SolidFrame newWrapOf(int rows, List<Var> vars, String[] names) {
         return new SolidFrame(rows, vars, names);
+    }
+
+    /**
+     * Build a frame which has only numeric columns and values are filled with 0
+     * (no missing values).
+     *
+     * @param rows     number of getRowCount
+     * @param colNames column names
+     * @return the new built frame
+     */
+    public static Frame newMatrix(int rows, String... colNames) {
+        return newMatrix(rows, Arrays.asList(colNames));
+    }
+
+    /**
+     * Build a frame which has only numeric columns and values are filled with 0
+     * (no missing values).
+     *
+     * @param rows     number of getRowCount
+     * @param colNames column names
+     * @return the new built frame
+     */
+    public static Frame newMatrix(int rows, List<String> colNames) {
+        List<Var> vars = new ArrayList<>();
+        colNames.stream().forEach(n -> vars.add(Numeric.newFill(rows, 0)));
+        return SolidFrame.newWrapOf(rows, vars, colNames);
     }
 
     // private constructor
