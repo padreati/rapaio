@@ -64,20 +64,11 @@ public class MappingTest {
             assertTrue("should raise an exception", false);
         } catch (IllegalArgumentException ignored) {
         }
-
-        m = m.sort((o1, o2) -> o1.compareTo(o2));
-        for (int i = 1; i < m.size(); i++) {
-            assertTrue(m.get(i - 1) < m.get(i));
-        }
     }
 
     @Test
     public void testListMappingManage() {
         Mapping m = Mapping.newCopyOf(IntStream.range(0, 100).mapToObj(i -> i).collect(Collectors.toList()));
-        m.sort((o1, o2) -> -1 * o1.compareTo(o2));
-        for (int i = 1; i < m.size(); i++) {
-            assertTrue(m.get(i - 1) > m.get(i));
-        }
 
         m.add(1000);
         assertEquals(1000, m.get(m.size() - 1));

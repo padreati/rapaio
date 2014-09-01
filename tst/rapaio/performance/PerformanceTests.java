@@ -42,7 +42,7 @@ public class PerformanceTests {
         setPrinter(new LocalPrinter());
 
         final int TESTS = 100;
-        final int LEN = 1_000_000;
+        final int LEN = 100_000;
 
         Numeric index = Numeric.newEmpty();
         Numeric time1 = Numeric.newEmpty();

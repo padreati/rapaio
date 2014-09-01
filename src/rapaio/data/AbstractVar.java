@@ -6,6 +6,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -13,7 +14,6 @@ import java.util.List;
 public abstract class AbstractVar implements Var {
 
     private String name;
-    private List<VSpot> spots;
 
     public String name() {
         return name;
@@ -36,13 +36,7 @@ public abstract class AbstractVar implements Var {
 
     @Override
     public VSpots stream() {
-        if (spots == null || spots.size() != rowCount()) {
-            spots = new LinkedList<>();
-            for (int i = 0; i < this.rowCount(); i++) {
-                spots.add(new VSpot(i, this));
-            }
-        }
-        return new VSpots(spots.stream());
+        return new VSpots(IntStream.range(0, rowCount()).mapToObj(row -> new VSpot(row, this)));
     }
 
     @Override

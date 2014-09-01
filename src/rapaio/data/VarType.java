@@ -130,20 +130,20 @@ public enum VarType {
         public boolean isNominal() {
             return false;
         }
-    },
-    /**
-     * Variable type used only to store text.
-     */
-    TEXT {
-        @Override
-        public boolean isNominal() {
-            return false;
-        }
-
-        @Override
-        public boolean isNumeric() {
-            return false;
-        }
+//    },
+//    /**
+//     * Variable type used only to store text.
+//     */
+//    TEXT {
+//        @Override
+//        public boolean isNominal() {
+//            return false;
+//        }
+//
+//        @Override
+//        public boolean isNumeric() {
+//            return false;
+//        }
     };
 
     public abstract boolean isNumeric();

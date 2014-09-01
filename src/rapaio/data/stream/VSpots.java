@@ -31,13 +31,19 @@ import java.util.function.*;
 import java.util.stream.*;
 
 /**
+ * Stream of variable spots which enrich the standard java streams with some specific
+ * operations.
+ *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public class VSpots implements Stream<VSpot>, Serializable {
 
     private final Stream<VSpot> stream;
 
+    /**
+     * Builds a stream of variable spots based on a standard java stream of spots
+     * @param stream nested stream
+     */
     public VSpots(Stream<VSpot> stream) {
         this.stream = stream;
     }
@@ -67,8 +73,12 @@ public class VSpots implements Stream<VSpot>, Serializable {
         return stream.mapToDouble(mapper);
     }
 
+    /**
+     * Map the observations to the numerical value given by {@link VSpot#value()}
+     * @return stream of numerical values
+     */
     public DoubleStream mapToDouble() {
-        return mapToDouble((VSpot inst) -> inst.value());
+        return mapToDouble(VSpot::value);
     }
 
     @Override
@@ -246,14 +256,27 @@ public class VSpots implements Stream<VSpot>, Serializable {
         stream.close();
     }
 
+    /**
+     * Filters the spot stream by removing all spots which contains missing values
+     * @return stream with complete spots
+     */
     public VSpots complete() {
         return new VSpots(stream.filter(s -> !s.missing()));
     }
 
+    /**
+     * Filters the spot stream by removing all spots which does not contain missing values
+     * @return stream with spots with missing values
+     */
     public VSpots incomplete() {
         return new VSpots(stream.filter(VSpot::missing));
     }
 
+    /**
+     * Makes a string which contains a concatenation of mapped values
+     * @param mapper mapper used to transform a spot into a specific value
+     * @return a string made from the concatenation of mapped values
+     */
     public <R> String mkString(Function<VSpot, R> mapper) {
         StringBuilder sb = new StringBuilder();
         Iterator<R> it = stream.map(mapper).iterator();
@@ -264,18 +287,34 @@ public class VSpots implements Stream<VSpot>, Serializable {
         return "[" + sb.toString() + "]";
     }
 
+    /**
+     * Applies a given transformation to all the numerical values of the underlying variable
+     * @param trans given transformation
+     */
     public void transformValue(Function<Double, Double> trans) {
         stream.forEach(spot -> spot.var().setValue(spot.row(), trans.apply(spot.value())));
     }
 
+    /**
+     * Applies a given transformation to all index values of the underlying variable
+     * @param trans given transformation
+     */
     public void transformIndex(Function<Integer, Integer> trans) {
         stream.forEach(spot -> spot.var().setIndex(spot.row(), trans.apply(spot.index())));
     }
 
+    /**
+     * Applies a given transformation to all label values of the underlying variable
+     * @param trans given transformation
+     */
     public void transformLabel(Function<String, String> trans) {
         stream.forEach(spot -> spot.var().setLabel(spot.row(), trans.apply(spot.label())));
     }
 
+    /**
+     * Builds a mapped variable which contains all the observations from the stream
+     * @return new mapped variable
+     */
     public MappedVar toMappedVar() {
         Mapping map = Mapping.newEmpty();
         Pin<Var> var = new Pin<>();

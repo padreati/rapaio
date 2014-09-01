@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -91,6 +90,19 @@ public class MappedFrameTest {
                 assertEquals(df1.value(i, j), df2.value(i, j), 1e-12);
             }
         }
+
+        df2 = df2.solidCopy();
+        assertEquals(df1.rowCount(), df2.rowCount());
+        assertEquals(df1.varCount(), df2.varCount());
+        for (int i = 0; i < df1.varNames().length; i++) {
+            assertEquals(df1.varNames()[i], df2.varNames()[i]);
+        }
+        for (int i = 0; i < df1.rowCount(); i++) {
+            for (int j = 0; j < df1.varCount(); j++) {
+                assertEquals(df1.value(i, j), df2.value(i, j), 1e-12);
+            }
+        }
+
 
         df2 = a.bindRows(c).bindVars(b.bindRows(d));
 

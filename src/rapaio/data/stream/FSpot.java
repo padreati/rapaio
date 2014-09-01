@@ -25,100 +25,206 @@ import rapaio.data.Frame;
 import java.io.Serializable;
 
 /**
+ * Frame spot is a reference to an observation from a frame.
+ *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
-public class FSpot implements Serializable {
+public final class FSpot implements Serializable {
 
     private final Frame df;
     private final int row;
 
-    public FSpot(Frame df, int row) {
+    /**
+     * Builds a frame spot for a given frame and a given row of the observation
+     * @param df given data frame
+     * @param row given row
+     */
+    public FSpot(final Frame df, final int row) {
         this.df = df;
         this.row = row;
     }
 
+    /**
+     * Returns the underlying frame of the spot
+     * @return the underlying frame
+     */
     public Frame getFrame() {
         return df;
     }
 
+    /**
+     * Returns the row of the observation referenced by spot
+     * @return row number
+     */
     public int row() {
         return row;
     }
 
+    /**
+     * Returns if the spot has a missing value on any variable
+     * @return true if missing value on any variable, false otherwise
+     */
     public boolean missing() {
         return df.missing(row);
     }
 
-    public boolean missing(int colIndex) {
-        return df.missing(row, colIndex);
+    /**
+     * Returns true if the spot has a missing value on the variable specified
+     * @param varIndex index of the variable
+     * @return true if is missing, false otherwise
+     */
+    public boolean missing(int varIndex) {
+        return df.missing(row, varIndex);
     }
 
-    public boolean missing(String colName) {
-        return df.missing(row, colName);
+    /**
+     * Returns true if the spot has a missing value on the variable specified
+     * @param varName variable name
+     * @return true is missing value, false otherwise
+     */
+    public boolean missing(String varName) {
+        return df.missing(row, varName);
     }
 
-    public void setMissing(int colIndex) {
-        df.setMissing(row, colIndex);
+    /**
+     * Sets missing value on given variable
+     * @param varIndex index of the variable
+     */
+    public void setMissing(int varIndex) {
+        df.setMissing(row, varIndex);
     }
 
-    public void setMissing(String colName) {
-        df.setMissing(row, colName);
+    /**
+     * Sets missing value for given variable
+     * @param varName variable name
+     */
+    public void setMissing(String varName) {
+        df.setMissing(row, varName);
     }
 
-    public double value(int colIndex) {
-        return df.value(row, colIndex);
+    /**
+     * Returns numeric value of the given variable
+     * @param varIndex index of the variable
+     * @return numerical value of the given variable on the current spot
+     */
+    public double value(int varIndex) {
+        return df.value(row, varIndex);
     }
 
-    public double value(String colName) {
-        return df.value(row, colName);
+    /**
+     * Returns numeric value of the given variable on the current spot
+     * @param varName variable name
+     * @return numeric value of the given variable on the current spot
+     */
+    public double value(String varName) {
+        return df.value(row, varName);
     }
 
-    public void setValue(int colIndex, double value) {
-        df.setValue(row, colIndex, value);
+    /**
+     * Sets numeric value of the given variable on the current spot
+     * @param varIndex index of the variable
+     * @param value given numeric value
+     */
+    public void setValue(int varIndex, double value) {
+        df.setValue(row, varIndex, value);
     }
 
-    public void setValue(String colName, double value) {
-        df.setValue(row, colName, value);
+    /**
+     * Sets numeric value of the given variable on the current spot
+     * @param varName variable name
+     * @param value given numeric value
+     */
+    public void setValue(String varName, double value) {
+        df.setValue(row, varName, value);
     }
 
-    public int index(int colIndex) {
-        return df.index(row, colIndex);
+    /**
+     * Returns index value of the given variable
+     * @param varIndex index of the variable
+     * @return index value of the given variable on the current spot
+     */
+    public int index(int varIndex) {
+        return df.index(row, varIndex);
     }
 
-    public int index(String colName) {
-        return df.index(row, colName);
+    /**
+     * Returns index value of the given variable
+     * @param varName variable name
+     * @return index value of the given variable on the current spot
+     */
+    public int index(String varName) {
+        return df.index(row, varName);
     }
 
-    public void setIndex(int colIndex, int value) {
-        df.setIndex(row, colIndex, value);
+    /**
+     * Sets the index value of the given variable on the current spot
+     * @param varIndex index of the variable
+     * @param value given index value
+     */
+    public void setIndex(int varIndex, int value) {
+        df.setIndex(row, varIndex, value);
     }
 
-    public void setIndex(String colName, int value) {
-        df.setIndex(row, colName, value);
+    /**
+     * Sets the index value of the given variable on the current spot
+     * @param varName variable name
+     * @param value given index value
+     */
+    public void setIndex(String varName, int value) {
+        df.setIndex(row, varName, value);
     }
 
-    public String label(int colIndex) {
-        return df.label(row, colIndex);
+    /**
+     * Returns label of the given variable on the current spot
+     * @param varIndex index of the variable
+     * @return label value
+     */
+    public String label(int varIndex) {
+        return df.label(row, varIndex);
     }
 
-    public String label(String colName) {
-        return df.label(row, colName);
+    /**
+     * Returns label of the given variable on the current spot
+     * @param varName variable name
+     * @return label value
+     */
+    public String label(String varName) {
+        return df.label(row, varName);
     }
 
-    public void setLabel(int colIndex, String value) {
-        df.setLabel(row, colIndex, value);
+    /**
+     * Sets label value of the given variable on the current spot
+     * @param varIndex index of the variable
+     * @param value given label value
+     */
+    public void setLabel(int varIndex, String value) {
+        df.setLabel(row, varIndex, value);
     }
 
-    public void setLabel(String colName, String value) {
-        df.setLabel(row, colName, value);
+    /**
+     * Sets label value of the given variable on the current spot
+     * @param varName variable name
+     * @param value given label value
+     */
+    public void setLabel(String varName, String value) {
+        df.setLabel(row, varName, value);
     }
 
-    public String[] dictionary(int colIndex) {
-        return df.var(colIndex).dictionary();
+    /**
+     * Returns label dictionary of the given variable
+     * @param varIndex index of the variable
+     * @return label dictionary
+     */
+    public String[] dictionary(int varIndex) {
+        return df.var(varIndex).dictionary();
     }
 
-    public String[] dictionary(String colName) {
-        return df.var(colName).dictionary();
+    /**
+     * Returns label dictionary of the given variable
+     * @param varName variable name
+     * @return label dictionary
+     */
+    public String[] dictionary(String varName) {
+        return df.var(varName).dictionary();
     }
 }

@@ -31,9 +31,10 @@ import java.util.function.*;
 import java.util.stream.*;
 
 /**
+ * Stream of frame spots.
+ *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public class FSpots implements Stream<FSpot>, Serializable {
 
     private final Stream<FSpot> stream;
@@ -42,17 +43,9 @@ public class FSpots implements Stream<FSpot>, Serializable {
         this.stream = stream;
     }
 
-    public FSpots(List<FSpot> list) {
-        this.stream = list.stream();
-    }
-
     @Override
     public FSpots filter(Predicate<? super FSpot> predicate) {
         return new FSpots(stream.filter(predicate));
-    }
-
-    public FSpots complete() {
-        return filter((FSpot fi) -> !fi.missing());
     }
 
     @Override
@@ -250,18 +243,48 @@ public class FSpots implements Stream<FSpot>, Serializable {
         stream.close();
     }
 
+    /**
+     * Filters the stream leaving in the stream only the spots which contains no missing values on any of the variables
+     * @return list of complete (non-missing) frame spots
+     */
+    public FSpots complete() {
+        return filter((FSpot fi) -> !fi.missing());
+    }
+
+    /**
+     * Collects the elements of the stream into a list of spots
+     * @return list of collected spots
+     */
     public List<FSpot> collectFSpotList() {
         final List<FSpot> list = new ArrayList<>();
         forEach(list::add);
         return list;
     }
 
+    /**
+     * Map spots into row numbers and collect them into a list
+     * @return lit of collected row numbers
+     */
     public List<Integer> collectRowList() {
         final List<Integer> list = new ArrayList<>();
         forEach(spot -> list.add(spot.row()));
         return list;
     }
 
+    /**
+     * Map spots into row numbers and collect the into a mapping
+     * @return mapping of collected row numbers
+     */
+    public Mapping collectMapping() {
+        final Mapping m = Mapping.newEmpty();
+        forEach(s -> m.add(s.row()));
+        return m;
+    }
+
+    /**
+     * Builds a mapped frame from stream spots
+     * @return mapped frame with spots from the stream
+     */
     public Frame toMappedFrame() {
         final Mapping mapping = Mapping.newEmpty();
         final Pin<Frame> dfPin = new Pin<>();

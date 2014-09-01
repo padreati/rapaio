@@ -21,6 +21,7 @@
 package rapaio.data;
 
 import rapaio.data.stream.VSpots;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,8 @@ public class Text extends AbstractVar {
 
     @Override
     public VarType type() {
-        return VarType.TEXT;
+//        return VarType.TEXT;
+        throw new NotImplementedException();
     }
 
     @Override

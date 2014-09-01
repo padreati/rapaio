@@ -26,6 +26,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * Base abstract class for a frame, which provides behavior for the utility
@@ -35,20 +36,17 @@ import java.util.List;
  */
 public abstract class AbstractFrame implements Frame {
 
-    private List<FSpot> streamList;
-
     @Override
     public SolidFrame solidCopy() {
-        throw new NotImplementedException();
+        String[] names = varNames();
+        Var[] vars = new Var[names.length];
+        for (int i = 0; i < names.length; i++) {
+            vars[i] = var(names[i]).solidCopy().withName(names[i]);
+        }
+        return SolidFrame.newWrapOf(vars);
     }
 
     public FSpots stream() {
-        if (streamList == null || streamList.size() != rowCount()) {
-            streamList = new ArrayList<>();
-            for (int i = 0; i < rowCount(); i++) {
-                streamList.add(new FSpot(this, i));
-            }
-        }
-        return new FSpots(streamList.stream());
+        return new FSpots(IntStream.range(0, rowCount()).mapToObj(row -> new FSpot(this, row)));
     }
 }

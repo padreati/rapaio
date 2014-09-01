@@ -113,14 +113,6 @@ public interface Mapping extends Serializable {
     void addAll(Collection<Integer> rows);
 
     /**
-     * Sorts the mapping indexes according with the given comparators
-     *
-     * @param comparators a list of comparators
-     * @return a copied mapping which has indexes values according with the order given by comparators
-     */
-    Mapping sort(final Comparator<Integer>... comparators);
-
-    /**
      * Builds a stream of indexes values
      *
      * @return a stream of indexed values
@@ -137,10 +129,7 @@ final class ListMapping implements Mapping {
     }
 
     public ListMapping(int[] rows) {
-        mapping = new ArrayList<>(rows.length);
-        for (int row : rows) {
-            mapping.add(row);
-        }
+        mapping = IntStream.of(rows).boxed().collect(Collectors.toList());
     }
 
     public ListMapping(List<Integer> mapping, boolean copy) {
@@ -163,12 +152,6 @@ final class ListMapping implements Mapping {
 
     public void addAll(Collection<Integer> pos) {
         mapping.addAll(pos);
-    }
-
-    public Mapping sort(final Comparator<Integer>... comparators) {
-        ListMapping copy = new ListMapping(mapping, true);
-        Collections.sort(copy.mapping, RowComparators.aggregateComparator(comparators));
-        return copy;
     }
 
     public IntStream rowStream() {
@@ -204,13 +187,6 @@ final class IntervalMapping implements Mapping {
     @Override
     public void addAll(Collection<Integer> rows) {
         throw new IllegalArgumentException("This is not allowed for interval mappings");
-    }
-
-    @Override
-    public Mapping sort(Comparator<Integer>... comparators) {
-        List<Integer> range = rowStream().mapToObj(i -> i).collect(Collectors.toList());
-        Collections.sort(range, RowComparators.aggregateComparator(comparators));
-        return new ListMapping(range, false);
     }
 
     @Override

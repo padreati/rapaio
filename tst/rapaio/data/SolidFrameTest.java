@@ -178,4 +178,17 @@ public class SolidFrameTest {
         } catch (IllegalArgumentException ignored) {
         }
     }
+
+    @Test
+    public void testMatrixBuilders() {
+        Frame df = SolidFrame.newMatrix(10, "a", "b", "c");
+        assertEquals(10, df.rowCount());
+        assertEquals(3, df.varCount());
+
+        for (int i = 0; i < df.varCount(); i++) {
+            for (int j = 0; j < df.rowCount(); j++) {
+                assertEquals(0, df.value(j, i), 1e-12);
+            }
+        }
+    }
 }
