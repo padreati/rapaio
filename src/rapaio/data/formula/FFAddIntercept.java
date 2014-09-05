@@ -47,15 +47,10 @@ public class FFAddIntercept implements FrameFilter {
             return df;
         }
         List<Var> vars = new ArrayList<>();
-        List<String> names = new ArrayList<>();
-
-        vars.add(Numeric.newFill(df.rowCount(), 1.0));
-        names.add("intercept");
-
+        vars.add(Numeric.newFill(df.rowCount(), 1.0).withName("intercept"));
         Arrays.stream(df.varNames()).forEach(varName -> {
             vars.add(df.var(varName));
-            names.add(varName);
         });
-        return SolidFrame.newWrapOf(df.rowCount(), vars, names);
+        return SolidFrame.newWrapOf(df.rowCount(), vars);
     }
 }

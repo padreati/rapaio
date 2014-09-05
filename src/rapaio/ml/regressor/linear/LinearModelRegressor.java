@@ -20,7 +20,6 @@
 
 package rapaio.ml.regressor.linear;
 
-import rapaio.core.VarRange;
 import rapaio.data.*;
 import rapaio.data.matrix.Matrix;
 import rapaio.data.matrix.QRDecomposition;
@@ -59,13 +58,13 @@ public class LinearModelRegressor implements Regressor {
         Matrix X = buildX(df);
         Matrix Y = buildY(df);
         Matrix beta = new QRDecomposition(X).solve(Y);
-        Var betaC = Numeric.newEmpty();
-        Var betaN = Nominal.newEmpty();
+        Var betaC = Numeric.newEmpty().withName("Term");
+        Var betaN = Nominal.newEmpty().withName("Coefficients");
         for (int i = 0; i < predictors.size(); i++) {
             betaN.addLabel(predictors.get(i));
             betaC.addValue(beta.get(i, 0));
         }
-        coefficients = SolidFrame.newWrapOf(predictors.size(), new Var[]{betaN, betaC}, new String[]{"Term", "Coefficients"});
+        coefficients = SolidFrame.newWrapOf(predictors.size(), betaN, betaC);
 
         fittedValues = buildFit(df);
     }

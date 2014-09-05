@@ -1,25 +1,25 @@
 
 /*
- * Apache License
- * Version 2.0, January 2004
- * http://www.apache.org/licenses/
- *
- *    Copyright 2013 Aurelian Tutuianu
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- */
+* Apache License
+* Version 2.0, January 2004
+* http://www.apache.org/licenses/
+*
+*    Copyright 2013 Aurelian Tutuianu
+*
+*    Licensed under the Apache License, Version 2.0 (the "License");
+*    you may not use this file except in compliance with the License.
+*    You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+*    Unless required by applicable law or agreed to in writing, software
+*    distributed under the License is distributed on an "AS IS" BASIS,
+*    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*    See the License for the specific language governing permissions and
+*    limitations under the License.
+*/
 
-package rapaio.ml.classifier.tree;
+package rapaio.ml.classifier.tree.ctree;
 
 import junit.framework.Assert;
 import org.junit.Test;
@@ -32,8 +32,8 @@ import rapaio.ws.Summary;
 import java.io.IOException;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
- */
+* @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+*/
 public class ID3ClassifierTest {
 
     @Test
@@ -42,7 +42,7 @@ public class ID3ClassifierTest {
         df = BaseFilters.retainNominal(df);
         final String className = "class";
 
-        TreeClassifier id3 = TreeClassifier.buildID3();
+        CTree id3 = CTree.newID3();
         id3.learn(df, className);
         id3.predict(df);
 
@@ -50,7 +50,7 @@ public class ID3ClassifierTest {
         DensityTable dtOutlook = new DensityTable(df.var("outlook"), df.var("class"));
         String splitCol = (dtWindy.getSplitEntropy() < dtOutlook.getSplitEntropy()) ? "windy" : "outlook";
         id3.summary();
-        Assert.assertTrue(id3.root.children.get(0).groupName.startsWith(splitCol));
+        Assert.assertTrue(id3.getRoot().getChildren().get(0).getGroupName().startsWith(splitCol));
 
         Summary.summary(id3);
     }
@@ -61,11 +61,11 @@ public class ID3ClassifierTest {
         df = BaseFilters.retainNominal(df);
         final String className = "class";
 
-        TreeClassifier id3 = new TreeClassifier()
-                .withNominalMethod(TreeClassifier.NominalMethods.FULL)
-                .withNumericMethod(TreeClassifier.NumericMethods.IGNORE)
-                .withSplitter(TreeClassifier.Splitters.REMAINS_IGNORED)
-                .withFunction(TreeClassifier.Functions.INFO_GAIN);
+        CTree id3 = new CTree()
+                .withNominalMethod(CTreeNominalMethod.FULL)
+                .withNumericMethod(CTreeNumericMethod.IGNORE)
+                .withSplitter(CTreeSplitter.REMAINS_IGNORED)
+                .withFunction(CTreePurityFunction.INFO_GAIN);
         id3.learn(df, className);
         id3.predict(df);
         id3.summary();
@@ -73,7 +73,7 @@ public class ID3ClassifierTest {
         DensityTable dtWindy = new DensityTable(df.var("windy"), df.var("class"));
         DensityTable dtOutlook = new DensityTable(df.var("outlook"), df.var("class"));
         String splitCol = (dtWindy.getInfoGain() > dtOutlook.getInfoGain()) ? "windy" : "outlook";
-        Assert.assertTrue(id3.root.children.get(0).groupName.startsWith(splitCol));
+        Assert.assertTrue(id3.getRoot().getChildren().get(0).getGroupName().startsWith(splitCol));
 
         Summary.summary(id3);
     }

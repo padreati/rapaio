@@ -30,21 +30,18 @@ import rapaio.data.stream.VSpot;
  * Ignores missing elements.
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
- * Date: 9/7/13
- * Time: 12:39 PM
  */
-@Deprecated
 public class Maximum implements Printable {
 
-    private final Var var;
+    private final String varName;
     private final double value;
 
     public Maximum(Var var) {
-        this.var = var;
-        this.value = compute();
+        this.varName = var.name();
+        this.value = compute(var);
     }
 
-    private double compute() {
+    private double compute(Var var) {
         if (var.stream().anyMatch((VSpot inst) -> !inst.missing())) {
             return var.stream().complete().mapToDouble().count();
         }
@@ -57,6 +54,6 @@ public class Maximum implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append(String.format("> maximum\n%.10f\n", value));
+        sb.append(String.format("> maximum['%s']\n%.10f\n", varName, value));
     }
 }

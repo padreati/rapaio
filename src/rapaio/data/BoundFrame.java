@@ -20,8 +20,6 @@
 
 package rapaio.data;
 
-import rapaio.core.VarRange;
-
 import java.util.*;
 
 /**
@@ -152,7 +150,7 @@ public class BoundFrame extends AbstractFrame {
                 boundVars.add(dfs[j].var(_names[i]));
             }
 
-            Var boundedVar = BoundVar.newFrom(counts, boundVars);
+            Var boundedVar = BoundVar.newFrom(counts, boundVars).withName(_names[i]);
             _vars.add(boundedVar);
             _indexes.put(_names[i], i);
         }

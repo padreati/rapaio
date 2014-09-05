@@ -20,7 +20,7 @@
 
 package rapaio.ml.clustering;
 
-import rapaio.core.VarRange;
+import rapaio.data.VarRange;
 import rapaio.core.sample.DiscreteSampling;
 import rapaio.core.stat.Mean;
 import rapaio.data.*;

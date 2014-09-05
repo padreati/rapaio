@@ -20,7 +20,7 @@
 
 package rapaio.ml.refactor.tree;
 
-import rapaio.core.VarRange;
+import rapaio.data.VarRange;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.StatOnline;
 import rapaio.core.stat.Sum;

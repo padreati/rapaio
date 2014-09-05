@@ -20,8 +20,6 @@
 
 package rapaio.data;
 
-import rapaio.core.VarRange;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -67,6 +65,7 @@ public class MappedFrame extends AbstractFrame {
     }
 
     private MappedFrame(Frame df, Mapping mapping, List<String> columns) {
+        if(mapping==null) mapping = Mapping.newCopyOf();
         if (df instanceof MappedFrame) {
             MappedFrame mappedFrame = (MappedFrame) df;
             this.source = mappedFrame.sourceFrame();
@@ -85,7 +84,7 @@ public class MappedFrame extends AbstractFrame {
         this.vars = new Var[names.length];
         IntStream.range(0, names.length).forEach(i -> {
             colIndex.put(names[i], i);
-            vars[i] = MappedVar.newByRows(this.source.var(names[i]), this.mapping);
+            vars[i] = MappedVar.newByRows(this.source.var(names[i]), this.mapping).withName(names[i]);
         });
     }
 

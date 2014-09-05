@@ -20,7 +20,7 @@
 
 package rapaio.ml.refactor.nnet;
 
-import rapaio.core.VarRange;
+import rapaio.data.VarRange;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
@@ -115,7 +115,7 @@ public class MultiLayerPerceptronRegressor implements Regressor, Serializable {
     @Override
     public void learn(Frame df, String targetCols) {
         VarRange targetVarRange = new VarRange(targetCols);
-        List<Integer> targets = targetVarRange.parseColumnIndexes(df);
+        List<Integer> targets = targetVarRange.parseVarIndexes(df);
         this.targetCols = new ArrayList<>();
         for (Integer target : targets) {
             this.targetCols.add(df.varNames()[target]);

@@ -21,8 +21,10 @@
 package rapaio.ml.classifier.tools;
 
 import org.junit.Test;
-import rapaio.core.VarRange;
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.Index;
+import rapaio.data.SolidFrame;
+import rapaio.data.VarRange;
 import rapaio.ml.refactor.colselect.ColSelector;
 import rapaio.ml.refactor.colselect.RandomColSelector;
 
@@ -33,50 +35,46 @@ import java.util.HashMap;
  */
 public class UnifRandomSelectorTest {
 
-	@Test
-	public void testNaive() {
-		Frame df = SolidFrame.newWrapOf(
-				0,
-				new Var[]{
-						Index.newScalar(1),
-                        Index.newScalar(1),
-                        Index.newScalar(1),
-                        Index.newScalar(1),
-						Index.newScalar(1),
-                        Index.newScalar(1),
-                        Index.newScalar(1),
-                        Index.newScalar(1),
-                        Index.newScalar(1)},
-				new String[]{
-						"a", "b", "c", "d", "e", "f", "g", "h", "class"
-				});
-		String classColName = "class";
-		int mcols = 4;
+    @Test
+    public void testNaive() {
+        Frame df = SolidFrame.newWrapOf(
+                0,
+                Index.newScalar(1).withName("a"),
+                Index.newScalar(1).withName("b"),
+                Index.newScalar(1).withName("c"),
+                Index.newScalar(1).withName("d"),
+                Index.newScalar(1).withName("e"),
+                Index.newScalar(1).withName("f"),
+                Index.newScalar(1).withName("g"),
+                Index.newScalar(1).withName("h"),
+                Index.newScalar(1).withName("class"));
+        String classColName = "class";
+        int mcols = 4;
 
-		ColSelector colSelector = new RandomColSelector(df, new VarRange(classColName), mcols);
+        ColSelector colSelector = new RandomColSelector(df, new VarRange(classColName), mcols);
 
-		final int TESTS = 10_000;
-		HashMap<String, Integer> counter = new HashMap<>();
-		for (int i = 0; i < TESTS; i++) {
-			String[] selection = colSelector.nextColNames();
-			for (String sel : selection) {
-				if (!counter.containsKey(sel)) {
-					counter.put(sel, 0);
-				}
-				counter.put(sel, counter.get(sel) + 1);
-			}
-		}
-		final double[] freq = new double[counter.size()];
-		int pos = 0;
-		double total = 0;
-		for (int value : counter.values()) {
-			freq[pos++] = value;
-			total += value;
-		}
-		for (int i = 0; i < freq.length; i++) {
-			freq[i] /= total;
-			System.out.println(String.format("%.6f", freq[i]));
-		}
+        final int TESTS = 10_000;
+        HashMap<String, Integer> counter = new HashMap<>();
+        for (int i = 0; i < TESTS; i++) {
+            String[] selection = colSelector.nextColNames();
+            for (String sel : selection) {
+                if (!counter.containsKey(sel)) {
+                    counter.put(sel, 0);
+                }
+                counter.put(sel, counter.get(sel) + 1);
+            }
+        }
+        final double[] freq = new double[counter.size()];
+        int pos = 0;
+        double total = 0;
+        for (int value : counter.values()) {
+            freq[pos++] = value;
+            total += value;
+        }
+        for (int i = 0; i < freq.length; i++) {
+            freq[i] /= total;
+            System.out.println(String.format("%.6f", freq[i]));
+        }
 
-	}
+    }
 }

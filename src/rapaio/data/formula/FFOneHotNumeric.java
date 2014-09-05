@@ -20,7 +20,7 @@
 
 package rapaio.data.formula;
 
-import rapaio.core.VarRange;
+import rapaio.data.VarRange;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
@@ -58,17 +58,14 @@ public class FFOneHotNumeric implements FrameFilter {
         Set<String> nameSet = new HashSet<>(varRange.parseVarNames(df));
 
         List<Var> vars = new ArrayList<>();
-        List<String> names = new ArrayList<>();
 
         for (String varName : df.varNames()) {
             if (nameSet.contains(varName) && df.var(varName).type().isNominal()) {
                 // process one hot encoding
                 String[] dict = df.var(varName).dictionary();
                 List<Var> oneHotVars = new ArrayList<>();
-                List<String> oneHotNames = new ArrayList<>();
                 for (int i = 1; i < dict.length; i++) {
-                    oneHotVars.add(Numeric.newFill(df.rowCount()));
-                    oneHotNames.add(varName + "." + dict[i]);
+                    oneHotVars.add(Numeric.newFill(df.rowCount()).withName(varName + "." + dict[i]));
                 }
                 for (int i = 0; i < df.rowCount(); i++) {
                     int index = df.index(i, varName);
@@ -77,12 +74,10 @@ public class FFOneHotNumeric implements FrameFilter {
                     }
                 }
                 vars.addAll(oneHotVars);
-                names.addAll(oneHotNames);
             } else {
                 vars.add(df.var(varName));
-                names.add(varName);
             }
         }
-        return SolidFrame.newWrapOf(df.rowCount(), vars, names);
+        return SolidFrame.newWrapOf(df.rowCount(), vars);
     }
 }

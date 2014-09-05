@@ -20,7 +20,7 @@
 
 package rapaio.data.formula;
 
-import rapaio.core.VarRange;
+import rapaio.data.VarRange;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
@@ -46,14 +46,12 @@ public class FFRemoveCols implements FrameFilter {
     public Frame apply(Frame df) {
         Set<String> remove = new HashSet<>(varRange.parseVarNames(df));
         List<Var> vars = new ArrayList<>();
-        List<String> names = new ArrayList<>();
         for (String varName : df.varNames()) {
             if (remove.contains(varName)) {
                 continue;
             }
-            vars.add(df.var(varName));
-            names.add(varName);
+            vars.add(df.var(varName).withName(varName));
         }
-        return SolidFrame.newWrapOf(df.rowCount(), vars, names);
+        return SolidFrame.newWrapOf(df.rowCount(), vars);
     }
 }

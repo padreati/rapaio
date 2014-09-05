@@ -22,7 +22,6 @@ package rapaio.core.stat;
 
 import rapaio.core.Printable;
 import rapaio.data.Var;
-import rapaio.data.stream.VSpot;
 import rapaio.util.Pin;
 
 /**
@@ -32,34 +31,37 @@ import rapaio.util.Pin;
  * Date: 9/7/13
  * Time: 12:21 PM
  */
-@Deprecated
 public final class Mean implements Printable {
 
-    private final Var var;
+    private final String varName;
     private final double value;
 
     public Mean(Var var) {
-        this.var = var;
-        this.value = compute();
+        this.varName = var.name();
+        this.value = compute(var);
     }
 
-    private double compute() {
-        double count = var.stream().complete().mapToDouble().count();
+    private double compute(final Var var) {
+        final double count = var.stream().complete().mapToDouble().count();
         if (count == 0) {
             return Double.NaN;
         }
         final double sum = var.stream().complete().mapToDouble().sum() / count;
         final Pin<Double> t = new Pin<>(0.0);
-        var.stream().complete().forEach((VSpot inst) -> t.set(t.get() + inst.value() - sum));
+        var.stream().complete().forEach(s -> t.set(t.get() + s.value() - sum));
         return sum + t.get() / count;
     }
 
+    /**
+     * Returns the computed mean of the vector
+     * @return computed mean
+     */
     public double value() {
         return value;
     }
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append(String.format("> mean\n%.10f\n", value));
+        sb.append(String.format("> mean['%s']\n%.10f\n", varName, value));
     }
 }

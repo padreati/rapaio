@@ -34,7 +34,7 @@ import java.util.stream.IntStream;
 public interface DUDistribution {
 
     /**
-     * @return canonical getName of the distribution
+     * @return canonical getName of the scores
      */
     String getName();
 
@@ -102,7 +102,7 @@ public interface DUDistribution {
     }
 
     /**
-     * Generates a sample of values from distribution
+     * Generates a sample of values from scores
      *
      * @param n sample size
      * @return sample values
@@ -112,35 +112,35 @@ public interface DUDistribution {
     }
 
     /**
-     * Compute distribution's expected value
+     * Compute scores's expected value
      *
      * @return expected value / mean
      */
     double mean();
 
     /**
-     * Computes distribution's mode, if multiple modes, one of them is returned
+     * Computes scores's mode, if multiple modes, one of them is returned
      *
-     * @return distribution's mode
+     * @return scores's mode
      */
     double mode();
 
     /**
-     * Computes variance of the distribution
+     * Computes variance of the scores
      *
      * @return variance or NaN if not defined
      */
     double variance();
 
     /**
-     * Computes skewness of the distribution
+     * Computes skewness of the scores
      *
      * @return skewness, NaN if not defined
      */
     double skewness();
 
     /**
-     * Computes kurtosis of the distribution
+     * Computes kurtosis of the scores
      *
      * @return kurtosis, NaN if not defined
      */

@@ -23,9 +23,10 @@ package rapaio.util;
 import java.io.Serializable;
 
 /**
+ * Tuple of length 2.
+ *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Pair<T1, T2> implements Serializable {
 
     public final T1 first;

@@ -36,7 +36,7 @@ import java.util.stream.IntStream;
 public interface CUDistribution {
 
     /**
-     * @return canonical name of the distribution with parameter values
+     * @return canonical name of the scores with parameter values
      */
     abstract String getName();
 
@@ -63,7 +63,7 @@ public interface CUDistribution {
     double pdf(double x);
 
     /**
-     * Computes cumulative distribution function value for given x
+     * Computes cumulative scores function value for given x
      * @param x given value
      * @return cdf(x)
      */
@@ -91,7 +91,7 @@ public interface CUDistribution {
     abstract public double max();
 
     /**
-     * Generate a sample for this distribution
+     * Generate a sample for this scores
      * @param n number of elements in sample
      * @return sample values
      */
@@ -108,15 +108,15 @@ public interface CUDistribution {
     abstract public double mean();
 
     /**
-     * Computes the mode of the distribution, if multiple modes are defined, than one of them is returned
+     * Computes the mode of the scores, if multiple modes are defined, than one of them is returned
      * @return mode value for which the pdf has the maximum value
      */
     abstract public double mode();
 
     /**
-     * Computes variance of the distribution
+     * Computes variance of the scores
      *
-     * @return variance of the distribution, or NaN if it is not defined
+     * @return variance of the scores, or NaN if it is not defined
      */
     abstract public double variance();
 

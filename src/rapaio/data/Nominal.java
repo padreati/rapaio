@@ -108,6 +108,7 @@ public final class Nominal extends FactorBase {
     @Override
     public Nominal solidCopy() {
         Nominal copy = Nominal.newEmpty(rowCount(), dictionary());
+        copy.withName(name());
         for (int i = 0; i < rowCount(); i++) {
             copy.setLabel(i, label(i));
         }

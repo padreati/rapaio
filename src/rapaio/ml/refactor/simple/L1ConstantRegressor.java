@@ -20,7 +20,7 @@
 
 package rapaio.ml.refactor.simple;
 
-import rapaio.core.VarRange;
+import rapaio.data.VarRange;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
@@ -62,7 +62,7 @@ public class L1ConstantRegressor implements Regressor {
     @Override
     public void learn(Frame df, String targetCols) {
         VarRange varRange = new VarRange(targetCols);
-        List<Integer> colIndexes = varRange.parseColumnIndexes(df);
+        List<Integer> colIndexes = varRange.parseVarIndexes(df);
 
         targets = new ArrayList<>();
         for (Integer colIndexe : colIndexes) {
@@ -82,7 +82,7 @@ public class L1ConstantRegressor implements Regressor {
     public void predict(Frame df) {
         fitValues = new ArrayList<>();
         for (int i = 0; i < targets.size(); i++) {
-            fitValues.add(Numeric.newFill(df.rowCount(), medians.get(i)));
+            fitValues.add(Numeric.newFill(df.rowCount(), medians.get(i)).withName(targets.get(i)));
         }
     }
 
@@ -93,6 +93,6 @@ public class L1ConstantRegressor implements Regressor {
 
     @Override
     public Frame getAllFitValues() {
-        return SolidFrame.newWrapOf(fitValues.get(0).rowCount(), fitValues, targets);
+        return SolidFrame.newWrapOf(fitValues.get(0).rowCount(), fitValues);
     }
 }

@@ -143,7 +143,7 @@ public class Norm implements CUDistribution {
         /*
          * Journal of Statistical Software (July 2004, Volume 11, Issue 5),
          * George Marsaglia Algorithum to compute the cdf of the normal
-         * distribution for some z score
+         * scores for some z score
          */
         double s = x, t = 0, b = x, q = x * x, i = 1;
         while (s != t) {

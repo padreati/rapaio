@@ -20,7 +20,7 @@
 
 package rapaio.data.filters;
 
-import rapaio.core.VarRange;
+import rapaio.data.VarRange;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.cu.Norm;
 import rapaio.data.*;
@@ -62,7 +62,7 @@ public final class BaseFilters implements Serializable {
         for (int i = 0; i < vars.length; i++) {
             vars[i] = toNumeric(df.var(i));
         }
-        return SolidFrame.newWrapOf(df.rowCount(), vars, df.varNames());
+        return SolidFrame.newWrapOf(df.rowCount(), vars);
     }
 
     /**
@@ -77,7 +77,7 @@ public final class BaseFilters implements Serializable {
                 names.add(df.varNames()[i]);
             }
         }
-        return SolidFrame.newWrapOf(df.rowCount(), vars, names);
+        return SolidFrame.newWrapOf(df.rowCount(), vars);
     }
 
     /**
@@ -92,7 +92,7 @@ public final class BaseFilters implements Serializable {
                 names.add(df.varNames()[i]);
             }
         }
-        return SolidFrame.newWrapOf(df.rowCount(), vars, names);
+        return SolidFrame.newWrapOf(df.rowCount(), vars);
     }
 
     /**
@@ -135,7 +135,7 @@ public final class BaseFilters implements Serializable {
                     }
                 }
             }
-            dest.add(SolidFrame.newWrapOf(frame.rowCount(), vars, frame.varNames()));
+            dest.add(SolidFrame.newWrapOf(frame.rowCount(), vars));
         }
 
         return dest;
@@ -202,7 +202,7 @@ public final class BaseFilters implements Serializable {
                 col.setLabel(j, sb.toString());
             }
             vars.add(col);
-            result.add(SolidFrame.newWrapOf(frame.rowCount(), vars, frame.varNames()));
+            result.add(SolidFrame.newWrapOf(frame.rowCount(), vars));
         }
         return result;
 
@@ -224,7 +224,7 @@ public final class BaseFilters implements Serializable {
     }
 
     public static Frame completeCases(Frame source, VarRange varRange) {
-        List<Integer> selectedCols = varRange.parseColumnIndexes(source);
+        List<Integer> selectedCols = varRange.parseVarIndexes(source);
         return source.stream().filter(s -> !selectedCols.stream().anyMatch(s::missing)).toMappedFrame();
     }
 
@@ -304,7 +304,7 @@ public final class BaseFilters implements Serializable {
     /**
      * Alter valid numeric values with normally distributed noise.
      * <p>
-     * Noise comes from a normal distribution with mean 0 and standard deviation
+     * Noise comes from a normal scores with mean 0 and standard deviation
      * 0.1
      *
      * @param var input values
@@ -318,7 +318,7 @@ public final class BaseFilters implements Serializable {
     /**
      * Alter valid numeric values with normally distributed noise.
      * <p>
-     * Noise comes from a normal distribution with mean 0 and standard deviation
+     * Noise comes from a normal scores with mean 0 and standard deviation
      * specified by {
      *
      * @param var input values

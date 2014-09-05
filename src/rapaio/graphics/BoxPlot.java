@@ -20,7 +20,7 @@
 
 package rapaio.graphics;
 
-import rapaio.core.VarRange;
+import rapaio.data.VarRange;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
@@ -94,7 +94,7 @@ public class BoxPlot extends BaseFigure {
             }
             varRange = new VarRange(indexes);
         }
-        List<Integer> indexes = varRange.parseColumnIndexes(df);
+        List<Integer> indexes = varRange.parseVarIndexes(df);
         vars = new Var[indexes.size()];
         labels = new String[indexes.size()];
 

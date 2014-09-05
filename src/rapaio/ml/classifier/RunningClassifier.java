@@ -28,7 +28,6 @@ import java.io.Serializable;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public interface RunningClassifier extends Classifier, Serializable {
 
 
@@ -45,12 +44,12 @@ public interface RunningClassifier extends Classifier, Serializable {
      * </ul>
      *
      * @param df         data set instances
-     * @param targetName target column name
+     * @param targetVars target column name
      * @param runs       additional runs to build
      */
-    default void learnFurther(Frame df, String targetName, int runs) {
-        learnFurther(df, Numeric.newFill(df.rowCount(), 1.0), targetName, runs);
+    default void learnFurther(Frame df, String targetVars, int runs) {
+        learnFurther(df, Numeric.newFill(df.rowCount(), 1.0), targetVars, runs);
     }
 
-    void learnFurther(Frame df, Numeric weights, String targetName, int runs);
+    void learnFurther(Frame df, Numeric weights, String targetVars, int runs);
 }

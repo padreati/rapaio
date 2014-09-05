@@ -20,51 +20,58 @@
 
 package rapaio.ml.classifier;
 
-import rapaio.ml.classifier.colselect.ColSelector;
-import rapaio.ml.classifier.colselect.StdColSelector;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
+import rapaio.ml.classifier.colselect.StdVarSelector;
+import rapaio.ml.classifier.colselect.VarSelector;
+
+import java.util.Map;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public abstract class AbstractClassifier implements Classifier {
 
-    protected ColSelector colSelector = new StdColSelector();
-    protected String targetCol;
-    protected String[] dict;
-    protected Nominal pred;
-    protected Frame dist;
+    protected VarSelector varSelector = new StdVarSelector();
+    protected String[] targetVars;
+    protected Map<String, String[]> dict;
+    protected Map<String, Nominal> classes;
+    protected Map<String, Frame> densities;
 
     @Override
-    public ColSelector getColSelector() {
-        return colSelector;
+    public VarSelector getVarSelector() {
+        return varSelector;
     }
 
     @Override
-    public Classifier withColSelector(ColSelector colSelector) {
-        this.colSelector = colSelector;
+    public Classifier withVarSelector(VarSelector varSelector) {
+        this.varSelector = varSelector;
         return this;
     }
 
     @Override
-    public String getTargetCol() {
-        return targetCol;
+    public String[] targetVars() {
+        return targetVars;
     }
 
     @Override
-    public String[] getDict() {
+    public Map<String, String[]> dictionaries() {
         return dict;
     }
 
     @Override
-    public Nominal pred() {
-        return pred;
+    public Map<String, Nominal> classes() {
+        return classes;
     }
 
     @Override
-    public Frame dist() {
-        return dist;
+    public Map<String, Frame> scores() {
+        return densities;
+    }
+
+    @Override
+    public void reset() {
+        classes = null;
+        densities = null;
     }
 }

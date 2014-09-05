@@ -72,20 +72,20 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("We have two continuous random variables which observes height of "
                 + "pairs of father and sons. ");
 
-        p("The 5-number summaries gives us some hints on how the distribution "
+        p("The 5-number summaries gives us some hints on how the scores "
                 + "of the values for the 2 random variables looks like. "
                 + "We note that the mean and median are very close which "
-                + "leads us to think that the distribution of the values "
+                + "leads us to think that the scores of the values "
                 + "are somehow symmetric. ");
 
         heading(3, "Histograms");
 
         p("One of the most important and usual tools to obtain information "
-                + "about the distribution of a random variable is histogram. ");
+                + "about the scores of a random variable is histogram. ");
 
         p("In statistics, a histogram is a graphical representation of the "
-                + "distribution of data. "
-                + "It is an estimate of the probability distribution of a "
+                + "scores of data. "
+                + "It is an estimate of the probability scores of a "
                 + "continuous variable and was first introduced by Karl Pearson. "
                 + "A histogram is a representation of tabulated frequencies, "
                 + "shown as adjacent rectangles, erected over discrete intervals (bins), "
@@ -114,7 +114,7 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("Note that on the vertical axis we found the count of the elements which "
                 + "are held by the bins that are displayed. We can "
                 + "change how the heights of the bins are computed into "
-                + "densities which makes the total area under curve to be 1. "
+                + "scores which makes the total area under curve to be 1. "
                 + "That feature is a key property of a probability density function, also.");
 
         p("        draw(new Plot().add(new Histogram(df.getCol(\"Father\"), 30, true)));\n");
@@ -126,8 +126,8 @@ public class HistogramDensityTutorial implements TutorialPage {
                 + "can reveal different features of the data. ");
         p("Some theoreticians have attempted to determine an optimal number "
                 + "of bins, but these methods generally make strong assumptions "
-                + "about the shape of the distribution. Depending on the actual "
-                + "data distribution and the goals of the analysis, different bin "
+                + "about the shape of the scores. Depending on the actual "
+                + "data scores and the goals of the analysis, different bin "
                 + "widths may be appropriate, so experimentation is usually needed "
                 + "to determine an appropriate width. ");
 

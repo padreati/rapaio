@@ -18,29 +18,20 @@
  *    limitations under the License.
  */
 
-package rapaio.core;
+package rapaio.data;
 
-import rapaio.data.Frame;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Builds a list of column indexes from column ranges in string
- * format when applied to a data frame. Used as utility tool to easy
- * the specification of column indexes.
- * <p>
- * Column ranges can be specified directly as a list of column indexes.
+ * Utility tool to easy the specification of column specification by column ranges.
+ * Column ranges can be specified directly as a list of column indexes or as a list of column ranges.
  * <p>
  * Column ranges syntax uses as range separator "-", and as column
  * range delimiter the comma ",".
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class VarRange {
 
     private static final String COL_DELIMITER = ",";
@@ -49,42 +40,46 @@ public class VarRange {
     private final String rawColumnRange;
 
     /**
-     * Builds a column range directly from a list of column indexes.
+     * Builds a var range directly from a list of var indexes.
      *
-     * @param colIndexes list of column indexes
+     * @param varIndexes list of var indexes
      */
-    public VarRange(int... colIndexes) {
-        if (colIndexes.length == 0) {
+    public VarRange(int... varIndexes) {
+        if (varIndexes.length == 0) {
             throw new IllegalArgumentException("No column indexes specified.");
         }
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < colIndexes.length; i++) {
+        for (int i = 0; i < varIndexes.length; i++) {
             if (i > 0) {
                 sb.append(",");
             }
-            sb.append(String.valueOf(colIndexes[i]));
+            sb.append(String.valueOf(varIndexes[i]));
         }
         this.rawColumnRange = sb.toString();
     }
 
     /**
-     * Builds a column range from column ranges formatted as string
-     * with required syntax.
+     * Builds a var range from var ranges formatted as strings with the required syntax.
      *
-     * @param rawColumnRange column ranges specified in string format
+     * @param varRanges var ranges specified in string format
      */
-    public VarRange(String rawColumnRange) {
-        this.rawColumnRange = rawColumnRange;
+    public VarRange(String... varRanges) {
+        StringBuilder sb = new StringBuilder();
+        Arrays.stream(varRanges).forEach(s -> {
+            if (sb.length() > 0)
+                sb.append(",");
+            sb.append(s);
+        });
+        this.rawColumnRange = sb.toString();
     }
 
     /**
-     * Apply a column range over a frame, obtaining the list of
-     * column indexes for that frame.
+     * Apply a var range over a frame, obtaining the list of var indexes for that frame.
      *
      * @param df target frame
      * @return a list of column indexes which corresponds to column range
      */
-    public List<Integer> parseColumnIndexes(Frame df) {
+    public List<Integer> parseVarIndexes(Frame df) {
         List<Integer> colIndexes = new ArrayList<>();
         if (COL_ALL.equals(rawColumnRange)) {
             for (int i = 0; i < df.varCount(); i++) {
@@ -132,6 +127,6 @@ public class VarRange {
     }
 
     public List<String> parseVarNames(Frame df) {
-        return parseColumnIndexes(df).stream().map(i -> df.varNames()[i]).collect(Collectors.toList());
+        return parseVarIndexes(df).stream().map(i -> df.varNames()[i]).collect(Collectors.toList());
     }
 }

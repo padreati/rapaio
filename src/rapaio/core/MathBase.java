@@ -276,7 +276,7 @@ public class MathBase {
      * <p>
      * erf(x) = 2 * cdf(x sqrt(2)) -1
      * <p>
-     * where cdf is the cdf of the normal distribution
+     * where cdf is the cdf of the normal scores
      * <p>
      * http://en.wikipedia.org/wiki/Error_function
      *
@@ -292,7 +292,7 @@ public class MathBase {
      * <p>
      * inverf(x) = invcdf(x/2+1/2)/sqrt(2)
      * <p>
-     * where invcdf is the inverse cdf of the normal distribution
+     * where invcdf is the inverse cdf of the normal scores
      * <p>
      * http://en.wikipedia.org/wiki/Error_function
      *
@@ -322,7 +322,7 @@ public class MathBase {
      * <p>
      * inverfc(x) = invcdf(x/2)/-sqrt(2)
      * <p>
-     * where invcdf is the inverse cdf of the normal distribution
+     * where invcdf is the inverse cdf of the normal scores
      * <p>
      * http://en.wikipedia.org/wiki/Error_function
      *
@@ -637,7 +637,7 @@ public class MathBase {
     }
 
     /**
-     * Compute the logarithm of the PMF for a binomial distribution
+     * Compute the logarithm of the PMF for a binomial scores
      * using the saddle point expansion.
      *
      * @param x     the value at which the probability is evaluated.

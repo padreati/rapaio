@@ -1,0 +1,129 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
+package rapaio.ml.classifier.tree.ctree;
+
+import rapaio.core.RandomSource;
+import rapaio.data.Frame;
+import rapaio.data.Numeric;
+import rapaio.data.Var;
+import rapaio.ml.classifier.tools.DensityTable;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
+ */
+public interface CTreeNominalMethod extends Serializable {
+    String name();
+
+    List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreePurityFunction function);
+
+    public CTreeNominalMethod IGNORE = new CTreeNominalMethod() {
+        @Override
+        public String name() {
+            return "IGNORE";
+        }
+
+        @Override
+        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreePurityFunction function) {
+            return new ArrayList<>();
+        }
+    };
+
+    public CTreeNominalMethod FULL = new CTreeNominalMethod() {
+        @Override
+        public String name() {
+            return "FULL";
+        }
+
+        @Override
+        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreePurityFunction function) {
+            List<CTreeCandidate> result = new ArrayList<>();
+            Var test = df.var(testColName);
+            Var target = df.var(targetColName);
+
+            if (new DensityTable(test, target).countWithMinimum(false, c.getMinCount()) < 2) {
+                return result;
+            }
+
+            DensityTable dt = new DensityTable(test, target, weights);
+            double value = function.compute(dt);
+
+            CTreeCandidate candidate = new CTreeCandidate(value, function.sign());
+            for (int i = 1; i < test.dictionary().length; i++) {
+
+                final String label = test.dictionary()[i];
+                candidate.addGroup(
+                        String.format("%s == %s", testColName, label),
+                        spot -> !spot.missing(testColName) && spot.label(testColName).equals(label));
+            }
+
+            result.add(candidate);
+            return result;
+        }
+    };
+
+    public CTreeNominalMethod BINARY = new CTreeNominalMethod() {
+
+        @Override
+        public String name() {
+            return "BINARY";
+        }
+
+
+        @Override
+        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreePurityFunction function) {
+
+            List<CTreeCandidate> result = new ArrayList<>();
+            CTreeCandidate best = null;
+            for (int i = 1; i < df.var(testColName).dictionary().length; i++) {
+                Var test = df.var(testColName);
+                Var target = df.var(targetColName);
+                String testLabel = df.var(testColName).dictionary()[i];
+
+                if (new DensityTable(test, target).countWithMinimum(false, c.getMinCount()) < 2) {
+                    return result;
+                }
+
+                DensityTable dt = new DensityTable(test, target, weights, testLabel);
+                double value = function.compute(dt);
+                CTreeCandidate candidate = new CTreeCandidate(value, function.sign());
+                if (best == null) {
+                    best = candidate;
+                    best.addGroup(testColName + " == " + testLabel, spot -> spot.label(testColName).equals(testLabel));
+                    best.addGroup(testColName + " != " + testLabel, spot -> !spot.label(testColName).equals(testLabel));
+                } else {
+                    int comp = best.compareTo(candidate);
+                    if (comp < 0) continue;
+                    if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
+                    best = candidate;
+                    best.addGroup(testColName + " == " + testLabel, spot -> spot.label(testColName).equals(testLabel));
+                    best.addGroup(testColName + " != " + testLabel, spot -> !spot.label(testColName).equals(testLabel));
+                }
+            }
+            if (best != null)
+                result.add(best);
+            return result;
+        }
+    };
+}

@@ -20,7 +20,7 @@
 
 package rapaio.ml.refactor.boost;
 
-import rapaio.core.VarRange;
+import rapaio.data.VarRange;
 import rapaio.core.sample.DiscreteSampling;
 import rapaio.data.*;
 import rapaio.data.MappedFrame;
@@ -273,7 +273,7 @@ public class GradientBoostingTreeRegressor implements Regressor {
     @Override
     public void predict(Frame df) {
         initialRegressor.predict(df);
-        fitValues = Numeric.newFill(df.rowCount());
+        fitValues = Numeric.newFill(df.rowCount()).withName(targetColName);
         for (int i = 0; i < df.rowCount(); i++) {
             fitValues.setValue(i, initialRegressor.getFitValues().value(i));
         }
@@ -293,6 +293,6 @@ public class GradientBoostingTreeRegressor implements Regressor {
 
     @Override
     public Frame getAllFitValues() {
-        return SolidFrame.newWrapOf(fitValues.rowCount(), new Var[]{fitValues}, new String[]{targetColName});
+        return SolidFrame.newWrapOf(fitValues.rowCount(), fitValues);
     }
 }

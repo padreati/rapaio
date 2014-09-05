@@ -102,10 +102,10 @@ public class NeuralNetTest {
     @Test
     public void testXorTwoOutputs() {
 
-        Var a = Numeric.newEmpty();
-        Var b = Numeric.newEmpty();
-        Var xorA = Numeric.newEmpty();
-        Var xorB = Numeric.newEmpty();
+        Var a = Numeric.newEmpty().withName("a");
+        Var b = Numeric.newEmpty().withName("b");
+        Var xorA = Numeric.newEmpty().withName("xorA");
+        Var xorB = Numeric.newEmpty().withName("xorB");
 
         a.addValue(0);
         b.addValue(0);
@@ -127,9 +127,7 @@ public class NeuralNetTest {
         xorA.addValue(0);
         xorB.addValue(1);
 
-        Frame df = SolidFrame.newWrapOf(xorA.rowCount(),
-                new Var[]{a, b, xorA, xorB},
-                new String[]{"a", "b", "xorA", "xorB"});
+        Frame df = SolidFrame.newWrapOf(xorA.rowCount(), a, b, xorA, xorB);
 
         Regressor nn = new MultiLayerPerceptronRegressor(new int[]{2, 4, 2}, 0.1).setRounds(100);
 

@@ -21,13 +21,14 @@
 package rapaio.util;
 
 /**
+ * Envelops a reference object. This is a convenience class which overcomes
+ * the limitation that lambda expressions cannot produce side effects.
+ *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Pin<T> {
 
     private T value;
-
 
     public Pin() {
     }

@@ -20,7 +20,7 @@
 
 package rapaio.ml.refactor.simple;
 
-import rapaio.core.VarRange;
+import rapaio.data.VarRange;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
@@ -62,23 +62,18 @@ public class CustomConstantRegressor implements Regressor {
     @Override
     public void learn(Frame df, String targetCols) {
         VarRange varRange = new VarRange(targetCols);
-        List<Integer> colIndexes = varRange.parseColumnIndexes(df);
+        List<Integer> colIndexes = varRange.parseVarIndexes(df);
 
         targets = new ArrayList<>();
         for (Integer colIndexe : colIndexes) {
             targets.add(df.varNames()[colIndexe]);
-        }
-
-        fitValues = new ArrayList<>();
-        for (String target : targets) {
-            fitValues.add(Numeric.newFill(df.var(target).rowCount(), customValue));
         }
     }
 
     @Override
     public void predict(Frame df) {
         fitValues = new ArrayList<>();
-        targets.stream().forEach(s -> fitValues.add(Numeric.newFill(df.rowCount(), customValue)));
+        targets.stream().forEach(s -> fitValues.add(Numeric.newFill(df.rowCount(), customValue).withName(s)));
     }
 
     @Override
@@ -88,6 +83,6 @@ public class CustomConstantRegressor implements Regressor {
 
     @Override
     public Frame getAllFitValues() {
-        return SolidFrame.newWrapOf(fitValues.get(0).rowCount(), fitValues, targets);
+        return SolidFrame.newWrapOf(fitValues.get(0).rowCount(), fitValues);
     }
 }

@@ -20,7 +20,7 @@
 
 package rapaio.ml.classifier.colselect;
 
-import rapaio.core.VarRange;
+import rapaio.data.VarRange;
 import rapaio.core.sample.DiscreteSampling;
 import rapaio.data.Frame;
 
@@ -28,24 +28,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * User: Aurelian Tutuianu <paderati@yahoo.com>
+ * Variable selector which selects only a maximum number of variables at random
+ *
+ * User: <a href="mailoto:paderati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
-public class RandomColSelector implements ColSelector {
+public class RandomVarSelector implements VarSelector {
 
-    private final int mCols;
+    private final int mVars;
     private String[] candidates;
 
-    public RandomColSelector(int mCols) {
-        this.mCols = mCols;
+    public RandomVarSelector(int mVars) {
+        this.mVars = mVars;
     }
 
     public String name() {
-        return "Random[" + mCols + "]";
+        return "Random[" + mVars + "]";
     }
 
     public synchronized void initialize(Frame df, VarRange except) {
-        List<Integer> exceptColumns = except == null ? new ArrayList<>() : except.parseColumnIndexes(df);
+        List<Integer> exceptColumns = except == null ? new ArrayList<>() : except.parseVarIndexes(df);
         candidates = new String[df.varCount() - exceptColumns.size()];
         int pos = 0;
         int expos = 0;
@@ -59,12 +60,12 @@ public class RandomColSelector implements ColSelector {
     }
 
     @Override
-    public synchronized String[] nextColNames() {
-        if (mCols < 1) {
-            throw new RuntimeException("Uniform random column selector not initialized");
+    public synchronized String[] nextVarNames() {
+        if (mVars < 1) {
+            throw new RuntimeException("Uniform random var selector not initialized");
         }
-        int[] indexes = new DiscreteSampling().sampleWR(mCols, candidates.length);
-        String[] result = new String[mCols];
+        int[] indexes = new DiscreteSampling().sampleWR(mVars, candidates.length);
+        String[] result = new String[mVars];
         for (int i = 0; i < indexes.length; i++) {
             result[i] = candidates[indexes[i]];
         }
@@ -73,6 +74,6 @@ public class RandomColSelector implements ColSelector {
 
     @Override
     public String toString() {
-        return "RAND_COL_SELECTOR(" + mCols + ')';
+        return "RAND_VAR_SELECTOR(" + mVars + ')';
     }
 }

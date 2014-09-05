@@ -89,7 +89,7 @@ public class Binom implements DUDistribution {
         if (pr == 0. || n == 0) return 0.;
 
         q = 1 - pr;
-        if (q == 0.) return n; /* covers the full range of the distribution */
+        if (q == 0.) return n; /* covers the full range of the scores */
         mu = n * pr;
         sigma = sqrt(n * pr * q);
         gamma = (q - pr) / sigma;

@@ -20,7 +20,6 @@
 
 package rapaio.data;
 
-import rapaio.core.VarRange;
 import rapaio.data.stream.FSpots;
 
 import java.io.Serializable;

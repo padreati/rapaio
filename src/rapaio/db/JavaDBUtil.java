@@ -146,6 +146,9 @@ public class JavaDBUtil {
                     vars.add(v2);
             }
         }
-        return SolidFrame.newWrapOf(lists.get(0).size(), vars, colNames);
+        for (int i = 0; i < vars.size(); i++) {
+            vars.get(i).withName(colNames.get(i));
+        }
+        return SolidFrame.newWrapOf(lists.get(0).size(), vars);
     }
 }

@@ -20,7 +20,7 @@
 
 package rapaio.ml.classifier.colselect;
 
-import rapaio.core.VarRange;
+import rapaio.data.VarRange;
 import rapaio.data.Frame;
 
 import java.util.ArrayList;
@@ -29,8 +29,7 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-@Deprecated
-public class StdColSelector implements ColSelector {
+public class StdVarSelector implements VarSelector {
 
     private String[] selection;
 
@@ -41,7 +40,7 @@ public class StdColSelector implements ColSelector {
     @Override
     public synchronized void initialize(Frame df, VarRange except) {
         String[] all = df.varNames();
-        List<Integer> ex = except==null ? new ArrayList<>() : except.parseColumnIndexes(df);
+        List<Integer> ex = except==null ? new ArrayList<>() : except.parseVarIndexes(df);
         selection = new String[all.length - ex.size()];
         int p = 0;
         int s = 0;
@@ -55,12 +54,12 @@ public class StdColSelector implements ColSelector {
     }
 
     @Override
-    public String[] nextColNames() {
+    public String[] nextVarNames() {
         return selection;
     }
 
     @Override
     public String toString() {
-        return "STD_COL_SELECTOR";
+        return "STD_VAR_SELECTOR";
     }
 }

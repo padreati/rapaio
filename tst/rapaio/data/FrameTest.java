@@ -21,7 +21,6 @@
 package rapaio.data;
 
 import org.junit.Test;
-import rapaio.core.VarRange;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;

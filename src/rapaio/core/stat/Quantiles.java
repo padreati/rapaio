@@ -43,7 +43,7 @@ public class Quantiles implements Printable {
     private final double[] percentiles;
     private final double[] quantiles;
 
-    public Quantiles(Var var, double[] percentiles) {
+    public Quantiles(Var var, double... percentiles) {
         this.var = var;
         this.percentiles = percentiles;
         this.quantiles = compute();

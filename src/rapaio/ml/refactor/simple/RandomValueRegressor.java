@@ -20,7 +20,7 @@
 
 package rapaio.ml.refactor.simple;
 
-import rapaio.core.VarRange;
+import rapaio.data.VarRange;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
@@ -76,7 +76,7 @@ public class RandomValueRegressor implements Regressor {
     @Override
     public void learn(Frame df, String targetCols) {
         VarRange varRange = new VarRange(targetCols);
-        List<Integer> colIndexes = varRange.parseColumnIndexes(df);
+        List<Integer> colIndexes = varRange.parseVarIndexes(df);
 
         targets = new ArrayList<>();
         for (Integer colIndexe : colIndexes) {
@@ -94,7 +94,7 @@ public class RandomValueRegressor implements Regressor {
     public void predict(Frame df) {
         fitValues = new ArrayList<>();
         for (int i = 0; i < targets.size(); i++) {
-            fitValues.add(Numeric.newFill(df.rowCount()));
+            fitValues.add(Numeric.newFill(df.rowCount()).withName(targets.get(i)));
             for (int j = 0; j < df.rowCount(); j++) {
                 fitValues.get(i).setValue(j, getRandomValue());
             }
@@ -108,6 +108,6 @@ public class RandomValueRegressor implements Regressor {
 
     @Override
     public Frame getAllFitValues() {
-        return SolidFrame.newWrapOf(fitValues.get(0).rowCount(), fitValues, targets);
+        return SolidFrame.newWrapOf(fitValues.get(0).rowCount(), fitValues);
     }
 }

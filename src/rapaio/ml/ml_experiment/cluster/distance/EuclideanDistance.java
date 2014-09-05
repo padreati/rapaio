@@ -20,7 +20,7 @@
 
 package rapaio.ml.ml_experiment.cluster.distance;
 
-import rapaio.core.VarRange;
+import rapaio.data.VarRange;
 import rapaio.data.Frame;
 
 import java.util.List;
@@ -42,8 +42,8 @@ public class EuclideanDistance implements Distance {
 
     @Override
     public double getDistance(Frame from, int fromRow, Frame targetFrame, int targetRow) {
-        List<Integer> sourceFields = range.parseColumnIndexes(from);
-        List<Integer> targetFields = range.parseColumnIndexes(targetFrame);
+        List<Integer> sourceFields = range.parseVarIndexes(from);
+        List<Integer> targetFields = range.parseVarIndexes(targetFrame);
         if (sourceFields.size() != targetFields.size()) {
             throw new IllegalArgumentException("Source frame and target frame have a different number of columns !");
         }
