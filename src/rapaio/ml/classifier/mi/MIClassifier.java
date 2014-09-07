@@ -127,7 +127,7 @@
 //        classes = Nominal.newEmpty(df.rowCount(), dict);
 //
 //        c.classes().stream().forEach(s -> classes.setLabel(s.row(), predictions.get(df.label(s.row(), groupCol))));
-//        scores = c.scores();
+//        densities = c.densities();
 //    }
 //
 //    @Override

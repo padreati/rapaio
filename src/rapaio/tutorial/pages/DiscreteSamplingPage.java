@@ -63,19 +63,19 @@ public class DiscreteSamplingPage implements TutorialPage {
                 + "The purpose of this tutorial is to present discrete random sampling methods.");
 
         p("<b>Definition:</b>");
-        p("<i>A statistical scores whose values can take only discrete values is "
-                + "called a discrete scores. </i>");
+        p("<i>A statistical densities whose values can take only discrete values is "
+                + "called a discrete densities. </i>");
 
-        p("A discrete probability scores function is completely described by "
+        p("A discrete probability densities function is completely described by "
                 + "the set of possible values the random variable can take and "
                 + "by the probabilities assigned to each value.");
 
-        p("An example of discrete scores is the process of throwing a standard dice. "
+        p("An example of discrete densities is the process of throwing a standard dice. "
                 + "We have a finite set of outcomes of the process (6 possible values) and "
                 + "a probability function value associated with each output (for a fair dice we "
                 + "can associate probability \\( p(x_i) = \\frac{1}{6} \\)).");
 
-        p("Drawing a sample from a scores is the process of selecting some values "
+        p("Drawing a sample from a densities is the process of selecting some values "
                 + "from the possible values \\( x_i,i=1..n \\) according with their probabilities. "
                 + "Sampling is useful for far many purposes that I can describe here. "
                 + "Among some very important scenarios are the simulation and the fapt that "
@@ -89,10 +89,10 @@ public class DiscreteSamplingPage implements TutorialPage {
         heading(2, "Uniform random sample with replacement");
 
         p("An uniform random sample is a sample from a discrete population with "
-                + "an uniform scores. A discrete uniform scores is a scores "
+                + "an uniform densities. A discrete uniform densities is a densities "
                 + "which assigns equal probability mass function values to each outcome. "
                 + "The previous example of throwing a fair dice is an example of uniform "
-                + "scores, since it assigns equal value \\(\\frac{1}{6}\\) to each "
+                + "densities, since it assigns equal value \\(\\frac{1}{6}\\) to each "
                 + "possible outcome \\( x_i \\). ");
 
         p("A sample with replacement is a sample where values of the sample can appear multiple "
@@ -205,7 +205,7 @@ public class DiscreteSamplingPage implements TutorialPage {
         );
 
         p("There is random in that plot. Everywhere. A summary on the data, however, "
-                + "can give us enough clues to understand that the scores "
+                + "can give us enough clues to understand that the densities "
                 + "of those numbers are still symmetric and somehow uniform.");
 
         Summary.summary(df);
@@ -213,7 +213,7 @@ public class DiscreteSamplingPage implements TutorialPage {
         heading(2, "Weighted random sample with replacement");
 
         p("A weighted sample is a discrete random sample which does not have an "
-                + "uniform scores. A well-know example used in almost "
+                + "uniform densities. A well-know example used in almost "
                 + "all introductory probability classes is the biased coin. A biased coin "
                 + "is a coin which is not fair. That mean the probability after a draw "
                 + "to see HEAD is different than the probability to see a TAIL. ");
@@ -287,7 +287,7 @@ public class DiscreteSamplingPage implements TutorialPage {
 
         p("This is the last getType of discrete random sampling covered here. What we are "
                 + "interested in is to generate samples without replacement (no repetition), "
-                + "from a discrete scores different than uniform scores. ");
+                + "from a discrete densities different than uniform densities. ");
 
         p("We consider again the lottery experiment. However we want to simulate "
                 + "a situation when some winning numbers are preferred over the others. "

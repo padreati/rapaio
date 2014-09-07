@@ -169,7 +169,7 @@ public class CorrelationsPage implements TutorialPage {
         heading(4, "Definition");
         p("The Spearman correlation coefficient is defined as the Pearson correlation "
                 + "coefficient between the ranked variables. For a sample of size \\(n\\), "
-                + "the \\(n\\) raw scores \\(X_i\\), \\(Y_i\\) are converted to ranks "
+                + "the \\(n\\) raw densities \\(X_i\\), \\(Y_i\\) are converted to ranks "
                 + "\\(x_i\\), \\(y_i\\), and \\(\\rho\\) is computed from these:");
         eqn("\\rho = \\frac{\\sum_i(x_i-\\bar{x})(y_i-\\bar{y})}{\\sqrt{\\sum_i (x_i-\\bar{x})^2 \\sum_i(y_i-\\bar{y})^2}}");
         p("Identical values (rank ties or value duplicates) are assigned a "

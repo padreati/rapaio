@@ -63,9 +63,9 @@ public class LawOfLargeNumbers implements TutorialPage {
                 + "the integer numbers from 1 to 6, with each output having equal "
                 + "probability. Therefore teh expected value of a single die roll is \\( (1+2+3+4+5+6)/6=3.5 \\)");
         p("We simulate the event of a single die roll to be a draw of a number from the "
-                + "discrete uniform scores with minimum value equals to 1 and maximum "
+                + "discrete uniform densities with minimum value equals to 1 and maximum "
                 + "value equals to 6. To simulate a large number of independent events we "
-                + "simply draw a large sample of generated random numbers from the same scores.");
+                + "simply draw a large sample of generated random numbers from the same densities.");
         p("Rapaio makes this possible by using the following code:");
         code("        final int N = 1_000;\n"
                 + "        Vector dice = new DUniform(1, 6).sample(N);\n");

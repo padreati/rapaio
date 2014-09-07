@@ -69,7 +69,7 @@ public interface CTreeNominalMethod extends Serializable {
             DensityTable dt = new DensityTable(test, target, weights);
             double value = function.compute(dt);
 
-            CTreeCandidate candidate = new CTreeCandidate(value, function.sign());
+            CTreeCandidate candidate = new CTreeCandidate(value, function.sign(), testColName);
             for (int i = 1; i < test.dictionary().length; i++) {
 
                 final String label = test.dictionary()[i];
@@ -107,7 +107,7 @@ public interface CTreeNominalMethod extends Serializable {
 
                 DensityTable dt = new DensityTable(test, target, weights, testLabel);
                 double value = function.compute(dt);
-                CTreeCandidate candidate = new CTreeCandidate(value, function.sign());
+                CTreeCandidate candidate = new CTreeCandidate(value, function.sign(), testColName);
                 if (best == null) {
                     best = candidate;
                     best.addGroup(testColName + " == " + testLabel, spot -> spot.label(testColName).equals(testLabel));

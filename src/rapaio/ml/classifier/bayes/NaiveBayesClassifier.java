@@ -20,8 +20,8 @@
 //
 //package rapaio.ml.classifier.bayes;
 //
-//import rapaio.core.scores.cu.Norm;
-//import rapaio.core.scores.empirical.*;
+//import rapaio.core.densities.cu.Norm;
+//import rapaio.core.densities.empirical.*;
 //import rapaio.core.stat.Mean;
 //import rapaio.core.stat.Variance;
 //import rapaio.data.*;
@@ -140,7 +140,7 @@
 //    public void predict(Frame df) {
 //
 //        classes = Nominal.newEmpty(df.rowCount(), dict);
-//        scores = SolidFrame.newMatrix(df.rowCount(), dict);
+//        densities = SolidFrame.newMatrix(df.rowCount(), dict);
 //
 //        for (int i = 0; i < df.rowCount(); i++) {
 //            DensityVector dv = new DensityVector(dict);
@@ -159,7 +159,7 @@
 //
 //            classes.setIndex(i, dv.findBestIndex());
 //            for (int j = 0; j < dict.length; j++) {
-//                scores.setValue(i, j, dv.get(j));
+//                densities.setValue(i, j, dv.get(j));
 //            }
 //        }
 //    }

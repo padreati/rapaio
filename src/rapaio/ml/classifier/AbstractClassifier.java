@@ -65,7 +65,7 @@ public abstract class AbstractClassifier implements Classifier {
     }
 
     @Override
-    public Map<String, Frame> scores() {
+    public Map<String, Frame> densities() {
         return densities;
     }
 

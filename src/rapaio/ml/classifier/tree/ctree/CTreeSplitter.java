@@ -32,6 +32,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -59,7 +60,7 @@ public interface CTreeSplitter extends Serializable {
 
             df.stream().forEach(s -> {
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                    SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
+                    Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                     if (predicate.test(s)) {
                         mappings.get(i).add(s.row());
                         weightsList.get(i).addValue(weights.value(s.row()));
@@ -92,7 +93,7 @@ public interface CTreeSplitter extends Serializable {
             List<FSpot> missingSpots = new LinkedList<>();
             df.stream().forEach(s -> {
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                    SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
+                    Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                     if (predicate.test(s)) {
                         mappings.get(i).add(s.row());
                         weightsList.get(i).addValue(weights.value(s.row()));
@@ -141,7 +142,7 @@ public interface CTreeSplitter extends Serializable {
             final Set<Integer> missingSpots = new HashSet<>();
             df.stream().forEach(s -> {
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                    SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
+                    Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                     if (predicate.test(s)) {
                         mappings.get(i).add(s.row());
                         weightsList.get(i).addValue(weights.value(s.row()));
@@ -192,7 +193,7 @@ public interface CTreeSplitter extends Serializable {
             final Set<Integer> missingSpots = new HashSet<>();
             df.stream().forEach(s -> {
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                    SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
+                    Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                     if (predicate.test(s)) {
                         mappings.get(i).add(s.row());
                         weightList.get(i).addValue(weights.value(s.row()));

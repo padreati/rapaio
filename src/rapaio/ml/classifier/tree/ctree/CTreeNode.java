@@ -27,11 +27,9 @@ import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.util.Pair;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Predicate;
 
 /**
@@ -49,7 +47,7 @@ public class CTreeNode implements Serializable {
     private DensityVector counter;
     private int bestIndex;
     private CTreeCandidate bestCandidate;
-    private TreeMap<CTreeCandidate, String> candidates;
+    private List<CTreeCandidate> candidates;
 
     public CTreeNode(final CTree tree, final CTreeNode parent,
                      final String groupName, final Predicate<FSpot> predicate) {
@@ -99,6 +97,10 @@ public class CTreeNode implements Serializable {
         return bestCandidate;
     }
 
+    public List<CTreeCandidate> getCandidates() {
+        return candidates;
+    }
+
     public void learn(Frame df, Numeric weights, int depth) {
         density = new DensityVector(df.var(tree.firstTargetVar()), weights);
         counter = new DensityVector(df.var(tree.firstTargetVar()), Numeric.newFill(df.rowCount(), 1));
@@ -112,10 +114,10 @@ public class CTreeNode implements Serializable {
             return;
         }
 
-        candidates = new TreeMap<>();
+        candidates = new ArrayList<>();
         tree.getVarSelector().initialize(df, null);
 
-        ConcurrentHashMap<CTreeCandidate, String> candidates = new ConcurrentHashMap<>();
+        ConcurrentLinkedQueue<CTreeCandidate> candidates = new ConcurrentLinkedQueue<>();
         Arrays.stream(tree.getVarSelector().nextVarNames()).parallel().forEach(testCol -> {
             if (testCol.equals(tree.firstTargetVar())) return;
             if (!tree.testCounter.canUse(testCol)) return;
@@ -123,22 +125,23 @@ public class CTreeNode implements Serializable {
             if (df.var(testCol).type().isNumeric()) {
                 tree.getNumericMethod().computeCandidates(
                         tree, df, weights, testCol, tree.firstTargetVar(), tree.getFunction())
-                        .forEach(candidate -> candidates.put(candidate, testCol));
+                        .forEach(candidate -> candidates.add(candidate));
             } else {
                 tree.getNominalMethod().computeCandidates(
                         tree, df, weights, testCol, tree.firstTargetVar(), tree.getFunction())
-                        .forEach(candidate -> candidates.put(candidate, testCol));
+                        .forEach(candidate -> candidates.add(candidate));
             }
         });
-        this.candidates.putAll(candidates);
+        this.candidates.addAll(candidates);
+        Collections.sort(this.candidates);
 
         if (this.candidates.isEmpty()) {
             return;
         }
         leaf = false;
 
-        bestCandidate = this.candidates.firstKey();
-        tree.testCounter.markUse(this.candidates.firstEntry().getValue());
+        bestCandidate = this.candidates.get(0);
+        tree.testCounter.markUse(this.candidates.get(0).getTestName());
 
         // now that we have a best candidate, do the effective split
 

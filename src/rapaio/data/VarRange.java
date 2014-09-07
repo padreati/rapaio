@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public class VarRange {
 
     private static final String COL_DELIMITER = ",";
-    private static final String COL_RANGE = "-";
+    private static final String COL_RANGE = "~";
     private static final String COL_ALL = "all";
     private final String rawColumnRange;
 

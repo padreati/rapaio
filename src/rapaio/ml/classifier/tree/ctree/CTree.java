@@ -130,6 +130,9 @@ public class CTree extends AbstractClassifier {
     }
 
     public CTree withMaxDepth(int maxDepth) {
+        if (maxDepth < 1) {
+            throw new IllegalArgumentException("max depth must be an integer greater than 0");
+        }
         this.maxDepth = maxDepth;
         return this;
     }
@@ -232,14 +235,14 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    public void predict(Frame df, boolean withClasses, boolean withScores) {
+    public void predict(Frame df, boolean withClasses, boolean withDistributions) {
 
         classes = new HashMap<>();
         densities = new HashMap<>();
         if (withClasses) {
             classes.put(firstTargetVar(), Nominal.newEmpty(df.rowCount(), firstDictionary()));
         }
-        if (withScores) {
+        if (withDistributions) {
             densities.put(firstTargetVar(), SolidFrame.newMatrix(df.rowCount(), firstDictionary()));
         }
 
@@ -247,7 +250,7 @@ public class CTree extends AbstractClassifier {
             Pair<Integer, DensityVector> result = predictor.predict(spot, root);
             if (withClasses)
                 classes.get(firstTargetVar()).setIndex(spot.row(), result.first);
-            if (withScores)
+            if (withDistributions)
                 for (int j = 0; j < firstDictionary().length; j++) {
                     densities.get(firstTargetVar()).setValue(spot.row(), j, result.second.get(j));
                 }
@@ -262,7 +265,7 @@ public class CTree extends AbstractClassifier {
 
         sb.append("\n");
         sb.append("description:\n");
-        sb.append("split, n/err, classes (scores) [* if is leaf]\n\n");
+        sb.append("split, n/err, classes (densities) [* if is leaf]\n\n");
 
         buildSummary(sb, root, 0);
     }

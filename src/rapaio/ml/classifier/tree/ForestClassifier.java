@@ -247,15 +247,15 @@
 //    @Override
 //    public void predict(Frame df) {
 //        classes = Nominal.newEmpty(df.rowCount(), dict);
-//        scores = SolidFrame.newMatrix(df.rowCount(), dict);
+//        densities = SolidFrame.newMatrix(df.rowCount(), dict);
 //
-//        List<Frame> scores = new ArrayList<>();
+//        List<Frame> densities = new ArrayList<>();
 //        predictors.forEach(p -> {
 //            p.predict(df);
-//            scores.add(p.scores());
+//            densities.add(p.densities());
 //        });
 //
-//        baggingMethod.computeDensity(dict, scores, classes, scores);
+//        baggingMethod.computeDensity(dict, densities, classes, densities);
 //    }
 //
 //    @Override
@@ -269,28 +269,28 @@
 //
 //        String name();
 //
-//        void computeDensity(String[] dictionary, List<Frame> scores, Nominal classes, Frame scores);
+//        void computeDensity(String[] dictionary, List<Frame> densities, Nominal classes, Frame densities);
 //    }
 //
 //    public static enum BaggingMethods implements BaggingMethod {
 //
 //        VOTING {
 //            @Override
-//            public void computeDensity(String[] dictionary, List<Frame> scores, Nominal classes, Frame scores) {
-//                scores.forEach(d -> {
+//            public void computeDensity(String[] dictionary, List<Frame> densities, Nominal classes, Frame densities) {
+//                densities.forEach(d -> {
 //                    for (int i = 0; i < d.rowCount(); i++) {
 //                        DensityVector dv = new DensityVector(dictionary);
 //                        for (int j = 0; j < dictionary.length; j++) {
 //                            dv.update(j, d.value(i, j));
 //                        }
 //                        int best = dv.findBestIndex();
-//                        scores.setValue(i, best, scores.value(i, best) + 1);
+//                        densities.setValue(i, best, densities.value(i, best) + 1);
 //                    }
 //                });
 //                for (int i = 0; i < classes.rowCount(); i++) {
 //                    DensityVector dv = new DensityVector(dictionary);
 //                    for (int j = 0; j < dictionary.length; j++) {
-//                        dv.update(j, scores.value(i, j));
+//                        dv.update(j, densities.value(i, j));
 //                    }
 //                    classes.setValue(i, dv.findBestIndex());
 //                }
@@ -298,18 +298,18 @@
 //        },
 //        DISTRIBUTION_SUM {
 //            @Override
-//            public void computeDensity(String[] dictionary, List<Frame> scores, Nominal classes, Frame scores) {
-//                scores.forEach(d -> {
+//            public void computeDensity(String[] dictionary, List<Frame> densities, Nominal classes, Frame densities) {
+//                densities.forEach(d -> {
 //                    for (int i = 0; i < d.rowCount(); i++) {
 //                        for (int j = 0; j < dictionary.length; j++) {
-//                            scores.setValue(i, j, scores.value(i, j) + d.value(i, j));
+//                            densities.setValue(i, j, densities.value(i, j) + d.value(i, j));
 //                        }
 //                    }
 //                });
 //                for (int i = 0; i < classes.rowCount(); i++) {
 //                    DensityVector dv = new DensityVector(dictionary);
 //                    for (int j = 0; j < dictionary.length; j++) {
-//                        dv.update(j, scores.value(i, j));
+//                        dv.update(j, densities.value(i, j));
 //                    }
 //                    classes.setValue(i, dv.findBestIndex());
 //                }

@@ -1,22 +1,22 @@
 ///*
-// * Apache License
-// * Version 2.0, January 2004
-// * http://www.apache.org/licenses/
-// *
-// *    Copyright 2013 Aurelian Tutuianu
-// *
-// *    Licensed under the Apache License, Version 2.0 (the "License");
-// *    you may not use this file except in compliance with the License.
-// *    You may obtain a copy of the License at
-// *
-// *      http://www.apache.org/licenses/LICENSE-2.0
-// *
-// *    Unless required by applicable law or agreed to in writing, software
-// *    distributed under the License is distributed on an "AS IS" BASIS,
-// *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// *    See the License for the specific language governing permissions and
-// *    limitations under the License.
-// */
+//* Apache License
+//* Version 2.0, January 2004
+//* http://www.apache.org/licenses/
+//*
+//*    Copyright 2013 Aurelian Tutuianu
+//*
+//*    Licensed under the Apache License, Version 2.0 (the "License");
+//*    you may not use this file except in compliance with the License.
+//*    You may obtain a copy of the License at
+//*
+//*      http://www.apache.org/licenses/LICENSE-2.0
+//*
+//*    Unless required by applicable law or agreed to in writing, software
+//*    distributed under the License is distributed on an "AS IS" BASIS,
+//*    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//*    See the License for the specific language governing permissions and
+//*    limitations under the License.
+//*/
 //
 //package rapaio.ml.classifier.boost;
 //
@@ -26,24 +26,26 @@
 //import rapaio.ml.classifier.Classifier;
 //import rapaio.ml.classifier.RunningClassifier;
 //import rapaio.ml.classifier.colselect.VarSelector;
-//import rapaio.ml.classifier.tree.TreeClassifier;
+//import rapaio.ml.classifier.tree.ctree.CTree;
+//import rapaio.ml.classifier.tree.ctree.CTreeNominalMethod;
+//import rapaio.ml.classifier.tree.ctree.CTreeNumericMethod;
 //
 //import java.util.ArrayList;
 //import java.util.List;
 //
 ///**
-// * User: Aurelian Tutuianu <paderati@yahoo.com>
-// */
+//* User: Aurelian Tutuianu <paderati@yahoo.com>
+//*/
 //@Deprecated
 //public class AdaBoostSAMMEClassifier extends AbstractClassifier implements RunningClassifier {
 //
 //    final double delta_error = 10e-10;
 //    // parameters
 //
-//    Classifier base = new TreeClassifier()
+//    Classifier base = new CTree()
 //            .withMaxDepth(2)
-//            .withNominalMethod(TreeClassifier.NominalMethods.BINARY)
-//            .withNumericMethod(TreeClassifier.NumericMethods.BINARY);
+//            .withNominalMethod(CTreeNominalMethod.BINARY)
+//            .withNumericMethod(CTreeNumericMethod.BINARY);
 //    int runs = 0;
 //    double sampling = 0;
 //    boolean stopOnError = false;
@@ -217,25 +219,25 @@
 //    @Override
 //    public void predict(Frame df) {
 //        classes = Nominal.newEmpty(df.rowCount(), dict);
-//        scores = SolidFrame.newMatrix(df.rowCount(), dict);
+//        densities = SolidFrame.newMatrix(df.rowCount(), dict);
 //
 //        for (int i = 0; i < h.size(); i++) {
 //            h.get(i).predict(df);
 //            for (int j = 0; j < df.rowCount(); j++) {
 //                int index = h.get(i).classes().index(j);
-//                scores.setValue(j, index, scores.value(j, index) + a.get(i));
+//                densities.setValue(j, index, densities.value(j, index) + a.get(i));
 //            }
 //        }
 //
 //        // simply predict
-//        for (int i = 0; i < scores.rowCount(); i++) {
+//        for (int i = 0; i < densities.rowCount(); i++) {
 //
 //            double max = 0;
 //            int prediction = 0;
-//            for (int j = 1; j < scores.varCount(); j++) {
-//                if (scores.value(i, j) > max) {
+//            for (int j = 1; j < densities.varCount(); j++) {
+//                if (densities.value(i, j) > max) {
 //                    prediction = j;
-//                    max = scores.value(i, j);
+//                    max = densities.value(i, j);
 //                }
 //            }
 //            classes.setIndex(i, prediction);

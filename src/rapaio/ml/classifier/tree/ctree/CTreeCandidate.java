@@ -26,6 +26,7 @@ import rapaio.util.SPredicate;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
@@ -34,15 +35,17 @@ public class CTreeCandidate implements Comparable<CTreeCandidate>, Serializable 
 
     private final double score;
     private final int sign;
+    private final String testName;
     private List<String> groupNames = new ArrayList<>();
-    private List<SPredicate<FSpot>> groupPredicates = new ArrayList<>();
+    private List<Predicate<FSpot>> groupPredicates = new ArrayList<>();
 
-    public CTreeCandidate(double score, int sign) {
+    public CTreeCandidate(double score, int sign, String testName) {
         this.score = score;
         this.sign = sign;
+        this.testName = testName;
     }
 
-    public void addGroup(String name, SPredicate<FSpot> predicate) {
+    public void addGroup(String name, Predicate<FSpot> predicate) {
         if (groupNames.contains(name)) {
             throw new IllegalArgumentException("group name already defined");
         }
@@ -54,8 +57,20 @@ public class CTreeCandidate implements Comparable<CTreeCandidate>, Serializable 
         return groupNames;
     }
 
-    public List<SPredicate<FSpot>> getGroupPredicates() {
+    public List<Predicate<FSpot>> getGroupPredicates() {
         return groupPredicates;
+    }
+
+    public double getScore() {
+        return score;
+    }
+
+    public int getSign() {
+        return sign;
+    }
+
+    public String getTestName() {
+        return testName;
     }
 
     @Override

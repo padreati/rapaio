@@ -164,7 +164,7 @@ import java.util.List;
 //    @Override
 //    public void predict(Frame df) {
 //        classes = Nominal.newEmpty(df.rowCount(), dict);
-//        scores = SolidFrame.newMatrix(df.rowCount(), dict);
+//        densities = SolidFrame.newMatrix(df.rowCount(), dict);
 //
 //        df.stream().forEach(spot -> {
 //            for (int i = 0; i < predicates.size(); i++) {
@@ -173,7 +173,7 @@ import java.util.List;
 //                    classifiers.get(i).predict(f);
 //                    classes.setLabel(spot.row(), classifiers.get(i).classes().label(0));
 //                    for (int j = 0; j < dict.length; j++) {
-//                        scores.setValue(spot.row(), dict[j], classifiers.get(i).scores().value(0, dict[j]));
+//                        densities.setValue(spot.row(), dict[j], classifiers.get(i).densities().value(0, dict[j]));
 //                    }
 //                    return;
 //                }
@@ -182,7 +182,7 @@ import java.util.List;
 //            classifiers.get(classifiers.size() - 1).predict(f);
 //            classes.setLabel(spot.row(), classifiers.get(classifiers.size() - 1).classes().label(0));
 //            for (int j = 0; j < dict.length; j++) {
-//                scores.setValue(spot.row(), dict[j], classifiers.get(classifiers.size() - 1).scores().value(0, dict[j]));
+//                densities.setValue(spot.row(), dict[j], classifiers.get(classifiers.size() - 1).densities().value(0, dict[j]));
 //            }
 //        });
 //    }

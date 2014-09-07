@@ -170,8 +170,8 @@
 //                + "a given computed ROC object. The following code does this.");
 //
 //        ROC rocOR = new ROC(oneRule.classes(), test.var("spam"), "1");
-////        ROC rocRF = new ROC(rf.scores().var("1"), test.var("spam"), "1");
-//        ROC rocAB = new ROC(ab.scores().var("1"), test.var("spam"), "1");
+////        ROC rocRF = new ROC(rf.densities().var("1"), test.var("spam"), "1");
+//        ROC rocAB = new ROC(ab.densities().var("1"), test.var("spam"), "1");
 //        draw(new Plot()
 //                        .add(new ROCCurve(rocOR).color(1))
 ////                        .add(new ROCCurve(rocRF).color(2))
@@ -183,8 +183,8 @@
 //        );
 //
 //        code("        ROC rocOR = new ROC(oneRule.getPrediction(), test.getCol(\"spam\"), \"1\");\n" +
-//                "        ROC rocRF = new ROC(rf.getDistribution().getCol(\"1\"), test.getCol(\"spam\"), \"1\");\n" +
-//                "        ROC rocAB = new ROC(ab.getDistribution().getCol(\"1\"), test.getCol(\"spam\"), \"1\");\n" +
+//                "        ROC rocRF = new ROC(rf.getDensity().getCol(\"1\"), test.getCol(\"spam\"), \"1\");\n" +
+//                "        ROC rocAB = new ROC(ab.getDensity().getCol(\"1\"), test.getCol(\"spam\"), \"1\");\n" +
 //                "        draw(new Plot()\n" +
 //                "                .add(new ROCCurve(rocOR).setColorIndex(1))\n" +
 //                "                .add(new ROCCurve(rocRF).setColorIndex(2))\n" +

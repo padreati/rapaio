@@ -98,13 +98,13 @@ public interface Classifier extends Printable, Serializable {
 
     /**
      * Predict classes for given instances, generating classes if specified and
-     * generating scores if specified.
+     * generating densities if specified.
      *
      * @param df               frame instances
      * @param withClasses      generate classes
-     * @param withScores generate scores for classes
+     * @param withDistributions generate densities for classes
      */
-    void predict(Frame df, boolean withClasses, boolean withScores);
+    void predict(Frame df, boolean withClasses, boolean withDistributions);
 
     /**
      * Returns target variables built at learning time
@@ -155,23 +155,23 @@ public interface Classifier extends Printable, Serializable {
     }
 
     /**
-     * Returns predicted class scores frame if is computed,
+     * Returns predicted class densities frame if is computed,
      * otherwise returns null.
      *
-     * @return predicted class scores (frame with one
+     * @return predicted class densities (frame with one
      * column for each target class, including missing value)
      */
-    Map<String, Frame> scores();
+    Map<String, Frame> densities();
 
     /**
-     * Returns predicted class scores for the first target variable if is computed,
+     * Returns predicted class density for the first target variable if is computed,
      * otherwise returns null.
      *
-     * @return predicted class scores (frame with one
+     * @return predicted class densities (frame with one
      * column for each target class, including missing value)
      */
-    default Frame firstScores() {
-        return scores().get(firstTargetVar());
+    default Frame firstDensity() {
+        return densities().get(firstTargetVar());
     }
 
     /**

@@ -27,8 +27,8 @@ import rapaio.data.filters.BaseFilters;
 
 /**
  * Creates a new statistical Kolmogorov-Smirnoff test. The 1 sample test, with <tt>v</tt>
- * being the 1 sample. The 1 sample test compare the data to a given scores,
- * and see if it does not belong to the given scores. The 2 sample test is
+ * being the 1 sample. The 1 sample test compare the data to a given densities,
+ * and see if it does not belong to the given densities. The 2 sample test is
  * designed to tell if the data is not from the same population.
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -47,12 +47,12 @@ public class KSTest implements Printable {
      * One-sample K-S test.
      * <p>
      * D is the maximum distance between ECDF(v) and given cdf.
-     * pValue is the computed p-value for the KS test against the given scores
+     * pValue is the computed p-value for the KS test against the given densities
      * <p>
-     * The null hypothesis of this test is that the given data set belongs to the given scores.
-     * The alternative hypothesis is that the data set does not belong to the given scores.
+     * The null hypothesis of this test is that the given data set belongs to the given densities.
+     * The alternative hypothesis is that the data set does not belong to the given densities.
      *
-     * @param cdf the scores to compare against
+     * @param cdf the densities to compare against
      */
     public KSTest(String testName, Var sample, CUDistribution cdf) {
         this.testName = testName;
@@ -81,8 +81,8 @@ public class KSTest implements Printable {
      * <p>
      * D is the maximum distance between ECDF(v1) and ECDF(v2)
      * pValue is the p-value for the 2 sample KS test
-     * The null hypothesis of this test is that both data sets comes from the same scores,
-     * The alternative hypothesis is that the two samples comes from different scores.
+     * The null hypothesis of this test is that both data sets comes from the same densities,
+     * The alternative hypothesis is that the two samples comes from different densities.
      *
      * @param sample1 first sample
      * @param sample2 second sample
@@ -133,7 +133,7 @@ public class KSTest implements Printable {
      * Returns maximum distance between ECDF and given cdf, for 1-sample test,
      * and returns maximum distance between the two given ECDFs for 2-sample test
      *
-     * @return maximum distance between scores
+     * @return maximum distance between densities
      */
     public double d() {
         return D;
@@ -171,7 +171,7 @@ public class KSTest implements Printable {
         if (ties > 0)
             sb.append(" (warning: p-values will not be exact because of ties)\n");
 
-        sb.append(String.format("scores: %s\n", cdf.getName()));
+        sb.append(String.format("densities: %s\n", cdf.getName()));
         sb.append(String.format("D statistic: %.6f\n", D));
         sb.append(String.format("p-value: %.12f %s\n", pValue, getPValueStars()));
         sb.append("\n");

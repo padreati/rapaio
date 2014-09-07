@@ -42,19 +42,19 @@ public class StudentTDistribution implements TutorialPage {
 
     @Override
     public String getPageTitle() {
-        return "Short story of a scores: Student's T";
+        return "Short story of a densities: Student's T";
     }
 
     @Override
     public void render() throws IOException {
 
-        heading(1, "Short story of a scores: Student's T");
+        heading(1, "Short story of a densities: Student's T");
 
         heading(3, "Foreword");
 
         p("I have always believed that knowing the history of scientific "
                 + "achievements is a must for anybody. This story is about "
-                + "William Sealy Gosset and it's famous t scores. ");
+                + "William Sealy Gosset and it's famous t densities. ");
 
         heading(3, "The context");
 
@@ -71,11 +71,11 @@ public class StudentTDistribution implements TutorialPage {
 
         p("Note that at that time the methods available involved mainly "
                 + "the practice of Karl Pearson and some other eminent statisticians, "
-                + "around the normal scores and Central Limit Theorem. ");
+                + "around the normal densities and Central Limit Theorem. ");
 
         heading(3, "Probability density and central limit theorem");
 
-        p("The probability density of a standard normal scores "
+        p("The probability density of a standard normal densities "
                 + "looks like this: ");
 
         draw(new Plot().add(new FunctionLine(new Norm()::pdf).color(1))
@@ -93,7 +93,7 @@ public class StudentTDistribution implements TutorialPage {
                 + "your expectation, aka. \"which values are expected to be produced with "
                 + "a high probability, and which not\". ");
 
-        p("The standard normal scores from the above tells us, for example, "
+        p("The standard normal densities from the above tells us, for example, "
                 + "that we expect that the value produced by our process to be very close "
                 + "to 0. It might variate but only around 0. There is many information contained "
                 + "in this density function like we expect that the value produced to be "
@@ -102,7 +102,7 @@ public class StudentTDistribution implements TutorialPage {
         p("Central Limit Theorem "
                 + "says something like: \"if you repeat the event enough times independently and "
                 + "in the same conditions, the mean of the values produced "
-                + "will follow a normal scores\". ");
+                + "will follow a normal densities\". ");
 
         p("This theory is wonderful due to its generality. However it has a fundamental flow: "
                 + "it doesn't work well if you don't repeat the event many times. ");

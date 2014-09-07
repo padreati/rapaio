@@ -20,9 +20,9 @@
 
 package rapaio.ml.classifier.tree.ctree;
 
-import junit.framework.Assert;
 import org.junit.Test;
 import rapaio.data.Frame;
+import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
 import rapaio.ws.Summary;
 
@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
@@ -37,7 +38,7 @@ import static junit.framework.Assert.assertEquals;
 public class CTreeTest {
 
     @Test
-    public void testBuilders() throws IOException, URISyntaxException {
+    public void testBuilderDecisionStump() throws IOException, URISyntaxException {
         Frame df = Datasets.loadIrisDataset();
 
         CTree tree = CTree.newDecisionStump();
@@ -45,11 +46,50 @@ public class CTreeTest {
 
         tree.learn(df, "class");
 
+        tree.summary();
+        CTreeNode root = tree.getRoot();
+        assertEquals("root", root.getGroupName());
 
+        String testName = root.getBestCandidate().getTestName();
+        if("petal-width".equals(testName)) {
+            assertEquals("petal-width", root.getCandidates().get(0).getTestName());
+            assertEquals("petal-width <= 0.600000", root.getBestCandidate().getGroupNames().get(0));
+            assertEquals("petal-width > 0.600000", root.getBestCandidate().getGroupNames().get(1));
+        } else {
+            assertEquals("petal-length", root.getCandidates().get(0).getTestName());
+            assertEquals("petal-length <= 1.900000", root.getBestCandidate().getGroupNames().get(0));
+            assertEquals("petal-length > 1.900000", root.getBestCandidate().getGroupNames().get(1));
+        }
     }
 
     @Test
-    public void testStandard() throws IOException, URISyntaxException {
+    public void testBuilderID3() throws IOException, URISyntaxException {
+        Frame df = Datasets.loadMushrooms();
+        Summary.names(df);
+        df = BaseFilters.retainNominal(df);
+
+        Summary.summary(df);
+    }
+
+    @Test
+    public void testCandidate() {
+        CTreeCandidate candidate = new CTreeCandidate(1, 1, "test");
+        candidate.addGroup("test <= 0", s -> s.value("test") <= 0);
+        candidate.addGroup("test > 0", s -> s.value("test") > 0);
+
+        assertEquals(-1, candidate.compareTo(new CTreeCandidate(2, 1, "test")));
+        assertEquals(-1, candidate.compareTo(new CTreeCandidate(2, -1, "test")));
+        assertEquals(1, candidate.compareTo(new CTreeCandidate(0.5, 1, "test")));
+
+        try {
+            candidate.addGroup("test <= 0", s -> true);
+            assertTrue("should raise an exception", false);
+        } catch (IllegalArgumentException ignored) {
+        }
+    }
+
+    @Test
+    public void testPredictorStandard() throws IOException, URISyntaxException {
         Frame df = Datasets.loadIrisDataset();
         CTree tree = CTree.newCART().withMaxDepth(10000).withMinCount(1).withTestCounter(CTreeTestCounter.M_NOMINAL_M_NUMERIC);
         tree.learn(df, "class");
@@ -60,7 +100,7 @@ public class CTreeTest {
         tree.predict(df, true, true);
         df = df.bindVars(tree.firstClasses().solidCopy().withName("predict"));
 
-        Frame match = df.stream().filter(spot -> spot.index("class")== spot.index("predict")).toMappedFrame();
+        Frame match = df.stream().filter(spot -> spot.index("class") == spot.index("predict")).toMappedFrame();
         assertEquals(150, match.rowCount());
 
         df.setMissing(0, 0);
@@ -69,8 +109,9 @@ public class CTreeTest {
         df.setMissing(0, 3);
 
         tree.predict(df, true, false);
-        match = df.stream().filter(spot -> spot.index("class")== spot.index("predict")).toMappedFrame();
+        match = df.stream().filter(spot -> spot.index("class") == spot.index("predict")).toMappedFrame();
         assertEquals(150, match.rowCount());
     }
+
 
 }

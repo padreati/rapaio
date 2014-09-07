@@ -20,13 +20,9 @@
 
 package rapaio.data.filters;
 
-import rapaio.data.VarRange;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.cu.Norm;
 import rapaio.data.*;
-import rapaio.data.MappedFrame;
-import rapaio.data.MappedVar;
-import rapaio.data.Mapping;
 import rapaio.data.stream.VSpot;
 
 import java.io.Serializable;
@@ -84,15 +80,16 @@ public final class BaseFilters implements Serializable {
      * Retain only nominal columns from a frame.
      */
     public static Frame retainNominal(Frame df) {
-        List<Var> vars = new ArrayList<>();
-        List<String> names = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < df.varCount(); i++) {
             if (df.var(i).type().isNominal()) {
-                vars.add(df.var(i));
-                names.add(df.varNames()[i]);
+                if (sb.length() != 0) {
+                    sb.append(",");
+                }
+                sb.append(df.varNames()[i]);
             }
         }
-        return SolidFrame.newWrapOf(df.rowCount(), vars);
+        return df.mapVars(sb.toString());
     }
 
     /**
@@ -304,7 +301,7 @@ public final class BaseFilters implements Serializable {
     /**
      * Alter valid numeric values with normally distributed noise.
      * <p>
-     * Noise comes from a normal scores with mean 0 and standard deviation
+     * Noise comes from a normal densities with mean 0 and standard deviation
      * 0.1
      *
      * @param var input values
@@ -318,7 +315,7 @@ public final class BaseFilters implements Serializable {
     /**
      * Alter valid numeric values with normally distributed noise.
      * <p>
-     * Noise comes from a normal scores with mean 0 and standard deviation
+     * Noise comes from a normal densities with mean 0 and standard deviation
      * specified by {
      *
      * @param var input values
