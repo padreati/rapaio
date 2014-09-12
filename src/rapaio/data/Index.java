@@ -157,6 +157,8 @@ public final class Index extends AbstractVar {
 
     private void ensureCapacityInternal(int minCapacity) {
         // overflow-conscious code
+        if (minCapacity < data.length)
+            return;
         int oldCapacity = data.length;
         int newCapacity = oldCapacity + (oldCapacity >> 1);
         if (newCapacity - minCapacity < 0)

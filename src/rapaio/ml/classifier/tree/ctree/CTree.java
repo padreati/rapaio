@@ -20,13 +20,15 @@
 
 package rapaio.ml.classifier.tree.ctree;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.Numeric;
+import rapaio.data.VarRange;
 import rapaio.ml.classifier.AbstractClassifier;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.util.Pair;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -89,7 +91,7 @@ public class CTree extends AbstractClassifier {
     public static CTree newCART() {
         return new CTree()
                 .withMaxDepth(Integer.MAX_VALUE)
-                .withTestCounter(CTreeTestCounter.ONE_NOMINAL_ONE_NUMERIC)
+                .withTestCounter(CTreeTestCounter.M_NOMINAL_M_NUMERIC)
                 .withSplitter(CTreeSplitter.REMAINS_TO_ALL_WEIGHTED)
                 .withNominalMethod(CTreeNominalMethod.BINARY)
                 .withNumericMethod(CTreeNumericMethod.BINARY)
@@ -214,7 +216,7 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    public void learn(Frame df, Numeric weights, String targetVars) {
+    public void learn(Frame df, Numeric weights, String... targetVars) {
 
         List<String> targetVarList = new VarRange(targetVars).parseVarNames(df);
         if (targetVarList.isEmpty()) {
@@ -230,31 +232,26 @@ public class CTree extends AbstractClassifier {
 
         testCounter.initialize(df, firstTargetVar());
 
-        root = new CTreeNode(this, null, "root", spot -> true);
-        root.learn(df, weights, maxDepth);
+        root = new CTreeNode(null, "root", spot -> true);
+        root.learn(this, df, weights, maxDepth);
     }
 
     @Override
-    public void predict(Frame df, boolean withClasses, boolean withDistributions) {
+    public CPrediction predict(Frame df, boolean withClasses, boolean withDensities) {
 
-        classes = new HashMap<>();
-        densities = new HashMap<>();
-        if (withClasses) {
-            classes.put(firstTargetVar(), Nominal.newEmpty(df.rowCount(), firstDictionary()));
-        }
-        if (withDistributions) {
-            densities.put(firstTargetVar(), SolidFrame.newMatrix(df.rowCount(), firstDictionary()));
-        }
+        CPrediction prediction = CPrediction.newEmpty(df.rowCount(), withClasses, withDensities);
+        prediction.addTarget(firstTargetVar(), firstDictionary());
 
         df.stream().forEach(spot -> {
-            Pair<Integer, DensityVector> result = predictor.predict(spot, root);
+            Pair<Integer, DensityVector> result = predictor.predict(this, spot, root);
             if (withClasses)
-                classes.get(firstTargetVar()).setIndex(spot.row(), result.first);
-            if (withDistributions)
+                prediction.firstClasses().setIndex(spot.row(), result.first);
+            if (withDensities)
                 for (int j = 0; j < firstDictionary().length; j++) {
-                    densities.get(firstTargetVar()).setValue(spot.row(), j, result.second.get(j));
+                    prediction.firstDensity().setValue(spot.row(), j, result.second.get(j));
                 }
         });
+        return prediction;
     }
 
     @Override

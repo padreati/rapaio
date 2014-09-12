@@ -27,8 +27,10 @@ import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.util.Pair;
 
 import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Predicate;
 
@@ -36,7 +38,6 @@ import java.util.function.Predicate;
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
 public class CTreeNode implements Serializable {
-    private final CTree tree;
     private final CTreeNode parent;
     private final String groupName;
     private final Predicate<FSpot> predicate;
@@ -47,18 +48,12 @@ public class CTreeNode implements Serializable {
     private DensityVector counter;
     private int bestIndex;
     private CTreeCandidate bestCandidate;
-    private List<CTreeCandidate> candidates;
 
-    public CTreeNode(final CTree tree, final CTreeNode parent,
+    public CTreeNode(final CTreeNode parent,
                      final String groupName, final Predicate<FSpot> predicate) {
         this.parent = parent;
-        this.tree = tree;
         this.groupName = groupName;
         this.predicate = predicate;
-    }
-
-    public CTree getTree() {
-        return tree;
     }
 
     public CTreeNode getParent() {
@@ -97,11 +92,7 @@ public class CTreeNode implements Serializable {
         return bestCandidate;
     }
 
-    public List<CTreeCandidate> getCandidates() {
-        return candidates;
-    }
-
-    public void learn(Frame df, Numeric weights, int depth) {
+    public void learn(CTree tree, Frame df, Numeric weights, int depth) {
         density = new DensityVector(df.var(tree.firstTargetVar()), weights);
         counter = new DensityVector(df.var(tree.firstTargetVar()), Numeric.newFill(df.rowCount(), 1));
         bestIndex = density.findBestIndex();
@@ -114,7 +105,7 @@ public class CTreeNode implements Serializable {
             return;
         }
 
-        candidates = new ArrayList<>();
+        List<CTreeCandidate> candidateList = new ArrayList<>();
         tree.getVarSelector().initialize(df, null);
 
         ConcurrentLinkedQueue<CTreeCandidate> candidates = new ConcurrentLinkedQueue<>();
@@ -125,23 +116,23 @@ public class CTreeNode implements Serializable {
             if (df.var(testCol).type().isNumeric()) {
                 tree.getNumericMethod().computeCandidates(
                         tree, df, weights, testCol, tree.firstTargetVar(), tree.getFunction())
-                        .forEach(candidate -> candidates.add(candidate));
+                        .forEach(candidates::add);
             } else {
                 tree.getNominalMethod().computeCandidates(
                         tree, df, weights, testCol, tree.firstTargetVar(), tree.getFunction())
-                        .forEach(candidate -> candidates.add(candidate));
+                        .forEach(candidates::add);
             }
         });
-        this.candidates.addAll(candidates);
-        Collections.sort(this.candidates);
+        candidateList.addAll(candidates);
+        Collections.sort(candidateList);
 
-        if (this.candidates.isEmpty()) {
+        if (candidateList.isEmpty()) {
             return;
         }
         leaf = false;
 
-        bestCandidate = this.candidates.get(0);
-        tree.testCounter.markUse(this.candidates.get(0).getTestName());
+        bestCandidate = candidateList.get(0);
+        tree.testCounter.markUse(candidateList.get(0).getTestName());
 
         // now that we have a best candidate, do the effective split
 
@@ -153,9 +144,9 @@ public class CTreeNode implements Serializable {
         Pair<List<Frame>, List<Numeric>> frames = tree.getSplitter().performSplit(df, weights, bestCandidate);
         children = new ArrayList<>(frames.first.size());
         for (int i = 0; i < frames.first.size(); i++) {
-            CTreeNode child = new CTreeNode(tree, this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
+            CTreeNode child = new CTreeNode(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
             children.add(child);
-            child.learn(frames.first.get(i), frames.second.get(i), depth - 1);
+            child.learn(tree, frames.first.get(i), frames.second.get(i), depth - 1);
         }
     }
 }

@@ -20,8 +20,6 @@
 
 package rapaio.ml.classifier;
 
-import rapaio.data.Frame;
-import rapaio.data.Nominal;
 import rapaio.ml.classifier.colselect.StdVarSelector;
 import rapaio.ml.classifier.colselect.VarSelector;
 
@@ -35,8 +33,6 @@ public abstract class AbstractClassifier implements Classifier {
     protected VarSelector varSelector = new StdVarSelector();
     protected String[] targetVars;
     protected Map<String, String[]> dict;
-    protected Map<String, Nominal> classes;
-    protected Map<String, Frame> densities;
 
     @Override
     public VarSelector getVarSelector() {
@@ -57,21 +53,5 @@ public abstract class AbstractClassifier implements Classifier {
     @Override
     public Map<String, String[]> dictionaries() {
         return dict;
-    }
-
-    @Override
-    public Map<String, Nominal> classes() {
-        return classes;
-    }
-
-    @Override
-    public Map<String, Frame> densities() {
-        return densities;
-    }
-
-    @Override
-    public void reset() {
-        classes = null;
-        densities = null;
     }
 }

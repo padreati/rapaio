@@ -24,6 +24,7 @@ import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
+import rapaio.ml.classifier.CPrediction;
 import rapaio.ws.Summary;
 
 import java.io.IOException;
@@ -52,11 +53,11 @@ public class CTreeTest {
 
         String testName = root.getBestCandidate().getTestName();
         if("petal-width".equals(testName)) {
-            assertEquals("petal-width", root.getCandidates().get(0).getTestName());
+            assertEquals("petal-width", root.getBestCandidate().getTestName());
             assertEquals("petal-width <= 0.600000", root.getBestCandidate().getGroupNames().get(0));
             assertEquals("petal-width > 0.600000", root.getBestCandidate().getGroupNames().get(1));
         } else {
-            assertEquals("petal-length", root.getCandidates().get(0).getTestName());
+            assertEquals("petal-length", root.getBestCandidate().getTestName());
             assertEquals("petal-length <= 1.900000", root.getBestCandidate().getGroupNames().get(0));
             assertEquals("petal-length > 1.900000", root.getBestCandidate().getGroupNames().get(1));
         }
@@ -97,8 +98,8 @@ public class CTreeTest {
         CTreePredictor predictor = CTreePredictor.STANDARD;
         assertEquals("STANDARD", predictor.name());
 
-        tree.predict(df, true, true);
-        df = df.bindVars(tree.firstClasses().solidCopy().withName("predict"));
+        CPrediction pred = tree.predict(df, true, true);
+        df = df.bindVars(pred.firstClasses().solidCopy().withName("predict"));
 
         Frame match = df.stream().filter(spot -> spot.index("class") == spot.index("predict")).toMappedFrame();
         assertEquals(150, match.rowCount());

@@ -121,7 +121,7 @@ public interface Frame extends Serializable {
      * @param varRange variable range as string
      * @return new frame with only the given variables
      */
-    default Frame mapVars(String varRange) {
+    default Frame mapVars(String... varRange) {
         return mapVars(new VarRange(varRange));
     }
 

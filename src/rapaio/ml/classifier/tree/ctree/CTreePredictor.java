@@ -33,7 +33,7 @@ public interface CTreePredictor extends Serializable {
 
     String name();
 
-    Pair<Integer, DensityVector> predict(FSpot spot, CTreeNode node);
+    Pair<Integer, DensityVector> predict(CTree tree, FSpot spot, CTreeNode node);
 
     CTreePredictor STANDARD = new CTreePredictor() {
         @Override
@@ -42,7 +42,7 @@ public interface CTreePredictor extends Serializable {
         }
 
         @Override
-        public Pair<Integer, DensityVector> predict(FSpot spot, CTreeNode node) {
+        public Pair<Integer, DensityVector> predict(CTree tree, FSpot spot, CTreeNode node) {
             if (node.getCounter().sum(false) == 0)
                 return new Pair<>(node.getParent().getBestIndex(), node.getParent().getDensity());
             if (node.isLeaf())
@@ -50,14 +50,14 @@ public interface CTreePredictor extends Serializable {
 
             for (CTreeNode child : node.getChildren()) {
                 if (child.getPredicate().test(spot)) {
-                    return predict(spot, child);
+                    return predict(tree, spot, child);
                 }
             }
 
-            String[] dict = node.getTree().firstDictionary();
+            String[] dict = tree.firstDictionary();
             DensityVector dv = new DensityVector(dict);
             for (CTreeNode child : node.getChildren()) {
-                DensityVector d = predict(spot, child).second;
+                DensityVector d = predict(tree, spot, child).second;
                 for (int i = 0; i < dict.length; i++) {
                     dv.update(i, d.get(i) * child.getDensity().sum(false));
                 }

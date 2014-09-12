@@ -21,7 +21,6 @@
 package rapaio.ml.classifier.tree.ctree;
 
 import rapaio.data.stream.FSpot;
-import rapaio.util.SPredicate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,8 +35,8 @@ public class CTreeCandidate implements Comparable<CTreeCandidate>, Serializable 
     private final double score;
     private final int sign;
     private final String testName;
-    private List<String> groupNames = new ArrayList<>();
-    private List<Predicate<FSpot>> groupPredicates = new ArrayList<>();
+    private final List<String> groupNames = new ArrayList<>();
+    private final List<Predicate<FSpot>> groupPredicates = new ArrayList<>();
 
     public CTreeCandidate(double score, int sign, String testName) {
         this.score = score;

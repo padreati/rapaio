@@ -22,7 +22,6 @@ package rapaio.ml.classifier;
 
 import rapaio.core.Printable;
 import rapaio.data.Frame;
-import rapaio.data.Nominal;
 import rapaio.data.Numeric;
 import rapaio.ml.classifier.colselect.VarSelector;
 
@@ -73,7 +72,7 @@ public interface Classifier extends Printable, Serializable {
      * @param df         data set instances
      * @param targetVars target variables
      */
-    default void learn(Frame df, String targetVars) {
+    default void learn(Frame df, String... targetVars) {
         Numeric weights = Numeric.newFill(df.rowCount(), 1);
         learn(df, weights, targetVars);
     }
@@ -85,15 +84,15 @@ public interface Classifier extends Printable, Serializable {
      * @param weights    instance weights
      * @param targetVars target variables
      */
-    void learn(Frame df, Numeric weights, String targetVars);
+    void learn(Frame df, Numeric weights, String... targetVars);
 
     /**
      * Predict classes for new data set instances
      *
      * @param df data set instances
      */
-    default void predict(Frame df) {
-        predict(df, true, true);
+    default CPrediction predict(Frame df) {
+        return predict(df, true, true);
     }
 
     /**
@@ -104,7 +103,7 @@ public interface Classifier extends Printable, Serializable {
      * @param withClasses      generate classes
      * @param withDistributions generate densities for classes
      */
-    void predict(Frame df, boolean withClasses, boolean withDistributions);
+    CPrediction predict(Frame df, boolean withClasses, boolean withDistributions);
 
     /**
      * Returns target variables built at learning time
@@ -137,45 +136,4 @@ public interface Classifier extends Printable, Serializable {
     default String[] firstDictionary() {
         return dictionaries().get(firstTargetVar());
     }
-
-    /**
-     * Returns predicted target classes for each target variable name
-     *
-     * @return frames with predicted classes
-     */
-    Map<String, Nominal> classes();
-
-    /**
-     * Returns predicted target classes for first target variable name
-     *
-     * @return frames with predicted classes
-     */
-    default Nominal firstClasses() {
-        return classes().get(firstTargetVar());
-    }
-
-    /**
-     * Returns predicted class densities frame if is computed,
-     * otherwise returns null.
-     *
-     * @return predicted class densities (frame with one
-     * column for each target class, including missing value)
-     */
-    Map<String, Frame> densities();
-
-    /**
-     * Returns predicted class density for the first target variable if is computed,
-     * otherwise returns null.
-     *
-     * @return predicted class densities (frame with one
-     * column for each target class, including missing value)
-     */
-    default Frame firstDensity() {
-        return densities().get(firstTargetVar());
-    }
-
-    /**
-     * Reset prediction and releases any prediction artifacts
-     */
-    public void reset();
 }
