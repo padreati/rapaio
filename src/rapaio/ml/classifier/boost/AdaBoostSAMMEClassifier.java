@@ -186,10 +186,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     private boolean learnRound(Frame df) {
         int[] rows = getSamplingRows(df);
         Frame dfTrain = MappedFrame.newByRow(df, rows);
-        Numeric dfWeights = Numeric.newEmpty(rows.length);
-        for (int j = 0; j < rows.length; j++) {
-            dfWeights.setValue(j, w.value(rows[j]));
-        }
+        Numeric dfWeights = (Numeric) w.mapRows(rows).solidCopy();
 
         Classifier hh = base.newInstance();
         hh.learn(dfTrain, dfWeights, targetVars);
@@ -206,12 +203,9 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
                 h.add(hh);
                 a.add(alpha);
             }
-//            System.out.println("Stop learning weak classifier. Computed err: 0");
             return false;
         }
         if (stopOnError && err > (1.0 - 1.0 / k) + delta_error) {
-//            System.out.println("Warning computed err: " + err
-//                    + ", required threshold: " + (1.0 - 1.0 / k) + delta_error);
             return false;
         }
         h.add(hh);

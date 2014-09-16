@@ -31,7 +31,7 @@
 //import rapaio.graphics.plot.Points;
 //import rapaio.ml.classifier.Classifier;
 //import rapaio.ml.classifier.colselect.RandomVarSelector;
-//import rapaio.ml.classifier.tree.ForestClassifier;
+//import rapaio.ml.classifier.tree.CForest;
 //import rapaio.ws.Summary;
 //
 //import java.io.IOException;
@@ -161,7 +161,7 @@
 //        final Var accuracy = Numeric.newEmpty(400);
 //        final Var oob = Numeric.newEmpty(400);
 //        for (int mTrees = 1; mTrees < 200; mTrees += 10) {
-//            ForestClassifier rf = new ForestClassifier()
+//            CForest rf = new CForest()
 //                    .withVarSelector(new RandomVarSelector(2))
 //                    .withRuns(mTrees)
 //                    .withOobError(true);
@@ -232,7 +232,7 @@
 //        final Var oob1 = Numeric.newEmpty(10);
 //        for (int mCol = 1; mCol <= 10; mCol++) {
 //
-//            ForestClassifier rf = new ForestClassifier()
+//            CForest rf = new CForest()
 //                    .withVarSelector(new RandomVarSelector(mCol))
 //                    .withRuns(30)
 //                    .withOobError(true);

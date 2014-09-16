@@ -82,9 +82,9 @@ public interface Classifier extends Printable, Serializable {
      *
      * @param df         train frame
      * @param weights    instance weights
-     * @param targetVars target variables
+     * @param targetVarNames target variables
      */
-    void learn(Frame df, Numeric weights, String... targetVars);
+    void learn(Frame df, Numeric weights, String... targetVarNames);
 
     /**
      * Predict classes for new data set instances

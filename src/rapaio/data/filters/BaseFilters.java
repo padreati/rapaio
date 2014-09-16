@@ -126,7 +126,7 @@ public final class BaseFilters implements Serializable {
                 if (!v.type().isNominal()) {
                     vars[i] = v;
                 } else {
-                    vars[i] = Nominal.newEmpty(v.rowCount(), dicts.get(colName));
+                    vars[i] = Nominal.newEmpty(v.rowCount(), dicts.get(colName)).withName(colName);
                     for (int k = 0; k < vars[i].rowCount(); k++) {
                         vars[i].setLabel(k, v.label(k));
                     }
