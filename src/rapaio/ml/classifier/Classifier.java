@@ -23,7 +23,7 @@ package rapaio.ml.classifier;
 import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
-import rapaio.ml.classifier.colselect.VarSelector;
+import rapaio.ml.classifier.varselect.VarSelector;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -80,8 +80,8 @@ public interface Classifier extends Printable, Serializable {
     /**
      * Fit a classifier on instances specified by frame, with row weights and targetVars
      *
-     * @param df         train frame
-     * @param weights    instance weights
+     * @param df             train frame
+     * @param weights        instance weights
      * @param targetVarNames target variables
      */
     void learn(Frame df, Numeric weights, String... targetVarNames);
@@ -99,8 +99,8 @@ public interface Classifier extends Printable, Serializable {
      * Predict classes for given instances, generating classes if specified and
      * generating densities if specified.
      *
-     * @param df               frame instances
-     * @param withClasses      generate classes
+     * @param df                frame instances
+     * @param withClasses       generate classes
      * @param withDistributions generate densities for classes
      */
     CPrediction predict(Frame df, boolean withClasses, boolean withDistributions);

@@ -18,23 +18,21 @@
  *    limitations under the License.
  */
 
-package rapaio.core;
+package rapaio.ml.classifier.varselect;
 
 import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.data.filters.BaseFilters;
-import rapaio.io.Csv;
+import rapaio.data.VarRange;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.Serializable;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public abstract class CoreStatTestUtil {
+public interface VarSelector extends Serializable {
 
-    public Frame getDataFrame() throws IOException {
-        return BaseFilters.toNumeric(new Csv().withHeader(false).read(getClass(), "core_stat.csv"));
-    }
+    String name();
+
+    void initialize(Frame df, VarRange except);
+
+    String[] nextVarNames();
 }

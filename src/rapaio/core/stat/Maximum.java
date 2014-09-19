@@ -42,10 +42,10 @@ public class Maximum implements Printable {
     }
 
     private double compute(Var var) {
-        if (var.stream().anyMatch((VSpot inst) -> !inst.missing())) {
-            return var.stream().complete().mapToDouble().count();
+        if (var.stream().allMatch(VSpot::missing)) {
+            return Double.NaN;
         }
-        return Double.NaN;
+        return var.stream().complete().mapToDouble().max().getAsDouble();
     }
 
     public double value() {

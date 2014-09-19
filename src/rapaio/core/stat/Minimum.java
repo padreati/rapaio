@@ -32,28 +32,21 @@ import rapaio.data.Var;
  * Date: 9/7/13
  * Time: 12:36 PM
  */
-@Deprecated
 public class Minimum implements Printable {
 
-    private final Var var;
+    private final String varName;
     private final double value;
 
     public Minimum(Var var) {
-        this.var = var;
-        this.value = compute();
+        this.varName = var.name();
+        this.value = compute(var);
     }
 
-    private double compute() {
-        double min = Double.MAX_VALUE;
-        boolean valid = false;
-        for (int i = 0; i < var.rowCount(); i++) {
-            if (var.missing(i)) {
-                continue;
-            }
-            valid = true;
-            min = Math.min(min, var.value(i));
+    private double compute(Var var) {
+        if (var.stream().complete().count() == 0) {
+            return Double.NaN;
         }
-        return valid ? min : Double.NaN;
+        return var.stream().complete().mapToDouble().min().getAsDouble();
     }
 
     public double value() {
@@ -62,6 +55,6 @@ public class Minimum implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append(String.format("minimum\n%.10f", value));
+        sb.append(String.format("minimum[%s]=%.10f", varName, value));
     }
 }

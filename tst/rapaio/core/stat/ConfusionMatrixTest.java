@@ -18,10 +18,9 @@
  *    limitations under the License.
  */
 
-package rapaio.core;
+package rapaio.core.stat;
 
 import org.junit.Test;
-import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Nominal;
 import rapaio.data.Var;
 
@@ -44,9 +43,9 @@ public class ConfusionMatrixTest {
         actual.setLabel(2, "dog");
         predict.setLabel(2, "dog");
 
-//        actual.setLabel(3, "dog");
-//        predict.setLabel(3, "mouse");
-//
+        actual.setLabel(3, "dog");
+        predict.setLabel(3, "mouse");
+
         actual.setLabel(4, "mouse");
         predict.setLabel(4, "mouse");
 

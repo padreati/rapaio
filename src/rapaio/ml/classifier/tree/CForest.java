@@ -27,10 +27,10 @@ import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.RunningClassifier;
-import rapaio.ml.classifier.colselect.RandomVarSelector;
-import rapaio.ml.classifier.colselect.VarSelector;
 import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.ml.classifier.tree.ctree.CTree;
+import rapaio.ml.classifier.varselect.RandomVarSelector;
+import rapaio.ml.classifier.varselect.VarSelector;
 import rapaio.util.Pair;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 

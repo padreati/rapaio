@@ -22,7 +22,6 @@ package rapaio.core.stat;
 
 import rapaio.core.Printable;
 import rapaio.data.Var;
-import rapaio.util.Pin;
 
 /**
  * Compensated version of arithmetic mean of values from a {@code Vector}.
@@ -47,13 +46,12 @@ public final class Mean implements Printable {
             return Double.NaN;
         }
         final double sum = var.stream().complete().mapToDouble().sum() / count;
-        final Pin<Double> t = new Pin<>(0.0);
-        var.stream().complete().forEach(s -> t.set(t.get() + s.value() - sum));
-        return sum + t.get() / count;
+        return sum + var.stream().complete().mapToDouble(s -> s.value() - sum).sum() / count;
     }
 
     /**
      * Returns the computed mean of the vector
+     *
      * @return computed mean
      */
     public double value() {

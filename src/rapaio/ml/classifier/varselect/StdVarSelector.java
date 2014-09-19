@@ -18,10 +18,10 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.colselect;
+package rapaio.ml.classifier.varselect;
 
-import rapaio.data.VarRange;
 import rapaio.data.Frame;
+import rapaio.data.VarRange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ public class StdVarSelector implements VarSelector {
     @Override
     public synchronized void initialize(Frame df, VarRange except) {
         String[] all = df.varNames();
-        List<Integer> ex = except==null ? new ArrayList<>() : except.parseVarIndexes(df);
+        List<Integer> ex = except == null ? new ArrayList<>() : except.parseVarIndexes(df);
         selection = new String[all.length - ex.size()];
         int p = 0;
         int s = 0;

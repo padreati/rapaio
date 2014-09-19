@@ -18,18 +18,18 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.colselect;
+package rapaio.ml.classifier.varselect;
 
-import rapaio.data.VarRange;
 import rapaio.core.sample.DiscreteSampling;
 import rapaio.data.Frame;
+import rapaio.data.VarRange;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Variable selector which selects only a maximum number of variables at random
- *
+ * <p>
  * User: <a href="mailoto:paderati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class RandomVarSelector implements VarSelector {
