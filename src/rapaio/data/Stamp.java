@@ -230,17 +230,17 @@ public class Stamp extends AbstractVar {
 
     @Override
     public String label(int row) {
-        throw new IllegalArgumentException("Operation not available for stamp variable");
+        return String.valueOf(stamp(row));
     }
 
     @Override
     public void setLabel(int row, String value) {
-        throw new IllegalArgumentException("Operation not available for stamp variable");
+        setStamp(row, Long.parseLong(value));
     }
 
     @Override
     public void addLabel(String value) {
-        throw new IllegalArgumentException("Operation not available for stamp variable");
+        addStamp(Long.parseLong(value));
     }
 
     @Override

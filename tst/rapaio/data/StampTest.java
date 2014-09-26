@@ -188,22 +188,24 @@ public class StampTest {
     @Test
     public void testLabel() {
         Stamp x = Stamp.newCopyOf(1, 2, 3);
-        expected.expect(IllegalArgumentException.class);
-        x.label(0);
+        assertEquals("1", x.label(0));
     }
 
     @Test
     public void testAddLabel() {
         Stamp x = Stamp.newCopyOf(1, 2, 3);
-        expected.expect(IllegalArgumentException.class);
         x.addLabel("10");
+        assertEquals(4, x.rowCount());
+        assertEquals("1", x.label(0));
+        assertEquals("10", x.label(3));
     }
 
     @Test
     public void testSetLabel() {
         Stamp x = Stamp.newCopyOf(1, 2, 3);
-        expected.expect(IllegalArgumentException.class);
         x.setLabel(0, "10");
+        assertEquals(3, x.rowCount());
+        assertEquals("10", x.label(0));
     }
 
     @Test

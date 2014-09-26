@@ -36,7 +36,7 @@ public class Datasets {
     public static Frame loadIrisDataset() throws IOException, URISyntaxException {
         return new Csv()
                 .withDefaultType(VarType.NUMERIC)
-                .withNominalFields("class")
+                .withTypes(VarType.NOMINAL, "class")
                 .read(Datasets.class, "iris.csv");
     }
 
@@ -65,7 +65,7 @@ public class Datasets {
 
     public static Frame loadSpamBase() throws IOException {
         return new Csv().withDefaultType(VarType.NUMERIC)
-                .withNominalFields("spam")
+                .withTypes(VarType.NOMINAL, "spam")
                 .read(Datasets.class, "spam-base.csv");
     }
 
@@ -82,14 +82,14 @@ public class Datasets {
                 .withSeparatorChar(',')
                 .withHeader(true)
                 .withQuotas(false)
-                .withNumericFields("temp", "humidity")
+                .withTypes(VarType.NUMERIC, "temp", "humidity")
                 .read(Datasets.class, "play.csv");
     }
 
     public static Frame loadOlympic() throws IOException {
         return new Csv()
                 .withQuotas(false)
-                .withNumericFields("Edition")
+                .withTypes(VarType.NUMERIC, "Edition")
                 .read(Datasets.class, "olympic.csv");
     }
 

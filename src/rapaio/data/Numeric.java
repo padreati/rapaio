@@ -234,17 +234,17 @@ public final class Numeric extends AbstractVar {
 
     @Override
     public String label(int row) {
-        return "";
+        return String.valueOf(value(row));
     }
 
     @Override
     public void setLabel(int row, String value) {
-        throw new RuntimeException("Operation not available for numeric vectors.");
+        setValue(row, Double.parseDouble(value));
     }
 
     @Override
     public void addLabel(String value) {
-        throw new RuntimeException("Operation not available for numeric vectors.");
+        addValue(Double.parseDouble(value));
     }
 
     @Override

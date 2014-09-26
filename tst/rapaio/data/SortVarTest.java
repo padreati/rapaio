@@ -133,8 +133,8 @@ public class SortVarTest {
 
         Frame df = new Csv()
                 .withQuotas(false)
-                .withNumericFields("z")
-                .withIndexFields("y")
+                .withTypes(VarType.NUMERIC, "z")
+                .withTypes(VarType.INDEX, "y")
                 .read(SortVarTest.class, "sorted-frame.csv");
 
         Var nominal = df.var(0);

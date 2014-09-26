@@ -22,14 +22,10 @@ package rapaio.core.stat;
 
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
-import rapaio.data.Var;
 import rapaio.data.filters.BaseFilters;
-import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -38,46 +34,17 @@ import static org.junit.Assert.assertEquals;
  */
 public class CoreStatTest {
 
+    private final Frame df;
+
+    public CoreStatTest() throws IOException {
+        this.df = BaseFilters.toNumeric(new Csv().withHeader(false).read(getClass(), "core_stat.csv"));
+    }
+
     @Test
-    public void testRReferenceMean() throws IOException {
-        Frame df = BaseFilters.toNumeric(new Csv().withHeader(false).read(getClass(), "core_stat.csv"));
+    public void testRReference() throws IOException {
         assertEquals(Double.valueOf("999.98132402093892779"), new Mean(df.var(0)).value(), 1e-12);
-    }
-
-    @Test
-    public void tesMeantWithEmptyValues() {
-        Var num = Numeric.newEmpty(10);
-        num.setValue(0, 1);
-        assertEquals(1.0, new Mean(num).value(), 10e-10);
-
-        num.setValue(7, 5);
-        assertEquals(3.0, new Mean(num).value(), 10e-10);
-    }
-
-    @Test
-    public void testRReferenceVariance() throws IOException {
-        Frame df = BaseFilters.toNumeric(new Csv().withHeader(false).read(getClass(), "core_stat.csv"));
         assertEquals(Double.valueOf("1.0012615815492349469"), Math.sqrt(new Variance(df.var(0)).getValue()), 1e-12);
-    }
-
-    @Test
-    public void testPearsonDSVariance() throws IOException, URISyntaxException {
-        Frame df = Datasets.loadPearsonHeightDataset();
-        assertEquals(Double.valueOf("7.93094884953222"), new Variance(df.var("Son")).getValue(), 1e-12);
-    }
-
-    @Test
-    public void testMinMax() {
-        Var v = Numeric.newWrapOf(1, 2, 3, 4, 5, 6);
-
-        assertEquals(6.0, new Maximum(v).value(), 1e-12);
-        assertEquals(1.0, new Minimum(v).value(), 1e-12);
-
-        v.addMissing();
-        v.addValue(12);
-        v.addValue(-1);
-
-        assertEquals(12, new Maximum(v).value(), 1e-12);
-        assertEquals(-1, new Minimum(v).value(), 1e-12);
+        assertEquals(996.343866540788, new Minimum(df.var(0)).value(), 1e-12);
+        assertEquals(1004.24956126934, new Maximum(df.var(0)).value(), 1e-12);
     }
 }

@@ -220,17 +220,17 @@ public final class Index extends AbstractVar {
 
     @Override
     public String label(int row) {
-        throw new IllegalArgumentException("Operation not available for index vectors.");
+        return String.valueOf(index(row));
     }
 
     @Override
     public void setLabel(int row, String value) {
-        throw new IllegalArgumentException("Operation not available for index vectors.");
+        setIndex(row, Integer.parseInt(value));
     }
 
     @Override
     public void addLabel(String value) {
-        throw new IllegalArgumentException("Operation not available for index vectors.");
+        addIndex(Integer.parseInt(value));
     }
 
     @Override

@@ -21,7 +21,6 @@
 package rapaio.io;
 
 import rapaio.data.*;
-import rapaio.data.Var;
 
 import java.io.*;
 import java.text.DecimalFormat;
@@ -38,9 +37,7 @@ public class Csv {
     private boolean quotas = true;
     private char separatorChar = ',';
     private char escapeChar = '\"';
-    private HashSet<String> numericFieldHints = new HashSet<>();
-    private HashSet<String> indexFieldHints = new HashSet<>();
-    private HashSet<String> nominalFieldHints = new HashSet<>();
+    private HashMap<String, VarType> typeFieldHints = new HashMap<>();
     private HashSet<String> naValues = new HashSet<>();
     private VarType defaultType = VarType.NOMINAL;
     private int startRow = 0;
@@ -86,18 +83,8 @@ public class Csv {
         return this;
     }
 
-    public Csv withNumericFields(String... fields) {
-        numericFieldHints = new HashSet<>(Arrays.asList(fields));
-        return this;
-    }
-
-    public Csv withIndexFields(String... fields) {
-        indexFieldHints = new HashSet<>(Arrays.asList(fields));
-        return this;
-    }
-
-    public Csv withNominalFields(String... fields) {
-        nominalFieldHints = new HashSet<>(Arrays.asList(fields));
+    public Csv withTypes(VarType varType, String... fields) {
+        Arrays.stream(fields).forEach(field -> typeFieldHints.put(field, varType));
         return this;
     }
 
@@ -148,30 +135,12 @@ public class Csv {
                         names.add("V" + (i + 1));
                     }
                     for (String colName : names) {
-                        if (indexFieldHints.contains(colName)) {
-                            vars.add(Index.newEmpty());
-                            continue;
-                        }
-                        if (numericFieldHints.contains(colName)) {
-                            vars.add(Numeric.newEmpty());
-                            continue;
-                        }
-                        if (nominalFieldHints.contains(colName)) {
-                            vars.add(Nominal.newEmpty());
+                        if (typeFieldHints.containsKey(colName)) {
+                            vars.add(typeFieldHints.get(colName).newInstance());
                             continue;
                         }
                         // default getType
-                        switch (defaultType) {
-                            case NOMINAL:
-                                vars.add(Nominal.newEmpty());
-                                break;
-                            case NUMERIC:
-                                vars.add(Numeric.newEmpty());
-                                break;
-                            case INDEX:
-                                vars.add(Index.newEmpty());
-                                break;
-                        }
+                        vars.add(defaultType.newInstance());
                     }
                 }
 

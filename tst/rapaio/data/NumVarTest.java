@@ -72,7 +72,7 @@ public class NumVarTest {
         }
 
         for (int i = 0; i < v.rowCount(); i++) {
-            assertEquals("", v.label(i));
+            assertEquals(String.valueOf(v.value(i)), v.label(i));
         }
         try {
             v.setLabel(0, "test");

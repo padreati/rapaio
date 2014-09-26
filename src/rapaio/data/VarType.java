@@ -59,6 +59,16 @@ public enum VarType {
         public boolean isNominal() {
             return false;
         }
+
+        @Override
+        public Var newInstance() {
+            return Numeric.newEmpty();
+        }
+
+        @Override
+        public Var newInstance(int rows) {
+            return Numeric.newEmpty(rows);
+        }
     },
     /**
      * Integer values on 32 bits
@@ -73,6 +83,16 @@ public enum VarType {
         public boolean isNominal() {
             return false;
         }
+
+        @Override
+        public Var newInstance() {
+            return Index.newEmpty();
+        }
+
+        @Override
+        public Var newInstance(int rows) {
+            return Index.newEmpty(rows);
+        }
     },
     STAMP {
         @Override
@@ -83,6 +103,16 @@ public enum VarType {
         @Override
         public boolean isNominal() {
             return false;
+        }
+
+        @Override
+        public Var newInstance() {
+            return Stamp.newEmpty();
+        }
+
+        @Override
+        public Var newInstance(int rows) {
+            return Stamp.newEmpty(rows);
         }
     },
     /**
@@ -98,6 +128,16 @@ public enum VarType {
         @Override
         public boolean isNominal() {
             return true;
+        }
+
+        @Override
+        public Var newInstance() {
+            return Nominal.newEmpty();
+        }
+
+        @Override
+        public Var newInstance(int rows) {
+            return Nominal.newEmpty(rows);
         }
     },
     /**
@@ -115,6 +155,16 @@ public enum VarType {
         public boolean isNominal() {
             return true;
         }
+
+        @Override
+        public Var newInstance() {
+            return Ordinal.newEmpty();
+        }
+
+        @Override
+        public Var newInstance(int rows) {
+            return Ordinal.newEmpty(rows);
+        }
     },
     /**
      * Numeric values stored on 1 bit, encodes also
@@ -129,6 +179,16 @@ public enum VarType {
         @Override
         public boolean isNominal() {
             return false;
+        }
+
+        @Override
+        public Var newInstance() {
+            return Binary.newEmpty();
+        }
+
+        @Override
+        public Var newInstance(int rows) {
+            return Binary.newEmpty(rows);
         }
 //    },
 //    /**
@@ -149,4 +209,8 @@ public enum VarType {
     public abstract boolean isNumeric();
 
     public abstract boolean isNominal();
+
+    public abstract Var newInstance();
+
+    public abstract Var newInstance(int rows);
 }

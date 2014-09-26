@@ -179,22 +179,23 @@ public class IndexTest {
     @Test
     public void testLabel() {
         Index x = Index.newCopyOf(1, 2, 3);
-        expected.expect(IllegalArgumentException.class);
-        x.label(0);
+        assertEquals("1", x.label(0));
     }
 
     @Test
     public void testAddLabel() {
         Index x = Index.newCopyOf(1, 2, 3);
-        expected.expect(IllegalArgumentException.class);
         x.addLabel("10");
+        assertEquals(4, x.rowCount());
+        assertEquals("10", x.label(3));
     }
 
     @Test
     public void testSetLabel() {
         Index x = Index.newCopyOf(1, 2, 3);
-        expected.expect(IllegalArgumentException.class);
         x.setLabel(0, "10");
+        assertEquals(3, x.rowCount());
+        assertEquals("10", x.label(0));
     }
 
     @Test

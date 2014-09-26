@@ -226,12 +226,20 @@ public final class Binary extends AbstractVar {
 
     @Override
     public void setLabel(int row, String value) {
-        throw new IllegalArgumentException("Operation not implemented on binary variables");
+        if ("?".equals(value)) {
+            setMissing(row);
+            return;
+        }
+        setBinary(row, "true".equalsIgnoreCase(value) || "1".equals(value));
     }
 
     @Override
     public void addLabel(String value) {
-        throw new IllegalArgumentException("Operation not implemented on binary variables");
+        if ("?".equals(value)) {
+            addMissing();
+            return;
+        }
+        addBinary("true".equalsIgnoreCase(value) || "1".equals(value));
     }
 
     @Override

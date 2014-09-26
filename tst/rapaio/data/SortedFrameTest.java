@@ -46,8 +46,8 @@ public class SortedFrameTest {
     public void init() throws IOException, URISyntaxException {
         df = new Csv()
                 .withQuotas(false)
-                .withNumericFields("z")
-                .withIndexFields("y")
+                .withTypes(VarType.NUMERIC, "z")
+                .withTypes(VarType.INDEX, "y")
                 .read(SortedFrameTest.class, "sorted-frame.csv");
     }
 
@@ -57,7 +57,7 @@ public class SortedFrameTest {
         RandomSource.setSeed(1);
         Var[] vars = new Var[1_000];
         for (int i = 0; i < 1_000; i++) {
-            vars[i] = Numeric.newFill(1_000).withName("v"+i);
+            vars[i] = Numeric.newFill(1_000).withName("v" + i);
             for (int j = 0; j < 1_000; j++) {
                 vars[i].setValue(j, RandomSource.nextDouble());
             }
@@ -160,7 +160,7 @@ public class SortedFrameTest {
         sorted = sort(sorted, nominalComparator(sorted.var("x"), true));
 
         for (int i = 0; i < sorted.rowCount() - 1; i++) {
-            assertTrue(sorted.label(i, "x").compareTo(sorted.label(i + 1, "x"))<=0);
+            assertTrue(sorted.label(i, "x").compareTo(sorted.label(i + 1, "x")) <= 0);
         }
     }
 }
