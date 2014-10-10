@@ -80,16 +80,13 @@ public final class BaseFilters implements Serializable {
      * Retain only nominal columns from a frame.
      */
     public static Frame retainNominal(Frame df) {
-        StringBuilder sb = new StringBuilder();
+        List<String> varNames = new ArrayList<>();
         for (int i = 0; i < df.varCount(); i++) {
             if (df.var(i).type().isNominal()) {
-                if (sb.length() != 0) {
-                    sb.append(",");
-                }
-                sb.append(df.varNames()[i]);
+                varNames.add(df.varNames()[i]);
             }
         }
-        return df.mapVars(sb.toString());
+        return df.mapVars(varNames);
     }
 
     /**

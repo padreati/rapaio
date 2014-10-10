@@ -39,6 +39,7 @@ public class ID3ClassifierTest {
     @Test
     public void testBasicID3Entropy() throws IOException {
         Frame df = Datasets.loadPlay();
+        Summary.summary(df);
         df = BaseFilters.retainNominal(df);
         final String className = "class";
 

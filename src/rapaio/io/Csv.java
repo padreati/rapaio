@@ -39,7 +39,7 @@ public class Csv {
     private char escapeChar = '\"';
     private HashMap<String, VarType> typeFieldHints = new HashMap<>();
     private HashSet<String> naValues = new HashSet<>();
-    private VarType defaultType = VarType.NOMINAL;
+    private VarType[] defaultTypes = new VarType[]{VarType.BINARY, VarType.INDEX, VarType.NUMERIC, VarType.NOMINAL};
     private int startRow = 0;
     private int endRow = Integer.MAX_VALUE;
 
@@ -88,8 +88,8 @@ public class Csv {
         return this;
     }
 
-    public Csv withDefaultType(VarType defaultType) {
-        this.defaultType = defaultType;
+    public Csv withDefaultTypes(VarType... defaultTypes) {
+        this.defaultTypes = defaultTypes;
         return this;
     }
 
@@ -110,9 +110,10 @@ public class Csv {
     public Frame read(InputStream inputStream) throws IOException {
         int rows = 0;
         List<String> names = new ArrayList<>();
-        List<Var> vars = new ArrayList<>();
+        List<VarSlot> varSlots = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+
             if (header) {
                 String line = reader.readLine();
                 if (line == null) {
@@ -120,6 +121,7 @@ public class Csv {
                 }
                 names = parseLine(line);
             }
+
             boolean first = true;
             while (true) {
                 String line = reader.readLine();
@@ -136,11 +138,11 @@ public class Csv {
                     }
                     for (String colName : names) {
                         if (typeFieldHints.containsKey(colName)) {
-                            vars.add(typeFieldHints.get(colName).newInstance());
-                            continue;
+                            varSlots.add(new VarSlot(defaultTypes, typeFieldHints.get(colName)));
+                        } else {
+                            // default getType
+                            varSlots.add(new VarSlot(defaultTypes));
                         }
-                        // default getType
-                        vars.add(defaultType.newInstance());
                     }
                 }
 
@@ -152,69 +154,18 @@ public class Csv {
                 rows++;
                 for (int i = 0; i < names.size(); i++) {
                     if (row.size() <= i || naValues.contains(row.get(i))) {
-                        vars.get(i).addMissing();
+                        varSlots.get(i).addMissing();
                         continue;
                     }
-                    String value = row.get(i);
-                    Var v = vars.get(i);
-                    switch (v.type()) {
-                        case INDEX:
-                            Integer intValue;
-                            try {
-                                intValue = Integer.parseInt(value);
-                                v.addIndex(intValue);
-                            } catch (Throwable ex) {
-                                // can't parse, try numeric
-                                Double fallbackNumeric;
-                                try {
-                                    fallbackNumeric = Double.parseDouble(value);
-                                    Numeric num = Numeric.newEmpty();
-                                    for (int j = 0; j < v.rowCount(); j++) {
-                                        num.addValue(v.index(j));
-                                    }
-                                    num.addValue(fallbackNumeric);
-                                    vars.set(i, num);
-                                    continue;
-
-                                } catch (Throwable ex2) {
-                                    // can't parse, use nominal
-                                    Nominal nom = Nominal.newEmpty();
-                                    for (int j = 0; j < v.rowCount(); j++) {
-                                        nom.addLabel(String.valueOf(v.index(j)));
-                                    }
-                                    nom.addLabel(value);
-                                    vars.set(i, nom);
-                                    continue;
-                                }
-                            }
-                            break;
-                        case NUMERIC:
-                            Double numValue;
-                            try {
-                                numValue = Double.parseDouble(value);
-                                v.addValue(numValue);
-                            } catch (Throwable ex) {
-                                // can't parse, use nominal
-                                Nominal nom = Nominal.newEmpty();
-                                for (int j = 0; j < v.rowCount(); j++) {
-                                    nom.addLabel(String.valueOf(v.value(j)));
-                                }
-                                nom.addLabel(value);
-                                vars.set(i, nom);
-                                continue;
-                            }
-                            break;
-                        case NOMINAL:
-                            v.addLabel(value);
-                            break;
-                    }
+                    varSlots.get(i).addValue(row.get(i));
                 }
             }
         }
-        for (int i = 0; i < vars.size(); i++) {
-            vars.get(i).withName(names.get(i));
+        List<Var> variables = new ArrayList<>();
+        for (int i = 0; i < varSlots.size(); i++) {
+            variables.add(varSlots.get(i).getVar().withName(names.get(i)));
         }
-        return SolidFrame.newWrapOf(rows - startRow, vars);
+        return SolidFrame.newWrapOf(rows - startRow, variables);
     }
 
     public List<String> parseLine(String line) {
@@ -262,7 +213,7 @@ public class Csv {
      * after removing quotas - remove leading and trailing quotas - remove
      * escape quota character
      *
-     * @param tok
+     * @param tok if (trimSpaces) {
      * @return
      */
     private String clean(String tok) {
@@ -350,5 +301,103 @@ public class Csv {
             label = "\"" + label + "\"";
         }
         return label;
+    }
+}
+
+class VarSlot {
+
+    private final VarType[] defaultTypes;
+
+    private final VarType type;
+    private Var var;
+    private Text text;
+
+    /**
+     * Constructor for slot which does not have a predefined type, it tries the best by using default types
+     */
+    public VarSlot(VarType[] defaultTypes) {
+        this.defaultTypes = defaultTypes;
+        this.type = null;
+        this.var = defaultTypes[0].newInstance();
+        this.text = Text.newEmpty();
+    }
+
+    public VarSlot(VarType[] defaultTypes, VarType varType) {
+        this.defaultTypes = defaultTypes;
+        this.type = varType;
+        this.var = varType.newInstance();
+        this.text = null;
+    }
+
+    public void addValue(String value) {
+        if (type == null) {
+
+            // for default values
+
+            while (true) {
+
+                // try first to add value to the current default type
+                try {
+                    var.addLabel(value);
+                    if (text != null) {
+                        text.addLabel(value);
+                    }
+                    return;
+                } catch (Throwable th) {
+                    // if it's the last default type, than nothing else could be done
+                    if (var.type() == defaultTypes[defaultTypes.length - 1]) {
+                        throw new IllegalArgumentException(
+                                String.format("Could not parse value %s in type %s. Error: %s",
+                                        value, var.type(), th.getMessage()));
+                    }
+                }
+
+                // have to find an upgrade
+                // find current default type position
+                int pos = 0;
+                for (int i = 0; i < defaultTypes.length; i++) {
+                    if (!defaultTypes[i].equals(var.type())) continue;
+                    pos = i + 1;
+                    break;
+                }
+
+                // try successive default type upgrades, if the last available fails also than throw an exception
+                for (int i = pos; i < defaultTypes.length; i++) {
+                    try {
+                        var = defaultTypes[i].newInstance();
+                        if (text != null && text.rowCount() > 0)
+                            text.stream().forEach(s -> var.addLabel(s.label()));
+                        if (i == defaultTypes.length - 1)
+                            text = null;
+                        break;
+                    } catch (Exception th) {
+                        if (i == defaultTypes.length - 1) {
+                            throw new IllegalArgumentException(
+                                    String.format("Could not parse value %s in type %s. Error: %s",
+                                            value, var.type(), th.getMessage()));
+                        }
+                    }
+                }
+            }
+        } else {
+
+            // for non-default values
+
+            try {
+                var.addLabel(value);
+            } catch (Throwable th) {
+                throw new IllegalArgumentException(
+                        String.format("Could not parse value %s in type %s. Error: %s",
+                                value, var.type(), th.getMessage()));
+            }
+        }
+    }
+
+    public void addMissing() {
+        var.addMissing();
+    }
+
+    public Var getVar() {
+        return var;
     }
 }

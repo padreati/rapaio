@@ -35,14 +35,14 @@ public class Datasets {
 
     public static Frame loadIrisDataset() throws IOException, URISyntaxException {
         return new Csv()
-                .withDefaultType(VarType.NUMERIC)
+                .withDefaultTypes(VarType.NUMERIC)
                 .withTypes(VarType.NOMINAL, "class")
                 .read(Datasets.class, "iris.csv");
     }
 
     public static Frame loadPearsonHeightDataset() throws IOException, URISyntaxException {
         return new Csv()
-                .withDefaultType(VarType.NUMERIC)
+                .withDefaultTypes(VarType.NUMERIC)
                 .read(Datasets.class, "pearsonheight.csv");
     }
 
@@ -50,7 +50,7 @@ public class Datasets {
         return new Csv()
                 .withSeparatorChar(',')
                 .withQuotas(true)
-                .withDefaultType(VarType.NUMERIC)
+                .withDefaultTypes(VarType.NUMERIC)
                 .read(Datasets.class, "chest.csv");
     }
 
@@ -59,12 +59,12 @@ public class Datasets {
                 .withSeparatorChar(',')
                 .withHeader(true)
                 .withQuotas(true)
-                .withDefaultType(VarType.NUMERIC)
+                .withDefaultTypes(VarType.NUMERIC)
                 .read(Datasets.class, "carmpg.csv");
     }
 
     public static Frame loadSpamBase() throws IOException {
-        return new Csv().withDefaultType(VarType.NUMERIC)
+        return new Csv().withDefaultTypes(VarType.NUMERIC)
                 .withTypes(VarType.NOMINAL, "spam")
                 .read(Datasets.class, "spam-base.csv");
     }
@@ -83,6 +83,7 @@ public class Datasets {
                 .withHeader(true)
                 .withQuotas(false)
                 .withTypes(VarType.NUMERIC, "temp", "humidity")
+                .withTypes(VarType.NOMINAL, "windy")
                 .read(Datasets.class, "play.csv");
     }
 
@@ -96,7 +97,7 @@ public class Datasets {
     public static Frame loadProstateCancer() throws IOException {
         return new Csv()
                 .withSeparatorChar('\t')
-                .withDefaultType(VarType.NUMERIC)
+                .withDefaultTypes(VarType.NUMERIC)
                 .read(Datasets.class, "prostate.csv");
     }
 }

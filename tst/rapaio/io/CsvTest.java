@@ -24,6 +24,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.data.Frame;
+import rapaio.data.VarType;
 
 import java.io.IOException;
 import java.util.List;
@@ -113,5 +114,19 @@ public class CsvTest {
         for (int i = 0; i < tokens.size(); i++) {
             assertEquals(matches[i], tokens.get(i));
         }
+    }
+
+    @Test
+    public void testDefaults() throws IOException {
+        Frame df = new Csv().read(this.getClass().getResourceAsStream("defaults-test.csv"));
+
+        // x1 is binary
+
+        assertEquals(df.var("x1").type(), VarType.BINARY);
+        assertEquals(false, df.binary(0, "x1"));
+        assertEquals(true, df.binary(1, "x1"));
+        assertEquals(false, df.binary(2, "x1"));
+        assertEquals(true, df.binary(3, "x1"));
+        assertEquals(true, df.missing(4, "x1"));
     }
 }

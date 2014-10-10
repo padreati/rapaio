@@ -125,6 +125,10 @@ public interface Frame extends Serializable {
         return mapVars(new VarRange(varRange));
     }
 
+    default Frame mapVars(List<String> varRange) {
+        return mapVars(new VarRange(varRange.toArray(new String[varRange.size()])));
+    }
+
     /**
      * Builds a new frame with all columns except the ones specified in variable range
      *
@@ -315,6 +319,22 @@ public interface Frame extends Serializable {
      */
     default void setLabel(int row, String varName, String value) {
         var(varName).setLabel(row, value);
+    }
+
+    default boolean binary(int row, int var) {
+        return var(var).binary(row);
+    }
+
+    default boolean binary(int row, String varName) {
+        return var(varName).binary(row);
+    }
+
+    default void setBinary(int row, int varIndex, boolean value) {
+        var(varIndex).setBinary(row, value);
+    }
+
+    default void setBinary(int row, String varName, boolean value) {
+        var(varName).setBinary(row, value);
     }
 
     /**

@@ -20,20 +20,58 @@
 
 package rapaio.data;
 
-import rapaio.data.stream.VSpots;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Text extends AbstractVar {
 
     private List<String> values = new ArrayList<>();
-    private int rows;
+
+    //
+    // Public static builders
+    //
+
+    public static Text newEmpty() {
+        return new Text(0);
+    }
+
+    public static Text newEmpty(int rows) {
+        return new Text(rows);
+    }
+
+    public static Text newCopyOf(String... values) {
+        Text text = new Text(0);
+        text.values = Arrays.stream(values).collect(Collectors.toList());
+        return text;
+    }
+
+    public static Text newCopyOf(List<String> values) {
+        Text text = new Text(0);
+        Collections.copy(text.values, values);
+        return text;
+    }
+
+    public static Text newWrapOf(List<String> values) {
+        Text text = new Text(0);
+        text.values = values;
+        return text;
+    }
+
+    //
+    // private constructor
+    //
+
+    private Text(int rows) {
+        values = new ArrayList<>(rows);
+        IntStream.range(0, rows).forEach(i -> values.add(null));
+    }
 
     @Override
     public Text withName(String name) {
@@ -42,68 +80,57 @@ public class Text extends AbstractVar {
 
     @Override
     public VarType type() {
-//        return VarType.TEXT;
-        throw new NotImplementedException();
+        return VarType.TEXT;
     }
 
     @Override
     public int rowCount() {
-        return rows;
-    }
-
-    @Override
-    public Var bindRows(Var var) {
-        return BoundVar.newFrom(this, var);
-    }
-
-    @Override
-    public Var mapRows(Mapping mapping) {
-        return MappedVar.newByRows(this, mapping);
+        return values.size();
     }
 
     @Override
     public double value(int row) {
-        return 0;
+        throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
     public void setValue(int row, double value) {
-
+        throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
     public void addValue(double value) {
-
+        throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
     public int index(int row) {
-        return 0;
+        throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
     public void setIndex(int row, int value) {
-
+        throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
     public void addIndex(int value) {
-
+        throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
     public String label(int row) {
-        return null;
+        return values.get(row);
     }
 
     @Override
     public void setLabel(int row, String value) {
-
+        values.set(row, value);
     }
 
     @Override
     public void addLabel(String value) {
-
+        values.add(value);
     }
 
     @Override
@@ -113,71 +140,61 @@ public class Text extends AbstractVar {
 
     @Override
     public void setDictionary(String[] dict) {
-
+        throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
     public boolean binary(int row) {
-        return false;
+        throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
     public void setBinary(int row, boolean value) {
-
+        throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
     public void addBinary(boolean value) {
-
+        throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
     public long stamp(int row) {
-        return 0;
+        throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
     public void setStamp(int row, long value) {
-
+        throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
     public void addStamp(long value) {
-
+        throw new RuntimeException("This operation is not available for text variables");
     }
 
     @Override
     public boolean missing(int row) {
-        return false;
+        return values.get(row) == null;
     }
 
     @Override
     public void setMissing(int row) {
-
+        values.set(row, null);
     }
 
     @Override
     public void addMissing() {
-
+        values.add(null);
     }
 
     @Override
     public void remove(int row) {
-
+        values.remove(row);
     }
 
     @Override
     public void clear() {
-
-    }
-
-    @Override
-    public Var solidCopy() {
-        return null;
-    }
-
-    @Override
-    public VSpots stream() {
-        return null;
+        values.clear();
     }
 }

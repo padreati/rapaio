@@ -190,20 +190,30 @@ public enum VarType {
         public Var newInstance(int rows) {
             return Binary.newEmpty(rows);
         }
-//    },
-//    /**
-//     * Variable type used only to store text.
-//     */
-//    TEXT {
-//        @Override
-//        public boolean isNominal() {
-//            return false;
-//        }
-//
-//        @Override
-//        public boolean isNumeric() {
-//            return false;
-//        }
+    },
+    /**
+     * Variable type used only to store text.
+     */
+    TEXT {
+        @Override
+        public boolean isNominal() {
+            return false;
+        }
+
+        @Override
+        public Var newInstance() {
+            return Text.newEmpty();
+        }
+
+        @Override
+        public Var newInstance(int rows) {
+            return Text.newEmpty(rows);
+        }
+
+        @Override
+        public boolean isNumeric() {
+            return false;
+        }
     };
 
     public abstract boolean isNumeric();
