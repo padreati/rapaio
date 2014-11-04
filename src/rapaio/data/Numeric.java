@@ -234,16 +234,26 @@ public final class Numeric extends AbstractVar {
 
     @Override
     public String label(int row) {
+        if (missing(row))
+            return "?";
         return String.valueOf(value(row));
     }
 
     @Override
     public void setLabel(int row, String value) {
+        if ("?".equals(value)) {
+            setMissing(row);
+            return;
+        }
         setValue(row, Double.parseDouble(value));
     }
 
     @Override
     public void addLabel(String value) {
+        if ("?".equals(value)) {
+            addMissing();
+            return;
+        }
         addValue(Double.parseDouble(value));
     }
 

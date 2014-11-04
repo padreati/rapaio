@@ -118,15 +118,55 @@ public class CsvTest {
 
     @Test
     public void testDefaults() throws IOException {
-        Frame df = new Csv().read(this.getClass().getResourceAsStream("defaults-test.csv"));
+        Frame df = new Csv()
+                .withHeader(true)
+                .withDefaultTypes(VarType.BINARY, VarType.INDEX, VarType.NUMERIC, VarType.NOMINAL)
+                .read(this.getClass().getResourceAsStream("defaults-test.csv"));
+
+        assertEquals(7, df.rowCount());
 
         // x1 is binary
 
-        assertEquals(df.var("x1").type(), VarType.BINARY);
+        assertEquals(VarType.BINARY, df.var("x1").type());
         assertEquals(false, df.binary(0, "x1"));
         assertEquals(true, df.binary(1, "x1"));
         assertEquals(false, df.binary(2, "x1"));
         assertEquals(true, df.binary(3, "x1"));
         assertEquals(true, df.missing(4, "x1"));
+        assertEquals(false, df.binary(5, "x1"));
+        assertEquals(true, df.binary(6, "x1"));
+
+        // x2 is index
+
+        assertEquals(VarType.INDEX, df.var("x2").type());
+        assertEquals(0, df.index(0, "x2"));
+        assertEquals(1, df.index(1, "x2"));
+        assertEquals(0, df.index(2, "x2"));
+        assertEquals(1, df.index(3, "x2"));
+        assertEquals(true, df.missing(4, "x2"));
+        assertEquals(2, df.index(5, "x2"));
+        assertEquals(3, df.index(6, "x2"));
+
+        // x3 is numeric
+
+        assertEquals(VarType.NUMERIC, df.var("x3").type());
+        assertEquals(0.0, df.value(0, "x3"), 10e-12);
+        assertEquals(1.0, df.value(1, "x3"), 10e-12);
+        assertEquals(0.0, df.value(2, "x3"), 10e-12);
+        assertEquals(1.0, df.value(3, "x3"), 10e-12);
+        assertEquals(Double.NaN, df.value(4, "x3"), 10e-12);
+        assertEquals(2.0, df.value(5, "x3"), 10e-12);
+        assertEquals(3.0, df.value(6, "x3"), 10e-12);
+
+        // x4 nominal
+
+        assertEquals(VarType.NOMINAL, df.var("x4").type());
+        assertEquals("0", df.label(0, "x4"));
+        assertEquals("1", df.label(1, "x4"));
+        assertEquals("false", df.label(2, "x4"));
+        assertEquals("other", df.label(3, "x4"));
+        assertEquals("?", df.label(4, "x4"));
+        assertEquals("2", df.label(5, "x4"));
+        assertEquals("3", df.label(6, "x4"));
     }
 }

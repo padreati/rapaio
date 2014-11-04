@@ -22,11 +22,15 @@ package rapaio.printer;
 
 import rapaio.graphics.base.Figure;
 
+import java.text.DecimalFormat;
+
 /**
  * @author tutuianu
  */
 @Deprecated
 public interface Printer {
+    static DecimalFormat formatDecShort = new DecimalFormat("0.###");
+    static DecimalFormat formatDecLong = new DecimalFormat("0.###############################");
 
     int getTextWidth();
 

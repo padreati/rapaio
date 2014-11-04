@@ -18,44 +18,40 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions.cu;
+package rapaio.core.distributions;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Numeric;
-import rapaio.data.Var;
-
-import java.util.function.Function;
-import java.util.stream.IntStream;
 
 /**
- * Continuous Univariate Distribution
- *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * Interface which models all types of uni-variate statistical distributions.
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 11/3/14.
  */
-@Deprecated
-public interface CUDistribution {
+public interface Distribution {
 
     /**
      * @return canonical name of the densities with parameter values
      */
-    abstract String getName();
+    String getName();
 
     /**
-     * Logarithm of the density function
+     * @return true if the distribution is discrete.
+     */
+    boolean isDiscrete();
+
+    /**
+     * Logarithm of the probability density/mass function
      *
      * @param x value for which it calculates log of probability
      * @return log of probability of x
      */
-    default double logpdf(double x) {
-        double pdf = pdf(x);
-        if (pdf <= 0) {
-            return -Double.MAX_VALUE;
-        }
-        return Math.log(pdf);
+    default double logPdf(double x) {
+        return Math.log(pdf(x));
     }
 
     /**
-     * Calculates probability density function (pdf) for given value x
+     * Calculates probability density/mass function for given value x
      *
      * @param x value for which it calculates
      * @return pdf(x)
@@ -63,7 +59,8 @@ public interface CUDistribution {
     double pdf(double x);
 
     /**
-     * Computes cumulative densities function value for given x
+     * Computes cumulative density function value for given x
+     *
      * @param x given value
      * @return cdf(x)
      */
@@ -71,6 +68,7 @@ public interface CUDistribution {
 
     /**
      * Computes quantile for the given probability value
+     *
      * @param p given probability
      * @return quantile value
      */
@@ -81,65 +79,76 @@ public interface CUDistribution {
      *
      * @return minimum value, might be -Inf
      */
-    abstract public double min();
+    double min();
 
     /**
      * Maximum value for which pdf is defined
      *
      * @return maximum value, might be Inf
      */
-    abstract public double max();
+    double max();
 
     /**
      * Generate a sample for this densities
+     *
      * @param n number of elements in sample
      * @return sample values
      */
-    default Numeric sample(int n) {
-        return IntStream.range(0, n)
-                .mapToObj(i -> quantile(RandomSource.nextDouble()))
-                .collect(Var.numericCollector());
+    default Numeric sample(final int n) {
+        Numeric sample = Numeric.newEmpty(n);
+        for (int i = 0; i < n; i++) {
+            sample.setValue(i, quantile(RandomSource.nextDouble()));
+        }
+        return sample;
     }
 
     /**
      * Computes expected value
+     *
      * @return expected value / mean
      */
-    abstract public double mean();
+    double mean();
 
     /**
      * Computes the mode of the densities, if multiple modes are defined, than one of them is returned
+     *
      * @return mode value for which the pdf has the maximum value
      */
-    abstract public double mode();
+    double mode();
 
     /**
-     * Computes variance of the densities
+     * Computes the median values of the density
      *
-     * @return variance of the densities, or NaN if it is not defined
+     * @return median value for density
      */
-    abstract public double variance();
+    default double median() {
+        return quantile(0.5);
+    }
 
     /**
-     * Computes the skewness
-     *
-     * @return skewness value
+     * @return variance of the distribution, or NaN if it is not defined
      */
-    abstract public double skewness();
+    double var();
 
     /**
-     * Computes the kurtosis
-     *
-     * @return the kurtosis value
-     */
-    abstract public double kurtosis();
-
-    /**
-     * Computes the standard deviation as a sqrt of variance
-     *
-     * @return standard deviation
+     * @return standard deviation of the distribution
      */
     default double sd() {
-        return Math.sqrt(variance());
+        return Math.sqrt(var());
     }
+
+    /**
+     * @return skewness of the distribution
+     */
+    double skewness();
+
+    /**
+     * @return kurtosis of the distribution
+     */
+    double kurtosis();
+
+    /**
+     * @return entropy of the distribution
+     */
+    double entropy();
 }

@@ -21,7 +21,7 @@
 package rapaio.data.filters;
 
 import rapaio.core.RandomSource;
-import rapaio.core.distributions.cu.Norm;
+import rapaio.core.distributions.Normal;
 import rapaio.data.*;
 import rapaio.data.stream.VSpot;
 
@@ -320,10 +320,10 @@ public final class BaseFilters implements Serializable {
      * @return altered values
      */
     public static Numeric jitter(Var var, double sd) {
-        Norm norm = new Norm(0, sd);
+        Normal normal = new Normal(0, sd);
         Numeric result = Numeric.newEmpty(var.rowCount());
         result.stream().forEach(s -> result.setValue(s.row(),
-                var.value(s.row()) + norm.quantile(RandomSource.nextDouble())));
+                var.value(s.row()) + normal.quantile(RandomSource.nextDouble())));
         return result;
     }
 

@@ -21,7 +21,7 @@
 package rapaio.tutorial.pages;
 
 import rapaio.core.RandomSource;
-import rapaio.core.distributions.du.DUnif;
+import rapaio.core.distributions.DUniform;
 import rapaio.core.stat.StatOnline;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
@@ -70,7 +70,7 @@ public class LawOfLargeNumbers implements TutorialPage {
         code("        final int N = 1_000;\n"
                 + "        Vector dice = new DUniform(1, 6).sample(N);\n");
         final int N = 1_000;
-        Var events = new DUnif(1, 6).sample(N);
+        Var events = new DUniform(1, 6).sample(N);
         p("Thus we have stored in a var N (1000) outputs of those events. "
                 + "We compute the running mean using StatOnline:");
         code("        StatOnline ocs = new StatOnline();\n"

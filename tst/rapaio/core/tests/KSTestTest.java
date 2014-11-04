@@ -22,9 +22,9 @@ package rapaio.core.tests;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import rapaio.core.distributions.cu.Norm;
-import rapaio.core.distributions.cu.StudentT;
-import rapaio.core.distributions.cu.Unif;
+import rapaio.core.distributions.Normal;
+import rapaio.core.distributions.StudentT;
+import rapaio.core.distributions.Uniform;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.datasets.Datasets;
@@ -49,7 +49,7 @@ public class KSTestTest {
 
     @Test
     public void testNormal() {
-        Norm d = new Norm(0, 1);
+        Normal d = new Normal(0, 1);
         Numeric sample = d.sample(1000);
         KSTest test = new KSTest("normal sample", sample, d);
         test.summary();
@@ -59,8 +59,8 @@ public class KSTestTest {
 
     @Test
     public void testUniform() {
-        Numeric sample = new Unif(0, 1).sample(1_000);
-        KSTest test = new KSTest("uniform sample", sample, new Norm(0, 1));
+        Numeric sample = new Uniform(0, 1).sample(1_000);
+        KSTest test = new KSTest("uniform sample", sample, new Normal(0, 1));
         test.summary();
         Assert.assertTrue(test.d() > 0.4);
         Assert.assertTrue(test.pValue() < 0.001);
@@ -70,7 +70,7 @@ public class KSTestTest {
     public void testStudentT() {
         StudentT d = new StudentT(3, 0, 1);
         Numeric sample = d.sample(1000);
-        KSTest test = new KSTest("studentT sample", sample, new Norm(0, 1));
+        KSTest test = new KSTest("studentT sample", sample, new Normal(0, 1));
         test.summary();
         Assert.assertTrue(test.d() > 0.04);
         Assert.assertTrue(test.pValue() < 0.01);

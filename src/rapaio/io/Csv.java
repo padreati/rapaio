@@ -27,9 +27,10 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 /**
+ * Comma separated file reader and writer utility.
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Csv {
 
     private boolean trimSpaces = true;
@@ -45,7 +46,6 @@ public class Csv {
 
     public Csv() {
         naValues.add("?");
-//        naValues.add("N/A");
     }
 
     public Csv withHeader(boolean hasHeader) {
@@ -138,10 +138,10 @@ public class Csv {
                     }
                     for (String colName : names) {
                         if (typeFieldHints.containsKey(colName)) {
-                            varSlots.add(new VarSlot(defaultTypes, typeFieldHints.get(colName)));
+                            varSlots.add(new VarSlot(this, typeFieldHints.get(colName)));
                         } else {
                             // default getType
-                            varSlots.add(new VarSlot(defaultTypes));
+                            varSlots.add(new VarSlot(this));
                         }
                     }
                 }
@@ -153,10 +153,6 @@ public class Csv {
                 if (rows == endRow) break;
                 rows++;
                 for (int i = 0; i < names.size(); i++) {
-                    if (row.size() <= i || naValues.contains(row.get(i))) {
-                        varSlots.get(i).addMissing();
-                        continue;
-                    }
                     varSlots.get(i).addValue(row.get(i));
                 }
             }
@@ -302,102 +298,102 @@ public class Csv {
         }
         return label;
     }
-}
 
-class VarSlot {
+    static class VarSlot {
 
-    private final VarType[] defaultTypes;
+        private final Csv parent;
 
-    private final VarType type;
-    private Var var;
-    private Text text;
+        private final VarType type;
+        private Var var;
+        private Text text;
 
-    /**
-     * Constructor for slot which does not have a predefined type, it tries the best by using default types
-     */
-    public VarSlot(VarType[] defaultTypes) {
-        this.defaultTypes = defaultTypes;
-        this.type = null;
-        this.var = defaultTypes[0].newInstance();
-        this.text = Text.newEmpty();
-    }
+        /**
+         * Constructor for slot which does not have a predefined type, it tries the best by using default types
+         */
+        public VarSlot(Csv parent) {
+            this.parent = parent;
+            this.type = null;
+            this.var = parent.defaultTypes[0].newInstance();
+            this.text = Text.newEmpty();
+        }
 
-    public VarSlot(VarType[] defaultTypes, VarType varType) {
-        this.defaultTypes = defaultTypes;
-        this.type = varType;
-        this.var = varType.newInstance();
-        this.text = null;
-    }
+        public VarSlot(Csv parent, VarType varType) {
+            this.parent = parent;
+            this.type = varType;
+            this.var = varType.newInstance();
+            this.text = null;
+        }
 
-    public void addValue(String value) {
-        if (type == null) {
+        public void addValue(String value) {
+            if (parent.naValues.contains(value)) {
+                value = "?";
+            }
+            if (type == null) {
 
-            // for default values
+                // for default values
 
-            while (true) {
+                while (true) {
 
-                // try first to add value to the current default type
-                try {
-                    var.addLabel(value);
-                    if (text != null) {
-                        text.addLabel(value);
-                    }
-                    return;
-                } catch (Throwable th) {
-                    // if it's the last default type, than nothing else could be done
-                    if (var.type() == defaultTypes[defaultTypes.length - 1]) {
-                        throw new IllegalArgumentException(
-                                String.format("Could not parse value %s in type %s. Error: %s",
-                                        value, var.type(), th.getMessage()));
-                    }
-                }
-
-                // have to find an upgrade
-                // find current default type position
-                int pos = 0;
-                for (int i = 0; i < defaultTypes.length; i++) {
-                    if (!defaultTypes[i].equals(var.type())) continue;
-                    pos = i + 1;
-                    break;
-                }
-
-                // try successive default type upgrades, if the last available fails also than throw an exception
-                for (int i = pos; i < defaultTypes.length; i++) {
+                    // try first to add value to the current default type
                     try {
-                        var = defaultTypes[i].newInstance();
-                        if (text != null && text.rowCount() > 0)
-                            text.stream().forEach(s -> var.addLabel(s.label()));
-                        if (i == defaultTypes.length - 1)
-                            text = null;
-                        break;
-                    } catch (Exception th) {
-                        if (i == defaultTypes.length - 1) {
+                        var.addLabel(value);
+                        if (text != null) {
+                            text.addLabel(value);
+                        }
+                        return;
+                    } catch (Throwable th) {
+                        // if it's the last default type, than nothing else could be done
+                        if (var.type() == parent.defaultTypes[parent.defaultTypes.length - 1]) {
                             throw new IllegalArgumentException(
                                     String.format("Could not parse value %s in type %s. Error: %s",
                                             value, var.type(), th.getMessage()));
                         }
                     }
+
+                    // have to find an upgrade
+                    // find current default type position
+                    int pos = 0;
+                    for (int i = 0; i < parent.defaultTypes.length; i++) {
+                        if (!parent.defaultTypes[i].equals(var.type())) continue;
+                        pos = i + 1;
+                        break;
+                    }
+
+                    // try successive default type upgrades, if the last available fails also than throw an exception
+                    for (int i = pos; i < parent.defaultTypes.length; i++) {
+                        try {
+                            var = parent.defaultTypes[i].newInstance();
+                            if (text != null && text.rowCount() > 0)
+                                text.stream().forEach(s -> var.addLabel(s.label()));
+                            if (i == parent.defaultTypes.length - 1)
+                                text = null;
+                            break;
+                        } catch (Exception th) {
+                            if (i == parent.defaultTypes.length - 1) {
+                                throw new IllegalArgumentException(
+                                        String.format("Could not parse value %s in type %s. Error: %s",
+                                                value, var.type(), th.getMessage()));
+                            }
+                        }
+                    }
+                }
+            } else {
+
+                // for non-default values
+
+                try {
+                    var.addLabel(value);
+                } catch (Throwable th) {
+                    throw new IllegalArgumentException(
+                            String.format("Could not parse value %s in type %s. Error: %s",
+                                    value, var.type(), th.getMessage()));
                 }
             }
-        } else {
+        }
 
-            // for non-default values
-
-            try {
-                var.addLabel(value);
-            } catch (Throwable th) {
-                throw new IllegalArgumentException(
-                        String.format("Could not parse value %s in type %s. Error: %s",
-                                value, var.type(), th.getMessage()));
-            }
+        public Var getVar() {
+            return var;
         }
     }
-
-    public void addMissing() {
-        var.addMissing();
-    }
-
-    public Var getVar() {
-        return var;
-    }
 }
+

@@ -33,7 +33,7 @@ import java.util.HashMap;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class UnifRandomSelectorTest {
+public class UniformRandomSelectorTest {
 
     @Test
     public void testNaive() {

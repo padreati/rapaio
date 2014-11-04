@@ -18,17 +18,14 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions.cu;
+package rapaio.core.distributions;
 
-import rapaio.printer.PrinterUtils;
-
-import java.text.DecimalFormat;
+import rapaio.printer.Printer;
 
 /**
  * @author Aurelian Tutuianu
  */
-@Deprecated
-public class Norm implements CUDistribution {
+public class Normal implements Distribution {
 
     private final double mu;
     private final double sd;
@@ -36,15 +33,19 @@ public class Norm implements CUDistribution {
 
     @Override
     public String getName() {
-        DecimalFormat f = PrinterUtils.getDecimalFormat();
-        return String.format("Norm(mu=%s, sd=%s)", f.format(mu), f.format(sd));
+        return String.format("Normal(mu=%s, sd=%s)", Printer.formatDecShort.format(mu), Printer.formatDecShort.format(sd));
     }
 
-    public Norm() {
+    @Override
+    public boolean isDiscrete() {
+        return false;
+    }
+
+    public Normal() {
         this(0, 1);
     }
 
-    public Norm(double mu, double sd) {
+    public Normal(double mu, double sd) {
         this.mu = mu;
         this.sd = sd;
         this.var = sd * sd;
@@ -173,7 +174,7 @@ public class Norm implements CUDistribution {
     }
 
     @Override
-    public double variance() {
+    public double var() {
         return var;
     }
 
@@ -185,5 +186,10 @@ public class Norm implements CUDistribution {
     @Override
     public double kurtosis() {
         return 0;
+    }
+
+    @Override
+    public double entropy() {
+        return Math.log(2 * Math.PI * Math.E * var);
     }
 }

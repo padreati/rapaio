@@ -18,10 +18,9 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions.du;
+package rapaio.core.distributions;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import rcaller.RCaller;
 import rcaller.RCode;
@@ -32,7 +31,7 @@ import java.util.stream.IntStream;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class BinomTest {
+public class BinomialTest {
 
     private double[] compute(String cmd, int n, double p, double factor) {
 
@@ -54,7 +53,7 @@ public class BinomTest {
     public void testPdf() throws Exception {
         BiConsumer<Integer, Double> f = (n, p) -> {
             double[] r = compute("dbinom", n, p, 1);
-            double[] j = IntStream.rangeClosed(0, n).mapToDouble(new Binom(p, n)::pmf).toArray();
+            double[] j = IntStream.rangeClosed(0, n).mapToDouble(new Binomial(p, n)::pdf).toArray();
             Assert.assertArrayEquals(r, j, 1e-14);
         };
         f.accept(10, 0.01);
@@ -80,7 +79,7 @@ public class BinomTest {
     public void testCdf() throws Exception {
         BiConsumer<Integer, Double> f = (n, p) -> {
             double[] r = compute("pbinom", n, p, 1);
-            double[] j = IntStream.rangeClosed(0, n).mapToDouble(new Binom(p, n)::cdf).toArray();
+            double[] j = IntStream.rangeClosed(0, n).mapToDouble(new Binomial(p, n)::cdf).toArray();
             Assert.assertArrayEquals(r, j, 1e-12);
         };
         f.accept(10, 0.01);
@@ -106,7 +105,7 @@ public class BinomTest {
     public void testQuantile() throws Exception {
         BiConsumer<Integer, Double> f = (n, p) -> {
             double[] r = compute("qbinom", n, p, n);
-            double[] j = IntStream.rangeClosed(0, n).mapToDouble(i -> i/(1.0*n)).map(new Binom(p, n)::quantile).toArray();
+            double[] j = IntStream.rangeClosed(0, n).mapToDouble(i -> i / (1.0 * n)).map(new Binomial(p, n)::quantile).toArray();
             Assert.assertArrayEquals(r, j, 1e-14);
         };
         f.accept(10, 0.01);

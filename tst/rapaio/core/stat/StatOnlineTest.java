@@ -22,7 +22,7 @@ package rapaio.core.stat;
 
 import org.junit.Test;
 import rapaio.WS;
-import rapaio.core.distributions.cu.Norm;
+import rapaio.core.distributions.Normal;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
@@ -45,7 +45,7 @@ public class StatOnlineTest {
         setPrinter(new LocalPrinter());
 
         int LEN = 1_000;
-        Var v = new Norm(0, 1).sample(LEN);
+        Var v = new Normal(0, 1).sample(LEN);
 
         StatOnline statOnline = new StatOnline();
 

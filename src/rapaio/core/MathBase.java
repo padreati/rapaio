@@ -20,7 +20,7 @@
 
 package rapaio.core;
 
-import rapaio.core.distributions.cu.Norm;
+import rapaio.core.distributions.Normal;
 
 /**
  * Utility class which simplifies access to common java math utilities and also
@@ -284,7 +284,7 @@ public class MathBase {
      * @return the erf of x
      */
     public static double erf(double x) {
-        return 2 * new Norm(0, 1).cdf(x * Math.sqrt(2.0)) - 1;
+        return 2 * new Normal(0, 1).cdf(x * Math.sqrt(2.0)) - 1;
     }
 
     /**
@@ -300,7 +300,7 @@ public class MathBase {
      * @return the invErf of x
      */
     public static double inverf(double x) {
-        return new Norm(0, 1).quantile(x / 2 + 0.5) / Math.sqrt(2.0);
+        return new Normal(0, 1).quantile(x / 2 + 0.5) / Math.sqrt(2.0);
     }
 
     /**
@@ -314,7 +314,7 @@ public class MathBase {
      * @return the erf of x
      */
     public static double erfc(double x) {
-        return 2 * new Norm(0, 1).cdf(-x * Math.sqrt(2.0));
+        return 2 * new Normal(0, 1).cdf(-x * Math.sqrt(2.0));
     }
 
     /**
@@ -330,7 +330,7 @@ public class MathBase {
      * @return the invErf of x
      */
     public static double inverfc(double x) {
-        return new Norm(0, 1).quantile(x / 2) / -Math.sqrt(2.0);
+        return new Normal(0, 1).quantile(x / 2) / -Math.sqrt(2.0);
     }
 
     /**

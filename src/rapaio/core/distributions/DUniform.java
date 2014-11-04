@@ -18,43 +18,50 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions.du;
+package rapaio.core.distributions;
 
 /**
- * @author tutuianu
+ * Discrete uniform distribution
+ *
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
-public class DUnif implements DUDistribution {
+public class DUniform implements Distribution {
 
-    private final int a;
-    private final int b;
+    private final double a;
+    private final double b;
+    private final double n;
 
-    public DUnif(int a, int b) {
+    public DUniform(int a, int b) {
         this.a = a;
         this.b = b;
+        this.n = b - a + 1;
+    }
+
+    public boolean isDiscrete() {
+        return true;
     }
 
     public int getA() {
-        return a;
+        return (int) a;
     }
 
     public int getB() {
-        return b;
+        return (int) b;
     }
 
     @Override
     public String getName() {
-        return String.format("DUnif(a=%d,b=%d)", a, b);
+        return String.format("DUniform(a=%d,b=%d)", (int) a, (int) b);
     }
 
     @Override
-    public double pmf(double x) {
+    public double pdf(double x) {
         double rint = Math.rint(x);
         if (!Double.isNaN(x) && !Double.isInfinite(x) && x == rint) {
             if (x < a || x > b) {
                 return 0;
             }
-            return 1 / (b - a + 1.);
+            return 1 / n;
         }
         return 0;
     }
@@ -67,7 +74,7 @@ public class DUnif implements DUDistribution {
         if (x > b) {
             return 1;
         }
-        return (Math.floor(x) - a + 1) / (b - a + 1);
+        return (Math.floor(x) - a + 1) / n;
     }
 
     @Override
@@ -75,10 +82,10 @@ public class DUnif implements DUDistribution {
         if (p < 0 || p > 1) {
             throw new ArithmeticException("Probability must be interface the range [0,1], not " + p);
         }
-        if (a == b && p == 1) {
+        if (a == b) {
             return a;
         }
-        return (int) (a + p * (b - a + 1));
+        return (int) Math.floor(a + p * n - 1);
     }
 
     @Override
@@ -93,18 +100,18 @@ public class DUnif implements DUDistribution {
 
     @Override
     public double mean() {
-        return (b - a) / 2.;
+        return (a + b) / 2;
     }
 
     @Override
     public double mode() {
-        return mean();
+        return Double.NaN;
     }
 
+
     @Override
-    public double variance() {
-        double n = b - a + 1;
-        return (n * 2 - 1) / 12.;
+    public double var() {
+        return (n * n - 1) / 12.;
     }
 
     @Override
@@ -114,7 +121,11 @@ public class DUnif implements DUDistribution {
 
     @Override
     public double kurtosis() {
-        double len = (b - a);
-        return -6. * (Math.pow(len, 2) + 1) / (5. * (Math.pow(len, 2) - 1));
+        return -6. * (n * n + 1) / (5. * (n * n - 1));
+    }
+
+    @Override
+    public double entropy() {
+        return Math.log(n);
     }
 }

@@ -27,7 +27,6 @@ import rapaio.data.Mapping;
 import rapaio.data.Numeric;
 import rapaio.data.stream.FSpot;
 import rapaio.util.Pair;
-import rapaio.util.SPredicate;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.Serializable;

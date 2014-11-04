@@ -20,17 +20,6 @@
 
 package rapaio.ml.classifier.meta;
 
-import rapaio.data.*;
-import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.Classifier;
-import rapaio.ml.classifier.RunningClassifier;
-import rapaio.data.stream.FSpot;
-import rapaio.util.SPredicate;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */

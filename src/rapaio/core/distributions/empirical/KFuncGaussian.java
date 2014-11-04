@@ -20,7 +20,7 @@
 
 package rapaio.core.distributions.empirical;
 
-import rapaio.core.distributions.cu.Norm;
+import rapaio.core.distributions.Normal;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -28,7 +28,7 @@ import rapaio.core.distributions.cu.Norm;
 @Deprecated
 public class KFuncGaussian implements KFunc {
 
-    private final Norm normal = new Norm();
+    private final Normal normal = new Normal();
 
     @Override
     public double pdf(double x, double x0, double bandwidth) {

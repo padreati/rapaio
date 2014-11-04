@@ -18,7 +18,9 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions.cu;
+package rapaio.core.distributions;
+
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import static rapaio.core.MathBase.*;
 
@@ -26,7 +28,7 @@ import static rapaio.core.MathBase.*;
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
-public class StudentT implements CUDistribution {
+public class StudentT implements Distribution {
 
     private final double df;
     private final double mu;
@@ -45,6 +47,11 @@ public class StudentT implements CUDistribution {
     @Override
     public String getName() {
         return "Student-T(df=" + df + ", mu=" + mu + ", sigma=" + sigma + ")";
+    }
+
+    @Override
+    public boolean isDiscrete() {
+        return false;
     }
 
     @Override
@@ -107,7 +114,7 @@ public class StudentT implements CUDistribution {
     }
 
     @Override
-    public double variance() {
+    public double var() {
         if (df <= 1) {
             return Double.NaN;
         }
@@ -126,5 +133,11 @@ public class StudentT implements CUDistribution {
             return Double.POSITIVE_INFINITY;
         }
         return 6 / (df - 4);
+    }
+
+    @Override
+    public double entropy() {
+        // take a look at the wiki page - it's scary
+        throw new NotImplementedException();
     }
 }

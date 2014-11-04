@@ -20,7 +20,7 @@
 
 package rapaio.graphics;
 
-import rapaio.core.distributions.cu.CUDistribution;
+import rapaio.core.distributions.Distribution;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.graphics.plot.Points;
@@ -38,7 +38,7 @@ public class QQPlot extends Plot {
         xLab("Theoretical Quantiles");
     }
 
-    public QQPlot add(Var points, CUDistribution distribution) {
+    public QQPlot add(Var points, Distribution distribution) {
         Var x = sort(points);
         Var y = Numeric.newEmpty(x.rowCount());
         for (int i = 0; i < y.rowCount(); i++) {

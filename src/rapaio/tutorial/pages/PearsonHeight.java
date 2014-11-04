@@ -21,7 +21,7 @@
 package rapaio.tutorial.pages;
 
 import rapaio.core.correlation.PearsonRCorrelation;
-import rapaio.core.distributions.cu.Norm;
+import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
 import rapaio.core.stat.Variance;
@@ -72,10 +72,10 @@ public class PearsonHeight implements TutorialPage {
         p("First we take a look at the histograms for the two dimensions");
 
         for (int i = 0; i < df.varCount(); i++) {
-            Norm norm = new Norm(new Mean(df.var(i)).value(), Math.sqrt(new Variance(df.var(i)).getValue()));
+            Normal normal = new Normal(new Mean(df.var(i)).value(), Math.sqrt(new Variance(df.var(i)).getValue()));
             draw(new Plot()
                             .add(new Histogram(df.var(i)).bins(23).prob(true).minValue(57).maxValue(80))
-                            .add(new FunctionLine(norm::pdf).color(2))
+                            .add(new FunctionLine(normal::pdf).color(2))
                             .xLab(df.varNames()[i])
                             .xLim(57, 80).yLim(0, 0.20),
                     700, 300
@@ -94,7 +94,7 @@ public class PearsonHeight implements TutorialPage {
 
         for (int i = 0; i < df.varCount(); i++) {
             final Var col = df.var(i);
-            Norm normal = new Norm();
+            Normal normal = new Normal();
             draw(new QQPlot().add(col, normal).yLab(df.varNames()[i]), 500, 300);
         }
 

@@ -18,41 +18,40 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions.du;
+package rapaio.core.distributions;
 
-import jdistlib.Normal;
 import rapaio.core.MathBase;
-import rapaio.core.distributions.cu.Norm;
 
 import static java.lang.Math.*;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
 import static jdistlib.math.Constants.DBL_EPSILON;
-import static jdistlib.math.MathFunctions.isInfinite;
-import static rapaio.core.Constants.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 @Deprecated
-public class Binom implements DUDistribution {
+public class Binomial implements Distribution {
 
 
     private final double p;
     private final double n;
 
-    public Binom(double p, double n) {
+    public Binomial(double p, double n) {
         this.p = p;
         this.n = n;
     }
 
     @Override
-    public String getName() {
-        return "Bin(p=" + ((int) p) + ",n=" + ((int) n) + ")";
+    public boolean isDiscrete() {
+        return true;
     }
 
     @Override
-    public double pmf(double x) {
+    public String getName() {
+        return "Binomial(p=" + ((int) p) + ",n=" + ((int) n) + ")";
+    }
+
+    @Override
+    public double pdf(double x) {
         if (x < min() || x > max()) return 0;
         return Math.exp(MathBase.logBinomial(x, n, p));
     }
@@ -100,13 +99,13 @@ public class Binom implements DUDistribution {
         if (p + 1.01 * DBL_EPSILON >= 1.) return n;
 
 		/* y := approx.value (Cornish-Fisher expansion) :  */
-        z = new Norm(0, 1).quantile(p);
+        z = new Normal(0, 1).quantile(p);
         //y = floor(mu + sigma * (z + gamma * (z*z - 1) / 6) + 0.5);
         y = rint(mu + sigma * (z + gamma * (z * z - 1) / 6));
 
         if (y > n) /* way off */ y = n;
 
-        z = new Binom(pr, n).cdf(y);
+        z = new Binomial(pr, n).cdf(y);
 
 		/* fuzz to ensure left continuity: */
         p *= 1 - 64 * DBL_EPSILON;
@@ -129,7 +128,7 @@ public class Binom implements DUDistribution {
         if (z[0] >= p) {
             /* search to the left */
             while (true) {
-                double newz = new Binom(pr, n).cdf(y - incr);
+                double newz = new Binomial(pr, n).cdf(y - incr);
                 if (y == 0 || newz < p)
                     return y;
                 y = Math.max(0, y - incr);
@@ -138,7 +137,7 @@ public class Binom implements DUDistribution {
         } else {		/* search to the right */
             while (true) {
                 y = Math.min(y + incr, n);
-                if (y == n || (z[0] = new Binom(pr, n).cdf(y)) >= p)
+                if (y == n || (z[0] = new Binomial(pr, n).cdf(y)) >= p)
                     return y;
             }
         }
@@ -163,13 +162,13 @@ public class Binom implements DUDistribution {
     @Override
     public double mode() {
         double low = Math.floor((n + 1) * p);
-        double p1 = pmf(low - 1);
-        double p2 = pmf(low);
+        double p1 = pdf(low - 1);
+        double p2 = pdf(low);
         return (p1 > p2) ? low - 1 : low;
     }
 
     @Override
-    public double variance() {
+    public double var() {
         return n * p * (1 - p);
     }
 
@@ -181,5 +180,21 @@ public class Binom implements DUDistribution {
     @Override
     public double kurtosis() {
         return (1 - 6 * p * (1 - p)) / (n * p * (1 - p));
+    }
+
+    /**
+     * The wikipedia dedicated page (http://en.wikipedia.org/wiki/Binomial_distribution)
+     * states that entropy for binomial is:
+     * $$\frac1 2 \log_2 \big( 2\pi e\, np(1-p) \big) + O \left( \frac{1}{n} \right)$$
+     * <p>
+     * According to this page is lighter to use an approximation. The following page
+     * http://math.stackexchange.com/questions/244455/entropy-of-a-binomial-distribution
+     * documents how this entropy is approximated.
+     *
+     * @return entropy value
+     */
+    @Override
+    public double entropy() {
+        return Math.log(2 * Math.PI * Math.E * n * p * (1 - p)) / (2.0 * Math.log(2));
     }
 }

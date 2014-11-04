@@ -230,7 +230,16 @@ public final class Binary extends AbstractVar {
             setMissing(row);
             return;
         }
-        setBinary(row, "true".equalsIgnoreCase(value) || "1".equals(value));
+        if ("true".equalsIgnoreCase(value) || "1".equals(value)) {
+            setBinary(row, true);
+            return;
+        }
+        if ("false".equalsIgnoreCase(value) || "0".equals(value)) {
+            setBinary(row, false);
+            return;
+        }
+        throw new IllegalArgumentException(
+                String.format("The value %s could not be converted to a binary value", value));
     }
 
     @Override

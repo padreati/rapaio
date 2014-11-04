@@ -18,13 +18,13 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions.du;
+package rapaio.core.distributions;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 @Deprecated
-public class Ber implements DUDistribution {
+public class Ber implements Distribution {
 
     private final double theta;
 
@@ -33,12 +33,17 @@ public class Ber implements DUDistribution {
     }
 
     @Override
+    public boolean isDiscrete() {
+        return true;
+    }
+
+    @Override
     public String getName() {
         return "Ber(theta=" + theta + ")";
     }
 
     @Override
-    public double pmf(double x) {
+    public double pdf(double x) {
         return x < 1 ? 1 - theta : theta;
     }
 
@@ -81,7 +86,7 @@ public class Ber implements DUDistribution {
     }
 
     @Override
-    public double variance() {
+    public double var() {
         return theta * (1 - theta);
     }
 
@@ -94,5 +99,10 @@ public class Ber implements DUDistribution {
     public double kurtosis() {
         double prod = (1 - theta) * theta;
         return (1 - 6 * prod) / prod;
+    }
+
+    @Override
+    public double entropy() {
+        return -theta * Math.log(theta) - (1 - theta) * Math.log(1 - theta);
     }
 }

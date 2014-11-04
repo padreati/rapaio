@@ -200,7 +200,8 @@ public final class Index extends AbstractVar {
     @Override
     public void addIndex(int value) {
         ensureCapacityInternal(rows + 1);
-        data[rows++] = value;
+        data[rows] = value;
+        rows++;
     }
 
     @Override
@@ -220,16 +221,26 @@ public final class Index extends AbstractVar {
 
     @Override
     public String label(int row) {
+        if (missing(row))
+            return "?";
         return String.valueOf(index(row));
     }
 
     @Override
     public void setLabel(int row, String value) {
+        if ("?".equals(value)) {
+            setMissing(row);
+            return;
+        }
         setIndex(row, Integer.parseInt(value));
     }
 
     @Override
     public void addLabel(String value) {
+        if ("?".equals(value)) {
+            addMissing();
+            return;
+        }
         addIndex(Integer.parseInt(value));
     }
 

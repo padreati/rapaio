@@ -21,7 +21,6 @@
 package rapaio.core.distributions;
 
 import org.junit.Test;
-import rapaio.core.distributions.cu.Norm;
 import rapaio.data.Frame;
 import rapaio.data.filters.BaseFilters;
 import rapaio.io.Csv;
@@ -35,19 +34,19 @@ import static org.junit.Assert.assertFalse;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class NormTest {
+public class NormalTest {
 
     private static final double ERROR = 1e-9;
     private Frame df;
 
-    public NormTest() throws IOException, URISyntaxException {
+    public NormalTest() throws IOException, URISyntaxException {
         df = new Csv().withHeader(false).withSeparatorChar(' ').read(this.getClass(), "standard_normal.csv");
         df = BaseFilters.toNumeric(df);
     }
 
     @Test
     public void testStandardQuantile() {
-        Norm d = new Norm();
+        Normal d = new Normal();
         double step = 0.0001;
         double q = 0;
         int pos = 0;
@@ -73,7 +72,7 @@ public class NormTest {
 
     @Test
     public void testExceptions() {
-        Norm dist = new Norm();
+        Normal dist = new Normal();
         try {
             dist.cdf(Double.NaN);
             assertFalse(true);
@@ -98,7 +97,7 @@ public class NormTest {
 
     @Test
     public void testAttributes() {
-        Norm distr = new Norm(1, 1);
+        Normal distr = new Normal(1, 1);
         assertEquals(1., distr.getMu(), ERROR);
         assertEquals(1., distr.getVar(), ERROR);
     }

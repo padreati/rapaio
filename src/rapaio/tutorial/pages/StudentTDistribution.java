@@ -20,8 +20,8 @@
 
 package rapaio.tutorial.pages;
 
-import rapaio.core.distributions.cu.Norm;
-import rapaio.core.distributions.cu.StudentT;
+import rapaio.core.distributions.Normal;
+import rapaio.core.distributions.StudentT;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.FunctionLine;
 
@@ -78,7 +78,7 @@ public class StudentTDistribution implements TutorialPage {
         p("The probability density of a standard normal densities "
                 + "looks like this: ");
 
-        draw(new Plot().add(new FunctionLine(new Norm()::pdf).color(1))
+        draw(new Plot().add(new FunctionLine(new Normal()::pdf).color(1))
                 .xLim(-4, 4)
                 .xLim(-4, 4)
                 .yLim(0, 0.5));
@@ -114,7 +114,7 @@ public class StudentTDistribution implements TutorialPage {
                 + "to repeat the experiments enough time. ");
 
         draw(new Plot()
-                .add(new FunctionLine(new Norm()::pdf).color(1))
+                .add(new FunctionLine(new Normal()::pdf).color(1))
                 .add(new FunctionLine(new StudentT(3)::pdf))
                 .xLim(-4, 4)
                 .yLim(0, 0.5));

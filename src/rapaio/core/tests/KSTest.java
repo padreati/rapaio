@@ -21,7 +21,7 @@
 package rapaio.core.tests;
 
 import rapaio.core.Printable;
-import rapaio.core.distributions.cu.CUDistribution;
+import rapaio.core.distributions.Distribution;
 import rapaio.data.Var;
 import rapaio.data.filters.BaseFilters;
 
@@ -36,7 +36,7 @@ import rapaio.data.filters.BaseFilters;
 @Deprecated
 public class KSTest implements Printable {
 
-    private final CUDistribution cdf;
+    private final Distribution cdf;
     private final Var v1;
     private final Var v2;
     private double D; // maximum distance between ECDF1 and F, or ECDF1 and ECFD2
@@ -54,7 +54,7 @@ public class KSTest implements Printable {
      *
      * @param cdf the densities to compare against
      */
-    public KSTest(String testName, Var sample, CUDistribution cdf) {
+    public KSTest(String testName, Var sample, Distribution cdf) {
         this.testName = testName;
         this.v1 = BaseFilters.sort(sample);
         this.cdf = cdf;

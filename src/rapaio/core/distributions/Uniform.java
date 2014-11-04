@@ -18,18 +18,21 @@
  *    limitations under the License.
  */
 
-package rapaio.core.distributions.cu;
+package rapaio.core.distributions;
+
+import rapaio.printer.Printer;
 
 /**
- * @author tutuianu
+ * Continuous uniform distribution
+ *
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
-public class Unif implements CUDistribution {
+public class Uniform implements Distribution {
 
     private final double a;
     private final double b;
 
-    public Unif(double a, double b) {
+    public Uniform(double a, double b) {
         this.a = a;
         this.b = b;
     }
@@ -44,7 +47,14 @@ public class Unif implements CUDistribution {
 
     @Override
     public String getName() {
-        return "Continuous Uniform Distribution";
+        return String.format("Uniform(a=%s,b=%s)",
+                Printer.formatDecShort.format(getA()),
+                Printer.formatDecShort.format(getB()));
+    }
+
+    @Override
+    public boolean isDiscrete() {
+        return false;
     }
 
     @Override
@@ -53,7 +63,7 @@ public class Unif implements CUDistribution {
             return 0;
         }
         if (a == b) {
-            return 0;
+            return 1;
         }
         return 1 / (b - a);
     }
@@ -72,7 +82,7 @@ public class Unif implements CUDistribution {
     @Override
     public double quantile(double p) {
         if (p < 0 || p > 1) {
-            throw new ArithmeticException("probability value should lie in [0,1] interval");
+            throw new IllegalArgumentException("probability value should lie in [0,1] interval");
         }
         return a + p * (b - a);
     }
@@ -89,7 +99,7 @@ public class Unif implements CUDistribution {
 
     @Override
     public double mean() {
-        return a + (b - a) / 2.;
+        return a + (b - a) / 2.0;
     }
 
     @Override
@@ -98,8 +108,8 @@ public class Unif implements CUDistribution {
     }
 
     @Override
-    public double variance() {
-        return Math.pow(b - a, 2) / 12.;
+    public double var() {
+        return Math.pow(b - a, 2) / 12.0;
     }
 
     @Override
@@ -109,6 +119,11 @@ public class Unif implements CUDistribution {
 
     @Override
     public double kurtosis() {
-        return -6. / 5.;
+        return -6.0 / 5.0;
+    }
+
+    @Override
+    public double entropy() {
+        return Math.log(b - a);
     }
 }
