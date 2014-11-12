@@ -41,7 +41,7 @@ public class BoxCoxTransform implements Transform {
     public void scale(Frame df) {
         for (String colName : colNames) {
             double gm = gm(df.var(colName));
-            df.var(colName).stream().transformValue(
+            df.var(colName).stream().transValue(
                     x -> (lambda == 0) ?
                             gm * Math.log(x) :
                             (Math.pow(x, lambda) - 1.0) / (lambda * Math.pow(gm, lambda - 1))

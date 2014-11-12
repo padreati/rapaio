@@ -20,13 +20,16 @@
 
 package rapaio.data.stream;
 
-import rapaio.data.Var;
 import rapaio.data.MappedVar;
 import rapaio.data.Mapping;
+import rapaio.data.Var;
 import rapaio.util.Pin;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Optional;
+import java.util.Spliterator;
 import java.util.function.*;
 import java.util.stream.*;
 
@@ -291,24 +294,33 @@ public class VSpots implements Stream<VSpot>, Serializable {
      * Applies a given transformation to all the numerical values of the underlying variable
      * @param trans given transformation
      */
-    public void transformValue(Function<Double, Double> trans) {
-        stream.forEach(spot -> spot.var().setValue(spot.row(), trans.apply(spot.value())));
+    public VSpots transValue(Function<Double, Double> trans) {
+        return new VSpots(stream.map(spot -> {
+            spot.setValue(trans.apply(spot.value()));
+            return spot;
+        }));
     }
 
     /**
      * Applies a given transformation to all index values of the underlying variable
      * @param trans given transformation
      */
-    public void transformIndex(Function<Integer, Integer> trans) {
-        stream.forEach(spot -> spot.var().setIndex(spot.row(), trans.apply(spot.index())));
+    public VSpots transIndex(Function<Integer, Integer> trans) {
+        return new VSpots(stream.map(spot -> {
+            spot.setIndex(trans.apply(spot.index()));
+            return spot;
+        }));
     }
 
     /**
      * Applies a given transformation to all label values of the underlying variable
      * @param trans given transformation
      */
-    public void transformLabel(Function<String, String> trans) {
-        stream.forEach(spot -> spot.var().setLabel(spot.row(), trans.apply(spot.label())));
+    public VSpots transLabel(Function<String, String> trans) {
+        return new VSpots(stream.map(spot -> {
+            spot.setLabel(trans.apply(spot.label()));
+            return spot;
+        }));
     }
 
     /**

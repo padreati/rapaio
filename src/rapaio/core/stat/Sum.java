@@ -22,6 +22,7 @@ package rapaio.core.stat;
 
 import rapaio.core.Printable;
 import rapaio.data.Var;
+import rapaio.printer.Printer;
 
 import static rapaio.core.MathBase.validNumber;
 
@@ -32,18 +33,17 @@ import static rapaio.core.MathBase.validNumber;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Sum implements Printable {
 
-    private final Var var;
+    private final String varName;
     private final double value;
 
     public Sum(Var var) {
-        this.var = var;
-        this.value = compute();
+        this.varName = var.name();
+        this.value = compute(var);
     }
 
-    private double compute() {
+    private double compute(Var var) {
         double sum = 0;
         for (int i = 0; i < var.rowCount(); i++) {
             if (validNumber(var.value(i))) {
@@ -59,6 +59,6 @@ public class Sum implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append(String.format("> sum\n%.10f\n", value));
+        sb.append(String.format("> sum[%s]\n%sf\n", varName, Printer.formatDecLong.format(value)));
     }
 }

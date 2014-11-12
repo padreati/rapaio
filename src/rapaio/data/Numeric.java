@@ -160,6 +160,22 @@ public final class Numeric extends AbstractVar {
         return new Numeric(1, 1, value);
     }
 
+    public static Numeric newSeq(double end) {
+        return newSeq(0, end);
+    }
+
+    public static Numeric newSeq(double start, double end) {
+        return newSeq(start, end, 1.0);
+    }
+
+    public static Numeric newSeq(double start, double end, double step) {
+        Numeric num = Numeric.newEmpty();
+        while (start <= end) {
+            num.addValue(start);
+            start += step;
+        }
+        return num;
+    }
     // private constructor
 
     @Override

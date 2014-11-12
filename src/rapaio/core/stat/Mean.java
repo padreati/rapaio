@@ -22,6 +22,7 @@ package rapaio.core.stat;
 
 import rapaio.core.Printable;
 import rapaio.data.Var;
+import rapaio.printer.Printer;
 
 /**
  * Compensated version of arithmetic mean of values from a {@code Vector}.
@@ -60,6 +61,6 @@ public final class Mean implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append(String.format("> mean['%s']\n%.10f\n", varName, value));
+        sb.append(String.format("> mean['%s']\n%s\n", varName, Printer.formatDecLong.format(value)));
     }
 }

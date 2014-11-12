@@ -137,4 +137,14 @@ public abstract class PlotComponent extends BaseFigure {
     public float getAlpha() {
         return super.getAlpha();
     }
+
+    @Override
+    public PlotComponent xLab(String label) {
+        return (PlotComponent) super.xLab(label);
+    }
+
+    @Override
+    public PlotComponent yLab(String label) {
+        return (PlotComponent) super.yLab(label);
+    }
 }

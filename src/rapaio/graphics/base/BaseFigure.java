@@ -147,7 +147,7 @@ public abstract class BaseFigure implements Figure {
     // size
 
     protected Var getDefaultSize() {
-        return Numeric.newScalar(2.5);
+        return Numeric.newScalar(3);
     }
 
     public BaseFigure sz(Var sizeIndex) {

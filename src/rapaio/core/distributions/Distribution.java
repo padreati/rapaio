@@ -88,6 +88,10 @@ public interface Distribution {
      */
     double max();
 
+    default double sampleNext() {
+        return quantile(RandomSource.nextDouble());
+    }
+
     /**
      * Generate a sample for this densities
      *

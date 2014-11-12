@@ -20,7 +20,6 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.core.sample.DiscreteSampling;
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.pch.PchPalette;
@@ -42,6 +41,14 @@ public class Points extends PlotComponent {
     public Points(Var x, Var y) {
         this.x = x;
         this.y = y;
+    }
+
+    @Override
+    public void initialize() {
+        if (parent != null) {
+            parent.xLab(x.name());
+            parent.yLab(y.name());
+        }
     }
 
     @Override

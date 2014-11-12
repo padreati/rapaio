@@ -20,7 +20,6 @@
 
 package rapaio.data.stream;
 
-import junit.framework.Assert;
 import org.junit.Test;
 import rapaio.core.stat.Sum;
 import rapaio.data.Numeric;
@@ -37,7 +36,7 @@ public class VSpotTest {
     public void testNumericStream() {
         Var x = Numeric.newWrapOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         Var y = x.solidCopy();
-        y.stream().transformValue(Math::sqrt);
+        y.stream().transValue(Math::sqrt);
 
         double v = 0;
         for (int i = 0; i < 10; i++) {

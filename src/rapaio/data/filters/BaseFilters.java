@@ -27,6 +27,7 @@ import rapaio.data.stream.VSpot;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Provides filters for frames.
@@ -383,5 +384,21 @@ public final class BaseFilters implements Serializable {
         }
         Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
         return MappedVar.newByRows(var, Mapping.newWrapOf(mapping));
+    }
+
+    public static Numeric trans(Var var, Function<Double, Double> f) {
+        return trans(var, f, "f");
+    }
+
+    public static Numeric trans(Var var, Function<Double, Double> f, String fName) {
+        Numeric t = Numeric.newEmpty().withName(fName + "(" + var.name() + ")");
+        var.stream().forEach(s -> {
+            if (s.missing()) {
+                t.addMissing();
+            } else {
+                t.addValue(f.apply(s.value()));
+            }
+        });
+        return t;
     }
 }

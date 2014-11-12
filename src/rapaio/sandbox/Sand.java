@@ -1,22 +1,34 @@
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package rapaio.sandbox;
 
-import rapaio.WS;
-import rapaio.data.Frame;
-import rapaio.data.filters.BaseFilters;
-import rapaio.datasets.CBenchmark;
-import rapaio.datasets.CTask;
-import rapaio.datasets.Datasets;
+import rapaio.core.distributions.Binomial;
 import rapaio.graphics.Plot;
-import rapaio.graphics.plot.Points;
+import rapaio.graphics.plot.FunctionLine;
 import rapaio.printer.LocalPrinter;
-import rapaio.ws.Summary;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
+
+import static rapaio.WS.draw;
+import static rapaio.WS.setPrinter;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -24,26 +36,9 @@ import java.util.stream.Collectors;
 public class Sand {
     public static void main(String[] args) throws IOException {
 
-        WS.setPrinter(new LocalPrinter());
+        setPrinter(new LocalPrinter());
 
-        Frame df = BaseFilters.retainNominal(Datasets.loadMushrooms());
-        String[] targetVars = df.varNames();
-
-        Map<String, String[]> dict = new HashMap<>();
-        Arrays.stream(targetVars).forEach(s -> dict.put(s, df.var(s).dictionary()));
-
-        System.out.println(dict.keySet());
-
-        Map<String, String[]> dict2 = Arrays.stream(targetVars).collect(Collectors.toMap(s->s, s->df.var(s).dictionary()));
-
-        System.out.println("=============");
-        for(String key: dict.keySet()) {
-            System.out.println(key + Arrays.toString(dict.get(key)));
-        }
-        System.out.println("=============");
-        for(String key: dict2.keySet()) {
-            System.out.println(key + Arrays.toString(dict2.get(key)));
-        }
+        draw(new Plot().add(new FunctionLine(new Binomial(0.1, 30)::pdf)).xLim(0, 20));
     }
 
 }

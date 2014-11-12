@@ -38,13 +38,13 @@ public class ShiftTransform implements Transform {
 
     public void scale(Frame df) {
         for (String colName : colNames) {
-            df.var(colName).stream().transformValue(x -> x - shift);
+            df.var(colName).stream().transValue(x -> x - shift);
         }
     }
 
     public void unscale(Frame df) {
         for (String colName : colNames) {
-            df.var(colName).stream().transformValue(x -> x + shift);
+            df.var(colName).stream().transValue(x -> x + shift);
         }
     }
 }
