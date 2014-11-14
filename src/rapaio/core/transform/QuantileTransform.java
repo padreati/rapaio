@@ -88,7 +88,7 @@ public class QuantileTransform implements Transform {
         }
     }
 
-    public void unscale(Frame df) {
+    public void unScale(Frame df) {
         for (String colName : colNames) {
             Var col = df.var(colName);
             double[] vals = values.get(colName);

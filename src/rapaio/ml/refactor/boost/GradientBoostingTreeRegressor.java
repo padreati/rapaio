@@ -20,12 +20,8 @@
 
 package rapaio.ml.refactor.boost;
 
-import rapaio.data.VarRange;
-import rapaio.core.sample.DiscreteSampling;
+import rapaio.core.sample.Sampling;
 import rapaio.data.*;
-import rapaio.data.MappedFrame;
-import rapaio.data.MappedVar;
-import rapaio.data.Mapping;
 import rapaio.ml.refactor.boost.gbt.BTRegressor;
 import rapaio.ml.refactor.boost.gbt.BoostingLossFunction;
 import rapaio.ml.refactor.boost.gbt.L1BoostingLossFunction;
@@ -158,7 +154,7 @@ public class GradientBoostingTreeRegressor implements Regressor {
             Mapping bootstrapMapping = null;
             if (bootstrap != 1) {
                 bootstrapMapping = Mapping.newEmpty();
-                int[] sample = new DiscreteSampling().sampleWOR((int) (bootstrap * xmLearn.rowCount()), xmLearn.rowCount());
+                int[] sample = new Sampling().sampleWOR((int) (bootstrap * xmLearn.rowCount()), xmLearn.rowCount());
                 for (int aSample : sample) {
                     bootstrapMapping.add(aSample);
                 }
@@ -224,7 +220,7 @@ public class GradientBoostingTreeRegressor implements Regressor {
             Mapping bootstrapMapping = null;
             if (bootstrap != 1) {
                 bootstrapMapping = Mapping.newEmpty();
-                int[] sample = new DiscreteSampling().sampleWOR((int) (bootstrap * xmLearn.rowCount()), xmLearn.rowCount());
+                int[] sample = new Sampling().sampleWOR((int) (bootstrap * xmLearn.rowCount()), xmLearn.rowCount());
                 for (int aSample : sample) {
                     bootstrapMapping.add(aSample);
                 }

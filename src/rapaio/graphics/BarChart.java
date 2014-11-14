@@ -24,7 +24,7 @@ import rapaio.data.Index;
 import rapaio.data.Nominal;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.graphics.base.BaseFigure;
+import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
 
@@ -36,7 +36,7 @@ import java.util.List;
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
-public class BarChart extends BaseFigure {
+public class BarChart extends HostFigure {
 
     private final Var category;
     private final Var condition;

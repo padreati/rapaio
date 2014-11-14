@@ -68,36 +68,36 @@ public class ABLine extends PlotComponent {
 
         double x1, x2, y1, y2;
         if (!h && !v) {
-            double xx = range.getX1();
+            double xx = range.x1();
             double yy = a * xx + b;
             if (range.contains(xx, yy)) {
                 x1 = (int) getParent().xScale(xx);
                 y1 = (int) getParent().yScale(yy);
             } else {
-                y1 = (int) getParent().yScale(range.getY1());
-                x1 = (int) getParent().xScale((range.getY1() - b) / a);
+                y1 = (int) getParent().yScale(range.y1());
+                x1 = (int) getParent().xScale((range.y1() - b) / a);
             }
 
-            xx = range.getX2();
+            xx = range.x2();
             yy = a * xx + b;
             if (range.contains(xx, yy)) {
                 x2 = (int) getParent().xScale(xx);
                 y2 = (int) getParent().yScale(yy);
             } else {
-                y2 = (int) getParent().yScale(range.getY2());
-                x2 = (int) getParent().xScale((range.getY2() - b) / a);
+                y2 = (int) getParent().yScale(range.y2());
+                x2 = (int) getParent().xScale((range.y2() - b) / a);
             }
         } else {
             if (h) {
-                x1 = (int) getParent().xScale(range.getX1());
+                x1 = (int) getParent().xScale(range.x1());
                 y1 = (int) getParent().yScale(a);
-                x2 = (int) getParent().xScale(range.getX2());
+                x2 = (int) getParent().xScale(range.x2());
                 y2 = (int) getParent().yScale(a);
             } else {
                 x1 = (int) getParent().xScale(a);
-                y1 = (int) getParent().yScale(range.getY1());
+                y1 = (int) getParent().yScale(range.y1());
                 x2 = (int) getParent().xScale(a);
-                y2 = (int) getParent().yScale(range.getY2());
+                y2 = (int) getParent().yScale(range.y2());
             }
         }
         Stroke oldStroke = g2d.getStroke();

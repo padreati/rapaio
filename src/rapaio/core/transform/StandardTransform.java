@@ -59,7 +59,7 @@ public class StandardTransform implements Transform {
     }
 
     @Override
-    public void unscale(Frame df) {
+    public void unScale(Frame df) {
         for (String colName : colNames) {
             df.var(colName).stream().transValue(
                     x -> x * sd.get(colName) + mean.get(colName)

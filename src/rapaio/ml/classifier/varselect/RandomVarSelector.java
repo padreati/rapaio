@@ -20,7 +20,7 @@
 
 package rapaio.ml.classifier.varselect;
 
-import rapaio.core.sample.DiscreteSampling;
+import rapaio.core.sample.Sampling;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
 
@@ -64,7 +64,7 @@ public class RandomVarSelector implements VarSelector {
         if (mVars < 1) {
             throw new RuntimeException("Uniform random var selector not initialized");
         }
-        int[] indexes = new DiscreteSampling().sampleWR(mVars, candidates.length);
+        int[] indexes = new Sampling().sampleWR(mVars, candidates.length);
         String[] result = new String[mVars];
         for (int i = 0; i < indexes.length; i++) {
             result[i] = candidates[indexes[i]];

@@ -23,21 +23,19 @@ package rapaio.core.sample;
 import rapaio.core.RandomSource;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import static rapaio.core.RandomSource.nextDouble;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
-public class DiscreteSampling {
+public final class Sampling {
 
     /**
      * Discrete sampling with repetition.
      * Nothing special, just using the uniform discrete sampler offered by the system.
      */
-    public int[] sampleWR(int m, final int populationSize) {
+    public static int[] sampleWR(int m, final int populationSize) {
         int[] sample = new int[m];
         for (int i = 0; i < m; i++) {
             sample[i] = RandomSource.nextInt(populationSize);
@@ -46,15 +44,15 @@ public class DiscreteSampling {
     }
 
     /**
-     * Draw an uniform discrete sample without replacement.
+     * Draws an uniform discrete sample without replacement.
      * <p>
      * Implements reservoir sampling.
      *
      * @param sampleSize     sample size
      * @param populationSize population size
-     * @return
+     * @return sampling indexes
      */
-    public int[] sampleWOR(final int sampleSize, final int populationSize) {
+    public static int[] sampleWOR(final int sampleSize, final int populationSize) {
         if (sampleSize > populationSize) {
             throw new IllegalArgumentException("Can't draw a sample without replacement bigger than population size.");
         }
@@ -86,12 +84,12 @@ public class DiscreteSampling {
      *
      * @param sampleSize number of samples
      * @param prob       var of probabilities
-     * @return var with m indices in [0,weights.length-1]
-     * @See: http://link.springer.com/content/pdf/10.1007/978-0-387-30162-4_478.pdf
+     * @return sampling indexes
+     * @see "http://link.springer.com/content/pdf/10.1007/978-0-387-30162-4_478.pdf"
      */
-    public int[] sampleWeightedWOR(final int sampleSize, final double[] prob) {
+    public static int[] sampleWeightedWOR(final int sampleSize, final double[] prob) {
         // validation
-        validateWeighterWOR(prob, sampleSize);
+        validateWeightWOR(prob, sampleSize);
 
         int[] result = new int[sampleSize];
 
@@ -180,7 +178,7 @@ public class DiscreteSampling {
         return result;
     }
 
-    private void validateWeighterWOR(double[] p, int m) {
+    private static void validateWeightWOR(double[] p, int m) {
         if (m > p.length) {
             throw new IllegalArgumentException("required sample size is bigger than population size");
         }
@@ -199,33 +197,41 @@ public class DiscreteSampling {
     }
 
 
-    /**
-     * Generate discrete weighted random samples with replacement (same values might occur),
-     * based on previous aliases computed by a previous call
-     * to {@link rapaio.core.sample.DiscreteSampling#sampleWeightedWR(int, double[])}.
-     * <p>
-     * Implementation based on Vose alias-method algorithm.
-     */
-    public int[] sampleWeightedWR(int m) {
-        return sampleWeightedWR(m, null);
-    }
+//    /**
+//     * Generate discrete weighted random samples with replacement (same values might occur),
+//     * based on previous aliases computed by a previous call
+//     * to {@link Sampling#sampleWeightedWR(int, double[])}.
+//     * <p>
+//     * Implementation based on Vose alias-method algorithm.
+//     */
+//    public static int[] sampleWeightedWR(int m) {
+//        return sampleWeightedWR(m, null);
+//    }
+//
 
     /**
      * Generate discrete weighted random samples with replacement (same values might occur)
      * with building aliases according to the new probabilities.
      * <p>
      * Implementation based on Vose alias-method algorithm
+     *
+     * @param m sample size
+     * @param p sampling probabilities
+     * @return sampling indexes
      */
-    public int[] sampleWeightedWR(int m, double[] p) {
+    public static int[] sampleWeightedWR(int m, double[] p) {
+        if (p == null) {
+            throw new IllegalArgumentException("sampling probability array cannot be null");
+        }
+
         double[] prob = Arrays.copyOf(p, p.length);
         for (int i = 0; i < prob.length; i++) {
             prob[i] *= prob.length;
         }
         int[] alias = new int[p.length];
 
-        if (p != null) {
-            makeAliasWR(p, prob, alias);
-        }
+        makeAliasWR(p, prob, alias);
+
         int[] sample = new int[m];
         for (int i = 0; i < m; i++) {
             int column = RandomSource.nextInt(prob.length);
@@ -236,12 +242,8 @@ public class DiscreteSampling {
 
     /**
      * Builds discrete random sampler without replacement
-     *
-     * @param p     The list of probabilities.
-     * @param prob
-     * @param alias
      */
-    private void makeAliasWR(double[] p, double[] prob, int[] alias) {
+    private static void makeAliasWR(double[] p, double[] prob, int[] alias) {
         if (p.length == 0)
             throw new IllegalArgumentException("Probability var must be nonempty.");
 

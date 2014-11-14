@@ -20,12 +20,12 @@
 
 package rapaio.graphics;
 
-import rapaio.data.VarRange;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.graphics.base.BaseFigure;
+import rapaio.data.VarRange;
+import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
 
 import java.awt.*;
@@ -36,7 +36,7 @@ import java.util.List;
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
-public class BoxPlot extends BaseFigure {
+public class BoxPlot extends HostFigure {
 
     private final Var[] vars;
     private final String[] labels;

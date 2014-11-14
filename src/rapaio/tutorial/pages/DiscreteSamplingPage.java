@@ -22,7 +22,7 @@ package rapaio.tutorial.pages;
 
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.empirical.KDE;
-import rapaio.core.sample.DiscreteSampling;
+import rapaio.core.sample.Sampling;
 import rapaio.data.*;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.*;
@@ -41,7 +41,7 @@ public class DiscreteSamplingPage implements TutorialPage {
 
     @Override
     public String getPageName() {
-        return "DiscreteSampling";
+        return "Sampling";
     }
 
     @Override
@@ -122,7 +122,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                 + "        Vector var = new NumericVector(\"fair-dice\", sample);\n"
                 + "        draw(new Histogram(var, 6, false), 500, 200);\n");
 
-        DiscreteSampling ds = new DiscreteSampling();
+        Sampling ds = new Sampling();
         int[] sample = ds.sampleWR(1000, 6);
         Var var = Index.newWrapOf(sample);
         draw(new Plot().add(new Histogram(var).bins(6).prob(false)), 500, 200);
@@ -256,7 +256,7 @@ public class DiscreteSamplingPage implements TutorialPage {
         double count = 0;
         double total = 0;
         for (int i = 0; i < 300; i++) {
-            int[] samples = new DiscreteSampling().sampleWeightedWR(1, new double[]{0.6, 0.4});
+            int[] samples = new Sampling().sampleWeightedWR(1, new double[]{0.6, 0.4});
             if (samples[0] == 0)
                 count++;
             total++;

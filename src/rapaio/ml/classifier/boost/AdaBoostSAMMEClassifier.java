@@ -20,7 +20,7 @@
 
 package rapaio.ml.classifier.boost;
 
-import rapaio.core.sample.DiscreteSampling;
+import rapaio.core.sample.Sampling;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Numeric;
@@ -115,7 +115,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
     private int[] getSamplingRows(Frame df) {
         if (sampling > 0.0) {
-            return new DiscreteSampling().sampleWR((int) (df.rowCount() * sampling), df.rowCount());
+            return new Sampling().sampleWR((int) (df.rowCount() * sampling), df.rowCount());
         }
         int[] rows = new int[df.rowCount()];
         for (int i = 0; i < rows.length; i++) {

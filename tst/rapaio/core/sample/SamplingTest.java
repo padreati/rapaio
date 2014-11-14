@@ -25,7 +25,7 @@ import org.junit.Test;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class DiscreteSamplingTest {
+public class SamplingTest {
 
 	//    @Test
 	public void worTest() {
@@ -39,7 +39,7 @@ public class DiscreteSamplingTest {
 		final int TRIALS = 1_000_000;
 		final int SAMPLES = 2;
 		for (int i = 0; i < TRIALS; i++) {
-			for (int next : new DiscreteSampling().sampleWeightedWOR(SAMPLES, w)) {
+			for (int next : Sampling.sampleWeightedWOR(SAMPLES, w)) {
 				freq[next]++;
 //                System.out.print(next + " ");
 			}
@@ -61,10 +61,8 @@ public class DiscreteSamplingTest {
 		double[] freq = new double[w.length];
 		final int TRIALS = 100_000;
 		final int SAMPLES = 100;
-		DiscreteSampling ds = new DiscreteSampling();
-		ds.sampleWeightedWR(0, w);
 		for (int i = 0; i < TRIALS; i++) {
-			for (int next : ds.sampleWeightedWR(SAMPLES)) {
+			for (int next : Sampling.sampleWeightedWR(SAMPLES, w)) {
 				freq[next]++;
 			}
 		}
@@ -81,12 +79,12 @@ public class DiscreteSamplingTest {
 		final int TRIALS = 100_000;
 		final int SAMPLES = 3;
 		for (int i = 0; i < TRIALS; i++) {
-			for (int next : new DiscreteSampling().sampleWOR(SAMPLES, 10)) {
+			for (int next : Sampling.sampleWOR(SAMPLES, 10)) {
 				freq[next]++;
 			}
 		}
-		for (int i = 0; i < freq.length; i++) {
-			System.out.print(String.format("%.6f, ", freq[i] / (1. * TRIALS * SAMPLES)));
+		for (double f : freq) {
+			System.out.print(String.format("%.6f, ", f / (1. * TRIALS * SAMPLES)));
 		}
 		System.out.println();
 	}

@@ -65,7 +65,7 @@ public class MappedFrame extends AbstractFrame {
     }
 
     private MappedFrame(Frame df, Mapping mapping, List<String> columns) {
-        if(mapping==null) mapping = Mapping.newCopyOf();
+        if (mapping == null) mapping = Mapping.newCopyOf();
         if (df instanceof MappedFrame) {
             MappedFrame mappedFrame = (MappedFrame) df;
             this.source = mappedFrame.sourceFrame();
@@ -113,6 +113,9 @@ public class MappedFrame extends AbstractFrame {
 
     @Override
     public int varIndex(String name) {
+        if (!colIndex.containsKey(name)) {
+            throw new IllegalArgumentException(String.format("var name: %s does not exist", name));
+        }
         return colIndex.get(name);
     }
 

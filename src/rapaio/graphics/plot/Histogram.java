@@ -126,11 +126,6 @@ public class Histogram extends PlotComponent {
     }
 
     @Override
-    protected Color[] getDefaultCol() {
-        return new Color[]{getCol(7)};
-    }
-
-    @Override
     public Range buildRange() {
         rebuild();
 
@@ -149,7 +144,7 @@ public class Histogram extends PlotComponent {
         g2d.setColor(ColorPalette.STANDARD.getColor(0));
         for (int i = 0; i < freqTable.length; i++) {
             double d = freqTable[i];
-            double mind = Math.min(d, getParent().getRange().getY2());
+            double mind = Math.min(d, getParent().getRange().y2());
             if (!getParent().getRange().contains(binStart(i), 0)) {
                 continue;
             }

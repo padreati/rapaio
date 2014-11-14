@@ -20,7 +20,7 @@
 
 package rapaio.graphics;
 
-import rapaio.graphics.base.BaseFigure;
+import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.plot.PlotComponent;
 
@@ -32,7 +32,7 @@ import java.util.List;
  * @author tutuianu
  */
 @Deprecated
-public class Plot extends BaseFigure {
+public class Plot extends HostFigure {
 
     private final List<PlotComponent> components = new LinkedList<>();
 
@@ -57,25 +57,24 @@ public class Plot extends BaseFigure {
             range = new Range(0, 0, 1, 1);
         }
 
-        if (getXRangeStart() == getXRangeStart() && getXRangeEnd() == getXRangeEnd()) {
-            range.setX1(getXRangeStart());
-            range.setX2(getXRangeEnd());
+        if (x1 == x1 && x2 == x2) {
+            range.setX1(x1);
+            range.setX2(x2);
         }
-        if (getYRangeStart() == getYRangeStart() && getYRangeEnd() == getYRangeEnd()) {
-            range.setY1(getYRangeStart());
-            range.setY2(getYRangeEnd());
+        if (y1 == y1 && y2 == y2) {
+            range.setY1(y1);
+            range.setY2(y2);
         }
 
-        if (range.getY1() == range.getY2()) {
-            range.setY1(range.getY1() - 0.5);
-            range.setY2(range.getY2() + 0.5);
+        if (range.y1() == range.y2()) {
+            range.setY1(range.y1() - 0.5);
+            range.setY2(range.y2() + 0.5);
         }
         return range;
     }
 
     public Plot add(PlotComponent pc) {
-        pc.setParent(this);
-        pc.initialize();
+        pc.initialize(this);
         components.add(pc);
         return this;
     }
@@ -97,6 +96,4 @@ public class Plot extends BaseFigure {
     protected void buildBottomMarkers() {
         buildNumericBottomMarkers();
     }
-
-
 }

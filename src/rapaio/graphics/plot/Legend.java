@@ -46,7 +46,9 @@ public class Legend extends PlotComponent {
 
     @Override
     public void paint(Graphics2D g2d) {
-        g2d.setFont(MARKERS_FONT);
+
+        // TODO I've commented that because it seems like it needs a better treatment
+//        g2d.setFont(MARKERS_FONT);
         double minHeight = Double.MAX_VALUE;
         for (String string : labels) {
             double height = g2d.getFontMetrics().getStringBounds(string, g2d).getHeight();

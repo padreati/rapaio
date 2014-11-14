@@ -25,7 +25,6 @@ import java.awt.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public interface Figure {
 
     default void paint(Graphics2D g2d, Rectangle rect) {

@@ -34,51 +34,11 @@ public abstract class PlotComponent extends BaseFigure {
 
     protected Plot parent;
 
-    public void initialize() {
-    }
-
-    public void setParent(Plot parent) {
+    public void initialize(Plot parent) {
         this.parent = parent;
     }
 
-    public Plot getParent() {
-        return parent;
-    }
-
-
     public abstract void paint(Graphics2D g2d);
-
-    @Override
-    public Color getCol(int row) {
-        if (parent != null && colors == null) {
-            return parent.getCol(row);
-        }
-        return super.getCol(row);
-    }
-
-    @Override
-    public int getPch(int row) {
-        if (parent != null && pchIndex == null) {
-            return parent.getPch(row);
-        }
-        return super.getPch(row);
-    }
-
-    @Override
-    public double getSize(int row) {
-        if (parent != null && sizeIndex == null) {
-            return parent.getSize(row);
-        }
-        return super.getSize(row);
-    }
-
-    @Override
-    public float getLwd() {
-        if (parent != null && lwd == null) {
-            return parent.getLwd();
-        }
-        return super.getLwd();
-    }
 
     @Override
     public PlotComponent color(int index) {
@@ -136,15 +96,5 @@ public abstract class PlotComponent extends BaseFigure {
     @Override
     public float getAlpha() {
         return super.getAlpha();
-    }
-
-    @Override
-    public PlotComponent xLab(String label) {
-        return (PlotComponent) super.xLab(label);
-    }
-
-    @Override
-    public PlotComponent yLab(String label) {
-        return (PlotComponent) super.yLab(label);
     }
 }

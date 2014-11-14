@@ -30,5 +30,5 @@ public interface Transform {
 
     void scale(Frame df);
 
-    void unscale(Frame df);
+    void unScale(Frame df);
 }

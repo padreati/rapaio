@@ -42,7 +42,7 @@ public class ShiftTransform implements Transform {
         }
     }
 
-    public void unscale(Frame df) {
+    public void unScale(Frame df) {
         for (String colName : colNames) {
             df.var(colName).stream().transValue(x -> x + shift);
         }

@@ -20,14 +20,17 @@
 
 package rapaio.datasets;
 
-import rapaio.core.sample.DiscreteSampling;
+import rapaio.core.sample.Sampling;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import rapaio.datasets.UCI.UCI;
 import rapaio.io.ArffPersistence;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -55,8 +58,8 @@ public class CBenchmark {
             @Override
             public boolean reSample(double p, boolean replacement) {
                 int[] rows = replacement
-                        ? new DiscreteSampling().sampleWR((int) (full.rowCount() * p), full.rowCount())
-                        : new DiscreteSampling().sampleWOR((int) (full.rowCount() * p), full.rowCount());
+                        ? new Sampling().sampleWR((int) (full.rowCount() * p), full.rowCount())
+                        : new Sampling().sampleWOR((int) (full.rowCount() * p), full.rowCount());
                 train = MappedFrame.newByRow(full, rows);
                 Set<Integer> used = Arrays.stream(rows).mapToObj(row -> row).collect(Collectors.toSet());
                 Mapping diff = Mapping.newCopyOf(IntStream.range(0, full.rowCount()).filter(row -> !used.contains(row)).toArray());

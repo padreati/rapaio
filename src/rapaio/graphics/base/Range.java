@@ -23,7 +23,6 @@ package rapaio.graphics.base;
 /**
  * @author tutuianu
  */
-@Deprecated
 public class Range {
 
     private double x1 = Double.NaN;
@@ -42,8 +41,8 @@ public class Range {
     }
 
     public void union(Range range) {
-        union(range.getX1(), range.getY1());
-        union(range.getX2(), range.getY2());
+        union(range.x1(), range.y1());
+        union(range.x2(), range.y2());
     }
 
     public void union(double x, double y) {
@@ -61,27 +60,27 @@ public class Range {
         return x1 <= x && x <= x2 && y1 <= y && y <= y2;
     }
 
-    public double getWidth() {
+    public double width() {
         return x2 - x1;
     }
 
-    public double getHeight() {
+    public double height() {
         return y2 - y1;
     }
 
-    public double getX1() {
+    public double x1() {
         return x1;
     }
 
-    public double getY1() {
+    public double y1() {
         return y1;
     }
 
-    public double getX2() {
+    public double x2() {
         return x2;
     }
 
-    public double getY2() {
+    public double y2() {
         return y2;
     }
 

@@ -50,7 +50,7 @@ public class BoxCoxTransform implements Transform {
     }
 
     @Override
-    public void unscale(Frame df) {
+    public void unScale(Frame df) {
 
     }
 

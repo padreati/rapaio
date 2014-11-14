@@ -26,7 +26,6 @@ import java.awt.image.BufferedImage;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class ImageUtility {
 
     public static BufferedImage buildImage(Figure figure, int width, int height) {

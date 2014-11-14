@@ -99,9 +99,9 @@ public class DensityLine extends PlotComponent {
         Range range = getParent().getRange();
         Var x = Numeric.newFill(points + 1, 0);
         Var y = Numeric.newFill(points + 1, 0);
-        double xstep = (range.getX2() - range.getX1()) / points;
+        double xstep = (range.x2() - range.x1()) / points;
         for (int i = 0; i < x.rowCount(); i++) {
-            x.setValue(i, range.getX1() + i * xstep);
+            x.setValue(i, range.x1() + i * xstep);
             y.setValue(i, kde.getPdf().apply(x.value(i)));
         }
 

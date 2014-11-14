@@ -33,7 +33,6 @@ import java.util.Random;
  *
  * @author Aurelian Tutuianu
  */
-@Deprecated
 public final class RandomSource implements Serializable {
 
     private static final Random rand = new Random();
@@ -41,7 +40,6 @@ public final class RandomSource implements Serializable {
     public static void setSeed(long seed) {
         rand.setSeed(seed);
     }
-
 
     public static double nextDouble() {
         return rand.nextDouble();
