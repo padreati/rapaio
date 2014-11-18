@@ -23,7 +23,7 @@ package rapaio.graphics.base;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.graphics.colors.StandardColorPalette;
+import rapaio.graphics.colors.ColorPalette;
 
 import java.awt.*;
 
@@ -35,6 +35,7 @@ public abstract class BaseFigure implements Figure {
     protected static Color[] DEFAULT_COLOR = new Color[]{Color.BLACK};
 
     //
+    private ColorPalette colorPalette = ColorPalette.STANDARD;
     private Color[] colors;
     private Float lwd;
     private Var sizeIndex;
@@ -44,10 +45,17 @@ public abstract class BaseFigure implements Figure {
     private Range range;
 
 
+    // color palette
+
+    public BaseFigure colorPalette(ColorPalette colorPalette) {
+        this.colorPalette = colorPalette;
+        return this;
+    }
+
     // color
 
     public BaseFigure color(int index) {
-        colors = new Color[]{new StandardColorPalette().getColor(index)};
+        colors = new Color[]{colorPalette.getColor(index)};
         return this;
     }
 
@@ -59,12 +67,12 @@ public abstract class BaseFigure implements Figure {
     public BaseFigure color(Var color) {
         colors = new Color[color.rowCount()];
         for (int i = 0; i < color.rowCount(); i++) {
-            colors[i] = new StandardColorPalette().getColor(color.index(i));
+            colors[i] = colorPalette.getColor(color.index(i));
         }
         return this;
     }
 
-    public Color getCol(int row) {
+    protected Color getCol(int row) {
         if (colors == null) {
             return DEFAULT_COLOR[row % DEFAULT_COLOR.length];
         }

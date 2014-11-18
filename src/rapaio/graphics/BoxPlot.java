@@ -137,14 +137,14 @@ public class BoxPlot extends HostFigure {
 
     @Override
     public void buildBottomMarkers() {
-        getBottomMarkersPos().clear();
-        getBottomMarkersMsg().clear();
+        bottomMarkersPos.clear();
+        bottomMarkersMsg.clear();
 
-        double xspotwidth = getViewport().width / vars.length;
+        double xSpotWidth = getViewport().width / vars.length;
 
         for (int i = 0; i < vars.length; i++) {
-            getBottomMarkersPos().add(i * xspotwidth + xspotwidth / 2);
-            getBottomMarkersMsg().add(labels[i]);
+            bottomMarkersPos.add(i * xSpotWidth + xSpotWidth / 2);
+            bottomMarkersMsg.add(labels[i]);
         }
     }
 
@@ -160,8 +160,8 @@ public class BoxPlot extends HostFigure {
             double[] p = new double[]{0.25, 0.5, 0.75};
             double[] q = new Quantiles(v, p).values();
             double iqr = q[2] - q[0];
-            double innerfence = 1.5 * iqr;
-            double outerfence = 3 * iqr;
+            double innerFence = 1.5 * iqr;
+            double outerFence = 3 * iqr;
 
             double x1 = i + 0.5 - 0.3;
             double x2 = i + 0.5;
@@ -185,7 +185,7 @@ public class BoxPlot extends HostFigure {
             double lowerqhisker = q[0];
             for (int j = 0; j < v.rowCount(); j++) {
                 double point = v.value(j);
-                if ((point > q[2] + outerfence) || (point < q[0] - outerfence)) {
+                if ((point > q[2] + outerFence) || (point < q[0] - outerFence)) {
                     // big outlier
                     int width = (int) (3 * getSize(i));
                     g2d.fillOval(
@@ -194,7 +194,7 @@ public class BoxPlot extends HostFigure {
                             width, width);
                     continue;
                 }
-                if ((point > q[2] + innerfence) || (point < q[0] - innerfence)) {
+                if ((point > q[2] + innerFence) || (point < q[0] - innerFence)) {
                     // outlier
                     int width = (int) (3.5 * getSize(i));
                     g2d.drawOval(
@@ -203,10 +203,10 @@ public class BoxPlot extends HostFigure {
                             width, width);
                     continue;
                 }
-                if ((point > upperwhisker) && (point < q[2] + innerfence)) {
+                if ((point > upperwhisker) && (point < q[2] + innerFence)) {
                     upperwhisker = Math.max(upperwhisker, point);
                 }
-                if ((point < lowerqhisker) && (point >= q[0] - innerfence)) {
+                if ((point < lowerqhisker) && (point >= q[0] - innerFence)) {
                     lowerqhisker = Math.min(lowerqhisker, point);
                 }
             }

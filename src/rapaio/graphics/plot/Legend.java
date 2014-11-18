@@ -55,8 +55,8 @@ public class Legend extends PlotComponent {
             minHeight = Math.min(minHeight, height);
         }
         double size = g2d.getFontMetrics().getStringBounds("aa", g2d).getWidth();
-        double xstart = getParent().xScale(x);
-        double ystart = getParent().yScale(y);
+        double xstart = parent.xScale(x);
+        double ystart = parent.yScale(y);
 
         for (int i = 0; i < labels.length; i++) {
             g2d.setColor(ColorPalette.STANDARD.getColor(colors[i]));

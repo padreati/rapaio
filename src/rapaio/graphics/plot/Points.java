@@ -21,6 +21,7 @@
 package rapaio.graphics.plot;
 
 import rapaio.data.Var;
+import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.pch.PchPalette;
 
@@ -44,11 +45,10 @@ public class Points extends PlotComponent {
     }
 
     @Override
-    public void initialize() {
-        if (parent != null) {
-            parent.xLab(x.name());
-            parent.yLab(y.name());
-        }
+    public void initialize(Plot parent) {
+        super.initialize(parent);
+        parent.xLab(x.name());
+        parent.yLab(y.name());
     }
 
     @Override
@@ -83,8 +83,8 @@ public class Points extends PlotComponent {
             g2d.setColor(getCol(i));
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getAlpha()));
             PchPalette.STANDARD.draw(g2d,
-                    getParent().xScale(x.value(i)),
-                    getParent().yScale(y.value(i)),
+                    parent.xScale(x.value(i)),
+                    parent.yScale(y.value(i)),
                     getSize(i), getPch(i));
         }
     }

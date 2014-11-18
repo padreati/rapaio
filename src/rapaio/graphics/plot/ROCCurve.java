@@ -21,6 +21,7 @@
 package rapaio.graphics.plot;
 
 import rapaio.core.stat.ROC;
+import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
 
@@ -45,9 +46,10 @@ public class ROCCurve extends PlotComponent {
     }
 
     @Override
-    public void initialize() {
-        getParent().xLab("fp rate");
-        getParent().yLab("tp rate");
+    public void initialize(Plot parent) {
+        super.initialize(parent);
+        parent.xLab("fp rate");
+        parent.yLab("tp rate");
     }
 
     @Override
@@ -58,16 +60,16 @@ public class ROCCurve extends PlotComponent {
 
         for (int i = 1; i < roc.getData().rowCount(); i++) {
             g2d.setColor(getCol(i));
-            double x1 = getParent().xScale(roc.getData().value(i - 1, "fpr"));
-            double y1 = getParent().yScale(roc.getData().value(i - 1, "tpr"));
-            double x2 = getParent().xScale(roc.getData().value(i, "fpr"));
-            double y2 = getParent().yScale(roc.getData().value(i, "tpr"));
+            double x1 = parent.xScale(roc.getData().value(i - 1, "fpr"));
+            double y1 = parent.yScale(roc.getData().value(i - 1, "tpr"));
+            double x2 = parent.xScale(roc.getData().value(i, "fpr"));
+            double y2 = parent.yScale(roc.getData().value(i, "tpr"));
 
-            if (getParent().getRange().contains(
+            if (parent.getRange().contains(
                     roc.getData().value(i - 1, "fpr"),
                     roc.getData().value(i - 1, "tpr")
             )
-                    && getParent().getRange().contains(
+                    && parent.getRange().contains(
                     roc.getData().value(i, "fpr"),
                     roc.getData().value(i, "tpr"))) {
                 g2d.draw(new Line2D.Double(x1, y1, x2, y2));

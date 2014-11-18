@@ -35,6 +35,9 @@ public abstract class PlotComponent extends BaseFigure {
     protected Plot parent;
 
     public void initialize(Plot parent) {
+        if (parent == null) {
+            throw new IllegalArgumentException("parent plot reference is null");
+        }
         this.parent = parent;
     }
 

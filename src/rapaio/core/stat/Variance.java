@@ -22,6 +22,7 @@ package rapaio.core.stat;
 
 import rapaio.core.Printable;
 import rapaio.data.Var;
+import rapaio.printer.Printer;
 
 /**
  * Compensated version of the algorithm for calculation of
@@ -32,18 +33,17 @@ import rapaio.data.Var;
  * Date: 9/7/13
  * Time: 12:26 PM
  */
-@Deprecated
 public class Variance implements Printable {
 
-    private final Var var;
+    private final String varName;
     private final double value;
 
     public Variance(Var var) {
-        this.var = var;
-        this.value = compute();
+        this.varName = var.name();
+        this.value = compute(var);
     }
 
-    private double compute() {
+    private double compute(final Var var) {
         double mean = new Mean(var).value();
         double n = 0;
         for (int i = 0; i < var.rowCount(); i++) {
@@ -74,7 +74,6 @@ public class Variance implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append(String.format("> variance\n%.10f", value));
+        sb.append(String.format("> variance[%s]\n%s", varName, Printer.formatDecLong.format(value)));
     }
-
 }

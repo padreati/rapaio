@@ -64,14 +64,14 @@ public class Lines extends PlotComponent {
 
         for (int i = 1; i < x.rowCount(); i++) {
             g2d.setColor(getCol(i));
-            double x1 = getParent().xScale(x.value(i - 1));
-            double y1 = getParent().yScale(y.value(i - 1));
-            double x2 = getParent().xScale(x.value(i));
-            double y2 = getParent().yScale(y.value(i));
+            double x1 = parent.xScale(x.value(i - 1));
+            double y1 = parent.yScale(y.value(i - 1));
+            double x2 = parent.xScale(x.value(i));
+            double y2 = parent.yScale(y.value(i));
 
             //TODO improve this crap to clip only parts of lines outside of the data range
-            if (getParent().getRange().contains(x.value(i - 1), y.value(i - 1))
-                    && getParent().getRange().contains(x.value(i), y.value(i))) {
+            if (parent.getRange().contains(x.value(i - 1), y.value(i - 1))
+                    && parent.getRange().contains(x.value(i), y.value(i))) {
                 g2d.draw(new Line2D.Double(x1, y1, x2, y2));
             }
         }

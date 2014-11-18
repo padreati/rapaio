@@ -21,8 +21,15 @@
 package rapaio.core.sample;
 
 import rapaio.core.RandomSource;
+import rapaio.data.Frame;
+import rapaio.data.MappedFrame;
+import rapaio.data.Mapping;
+import rapaio.data.filters.BaseFilters;
+import rapaio.data.stream.FIterator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static rapaio.core.RandomSource.nextDouble;
 
@@ -35,9 +42,9 @@ public final class Sampling {
      * Discrete sampling with repetition.
      * Nothing special, just using the uniform discrete sampler offered by the system.
      */
-    public static int[] sampleWR(int m, final int populationSize) {
-        int[] sample = new int[m];
-        for (int i = 0; i < m; i++) {
+    public static int[] sampleWR(int sampleSize, final int populationSize) {
+        int[] sample = new int[sampleSize];
+        for (int i = 0; i < sampleSize; i++) {
             sample[i] = RandomSource.nextInt(populationSize);
         }
         return sample;
@@ -76,6 +83,36 @@ public final class Sampling {
     }
 
     /**
+     * Generate discrete weighted random samples with replacement (same values might occur)
+     * with building aliases according to the new probabilities.
+     * <p>
+     * Implementation based on Vose alias-method algorithm
+     *
+     * @param sampleSize sample size
+     * @param freq       sampling probabilities
+     * @return sampling indexes
+     */
+    public static int[] sampleWeightedWR(final int sampleSize, final double[] freq) {
+
+        normalize(freq);
+
+        double[] prob = Arrays.copyOf(freq, freq.length);
+        for (int i = 0; i < prob.length; i++) {
+            prob[i] *= prob.length;
+        }
+        int[] alias = new int[freq.length];
+
+        makeAliasWR(freq, prob, alias);
+
+        int[] sample = new int[sampleSize];
+        for (int i = 0; i < sampleSize; i++) {
+            int column = RandomSource.nextInt(prob.length);
+            sample[i] = RandomSource.nextDouble() < prob[column] ? column : alias[column];
+        }
+        return sample;
+    }
+
+    /**
      * Draw m <= n weighted random samples, weight by probabilities
      * without replacement.
      * <p>
@@ -83,18 +120,22 @@ public final class Sampling {
      * Implements Efraimidis-Spirakis method.
      *
      * @param sampleSize number of samples
-     * @param prob       var of probabilities
+     * @param freq       var of probabilities
      * @return sampling indexes
      * @see "http://link.springer.com/content/pdf/10.1007/978-0-387-30162-4_478.pdf"
      */
-    public static int[] sampleWeightedWOR(final int sampleSize, final double[] prob) {
+    public static int[] sampleWeightedWOR(final int sampleSize, final double[] freq) {
         // validation
-        validateWeightWOR(prob, sampleSize);
+        if (sampleSize > freq.length) {
+            throw new IllegalArgumentException("required sample size is bigger than population size");
+        }
+
+        normalize(freq);
 
         int[] result = new int[sampleSize];
 
-        if (sampleSize == prob.length) {
-            for (int i = 0; i < prob.length; i++) {
+        if (sampleSize == freq.length) {
+            for (int i = 0; i < freq.length; i++) {
                 result[i] = i;
             }
             return result;
@@ -116,7 +157,7 @@ public final class Sampling {
         // fill heap base
         for (int i = 0; i < sampleSize; i++) {
             heap[i + len / 2] = i;
-            k[i] = Math.pow(nextDouble(), 1. / prob[i]);
+            k[i] = Math.pow(nextDouble(), 1. / freq[i]);
             result[i] = i;
         }
 
@@ -139,25 +180,25 @@ public final class Sampling {
 
         // exhaust the source
         int pos = sampleSize;
-        while (pos < prob.length) {
+        while (pos < freq.length) {
             double r = nextDouble();
             double xw = Math.log(r) / Math.log(k[heap[1]]);
 
             double acc = 0;
-            while (pos < prob.length) {
-                if (acc + prob[pos] < xw) {
-                    acc += prob[pos];
+            while (pos < freq.length) {
+                if (acc + freq[pos] < xw) {
+                    acc += freq[pos];
                     pos++;
                     continue;
                 }
                 break;
             }
-            if (pos == prob.length) break;
+            if (pos == freq.length) break;
 
             // min replaced with the new selected value
-            double tw = Math.pow(k[heap[1]], prob[pos]);
+            double tw = Math.pow(k[heap[1]], freq[pos]);
             double r2 = nextDouble() * (1. - tw) + tw;
-            double ki = Math.pow(r2, 1 / prob[pos]);
+            double ki = Math.pow(r2, 1 / freq[pos]);
 
             k[heap[1]] = ki;
             result[heap[1]] = pos++;
@@ -178,66 +219,27 @@ public final class Sampling {
         return result;
     }
 
-    private static void validateWeightWOR(double[] p, int m) {
-        if (m > p.length) {
-            throw new IllegalArgumentException("required sample size is bigger than population size");
-        }
-        double total = 0;
-        for (double aP : p) {
-            if (aP <= 0) {
-                throw new IllegalArgumentException("weights must be strict positive.");
-            }
-            total += aP;
-        }
-        if (total != 1.) {
-            for (int i = 0; i < p.length; i++) {
-                p[i] /= total;
-            }
-        }
-    }
+    private static void normalize(double[] freq) {
 
-
-//    /**
-//     * Generate discrete weighted random samples with replacement (same values might occur),
-//     * based on previous aliases computed by a previous call
-//     * to {@link Sampling#sampleWeightedWR(int, double[])}.
-//     * <p>
-//     * Implementation based on Vose alias-method algorithm.
-//     */
-//    public static int[] sampleWeightedWR(int m) {
-//        return sampleWeightedWR(m, null);
-//    }
-//
-
-    /**
-     * Generate discrete weighted random samples with replacement (same values might occur)
-     * with building aliases according to the new probabilities.
-     * <p>
-     * Implementation based on Vose alias-method algorithm
-     *
-     * @param m sample size
-     * @param p sampling probabilities
-     * @return sampling indexes
-     */
-    public static int[] sampleWeightedWR(int m, double[] p) {
-        if (p == null) {
+        if (freq == null) {
             throw new IllegalArgumentException("sampling probability array cannot be null");
         }
 
-        double[] prob = Arrays.copyOf(p, p.length);
-        for (int i = 0; i < prob.length; i++) {
-            prob[i] *= prob.length;
+        double total = 0;
+        for (double p : freq) {
+            if (p < 0) {
+                throw new IllegalArgumentException("frequencies must be positive.");
+            }
+            total += p;
         }
-        int[] alias = new int[p.length];
-
-        makeAliasWR(p, prob, alias);
-
-        int[] sample = new int[m];
-        for (int i = 0; i < m; i++) {
-            int column = RandomSource.nextInt(prob.length);
-            sample[i] = RandomSource.nextDouble() < prob[column] ? column : alias[column];
+        if (total <= 0) {
+            throw new IllegalArgumentException("sum of frequencies must be strict positive");
         }
-        return sample;
+        if (total != 1.0) {
+            for (int i = 0; i < freq.length; i++) {
+                freq[i] /= total;
+            }
+        }
     }
 
     /**
@@ -288,5 +290,41 @@ public final class Sampling {
         }
     }
 
+    public static List<Frame> randomSampleSlices(Frame frame, double... freq) {
+        int total = 0;
+        for (double f : freq) {
+            total += (int) f * frame.rowCount();
+        }
+        if (total > frame.rowCount()) {
+            throw new IllegalArgumentException("total counts greater than available number of getRowCount");
+        }
+        List<Frame> result = new ArrayList<>();
+        Frame shuffle = BaseFilters.shuffle(frame);
 
+        FIterator it = shuffle.stream().iterator();
+        for (int i = 0; i < freq.length; i++) {
+            for (int j = 0; j < (int) freq[i] * frame.rowCount(); j++) {
+                it.next();
+                it.collect(String.valueOf(i));
+            }
+            result.add(it.mappedFrame(String.valueOf(i)));
+        }
+        while (it.hasNext()) {
+            it.next();
+            it.collect(String.valueOf(freq.length));
+        }
+        Frame last = it.mappedFrame(String.valueOf(freq.length));
+        if (last != null) {
+            result.add(last);
+        }
+        return result;
+    }
+
+    public static Frame randomBootstrap(Frame frame) {
+        return randomBootstrap(frame, 1.0);
+    }
+
+    public static Frame randomBootstrap(Frame frame, double percent) {
+        return MappedFrame.newByRow(frame, Mapping.newCopyOf(Sampling.sampleWR(frame.rowCount(), (int) percent * frame.rowCount())));
+    }
 }

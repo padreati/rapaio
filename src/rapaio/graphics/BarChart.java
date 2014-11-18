@@ -197,8 +197,8 @@ public class BarChart extends HostFigure {
 
     @Override
     public void buildBottomMarkers() {
-        getBottomMarkersPos().clear();
-        getBottomMarkersMsg().clear();
+        bottomMarkersPos.clear();
+        bottomMarkersMsg.clear();
 
         int cnt = 0;
         for (int aSel1 : sel) {
@@ -212,8 +212,8 @@ public class BarChart extends HostFigure {
         for (int aSel : sel) {
             if (totals[aSel] == 0)
                 continue;
-            getBottomMarkersPos().add(xspotwidth * (0.5 + cnt));
-            getBottomMarkersMsg().add(category.dictionary()[aSel]);
+            bottomMarkersPos.add(xspotwidth * (0.5 + cnt));
+            bottomMarkersMsg.add(category.dictionary()[aSel]);
             cnt++;
         }
     }
