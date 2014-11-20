@@ -23,8 +23,8 @@
 //import rapaio.ml.classifier.boost.AdaBoostSAMMEClassifier;
 //import rapaio.ml.classifier.rule.OneRule;
 //import rapaio.core.RandomSource;
-//import rapaio.core.stat.ConfusionMatrix;
-//import rapaio.core.stat.ROC;
+//import rapaio.core.eval.ConfusionMatrix;
+//import rapaio.core.eval.ROC;
 //import rapaio.data.Frame;
 //import rapaio.datasets.Datasets;
 //import rapaio.graphics.Plot;

@@ -20,7 +20,7 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.core.stat.ROC;
+import rapaio.core.eval.ROC;
 import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;

@@ -40,7 +40,6 @@ package rapaio.core.stat;
  *
  * @author Aurelian Tutuianu
  */
-@Deprecated
 public class StatOnline {
 
     double n; // number of elements

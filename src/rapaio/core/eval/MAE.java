@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.core.stat;
+package rapaio.core.eval;
 
 import rapaio.core.Printable;
 import rapaio.data.Frame;
@@ -28,16 +28,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * User: Aurelian Tutuianu <paderati@yahoo.com>
+ * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public class RMSE implements Printable {
-
+public class MAE implements Printable {
     private final List<Var> source;
     private final List<Var> target;
     private double value;
 
-    public RMSE(Frame dfSource, Frame dfTarget) {
+    public MAE(Frame dfSource, Frame dfTarget) {
         source = new ArrayList<>();
         for (int i = 0; i < dfSource.varCount(); i++) {
             if (dfSource.var(i).type().isNumeric()) {
@@ -53,7 +52,7 @@ public class RMSE implements Printable {
         compute();
     }
 
-    public RMSE(Var source, Var target) {
+    public MAE(Var source, Var target) {
         this.source = new ArrayList<>();
         this.source.add(source);
         this.target = new ArrayList<>();
@@ -68,10 +67,10 @@ public class RMSE implements Printable {
         for (int i = 0; i < source.size(); i++) {
             for (int j = 0; j < source.get(i).rowCount(); j++) {
                 count++;
-                total += Math.pow(source.get(i).value(j) - target.get(i).value(j), 2);
+                total += Math.abs(source.get(i).value(j) - target.get(i).value(j));
             }
         }
-        value = Math.sqrt(total / count);
+        value = total / count;
     }
 
     public double value() {
@@ -80,6 +79,6 @@ public class RMSE implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append("> not implemented\n");
+        sb.append(String.format("> mean absolute error\nMAE: %.6f\n", value()));
     }
 }

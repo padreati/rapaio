@@ -22,7 +22,7 @@
 //
 //import org.junit.Test;
 //import rapaio.WS;
-//import rapaio.core.stat.ConfusionMatrix;
+//import rapaio.core.eval.ConfusionMatrix;
 //import rapaio.data.*;
 //import rapaio.ml.classifier.Classifier;
 //import rapaio.ml.classifier.bayes.NaiveBayesClassifier;

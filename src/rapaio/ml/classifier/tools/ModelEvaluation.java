@@ -20,8 +20,8 @@
 
 package rapaio.ml.classifier.tools;
 
+import rapaio.core.eval.ConfusionMatrix;
 import rapaio.core.sample.Sampling;
-import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;

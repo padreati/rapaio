@@ -28,20 +28,19 @@ import java.util.Arrays;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Mode implements Printable {
 
-    private final Var var;
+    private final String varName;
     private final boolean includeMissing;
     private final String[] modes;
 
     public Mode(Var var, boolean includeMissing) {
-        this.var = var;
+        this.varName = var.name();
         this.includeMissing = includeMissing;
-        this.modes = compute();
+        this.modes = compute(var);
     }
 
-    private String[] compute() {
+    private String[] compute(Var var) {
         if (!var.type().isNominal()) {
             throw new IllegalArgumentException("Can't compute mode for other than nominal vectors");
         }
@@ -79,6 +78,6 @@ public class Mode implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append(String.format("mode\n%s", Arrays.deepToString(modes)));
+        sb.append(String.format("mode[%s]\n%s", varName, Arrays.deepToString(modes)));
     }
 }

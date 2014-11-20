@@ -36,20 +36,19 @@ import static rapaio.data.filters.BaseFilters.sort;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Quantiles implements Printable {
 
-    private final Var var;
+    private final String varName;
     private final double[] percentiles;
     private final double[] quantiles;
 
     public Quantiles(Var var, double... percentiles) {
-        this.var = var;
+        this.varName = var.name();
         this.percentiles = percentiles;
-        this.quantiles = compute();
+        this.quantiles = compute(var);
     }
 
-    private double[] compute() {
+    private double[] compute(final Var var) {
         if (var.rowCount() == 1) {
             double[] values = new double[percentiles.length];
             for (int i = 0; i < values.length; i++) {
@@ -94,7 +93,7 @@ public class Quantiles implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append("> quantiles - estimated quantiles\n");
+        sb.append(String.format("> quantiles[%s] - estimated quantiles\n", varName));
         for (int i = 0; i < quantiles.length; i++) {
             sb.append(String.format("quantile[%f = %f\n", percentiles[i], quantiles[i]));
         }

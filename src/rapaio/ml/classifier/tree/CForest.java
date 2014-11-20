@@ -20,8 +20,8 @@
 
 package rapaio.ml.classifier.tree;
 
+import rapaio.core.eval.ConfusionMatrix;
 import rapaio.core.sample.Sampling;
-import rapaio.core.stat.ConfusionMatrix;
 import rapaio.data.*;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
