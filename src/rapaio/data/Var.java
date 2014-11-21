@@ -49,7 +49,7 @@ public interface Var extends Serializable {
      *
      * @param name future name of the variable
      */
-    Var withName(String name);
+    AbstractVar withName(String name);
 
     /**
      * @return variable type

@@ -18,9 +18,8 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.refactor.simple;
+package rapaio.ml.regressor.simple;
 
-import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.ml.refactor.Regressor;
 
@@ -31,10 +30,10 @@ import java.util.List;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public class RandomValueRegressor implements Regressor {
+public class CustomConstantRegressor implements Regressor {
+
     List<String> targets;
-    double startValue;
-    double stopValue;
+    double customValue;
     List<Var> fitValues;
 
     @Override
@@ -42,26 +41,13 @@ public class RandomValueRegressor implements Regressor {
         return new L2ConstantRegressor();
     }
 
-    public double getStartValue() {
-        return startValue;
+    public double getCustomValue() {
+        return customValue;
     }
 
-    public RandomValueRegressor setStartValue(double startValue) {
-        this.startValue = startValue;
+    public CustomConstantRegressor setCustomValue(double customValue) {
+        this.customValue = customValue;
         return this;
-    }
-
-    public double getStopValue() {
-        return stopValue;
-    }
-
-    public RandomValueRegressor setStopValue(double stopValue) {
-        this.stopValue = stopValue;
-        return this;
-    }
-
-    private double getRandomValue() {
-        return RandomSource.nextDouble() * (stopValue - startValue) + startValue;
     }
 
     @Override
@@ -78,23 +64,12 @@ public class RandomValueRegressor implements Regressor {
         for (Integer colIndexe : colIndexes) {
             targets.add(df.varNames()[colIndexe]);
         }
-
-        fitValues = new ArrayList<>();
-        for (String target : targets) {
-            double customValue = getRandomValue();
-            fitValues.add(Numeric.newFill(df.var(target).rowCount(), customValue));
-        }
     }
 
     @Override
     public void predict(Frame df) {
         fitValues = new ArrayList<>();
-        for (int i = 0; i < targets.size(); i++) {
-            fitValues.add(Numeric.newFill(df.rowCount()).withName(targets.get(i)));
-            for (int j = 0; j < df.rowCount(); j++) {
-                fitValues.get(i).setValue(j, getRandomValue());
-            }
-        }
+        targets.stream().forEach(s -> fitValues.add(Numeric.newFill(df.rowCount(), customValue).withName(s)));
     }
 
     @Override

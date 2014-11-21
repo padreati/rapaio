@@ -20,12 +20,8 @@
 
 package rapaio.ml.refactor.simple;
 
-import rapaio.data.VarRange;
-import rapaio.data.Frame;
-import rapaio.data.Numeric;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
-import rapaio.ml.regressor.Regressor;
+import rapaio.data.*;
+import rapaio.ml.refactor.Regressor;
 
 import java.util.ArrayList;
 import java.util.List;

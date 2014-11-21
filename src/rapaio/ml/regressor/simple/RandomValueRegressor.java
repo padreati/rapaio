@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.refactor.simple;
+package rapaio.ml.regressor.simple;
 
 import rapaio.core.RandomSource;
 import rapaio.data.*;

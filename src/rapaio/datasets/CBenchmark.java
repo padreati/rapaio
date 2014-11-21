@@ -58,8 +58,8 @@ public class CBenchmark {
             @Override
             public boolean reSample(double p, boolean replacement) {
                 int[] rows = replacement
-                        ? new Sampling().sampleWR((int) (full.rowCount() * p), full.rowCount())
-                        : new Sampling().sampleWOR((int) (full.rowCount() * p), full.rowCount());
+                        ? Sampling.sampleWR((int) (full.rowCount() * p), full.rowCount())
+                        : Sampling.sampleWOR((int) (full.rowCount() * p), full.rowCount());
                 train = MappedFrame.newByRow(full, rows);
                 Set<Integer> used = Arrays.stream(rows).mapToObj(row -> row).collect(Collectors.toSet());
                 Mapping diff = Mapping.newCopyOf(IntStream.range(0, full.rowCount()).filter(row -> !used.contains(row)).toArray());

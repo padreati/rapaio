@@ -20,15 +20,14 @@
 
 package rapaio.ml.refactor.tree;
 
-import rapaio.data.VarRange;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.StatOnline;
 import rapaio.core.stat.Sum;
 import rapaio.data.*;
 import rapaio.data.filters.BaseFilters;
+import rapaio.ml.refactor.Regressor;
 import rapaio.ml.refactor.colselect.ColSelector;
 import rapaio.ml.refactor.colselect.DefaultColSelector;
-import rapaio.ml.regressor.Regressor;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**

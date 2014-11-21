@@ -47,6 +47,7 @@ public final class Nominal extends FactorBase {
 
     /**
      * Builds a new empty nominal variable
+     *
      * @return new variable instance of nominal type
      */
     public static Nominal newEmpty() {
@@ -83,9 +84,9 @@ public final class Nominal extends FactorBase {
         return nominal;
     }
 
-    public static Nominal newCopyOf(String...values) {
+    public static Nominal newCopyOf(String... values) {
         Nominal nominal = Nominal.newEmpty();
-        for(String value : values)
+        for (String value : values)
             nominal.addLabel(value);
         return nominal;
     }
@@ -98,6 +99,11 @@ public final class Nominal extends FactorBase {
         this.dict.add("?");
         data = new int[0];
         rows = 0;
+    }
+
+    @Override
+    public Nominal withName(String name) {
+        return (Nominal) super.withName(name);
     }
 
     @Override

@@ -60,7 +60,7 @@ public class CPrediction {
         targetVars.add(target);
         dictionaries.put(target, dictionary);
         if (withClasses) {
-            classes.put(target, Nominal.newEmpty(rows, dictionary));
+            classes.put(target, Nominal.newEmpty(rows, dictionary).withName(target));
         }
         if (withDensities) {
             densities.put(target, SolidFrame.newMatrix(rows, dictionary));

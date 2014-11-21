@@ -122,8 +122,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                 + "        Vector var = new NumericVector(\"fair-dice\", sample);\n"
                 + "        draw(new Histogram(var, 6, false), 500, 200);\n");
 
-        Sampling ds = new Sampling();
-        int[] sample = ds.sampleWR(1000, 6);
+        int[] sample = Sampling.sampleWR(1000, 6);
         Var var = Index.newWrapOf(sample);
         draw(new Plot().add(new Histogram(var).bins(6).prob(false)), 500, 200);
 
@@ -188,7 +187,7 @@ public class DiscreteSamplingPage implements TutorialPage {
         vars[1] = Numeric.newEmpty(SAMPLE_SIZE * TRIALS).withName("winning number");
 
         for (int i = 0; i < TRIALS; i++) {
-            int[] numbers = ds.sampleWOR(SAMPLE_SIZE, POPULATION_SIZE);
+            int[] numbers = Sampling.sampleWOR(SAMPLE_SIZE, POPULATION_SIZE);
             for (int j = 0; j < numbers.length; j++) {
                 vars[0].setValue(i * SAMPLE_SIZE + j, i + 1);
                 vars[1].setValue(i * SAMPLE_SIZE + j, numbers[j] + 1);
@@ -256,7 +255,7 @@ public class DiscreteSamplingPage implements TutorialPage {
         double count = 0;
         double total = 0;
         for (int i = 0; i < 300; i++) {
-            int[] samples = new Sampling().sampleWeightedWR(1, new double[]{0.6, 0.4});
+            int[] samples = Sampling.sampleWeightedWR(1, new double[]{0.6, 0.4});
             if (samples[0] == 0)
                 count++;
             total++;
@@ -343,7 +342,7 @@ public class DiscreteSamplingPage implements TutorialPage {
             prob[i] = 10;
         }
         for (int i = 0; i < TRIALS; i++) {
-            int[] numbers = ds.sampleWeightedWOR(SAMPLE_SIZE, prob);
+            int[] numbers = Sampling.sampleWeightedWOR(SAMPLE_SIZE, prob);
             for (int j = 0; j < numbers.length; j++) {
                 vars[0].setValue(i * SAMPLE_SIZE + j, i + 1);
                 vars[1].setValue(i * SAMPLE_SIZE + j, numbers[j] + 1);

@@ -115,7 +115,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
     private int[] getSamplingRows(Frame df) {
         if (sampling > 0.0) {
-            return new Sampling().sampleWR((int) (df.rowCount() * sampling), df.rowCount());
+            return Sampling.sampleWR((int) (df.rowCount() * sampling), df.rowCount());
         }
         int[] rows = new int[df.rowCount()];
         for (int i = 0; i < rows.length; i++) {

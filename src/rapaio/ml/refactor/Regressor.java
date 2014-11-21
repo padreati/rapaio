@@ -18,20 +18,34 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.refactor.boost.gbt;
+package rapaio.ml.refactor;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.ml.refactor.Regressor;
+
+import java.util.List;
 
 /**
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
 @Deprecated
-public interface BTRegressor extends Regressor {
+public interface Regressor {
 
-    void boostFit(Frame x, Var y, Var fx, BoostingLossFunction lossFunction);
+    /**
+     * Builds a new regressor model. It keeps the same parameters, but
+     * it does not copy all the regression artifacts
+     * @return a new instance
+     */
+    Regressor newInstance();
 
-    @Override
-    BTRegressor newInstance();
+    @Deprecated
+    default void learn(Frame df, List<Double> weights, String targetColName) {}
+
+    void learn(Frame df, String targetCols);
+
+    void predict(Frame df);
+
+    Var getFitValues();
+
+    Frame getAllFitValues();
 }

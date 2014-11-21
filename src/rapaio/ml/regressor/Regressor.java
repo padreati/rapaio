@@ -21,31 +21,94 @@
 package rapaio.ml.regressor;
 
 import rapaio.data.Frame;
-import rapaio.data.Var;
-
-import java.util.List;
+import rapaio.data.Numeric;
+import rapaio.ml.classifier.varselect.VarSelector;
 
 /**
- * User: Aurelian Tutuianu <paderati@yahoo.com>
+ * Interface implemented by all regression algorithms
+ *
+ * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
-@Deprecated
 public interface Regressor {
-
     /**
-     * Builds a new regressor model. It keeps the same parameters, but
-     * it does not copy all the regression artifacts
-     * @return a new instance
+     * Creates a new regressor instance with the same parameters as the original.
+     * The fitted model and other artifacts are not replicated.
+     *
+     * @return new parametrized instance
      */
     Regressor newInstance();
 
-    @Deprecated
-    default void learn(Frame df, List<Double> weights, String targetColName) {}
+    /**
+     * Returns the regressor name.
+     *
+     * @return regressor name
+     */
+    String name();
 
-    void learn(Frame df, String targetCols);
+    /**
+     * Builds a string which contains the regressor instance name and parameters.
+     *
+     * @return regressor algorithm name and parameters
+     */
+    String fullName();
 
-    void predict(Frame df);
 
-    Var getFitValues();
+    VarSelector getVarSelector();
 
-    Frame getAllFitValues();
+    Regressor withVarSelector(VarSelector varSelector);
+
+    /**
+     * Fit a classifier on instances specified by frame, with row weights
+     * equal to 1 and target as targetVars.
+     *
+     * @param df         data set instances
+     * @param targetVars target variables
+     */
+    default void learn(Frame df, String... targetVars) {
+        Numeric weights = Numeric.newFill(df.rowCount(), 1);
+        learn(df, weights, targetVars);
+    }
+
+    /**
+     * Fit a classifier on instances specified by frame, with row weights and targetVars
+     *
+     * @param df             train frame
+     * @param weights        instance weights
+     * @param targetVarNames target variables
+     */
+    void learn(Frame df, Numeric weights, String... targetVarNames);
+
+    /**
+     * Predict classes for new data set instances
+     *
+     * @param df data set instances
+     */
+    default RPrediction predict(Frame df) {
+        return predict(df, true);
+    }
+
+    /**
+     * Predict classes for given instances, generating classes if specified and
+     * generating densities if specified.
+     *
+     * @param df            frame instances
+     * @param withResiduals compute residuals
+     */
+    RPrediction predict(Frame df, boolean withResiduals);
+
+    /**
+     * Returns target variables built at learning time
+     *
+     * @return target variable names
+     */
+    String[] targetVarNames();
+
+    /**
+     * Returns first target variable built at learning time
+     *
+     * @return target variable names
+     */
+    default String firstTargetVarName() {
+        return targetVarNames()[0];
+    }
 }

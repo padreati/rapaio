@@ -22,16 +22,11 @@ package rapaio.ml.refactor.tree;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.StatOnline;
-import rapaio.data.Frame;
-import rapaio.data.Numeric;
-import rapaio.data.RowComparators;
-import rapaio.data.Var;
-import rapaio.data.MappedVar;
-import rapaio.data.Mapping;
+import rapaio.data.*;
 import rapaio.data.stream.VSpot;
+import rapaio.ml.refactor.Regressor;
 import rapaio.ml.refactor.boost.gbt.BTRegressor;
 import rapaio.ml.refactor.boost.gbt.BoostingLossFunction;
-import rapaio.ml.regressor.Regressor;
 
 import java.util.Collections;
 import java.util.List;

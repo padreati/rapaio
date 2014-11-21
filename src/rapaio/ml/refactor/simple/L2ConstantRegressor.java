@@ -20,10 +20,9 @@
 
 package rapaio.ml.refactor.simple;
 
-import rapaio.data.VarRange;
 import rapaio.core.stat.Mean;
 import rapaio.data.*;
-import rapaio.ml.regressor.Regressor;
+import rapaio.ml.refactor.Regressor;
 
 import java.util.ArrayList;
 import java.util.List;

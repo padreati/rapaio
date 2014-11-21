@@ -87,7 +87,7 @@ public class StandardPrinter extends AbstractPrinter {
             System.out.println(message);
         }
         if (throwable != null) {
-            System.out.println(throwable);
+            System.out.println(throwable.getMessage());
         }
     }
 

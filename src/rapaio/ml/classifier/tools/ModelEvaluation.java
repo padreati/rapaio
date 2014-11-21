@@ -174,7 +174,7 @@ public class ModelEvaluation {
         double total = 0;
         double count = 0;
         for (int i = 0; i < bootstraps; i++) {
-            int[] rows = new Sampling().sampleWR(((int) (df.rowCount() * p)), df.rowCount());
+            int[] rows = Sampling.sampleWR(((int) (df.rowCount() * p)), df.rowCount());
             Frame train = MappedFrame.newByRow(df, rows);
             Mapping others = Mapping.newEmpty();
             Set<Integer> set = new HashSet<>();

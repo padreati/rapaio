@@ -20,12 +20,12 @@
 
 package rapaio.ml.refactor.nnet;
 
-import rapaio.data.VarRange;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
-import rapaio.ml.regressor.Regressor;
+import rapaio.data.VarRange;
+import rapaio.ml.refactor.Regressor;
 
 import java.io.Serializable;
 import java.util.ArrayList;

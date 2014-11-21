@@ -67,7 +67,7 @@ public interface Classifier extends Printable, Serializable {
 
     /**
      * Fit a classifier on instances specified by frame, with row weights
-     * equal to 1 and target as classColName.
+     * equal to 1 and target as targetVars.
      *
      * @param df         data set instances
      * @param targetVars target variables

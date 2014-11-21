@@ -18,9 +18,9 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.refactor.simple;
+package rapaio.ml.regressor.simple;
 
-import rapaio.core.RandomSource;
+import rapaio.core.stat.Mean;
 import rapaio.data.*;
 import rapaio.ml.refactor.Regressor;
 
@@ -31,37 +31,15 @@ import java.util.List;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public class RandomValueRegressor implements Regressor {
-    List<String> targets;
-    double startValue;
-    double stopValue;
-    List<Var> fitValues;
+public class L2ConstantRegressor implements Regressor {
+
+    private List<String> targets;
+    private List<Double> means;
+    private List<Var> fitValues;
 
     @Override
     public Regressor newInstance() {
         return new L2ConstantRegressor();
-    }
-
-    public double getStartValue() {
-        return startValue;
-    }
-
-    public RandomValueRegressor setStartValue(double startValue) {
-        this.startValue = startValue;
-        return this;
-    }
-
-    public double getStopValue() {
-        return stopValue;
-    }
-
-    public RandomValueRegressor setStopValue(double stopValue) {
-        this.stopValue = stopValue;
-        return this;
-    }
-
-    private double getRandomValue() {
-        return RandomSource.nextDouble() * (stopValue - startValue) + startValue;
     }
 
     @Override
@@ -79,10 +57,12 @@ public class RandomValueRegressor implements Regressor {
             targets.add(df.varNames()[colIndexe]);
         }
 
+        means = new ArrayList<>();
         fitValues = new ArrayList<>();
         for (String target : targets) {
-            double customValue = getRandomValue();
-            fitValues.add(Numeric.newFill(df.var(target).rowCount(), customValue));
+            double mean = new Mean(df.var(target)).value();
+            means.add(mean);
+            fitValues.add(Numeric.newFill(df.var(target).rowCount(), mean));
         }
     }
 
@@ -90,10 +70,7 @@ public class RandomValueRegressor implements Regressor {
     public void predict(Frame df) {
         fitValues = new ArrayList<>();
         for (int i = 0; i < targets.size(); i++) {
-            fitValues.add(Numeric.newFill(df.rowCount()).withName(targets.get(i)));
-            for (int j = 0; j < df.rowCount(); j++) {
-                fitValues.get(i).setValue(j, getRandomValue());
-            }
+            fitValues.add(Numeric.newFill(df.rowCount(), means.get(i)).withName(targets.get(i)));
         }
     }
 

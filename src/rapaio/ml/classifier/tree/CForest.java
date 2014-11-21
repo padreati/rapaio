@@ -174,7 +174,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
         weightsList.add(Numeric.newEmpty());
         weightsList.add(Numeric.newEmpty());
 
-        int[] sample = new Sampling().sampleWR((int) (df.rowCount() * sampling), df.rowCount());
+        int[] sample = Sampling.sampleWR((int) (df.rowCount() * sampling), df.rowCount());
         HashSet<Integer> rows = new HashSet<>();
         for (int row : sample) {
             rows.add(row);

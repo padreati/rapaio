@@ -18,12 +18,12 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.regressor.linear;
+package rapaio.ml.refactor.linear;
 
 import rapaio.data.*;
 import rapaio.data.matrix.Matrix;
 import rapaio.data.matrix.QRDecomposition;
-import rapaio.ml.regressor.Regressor;
+import rapaio.ml.refactor.Regressor;
 
 import java.util.ArrayList;
 import java.util.Arrays;

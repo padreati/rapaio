@@ -26,7 +26,7 @@ import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
-import rapaio.ml.regressor.Regressor;
+import rapaio.ml.refactor.Regressor;
 import rapaio.ws.Summary;
 
 
