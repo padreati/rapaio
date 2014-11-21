@@ -41,18 +41,18 @@ import java.util.List;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class L1ConstantRegressor extends AbstractRegressor {
+public class L1Regressor extends AbstractRegressor {
 
     private double[] medians;
 
     @Override
     public Regressor newInstance() {
-        return new L1ConstantRegressor();
+        return new L1Regressor();
     }
 
     @Override
     public String name() {
-        return "L1ConstantRegressor";
+        return "L1Regressor";
     }
 
     @Override

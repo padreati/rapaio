@@ -49,6 +49,9 @@ is considered to be fully implemented and well tested.
 * NaiveBayes (Gaussian estimation, KDE estimation, Multinomial estimator)
 * MIClassifier
 
+**Regression**
+L1Regressor
+
 **Classification and Regression - not final stage**
 
 An important refactor is in progress. As a consequence, all the algorithm implementations
@@ -58,7 +61,7 @@ are considered by default in experimental state.
 this tree is similar with CART and C45)
 * Linear Regressor - filter only numerical attributes
 * MultiLayer Perceptron - regression with sigmoid
-* Simple regression - L1Regressor, L2Regressor, ConstantRegressor, RandomValueRegressor
+* Simple regression - L2Regressor, ConstantRegressor, RandomValueRegressor
 * Decision Stump Regressor
 * Gradient Boosting Tree regressor
 
