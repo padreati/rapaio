@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.tools;
+package rapaio.ml.classifier;
 
 import rapaio.core.eval.ConfusionMatrix;
 import rapaio.core.sample.Sampling;
@@ -26,8 +26,6 @@ import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.ml.classifier.CPrediction;
-import rapaio.ml.classifier.Classifier;
 
 import java.util.*;
 

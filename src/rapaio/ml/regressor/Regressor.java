@@ -22,7 +22,7 @@ package rapaio.ml.regressor;
 
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
-import rapaio.ml.classifier.varselect.VarSelector;
+import rapaio.ml.varselect.VarSelector;
 
 /**
  * Interface implemented by all regression algorithms

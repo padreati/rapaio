@@ -29,8 +29,8 @@ import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.RunningClassifier;
 import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.ml.classifier.tree.ctree.CTree;
-import rapaio.ml.classifier.varselect.RandomVarSelector;
-import rapaio.ml.classifier.varselect.VarSelector;
+import rapaio.ml.varselect.RandomVarSelector;
+import rapaio.ml.varselect.VarSelector;
 import rapaio.util.Pair;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -74,6 +74,13 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
                 .withSampling(sampling);
     }
 
+    public static CForest buildBagging(int runs, double sampling, Classifier c) {
+        return new CForest()
+                .withClassifier(c)
+                .withSampling(1.0)
+                .withBaggingMethod(BaggingMethods.VOTING)
+                .withOobError(false);
+    }
 
     @Override
     public Classifier newInstance() {

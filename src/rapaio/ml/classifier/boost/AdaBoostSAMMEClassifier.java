@@ -30,7 +30,7 @@ import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.RunningClassifier;
 import rapaio.ml.classifier.tree.ctree.CTree;
-import rapaio.ml.classifier.varselect.VarSelector;
+import rapaio.ml.varselect.VarSelector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -197,6 +197,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
                 err += w.value(j);
             }
         }
+        err /= w.stream().mapToDouble().sum();
         double alpha = Math.log((1. - err) / err) + Math.log(k - 1);
         if (err == 0) {
             if (h.isEmpty()) {

@@ -23,7 +23,7 @@ package rapaio.ml.classifier;
 import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
-import rapaio.ml.classifier.varselect.VarSelector;
+import rapaio.ml.varselect.VarSelector;
 
 import java.io.Serializable;
 import java.util.Map;

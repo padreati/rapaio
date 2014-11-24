@@ -18,21 +18,18 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.varselect;
+package rapaio.ml.refactor.ml_experiment.cluster.distance;
 
 import rapaio.data.Frame;
-import rapaio.data.VarRange;
-
-import java.io.Serializable;
 
 /**
- * User: Aurelian Tutuianu <paderati@yahoo.com>
+ * Created with IntelliJ IDEA.
+ * User: tincu
+ * Date: 2/4/14
+ * Time: 12:56 PM
+ * To change this template use File | Settings | File Templates.
  */
-public interface VarSelector extends Serializable {
-
-    String name();
-
-    void initialize(Frame df, VarRange except);
-
-    String[] nextVarNames();
+@Deprecated
+public interface Distance {
+    public double getDistance(Frame from, int fromRow, Frame targetFrame, int targetRow);
 }

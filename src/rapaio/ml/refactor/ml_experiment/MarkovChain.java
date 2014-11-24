@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.ml_experiment;
+package rapaio.ml.refactor.ml_experiment;
 
 import java.util.Arrays;
 import java.util.HashMap;

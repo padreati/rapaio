@@ -44,18 +44,19 @@ is considered to be fully implemented and well tested.
 
 * TreeClassifier (DecisionStump, ID3, C45, CART)
 * AdaBoost.SAMME
-* OneRule
 * Forests (Bagging, Random Forests)
 * NaiveBayes (Gaussian estimation, KDE estimation, Multinomial estimator)
-* MIClassifier
 
 **Regression**
 Simple regression algorithms: L1Regressor,L2Regressor, RandomValueRegressor, ConstantRegressor
 
-**Classification and Regression - not final stage**
+**Classification and Regression - To be Done **
 
 An important refactor is in progress. As a consequence, all the algorithm implementations
 are considered by default in experimental state.
+
+* OneRule
+* MIClassifier
 
 * Tree Regressor - accept only numerical, non-missing, has no pruning (with this constraints
 this tree is similar with CART and C45)

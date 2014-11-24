@@ -18,10 +18,10 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.ml_experiment.cluster.distance;
+package rapaio.ml.refactor.ml_experiment.cluster.distance;
 
-import rapaio.data.VarRange;
 import rapaio.data.Frame;
+import rapaio.data.VarRange;
 
 import java.util.List;
 

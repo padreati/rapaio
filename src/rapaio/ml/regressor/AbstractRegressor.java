@@ -20,8 +20,8 @@
 
 package rapaio.ml.regressor;
 
-import rapaio.ml.classifier.varselect.StdVarSelector;
-import rapaio.ml.classifier.varselect.VarSelector;
+import rapaio.ml.varselect.StdVarSelector;
+import rapaio.ml.varselect.VarSelector;
 
 /**
  * Abstract class needed to implement prerequisites for all regression algorithms.

@@ -20,8 +20,8 @@
 
 package rapaio.ml.classifier;
 
-import rapaio.ml.classifier.varselect.StdVarSelector;
-import rapaio.ml.classifier.varselect.VarSelector;
+import rapaio.ml.varselect.StdVarSelector;
+import rapaio.ml.varselect.VarSelector;
 
 import java.util.Map;
 

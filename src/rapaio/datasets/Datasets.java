@@ -60,6 +60,7 @@ public class Datasets {
                 .withHeader(true)
                 .withQuotas(true)
                 .withDefaultTypes(VarType.NUMERIC)
+                .withTypes(VarType.NOMINAL, "carname")
                 .read(Datasets.class, "carmpg.csv");
     }
 

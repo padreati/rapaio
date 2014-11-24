@@ -24,9 +24,10 @@ import rapaio.core.Printable;
 import rapaio.data.Var;
 
 /**
+ * Confusion matrix utility.
+ *
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class ConfusionMatrix implements Printable {
 
     private final Var actual;

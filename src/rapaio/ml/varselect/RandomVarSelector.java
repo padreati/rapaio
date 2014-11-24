@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.varselect;
+package rapaio.ml.varselect;
 
 import rapaio.core.sample.Sampling;
 import rapaio.data.Frame;

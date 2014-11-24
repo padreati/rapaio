@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.varselect;
+package rapaio.ml.varselect;
 
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
