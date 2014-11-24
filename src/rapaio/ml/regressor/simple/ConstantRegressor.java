@@ -20,64 +20,58 @@
 
 package rapaio.ml.regressor.simple;
 
-import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.VarRange;
 import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.RPrediction;
 import rapaio.ml.regressor.Regressor;
+import rapaio.printer.Printer;
 
 import java.util.List;
 
 /**
- * Simple regressor which predicts with the median value of the target columns.
- * <p>
- * This simple regressor is used alone for simple prediction or as a
- * starting point for other more complex regression algorithms.
- * <p>
- * Tis regressor implements the regression by a constant paradigm using
- * sum of absolute deviations loss function: L1(y - y_hat) = \sum(|y - y_hat|).
- * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class L1Regressor extends AbstractRegressor {
+public class ConstantRegressor extends AbstractRegressor {
 
-    private double[] medians;
+    double constantValue;
 
     @Override
     public Regressor newInstance() {
-        return new L1Regressor();
+        return new ConstantRegressor();
     }
 
     @Override
     public String name() {
-        return "L1Regressor";
+        return "ConstantRegressor";
     }
 
     @Override
     public String fullName() {
-        return name();
+        return String.format("ConstantRegressor(constant=%s)", Printer.formatDecShort.format(constantValue));
+    }
+
+    public double constantValue() {
+        return constantValue;
+    }
+
+    public ConstantRegressor withConstantValue(double customValue) {
+        this.constantValue = customValue;
+        return this;
     }
 
     @Override
     public void learn(Frame df, Numeric weights, String... targetVarNames) {
-        List<String> varNames = new VarRange(targetVarNames).parseVarNames(df);
-        this.targetNames = varNames.toArray(new String[varNames.size()]);
-        medians = new double[targetNames.length];
-        for (int i = 0; i < targetNames.length; i++) {
-            String target = targetNames[i];
-            medians[i] = new Quantiles(df.var(target), new double[]{0.5}).values()[0];
-        }
+        List<String> list = new VarRange(targetVarNames).parseVarNames(df);
+        targetNames = list.toArray(new String[list.size()]);
     }
 
     @Override
-    public RPrediction predict(Frame df, boolean withResiduals) {
+    public RPrediction predict(final Frame df, final boolean withResiduals) {
         RPrediction pred = RPrediction.newEmpty(df.rowCount(), withResiduals, targetNames);
-        for (int i = 0; i < targetNames.length; i++) {
-            String target = targetNames[i];
-            double median = medians[i];
-            pred.fit(target).stream().transValue(value -> median);
+        for (String targetName : targetNames) {
+            pred.fit(targetName).stream().forEach(s -> s.setValue(constantValue));
         }
         pred.buildResiduals(df);
         return pred;

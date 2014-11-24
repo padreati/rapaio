@@ -20,7 +20,7 @@
 
 package rapaio.ml.regressor.simple;
 
-import rapaio.core.stat.Quantiles;
+import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.VarRange;
@@ -31,28 +31,20 @@ import rapaio.ml.regressor.Regressor;
 import java.util.List;
 
 /**
- * Simple regressor which predicts with the median value of the target columns.
- * <p>
- * This simple regressor is used alone for simple prediction or as a
- * starting point for other more complex regression algorithms.
- * <p>
- * Tis regressor implements the regression by a constant paradigm using
- * sum of absolute deviations loss function: L1(y - y_hat) = \sum(|y - y_hat|).
- * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class L1Regressor extends AbstractRegressor {
+public class L2Regressor extends AbstractRegressor {
 
-    private double[] medians;
+    private double[] means;
 
     @Override
     public Regressor newInstance() {
-        return new L1Regressor();
+        return new L2Regressor();
     }
 
     @Override
     public String name() {
-        return "L1Regressor";
+        return "L2Regressor";
     }
 
     @Override
@@ -62,22 +54,21 @@ public class L1Regressor extends AbstractRegressor {
 
     @Override
     public void learn(Frame df, Numeric weights, String... targetVarNames) {
-        List<String> varNames = new VarRange(targetVarNames).parseVarNames(df);
-        this.targetNames = varNames.toArray(new String[varNames.size()]);
-        medians = new double[targetNames.length];
+        List<String> list = new VarRange(targetVarNames).parseVarNames(df);
+        targetNames = list.toArray(new String[list.size()]);
+        means = new double[targetNames.length];
         for (int i = 0; i < targetNames.length; i++) {
-            String target = targetNames[i];
-            medians[i] = new Quantiles(df.var(target), new double[]{0.5}).values()[0];
+            double mean = new Mean(df.var(targetNames[i])).value();
+            means[i] = mean;
         }
     }
 
     @Override
-    public RPrediction predict(Frame df, boolean withResiduals) {
+    public RPrediction predict(final Frame df, final boolean withResiduals) {
         RPrediction pred = RPrediction.newEmpty(df.rowCount(), withResiduals, targetNames);
         for (int i = 0; i < targetNames.length; i++) {
-            String target = targetNames[i];
-            double median = medians[i];
-            pred.fit(target).stream().transValue(value -> median);
+            double mean = means[i];
+            pred.fit(targetNames[i]).stream().forEach(s -> s.setValue(mean));
         }
         pred.buildResiduals(df);
         return pred;

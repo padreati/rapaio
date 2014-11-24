@@ -101,7 +101,7 @@ public interface Regressor {
      *
      * @return target variable names
      */
-    String[] targetVarNames();
+    String[] targetNames();
 
     /**
      * Returns first target variable built at learning time
@@ -109,6 +109,6 @@ public interface Regressor {
      * @return target variable names
      */
     default String firstTargetVarName() {
-        return targetVarNames()[0];
+        return targetNames()[0];
     }
 }

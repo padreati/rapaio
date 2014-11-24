@@ -31,7 +31,7 @@ import rapaio.ml.classifier.varselect.VarSelector;
 public abstract class AbstractRegressor implements Regressor {
 
     protected VarSelector varSelector = new StdVarSelector();
-    protected String[] targetVarNames;
+    protected String[] targetNames;
 
     @Override
     public VarSelector getVarSelector() {
@@ -45,7 +45,7 @@ public abstract class AbstractRegressor implements Regressor {
     }
 
     @Override
-    public String[] targetVarNames() {
-        return targetVarNames;
+    public String[] targetNames() {
+        return targetNames;
     }
 }

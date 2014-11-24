@@ -50,7 +50,7 @@ is considered to be fully implemented and well tested.
 * MIClassifier
 
 **Regression**
-L1Regressor
+Simple regression algorithms: L1Regressor,L2Regressor, RandomValueRegressor, ConstantRegressor
 
 **Classification and Regression - not final stage**
 
@@ -61,7 +61,6 @@ are considered by default in experimental state.
 this tree is similar with CART and C45)
 * Linear Regressor - filter only numerical attributes
 * MultiLayer Perceptron - regression with sigmoid
-* Simple regression - L2Regressor, ConstantRegressor, RandomValueRegressor
 * Decision Stump Regressor
 * Gradient Boosting Tree regressor
 

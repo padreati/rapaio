@@ -48,6 +48,14 @@ public class RPrediction {
         return new RPrediction(rows, withResiduals);
     }
 
+    public static RPrediction newEmpty(int rows, boolean withResiduals, String... targetVarNames) {
+        RPrediction pred = new RPrediction(rows, withResiduals);
+        for (String targetVarName : targetVarNames) {
+            pred.addTarget(targetVarName);
+        }
+        return pred;
+    }
+
     // private constructor
 
     private RPrediction(int rows, boolean withResiduals) {
@@ -140,4 +148,13 @@ public class RPrediction {
         return residuals.get(targetVar);
     }
 
+    public void buildResiduals(Frame df) {
+        if (withResiduals) {
+            for (String targetVar : targetVars) {
+                for (int i = 0; i < df.rowCount(); i++) {
+                    residuals.get(targetVar).setValue(i, df.var(targetVar).value(i) - fit(targetVar).value(i));
+                }
+            }
+        }
+    }
 }
