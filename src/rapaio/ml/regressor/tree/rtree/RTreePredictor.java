@@ -20,8 +20,28 @@
 
 package rapaio.ml.regressor.tree.rtree;
 
+import rapaio.data.stream.FSpot;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
 public interface RTreePredictor {
+
+    String name();
+
+    double predict(RTree tree, FSpot spot, RTreeNode root);
+
+    RTreePredictor STANDARD = new RTreePredictor() {
+
+        @Override
+        public String name() {
+            return "standard";
+        }
+
+        @Override
+        public double predict(RTree tree, FSpot spot, RTreeNode root) {
+            throw new NotImplementedException();
+        }
+    };
 }

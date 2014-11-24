@@ -33,6 +33,9 @@ import rapaio.ml.regressor.Regressor;
  */
 public class RTree extends AbstractRegressor {
 
+    private RTreePredictor predictor = RTreePredictor.STANDARD;
+    RTreeNode root;
+
     @Override
     public Regressor newInstance() {
         return null;
@@ -60,6 +63,13 @@ public class RTree extends AbstractRegressor {
 
     @Override
     public RPrediction predict(Frame df, boolean withResiduals) {
-        return null;
+        RPrediction pred = RPrediction.newEmpty(df.rowCount(), withResiduals, targetNames);
+
+        df.stream().forEach(spot -> {
+            double result = predictor.predict(this, spot, root);
+            pred.fit(firstTargetVarName()).setValue(spot.row(), result);
+        });
+        pred.buildResiduals(df);
+        return pred;
     }
 }
