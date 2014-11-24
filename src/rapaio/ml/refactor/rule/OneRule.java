@@ -18,7 +18,7 @@
 // *    limitations under the License.
 // */
 //
-//package rapaio.ml.classifier.rule;
+//package rapaio.ml.refactor.rule;
 //
 //import rapaio.ml.classifier.AbstractClassifier;
 //import rapaio.ml.classifier.tools.DensityVector;

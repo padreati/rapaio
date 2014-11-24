@@ -36,7 +36,7 @@ public interface CTreeNumericMethod extends Serializable {
 
     String name();
 
-    List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreePurityFunction function);
+    List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreeTestFunction function);
 
     CTreeNumericMethod IGNORE = new CTreeNumericMethod() {
         @Override
@@ -45,7 +45,7 @@ public interface CTreeNumericMethod extends Serializable {
         }
 
         @Override
-        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreePurityFunction function) {
+        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreeTestFunction function) {
             return new ArrayList<>();
         }
     };
@@ -57,7 +57,7 @@ public interface CTreeNumericMethod extends Serializable {
         }
 
         @Override
-        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreePurityFunction function) {
+        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreeTestFunction function) {
             Var test = df.var(testColName);
             Var target = df.var(targetColName);
 
@@ -139,7 +139,7 @@ public interface CTreeNumericMethod extends Serializable {
         }
 
         @Override
-        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreePurityFunction function) {
+        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreeTestFunction function) {
             Var test = df.var(testColName);
             Var target = df.var(targetColName);
 

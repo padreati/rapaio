@@ -36,7 +36,7 @@ import java.util.List;
 public interface CTreeNominalMethod extends Serializable {
     String name();
 
-    List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreePurityFunction function);
+    List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreeTestFunction function);
 
     public CTreeNominalMethod IGNORE = new CTreeNominalMethod() {
         @Override
@@ -45,7 +45,7 @@ public interface CTreeNominalMethod extends Serializable {
         }
 
         @Override
-        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreePurityFunction function) {
+        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreeTestFunction function) {
             return new ArrayList<>();
         }
     };
@@ -57,7 +57,7 @@ public interface CTreeNominalMethod extends Serializable {
         }
 
         @Override
-        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreePurityFunction function) {
+        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreeTestFunction function) {
             List<CTreeCandidate> result = new ArrayList<>();
             Var test = df.var(testColName);
             Var target = df.var(targetColName);
@@ -92,7 +92,7 @@ public interface CTreeNominalMethod extends Serializable {
 
 
         @Override
-        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreePurityFunction function) {
+        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreeTestFunction function) {
 
             List<CTreeCandidate> result = new ArrayList<>();
             CTreeCandidate best = null;

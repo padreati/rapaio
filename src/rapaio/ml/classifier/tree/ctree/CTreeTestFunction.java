@@ -27,7 +27,7 @@ import java.io.Serializable;
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
-public interface CTreePurityFunction extends Serializable {
+public interface CTreeTestFunction extends Serializable {
     String name();
 
     double compute(DensityTable dt);
@@ -35,7 +35,7 @@ public interface CTreePurityFunction extends Serializable {
     int sign();
 
 
-    CTreePurityFunction ENTROPY = new CTreePurityFunction() {
+    CTreeTestFunction ENTROPY = new CTreeTestFunction() {
 
         @Override
         public double compute(DensityTable dt) {
@@ -53,7 +53,7 @@ public interface CTreePurityFunction extends Serializable {
         }
     };
 
-    CTreePurityFunction INFO_GAIN = new CTreePurityFunction() {
+    CTreeTestFunction INFO_GAIN = new CTreeTestFunction() {
         @Override
         public String name() {
             return "INFO_GAIN";
@@ -70,7 +70,7 @@ public interface CTreePurityFunction extends Serializable {
         }
     };
 
-    CTreePurityFunction GAIN_RATIO = new CTreePurityFunction() {
+    CTreeTestFunction GAIN_RATIO = new CTreeTestFunction() {
         @Override
         public String name() {
             return "GAIN_RATIO";
@@ -87,7 +87,7 @@ public interface CTreePurityFunction extends Serializable {
         }
     };
 
-    CTreePurityFunction GINI_GAIN = new CTreePurityFunction() {
+    CTreeTestFunction GINI_GAIN = new CTreeTestFunction() {
         @Override
         public String name() {
             return "GINI_GAIN";

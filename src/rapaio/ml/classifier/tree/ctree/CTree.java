@@ -1,22 +1,22 @@
 /*
-* Apache License
-* Version 2.0, January 2004
-* http://www.apache.org/licenses/
-*
-*    Copyright 2013 Aurelian Tutuianu
-*
-*    Licensed under the Apache License, Version 2.0 (the "License");
-*    you may not use this file except in compliance with the License.
-*    You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-*    Unless required by applicable law or agreed to in writing, software
-*    distributed under the License is distributed on an "AS IS" BASIS,
-*    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*    See the License for the specific language governing permissions and
-*    limitations under the License.
-*/
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
 
 package rapaio.ml.classifier.tree.ctree;
 
@@ -46,7 +46,7 @@ public class CTree extends AbstractClassifier {
     CTreeTestCounter testCounter = CTreeTestCounter.M_NOMINAL_M_NUMERIC;
     CTreeNominalMethod nominalMethod = CTreeNominalMethod.FULL;
     CTreeNumericMethod numericMethod = CTreeNumericMethod.BINARY;
-    CTreePurityFunction function = CTreePurityFunction.INFO_GAIN;
+    CTreeTestFunction function = CTreeTestFunction.INFO_GAIN;
     CTreeSplitter splitter = CTreeSplitter.REMAINS_IGNORED;
     CTreePredictor predictor = CTreePredictor.STANDARD;
 
@@ -63,7 +63,7 @@ public class CTree extends AbstractClassifier {
                 .withSplitter(CTreeSplitter.REMAINS_IGNORED)
                 .withNominalMethod(CTreeNominalMethod.FULL)
                 .withNumericMethod(CTreeNumericMethod.IGNORE)
-                .withFunction(CTreePurityFunction.ENTROPY)
+                .withFunction(CTreeTestFunction.ENTROPY)
                 .withPredictor(CTreePredictor.STANDARD);
     }
 
@@ -74,7 +74,7 @@ public class CTree extends AbstractClassifier {
                 .withSplitter(CTreeSplitter.REMAINS_TO_ALL_WEIGHTED)
                 .withNominalMethod(CTreeNominalMethod.FULL)
                 .withNumericMethod(CTreeNumericMethod.BINARY)
-                .withFunction(CTreePurityFunction.GAIN_RATIO)
+                .withFunction(CTreeTestFunction.GAIN_RATIO)
                 .withPredictor(CTreePredictor.STANDARD);
     }
 
@@ -166,11 +166,11 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
-    public CTreePurityFunction getFunction() {
+    public CTreeTestFunction getFunction() {
         return function;
     }
 
-    public CTree withFunction(CTreePurityFunction function) {
+    public CTree withFunction(CTreeTestFunction function) {
         this.function = function;
         return this;
     }

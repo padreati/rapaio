@@ -18,7 +18,7 @@
 // *    limitations under the License.
 // */
 //
-//package rapaio.ml.classifier.rule;
+//package rapaio.ml.refactor.rule;
 //
 //import org.junit.Assert;
 //import org.junit.Test;

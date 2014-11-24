@@ -18,7 +18,7 @@
 // *    limitations under the License.
 // */
 //
-//package rapaio.ml.classifier.mi;
+//package rapaio.ml.refactor.mi;
 //
 //import rapaio.data.Frame;
 //import rapaio.data.Nominal;

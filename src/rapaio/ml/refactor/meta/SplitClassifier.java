@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.meta;
+package rapaio.ml.refactor.meta;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
