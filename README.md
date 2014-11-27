@@ -63,7 +63,8 @@ StatSampling
 * Tree: C45 (no pruning)
 * Tree: DecisionStump
 
-**Classification and Regression - To be Done **
+Not Implemented Features
+========================
 
 An important refactor is in progress. As a consequence, all the algorithm implementations
 are considered by default in experimental state.
