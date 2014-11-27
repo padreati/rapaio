@@ -21,7 +21,10 @@
 package rapaio.ml.classifier.tree.ctree;
 
 import rapaio.core.RandomSource;
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.Index;
+import rapaio.data.RowComparators;
+import rapaio.data.Var;
 import rapaio.data.filters.BaseFilters;
 import rapaio.ml.classifier.tools.DensityTable;
 
@@ -36,7 +39,7 @@ public interface CTreeNumericMethod extends Serializable {
 
     String name();
 
-    List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreeTestFunction function);
+    List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function);
 
     CTreeNumericMethod IGNORE = new CTreeNumericMethod() {
         @Override
@@ -45,7 +48,7 @@ public interface CTreeNumericMethod extends Serializable {
         }
 
         @Override
-        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreeTestFunction function) {
+        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function) {
             return new ArrayList<>();
         }
     };
@@ -57,7 +60,7 @@ public interface CTreeNumericMethod extends Serializable {
         }
 
         @Override
-        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreeTestFunction function) {
+        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function) {
             Var test = df.var(testColName);
             Var target = df.var(targetColName);
 
@@ -139,7 +142,7 @@ public interface CTreeNumericMethod extends Serializable {
         }
 
         @Override
-        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreeTestFunction function) {
+        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function) {
             Var test = df.var(testColName);
             Var target = df.var(targetColName);
 
@@ -207,8 +210,6 @@ public interface CTreeNumericMethod extends Serializable {
             return result;
         }
     }
-
-    ;
 }
 
 

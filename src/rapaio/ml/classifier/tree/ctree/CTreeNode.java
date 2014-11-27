@@ -22,6 +22,7 @@ package rapaio.ml.classifier.tree.ctree;
 
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
+import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
 import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.util.Pair;
@@ -92,7 +93,7 @@ public class CTreeNode implements Serializable {
         return bestCandidate;
     }
 
-    public void learn(CTree tree, Frame df, Numeric weights, int depth) {
+    public void learn(CTree tree, Frame df, Var weights, int depth) {
         density = new DensityVector(df.var(tree.firstTargetVar()), weights);
         counter = new DensityVector(df.var(tree.firstTargetVar()), Numeric.newFill(df.rowCount(), 1));
         bestIndex = density.findBestIndex();

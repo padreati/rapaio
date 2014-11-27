@@ -20,8 +20,11 @@
 
 package rapaio.ml.regressor.tree.rtree;
 
+import rapaio.core.stat.Sum;
+import rapaio.core.stat.WeightedMean;
+import rapaio.data.Numeric;
 import rapaio.data.stream.FSpot;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import rapaio.util.Pair;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
@@ -30,7 +33,7 @@ public interface RTreePredictor {
 
     String name();
 
-    double predict(RTree tree, FSpot spot, RTreeNode root);
+    Pair<Double, Double> predict(RTree tree, FSpot spot, RTreeNode root);
 
     RTreePredictor STANDARD = new RTreePredictor() {
 
@@ -40,8 +43,25 @@ public interface RTreePredictor {
         }
 
         @Override
-        public double predict(RTree tree, FSpot spot, RTreeNode root) {
-            throw new NotImplementedException();
+        public Pair<Double, Double> predict(RTree tree, FSpot spot, RTreeNode node) {
+
+            if (node.isLeaf())
+                return new Pair<>(node.getValue(), node.getWeight());
+
+            for (RTreeNode child : node.getChildren()) {
+                if (child.getPredicate().test(spot)) {
+                    return predict(tree, spot, child);
+                }
+            }
+
+            Numeric values = Numeric.newEmpty();
+            Numeric weights = Numeric.newEmpty();
+            for (RTreeNode child : node.getChildren()) {
+                Pair<Double, Double> prediction = predict(tree, spot, child);
+                values.addValue(prediction.first);
+                weights.addValue(prediction.second);
+            }
+            return new Pair<>(new WeightedMean(values, weights).value(), new Sum(weights).value());
         }
     };
 }

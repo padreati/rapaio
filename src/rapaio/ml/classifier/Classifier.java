@@ -23,6 +23,7 @@ package rapaio.ml.classifier;
 import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
+import rapaio.data.Var;
 import rapaio.ml.varselect.VarSelector;
 
 import java.io.Serializable;
@@ -84,7 +85,7 @@ public interface Classifier extends Printable, Serializable {
      * @param weights        instance weights
      * @param targetVarNames target variables
      */
-    void learn(Frame df, Numeric weights, String... targetVarNames);
+    void learn(Frame df, Var weights, String... targetVarNames);
 
     /**
      * Predict classes for new data set instances

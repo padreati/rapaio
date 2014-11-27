@@ -20,8 +20,184 @@
 
 package rapaio.ml.regressor.tree.rtree;
 
+import rapaio.data.Frame;
+import rapaio.data.Var;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
 public interface RTreeNumericMethod {
+
+    String name();
+
+    List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testColName, String targetColName, RTreeTestFunction function);
+
+    RTreeNumericMethod IGNORE = new RTreeNumericMethod() {
+        @Override
+        public String name() {
+            return "IGNORE";
+        }
+
+        @Override
+        public List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testColName, String targetColName, RTreeTestFunction function) {
+            return new ArrayList<>();
+        }
+    };
+
+//    RTreeNumericMethod BINARY = new RTreeNumericMethod() {
+//        @Override
+//        public String name() {
+//            return "BINARY";
+//        }
+//
+//        @Override
+//        public List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testColName, String targetColName, RTreeTestFunction function) {
+//            Var test = df.var(testColName);
+//            Var target = df.var(targetColName);
+//
+//            StatOnline leftStat = new StatOnline();
+//            StatOnline rightStat = new StatOnline();
+//
+//            leftStat.update();
+//            Var sort = BaseFilters.sort(Index.newSeq(df.rowCount()), RowComparators.numericComparator(test, true));
+//
+//            CTreeCandidate best = null;
+//
+//            for (int i = 0; i < df.rowCount(); i++) {
+//                int row = sort.index(i);
+//
+//                if (test.missing(row)) continue;
+//
+//                dt.update(2, target.index(row), -weights.value(row));
+//                dt.update(1, target.index(row), +weights.value(row));
+//
+//                if (i >= misCount + c.getMinCount() - 1 &&
+//                        i < df.rowCount() - c.getMinCount() &&
+//                        test.value(sort.index(i)) < test.value(sort.index(i + 1))) {
+//
+//                    CTreeCandidate current = new CTreeCandidate(function.compute(dt), function.sign(), testColName);
+//                    if (best == null) {
+//                        best = current;
+//
+//                        final double testValue = test.value(sort.index(i));
+//                        current.addGroup(
+//                                String.format("%s <= %.6f", testColName, testValue),
+//                                spot -> !spot.missing(testColName) && spot.value(testColName) <= testValue);
+//                        current.addGroup(
+//                                String.format("%s > %.6f", testColName, testValue),
+//                                spot -> !spot.missing(testColName) && spot.value(testColName) > testValue);
+//                    } else {
+//                        int comp = best.compareTo(current);
+//                        if (comp < 0) continue;
+//                        if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
+//                        best = current;
+//
+//                        final double testValue = test.value(sort.index(i));
+//                        current.addGroup(
+//                                String.format("%s <= %.6f", testColName, testValue),
+//                                spot -> !spot.missing(testColName) && spot.value(testColName) <= testValue);
+//                        current.addGroup(
+//                                String.format("%s > %.6f", testColName, testValue),
+//                                spot -> !spot.missing(testColName) && spot.value(testColName) > testValue);
+//                    }
+//                }
+//            }
+//
+//            List<CTreeCandidate> result = new ArrayList<>();
+//            if (best != null)
+//                result.add(best);
+//            return result;
+//        }
+//    };
+
+//    CTreeNumericMethodBinarySkip BINARY_SKIP = new CTreeNumericMethodBinarySkip(2);
+//
+//    class CTreeNumericMethodBinarySkip implements CTreeNumericMethod {
+//        private final int skip;
+//
+//        public CTreeNumericMethodBinarySkip(int skip) {
+//            this.skip = skip;
+//        }
+//
+//        @Override
+//        public String name() {
+//            return "BINARY";
+//        }
+//
+//        public CTreeNumericMethod withSkip(int skip) {
+//            return new CTreeNumericMethodBinarySkip(skip);
+//        }
+//
+//        @Override
+//        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreeTestFunction function) {
+//            Var test = df.var(testColName);
+//            Var target = df.var(targetColName);
+//
+//            DensityTable dt = new DensityTable(DensityTable.NUMERIC_DEFAULT_LABELS, target.dictionary());
+//            int misCount = 0;
+//            for (int i = 0; i < df.rowCount(); i++) {
+//                int row = (test.missing(i)) ? 0 : 2;
+//                if (test.missing(i)) misCount++;
+//                dt.update(row, target.index(i), weights.value(i));
+//            }
+//
+//            Var sort = BaseFilters.sort(Index.newSeq(df.rowCount()), RowComparators.numericComparator(test, true));
+//
+//            CTreeCandidate best = null;
+//
+//            int count = skip - 1;
+//            for (int i = 0; i < df.rowCount(); i++) {
+//                int row = sort.index(i);
+//                count++;
+//                if (count == skip) {
+//                    count = 0;
+//                }
+//
+//                if (test.missing(row)) continue;
+//
+//                dt.update(2, target.index(row), -weights.value(row));
+//                dt.update(1, target.index(row), +weights.value(row));
+//
+//                if (count != 0) continue;
+//                if (i >= misCount + c.getMinCount() - 1 &&
+//                        i < df.rowCount() - c.getMinCount() &&
+//                        test.value(sort.index(i)) < test.value(sort.index(i + 1))) {
+//
+//                    CTreeCandidate current = new CTreeCandidate(function.compute(dt), function.sign(), testColName);
+//                    if (best == null) {
+//                        best = current;
+//
+//                        final double testValue = test.value(sort.index(i));
+//                        current.addGroup(
+//                                String.format("%s <= %.6f", testColName, testValue),
+//                                spot -> !spot.missing(testColName) && spot.value(testColName) <= testValue);
+//                        current.addGroup(
+//                                String.format("%s > %.6f", testColName, testValue),
+//                                spot -> !spot.missing(testColName) && spot.value(testColName) > testValue);
+//                    } else {
+//                        int comp = best.compareTo(current);
+//                        if (comp < 0) continue;
+//                        if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
+//                        best = current;
+//
+//                        final double testValue = test.value(sort.index(i));
+//                        current.addGroup(
+//                                String.format("%s <= %.6f", testColName, testValue),
+//                                spot -> !spot.missing(testColName) && spot.value(testColName) <= testValue);
+//                        current.addGroup(
+//                                String.format("%s > %.6f", testColName, testValue),
+//                                spot -> !spot.missing(testColName) && spot.value(testColName) > testValue);
+//                    }
+//                }
+//            }
+//
+//            List<CTreeCandidate> result = new ArrayList<>();
+//            if (best != null)
+//                result.add(best);
+//            return result;
+//        }
+//    }
 }

@@ -49,6 +49,7 @@ public class StatOnline {
     double m4;
     double min = 0;
     double max = 0;
+    boolean weighted = false;
 
     public StatOnline() {
         clean();
@@ -62,6 +63,7 @@ public class StatOnline {
         m2 = 0;
         m3 = 0;
         m4 = 0;
+        weighted = false;
     }
 
     /**
@@ -73,18 +75,32 @@ public class StatOnline {
      * @param x value to be used to out statistics
      */
     public void update(double x) {
-        double delta, delta_n, delta_n2, term1;
+        update(x, 1.0);
+    }
 
-        long n1 = (long) Math.rint(n);
-        n++;
-        delta = x - m1;
-        delta_n = delta / n;
-        delta_n2 = delta_n * delta_n;
-        term1 = delta * delta_n * n1;
-        m1 += delta_n;
+    /**
+     * For now implement this method using only positive values for times. It
+     * may be later modified in order to support negative values for times, with
+     * the new meaning that we "remove" elements from calculations and as a side
+     * effect to decrease the value of N;
+     *
+     * @param x      value to be used to out statistics
+     * @param weight weight of value
+     */
+    public void update(double x, double weight) {
+        if (weight != 1.0) {
+            weighted = true;
+        }
+        double n1 = n;
+        n += weight;
+        double delta = (x - m1);
+        double delta_n = delta / n;
+        double delta_n2 = delta_n * delta_n;
+        double term1 = delta * delta_n * n1;
+        m1 += delta_n * weight;
         m4 += term1 * delta_n2 * (n * n - 3 * n + 3) + 6 * delta_n2 * m2 - 4 * delta_n * m3;
         m3 += term1 * delta_n * (n - 2) - 3 * delta_n * m2;
-        m2 += term1;
+        m2 += term1 * weight;
         min = Math.min(min, x);
         max = Math.max(max, x);
     }
@@ -117,10 +133,16 @@ public class StatOnline {
     }
 
     public double skewness() {
+        if (weighted) {
+            return Double.NaN;
+        }
         return Math.sqrt(n) * m3 / Math.pow(m2, 1.5);
     }
 
     public double kurtosis() {
+        if (weighted) {
+            return Double.NaN;
+        }
         return n * m4 / (m2 * m2) - 3.0;
     }
 

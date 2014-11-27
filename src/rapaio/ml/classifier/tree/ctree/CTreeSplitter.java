@@ -21,10 +21,7 @@
 package rapaio.ml.classifier.tree.ctree;
 
 import rapaio.core.RandomSource;
-import rapaio.data.Frame;
-import rapaio.data.MappedFrame;
-import rapaio.data.Mapping;
-import rapaio.data.Numeric;
+import rapaio.data.*;
 import rapaio.data.stream.FSpot;
 import rapaio.util.Pair;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -40,7 +37,7 @@ import java.util.stream.Collectors;
 public interface CTreeSplitter extends Serializable {
     String name();
 
-    public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Numeric weights, CTreeCandidate candidate);
+    public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Var weights, CTreeCandidate candidate);
 
     CTreeSplitter REMAINS_IGNORED = new CTreeSplitter() {
         @Override
@@ -49,7 +46,7 @@ public interface CTreeSplitter extends Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Numeric weights, CTreeCandidate candidate) {
+        public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Var weights, CTreeCandidate candidate) {
             List<Mapping> mappings = new ArrayList<>();
             List<Numeric> weightsList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
@@ -81,7 +78,7 @@ public interface CTreeSplitter extends Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Numeric weights, CTreeCandidate candidate) {
+        public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Var weights, CTreeCandidate candidate) {
             List<Mapping> mappings = new ArrayList<>();
             List<Numeric> weightsList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
@@ -130,7 +127,7 @@ public interface CTreeSplitter extends Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Numeric weights, CTreeCandidate candidate) {
+        public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Var weights, CTreeCandidate candidate) {
             List<Mapping> mappings = new ArrayList<>();
             List<Numeric> weightsList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
@@ -181,7 +178,7 @@ public interface CTreeSplitter extends Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Numeric weights, CTreeCandidate candidate) {
+        public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Var weights, CTreeCandidate candidate) {
             List<Mapping> mappings = new ArrayList<>();
             List<Numeric> weightList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
@@ -214,7 +211,7 @@ public interface CTreeSplitter extends Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Numeric weights, CTreeCandidate candidate) {
+        public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Var weights, CTreeCandidate candidate) {
             // TODO partition tree classifier - remains surrogates
             throw new NotImplementedException();
         }

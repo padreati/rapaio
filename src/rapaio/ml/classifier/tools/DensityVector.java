@@ -21,7 +21,6 @@
 package rapaio.ml.classifier.tools;
 
 import rapaio.core.RandomSource;
-import rapaio.data.Numeric;
 import rapaio.data.Var;
 
 import java.io.Serializable;
@@ -46,7 +45,7 @@ public class DensityVector implements Serializable {
         this.values = new double[labels.length];
     }
 
-    public DensityVector(Var var, Numeric weights) {
+    public DensityVector(Var var, Var weights) {
         this.labels = var.dictionary();
         this.values = new double[labels.length];
         var.stream().forEach(spot -> values[spot.index()] += weights.value(spot.row()));

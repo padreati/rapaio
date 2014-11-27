@@ -56,7 +56,6 @@ An important refactor is in progress. As a consequence, all the algorithm implem
 are considered by default in experimental state.
 
 * OneRule
-* MIClassifier
 
 * Tree Regressor - accept only numerical, non-missing, has no pruning (with this constraints
 this tree is similar with CART and C45)

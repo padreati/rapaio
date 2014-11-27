@@ -20,12 +20,22 @@
 
 package rapaio.sandbox;
 
-import rapaio.core.distributions.Binomial;
+import rapaio.data.Frame;
+import rapaio.data.Numeric;
+import rapaio.data.SolidFrame;
+import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
-import rapaio.graphics.plot.FunctionLine;
+import rapaio.graphics.plot.Lines;
+import rapaio.graphics.plot.Points;
+import rapaio.ml.regressor.RPrediction;
+import rapaio.ml.regressor.Regressor;
+import rapaio.ml.regressor.tree.rtree.RTree;
 import rapaio.printer.LocalPrinter;
+import rapaio.ws.Summary;
 
+import java.awt.*;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import static rapaio.WS.draw;
 import static rapaio.WS.setPrinter;
@@ -34,11 +44,32 @@ import static rapaio.WS.setPrinter;
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 public class Sand {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, URISyntaxException {
 
         setPrinter(new LocalPrinter());
 
-        draw(new Plot().add(new FunctionLine(new Binomial(0.1, 30)::pdf)).xLim(0, 20));
+        Frame df = Datasets.loadPearsonHeightDataset();
+        Summary.summary(df);
+
+        final String F = "Father";
+        final String S = "Son";
+
+
+        Numeric test = Numeric.newSeq(59, 75, 0.1).withName(F);
+        Frame te = SolidFrame.newWrapOf(test);
+
+        Regressor r = new RTree();
+
+        r.learn(df, S);
+
+        r.summary();
+
+        RPrediction pred = r.predict(te);
+
+        draw(new Plot()
+                        .add(new Points(df.var(F), df.var(S)))
+                        .add(new Lines(te.var(F), pred.firstFit()).color(Color.BLUE))
+        );
     }
 
 }

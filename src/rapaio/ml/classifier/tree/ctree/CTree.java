@@ -21,7 +21,7 @@
 package rapaio.ml.classifier.tree.ctree;
 
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
+import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
@@ -216,7 +216,7 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    public void learn(Frame df, Numeric weights, String... targetVars) {
+    public void learn(Frame df, Var weights, String... targetVars) {
 
         List<String> targetVarList = new VarRange(targetVars).parseVarNames(df);
         if (targetVarList.isEmpty()) {

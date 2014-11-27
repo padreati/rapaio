@@ -22,7 +22,7 @@ package rapaio.ml.regressor.simple;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
+import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.RPrediction;
@@ -61,7 +61,7 @@ public class L1Regressor extends AbstractRegressor {
     }
 
     @Override
-    public void learn(Frame df, Numeric weights, String... targetVarNames) {
+    public void learn(Frame df, Var weights, String... targetVarNames) {
         List<String> varNames = new VarRange(targetVarNames).parseVarNames(df);
         this.targetNames = varNames.toArray(new String[varNames.size()]);
         medians = new double[targetNames.length];
@@ -77,7 +77,7 @@ public class L1Regressor extends AbstractRegressor {
         for (int i = 0; i < targetNames.length; i++) {
             String target = targetNames[i];
             double median = medians[i];
-            pred.fit(target).stream().transValue(value -> median);
+            pred.fit(target).stream().forEach(s -> s.setValue(median));
         }
         pred.buildResiduals(df);
         return pred;

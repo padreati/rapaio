@@ -23,7 +23,7 @@ package rapaio.ml.regressor.simple;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Uniform;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
+import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.RPrediction;
@@ -62,7 +62,7 @@ public class RandomValueRegressor extends AbstractRegressor {
     }
 
     @Override
-    public void learn(Frame df, Numeric weights, String... targetVarNames) {
+    public void learn(Frame df, Var weights, String... targetVarNames) {
         List<String> list = new VarRange(targetVarNames).parseVarNames(df);
         targetNames = list.toArray(new String[list.size()]);
     }
@@ -70,8 +70,8 @@ public class RandomValueRegressor extends AbstractRegressor {
     @Override
     public RPrediction predict(final Frame df, final boolean withResiduals) {
         RPrediction pred = RPrediction.newEmpty(df.rowCount(), withResiduals, targetNames);
-        for (int i = 0; i < targetNames.length; i++) {
-            pred.fit(targetNames[i]).stream().forEach(s -> s.setValue(distribution.sampleNext()));
+        for (String targetName : targetNames) {
+            pred.fit(targetName).stream().forEach(s -> s.setValue(distribution.sampleNext()));
         }
         pred.buildResiduals(df);
         return pred;

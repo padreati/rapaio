@@ -21,10 +21,7 @@
 package rapaio.ml.classifier.boost;
 
 import rapaio.core.sample.Sampling;
-import rapaio.data.Frame;
-import rapaio.data.MappedFrame;
-import rapaio.data.Numeric;
-import rapaio.data.VarRange;
+import rapaio.data.*;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
@@ -55,7 +52,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
     private List<Double> a;
     private List<Classifier> h;
-    private Numeric w;
+    private Var w;
     private double k;
 
     public AdaBoostSAMMEClassifier() {
@@ -125,7 +122,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     }
 
     @Override
-    public void learn(Frame df, Numeric weights, String... targetVars) {
+    public void learn(Frame df, Var weights, String... targetVars) {
         List<String> targetVarList = new VarRange(targetVars).parseVarNames(df);
         if (targetVarList.isEmpty()) {
             throw new IllegalArgumentException("tree classifier must specify a target variable");
@@ -154,7 +151,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     }
 
     @Override
-    public void learnFurther(Frame df, Numeric weights, String targetVarsRange, int additionalRuns) {
+    public void learnFurther(Frame df, Var weights, String targetVarsRange, int additionalRuns) {
 
         List<String> targetVarList = new VarRange(targetVarsRange).parseVarNames(df);
         String[] targetVars = targetVarList.toArray(new String[targetVarList.size()]);

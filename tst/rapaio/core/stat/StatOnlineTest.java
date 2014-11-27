@@ -30,6 +30,8 @@ import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;
 import rapaio.printer.LocalPrinter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static rapaio.WS.draw;
 import static rapaio.WS.setPrinter;
 
@@ -94,5 +96,44 @@ public class StatOnlineTest {
 
         WS.p(String.format("%12f", soA.variance()));
         WS.p(String.format("%12f", new Variance(ab).getValue()));
+    }
+
+    @Test
+    public void testWeightedStat() {
+
+        Var a = Numeric.newWrapOf(1, 1, 2, 2, 2, 3, 3, 3, 3, 4);
+        StatOnline so1 = new StatOnline();
+
+        a.stream().forEach(s -> so1.update(s.value(), 1.0));
+
+        assertEquals(2.4, so1.mean(), 10e-12);
+        assertEquals(0.9333333333333331, so1.variance(), 10e-12);
+        assertEquals(-0.897959183673469, so1.kurtosis(), 10e-12);
+        assertEquals(-0.0935219529582825, so1.skewness(), 10e-12);
+
+        StatOnline so2 = new StatOnline();
+
+        so2.update(1, 2);
+        so2.update(2, 3);
+        so2.update(3, 4);
+        so2.update(4, 1);
+
+        assertEquals("mean", 2.4, so2.mean(), 10e-12);
+        assertEquals("variance", 0.9333333333333331, so2.variance(), 10e-12);
+        assertTrue(Double.isNaN(so2.kurtosis()));
+        assertTrue(Double.isNaN(so2.skewness()));
+
+        StatOnline so3 = new StatOnline();
+
+        so3.update(1, 1);
+        so3.update(2, 1.5);
+        so3.update(3, 2);
+        so3.update(4, 0.5);
+
+        assertEquals("mean", 2.4, so3.mean(), 10e-12);
+//        assertEquals("variance", 0.9333333333333331, so3.variance(), 10e-12);
+        assertTrue(Double.isNaN(so3.kurtosis()));
+        assertTrue(Double.isNaN(so3.skewness()));
+
     }
 }

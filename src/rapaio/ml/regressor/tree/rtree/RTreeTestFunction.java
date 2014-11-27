@@ -24,4 +24,14 @@ package rapaio.ml.regressor.tree.rtree;
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
 public interface RTreeTestFunction {
+
+    String name();
+
+    RTreeTestFunction VARIANCE_SUM = new RTreeTestFunction() {
+
+        @Override
+        public String name() {
+            return "VARIANCE_SUM";
+        }
+    };
 }

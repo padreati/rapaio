@@ -22,7 +22,7 @@ package rapaio.ml.regressor.simple;
 
 import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
+import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.RPrediction;
@@ -53,7 +53,7 @@ public class L2Regressor extends AbstractRegressor {
     }
 
     @Override
-    public void learn(Frame df, Numeric weights, String... targetVarNames) {
+    public void learn(Frame df, Var weights, String... targetVarNames) {
         List<String> list = new VarRange(targetVarNames).parseVarNames(df);
         targetNames = list.toArray(new String[list.size()]);
         means = new double[targetNames.length];

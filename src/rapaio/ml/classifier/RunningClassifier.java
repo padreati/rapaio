@@ -22,6 +22,7 @@ package rapaio.ml.classifier;
 
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
+import rapaio.data.Var;
 
 import java.io.Serializable;
 
@@ -51,5 +52,5 @@ public interface RunningClassifier extends Classifier, Serializable {
         learnFurther(df, Numeric.newFill(df.rowCount(), 1.0), targetVars, runs);
     }
 
-    void learnFurther(Frame df, Numeric weights, String targetVars, int runs);
+    void learnFurther(Frame df, Var weights, String targetVars, int runs);
 }

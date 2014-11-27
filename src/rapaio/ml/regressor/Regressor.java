@@ -20,16 +20,21 @@
 
 package rapaio.ml.regressor;
 
+import org.apache.commons.lang.NotImplementedException;
+import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
+import rapaio.data.Var;
 import rapaio.ml.varselect.VarSelector;
+
+import java.io.Serializable;
 
 /**
  * Interface implemented by all regression algorithms
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
-public interface Regressor {
+public interface Regressor extends Printable, Serializable {
     /**
      * Creates a new regressor instance with the same parameters as the original.
      * The fitted model and other artifacts are not replicated.
@@ -76,7 +81,7 @@ public interface Regressor {
      * @param weights        instance weights
      * @param targetVarNames target variables
      */
-    void learn(Frame df, Numeric weights, String... targetVarNames);
+    void learn(Frame df, Var weights, String... targetVarNames);
 
     /**
      * Predict classes for new data set instances
@@ -84,7 +89,7 @@ public interface Regressor {
      * @param df data set instances
      */
     default RPrediction predict(Frame df) {
-        return predict(df, true);
+        return predict(df, false);
     }
 
     /**
@@ -101,14 +106,18 @@ public interface Regressor {
      *
      * @return target variable names
      */
-    String[] targetNames();
+    String[] targetVars();
 
     /**
      * Returns first target variable built at learning time
      *
      * @return target variable names
      */
-    default String firstTargetVarName() {
-        return targetNames()[0];
+    default String firstTargetVar() {
+        return targetVars()[0];
+    }
+
+    default void buildSummary(StringBuilder sb) {
+        throw new NotImplementedException();
     }
 }

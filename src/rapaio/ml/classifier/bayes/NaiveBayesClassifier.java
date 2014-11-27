@@ -27,7 +27,6 @@ import rapaio.core.distributions.empirical.KFuncGaussian;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.ml.classifier.AbstractClassifier;
@@ -105,7 +104,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
     }
 
     @Override
-    public void learn(Frame df, Numeric weights, String... targetVarNames) {
+    public void learn(Frame df, Var weights, String... targetVarNames) {
         if (targetVarNames.length == 0) {
             throw new IllegalArgumentException("Target variable names must not be empty");
         }

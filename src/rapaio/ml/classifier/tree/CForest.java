@@ -160,9 +160,9 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
         return this;
     }
 
-    public Pair<List<Frame>, List<Numeric>> produceSamples(Frame df, Numeric weights) {
+    public Pair<List<Frame>, List<Var>> produceSamples(Frame df, Var weights) {
         List<Frame> frames = new ArrayList<>();
-        List<Numeric> weightsList = new ArrayList<>();
+        List<Var> weightsList = new ArrayList<>();
 
         if (sampling <= 0) {
             // no sampling
@@ -201,7 +201,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
     }
 
     @Override
-    public void learn(Frame df, Numeric weights, String... targetVarNames) {
+    public void learn(Frame df, Var weights, String... targetVarNames) {
 
         List<String> targetVarsList = new VarRange(targetVarNames).parseVarNames(df);
         if (targetVarsList.size() != 1) {
@@ -226,7 +226,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
     }
 
     @Override
-    public void learnFurther(Frame df, Numeric weights, String targetVars, int additionalRuns) {
+    public void learnFurther(Frame df, Var weights, String targetVars, int additionalRuns) {
 
         if (this.targetVars != null && dict != null) {
             this.runs += additionalRuns;
@@ -241,11 +241,11 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
         }
     }
 
-    private void buildWeakPredictor(Frame df, Numeric weights) {
+    private void buildWeakPredictor(Frame df, Var weights) {
         Classifier weak = c.newInstance();
         weak.withVarSelector(varSelector);
 
-        Pair<List<Frame>, List<Numeric>> samples = produceSamples(df, weights);
+        Pair<List<Frame>, List<Var>> samples = produceSamples(df, weights);
         Frame train = samples.first.get(0);
         Frame oob = samples.first.get(1);
 
