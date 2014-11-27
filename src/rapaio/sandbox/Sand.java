@@ -20,6 +20,7 @@
 
 package rapaio.sandbox;
 
+import rapaio.core.eval.RMSE;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
@@ -58,7 +59,7 @@ public class Sand {
         Numeric test = Numeric.newSeq(59, 75, 0.04).withName(F);
         Frame te = SolidFrame.newWrapOf(test);
 
-        Regressor r = new RTree().withMinCount(2);
+        Regressor r = new RTree().withMinCount(7);
 
         r.learn(df, S);
 
@@ -70,6 +71,8 @@ public class Sand {
                         .add(new Points(df.var(F), df.var(S)).color(Color.LIGHT_GRAY))
                         .add(new Lines(te.var(F), pred.firstFit()).color(Color.BLUE))
         );
+
+        new RMSE(df.var(S), r.predict(df).firstFit()).summary();
     }
 
 }

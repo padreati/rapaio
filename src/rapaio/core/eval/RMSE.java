@@ -23,6 +23,7 @@ package rapaio.core.eval;
 import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.printer.Printer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +81,8 @@ public class RMSE implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append("> not implemented\n");
+        for (int i = 0; i < source.size(); i++) {
+            sb.append(String.format("> RMSE[%s,%s]:\n%s", source.get(i).name(), target.get(i).name(), Printer.formatDecLong.format(value)));
+        }
     }
 }
