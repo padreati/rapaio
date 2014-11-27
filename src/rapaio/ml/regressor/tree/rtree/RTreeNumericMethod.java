@@ -20,10 +20,17 @@
 
 package rapaio.ml.regressor.tree.rtree;
 
+import rapaio.core.RandomSource;
+import rapaio.core.stat.StatOnline;
 import rapaio.data.Frame;
+import rapaio.data.Index;
+import rapaio.data.RowComparators;
 import rapaio.data.Var;
+import rapaio.data.filters.BaseFilters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,71 +54,78 @@ public interface RTreeNumericMethod {
         }
     };
 
-//    RTreeNumericMethod BINARY = new RTreeNumericMethod() {
-//        @Override
-//        public String name() {
-//            return "BINARY";
-//        }
-//
-//        @Override
-//        public List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testColName, String targetColName, RTreeTestFunction function) {
-//            Var test = df.var(testColName);
-//            Var target = df.var(targetColName);
-//
-//            StatOnline leftStat = new StatOnline();
-//            StatOnline rightStat = new StatOnline();
-//
-//            leftStat.update();
-//            Var sort = BaseFilters.sort(Index.newSeq(df.rowCount()), RowComparators.numericComparator(test, true));
-//
-//            CTreeCandidate best = null;
-//
-//            for (int i = 0; i < df.rowCount(); i++) {
-//                int row = sort.index(i);
-//
-//                if (test.missing(row)) continue;
-//
-//                dt.update(2, target.index(row), -weights.value(row));
-//                dt.update(1, target.index(row), +weights.value(row));
-//
-//                if (i >= misCount + c.getMinCount() - 1 &&
-//                        i < df.rowCount() - c.getMinCount() &&
-//                        test.value(sort.index(i)) < test.value(sort.index(i + 1))) {
-//
-//                    CTreeCandidate current = new CTreeCandidate(function.compute(dt), function.sign(), testColName);
-//                    if (best == null) {
-//                        best = current;
-//
-//                        final double testValue = test.value(sort.index(i));
-//                        current.addGroup(
-//                                String.format("%s <= %.6f", testColName, testValue),
-//                                spot -> !spot.missing(testColName) && spot.value(testColName) <= testValue);
-//                        current.addGroup(
-//                                String.format("%s > %.6f", testColName, testValue),
-//                                spot -> !spot.missing(testColName) && spot.value(testColName) > testValue);
-//                    } else {
-//                        int comp = best.compareTo(current);
-//                        if (comp < 0) continue;
-//                        if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
-//                        best = current;
-//
-//                        final double testValue = test.value(sort.index(i));
-//                        current.addGroup(
-//                                String.format("%s <= %.6f", testColName, testValue),
-//                                spot -> !spot.missing(testColName) && spot.value(testColName) <= testValue);
-//                        current.addGroup(
-//                                String.format("%s > %.6f", testColName, testValue),
-//                                spot -> !spot.missing(testColName) && spot.value(testColName) > testValue);
-//                    }
-//                }
-//            }
-//
-//            List<CTreeCandidate> result = new ArrayList<>();
-//            if (best != null)
-//                result.add(best);
-//            return result;
-//        }
-//    };
+    RTreeNumericMethod BINARY = new RTreeNumericMethod() {
+        @Override
+        public String name() {
+            return "BINARY";
+        }
+
+        @Override
+        public List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testColName, String targetColName, RTreeTestFunction function) {
+            Var test = df.var(testColName);
+            Var target = df.var(targetColName);
+
+            Var sort = BaseFilters.sort(Index.newSeq(df.rowCount()), RowComparators.numericComparator(test, true));
+
+            double[] var_sum = new double[df.rowCount()];
+            StatOnline so = new StatOnline();
+
+            for (int i = 0; i < df.rowCount(); i++) {
+                int row = sort.index(i);
+                if (target.missing(row)) {
+                    continue;
+                }
+                so.update(target.value(row), weights.value(row));
+                var_sum[row] = so.variance();
+            }
+            for (int i = df.rowCount() - 1; i >= 0; i--) {
+                int row = sort.index(i);
+                if (target.missing(row)) {
+                    continue;
+                }
+                so.update(target.value(row), weights.value(row));
+                var_sum[row] += so.variance();
+            }
+
+            RTreeCandidate best = null;
+
+            for (int i = 0; i < df.rowCount(); i++) {
+                int row = sort.index(i);
+
+                if (test.missing(row)) continue;
+                if (i < c.minCount || i > df.rowCount() - 1 - c.minCount) continue;
+                if (test.value(sort.index(i)) == test.value(sort.index(i + 1))) continue;
+
+
+                RTreeCandidate current = new RTreeCandidate(var_sum[i], testColName);
+                if (best == null) {
+                    best = current;
+
+                    final double testValue = test.value(sort.index(i));
+                    current.addGroup(
+                            String.format("%s <= %.6f", testColName, testValue),
+                            spot -> !spot.missing(testColName) && spot.value(testColName) <= testValue);
+                    current.addGroup(
+                            String.format("%s > %.6f", testColName, testValue),
+                            spot -> !spot.missing(testColName) && spot.value(testColName) > testValue);
+                } else {
+                    int comp = best.compareTo(current);
+                    if (comp < 0) continue;
+                    if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
+                    best = current;
+
+                    final double testValue = test.value(sort.index(i));
+                    current.addGroup(
+                            String.format("%s <= %.6f", testColName, testValue),
+                            spot -> !spot.missing(testColName) && spot.value(testColName) <= testValue);
+                    current.addGroup(
+                            String.format("%s > %.6f", testColName, testValue),
+                            spot -> !spot.missing(testColName) && spot.value(testColName) > testValue);
+                }
+            }
+            return (best != null) ? Arrays.asList(best) : Collections.EMPTY_LIST;
+        }
+    };
 
 //    CTreeNumericMethodBinarySkip BINARY_SKIP = new CTreeNumericMethodBinarySkip(2);
 //

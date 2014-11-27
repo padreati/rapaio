@@ -27,11 +27,5 @@ public interface RTreeTestFunction {
 
     String name();
 
-    RTreeTestFunction VARIANCE_SUM = new RTreeTestFunction() {
-
-        @Override
-        public String name() {
-            return "VARIANCE_SUM";
-        }
-    };
+    RTreeTestFunction VARIANCE_SUM = () -> "VARIANCE_SUM";
 }

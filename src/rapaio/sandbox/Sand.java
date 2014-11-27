@@ -55,10 +55,10 @@ public class Sand {
         final String S = "Son";
 
 
-        Numeric test = Numeric.newSeq(59, 75, 0.1).withName(F);
+        Numeric test = Numeric.newSeq(59, 75, 0.04).withName(F);
         Frame te = SolidFrame.newWrapOf(test);
 
-        Regressor r = new RTree();
+        Regressor r = new RTree().withMinCount(2);
 
         r.learn(df, S);
 
@@ -67,7 +67,7 @@ public class Sand {
         RPrediction pred = r.predict(te);
 
         draw(new Plot()
-                        .add(new Points(df.var(F), df.var(S)))
+                        .add(new Points(df.var(F), df.var(S)).color(Color.LIGHT_GRAY))
                         .add(new Lines(te.var(F), pred.firstFit()).color(Color.BLUE))
         );
     }

@@ -35,14 +35,12 @@ import java.util.function.Predicate;
 public class RTreeCandidate implements Comparable<RTreeCandidate>, Serializable {
 
     private final double score;
-    private final int sign;
     private final String testName;
     private final List<String> groupNames = new ArrayList<>();
     private final List<Predicate<FSpot>> groupPredicates = new ArrayList<>();
 
-    public RTreeCandidate(double score, int sign, String testName) {
+    public RTreeCandidate(double score, String testName) {
         this.score = score;
-        this.sign = sign;
         this.testName = testName;
     }
 
@@ -66,10 +64,6 @@ public class RTreeCandidate implements Comparable<RTreeCandidate>, Serializable 
         return score;
     }
 
-    public int getSign() {
-        return sign;
-    }
-
     public String getTestName() {
         return testName;
     }
@@ -77,6 +71,6 @@ public class RTreeCandidate implements Comparable<RTreeCandidate>, Serializable 
     @Override
     public int compareTo(RTreeCandidate o) {
         if (o == null) return -1;
-        return new Double(score).compareTo(o.score) * sign;
+        return new Double(score).compareTo(o.score);
     }
 }

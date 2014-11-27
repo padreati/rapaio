@@ -43,7 +43,7 @@ public class RTree extends AbstractRegressor {
 
     RTreeTestCounter testCounter = RTreeTestCounter.M_NOMINAL_M_NUMERIC;
     RTreeNominalMethod nominalMethod = RTreeNominalMethod.IGNORE;
-    RTreeNumericMethod numericMethod = RTreeNumericMethod.IGNORE;
+    RTreeNumericMethod numericMethod = RTreeNumericMethod.BINARY;
     RTreeTestFunction function = RTreeTestFunction.VARIANCE_SUM;
     RTreeSplitter splitter = RTreeSplitter.REMAINS_IGNORED;
     RTreePredictor predictor = RTreePredictor.STANDARD;
