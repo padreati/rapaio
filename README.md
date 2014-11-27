@@ -37,19 +37,31 @@ is considered to be fully implemented and well tested.
 
 **Sampling**
 
-* DiscreteSampling - generates discrete integer samples with/without replacement, weighted/non-weighted
-* StatSampling - offers utility methods for bootstraps, simple random, stratified sampling
+StatSampling
+
+* generates discrete integer samples with/without replacement, weighted/non-weighted
+* offers utility methods for bootstraps, simple random, stratified sampling
 
 **Classification**
 
-* TreeClassifier (DecisionStump, ID3, C45, CART)
-* AdaBoost.SAMME
-* Forests (Bagging, Random Forests)
-* NaiveBayes (Gaussian estimation, KDE estimation, Multinomial estimator)
+* Decision Trees: DecisionStump
+* Decision Trees: ID3
+* Decision Trees: C45 (no pruning)
+* Decision Trees: CART (no pruning)
+* Boosting: AdaBoost.SAMME
+* Ensemble: Bagging
+* Ensemble: Random Forests
+* Bayesian: NaiveBayes (Gaussian, Empirical, Multinomial)
 
 **Regression**
-* Simple regression algorithms: L1Regressor,L2Regressor, RandomValueRegressor, ConstantRegressor
-* Tree Regressor - has no pruning (CART, C45, DecisionStump)
+
+* Simple: L1Regressor
+* Simple: L2Regressor
+* Simple: RandomValueRegressor
+* Simple: ConstantRegressor
+* Tree: CART (no pruning)
+* Tree: C45 (no pruning)
+* Tree: DecisionStump
 
 **Classification and Regression - To be Done **
 
@@ -60,7 +72,6 @@ are considered by default in experimental state.
 
 * Linear Regressor - filter only numerical attributes
 * MultiLayer Perceptron - regression with sigmoid
-* Decision Stump Regressor
 * Gradient Boosting Tree regressor
 
 **Matrices and vectors**
