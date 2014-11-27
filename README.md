@@ -48,7 +48,8 @@ is considered to be fully implemented and well tested.
 * NaiveBayes (Gaussian estimation, KDE estimation, Multinomial estimator)
 
 **Regression**
-Simple regression algorithms: L1Regressor,L2Regressor, RandomValueRegressor, ConstantRegressor
+* Simple regression algorithms: L1Regressor,L2Regressor, RandomValueRegressor, ConstantRegressor
+* Tree Regressor - has no pruning (CART, C45, DecisionStump)
 
 **Classification and Regression - To be Done **
 
@@ -57,8 +58,6 @@ are considered by default in experimental state.
 
 * OneRule
 
-* Tree Regressor - accept only numerical, non-missing, has no pruning (with this constraints
-this tree is similar with CART and C45)
 * Linear Regressor - filter only numerical attributes
 * MultiLayer Perceptron - regression with sigmoid
 * Decision Stump Regressor
