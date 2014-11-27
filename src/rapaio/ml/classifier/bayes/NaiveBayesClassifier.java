@@ -235,7 +235,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
                 Frame cond = df.stream().filter(s -> classLabel.equals(s.label(targetCol))).toMappedFrame();
                 Var v = cond.var(testCol);
                 double mu = new Mean(v).value();
-                double sd = Math.sqrt(new Variance(v).getValue());
+                double sd = Math.sqrt(new Variance(v).value());
                 normals.put(classLabel, new Normal(mu, sd));
             }
         }

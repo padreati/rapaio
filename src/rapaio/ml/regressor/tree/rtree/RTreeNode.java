@@ -92,7 +92,7 @@ public class RTreeNode {
         value = new WeightedMean(df.var(tree.firstTargetVar()), weights).value();
         weight = weights.stream().parallel().complete().mapToDouble().sum();
 
-        if (df.rowCount() == 0 || df.rowCount() <= tree.getMinCount() || depth < 1) {
+        if (df.rowCount() == 0 || df.rowCount() <= tree.getMinCount() || depth <= 1) {
             return;
         }
 

@@ -40,11 +40,11 @@ public final class MathNumeric {
     }
 
     public static Numeric sd(final Numeric num) {
-        return Numeric.newFill(1, StrictMath.sqrt(new Variance(num).getValue()));
+        return Numeric.newFill(1, StrictMath.sqrt(new Variance(num).value()));
     }
 
     public static Numeric var(final Numeric num) {
-        return Numeric.newFill(1, new Variance(num).getValue());
+        return Numeric.newFill(1, new Variance(num).value());
     }
 
     public static Numeric plus(final Numeric... nums) {

@@ -95,7 +95,7 @@ public class StatOnlineTest {
         soA.apply(soB);
 
         WS.p(String.format("%12f", soA.variance()));
-        WS.p(String.format("%12f", new Variance(ab).getValue()));
+        WS.p(String.format("%12f", new Variance(ab).value()));
     }
 
     @Test

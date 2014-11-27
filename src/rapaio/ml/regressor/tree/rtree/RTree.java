@@ -42,7 +42,7 @@ public class RTree extends AbstractRegressor {
     int maxDepth = Integer.MAX_VALUE;
 
     RTreeTestCounter testCounter = RTreeTestCounter.M_NOMINAL_M_NUMERIC;
-    RTreeNominalMethod nominalMethod = RTreeNominalMethod.IGNORE;
+    RTreeNominalMethod nominalMethod = RTreeNominalMethod.BINARY;
     RTreeNumericMethod numericMethod = RTreeNumericMethod.BINARY;
     RTreeTestFunction function = RTreeTestFunction.VARIANCE_SUM;
     RTreeSplitter splitter = RTreeSplitter.REMAINS_IGNORED;
@@ -52,10 +52,21 @@ public class RTree extends AbstractRegressor {
     private RTreeNode root;
     private int rows;
 
+    public static RTree buildDecisionStump() {
+        return new RTree()
+                .withMaxDepth(2)
+                .withNominalMethod(RTreeNominalMethod.BINARY)
+                .withNumericMethod(RTreeNumericMethod.BINARY)
+                .withSplitter(RTreeSplitter.REMAINS_TO_MAJORITY)
+                ;
+    }
 
     @Override
     public Regressor newInstance() {
         return null;
+    }
+
+    private RTree() {
     }
 
     @Override
@@ -86,6 +97,15 @@ public class RTree extends AbstractRegressor {
 
     public RTree withMinCount(int minCount) {
         this.minCount = minCount;
+        return this;
+    }
+
+    public int getMaxDepth() {
+        return maxDepth;
+    }
+
+    public RTree withMaxDepth(int maxDepth) {
+        this.maxDepth = maxDepth;
         return this;
     }
 

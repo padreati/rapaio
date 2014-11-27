@@ -20,25 +20,17 @@
 
 package rapaio.sandbox;
 
-import rapaio.core.eval.RMSE;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
-import rapaio.data.SolidFrame;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.Plot;
-import rapaio.graphics.plot.Lines;
-import rapaio.graphics.plot.Points;
 import rapaio.ml.regressor.RPrediction;
 import rapaio.ml.regressor.Regressor;
 import rapaio.ml.regressor.tree.rtree.RTree;
 import rapaio.printer.LocalPrinter;
 import rapaio.ws.Summary;
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.WS.draw;
 import static rapaio.WS.setPrinter;
 
 /**
@@ -49,30 +41,16 @@ public class Sand {
 
         setPrinter(new LocalPrinter());
 
-        Frame df = Datasets.loadPearsonHeightDataset();
+        Frame df = Datasets.loadIrisDataset();
         Summary.summary(df);
 
-        final String F = "Father";
-        final String S = "Son";
+        Regressor r = RTree.buildDecisionStump();
 
-
-        Numeric test = Numeric.newSeq(59, 75, 0.04).withName(F);
-        Frame te = SolidFrame.newWrapOf(test);
-
-        Regressor r = new RTree().withMinCount(7);
-
-        r.learn(df, S);
+        r.learn(df, "sepal-length");
 
         r.summary();
 
-        RPrediction pred = r.predict(te);
-
-        draw(new Plot()
-                        .add(new Points(df.var(F), df.var(S)).color(Color.LIGHT_GRAY))
-                        .add(new Lines(te.var(F), pred.firstFit()).color(Color.BLUE))
-        );
-
-        new RMSE(df.var(S), r.predict(df).firstFit()).summary();
+        RPrediction pred = r.predict(df);
     }
 
 }

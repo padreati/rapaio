@@ -83,7 +83,7 @@ public class PearsonRCorrelation implements Printable {
         double yMean = new Mean(y).value();
         double sum = 0;
         int len = Math.min(x.rowCount(), y.rowCount());
-        double sdp = Math.sqrt(new Variance(x).getValue()) * Math.sqrt(new Variance(y).getValue());
+        double sdp = Math.sqrt(new Variance(x).value()) * Math.sqrt(new Variance(y).value());
         double count = 0;
         for (int i = 0; i < len; i++) {
             if (x.missing(i) || y.missing(i)) {

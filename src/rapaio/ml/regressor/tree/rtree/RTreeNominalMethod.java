@@ -20,6 +20,8 @@
 
 package rapaio.ml.regressor.tree.rtree;
 
+import rapaio.core.RandomSource;
+import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 
@@ -81,48 +83,61 @@ public interface RTreeNominalMethod {
 //            return result;
 //        }
 //    };
-//
-//    public CTreeNominalMethod BINARY = new CTreeNominalMethod() {
-//
-//        @Override
-//        public String name() {
-//            return "BINARY";
-//        }
-//
-//
-//        @Override
-//        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Numeric weights, String testColName, String targetColName, CTreeTestFunction function) {
-//
-//            List<CTreeCandidate> result = new ArrayList<>();
-//            CTreeCandidate best = null;
-//            for (int i = 1; i < df.var(testColName).dictionary().length; i++) {
-//                Var test = df.var(testColName);
-//                Var target = df.var(targetColName);
-//                String testLabel = df.var(testColName).dictionary()[i];
-//
-//                if (new DensityTable(test, target).countWithMinimum(false, c.getMinCount()) < 2) {
-//                    return result;
-//                }
-//
-//                DensityTable dt = new DensityTable(test, target, weights, testLabel);
-//                double value = function.compute(dt);
-//                CTreeCandidate candidate = new CTreeCandidate(value, function.sign(), testColName);
-//                if (best == null) {
-//                    best = candidate;
-//                    best.addGroup(testColName + " == " + testLabel, spot -> spot.label(testColName).equals(testLabel));
-//                    best.addGroup(testColName + " != " + testLabel, spot -> !spot.label(testColName).equals(testLabel));
-//                } else {
-//                    int comp = best.compareTo(candidate);
-//                    if (comp < 0) continue;
-//                    if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
-//                    best = candidate;
-//                    best.addGroup(testColName + " == " + testLabel, spot -> spot.label(testColName).equals(testLabel));
-//                    best.addGroup(testColName + " != " + testLabel, spot -> !spot.label(testColName).equals(testLabel));
-//                }
-//            }
-//            if (best != null)
-//                result.add(best);
-//            return result;
-//        }
-//    };
+
+    public RTreeNominalMethod BINARY = new RTreeNominalMethod() {
+
+        @Override
+        public String name() {
+            return "BINARY";
+        }
+
+
+        @Override
+        public List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testColName, String targetColName, RTreeTestFunction function) {
+
+            List<RTreeCandidate> result = new ArrayList<>();
+            RTreeCandidate best = null;
+            for (int i = 1; i < df.var(testColName).dictionary().length; i++) {
+                String testLabel = df.var(testColName).dictionary()[i];
+
+                if (df.stream()
+                        .filter(s -> !s.missing(testColName) && s.label(testColName).equals(testLabel))
+                        .count() < c.getMinCount() ||
+                        df.stream()
+                                .filter(s -> !s.missing(testColName) && !s.label(testColName).equals(testLabel))
+                                .count() < c.getMinCount()) {
+                    continue;
+                }
+
+                Var in = df.stream()
+                        .filter(s -> !s.missing(testColName) && s.label(testColName).equals(testLabel))
+                        .toMappedFrame()
+                        .var(targetColName);
+                Var out = df.stream()
+                        .filter(s -> !s.missing(testColName) && !s.label(testColName).equals(testLabel))
+                        .toMappedFrame()
+                        .var(targetColName);
+
+
+                double value = new Variance(in).value() + new Variance(out).value();
+
+                RTreeCandidate candidate = new RTreeCandidate(value, testColName);
+                if (best == null) {
+                    best = candidate;
+                    best.addGroup(testColName + " == " + testLabel, spot -> spot.label(testColName).equals(testLabel));
+                    best.addGroup(testColName + " != " + testLabel, spot -> !spot.label(testColName).equals(testLabel));
+                } else {
+                    int comp = best.compareTo(candidate);
+                    if (comp < 0) continue;
+                    if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
+                    best = candidate;
+                    best.addGroup(testColName + " == " + testLabel, spot -> spot.label(testColName).equals(testLabel));
+                    best.addGroup(testColName + " != " + testLabel, spot -> !spot.label(testColName).equals(testLabel));
+                }
+            }
+            if (best != null)
+                result.add(best);
+            return result;
+        }
+    };
 }

@@ -96,7 +96,7 @@ public class KDE {
      */
     public static double getSilvermanBandwidth(Var vector) {
         Variance var = new Variance(vector);
-        double sd = Math.sqrt(var.getValue());
+        double sd = Math.sqrt(var.value());
         if (sd == 0) {
             sd = 1;
         }

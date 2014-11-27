@@ -68,7 +68,7 @@ public class Variance implements Printable {
 
     }
 
-    public double getValue() {
+    public double value() {
         return value;
     }
 

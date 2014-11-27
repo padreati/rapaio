@@ -72,7 +72,7 @@ public class PearsonHeight implements TutorialPage {
         p("First we take a look at the histograms for the two dimensions");
 
         for (int i = 0; i < df.varCount(); i++) {
-            Normal normal = new Normal(new Mean(df.var(i)).value(), Math.sqrt(new Variance(df.var(i)).getValue()));
+            Normal normal = new Normal(new Mean(df.var(i)).value(), Math.sqrt(new Variance(df.var(i)).value()));
             draw(new Plot()
                             .add(new Histogram(df.var(i)).bins(23).prob(true).minValue(57).maxValue(80))
                             .add(new FunctionLine(normal::pdf).color(2))
