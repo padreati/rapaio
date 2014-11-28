@@ -21,7 +21,7 @@
 //package rapaio.tutorial.pages;
 //
 //import rapaio.ml.classifier.boost.AdaBoostSAMMEClassifier;
-//import rapaio.ml.refactor.rule.OneRule;
+//import rapaio.ml.classifier.rule.OneRule;
 //import rapaio.core.RandomSource;
 //import rapaio.core.eval.ConfusionMatrix;
 //import rapaio.core.eval.ROC;

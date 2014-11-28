@@ -20,18 +20,20 @@
 
 package rapaio.sandbox;
 
+import rapaio.core.eval.ConfusionMatrix;
 import rapaio.data.Frame;
+import rapaio.data.Index;
+import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
-import rapaio.graphics.plot.ABLine;
 import rapaio.graphics.plot.Points;
-import rapaio.ml.regressor.RPrediction;
-import rapaio.ml.regressor.Regressor;
-import rapaio.ml.regressor.tree.rtree.RTree;
+import rapaio.ml.classifier.CPrediction;
+import rapaio.ml.classifier.Classifier;
+import rapaio.ml.classifier.boost.AdaBoostSAMMEClassifier;
+import rapaio.ml.classifier.rule.OneRule;
 import rapaio.printer.LocalPrinter;
 import rapaio.ws.Summary;
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -49,25 +51,22 @@ public class Sand {
         Frame df = Datasets.loadIrisDataset();
         Summary.summary(df);
 
-        Regressor r = RTree.buildDecisionStump();
+        Classifier c = new AdaBoostSAMMEClassifier()
+                .withClassifier(new OneRule())
+                .withRuns(1);
 
-        r = RTree.buildC45().withMaxDepth(Integer.MAX_VALUE);
-        r = RTree.buildC45().withMaxDepth(Integer.MAX_VALUE);
+        c.learn(df, "class");
+        CPrediction pred = c.predict(df, true, true);
 
-        r.learn(df, "sepal-length");
+        new ConfusionMatrix(df.var("class"), pred.firstClasses()).summary();
 
-        r.summary();
-
-        RPrediction pred = r.predict(df, true);
-
-        draw(new Plot()
-                        .add(new Points(df.var(1), df.var(0)).color(Color.LIGHT_GRAY))
-                        .add(new Points(df.var(1), pred.firstFit()).color(Color.BLUE))
-        );
+        Var correct = Index.newEmpty();
+        for (int i = 0; i < df.rowCount(); i++) {
+            correct.addBinary(pred.firstClasses().index(i) == df.var("class").index(i));
+        }
 
         draw(new Plot()
-                        .add(new Points(df.var(1), pred.firstResidual()))
-                        .add(new ABLine(0, true).color(Color.LIGHT_GRAY))
+                        .add(new Points(df.var(3), df.var(2)).color(correct))
         );
     }
 }

@@ -43,8 +43,15 @@ public final class WeightedMean implements Printable {
         if (var.rowCount() != weights.rowCount()) {
             throw new IllegalArgumentException("weights must have the same count as values");
         }
-        double total = weights.stream().complete().mapToDouble().sum();
-        if (total == 0) {
+        int count = 0;
+        double total = 0;
+        for (int i = 0; i < var.rowCount(); i++) {
+            if (var.missing(i) || weights.missing(i))
+                continue;
+            count++;
+            total += weights.value(i);
+        }
+        if (count == 0 || total == 0) {
             return Double.NaN;
         }
         double sum = 0;

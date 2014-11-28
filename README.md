@@ -48,6 +48,7 @@ StatSampling
 * Decision Trees: ID3
 * Decision Trees: C45 (no pruning)
 * Decision Trees: CART (no pruning)
+* Rule: OneRule
 * Boosting: AdaBoost.SAMME
 * Ensemble: Bagging
 * Ensemble: Random Forests
@@ -69,7 +70,6 @@ Not Implemented Features
 An important refactor is in progress. As a consequence, all the algorithm implementations
 are considered by default in experimental state.
 
-* OneRule
 
 * Linear Regressor - filter only numerical attributes
 * MultiLayer Perceptron - regression with sigmoid
