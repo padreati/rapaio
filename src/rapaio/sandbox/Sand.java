@@ -22,15 +22,20 @@ package rapaio.sandbox;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
+import rapaio.graphics.Plot;
+import rapaio.graphics.plot.ABLine;
+import rapaio.graphics.plot.Points;
 import rapaio.ml.regressor.RPrediction;
 import rapaio.ml.regressor.Regressor;
 import rapaio.ml.regressor.tree.rtree.RTree;
 import rapaio.printer.LocalPrinter;
 import rapaio.ws.Summary;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import static rapaio.WS.draw;
 import static rapaio.WS.setPrinter;
 
 /**
@@ -46,11 +51,23 @@ public class Sand {
 
         Regressor r = RTree.buildDecisionStump();
 
+        r = RTree.buildC45().withMaxDepth(Integer.MAX_VALUE);
+        r = RTree.buildC45().withMaxDepth(Integer.MAX_VALUE);
+
         r.learn(df, "sepal-length");
 
         r.summary();
 
-        RPrediction pred = r.predict(df);
-    }
+        RPrediction pred = r.predict(df, true);
 
+        draw(new Plot()
+                        .add(new Points(df.var(1), df.var(0)).color(Color.LIGHT_GRAY))
+                        .add(new Points(df.var(1), pred.firstFit()).color(Color.BLUE))
+        );
+
+        draw(new Plot()
+                        .add(new Points(df.var(1), pred.firstResidual()))
+                        .add(new ABLine(0, true).color(Color.LIGHT_GRAY))
+        );
+    }
 }

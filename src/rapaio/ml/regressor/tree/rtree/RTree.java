@@ -41,7 +41,6 @@ public class RTree extends AbstractRegressor {
     int minCount = 1;
     int maxDepth = Integer.MAX_VALUE;
 
-    RTreeTestCounter testCounter = RTreeTestCounter.M_NOMINAL_M_NUMERIC;
     RTreeNominalMethod nominalMethod = RTreeNominalMethod.BINARY;
     RTreeNumericMethod numericMethod = RTreeNumericMethod.BINARY;
     RTreeTestFunction function = RTreeTestFunction.VARIANCE_SUM;
@@ -58,6 +57,26 @@ public class RTree extends AbstractRegressor {
                 .withNominalMethod(RTreeNominalMethod.BINARY)
                 .withNumericMethod(RTreeNumericMethod.BINARY)
                 .withSplitter(RTreeSplitter.REMAINS_TO_MAJORITY)
+                ;
+    }
+
+    public static RTree buildC45() {
+        return new RTree()
+                .withMaxDepth(Integer.MAX_VALUE)
+                .withNominalMethod(RTreeNominalMethod.FULL)
+                .withNumericMethod(RTreeNumericMethod.BINARY)
+                .withSplitter(RTreeSplitter.REMAINS_TO_RANDOM)
+                .withMinCount(2)
+                ;
+    }
+
+    public static RTree buildCART() {
+        return new RTree()
+                .withMaxDepth(Integer.MAX_VALUE)
+                .withNominalMethod(RTreeNominalMethod.BINARY)
+                .withNumericMethod(RTreeNumericMethod.BINARY)
+                .withSplitter(RTreeSplitter.REMAINS_TO_RANDOM)
+                .withMinCount(2)
                 ;
     }
 
@@ -81,7 +100,6 @@ public class RTree extends AbstractRegressor {
         sb.append("colSelector=").append(varSelector.toString()).append(",");
         sb.append("minCount=").append(minCount).append(",");
         sb.append("maxDepth=").append(maxDepth).append(",");
-        sb.append("testCounter=").append(testCounter.name()).append(",");
         sb.append("numericMethod=").append(numericMethod.name()).append(",");
         sb.append("nominalMethod=").append(nominalMethod.name()).append(",");
         sb.append("function=").append(function.name()).append(",");
@@ -91,26 +109,17 @@ public class RTree extends AbstractRegressor {
         return sb.toString();
     }
 
-    public int getMinCount() {
-        return minCount;
-    }
-
     public RTree withMinCount(int minCount) {
         this.minCount = minCount;
         return this;
     }
 
-    public int getMaxDepth() {
-        return maxDepth;
-    }
-
     public RTree withMaxDepth(int maxDepth) {
+        if (maxDepth == -1) {
+            maxDepth = Integer.MAX_VALUE;
+        }
         this.maxDepth = maxDepth;
         return this;
-    }
-
-    public RTreeNumericMethod getNumericMethod() {
-        return numericMethod;
     }
 
     public RTree withNumericMethod(RTreeNumericMethod numericMethod) {
@@ -118,26 +127,14 @@ public class RTree extends AbstractRegressor {
         return this;
     }
 
-    public RTreeNominalMethod getNominalMethod() {
-        return nominalMethod;
-    }
-
     public RTree withNominalMethod(RTreeNominalMethod nominalMethod) {
         this.nominalMethod = nominalMethod;
         return this;
     }
 
-    public RTreeTestFunction getFunction() {
-        return function;
-    }
-
     public RTree withFunction(RTreeTestFunction function) {
         this.function = function;
         return this;
-    }
-
-    public RTreeSplitter getSplitter() {
-        return splitter;
     }
 
     public RTree withSplitter(RTreeSplitter splitter) {
@@ -158,8 +155,6 @@ public class RTree extends AbstractRegressor {
         this.targetNames = targetVarList.toArray(new String[targetVarList.size()]);
 
         rows = df.rowCount();
-
-        testCounter.initialize(df, firstTargetVar());
 
         root = new RTreeNode(null, "root", spot -> true);
         root.learn(this, df, weights, maxDepth);

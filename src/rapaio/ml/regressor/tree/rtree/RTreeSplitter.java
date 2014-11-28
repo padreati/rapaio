@@ -24,7 +24,6 @@ import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.data.stream.FSpot;
 import rapaio.util.Pair;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -37,7 +36,7 @@ public interface RTreeSplitter {
 
     String name();
 
-    public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Var weights, RTreeCandidate candidate);
+    public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTreeCandidate candidate);
 
     RTreeSplitter REMAINS_IGNORED = new RTreeSplitter() {
         @Override
@@ -46,9 +45,9 @@ public interface RTreeSplitter {
         }
 
         @Override
-        public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Var weights, RTreeCandidate candidate) {
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTreeCandidate candidate) {
             List<Mapping> mappings = new ArrayList<>();
-            List<Numeric> weightsList = new ArrayList<>();
+            List<Var> weightsList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                 mappings.add(Mapping.newEmpty());
                 weightsList.add(Numeric.newEmpty());
@@ -80,9 +79,9 @@ public interface RTreeSplitter {
         }
 
         @Override
-        public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Var weights, RTreeCandidate candidate) {
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTreeCandidate candidate) {
             List<Mapping> mappings = new ArrayList<>();
-            List<Numeric> weightsList = new ArrayList<>();
+            List<Var> weightsList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                 mappings.add(Mapping.newEmpty());
                 weightsList.add(Numeric.newEmpty());
@@ -130,9 +129,9 @@ public interface RTreeSplitter {
         }
 
         @Override
-        public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Var weights, RTreeCandidate candidate) {
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTreeCandidate candidate) {
             List<Mapping> mappings = new ArrayList<>();
-            List<Numeric> weightsList = new ArrayList<>();
+            List<Var> weightsList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                 mappings.add(Mapping.newEmpty());
                 weightsList.add(Numeric.newEmpty());
@@ -181,12 +180,10 @@ public interface RTreeSplitter {
         }
 
         @Override
-        public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Var weights, RTreeCandidate candidate) {
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTreeCandidate candidate) {
             List<Mapping> mappings = new ArrayList<>();
-            List<Numeric> weightList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                 mappings.add(Mapping.newEmpty());
-                weightList.add(Numeric.newEmpty());
             }
 
             final Set<Integer> missingSpots = new HashSet<>();
@@ -195,29 +192,17 @@ public interface RTreeSplitter {
                     Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                     if (predicate.test(s)) {
                         mappings.get(i).add(s.row());
-                        weightList.get(i).addValue(weights.value(s.row()));
                         return;
                     }
                 }
                 missingSpots.add(s.row());
             });
             missingSpots.forEach(rowId -> mappings.get(RandomSource.nextInt(mappings.size())).add(rowId));
-            List<Frame> frames = mappings.stream().map(mapping -> MappedFrame.newByRow(df, mapping)).collect(Collectors.toList());
-            return new Pair<>(frames, weightList);
-        }
-    };
-
-    RTreeSplitter REMAINS_WITH_SURROGATES = new RTreeSplitter() {
-
-        @Override
-        public String name() {
-            return "REMAINS_WITH_SURROGATES";
-        }
-
-        @Override
-        public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Var weights, RTreeCandidate candidate) {
-            // TODO partition tree classifier - remains surrogates
-            throw new NotImplementedException();
+            List<Frame> frameList = mappings.stream()
+                    .map(mapping -> MappedFrame.newByRow(df, mapping)).collect(Collectors.toList());
+            List<Var> weightList = mappings.stream()
+                    .map(mapping -> weights.mapRows(mapping)).collect(Collectors.toList());
+            return new Pair<>(frameList, weightList);
         }
     };
 }

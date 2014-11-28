@@ -50,39 +50,68 @@ public interface RTreeNominalMethod {
         }
     };
 
-//    public RTreeNominalMethod FULL = new RTreeNominalMethod() {
-//
-//        @Override
-//        public String name() {
-//            return "FULL";
-//        }
-//
-//        @Override
-//        public List<RTreeCandidate> computeCandidates(RTree c, Frame df, Numeric weights, String testColName, String targetColName, RTreeTestFunction function) {
-//            List<RTreeCandidate> result = new ArrayList<>();
-//            Var test = df.var(testColName);
-//            Var target = df.var(targetColName);
-//
-//            if (new DensityTable(test, target).countWithMinimum(false, c.getMinCount()) < 2) {
-//                return result;
-//            }
-//
-//            DensityTable dt = new DensityTable(test, target, weights);
-//            double value = function.compute(dt);
-//
-//            CTreeCandidate candidate = new CTreeCandidate(value, function.sign(), testColName);
-//            for (int i = 1; i < test.dictionary().length; i++) {
-//
-//                final String label = test.dictionary()[i];
-//                candidate.addGroup(
-//                        String.format("%s == %s", testColName, label),
-//                        spot -> !spot.missing(testColName) && spot.label(testColName).equals(label));
-//            }
-//
-//            result.add(candidate);
-//            return result;
-//        }
-//    };
+    public RTreeNominalMethod FULL = new RTreeNominalMethod() {
+
+        @Override
+        public String name() {
+            return "FULL";
+        }
+
+
+        @Override
+        public List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testColName, String targetColName, RTreeTestFunction function) {
+
+            List<RTreeCandidate> result = new ArrayList<>();
+            RTreeCandidate best = null;
+            for (int i = 1; i < df.var(testColName).dictionary().length; i++) {
+
+                Var testVar = df.var(testColName);
+                String[] testDict = testVar.dictionary();
+
+                List<String> labels = new ArrayList<>();
+                for (int j = 1; j < testVar.dictionary().length; j++) {
+                    String testLabel = testDict[j];
+                    if (testVar.stream().filter(s -> s.label().equals(testLabel)).count() >= c.minCount) {
+                        labels.add(testLabel);
+                    }
+                }
+
+                if (labels.size() < 2) {
+                    continue;
+                }
+
+                double[] variances = new double[labels.size()];
+                for (int j = 0; j < variances.length; j++) {
+                    String label = labels.get(j);
+                    Var v = df.stream().filter(s -> s.label(testColName).equals(label)).toMappedFrame().var(targetColName);
+                    variances[j] = new Variance(v).value();
+                }
+
+                double value = c.function.computeTestValue(variances);
+
+                RTreeCandidate candidate = new RTreeCandidate(value, testColName);
+                if (best == null) {
+                    best = candidate;
+                    for (int j = 0; j < labels.size(); j++) {
+                        String label = labels.get(j);
+                        best.addGroup(testColName + " == " + label, spot -> spot.label(testColName).equals(label));
+                    }
+                } else {
+                    int comp = best.compareTo(candidate);
+                    if (comp < 0) continue;
+                    if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
+                    best = candidate;
+                    for (int j = 0; j < labels.size(); j++) {
+                        String label = labels.get(j);
+                        best.addGroup(testColName + " == " + label, spot -> spot.label(testColName).equals(label));
+                    }
+                }
+            }
+            if (best != null)
+                result.add(best);
+            return result;
+        }
+    };
 
     public RTreeNominalMethod BINARY = new RTreeNominalMethod() {
 
@@ -102,10 +131,10 @@ public interface RTreeNominalMethod {
 
                 if (df.stream()
                         .filter(s -> !s.missing(testColName) && s.label(testColName).equals(testLabel))
-                        .count() < c.getMinCount() ||
+                        .count() < c.minCount ||
                         df.stream()
                                 .filter(s -> !s.missing(testColName) && !s.label(testColName).equals(testLabel))
-                                .count() < c.getMinCount()) {
+                                .count() < c.minCount) {
                     continue;
                 }
 
@@ -119,7 +148,9 @@ public interface RTreeNominalMethod {
                         .var(targetColName);
 
 
-                double value = new Variance(in).value() + new Variance(out).value();
+                double left = new Variance(in).value();
+                double right = new Variance(out).value();
+                double value = c.function.computeTestValue(left, right);
 
                 RTreeCandidate candidate = new RTreeCandidate(value, testColName);
                 if (best == null) {

@@ -67,7 +67,9 @@ public interface RTreeNumericMethod {
 
             Var sort = BaseFilters.sort(Index.newSeq(df.rowCount()), RowComparators.numericComparator(test, true));
 
-            double[] var_sum = new double[df.rowCount()];
+            double[] leftVar = new double[df.rowCount()];
+            double[] rightVar = new double[df.rowCount()];
+
             StatOnline so = new StatOnline();
 
             for (int i = 0; i < df.rowCount(); i++) {
@@ -76,7 +78,7 @@ public interface RTreeNumericMethod {
                     continue;
                 }
                 so.update(target.value(row), weights.value(row));
-                var_sum[row] = so.variance();
+                leftVar[row] = so.variance();
             }
             for (int i = df.rowCount() - 1; i >= 0; i--) {
                 int row = sort.index(i);
@@ -84,7 +86,7 @@ public interface RTreeNumericMethod {
                     continue;
                 }
                 so.update(target.value(row), weights.value(row));
-                var_sum[row] += so.variance();
+                rightVar[row] += so.variance();
             }
 
             RTreeCandidate best = null;
@@ -96,8 +98,12 @@ public interface RTreeNumericMethod {
                 if (i < c.minCount || i > df.rowCount() - 1 - c.minCount) continue;
                 if (test.value(sort.index(i)) == test.value(sort.index(i + 1))) continue;
 
+                double left = leftVar[i];
+                double right = rightVar[i];
 
-                RTreeCandidate current = new RTreeCandidate(var_sum[i], testColName);
+                double value = c.function.computeTestValue(left, right);
+
+                RTreeCandidate current = new RTreeCandidate(value, testColName);
                 if (best == null) {
                     best = current;
 

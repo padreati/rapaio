@@ -20,6 +20,8 @@
 
 package rapaio.ml.regressor.tree.rtree;
 
+import java.util.Arrays;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
@@ -27,5 +29,34 @@ public interface RTreeTestFunction {
 
     String name();
 
-    RTreeTestFunction VARIANCE_SUM = () -> "VARIANCE_SUM";
+    double computeTestValue(double... variances);
+
+    ////////////////////
+    // implementations
+
+    RTreeTestFunction VARIANCE_SUM = new RTreeTestFunction() {
+
+        @Override
+        public String name() {
+            return "VARIANCE_SUM";
+        }
+
+        @Override
+        public double computeTestValue(double... variances) {
+            return Arrays.stream(variances).sum();
+        }
+    };
+
+    RTreeTestFunction STD_SUM = new RTreeTestFunction() {
+
+        @Override
+        public String name() {
+            return "STD_SUM";
+        }
+
+        @Override
+        public double computeTestValue(double... variances) {
+            return Arrays.stream(variances).map(Math::sqrt).sum();
+        }
+    };
 }

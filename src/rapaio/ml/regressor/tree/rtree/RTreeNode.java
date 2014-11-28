@@ -22,7 +22,6 @@ package rapaio.ml.regressor.tree.rtree;
 
 import rapaio.core.stat.WeightedMean;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
 import rapaio.util.Pair;
@@ -92,7 +91,7 @@ public class RTreeNode {
         value = new WeightedMean(df.var(tree.firstTargetVar()), weights).value();
         weight = weights.stream().parallel().complete().mapToDouble().sum();
 
-        if (df.rowCount() == 0 || df.rowCount() <= tree.getMinCount() || depth <= 1) {
+        if (df.rowCount() == 0 || df.rowCount() <= tree.minCount || depth <= 1) {
             return;
         }
 
@@ -102,15 +101,14 @@ public class RTreeNode {
         ConcurrentLinkedQueue<RTreeCandidate> candidates = new ConcurrentLinkedQueue<>();
         Arrays.stream(tree.getVarSelector().nextVarNames()).parallel().forEach(testCol -> {
             if (testCol.equals(tree.firstTargetVar())) return;
-            if (!tree.testCounter.canUse(testCol)) return;
 
             if (df.var(testCol).type().isNumeric()) {
-                tree.getNumericMethod().computeCandidates(
-                        tree, df, weights, testCol, tree.firstTargetVar(), tree.getFunction())
+                tree.numericMethod.computeCandidates(
+                        tree, df, weights, testCol, tree.firstTargetVar(), tree.function)
                         .forEach(candidates::add);
             } else {
-                tree.getNominalMethod().computeCandidates(
-                        tree, df, weights, testCol, tree.firstTargetVar(), tree.getFunction())
+                tree.nominalMethod.computeCandidates(
+                        tree, df, weights, testCol, tree.firstTargetVar(), tree.function)
                         .forEach(candidates::add);
             }
         });
@@ -121,9 +119,7 @@ public class RTreeNode {
             return;
         }
         leaf = false;
-
         bestCandidate = candidateList.get(0);
-        tree.testCounter.markUse(candidateList.get(0).getTestName());
 
         // now that we have a best candidate,do the effective split
 
@@ -132,7 +128,7 @@ public class RTreeNode {
             return;
         }
 
-        Pair<List<Frame>, List<Numeric>> frames = tree.getSplitter().performSplit(df, weights, bestCandidate);
+        Pair<List<Frame>, List<Var>> frames = tree.splitter.performSplit(df, weights, bestCandidate);
         children = new ArrayList<>(frames.first.size());
         for (int i = 0; i < frames.first.size(); i++) {
             RTreeNode child = new RTreeNode(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
