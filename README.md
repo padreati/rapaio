@@ -50,6 +50,7 @@ StatSampling
 * Decision Trees: CART (no pruning)
 * Rule: OneRule
 * Boosting: AdaBoost.SAMME
+* Ensemble: SplitClassifier
 * Ensemble: Bagging
 * Ensemble: Random Forests
 * Bayesian: NaiveBayes (Gaussian, Empirical, Multinomial)

@@ -23,14 +23,13 @@ package rapaio.sandbox;
 import rapaio.core.eval.ConfusionMatrix;
 import rapaio.data.Frame;
 import rapaio.data.Index;
-import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;
 import rapaio.ml.classifier.CPrediction;
-import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.boost.AdaBoostSAMMEClassifier;
-import rapaio.ml.classifier.rule.OneRule;
+import rapaio.ml.classifier.meta.SplitClassifier;
+import rapaio.ml.classifier.tree.ctree.CTree;
 import rapaio.printer.LocalPrinter;
 import rapaio.ws.Summary;
 
@@ -51,22 +50,20 @@ public class Sand {
         Frame df = Datasets.loadIrisDataset();
         Summary.summary(df);
 
-        Classifier c = new AdaBoostSAMMEClassifier()
-                .withClassifier(new OneRule())
-                .withRuns(1);
+        SplitClassifier sc = new SplitClassifier();
+        sc.withSplit(s -> s.value("sepal-width") >= 3.1, CTree.newID3());
+        sc.withSplit(s -> s.value("sepal-width") < 3.1, new AdaBoostSAMMEClassifier().withClassifier(CTree.newC45()).withRuns(100));
 
-        c.learn(df, "class");
-        CPrediction pred = c.predict(df, true, true);
+        sc.learn(df, "class");
 
+        CPrediction pred = sc.predict(df, true, true);
         new ConfusionMatrix(df.var("class"), pred.firstClasses()).summary();
 
-        Var correct = Index.newEmpty();
+        Index hit = Index.newEmpty();
         for (int i = 0; i < df.rowCount(); i++) {
-            correct.addBinary(pred.firstClasses().index(i) == df.var("class").index(i));
+            hit.addBinary(pred.firstClasses().index(i) == df.var("class").index(i));
         }
+        draw(new Plot().add(new Points(df.var(0), df.var(1)).color(df.var("class")).pch(hit)));
 
-        draw(new Plot()
-                        .add(new Points(df.var(3), df.var(2)).color(correct))
-        );
     }
 }

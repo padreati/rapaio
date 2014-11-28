@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.refactor.meta;
+package rapaio.ml.classifier.meta;
 
 import rapaio.data.*;
 import rapaio.data.stream.FSpot;
@@ -119,7 +119,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
         List<Frame> frames = maps.stream().map(df::mapRows).collect(Collectors.toList());
         List<Var> weightList = maps.stream().map(weights::mapRows).collect(Collectors.toList());
 
-        for (int i = 0; i < splits.size() + 1; i++) {
+        for (int i = 0; i < splits.size(); i++) {
             Split split = splits.get(i);
 
             if (split.classifier instanceof RunningClassifier) {
@@ -145,26 +145,25 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
 
         df.stream().forEach(spot -> {
             for (Split split : splits) {
-                if (!split.predicate.test(spot)) {
-                    continue;
-                }
+                if (split.predicate.test(spot)) {
 
-                Frame f = MappedFrame.newByRow(df, spot.row());
-                CPrediction p = split.classifier.predict(f, withClasses, withDensities);
+                    Frame f = MappedFrame.newByRow(df, spot.row());
+                    CPrediction p = split.classifier.predict(f, withClasses, withDensities);
 
-                if (withClasses) {
-                    for (String targetVar : targetVars) {
-                        pred.classes(targetVar).setLabel(spot.row(), p.classes(targetVar).label(0));
-                    }
-                }
-                if (withDensities) {
-                    for (String targetVar : targetVars) {
-                        for (int j = 0; j < dict.get(targetVar).length; j++) {
-                            pred.densities().get(targetVar).setValue(spot.row(), dict.get(targetVar)[j], p.densities().get(targetVar).value(0, dict.get(targetVar)[j]));
+                    if (withClasses) {
+                        for (String targetVar : targetVars) {
+                            pred.classes(targetVar).setLabel(spot.row(), p.classes(targetVar).label(0));
                         }
                     }
+                    if (withDensities) {
+                        for (String targetVar : targetVars) {
+                            for (int j = 0; j < dict.get(targetVar).length; j++) {
+                                pred.densities().get(targetVar).setValue(spot.row(), dict.get(targetVar)[j], p.densities().get(targetVar).value(0, dict.get(targetVar)[j]));
+                            }
+                        }
+                    }
+                    return;
                 }
-                return;
             }
         });
         return pred;
