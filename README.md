@@ -65,8 +65,9 @@ StatSampling
 * Tree: C45 (no pruning)
 * Tree: DecisionStump
 * Boost: GBT (Gradient Boosting Tree) Regressor
+* NNet: MultiLayer Perceptron Regressor
 
-Not Implemented Features
+Experimental (Not Stable) Features
 ========================
 
 An important refactor is in progress. As a consequence, all the algorithm implementations
@@ -74,7 +75,6 @@ are considered by default in experimental state.
 
 
 * Linear Regressor - filter only numerical attributes
-* MultiLayer Perceptron - regression with sigmoid
 
 **Matrices and vectors**
 

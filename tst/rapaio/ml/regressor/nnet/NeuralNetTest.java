@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.refactor.nnet;
+package rapaio.ml.regressor.nnet;
 
 import junit.framework.Assert;
 import org.junit.Test;
@@ -26,7 +26,8 @@ import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
-import rapaio.ml.refactor.Regressor;
+import rapaio.ml.regressor.RPrediction;
+import rapaio.ml.regressor.Regressor;
 import rapaio.ws.Summary;
 
 
@@ -60,19 +61,19 @@ public class NeuralNetTest {
 
         Frame df = SolidFrame.newWrapOf(a, b, and);
 
-        Regressor nn = new MultiLayerPerceptronRegressor(new int[]{2, 1}, 0.1).setRounds(100);
+        Regressor nn = new MultiLayerPerceptronRegressor(2, 1).withLearningRate(0.1).withRuns(100);
 
         for (int i = 0; i < 1000; i++) {
             nn.learn(df, "and");
         }
-        nn.predict(df);
+        RPrediction pred = nn.predict(df);
 
-        Summary.lines(nn.getAllFitValues());
+        Summary.lines(pred.fitFrame());
 
-        Assert.assertTrue(nn.getFitValues().value(0) < .5);
-        Assert.assertTrue(nn.getFitValues().value(1) < .5);
-        Assert.assertTrue(nn.getFitValues().value(2) < .5);
-        Assert.assertTrue(nn.getFitValues().value(3) > .5);
+        Assert.assertTrue(pred.firstFit().value(0) < .5);
+        Assert.assertTrue(pred.firstFit().value(1) < .5);
+        Assert.assertTrue(pred.firstFit().value(2) < .5);
+        Assert.assertTrue(pred.firstFit().value(3) > .5);
     }
 
     @Test
@@ -84,19 +85,19 @@ public class NeuralNetTest {
 
         Frame df = SolidFrame.newWrapOf(a, b, xor);
 
-        Regressor nn = new MultiLayerPerceptronRegressor(new int[]{2, 2, 1}, 0.1).setRounds(100);
+        Regressor nn = new MultiLayerPerceptronRegressor(2, 2, 1).withLearningRate(0.1).withRuns(100);
 
         for (int i = 0; i < 1000; i++) {
             nn.learn(df, "xor");
         }
-        nn.predict(df);
+        RPrediction rp = nn.predict(df);
 
-        Summary.lines(nn.getAllFitValues());
+        Summary.lines(rp.fitFrame());
 
-        Assert.assertTrue(nn.getFitValues().value(0) > .5);
-        Assert.assertTrue(nn.getFitValues().value(1) < .5);
-        Assert.assertTrue(nn.getFitValues().value(2) < .5);
-        Assert.assertTrue(nn.getFitValues().value(3) > .5);
+        Assert.assertTrue(rp.firstFit().value(0) > .5);
+        Assert.assertTrue(rp.firstFit().value(1) < .5);
+        Assert.assertTrue(rp.firstFit().value(2) < .5);
+        Assert.assertTrue(rp.firstFit().value(3) > .5);
     }
 
     @Test
@@ -129,27 +130,27 @@ public class NeuralNetTest {
 
         Frame df = SolidFrame.newWrapOf(xorA.rowCount(), a, b, xorA, xorB);
 
-        Regressor nn = new MultiLayerPerceptronRegressor(new int[]{2, 4, 2}, 0.1).setRounds(100);
+        Regressor nn = new MultiLayerPerceptronRegressor(2, 4, 2).withLearningRate(0.1).withRuns(100);
 
         for (int i = 0; i < 10_000; i++) {
             nn.learn(df, "xorA,xorB");
         }
-        nn.predict(df);
+        RPrediction rp = nn.predict(df);
 
-        Assert.assertTrue(nn.getAllFitValues().var("xorA").value(0) < .5);
-        Assert.assertTrue(nn.getAllFitValues().var("xorA").value(1) > .5);
-        Assert.assertTrue(nn.getAllFitValues().var("xorA").value(2) > .5);
-        Assert.assertTrue(nn.getAllFitValues().var("xorA").value(3) < .5);
+        Assert.assertTrue(rp.fitFrame().var("xorA").value(0) < .5);
+        Assert.assertTrue(rp.fitFrame().var("xorA").value(1) > .5);
+        Assert.assertTrue(rp.fitFrame().var("xorA").value(2) > .5);
+        Assert.assertTrue(rp.fitFrame().var("xorA").value(3) < .5);
 
-        Assert.assertTrue(nn.getAllFitValues().var("xorB").value(0) > .5);
-        Assert.assertTrue(nn.getAllFitValues().var("xorB").value(1) < .5);
-        Assert.assertTrue(nn.getAllFitValues().var("xorB").value(2) < .5);
-        Assert.assertTrue(nn.getAllFitValues().var("xorB").value(3) > .5);
+        Assert.assertTrue(rp.fitFrame().var("xorB").value(0) > .5);
+        Assert.assertTrue(rp.fitFrame().var("xorB").value(1) < .5);
+        Assert.assertTrue(rp.fitFrame().var("xorB").value(2) < .5);
+        Assert.assertTrue(rp.fitFrame().var("xorB").value(3) > .5);
 
-        Summary.lines(nn.getAllFitValues());
+        Summary.lines(rp.fitFrame());
     }
 
-    //    @Test
+    @Test
     public void testGarciaChallenge() {
 
         Var a = Numeric.newWrapOf(0, 1, 0, 1).withName("a");
@@ -158,27 +159,27 @@ public class NeuralNetTest {
 
         Frame df = SolidFrame.newWrapOf(a, b, xor);
 
-        Regressor nn = new MultiLayerPerceptronRegressor(new int[]{2, 2, 1}, 0.1).setRounds(100);
+        Regressor nn = new MultiLayerPerceptronRegressor(2, 2, 1).withLearningRate(0.1).withRuns(100);
 
-        Frame stat = SolidFrame.newMatrix(100, new String[]{"time", "xor1err", "xor2err", "xor3err", "xor4err"});
-        for (int i = 0; i < 100; i++) {
+        Frame stat = SolidFrame.newMatrix(100, "time", "xor1err", "xor2err", "xor3err", "xor4err");
+        for (int i = 0; i < 1; i++) {
             long start = System.currentTimeMillis();
             for (int j = 0; j < 4 * 2_000; j++) {
                 nn.learn(df, "xor");
             }
-            nn.predict(df);
+            RPrediction rp = nn.predict(df);
             long stop = System.currentTimeMillis();
 
-            Assert.assertTrue(nn.getFitValues().value(0) > .95);
-            Assert.assertTrue(nn.getFitValues().value(1) < .05);
-            Assert.assertTrue(nn.getFitValues().value(2) < .05);
-            Assert.assertTrue(nn.getFitValues().value(3) > .95);
+            Assert.assertTrue(rp.firstFit().value(0) > .95);
+            Assert.assertTrue(rp.firstFit().value(1) < .05);
+            Assert.assertTrue(rp.firstFit().value(2) < .05);
+            Assert.assertTrue(rp.firstFit().value(3) > .95);
 
             stat.setValue(i, "time", (stop - start) / 1000.);
-            stat.setValue(i, "xor1err", 1. - nn.getFitValues().value(0));
-            stat.setValue(i, "xor2err", nn.getFitValues().value(1));
-            stat.setValue(i, "xor3err", nn.getFitValues().value(2));
-            stat.setValue(i, "xor4err", 1. - nn.getFitValues().value(3));
+            stat.setValue(i, "xor1err", 1. - rp.firstFit().value(0));
+            stat.setValue(i, "xor2err", rp.firstFit().value(1));
+            stat.setValue(i, "xor3err", rp.firstFit().value(2));
+            stat.setValue(i, "xor4err", 1. - rp.firstFit().value(3));
         }
 
         Summary.summary(stat);

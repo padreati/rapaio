@@ -18,24 +18,43 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.refactor.nnet;
+package rapaio.ml.regressor.nnet;
+
+import rapaio.core.RandomSource;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class TanhFunction implements TFunction {
+public enum TFunction {
 
-    @Override
-    public double compute(double x) {
-//        return 1.7159 * Math.tanh(0.66666667 * x);
-        return Math.tanh(x);
-    }
+    SIGMOID() {
+        public double compute(double input) {
+            return 1. / (1. + StrictMath.exp(-input));
+        }
 
-    @Override
-    public double differential(double x) {
+        public double differential(double value) {
+            if (value == 0) return RandomSource.nextDouble() / 100;
+            return value * (1. - value);
+        }
+    },
+    TANH() {
+        @Override
+        public double compute(double x) {
+            return 1.7159 * Math.tanh(0.66666667 * x);
+//        return Math.tanh(x);
+        }
+
+        @Override
+        public double differential(double x) {
 //        double cosh = Math.cosh(0.66666666667 * x);
 //        return 1.14393 / (cosh*cosh);
-        return 1 - x * x;
-//        return 0.66666667 / 1.7159 * (1.7159 + x) * (1.7159 - x);
-    }
+//        return 1 - x * x;
+            return 0.66666667 / 1.7159 * (1.7159 + x) * (1.7159 - x);
+        }
+    };
+
+
+    public abstract double compute(double input);
+
+    public abstract double differential(double value);
 }

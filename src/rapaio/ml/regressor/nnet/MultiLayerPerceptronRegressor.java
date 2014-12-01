@@ -18,39 +18,43 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.refactor.nnet;
+package rapaio.ml.regressor.nnet;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
-import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
-import rapaio.ml.refactor.Regressor;
+import rapaio.ml.regressor.AbstractRegressor;
+import rapaio.ml.regressor.RPrediction;
+import rapaio.ml.regressor.Regressor;
+import rapaio.printer.Printer;
 
-import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
-public class MultiLayerPerceptronRegressor implements Regressor, Serializable {
+public class MultiLayerPerceptronRegressor extends AbstractRegressor {
 
-    private final double learningRate;
+    private final int[] layerSizes;
     private final NetNode[][] net;
-    private final TFunction sigmoid = new SigmoidFunction();
+    private TFunction function = TFunction.SIGMOID;
+    private double learningRate = 1.0;
 
-    List<String> inputCols;
-    List<String> targetCols;
-    Frame prediction;
-    int rounds = 0;
+    String[] inputNames;
+    int runs = 0;
 
-    public MultiLayerPerceptronRegressor(int[] layerSizes, double learningRate) {
-        this.learningRate = learningRate;
+    @Override
+    public Regressor newInstance() {
+        return new MultiLayerPerceptronRegressor(layerSizes);
+    }
+
+    public MultiLayerPerceptronRegressor(int... layerSizes) {
+        this.layerSizes = layerSizes;
 
         if (layerSizes.length < 2) {
-            throw new IllegalArgumentException("neural net must hav at least 2 layers (including input layer)");
+            throw new IllegalArgumentException("neural net must have at least 2 layers (including input layer)");
         }
 
         // build design
@@ -94,58 +98,70 @@ public class MultiLayerPerceptronRegressor implements Regressor, Serializable {
     }
 
     @Override
-    public Regressor newInstance() {
-        throw new RuntimeException("Not implemented");
+    public String name() {
+        return "MultiLayerPerceptronRegressor";
     }
 
-    public int getRounds() {
-        return rounds;
+    @Override
+    public String fullName() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(name()).append("{");
+        sb.append("function=").append(function.name()).append(", ");
+        sb.append("learningRate=").append(Printer.formatDecShort.format(learningRate)).append(", ");
+        sb.append("layerSizes=").append(Arrays.deepToString(Arrays.stream(layerSizes).mapToObj(i -> i).toArray()));
+        sb.append("}");
+        return sb.toString();
     }
 
-    public MultiLayerPerceptronRegressor setRounds(int rounds) {
-        this.rounds = rounds;
+    public MultiLayerPerceptronRegressor withFunction(TFunction function) {
+        this.function = function;
+        return this;
+    }
+
+    public MultiLayerPerceptronRegressor withLearningRate(double learningRate) {
+        this.learningRate = learningRate;
+        return this;
+    }
+
+    public MultiLayerPerceptronRegressor withRuns(int runs) {
+        this.runs = runs;
         return this;
     }
 
     @Override
-    public void learn(Frame df, List<Double> weights, String targetColName) {
-        this.learn(df, null, targetColName);
-    }
+    public void learn(Frame df, Var weights, String... targetVarNames) {
 
-    @Override
-    public void learn(Frame df, String targetCols) {
-        VarRange targetVarRange = new VarRange(targetCols);
-        List<Integer> targets = targetVarRange.parseVarIndexes(df);
-        this.targetCols = new ArrayList<>();
-        for (Integer target : targets) {
-            this.targetCols.add(df.varNames()[target]);
-        }
-        inputCols = new ArrayList<>();
-        for (int i = 0; i < df.varNames().length; i++) {
-            if (this.targetCols.contains(df.varNames()[i])) continue;
-            if (df.var(df.varNames()[i]).type().isNominal()) continue;
-            inputCols.add(df.varNames()[i]);
+        List<String> list = new VarRange(targetVarNames).parseVarNames(df);
+
+        this.targetNames = list.toArray(new String[list.size()]);
+        this.inputNames = new String[df.varCount() - targetNames.length];
+        int pos = 0;
+        for (String varName : df.varNames()) {
+            if (list.contains(varName)) continue;
+            if (df.var(varName).type().isNominal()) continue;
+            inputNames[pos++] = varName;
         }
 
         // validate
-        if (this.targetCols.size() != net[net.length - 1].length) {
-            throw new IllegalArgumentException("target columns does not fit output nodes");
+
+        if (this.targetNames.length != net[net.length - 1].length) {
+            throw new IllegalArgumentException("target var names does not fit output nodes");
         }
-        if (inputCols.size() != net[0].length - 1) {
-            throw new IllegalArgumentException("input columns does not fit input nodes");
+        if (inputNames.length != net[0].length - 1) {
+            throw new IllegalArgumentException("input var names does not fit input nodes");
         }
 
         // learn network
 
-        for (int kk = 0; kk < rounds; kk++) {
-            int pos = RandomSource.nextInt(df.rowCount());
+        for (int kk = 0; kk < runs; kk++) {
+            pos = RandomSource.nextInt(df.rowCount());
 
             // set inputs
-            for (int i = 0; i < inputCols.size(); i++) {
-                if (df.missing(pos, inputCols.get(i))) {
+            for (int i = 0; i < inputNames.length; i++) {
+                if (df.missing(pos, inputNames[i])) {
                     throw new RuntimeException("detected NaN in input values");
                 }
-                net[0][i + 1].value = df.value(pos, inputCols.get(i));
+                net[0][i + 1].value = df.value(pos, inputNames[i]);
             }
 
             // feed forward
@@ -156,24 +172,24 @@ public class MultiLayerPerceptronRegressor implements Regressor, Serializable {
                         for (int k = 0; k < net[i][j].inputs.length; k++) {
                             t += net[i][j].inputs[k].value * net[i][j].weights[k];
                         }
-                        net[i][j].value = sigmoid.compute(t);
+                        net[i][j].value = function.compute(t);
                     }
                 }
             }
 
             // back propagate
 
-            for (NetNode[] aNet : net) {
-                for (int j = 0; j < aNet.length; j++) {
-                    aNet[j].gamma = 0;
+            for (NetNode[] layer : net) {
+                for (NetNode node : layer) {
+                    node.gamma = 0;
                 }
             }
 
             int last = net.length - 1;
             for (int i = 0; i < net[last].length; i++) {
-                double expected = df.value(pos, this.targetCols.get(i));
+                double expected = df.value(pos, targetNames[i]);
                 double actual = net[last][i].value;
-                net[last][i].gamma = sigmoid.differential(actual) * (expected - actual);
+                net[last][i].gamma = function.differential(actual) * (expected - actual);
             }
             for (int i = last - 1; i > 0; i--) {
                 for (int j = 0; j < net[i].length; j++) {
@@ -182,7 +198,7 @@ public class MultiLayerPerceptronRegressor implements Regressor, Serializable {
                         if (net[i + 1][k].weights == null) continue;
                         sum += net[i + 1][k].weights[j] * net[i + 1][k].gamma;
                     }
-                    net[i][j].gamma = sigmoid.differential(net[i][j].value) * sum;
+                    net[i][j].gamma = function.differential(net[i][j].value) * sum;
                 }
             }
             for (int i = net.length - 1; i > 0; i--) {
@@ -198,13 +214,15 @@ public class MultiLayerPerceptronRegressor implements Regressor, Serializable {
         }
     }
 
-    public void predict(Frame df) {
-        prediction = SolidFrame.newMatrix(df.rowCount(), targetCols);
+    @Override
+    public RPrediction predict(Frame df, boolean withResiduals) {
+        RPrediction pred = RPrediction.newEmpty(df.rowCount(), withResiduals, targetNames);
 
         for (int pos = 0; pos < df.rowCount(); pos++) {
+
             // set inputs
-            for (int i = 0; i < inputCols.size(); i++) {
-                net[0][i + 1].value = df.value(pos, inputCols.get(i));
+            for (int i = 0; i < inputNames.length; i++) {
+                net[0][i + 1].value = df.value(pos, inputNames[i]);
             }
 
             // feed forward
@@ -215,23 +233,34 @@ public class MultiLayerPerceptronRegressor implements Regressor, Serializable {
                         for (int k = 0; k < net[i][j].inputs.length; k++) {
                             t += net[i][j].inputs[k].value * net[i][j].weights[k];
                         }
-                        net[i][j].value = sigmoid.compute(t);
+                        net[i][j].value = function.compute(t);
                     }
                 }
             }
-            for (int i = 0; i < targetCols.size(); i++) {
-                prediction.setValue(pos, i, net[net.length - 1][i].value);
+            for (int i = 0; i < targetNames.length; i++) {
+                pred.fit(targetNames[i]).setValue(pos, net[net.length - 1][i].value);
             }
         }
+        return pred;
     }
+}
 
-    @Override
-    public Var getFitValues() {
-        return prediction.var(0);
-    }
+class NetNode {
 
-    @Override
-    public Frame getAllFitValues() {
-        return prediction;
+    double value = RandomSource.nextDouble() / 10.;
+    NetNode[] inputs;
+    double[] weights;
+    double gamma;
+
+    public void setInputs(NetNode[] inputs) {
+        this.inputs = inputs;
+        if (inputs == null) {
+            this.weights = null;
+            return;
+        }
+        this.weights = new double[inputs.length];
+        for (int i = 0; i < weights.length; i++) {
+            weights[i] = RandomSource.nextDouble() / 10.;
+        }
     }
 }
