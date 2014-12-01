@@ -64,6 +64,7 @@ StatSampling
 * Tree: CART (no pruning)
 * Tree: C45 (no pruning)
 * Tree: DecisionStump
+* Boost: GBT (Gradient Boosting Tree) Regressor
 
 Not Implemented Features
 ========================
@@ -74,7 +75,6 @@ are considered by default in experimental state.
 
 * Linear Regressor - filter only numerical attributes
 * MultiLayer Perceptron - regression with sigmoid
-* Gradient Boosting Tree regressor
 
 **Matrices and vectors**
 

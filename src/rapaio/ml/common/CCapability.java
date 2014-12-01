@@ -18,29 +18,10 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.refactor.boost.gbt;
-
-import rapaio.core.stat.Mean;
-import rapaio.data.Numeric;
-import rapaio.data.Var;
+package rapaio.ml.common;
 
 /**
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/1/14.
  */
-@Deprecated
-public class L2BoostingLossFunction implements BoostingLossFunction {
-
-    @Override
-    public double findMinimum(Var y, Var fx) {
-        return new Mean(gradient(y, fx)).value();
-    }
-
-    @Override
-    public Numeric gradient(Var y, Var fx) {
-        Numeric delta = Numeric.newEmpty();
-        for (int i = 0; i < y.rowCount(); i++) {
-            delta.addValue(y.value(i) - fx.value(i));
-        }
-        return delta;
-    }
+public class CCapability {
 }

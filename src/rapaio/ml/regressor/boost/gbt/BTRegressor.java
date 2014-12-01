@@ -18,33 +18,21 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.refactor.boost.gbt;
+package rapaio.ml.regressor.boost.gbt;
 
-import rapaio.core.stat.Quantiles;
-import rapaio.data.Numeric;
+import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.ml.regressor.Regressor;
 
 /**
+ * Boosting tree regressor interface.
+ *
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
-public class L1BoostingLossFunction implements BoostingLossFunction {
+public interface BTRegressor extends Regressor {
 
     @Override
-    public double findMinimum(Var y, Var fx) {
-        Numeric values = Numeric.newEmpty();
-        for (int i = 0; i < y.rowCount(); i++) {
-            values.addValue(y.value(i) - fx.value(i));
-        }
-        return new Quantiles(values, new double[]{0.5}).values()[0];
-    }
+    BTRegressor newInstance();
 
-    @Override
-    public Numeric gradient(Var y, Var fx) {
-        Numeric gradient = Numeric.newEmpty();
-        for (int i = 0; i < y.rowCount(); i++) {
-            gradient.addValue(y.value(i) - fx.value(i) < 0 ? -1. : 1.);
-        }
-        return gradient;
-    }
+    void boostFit(Frame x, Var y, Var fx, GBTLossFunction lossFunction);
 }

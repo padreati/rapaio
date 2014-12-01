@@ -45,7 +45,7 @@ public abstract class AbstractRegressor implements Regressor {
     }
 
     @Override
-    public String[] targetVars() {
+    public String[] targetNames() {
         return targetNames;
     }
 }

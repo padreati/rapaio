@@ -20,19 +20,21 @@
 
 package rapaio.sandbox;
 
-import rapaio.core.eval.ConfusionMatrix;
 import rapaio.data.Frame;
-import rapaio.data.Index;
+import rapaio.data.Numeric;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
+import rapaio.graphics.plot.Lines;
 import rapaio.graphics.plot.Points;
-import rapaio.ml.classifier.CPrediction;
-import rapaio.ml.classifier.boost.AdaBoostSAMMEClassifier;
-import rapaio.ml.classifier.meta.SplitClassifier;
-import rapaio.ml.classifier.tree.ctree.CTree;
+import rapaio.ml.regressor.RPrediction;
+import rapaio.ml.regressor.boost.GBTRegressor;
+import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
 import rapaio.printer.LocalPrinter;
 import rapaio.ws.Summary;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -47,23 +49,25 @@ public class Sand {
 
         setPrinter(new LocalPrinter());
 
-        Frame df = Datasets.loadIrisDataset();
+        Frame df = Datasets.loadPearsonHeightDataset();
         Summary.summary(df);
 
-        SplitClassifier sc = new SplitClassifier();
-        sc.withSplit(s -> s.value("sepal-width") >= 3.1, CTree.newID3());
-        sc.withSplit(s -> s.value("sepal-width") < 3.1, new AdaBoostSAMMEClassifier().withClassifier(CTree.newC45()).withRuns(100));
+        GBTRegressor r = new GBTRegressor()
+                .withBootstrap(true)
+                .withBootstrapSize(0.9)
+                .withShrinkage(1)
+                .withLossFunction(new GBTLossFunction.L1());
 
-        sc.learn(df, "class");
+        for (int i = 1; i < 1000; i++) {
+            r.learnFurther(df, i, "Son");
+            Var test = Numeric.newSeq(59, 76, 0.1).withName("Father");
+            RPrediction pred = r.predict(SolidFrame.newWrapOf(test));
 
-        CPrediction pred = sc.predict(df, true, true);
-        new ConfusionMatrix(df.var("class"), pred.firstClasses()).summary();
-
-        Index hit = Index.newEmpty();
-        for (int i = 0; i < df.rowCount(); i++) {
-            hit.addBinary(pred.firstClasses().index(i) == df.var("class").index(i));
+            draw(new Plot()
+                            .add(new Points(df.var("Father"), df.var("Son")).color(Color.LIGHT_GRAY))
+                            .add(new Lines(test, pred.firstFit()).color(Color.BLUE))
+            );
         }
-        draw(new Plot().add(new Points(df.var(0), df.var(1)).color(df.var("class")).pch(hit)));
 
     }
 }

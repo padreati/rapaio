@@ -20,12 +20,12 @@
 
 package rapaio.ml.regressor;
 
-import org.apache.commons.lang.NotImplementedException;
 import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.ml.varselect.VarSelector;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.Serializable;
 
@@ -64,7 +64,7 @@ public interface Regressor extends Printable, Serializable {
 
     /**
      * Fit a classifier on instances specified by frame, with row weights
-     * equal to 1 and target as targetVars.
+     * equal to 1 and target as targetNames.
      *
      * @param df         data set instances
      * @param targetVars target variables
@@ -75,7 +75,7 @@ public interface Regressor extends Printable, Serializable {
     }
 
     /**
-     * Fit a classifier on instances specified by frame, with row weights and targetVars
+     * Fit a classifier on instances specified by frame, with row weights and targetNames
      *
      * @param df             train frame
      * @param weights        instance weights
@@ -106,15 +106,15 @@ public interface Regressor extends Printable, Serializable {
      *
      * @return target variable names
      */
-    String[] targetVars();
+    String[] targetNames();
 
     /**
      * Returns first target variable built at learning time
      *
      * @return target variable names
      */
-    default String firstTargetVar() {
-        return targetVars()[0];
+    default String firstTargetName() {
+        return targetNames()[0];
     }
 
     default void buildSummary(StringBuilder sb) {

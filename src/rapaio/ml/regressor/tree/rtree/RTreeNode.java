@@ -22,8 +22,10 @@ package rapaio.ml.regressor.tree.rtree;
 
 import rapaio.core.stat.WeightedMean;
 import rapaio.data.Frame;
+import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
+import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
 import rapaio.util.Pair;
 
 import java.util.ArrayList;
@@ -88,7 +90,7 @@ public class RTreeNode {
     }
 
     public void learn(RTree tree, Frame df, Var weights, int depth) {
-        value = new WeightedMean(df.var(tree.firstTargetVar()), weights).value();
+        value = new WeightedMean(df.var(tree.firstTargetName()), weights).value();
         weight = weights.stream().parallel().complete().mapToDouble().sum();
 
         if (df.rowCount() == 0 || df.rowCount() <= tree.minCount || depth <= 1) {
@@ -100,15 +102,15 @@ public class RTreeNode {
 
         ConcurrentLinkedQueue<RTreeCandidate> candidates = new ConcurrentLinkedQueue<>();
         Arrays.stream(tree.getVarSelector().nextVarNames()).parallel().forEach(testCol -> {
-            if (testCol.equals(tree.firstTargetVar())) return;
+            if (testCol.equals(tree.firstTargetName())) return;
 
             if (df.var(testCol).type().isNumeric()) {
                 tree.numericMethod.computeCandidates(
-                        tree, df, weights, testCol, tree.firstTargetVar(), tree.function)
+                        tree, df, weights, testCol, tree.firstTargetName(), tree.function)
                         .forEach(candidates::add);
             } else {
                 tree.nominalMethod.computeCandidates(
-                        tree, df, weights, testCol, tree.firstTargetVar(), tree.function)
+                        tree, df, weights, testCol, tree.firstTargetName(), tree.function)
                         .forEach(candidates::add);
             }
         });
@@ -134,6 +136,31 @@ public class RTreeNode {
             RTreeNode child = new RTreeNode(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
             children.add(child);
             child.learn(tree, frames.first.get(i), frames.second.get(i), depth - 1);
+        }
+    }
+
+    public void boostFit(Frame x, Var y, Var fx, GBTLossFunction lossFunction) {
+        if (leaf) {
+            value = lossFunction.findMinimum(y, fx);
+            return;
+        }
+
+        Mapping[] mapping = new Mapping[children.size()];
+        for (int i = 0; i < children.size(); i++) {
+            mapping[i] = Mapping.newEmpty();
+        }
+        x.stream().forEach(spot -> {
+            for (int i = 0; i < children.size(); i++) {
+                RTreeNode child = children.get(i);
+                if (child.predicate.test(spot)) {
+                    mapping[i].add(spot.row());
+                    return;
+                }
+            }
+        });
+
+        for (int i = 0; i < children.size(); i++) {
+            children.get(i).boostFit(x.mapRows(mapping[i]), y.mapRows(mapping[i]), fx.mapRows(mapping[i]), lossFunction);
         }
     }
 }

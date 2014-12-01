@@ -25,7 +25,8 @@ import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.RPrediction;
-import rapaio.ml.regressor.Regressor;
+import rapaio.ml.regressor.boost.gbt.BTRegressor;
+import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
 import rapaio.printer.Printer;
 import rapaio.util.Pair;
 
@@ -36,7 +37,7 @@ import java.util.List;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
-public class RTree extends AbstractRegressor {
+public class RTree extends AbstractRegressor implements BTRegressor {
 
     int minCount = 1;
     int maxDepth = Integer.MAX_VALUE;
@@ -81,8 +82,48 @@ public class RTree extends AbstractRegressor {
     }
 
     @Override
-    public Regressor newInstance() {
-        return null;
+    public void boostFit(Frame x, Var y, Var fx, GBTLossFunction lossFunction) {
+
+//        if (testColName == null) {
+//            fitValues = Numeric.newFill(x.rowCount(), defaultFit);
+//            return;
+//        }
+//
+//        Mapping dfLeft = Mapping.newEmpty();
+//        Mapping dfRight = Mapping.newEmpty();
+//
+//        Var test = x.var(testColName);
+//        for (int i = 0; i < test.rowCount(); i++) {
+//            if (test.missing(i)) continue;
+//            if (test.type().isNominal()) continue;
+//            if (test.type().isNumeric() && (testValue >= test.value(i))) {
+//                dfLeft.add(i);
+//            } else {
+//                dfRight.add(i);
+//            }
+//        }
+//
+//        defaultFit = lossFunction.findMinimum(y, fx);
+//        leftFit = lossFunction.findMinimum(
+//                MappedVar.newByRows(y, dfLeft),
+//                MappedVar.newByRows(fx, dfLeft));
+//        rightFit = lossFunction.findMinimum(
+//                MappedVar.newByRows(y, dfRight),
+//                MappedVar.newByRows(fx, dfRight));
+
+        root.boostFit(x, y, fx, lossFunction);
+    }
+
+    @Override
+    public BTRegressor newInstance() {
+        return (BTRegressor) new RTree()
+                .withMinCount(minCount)
+                .withNumericMethod(numericMethod)
+                .withNominalMethod(nominalMethod)
+                .withMaxDepth(maxDepth)
+                .withSplitter(splitter)
+                .withFunction(function)
+                .withVarSelector(varSelector);
     }
 
     private RTree() {
@@ -166,7 +207,7 @@ public class RTree extends AbstractRegressor {
 
         df.stream().forEach(spot -> {
             Pair<Double, Double> result = predictor.predict(this, spot, root);
-            pred.fit(firstTargetVar()).setValue(spot.row(), result.first);
+            pred.fit(firstTargetName()).setValue(spot.row(), result.first);
         });
         pred.buildResiduals(df);
         return pred;
