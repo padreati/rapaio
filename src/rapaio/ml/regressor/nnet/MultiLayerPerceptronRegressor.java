@@ -241,6 +241,7 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor {
                 pred.fit(targetNames[i]).setValue(pos, net[net.length - 1][i].value);
             }
         }
+        pred.buildResiduals(df);
         return pred;
     }
 }

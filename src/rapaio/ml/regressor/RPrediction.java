@@ -58,7 +58,7 @@ public class RPrediction {
 
     // private constructor
 
-    private RPrediction(int rows, boolean withResiduals) {
+    protected RPrediction(int rows, boolean withResiduals) {
         this.withResiduals = withResiduals;
         this.rows = rows;
         this.fit = new HashMap<>();

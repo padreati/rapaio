@@ -66,6 +66,7 @@ StatSampling
 * Tree: DecisionStump
 * Boost: GBT (Gradient Boosting Tree) Regressor
 * NNet: MultiLayer Perceptron Regressor
+* Function: OLSRegressor (one target, only numerical attributes, no summary)
 
 Experimental (Not Stable) Features
 ========================
@@ -74,7 +75,6 @@ An important refactor is in progress. As a consequence, all the algorithm implem
 are considered by default in experimental state.
 
 
-* Linear Regressor - filter only numerical attributes
 
 **Matrices and vectors**
 

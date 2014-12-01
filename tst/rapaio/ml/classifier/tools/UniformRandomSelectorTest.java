@@ -25,8 +25,7 @@ import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarRange;
-import rapaio.ml.refactor.colselect.ColSelector;
-import rapaio.ml.refactor.colselect.RandomColSelector;
+import rapaio.ml.common.VarSelector;
 
 import java.util.HashMap;
 
@@ -51,12 +50,13 @@ public class UniformRandomSelectorTest {
         String classColName = "class";
         int mcols = 4;
 
-        ColSelector colSelector = new RandomColSelector(df, new VarRange(classColName), mcols);
+        VarSelector colSelector = new VarSelector.Random(mcols);
+        colSelector.initialize(df, new VarRange(classColName));
 
         final int TESTS = 10_000;
         HashMap<String, Integer> counter = new HashMap<>();
         for (int i = 0; i < TESTS; i++) {
-            String[] selection = colSelector.nextColNames();
+            String[] selection = colSelector.nextVarNames();
             for (String sel : selection) {
                 if (!counter.containsKey(sel)) {
                     counter.put(sel, 0);

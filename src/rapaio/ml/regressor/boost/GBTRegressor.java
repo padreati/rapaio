@@ -301,6 +301,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
                 pred.firstFit().setValue(i, pred.firstFit().value(i) + shrinkage * treePred.firstFit().value(i));
             }
         }
+        pred.buildResiduals(df);
         return pred;
     }
 }

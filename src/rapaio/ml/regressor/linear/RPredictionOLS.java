@@ -18,34 +18,23 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.refactor;
+package rapaio.ml.regressor.linear;
 
-import rapaio.data.Frame;
-import rapaio.data.Var;
-
-import java.util.List;
+import rapaio.ml.regressor.RPrediction;
 
 /**
- * User: Aurelian Tutuianu <paderati@yahoo.com>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/1/14.
  */
-@Deprecated
-public interface Regressor {
+public class RPredictionOLS extends RPrediction {
 
-    /**
-     * Builds a new regressor model. It keeps the same parameters, but
-     * it does not copy all the regression artifacts
-     * @return a new instance
-     */
-    Regressor newInstance();
+    public static RPredictionOLS newEmpty(int rows, boolean withResiduals, String... targetNames) {
+        return new RPredictionOLS(rows, withResiduals, targetNames);
+    }
 
-    @Deprecated
-    default void learn(Frame df, List<Double> weights, String targetColName) {}
-
-    void learn(Frame df, String targetCols);
-
-    void predict(Frame df);
-
-    Var getFitValues();
-
-    Frame getAllFitValues();
+    private RPredictionOLS(int rows, boolean withResiduals, String... targetNames) {
+        super(rows, withResiduals);
+        for (String targetName : targetNames) {
+            addTarget(targetName);
+        }
+    }
 }

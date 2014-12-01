@@ -18,14 +18,14 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.refactor.linear;
+package rapaio.ml.regressor.linear;
 
 import rapaio.data.*;
 import rapaio.data.matrix.Matrix;
 import rapaio.data.matrix.QRDecomposition;
-import rapaio.ml.refactor.Regressor;
+import rapaio.ml.regressor.AbstractRegressor;
+import rapaio.ml.regressor.Regressor;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,56 +33,57 @@ import java.util.stream.Collectors;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-//@Deprecated
-@Deprecated
-public class LinearModelRegressor implements Regressor {
+public class OLSRegressor extends AbstractRegressor {
 
-    List<String> predictors = new ArrayList<>();
-    List<String> targets = new ArrayList<>();
+    List<String> predictors;
     Frame coefficients;
     Var fittedValues;
 
     @Override
     public Regressor newInstance() {
-        return new LinearModelRegressor();
+        return new OLSRegressor();
     }
 
     @Override
-    public void learn(Frame df, String targetCols) {
-        targets = new VarRange(targetCols).parseVarNames(df);
+    public String name() {
+        return "OLSRegressor";
+    }
 
+    @Override
+    public String fullName() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(name()).append("{");
+        sb.append("TODO");
+        sb.append("}");
+        return sb.toString();
+    }
+
+    @Override
+    public void learn(Frame df, Var weights, String... targetVarNames) {
+
+        List<String> list = new VarRange(targetVarNames).parseVarNames(df);
+        if (list.isEmpty()) {
+            throw new IllegalArgumentException("OLS must specify at least one target variable name");
+        }
+        targetNames = list.toArray(new String[list.size()]);
         predictors = Arrays.stream(df.varNames())
-                .filter(c -> !targetCols.contains(c) && df.var(c).type().isNumeric())
+                .filter(c -> !list.contains(c) && df.var(c).type().isNumeric())
                 .collect(Collectors.toList());
 
         Matrix X = buildX(df);
         Matrix Y = buildY(df);
         Matrix beta = new QRDecomposition(X).solve(Y);
-        Var betaC = Numeric.newEmpty().withName("Term");
-        Var betaN = Nominal.newEmpty().withName("Coefficients");
+        Var betaN = Nominal.newEmpty().withName("Term");
+        Var betaC = Numeric.newEmpty().withName("Coefficient");
         for (int i = 0; i < predictors.size(); i++) {
             betaN.addLabel(predictors.get(i));
             betaC.addValue(beta.get(i, 0));
         }
         coefficients = SolidFrame.newWrapOf(predictors.size(), betaN, betaC);
-
-        fittedValues = buildFit(df);
-    }
-
-    private Var buildFit(Frame df) {
-        Var result = Numeric.newFill(df.rowCount());
-        for (int i = 0; i < df.rowCount(); i++) {
-            double acc = 0;
-            for (int k = 0; k < predictors.size(); k++) {
-                acc += coefficients.value(k, "Coefficients") * df.value(i, predictors.get(k));
-            }
-            result.setValue(i, acc);
-        }
-        return result;
     }
 
     private Matrix buildY(Frame df) {
-        return new Matrix(targets.stream()
+        return new Matrix(Arrays.stream(targetNames)
                 .map(colName -> (Numeric) df.var(colName))
                 .collect(Collectors.toList())
         );
@@ -96,21 +97,22 @@ public class LinearModelRegressor implements Regressor {
     }
 
     @Override
-    public void predict(Frame df) {
-        fittedValues = buildFit(df);
+    public RPredictionOLS predict(Frame df, boolean withResiduals) {
+        RPredictionOLS rp = RPredictionOLS.newEmpty(df.rowCount(), withResiduals, targetNames);
+        for (int i = 0; i < df.rowCount(); i++) {
+            double acc = 0;
+            for (int k = 0; k < predictors.size(); k++) {
+                double c = coefficients.value(k, "Coefficient");
+                double v = df.value(i, predictors.get(k));
+                acc += c * v;
+            }
+            rp.firstFit().setValue(i, acc);
+        }
+        rp.buildResiduals(df);
+        return rp;
     }
 
     public Frame getCoefficients() {
         return coefficients;
-    }
-
-    @Override
-    public Var getFitValues() {
-        return fittedValues;
-    }
-
-    @Override
-    public Frame getAllFitValues() {
-        return null;
     }
 }

@@ -18,13 +18,18 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.refactor.colselect;
+package rapaio.ml_experiment.cluster.distance;
+
+import rapaio.data.Frame;
 
 /**
- * User: Aurelian Tutuianu <paderati@yahoo.com>
+ * Created with IntelliJ IDEA.
+ * User: tincu
+ * Date: 2/4/14
+ * Time: 12:56 PM
+ * To change this template use File | Settings | File Templates.
  */
 @Deprecated
-public interface ColSelector {
-
-    String[] nextColNames();
+public interface Distance {
+    public double getDistance(Frame from, int fromRow, Frame targetFrame, int targetRow);
 }

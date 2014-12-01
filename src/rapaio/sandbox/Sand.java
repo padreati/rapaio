@@ -30,7 +30,7 @@ import rapaio.graphics.plot.Lines;
 import rapaio.graphics.plot.Points;
 import rapaio.ml.regressor.RPrediction;
 import rapaio.ml.regressor.boost.GBTRegressor;
-import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
+import rapaio.ml.regressor.linear.OLSRegressor;
 import rapaio.printer.LocalPrinter;
 import rapaio.ws.Summary;
 
@@ -52,22 +52,32 @@ public class Sand {
         Frame df = Datasets.loadPearsonHeightDataset();
         Summary.summary(df);
 
-        GBTRegressor r = new GBTRegressor()
-                .withBootstrap(true)
-                .withBootstrapSize(0.9)
-                .withShrinkage(1)
-                .withLossFunction(new GBTLossFunction.L1());
+        SolidFrame tr = SolidFrame.newWrapOf(Numeric.newFill(df.rowCount(), 1.0).withName("Intercept"));
+        df = tr.bindVars(df);
 
-        for (int i = 1; i < 1000; i++) {
-            r.learnFurther(df, i, "Son");
-            Var test = Numeric.newSeq(59, 76, 0.1).withName("Father");
-            RPrediction pred = r.predict(SolidFrame.newWrapOf(test));
+        Summary.summary(df);
+
+        OLSRegressor r = new OLSRegressor();
+        r.learn(df, "Son");
+
+        Var test = Numeric.newSeq(59, 76, 0.1).withName("Father");
+        Var inter = Numeric.newFill(test.rowCount(), 1.0).withName("Intercept");
+        Frame te = SolidFrame.newWrapOf(inter, test);
+
+        RPrediction pred = r.predict(te);
+
+
+        GBTRegressor gbt = new GBTRegressor().withBootstrap(true).withBootstrapSize(0.9).withShrinkage(1);
+        for (int i = 1; i < 500; i++) {
+            gbt.learnFurther(df, i, "Son");
+            RPrediction rp = gbt.predict(te);
 
             draw(new Plot()
                             .add(new Points(df.var("Father"), df.var("Son")).color(Color.LIGHT_GRAY))
                             .add(new Lines(test, pred.firstFit()).color(Color.BLUE))
+                            .add(new Lines(test, rp.firstFit()).color(Color.RED))
             );
-        }
 
+        }
     }
 }
