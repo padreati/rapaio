@@ -32,7 +32,7 @@ import rapaio.data.VarRange;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.tools.DensityVector;
-import rapaio.ml.varselect.VarSelector;
+import rapaio.ml.common.VarSelector;
 
 import java.io.Serializable;
 import java.util.HashMap;

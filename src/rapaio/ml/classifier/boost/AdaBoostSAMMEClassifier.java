@@ -27,7 +27,7 @@ import rapaio.ml.classifier.CPrediction;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.RunningClassifier;
 import rapaio.ml.classifier.tree.ctree.CTree;
-import rapaio.ml.varselect.VarSelector;
+import rapaio.ml.common.VarSelector;
 
 import java.util.ArrayList;
 import java.util.Arrays;

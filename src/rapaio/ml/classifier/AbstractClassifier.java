@@ -20,8 +20,7 @@
 
 package rapaio.ml.classifier;
 
-import rapaio.ml.varselect.StdVarSelector;
-import rapaio.ml.varselect.VarSelector;
+import rapaio.ml.common.VarSelector;
 
 import java.util.Map;
 
@@ -30,7 +29,7 @@ import java.util.Map;
  */
 public abstract class AbstractClassifier implements Classifier {
 
-    protected VarSelector varSelector = new StdVarSelector();
+    protected VarSelector varSelector = new VarSelector.Standard();
     protected String[] targetVars;
     protected Map<String, String[]> dict;
 

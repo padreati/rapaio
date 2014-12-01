@@ -20,8 +20,7 @@
 
 package rapaio.ml.regressor;
 
-import rapaio.ml.varselect.StdVarSelector;
-import rapaio.ml.varselect.VarSelector;
+import rapaio.ml.common.VarSelector;
 
 /**
  * Abstract class needed to implement prerequisites for all regression algorithms.
@@ -30,7 +29,7 @@ import rapaio.ml.varselect.VarSelector;
  */
 public abstract class AbstractRegressor implements Regressor {
 
-    protected VarSelector varSelector = new StdVarSelector();
+    protected VarSelector varSelector = new VarSelector.Standard();
     protected String[] targetNames;
 
     @Override

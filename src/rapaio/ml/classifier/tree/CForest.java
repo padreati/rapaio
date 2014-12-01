@@ -29,8 +29,7 @@ import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.RunningClassifier;
 import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.ml.classifier.tree.ctree.CTree;
-import rapaio.ml.varselect.RandomVarSelector;
-import rapaio.ml.varselect.VarSelector;
+import rapaio.ml.common.VarSelector;
 import rapaio.util.Pair;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -61,7 +60,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
                 .withClassifier(CTree.newCART())
                 .withBaggingMethod(BaggingMethods.DISTRIBUTION_SUM)
                 .withRuns(runs)
-                .withVarSelector(new RandomVarSelector(mcols))
+                .withVarSelector(new VarSelector.Random(mcols))
                 .withSampling(sampling);
     }
 
@@ -70,14 +69,15 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
                 .withClassifier(c)
                 .withBaggingMethod(BaggingMethods.DISTRIBUTION_SUM)
                 .withRuns(runs)
-                .withVarSelector(new RandomVarSelector(mcols))
+                .withVarSelector(new VarSelector.Random(mcols))
                 .withSampling(sampling);
     }
 
     public static CForest buildBagging(int runs, double sampling, Classifier c) {
         return new CForest()
                 .withClassifier(c)
-                .withSampling(1.0)
+                .withRuns(runs)
+                .withSampling(sampling)
                 .withBaggingMethod(BaggingMethods.VOTING)
                 .withOobError(false);
     }

@@ -24,7 +24,7 @@ import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.ml.varselect.VarSelector;
+import rapaio.ml.common.VarSelector;
 
 import java.io.Serializable;
 import java.util.Map;
