@@ -68,12 +68,9 @@ public class ConstantRegressor extends AbstractRegressor {
     }
 
     @Override
-    public RPrediction predict(final Frame df, final boolean withResiduals) {
-        RPrediction pred = RPrediction.newEmpty(df.rowCount(), withResiduals, targetNames);
-        for (String targetName : targetNames) {
-            pred.fit(targetName).stream().forEach(s -> s.setValue(constantValue));
-        }
-        pred.buildResiduals(df);
+    public RPrediction predict(final Frame df) {
+        RPrediction pred = RPrediction.newEmpty(df, targetNames);
+        pred.buildComplete();
         return pred;
     }
 }

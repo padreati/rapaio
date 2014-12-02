@@ -97,8 +97,8 @@ public class OLSRegressor extends AbstractRegressor {
     }
 
     @Override
-    public RPredictionOLS predict(Frame df, boolean withResiduals) {
-        RPredictionOLS rp = RPredictionOLS.newEmpty(df.rowCount(), withResiduals, targetNames);
+    public RPredictionOLS predict(Frame df) {
+        RPredictionOLS rp = RPredictionOLS.newEmpty(df, targetNames);
         for (int i = 0; i < df.rowCount(); i++) {
             double acc = 0;
             for (int k = 0; k < predictors.size(); k++) {
@@ -108,7 +108,7 @@ public class OLSRegressor extends AbstractRegressor {
             }
             rp.firstFit().setValue(i, acc);
         }
-        rp.buildResiduals(df);
+        rp.buildComplete();
         return rp;
     }
 

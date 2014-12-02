@@ -138,7 +138,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
         Frame x = df.removeVars(new VarRange(firstTargetName()));
 
         initRegressor.learn(df, firstTargetName());
-        RPrediction initPred = initRegressor.predict(df, false);
+        RPrediction initPred = initRegressor.predict(df);
         trees = new ArrayList<>();
 
         fitLearn = Numeric.newFill(df.rowCount());
@@ -185,7 +185,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
 
             // add next prediction to the fit values
 
-            RPrediction treePred = tree.predict(df, false);
+            RPrediction treePred = tree.predict(df);
             for (int j = 0; j < df.rowCount(); j++) {
                 fitLearn.setValue(j, fitLearn.value(j) + shrinkage * treePred.firstFit().value(j));
             }
@@ -288,8 +288,8 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
     }
 
     @Override
-    public RPrediction predict(Frame df, boolean withResiduals) {
-        RPrediction pred = RPrediction.newEmpty(df.rowCount(), withResiduals, firstTargetName());
+    public RPrediction predict(Frame df) {
+        RPrediction pred = RPrediction.newEmpty(df, targetNames);
 
         RPrediction initPred = initRegressor.predict(df);
         for (int i = 0; i < df.rowCount(); i++) {
@@ -301,7 +301,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
                 pred.firstFit().setValue(i, pred.firstFit().value(i) + shrinkage * treePred.firstFit().value(i));
             }
         }
-        pred.buildResiduals(df);
+        pred.buildComplete();
         return pred;
     }
 }

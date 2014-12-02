@@ -23,14 +23,12 @@ package rapaio.sandbox;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
-import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
-import rapaio.graphics.plot.Lines;
+import rapaio.graphics.plot.ABLine;
 import rapaio.graphics.plot.Points;
-import rapaio.ml.regressor.RPrediction;
-import rapaio.ml.regressor.boost.GBTRegressor;
 import rapaio.ml.regressor.linear.OLSRegressor;
+import rapaio.ml.regressor.linear.RPredictionOLS;
 import rapaio.printer.LocalPrinter;
 import rapaio.ws.Summary;
 
@@ -49,7 +47,7 @@ public class Sand {
 
         setPrinter(new LocalPrinter());
 
-        Frame df = Datasets.loadPearsonHeightDataset();
+        Frame df = Datasets.loadHousing();
         Summary.summary(df);
 
         SolidFrame tr = SolidFrame.newWrapOf(Numeric.newFill(df.rowCount(), 1.0).withName("Intercept"));
@@ -58,26 +56,15 @@ public class Sand {
         Summary.summary(df);
 
         OLSRegressor r = new OLSRegressor();
-        r.learn(df, "Son");
+        r.learn(df, "MEDV");
 
-        Var test = Numeric.newSeq(59, 76, 0.1).withName("Father");
-        Var inter = Numeric.newFill(test.rowCount(), 1.0).withName("Intercept");
-        Frame te = SolidFrame.newWrapOf(inter, test);
+        RPredictionOLS rp = r.predict(df);
 
-        RPrediction pred = r.predict(te);
+        draw(new Plot()
+                        .add(new Points(df.var("MEDV"), rp.firstResidual()))
+                        .add(new ABLine(0, true).color(Color.LIGHT_GRAY))
+        );
 
-
-        GBTRegressor gbt = new GBTRegressor().withBootstrap(true).withBootstrapSize(0.9).withShrinkage(1);
-        for (int i = 1; i < 500; i++) {
-            gbt.learnFurther(df, i, "Son");
-            RPrediction rp = gbt.predict(te);
-
-            draw(new Plot()
-                            .add(new Points(df.var("Father"), df.var("Son")).color(Color.LIGHT_GRAY))
-                            .add(new Lines(test, pred.firstFit()).color(Color.BLUE))
-                            .add(new Lines(test, rp.firstFit()).color(Color.RED))
-            );
-
-        }
+//        draw(new Plot().add(new Histogram(df.var("MEDV")).bins(50)));
     }
 }

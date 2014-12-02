@@ -215,8 +215,8 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor {
     }
 
     @Override
-    public RPrediction predict(Frame df, boolean withResiduals) {
-        RPrediction pred = RPrediction.newEmpty(df.rowCount(), withResiduals, targetNames);
+    public RPrediction predict(Frame df) {
+        RPrediction pred = RPrediction.newEmpty(df, targetNames);
 
         for (int pos = 0; pos < df.rowCount(); pos++) {
 
@@ -241,7 +241,7 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor {
                 pred.fit(targetNames[i]).setValue(pos, net[net.length - 1][i].value);
             }
         }
-        pred.buildResiduals(df);
+        pred.buildComplete();
         return pred;
     }
 }

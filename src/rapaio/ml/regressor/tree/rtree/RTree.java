@@ -83,34 +83,6 @@ public class RTree extends AbstractRegressor implements BTRegressor {
 
     @Override
     public void boostFit(Frame x, Var y, Var fx, GBTLossFunction lossFunction) {
-
-//        if (testColName == null) {
-//            fitValues = Numeric.newFill(x.rowCount(), defaultFit);
-//            return;
-//        }
-//
-//        Mapping dfLeft = Mapping.newEmpty();
-//        Mapping dfRight = Mapping.newEmpty();
-//
-//        Var test = x.var(testColName);
-//        for (int i = 0; i < test.rowCount(); i++) {
-//            if (test.missing(i)) continue;
-//            if (test.type().isNominal()) continue;
-//            if (test.type().isNumeric() && (testValue >= test.value(i))) {
-//                dfLeft.add(i);
-//            } else {
-//                dfRight.add(i);
-//            }
-//        }
-//
-//        defaultFit = lossFunction.findMinimum(y, fx);
-//        leftFit = lossFunction.findMinimum(
-//                MappedVar.newByRows(y, dfLeft),
-//                MappedVar.newByRows(fx, dfLeft));
-//        rightFit = lossFunction.findMinimum(
-//                MappedVar.newByRows(y, dfRight),
-//                MappedVar.newByRows(fx, dfRight));
-
         root.boostFit(x, y, fx, lossFunction);
     }
 
@@ -202,14 +174,14 @@ public class RTree extends AbstractRegressor implements BTRegressor {
     }
 
     @Override
-    public RPrediction predict(Frame df, boolean withResiduals) {
-        RPrediction pred = RPrediction.newEmpty(df.rowCount(), withResiduals, targetNames);
+    public RPrediction predict(Frame df) {
+        RPrediction pred = RPrediction.newEmpty(df, targetNames);
 
         df.stream().forEach(spot -> {
             Pair<Double, Double> result = predictor.predict(this, spot, root);
             pred.fit(firstTargetName()).setValue(spot.row(), result.first);
         });
-        pred.buildResiduals(df);
+        pred.buildComplete();
         return pred;
     }
 

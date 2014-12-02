@@ -72,14 +72,14 @@ public class L1Regressor extends AbstractRegressor {
     }
 
     @Override
-    public RPrediction predict(Frame df, boolean withResiduals) {
-        RPrediction pred = RPrediction.newEmpty(df.rowCount(), withResiduals, targetNames);
+    public RPrediction predict(Frame df) {
+        RPrediction pred = RPrediction.newEmpty(df, targetNames);
         for (int i = 0; i < targetNames.length; i++) {
             String target = targetNames[i];
             double median = medians[i];
             pred.fit(target).stream().forEach(s -> s.setValue(median));
         }
-        pred.buildResiduals(df);
+        pred.buildComplete();
         return pred;
     }
 }

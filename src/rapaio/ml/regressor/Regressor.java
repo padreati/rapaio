@@ -88,18 +88,7 @@ public interface Regressor extends Printable, Serializable {
      *
      * @param df data set instances
      */
-    default RPrediction predict(Frame df) {
-        return predict(df, false);
-    }
-
-    /**
-     * Predict classes for given instances, generating classes if specified and
-     * generating densities if specified.
-     *
-     * @param df            frame instances
-     * @param withResiduals compute residuals
-     */
-    RPrediction predict(Frame df, boolean withResiduals);
+    RPrediction predict(Frame df);
 
     /**
      * Returns target variables built at learning time

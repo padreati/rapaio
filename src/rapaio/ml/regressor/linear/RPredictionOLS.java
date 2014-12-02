@@ -20,6 +20,7 @@
 
 package rapaio.ml.regressor.linear;
 
+import rapaio.data.Frame;
 import rapaio.ml.regressor.RPrediction;
 
 /**
@@ -27,14 +28,11 @@ import rapaio.ml.regressor.RPrediction;
  */
 public class RPredictionOLS extends RPrediction {
 
-    public static RPredictionOLS newEmpty(int rows, boolean withResiduals, String... targetNames) {
-        return new RPredictionOLS(rows, withResiduals, targetNames);
+    public static RPredictionOLS newEmpty(Frame df, String... targetVarNames) {
+        return new RPredictionOLS(df, targetVarNames);
     }
 
-    private RPredictionOLS(int rows, boolean withResiduals, String... targetNames) {
-        super(rows, withResiduals);
-        for (String targetName : targetNames) {
-            addTarget(targetName);
-        }
+    private RPredictionOLS(Frame df, String... targetNames) {
+        super(df, targetNames);
     }
 }

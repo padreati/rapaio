@@ -23,8 +23,8 @@ package rapaio.ml.regressor;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
+import rapaio.data.VarRange;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,45 +36,38 @@ import java.util.stream.Collectors;
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
 public class RPrediction {
-    private final int rows;
-    private final boolean withResiduals;
-    private final List<String> targetVars = new ArrayList<>();
+    private final Frame df;
+    private final List<String> targetVars;
     private final Map<String, Numeric> fit;
     private final Map<String, Numeric> residuals;
 
     // builder
 
-    public static RPrediction newEmpty(int rows, boolean withResiduals) {
-        return new RPrediction(rows, withResiduals);
-    }
-
-    public static RPrediction newEmpty(int rows, boolean withResiduals, String... targetVarNames) {
-        RPrediction pred = new RPrediction(rows, withResiduals);
-        for (String targetVarName : targetVarNames) {
-            pred.addTarget(targetVarName);
-        }
-        return pred;
+    public static RPrediction newEmpty(Frame df, String... targetVarNames) {
+        return new RPrediction(df, targetVarNames);
     }
 
     // private constructor
 
-    protected RPrediction(int rows, boolean withResiduals) {
-        this.withResiduals = withResiduals;
-        this.rows = rows;
+    protected RPrediction(Frame df, String... targetVarNames) {
+        this.df = df;
+        this.targetVars = new VarRange(targetVarNames).parseVarNames(df);
+
         this.fit = new HashMap<>();
         this.residuals = new HashMap<>();
-    }
 
-    public void addTarget(String target) {
-        targetVars.add(target);
-        fit.put(target, Numeric.newEmpty(rows).withName(target));
-        if (withResiduals) {
-            residuals.put(target, Numeric.newEmpty(rows).withName(target));
+        for (String targetVar : targetVars) {
+            fit.put(targetVar, Numeric.newEmpty(df.rowCount()).withName(targetVar));
+            residuals.put(targetVar, Numeric.newEmpty(df.rowCount()).withName(targetVar + "-residual"));
         }
     }
 
+    public Frame getFrame() {
+        return df;
+    }
+
     public int getRows() {
-        return rows;
+        return df.rowCount();
     }
 
     /**
@@ -148,12 +141,10 @@ public class RPrediction {
         return residuals.get(targetVar);
     }
 
-    public void buildResiduals(Frame df) {
-        if (withResiduals) {
-            for (String targetVar : targetVars) {
-                for (int i = 0; i < df.rowCount(); i++) {
-                    residuals.get(targetVar).setValue(i, df.var(targetVar).value(i) - fit(targetVar).value(i));
-                }
+    public void buildComplete() {
+        for (String targetVar : targetVars) {
+            for (int i = 0; i < df.rowCount(); i++) {
+                residuals.get(targetVar).setValue(i, df.var(targetVar).value(i) - fit(targetVar).value(i));
             }
         }
     }

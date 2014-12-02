@@ -68,12 +68,12 @@ public class RandomValueRegressor extends AbstractRegressor {
     }
 
     @Override
-    public RPrediction predict(final Frame df, final boolean withResiduals) {
-        RPrediction pred = RPrediction.newEmpty(df.rowCount(), withResiduals, targetNames);
+    public RPrediction predict(final Frame df) {
+        RPrediction pred = RPrediction.newEmpty(df, targetNames);
         for (String targetName : targetNames) {
             pred.fit(targetName).stream().forEach(s -> s.setValue(distribution.sampleNext()));
         }
-        pred.buildResiduals(df);
+        pred.buildComplete();
         return pred;
     }
 }

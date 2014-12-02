@@ -101,4 +101,12 @@ public class Datasets {
                 .withDefaultTypes(VarType.NUMERIC)
                 .read(Datasets.class, "prostate.csv");
     }
+
+    public static Frame loadHousing() throws IOException {
+        return new Csv()
+                .withSeparatorChar(',')
+                .withDefaultTypes(VarType.NUMERIC)
+//                .withTypes(VarType.BINARY, "CHAS")
+                .read(Datasets.class, "housing.csv");
+    }
 }

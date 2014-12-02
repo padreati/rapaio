@@ -64,13 +64,13 @@ public class L2Regressor extends AbstractRegressor {
     }
 
     @Override
-    public RPrediction predict(final Frame df, final boolean withResiduals) {
-        RPrediction pred = RPrediction.newEmpty(df.rowCount(), withResiduals, targetNames);
+    public RPrediction predict(final Frame df) {
+        RPrediction pred = RPrediction.newEmpty(df, targetNames);
         for (int i = 0; i < targetNames.length; i++) {
             double mean = means[i];
             pred.fit(targetNames[i]).stream().forEach(s -> s.setValue(mean));
         }
-        pred.buildResiduals(df);
+        pred.buildComplete();
         return pred;
     }
 }
