@@ -25,7 +25,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.ml.regressor.AbstractRegressor;
-import rapaio.ml.regressor.RPrediction;
+import rapaio.ml.regressor.RResult;
 import rapaio.ml.regressor.Regressor;
 
 import java.util.List;
@@ -72,8 +72,8 @@ public class L1Regressor extends AbstractRegressor {
     }
 
     @Override
-    public RPrediction predict(Frame df) {
-        RPrediction pred = RPrediction.newEmpty(df, targetNames);
+    public RResult predict(final Frame df, final boolean withResiduals) {
+        RResult pred = RResult.newEmpty(df, withResiduals, targetNames);
         for (int i = 0; i < targetNames.length; i++) {
             String target = targetNames[i];
             double median = medians[i];

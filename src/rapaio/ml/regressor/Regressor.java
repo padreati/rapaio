@@ -83,12 +83,17 @@ public interface Regressor extends Printable, Serializable {
      */
     void learn(Frame df, Var weights, String... targetVarNames);
 
+    default RResult predict(final Frame df) {
+        return predict(df, true);
+    }
+
     /**
      * Predict classes for new data set instances
      *
-     * @param df data set instances
+     * @param df            data set instances
+     * @param withResiduals if residuals will be computed or not
      */
-    RPrediction predict(Frame df);
+    RResult predict(Frame df, boolean withResiduals);
 
     /**
      * Returns target variables built at learning time

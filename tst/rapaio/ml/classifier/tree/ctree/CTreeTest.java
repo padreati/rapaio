@@ -24,7 +24,7 @@ import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.CPrediction;
+import rapaio.ml.classifier.CResult;
 import rapaio.ws.Summary;
 
 import java.io.IOException;
@@ -98,7 +98,7 @@ public class CTreeTest {
         CTreePredictor predictor = CTreePredictor.STANDARD;
         assertEquals("STANDARD", predictor.name());
 
-        CPrediction pred = tree.predict(df, true, true);
+        CResult pred = tree.predict(df, true, true);
         df = df.bindVars(pred.firstClasses().solidCopy().withName("predict"));
 
         Frame match = df.stream().filter(spot -> spot.index("class") == spot.index("predict")).toMappedFrame();

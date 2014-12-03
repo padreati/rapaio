@@ -24,7 +24,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.ml.regressor.AbstractRegressor;
-import rapaio.ml.regressor.RPrediction;
+import rapaio.ml.regressor.RResult;
 import rapaio.ml.regressor.boost.gbt.BTRegressor;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
 import rapaio.printer.Printer;
@@ -174,8 +174,8 @@ public class RTree extends AbstractRegressor implements BTRegressor {
     }
 
     @Override
-    public RPrediction predict(Frame df) {
-        RPrediction pred = RPrediction.newEmpty(df, targetNames);
+    public RResult predict(Frame df, boolean withResiduals) {
+        RResult pred = RResult.newEmpty(df, withResiduals, targetNames);
 
         df.stream().forEach(spot -> {
             Pair<Double, Double> result = predictor.predict(this, spot, root);

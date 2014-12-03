@@ -28,7 +28,7 @@ import rapaio.graphics.Plot;
 import rapaio.graphics.plot.ABLine;
 import rapaio.graphics.plot.Points;
 import rapaio.ml.regressor.linear.OLSRegressor;
-import rapaio.ml.regressor.linear.RPredictionOLS;
+import rapaio.ml.regressor.linear.RResultOLS;
 import rapaio.printer.LocalPrinter;
 import rapaio.ws.Summary;
 
@@ -58,7 +58,7 @@ public class Sand {
         OLSRegressor r = new OLSRegressor();
         r.learn(df, "MEDV");
 
-        RPredictionOLS rp = r.predict(df);
+        RResultOLS rp = r.predict(df);
 
         draw(new Plot()
                         .add(new Points(df.var("MEDV"), rp.firstResidual()))

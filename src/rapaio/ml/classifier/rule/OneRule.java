@@ -24,7 +24,7 @@ import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.data.filters.BaseFilters;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CPrediction;
+import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.tools.DensityVector;
 
 import java.util.ArrayList;
@@ -92,8 +92,8 @@ public class OneRule extends AbstractClassifier {
     }
 
     @Override
-    public CPrediction predict(final Frame test, final boolean withClasses, final boolean withDensities) {
-        CPrediction pred = CPrediction.newEmpty(test.rowCount(), withClasses, withDensities);
+    public CResult predict(final Frame test, final boolean withClasses, final boolean withDensities) {
+        CResult pred = CResult.newEmpty(test, withClasses, withDensities);
         pred.addTarget(firstTargetVar(), firstDictionary());
 
         for (int i = 0; i < test.rowCount(); i++) {

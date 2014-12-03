@@ -92,7 +92,7 @@ public interface Classifier extends Printable, Serializable {
      *
      * @param df data set instances
      */
-    default CPrediction predict(Frame df) {
+    default CResult predict(Frame df) {
         return predict(df, true, true);
     }
 
@@ -104,7 +104,7 @@ public interface Classifier extends Printable, Serializable {
      * @param withClasses       generate classes
      * @param withDistributions generate densities for classes
      */
-    CPrediction predict(Frame df, boolean withClasses, boolean withDistributions);
+    CResult predict(Frame df, boolean withClasses, boolean withDistributions);
 
     /**
      * Returns target variables built at learning time

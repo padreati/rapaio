@@ -30,7 +30,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CPrediction;
+import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.ml.common.VarSelector;
 
@@ -156,9 +156,9 @@ public class NaiveBayesClassifier extends AbstractClassifier {
     }
 
     @Override
-    public CPrediction predict(Frame df, final boolean withClasses, final boolean withDensities) {
+    public CResult predict(Frame df, final boolean withClasses, final boolean withDensities) {
 
-        CPrediction pred = CPrediction.newEmpty(df.rowCount(), withClasses, withDensities);
+        CResult pred = CResult.newEmpty(df, withClasses, withDensities);
         pred.addTarget(firstTargetVar(), firstDictionary());
 
         for (int i = 0; i < df.rowCount(); i++) {

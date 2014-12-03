@@ -26,7 +26,7 @@ import rapaio.core.eval.ConfusionMatrix;
 import rapaio.data.Frame;
 import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.CPrediction;
+import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.tools.DensityTable;
 import rapaio.ws.Summary;
 
@@ -45,7 +45,7 @@ public class C45ClassifierTest {
 
         CTree classifier = CTree.newC45();
         classifier.learn(df, className);
-        CPrediction pred = classifier.predict(df);
+        CResult pred = classifier.predict(df);
 
         DensityTable dtWindy = new DensityTable(df.var("windy"), df.var("class"));
         DensityTable dtOutlook = new DensityTable(df.var("outlook"), df.var("class"));
@@ -68,7 +68,7 @@ public class C45ClassifierTest {
         classifier.learn(df, className);
         Summary.summary(classifier);
 
-        CPrediction pred = classifier.predict(df);
+        CResult pred = classifier.predict(df);
 
         ConfusionMatrix cm = new ConfusionMatrix(df.var("class"), pred.firstClasses());
         Summary.summary(cm);
@@ -83,7 +83,7 @@ public class C45ClassifierTest {
         classifier.learn(df, className);
         Summary.summary(classifier);
 
-        CPrediction pred = classifier.predict(df);
+        CResult pred = classifier.predict(df);
 
         ConfusionMatrix cm = new ConfusionMatrix(df.var("class"), pred.firstClasses());
         Summary.summary(cm);

@@ -23,7 +23,7 @@ package rapaio.ml.classifier.rule;
 import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.*;
-import rapaio.ml.classifier.CPrediction;
+import rapaio.ml.classifier.CResult;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -56,7 +56,7 @@ public class OneRuleTest {
 
         oneRule = oneRule.withMinCount(1);
         oneRule.learn(df, "class");
-        CPrediction pred = oneRule.predict(df);
+        CResult pred = oneRule.predict(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
             Assert.assertEquals(labels[i], pred.firstClasses().label(i));

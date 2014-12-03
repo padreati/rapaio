@@ -35,30 +35,34 @@ import java.util.stream.Collectors;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
-public class RPrediction {
+public class RResult {
     private final Frame df;
     private final List<String> targetVars;
+    private final boolean withResiduals;
     private final Map<String, Numeric> fit;
     private final Map<String, Numeric> residuals;
 
     // builder
 
-    public static RPrediction newEmpty(Frame df, String... targetVarNames) {
-        return new RPrediction(df, targetVarNames);
+    public static RResult newEmpty(Frame df, boolean withResiduals, String... targetVarNames) {
+        return new RResult(df, withResiduals, targetVarNames);
     }
 
     // private constructor
 
-    protected RPrediction(Frame df, String... targetVarNames) {
+    protected RResult(Frame df, final boolean withResiduals, String... targetVarNames) {
         this.df = df;
         this.targetVars = new VarRange(targetVarNames).parseVarNames(df);
+        this.withResiduals = withResiduals;
 
         this.fit = new HashMap<>();
         this.residuals = new HashMap<>();
 
         for (String targetVar : targetVars) {
             fit.put(targetVar, Numeric.newEmpty(df.rowCount()).withName(targetVar));
-            residuals.put(targetVar, Numeric.newEmpty(df.rowCount()).withName(targetVar + "-residual"));
+            if (withResiduals) {
+                residuals.put(targetVar, Numeric.newEmpty(df.rowCount()).withName(targetVar + "-residual"));
+            }
         }
     }
 
@@ -142,9 +146,11 @@ public class RPrediction {
     }
 
     public void buildComplete() {
-        for (String targetVar : targetVars) {
-            for (int i = 0; i < df.rowCount(); i++) {
-                residuals.get(targetVar).setValue(i, df.var(targetVar).value(i) - fit(targetVar).value(i));
+        if (withResiduals) {
+            for (String targetVar : targetVars) {
+                for (int i = 0; i < df.rowCount(); i++) {
+                    residuals.get(targetVar).setValue(i, df.var(targetVar).value(i) - fit(targetVar).value(i));
+                }
             }
         }
     }

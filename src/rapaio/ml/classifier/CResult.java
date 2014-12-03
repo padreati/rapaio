@@ -32,26 +32,26 @@ import java.util.Map;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class CPrediction {
+public class CResult {
 
-    private final int rows;
+    private final Frame df;
+    private final List<String> targetVars = new ArrayList<>();
     private final boolean withClasses;
     private final boolean withDensities;
-    private final List<String> targetVars = new ArrayList<>();
     private final Map<String, String[]> dictionaries = new HashMap<>();
     private final Map<String, Nominal> classes = new HashMap<>();
     private final Map<String, Frame> densities = new HashMap<>();
 
     // builder
 
-    public static CPrediction newEmpty(int rows, boolean withClasses, boolean withDensities) {
-        return new CPrediction(rows, withClasses, withDensities);
+    public static CResult newEmpty(Frame df, boolean withClasses, boolean withDensities) {
+        return new CResult(df, withClasses, withDensities);
     }
 
     // private constructor
 
-    private CPrediction(int rows, boolean withClasses, boolean withDensities) {
-        this.rows = rows;
+    private CResult(Frame df, boolean withClasses, boolean withDensities) {
+        this.df = df;
         this.withClasses = withClasses;
         this.withDensities = withDensities;
     }
@@ -60,15 +60,15 @@ public class CPrediction {
         targetVars.add(target);
         dictionaries.put(target, dictionary);
         if (withClasses) {
-            classes.put(target, Nominal.newEmpty(rows, dictionary).withName(target));
+            classes.put(target, Nominal.newEmpty(df.rowCount(), dictionary).withName(target));
         }
         if (withDensities) {
-            densities.put(target, SolidFrame.newMatrix(rows, dictionary));
+            densities.put(target, SolidFrame.newMatrix(df.rowCount(), dictionary));
         }
     }
 
     public int getRows() {
-        return rows;
+        return df.rowCount();
     }
 
     public boolean isWithClasses() {

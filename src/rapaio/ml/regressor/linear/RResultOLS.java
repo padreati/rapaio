@@ -21,18 +21,18 @@
 package rapaio.ml.regressor.linear;
 
 import rapaio.data.Frame;
-import rapaio.ml.regressor.RPrediction;
+import rapaio.ml.regressor.RResult;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/1/14.
  */
-public class RPredictionOLS extends RPrediction {
+public class RResultOLS extends RResult {
 
-    public static RPredictionOLS newEmpty(Frame df, String... targetVarNames) {
-        return new RPredictionOLS(df, targetVarNames);
+    public static RResultOLS newEmpty(Frame df, boolean withResiduals, String... targetVarNames) {
+        return new RResultOLS(df, withResiduals, targetVarNames);
     }
 
-    private RPredictionOLS(Frame df, String... targetNames) {
-        super(df, targetNames);
+    private RResultOLS(Frame df, boolean withResiduals, String... targetNames) {
+        super(df, withResiduals, targetNames);
     }
 }
