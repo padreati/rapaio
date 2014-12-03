@@ -20,7 +20,6 @@
 
 package rapaio.ml.classifier.tree;
 
-import rapaio.core.eval.ConfusionMatrix;
 import rapaio.core.sample.Sampling;
 import rapaio.data.*;
 import rapaio.ml.classifier.AbstractClassifier;
@@ -30,6 +29,7 @@ import rapaio.ml.classifier.RunningClassifier;
 import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.ml.classifier.tree.ctree.CTree;
 import rapaio.ml.common.VarSelector;
+import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.util.Pair;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -48,7 +48,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
     boolean oobCompute = false;
     Classifier c = CTree.newC45();
     double sampling = 1;
-    BaggingMethod baggingMethod = BaggingMethods.DISTRIBUTION_SUM;
+    BaggingMethod baggingMethod = BaggingMethods.DISTRIBUTION;
     //
     double totalOobInstances = 0;
     double totalOobError = 0;
@@ -58,7 +58,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
     public static CForest buildRandomForest(int runs, int mcols, double sampling) {
         return new CForest()
                 .withClassifier(CTree.newCART())
-                .withBaggingMethod(BaggingMethods.DISTRIBUTION_SUM)
+                .withBaggingMethod(BaggingMethods.DISTRIBUTION)
                 .withRuns(runs)
                 .withVarSelector(new VarSelector.Random(mcols))
                 .withSampling(sampling);
@@ -67,7 +67,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
     public static CForest buildRandomForest(int runs, int mcols, double sampling, Classifier c) {
         return new CForest()
                 .withClassifier(c)
-                .withBaggingMethod(BaggingMethods.DISTRIBUTION_SUM)
+                .withBaggingMethod(BaggingMethods.DISTRIBUTION)
                 .withRuns(runs)
                 .withVarSelector(new VarSelector.Random(mcols))
                 .withSampling(sampling);
@@ -99,12 +99,12 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
     @Override
     public String fullName() {
         StringBuilder sb = new StringBuilder();
-        sb.append(name()).append("(");
+        sb.append(name()).append("{");
         sb.append("baggingMethod=").append(baggingMethod.name()).append(",");
-        sb.append("colSelector=").append(varSelector.name()).append(",");
+        sb.append("varSelector=").append(varSelector.name()).append(",");
         sb.append("runs=").append(runs).append(",");
         sb.append("c=").append(c.fullName());
-        sb.append(")");
+        sb.append("}");
         return sb.toString();
     }
 
@@ -312,7 +312,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
                 }
             }
         },
-        DISTRIBUTION_SUM {
+        DISTRIBUTION {
             @Override
             public void computeDensity(String[] dictionary, List<Frame> treeDensities, Nominal classes, Frame densities) {
                 treeDensities.forEach(d -> {

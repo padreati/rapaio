@@ -21,9 +21,9 @@
 package rapaio.core.stat;
 
 import org.junit.Test;
-import rapaio.core.eval.ConfusionMatrix;
 import rapaio.data.Nominal;
 import rapaio.data.Var;
+import rapaio.ml.eval.ConfusionMatrix;
 
 /**
  * @author tutuianu

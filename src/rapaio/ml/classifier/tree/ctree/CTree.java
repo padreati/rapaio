@@ -201,8 +201,8 @@ public class CTree extends AbstractClassifier {
     @Override
     public String fullName() {
         StringBuilder sb = new StringBuilder();
-        sb.append("TreeClassifier (");
-        sb.append("colSelector=").append(varSelector.toString()).append(",");
+        sb.append("TreeClassifier{");
+        sb.append("varSelector=").append(varSelector.name()).append(",");
         sb.append("minCount=").append(minCount).append(",");
         sb.append("maxDepth=").append(maxDepth).append(",");
         sb.append("testCounter=").append(testCounter.name()).append(",");
@@ -211,7 +211,7 @@ public class CTree extends AbstractClassifier {
         sb.append("function=").append(function.name()).append(",");
         sb.append("splitter=").append(splitter.name()).append(",");
         sb.append("predictor=").append(predictor.name());
-        sb.append(")");
+        sb.append("}");
         return sb.toString();
     }
 

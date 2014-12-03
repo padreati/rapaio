@@ -18,25 +18,27 @@
  *    limitations under the License.
  */
 
-package rapaio.core.eval;
+package rapaio.ml.eval;
 
 import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.printer.Printer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * User: Aurelian Tutuianu <padreati@yahoo.com>
+ * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
 @Deprecated
-public class MAE implements Printable {
+public class RMSE implements Printable {
+
     private final List<Var> source;
     private final List<Var> target;
     private double value;
 
-    public MAE(Frame dfSource, Frame dfTarget) {
+    public RMSE(Frame dfSource, Frame dfTarget) {
         source = new ArrayList<>();
         for (int i = 0; i < dfSource.varCount(); i++) {
             if (dfSource.var(i).type().isNumeric()) {
@@ -52,7 +54,7 @@ public class MAE implements Printable {
         compute();
     }
 
-    public MAE(Var source, Var target) {
+    public RMSE(Var source, Var target) {
         this.source = new ArrayList<>();
         this.source.add(source);
         this.target = new ArrayList<>();
@@ -67,10 +69,10 @@ public class MAE implements Printable {
         for (int i = 0; i < source.size(); i++) {
             for (int j = 0; j < source.get(i).rowCount(); j++) {
                 count++;
-                total += Math.abs(source.get(i).value(j) - target.get(i).value(j));
+                total += Math.pow(source.get(i).value(j) - target.get(i).value(j), 2);
             }
         }
-        value = total / count;
+        value = Math.sqrt(total / count);
     }
 
     public double value() {
@@ -79,6 +81,8 @@ public class MAE implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append(String.format("> mean absolute error\nMAE: %.6f\n", value()));
+        for (int i = 0; i < source.size(); i++) {
+            sb.append(String.format("> RMSE[%s,%s]:\n%s", source.get(i).name(), target.get(i).name(), Printer.formatDecLong.format(value)));
+        }
     }
 }

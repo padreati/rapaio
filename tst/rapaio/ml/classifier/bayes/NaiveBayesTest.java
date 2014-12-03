@@ -22,10 +22,10 @@ package rapaio.ml.classifier.bayes;
 
 import org.junit.Test;
 import rapaio.core.RandomSource;
-import rapaio.core.eval.ConfusionMatrix;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.CResult;
+import rapaio.ml.eval.ConfusionMatrix;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

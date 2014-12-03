@@ -20,10 +20,10 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.core.eval.ROC;
 import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.colors.ColorPalette;
+import rapaio.ml.eval.ROC;
 
 import java.awt.*;
 import java.awt.geom.Line2D;

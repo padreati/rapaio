@@ -20,12 +20,12 @@
 
 package rapaio.ml.classifier;
 
-import rapaio.core.eval.ConfusionMatrix;
 import rapaio.core.sample.Sampling;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
+import rapaio.ml.eval.ConfusionMatrix;
 
 import java.util.*;
 

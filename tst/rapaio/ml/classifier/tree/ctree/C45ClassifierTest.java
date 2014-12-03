@@ -22,12 +22,12 @@ package rapaio.ml.classifier.tree.ctree;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import rapaio.core.eval.ConfusionMatrix;
 import rapaio.data.Frame;
 import rapaio.data.filters.BaseFilters;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.tools.DensityTable;
+import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.ws.Summary;
 
 import java.io.IOException;

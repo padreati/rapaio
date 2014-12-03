@@ -18,27 +18,25 @@
  *    limitations under the License.
  */
 
-package rapaio.core.eval;
+package rapaio.ml.eval;
 
 import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.printer.Printer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * User: Aurelian Tutuianu <paderati@yahoo.com>
+ * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public class RMSE implements Printable {
-
+public class MAE implements Printable {
     private final List<Var> source;
     private final List<Var> target;
     private double value;
 
-    public RMSE(Frame dfSource, Frame dfTarget) {
+    public MAE(Frame dfSource, Frame dfTarget) {
         source = new ArrayList<>();
         for (int i = 0; i < dfSource.varCount(); i++) {
             if (dfSource.var(i).type().isNumeric()) {
@@ -54,7 +52,7 @@ public class RMSE implements Printable {
         compute();
     }
 
-    public RMSE(Var source, Var target) {
+    public MAE(Var source, Var target) {
         this.source = new ArrayList<>();
         this.source.add(source);
         this.target = new ArrayList<>();
@@ -69,10 +67,10 @@ public class RMSE implements Printable {
         for (int i = 0; i < source.size(); i++) {
             for (int j = 0; j < source.get(i).rowCount(); j++) {
                 count++;
-                total += Math.pow(source.get(i).value(j) - target.get(i).value(j), 2);
+                total += Math.abs(source.get(i).value(j) - target.get(i).value(j));
             }
         }
-        value = Math.sqrt(total / count);
+        value = total / count;
     }
 
     public double value() {
@@ -81,8 +79,6 @@ public class RMSE implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        for (int i = 0; i < source.size(); i++) {
-            sb.append(String.format("> RMSE[%s,%s]:\n%s", source.get(i).name(), target.get(i).name(), Printer.formatDecLong.format(value)));
-        }
+        sb.append(String.format("> mean absolute error\nMAE: %.6f\n", value()));
     }
 }

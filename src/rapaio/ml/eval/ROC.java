@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.core.eval;
+package rapaio.ml.eval;
 
 import rapaio.core.Printable;
 import rapaio.data.*;
