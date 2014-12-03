@@ -23,42 +23,64 @@ package rapaio.ml.eval;
 import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.VarRange;
 import rapaio.printer.Printer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Regression evaluation tool which enables one to compute
+ * Root Mean Squared Error, which is the sum of the squared
+ * values of the residuals for all pairs of actual and
+ * prediction variables.
+ * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-@Deprecated
 public class RMSE implements Printable {
 
-    private final List<Var> source;
-    private final List<Var> target;
+    private final List<String> targetNames;
+    private final List<Var> actualVars;
+    private final List<Var> predictVars;
     private double value;
 
-    public RMSE(Frame dfSource, Frame dfTarget) {
-        source = new ArrayList<>();
-        for (int i = 0; i < dfSource.varCount(); i++) {
-            if (dfSource.var(i).type().isNumeric()) {
-                source.add(dfSource.var(i));
+    public RMSE(Frame actual, Frame predict, String... targetVarNames) {
+        List<String> actualNames = new VarRange(targetVarNames).parseVarNames(actual);
+        List<String> predictNames = new VarRange(targetVarNames).parseVarNames(predict);
+
+        for (String varName : actualNames) {
+            if (!predictNames.contains(varName)) {
+                throw new IllegalArgumentException("actual and predict variables are not the same");
             }
         }
-        target = new ArrayList<>();
-        for (int i = 0; i < dfTarget.varCount(); i++) {
-            if (dfTarget.var(i).type().isNumeric()) {
-                target.add(dfTarget.var(i));
+        for (String varName : predictNames) {
+            if (!actualNames.contains(varName)) {
+                throw new IllegalArgumentException("actual and predict variables are not the same");
             }
         }
+
+        targetNames = actualNames;
+        actualVars = new ArrayList<>();
+        predictVars = new ArrayList<>();
+
+        for (String targetName : targetNames) {
+            actualVars.add(actual.var(targetName));
+            predictVars.add(predict.var(targetName));
+        }
+
         compute();
     }
 
-    public RMSE(Var source, Var target) {
-        this.source = new ArrayList<>();
-        this.source.add(source);
-        this.target = new ArrayList<>();
-        this.target.add(target);
+    public RMSE(Var actual, Var predict) {
+        targetNames = new ArrayList<>();
+        targetNames.add(actual.name());
+
+        actualVars = new ArrayList<>();
+        predictVars = new ArrayList<>();
+
+        actualVars.add(actual);
+        predictVars.add(predict);
+
         compute();
     }
 
@@ -66,10 +88,10 @@ public class RMSE implements Printable {
         double total = 0;
         double count = 0;
 
-        for (int i = 0; i < source.size(); i++) {
-            for (int j = 0; j < source.get(i).rowCount(); j++) {
+        for (int i = 0; i < targetNames.size(); i++) {
+            for (int j = 0; j < actualVars.get(i).rowCount(); j++) {
                 count++;
-                total += Math.pow(source.get(i).value(j) - target.get(i).value(j), 2);
+                total += Math.pow(actualVars.get(i).value(j) - predictVars.get(i).value(j), 2);
             }
         }
         value = Math.sqrt(total / count);
@@ -81,8 +103,7 @@ public class RMSE implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        for (int i = 0; i < source.size(); i++) {
-            sb.append(String.format("> RMSE[%s,%s]:\n%s", source.get(i).name(), target.get(i).name(), Printer.formatDecLong.format(value)));
-        }
+        sb.append("> Root Mean Squared Error").append("\n");
+        sb.append("RMSE: ").append(Printer.formatDecLong.format(value)).append("\n");
     }
 }

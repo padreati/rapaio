@@ -23,40 +23,63 @@ package rapaio.ml.eval;
 import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.VarRange;
+import rapaio.printer.Printer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Regression evaluation tool which enables one to compute
+ * sum of absolute differences between actual and prediction '
+ * variables (in other words the total sum of the absolute
+ * value of residuals).
+ * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public class MAE implements Printable {
-    private final List<Var> source;
-    private final List<Var> target;
+    private final List<String> targetNames;
+    private final List<Var> actualVars;
+    private final List<Var> predictVars;
     private double value;
 
-    public MAE(Frame dfSource, Frame dfTarget) {
-        source = new ArrayList<>();
-        for (int i = 0; i < dfSource.varCount(); i++) {
-            if (dfSource.var(i).type().isNumeric()) {
-                source.add(dfSource.var(i));
+    public MAE(Frame actual, Frame predict, String... targetVarNames) {
+        List<String> actualNames = new VarRange(targetVarNames).parseVarNames(actual);
+        List<String> predictNames = new VarRange(targetVarNames).parseVarNames(predict);
+
+        for (String varName : actualNames) {
+            if (!predictNames.contains(varName)) {
+                throw new IllegalArgumentException("actual and predict variables are not the same");
             }
         }
-        target = new ArrayList<>();
-        for (int i = 0; i < dfTarget.varCount(); i++) {
-            if (dfTarget.var(i).type().isNumeric()) {
-                target.add(dfTarget.var(i));
+        for (String varName : predictNames) {
+            if (!actualNames.contains(varName)) {
+                throw new IllegalArgumentException("actual and predict variables are not the same");
             }
         }
+
+        targetNames = actualNames;
+        actualVars = new ArrayList<>();
+        predictVars = new ArrayList<>();
+
+        for (String targetName : targetNames) {
+            actualVars.add(actual.var(targetName));
+            predictVars.add(predict.var(targetName));
+        }
+
         compute();
     }
 
-    public MAE(Var source, Var target) {
-        this.source = new ArrayList<>();
-        this.source.add(source);
-        this.target = new ArrayList<>();
-        this.target.add(target);
+    public MAE(Var actual, Var predict) {
+        targetNames = new ArrayList<>();
+        targetNames.add(actual.name());
+
+        actualVars = new ArrayList<>();
+        predictVars = new ArrayList<>();
+
+        actualVars.add(actual);
+        predictVars.add(predict);
+
         compute();
     }
 
@@ -64,10 +87,10 @@ public class MAE implements Printable {
         double total = 0;
         double count = 0;
 
-        for (int i = 0; i < source.size(); i++) {
-            for (int j = 0; j < source.get(i).rowCount(); j++) {
+        for (int i = 0; i < targetNames.size(); i++) {
+            for (int j = 0; j < actualVars.get(i).rowCount(); j++) {
                 count++;
-                total += Math.abs(source.get(i).value(j) - target.get(i).value(j));
+                total += Math.abs(actualVars.get(i).value(j) - predictVars.get(i).value(j));
             }
         }
         value = total / count;
@@ -79,6 +102,7 @@ public class MAE implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append(String.format("> mean absolute error\nMAE: %.6f\n", value()));
+        sb.append("> mean absolute error").append("\n");
+        sb.append("MAE: %sf").append(Printer.formatDecLong.format(value)).append("\n");
     }
 }
