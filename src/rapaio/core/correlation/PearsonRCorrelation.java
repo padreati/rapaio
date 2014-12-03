@@ -39,7 +39,6 @@ import static rapaio.WS.getPrinter;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class PearsonRCorrelation implements Printable {
 
     private final String[] names;

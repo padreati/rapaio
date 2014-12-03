@@ -25,8 +25,8 @@ import rapaio.data.*;
 
 import java.util.Arrays;
 
-import static rapaio.data.filters.BaseFilters.sort;
 import static rapaio.WS.getPrinter;
+import static rapaio.data.filters.BaseFilters.sort;
 
 /**
  * Spearman's rank correlation coefficient.
@@ -37,7 +37,6 @@ import static rapaio.WS.getPrinter;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class RhoCorr implements Printable {
 
     private final String[] names;
