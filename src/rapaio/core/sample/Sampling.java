@@ -24,12 +24,13 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
-import rapaio.data.filters.BaseFilters;
-import rapaio.data.stream.FIterator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static rapaio.core.RandomSource.nextDouble;
 
@@ -296,26 +297,21 @@ public final class Sampling {
             total += (int) f * frame.rowCount();
         }
         if (total > frame.rowCount()) {
-            throw new IllegalArgumentException("total counts greater than available number of getRowCount");
+            throw new IllegalArgumentException("total counts greater than available number of rows");
         }
         List<Frame> result = new ArrayList<>();
-        Frame shuffle = BaseFilters.shuffle(frame);
 
-        FIterator it = shuffle.stream().iterator();
+        List<Integer> rows = IntStream.range(0, frame.rowCount()).mapToObj(i -> i).collect(Collectors.toList());
+        Collections.shuffle(rows);
+
+        int start = 0;
         for (int i = 0; i < freq.length; i++) {
-            for (int j = 0; j < (int) freq[i] * frame.rowCount(); j++) {
-                it.next();
-                it.collect(String.valueOf(i));
-            }
-            result.add(it.mappedFrame(String.valueOf(i)));
+            int len = (int) freq[i] * frame.rowCount();
+            result.add(frame.mapRows(Mapping.newCopyOf(rows.subList(start, start + len))));
+            start += len;
         }
-        while (it.hasNext()) {
-            it.next();
-            it.collect(String.valueOf(freq.length));
-        }
-        Frame last = it.mappedFrame(String.valueOf(freq.length));
-        if (last != null) {
-            result.add(last);
+        if (start < frame.rowCount()) {
+            result.add(frame.mapRows(Mapping.newCopyOf(rows.subList(start, frame.rowCount()))));
         }
         return result;
     }

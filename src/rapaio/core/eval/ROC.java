@@ -189,5 +189,6 @@ public class ROC implements Printable {
             sb.append("\n");
         }
         sb.append("\n");
+        sb.append("AUC: ").append(Printer.formatDecShort.format(auc)).append("\n");
     }
 }

@@ -204,8 +204,8 @@ public class FSpots implements Stream<FSpot>, Serializable {
     }
 
     @Override
-    public FIterator iterator() {
-        return new FIterator(stream.iterator());
+    public Iterator<FSpot> iterator() {
+        return stream.iterator();
     }
 
     @Override

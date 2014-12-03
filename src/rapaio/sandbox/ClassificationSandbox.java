@@ -23,6 +23,8 @@ package rapaio.sandbox;
 import rapaio.core.eval.ROC;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
+import rapaio.graphics.Plot;
+import rapaio.graphics.plot.ROCCurve;
 import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.tree.CForest;
@@ -31,6 +33,7 @@ import rapaio.printer.LocalPrinter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import static rapaio.WS.draw;
 import static rapaio.WS.setPrinter;
 
 /**
@@ -47,11 +50,14 @@ public class ClassificationSandbox {
         // make it binary by removing one target class
         df = df.stream().filter(s -> s.index("class") != 2).toMappedFrame();
 
-        Classifier c = CForest.buildRandomForest(1, 2, 0.8);
+        Classifier c = CForest.buildRandomForest(7, 1, 0.05);
 
         c.learn(df, "class");
         CResult cr = c.predict(df, true, true);
 
-        new ROC(cr.firstDensity().var(1), df.var("class"), 1).summary();
+        ROC roc = new ROC(cr.firstDensity().var(1), df.var("class"), 1);
+        roc.summary();
+
+        draw(new Plot().add(new ROCCurve(roc)));
     }
 }
