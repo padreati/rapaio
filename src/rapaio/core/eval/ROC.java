@@ -22,14 +22,18 @@ package rapaio.core.eval;
 
 import rapaio.core.Printable;
 import rapaio.data.*;
+import rapaio.printer.Printer;
 
 import static rapaio.data.filters.BaseFilters.sort;
 
 
 /**
+ * Receiver Operator Characteristic.
+ *
+ * This utility class computes ROC for a given scores and binary prediction.
+ *
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-@Deprecated
 public class ROC implements Printable {
 
     private final Var score;
@@ -37,6 +41,15 @@ public class ROC implements Printable {
     private Frame data;
     private double auc;
 
+    /**
+     * Builds a new ROC instance from scores and the indicator value.
+     * The binary indicator value is obtained by comparing the actual
+     * classes with the predicted classes.
+     *
+     * @param score   variable which contains scores
+     * @param actual  variable which contains the actual classes
+     * @param predict variable which contains the predicted classes
+     */
     public ROC(Var score, Var actual, Var predict) {
         this.score = score;
         this.classes = Index.newEmpty(actual.rowCount());
@@ -50,10 +63,28 @@ public class ROC implements Printable {
         compute();
     }
 
+    /**
+     * Builds a new ROC instance from scores and the truth value is a prediction
+     * is correct or not. The truth value is obtained by comparing the actual index value
+     * with the given index.
+     *
+     * @param score scores variable
+     * @param actual actual class
+     * @param index index of the class considered 1, all other index values are 0
+     */
     public ROC(Var score, Var actual, int index) {
         this(score, actual, actual.dictionary()[index]);
     }
 
+    /**
+     * Builds a new ROC instance from scores and the truth value is a prediction
+     * is correct or not. The truth value is obtained by comparing the actual label value
+     * with the given label.
+     *
+     * @param score scores variable
+     * @param actual actual class
+     * @param label label of the class considered 1, all other labels values are 0
+     */
     public ROC(Var score, Var actual, String label) {
         this.score = score;
         this.classes = Index.newEmpty(actual.rowCount());
@@ -136,6 +167,27 @@ public class ROC implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append("> ROC summary\nnot implemented\n");
+
+        final String fmt = "%10s";
+
+        sb.append("> ROC summary").append("\n");
+        sb.append("\n");
+        for (int j = 0; j < data.varCount(); j++) {
+            if (j > 0) {
+                sb.append(", ");
+            }
+            sb.append(String.format(fmt, data.varNames()[j]));
+        }
+        sb.append("\n");
+        for (int i = 0; i < data.rowCount(); i++) {
+            for (int j = 0; j < data.varCount(); j++) {
+                if (j > 0) {
+                    sb.append(", ");
+                }
+                sb.append(String.format(fmt, Printer.formatDecShort.format(data.value(i, j))));
+            }
+            sb.append("\n");
+        }
+        sb.append("\n");
     }
 }

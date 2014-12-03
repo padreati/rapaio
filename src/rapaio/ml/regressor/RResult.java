@@ -162,8 +162,8 @@ public class RResult implements Printable {
     @Override
     public void buildSummary(StringBuilder sb) {
 
-        sb.append("Regression Result Summary").append("\n");
-        sb.append("=========================\n");
+        sb.append("> Regression Result Summary").append("\n");
+        sb.append("  =========================\n");
         sb.append("\n");
 
         sb.append("Model type: ").append(model.name()).append("\n");

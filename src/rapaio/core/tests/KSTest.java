@@ -33,7 +33,6 @@ import rapaio.data.filters.BaseFilters;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public class KSTest implements Printable {
 
     private final Distribution cdf;
