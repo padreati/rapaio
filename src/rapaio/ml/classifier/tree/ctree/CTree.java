@@ -225,12 +225,12 @@ public class CTree extends AbstractClassifier {
         if (targetVarList.size() > 1) {
             throw new IllegalArgumentException("tree classifier can't fit more than one target variable");
         }
-        this.targetVars = targetVarList.toArray(new String[targetVarList.size()]);
+        this.targetNames = targetVarList.toArray(new String[targetVarList.size()]);
 
-        dict = Arrays.stream(this.targetVars).collect(Collectors.toMap(s -> s, s -> df.var(s).dictionary()));
+        dict = Arrays.stream(this.targetNames).collect(Collectors.toMap(s -> s, s -> df.var(s).dictionary()));
         rows = df.rowCount();
 
-        testCounter.initialize(df, firstTargetVar());
+        testCounter.initialize(df, firstTargetName());
 
         root = new CTreeNode(null, "root", spot -> true);
         root.learn(this, df, weights, maxDepth);
@@ -239,8 +239,8 @@ public class CTree extends AbstractClassifier {
     @Override
     public CResult predict(Frame df, boolean withClasses, boolean withDensities) {
 
-        CResult prediction = CResult.newEmpty(df, withClasses, withDensities);
-        prediction.addTarget(firstTargetVar(), firstDictionary());
+        CResult prediction = CResult.newEmpty(this, df, withClasses, withDensities);
+        prediction.addTarget(firstTargetName(), firstDictionary());
 
         df.stream().forEach(spot -> {
             Pair<Integer, DensityVector> result = predictor.predict(this, spot, root);

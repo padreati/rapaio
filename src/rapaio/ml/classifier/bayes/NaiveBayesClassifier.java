@@ -112,22 +112,22 @@ public class NaiveBayesClassifier extends AbstractClassifier {
         if (list.size() != 1) {
             throw new IllegalArgumentException("NaiveBayes is able to predict only one target variable");
         }
-        this.targetVars = new String[]{list.get(0)};
+        this.targetNames = new String[]{list.get(0)};
         this.dict = new HashMap<>();
-        this.dict.put(firstTargetVar(), df.var(firstTargetVar()).dictionary());
+        this.dict.put(firstTargetName(), df.var(firstTargetName()).dictionary());
 
         // build priors
 
         priors = new HashMap<>();
-        DensityVector dv = new DensityVector(dict.get(firstTargetVar()));
-        df.stream().forEach(s -> dv.update(s.index(firstTargetVar()), weights.value(s.row())));
+        DensityVector dv = new DensityVector(dict.get(firstTargetName()));
+        df.stream().forEach(s -> dv.update(s.index(firstTargetName()), weights.value(s.row())));
 
         // laplace add-one smoothing
-        for (int i = 0; i < dict.get(firstTargetVar()).length; i++) {
+        for (int i = 0; i < dict.get(firstTargetName()).length; i++) {
             dv.update(i, 1.0);
         }
         dv.normalize(false);
-        for (int i = 1; i < dict.get(firstTargetVar()).length; i++) {
+        for (int i = 1; i < dict.get(firstTargetName()).length; i++) {
             priors.put(firstDictionary()[i], dv.get(i));
         }
 
@@ -137,11 +137,11 @@ public class NaiveBayesClassifier extends AbstractClassifier {
         cvpEstimatorMap = new HashMap<>();
 
         for (String testCol : df.varNames()) {
-            if (firstTargetVar().equals(testCol)) continue;
+            if (firstTargetName().equals(testCol)) continue;
             if (df.var(testCol).type().isNumeric()) {
 
                 CvpEstimator estimator = cvpEstimator.newInstance();
-                estimator.learn(df, firstTargetVar(), testCol);
+                estimator.learn(df, firstTargetName(), testCol);
                 cvpEstimatorMap.put(testCol, estimator);
                 continue;
             }
@@ -149,7 +149,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
             if (df.var(testCol).type().isNominal()) {
 
                 DvpEstimator estimator = dvpEstimator.newInstance();
-                estimator.learn(df, firstTargetVar(), testCol);
+                estimator.learn(df, firstTargetName(), testCol);
                 dvpEstimatorMap.put(testCol, estimator);
             }
         }
@@ -158,20 +158,20 @@ public class NaiveBayesClassifier extends AbstractClassifier {
     @Override
     public CResult predict(Frame df, final boolean withClasses, final boolean withDensities) {
 
-        CResult pred = CResult.newEmpty(df, withClasses, withDensities);
-        pred.addTarget(firstTargetVar(), firstDictionary());
+        CResult pred = CResult.newEmpty(this, df, withClasses, withDensities);
+        pred.addTarget(firstTargetName(), firstDictionary());
 
         for (int i = 0; i < df.rowCount(); i++) {
-            DensityVector dv = new DensityVector(dict.get(firstTargetVar()));
+            DensityVector dv = new DensityVector(dict.get(firstTargetName()));
             for (int j = 1; j < firstDictionary().length; j++) {
-                double sumLog = Math.log(priors.get(dict.get(firstTargetVar())[j]));
+                double sumLog = Math.log(priors.get(dict.get(firstTargetName())[j]));
                 for (String testCol : cvpEstimatorMap.keySet()) {
                     if (df.missing(i, testCol)) continue;
-                    sumLog += cvpEstimatorMap.get(testCol).cpValue(df.value(i, testCol), dict.get(firstTargetVar())[j]);
+                    sumLog += cvpEstimatorMap.get(testCol).cpValue(df.value(i, testCol), dict.get(firstTargetName())[j]);
                 }
                 for (String testCol : dvpEstimatorMap.keySet()) {
                     if (df.missing(i, testCol)) continue;
-                    sumLog += dvpEstimatorMap.get(testCol).cpValue(df.label(i, testCol), dict.get(firstTargetVar())[j]);
+                    sumLog += dvpEstimatorMap.get(testCol).cpValue(df.label(i, testCol), dict.get(firstTargetName())[j]);
                 }
                 dv.update(j, sumLog);
             }

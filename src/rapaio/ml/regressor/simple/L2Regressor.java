@@ -65,7 +65,7 @@ public class L2Regressor extends AbstractRegressor {
 
     @Override
     public RResult predict(final Frame df, final boolean withResiduals) {
-        RResult pred = RResult.newEmpty(df, withResiduals, targetNames);
+        RResult pred = RResult.newEmpty(this, df, withResiduals, targetNames);
         for (int i = 0; i < targetNames.length; i++) {
             double mean = means[i];
             pred.fit(targetNames[i]).stream().forEach(s -> s.setValue(mean));

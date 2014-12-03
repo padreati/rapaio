@@ -30,7 +30,7 @@ import java.util.Map;
 public abstract class AbstractClassifier implements Classifier {
 
     protected VarSelector varSelector = new VarSelector.Standard();
-    protected String[] targetVars;
+    protected String[] targetNames;
     protected Map<String, String[]> dict;
 
     @Override
@@ -45,8 +45,8 @@ public abstract class AbstractClassifier implements Classifier {
     }
 
     @Override
-    public String[] targetVars() {
-        return targetVars;
+    public String[] targetNames() {
+        return targetNames;
     }
 
     @Override

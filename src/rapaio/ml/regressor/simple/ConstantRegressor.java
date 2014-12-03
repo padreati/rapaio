@@ -69,7 +69,7 @@ public class ConstantRegressor extends AbstractRegressor {
 
     @Override
     public RResult predict(final Frame df, final boolean withResiduals) {
-        RResult pred = RResult.newEmpty(df, withResiduals, targetNames);
+        RResult pred = RResult.newEmpty(this, df, withResiduals, targetNames);
         pred.buildComplete();
         return pred;
     }

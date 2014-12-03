@@ -28,11 +28,11 @@ import rapaio.ml.regressor.RResult;
  */
 public class RResultOLS extends RResult {
 
-    public static RResultOLS newEmpty(Frame df, boolean withResiduals, String... targetVarNames) {
-        return new RResultOLS(df, withResiduals, targetVarNames);
+    public static RResultOLS newEmpty(OLSRegressor model, Frame df, boolean withResiduals, String... targetVarNames) {
+        return new RResultOLS(model, df, withResiduals, targetVarNames);
     }
 
-    private RResultOLS(Frame df, boolean withResiduals, String... targetNames) {
-        super(df, withResiduals, targetNames);
+    private RResultOLS(OLSRegressor model, Frame df, boolean withResiduals, String... targetNames) {
+        super(model, df, withResiduals, targetNames);
     }
 }

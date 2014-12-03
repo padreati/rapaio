@@ -289,7 +289,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
 
     @Override
     public RResult predict(final Frame df, final boolean withResiduals) {
-        RResult pred = RResult.newEmpty(df, withResiduals, targetNames);
+        RResult pred = RResult.newEmpty(this, df, withResiduals, targetNames);
 
         RResult initPred = initRegressor.predict(df);
         for (int i = 0; i < df.rowCount(); i++) {

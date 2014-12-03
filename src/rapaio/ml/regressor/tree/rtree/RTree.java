@@ -175,7 +175,7 @@ public class RTree extends AbstractRegressor implements BTRegressor {
 
     @Override
     public RResult predict(Frame df, boolean withResiduals) {
-        RResult pred = RResult.newEmpty(df, withResiduals, targetNames);
+        RResult pred = RResult.newEmpty(this, df, withResiduals, targetNames);
 
         df.stream().forEach(spot -> {
             Pair<Double, Double> result = predictor.predict(this, spot, root);

@@ -59,6 +59,7 @@ public class Sand {
         r.learn(df, "MEDV");
 
         RResultOLS rp = r.predict(df);
+        rp.summary();
 
         draw(new Plot()
                         .add(new Points(df.var("MEDV"), rp.firstResidual()))

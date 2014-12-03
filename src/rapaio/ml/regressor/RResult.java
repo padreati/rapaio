@@ -20,11 +20,13 @@
 
 package rapaio.ml.regressor;
 
+import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.data.VarRange;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +37,8 @@ import java.util.stream.Collectors;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
-public class RResult {
+public class RResult implements Printable {
+    private final Regressor model;
     private final Frame df;
     private final List<String> targetVars;
     private final boolean withResiduals;
@@ -44,13 +47,14 @@ public class RResult {
 
     // builder
 
-    public static RResult newEmpty(Frame df, boolean withResiduals, String... targetVarNames) {
-        return new RResult(df, withResiduals, targetVarNames);
+    public static RResult newEmpty(Regressor model, Frame df, boolean withResiduals, String... targetVarNames) {
+        return new RResult(model, df, withResiduals, targetVarNames);
     }
 
     // private constructor
 
-    protected RResult(Frame df, final boolean withResiduals, String... targetVarNames) {
+    protected RResult(final Regressor model, final Frame df, final boolean withResiduals, String... targetVarNames) {
+        this.model = model;
         this.df = df;
         this.targetVars = new VarRange(targetVarNames).parseVarNames(df);
         this.withResiduals = withResiduals;
@@ -153,5 +157,26 @@ public class RResult {
                 }
             }
         }
+    }
+
+    @Override
+    public void buildSummary(StringBuilder sb) {
+
+        sb.append("Regression Result Summary").append("\n");
+        sb.append("=========================\n");
+        sb.append("\n");
+
+        sb.append("Model type: ").append(model.name()).append("\n");
+        sb.append("Model instance: ").append(model.fullName()).append("\n");
+        sb.append("\n");
+
+        sb.append("Predicted frame summary:\n");
+        sb.append("- rows: ").append(df.rowCount()).append("\n");
+        sb.append("- vars: ").append(df.varCount()).append("\n");
+        sb.append("- targets: ").append(Arrays.deepToString(model.targetNames())).append("\n");
+        sb.append("\n");
+
+        sb.append("Regression results:").append("\n");
+        sb.append("TO BE DONE").append("\n");
     }
 }

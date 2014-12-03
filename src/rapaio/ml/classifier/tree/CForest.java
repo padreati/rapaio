@@ -207,9 +207,9 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
         if (targetVarsList.size() != 1) {
             throw new IllegalArgumentException("Forest classifiers can learn only one target variable");
         }
-        this.targetVars = targetVarsList.toArray(new String[targetVarsList.size()]);
+        this.targetNames = targetVarsList.toArray(new String[targetVarsList.size()]);
         this.dict = new HashMap<>();
-        this.dict.put(firstTargetVar(), df.var(firstTargetVar()).dictionary());
+        this.dict.put(firstTargetName(), df.var(firstTargetName()).dictionary());
 
         predictors.clear();
 
@@ -228,7 +228,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
     @Override
     public void learnFurther(Frame df, Var weights, String targetVars, int additionalRuns) {
 
-        if (this.targetVars != null && dict != null) {
+        if (this.targetNames != null && dict != null) {
             this.runs += additionalRuns;
         } else {
             this.runs = additionalRuns;
@@ -249,19 +249,19 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
         Frame train = samples.first.get(0);
         Frame oob = samples.first.get(1);
 
-        weak.learn(train, samples.second.get(0), firstTargetVar());
+        weak.learn(train, samples.second.get(0), firstTargetName());
         if (oobCompute) {
             CResult cp = weak.predict(oob);
             totalOobInstances += oob.rowCount();
-            totalOobError += 1 - new ConfusionMatrix(oob.var(firstTargetVar()), cp.firstClasses()).accuracy();
+            totalOobError += 1 - new ConfusionMatrix(oob.var(firstTargetName()), cp.firstClasses()).accuracy();
         }
         predictors.add(weak);
     }
 
     @Override
     public CResult predict(Frame df, boolean withClasses, boolean withDensities) {
-        CResult cp = CResult.newEmpty(df, true, true);
-        cp.addTarget(firstTargetVar(), firstDictionary());
+        CResult cp = CResult.newEmpty(this, df, true, true);
+        cp.addTarget(firstTargetName(), firstDictionary());
 
         List<Frame> treeDensities = new ArrayList<>();
         predictors.forEach(p -> {

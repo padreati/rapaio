@@ -107,19 +107,19 @@ public interface Classifier extends Printable, Serializable {
     CResult predict(Frame df, boolean withClasses, boolean withDistributions);
 
     /**
-     * Returns target variables built at learning time
+     * Returns target variables names built at learning time
      *
      * @return target variable names
      */
-    String[] targetVars();
+    String[] targetNames();
 
     /**
      * Returns first target variable built at learning time
      *
      * @return target variable names
      */
-    default String firstTargetVar() {
-        return targetVars()[0];
+    default String firstTargetName() {
+        return targetNames()[0];
     }
 
     /**
@@ -135,6 +135,6 @@ public interface Classifier extends Printable, Serializable {
      * @return map with target variable names as key and dictionaries as variables
      */
     default String[] firstDictionary() {
-        return dictionaries().get(firstTargetVar());
+        return dictionaries().get(firstTargetName());
     }
 }

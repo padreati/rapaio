@@ -73,13 +73,13 @@ public class OneRule extends AbstractClassifier {
             throw new IllegalArgumentException("OneRule algorithm can't handle multiple targets");
         }
 
-        this.targetVars = new String[]{list.get(0)};
+        this.targetNames = new String[]{list.get(0)};
         this.dict = new HashMap<>();
-        this.dict.put(firstTargetVar(), df.var(firstTargetVar()).dictionary());
+        this.dict.put(firstTargetName(), df.var(firstTargetName()).dictionary());
 
         bestRuleSet = null;
         for (String testCol : df.varNames()) {
-            if (testCol.equals(firstTargetVar())) {
+            if (testCol.equals(firstTargetName())) {
                 continue;
             }
             RuleSet ruleSet = df.var(testCol).type().isNominal() ?
@@ -93,8 +93,8 @@ public class OneRule extends AbstractClassifier {
 
     @Override
     public CResult predict(final Frame test, final boolean withClasses, final boolean withDensities) {
-        CResult pred = CResult.newEmpty(test, withClasses, withDensities);
-        pred.addTarget(firstTargetVar(), firstDictionary());
+        CResult pred = CResult.newEmpty(this, test, withClasses, withDensities);
+        pred.addTarget(firstTargetName(), firstDictionary());
 
         for (int i = 0; i < test.rowCount(); i++) {
             String label = "";
@@ -159,7 +159,7 @@ public class OneRule extends AbstractClassifier {
             dvs[i] = new DensityVector(firstDictionary());
         }
         for (int i = 0; i < df.rowCount(); i++) {
-            dvs[df.index(i, testCol)].update(df.index(i, firstTargetVar()), weights.value(i));
+            dvs[df.index(i, testCol)].update(df.index(i, firstTargetName()), weights.value(i));
         }
         for (int i = 0; i < len; i++) {
             DensityVector dv = dvs[i];
@@ -175,7 +175,7 @@ public class OneRule extends AbstractClassifier {
         RuleSet set = new RuleSet(testCol);
         Var sort = BaseFilters.sort(Index.newSeq(weights.rowCount()),
                 RowComparators.numericComparator(df.var(testCol), true),
-                RowComparators.nominalComparator(df.var(firstTargetVar()), true));
+                RowComparators.nominalComparator(df.var(firstTargetName()), true));
         int pos = 0;
         while (pos < sort.rowCount()) {
             if (df.missing(sort.index(pos), testCol)) {
@@ -189,7 +189,7 @@ public class OneRule extends AbstractClassifier {
         if (pos > 0) {
             double[] hist = new double[firstDictionary().length];
             for (int i = 0; i < pos; i++) {
-                hist[df.index(sort.index(i), firstTargetVar())] += weights.value(sort.index(i));
+                hist[df.index(sort.index(i), firstTargetName())] += weights.value(sort.index(i));
             }
             List<Integer> best = new ArrayList<>();
             double max = Double.MIN_VALUE;
@@ -222,7 +222,7 @@ public class OneRule extends AbstractClassifier {
             double[] hist = new double[firstDictionary().length];
 
             do { // fill it until it has enough of the majority class
-                index = df.index(sort.index(i), firstTargetVar());
+                index = df.index(sort.index(i), firstTargetName());
                 hist[index] += weights.value(sort.index(i));
                 i++;
             } while (hist[index] < minCount && i < sort.rowCount());
@@ -230,7 +230,7 @@ public class OneRule extends AbstractClassifier {
             // while class remains the same, keep on filling
             while (i < sort.rowCount()) {
                 index = sort.index(i);
-                if (df.index(sort.index(i), firstTargetVar()) == index) {
+                if (df.index(sort.index(i), firstTargetName()) == index) {
                     hist[index] += weights.value(sort.index(i));
                     i++;
                     continue;
@@ -241,7 +241,7 @@ public class OneRule extends AbstractClassifier {
             while (i < sort.rowCount()
                     && df.value(sort.index(i - 1), testCol)
                     == df.value(sort.index(i), testCol)) {
-                index = df.index(sort.index(i), firstTargetVar());
+                index = df.index(sort.index(i), firstTargetName());
                 hist[index] += weights.value(sort.index(i));
                 i++;
             }

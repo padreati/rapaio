@@ -130,8 +130,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         if (targetVarList.size() > 1) {
             throw new IllegalArgumentException("tree classifier can't fit more than one target variable");
         }
-        this.targetVars = targetVarList.toArray(new String[targetVarList.size()]);
-        dict = Arrays.stream(this.targetVars).collect(Collectors.toMap(s -> s, s -> df.var(s).dictionary()));
+        this.targetNames = targetVarList.toArray(new String[targetVarList.size()]);
+        dict = Arrays.stream(this.targetNames).collect(Collectors.toMap(s -> s, s -> df.var(s).dictionary()));
 
         k = firstDictionary().length - 1;
 
@@ -156,9 +156,9 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         List<String> targetVarList = new VarRange(targetVarsRange).parseVarNames(df);
         String[] targetVars = targetVarList.toArray(new String[targetVarList.size()]);
 
-        if (w != null && this.targetVars != null && dict != null) {
+        if (w != null && this.targetNames != null && dict != null) {
             // if prev trained on something else than we have a problem
-            if ((!targetVars[0].equals(firstTargetVar()) ||
+            if ((!targetVars[0].equals(firstTargetName()) ||
                     k != firstDictionary().length - 1)) {
                 throw new IllegalArgumentException("previous classifier trained on different target");
             }
@@ -186,11 +186,11 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         Numeric dfWeights = (Numeric) w.mapRows(rows).solidCopy();
 
         Classifier hh = base.newInstance();
-        hh.learn(dfTrain, dfWeights, targetVars);
+        hh.learn(dfTrain, dfWeights, targetNames);
         CResult p = hh.predict(df, true, false);
         double err = 0;
         for (int j = 0; j < df.rowCount(); j++) {
-            if (p.firstClasses().index(j) != df.var(firstTargetVar()).index(j)) {
+            if (p.firstClasses().index(j) != df.var(firstTargetName()).index(j)) {
                 err += w.value(j);
             }
         }
@@ -210,7 +210,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         a.add(alpha);
 
         for (int j = 0; j < w.rowCount(); j++) {
-            if (p.firstClasses().index(j) != df.var(firstTargetVar()).index(j)) {
+            if (p.firstClasses().index(j) != df.var(firstTargetName()).index(j)) {
                 w.setValue(j, w.value(j) * Math.exp(alpha));
             }
         }
@@ -222,8 +222,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
     @Override
     public CResult predict(Frame df, boolean withClasses, boolean withDistributions) {
-        CResult p = CResult.newEmpty(df, withClasses, true);
-        p.addTarget(firstTargetVar(), firstDictionary());
+        CResult p = CResult.newEmpty(this, df, withClasses, true);
+        p.addTarget(firstTargetName(), firstDictionary());
 
         for (int i = 0; i < h.size(); i++) {
             CResult hp = h.get(i).predict(df, true, false);

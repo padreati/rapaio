@@ -86,9 +86,9 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
     public void learn(Frame df, Var weights, String... targetVarNames) {
 
         List<String> list = new VarRange(targetVarNames).parseVarNames(df);
-        this.targetVars = list.toArray(new String[list.size()]);
+        this.targetNames = list.toArray(new String[list.size()]);
         this.dict = new HashMap<>();
-        for (String targetVar : targetVars) {
+        for (String targetVar : targetNames) {
             dict.put(targetVar, df.var(targetVar).dictionary());
         }
 
@@ -125,7 +125,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
             if (split.classifier instanceof RunningClassifier) {
                 ((RunningClassifier) split.classifier).withRuns(runs);
             }
-            split.classifier.learn(frames.get(i), weightList.get(i), targetVars);
+            split.classifier.learn(frames.get(i), weightList.get(i), targetNames);
         }
     }
 
@@ -138,8 +138,8 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
     @Override
     public CResult predict(Frame df, boolean withClasses, boolean withDensities) {
 
-        CResult pred = CResult.newEmpty(df, withClasses, withDensities);
-        for (String targetVar : targetVars) {
+        CResult pred = CResult.newEmpty(this, df, withClasses, withDensities);
+        for (String targetVar : targetNames) {
             pred.addTarget(targetVar, dict.get(targetVar));
         }
 
@@ -151,12 +151,12 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
                     CResult p = split.classifier.predict(f, withClasses, withDensities);
 
                     if (withClasses) {
-                        for (String targetVar : targetVars) {
+                        for (String targetVar : targetNames) {
                             pred.classes(targetVar).setLabel(spot.row(), p.classes(targetVar).label(0));
                         }
                     }
                     if (withDensities) {
-                        for (String targetVar : targetVars) {
+                        for (String targetVar : targetNames) {
                             for (int j = 0; j < dict.get(targetVar).length; j++) {
                                 pred.densities().get(targetVar).setValue(spot.row(), dict.get(targetVar)[j], p.densities().get(targetVar).value(0, dict.get(targetVar)[j]));
                             }

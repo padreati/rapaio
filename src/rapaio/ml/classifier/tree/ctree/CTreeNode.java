@@ -94,8 +94,8 @@ public class CTreeNode implements Serializable {
     }
 
     public void learn(CTree tree, Frame df, Var weights, int depth) {
-        density = new DensityVector(df.var(tree.firstTargetVar()), weights);
-        counter = new DensityVector(df.var(tree.firstTargetVar()), Numeric.newFill(df.rowCount(), 1));
+        density = new DensityVector(df.var(tree.firstTargetName()), weights);
+        counter = new DensityVector(df.var(tree.firstTargetName()), Numeric.newFill(df.rowCount(), 1));
         bestIndex = density.findBestIndex();
 
         if (df.rowCount() == 0) {
@@ -111,16 +111,16 @@ public class CTreeNode implements Serializable {
 
         ConcurrentLinkedQueue<CTreeCandidate> candidates = new ConcurrentLinkedQueue<>();
         Arrays.stream(tree.getVarSelector().nextVarNames()).parallel().forEach(testCol -> {
-            if (testCol.equals(tree.firstTargetVar())) return;
+            if (testCol.equals(tree.firstTargetName())) return;
             if (!tree.testCounter.canUse(testCol)) return;
 
             if (df.var(testCol).type().isNumeric()) {
                 tree.getNumericMethod().computeCandidates(
-                        tree, df, weights, testCol, tree.firstTargetVar(), tree.getFunction())
+                        tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction())
                         .forEach(candidates::add);
             } else {
                 tree.getNominalMethod().computeCandidates(
-                        tree, df, weights, testCol, tree.firstTargetVar(), tree.getFunction())
+                        tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction())
                         .forEach(candidates::add);
             }
         });

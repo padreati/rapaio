@@ -20,20 +20,19 @@
 
 package rapaio.ml.classifier;
 
+import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
 import rapaio.data.SolidFrame;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class CResult {
+public class CResult implements Printable {
 
+    private final Classifier model;
     private final Frame df;
     private final List<String> targetVars = new ArrayList<>();
     private final boolean withClasses;
@@ -44,13 +43,18 @@ public class CResult {
 
     // builder
 
-    public static CResult newEmpty(Frame df, boolean withClasses, boolean withDensities) {
-        return new CResult(df, withClasses, withDensities);
+    public static CResult newEmpty(
+            final Classifier model,
+            final Frame df,
+            final boolean withClasses,
+            final boolean withDensities) {
+        return new CResult(model, df, withClasses, withDensities);
     }
 
     // private constructor
 
-    private CResult(Frame df, boolean withClasses, boolean withDensities) {
+    private CResult(final Classifier model, final Frame df, final boolean withClasses, final boolean withDensities) {
+        this.model = model;
         this.df = df;
         this.withClasses = withClasses;
         this.withDensities = withDensities;
@@ -182,5 +186,27 @@ public class CResult {
      */
     public Frame density(final String targetVar) {
         return densities.get(targetVar);
+    }
+
+    @Override
+    public void buildSummary(StringBuilder sb) {
+
+
+        sb.append("Classification Result Summary").append("\n");
+        sb.append("=============================\n");
+        sb.append("\n");
+
+        sb.append("Model type: ").append(model.name()).append("\n");
+        sb.append("Model instance: ").append(model.fullName()).append("\n");
+        sb.append("\n");
+
+        sb.append("Predicted frame summary:\n");
+        sb.append("- rows: ").append(df.rowCount()).append("\n");
+        sb.append("- vars: ").append(df.varCount()).append("\n");
+        sb.append("- targets: ").append(Arrays.deepToString(model.targetNames())).append("\n");
+        sb.append("\n");
+
+        sb.append("Classification results:").append("\n");
+        sb.append("TO BE DONE").append("\n");
     }
 }
