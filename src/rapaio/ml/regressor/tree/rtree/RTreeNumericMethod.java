@@ -26,7 +26,7 @@ import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
-import rapaio.data.filters.BaseFilters;
+import rapaio.data.filters.VFRefSort;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,7 +65,7 @@ public interface RTreeNumericMethod {
             Var test = df.var(testColName);
             Var target = df.var(targetColName);
 
-            Var sort = BaseFilters.sort(Index.newSeq(df.rowCount()), RowComparators.numericComparator(test, true));
+            Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.newSeq(df.rowCount()));
 
             double[] leftVar = new double[df.rowCount()];
             double[] rightVar = new double[df.rowCount()];

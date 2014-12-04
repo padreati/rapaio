@@ -22,8 +22,7 @@ package rapaio.core.stat;
 
 import rapaio.core.Printable;
 import rapaio.data.Var;
-
-import static rapaio.data.filters.BaseFilters.sort;
+import rapaio.data.filters.VFSort;
 
 
 /**
@@ -56,7 +55,7 @@ public class Quantiles implements Printable {
             }
             return values;
         }
-        Var sorted = sort(var);
+        Var sorted = new VFSort().fitApply(var);
         int start = 0;
         while (sorted.missing(start)) {
             start++;

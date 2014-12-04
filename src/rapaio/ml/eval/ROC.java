@@ -22,9 +22,8 @@ package rapaio.ml.eval;
 
 import rapaio.core.Printable;
 import rapaio.data.*;
+import rapaio.data.filters.VFRefSort;
 import rapaio.printer.Printer;
-
-import static rapaio.data.filters.BaseFilters.sort;
 
 
 /**
@@ -117,7 +116,7 @@ public class ROC implements Printable {
         double tp = 0;
         auc = 0;
 
-        Var rows = sort(Index.newSeq(score.rowCount()), RowComparators.numericComparator(score, false));
+        Var rows = new VFRefSort(RowComparators.numeric(score, false)).fitApply(Index.newSeq(score.rowCount()));
         int len = 1;
         double prev = Double.MIN_VALUE;
         for (int i = 0; i < rows.rowCount(); i++) {

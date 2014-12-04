@@ -23,7 +23,7 @@ package rapaio.core.tests;
 import rapaio.core.Printable;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Var;
-import rapaio.data.filters.BaseFilters;
+import rapaio.data.filters.VFSort;
 
 /**
  * Creates a new statistical Kolmogorov-Smirnoff test. The 1 sample test, with <tt>v</tt>
@@ -55,7 +55,7 @@ public class KSTest implements Printable {
      */
     public KSTest(String testName, Var sample, Distribution cdf) {
         this.testName = testName;
-        this.v1 = BaseFilters.sort(sample);
+        this.v1 = new VFSort().fitApply(sample);
         this.cdf = cdf;
         this.v2 = null;
 
@@ -88,8 +88,8 @@ public class KSTest implements Printable {
      */
     public KSTest(String testName, Var sample1, Var sample2) {
         this.testName = testName;
-        this.v1 = BaseFilters.sort(sample1);
-        this.v2 = BaseFilters.sort(sample2);
+        this.v1 = new VFSort().fitApply(sample1);
+        this.v2 = new VFSort().fitApply(sample2);
         this.cdf = null;
 
         D = 0;

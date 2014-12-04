@@ -20,9 +20,8 @@
 
 package rapaio.data;
 
-import junit.framework.Assert;
 import org.junit.Test;
-import rapaio.data.filters.BaseFilters;
+import rapaio.data.filters.VFSort;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,7 +58,7 @@ public class VarTest {
     public void testNumericCollector() {
         Var x = Numeric.newWrapOf(1, 2, 3, 4, 5);
         Var y = Arrays.stream(new double[]{1, 2, 3, 4, 5}).mapToObj(d -> d).parallel().collect(Var.numericCollector());
-        y = BaseFilters.sort(y);
+        y = new VFSort().fitApply(y);
 
         assertEquals(5, x.rowCount());
         assertEquals(5, y.rowCount());
@@ -73,7 +72,7 @@ public class VarTest {
     public void testIndexCollector() {
         Var x = Index.newWrapOf(1, 2, 3, 4, 5);
         Var y = Arrays.stream(new int[]{1, 2, 3, 4, 5}).mapToObj(d -> d).parallel().collect(Var.indexCollector());
-        y = BaseFilters.sort(y);
+        y = new VFSort().fitApply(y);
 
         assertEquals(5, x.rowCount());
         assertEquals(5, y.rowCount());

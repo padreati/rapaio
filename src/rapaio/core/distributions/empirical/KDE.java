@@ -22,7 +22,7 @@ package rapaio.core.distributions.empirical;
 
 import rapaio.core.stat.Variance;
 import rapaio.data.Var;
-import rapaio.data.filters.BaseFilters;
+import rapaio.data.filters.VFSort;
 
 import java.util.Arrays;
 import java.util.function.Function;
@@ -53,7 +53,7 @@ public class KDE {
     }
 
     public KDE(Var values, KFunc kernel, double bandwidth) {
-        this.values = BaseFilters.sort(values).stream().filter(s -> !s.missing()).mapToDouble().toArray();
+        this.values = new VFSort().fitApply(values).stream().filter(s -> !s.missing()).mapToDouble().toArray();
         this.kernel = kernel;
         this.bandwidth = bandwidth;
     }

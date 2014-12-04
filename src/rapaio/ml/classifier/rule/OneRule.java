@@ -22,7 +22,7 @@ package rapaio.ml.classifier.rule;
 
 import rapaio.core.RandomSource;
 import rapaio.data.*;
-import rapaio.data.filters.BaseFilters;
+import rapaio.data.filters.VFRefSort;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.tools.DensityVector;
@@ -173,9 +173,8 @@ public class OneRule extends AbstractClassifier {
 
     private RuleSet buildNumeric(String testCol, Frame df, Var weights) {
         RuleSet set = new RuleSet(testCol);
-        Var sort = BaseFilters.sort(Index.newSeq(weights.rowCount()),
-                RowComparators.numericComparator(df.var(testCol), true),
-                RowComparators.nominalComparator(df.var(firstTargetName()), true));
+        Var sort = new VFRefSort(RowComparators.numeric(df.var(testCol), true),
+                RowComparators.nominal(df.var(firstTargetName()), true)).fitApply(Index.newSeq(weights.rowCount()));
         int pos = 0;
         while (pos < sort.rowCount()) {
             if (df.missing(sort.index(pos), testCol)) {

@@ -43,7 +43,7 @@ public final class RowComparators implements Serializable {
         };
     }
 
-    public static Comparator<Integer> nominalComparator(final Var var, final boolean asc) {
+    public static Comparator<Integer> nominal(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
 
         return (row1, row2) -> {
@@ -60,7 +60,7 @@ public final class RowComparators implements Serializable {
         };
     }
 
-    public static Comparator<Integer> numericComparator(final Var var, final boolean asc) {
+    public static Comparator<Integer> numeric(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
         return (row1, row2) -> {
             if (var.missing(row1) && var.missing(row2)) {
@@ -79,7 +79,7 @@ public final class RowComparators implements Serializable {
         };
     }
 
-    public static Comparator<Integer> indexComparator(final Var var, final boolean asc) {
+    public static Comparator<Integer> index(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
 
         return (row1, row2) -> {

@@ -25,7 +25,7 @@ import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
-import rapaio.data.filters.BaseFilters;
+import rapaio.data.filters.VFRefSort;
 import rapaio.ml.classifier.tools.DensityTable;
 
 import java.io.Serializable;
@@ -72,7 +72,7 @@ public interface CTreeNumericMethod extends Serializable {
                 dt.update(row, target.index(i), weights.value(i));
             }
 
-            Var sort = BaseFilters.sort(Index.newSeq(df.rowCount()), RowComparators.numericComparator(test, true));
+            Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.newSeq(df.rowCount()));
 
             CTreeCandidate best = null;
 
@@ -154,7 +154,7 @@ public interface CTreeNumericMethod extends Serializable {
                 dt.update(row, target.index(i), weights.value(i));
             }
 
-            Var sort = BaseFilters.sort(Index.newSeq(df.rowCount()), RowComparators.numericComparator(test, true));
+            Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.newSeq(df.rowCount()));
 
             CTreeCandidate best = null;
 

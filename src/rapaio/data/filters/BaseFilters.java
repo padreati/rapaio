@@ -203,26 +203,6 @@ public final class BaseFilters implements Serializable {
 
     }
 
-    public static Var completeCases(Var source) {
-        return source.stream().complete().toMappedVar();
-    }
-
-    /**
-     * Returns a mapped frame with cases which does not contain missing values
-     * in any column of the frame.
-     *
-     * @param source source frame
-     * @return mapped frame with complete cases
-     */
-    public static Frame completeCases(Frame source) {
-        return completeCases(source, new VarRange("all"));
-    }
-
-    public static Frame completeCases(Frame source, VarRange varRange) {
-        List<Integer> selectedCols = varRange.parseVarIndexes(source);
-        return source.stream().filter(s -> !selectedCols.stream().anyMatch(s::missing)).toMappedFrame();
-    }
-
     /**
      * Vector filters
      */
@@ -363,27 +343,6 @@ public final class BaseFilters implements Serializable {
             mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
         }
         return MappedVar.newByRows(v, Mapping.newWrapOf(mapping));
-    }
-
-    public static Var sort(Var v) {
-        return sort(v, true);
-    }
-
-    public static Var sort(Var v, boolean asc) {
-        if (v.type().isNumeric()) {
-            return sort(v, RowComparators.numericComparator(v, asc));
-        }
-        return sort(v, RowComparators.nominalComparator(v, asc));
-    }
-
-    @SafeVarargs
-    public static Var sort(Var var, Comparator<Integer>... comparators) {
-        List<Integer> mapping = new ArrayList<>(var.rowCount());
-        for (int i = 0; i < var.rowCount(); i++) {
-            mapping.add(i);
-        }
-        Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
-        return MappedVar.newByRows(var, Mapping.newWrapOf(mapping));
     }
 
     public static Numeric trans(Var var, Function<Double, Double> f) {

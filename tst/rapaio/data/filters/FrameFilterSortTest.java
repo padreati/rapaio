@@ -25,11 +25,8 @@ import rapaio.data.Nominal;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 
-import java.util.Arrays;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static rapaio.data.filters.BaseFilters.sort;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -39,7 +36,7 @@ public class FrameFilterSortTest {
     @Test
     public void testValueVector() {
         Var unsorted = Numeric.newCopyOf(0., 1., 2., 3., 4., 5., 6.);
-        Var sorted = sort(unsorted, true);
+        Var sorted = new VFSort().fitApply(unsorted);
         for (int i = 1; i < sorted.rowCount(); i++) {
             assertTrue(sorted.value(i - 1) <= sorted.value(i));
         }
@@ -48,7 +45,7 @@ public class FrameFilterSortTest {
     @Test
     public void testValueVectorWithNA() {
         Var unsorted = Numeric.newCopyOf(Double.NaN, 0., Double.NaN, 1., Double.NaN, 2.);
-        Var sorted = sort(unsorted);
+        Var sorted = new VFSort().fitApply(unsorted);
         for (int i = 0; i < 3; i++) {
             assert (sorted.missing(i));
         }
@@ -61,19 +58,19 @@ public class FrameFilterSortTest {
         unsorted.setLabel(1, "vasile");
         unsorted.setLabel(2, "ion");
 
-        Var sorted = sort(unsorted);
+        Var sorted = new VFSort().fitApply(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
         assertEquals("ana", sorted.label(0));
         assertEquals("ion", sorted.label(1));
         assertEquals("vasile", sorted.label(2));
 
-        sorted = sort(unsorted, true);
+        sorted = new VFSort().fitApply(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
         assertEquals("ana", sorted.label(0));
         assertEquals("ion", sorted.label(1));
         assertEquals("vasile", sorted.label(2));
 
-        sorted = sort(unsorted, false);
+        sorted = new VFSort(false).fitApply(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
         assertEquals("vasile", sorted.label(0));
         assertEquals("ion", sorted.label(1));
@@ -87,13 +84,13 @@ public class FrameFilterSortTest {
         unsorted.setLabel(1, "vasile");
         unsorted.setLabel(2, "?");
 
-        Var sorted = sort(unsorted);
+        Var sorted = new VFSort().fitApply(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
         assertEquals("?", sorted.label(0));
         assertEquals("ana", sorted.label(1));
         assertEquals("vasile", sorted.label(2));
 
-        sorted = sort(unsorted, false);
+        sorted = new VFSort(false).fitApply(unsorted);
         assertEquals(sorted.rowCount(), unsorted.rowCount());
         assertEquals("vasile", sorted.label(0));
         assertEquals("ana", sorted.label(1));

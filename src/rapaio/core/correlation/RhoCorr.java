@@ -22,11 +22,11 @@ package rapaio.core.correlation;
 
 import rapaio.core.Printable;
 import rapaio.data.*;
+import rapaio.data.filters.VFRefSort;
 
 import java.util.Arrays;
 
 import static rapaio.WS.getPrinter;
-import static rapaio.data.filters.BaseFilters.sort;
 
 /**
  * Spearman's rank correlation coefficient.
@@ -69,7 +69,7 @@ public class RhoCorr implements Printable {
             for (int j = 0; j < vars[i].rowCount(); j++) {
                 index.addIndex(j);
             }
-            sorted[i] = sort(index, RowComparators.numericComparator(vars[i], true));
+            sorted[i] = new VFRefSort(RowComparators.numeric(vars[i], true)).fitApply(index);
             ranks[i] = Numeric.newFill(vars[i].rowCount());
         }
 
