@@ -24,13 +24,11 @@ import org.junit.Test;
 import rapaio.data.Nominal;
 import rapaio.data.Var;
 
-import java.util.Arrays;
 import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static rapaio.data.filters.BaseFilters.sort;
-import static rapaio.data.filters.BaseFilters.toNumeric;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -49,7 +47,7 @@ public class FrameFilterNominalToDoubleTest {
             String value = String.valueOf(Math.pow(i, 1.5));
             v.setLabel(i, value);
         }
-        Var filtered = toNumeric(v);
+        Var filtered = new VFToNumeric().fitApply(v);
         for (int i = 0; i < v.rowCount(); i++) {
             double value = Math.pow(i, 1.5);
             assertEquals(value, filtered.value(i), 1e-10);
@@ -69,7 +67,7 @@ public class FrameFilterNominalToDoubleTest {
     public void testNFE() {
         Var filtered = Nominal.newEmpty(1, "abc");
         filtered.setLabel(0, "abc");
-        Var numeric = toNumeric(filtered);
+        Var numeric = new VFToNumeric().fitApply(filtered);
         assertEquals(numeric.value(0), numeric.value(0), 1e-10);
         assertTrue(numeric.missing(0));
     }

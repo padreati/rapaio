@@ -20,28 +20,15 @@
 
 package rapaio.data.filters;
 
-import rapaio.data.Mapping;
-import rapaio.data.RowComparators;
+import rapaio.data.Index;
 import rapaio.data.Var;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import rapaio.data.VarType;
+import rapaio.data.stream.VSpot;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFRefSort extends AbstractVF {
-
-    private final Comparator<Integer> aggregateComparator;
-
-    public VFRefSort(Comparator<Integer>... rowComparators) {
-        if (rowComparators == null || rowComparators.length == 0) {
-            throw new IllegalArgumentException("Filter requires at least a row comparator");
-        }
-        aggregateComparator = RowComparators.aggregateComparator(rowComparators);
-    }
+public class VFToIndex extends AbstractVF {
 
     @Override
     public void fit(Var... vars) {
@@ -51,11 +38,26 @@ public class VFRefSort extends AbstractVF {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        List<Integer> rows = new ArrayList<>(vars[0].rowCount());
-        for (int i = 0; i < vars[0].rowCount(); i++) {
-            rows.add(i);
+        Var v = vars[0];
+        if (v.type().equals(VarType.INDEX)) {
+            return (Index) v;
         }
-        Collections.sort(rows, aggregateComparator);
-        return vars[0].mapRows(Mapping.newWrapOf(rows));
+        final Index result = Index.newEmpty();
+        v.stream().forEach((VSpot inst) -> {
+            if (inst.missing()) {
+                result.addMissing();
+            } else {
+                switch (v.type()) {
+                    case NUMERIC:
+                        result.addIndex((int) Math.rint(inst.value()));
+                        break;
+                    case NOMINAL:
+                        int value = Integer.parseInt(inst.label());
+                        result.addIndex(value);
+                        break;
+                }
+            }
+        });
+        return result;
     }
 }

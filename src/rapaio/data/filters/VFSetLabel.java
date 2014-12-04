@@ -20,27 +20,20 @@
 
 package rapaio.data.filters;
 
-import rapaio.data.Mapping;
-import rapaio.data.RowComparators;
 import rapaio.data.Var;
+import rapaio.data.stream.VSpot;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.function.Function;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFRefSort extends AbstractVF {
+public class VFSetLabel extends AbstractVF {
 
-    private final Comparator<Integer> aggregateComparator;
+    private final Function<VSpot, String> f;
 
-    public VFRefSort(Comparator<Integer>... rowComparators) {
-        if (rowComparators == null || rowComparators.length == 0) {
-            throw new IllegalArgumentException("Filter requires at least a row comparator");
-        }
-        aggregateComparator = RowComparators.aggregateComparator(rowComparators);
+    public VFSetLabel(Function<VSpot, String> f) {
+        this.f = f;
     }
 
     @Override
@@ -51,11 +44,7 @@ public class VFRefSort extends AbstractVF {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        List<Integer> rows = new ArrayList<>(vars[0].rowCount());
-        for (int i = 0; i < vars[0].rowCount(); i++) {
-            rows.add(i);
-        }
-        Collections.sort(rows, aggregateComparator);
-        return vars[0].mapRows(Mapping.newWrapOf(rows));
+        vars[0].stream().forEach(s -> s.setLabel(f.apply(s)));
+        return vars[0];
     }
 }

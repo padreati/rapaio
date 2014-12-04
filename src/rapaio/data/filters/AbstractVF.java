@@ -63,4 +63,9 @@ public abstract class AbstractVF implements VarFilter {
             throw new IllegalArgumentException("Filter operation requires between " + min + " and " + max + " input variables");
         }
     }
+
+    @Override
+    public void buildSummary(StringBuilder sb) {
+        sb.append("Not Implemented Yet!");
+    }
 }

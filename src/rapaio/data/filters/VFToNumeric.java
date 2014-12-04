@@ -20,44 +20,15 @@
 
 package rapaio.data.filters;
 
-import rapaio.core.distributions.Distribution;
-import rapaio.core.distributions.Normal;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
+import rapaio.data.VarType;
+import rapaio.data.stream.VSpot;
 
 /**
- * Applies a random noise from a given distribution to a numeric vector.
- * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFJitter extends AbstractVF {
-
-    private final Distribution d;
-
-    /**
-     * Builds a jitter filter with Gaussian distribution with mean=0 and sd=0.1
-     */
-    public VFJitter() {
-        this(new Normal(0, 0.1));
-    }
-
-    /**
-     * Builds a jitter filter with a Gaussian distribution with mean=0 and given standard deviation
-     *
-     * @param sd standard deviation of zero mean Gaussian noise
-     */
-    public VFJitter(double sd) {
-        this(new Normal(0, sd));
-    }
-
-    /**
-     * Builds a jitter filter with noise generated from given distribution
-     *
-     * @param d noise distribution
-     */
-    public VFJitter(Distribution d) {
-        this.d = d;
-    }
+public class VFToNumeric extends AbstractVF {
 
     @Override
     public void fit(Var... vars) {
@@ -67,10 +38,30 @@ public class VFJitter extends AbstractVF {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        Numeric result = Numeric.newEmpty(vars[0].rowCount());
-        for (int i = 0; i < vars[0].rowCount(); i++) {
-            result.setValue(i, vars[0].value(i) + d.sampleNext());
+        Var v = vars[0];
+        if (v.type().equals(VarType.NUMERIC)) {
+            return v;
         }
+        final Numeric result = Numeric.newEmpty();
+        v.stream().forEach((VSpot vi) -> {
+            if (vi.missing()) {
+                result.addMissing();
+            } else {
+                switch (v.type()) {
+                    case NOMINAL:
+                        try {
+                            double value = Double.parseDouble(vi.label());
+                            result.addValue(value);
+                        } catch (NumberFormatException nfe) {
+                            result.addMissing();
+                        }
+                        break;
+                    case INDEX:
+                        result.addValue(vi.index());
+                        break;
+                }
+            }
+        });
         return result;
     }
 }

@@ -22,11 +22,9 @@ package rapaio.data.filters;
 
 import rapaio.core.RandomSource;
 import rapaio.data.*;
-import rapaio.data.stream.VSpot;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.function.Function;
 
 /**
  * Provides filters for frames.
@@ -56,7 +54,7 @@ public final class BaseFilters implements Serializable {
     public static Frame toNumeric(Frame df) {
         Var[] vars = new Var[df.varCount()];
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = toNumeric(df.var(i));
+            vars[i] = new VFToNumeric().fitApply(df.var(i));
         }
         return SolidFrame.newWrapOf(df.rowCount(), vars);
     }
@@ -202,129 +200,4 @@ public final class BaseFilters implements Serializable {
 
     }
 
-    /**
-     * Vector filters
-     */
-    //=================================================================================
-
-    /**
-     * Convert a var to numeric by parsing as numbers the nominal
-     * labels, or promoting to double the numeric values.
-     * <p>
-     * If the input value is already a numeric var, the input var is
-     * returned untouched.
-     *
-     * @param v input var
-     * @return converted value var
-     */
-    public static Numeric toNumeric(Var v) {
-        if (v.type().equals(VarType.NUMERIC)) {
-            return (Numeric) v;
-        }
-        final Numeric result = Numeric.newEmpty();
-        v.stream().forEach((VSpot vi) -> {
-            if (vi.missing()) {
-                result.addMissing();
-            } else {
-                switch (v.type()) {
-                    case NOMINAL:
-                        try {
-                            double value = Double.parseDouble(vi.label());
-                            result.addValue(value);
-                        } catch (NumberFormatException nfe) {
-                            result.addMissing();
-                        }
-                        break;
-                    case INDEX:
-                        result.addValue(vi.index());
-                        break;
-                }
-            }
-        });
-        return result;
-    }
-
-    /**
-     * Converts a given var to index, either by parsing nominal labels,
-     * either by rounding the numeric values.
-     * Any error produces a missing value.
-     *
-     * @param v input var
-     * @return resulted index var
-     */
-    public static Index toIndex(Var v) {
-        if (v.type().equals(VarType.INDEX)) {
-            return (Index) v;
-        }
-        final Index result = Index.newEmpty();
-        v.stream().forEach((VSpot inst) -> {
-            if (inst.missing()) {
-                result.addMissing();
-            } else {
-                switch (v.type()) {
-                    case NUMERIC:
-                        result.addIndex((int) Math.rint(inst.value()));
-                        break;
-                    case NOMINAL:
-                        int value = Integer.parseInt(inst.label());
-                        result.addIndex(value);
-                        break;
-                }
-            }
-        });
-        return result;
-    }
-
-    /**
-     * Set missing values for all nominal values included
-     * in missing values array {@param missingValues}.
-     *
-     * @param var           source var
-     * @param missingValues labels for missing values
-     * @return original var with missing value on matched positions
-     */
-    public static Var fillMissingValues(Var var, Collection<String> missingValues) {
-        if (!var.type().isNominal()) {
-            throw new IllegalArgumentException("Vector is not nominal.");
-        }
-        var.stream().forEach((VSpot inst) -> {
-            if (missingValues.contains(inst.label()))
-                inst.setMissing();
-        });
-        return var;
-    }
-
-
-    /**
-     * Builds a mapped var with shuffled rowIds
-     *
-     * @param v source var
-     * @return shuffled var
-     */
-    public static Var shuffle(Var v) {
-        List<Integer> mapping = new ArrayList<>();
-        for (int i = 0; i < v.rowCount(); i++) {
-            mapping.add(i);
-        }
-        for (int i = mapping.size(); i > 1; i--) {
-            mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
-        }
-        return MappedVar.newByRows(v, Mapping.newWrapOf(mapping));
-    }
-
-    public static Numeric trans(Var var, Function<Double, Double> f) {
-        return trans(var, f, "f");
-    }
-
-    public static Numeric trans(Var var, Function<Double, Double> f, String fName) {
-        Numeric t = Numeric.newEmpty().withName(fName + "(" + var.name() + ")");
-        var.stream().forEach(s -> {
-            if (s.missing()) {
-                t.addMissing();
-            } else {
-                t.addValue(f.apply(s.value()));
-            }
-        });
-        return t;
-    }
 }

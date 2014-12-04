@@ -57,9 +57,4 @@ public class VFSort extends AbstractVF {
         }
         return null;
     }
-
-    @Override
-    public void buildSummary(StringBuilder sb) {
-
-    }
 }
