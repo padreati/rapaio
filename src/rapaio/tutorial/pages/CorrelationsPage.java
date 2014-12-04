@@ -24,6 +24,7 @@ import rapaio.core.correlation.PearsonRCorrelation;
 import rapaio.core.correlation.RhoCorr;
 import rapaio.data.Frame;
 import rapaio.data.filters.BaseFilters;
+import rapaio.data.filters.VFJitter;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;
@@ -31,10 +32,9 @@ import rapaio.graphics.plot.Points;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.data.filters.BaseFilters.jitter;
+import static rapaio.WS.*;
 import static rapaio.ws.Summary.names;
 import static rapaio.ws.Summary.summary;
-import static rapaio.WS.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -128,8 +128,8 @@ public class CorrelationsPage implements TutorialPage {
 
         draw(new Plot()
                         .add(new Points(
-                                jitter(df.var("petal-length"), 0.01),
-                                jitter(df.var("sepal-length"), 0.01)).pch(1))
+                                new VFJitter(0.01).fitApply(df.var("petal-length")),
+                                new VFJitter(0.01).fitApply(df.var("sepal-length"))).pch(1))
                         .title("p correlation = " + r.values()[df.varIndex("petal-length")][df.varIndex("sepal-length")]),
                 400, 300
         );
@@ -138,7 +138,9 @@ public class CorrelationsPage implements TutorialPage {
                 + "sepal-length and petal-length. Let's check that with a plot, also: ");
 
         draw(new Plot()
-                        .add(new Points(jitter(df.var("petal-length"), 0.01), jitter(df.var("petal-width"), 0.01))
+                        .add(new Points(
+                                new VFJitter(0.01).fitApply(df.var("petal-length")),
+                                new VFJitter(0.01).fitApply(df.var("petal-width")))
                                 .pch(1))
                         .title("p correlation = " + r.values()[df.varIndex("petal-length")][df.varIndex("petal-width")]),
                 400, 300
@@ -149,7 +151,9 @@ public class CorrelationsPage implements TutorialPage {
                 + "Such a value for correlation we have between sepal-length and sepal-width. ");
 
         draw(new Plot()
-                        .add(new Points(jitter(df.var("sepal-length"), 0.01), jitter(df.var("sepal-width"), 0.01))
+                        .add(new Points(
+                                new VFJitter(0.01).fitApply(df.var("sepal-length")),
+                                new VFJitter(0.01).fitApply(df.var("sepal-width")))
                                 .pch(1))
                         .title("p correlation = " + r.values()[df.varIndex("sepal-length")][df.varIndex("sepal-width")]),
                 400, 300

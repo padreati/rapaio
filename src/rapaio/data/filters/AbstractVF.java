@@ -30,13 +30,13 @@ import rapaio.data.Var;
  */
 public abstract class AbstractVF implements VarFilter {
 
-    protected void checkEmptyVars(Var... vars) {
+    protected void checkEmptyVars(Var[] vars) {
         if (vars != null && vars.length > 0) {
             throw new IllegalArgumentException("Filter operation accepts no input variables");
         }
     }
 
-    protected void checkSingleVar(Var... vars) {
+    protected void checkSingleVar(Var[] vars) {
         if (vars == null) {
             throw new IllegalArgumentException("List of variables must not be empty");
         }
@@ -45,7 +45,7 @@ public abstract class AbstractVF implements VarFilter {
         }
     }
 
-    protected void checkFixedVars(int count, Var... vars) {
+    protected void checkFixedVars(int count, Var[] vars) {
         if (count <= 0) {
             checkEmptyVars(vars);
             return;
@@ -55,7 +55,7 @@ public abstract class AbstractVF implements VarFilter {
         }
     }
 
-    protected void checkRangeVars(int min, int max, Var... vars) {
+    protected void checkRangeVars(int min, int max, Var[] vars) {
         if (max <= 0) {
             checkEmptyVars(vars);
         }

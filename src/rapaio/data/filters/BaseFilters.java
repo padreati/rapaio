@@ -21,7 +21,6 @@
 package rapaio.data.filters;
 
 import rapaio.core.RandomSource;
-import rapaio.core.distributions.Normal;
 import rapaio.data.*;
 import rapaio.data.stream.VSpot;
 
@@ -273,38 +272,6 @@ public final class BaseFilters implements Serializable {
                 }
             }
         });
-        return result;
-    }
-
-    /**
-     * Alter valid numeric values with normally distributed noise.
-     * <p>
-     * Noise comes from a normal densities with mean 0 and standard deviation
-     * 0.1
-     *
-     * @param var input values
-     * @return altered values
-     */
-
-    public static Numeric jitter(Var var) {
-        return jitter(var, 0.1);
-    }
-
-    /**
-     * Alter valid numeric values with normally distributed noise.
-     * <p>
-     * Noise comes from a normal densities with mean 0 and standard deviation
-     * specified by {
-     *
-     * @param var input values
-     * @param sd  standard deviation of the normally distributed noise
-     * @return altered values
-     */
-    public static Numeric jitter(Var var, double sd) {
-        Normal normal = new Normal(0, sd);
-        Numeric result = Numeric.newEmpty(var.rowCount());
-        result.stream().forEach(s -> result.setValue(s.row(),
-                var.value(s.row()) + normal.quantile(RandomSource.nextDouble())));
         return result;
     }
 
