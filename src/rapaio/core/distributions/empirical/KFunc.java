@@ -20,11 +20,13 @@
 
 package rapaio.core.distributions.empirical;
 
+import java.io.Serializable;
+
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
-public interface KFunc {
+public interface KFunc extends Serializable {
 
     double pdf(double x, double x0, double bandwidth);
 

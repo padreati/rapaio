@@ -23,12 +23,14 @@ package rapaio.core.distributions;
 import rapaio.core.RandomSource;
 import rapaio.data.Numeric;
 
+import java.io.Serializable;
+
 /**
  * Interface which models all types of uni-variate statistical distributions.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 11/3/14.
  */
-public interface Distribution {
+public interface Distribution extends Serializable {
 
     /**
      * @return canonical name of the densities with parameter values

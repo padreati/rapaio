@@ -24,6 +24,7 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 import rapaio.data.filters.VFSort;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -32,7 +33,7 @@ import java.util.stream.IntStream;
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
-public class KDE {
+public class KDE implements Serializable {
 
     private final double[] values;
     private final KFunc kernel;
