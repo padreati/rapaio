@@ -29,12 +29,12 @@ import java.io.Serializable;
  */
 public interface FrameFilter extends Serializable {
 
-    void fit(Frame df, String... varNames);
+    void fit(Frame df);
 
     Frame apply(Frame df);
 
-    default Frame fitApply(Frame df, String... varNames) {
-        fit(df, varNames);
+    default Frame fitApply(Frame df) {
+        fit(df);
         return apply(df);
     }
 }

@@ -32,14 +32,16 @@ import java.util.List;
  */
 public class FFShuffle extends AbstractFF {
 
+    public FFShuffle() {
+        super(null);
+    }
+
     @Override
-    public void fit(Frame df, String... varNames) {
-        checkEmptyVars(df, varNames);
+    public void fit(Frame df) {
     }
 
     @Override
     public Frame apply(Frame df) {
-
         List<Integer> mapping = new ArrayList<>();
         for (int i = 0; i < df.rowCount(); i++) {
             mapping.add(i);

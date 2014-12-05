@@ -38,12 +38,12 @@ public class FFRefSort extends AbstractFF {
     private final Comparator<Integer> aggregateComparator;
 
     public FFRefSort(Comparator<Integer> comparators) {
+        super(null);
         this.aggregateComparator = RowComparators.aggregateComparator(comparators);
     }
 
     @Override
-    public void fit(Frame df, String... varNames) {
-        checkEmptyVars(df, varNames);
+    public void fit(Frame df) {
     }
 
     @Override

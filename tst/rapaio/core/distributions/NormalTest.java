@@ -41,7 +41,7 @@ public class NormalTest {
 
     public NormalTest() throws IOException, URISyntaxException {
         df = new Csv().withHeader(false).withSeparatorChar(' ').read(this.getClass(), "standard_normal.csv");
-        df = new FFToNumeric().fitApply(df, "all");
+        df = new FFToNumeric("all").fitApply(df);
     }
 
     @Test

@@ -37,14 +37,14 @@ public class FFRetainTypes extends AbstractFF {
     private final VarType[] types;
 
     public FFRetainTypes(VarType... types) {
+        super(null);
         if (types == null || types.length == 0)
             throw new IllegalArgumentException("Must provide at least a type to retain");
         this.types = types;
     }
 
     @Override
-    public void fit(Frame df, String... varNames) {
-        checkEmptyVars(df, varNames);
+    public void fit(Frame df) {
     }
 
     @Override

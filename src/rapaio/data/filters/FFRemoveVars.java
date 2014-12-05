@@ -18,15 +18,27 @@
  *    limitations under the License.
  */
 
-package rapaio.data.formula;
+package rapaio.data.filters;
 
 import rapaio.data.Frame;
+import rapaio.data.VarRange;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-@Deprecated
-public interface FrameFilter {
+public class FFRemoveVars extends AbstractFF {
 
-    Frame apply(Frame df);
+    public FFRemoveVars(String... varNames) {
+        super(varNames);
+    }
+
+    @Override
+    public void fit(Frame df) {
+    }
+
+    @Override
+    public Frame apply(Frame df) {
+        checkRangeVars(0, df.varCount() - 1, df, varNames);
+        return df.removeVars(new VarRange(varNames));
+    }
 }

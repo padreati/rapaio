@@ -30,6 +30,12 @@ import java.util.List;
  */
 public abstract class AbstractFF implements FrameFilter {
 
+    protected final String[] varNames;
+
+    public AbstractFF(String[] varNames) {
+        this.varNames = varNames;
+    }
+
     protected List<String> parse(Frame df, String... varNames) {
         return new VarRange(varNames).parseVarNames(df);
     }

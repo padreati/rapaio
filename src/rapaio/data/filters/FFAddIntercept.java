@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.data.formula;
+package rapaio.data.filters;
 
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
@@ -33,24 +33,33 @@ import java.util.List;
  * Adds an intercept column: a numeric column with all values equal with 1.0,
  * used in general for linear regression like setups.
  * <p>
- * In case there is already a column called intercept on the
- * first position, nothing will happen.
+ * In case there is already a column called intercept, nothing will happen.
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
-public class FFAddIntercept implements FrameFilter {
+public class FFAddIntercept extends AbstractFF {
+
+    public static String INTERCEPT = "Intercept";
+
+    public FFAddIntercept(String[] varNames) {
+        super(varNames);
+    }
 
     @Override
+    public void fit(Frame df) {
+
+    }
+
     public Frame apply(Frame df) {
-        if (df.varNames()[0].equals("intercept")) {
+        checkEmptyVars(df, varNames);
+
+        List<String> names = parse(df, "all");
+        if (names.contains(INTERCEPT)) {
             return df;
         }
         List<Var> vars = new ArrayList<>();
-        vars.add(Numeric.newFill(df.rowCount(), 1.0).withName("intercept"));
-        Arrays.stream(df.varNames()).forEach(varName -> {
-            vars.add(df.var(varName));
-        });
+        vars.add(Numeric.newFill(df.rowCount(), 1.0).withName(INTERCEPT));
+        Arrays.stream(df.varNames()).forEach(varName -> vars.add(df.var(varName)));
         return SolidFrame.newWrapOf(df.rowCount(), vars);
     }
 }

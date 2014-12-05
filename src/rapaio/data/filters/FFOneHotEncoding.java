@@ -18,13 +18,9 @@
  *    limitations under the License.
  */
 
-package rapaio.data.formula;
+package rapaio.data.filters;
 
-import rapaio.data.VarRange;
-import rapaio.data.Frame;
-import rapaio.data.Numeric;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
+import rapaio.data.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -44,19 +40,20 @@ import java.util.Set;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
-public class FFOneHotNumeric implements FrameFilter {
+public class FFOneHotEncoding extends AbstractFF {
 
-    private final VarRange varRange;
-
-    public FFOneHotNumeric(VarRange varRange) {
-        this.varRange = varRange;
+    public FFOneHotEncoding(String... varNames) {
+        super(varNames);
     }
 
     @Override
-    public Frame apply(Frame df) {
-        Set<String> nameSet = new HashSet<>(varRange.parseVarNames(df));
+    public void fit(Frame df) {
+    }
 
+    public Frame apply(Frame df) {
+        checkRangeVars(1, df.varCount(), df, varNames);
+
+        Set<String> nameSet = new HashSet<>(new VarRange(varNames).parseVarNames(df));
         List<Var> vars = new ArrayList<>();
 
         for (String varName : df.varNames()) {

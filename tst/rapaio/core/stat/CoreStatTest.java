@@ -37,7 +37,7 @@ public class CoreStatTest {
     private final Frame df;
 
     public CoreStatTest() throws IOException {
-        this.df = new FFToNumeric().fitApply(new Csv().withHeader(false).read(getClass(), "core_stat.csv"), "all");
+        this.df = new FFToNumeric("all").fitApply(new Csv().withHeader(false).read(getClass(), "core_stat.csv"));
     }
 
     @Test

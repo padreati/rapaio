@@ -25,7 +25,6 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -36,18 +35,19 @@ import java.util.Set;
  */
 public class FFToNumeric extends AbstractFF {
 
-    private Set<String> nameSet = new HashSet<>();
+    public FFToNumeric(String... varNames) {
+        super(varNames);
+    }
 
     @Override
-    public void fit(Frame df, String... varNames) {
-        checkRangeVars(1, df.varCount(), df, varNames);
-        List<String> names = parse(df, varNames);
-        nameSet = new HashSet<>(names);
+    public void fit(Frame df) {
     }
 
     @Override
     public Frame apply(Frame df) {
+        checkRangeVars(1, df.rowCount(), df, varNames);
 
+        Set<String> nameSet = new HashSet<>(parse(df, varNames));
         Var[] vars = new Var[df.varCount()];
         for (int i = 0; i < vars.length; i++) {
             if (nameSet.contains(df.var(i).name())) {

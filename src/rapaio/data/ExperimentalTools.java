@@ -18,12 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.data.filters;
-
-import rapaio.data.Frame;
-import rapaio.data.Nominal;
-import rapaio.data.SolidFrame;
-import rapaio.data.Var;
+package rapaio.data;
 
 import java.io.Serializable;
 import java.util.*;
@@ -33,9 +28,9 @@ import java.util.*;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public final class Experimental implements Serializable {
+public final class ExperimentalTools implements Serializable {
 
-    private Experimental() {
+    private ExperimentalTools() {
     }
 
 
