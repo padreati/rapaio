@@ -22,7 +22,7 @@ package rapaio.core.distributions;
 
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.filters.BaseFilters;
+import rapaio.data.filters.FFToNumeric;
 import rapaio.io.Csv;
 
 import java.io.IOException;
@@ -41,7 +41,7 @@ public class NormalTest {
 
     public NormalTest() throws IOException, URISyntaxException {
         df = new Csv().withHeader(false).withSeparatorChar(' ').read(this.getClass(), "standard_normal.csv");
-        df = BaseFilters.toNumeric(df);
+        df = new FFToNumeric().fitApply(df, "all");
     }
 
     @Test

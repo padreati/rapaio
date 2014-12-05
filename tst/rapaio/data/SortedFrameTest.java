@@ -23,6 +23,7 @@ package rapaio.data;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.RandomSource;
+import rapaio.data.filters.FFRefSort;
 import rapaio.io.Csv;
 
 import java.io.IOException;
@@ -33,7 +34,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static rapaio.data.RowComparators.nominal;
 import static rapaio.data.RowComparators.numeric;
-import static rapaio.data.filters.BaseFilters.sort;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -67,10 +67,10 @@ public class SortedFrameTest {
         for (int i = 0; i < 100; i++) {
             int col = RandomSource.nextInt(sorted.varCount());
             boolean asc = RandomSource.nextDouble() >= .5;
-            sorted = sort(sorted, numeric(sorted.var(col), asc));
+            sorted = new FFRefSort(numeric(sorted.var(col), asc)).fitApply(sorted);
         }
 
-        sorted = sort(sorted, numeric(sorted.var(0), true));
+        sorted = new FFRefSort(numeric(sorted.var(0), true)).fitApply(sorted);
         for (int i = 1; i < sorted.rowCount(); i++) {
             assertTrue(sorted.value(i - 1, 0) <= sorted.value(i, 0));
         }
@@ -82,7 +82,7 @@ public class SortedFrameTest {
         assertEquals(3, df.varCount());
         assertEquals(4, df.rowCount());
 
-        Frame sort = sort(df, nominal(df.var(0), true));
+        Frame sort = new FFRefSort(nominal(df.var(0), true)).fitApply(df);
         assertEquals(3, sort.varCount());
         assertEquals(4, sort.rowCount());
 
@@ -97,14 +97,14 @@ public class SortedFrameTest {
 
     @Test
     public void testSortNominal() {
-        Frame sort = sort(df, nominal(df.var(0), true));
+        Frame sort = new FFRefSort(nominal(df.var(0), true)).fitApply(df);
         for (int i = 1; i < sort.rowCount(); i++) {
             String label1 = sort.label(i - 1, 0);
             String label2 = sort.label(i, 0);
             assertTrue(label1.compareTo(label2) <= 0);
         }
 
-        sort = sort(df, nominal(df.var(0), false));
+        sort = new FFRefSort(nominal(df.var(0), false)).fitApply(df);
         for (int i = 1; i < sort.rowCount(); i++) {
             String label1 = sort.label(i - 1, 0);
             String label2 = sort.label(i, 0);
@@ -115,12 +115,12 @@ public class SortedFrameTest {
     @Test
     public void testSortNumeric() {
         for (int col = 1; col <= 2; col++) {
-            Frame sort = sort(df, numeric(df.var(col), true));
+            Frame sort = new FFRefSort(numeric(df.var(col), true)).fitApply(df);
             for (int i = 1; i < sort.rowCount(); i++) {
                 assertTrue(sort.value(i - 1, col) <= sort.value(i, col));
             }
 
-            sort = sort(df, numeric(df.var(col), false));
+            sort = new FFRefSort(numeric(df.var(col), false)).fitApply(df);
             for (int i = 1; i < sort.rowCount(); i++) {
                 assertTrue(sort.value(i - 1, col) >= sort.value(i, col));
             }
@@ -129,7 +129,7 @@ public class SortedFrameTest {
 
     @Test
     public void testCols() {
-        Frame sorted = sort(df, nominal(df.var(0), true));
+        Frame sorted = new FFRefSort(nominal(df.var(0), true)).fitApply(df);
 
         assertEquals(df.varCount(), sorted.varCount());
         for (int i = 0; i < df.varCount(); i++) {
@@ -154,10 +154,10 @@ public class SortedFrameTest {
             Comparator<Integer> comp = sorted.var(col).type().isNominal() ?
                     nominal(sorted.var(0), asc) :
                     numeric(sorted.var(0), asc);
-            sorted = sort(sorted, comp);
+            sorted = new FFRefSort(comp).fitApply(sorted);
         }
 
-        sorted = sort(sorted, nominal(sorted.var("x"), true));
+        sorted = new FFRefSort(nominal(sorted.var("x"), true)).fitApply(sorted);
 
         for (int i = 0; i < sorted.rowCount() - 1; i++) {
             assertTrue(sorted.label(i, "x").compareTo(sorted.label(i + 1, "x")) <= 0);

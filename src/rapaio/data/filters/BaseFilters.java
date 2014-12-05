@@ -43,21 +43,6 @@ public final class BaseFilters implements Serializable {
      */
     //=================================================================================
 
-    /**
-     * Convert to numeric values all the columns which are nominal.
-     * <p>
-     * All the other columns remain the same.
-     *
-     * @param df input frame
-     * @return frame with value converted columns
-     */
-    public static Frame toNumeric(Frame df) {
-        Var[] vars = new Var[df.varCount()];
-        for (int i = 0; i < vars.length; i++) {
-            vars[i] = new VFToNumeric().fitApply(df.var(i));
-        }
-        return SolidFrame.newWrapOf(df.rowCount(), vars);
-    }
 
     /**
      * Retain only numeric columns from a frame.
@@ -147,15 +132,6 @@ public final class BaseFilters implements Serializable {
         for (int i = mapping.size(); i > 1; i--) {
             mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
         }
-        return MappedFrame.newByRow(df, Mapping.newWrapOf(mapping));
-    }
-
-    public static Frame sort(Frame df, Comparator<Integer>... comparators) {
-        List<Integer> mapping = new ArrayList<>(df.rowCount());
-        for (int i = 0; i < df.rowCount(); i++) {
-            mapping.add(i);
-        }
-        Collections.sort(mapping, RowComparators.aggregateComparator(comparators));
         return MappedFrame.newByRow(df, Mapping.newWrapOf(mapping));
     }
 

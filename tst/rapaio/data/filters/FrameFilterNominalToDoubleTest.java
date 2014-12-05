@@ -28,7 +28,6 @@ import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static rapaio.data.filters.BaseFilters.sort;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -57,7 +56,7 @@ public class FrameFilterNominalToDoubleTest {
     @Test
     public void testNullVector() {
         try {
-            sort(null);
+            new FFRefSort(null).fitApply(null);
         } catch (Exception ex) {
             assertTrue(true);
         }
