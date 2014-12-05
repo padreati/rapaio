@@ -25,12 +25,12 @@ import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
+import rapaio.data.filters.FFShuffle;
 import rapaio.ml.eval.ConfusionMatrix;
 
 import java.util.*;
 
 import static rapaio.WS.print;
-import static rapaio.data.filters.BaseFilters.shuffle;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -109,7 +109,7 @@ public class ModelEvaluation {
     public void multiCv(Frame df, String classColName, List<Classifier> classifiers, int folds) {
         print("\n<pre><code>\n");
         print("CrossValidation with " + folds + " folds\n");
-        df = shuffle(df);
+        df = new FFShuffle().fitApply(df);
         double[] tacc = new double[classifiers.size()];
 
         for (int i = 0; i < folds; i++) {

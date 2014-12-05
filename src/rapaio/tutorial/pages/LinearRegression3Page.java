@@ -23,7 +23,8 @@ package rapaio.tutorial.pages;
 import rapaio.core.correlation.PearsonRCorrelation;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
-import rapaio.data.filters.BaseFilters;
+import rapaio.data.VarType;
+import rapaio.data.filters.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;
@@ -62,7 +63,7 @@ public class LinearRegression3Page implements TutorialPage {
 
         heading(4, "Multiple Linear Regression");
 
-        Frame cars = BaseFilters.retainNumeric(Datasets.loadCarMpgDataset());
+        Frame cars = new FFRetainTypes(VarType.NUMERIC).fitApply(Datasets.loadCarMpgDataset());
         Summary.summary(cars);
         new PearsonRCorrelation(cars).summary();
 

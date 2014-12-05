@@ -24,7 +24,8 @@ package rapaio.ml.classifier.tree.ctree;
 import junit.framework.Assert;
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.filters.BaseFilters;
+import rapaio.data.VarType;
+import rapaio.data.filters.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.tools.DensityTable;
 import rapaio.ws.Summary;
@@ -32,15 +33,15 @@ import rapaio.ws.Summary;
 import java.io.IOException;
 
 /**
-* @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
-*/
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ */
 public class ID3ClassifierTest {
 
     @Test
     public void testBasicID3Entropy() throws IOException {
         Frame df = Datasets.loadPlay();
         Summary.summary(df);
-        df = BaseFilters.retainNominal(df);
+        df = new FFRetainTypes(VarType.NOMINAL).fitApply(df);
         final String className = "class";
 
         CTree id3 = CTree.newID3();
@@ -59,7 +60,7 @@ public class ID3ClassifierTest {
     @Test
     public void testBasicID3InfoGain() throws IOException {
         Frame df = Datasets.loadPlay();
-        df = BaseFilters.retainNominal(df);
+        df = new FFRetainTypes(VarType.NOMINAL).fitApply(df);
         final String className = "class";
 
         CTree id3 = new CTree()

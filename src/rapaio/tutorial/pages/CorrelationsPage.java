@@ -23,7 +23,8 @@ package rapaio.tutorial.pages;
 import rapaio.core.correlation.PearsonRCorrelation;
 import rapaio.core.correlation.RhoCorr;
 import rapaio.data.Frame;
-import rapaio.data.filters.BaseFilters;
+import rapaio.data.VarType;
+import rapaio.data.filters.FFRetainTypes;
 import rapaio.data.filters.VFJitter;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
@@ -63,7 +64,7 @@ public class CorrelationsPage implements TutorialPage {
         code("Frame df = Datasets.loadIrisDataset();\n"
                 + "df = ColFilters.retainNumeric(df);\n"
                 + "names(df);");
-        final Frame df = BaseFilters.retainNumeric(Datasets.loadIrisDataset());
+        final Frame df = new FFRetainTypes(VarType.NUMERIC).fitApply(Datasets.loadIrisDataset());
         names(df);
 
         heading(2, "Pearson product-moment correlation");

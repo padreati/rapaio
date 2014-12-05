@@ -23,7 +23,8 @@ package rapaio.ml.classifier.tree.ctree;
 import junit.framework.Assert;
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.filters.BaseFilters;
+import rapaio.data.VarType;
+import rapaio.data.filters.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.tools.DensityTable;
@@ -40,7 +41,7 @@ public class C45ClassifierTest {
     @Test
     public void testNominalInfoGain() throws IOException {
         Frame df = Datasets.loadPlay();
-        df = BaseFilters.retainNominal(df);
+        df = new FFRetainTypes(VarType.NOMINAL).fitApply(df);
         final String className = "class";
 
         CTree classifier = CTree.newC45();

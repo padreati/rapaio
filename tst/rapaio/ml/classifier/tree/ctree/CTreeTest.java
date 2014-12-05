@@ -22,7 +22,8 @@ package rapaio.ml.classifier.tree.ctree;
 
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.filters.BaseFilters;
+import rapaio.data.VarType;
+import rapaio.data.filters.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.CResult;
 import rapaio.ws.Summary;
@@ -52,7 +53,7 @@ public class CTreeTest {
         assertEquals("root", root.getGroupName());
 
         String testName = root.getBestCandidate().getTestName();
-        if("petal-width".equals(testName)) {
+        if ("petal-width".equals(testName)) {
             assertEquals("petal-width", root.getBestCandidate().getTestName());
             assertEquals("petal-width <= 0.600000", root.getBestCandidate().getGroupNames().get(0));
             assertEquals("petal-width > 0.600000", root.getBestCandidate().getGroupNames().get(1));
@@ -67,7 +68,7 @@ public class CTreeTest {
     public void testBuilderID3() throws IOException, URISyntaxException {
         Frame df = Datasets.loadMushrooms();
         Summary.names(df);
-        df = BaseFilters.retainNominal(df);
+        df = new FFRetainTypes(VarType.NOMINAL).fitApply(df);
 
         Summary.summary(df);
     }
