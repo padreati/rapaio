@@ -18,7 +18,12 @@
  *    limitations under the License.
  */
 
-package rapaio.data;
+package rapaio.data.tools;
+
+import rapaio.data.Frame;
+import rapaio.data.Nominal;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
 
 import java.io.Serializable;
 import java.util.*;

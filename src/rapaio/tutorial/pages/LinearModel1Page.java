@@ -17,16 +17,19 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+
 package rapaio.tutorial.pages;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import static rapaio.WS.*;
 import rapaio.data.Frame;
-import static rapaio.data.MathNumeric.*;
 import rapaio.data.Numeric;
 import rapaio.datasets.Datasets;
 import rapaio.ws.Summary;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import static rapaio.WS.*;
+import static rapaio.data.tools.MathNumeric.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>

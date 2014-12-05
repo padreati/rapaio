@@ -21,12 +21,13 @@
 package rapaio.graphics.pch;
 
 import java.awt.*;
+import java.io.Serializable;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
-public enum PchPalette {
+public enum PchPalette implements Serializable {
 
     STANDARD(new StandardPchPalette());
     private final Mapping mapping;

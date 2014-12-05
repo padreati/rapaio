@@ -21,11 +21,12 @@
 package rapaio.graphics.base;
 
 import java.awt.*;
+import java.io.Serializable;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface Figure {
+public interface Figure extends Serializable {
 
     default void paint(Graphics2D g2d, Rectangle rect) {
     }

@@ -78,10 +78,7 @@ public class LocalPrinter extends StandardPrinter {
                         figure,
                         cb.getGraphicalWidth(),
                         cb.getGraphicalHeight());
-                new ClassMarshaller().marshallDraw(s.getOutputStream(),
-                        image,
-                        cb.getGraphicalWidth(),
-                        cb.getGraphicalHeight());
+                new ClassMarshaller().marshallDraw(s.getOutputStream(), figure);
             }
         } catch (IOException | ClassNotFoundException ex) {
             ex.printStackTrace();

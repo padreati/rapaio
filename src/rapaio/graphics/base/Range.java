@@ -20,10 +20,12 @@
 
 package rapaio.graphics.base;
 
+import java.io.Serializable;
+
 /**
  * @author tutuianu
  */
-public class Range {
+public class Range implements Serializable {
 
     private double x1 = Double.NaN;
     private double y1 = Double.NaN;

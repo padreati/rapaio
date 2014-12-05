@@ -22,6 +22,7 @@ package rapaio.graphics.pch;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -47,7 +48,7 @@ public class StandardPchPalette implements PchPalette.Mapping {
     }
 }
 
-interface Drawer {
+interface Drawer extends Serializable {
 
     void draw(Graphics2D g2d, double x, double y, double size);
 }

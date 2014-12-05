@@ -18,10 +18,12 @@
  *    limitations under the License.
  */
 
-package rapaio.data;
+package rapaio.data.tools;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
+import rapaio.data.Numeric;
+import rapaio.data.Var;
 
 import java.util.Arrays;
 

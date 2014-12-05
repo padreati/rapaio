@@ -25,6 +25,8 @@ import rapaio.data.*;
 import rapaio.data.filters.VFRefSort;
 import rapaio.printer.Printer;
 
+import java.io.Serializable;
+
 
 /**
  * Receiver Operator Characteristic.
@@ -33,7 +35,7 @@ import rapaio.printer.Printer;
  *
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class ROC implements Printable {
+public class ROC implements Printable, Serializable {
 
     private final Var score;
     private final Var classes;
