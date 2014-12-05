@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.graphics.colors;
+package rapaio.graphics.opt;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -26,7 +26,6 @@ import java.io.Serializable;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public enum ColorPalette implements Serializable {
 
     STANDARD(new StandardColorPalette()),

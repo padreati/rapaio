@@ -23,7 +23,7 @@ package rapaio.graphics.base;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.graphics.colors.ColorPalette;
+import rapaio.graphics.opt.ColorPalette;
 
 import java.awt.*;
 

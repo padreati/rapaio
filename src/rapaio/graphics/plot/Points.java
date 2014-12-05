@@ -23,7 +23,7 @@ package rapaio.graphics.plot;
 import rapaio.data.Var;
 import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
-import rapaio.graphics.pch.PchPalette;
+import rapaio.graphics.opt.PchPalette;
 
 import java.awt.*;
 import java.util.ArrayList;

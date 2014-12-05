@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.graphics.pch;
+package rapaio.graphics.opt;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -29,7 +29,28 @@ import java.util.ArrayList;
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
-public class StandardPchPalette implements PchPalette.Mapping {
+public enum PchPalette implements Serializable {
+
+    STANDARD(new StandardPchPalette());
+
+
+    private final Mapping mapping;
+
+    private PchPalette(Mapping mapping) {
+        this.mapping = mapping;
+    }
+
+    public void draw(Graphics2D g2d, double x, double y, double size, int pch) {
+        mapping.draw(g2d, x, y, size, pch);
+    }
+
+}
+
+interface Mapping {
+    void draw(Graphics2D g2d, double x, double y, double size, int pch);
+}
+
+final class StandardPchPalette implements Mapping {
 
     private final java.util.List<Drawer> pchs = new ArrayList<Drawer>() {{
         add((g2d, x, y, sz) -> g2d.draw(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2)));

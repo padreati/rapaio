@@ -23,7 +23,7 @@ package rapaio.graphics.plot;
 import rapaio.data.Var;
 import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
-import rapaio.graphics.colors.ColorPalette;
+import rapaio.graphics.opt.ColorPalette;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -48,7 +48,9 @@ public class Histogram extends PlotComponent {
     @Override
     public void initialize(Plot parent) {
         super.initialize(parent);
+
         parent.yLab(prob ? "density" : "frequency");
+        parent.xLab(v.name());
         parent.leftThick(true);
         parent.leftMarkers(true);
         parent.bottomThick(true);

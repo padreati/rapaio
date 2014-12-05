@@ -21,7 +21,7 @@
 package rapaio.graphics.plot;
 
 import rapaio.graphics.base.Range;
-import rapaio.graphics.colors.ColorPalette;
+import rapaio.graphics.opt.ColorPalette;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;

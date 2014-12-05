@@ -20,7 +20,7 @@
 
 package rapaio.graphics.base;
 
-import rapaio.graphics.colors.ColorPalette;
+import rapaio.graphics.opt.ColorPalette;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -94,33 +94,60 @@ public abstract class HostFigure extends BaseFigure {
         return y2;
     }
 
+    protected int sizeLeftThicker;
+    protected int sizeBottomThicker;
+    protected int sizeLeftMarkers;
+    protected int sizeBottomMarkers;
+    protected int sizeTitle;
+    protected int sizeYLabel;
+    protected int sizeXLabel;
+
     protected void buildViewport(Rectangle rectangle) {
         viewport = new Rectangle(rectangle);
-        viewport.x += 2 * THICKER_PAD;
+
+        viewport.x += MINIMUM_PAD;
+        viewport.width -= 2 * MINIMUM_PAD;
+
+        viewport.y += MINIMUM_PAD;
+        viewport.height -= 2 * MINIMUM_PAD;
+
+        if (leftThicker) {
+            sizeLeftThicker = 2 * THICKER_PAD;
+        }
         if (leftMarkers) {
-            viewport.x += MARKER_PAD;
+            sizeLeftMarkers = MARKER_PAD;
         }
         if (yLabel != null) {
-            viewport.x += LABEL_PAD;
+            sizeYLabel = LABEL_PAD;
         }
-        viewport.x += MINIMUM_PAD;
         if (title != null) {
-            viewport.y += TITLE_PAD;
+            sizeTitle = TITLE_PAD;
         }
-        viewport.y += MINIMUM_PAD;
-        viewport.width = rectangle.width - viewport.x - MINIMUM_PAD;
-
-        int height = 0;
-        height += 2 * THICKER_PAD;
+        if (bottomThicker) {
+            sizeBottomThicker = 2 * THICKER_PAD;
+        }
         if (bottomMarkers) {
-            height += MARKER_PAD;
+            sizeBottomMarkers = MARKER_PAD;
         }
         if (xLabel != null) {
-            height += LABEL_PAD;
+            sizeXLabel = LABEL_PAD;
         }
-        height += MINIMUM_PAD;
 
-        viewport.height = rectangle.height - viewport.y - height;
+        viewport.x += sizeLeftThicker;
+        viewport.width -= sizeLeftThicker;
+        viewport.x += sizeLeftMarkers;
+        viewport.width -= sizeLeftMarkers;
+        viewport.x += sizeYLabel;
+        viewport.width -= sizeYLabel;
+
+
+        viewport.y += sizeTitle;
+        viewport.height -= sizeTitle;
+
+        viewport.height -= sizeBottomThicker;
+        viewport.height -= sizeBottomMarkers;
+        viewport.height -= sizeXLabel;
+
     }
 
     public double xScale(double x) {
@@ -225,7 +252,7 @@ public abstract class HostFigure extends BaseFigure {
             g2d.setFont(LABELS_FONT);
             double ywidth = g2d.getFontMetrics().getStringBounds(yLabel, g2d).getWidth();
             int xx = viewport.x - 5 * THICKER_PAD - MARKER_PAD;
-            int yy = (int) ((rect.height + ywidth) / 2);
+            int yy = (int) (viewport.y + ywidth + (viewport.height - ywidth) / 2);
             g2d.translate(xx, yy);
             g2d.rotate(-Math.PI / 2);
             g2d.drawString(yLabel, 0, 0);
@@ -264,7 +291,7 @@ public abstract class HostFigure extends BaseFigure {
             g2d.setFont(LABELS_FONT);
             double xwidth = g2d.getFontMetrics().getStringBounds(xLabel, g2d).getWidth();
             g2d.drawString(xLabel,
-                    (int) ((rect.width - xwidth) / 2),
+                    (int) (viewport.x + (viewport.width - xwidth) / 2),
                     viewport.y + viewport.height + 2 * THICKER_PAD + MARKER_PAD + LABEL_PAD);
         }
     }

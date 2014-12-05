@@ -22,7 +22,7 @@ package rapaio.graphics.plot;
 
 import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
-import rapaio.graphics.colors.ColorPalette;
+import rapaio.graphics.opt.ColorPalette;
 import rapaio.ml.eval.ROC;
 
 import java.awt.*;
