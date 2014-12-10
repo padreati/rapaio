@@ -30,16 +30,16 @@ import java.awt.geom.Rectangle2D;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-public class DensityMap extends PlotComponent {
+public class Histogram2D extends PlotComponent {
 
     private final Var x;
     private final Var y;
-    private int xBins = 20;
-    private int yBins = 20;
+    private int xBins = 10;
+    private int yBins = 10;
     private int[][] freq;
     private int maxFreq;
 
-    public DensityMap(Var x, Var y) {
+    public Histogram2D(Var x, Var y) {
         this.x = x;
         this.y = y;
     }
@@ -53,6 +53,16 @@ public class DensityMap extends PlotComponent {
         parent.bottomMarkers(true);
         parent.bottomThick(true);
         parent.yLab(y.name());
+    }
+
+    public Histogram2D withXBins(int xBins) {
+        this.xBins = xBins;
+        return this;
+    }
+
+    public Histogram2D withYBins(int yBins) {
+        this.yBins = yBins;
+        return this;
     }
 
     @Override
@@ -103,8 +113,8 @@ public class DensityMap extends PlotComponent {
 
         for (int i = 0; i < xBins; i++) {
             for (int j = 0; j < yBins; j++) {
-                int blue = (int) (255 - 255 * freq[i][j] / (1.0 * maxFreq));
-                Color color = new Color(255, 255, blue);
+                int blue = (int) (255 * freq[i][j] / (1.0 * maxFreq));
+                Color color = new Color(getCol(0).getRed(), getCol(0).getGreen(), getCol(0).getBlue(), blue);
                 g2d.setColor(color);
                 Rectangle2D.Double rr = new Rectangle2D.Double(
                         parent.xScale(range.x1() + w * i),

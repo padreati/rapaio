@@ -28,7 +28,6 @@ import java.util.ArrayList;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public enum PchPalette implements Serializable {
 
     STANDARD(new StandardPchPalette());
