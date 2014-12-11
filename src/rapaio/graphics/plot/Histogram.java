@@ -50,7 +50,7 @@ public class Histogram extends PlotComponent {
     private double computeFreedmanDiaconisEstimation(Var v) {
         double[] q = new Quantiles(v, 0, 0.25, 0.75, 1).values();
         double iqr = q[2] - q[1];
-        return (q[3] - q[0]) / (2 * iqr * Math.pow(v.stream().complete().count(), -1.0 / 3.0));
+        return Math.ceil((q[3] - q[0]) / (2 * iqr * Math.pow(v.stream().complete().count(), -1.0 / 3.0)));
     }
 
     @Override

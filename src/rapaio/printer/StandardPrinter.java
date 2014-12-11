@@ -33,13 +33,13 @@ public class StandardPrinter extends AbstractPrinter {
 
     public StandardPrinter() {
         setTextWidth(180);
-        setGraphicWidth(800);
-        setGraphicHeight(600);
+        setGraphicWidth(1280);
+        setGraphicHeight(1024);
     }
 
-    private int textWidth = 120;
-    private int graphicWidth = 800;
-    private int graphicHeight = 600;
+    private int textWidth;
+    private int graphicWidth;
+    private int graphicHeight;
 
     @Override
     public int getTextWidth() {
@@ -100,6 +100,7 @@ public class StandardPrinter extends AbstractPrinter {
         frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         frame.setLayout(new BorderLayout());
         frame.setAutoRequestFocus(true);
+
         frame.setSize(width, height);
         while (true) {
             try {
