@@ -44,6 +44,7 @@ public class Histogram extends PlotComponent {
     public Histogram(Var v) {
         this.v = v;
         this.bins = (int) computeFreedmanDiaconisEstimation(v);
+        color(7);
     }
 
     private double computeFreedmanDiaconisEstimation(Var v) {
@@ -62,7 +63,6 @@ public class Histogram extends PlotComponent {
         parent.leftMarkers(true);
         parent.bottomThick(true);
         parent.bottomMarkers(true);
-        color(7);
     }
 
     public int getBins() {

@@ -33,7 +33,7 @@ import rapaio.graphics.plot.Histogram;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.
  */
-public class VFBoxCoxTransformTest {
+public class VFBoxCoxTTest {
 
     @Test
     public void basicTest() {
@@ -43,7 +43,7 @@ public class VFBoxCoxTransformTest {
             a.addValue(Math.sqrt(1 + d.sampleNext()));
         }
 
-        Var b = new VFBoxCoxTransform(5, 10).fitApply(a.solidCopy());
+        Var b = new VFBoxCoxT(5, 10).fitApply(a.solidCopy());
 
         WS.draw(new Grid(1, 2)
                         .add(1, 1, new Plot().add(new Histogram(a)).title("original"))

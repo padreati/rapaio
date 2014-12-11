@@ -25,18 +25,18 @@ import rapaio.data.Var;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.
  */
-public class VFBoxCoxTransform extends AbstractVF {
+public class VFBoxCoxT extends AbstractVF {
 
     private final double lambda;
     private final double shift;
 
-    public VFBoxCoxTransform(double lambda) {
+    public VFBoxCoxT(double lambda) {
         super(false);
         this.lambda = lambda;
         this.shift = 0;
     }
 
-    public VFBoxCoxTransform(double lambda, double shift) {
+    public VFBoxCoxT(double lambda, double shift) {
         super(false);
         this.lambda = lambda;
         this.shift = shift;

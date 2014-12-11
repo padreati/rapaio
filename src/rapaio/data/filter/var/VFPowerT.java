@@ -25,11 +25,11 @@ import rapaio.data.Var;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.
  */
-public class VFPowerTransform extends AbstractVF {
+public class VFPowerT extends AbstractVF {
 
     private final double lambda;
 
-    public VFPowerTransform(double lambda) {
+    public VFPowerT(double lambda) {
         super(false);
         this.lambda = lambda;
     }
