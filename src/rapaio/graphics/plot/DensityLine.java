@@ -34,7 +34,6 @@ import java.awt.geom.Line2D;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class DensityLine extends PlotComponent {
 
     private final Var var;

@@ -29,7 +29,6 @@ import java.awt.*;
 /**
  * @author Aurelian Tutuianu
  */
-@Deprecated
 public abstract class PlotComponent extends BaseFigure {
 
     protected Plot parent;

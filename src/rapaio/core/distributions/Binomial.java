@@ -26,9 +26,12 @@ import static java.lang.Math.*;
 import static jdistlib.math.Constants.DBL_EPSILON;
 
 /**
+ * Binomial distribution.
+ * It models the number of successes from n trials, where all trials
+ * are independent Bernoulli random variables with parameter p.
+ *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Binomial implements Distribution {
 
 

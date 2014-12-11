@@ -33,7 +33,6 @@ import java.util.List;
 /**
  * @author tutuianu
  */
-@Deprecated
 public class Points extends PlotComponent {
 
     private final Var x;

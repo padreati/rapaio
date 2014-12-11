@@ -21,14 +21,15 @@
 package rapaio.core.distributions;
 
 /**
+ * Bernoulli distribution
+ *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
-public class Ber implements Distribution {
+public class Bernoulli implements Distribution {
 
     private final double theta;
 
-    public Ber(double theta) {
+    public Bernoulli(double theta) {
         this.theta = theta;
     }
 
@@ -39,7 +40,7 @@ public class Ber implements Distribution {
 
     @Override
     public String getName() {
-        return "Ber(theta=" + theta + ")";
+        return "Bernoulli(theta=" + theta + ")";
     }
 
     @Override

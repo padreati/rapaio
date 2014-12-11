@@ -31,7 +31,6 @@ import java.util.List;
 /**
  * @author tutuianu
  */
-@Deprecated
 public class Plot extends HostFigure {
 
     private final List<PlotComponent> components = new LinkedList<>();

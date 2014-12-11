@@ -25,9 +25,12 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import static rapaio.core.MathBase.*;
 
 /**
+ * Student's T distribution, or T distribution.
+ * This distribution arises when a normal distribution is approximated
+ * for small sample size or when the standard deviation of the population is not known.
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class StudentT implements Distribution {
 
     private final double df;
@@ -46,7 +49,7 @@ public class StudentT implements Distribution {
 
     @Override
     public String getName() {
-        return "Student-T(df=" + df + ", mu=" + mu + ", sigma=" + sigma + ")";
+        return "StudentT(df=" + df + ", mu=" + mu + ", sigma=" + sigma + ")";
     }
 
     @Override

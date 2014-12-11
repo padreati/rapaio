@@ -30,7 +30,6 @@ import java.awt.geom.Line2D;
 /**
  * @author Aurelian Tutuianu
  */
-@Deprecated
 public class Lines extends PlotComponent {
 
     private final Var x;
