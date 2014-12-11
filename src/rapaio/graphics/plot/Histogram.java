@@ -20,6 +20,7 @@
 
 package rapaio.graphics.plot;
 
+import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
 import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
@@ -43,6 +44,13 @@ public class Histogram extends PlotComponent {
 
     public Histogram(Var v) {
         this.v = v;
+        this.bins = (int) computeFreedmanDiaconisEstimation(v);
+    }
+
+    private double computeFreedmanDiaconisEstimation(Var v) {
+        double[] q = new Quantiles(v, 0, 0.25, 0.75, 1).values();
+        double iqr = q[2] - q[1];
+        return (q[3] - q[0]) / (2 * iqr * Math.pow(v.stream().complete().count(), -1.0 / 3.0));
     }
 
     @Override
