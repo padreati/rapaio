@@ -25,7 +25,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.VarType;
-import rapaio.data.filters.FFRetainTypes;
+import rapaio.data.filter.frame.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.tools.DensityTable;
 import rapaio.ws.Summary;

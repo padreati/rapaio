@@ -29,7 +29,7 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * Provides filters for frames.
+ * Provides filter for frames.
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */

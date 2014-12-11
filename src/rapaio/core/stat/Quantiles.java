@@ -22,7 +22,7 @@ package rapaio.core.stat;
 
 import rapaio.core.Printable;
 import rapaio.data.Var;
-import rapaio.data.filters.VFSort;
+import rapaio.data.filter.var.VFSort;
 
 
 /**

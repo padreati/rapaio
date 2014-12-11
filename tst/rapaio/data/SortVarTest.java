@@ -21,8 +21,8 @@
 package rapaio.data;
 
 import org.junit.Test;
-import rapaio.data.filters.VFRefSort;
-import rapaio.data.filters.VFSort;
+import rapaio.data.filter.var.VFRefSort;
+import rapaio.data.filter.var.VFSort;
 import rapaio.io.Csv;
 
 import java.io.IOException;

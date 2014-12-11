@@ -26,7 +26,7 @@ import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
-import rapaio.data.filters.VFRefSort;
+import rapaio.data.filter.var.VFRefSort;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -25,7 +25,7 @@ import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.data.filters.FFShuffle;
+import rapaio.data.filter.frame.FFShuffle;
 import rapaio.ml.eval.ConfusionMatrix;
 
 import java.util.*;

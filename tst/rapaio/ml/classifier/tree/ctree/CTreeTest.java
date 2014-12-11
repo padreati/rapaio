@@ -23,7 +23,7 @@ package rapaio.ml.classifier.tree.ctree;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.VarType;
-import rapaio.data.filters.FFRetainTypes;
+import rapaio.data.filter.frame.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.CResult;
 import rapaio.ws.Summary;

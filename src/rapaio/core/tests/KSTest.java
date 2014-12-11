@@ -23,7 +23,7 @@ package rapaio.core.tests;
 import rapaio.core.Printable;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Var;
-import rapaio.data.filters.VFSort;
+import rapaio.data.filter.var.VFSort;
 
 /**
  * Creates a new statistical Kolmogorov-Smirnoff test. The 1 sample test, with <tt>v</tt>

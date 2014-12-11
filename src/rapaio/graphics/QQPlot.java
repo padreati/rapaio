@@ -23,7 +23,7 @@ package rapaio.graphics;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.data.filters.VFSort;
+import rapaio.data.filter.var.VFSort;
 import rapaio.graphics.plot.Points;
 
 /**

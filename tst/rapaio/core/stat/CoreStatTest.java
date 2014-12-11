@@ -22,7 +22,7 @@ package rapaio.core.stat;
 
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.filters.FFToNumeric;
+import rapaio.data.filter.frame.FFToNumeric;
 import rapaio.io.Csv;
 
 import java.io.IOException;

@@ -24,7 +24,7 @@ import rapaio.core.correlation.PearsonRCorrelation;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.VarType;
-import rapaio.data.filters.FFRetainTypes;
+import rapaio.data.filter.frame.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;

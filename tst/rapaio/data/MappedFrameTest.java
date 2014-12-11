@@ -21,7 +21,7 @@
 package rapaio.data;
 
 import org.junit.Test;
-import rapaio.data.filters.FFRefSort;
+import rapaio.data.filter.frame.FFRefSort;
 import rapaio.datasets.Datasets;
 
 import java.io.IOException;

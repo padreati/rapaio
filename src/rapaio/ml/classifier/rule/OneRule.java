@@ -22,7 +22,7 @@ package rapaio.ml.classifier.rule;
 
 import rapaio.core.RandomSource;
 import rapaio.data.*;
-import rapaio.data.filters.VFRefSort;
+import rapaio.data.filter.var.VFRefSort;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.tools.DensityVector;
