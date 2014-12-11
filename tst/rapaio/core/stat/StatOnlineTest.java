@@ -28,7 +28,7 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Points;
-import rapaio.printer.LocalPrinter;
+import rapaio.printer.IdeaPrinter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -44,7 +44,7 @@ public class StatOnlineTest {
     public void testVariance() {
 
 //        RandomSource.setSeed(1223);
-        setPrinter(new LocalPrinter());
+        setPrinter(new IdeaPrinter());
 
         int LEN = 1_000;
         Var v = new Normal(0, 1).sample(LEN);

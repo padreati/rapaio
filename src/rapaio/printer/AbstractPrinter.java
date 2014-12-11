@@ -25,7 +25,6 @@ import rapaio.graphics.base.Figure;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public abstract class AbstractPrinter implements Printer {
 
     private int textWidth;

@@ -32,8 +32,7 @@ import java.net.Socket;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
-public class LocalPrinter extends StandardPrinter {
+public class IdeaPrinter extends StandardPrinter {
     public static final int DEFAULT_PORT = 56339;
 
     @Override

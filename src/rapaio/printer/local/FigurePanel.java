@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.printer;
+package rapaio.printer.local;
 
 import rapaio.graphics.base.Figure;
 import rapaio.graphics.base.ImageUtility;
@@ -31,7 +31,6 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class FigurePanel extends JPanel {
 
     private final Figure figure;

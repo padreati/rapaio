@@ -21,6 +21,7 @@
 package rapaio.printer;
 
 import rapaio.graphics.base.Figure;
+import rapaio.printer.local.FigurePanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,7 +29,6 @@ import java.awt.*;
 /**
  * @author tutuianu
  */
-@Deprecated
 public class StandardPrinter extends AbstractPrinter {
 
     public StandardPrinter() {

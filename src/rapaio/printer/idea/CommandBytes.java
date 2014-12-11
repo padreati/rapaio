@@ -25,7 +25,6 @@ import java.io.Serializable;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class CommandBytes implements Serializable {
 
     public static enum Type {

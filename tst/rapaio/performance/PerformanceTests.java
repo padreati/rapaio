@@ -26,7 +26,7 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Numeric;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
-import rapaio.printer.LocalPrinter;
+import rapaio.printer.IdeaPrinter;
 
 import static rapaio.WS.draw;
 import static rapaio.WS.setPrinter;
@@ -39,7 +39,7 @@ public class PerformanceTests {
     @Test
     public void testNumericVector() {
 
-        setPrinter(new LocalPrinter());
+        setPrinter(new IdeaPrinter());
 
         final int TESTS = 100;
         final int LEN = 100_000;
