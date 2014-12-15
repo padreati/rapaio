@@ -294,7 +294,7 @@ public final class Sampling {
     public static List<Frame> randomSampleSlices(Frame frame, double... freq) {
         int total = 0;
         for (double f : freq) {
-            total += (int) f * frame.rowCount();
+            total += (int) (f * frame.rowCount());
         }
         if (total > frame.rowCount()) {
             throw new IllegalArgumentException("total counts greater than available number of rows");
@@ -305,8 +305,8 @@ public final class Sampling {
         Collections.shuffle(rows);
 
         int start = 0;
-        for (int i = 0; i < freq.length; i++) {
-            int len = (int) freq[i] * frame.rowCount();
+        for (double f : freq) {
+            int len = (int) (f * frame.rowCount());
             result.add(frame.mapRows(Mapping.newCopyOf(rows.subList(start, start + len))));
             start += len;
         }
@@ -314,6 +314,31 @@ public final class Sampling {
             result.add(frame.mapRows(Mapping.newCopyOf(rows.subList(start, frame.rowCount()))));
         }
         return result;
+    }
+
+    public static List<Frame> randomSampleStratifiedSplit(Frame df, String strataName, double p) {
+        if (p <= 0 || p >= 1) {
+            throw new IllegalArgumentException("Percentage must be in interval (0, 1)");
+        }
+        List<List<Integer>> maps = new ArrayList<>();
+        for (int i = 0; i < df.var(strataName).dictionary().length; i++) {
+            maps.add(new ArrayList<>());
+        }
+        df.var(strataName).stream().forEach(s -> maps.get(s.index()).add(s.row()));
+        List<Integer> left = new ArrayList<>();
+        List<Integer> right = new ArrayList<>();
+        for (List<Integer> map : maps) {
+            Collections.shuffle(map);
+            left.addAll(map.subList(0, (int) (p * map.size())));
+            right.addAll(map.subList((int) (p * map.size()), map.size()));
+        }
+        Collections.shuffle(left);
+        Collections.shuffle(right);
+
+        return new ArrayList<Frame>() {{
+            add(df.mapRows(Mapping.newWrapOf(left)));
+            add(df.mapRows(Mapping.newWrapOf(right)));
+        }};
     }
 
     public static Frame randomBootstrap(Frame frame) {

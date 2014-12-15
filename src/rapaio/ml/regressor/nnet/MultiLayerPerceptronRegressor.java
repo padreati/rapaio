@@ -216,7 +216,10 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor {
 
     @Override
     public RResult predict(final Frame df, final boolean withResiduals) {
-        RResult pred = RResult.newEmpty(this, df, withResiduals, targetNames);
+        RResult pred = RResult.newEmpty(this, df, withResiduals);
+        for (String targetName : targetNames) {
+            pred.addTarget(targetName);
+        }
 
         for (int pos = 0; pos < df.rowCount(); pos++) {
 

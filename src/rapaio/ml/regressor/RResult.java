@@ -24,12 +24,8 @@ import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
-import rapaio.data.VarRange;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -47,27 +43,29 @@ public class RResult implements Printable {
 
     // builder
 
-    public static RResult newEmpty(Regressor model, Frame df, boolean withResiduals, String... targetVarNames) {
-        return new RResult(model, df, withResiduals, targetVarNames);
+    public static RResult newEmpty(Regressor model, Frame df, boolean withResiduals) {
+        return new RResult(model, df, withResiduals);
     }
 
     // private constructor
 
-    protected RResult(final Regressor model, final Frame df, final boolean withResiduals, String... targetVarNames) {
+    protected RResult(final Regressor model, final Frame df, final boolean withResiduals) {
         this.model = model;
         this.df = df;
-        this.targetVars = new VarRange(targetVarNames).parseVarNames(df);
+        this.targetVars = new ArrayList<>();
         this.withResiduals = withResiduals;
 
         this.fit = new HashMap<>();
         this.residuals = new HashMap<>();
+    }
 
-        for (String targetVar : targetVars) {
-            fit.put(targetVar, Numeric.newEmpty(df.rowCount()).withName(targetVar));
-            if (withResiduals) {
-                residuals.put(targetVar, Numeric.newEmpty(df.rowCount()).withName(targetVar + "-residual"));
-            }
+    public RResult addTarget(String targetName) {
+        targetVars.add(targetName);
+        fit.put(targetName, Numeric.newEmpty(df.rowCount()).withName(targetName));
+        if (withResiduals) {
+            residuals.put(targetName, Numeric.newEmpty(df.rowCount()).withName(targetName + "-residual"));
         }
+        return this;
     }
 
     public Frame getFrame() {

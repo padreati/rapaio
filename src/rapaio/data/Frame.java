@@ -164,6 +164,10 @@ public interface Frame extends Serializable {
      */
     public Frame bindRows(Frame df);
 
+    default Frame mapRows(int... rows) {
+        return mapRows(Mapping.newCopyOf(rows));
+    }
+
     /**
      * Builds a new frame only with rows specified in mapping.
      *

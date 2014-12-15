@@ -67,7 +67,7 @@ public class VarRange {
         StringBuilder sb = new StringBuilder();
         Arrays.stream(varRanges).forEach(s -> {
             if (sb.length() > 0)
-                sb.append(",");
+                sb.append(COL_DELIMITER);
             sb.append(s);
         });
         this.rawColumnRange = sb.toString();

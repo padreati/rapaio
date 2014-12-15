@@ -39,34 +39,13 @@ import java.util.stream.IntStream;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
-public class CBenchmark {
+public class CTasks {
 
     private List<CTask> tasks = new ArrayList<>();
 
-    public CBenchmark() throws IOException {
+    public CTasks() throws IOException {
 
-        tasks.add(new CTask() {
-
-            {
-                name = "iris";
-                targetName = "class";
-                full = new ArffPersistence().read(UCI.class.getResourceAsStream("iris.arff"));
-                reSample(0.7, false);
-            }
-
-            @Override
-            public boolean reSample(double p, boolean replacement) {
-                int[] rows = replacement
-                        ? Sampling.sampleWR((int) (full.rowCount() * p), full.rowCount())
-                        : Sampling.sampleWOR((int) (full.rowCount() * p), full.rowCount());
-                train = MappedFrame.newByRow(full, rows);
-                Set<Integer> used = Arrays.stream(rows).mapToObj(row -> row).collect(Collectors.toSet());
-                Mapping diff = Mapping.newCopyOf(IntStream.range(0, full.rowCount()).filter(row -> !used.contains(row)).toArray());
-                test = MappedFrame.newByRow(full, diff);
-                return true;
-            }
-        });
+        tasks.add(new IrisUCITask());
     }
 
     public List<CTask> getDefaultTasks() {
@@ -75,5 +54,28 @@ public class CBenchmark {
 
     public CTask getTask(String name) {
         return tasks.stream().filter(t -> t.getName().equals(name)).findFirst().get();
+    }
+}
+
+
+class IrisUCITask extends CTask {
+
+    public IrisUCITask() throws IOException {
+        this.name = "Iris.UCI";
+        this.targetName = "class";
+        this.full = new ArffPersistence().read(UCI.class.getResourceAsStream("iris.arff"));
+        reSample(0.7, false);
+    }
+
+    @Override
+    public boolean reSample(double p, boolean replacement) {
+        int[] rows = replacement
+                ? Sampling.sampleWR((int) (full.rowCount() * p), full.rowCount())
+                : Sampling.sampleWOR((int) (full.rowCount() * p), full.rowCount());
+        train = MappedFrame.newByRow(full, rows);
+        Set<Integer> used = Arrays.stream(rows).mapToObj(row -> row).collect(Collectors.toSet());
+        Mapping diff = Mapping.newCopyOf(IntStream.range(0, full.rowCount()).filter(row -> !used.contains(row)).toArray());
+        test = MappedFrame.newByRow(full, diff);
+        return true;
     }
 }

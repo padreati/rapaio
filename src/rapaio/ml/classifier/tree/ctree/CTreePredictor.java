@@ -44,7 +44,11 @@ public interface CTreePredictor extends Serializable {
         @Override
         public Pair<Integer, DensityVector> predict(CTree tree, FSpot spot, CTreeNode node) {
             if (node.getCounter().sum(false) == 0)
-                return new Pair<>(node.getParent().getBestIndex(), node.getParent().getDensity());
+                if (node.getParent() == null) {
+                    throw new RuntimeException("Something bad happened at learning time");
+                } else {
+                    return new Pair<>(node.getParent().getBestIndex(), node.getParent().getDensity());
+                }
             if (node.isLeaf())
                 return new Pair<>(node.getBestIndex(), node.getDensity());
 

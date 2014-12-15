@@ -39,8 +39,8 @@ import static rapaio.WS.print;
 public class ModelEvaluation {
 
     public double cv(Frame df, String classColName, Classifier c, int folds) {
-        print("\n<pre><code>\n");
-        print("CrossValidation with " + folds + " folds\n");
+        print("\nCrossValidation with " + folds + " folds\n");
+        print("Model: " + c.fullName() + "\n");
 
         List<Integer>[] strata = buildStrata(df, folds, classColName);
 
@@ -72,8 +72,6 @@ public class ModelEvaluation {
         }
         correct /= (1. * df.rowCount());
         print(String.format("Mean accuracy:%.6f\n", correct));
-
-        print("</code></pre>\n");
         return correct;
     }
 

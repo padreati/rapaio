@@ -50,6 +50,7 @@ StatSampling
 * Decision Trees: CART (no pruning)
 * Rule: OneRule
 * Boosting: AdaBoost.SAMME
+* Boosting: GBT (Gradient Boosting Trees) Classifier
 * Ensemble: SplitClassifier
 * Ensemble: Bagging
 * Ensemble: Random Forests

@@ -216,7 +216,7 @@ public abstract class HostFigure extends BaseFigure {
         if (title != null) {
             g2d.setFont(TITLE_FONT);
             double titleWidth = g2d.getFontMetrics().getStringBounds(title, g2d).getWidth();
-            g2d.drawString(title, (int) (rect.x + (rect.width - titleWidth) / 2), TITLE_PAD);
+            g2d.drawString(title, (int) (rect.x + (rect.width - titleWidth) / 2), rect.y + TITLE_PAD);
         }
 
         // left part

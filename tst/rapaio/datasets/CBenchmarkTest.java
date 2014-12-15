@@ -84,12 +84,12 @@
 //
 //                for (String cName : cNames) {
 //                    Classifier c = classifiers.get(cName);
-//                    c.learn(task.getTrainFrame(), task.getTargetName());
-//                    c.predict(task.getTestFrame());
+//                    c.learn(task.trainFrame(), task.targetName());
+//                    c.predict(task.testFrame());
 //
 //                    results.setValue(i, cName,
 //                            new ConfusionMatrix(
-//                                    task.getTestFrame().var(task.getTargetName()),
+//                                    task.testFrame().var(task.targetName()),
 //                                    c.classes()).accuracy());
 //                }
 //            }
