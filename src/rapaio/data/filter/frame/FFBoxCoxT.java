@@ -21,20 +21,37 @@
 package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
+import rapaio.data.filter.var.VFBoxCoxT;
 
-import java.io.Serializable;
+import java.util.List;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
  */
-public interface FrameFilter extends Serializable {
+public class FFBoxCoxT extends AbstractFF {
 
-    void fit(Frame df);
+    private final VFBoxCoxT bct;
 
-    Frame apply(Frame df);
+    public FFBoxCoxT(double lambda, String... varNames) {
+        this(lambda, 0, varNames);
+    }
 
-    default Frame fitApply(Frame df) {
-        fit(df);
-        return apply(df);
+    public FFBoxCoxT(double lambda, double shift, String... varNames) {
+        super(varNames);
+        this.bct = new VFBoxCoxT(lambda, shift);
+    }
+
+    @Override
+    public void fit(Frame df) {
+        checkRangeVars(1, df.varCount(), df, varNames);
+    }
+
+    @Override
+    public Frame apply(Frame df) {
+        List<String> names = parse(df, varNames);
+        for (String name : names) {
+            bct.fitApply(df.var(name));
+        }
+        return df;
     }
 }

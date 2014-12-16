@@ -31,12 +31,10 @@ public class VFSort extends AbstractVF {
     private boolean asc;
 
     public VFSort() {
-        super(false);
         this.asc = true;
     }
 
     public VFSort(boolean asc) {
-        super(false);
         this.asc = asc;
     }
 

@@ -74,13 +74,4 @@ public interface VarFilter extends Serializable, Printable {
         fit(vars);
         return apply(vars);
     }
-
-    boolean reversible();
-
-    default Var revert(Var... vars) {
-        if (!reversible()) {
-            throw new IllegalArgumentException("This filter is not reversible");
-        }
-        throw new IllegalArgumentException("Not implemented");
-    }
 }

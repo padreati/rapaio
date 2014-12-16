@@ -37,7 +37,6 @@ public class VFRefSort extends AbstractVF {
     private final Comparator<Integer> aggregateComparator;
 
     public VFRefSort(Comparator<Integer>... rowComparators) {
-        super(false);
         if (rowComparators == null || rowComparators.length == 0) {
             throw new IllegalArgumentException("Filter requires at least a row comparator");
         }

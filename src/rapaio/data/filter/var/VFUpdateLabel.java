@@ -33,7 +33,6 @@ public class VFUpdateLabel extends AbstractVF {
     private final Function<VSpot, String> f;
 
     public VFUpdateLabel(Function<VSpot, String> f) {
-        super(false);
         this.f = f;
     }
 

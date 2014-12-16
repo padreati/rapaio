@@ -31,16 +31,9 @@ import java.util.List;
 public abstract class AbstractFF implements FrameFilter {
 
     protected final String[] varNames;
-    private final boolean reversible;
 
-    public AbstractFF(boolean reversible, String[] varNames) {
-        this.reversible = reversible;
+    public AbstractFF(String[] varNames) {
         this.varNames = varNames;
-    }
-
-    @Override
-    public boolean reversible() {
-        return reversible;
     }
 
     protected List<String> parse(Frame df, String... varNames) {

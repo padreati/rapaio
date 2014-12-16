@@ -38,7 +38,7 @@ public class FFRefSort extends AbstractFF {
     private final Comparator<Integer> aggregateComparator;
 
     public FFRefSort(Comparator<Integer> comparators) {
-        super(false, null);
+        super(null);
         this.aggregateComparator = RowComparators.aggregateComparator(comparators);
     }
 

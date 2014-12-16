@@ -33,12 +33,10 @@ public class VFSetMissing extends AbstractVF {
     private final Collection<String> missingValues;
 
     public VFSetMissing(Collection<String> missingValues) {
-        super(false);
         this.missingValues = missingValues;
     }
 
     public VFSetMissing(String... missingValues) {
-        super(false);
         this.missingValues = Arrays.asList(missingValues);
     }
 

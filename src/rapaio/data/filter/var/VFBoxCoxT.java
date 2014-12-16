@@ -31,13 +31,11 @@ public class VFBoxCoxT extends AbstractVF {
     private final double shift;
 
     public VFBoxCoxT(double lambda) {
-        super(false);
         this.lambda = lambda;
         this.shift = 0;
     }
 
     public VFBoxCoxT(double lambda, double shift) {
-        super(false);
         this.lambda = lambda;
         this.shift = shift;
     }

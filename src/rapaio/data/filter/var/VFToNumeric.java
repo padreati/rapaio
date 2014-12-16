@@ -30,10 +30,6 @@ import rapaio.data.stream.VSpot;
  */
 public class VFToNumeric extends AbstractVF {
 
-    public VFToNumeric() {
-        super(false);
-    }
-
     @Override
     public void fit(Var... vars) {
         checkSingleVar(vars);

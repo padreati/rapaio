@@ -22,19 +22,34 @@ package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
 
-import java.io.Serializable;
+import java.util.List;
+import java.util.function.Function;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
  */
-public interface FrameFilter extends Serializable {
+public class FFUpdateValue extends AbstractFF {
 
-    void fit(Frame df);
+    private final Function<Double, Double> f;
 
-    Frame apply(Frame df);
+    public FFUpdateValue(Function<Double, Double> f, String... varNames) {
+        super(varNames);
+        this.f = f;
+    }
 
-    default Frame fitApply(Frame df) {
-        fit(df);
-        return apply(df);
+    @Override
+    public void fit(Frame df) {
+        checkRangeVars(1, df.varCount(), df, varNames);
+    }
+
+    @Override
+    public Frame apply(Frame df) {
+        List<String> names = parse(df, varNames);
+        for (int i = 0; i < df.rowCount(); i++) {
+            for (String name : names) {
+                df.setValue(i, name, f.apply(df.value(i, name)));
+            }
+        }
+        return df;
     }
 }

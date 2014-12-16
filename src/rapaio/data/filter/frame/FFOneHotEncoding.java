@@ -43,7 +43,7 @@ import java.util.Set;
 public class FFOneHotEncoding extends AbstractFF {
 
     public FFOneHotEncoding(String... varNames) {
-        super(false, varNames);
+        super(varNames);
     }
 
     @Override

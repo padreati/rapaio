@@ -37,7 +37,7 @@ import java.util.Set;
 public class FFToNumeric extends AbstractFF {
 
     public FFToNumeric(String... varNames) {
-        super(false, varNames);
+        super(varNames);
     }
 
     @Override

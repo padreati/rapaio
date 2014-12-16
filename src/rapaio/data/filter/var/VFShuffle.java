@@ -32,10 +32,6 @@ import java.util.List;
  */
 public class VFShuffle extends AbstractVF {
 
-    public VFShuffle() {
-        super(false);
-    }
-
     @Override
     public void fit(Var... vars) {
         checkSingleVar(vars);

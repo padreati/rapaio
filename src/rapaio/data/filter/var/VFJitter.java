@@ -55,7 +55,6 @@ public class VFJitter extends AbstractVF {
      * @param d noise distribution
      */
     public VFJitter(Distribution d) {
-        super(false);
         this.d = d;
     }
 

@@ -33,7 +33,6 @@ public class VFUpdateIndex extends AbstractVF {
     private final Function<VSpot, Integer> f;
 
     public VFUpdateIndex(Function<VSpot, Integer> f) {
-        super(false);
         this.f = f;
     }
 

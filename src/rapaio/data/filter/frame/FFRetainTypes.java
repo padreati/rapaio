@@ -37,7 +37,7 @@ public class FFRetainTypes extends AbstractFF {
     private final VarType[] types;
 
     public FFRetainTypes(VarType... types) {
-        super(false, null);
+        super(null);
         if (types == null || types.length == 0)
             throw new IllegalArgumentException("Must provide at least a type to retain");
         this.types = types;

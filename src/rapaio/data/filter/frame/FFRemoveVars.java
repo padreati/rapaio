@@ -31,7 +31,7 @@ import java.util.List;
 public class FFRemoveVars extends AbstractFF {
 
     public FFRemoveVars(String... varNames) {
-        super(false, varNames);
+        super(varNames);
     }
 
     @Override

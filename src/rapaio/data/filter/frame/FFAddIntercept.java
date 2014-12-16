@@ -42,7 +42,7 @@ public class FFAddIntercept extends AbstractFF {
     public static String INTERCEPT = "Intercept";
 
     public FFAddIntercept(String[] varNames) {
-        super(false, varNames);
+        super(varNames);
     }
 
     @Override

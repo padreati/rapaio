@@ -39,10 +39,6 @@ public class VFChain extends AbstractVF {
 
     private final List<VarFilter> filters = new ArrayList<>();
 
-    public VFChain() {
-        super(false);
-    }
-
     public void clearFilters() {
         filters.clear();
     }

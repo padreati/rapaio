@@ -30,10 +30,6 @@ import rapaio.data.stream.VSpot;
  */
 public class VFToIndex extends AbstractVF {
 
-    public VFToIndex() {
-        super(false);
-    }
-
     @Override
     public void fit(Var... vars) {
         checkSingleVar(vars);

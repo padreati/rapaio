@@ -33,7 +33,6 @@ public class VFUpdateValue extends AbstractVF {
     private final Function<VSpot, Double> f;
 
     public VFUpdateValue(Function<VSpot, Double> f) {
-        super(false);
         this.f = f;
     }
 

@@ -30,12 +30,6 @@ import rapaio.data.Var;
  */
 public abstract class AbstractVF implements VarFilter {
 
-    private final boolean reversible;
-
-    public AbstractVF(boolean reversible) {
-        this.reversible = reversible;
-    }
-
     protected void checkEmptyVars(Var[] vars) {
         if (vars != null && vars.length > 0) {
             throw new IllegalArgumentException("Filter operation accepts no input variables");
@@ -68,11 +62,6 @@ public abstract class AbstractVF implements VarFilter {
         if (vars == null || vars.length < min || vars.length > max) {
             throw new IllegalArgumentException("Filter operation requires between " + min + " and " + max + " input variables");
         }
-    }
-
-    @Override
-    public boolean reversible() {
-        return reversible;
     }
 
     @Override

@@ -33,7 +33,7 @@ import java.util.List;
 public class FFShuffle extends AbstractFF {
 
     public FFShuffle() {
-        super(false, null);
+        super(null);
     }
 
     @Override

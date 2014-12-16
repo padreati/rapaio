@@ -41,8 +41,8 @@ public class FFJitter extends AbstractFF {
         this(new Normal(0, sd), varNames);
     }
 
-    public FFJitter(Distribution d, String[] varNames) {
-        super(false, varNames);
+    public FFJitter(Distribution d, String... varNames) {
+        super(varNames);
         if (d == null) {
             throw new IllegalArgumentException("distribution parameter cannot be empty");
         }

@@ -30,7 +30,6 @@ public class VFPowerT extends AbstractVF {
     private final double lambda;
 
     public VFPowerT(double lambda) {
-        super(false);
         this.lambda = lambda;
     }
 
