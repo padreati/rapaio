@@ -30,7 +30,6 @@ import rapaio.core.RandomSource;
  * @version 5 August 1998
  *          User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public class MathMatrix {
 
     /**

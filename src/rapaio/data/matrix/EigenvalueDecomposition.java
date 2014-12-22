@@ -38,8 +38,6 @@ import static java.lang.StrictMath.hypot;
  * validity of the equation A = V*D*inverse(V) depends upon V.cond().
  */
 
-@Deprecated
-
 public class EigenvalueDecomposition implements java.io.Serializable {
 
     /*

@@ -18,25 +18,26 @@
  *    limitations under the License.
  */
 
-package rapaio.session;
-
-import org.junit.Assert;
-import org.junit.Test;
-import rapaio.WS;
+package rapaio.core.distributions.empirical;
 
 /**
- * @author Aurelian Tutuianu
+ * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+public class KFuncBiWeight implements KFunc {
 
+    @Override
+    public double pdf(double x, double x0, double bandwidth) {
+        double value = Math.abs(x - x0) / bandwidth;
+        return value <= 1 ? 15 * (1 - value * value) * (1 - value * value) / 16. : 0;
+    }
 
-public class WTest {
+    @Override
+    public double getMinValue(double x0, double bandwidth) {
+        return x0 - bandwidth;
+    }
 
-	@Test
-	public void testSession() {
-
-		WS.getData().put(String.class, "a", "a value");
-		String get = WS.getData().get(String.class, "a");
-
-		Assert.assertEquals("a value", get);
-	}
+    @Override
+    public double getMaxValue(double x0, double bandwidth) {
+        return x0 + bandwidth;
+    }
 }

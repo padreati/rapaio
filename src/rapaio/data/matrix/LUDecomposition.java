@@ -33,8 +33,6 @@ package rapaio.data.matrix;
  * equations. This will fail if isNonsingular() returns false.
  */
 
-
-@Deprecated
 public class LUDecomposition implements java.io.Serializable {
 
     /*

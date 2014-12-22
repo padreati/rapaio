@@ -31,7 +31,6 @@ import java.io.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class HTMLPrinter extends AbstractPrinter {
 
     private final String title;

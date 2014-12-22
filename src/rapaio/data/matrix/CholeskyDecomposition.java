@@ -32,8 +32,6 @@ package rapaio.data.matrix;
  * isSPD() method.
  */
 
-@Deprecated
-
 public class CholeskyDecomposition implements java.io.Serializable {
 
     /*

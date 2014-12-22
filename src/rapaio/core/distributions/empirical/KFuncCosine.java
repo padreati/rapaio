@@ -24,7 +24,6 @@ package rapaio.core.distributions.empirical;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class KFuncCosine implements KFunc {
 
     @Override

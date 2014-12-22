@@ -30,7 +30,6 @@ import java.net.URISyntaxException;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Datasets {
 
     public static Frame loadIrisDataset() throws IOException, URISyntaxException {
