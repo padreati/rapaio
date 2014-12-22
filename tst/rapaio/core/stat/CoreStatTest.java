@@ -22,7 +22,7 @@ package rapaio.core.stat;
 
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.filter.frame.FFToNumeric;
+import rapaio.data.VarType;
 import rapaio.io.Csv;
 
 import java.io.IOException;
@@ -37,7 +37,7 @@ public class CoreStatTest {
     private final Frame df;
 
     public CoreStatTest() throws IOException {
-        this.df = new FFToNumeric("all").fitApply(new Csv().withHeader(false).read(getClass(), "core_stat.csv"));
+        this.df = new Csv().withHeader(true).withDefaultTypes(VarType.NUMERIC).read(getClass(), "core_stat.csv");
     }
 
     @Test

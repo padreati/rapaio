@@ -152,7 +152,19 @@ public class Csv {
                 }
                 if (rows == endRow) break;
                 rows++;
-                for (int i = 0; i < names.size(); i++) {
+                int len = Math.max(row.size(), names.size());
+                for (int i = 0; i < len; i++) {
+                    // we have a value in row for which we did not defined a var slot
+                    if (i >= varSlots.size()) {
+                        varSlots.add(new VarSlot(this));
+                        continue;
+                    }
+                    // we have missing values at the end of the row
+                    if (i >= row.size()) {
+                        varSlots.get(i).addValue("?");
+                        continue;
+                    }
+                    // normal behavior
                     varSlots.get(i).addValue(row.get(i));
                 }
             }
