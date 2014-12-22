@@ -75,6 +75,10 @@ public interface VarSelector extends Serializable {
         private final int mVars;
         private String[] candidates;
 
+        public Random() {
+            this.mVars = -1;
+        }
+
         public Random(int mVars) {
             this.mVars = mVars;
         }
@@ -99,11 +103,9 @@ public interface VarSelector extends Serializable {
 
         @Override
         public synchronized String[] nextVarNames() {
-            if (mVars < 1) {
-                throw new RuntimeException("Uniform random var selector not initialized");
-            }
-            int[] indexes = Sampling.sampleWR(mVars, candidates.length);
-            String[] result = new String[mVars];
+            int m = (mVars < 1) ? Math.max((int) Math.sqrt(candidates.length), 1) : mVars;
+            int[] indexes = Sampling.sampleWR(m, candidates.length);
+            String[] result = new String[m];
             for (int i = 0; i < indexes.length; i++) {
                 result[i] = candidates[indexes[i]];
             }

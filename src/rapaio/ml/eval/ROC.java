@@ -169,7 +169,7 @@ public class ROC implements Printable, Serializable {
     @Override
     public void buildSummary(StringBuilder sb) {
 
-        final String fmt = "%10s";
+        final String fmt = "%-10s";
 
         sb.append("> ROC summary").append("\n");
         sb.append("\n");

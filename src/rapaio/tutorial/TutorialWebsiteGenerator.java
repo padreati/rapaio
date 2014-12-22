@@ -39,7 +39,6 @@ import static rapaio.WS.*;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class TutorialWebsiteGenerator {
 
     private static final Logger logger = Logger.getLogger("rapaio");
@@ -67,13 +66,13 @@ public class TutorialWebsiteGenerator {
         TreeMap<String, List<TutorialPage>> pages = new TreeMap<>();
 
         pages.put("Graphics", Arrays.asList(
-//                new HistogramDensityTutorial()
+                new HistogramDensityTutorial()
                 ));
 
         pages.put("StatisticalProcedures", Arrays.asList(
-//                new DiscreteSamplingPage(),
-//                new CorrelationsPage(),
-//                new ROCCurvesPage()
+                new DiscreteSamplingPage(),
+                new CorrelationsPage(),
+                new ROCCurvesPage()
         ));
 
         pages.put("SampleAnalysis", Arrays.asList(
@@ -146,20 +145,17 @@ public class TutorialWebsiteGenerator {
         p("That happens because they will grow together with the library and its "
                 + "facilities. The tutorials are generated from source code, using Rapaio "
                 + "library documenting facilities. The advantage of writing tutorials in this "
-                + "manner is that they will remain comaptible with the last revision of "
+                + "manner is that they will remain compatible with the last revision of "
                 + "the library, thus they will be up-to-date and ready for immediate usage.");
 
         p("Have fun on learning and using Rapaio.");
 
         heading(2, "Rapaio Tutorial Gallery");
 
-        pages.keySet().stream().map((category) -> {
+        pages.keySet().stream().forEach(category -> {
             heading(3, category);
-            return category;
-        }).forEach((category) -> {
-            pages.get(category).stream().forEach((page) -> {
-                print("<a href=\"pages/" + category + "/" + page.getPageName() + ".html\">" + page.getPageTitle() + "</a></br>");
-            });
+            pages.get(category).stream()
+                    .forEach((page) -> print("<a href=\"pages/" + category + "/" + page.getPageName() + ".html\">" + page.getPageTitle() + "</a></br>"));
         });
 
         closePrinter();

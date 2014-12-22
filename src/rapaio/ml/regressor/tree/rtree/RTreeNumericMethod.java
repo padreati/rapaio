@@ -34,13 +34,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
+ * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
 public interface RTreeNumericMethod {
 
     String name();
 
-    List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testColName, String targetColName, RTreeTestFunction function);
+    List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function);
 
     RTreeNumericMethod IGNORE = new RTreeNumericMethod() {
         @Override
@@ -49,7 +49,7 @@ public interface RTreeNumericMethod {
         }
 
         @Override
-        public List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testColName, String targetColName, RTreeTestFunction function) {
+        public List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
             return new ArrayList<>();
         }
     };
@@ -61,9 +61,9 @@ public interface RTreeNumericMethod {
         }
 
         @Override
-        public List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testColName, String targetColName, RTreeTestFunction function) {
-            Var test = df.var(testColName);
-            Var target = df.var(targetColName);
+        public List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
+            Var test = df.var(testVarName);
+            Var target = df.var(targetVarName);
 
             Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.newSeq(df.rowCount()));
 
@@ -103,17 +103,17 @@ public interface RTreeNumericMethod {
 
                 double value = c.function.computeTestValue(left, right);
 
-                RTreeCandidate current = new RTreeCandidate(value, testColName);
+                RTreeCandidate current = new RTreeCandidate(value, testVarName);
                 if (best == null) {
                     best = current;
 
                     final double testValue = test.value(sort.index(i));
                     current.addGroup(
-                            String.format("%s <= %.6f", testColName, testValue),
-                            spot -> !spot.missing(testColName) && spot.value(testColName) <= testValue);
+                            String.format("%s <= %.6f", testVarName, testValue),
+                            spot -> !spot.missing(testVarName) && spot.value(testVarName) <= testValue);
                     current.addGroup(
-                            String.format("%s > %.6f", testColName, testValue),
-                            spot -> !spot.missing(testColName) && spot.value(testColName) > testValue);
+                            String.format("%s > %.6f", testVarName, testValue),
+                            spot -> !spot.missing(testVarName) && spot.value(testVarName) > testValue);
                 } else {
                     int comp = best.compareTo(current);
                     if (comp < 0) continue;
@@ -122,11 +122,11 @@ public interface RTreeNumericMethod {
 
                     final double testValue = test.value(sort.index(i));
                     current.addGroup(
-                            String.format("%s <= %.6f", testColName, testValue),
-                            spot -> !spot.missing(testColName) && spot.value(testColName) <= testValue);
+                            String.format("%s <= %.6f", testVarName, testValue),
+                            spot -> !spot.missing(testVarName) && spot.value(testVarName) <= testValue);
                     current.addGroup(
-                            String.format("%s > %.6f", testColName, testValue),
-                            spot -> !spot.missing(testColName) && spot.value(testColName) > testValue);
+                            String.format("%s > %.6f", testVarName, testValue),
+                            spot -> !spot.missing(testVarName) && spot.value(testVarName) > testValue);
                 }
             }
             return (best != null) ? Arrays.asList(best) : Collections.EMPTY_LIST;

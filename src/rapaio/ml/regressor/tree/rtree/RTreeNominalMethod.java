@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
+ * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
 public interface RTreeNominalMethod {
 

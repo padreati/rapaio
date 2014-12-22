@@ -64,6 +64,15 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
                 .withSampling(sampling);
     }
 
+    public static CForest buildRandomForest(int runs, double sampling) {
+        return new CForest()
+                .withClassifier(CTree.newCART())
+                .withBaggingMethod(BaggingMethods.DISTRIBUTION)
+                .withRuns(runs)
+                .withVarSelector(new VarSelector.Random())
+                .withSampling(sampling);
+    }
+
     public static CForest buildRandomForest(int runs, int mcols, double sampling, Classifier c) {
         return new CForest()
                 .withClassifier(c)
@@ -88,6 +97,8 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
                 .withVarSelector(varSelector)
                 .withRuns(runs)
                 .withBaggingMethod(baggingMethod)
+                .withSampling(sampling)
+                .withOobError(oobCompute)
                 .withClassifier(c);
     }
 
@@ -265,12 +276,11 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
 
         List<Frame> treeDensities = new ArrayList<>();
         predictors.forEach(p -> {
-            CResult cpTree = p.predict(df);
+            CResult cpTree = p.predict(df, true, true);
             treeDensities.add(cpTree.firstDensity());
         });
 
         baggingMethod.computeDensity(firstDictionary(), treeDensities, cp.firstClasses(), cp.firstDensity());
-
         return cp;
     }
 
@@ -315,10 +325,19 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
         DISTRIBUTION {
             @Override
             public void computeDensity(String[] dictionary, List<Frame> treeDensities, Nominal classes, Frame densities) {
+                for (int i = 0; i < densities.rowCount(); i++) {
+                    for (int j = 0; j < densities.varCount(); j++) {
+                        densities.setValue(i, j, 0);
+                    }
+                }
                 treeDensities.forEach(d -> {
-                    for (int i = 0; i < d.rowCount(); i++) {
-                        for (int j = 0; j < dictionary.length; j++) {
-                            densities.setValue(i, j, densities.value(i, j) + d.value(i, j));
+                    for (int i = 0; i < densities.rowCount(); i++) {
+                        double t = 0.0;
+                        for (int j = 0; j < densities.varCount(); j++) {
+                            t += d.value(i, j);
+                        }
+                        for (int j = 0; j < densities.varCount(); j++) {
+                            densities.setValue(i, j, densities.value(i, j) + d.value(i, j) / t);
                         }
                     }
                 });

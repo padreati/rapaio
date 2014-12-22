@@ -30,7 +30,6 @@ import java.util.Arrays;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public final class MathNumeric {
 
     public static Numeric sum(final Numeric num) {

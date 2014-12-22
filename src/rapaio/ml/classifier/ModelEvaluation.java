@@ -35,7 +35,6 @@ import static rapaio.WS.print;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class ModelEvaluation {
 
     public double cv(Frame df, String classColName, Classifier c, int folds) {

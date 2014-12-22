@@ -25,7 +25,6 @@ import java.io.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public class JavaSerialization {
 
     public static Object restoreFromFile(String file) throws IOException, ClassNotFoundException {
