@@ -61,21 +61,26 @@ public class ROCCurvesPage implements TutorialPage {
     public void render() throws IOException, URISyntaxException {
         RandomSource.setSeed(1234);
 
-        heading(2, "Data set preparation");
+        heading(1, "ROC Curves Tutorial Page");
 
-        p("For exemplification I will use the classical spam data set. We load the data set and "
-                + "we split randomly in two pieces. The first sample will be used for training purposes "
-                + "and it will have ~ 0.66 of the data, the second sample will be used for "
-                + "testing our model. ");
+        p("This tutorial page describes how you can build ROC curves graphs with " +
+                "rapaio library.");
+
+        heading(2, "Data set");
+
+        p("Data set used in this tutorial page is the classical UCI spam data set. " +
+                "We load the data set and we split randomly in two pieces. " +
+                "The first sample will be used for training purposes and it will have ~ 0.66 " +
+                "of the data, the second sample will be used for testing our model. ");
 
         RandomSource.setSeed(2718);
-        final Frame spam = Datasets.loadSpamBase().mapVars("0~4,spam");
+        final Frame spam = Datasets.loadSpamBase().mapVars("0~3,spam");
         List<Frame> samples = Sampling.randomSampleSlices(spam, 0.6);
         final Frame train = samples.get(0);
         final Frame test = samples.get(1);
 
         code("        RandomSource.setSeed(2718);\n" +
-                "        final Frame spam = Datasets.loadSpamBase().mapVars(\"0~4,spam\");\n" +
+                "        final Frame spam = Datasets.loadSpamBase().mapVars(\"0~3,spam\");\n" +
                 "        List<Frame> samples = Sampling.randomSampleSlices(spam, 0.6);\n" +
                 "        final Frame train = samples.get(0);\n" +
                 "        final Frame test = samples.get(1);\n");
@@ -84,10 +89,10 @@ public class ROCCurvesPage implements TutorialPage {
                 + "that it consists of many numerical attributes used to predict a nominal "
                 + "attribute called \\(spam\\)");
 
-        p("Thus we know there are 2788 instances classified as \\(ham\\), codified by value 0 (\\(not spam\\)), "
+        p("Thus we know there are 2788 instances classified as \\(ham\\), codified by value 0 (not spam), "
                 + "and 1813 instances codified by 1, which denotes spam emails. There are a lot of "
                 + "numeric features in this data set. We use "
-                + "only the first 5 numerical features for prediction.");
+                + "only the first 4 numerical features for prediction.");
 
         summary(spam);
 
@@ -95,42 +100,45 @@ public class ROCCurvesPage implements TutorialPage {
 
         heading(2, "Binary classification");
 
-        p("We will learn 3 models for prediction. We will use the train test which consists "
-                + "of 66% percents of our initial data. For testing how well the model predicts "
-                + "we use the remaining data.");
+        p("We will fit 4 models to the data in order to do predictions. " +
+                "We will use the train test which consists of 0.66 of our initial data. " +
+                "For testing how well the model predicts we use the remaining data.");
 
         heading(4, "OneRule");
-        p("This first model is one of the simplest model possible. It basically learn a decision tree "
-                + "with a single level. For documentation obout this algorithm you can "
-                + "check the original paper <a href=\"http://link.springer.com/article/10.1023/A:1022631118932\">"
+
+        p("This first model is one of the simplest possible models. It basically learns a decision tree "
+                + "with a single level and possible more than two children. " +
+                "For documentation about this algorithm you can check the original " +
+                "paper <a href=\"http://link.springer.com/article/10.1023/A:1022631118932\">"
                 + "Holte, R.C. Very Simple Classification Rules Perform Well on Most Commonly Used Datasets. "
                 + "Machine Learning 11, 63-91 (1993).</a>");
-
-        code("        OneRule oneRule = new OneRule();\n" +
-                "        oneRule.learn(train, \"spam\");\n" +
-                "        CResult crOneRule = oneRule.predict(test);\n");
 
         OneRule oneRule = new OneRule();
         oneRule.learn(train, "spam");
         CResult crOneRule = oneRule.predict(test);
 
+        code("        OneRule oneRule = new OneRule();\n" +
+                "        oneRule.learn(train, \"spam\");\n" +
+                "        CResult crOneRule = oneRule.predict(test);\n");
+
         p("One of the most used ways to check the performance of a classifier is the accuracy. "
                 + "Accuracy is the percentage of cases with correct prediction from total number of cases. "
-                + "With rapaio library one way to see the accuracy is to summarize the confusion rapaio.data.matrix.");
-
-        code("        new ConfusionMatrix(test.var(\"spam\"), crOneRule.firstClasses()).summary();\n");
+                + "With rapaio library one way to compute the accuracy is " +
+                "to summarize the confusion matrix.");
 
         new ConfusionMatrix(test.var("spam"), crOneRule.firstClasses()).summary();
 
+        code("        new ConfusionMatrix(test.var(\"spam\"), crOneRule.firstClasses()).summary();\n");
+
         heading(4, "Random Forest");
 
-        p("The second prediction model is a random forest with 200 random trees. ");
+        p("The second prediction model is a random forest with 50 random trees. ");
 
-        CForest rf = CForest.buildRandomForest(200, 10, 0);
+        CForest rf = CForest.buildRandomForest(50, 10, 0);
         rf.learn(train, "spam");
         CResult crRF = rf.predict(test);
 
-        code("        CForest rf = CForest.buildRandomForest(200, 1.0);\n" +
+        code("        CForest rf = CForest.buildRandomForest(50, 1.0);\n" +
                 "        rf.learn(train, \"spam\");\n" +
                 "        rf.predict(test);\n");
 
@@ -140,14 +148,14 @@ public class ROCCurvesPage implements TutorialPage {
 
         p("The third prediction model is a boosting algorithm called AdaBoost.SAMME. " +
                 "This model uses decision stumps as a weak learners, " +
-                "and builds 200 boosting iterations. "
-                + "The following code shows how one can achieve that using rapaio.");
+                "and builds 50 boosting iterations. " +
+                "The following code shows how one can achieve that using rapaio.");
 
-        AdaBoostSAMMEClassifier ab = new AdaBoostSAMMEClassifier().withRuns(200);
+        AdaBoostSAMMEClassifier ab = new AdaBoostSAMMEClassifier().withRuns(50);
         ab.learn(train, "spam");
         CResult crAB = ab.predict(test);
 
-        code("        AdaBoostSAMMEClassifier ab = new AdaBoostSAMMEClassifier().withRuns(200);\n" +
+        code("        AdaBoostSAMMEClassifier ab = new AdaBoostSAMMEClassifier().withRuns(50);\n" +
                 "        ab.learn(train, \"spam\");\n" +
                 "        CResult crAB = ab.predict(test);\n");
 
@@ -156,14 +164,14 @@ public class ROCCurvesPage implements TutorialPage {
         heading(4, "GBTClassifier");
 
         p("The fourth prediction model is another boosting algorithm called Gradient Boosting Tree. " +
-                "This model uses decision trees as weak learners, and builds 200 boosting iterations. " +
+                "This model uses decision trees as weak learners, and builds 50 boosting iterations. " +
                 "The following code shows how one can achieve that using rapaio.");
 
-        GBTClassifier gbt = new GBTClassifier().withRuns(200);
+        GBTClassifier gbt = new GBTClassifier().withRuns(50);
         gbt.learn(train, "spam");
         CResult crGBT = gbt.predict(test);
 
-        code("        GBTClassifier gbt = new GBTClassifier().withRuns(200);\n" +
+        code("        GBTClassifier gbt = new GBTClassifier().withRuns(50);\n" +
                 "        gbt.learn(train, \"spam\");\n" +
                 "        CResult crGBT = gbt.predict(test);\n");
 
@@ -171,20 +179,24 @@ public class ROCCurvesPage implements TutorialPage {
 
         heading(2, "ROC Curves");
 
-        p("When accuracy is used to compare the performance of some classifiers it is very often "
-                + "the case that the comparison is misleading. That happens because accuracy "
-                + "is a measure which depends on many factors which pose some assumptions "
-                + "which are not always true. ");
+        p("When accuracy is used to compare the performance of some classifiers it is very often " +
+                "the case that the comparison is misleading. In fact, it is very hard to find a single " +
+                "tools which can be used to compare different models in a proper way. " +
+                "This problem is so complicated that it has its own name called model selection");
 
-        p("I will not explain what a ROC graph is. There is enought literature on this topic. "
-                + "Among many useful documents, I found one which gives crystal clear details "
-                + "and explanations on ROC curves: <a href=\"http://binf.gmu.edu/mmasso/ROC101.pdf\">"
-                + "Fawcett, T. (2004). ROC graphs: Notes and practical considerations for researchers. "
-                + "Machine Learning.</a>");
+        p("Among many other tools used for model selection there is a very interesting tool called ROC curves. " +
+                "I will not explain what a ROC curve, ROC graph or area under ROC curve are. " +
+                "There is enough literature on this topic. " +
+                "Among many useful documents, I found one which gives crystal clear details " +
+                "and explanations on ROC curves: <a href=\"http://binf.gmu.edu/mmasso/ROC101.pdf\">" +
+                "Fawcett, T. (2004). ROC graphs: Notes and practical considerations for researchers. " +
+                "Machine Learning.</a>");
 
-        p("In order to draw ROC graphs for the previous models with rapaio you can use the "
-                + "ROCCurve plot component which builds and draws a curve according with "
-                + "a given computed ROC object. The following code does this.");
+        p("In order to draw ROC graphs for the previous models with rapaio you can use the " +
+                "ROCCurve plot component which builds and draws a curve according with " +
+                "a given computed ROC object. So, the first step is to build a ROC object " +
+                "which contains all the necessary computation and information. " +
+                "The following code does this.");
 
         ROC rocOR = new ROC(crOneRule.firstDensity().var("1"), test.var("spam"), "1");
         ROC rocRF = new ROC(crRF.firstDensity().var("1"), test.var("spam"), "1");
@@ -218,15 +230,21 @@ public class ROCCurvesPage implements TutorialPage {
                 "                600, 400\n" +
                 "        );\n");
 
-        p("As you can see, ROC objects are used to compute values for ROC curves, and "
-                + "ROCCurve plot is used to add these on a plot graphic. ");
+        p("As we can see, ROC objects are used to compute values for ROC curves, and "
+                + "ROCCurve plot components are used to add these on a plot graphic. ");
 
-        p("Note however, that Random Forst model used exhibits a ROC graph which is "
+        p("We can see that Random Forst model used exhibits a ROC graph which is "
                 + "better than adaboost model most of the times in the conservative "
-                + "area of the graph. AdaBoost tends to be a little better in the "
-                + "liberal area, but in the extreme liberal area, again the random "
-                + "forest model exhibits better performance. ");
-        p("OneRule behaves sub-optimal, as it was expected in this specific case. ");
+                + "area of the graph. Boosting algorithms tend to be a little better in the "
+                + "liberal area. ");
+
+        p("OneRule behaves sub-optimal as it was expected, being a very simple algorithm. ");
+
+        p("Note however that the tutorial page topic is ROC Curve and the model used " +
+                "in this tutorial are built only for exemplification purposes. " +
+                "Those models are not at all optimal for the given problem, " +
+                "and a comparison on these algorithms based only on this " +
+                "tutorial is obviously wrong. ");
 
         p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");
     }
