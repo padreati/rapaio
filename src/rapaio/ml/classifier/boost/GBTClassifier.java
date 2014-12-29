@@ -45,7 +45,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
 
     private int runs = 0;
     private double shrinkage = 1.0;
-    private boolean useBootstrap = false;
+    private boolean useBootstrap = true;
     private double bootstrapSize = 1.0;
     private BTRegressor classifier = RTree.buildCART().withMaxDepth(4);
 

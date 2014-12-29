@@ -29,6 +29,7 @@ import rapaio.graphics.plot.Legend;
 import rapaio.graphics.plot.ROCCurve;
 import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.boost.AdaBoostSAMMEClassifier;
+import rapaio.ml.classifier.boost.GBTClassifier;
 import rapaio.ml.classifier.rule.OneRule;
 import rapaio.ml.classifier.tree.CForest;
 import rapaio.ml.eval.ConfusionMatrix;
@@ -152,6 +153,22 @@ public class ROCCurvesPage implements TutorialPage {
 
         new ConfusionMatrix(test.var("spam"), crAB.firstClasses()).summary();
 
+        heading(4, "GBTClassifier");
+
+        p("The fourth prediction model is another boosting algorithm called Gradient Boosting Tree. " +
+                "This model uses decision trees as weak learners, and builds 200 boosting iterations. " +
+                "The following code shows how one can achieve that using rapaio.");
+
+        GBTClassifier gbt = new GBTClassifier().withRuns(200);
+        gbt.learn(train, "spam");
+        CResult crGBT = gbt.predict(test);
+
+        code("        GBTClassifier gbt = new GBTClassifier().withRuns(200);\n" +
+                "        gbt.learn(train, \"spam\");\n" +
+                "        CResult crGBT = gbt.predict(test);\n");
+
+        new ConfusionMatrix(test.var("spam"), crGBT.firstClasses()).summary();
+
         heading(2, "ROC Curves");
 
         p("When accuracy is used to compare the performance of some classifiers it is very often "
@@ -172,26 +189,32 @@ public class ROCCurvesPage implements TutorialPage {
         ROC rocOR = new ROC(crOneRule.firstDensity().var("1"), test.var("spam"), "1");
         ROC rocRF = new ROC(crRF.firstDensity().var("1"), test.var("spam"), "1");
         ROC rocAB = new ROC(crAB.firstDensity().var("1"), test.var("spam"), "1");
+        ROC rocGBT = new ROC(crGBT.firstDensity().var("1"), test.var("spam"), "1");
+
         draw(new Plot()
                         .add(new ROCCurve(rocOR).color(1))
                         .add(new ROCCurve(rocRF).color(2))
                         .add(new ROCCurve(rocAB).color(3))
+                        .add(new ROCCurve(rocGBT).color(4))
                         .add(new Legend(0.6, 0.33,
-                                new String[]{"onerule", "rf", "adaboost.m1"},
-                                new int[]{1, 2, 3})),
+                                new String[]{"onerule", "rf", "adaboost.m1", "gbt"},
+                                new int[]{1, 2, 3, 4})),
                 600, 400
         );
 
-        code("        ROC rocOR = new ROC(crOneRule.firstClasses(), test.var(\"spam\"), \"1\");\n" +
-                "        ROC rocRF = new ROC(crRF.firstDensity().var(1), test.var(\"spam\"), \"1\");\n" +
-                "        ROC rocAB = new ROC(crAB.firstDensity().var(1), test.var(\"spam\"), \"1\");\n" +
+        code("        ROC rocOR = new ROC(crOneRule.firstDensity().var(\"1\"), test.var(\"spam\"), \"1\");\n" +
+                "        ROC rocRF = new ROC(crRF.firstDensity().var(\"1\"), test.var(\"spam\"), \"1\");\n" +
+                "        ROC rocAB = new ROC(crAB.firstDensity().var(\"1\"), test.var(\"spam\"), \"1\");\n" +
+                "        ROC rocGBT = new ROC(crGBT.firstDensity().var(\"1\"), test.var(\"spam\"), \"1\");\n" +
+                "        \n" +
                 "        draw(new Plot()\n" +
                 "                        .add(new ROCCurve(rocOR).color(1))\n" +
                 "                        .add(new ROCCurve(rocRF).color(2))\n" +
                 "                        .add(new ROCCurve(rocAB).color(3))\n" +
+                "                        .add(new ROCCurve(rocGBT).color(4))\n" +
                 "                        .add(new Legend(0.6, 0.33,\n" +
-                "                                new String[]{\"onerule\", \"rf\", \"adaboost.m1\"},\n" +
-                "                                new int[]{1, 2, 3})),\n" +
+                "                                new String[]{\"onerule\", \"rf\", \"adaboost.m1\", \"gbt\"},\n" +
+                "                                new int[]{1, 2, 3, 4})),\n" +
                 "                600, 400\n" +
                 "        );\n");
 

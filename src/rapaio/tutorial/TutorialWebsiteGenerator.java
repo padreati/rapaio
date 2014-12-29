@@ -21,7 +21,8 @@
 package rapaio.tutorial;
 
 import rapaio.printer.HTMLPrinter;
-import rapaio.tutorial.pages.*;
+import rapaio.tutorial.pages.ROCCurvesPage;
+import rapaio.tutorial.pages.TutorialPage;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,12 +67,12 @@ public class TutorialWebsiteGenerator {
         TreeMap<String, List<TutorialPage>> pages = new TreeMap<>();
 
         pages.put("Graphics", Arrays.asList(
-                new HistogramDensityTutorial()
+//                new HistogramDensityTutorial()
                 ));
 
         pages.put("StatisticalProcedures", Arrays.asList(
-                new DiscreteSamplingPage(),
-                new CorrelationsPage(),
+//                new DiscreteSamplingPage(),
+//                new CorrelationsPage(),
                 new ROCCurvesPage()
         ));
 
@@ -82,7 +83,7 @@ public class TutorialWebsiteGenerator {
 
         pages.put("SupervisedClassification", Arrays.asList(
 //                new ClassificationWithRF()
-                new ClassificationWithNaiveBayesPage()
+//                new ClassificationWithNaiveBayesPage()
         ));
 
         pages.put("Regression", Arrays.asList(
