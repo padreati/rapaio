@@ -82,7 +82,7 @@ public class TutorialWebsiteGenerator {
         ));
 
         pages.put("SupervisedClassification", Arrays.asList(
-//                new ClassificationWithRF()
+                new ClassificationWithRF(),
                 new ClassificationWithNaiveBayesPage()
         ));
 
