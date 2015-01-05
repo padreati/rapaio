@@ -23,6 +23,7 @@ package rapaio.core.correlation;
 import rapaio.core.Printable;
 import rapaio.data.*;
 import rapaio.data.filter.var.VFRefSort;
+import rapaio.printer.Printer;
 
 import java.util.Arrays;
 
@@ -120,7 +121,7 @@ public class RhoCorr implements Printable {
     private void summaryTwo(StringBuilder sb) {
         sb.append(String.format("spearman[%s, %s] - Spearman's rank correlation coefficient\n",
                 names[0], names[1]));
-        sb.append(String.format("%.6f\n", rho[0][1]));
+        sb.append(Printer.formatDecShort.format(rho[0][1])).append("\n");
     }
 
     private void summaryMore(StringBuilder sb) {
@@ -133,7 +134,7 @@ public class RhoCorr implements Printable {
             table[0][i] = i + ".";
             table[i][0] = i + "." + names[i - 1];
             for (int j = 1; j < vars.length + 1; j++) {
-                table[i][j] = String.format("%.6f", rho[i - 1][j - 1]);
+                table[i][j] = Printer.formatDecShort.format(rho[i - 1][j - 1]);
                 if (i == j) {
                     table[i][j] = "x";
                 }

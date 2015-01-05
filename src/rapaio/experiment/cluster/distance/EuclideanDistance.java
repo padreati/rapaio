@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml_experiment.cluster.distance;
+package rapaio.experiment.cluster.distance;
 
 import rapaio.data.Frame;
 import rapaio.data.VarRange;

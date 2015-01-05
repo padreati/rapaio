@@ -20,7 +20,9 @@
 
 package rapaio.tutorial;
 
+import rapaio.WS;
 import rapaio.printer.HTMLPrinter;
+import rapaio.tutorial.pages.CorrelationsPage;
 import rapaio.tutorial.pages.ROCCurvesPage;
 import rapaio.tutorial.pages.TutorialPage;
 
@@ -68,11 +70,11 @@ public class TutorialWebsiteGenerator {
 
         pages.put("Graphics", Arrays.asList(
 //                new HistogramDensityTutorial()
-                ));
+        ));
 
         pages.put("StatisticalProcedures", Arrays.asList(
 //                new DiscreteSamplingPage(),
-//                new CorrelationsPage(),
+                new CorrelationsPage(),
                 new ROCCurvesPage()
         ));
 
@@ -106,10 +108,10 @@ public class TutorialWebsiteGenerator {
             }
             for (TutorialPage page : pages.get(categ)) {
                 File pageFile = new File(categoryRoot, page.getPageName() + ".html");
-                setPrinter(new HTMLPrinter(pageFile.getAbsolutePath(), page.getPageTitle(), "<a href=\"../../index.html\">Back</a>"));
-                preparePrinter();
+                WS.setPrinter(new HTMLPrinter(pageFile.getAbsolutePath(), page.getPageTitle(), "<a href=\"../../index.html\">Back</a>"));
+                WS.preparePrinter();
                 page.render();
-                closePrinter();
+                WS.closePrinter();
             }
         }
     }

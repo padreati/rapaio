@@ -25,6 +25,7 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.printer.Printer;
 
 import java.util.Arrays;
 
@@ -122,7 +123,7 @@ public class PearsonRCorrelation implements Printable {
     private void summaryTwo(StringBuilder sb) {
         sb.append(String.format("> pearson[%s, %s] - Pearson product-moment correlation coefficient\n",
                 names[0], names[1]));
-        sb.append(String.format("%.6f\n", pearson[0][1]));
+        sb.append(Printer.formatDecShort.format(pearson[0][1])).append("\n");
     }
 
     private void summaryMore(StringBuilder sb) {
@@ -135,7 +136,7 @@ public class PearsonRCorrelation implements Printable {
             table[0][i] = i + ".";
             table[i][0] = i + "." + names[i - 1];
             for (int j = 1; j < vars.length + 1; j++) {
-                table[i][j] = String.format("%.2f", pearson[i - 1][j - 1]);
+                table[i][j] = Printer.formatDecShort.format(pearson[i - 1][j - 1]);
                 if (i == j) {
                     table[i][j] = "x";
                 }

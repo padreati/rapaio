@@ -40,7 +40,6 @@ import static rapaio.ws.Summary.summary;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class CorrelationsPage implements TutorialPage {
 
     @Override
@@ -57,75 +56,72 @@ public class CorrelationsPage implements TutorialPage {
     public void render() throws IOException, URISyntaxException {
 
         heading(2, "Introduction");
-        p("This tutorial presents you the correlations tools offered by Rapaio library.");
+        p("This tutorial presents you the tools built in rapaio library which enables you to compute correlation coefficients.");
 
-        p("We will use the classical iris data set. The numerical columns of this dataset are:");
+        p("We will use the classical iris data set. The numerical columns of this data set are:");
 
-        code("Frame df = Datasets.loadIrisDataset();\n"
-                + "df = ColFilters.retainNumeric(df);\n"
-                + "names(df);");
         final Frame df = new FFRetainTypes(VarType.NUMERIC).fitApply(Datasets.loadIrisDataset());
         names(df);
 
+        code("" +
+                "        final Frame df = new FFRetainTypes(VarType.NUMERIC).fitApply(Datasets.loadIrisDataset());\n" +
+                "        names(df);\n");
+
         heading(2, "Pearson product-moment correlation");
 
-        p("Pearson product-moment correlation measures the linear "
-                + "correlation between two random variables. Among other "
-                + "getType of correlation measures, the Pearson product-moment "
-                + "detects only linear correlations. ");
+        p("Pearson product-moment correlation measures the linear " +
+                "correlation between two random variables. Among other types " +
+                "of correlation measures, the Pearson product-moment measures " +
+                "only linear correlations. ");
 
         heading(4, "Definition");
 
-        p("Pearson product-moment coefficient measures the linear correlation "
-                + "between two random variables \\(X\\) and \\(Y\\), "
-                + "giving a value between +1 and −1 inclusive, "
-                + "where 1 is total positive correlation, "
-                + "0 is no correlation, and −1 is negative correlation.");
+        p("Pearson product-moment coefficient measures the linear correlation " +
+                "between two random variables \\(X\\) and \\(Y\\), " +
+                "giving a value in \\([+1,−1]\\), " +
+                "where \\(1\\) is perfect positive linear correlation, " +
+                "\\(0\\) is no correlation, " +
+                "and \\(−1\\) is perfect negative linear correlation.");
 
-        p("Pearson's correlation coefficient when applied to a population "
-                + "is commonly represented by the Greek letter \\(\rho\\) (rho) "
-                + "and may be referred to as the population correlation "
-                + "coefficient or the population Pearson correlation "
-                + "coefficient. "
-                + "The formula for \\(\\rho\\) is:");
+        p("Pearson's correlation coefficient when applied to a population " +
+                "is commonly represented by the Greek letter \\(\rho\\) (rho) " +
+                "and may be referred to as the population correlation " +
+                "coefficient or the population Pearson correlation " +
+                "coefficient. " +
+                "The formula for \\(\\rho\\) is:");
 
         eqn("\\rho_{X,Y} = \\frac{cov(X,Y)}{\\sigma_X\\sigma_Y} = \\frac{E[(X-\\mu_X)(Y-\\mu_Y)]}{\\sigma_X\\sigma_Y}");
 
-        p("Pearson's correlation coefficient when applied to a "
-                + "sample is commonly represented by the "
-                + "letter \\(r\\) and may be referred to as "
-                + "the sample correlation coefficient or "
-                + "the sample Pearson correlation coefficient. "
-                + "We can obtain a formula for \\(r\\) by substituting estimates "
-                + "of the covariances and variances based on a sample "
-                + "into the formula above. That formula for \\(r\\) is:");
+        p("Pearson's correlation coefficient when applied to a sample is commonly represented by the " +
+                "letter \\(r\\) and may be referred to as the sample correlation coefficient or " +
+                "the sample Pearson correlation coefficient. " +
+                "We can obtain a formula for \\(r\\) by substituting estimates of the covariances and variances " +
+                "based on a sample into the formula above. That formula for \\(r\\) is:");
 
         eqn("r = \\frac{\\sum ^n _{i=1}(X_i-\\bar{X})(Y_i-\\bar{Y})}{\\sqrt{\\sum ^n _{i=1}(X_i - \\bar{X})^2} "
                 + "\\sqrt{\\sum ^n _{i=1}(Y_i - \\bar{Y})^2}}");
 
-        p("The interpretation of a correlation coefficient depends "
-                + "on the context and purposes. A correlation of 0.8 "
-                + "may be very low if one is verifying a physical law "
-                + "using high-quality instruments, but may be regarded "
-                + "as very high in the social sciences where there may be "
-                + "a greater contribution from complicating factors.");
+        p("The interpretation of a correlation coefficient depends on the context and purposes. " +
+                "A correlation of \\(0.8\\) may be very low if one is verifying a physical law " +
+                "using high-quality instruments, but may be regarded as very high in the " +
+                "social sciences where there may be a greater contribution from complicating factors.");
 
-        heading(2, "Usa Rapaio for Pearson correlation");
+        heading(2, "How to compute Pearson correlation coefficient");
 
-        p("Rapaio library allows one to compute Pearson \\(r\\) for more then one var at a time. "
-                + "Thus the result will be a rapaio.data.matrix with computed \\(r\\) values between vectors,"
-                + "using vectors index position as indexes in resulted rapaio.data.matrix. ");
+        p("Rapaio library allows one to compute Pearson \\(r\\) for more then one variable at a time. " +
+                "Thus the result will be a matrix with computed \\(r\\) values between vectors, " +
+                "using vectors index position as indexes in resulted matrix. ");
 
-        code("        PearsonRCorrelation corr = new PearsonRCorrelation(df);\n"
-                + "        summary(corr);\n");
         final PearsonRCorrelation r = new PearsonRCorrelation(df);
         summary(r);
 
-        p("We can spot with eas that many of the attributes are "
-                + "linearly correlated. As a sample we find from the "
-                + "correlation summary that petal-length and petal-width "
-                + "have a very strong linear correlation. Let's check "
-                + "this intuition with a plot:");
+        code("        final PearsonRCorrelation r = new PearsonRCorrelation(df);\n" +
+                "        summary(r);\n");
+
+        p("We can note by visual inspection that many of the attributes are linearly correlated. " +
+                "For example we can find from the correlation summary that petal-length and " +
+                "petal-width variables have a very strong linear correlation. Let's check " +
+                "this intuition with a plot:");
 
         draw(new Plot()
                         .add(new Points(
@@ -135,8 +131,8 @@ public class CorrelationsPage implements TutorialPage {
                 400, 300
         );
 
-        p("Another \\(r\\) coefficient which have a value close to \\(1\\) is between "
-                + "sepal-length and petal-length. Let's check that with a plot, also: ");
+        p("Another \\(r\\) coefficient which has a value close to \\(1\\) is the sample correlation between " +
+                "sepal-length and petal-length. Let's check that with a plot, also: ");
 
         draw(new Plot()
                         .add(new Points(
@@ -147,9 +143,9 @@ public class CorrelationsPage implements TutorialPage {
                 400, 300
         );
 
-        p("Finally, we plot again, but this time using a coefficient which is closer to 0, "
-                + "which could mean that the variables are not linearly correlated. "
-                + "Such a value for correlation we have between sepal-length and sepal-width. ");
+        p("Finally, we plot again, but this time using a coefficient which is closer to 0, " +
+                "which could mean that the variables are not linearly correlated. " +
+                "We have such kind of value between sepal-length and sepal-width variables. ");
 
         draw(new Plot()
                         .add(new Points(
@@ -162,30 +158,31 @@ public class CorrelationsPage implements TutorialPage {
 
         heading(2, "Spearman's rank correlation coefficient");
 
-        p("often denoted by the Greek letter \\(\\rho\\) (rho) "
-                + "or as \\(r_s\\), is a nonparametric measure of "
-                + "statistical dependence between two variables. "
-                + "It assesses how well the relationship between two variables "
-                + "can be described using a monotonic function. If there are "
-                + "no repeated data values, a perfect Spearman correlation of "
-                + "\\(+1\\) or \\(−1\\) occurs when each of the variables is a "
-                + "perfect monotone function of the other.");
+        p("Often denoted by the Greek letter \\(\\rho\\) (rho) or as \\(r_s\\), this correlation " +
+                "coefficient is a non-parametric measure of statistical dependence between " +
+                "two variables. It assesses how well the relationship between two variables " +
+                "can be described using a monotonic function. If there are no repeated data values, " +
+                "a perfect Spearman correlation of \\(+1\\) or \\({−1}\\) occurs when each of the " +
+                "variables is a perfect monotone function of the other.");
 
         heading(4, "Definition");
-        p("The Spearman correlation coefficient is defined as the Pearson correlation "
-                + "coefficient between the ranked variables. For a sample of size \\(n\\), "
-                + "the \\(n\\) raw densities \\(X_i\\), \\(Y_i\\) are converted to ranks "
-                + "\\(x_i\\), \\(y_i\\), and \\(\\rho\\) is computed from these:");
+
+        p("The Spearman correlation coefficient is defined as the Pearson correlation coefficient " +
+                "between the ranked variables. For a sample of size \\(n\\), the \\(n\\) sample " +
+                "values \\(X_i\\), \\(Y_i\\) are converted to ranks " +
+                "\\(x_i\\), \\(y_i\\), and \\(\\rho\\) is computed on the ranked values:");
+
         eqn("\\rho = \\frac{\\sum_i(x_i-\\bar{x})(y_i-\\bar{y})}{\\sqrt{\\sum_i (x_i-\\bar{x})^2 \\sum_i(y_i-\\bar{y})^2}}");
-        p("Identical values (rank ties or value duplicates) are assigned a "
-                + "rank equal to the average of their positions in the ascending "
-                + "order of the values.");
+
+        p("Identical values (rank ties or value duplicates) are assigned a " +
+                "rank equal to the average of their positions in the ascending " +
+                "order of the values.");
 
         heading(2, "Use Rapaio to compute Spearman's rank correlation");
 
-        p("Rapaio library allows one to compute Spearman \\(\\rho\\) for more then one var at a time. "
-                + "Thus the result will be a rapaio.data.matrix with computed \\(\\rho\\) values between vectors,"
-                + "using vectors index position as indexes in resulted rapaio.data.matrix. ");
+        p("Rapaio library allows one to compute Spearman \\(\\rho\\) for more then \\(1\\) variable at a time. " +
+                "Thus the result will be a matrix with computed \\(\\rho\\) values between given variables, " +
+                "using variables' index positions as indexes in the resulted matrix. ");
 
         RhoCorr rho = new RhoCorr(df);
         summary(rho);

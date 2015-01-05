@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml_experiment.clustering;
+package rapaio.experiment.clustering;
 
 import rapaio.core.sample.Sampling;
 import rapaio.core.stat.Mean;

@@ -29,7 +29,7 @@ import java.text.DecimalFormat;
  */
 public interface Printer {
 
-    static DecimalFormat formatDecShort = new DecimalFormat("0.###");
+    static DecimalFormat formatDecShort = new DecimalFormat("0.000");
 
     static DecimalFormat formatDecLong = new DecimalFormat("0.###############################");
 

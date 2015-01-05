@@ -85,14 +85,14 @@ public class ROCCurvesPage implements TutorialPage {
                 "        final Frame train = samples.get(0);\n" +
                 "        final Frame test = samples.get(1);\n");
 
-        p("If you are not aware how the data for spam data looks like that what you will have to know is "
-                + "that it consists of many numerical attributes used to predict a nominal "
-                + "attribute called \\(spam\\)");
+        p("If you are not aware how the data for spam data looks like that what you will have to know is " +
+                "that it consists of many numerical attributes used to predict a nominal " +
+                "attribute called \\(spam\\)");
 
-        p("Thus we know there are 2788 instances classified as \\(ham\\), codified by value 0 (not spam), "
-                + "and 1813 instances codified by 1, which denotes spam emails. There are a lot of "
-                + "numeric features in this data set. We use "
-                + "only the first 4 numerical features for prediction.");
+        p("Thus we know there are 2788 instances classified as \\(ham\\), codified by value 0 (not spam), " +
+                "and 1813 instances codified by 1, which denotes spam emails. There are a lot of " +
+                "numeric features in this data set. We use " +
+                "only the first 4 numerical features for prediction.");
 
         summary(spam);
 
@@ -132,15 +132,15 @@ public class ROCCurvesPage implements TutorialPage {
 
         heading(4, "Random Forest");
 
-        p("The second prediction model is a random forest with 50 random trees. ");
+        p("The second prediction model is a random forest with 20 random trees. ");
 
-        CForest rf = CForest.buildRandomForest(50, 10, 0);
+        CForest rf = CForest.buildRandomForest(20, 10, 0);
         rf.learn(train, "spam");
         CResult crRF = rf.predict(test);
 
-        code("        CForest rf = CForest.buildRandomForest(50, 1.0);\n" +
+        code("        CForest rf = CForest.buildRandomForest(20, 10, 0);\n" +
                 "        rf.learn(train, \"spam\");\n" +
-                "        rf.predict(test);\n");
+                "        CResult crRF = rf.predict(test);\n");
 
         new ConfusionMatrix(test.var("spam"), crRF.firstClasses()).summary();
 
@@ -151,11 +151,11 @@ public class ROCCurvesPage implements TutorialPage {
                 "and builds 50 boosting iterations. " +
                 "The following code shows how one can achieve that using rapaio.");
 
-        AdaBoostSAMMEClassifier ab = new AdaBoostSAMMEClassifier().withRuns(50);
+        AdaBoostSAMMEClassifier ab = new AdaBoostSAMMEClassifier().withRuns(20);
         ab.learn(train, "spam");
         CResult crAB = ab.predict(test);
 
-        code("        AdaBoostSAMMEClassifier ab = new AdaBoostSAMMEClassifier().withRuns(50);\n" +
+        code("        AdaBoostSAMMEClassifier ab = new AdaBoostSAMMEClassifier().withRuns(20);\n" +
                 "        ab.learn(train, \"spam\");\n" +
                 "        CResult crAB = ab.predict(test);\n");
 
@@ -164,14 +164,14 @@ public class ROCCurvesPage implements TutorialPage {
         heading(4, "GBTClassifier");
 
         p("The fourth prediction model is another boosting algorithm called Gradient Boosting Tree. " +
-                "This model uses decision trees as weak learners, and builds 50 boosting iterations. " +
+                "This model uses decision trees as weak learners, and builds 20 boosting iterations. " +
                 "The following code shows how one can achieve that using rapaio.");
 
-        GBTClassifier gbt = new GBTClassifier().withRuns(50);
+        GBTClassifier gbt = new GBTClassifier().withRuns(20);
         gbt.learn(train, "spam");
         CResult crGBT = gbt.predict(test);
 
-        code("        GBTClassifier gbt = new GBTClassifier().withRuns(50);\n" +
+        code("        GBTClassifier gbt = new GBTClassifier().withRuns(20);\n" +
                 "        gbt.learn(train, \"spam\");\n" +
                 "        CResult crGBT = gbt.predict(test);\n");
 
@@ -230,13 +230,13 @@ public class ROCCurvesPage implements TutorialPage {
                 "                600, 400\n" +
                 "        );\n");
 
-        p("As we can see, ROC objects are used to compute values for ROC curves, and "
-                + "ROCCurve plot components are used to add these on a plot graphic. ");
+        p("As we can see, ROC objects are used to compute values for ROC curves, and " +
+                "ROCCurve plot components are used to add these on a plot graphic. ");
 
-        p("We can see that Random Forst model used exhibits a ROC graph which is "
-                + "better than adaboost model most of the times in the conservative "
-                + "area of the graph. Boosting algorithms tend to be a little better in the "
-                + "liberal area. ");
+        p("We can see that Random Forst model used exhibits a ROC graph which is " +
+                "better than adaboost model most of the times in the conservative " +
+                "area of the graph. Boosting algorithms tend to be a little better in the " +
+                "liberal area. ");
 
         p("OneRule behaves sub-optimal as it was expected, being a very simple algorithm. ");
 
