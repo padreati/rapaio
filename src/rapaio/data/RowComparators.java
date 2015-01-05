@@ -28,6 +28,7 @@ import java.util.Comparator;
  */
 public final class RowComparators implements Serializable {
 
+    @SafeVarargs
     public static Comparator<Integer> aggregateComparator(final Comparator<Integer>... comparators) {
         return new Comparator<Integer>() {
             @Override
