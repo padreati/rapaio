@@ -63,13 +63,14 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "The purpose of this tutorial is to present discrete random sampling methods.");
 
         p("<b>Definition:</b>");
-        p("<i>A statistical probability density whose values can take only values from " + "a countable discrete set is called a discrete density. </i>");
+        p("<i>A statistical probability distribution whose values can take only values from " +
+                "a countable discrete set is called a discrete distribution. </i>");
 
-        p("A discrete probability density function is completely described by " +
+        p("A discrete probability distribution function is completely described by " +
                 "the set of possible values the random variable can take and " +
                 "by the probability values assigned to each input value.");
 
-        p("An example of discrete density is the process of throwing a standard dice. " +
+        p("An example of a discrete distribution is the process of throwing a standard dice. " +
                 "We have a finite set of outcomes of the process (6 possible values) and " +
                 "a probability function value associated with each output (for a fair dice we " +
                 "can associate probability \\( p(x_i) = \\frac{1}{6} \\)).");
@@ -86,10 +87,10 @@ public class DiscreteSamplingPage implements TutorialPage {
         heading(2, "Uniform random sample with replacement");
 
         p("An uniform random sample is a sample from a discrete population with " +
-                "an uniform discrete density. A discrete uniform density assigns " +
+                "an uniform discrete distribution. A discrete uniform distribution assigns " +
                 "equal probability mass function values to each outcome. " +
                 "The previous example of throwing a fair dice is an example of " +
-                "discrete uniform density, since it assigns equal value " +
+                "discrete uniform distribution, since it assigns equal value " +
                 "\\(\\frac{1}{6}\\) to each possible outcome \\( x_i \\). ");
 
         p("A sample with replacement is a sample where values of the sample can appear multiple " +

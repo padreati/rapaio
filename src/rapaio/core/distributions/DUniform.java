@@ -85,7 +85,11 @@ public class DUniform implements Distribution {
         if (a == b) {
             return a;
         }
-        return (int) Math.floor(a + p * n - 1);
+        double v = a + p * n;
+        int vi = (int) v;
+        if (vi == v)
+            return vi - 1;
+        return vi;
     }
 
     @Override

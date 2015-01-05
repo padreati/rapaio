@@ -78,12 +78,12 @@ public class TutorialWebsiteGenerator {
 
         pages.put("SampleAnalysis", Arrays.asList(
 //                new PearsonHeight(),
-//                new LawOfLargeNumbers()
+                new LawOfLargeNumbers()
         ));
 
         pages.put("SupervisedClassification", Arrays.asList(
 //                new ClassificationWithRF()
-//                new ClassificationWithNaiveBayesPage()
+                new ClassificationWithNaiveBayesPage()
         ));
 
         pages.put("Regression", Arrays.asList(

@@ -64,7 +64,7 @@ public class DUniformTest {
         assertEquals("DUniform(a=0,b=5)", u.getName());
 
         assertEquals(0, u.quantile(1 / 6.0), 1e-12);
-        assertEquals(0, u.quantile(1.5 / 6.0), 1e-12);
+        assertEquals(1, u.quantile(1.2 / 6.0), 1e-12);
         assertEquals(1, u.quantile(2 / 6.0), 1e-12);
         assertEquals(2, u.quantile(3 / 6.0), 1e-12);
         assertEquals(3, u.quantile(4 / 6.0), 1e-12);

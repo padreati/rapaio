@@ -23,12 +23,12 @@ package rapaio.tutorial.pages;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.WS.*;
+import static rapaio.WS.heading;
+import static rapaio.WS.p;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public class ClassificationWithNaiveBayesPage implements TutorialPage {
 
     @Override
