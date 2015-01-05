@@ -22,10 +22,7 @@ package rapaio.tutorial;
 
 import rapaio.WS;
 import rapaio.printer.HTMLPrinter;
-import rapaio.tutorial.pages.CorrelationsPage;
-import rapaio.tutorial.pages.DiscreteSamplingPage;
-import rapaio.tutorial.pages.ROCCurvesPage;
-import rapaio.tutorial.pages.TutorialPage;
+import rapaio.tutorial.pages.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,7 +67,7 @@ public class TutorialWebsiteGenerator {
         TreeMap<String, List<TutorialPage>> pages = new TreeMap<>();
 
         pages.put("Graphics", Arrays.asList(
-//                new HistogramDensityTutorial()
+                new HistogramDensityTutorial()
         ));
 
         pages.put("StatisticalProcedures", Arrays.asList(

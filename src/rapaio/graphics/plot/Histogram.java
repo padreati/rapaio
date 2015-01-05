@@ -36,7 +36,7 @@ public class Histogram extends PlotComponent {
 
     private final Var v;
     int bins = 30;
-    boolean prob = true;
+    boolean prob = false;
     double[] freqTable;
     double minValue = Double.NaN;
     double maxValue = Double.NaN;
