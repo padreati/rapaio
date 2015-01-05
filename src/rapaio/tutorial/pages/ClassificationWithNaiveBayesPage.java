@@ -20,11 +20,16 @@
 
 package rapaio.tutorial.pages;
 
+import rapaio.data.Frame;
+import rapaio.datasets.Datasets;
+import rapaio.ml.classifier.CResult;
+import rapaio.ml.classifier.bayes.NaiveBayesClassifier;
+import rapaio.ml.eval.ConfusionMatrix;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.WS.heading;
-import static rapaio.WS.p;
+import static rapaio.WS.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -69,7 +74,7 @@ public class ClassificationWithNaiveBayesPage implements TutorialPage {
 
         p("$$ p(t)p(x_1,x_2,..,x_n|t) = p(t,x_1,x_2,..,x_n) $$");
 
-        p("This can easily verified using the definition of conditional probability. Thus, on can usually say that " +
+        p("This can easily verified using the definition of conditional probability. Thus, one can say that " +
                 "for a Bayesian model one is aimed to find the joint probability of inputs and outputs.");
 
         p("Using chain rule we can go further and split the joint probability into a product of conditional probabilities. ");
@@ -89,9 +94,73 @@ public class ClassificationWithNaiveBayesPage implements TutorialPage {
 
         p("$$ p(x_i|t,x_1,x_2,..,x_{i-1}) = p(x_i|t) $$");
 
-        p("This looks much simpler. The start model for a NaiveBayes looks like:");
+        p("This is indeed much simpler. The start model for a NaiveBayes looks like:");
 
         p("$$ p(t|x_1,x_2,..,x_n) \\propto p(t)\\prod_{i=1}^{n}p(x_i|t) $$");
+
+        p("The model described uses random variables. In supervised classification learning problem, what we really have is " +
+                "a training set of observations of those variables. Without further development of the topic, " +
+                "we describe a way to estimate \\(p(t)\\) and \\(p(x_i|t)\\) probability functions. ");
+
+        p("The marginal density \\(p(t)\\) is estimated by the frequency of the target classes.");
+
+        p("The conditional estimators for the independent features could be the maximal " +
+                "conditional frequencies for nominal case or for numerical variable a KDE " +
+                "estimator or a Gaussian estimator. ");
+
+        heading(2, "NaiveBayes in practice");
+
+        p("We use the same built-in iris data set. ");
+
+        Frame df = Datasets.loadIrisDataset();
+
+        code("        Frame df = Datasets.loadIrisDataset();\n");
+
+        p("Then we build a Naive Bayes classifier from the data set and predict the " +
+                "classifier on the same training data.");
+
+        NaiveBayesClassifier nb = new NaiveBayesClassifier();
+        nb.learn(df, "class");
+        CResult cr = nb.predict(df, true, false);
+
+        code("        NaiveBayesClassifier nb = new NaiveBayesClassifier();\n" +
+                "        nb.learn(df, \"class\");\n" +
+                "        CResult cr = nb.predict(df, true, false);\n");
+
+        p("Too see how the classifier worked, we can print the confusion matrix. ");
+
+        code("        new ConfusionMatrix(df.var(\"class\"), cr.firstClasses()).summary();\n");
+
+        new ConfusionMatrix(df.var("class"), cr.firstClasses()).summary();
+
+        heading(3, "Some notes on the parameters");
+
+        p("NaiveBayes classifier does not have a lot of parameters to tune. However there is " +
+                "something important which can be used in order to make the NaiveBayes algorithm " +
+                "behave better, and this is to change the way how individual conditional " +
+                "probability estimators works. ");
+
+        p("One can change the discrete estimator used for nominal variables. Currently there is " +
+                "only a single implementation, the multinomial estimator, but at any time " +
+                "you can build your own discrete estimator and use it. ");
+
+        nb.withDvpEstimator(new NaiveBayesClassifier.DvpEstimatorMultinomial());
+
+        code("        nb.withDvpEstimator(new NaiveBayesClassifier.DvpEstimatorMultinomial());\n");
+
+        p("For numeric variables we can also change the continuous density estimator. This time " +
+                "we have two built-in options: empirical density approximated by a kernel " +
+                "density estimator and a Gaussian density with parameters (mean and variance) computed from " +
+                "the sample values. Below is a code which shows how those estimators can be used, " +
+                "with the same note that it is always possible to implement your own continuous " +
+                "density estimator. ");
+
+        nb.withCvpEstimator(new NaiveBayesClassifier.CvpEstimatorKDE());
+        nb.withCvpEstimator(new NaiveBayesClassifier.CvpEstimatorGaussianEmpiric());
+
+        code("        nb.withCvpEstimator(new NaiveBayesClassifier.CvpEstimatorKDE());\n" +
+                "        nb.withCvpEstimator(new NaiveBayesClassifier.CvpEstimatorGaussianEmpiric());\n");
+
 
     }
 }
