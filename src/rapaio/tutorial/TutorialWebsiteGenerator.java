@@ -23,6 +23,7 @@ package rapaio.tutorial;
 import rapaio.WS;
 import rapaio.printer.HTMLPrinter;
 import rapaio.tutorial.pages.CorrelationsPage;
+import rapaio.tutorial.pages.DiscreteSamplingPage;
 import rapaio.tutorial.pages.ROCCurvesPage;
 import rapaio.tutorial.pages.TutorialPage;
 
@@ -73,7 +74,7 @@ public class TutorialWebsiteGenerator {
         ));
 
         pages.put("StatisticalProcedures", Arrays.asList(
-//                new DiscreteSamplingPage(),
+                new DiscreteSamplingPage(),
                 new CorrelationsPage(),
                 new ROCCurvesPage()
         ));
