@@ -69,14 +69,6 @@ StatSampling
 * NNet: MultiLayer Perceptron Regressor
 * Function: OLSRegressor (one target, only numerical attributes, no summary)
 
-Experimental (Not Stable) Features
-========================
-
-An important refactor is in progress. As a consequence, all the algorithm implementations
-are considered by default in experimental state.
-
-
-
 **Matrices and vectors**
 
 * Numeric vector operations
@@ -100,7 +92,7 @@ further improvements in order to make the utilization easier.
 * BoxPlot
 
 
-** Other notes **
+**Other notes**
 
 Check JDistLib for distribution function implementations
 Added links to rcaller in order to test against R implementations.
