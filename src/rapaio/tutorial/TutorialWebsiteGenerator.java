@@ -66,6 +66,13 @@ public class TutorialWebsiteGenerator {
 
         TreeMap<String, List<TutorialPage>> pages = new TreeMap<>();
 
+        pages.put("ExploratoryAnalysis", Arrays.asList(
+//                new PearsonHeight(),
+//                new StudentTDistribution()
+                new IrisExplorePage(),
+                new LawOfLargeNumbersPage()
+        ));
+
         pages.put("Graphics", Arrays.asList(
                 new HistogramDensityTutorial()
         ));
@@ -76,25 +83,9 @@ public class TutorialWebsiteGenerator {
                 new ROCCurvesPage()
         ));
 
-        pages.put("SampleAnalysis", Arrays.asList(
-//                new PearsonHeight(),
-                new LawOfLargeNumbers()
-        ));
-
         pages.put("SupervisedClassification", Arrays.asList(
-                new ClassificationWithRF(),
+                new ClassificationWithRFPage(),
                 new ClassificationWithNaiveBayesPage()
-        ));
-
-        pages.put("Regression", Arrays.asList(
-//                new LinearModel1Page()//,
-//                new LinearRegression2Page(),
-//                new LinearRegression3Page()
-        ));
-
-        pages.put("WorkInProgress", Arrays.asList(
-//                new IrisExplore(),
-//                new StudentTDistribution()
         ));
 
         makeIndexPage(webRoot, pages);

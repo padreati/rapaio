@@ -44,7 +44,7 @@ import static rapaio.WS.*;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class ClassificationWithRF implements TutorialPage {
+public class ClassificationWithRFPage implements TutorialPage {
 
     @Override
     public String getPageName() {

@@ -37,11 +37,11 @@ import static rapaio.WS.*;
 /**
  * @author Aurelian Tutuianu
  */
-public class LawOfLargeNumbers implements TutorialPage {
+public class LawOfLargeNumbersPage implements TutorialPage {
 
     @Override
     public String getPageName() {
-        return "LawOfLargeNumbers";
+        return "LawOfLargeNumbersPage";
     }
 
     @Override
