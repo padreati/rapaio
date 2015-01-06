@@ -256,15 +256,13 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
         Classifier weak = c.newInstance();
         weak.withVarSelector(varSelector);
 
-        Pair<List<Frame>, List<Var>> samples = produceSamples(df, weights);
-        Frame train = samples.first.get(0);
-        Frame oob = samples.first.get(1);
+        Pair<List<Frame>, List<Var>> ss = produceSamples(df, weights);
 
-        weak.learn(train, samples.second.get(0), firstTargetName());
+        weak.learn(ss.first.get(0), ss.second.get(0), firstTargetName());
         if (oobCompute) {
-            CResult cp = weak.predict(oob);
-            totalOobInstances += oob.rowCount();
-            totalOobError += 1 - new ConfusionMatrix(oob.var(firstTargetName()), cp.firstClasses()).accuracy();
+            CResult cp = weak.predict(ss.first.get(1));
+            totalOobInstances += ss.first.get(1).rowCount();
+            totalOobError += new ConfusionMatrix(ss.first.get(1).var(firstTargetName()), cp.firstClasses()).errorCases();
         }
         predictors.add(weak);
     }

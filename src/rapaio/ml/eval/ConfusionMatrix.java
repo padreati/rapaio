@@ -37,6 +37,8 @@ public class ConfusionMatrix implements Printable {
     private final boolean percents;
     private double acc;
     private double completeCases = 0;
+    private double acceptedCases = 0;
+    private double errorCases = 0;
 
     public ConfusionMatrix(Var actual, Var predict) {
         this(actual, predict, false);
@@ -82,6 +84,9 @@ public class ConfusionMatrix implements Printable {
                 acc++;
             }
         }
+
+        acceptedCases = acc;
+        errorCases = completeCases - acceptedCases;
 
         if (completeCases == 0) {
             acc = 0;
@@ -280,6 +285,20 @@ public class ConfusionMatrix implements Printable {
 
     public double error() {
         return 1.0 - acc;
+    }
+
+    /**
+     * Number of cases which were correctly predicted
+     */
+    public int acceptedCases() {
+        return (int) Math.rint(acceptedCases);
+    }
+
+    /**
+     * Number of cases which were not predicted correctly
+     */
+    public int errorCases() {
+        return (int) Math.rint(errorCases);
     }
 
     public int completeCases() {

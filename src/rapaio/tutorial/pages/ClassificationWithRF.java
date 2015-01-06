@@ -183,7 +183,6 @@ public class ClassificationWithRF implements TutorialPage {
                 .add(new Points(index, errors).color(2))
                 .add(new Lines(index, oob))
                 .add(new Points(index, oob))
-                .yLim(0, 0.24)
                 .yLab("test (blue), oob (black)")
                 .xLab("number of trees")
                 .title("Accuracy errors (% misclassified)")
@@ -221,7 +220,6 @@ public class ClassificationWithRF implements TutorialPage {
                 "                .add(new Points(index, errors).color(2))\n" +
                 "                .add(new Lines(index, oob))\n" +
                 "                .add(new Points(index, oob))\n" +
-                "                .yLim(0, 0.24)\n" +
                 "                .yLab(\"test (blue), oob (black)\")\n" +
                 "                .xLab(\"number of trees\")\n" +
                 "                .title(\"Accuracy errors (% misclassified)\")\n" +
@@ -262,7 +260,7 @@ public class ClassificationWithRF implements TutorialPage {
                 .yLab("test (blue), oob (black")
                 .xLab("mcols - number of features considered")
                 .title("Accuracy errors (% misclassified)")
-                .yLim(0, 0.2), 600, 400);
+                , 600, 400);
 
         p("The code which produced the last plot is listed below.");
 
@@ -292,7 +290,7 @@ public class ClassificationWithRF implements TutorialPage {
                 "                .yLab(\"test (blue), oob (black\")\n" +
                 "                .xLab(\"mcols - number of features considered\")\n" +
                 "                .title(\"Accuracy errors (% misclassified)\")\n" +
-                "                .yLim(0, 0.2), 600, 400);\n");
+                "                , 600, 400);\n");
 
         p("Note: the sole purpose of this tutorial is to show what and how it can "
                 + "be done with Rapaio toolbox library. ");
