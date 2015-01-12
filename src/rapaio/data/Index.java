@@ -323,7 +323,7 @@ public final class Index extends AbstractVar {
 
     @Override
     public Index solidCopy() {
-        Index copy = new Index(rowCount(), rowCount(), 0);
+        Index copy = new Index(rowCount(), rowCount(), 0).withName(name());
         for (int i = 0; i < rowCount(); i++) {
             copy.setIndex(i, index(i));
         }

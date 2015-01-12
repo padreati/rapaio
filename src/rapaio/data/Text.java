@@ -197,4 +197,13 @@ public class Text extends AbstractVar {
     public void clear() {
         values.clear();
     }
+
+    @Override
+    public Var solidCopy() {
+        Text text = new Text(rowCount());
+        for (int i = 0; i < rowCount(); i++) {
+            text.setLabel(i, label(i));
+        }
+        return text;
+    }
 }

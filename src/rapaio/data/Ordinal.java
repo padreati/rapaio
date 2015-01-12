@@ -109,7 +109,7 @@ public final class Ordinal extends FactorBase {
 
     @Override
     public Ordinal solidCopy() {
-        Ordinal copy = Ordinal.newEmpty(rowCount(), dictionary());
+        Ordinal copy = Ordinal.newEmpty(rowCount(), dictionary()).withName(name());
         for (int i = 0; i < rowCount(); i++) {
             copy.setLabel(i, label(i));
         }

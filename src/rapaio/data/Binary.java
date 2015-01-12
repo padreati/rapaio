@@ -369,7 +369,7 @@ public final class Binary extends AbstractVar {
 
     @Override
     public Binary solidCopy() {
-        Binary copy = Binary.newEmpty(rowCount());
+        Binary copy = Binary.newEmpty(rowCount()).withName(name());
         for (int i = 0; i < rowCount(); i++) {
             if (!missing(i))
                 copy.setBinary(i, binary(i));

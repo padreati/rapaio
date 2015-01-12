@@ -324,7 +324,7 @@ public class Stamp extends AbstractVar {
 
     @Override
     public Stamp solidCopy() {
-        Stamp copy = new Stamp(rowCount(), rowCount(), 0);
+        Stamp copy = new Stamp(rowCount(), rowCount(), 0).withName(name());
         for (int i = 0; i < rowCount(); i++) {
             copy.setStamp(i, index(i));
         }
