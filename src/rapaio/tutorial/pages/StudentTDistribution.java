@@ -52,30 +52,28 @@ public class StudentTDistribution implements TutorialPage {
 
         heading(3, "Foreword");
 
-        p("I have always believed that knowing the history of scientific "
-                + "achievements is a must for anybody. This story is about "
-                + "William Sealy Gosset and it's famous t densities. ");
+        p("I have always believed that knowing the history of scientific achievements " +
+                "is a must for anybody. This story is about William Sealy Gosset and " +
+                "it's famous t probability distribution. ");
 
         heading(3, "The context");
 
-        p("When the story begins, the science of mathematical statistics "
-                + "lived its first years as a serious scientific discipline, "
-                + "mainly through the efforts made by Karl Pearson, who was "
-                + "the founder of the first university statistics department "
-                + "in the world. ");
+        p("When the story begins, the science of mathematical statistics lived its first " +
+                "years as a serious scientific discipline, mainly through the efforts made " +
+                "by Karl Pearson, who was the founder of the first university statistics " +
+                "department in the world. ");
 
-        p("After graduating on chemistry and mathematics at New College, Oxford, "
-                + "Gosset joined the brewery of Arthur Guinness and Son, and "
-                + "started to apply his statistical knowledge in brewery and on "
-                + "the selection of barley. ");
+        p("After graduating on chemistry and mathematics at New College, Oxford, Gosset " +
+                "joined the brewery of Arthur Guinness and Son, and started to apply his " +
+                "statistical knowledge in brewery and on the selection of barley. ");
 
-        p("Note that at that time the methods available involved mainly "
-                + "the practice of Karl Pearson and some other eminent statisticians, "
-                + "around the normal densities and Central Limit Theorem. ");
+        p("Note that at that time the methods available involved mainly the practice of " +
+                "Karl Pearson and some other eminent statisticians, around the normal " +
+                "densities and Central Limit Theorem. ");
 
         heading(3, "Probability density and central limit theorem");
 
-        p("The probability density of a standard normal densities "
+        p("The probability density function of a standard normal distribution "
                 + "looks like this: ");
 
         draw(new Plot().add(new FunctionLine(new Normal()::pdf).color(1))
@@ -83,21 +81,22 @@ public class StudentTDistribution implements TutorialPage {
                 .xLim(-4, 4)
                 .yLim(0, 0.5));
 
-        p("To understand it's mechanics you have to imagine a "
-                + "process, which produces a numeric value. "
-                + "If the only thing you would know about the value of the "
-                + "number to be produces is it's range, than you don't know "
-                + "much. ");
+        p("To understand it's mechanics you have to imagine a process, which produces a " +
+                "numeric value. If the only thing you would know about the value of the " +
+                "number to be produced is it's range, than you don't know much. ");
 
-        p("Statistics adds a new dimension to that range: "
-                + "your expectation, aka. \"which values are expected to be produced with "
-                + "a high probability, and which not\". ");
+        p("Statistics adds a new dimension to that range: your expectation, aka. \"which " +
+                "values are expected to be produced with a high probability, which values " +
+                "might be produced with a low or medium probability and which not\". " +
+                "Here the probability has the meaning of frequency. ");
 
-        p("The standard normal densities from the above tells us, for example, "
-                + "that we expect that the value produced by our process to be very close "
-                + "to 0. It might variate but only around 0. There is many information contained "
-                + "in this density function like we expect that the value produced to be "
-                + "in interval [-2,+2] in most of the cases. ");
+        p("The standard normal distribution from the above graph tells us, for example, " +
+                "that we expect that the value produced by our process to be close to 0. " +
+                "It will not be exactly 0, but very often the values will be near 0. " +
+                "There is a lot o information contained in this density function. " +
+                "For example we can say that we expect that produced to be in interval [-2,+2] " +
+                "in most of the cases. More precisely we can say that 95% of the values will " +
+                "lay in this interval. ");
 
         p("Central Limit Theorem "
                 + "says something like: \"if you repeat the event enough times independently and "

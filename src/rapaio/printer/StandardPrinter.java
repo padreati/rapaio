@@ -34,7 +34,7 @@ public class StandardPrinter extends AbstractPrinter {
     public StandardPrinter() {
         setTextWidth(180);
         setGraphicWidth(1280);
-        setGraphicHeight(1024);
+        setGraphicHeight(800);
     }
 
     private int textWidth;

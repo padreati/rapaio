@@ -121,6 +121,11 @@ public final class Binary extends AbstractVar {
             this.values.flip(0, rows);
     }
 
+    @Override
+    public Binary withName(String name) {
+        return (Binary) super.withName(name);
+    }
+
     void increaseCapacity(int minCapacity) {
         if (minCapacity > rows) {
             minCapacity = Math.max(minCapacity, rows + rows >> 1);

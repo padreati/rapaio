@@ -224,7 +224,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
     public CResult predict(Frame df, boolean withClasses, boolean withDistributions) {
         CResult cr = CResult.newEmpty(this, df, withClasses, withDistributions);
         for (String targetName : targetNames) {
-            cr.addTarget(targetName, df.var(targetName).dictionary());
+            cr.addTarget(targetName, dictionaries().get(targetName));
         }
 
         for (int k = 0; k < K; k++) {
@@ -288,7 +288,7 @@ class ClassifierLossFunction implements GBTLossFunction {
         }
 
         if (Double.isNaN(up) || Double.isNaN(down)) {
-            System.out.println("check that");
+            return 0;
         }
 
         return ((K - 1) * up) / (K * down);

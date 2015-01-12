@@ -22,10 +22,7 @@ package rapaio.data;
 
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
 /**
@@ -47,6 +44,6 @@ public abstract class AbstractFrame implements Frame {
     }
 
     public FSpots stream() {
-        return new FSpots(IntStream.range(0, rowCount()).mapToObj(row -> new FSpot(this, row)));
+        return new FSpots(IntStream.range(0, rowCount()).mapToObj(row -> new FSpot(this, row)), this);
     }
 }

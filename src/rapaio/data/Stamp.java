@@ -159,6 +159,11 @@ public class Stamp extends AbstractVar {
             Arrays.fill(data, 0, rows, fill);
     }
 
+    @Override
+    public Stamp withName(String name) {
+        return (Stamp) super.withName(name);
+    }
+
     private void ensureCapacityInternal(int minCapacity) {
         // overflow-conscious code
         int oldCapacity = data.length;

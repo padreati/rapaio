@@ -283,7 +283,7 @@ public class Csv {
                         writer.append("?");
                         continue;
                     }
-                    if (df.var(j).type().isNominal()) {
+                    if (df.var(j).type().isNominal() || df.var(j).type().equals(VarType.TEXT)) {
                         writer.append(unclean(df.label(i, j)));
                     } else {
                         writer.append(format.format(df.value(i, j)));

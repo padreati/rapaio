@@ -76,4 +76,8 @@ public class Variance implements Printable {
     public void buildSummary(StringBuilder sb) {
         sb.append(String.format("> variance[%s]\n%s", varName, Printer.formatDecLong.format(value)));
     }
+
+    public double sdValue() {
+        return Math.sqrt(value);
+    }
 }

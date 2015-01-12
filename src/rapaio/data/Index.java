@@ -155,6 +155,12 @@ public final class Index extends AbstractVar {
             Arrays.fill(data, 0, rows, fill);
     }
 
+    @Override
+    public Index withName(String name) {
+        return (Index) super.withName(name);
+    }
+
+
     private void ensureCapacityInternal(int minCapacity) {
         // overflow-conscious code
         if (minCapacity < data.length)

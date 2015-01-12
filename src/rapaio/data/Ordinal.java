@@ -98,6 +98,11 @@ public final class Ordinal extends FactorBase {
     }
 
     @Override
+    public Ordinal withName(String name) {
+        return (Ordinal) super.withName(name);
+    }
+
+    @Override
     public VarType type() {
         return VarType.ORDINAL;
     }

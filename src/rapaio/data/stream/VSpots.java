@@ -23,7 +23,6 @@ package rapaio.data.stream;
 import rapaio.data.MappedVar;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.util.Pin;
 
 import java.io.Serializable;
 import java.util.Comparator;
@@ -42,18 +41,20 @@ import java.util.stream.*;
 public class VSpots implements Stream<VSpot>, Serializable {
 
     private final Stream<VSpot> stream;
+    private final Var source;
 
     /**
      * Builds a stream of variable spots based on a standard java stream of spots
      * @param stream nested stream
      */
-    public VSpots(Stream<VSpot> stream) {
+    public VSpots(Stream<VSpot> stream, Var source) {
         this.stream = stream;
+        this.source = source;
     }
 
     @Override
     public VSpots filter(Predicate<? super VSpot> predicate) {
-        return new VSpots(stream.filter(predicate));
+        return new VSpots(stream.filter(predicate), source);
     }
 
     @Override
@@ -106,32 +107,32 @@ public class VSpots implements Stream<VSpot>, Serializable {
 
     @Override
     public VSpots distinct() {
-        return new VSpots(stream.distinct());
+        return new VSpots(stream.distinct(), source);
     }
 
     @Override
     public VSpots sorted() {
-        return new VSpots(stream.sorted());
+        return new VSpots(stream.sorted(), source);
     }
 
     @Override
     public VSpots sorted(Comparator<? super VSpot> comparator) {
-        return new VSpots(stream.sorted(comparator));
+        return new VSpots(stream.sorted(comparator), source);
     }
 
     @Override
     public VSpots peek(Consumer<? super VSpot> action) {
-        return new VSpots(stream.peek(action));
+        return new VSpots(stream.peek(action), source);
     }
 
     @Override
     public VSpots limit(long maxSize) {
-        return new VSpots(stream.limit(maxSize));
+        return new VSpots(stream.limit(maxSize), source);
     }
 
     @Override
     public VSpots skip(long n) {
-        return new VSpots(stream.skip(n));
+        return new VSpots(stream.skip(n), source);
     }
 
     @Override
@@ -236,22 +237,22 @@ public class VSpots implements Stream<VSpot>, Serializable {
 
     @Override
     public VSpots sequential() {
-        return new VSpots(stream.sequential());
+        return new VSpots(stream.sequential(), source);
     }
 
     @Override
     public VSpots parallel() {
-        return new VSpots(stream.parallel());
+        return new VSpots(stream.parallel(), source);
     }
 
     @Override
     public VSpots unordered() {
-        return new VSpots(stream.unordered());
+        return new VSpots(stream.unordered(), source);
     }
 
     @Override
     public VSpots onClose(Runnable closeHandler) {
-        return new VSpots(stream.onClose(closeHandler));
+        return new VSpots(stream.onClose(closeHandler), source);
     }
 
     @Override
@@ -264,7 +265,7 @@ public class VSpots implements Stream<VSpot>, Serializable {
      * @return stream with complete spots
      */
     public VSpots complete() {
-        return new VSpots(stream.filter(s -> !s.missing()));
+        return new VSpots(stream.filter(s -> !s.missing()), source);
     }
 
     /**
@@ -272,7 +273,7 @@ public class VSpots implements Stream<VSpot>, Serializable {
      * @return stream with spots with missing values
      */
     public VSpots incomplete() {
-        return new VSpots(stream.filter(VSpot::missing));
+        return new VSpots(stream.filter(VSpot::missing), source);
     }
 
     /**
@@ -298,7 +299,7 @@ public class VSpots implements Stream<VSpot>, Serializable {
         return new VSpots(stream.map(spot -> {
             spot.setValue(trans.apply(spot.value()));
             return spot;
-        }));
+        }), source);
     }
 
     /**
@@ -309,7 +310,7 @@ public class VSpots implements Stream<VSpot>, Serializable {
         return new VSpots(stream.map(spot -> {
             spot.setIndex(trans.apply(spot.index()));
             return spot;
-        }));
+        }), source);
     }
 
     /**
@@ -320,7 +321,7 @@ public class VSpots implements Stream<VSpot>, Serializable {
         return new VSpots(stream.map(spot -> {
             spot.setLabel(trans.apply(spot.label()));
             return spot;
-        }));
+        }), source);
     }
 
     /**
@@ -329,13 +330,9 @@ public class VSpots implements Stream<VSpot>, Serializable {
      */
     public MappedVar toMappedVar() {
         Mapping map = Mapping.newEmpty();
-        Pin<Var> var = new Pin<>();
         stream.forEach(s -> {
             map.add(s.row());
-            if (var.isEmpty()) {
-                var.set(s.var());
-            }
         });
-        return MappedVar.newByRows(var.get(), map);
+        return MappedVar.newByRows(source, map);
     }
 }

@@ -23,7 +23,6 @@ package rapaio.data.stream;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
-import rapaio.util.Pin;
 
 import java.io.Serializable;
 import java.util.*;
@@ -38,14 +37,16 @@ import java.util.stream.*;
 public class FSpots implements Stream<FSpot>, Serializable {
 
     private final Stream<FSpot> stream;
+    private final Frame source;
 
-    public FSpots(Stream<FSpot> stream) {
+    public FSpots(Stream<FSpot> stream, Frame source) {
         this.stream = stream;
+        this.source = source;
     }
 
     @Override
     public FSpots filter(Predicate<? super FSpot> predicate) {
-        return new FSpots(stream.filter(predicate));
+        return new FSpots(stream.filter(predicate), source);
     }
 
     @Override
@@ -90,32 +91,32 @@ public class FSpots implements Stream<FSpot>, Serializable {
 
     @Override
     public FSpots distinct() {
-        return new FSpots(stream.distinct());
+        return new FSpots(stream.distinct(), source);
     }
 
     @Override
     public FSpots sorted() {
-        return new FSpots(stream.sorted());
+        return new FSpots(stream.sorted(), source);
     }
 
     @Override
     public FSpots sorted(Comparator<? super FSpot> comparator) {
-        return new FSpots(stream.sorted(comparator));
+        return new FSpots(stream.sorted(comparator), source);
     }
 
     @Override
     public FSpots peek(Consumer<? super FSpot> action) {
-        return new FSpots(stream.peek(action));
+        return new FSpots(stream.peek(action), source);
     }
 
     @Override
     public FSpots limit(long maxSize) {
-        return new FSpots(stream.limit(maxSize));
+        return new FSpots(stream.limit(maxSize), source);
     }
 
     @Override
     public FSpots skip(long n) {
-        return new FSpots(stream.skip(n));
+        return new FSpots(stream.skip(n), source);
     }
 
     @Override
@@ -220,22 +221,22 @@ public class FSpots implements Stream<FSpot>, Serializable {
 
     @Override
     public FSpots sequential() {
-        return new FSpots(stream.sequential());
+        return new FSpots(stream.sequential(), source);
     }
 
     @Override
     public FSpots parallel() {
-        return new FSpots(stream.parallel());
+        return new FSpots(stream.parallel(), source);
     }
 
     @Override
     public FSpots unordered() {
-        return new FSpots(stream.unordered());
+        return new FSpots(stream.unordered(), source);
     }
 
     @Override
     public FSpots onClose(Runnable closeHandler) {
-        return new FSpots(stream.onClose(closeHandler));
+        return new FSpots(stream.onClose(closeHandler), source);
     }
 
     @Override
@@ -287,13 +288,9 @@ public class FSpots implements Stream<FSpot>, Serializable {
      */
     public Frame toMappedFrame() {
         final Mapping mapping = Mapping.newEmpty();
-        final Pin<Frame> dfPin = new Pin<>();
         forEach(spot -> {
             mapping.add(spot.row());
-            if (dfPin.isEmpty()) {
-                dfPin.set(spot.getFrame());
-            }
         });
-        return MappedFrame.newByRow(dfPin.get(), mapping);
+        return MappedFrame.newByRow(source, mapping);
     }
 }
