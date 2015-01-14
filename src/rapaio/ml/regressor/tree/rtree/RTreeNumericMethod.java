@@ -21,7 +21,7 @@
 package rapaio.ml.regressor.tree.rtree;
 
 import rapaio.core.RandomSource;
-import rapaio.core.stat.StatOnline;
+import rapaio.core.stat.OnlineStat;
 import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.RowComparators;
@@ -70,14 +70,16 @@ public interface RTreeNumericMethod {
             double[] leftVar = new double[df.rowCount()];
             double[] rightVar = new double[df.rowCount()];
 
-            StatOnline so = new StatOnline();
+            OnlineStat so = new OnlineStat();
 
             for (int i = 0; i < df.rowCount(); i++) {
                 int row = sort.index(i);
                 if (target.missing(row)) {
                     continue;
                 }
-                so.update(target.value(row), weights.value(row));
+                double tValue = target.value(row);
+                double wValue = weights.value(row);
+                so.update(tValue);
                 leftVar[row] = so.variance();
             }
             for (int i = df.rowCount() - 1; i >= 0; i--) {
@@ -85,7 +87,7 @@ public interface RTreeNumericMethod {
                 if (target.missing(row)) {
                     continue;
                 }
-                so.update(target.value(row), weights.value(row));
+                so.update(target.value(row));
                 rightVar[row] += so.variance();
             }
 

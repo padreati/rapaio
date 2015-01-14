@@ -24,6 +24,8 @@ import rapaio.core.Printable;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFSort;
 
+import java.util.stream.IntStream;
+
 
 /**
  * Estimates quantiles from a numerical {@link rapaio.data.Var} of values.
@@ -48,6 +50,9 @@ public class Quantiles implements Printable {
     }
 
     private double[] compute(final Var var) {
+        if (var.rowCount() == 0) {
+            return IntStream.range(0, percentiles.length).mapToDouble(i -> Double.NaN).toArray();
+        }
         if (var.rowCount() == 1) {
             double[] values = new double[percentiles.length];
             for (int i = 0; i < values.length; i++) {

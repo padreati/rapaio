@@ -22,7 +22,7 @@ package rapaio.tutorial.pages;
 
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.DUniform;
-import rapaio.core.stat.StatOnline;
+import rapaio.core.stat.OnlineStat;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
@@ -80,7 +80,7 @@ public class LawOfLargeNumbersPage implements TutorialPage {
 
         p("Thus we have stored in a var N (1000) outputs of those events. We compute the running mean using StatOnline:");
 
-        StatOnline ocs = new StatOnline();
+        OnlineStat ocs = new OnlineStat();
         final Var mean = Numeric.newEmpty(N);
         for (int i = 0; i < events.rowCount(); i++) {
             ocs.update(events.value(i));
