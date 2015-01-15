@@ -28,23 +28,31 @@ import java.io.Serializable;
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
 public interface CTreeTestFunction extends Serializable {
+
     String name();
+
+    CTreeTestFunction newInstance();
 
     double compute(DensityTable dt);
 
     int sign();
 
 
-    CTreeTestFunction ENTROPY = new CTreeTestFunction() {
+    public static class Entropy implements CTreeTestFunction {
+
+        @Override
+        public String name() {
+            return "Entropy";
+        }
+
+        @Override
+        public CTreeTestFunction newInstance() {
+            return new Entropy();
+        }
 
         @Override
         public double compute(DensityTable dt) {
             return dt.getSplitEntropy(false);
-        }
-
-        @Override
-        public String name() {
-            return "ENTROPY";
         }
 
         @Override
@@ -53,10 +61,16 @@ public interface CTreeTestFunction extends Serializable {
         }
     };
 
-    CTreeTestFunction INFO_GAIN = new CTreeTestFunction() {
+    public static class InfoGain implements CTreeTestFunction {
+
         @Override
         public String name() {
-            return "INFO_GAIN";
+            return "InfoGain";
+        }
+
+        @Override
+        public CTreeTestFunction newInstance() {
+            return new InfoGain();
         }
 
         @Override
@@ -70,10 +84,16 @@ public interface CTreeTestFunction extends Serializable {
         }
     };
 
-    CTreeTestFunction GAIN_RATIO = new CTreeTestFunction() {
+    public static class GainRatio implements CTreeTestFunction {
+
         @Override
         public String name() {
-            return "GAIN_RATIO";
+            return "GainRatio";
+        }
+
+        @Override
+        public CTreeTestFunction newInstance() {
+            return new GainRatio();
         }
 
         @Override
@@ -87,10 +107,16 @@ public interface CTreeTestFunction extends Serializable {
         }
     };
 
-    CTreeTestFunction GINI_GAIN = new CTreeTestFunction() {
+    public static class GiniGain implements CTreeTestFunction {
+
         @Override
         public String name() {
-            return "GINI_GAIN";
+            return "GiniGain";
+        }
+
+        @Override
+        public CTreeTestFunction newInstance() {
+            return new GiniGain();
         }
 
         @Override
@@ -103,6 +129,5 @@ public interface CTreeTestFunction extends Serializable {
             return dt.getGiniIndex();
         }
     };
-
 }
 

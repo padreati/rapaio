@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -227,9 +228,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
         totalOobInstances = 0;
         totalOobError = 0;
 
-        for (int i = 0; i < runs; i++) {
-            buildWeakPredictor(df, weights);
-        }
+        IntStream.range(0, runs).parallel().forEach(s -> buildWeakPredictor(df, weights));
 
         if (oobCompute) {
             oobError = totalOobError / totalOobInstances;
@@ -261,10 +260,15 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
         weak.learn(ss.first.get(0), ss.second.get(0), firstTargetName());
         if (oobCompute) {
             CResult cp = weak.predict(ss.first.get(1));
-            totalOobInstances += ss.first.get(1).rowCount();
-            totalOobError += new ConfusionMatrix(ss.first.get(1).var(firstTargetName()), cp.firstClasses()).errorCases();
+            double oobError = new ConfusionMatrix(ss.first.get(1).var(firstTargetName()), cp.firstClasses()).errorCases();
+            synchronized (this) {
+                totalOobInstances += ss.first.get(1).rowCount();
+                totalOobError += oobError;
+            }
         }
-        predictors.add(weak);
+        synchronized (this) {
+            predictors.add(weak);
+        }
     }
 
     @Override

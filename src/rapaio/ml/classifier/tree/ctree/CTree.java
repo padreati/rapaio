@@ -43,12 +43,12 @@ public class CTree extends AbstractClassifier {
     int minCount = 1;
     int maxDepth = Integer.MAX_VALUE;
 
-    CTreeTestCounter testCounter = CTreeTestCounter.M_NOMINAL_M_NUMERIC;
-    CTreeNominalMethod nominalMethod = CTreeNominalMethod.FULL;
-    CTreeNumericMethod numericMethod = CTreeNumericMethod.BINARY;
-    CTreeTestFunction function = CTreeTestFunction.INFO_GAIN;
-    CTreeSplitter splitter = CTreeSplitter.REMAINS_IGNORED;
-    CTreePredictor predictor = CTreePredictor.STANDARD;
+    CTreeTestCounter testCounter = new CTreeTestCounter.MNominalMNumeric();
+    CTreeNominalMethod nominalMethod = new CTreeNominalMethod.Full();
+    CTreeNumericMethod numericMethod = new CTreeNumericMethod.BINARY();
+    CTreeTestFunction function = new CTreeTestFunction.InfoGain();
+    CTreeSplitter splitter = new CTreeSplitter.RemainsIgnored();
+    CTreePredictor predictor = new CTreePredictor.Standard();
 
     // tree root node
     private CTreeNode root;
@@ -58,44 +58,44 @@ public class CTree extends AbstractClassifier {
 
     public static CTree newID3() {
         return new CTree()
-                .withTestCounter(CTreeTestCounter.ONE_NOMINAL_ONE_NUMERIC)
+                .withTestCounter(new CTreeTestCounter.OneNominalOneNumeric())
                 .withMaxDepth(Integer.MAX_VALUE)
-                .withSplitter(CTreeSplitter.REMAINS_IGNORED)
-                .withNominalMethod(CTreeNominalMethod.FULL)
-                .withNumericMethod(CTreeNumericMethod.IGNORE)
-                .withFunction(CTreeTestFunction.ENTROPY)
-                .withPredictor(CTreePredictor.STANDARD);
+                .withSplitter(new CTreeSplitter.RemainsIgnored())
+                .withNominalMethod(new CTreeNominalMethod.Full())
+                .withNumericMethod(new CTreeNumericMethod.IGNORE())
+                .withFunction(new CTreeTestFunction.Entropy())
+                .withPredictor(new CTreePredictor.Standard());
     }
 
     public static CTree newC45() {
         return new CTree()
-                .withTestCounter(CTreeTestCounter.ONE_NOMINAL_ONE_NUMERIC)
+                .withTestCounter(new CTreeTestCounter.OneNominalOneNumeric())
                 .withMaxDepth(Integer.MAX_VALUE)
-                .withSplitter(CTreeSplitter.REMAINS_TO_ALL_WEIGHTED)
-                .withNominalMethod(CTreeNominalMethod.FULL)
-                .withNumericMethod(CTreeNumericMethod.BINARY)
-                .withFunction(CTreeTestFunction.GAIN_RATIO)
-                .withPredictor(CTreePredictor.STANDARD);
+                .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
+                .withNominalMethod(new CTreeNominalMethod.Full())
+                .withNumericMethod(new CTreeNumericMethod.BINARY())
+                .withFunction(new CTreeTestFunction.GainRatio())
+                .withPredictor(new CTreePredictor.Standard());
     }
 
     public static CTree newDecisionStump() {
         return new CTree()
                 .withMaxDepth(1)
-                .withTestCounter(CTreeTestCounter.ONE_NOMINAL_ONE_NUMERIC)
-                .withSplitter(CTreeSplitter.REMAINS_TO_ALL_WEIGHTED)
-                .withNominalMethod(CTreeNominalMethod.BINARY)
-                .withNumericMethod(CTreeNumericMethod.BINARY)
-                .withPredictor(CTreePredictor.STANDARD);
+                .withTestCounter(new CTreeTestCounter.OneNominalOneNumeric())
+                .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
+                .withNominalMethod(new CTreeNominalMethod.Binary())
+                .withNumericMethod(new CTreeNumericMethod.BINARY())
+                .withPredictor(new CTreePredictor.Standard());
     }
 
     public static CTree newCART() {
         return new CTree()
                 .withMaxDepth(Integer.MAX_VALUE)
-                .withTestCounter(CTreeTestCounter.M_NOMINAL_M_NUMERIC)
-                .withSplitter(CTreeSplitter.REMAINS_TO_ALL_WEIGHTED)
-                .withNominalMethod(CTreeNominalMethod.BINARY)
-                .withNumericMethod(CTreeNumericMethod.BINARY)
-                .withPredictor(CTreePredictor.STANDARD);
+                .withTestCounter(new CTreeTestCounter.MNominalMNumeric())
+                .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
+                .withNominalMethod(new CTreeNominalMethod.Binary())
+                .withNumericMethod(new CTreeNumericMethod.BINARY())
+                .withPredictor(new CTreePredictor.Standard());
     }
 
     @Override
@@ -103,12 +103,12 @@ public class CTree extends AbstractClassifier {
         return (CTree) new CTree()
                 .withMinCount(minCount)
                 .withMaxDepth(maxDepth)
-                .withNominalMethod(nominalMethod)
-                .withNumericMethod(numericMethod)
-                .withFunction(function)
-                .withSplitter(splitter)
-                .withPredictor(predictor)
-                .withVarSelector(varSelector);
+                .withNominalMethod(nominalMethod.newInstance())
+                .withNumericMethod(numericMethod.newInstance())
+                .withFunction(function.newInstance())
+                .withSplitter(splitter.newInstance())
+                .withPredictor(predictor.newInstance())
+                .withVarSelector(varSelector.newInstance());
     }
 
     public CTreeNode getRoot() {

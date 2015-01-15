@@ -35,14 +35,23 @@ import java.util.stream.Collectors;
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
 public interface CTreeSplitter extends Serializable {
+
     String name();
+
+    CTreeSplitter newInstance();
 
     public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Var weights, CTreeCandidate candidate);
 
-    CTreeSplitter REMAINS_IGNORED = new CTreeSplitter() {
+    public static class RemainsIgnored implements CTreeSplitter {
+
         @Override
         public String name() {
-            return "REMAINS_IGNORED";
+            return "RemainsIgnored";
+        }
+
+        @Override
+        public CTreeSplitter newInstance() {
+            return new RemainsIgnored();
         }
 
         @Override
@@ -70,11 +79,19 @@ public interface CTreeSplitter extends Serializable {
             });
             return new Pair<>(frames, weightsList);
         }
-    };
-    CTreeSplitter REMAINS_TO_MAJORITY = new CTreeSplitter() {
+    }
+
+
+    public static class RemainsToMajority implements CTreeSplitter {
+
         @Override
         public String name() {
-            return "REMAINS_TO_MAJORITY";
+            return "RemainsToMajority";
+        }
+
+        @Override
+        public CTreeSplitter newInstance() {
+            return new RemainsToMajority();
         }
 
         @Override
@@ -118,12 +135,18 @@ public interface CTreeSplitter extends Serializable {
             });
             return new Pair<>(frames, weightsList);
         }
-    };
+    }
 
-    CTreeSplitter REMAINS_TO_ALL_WEIGHTED = new CTreeSplitter() {
+    public static class RemainsToAllWeighted implements CTreeSplitter {
+
         @Override
         public String name() {
-            return "REMAINS_TO_ALL_WEIGHTED";
+            return "RemainsToAllWeighted";
+        }
+
+        @Override
+        public CTreeSplitter newInstance() {
+            return new RemainsToAllWeighted();
         }
 
         @Override
@@ -163,18 +186,21 @@ public interface CTreeSplitter extends Serializable {
                     weightsList.get(ii).addValue(weights.value(missingRow) * p[ii]);
                 });
             }
-            List<Frame> frames = new ArrayList<>();
-            for (int i = 0; i < mappings.size(); i++) {
-                frames.add(MappedFrame.newByRow(df, mappings.get(i)));
-            }
+            List<Frame> frames = mappings.stream().map(mapping -> MappedFrame.newByRow(df, mapping)).collect(Collectors.toList());
             return new Pair<>(frames, weightsList);
         }
-    };
+    }
 
-    CTreeSplitter REMAINS_TO_RANDOM = new CTreeSplitter() {
+    public static final class RemainsToRandom implements CTreeSplitter {
+
         @Override
         public String name() {
-            return "REMAINS_TO_RANDOM";
+            return "RemainsToRandom";
+        }
+
+        @Override
+        public CTreeSplitter newInstance() {
+            return new RemainsToRandom();
         }
 
         @Override
@@ -202,12 +228,18 @@ public interface CTreeSplitter extends Serializable {
             List<Frame> frames = mappings.stream().map(mapping -> MappedFrame.newByRow(df, mapping)).collect(Collectors.toList());
             return new Pair<>(frames, weightList);
         }
-    };
+    }
 
-    CTreeSplitter REMAINS_WITH_SURROGATES = new CTreeSplitter() {
+    public static final class RemainsWithSurrogates implements CTreeSplitter {
+
         @Override
         public String name() {
-            return "REMAINS_WITH_SURROGATES";
+            return "RemainsWithSurrogates";
+        }
+
+        @Override
+        public CTreeSplitter newInstance() {
+            return new RemainsWithSurrogates();
         }
 
         @Override

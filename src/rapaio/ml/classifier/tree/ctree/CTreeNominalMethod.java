@@ -36,12 +36,19 @@ public interface CTreeNominalMethod extends Serializable {
 
     String name();
 
+    CTreeNominalMethod newInstance();
+
     List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function);
 
-    public CTreeNominalMethod IGNORE = new CTreeNominalMethod() {
+    public static class Ignore implements CTreeNominalMethod {
         @Override
         public String name() {
-            return "IGNORE";
+            return "Ignore";
+        }
+
+        @Override
+        public CTreeNominalMethod newInstance() {
+            return new Ignore();
         }
 
         @Override
@@ -50,10 +57,15 @@ public interface CTreeNominalMethod extends Serializable {
         }
     };
 
-    public CTreeNominalMethod FULL = new CTreeNominalMethod() {
+    public static class Full implements CTreeNominalMethod {
         @Override
         public String name() {
-            return "FULL";
+            return "Full";
+        }
+
+        @Override
+        public CTreeNominalMethod newInstance() {
+            return new Full();
         }
 
         @Override
@@ -83,13 +95,17 @@ public interface CTreeNominalMethod extends Serializable {
         }
     };
 
-    public CTreeNominalMethod BINARY = new CTreeNominalMethod() {
+    public static class Binary implements CTreeNominalMethod {
 
         @Override
         public String name() {
-            return "BINARY";
+            return "Binary";
         }
 
+        @Override
+        public CTreeNominalMethod newInstance() {
+            return new Binary();
+        }
 
         @Override
         public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function) {

@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
@@ -40,17 +41,17 @@ public interface CTreeTestCounter extends Serializable {
 
     void markUse(String name);
 
-    public CTreeTestCounter M_NOMINAL_M_NUMERIC = new CTreeTestCounter() {
+    public static class MNominalMNumeric implements CTreeTestCounter {
 
-        private Map<String, Integer> counters = new HashMap<>();
+        private Map<String, Integer> counters = new ConcurrentHashMap<>();
 
         @Override
         public String name() {
-            return "M_NOMINAL_M_NUMERIC";
+            return "MNominalMNumeric";
         }
 
         public void initialize(Frame df, String targetName) {
-            counters = new HashMap<>();
+            counters = new ConcurrentHashMap<>();
             Arrays.stream(df.varNames()).forEach(colName -> {
                 if (targetName.equals(colName))
                     return;
@@ -66,15 +67,15 @@ public interface CTreeTestCounter extends Serializable {
             if (!counters.containsKey(name))
                 throw new IllegalArgumentException("can't mark a column for use as a test if it was not initialized");
         }
-    };
+    }
 
-    public CTreeTestCounter ONE_NOMINAL_M_NUMERIC = new CTreeTestCounter() {
+    public static class OneNominalMNumeric implements CTreeTestCounter {
 
         private Map<String, Integer> counters = new HashMap<>();
 
         @Override
         public String name() {
-            return "ONE_NOMINAL_M_NUMERIC";
+            return "OneNominalMNumeric";
         }
 
         @Override
@@ -104,15 +105,15 @@ public interface CTreeTestCounter extends Serializable {
             if (count <= 0) return;
             counters.put(name, count - 1);
         }
-    };
+    }
 
-    CTreeTestCounter ONE_NOMINAL_ONE_NUMERIC = new CTreeTestCounter() {
+    public static class OneNominalOneNumeric implements CTreeTestCounter {
 
         private Map<String, Integer> counters = new HashMap<>();
 
         @Override
         public String name() {
-            return "ONE_NOMINAL_ONE_NUMERIC";
+            return "OneNominalOneNumeric";
         }
 
         @Override

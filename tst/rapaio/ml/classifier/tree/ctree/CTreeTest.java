@@ -93,11 +93,11 @@ public class CTreeTest {
     @Test
     public void testPredictorStandard() throws IOException, URISyntaxException {
         Frame df = Datasets.loadIrisDataset();
-        CTree tree = CTree.newCART().withMaxDepth(10000).withMinCount(1).withTestCounter(CTreeTestCounter.M_NOMINAL_M_NUMERIC);
+        CTree tree = CTree.newCART().withMaxDepth(10000).withMinCount(1).withTestCounter(new CTreeTestCounter.MNominalMNumeric());
         tree.learn(df, "class");
         tree.summary();
-        CTreePredictor predictor = CTreePredictor.STANDARD;
-        assertEquals("STANDARD", predictor.name());
+        CTreePredictor predictor = new CTreePredictor.Standard();
+        assertEquals("Standard", predictor.name());
 
         CResult pred = tree.predict(df, true, true);
         df = df.bindVars(pred.firstClasses().solidCopy().withName("predict"));

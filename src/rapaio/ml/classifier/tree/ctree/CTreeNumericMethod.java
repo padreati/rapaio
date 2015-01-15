@@ -39,24 +39,39 @@ public interface CTreeNumericMethod extends Serializable {
 
     String name();
 
+    CTreeNumericMethod newInstance();
+
     List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function);
 
-    CTreeNumericMethod IGNORE = new CTreeNumericMethod() {
+    public static class IGNORE implements CTreeNumericMethod {
         @Override
         public String name() {
             return "IGNORE";
         }
 
         @Override
+        public CTreeNumericMethod newInstance() {
+            return new IGNORE();
+        }
+
+        @Override
         public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function) {
             return new ArrayList<>();
         }
-    };
+    }
 
-    CTreeNumericMethod BINARY = new CTreeNumericMethod() {
+    ;
+
+    public static class BINARY implements CTreeNumericMethod {
+
         @Override
         public String name() {
             return "BINARY";
+        }
+
+        @Override
+        public CTreeNumericMethod newInstance() {
+            return new BINARY();
         }
 
         @Override
@@ -121,24 +136,34 @@ public interface CTreeNumericMethod extends Serializable {
                 result.add(best);
             return result;
         }
-    };
+    }
 
-    CTreeNumericMethodBinarySkip BINARY_SKIP = new CTreeNumericMethodBinarySkip(2);
+    ;
 
-    class CTreeNumericMethodBinarySkip implements CTreeNumericMethod {
+    public static class Skip implements CTreeNumericMethod {
+
         private final int skip;
 
-        public CTreeNumericMethodBinarySkip(int skip) {
+        public Skip() {
+            this.skip = 2;
+        }
+
+        public Skip(int skip) {
             this.skip = skip;
         }
 
         @Override
         public String name() {
-            return "BINARY";
+            return "Skip(" + skip + ")";
+        }
+
+        @Override
+        public CTreeNumericMethod newInstance() {
+            return new Skip(skip);
         }
 
         public CTreeNumericMethod withSkip(int skip) {
-            return new CTreeNumericMethodBinarySkip(skip);
+            return new Skip(skip);
         }
 
         @Override

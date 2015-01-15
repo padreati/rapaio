@@ -73,6 +73,6 @@ public class KSTestTest {
         KSTest test = new KSTest("studentT sample", sample, new Normal(0, 1));
         test.summary();
         Assert.assertTrue(test.d() > 0.04);
-        Assert.assertTrue(test.pValue() < 0.01);
+        Assert.assertTrue(test.pValue() < 0.05);
     }
 }

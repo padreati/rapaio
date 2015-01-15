@@ -64,10 +64,10 @@ public class ID3ClassifierTest {
         final String className = "class";
 
         CTree id3 = new CTree()
-                .withNominalMethod(CTreeNominalMethod.FULL)
-                .withNumericMethod(CTreeNumericMethod.IGNORE)
-                .withSplitter(CTreeSplitter.REMAINS_IGNORED)
-                .withFunction(CTreeTestFunction.INFO_GAIN);
+                .withNominalMethod(new CTreeNominalMethod.Full())
+                .withNumericMethod(new CTreeNumericMethod.IGNORE())
+                .withSplitter(new CTreeSplitter.RemainsIgnored())
+                .withFunction(new CTreeTestFunction.InfoGain());
         id3.learn(df, className);
         id3.predict(df);
         id3.summary();

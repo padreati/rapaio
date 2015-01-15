@@ -33,12 +33,20 @@ public interface CTreePredictor extends Serializable {
 
     String name();
 
+    CTreePredictor newInstance();
+
     Pair<Integer, DensityVector> predict(CTree tree, FSpot spot, CTreeNode node);
 
-    CTreePredictor STANDARD = new CTreePredictor() {
+    public static final class Standard implements CTreePredictor {
+
         @Override
         public String name() {
-            return "STANDARD";
+            return "Standard";
+        }
+
+        @Override
+        public CTreePredictor newInstance() {
+            return new Standard();
         }
 
         @Override

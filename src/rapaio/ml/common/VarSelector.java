@@ -35,18 +35,25 @@ public interface VarSelector extends Serializable {
 
     String name();
 
+    VarSelector newInstance();
+
     void initialize(Frame df, VarRange except);
 
     String[] nextVarNames();
 
     // built-in instances
 
-    public class Standard implements VarSelector {
+    public static final class Standard implements VarSelector {
 
         private String[] selection;
 
         public String name() {
             return "Std";
+        }
+
+        @Override
+        public VarSelector newInstance() {
+            return new Standard();
         }
 
         @Override
@@ -71,7 +78,8 @@ public interface VarSelector extends Serializable {
         }
     }
 
-    public class Random implements VarSelector {
+    public static final class Random implements VarSelector {
+
         private final int mVars;
         private String[] candidates;
 
@@ -81,6 +89,11 @@ public interface VarSelector extends Serializable {
 
         public Random(int mVars) {
             this.mVars = mVars;
+        }
+
+        @Override
+        public VarSelector newInstance() {
+            return new Random();
         }
 
         public String name() {
