@@ -49,7 +49,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
     boolean oobCompute = false;
     Classifier c = CTree.newC45();
     double sampling = 1;
-    BaggingMethod baggingMethod = BaggingMethods.DISTRIBUTION;
+    BaggingMethod baggingMethod = BaggingMethods.VOTING;
     //
     double totalOobInstances = 0;
     double totalOobError = 0;
@@ -95,7 +95,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
     @Override
     public Classifier newInstance() {
         return new CForest()
-                .withVarSelector(varSelector)
+                .withVarSelector(varSelector.newInstance())
                 .withRuns(runs)
                 .withBaggingMethod(baggingMethod)
                 .withSampling(sampling)
@@ -245,10 +245,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
             learn(df, targetVars);
             return;
         }
-
-        for (int i = predictors.size(); i < runs; i++) {
-            buildWeakPredictor(df, weights);
-        }
+        IntStream.range(0, runs).parallel().forEach(s -> buildWeakPredictor(df, weights));
     }
 
     private void buildWeakPredictor(Frame df, Var weights) {

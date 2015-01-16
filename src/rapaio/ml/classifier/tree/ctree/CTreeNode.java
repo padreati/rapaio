@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
@@ -44,7 +45,7 @@ public class CTreeNode implements Serializable {
     private final Predicate<FSpot> predicate;
 
     private boolean leaf = true;
-    private List<CTreeNode> children;
+    private final List<CTreeNode> children = new ArrayList<>();
     private DensityVector density;
     private DensityVector counter;
     private int bestIndex;
@@ -143,11 +144,13 @@ public class CTreeNode implements Serializable {
         }
 
         Pair<List<Frame>, List<Numeric>> frames = tree.getSplitter().performSplit(df, weights, bestCandidate);
-        children = new ArrayList<>(frames.first.size());
-        for (int i = 0; i < frames.first.size(); i++) {
+
+        IntStream.range(0, frames.first.size()).parallel().forEach(i -> {
             CTreeNode child = new CTreeNode(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
-            children.add(child);
+            synchronized (children) {
+                children.add(child);
+            }
             child.learn(tree, frames.first.get(i), frames.second.get(i), depth - 1);
-        }
+        });
     }
 }

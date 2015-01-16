@@ -23,9 +23,11 @@ package rapaio.ml.eval;
 import rapaio.core.Printable;
 import rapaio.data.Var;
 
+import java.util.stream.IntStream;
+
 /**
  * Confusion matrix utility.
- *
+ * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class ConfusionMatrix implements Printable {
@@ -78,13 +80,7 @@ public class ConfusionMatrix implements Printable {
                 cmf[actual.index(i) - 1][predict.index(i) - 1]++;
             }
         }
-        acc = 0;
-        for (int i = 0; i < actual.rowCount(); i++) {
-            if (actual.index(i) == predict.index(i) && actual.index(i) != 0) {
-                acc++;
-            }
-        }
-
+        acc = IntStream.range(0, cmf.length).mapToDouble(i -> cmf[i][i]).sum();
         acceptedCases = acc;
         errorCases = completeCases - acceptedCases;
 
