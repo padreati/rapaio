@@ -30,9 +30,9 @@ import java.io.Serializable;
 
 /**
  * Receiver Operator Characteristic.
- *
+ * <p>
  * This utility class computes ROC for a given scores and binary prediction.
- *
+ * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
 public class ROC implements Printable, Serializable {
@@ -69,9 +69,9 @@ public class ROC implements Printable, Serializable {
      * is correct or not. The truth value is obtained by comparing the actual index value
      * with the given index.
      *
-     * @param score scores variable
+     * @param score  scores variable
      * @param actual actual class
-     * @param index index of the class considered 1, all other index values are 0
+     * @param index  index of the class considered 1, all other index values are 0
      */
     public ROC(Var score, Var actual, int index) {
         this(score, actual, actual.dictionary()[index]);
@@ -82,9 +82,9 @@ public class ROC implements Printable, Serializable {
      * is correct or not. The truth value is obtained by comparing the actual label value
      * with the given label.
      *
-     * @param score scores variable
+     * @param score  scores variable
      * @param actual actual class
-     * @param label label of the class considered 1, all other labels values are 0
+     * @param label  label of the class considered 1, all other labels values are 0
      */
     public ROC(Var score, Var actual, String label) {
         this.score = score;
@@ -180,7 +180,21 @@ public class ROC implements Printable, Serializable {
             sb.append(String.format(fmt, data.varNames()[j]));
         }
         sb.append("\n");
-        for (int i = 0; i < data.rowCount(); i++) {
+
+        int[] rows = new int[11];
+        rows[0] = 0;
+        rows[1] = 1 * data.rowCount() / 10;
+        rows[2] = 2 * data.rowCount() / 10;
+        rows[3] = 3 * data.rowCount() / 10;
+        rows[4] = 4 * data.rowCount() / 10;
+        rows[5] = 5 * data.rowCount() / 10;
+        rows[6] = 6 * data.rowCount() / 10;
+        rows[7] = 7 * data.rowCount() / 10;
+        rows[8] = 8 * data.rowCount() / 10;
+        rows[9] = 9 * data.rowCount() / 10;
+        rows[10] = data.rowCount() - 1;
+
+        for (int i : rows) {
             for (int j = 0; j < data.varCount(); j++) {
                 if (j > 0) {
                     sb.append(", ");

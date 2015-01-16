@@ -640,8 +640,8 @@ public class MathBase {
      * Compute the logarithm of the PMF for a binomial densities
      * using the saddle point expansion.
      *
-     * @param x     the value at which the probability is evaluated.
-     * @param n     the number of trials.
+     * @param x the value at which the probability is evaluated.
+     * @param n the number of trials.
      * @param p the probability of success.
      * @return log(p(x)).
      */
@@ -675,4 +675,34 @@ public class MathBase {
         if (x == 0) return Math.exp(-lb);
         return Math.exp(-getStirlingError(x) - getDeviancePart(x, lb)) / Math.sqrt(TWO_PI * x);
     }
+
+
+    public static final double SMALL_ERR = 1e-6;
+
+    /**
+     * Tests if the double values are approximately equal
+     *
+     * @param a first value
+     * @param b second value
+     * @return true if equals, false otherwise
+     */
+    public static boolean eq(double a, double b) {
+        return (a - b < SMALL_ERR) && (b - a < SMALL_ERR);
+    }
+
+    /**
+     * Tests if the first number is smaller than the second number
+     *
+     * @param a
+     * @param b
+     * @return
+     */
+    public static boolean sm(double a, double b) {
+        return (b - a > SMALL_ERR);
+    }
+
+    public static boolean gr(double a, double b) {
+        return (a - b > SMALL_ERR);
+    }
+
 }
