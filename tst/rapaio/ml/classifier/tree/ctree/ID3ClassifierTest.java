@@ -65,7 +65,7 @@ public class ID3ClassifierTest {
 
         CTree id3 = new CTree()
                 .withNominalMethod(new CTreeNominalMethod.Full())
-                .withNumericMethod(new CTreeNumericMethod.IGNORE())
+                .withNumericMethod(new CTreeNumericMethod.Ignore())
                 .withSplitter(new CTreeSplitter.RemainsIgnored())
                 .withFunction(new CTreeTestFunction.InfoGain());
         id3.learn(df, className);

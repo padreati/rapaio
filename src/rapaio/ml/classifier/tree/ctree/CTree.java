@@ -45,7 +45,7 @@ public class CTree extends AbstractClassifier {
 
     CTreeTestCounter testCounter = new CTreeTestCounter.MNominalMNumeric();
     CTreeNominalMethod nominalMethod = new CTreeNominalMethod.Full();
-    CTreeNumericMethod numericMethod = new CTreeNumericMethod.BINARY();
+    CTreeNumericMethod numericMethod = new CTreeNumericMethod.Binary();
     CTreeTestFunction function = new CTreeTestFunction.InfoGain();
     CTreeSplitter splitter = new CTreeSplitter.RemainsIgnored();
     CTreePredictor predictor = new CTreePredictor.Standard();
@@ -62,7 +62,7 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(Integer.MAX_VALUE)
                 .withSplitter(new CTreeSplitter.RemainsIgnored())
                 .withNominalMethod(new CTreeNominalMethod.Full())
-                .withNumericMethod(new CTreeNumericMethod.IGNORE())
+                .withNumericMethod(new CTreeNumericMethod.Ignore())
                 .withFunction(new CTreeTestFunction.Entropy())
                 .withPredictor(new CTreePredictor.Standard());
     }
@@ -73,7 +73,7 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(Integer.MAX_VALUE)
                 .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
                 .withNominalMethod(new CTreeNominalMethod.Full())
-                .withNumericMethod(new CTreeNumericMethod.BINARY())
+                .withNumericMethod(new CTreeNumericMethod.Binary())
                 .withFunction(new CTreeTestFunction.GainRatio())
                 .withPredictor(new CTreePredictor.Standard());
     }
@@ -84,7 +84,7 @@ public class CTree extends AbstractClassifier {
                 .withTestCounter(new CTreeTestCounter.OneNominalOneNumeric())
                 .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
                 .withNominalMethod(new CTreeNominalMethod.Binary())
-                .withNumericMethod(new CTreeNumericMethod.BINARY())
+                .withNumericMethod(new CTreeNumericMethod.Binary())
                 .withPredictor(new CTreePredictor.Standard());
     }
 
@@ -94,7 +94,7 @@ public class CTree extends AbstractClassifier {
                 .withTestCounter(new CTreeTestCounter.MNominalMNumeric())
                 .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
                 .withNominalMethod(new CTreeNominalMethod.Binary())
-                .withNumericMethod(new CTreeNumericMethod.BINARY())
+                .withNumericMethod(new CTreeNumericMethod.Binary())
                 .withPredictor(new CTreePredictor.Standard());
     }
 

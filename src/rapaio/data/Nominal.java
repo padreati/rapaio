@@ -72,6 +72,7 @@ public final class Nominal extends FactorBase {
     public static Nominal newEmpty(int rows, Collection<String> dict) {
         Nominal nominal = new Nominal();
         HashSet<String> used = new HashSet<>();
+        used.add("?");
         for (String next : dict) {
             if (used.contains(next)) continue;
             used.add(next);

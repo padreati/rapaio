@@ -43,15 +43,15 @@ public interface CTreeNumericMethod extends Serializable {
 
     List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function);
 
-    public static class IGNORE implements CTreeNumericMethod {
+    public static class Ignore implements CTreeNumericMethod {
         @Override
         public String name() {
-            return "IGNORE";
+            return "Ignore";
         }
 
         @Override
         public CTreeNumericMethod newInstance() {
-            return new IGNORE();
+            return new Ignore();
         }
 
         @Override
@@ -62,16 +62,16 @@ public interface CTreeNumericMethod extends Serializable {
 
     ;
 
-    public static class BINARY implements CTreeNumericMethod {
+    public static class Binary implements CTreeNumericMethod {
 
         @Override
         public String name() {
-            return "BINARY";
+            return "Binary";
         }
 
         @Override
         public CTreeNumericMethod newInstance() {
-            return new BINARY();
+            return new Binary();
         }
 
         @Override
