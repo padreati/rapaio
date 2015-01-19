@@ -55,6 +55,7 @@ StatSampling
 * Ensemble: Bagging
 * Ensemble: Random Forests
 * Bayesian: NaiveBayes (Gaussian, Empirical, Multinomial)
+* SVM: BinarySMO
 
 **Regression**
 

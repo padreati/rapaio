@@ -48,6 +48,12 @@ public final class RandomSource implements Serializable {
     public static int nextInt(int n) {
         return rand.nextInt(n);
     }
+
+    public static Random getRandom() {
+        return rand;
+    }
+
+    ;
 }
 
 /**

@@ -28,17 +28,27 @@ import rapaio.data.Frame;
  */
 public class PolyKernel extends AbstractKernel {
 
-    private final boolean lowerOrder;
     private final double exponent;
+    private final double bias;
+    private final double slope;
 
     @Override
     public boolean isLinear() {
-        return MathBase.eq(exponent, 1);
+        return MathBase.eq(exponent, 1.0);
     }
 
-    public PolyKernel(double exponent, boolean lowerOrder) {
+    public PolyKernel(double exponent) {
+        this(exponent, 1.0, 1.0);
+    }
+
+    public PolyKernel(double exponent, double bias) {
+        this(exponent, bias, 1.0);
+    }
+
+    public PolyKernel(double exponent, double bias, double slope) {
         this.exponent = exponent;
-        this.lowerOrder = lowerOrder;
+        this.slope = slope;
+        this.bias = bias;
     }
 
     @Override
@@ -49,11 +59,8 @@ public class PolyKernel extends AbstractKernel {
         }
 
         double result = dotProd(df1, row1, df2, row2);
-        if (lowerOrder) {
-            result += 1;
-        }
         if (exponent != 1.0) {
-            result = Math.pow(result, exponent);
+            result = Math.pow(slope * result + bias, exponent);
         }
         return result;
     }

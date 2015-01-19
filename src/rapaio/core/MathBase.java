@@ -690,6 +690,10 @@ public class MathBase {
         return (a - b < SMALL_ERR) && (b - a < SMALL_ERR);
     }
 
+    public static boolean eq(double a, double b, double err) {
+        return (a - b < err) && (b - a < err);
+    }
+
     /**
      * Tests if the first number is smaller than the second number
      *

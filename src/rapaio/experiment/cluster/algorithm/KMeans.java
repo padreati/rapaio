@@ -20,12 +20,12 @@
 
 package rapaio.experiment.cluster.algorithm;
 
+import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.experiment.cluster.distance.Distance;
 import rapaio.util.Pair;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA.
@@ -43,14 +43,14 @@ public class KMeans {
     public static final int MAX_ITERATIONS = 100;
 
     public KMeans(int clusterNumber, Distance distance, int maxIterations) {
-        Random rand = new Random();
+        RandomSource.setSeed(1);
         this.maxIterations = maxIterations;
         this.clusterNumber = clusterNumber;
         this.distance = distance;
         this.centroids = new double[clusterNumber];
         this.meanDistances = new double[clusterNumber];
         for (int i = 0; i < clusterNumber; i++) {
-            centroids[i] = rand.nextDouble();
+            centroids[i] = RandomSource.nextDouble();
             meanDistances[i] = Double.NaN;
         }
     }

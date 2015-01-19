@@ -23,35 +23,22 @@ package rapaio.ml.classifier.svm.kernel;
 import rapaio.data.Frame;
 
 /**
- * The Gaussian kernel is an example of radial basis function kernel.
- *
- *      K(x,y) = exp( -(<x-y, x-y>^2) / (2*sigma) )
- *
- *
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
-public class RBFKernel extends AbstractKernel {
+public class CircularKernel extends AbstractKernel {
 
     private final double sigma;
-    private final double factor;
 
-    public RBFKernel() {
-        this(7);
-    }
-
-    public RBFKernel(double sigma) {
+    public CircularKernel(double sigma) {
         this.sigma = sigma;
-        this.factor = 1.0 / (2.0 * sigma * sigma);
-    }
-
-    @Override
-    public void buildKernel(String[] varNames) {
-        this.varNames = varNames;
     }
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double value = deltaDotProd(df1, row1, df2, row2);
-        return 1.0 / Math.pow(Math.E, factor * value * value);
+        double dot = deltaDotProd(df1, row1, df2, row2);
+        if (dot < sigma)
+            return 0;
+        double f = dot / sigma;
+        return 2 * (Math.acos(-f) - f * Math.sqrt(1 - f * f)) / Math.PI;
     }
 }

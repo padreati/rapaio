@@ -23,35 +23,25 @@ package rapaio.ml.classifier.svm.kernel;
 import rapaio.data.Frame;
 
 /**
+ * Huang, 2008
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
-public abstract class AbstractKernel implements Kernel {
+public class WaveKernel extends AbstractKernel {
 
-    protected String[] varNames;
+    private final double theta;
 
-    @Override
-    public void buildKernel(String[] varNames) {
-        this.varNames = varNames;
+    public WaveKernel() {
+        this(1.0);
+    }
+
+    public WaveKernel(double theta) {
+        this.theta = theta;
     }
 
     @Override
-    public boolean isLinear() {
-        return false;
-    }
-
-    protected double dotProd(Frame df1, int row1, Frame df2, int row2) {
-        double result = 0;
-        for (String varName : varNames) {
-            result += df1.value(row1, varName) * df2.value(row2, varName);
-        }
-        return result;
-    }
-
-    protected double deltaDotProd(Frame df1, int row1, Frame df2, int row2) {
-        double result = 0;
-        for (String varName : varNames) {
-            result += Math.pow(df1.value(row1, varName) - df2.value(row2, varName), 2);
-        }
-        return result;
+    public double eval(Frame df1, int row1, Frame df2, int row2) {
+        double dot = dotProd(df1, row1, df2, row2);
+        return theta * Math.sin(dot / theta) / dot;
     }
 }

@@ -312,12 +312,12 @@
 //    /**
 //     * The complexity parameter.
 //     */
-//    protected double m_C = 1.0;
+//    protected double C = 1.0;
 //
 //    /**
 //     * Epsilon for rounding.
 //     */
-//    protected double m_eps = 1.0e-12;
+//    protected double eps = 1.0e-12;
 //
 //    /**
 //     * Tolerance for accuracy of result.
@@ -347,7 +347,7 @@
 //    /**
 //     * The class index from the training data
 //     */
-//    protected int m_classIndex = -1;
+//    protected int classIndex = -1;
 //
 //    /**
 //     * The class attribute
@@ -391,7 +391,7 @@
 //    /**
 //     * the kernel to use
 //     */
-//    protected Kernel m_kernel = new PolyKernel();
+//    protected Kernel kernel = new PolyKernel();
 //
 //    /**
 //     * Turns off checks for missing values, etc. Use with caution.
@@ -511,9 +511,9 @@
 //            m_Filter = null;
 //        }
 //
-//        m_classIndex = insts.classIndex();
+//        classIndex = insts.classIndex();
 //        m_classAttribute = insts.classAttribute();
-//        m_KernelIsLinear = (m_kernel instanceof PolyKernel) && (((PolyKernel) m_kernel).getExponent() == 1.0);
+//        m_KernelIsLinear = (kernel instanceof PolyKernel) && (((PolyKernel) kernel).getExponent() == 1.0);
 //
 //        // Generate subsets representing each class
 //        Instances[] subsets = new Instances[insts.numClasses()];
@@ -582,8 +582,8 @@
 //            double[] result = new double[inst.numClasses()];
 //            for (int i = 0; i < inst.numClasses(); i++) {
 //                for (int j = i + 1; j < inst.numClasses(); j++) {
-//                    if ((m_classifiers[i][j].m_alpha != null) ||
-//                            (m_classifiers[i][j].m_sparseWeights != null)) {
+//                    if ((m_classifiers[i][j].alpha != null) ||
+//                            (m_classifiers[i][j].sparseWeights != null)) {
 //                        double output = m_classifiers[i][j].SVMOutput(-1, inst);
 //                        if (output > 0) {
 //                            result[j] += 1;
@@ -610,14 +610,14 @@
 //            double[][] n = new double[inst.numClasses()][inst.numClasses()];
 //            for (int i = 0; i < inst.numClasses(); i++) {
 //                for (int j = i + 1; j < inst.numClasses(); j++) {
-//                    if ((m_classifiers[i][j].m_alpha != null) ||
-//                            (m_classifiers[i][j].m_sparseWeights != null)) {
+//                    if ((m_classifiers[i][j].alpha != null) ||
+//                            (m_classifiers[i][j].sparseWeights != null)) {
 //                        double[] newInst = new double[2];
 //                        newInst[0] = m_classifiers[i][j].SVMOutput(-1, inst);
 //                        newInst[1] = Utils.missingValue();
 //                        r[i][j] = m_classifiers[i][j].m_logistic.
 //                                distributionForInstance(new DenseInstance(1, newInst))[0];
-//                        n[i][j] = m_classifiers[i][j].m_sumOfWeights;
+//                        n[i][j] = m_classifiers[i][j].sumOfWeights;
 //                    }
 //                }
 //            }
@@ -677,7 +677,7 @@
 //
 //        for (int i = 0; i < numValues; i++) {
 //            for (int j = i + 1; j < numValues; j++) {
-//                sparseWeights[i][j] = m_classifiers[i][j].m_sparseWeights;
+//                sparseWeights[i][j] = m_classifiers[i][j].sparseWeights;
 //            }
 //        }
 //
@@ -694,7 +694,7 @@
 //
 //        for (int i = 0; i < numValues; i++) {
 //            for (int j = i + 1; j < numValues; j++) {
-//                sparseIndices[i][j] = m_classifiers[i][j].m_sparseIndices;
+//                sparseIndices[i][j] = m_classifiers[i][j].sparseIndices;
 //            }
 //        }
 //
@@ -711,7 +711,7 @@
 //
 //        for (int i = 0; i < numValues; i++) {
 //            for (int j = i + 1; j < numValues; j++) {
-//                bias[i][j] = m_classifiers[i][j].m_b;
+//                bias[i][j] = m_classifiers[i][j].b;
 //            }
 //        }
 //
@@ -753,11 +753,11 @@
 //        for (int i = 0; i < numValues; i++) {
 //            for (int j = i + 1; j < numValues; j++) {
 //                //	int numAttributes = m_classifiers[i][j].m_data.numAttributes();
-//                int numAttributes = m_classifiers[i][j].m_sparseIndices.length;
+//                int numAttributes = m_classifiers[i][j].sparseIndices.length;
 //                String[] attrNames = new String[numAttributes];
 //                for (int k = 0; k < numAttributes; k++) {
 //                    attrNames[k] = m_classifiers[i][j].
-//                            m_data.attribute(m_classifiers[i][j].m_sparseIndices[k]).name();
+//                            m_data.attribute(m_classifiers[i][j].sparseIndices[k]).name();
 //                }
 //                attributeNames[i][j] = attrNames;
 //            }
@@ -1062,7 +1062,7 @@
 //     * @param value the kernel to use
 //     */
 //    public void setKernel(Kernel value) {
-//        m_kernel = value;
+//        kernel = value;
 //    }
 //
 //    /**
@@ -1071,7 +1071,7 @@
 //     * @return the current kernel
 //     */
 //    public Kernel getKernel() {
-//        return m_kernel;
+//        return kernel;
 //    }
 //
 //    /**
@@ -1091,7 +1091,7 @@
 //     */
 //    public double getC() {
 //
-//        return m_C;
+//        return C;
 //    }
 //
 //    /**
@@ -1101,7 +1101,7 @@
 //     */
 //    public void setC(double v) {
 //
-//        m_C = v;
+//        C = v;
 //    }
 //
 //    /**
@@ -1151,7 +1151,7 @@
 //     */
 //    public double getEpsilon() {
 //
-//        return m_eps;
+//        return eps;
 //    }
 //
 //    /**
@@ -1161,7 +1161,7 @@
 //     */
 //    public void setEpsilon(double v) {
 //
-//        m_eps = v;
+//        eps = v;
 //    }
 //
 //    /**
@@ -1304,7 +1304,7 @@
 //        }
 //        try {
 //            text.append("SMO\n\n");
-//            text.append("Kernel used:\n  " + m_kernel.toString() + "\n\n");
+//            text.append("Kernel used:\n  " + kernel.toString() + "\n\n");
 //
 //            for (int i = 0; i < m_classAttribute.numValues(); i++) {
 //                for (int j = i + 1; j < m_classAttribute.numValues(); j++) {

@@ -20,6 +20,7 @@
 
 package rapaio.graphics.plot;
 
+import rapaio.core.RandomSource;
 import rapaio.data.Var;
 import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
@@ -73,7 +74,7 @@ public class Points extends PlotComponent {
         for (int i = 0; i < len; i++) {
             pos.add(i);
         }
-        Collections.shuffle(pos);
+        Collections.shuffle(pos, RandomSource.getRandom());
         for (int j = 0; j < len; j++) {
             int i = pos.get(j);
             if (x.missing(i) || y.missing(i)) {

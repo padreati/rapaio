@@ -20,6 +20,7 @@
 
 package rapaio.ml.classifier;
 
+import rapaio.core.RandomSource;
 import rapaio.core.sample.Sampling;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
@@ -85,7 +86,7 @@ public class ModelEvaluation {
         }
         List<Integer> shuffle = new ArrayList<>();
         for (int i = 0; i < dict.length; i++) {
-            Collections.shuffle(rows[i]);
+            Collections.shuffle(rows[i], RandomSource.getRandom());
             shuffle.addAll(rows[i]);
         }
         List<Integer>[] strata = new List[folds];

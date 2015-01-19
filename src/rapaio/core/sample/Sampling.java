@@ -302,7 +302,7 @@ public final class Sampling {
         List<Frame> result = new ArrayList<>();
 
         List<Integer> rows = IntStream.range(0, frame.rowCount()).mapToObj(i -> i).collect(Collectors.toList());
-        Collections.shuffle(rows);
+        Collections.shuffle(rows, RandomSource.getRandom());
 
         int start = 0;
         for (double f : freq) {
@@ -328,12 +328,12 @@ public final class Sampling {
         List<Integer> left = new ArrayList<>();
         List<Integer> right = new ArrayList<>();
         for (List<Integer> map : maps) {
-            Collections.shuffle(map);
+            Collections.shuffle(map, RandomSource.getRandom());
             left.addAll(map.subList(0, (int) (p * map.size())));
             right.addAll(map.subList((int) (p * map.size()), map.size()));
         }
-        Collections.shuffle(left);
-        Collections.shuffle(right);
+        Collections.shuffle(left, RandomSource.getRandom());
+        Collections.shuffle(right, RandomSource.getRandom());
 
         return new ArrayList<Frame>() {{
             add(df.mapRows(Mapping.newWrapOf(left)));
