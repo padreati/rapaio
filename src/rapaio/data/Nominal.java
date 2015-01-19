@@ -20,10 +20,7 @@
 
 package rapaio.data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Nominal var contains values for categorical observations where order of labels is not important.
@@ -74,8 +71,10 @@ public final class Nominal extends FactorBase {
      */
     public static Nominal newEmpty(int rows, Collection<String> dict) {
         Nominal nominal = new Nominal();
+        HashSet<String> used = new HashSet<>();
         for (String next : dict) {
-            if (nominal.dict.contains(next)) continue;
+            if (used.contains(next)) continue;
+            used.add(next);
             nominal.dict.add(next);
             nominal.reverse.put(next, nominal.reverse.size());
         }
