@@ -55,7 +55,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     // class indices
     protected int cl1 = 1;
     protected int cl2 = 2;
-    protected int maxRuns = 1_000_000;
+    protected int maxRuns = Integer.MAX_VALUE;
 
     protected double C = 1.0; // complexity parameter
     protected double eps = 1e-12; // epsilon for rounding
@@ -245,7 +245,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         sparseIndices = null;
 
         // init kernel
-        kernel.buildKernel(varNames);
+        kernel.buildKernel(varNames, df);
 
         // Initialize error cache
         fCache = new double[df.rowCount()];
@@ -382,10 +382,12 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                 double pred = predict(df, i);
                 if (MathBase.sm(pred, 0)) {
                     cr.firstClasses().setIndex(i, cl1);
-                    cr.firstDensity().setValue(i, firstDictionary()[cl1], 1);
+                    cr.firstDensity().setValue(i, firstDictionary()[cl1], -pred);
+                    cr.firstDensity().setValue(i, firstDictionary()[cl2], pred);
                 } else {
                     cr.firstClasses().setIndex(i, cl2);
-                    cr.firstDensity().setValue(i, firstDictionary()[cl2], 1);
+                    cr.firstDensity().setValue(i, firstDictionary()[cl1], -pred);
+                    cr.firstDensity().setValue(i, firstDictionary()[cl2], pred);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -434,7 +436,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             }
         } else {
             for (int i = supportVectors.nextSetBit(0); i != -1; i = supportVectors.nextSetBit(i + 1)) {
-                result += target[i] * alpha[i] * kernel.eval(train, i, df, row);
+                result += target[i] * alpha[i] * kernel.compute(train, i, df, row);
             }
         }
         result -= b;
@@ -548,9 +550,9 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         }
 
         // Compute second derivative of objective function
-        double k11 = kernel.eval(train, i1, train, i1);
-        double k12 = kernel.eval(train, i1, train, i2);
-        double k22 = kernel.eval(train, i2, train, i2);
+        double k11 = kernel.compute(train, i1, train, i1);
+        double k12 = kernel.compute(train, i1, train, i2);
+        double k22 = kernel.compute(train, i2, train, i2);
         double eta = 2 * k12 - k11 - k22;
 
         double a1, a2;
@@ -691,8 +693,8 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         for (int j = I0.nextSetBit(0); j != -1; j = I0.nextSetBit(j + 1)) {
             if ((j != i1) && (j != i2)) {
                 fCache[j] +=
-                        y1 * (a1 - alph1) * kernel.eval(train, i1, train, j) +
-                                y2 * (a2 - alph2) * kernel.eval(train, i2, train, j);
+                        y1 * (a1 - alph1) * kernel.compute(train, i1, train, j) +
+                                y2 * (a2 - alph2) * kernel.compute(train, i2, train, j);
             }
         }
 

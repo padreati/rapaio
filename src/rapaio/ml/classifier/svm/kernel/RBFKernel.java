@@ -45,11 +45,6 @@ public class RBFKernel extends AbstractKernel {
     }
 
     @Override
-    public void buildKernel(String[] varNames) {
-        this.varNames = varNames;
-    }
-
-    @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
         double value = deltaDotProd(df1, row1, df2, row2);
         return 1.0 / Math.pow(Math.E, factor * value * value);

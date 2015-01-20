@@ -29,9 +29,9 @@ public interface Kernel {
 
     boolean isLinear();
 
-    void buildKernel(String[] varNames);
+    void buildKernel(String[] varNames, Frame df);
 
-    double eval(Frame df1, int row1, Frame df2, int row2);
+    double compute(Frame df1, int row1, Frame df2, int row2);
 
     default void clean() {
     }
