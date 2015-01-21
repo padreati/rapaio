@@ -23,6 +23,14 @@ package rapaio.ml.classifier.svm.kernel;
 import rapaio.data.Frame;
 
 /**
+ * Spherical Kernel
+ * <p>
+ * The spherical kernel is similar to the circular kernel, but is positive definite in R3.
+ * <p>
+ * k(x, y) = 1 - \frac{3}{2} \frac{\lVert x-y \rVert}{\sigma} + \frac{1}{2} \left( \frac{ \lVert x-y \rVert}{\sigma} \right)^3
+ * <p>
+ * \mbox{if}~ \lVert x-y \rVert < \sigma \mbox{, zero otherwise}
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 public class SphericalKernel extends AbstractKernel {

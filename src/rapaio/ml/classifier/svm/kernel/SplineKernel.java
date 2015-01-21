@@ -23,29 +23,22 @@ package rapaio.ml.classifier.svm.kernel;
 import rapaio.data.Frame;
 
 /**
- * The exponential kernel is closely related to the Gaussian kernel, with only the square of the norm left out. It is also a radial basis function kernel.
+ * The Spline kernel is given as a piece-wise cubic polynomial, as derived in the works by Gunn (1998).
  * <p>
- * k(x, y) = \exp\left(-\frac{ \lVert x-y \rVert }{2\sigma^2}\right)
- * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
-public class ExponentialKernel extends AbstractKernel {
-
-    private final double sigma;
-    private final double factor;
-
-    public ExponentialKernel() {
-        this(7);
-    }
-
-    public ExponentialKernel(double sigma) {
-        this.sigma = sigma;
-        this.factor = 1.0 / (2.0 * sigma * sigma);
-    }
+public class SplineKernel extends AbstractKernel {
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double value = deltaDotProd(df1, row1, df2, row2);
-        return 1.0 / Math.pow(Math.E, factor * value);
+
+        double value = 1;
+        for (String varName : varNames) {
+            double x_i = df1.value(row1, varName);
+            double y_i = df2.value(row2, varName);
+            double min = Math.min(x_i, y_i);
+            value *= 1 + x_i * y_i + x_i * y_i * min - (x_i + y_i) * Math.pow(min, 2) / 2.0 + Math.pow(min, 3) / 3;
+        }
+        return value;
     }
 }

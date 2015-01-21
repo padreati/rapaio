@@ -23,6 +23,16 @@ package rapaio.ml.classifier.svm.kernel;
 import rapaio.data.Frame;
 
 /**
+ * Circular Kernel
+ * <p>
+ * The circular kernel is used in geostatic applications.
+ * It is an example of an isotropic stationary kernel
+ * and is positive definite in R2.
+ * <p>
+ * k(x, y) = \frac{2}{\pi} \arccos ( - \frac{ \lVert x-y \rVert}{\sigma}) - \frac{2}{\pi} \frac{ \lVert x-y \rVert}{\sigma} \sqrt{1 - \left(\frac{ \lVert x-y \rVert}{\sigma} \right)^2}
+ * <p>
+ * \mbox{if}~ \lVert x-y \rVert < \sigma \mbox{, zero otherwise}
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 public class CircularKernel extends AbstractKernel {

@@ -23,6 +23,11 @@ package rapaio.ml.classifier.svm.kernel;
 import rapaio.data.Frame;
 
 /**
+ * The Rational Quadratic kernel is less computationally intensive than the Gaussian kernel
+ * and can be used as an alternative when using the Gaussian becomes too expensive.
+ * <p>
+ * k(x, y) = 1 - \frac{\lVert x-y \rVert^2}{\lVert x-y \rVert^2 + c}
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 public class RationalQuadraticKernel extends AbstractKernel {

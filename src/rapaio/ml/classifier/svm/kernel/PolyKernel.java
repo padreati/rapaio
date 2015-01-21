@@ -24,6 +24,21 @@ import rapaio.core.MathBase;
 import rapaio.data.Frame;
 
 /**
+ * The Polynomial kernel is a non-stationary kernel. Polynomial kernels
+ * are well suited for problems where all the training data is normalized.
+ * <p>
+ * k(x, y) = (\alpha x^T y + c)^d
+ * <p>
+ * Adjustable parameters are the slope alpha, the constant term c and the
+ * polynomial degree d.
+ * <p>
+ * A special case is the linear kernel (d=1).
+ * <p>
+ * The Linear kernel is the simplest kernel function. It is given by the
+ * inner product <x,y> plus an optional constant c. Kernel algorithms
+ * using a linear kernel are often equivalent to their non-kernel
+ * counterparts, i.e. KPCA with linear kernel is the same as standard PCA.
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
 public class PolyKernel extends AbstractKernel {

@@ -23,29 +23,25 @@ package rapaio.ml.classifier.svm.kernel;
 import rapaio.data.Frame;
 
 /**
- * The exponential kernel is closely related to the Gaussian kernel, with only the square of the norm left out. It is also a radial basis function kernel.
+ * The Multiquadric kernel can be used in the same situations as the Rational Quadratic kernel.
+ * As is the case with the Sigmoid kernel, it is also an example of an
+ * non-positive definite kernel.
  * <p>
- * k(x, y) = \exp\left(-\frac{ \lVert x-y \rVert }{2\sigma^2}\right)
+ * k(x, y) = \sqrt{\lVert x-y \rVert^2 + c^2}
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
-public class ExponentialKernel extends AbstractKernel {
+public class MultiQuadricKernel extends AbstractKernel {
 
-    private final double sigma;
-    private final double factor;
+    private final double c;
 
-    public ExponentialKernel() {
-        this(7);
-    }
-
-    public ExponentialKernel(double sigma) {
-        this.sigma = sigma;
-        this.factor = 1.0 / (2.0 * sigma * sigma);
+    public MultiQuadricKernel(double c) {
+        this.c = c;
     }
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double value = deltaDotProd(df1, row1, df2, row2);
-        return 1.0 / Math.pow(Math.E, factor * value);
+        double dot = deltaDotProd(df1, row1, df2, row2);
+        return Math.sqrt(dot * dot + c * c);
     }
 }

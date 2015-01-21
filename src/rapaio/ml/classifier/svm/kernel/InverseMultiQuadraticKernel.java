@@ -23,6 +23,14 @@ package rapaio.ml.classifier.svm.kernel;
 import rapaio.data.Frame;
 
 /**
+ * Inverse Multiquadric Kernel
+ * <p>
+ * The Inverse Multi Quadric kernel. As with the Gaussian kernel,
+ * it results in a kernel matrix with full rank (Micchelli, 1986)
+ * and thus forms a infinite dimension feature space.
+ * <p>
+ * k(x, y) = \frac{1}{\sqrt{\lVert x-y \rVert^2 + \theta^2}}
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 public class InverseMultiQuadraticKernel extends AbstractKernel {

@@ -23,7 +23,22 @@ package rapaio.ml.classifier.svm.kernel;
 import rapaio.data.Frame;
 
 /**
- * Huang, 2008
+ * The Wavelet kernel (Zhang et al, 2004) comes from Wavelet theory and is given as:
+ * <p>
+ * k(x,y) = \prod_{i=1}^N h(\frac{x_i-c_i}{a}) \: h(\frac{y_i-c_i}{a})
+ * <p>
+ * Where a and c are the wavelet dilation and translation coefficients, respectively
+ * (the form presented above is a simplification, please see the original paper for
+ * details). A translation-invariant version of this kernel can be given as:
+ * <p>
+ * k(x,y) = \prod_{i=1}^N h(\frac{x_i-y_i}{a})
+ * <p>
+ * Where in both h(x) denotes a mother wavelet function. In the paper by Li Zhang,
+ * Weida Zhou, and Licheng Jiao, the authors suggests a possible h(x) as:
+ * <p>
+ * h(x) = cos(1.75x)exp(-\frac{x^2}{2})
+ * <p>
+ * Which they also prove as an admissible kernel function.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */

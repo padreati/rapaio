@@ -23,6 +23,26 @@ package rapaio.ml.classifier.svm.kernel;
 import rapaio.data.Frame;
 
 /**
+ * The Hyperbolic Tangent Kernel is also known as the Sigmoid Kernel and as
+ * the Multilayer Perceptron (MLP) kernel. The Sigmoid Kernel comes from the
+ * Neural Networks field, where the bipolar sigmoid function is often used as
+ * an activation function for artificial neurons.
+ * <p>
+ * k(x, y) = \tanh (\alpha x^T y + c)
+ * <p>
+ * It is interesting to note that a SVM model using a sigmoid kernel function
+ * is equivalent to a two-layer, perceptron neural network. This kernel was
+ * quite popular for support vector machines due to its origin from neural
+ * network theory. Also, despite being only conditionally positive definite,
+ * it has been found to perform well in practice.
+ * <p>
+ * There are two adjustable parameters in the sigmoid kernel, the slope alpha
+ * and the intercept constant c. A common value for alpha is 1/N,
+ * where N is the data dimension.
+ * <p>
+ * A more detailed study on sigmoid kernels can be found in the
+ * works by Hsuan-Tien and Chih-Jen.
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 public class SigmoidKernel extends AbstractKernel {

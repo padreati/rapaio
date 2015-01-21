@@ -23,6 +23,12 @@ package rapaio.ml.classifier.svm.kernel;
 import rapaio.data.Frame;
 
 /**
+ * The Power kernel is also known as the (unrectified) triangular kernel.
+ * It is an example of scale-invariant kernel (Sahbi and Fleuret, 2004)
+ * and is also only conditionally positive definite.
+ * <p>
+ * k(x,y) = - \lVert x-y \rVert ^d
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 public class PowerKernel extends AbstractKernel {
