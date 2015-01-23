@@ -23,6 +23,7 @@ package rapaio.graphics.plot;
 import rapaio.data.Var;
 import rapaio.graphics.Plot;
 import rapaio.graphics.base.BaseFigure;
+import rapaio.graphics.opt.ColorPalette;
 
 import java.awt.*;
 
@@ -98,5 +99,10 @@ public abstract class PlotComponent extends BaseFigure {
     @Override
     public float getAlpha() {
         return super.getAlpha();
+    }
+
+    @Override
+    public PlotComponent colorPalette(ColorPalette colorPalette) {
+        return (PlotComponent) super.colorPalette(colorPalette);
     }
 }

@@ -96,8 +96,11 @@ public class CTreeNode implements Serializable {
 
     public void learn(CTree tree, Frame df, Var weights, int depth) {
         density = new DensityVector(df.var(tree.firstTargetName()), weights);
+        density.normalize(false);
+
         counter = new DensityVector(df.var(tree.firstTargetName()), Numeric.newFill(df.rowCount(), 1));
         bestIndex = density.findBestIndex();
+
 
         if (df.rowCount() == 0) {
             return;

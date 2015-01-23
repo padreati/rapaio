@@ -63,7 +63,7 @@ public class DensityVector implements Serializable {
         double n = 0;
         int bestIndex = -1;
         double best = Double.NEGATIVE_INFINITY;
-        for (int i = 1; i < values.length; i++) {
+        for (int i = 0; i < values.length; i++) {
             if (values[i] > best) {
                 best = values[i];
                 bestIndex = i;

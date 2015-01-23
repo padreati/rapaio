@@ -238,15 +238,26 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
                 }
             }
         }
+
         for (int i = 0; i < df.rowCount(); i++) {
             int maxIndex = 0;
             double maxValue = Double.NEGATIVE_INFINITY;
+            double total = 0;
             for (int k = 0; k < K; k++) {
                 if (cr.firstDensity().value(i, k + 1) > maxValue) {
                     maxValue = cr.firstDensity().value(i, k + 1);
                     maxIndex = k + 1;
                 }
+                total += cr.firstDensity().value(i, k + 1);
             }
+            // this does not work directly since we have also negative scores
+            // why is that happening?
+
+//            for (int k = 0; k < K; k++) {
+//                double p = cr.firstDensity().value(i, k + 1);
+//                p /= total;
+//                cr.firstDensity().setValue(i, k + 1, p);
+//            }
             cr.firstClasses().setIndex(i, maxIndex);
         }
         return cr;

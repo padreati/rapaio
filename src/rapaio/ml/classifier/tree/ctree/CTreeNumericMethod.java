@@ -107,7 +107,7 @@ public interface CTreeNumericMethod extends Serializable {
                     if (best == null) {
                         best = current;
 
-                        final double testValue = test.value(sort.index(i));
+                        final double testValue = (test.value(sort.index(i)) + test.value(sort.index(i + 1))) / 2.0;
                         current.addGroup(
                                 String.format("%s <= %.6f", testColName, testValue),
                                 spot -> !spot.missing(testColName) && spot.value(testColName) <= testValue);
@@ -120,7 +120,7 @@ public interface CTreeNumericMethod extends Serializable {
                         if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
                         best = current;
 
-                        final double testValue = test.value(sort.index(i));
+                        final double testValue = (test.value(sort.index(i)) + test.value(sort.index(i + 1))) / 2.0;
                         current.addGroup(
                                 String.format("%s <= %.6f", testColName, testValue),
                                 spot -> !spot.missing(testColName) && spot.value(testColName) <= testValue);
@@ -205,7 +205,7 @@ public interface CTreeNumericMethod extends Serializable {
                     if (best == null) {
                         best = current;
 
-                        final double testValue = test.value(sort.index(i));
+                        final double testValue = (test.value(sort.index(i)) + test.value(sort.index(i + 1))) / 2.0;
                         current.addGroup(
                                 String.format("%s <= %.6f", testColName, testValue),
                                 spot -> !spot.missing(testColName) && spot.value(testColName) <= testValue);

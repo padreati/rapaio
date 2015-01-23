@@ -22,7 +22,9 @@ package rapaio.ml.eval;
 
 import rapaio.core.Printable;
 import rapaio.data.Var;
+import rapaio.printer.Printer;
 
+import java.text.DecimalFormat;
 import java.util.stream.IntStream;
 
 /**
@@ -36,8 +38,14 @@ public class ConfusionMatrix implements Printable {
     private final Var predict;
     private final String[] dict;
     private final int[][] cmf;
+    private final boolean binary;
     private final boolean percents;
     private double acc;
+    private double mcc;
+    private double f1;
+    private double g;
+    private double precision;
+    private double recall;
     private double completeCases = 0;
     private double acceptedCases = 0;
     private double errorCases = 0;
@@ -53,6 +61,7 @@ public class ConfusionMatrix implements Printable {
         this.dict = actual.dictionary();
         this.cmf = new int[dict.length - 1][dict.length - 1];
         this.percents = percents;
+        this.binary = actual.dictionary().length == 3;
         compute();
     }
 
@@ -89,6 +98,19 @@ public class ConfusionMatrix implements Printable {
         } else {
             acc = acc / completeCases;
         }
+
+        if (binary) {
+            double tp = cmf[0][0];
+            double tn = cmf[1][1];
+            double fp = cmf[1][0];
+            double fn = cmf[0][1];
+
+            mcc = (tp * tn - fp * fn) / Math.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn));
+            f1 = 2 * tp / (2 * tp + fp + fn);
+            precision = tp / (tp + fp);
+            recall = tp / (tp + fn);
+            g = Math.sqrt(precision * recall);
+        }
     }
 
     @Override
@@ -98,8 +120,17 @@ public class ConfusionMatrix implements Printable {
     }
 
     private void addDetails(StringBuilder sb) {
+        DecimalFormat fmt = Printer.formatDecShort;
         sb.append(String.format("\nComplete cases %d from %d\n", (int) Math.rint(completeCases), actual.rowCount()));
-        sb.append(String.format("Accuracy: %.4f\n", acc));
+        sb.append(String.format("Acc: %s         (Accuracy )\n", fmt.format(acc)));
+        if (binary) {
+            sb.append(String.format("F1:  %s         (F1 score / F-measure)\n", fmt.format(f1)));
+            sb.append(String.format("MCC: %s         (Matthew correlation coefficient)\n", fmt.format(mcc)));
+            sb.append(String.format("Pre: %s         (Precision)\n", fmt.format(precision)));
+            sb.append(String.format("Rec: %s         (Recall)\n", fmt.format(recall)));
+            sb.append(String.format("G:   %s         (G-measure)\n", fmt.format(g)));
+        }
+        sb.append("\n");
     }
 
     private void addConfusionMatrix(StringBuilder sb) {

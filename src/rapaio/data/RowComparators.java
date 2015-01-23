@@ -30,17 +30,14 @@ public final class RowComparators implements Serializable {
 
     @SafeVarargs
     public static Comparator<Integer> aggregateComparator(final Comparator<Integer>... comparators) {
-        return new Comparator<Integer>() {
-            @Override
-            public int compare(Integer row1, Integer row2) {
-                for (Comparator<Integer> comparator : comparators) {
-                    int comp = comparator.compare(row1, row2);
-                    if (comp != 0) {
-                        return comp;
-                    }
+        return (row1, row2) -> {
+            for (Comparator<Integer> comparator : comparators) {
+                int comp = comparator.compare(row1, row2);
+                if (comp != 0) {
+                    return comp;
                 }
-                return 0;
             }
+            return 0;
         };
     }
 

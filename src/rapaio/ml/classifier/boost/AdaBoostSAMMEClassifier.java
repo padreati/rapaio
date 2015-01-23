@@ -238,11 +238,16 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
             double max = 0;
             int prediction = 0;
+            double total = 0;
             for (int j = 1; j < p.firstDensity().varCount(); j++) {
+                total += p.firstDensity().value(i, j);
                 if (p.firstDensity().value(i, j) > max) {
                     prediction = j;
                     max = p.firstDensity().value(i, j);
                 }
+            }
+            for (int j = 1; j < p.firstDensity().varCount(); j++) {
+                p.firstDensity().setValue(i, j, p.firstDensity().value(i, j) / total);
             }
             p.firstClasses().setIndex(i, prediction);
         }
