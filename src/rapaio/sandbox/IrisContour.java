@@ -28,7 +28,7 @@ import rapaio.data.Frame;
 import rapaio.data.*;
 import rapaio.data.grid.MeshGrid;
 import rapaio.graphics.Plot;
-import rapaio.graphics.plot.ContourLine;
+import rapaio.graphics.plot.MeshContour;
 import rapaio.graphics.plot.Points;
 import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.Classifier;
@@ -72,8 +72,8 @@ public class IrisContour {
         Classifier c = CForest.buildRandomForest(400, 2, 0.9);
 //        c = new NaiveBayesClassifier().withCvpEstimator(new NaiveBayesClassifier.CvpEstimatorKDE());
         c = new GBTClassifier()
-                .withTree(RTree.buildCART().withMaxDepth(4))
-                .withRuns(200);
+                .withTree(RTree.buildCART().withMaxDepth(6))
+                .withRuns(2000);
 
 //        c = new BinarySMO().withKernel(new PolyKernel(1, 1)).withMaxRuns(100);
 //        c = new BinarySMO().withKernel(new PolyKernel(2, 1));
@@ -111,16 +111,17 @@ public class IrisContour {
         int pos = 0;
         for (int i = 0; i < x.rowCount(); i++) {
             for (int j = 0; j < y.rowCount(); j++) {
-                mg.setValue(i, j, cr.firstDensity().value(pos++, 1));
+                mg.setValue(i, j, cr.firstDensity().value(pos, 1) - cr.firstDensity().value(pos, 2));
+                pos++;
 //                mg.setValue(i, j, cr.firstClasses().value(pos++));
             }
         }
 
         Plot p = new Plot();
-        for (int i = 0; i <= 10; i++) {
-            p.add(new ContourLine(mg, i / 10.).withFill(true).color(new Color(0f, 0f, 1f, (i) / 10.f)));
+        for (int i = -10; i <= 10; i++) {
+            p.add(new MeshContour(mg, i / 10.).withFill(true).color(new Color(0f, 0f, 1f, (i + 10) / 20.f)));
         }
-        p.add(new ContourLine(mg, 0.5).color(0).lwd(2f));
+        p.add(new MeshContour(mg, 0).color(0).lwd(2f));
 
         WS.draw(p.add(new Points(df.var(0), df.var(1)).color(df.var(2))));
     }

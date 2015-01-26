@@ -27,7 +27,8 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.grid.MeshGrid;
 import rapaio.graphics.Plot;
-import rapaio.graphics.plot.ContourLine;
+import rapaio.graphics.plot.MeshContour;
+import rapaio.graphics.plot.SandboxComponent;
 import rapaio.util.Pair;
 
 import java.awt.*;
@@ -63,13 +64,14 @@ public class ContourSample {
         Pair<Double, Double> range = mg.valueRange();
         Var q = Numeric.newSeq(0.1, 0.99, 0.1);
         for (int i = 0; i < q.rowCount(); i++) {
-            p.add(new ContourLine(mg, range.first + q.value(i) * (range.second - range.first))
+            p.add(new MeshContour(mg, range.first + q.value(i) * (range.second - range.first))
                     .withFill(true)
                     .color(new Color(0.f, 0.f, 1f, (float) q.value(i) * 0.7f)));
         }
 //        p.add(new ContourLine(bi, Math.pow(10, -7)).color(Color.green));
-        draw(p);
+//        draw(p);
 
 
+        draw(new Plot().add(new SandboxComponent()));
     }
 }

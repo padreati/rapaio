@@ -32,18 +32,18 @@ import java.awt.geom.Point2D;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/20/15.
  */
-public class ContourLine extends PlotComponent {
+public class MeshContour extends PlotComponent {
 
     private final MeshGrid mg;
     private final double threshold;
     private boolean fill = false;
 
-    public ContourLine(MeshGrid mg, double threshold) {
+    public MeshContour(MeshGrid mg, double threshold) {
         this.mg = mg;
         this.threshold = threshold;
     }
 
-    public ContourLine withFill(boolean fill) {
+    public MeshContour withFill(boolean fill) {
         this.fill = fill;
         return this;
     }
@@ -62,7 +62,7 @@ public class ContourLine extends PlotComponent {
     public void paint(Graphics2D g2d) {
         Point2D.Double[] points = new Point2D.Double[4];
         g2d.setColor(getCol(0));
-        int pointsCount = 0;
+        int pointsCount;
 
         Var x = mg.getX();
         Var y = mg.getY();
@@ -237,6 +237,13 @@ public class ContourLine extends PlotComponent {
                 if (pointsCount == 4) {
                     g2d.draw(new Line2D.Double(points[0], points[2]));
                     g2d.draw(new Line2D.Double(points[1], points[3]));
+//                    if(fill) {
+//                        if(mg.value(i, j) >= threshold) {
+//                            Path2D.Double path = new Path2D.Double();
+//                            path.moveTo(parent.xScale(x.value(i)), parent.xScale(y.value(j)));
+//                            path.lineTo(parent.xScale());
+//                        }
+//                    }
                     continue;
                 }
                 throw new RuntimeException("This should not happen");
