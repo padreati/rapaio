@@ -28,6 +28,7 @@ import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
+import java.util.LinkedList;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/20/15.
@@ -35,218 +36,220 @@ import java.awt.geom.Point2D;
 public class MeshContour extends PlotComponent {
 
     private final MeshGrid mg;
-    private final double threshold;
+    private boolean contour = false;
     private boolean fill = false;
 
-    public MeshContour(MeshGrid mg, double threshold) {
+    public MeshContour(MeshGrid mg, boolean contour, boolean fill) {
         this.mg = mg;
-        this.threshold = threshold;
-    }
-
-    public MeshContour withFill(boolean fill) {
+        this.contour = contour;
         this.fill = fill;
-        return this;
     }
 
     @Override
     protected Range buildRange() {
         return new Range(
-                mg.getX().value(0),
-                mg.getY().value(0),
-                mg.getX().value(mg.getX().rowCount() - 1),
-                mg.getY().value(mg.getY().rowCount() - 1)
+                mg.x().value(0),
+                mg.y().value(0),
+                mg.x().value(mg.x().rowCount() - 1),
+                mg.y().value(mg.y().rowCount() - 1)
         );
     }
 
     @Override
     public void paint(Graphics2D g2d) {
-        Point2D.Double[] points = new Point2D.Double[4];
         g2d.setColor(getCol(0));
-        int pointsCount;
 
-        Var x = mg.getX();
-        Var y = mg.getY();
+        Var x = mg.x();
+        Var y = mg.y();
 
-        for (int i = 0; i < mg.getX().rowCount() - 1; i++) {
-            for (int j = 0; j < mg.getY().rowCount() - 1; j++) {
+        for (int i = 0; i < mg.x().rowCount() - 1; i++) {
+            for (int j = 0; j < mg.y().rowCount() - 1; j++) {
 
-                for (int k = 0; k < 4; k++) {
-                    points[k] = null;
-                }
-                pointsCount = 0;
+                if (!parent.getRange().contains(x.value(i), y.value(j)))
+                    continue;
+                if (!parent.getRange().contains(x.value(i + 1), y.value(j + 1)))
+                    continue;
 
-                if (mg.value(i, j) >= threshold ^ mg.value(i, j + 1) >= threshold) {
-                    double r = Math.abs(threshold - mg.value(i, j)) / Math.abs(mg.value(i, j) - mg.value(i, j + 1));
-                    points[0] = new Point2D.Double(
-                            parent.xScale(x.value(i)),
-                            parent.yScale(y.value(j) + Math.abs(y.value(j) - y.value(j + 1)) * r)
-                    );
-                    pointsCount++;
-                }
-                if (mg.value(i, j + 1) >= threshold ^ mg.value(i + 1, j + 1) >= threshold) {
-                    double r = Math.abs(threshold - mg.value(i, j + 1)) / Math.abs(mg.value(i, j + 1) - mg.value(i + 1, j + 1));
-                    points[1] = new Point2D.Double(
-                            parent.xScale(x.value(i) + Math.abs(x.value(i) - x.value(i + 1)) * r),
-                            parent.yScale(y.value(j + 1))
-                    );
-                    pointsCount++;
-                }
-                if (mg.value(i + 1, j) >= threshold ^ mg.value(i + 1, j + 1) >= threshold) {
-                    double r = Math.abs(threshold - mg.value(i + 1, j)) / Math.abs(mg.value(i + 1, j) - mg.value(i + 1, j + 1));
-                    points[2] = new Point2D.Double(
-                            parent.xScale(x.value(i + 1)),
-                            parent.yScale(y.value(j) + Math.abs(y.value(j) - y.value(j + 1)) * r)
-                    );
-                    pointsCount++;
-                }
-                if (mg.value(i, j) >= threshold ^ mg.value(i + 1, j) >= threshold) {
-                    double r = Math.abs(threshold - mg.value(i, j)) / Math.abs(mg.value(i, j) - mg.value(i + 1, j));
-                    points[3] = new Point2D.Double(
-                            parent.xScale(x.value(i) + Math.abs(x.value(i) - x.value(i + 1)) * r),
-                            parent.yScale(y.value(j))
-                    );
-                    pointsCount++;
-                }
-                if (pointsCount == 0) {
-                    if (fill) {
-                        if (mg.value(i, j) >= threshold) {
+                int k = mg.side(i, j);
+                k = k * 10 + mg.side(i + 1, j);
+                k = k * 10 + mg.side(i + 1, j + 1);
+                k = k * 10 + mg.side(i, j + 1);
+
+                switch (k) {
+                    case 0:
+                    case 2222:
+                        // no contour
+                        // no fill
+                        break;
+
+                    case 1111:
+
+                        // no contour
+                        // full fill
+                        if (fill) {
                             Path2D.Double path = new Path2D.Double();
                             path.moveTo(parent.xScale(x.value(i)), parent.yScale(y.value(j)));
-                            path.lineTo(parent.xScale(x.value(i)), parent.yScale(y.value(j + 1)));
-                            path.lineTo(parent.xScale(x.value(i + 1)), parent.yScale(y.value(j + 1)));
                             path.lineTo(parent.xScale(x.value(i + 1)), parent.yScale(y.value(j)));
+                            path.lineTo(parent.xScale(x.value(i + 1)), parent.yScale(y.value(j + 1)));
+                            path.lineTo(parent.xScale(x.value(i)), parent.yScale(y.value(j + 1)));
                             path.lineTo(parent.xScale(x.value(i)), parent.yScale(y.value(j)));
                             g2d.fill(path);
                         }
-                    }
-                    continue;
+                        break;
+
+                    default:
+
+                        // no saddle point impl for now
+
+                        Point.Double[] points = new Point2D.Double[12];
+                        int[] sides = new int[12];
+
+                        // first fill corners
+
+                        points[0] = new Point2D.Double(parent.xScale(x.value(i)), parent.yScale(y.value(j)));
+                        sides[0] = mg.side(i, j);
+
+                        points[3] = new Point2D.Double(parent.xScale(x.value(i + 1)), parent.yScale(y.value(j)));
+                        sides[3] = mg.side(i + 1, j);
+
+                        points[6] = new Point2D.Double(parent.xScale(x.value(i + 1)), parent.yScale(y.value(j + 1)));
+                        sides[6] = mg.side(i + 1, j + 1);
+
+                        points[9] = new Point2D.Double(parent.xScale(x.value(i)), parent.yScale(y.value(j + 1)));
+                        sides[9] = mg.side(i, j + 1);
+
+
+                        // now fill middle points
+
+                        // (i,j) -> (i+1,j)
+
+                        if (sides[0] == 0 && sides[3] >= 1) {
+                            points[1] = new Point2D.Double(parent.xScale(mg.xLow(i, j)), parent.yScale(y.value(j)));
+                            sides[1] = 1;
+                        }
+                        if (sides[0] >= 1 && sides[3] == 0) {
+                            points[2] = new Point2D.Double(parent.xScale(mg.xLow(i, j)), parent.yScale(y.value(j)));
+                            sides[2] = 1;
+                        }
+
+                        if (sides[0] <= 1 && sides[3] == 2) {
+                            points[2] = new Point2D.Double(parent.xScale(mg.xHigh(i, j)), parent.yScale(y.value(j)));
+                            sides[2] = 2;
+                        }
+                        if (sides[0] == 2 && sides[3] <= 1) {
+                            points[1] = new Point2D.Double(parent.xScale(mg.xHigh(i, j)), parent.yScale(y.value(j)));
+                            sides[1] = 2;
+                        }
+
+                        // (i+1,j) -> (i+1,j+1)
+
+
+                        if (sides[3] == 0 && sides[6] >= 1) {
+                            points[4] = new Point2D.Double(parent.xScale(x.value(i + 1)), parent.yScale(mg.yLow(i + 1, j)));
+                            sides[4] = 1;
+                        }
+                        if (sides[3] >= 1 && sides[6] == 0) {
+                            points[5] = new Point2D.Double(parent.xScale(x.value(i + 1)), parent.yScale(mg.yLow(i + 1, j)));
+                            sides[5] = 1;
+                        }
+
+                        if (sides[3] <= 1 && sides[6] == 2) {
+                            points[5] = new Point2D.Double(parent.xScale(x.value(i + 1)), parent.yScale(mg.yHigh(i + 1, j)));
+                            sides[5] = 2;
+                        }
+                        if (sides[3] == 2 && sides[6] <= 1) {
+                            points[4] = new Point2D.Double(parent.xScale(x.value(i + 1)), parent.yScale(mg.yHigh(i + 1, j)));
+                            sides[4] = 2;
+                        }
+
+                        // (i+1,j+1) -> (i,j+1)
+
+                        if (sides[6] == 0 && sides[9] >= 1) {
+                            points[7] = new Point2D.Double(parent.xScale(mg.xLow(i, j + 1)), parent.yScale(y.value(j + 1)));
+                            sides[7] = 1;
+                        }
+                        if (sides[6] >= 1 && sides[9] == 0) {
+                            points[8] = new Point2D.Double(parent.xScale(mg.xLow(i, j + 1)), parent.yScale(y.value(j + 1)));
+                            sides[8] = 1;
+                        }
+
+                        if (sides[6] <= 1 && sides[9] == 2) {
+                            points[8] = new Point2D.Double(parent.xScale(mg.xHigh(i, j + 1)), parent.yScale(y.value(j + 1)));
+                            sides[8] = 2;
+                        }
+                        if (sides[6] == 2 && sides[9] <= 1) {
+                            points[7] = new Point2D.Double(parent.xScale(mg.xHigh(i, j + 1)), parent.yScale(y.value(j + 1)));
+                            sides[7] = 2;
+                        }
+
+                        // (i,j+1) -> (i,j)
+
+                        if (sides[9] == 0 && sides[0] >= 1) {
+                            points[10] = new Point2D.Double(parent.xScale(x.value(i)), parent.yScale(mg.yLow(i, j)));
+                            sides[10] = 1;
+                        }
+                        if (sides[9] >= 1 && sides[0] == 0) {
+                            points[11] = new Point2D.Double(parent.xScale(x.value(i)), parent.yScale(mg.yLow(i, j)));
+                            sides[11] = 1;
+                        }
+
+                        if (sides[9] <= 1 && sides[0] == 2) {
+                            points[11] = new Point2D.Double(parent.xScale(x.value(i)), parent.yScale(mg.yHigh(i, j)));
+                            sides[11] = 2;
+                        }
+                        if (sides[9] == 2 && sides[0] <= 1) {
+                            points[10] = new Point2D.Double(parent.xScale(x.value(i)), parent.yScale(mg.yHigh(i, j)));
+                            sides[11] = 2;
+                        }
+
+                        if (contour) {
+                            LinkedList<Point2D.Double> list = new LinkedList<>();
+                            for (int q = 0; q < points.length; q++) {
+                                Point2D.Double p = points[q];
+                                if (p == null || q % 3 == 0)
+                                    continue;
+                                list.add(p);
+                            }
+                            Point2D.Double p = list.pollLast();
+                            list.addFirst(p);
+
+                            g2d.setColor(Color.BLACK);
+
+                            while (!list.isEmpty()) {
+
+                                Point2D.Double from = list.pollLast();
+                                Point2D.Double to = list.pollLast();
+
+                                g2d.draw(new Line2D.Double(from, to));
+                            }
+
+                        }
+
+                        if (fill) {
+
+                            g2d.setColor(getCol(0));
+
+                            Path2D.Double path = new Path2D.Double();
+                            Point2D.Double start = null;
+
+                            for (int q = 0; q < points.length; q++) {
+                                Point2D.Double p = points[q];
+                                if (p == null || ((q % 3 == 0) && (sides[q] == 0 || sides[q] == 2)))
+                                    continue;
+                                if (start == null) {
+                                    start = p;
+                                    path.moveTo(p.x, p.y);
+                                } else {
+                                    path.lineTo(p.x, p.y);
+                                }
+                            }
+                            if (start == null) {
+                                continue;
+                            }
+                            path.lineTo(start.x, start.y);
+                            g2d.fill(path);
+                        }
                 }
-                if (pointsCount == 2) {
-                    Point2D.Double p1 = null;
-                    Point2D.Double p2 = null;
-                    for (int k = 0; k < 4; k++) {
-                        if (points[k] != null) {
-                            if (p1 == null) {
-                                p1 = points[k];
-                            } else {
-                                p2 = points[k];
-                            }
-                        }
-                    }
-                    g2d.draw(new Line2D.Double(p1, p2));
-                    if (fill) {
-
-                        Path2D.Double path = new Path2D.Double();
-                        boolean start = false;
-                        double startX = Double.NaN;
-                        double startY = Double.NaN;
-
-                        if (mg.value(i, j) >= threshold) {
-                            double xx = parent.xScale(x.value(i));
-                            double yy = parent.yScale(y.value(j));
-
-                            start = true;
-                            startX = xx;
-                            startY = yy;
-                            path.moveTo(xx, yy);
-                        }
-                        if (points[0] != null) {
-                            if (!start) {
-                                start = true;
-                                startX = points[0].x;
-                                startY = points[0].y;
-                                path.moveTo(points[0].x, points[0].y);
-                            } else {
-                                path.lineTo(points[0].x, points[0].y);
-                            }
-                        }
-                        if (mg.value(i, j + 1) >= threshold) {
-                            double xx = parent.xScale(x.value(i));
-                            double yy = parent.yScale(y.value(j + 1));
-
-                            if (!start) {
-                                start = true;
-                                startX = xx;
-                                startY = yy;
-                                path.moveTo(xx, yy);
-                            } else {
-                                path.lineTo(xx, yy);
-                            }
-                        }
-                        if (points[1] != null) {
-                            if (!start) {
-                                start = true;
-                                startX = points[1].x;
-                                startY = points[1].y;
-                                path.moveTo(points[1].x, points[1].y);
-                            } else {
-                                path.lineTo(points[1].x, points[1].y);
-                            }
-                        }
-                        if (mg.value(i + 1, j + 1) >= threshold) {
-                            double xx = parent.xScale(x.value(i + 1));
-                            double yy = parent.yScale(y.value(j + 1));
-
-                            if (!start) {
-                                start = true;
-                                startX = xx;
-                                startY = yy;
-                                path.moveTo(xx, yy);
-                            } else {
-                                path.lineTo(xx, yy);
-                            }
-                        }
-                        if (points[2] != null) {
-                            if (!start) {
-                                start = true;
-                                startX = points[2].x;
-                                startY = points[2].y;
-                                path.moveTo(points[2].x, points[2].y);
-                            } else {
-                                path.lineTo(points[2].x, points[2].y);
-                            }
-                        }
-                        if (mg.value(i + 1, j) >= threshold) {
-                            double xx = parent.xScale(x.value(i + 1));
-                            double yy = parent.yScale(y.value(j));
-
-                            if (!start) {
-                                start = true;
-                                startX = xx;
-                                startY = yy;
-                                path.moveTo(xx, yy);
-                            } else {
-                                path.lineTo(xx, yy);
-                            }
-                        }
-                        if (points[3] != null) {
-                            if (!start) {
-                                startX = points[3].x;
-                                startY = points[3].y;
-                                path.moveTo(points[3].x, points[3].y);
-                            } else {
-                                path.lineTo(points[3].x, points[3].y);
-                            }
-                        }
-
-                        path.lineTo(startX, startY);
-                        g2d.fill(path);
-                    }
-                    continue;
-                }
-                if (pointsCount == 4) {
-                    g2d.draw(new Line2D.Double(points[0], points[2]));
-                    g2d.draw(new Line2D.Double(points[1], points[3]));
-//                    if(fill) {
-//                        if(mg.value(i, j) >= threshold) {
-//                            Path2D.Double path = new Path2D.Double();
-//                            path.moveTo(parent.xScale(x.value(i)), parent.xScale(y.value(j)));
-//                            path.lineTo(parent.xScale());
-//                        }
-//                    }
-                    continue;
-                }
-                throw new RuntimeException("This should not happen");
             }
         }
     }

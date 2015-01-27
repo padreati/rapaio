@@ -25,10 +25,9 @@ import rapaio.core.distributions.empirical.KFuncBiWeight;
 import rapaio.core.distributions.empirical.KFuncGaussian;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.data.grid.MeshGrid;
+import rapaio.data.grid.MeshGrid1D;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.MeshContour;
-import rapaio.graphics.plot.SandboxComponent;
 import rapaio.util.Pair;
 
 import java.awt.*;
@@ -56,22 +55,23 @@ public class ContourSample {
         Numeric x = Numeric.newSeq(-3, 10, 0.07);
         Numeric y = Numeric.newSeq(-3, 10, 0.07);
 
-        MeshGrid mg = new MeshGrid(x, y);
+        MeshGrid1D mg = new MeshGrid1D(x, y);
         mg.fillWithFunction(bi);
 
 
         Plot p = new Plot();
         Pair<Double, Double> range = mg.valueRange();
-        Var q = Numeric.newSeq(0.1, 0.99, 0.1);
-        for (int i = 0; i < q.rowCount(); i++) {
-            p.add(new MeshContour(mg, range.first + q.value(i) * (range.second - range.first))
-                    .withFill(true)
+        Var q = Numeric.newSeq(0.1, 1, 0.1);
+        for (int i = 0; i < q.rowCount() - 1; i++) {
+            p.add(new MeshContour(
+                    mg.compute(
+                            range.first + q.value(i) * (range.second - range.first),
+                            range.first + q.value(i + 1) * (range.second - range.first)
+                    ), true, true
+            )
                     .color(new Color(0.f, 0.f, 1f, (float) q.value(i) * 0.7f)));
         }
-//        p.add(new ContourLine(bi, Math.pow(10, -7)).color(Color.green));
-//        draw(p);
-
-
-        draw(new Plot().add(new SandboxComponent()));
+        p.add(new MeshContour(mg.compute(0.5, Double.POSITIVE_INFINITY), true, false).color(Color.green));
+        draw(p);
     }
 }

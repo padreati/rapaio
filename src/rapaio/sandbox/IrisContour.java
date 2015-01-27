@@ -26,7 +26,7 @@ import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.data.Frame;
 import rapaio.data.*;
-import rapaio.data.grid.MeshGrid;
+import rapaio.data.grid.MeshGrid1D;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.MeshContour;
 import rapaio.graphics.plot.Points;
@@ -47,6 +47,8 @@ import java.net.URISyntaxException;
 public class IrisContour {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
+
+        RandomSource.setSeed(1);
 
         String xlab = "x";
         String ylab = "y";
@@ -70,10 +72,10 @@ public class IrisContour {
 
 
         Classifier c = CForest.buildRandomForest(400, 2, 0.9);
-//        c = new NaiveBayesClassifier().withCvpEstimator(new NaiveBayesClassifier.CvpEstimatorKDE());
+//        c = new NaiveBayesClassifier();
         c = new GBTClassifier()
                 .withTree(RTree.buildCART().withMaxDepth(6))
-                .withRuns(2000);
+                .withRuns(1000);
 
 //        c = new BinarySMO().withKernel(new PolyKernel(1, 1)).withMaxRuns(100);
 //        c = new BinarySMO().withKernel(new PolyKernel(2, 1));
@@ -93,7 +95,7 @@ public class IrisContour {
         Var x = Numeric.newSeq(new Minimum(df.var(0)).value() - 1, new Maximum(df.var(0)).value() + 1, 0.05).withName(xlab);
         Var y = Numeric.newSeq(new Minimum(df.var(1)).value() - 1, new Maximum(df.var(1)).value() + 1, 0.05).withName(ylab);
 
-        MeshGrid mg = new MeshGrid(x, y);
+        MeshGrid1D mg = new MeshGrid1D(x, y);
 
         Var x1 = Numeric.newEmpty().withName(xlab);
         Var y1 = Numeric.newEmpty().withName(ylab);
@@ -118,10 +120,14 @@ public class IrisContour {
         }
 
         Plot p = new Plot();
-        for (int i = -10; i <= 10; i++) {
-            p.add(new MeshContour(mg, i / 10.).withFill(true).color(new Color(0f, 0f, 1f, (i + 10) / 20.f)));
+        double[] pp = new double[]{0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1};
+        double[] qq = mg.quantiles(pp);
+
+        for (int i = 0; i < qq.length - 1; i++) {
+            p.add(new MeshContour(mg.compute(qq[i], qq[i + 1]), false, true).color(new Color(0f, 0f, 1f, (float) pp[i + 1])));
         }
-        p.add(new MeshContour(mg, 0).color(0).lwd(2f));
+        p.add(new MeshContour(mg.compute(0, Double.POSITIVE_INFINITY), true, false).color(0).lwd(2f));
+        p.title("test");
 
         WS.draw(p.add(new Points(df.var(0), df.var(1)).color(df.var(2))));
     }

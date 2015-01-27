@@ -20,86 +20,72 @@
 
 package rapaio.data.grid;
 
-import rapaio.core.stat.Maximum;
-import rapaio.core.stat.Minimum;
-import rapaio.core.stat.Quantiles;
-import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.util.Pair;
-
-import java.util.function.BiFunction;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/22/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/27/15.
  */
-public class MeshGrid {
+public interface MeshGrid {
 
-    private Var x;
-    private Var y;
+    Var x();
 
-    private double xStart;
-    private double xEnd;
+    Var y();
 
-    private double yStart;
-    private double yEnd;
+    /**
+     * Computes the side of the mesh grid point.
+     *
+     * @param i index of the x coordinate
+     * @param j index of the y coordinate
+     * @return 0 if below isoBand, 1 if inside isoBand, 2 if above isoBand
+     */
+    int side(int i, int j);
 
-    private double[][] grid;
+    /**
+     * Computes the side of the saddle point from the square (i,j) and (i+1,j+1)
+     *
+     * @param i index of the x coordinate of the top left corner
+     * @param j index of the y coordinate of the top left corner
+     * @return 0 if below isoBand, 1 if inside isoBand, 2 if above isoBand
+     */
+    int saddleSide(int i, int j);
 
-    public MeshGrid(Var x, Var y) {
-        this.x = x;
-        this.y = y;
+    /**
+     * Computes x coordinate of the low threshold between
+     * grid points with indexes (i,j) and (i+1,j)
+     *
+     * @param i index of the x coordinate of the starting point
+     * @param j index of the y coordinate of the starting point
+     * @return x coordinate value of the low threshold
+     */
+    double xLow(int i, int j);
 
-        this.xStart = new Minimum(x).value();
-        this.xEnd = new Maximum(x).value();
-        this.yStart = new Minimum(y).value();
-        this.yEnd = new Maximum(y).value();
+    /**
+     * Computes x coordinate of the high threshold between
+     * grid points with indexes (i, j) and (i+1,j)
+     *
+     * @param i index of the x coordinate of the starting point
+     * @param j index of the y coordinate of the starting point
+     * @return x coordinate value of the high threshold
+     */
+    double xHigh(int i, int j);
 
-        this.grid = new double[x.rowCount()][y.rowCount()];
-    }
+    /**
+     * Computes y coordinate of the low threshold between
+     * grid points with indexes (i,j) and (i,j+1)
+     *
+     * @param i index of the x coordinate of the starting point
+     * @param j index of the y coordinate of the starting point
+     * @return y coordinate value of the low threshold
+     */
+    double yLow(int i, int j);
 
-    public Var getX() {
-        return x;
-    }
-
-    public Var getY() {
-        return y;
-    }
-
-    public Pair<Double, Double> valueRange() {
-        double min = grid[0][0];
-        double max = grid[0][0];
-        for (int i = 0; i < x.rowCount(); i++) {
-            for (int j = 0; j < y.rowCount(); j++) {
-                min = Math.min(min, grid[i][j]);
-                max = Math.max(max, grid[i][j]);
-            }
-        }
-        return new Pair<>(min, max);
-    }
-
-    public double value(int i, int j) {
-        return grid[i][j];
-    }
-
-    public void setValue(int i, int j, double value) {
-        grid[i][j] = value;
-    }
-
-    public double[] quantiles(double... qs) {
-        Numeric values = Numeric.newEmpty();
-        for (int i = 0; i < x.rowCount(); i++) {
-            for (int j = 0; j < y.rowCount(); j++) {
-                values.addValue(grid[i][j]);
-            }
-        }
-        return new Quantiles(values, qs).values();
-    }
-
-    public void fillWithFunction(BiFunction<Double, Double, Double> f) {
-        for (int i = 0; i < x.rowCount(); i++) {
-            for (int j = 0; j < y.rowCount(); j++) {
-                grid[i][j] = f.apply(x.value(i), y.value(j));
-            }
-        }
-    }
+    /**
+     * Computes y coordinate of the high threshold between
+     * grid points with indexes (i,j) and (i,j+1)
+     *
+     * @param i index of the x coordinate of the starting point
+     * @param j index of the y coordinate of the starting point
+     * @return y coordinate value of the high threshold
+     */
+    double yHigh(int i, int j);
 }
