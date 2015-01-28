@@ -74,7 +74,8 @@ public class TutorialWebsiteGenerator {
         ));
 
         pages.put("Graphics", Arrays.asList(
-                new HistogramDensityTutorial()
+                new HistogramDensityTutorial(),
+                new MeshGridTutorialPage()
         ));
 
         pages.put("StatisticalProcedures", Arrays.asList(

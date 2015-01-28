@@ -20,18 +20,19 @@
 
 package rapaio.sandbox;
 
-import rapaio.core.distributions.empirical.KFunc;
-import rapaio.core.distributions.empirical.KFuncBiWeight;
-import rapaio.core.distributions.empirical.KFuncGaussian;
+import rapaio.core.distributions.Normal;
+import rapaio.data.Frame;
 import rapaio.data.Numeric;
+import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.grid.MeshGrid1D;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.MeshContour;
-import rapaio.util.Pair;
+import rapaio.graphics.plot.Points;
 
 import java.awt.*;
 import java.util.function.BiFunction;
+import java.util.stream.IntStream;
 
 import static rapaio.WS.draw;
 
@@ -43,35 +44,35 @@ public class ContourSample {
     public static void main(String[] args) {
 
 //        setPrinter(new IdeaPrinter());
-        KFunc f1 = new KFuncGaussian();
-        KFunc f2 = new KFuncGaussian();
-        KFunc f3 = new KFuncBiWeight();
+
+        Frame xy = SolidFrame.newWrapOf(
+                Numeric.newWrapOf(3, -1, -2).withName("x"),
+                Numeric.newWrapOf(3, -1, 6).withName("y")
+        );
+        Normal d = new Normal(0, 2);
 
         BiFunction<Double, Double, Double> bi = (x, y) ->
-                Math.sqrt(f1.pdf(x, 3, 2) * f1.pdf(y, 3, 2)) +
-                        Math.sqrt(f2.pdf(x, -1, 1) * f2.pdf(y, -1, 1)) +
-                        Math.sqrt(f3.pdf(x, -2, 2) * f3.pdf(y, 6, 3)) / 3;
+                IntStream.range(0, 3).mapToDouble(
+                        row -> d.pdf(Math.sqrt(Math.pow(x - xy.value(row, "x"), 2) + Math.pow(y - xy.value(row, "y"), 2)))
+                ).sum();
 
-        Numeric x = Numeric.newSeq(-3, 10, 0.07);
-        Numeric y = Numeric.newSeq(-3, 10, 0.07);
+        Numeric x = Numeric.newSeq(-3, 10, 0.05);
+        Numeric y = Numeric.newSeq(-3, 10, 0.05);
 
         MeshGrid1D mg = new MeshGrid1D(x, y);
         mg.fillWithFunction(bi);
 
-
         Plot p = new Plot();
-        Pair<Double, Double> range = mg.valueRange();
-        Var q = Numeric.newSeq(0.1, 1, 0.1);
+        Var q = Numeric.newSeq(0, 1, 0.05);
+        double[] qq = mg.quantiles(q.stream().mapToDouble().toArray());
+        qq[qq.length - 1] = Double.POSITIVE_INFINITY;
+
         for (int i = 0; i < q.rowCount() - 1; i++) {
-            p.add(new MeshContour(
-                    mg.compute(
-                            range.first + q.value(i) * (range.second - range.first),
-                            range.first + q.value(i + 1) * (range.second - range.first)
-                    ), true, true
-            )
-                    .color(new Color(0.f, 0.f, 1f, (float) q.value(i) * 0.7f)));
+            p.add(new MeshContour(mg.compute(qq[i], qq[i + 1]), true, true)
+                            .color(new Color(0.f, 0.f, 1f, (float) qq[i])).lwd(0.5f)
+            );
         }
-        p.add(new MeshContour(mg.compute(0.5, Double.POSITIVE_INFINITY), true, false).color(Color.green));
+        p.add(new Points(xy.var("x"), xy.var("y")));
         draw(p);
     }
 }

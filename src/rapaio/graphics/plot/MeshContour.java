@@ -87,12 +87,15 @@ public class MeshContour extends PlotComponent {
                         // no contour
                         // full fill
                         if (fill) {
+                            g2d.setColor(getCol(0));
                             Path2D.Double path = new Path2D.Double();
                             path.moveTo(parent.xScale(x.value(i)), parent.yScale(y.value(j)));
                             path.lineTo(parent.xScale(x.value(i + 1)), parent.yScale(y.value(j)));
                             path.lineTo(parent.xScale(x.value(i + 1)), parent.yScale(y.value(j + 1)));
                             path.lineTo(parent.xScale(x.value(i)), parent.yScale(y.value(j + 1)));
                             path.lineTo(parent.xScale(x.value(i)), parent.yScale(y.value(j)));
+//                            g2d.setStroke(new BasicStroke(0.000001f));
+//                            g2d.draw(path);
                             g2d.fill(path);
                         }
                         break;
@@ -220,6 +223,7 @@ public class MeshContour extends PlotComponent {
                                 Point2D.Double from = list.pollLast();
                                 Point2D.Double to = list.pollLast();
 
+                                g2d.setStroke(new BasicStroke(getLwd()));
                                 g2d.draw(new Line2D.Double(from, to));
                             }
 
@@ -228,6 +232,7 @@ public class MeshContour extends PlotComponent {
                         if (fill) {
 
                             g2d.setColor(getCol(0));
+                            g2d.setBackground(getCol(0));
 
                             Path2D.Double path = new Path2D.Double();
                             Point2D.Double start = null;
@@ -247,6 +252,8 @@ public class MeshContour extends PlotComponent {
                                 continue;
                             }
                             path.lineTo(start.x, start.y);
+//                            g2d.setStroke(new BasicStroke(0.05f));
+//                            g2d.draw(path);
                             g2d.fill(path);
                         }
                 }

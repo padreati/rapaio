@@ -110,7 +110,7 @@ public class SolidFrame extends AbstractFrame {
         this.names = new String[vars.size()];
 
         for (int i = 0; i < vars.size(); i++) {
-            this.vars[i] = vars.get(i);
+            this.vars[i] = vars.get(i); //.solidCopy();
             this.colIndex.put(this.vars[i].name(), i);
             this.names[i] = this.vars[i].name();
         }

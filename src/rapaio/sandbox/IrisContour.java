@@ -32,10 +32,11 @@ import rapaio.graphics.plot.MeshContour;
 import rapaio.graphics.plot.Points;
 import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.Classifier;
-import rapaio.ml.classifier.boost.GBTClassifier;
+import rapaio.ml.classifier.svm.BinarySMO;
+import rapaio.ml.classifier.svm.kernel.RBFKernel;
+import rapaio.ml.classifier.svm.kernel.WaveletKernel;
 import rapaio.ml.classifier.tree.CForest;
 import rapaio.ml.eval.ConfusionMatrix;
-import rapaio.ml.regressor.tree.rtree.RTree;
 
 import java.awt.*;
 import java.io.IOException;
@@ -73,15 +74,15 @@ public class IrisContour {
 
         Classifier c = CForest.buildRandomForest(400, 2, 0.9);
 //        c = new NaiveBayesClassifier();
-        c = new GBTClassifier()
-                .withTree(RTree.buildCART().withMaxDepth(6))
-                .withRuns(1000);
+//        c = new GBTClassifier()
+//                .withTree(RTree.buildCART().withMaxDepth(6))
+//                .withRuns(1000);
 
 //        c = new BinarySMO().withKernel(new PolyKernel(1, 1)).withMaxRuns(100);
 //        c = new BinarySMO().withKernel(new PolyKernel(2, 1));
-//        c = new BinarySMO().withKernel(new RBFKernel(0.01)).withC(0.2);
+        c = new BinarySMO().withKernel(new RBFKernel(0.01)).withC(0.2);
 //        c = new BinarySMO().withKernel(new WaveletKernel(0.5)).withC(1);
-//        c = new BinarySMO().withKernel(new WaveletKernel(0.5));
+        c = new BinarySMO().withKernel(new WaveletKernel(0.5));
 //        c = new BinarySMO().withKernel(new WaveletKernel(2));
 //        c = new BinarySMO().withKernel(new ChiSquareKernel());
 //        c = new BinarySMO().withKernel(new MinKernel());
