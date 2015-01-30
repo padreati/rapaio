@@ -20,28 +20,38 @@
 
 package rapaio.ml.classifier;
 
-import rapaio.ml.common.VarSelector;
+import rapaio.core.sample.Sampler;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarRange;
 
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 public abstract class AbstractClassifier implements Classifier {
 
-    protected VarSelector varSelector = new VarSelector.Standard();
-    protected String[] targetNames;
-    protected Map<String, String[]> dict;
+    private String[] inputNames;
+    private String[] targetNames;
+    private Map<String, String[]> dict;
+    private Sampler sampler = new Sampler.Identity();
 
     @Override
-    public VarSelector getVarSelector() {
-        return varSelector;
+    public Sampler sampler() {
+        return sampler;
     }
 
     @Override
-    public Classifier withVarSelector(VarSelector varSelector) {
-        this.varSelector = varSelector;
+    public AbstractClassifier withSampler(Sampler sampler) {
+        this.sampler = sampler;
         return this;
+    }
+
+    @Override
+    public String[] inputNames() {
+        return inputNames;
     }
 
     @Override
@@ -52,5 +62,17 @@ public abstract class AbstractClassifier implements Classifier {
     @Override
     public Map<String, String[]> dictionaries() {
         return dict;
+    }
+
+    public void prepareLearning(Frame df, Var weights, String... targetVarNames) {
+
+        List<String> targetVarsList = new VarRange(targetVarNames).parseVarNames(df);
+        this.targetNames = targetVarsList.toArray(new String[targetVarsList.size()]);
+        this.dict = new HashMap<>();
+        this.dict.put(firstTargetName(), df.var(firstTargetName()).dictionary());
+
+        HashSet<String> targets = new HashSet<>(targetVarsList);
+        List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targets.contains(varName)).collect(Collectors.toList());
+        this.inputNames = inputs.toArray(new String[inputs.size()]);
     }
 }

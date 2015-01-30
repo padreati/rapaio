@@ -21,7 +21,7 @@
 package rapaio.tutorial.pages;
 
 import rapaio.core.RandomSource;
-import rapaio.core.sample.Sampling;
+import rapaio.core.sample.SamplingTool;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
@@ -75,7 +75,7 @@ public class ROCCurvesPage implements TutorialPage {
 
         RandomSource.setSeed(2718);
         final Frame spam = Datasets.loadSpamBase().mapVars("0~3,spam");
-        List<Frame> samples = Sampling.randomSampleSlices(spam, 0.6);
+        List<Frame> samples = SamplingTool.randomSampleSlices(spam, 0.6);
         final Frame train = samples.get(0);
         final Frame test = samples.get(1);
 

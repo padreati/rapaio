@@ -44,4 +44,9 @@ public class MultiQuadricKernel extends AbstractKernel {
         double dot = deltaDotProd(df1, row1, df2, row2);
         return Math.sqrt(dot * dot + c * c);
     }
+
+    @Override
+    public Kernel newInstance() {
+        return new MultiQuadricKernel(c);
+    }
 }

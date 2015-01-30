@@ -20,7 +20,7 @@
 
 package rapaio.tutorial.pages;
 
-import rapaio.core.sample.Sampling;
+import rapaio.core.sample.SamplingTool;
 import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
@@ -31,6 +31,7 @@ import rapaio.graphics.plot.Lines;
 import rapaio.graphics.plot.Points;
 import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.tree.CForest;
+import rapaio.ml.classifier.tree.ctree.CTree;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.ws.Summary;
@@ -145,7 +146,7 @@ public class ClassificationWithRFPage implements TutorialPage {
                 "        Frame test = frames.get(1);\n");
 
 
-        List<Frame> frames = Sampling.randomSampleSlices(all, 0.15);
+        List<Frame> frames = SamplingTool.randomSampleSlices(all, 0.15);
         Frame train = frames.get(0);
         Frame test = frames.get(1);
 
@@ -161,7 +162,7 @@ public class ClassificationWithRFPage implements TutorialPage {
         final Var oob = Numeric.newEmpty();
 
         CForest rf = new CForest()
-                .withVarSelector(new VarSelector.Random(2))
+                .withClassifier(CTree.newC45().withVarSelector(new VarSelector.Random(2)))
                 .withOobError(true);
 
         for (int mTrees = 1; mTrees < 20; mTrees += 1) {
@@ -241,7 +242,7 @@ public class ClassificationWithRFPage implements TutorialPage {
         for (int mCol = 1; mCol <= 10; mCol++) {
 
             rf = new CForest()
-                    .withVarSelector(new VarSelector.Random(mCol))
+                    .withClassifier(CTree.newC45().withVarSelector(new VarSelector.Random(mCol)))
                     .withRuns(30)
                     .withOobError(true);
 

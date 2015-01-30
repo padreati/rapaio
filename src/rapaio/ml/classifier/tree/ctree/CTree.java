@@ -26,11 +26,8 @@ import rapaio.data.VarRange;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.tools.DensityVector;
+import rapaio.ml.common.VarSelector;
 import rapaio.util.Pair;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Tree classifier.
@@ -43,6 +40,7 @@ public class CTree extends AbstractClassifier {
     int minCount = 1;
     int maxDepth = Integer.MAX_VALUE;
 
+    VarSelector varSelector = new VarSelector.Standard();
     CTreeTestCounter testCounter = new CTreeTestCounter.MNominalMNumeric();
     CTreeNominalMethod nominalMethod = new CTreeNominalMethod.Full();
     CTreeNumericMethod numericMethod = new CTreeNumericMethod.Binary();
@@ -60,6 +58,7 @@ public class CTree extends AbstractClassifier {
         return new CTree()
                 .withTestCounter(new CTreeTestCounter.OneNominalOneNumeric())
                 .withMaxDepth(Integer.MAX_VALUE)
+                .withVarSelector(new VarSelector.Standard())
                 .withSplitter(new CTreeSplitter.RemainsIgnored())
                 .withNominalMethod(new CTreeNominalMethod.Full())
                 .withNumericMethod(new CTreeNumericMethod.Ignore())
@@ -81,6 +80,7 @@ public class CTree extends AbstractClassifier {
     public static CTree newDecisionStump() {
         return new CTree()
                 .withMaxDepth(1)
+                .withVarSelector(new VarSelector.Standard())
                 .withTestCounter(new CTreeTestCounter.OneNominalOneNumeric())
                 .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
                 .withNominalMethod(new CTreeNominalMethod.Binary())
@@ -91,6 +91,7 @@ public class CTree extends AbstractClassifier {
     public static CTree newCART() {
         return new CTree()
                 .withMaxDepth(Integer.MAX_VALUE)
+                .withVarSelector(new VarSelector.Standard())
                 .withTestCounter(new CTreeTestCounter.MNominalMNumeric())
                 .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
                 .withNominalMethod(new CTreeNominalMethod.Binary())
@@ -108,11 +109,21 @@ public class CTree extends AbstractClassifier {
                 .withFunction(function.newInstance())
                 .withSplitter(splitter.newInstance())
                 .withPredictor(predictor.newInstance())
-                .withVarSelector(varSelector.newInstance());
+                .withVarSelector(varSelector().newInstance())
+                .withSampler(sampler());
     }
 
     public CTreeNode getRoot() {
         return root;
+    }
+
+    public VarSelector varSelector() {
+        return varSelector;
+    }
+
+    public CTree withVarSelector(VarSelector varSelector) {
+        this.varSelector = varSelector;
+        return this;
     }
 
     public int getMinCount() {
@@ -202,7 +213,7 @@ public class CTree extends AbstractClassifier {
     public String fullName() {
         StringBuilder sb = new StringBuilder();
         sb.append("TreeClassifier{");
-        sb.append("varSelector=").append(varSelector.name()).append(",");
+        sb.append("varSelector=").append(varSelector().name()).append(",");
         sb.append("minCount=").append(minCount).append(",");
         sb.append("maxDepth=").append(maxDepth).append(",");
         sb.append("testCounter=").append(testCounter.name()).append(",");
@@ -218,16 +229,17 @@ public class CTree extends AbstractClassifier {
     @Override
     public void learn(Frame df, Var weights, String... targetVars) {
 
-        List<String> targetVarList = new VarRange(targetVars).parseVarNames(df);
-        if (targetVarList.isEmpty()) {
+        prepareLearning(df, weights, targetVars);
+
+        this.varSelector.initialize(df, new VarRange(targetNames()));
+
+        if (targetNames().length == 0) {
             throw new IllegalArgumentException("tree classifier must specify a target variable");
         }
-        if (targetVarList.size() > 1) {
+        if (targetNames().length > 1) {
             throw new IllegalArgumentException("tree classifier can't fit more than one target variable");
         }
-        this.targetNames = targetVarList.toArray(new String[targetVarList.size()]);
 
-        dict = Arrays.stream(this.targetNames).collect(Collectors.toMap(s -> s, s -> df.var(s).dictionary()));
         rows = df.rowCount();
 
         testCounter.initialize(df, firstTargetName());

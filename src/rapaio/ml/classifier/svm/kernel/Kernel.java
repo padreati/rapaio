@@ -35,4 +35,6 @@ public interface Kernel {
 
     default void clean() {
     }
+
+    Kernel newInstance();
 }

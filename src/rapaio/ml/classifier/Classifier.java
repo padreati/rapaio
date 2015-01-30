@@ -21,10 +21,10 @@
 package rapaio.ml.classifier;
 
 import rapaio.core.Printable;
+import rapaio.core.sample.Sampler;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.ml.common.VarSelector;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -61,14 +61,82 @@ public interface Classifier extends Printable, Serializable {
      */
     String fullName();
 
+    /**
+     * @return the sampler instance used
+     */
+    Sampler sampler();
 
-    VarSelector getVarSelector();
+    /**
+     * Specifies the sampler to be used at learning time.
+     *
+     * @param sampler instance of a new sampler
+     */
+    AbstractClassifier withSampler(Sampler sampler);
 
-    Classifier withVarSelector(VarSelector varSelector);
+    /**
+     * Returns input variable names built at learning time
+     *
+     * @return input variable names
+     */
+    String[] inputNames();
+
+    default String inputNames(int pos) {
+        return inputNames()[pos];
+    }
+
+    /**
+     * Returns target variables names built at learning time
+     *
+     * @return target variable names
+     */
+    String[] targetNames();
+
+    /**
+     * Returns first target variable built at learning time
+     *
+     * @return target variable names
+     */
+    default String firstTargetName() {
+        return targetNames()[0];
+    }
+
+    /**
+     * Returns the name of the target variable at the given position
+     *
+     * @param pos position of the target variable name
+     * @return name of the target variable
+     */
+    default String targetName(int pos) {
+        return targetNames()[pos];
+    }
+
+    /**
+     * Returns dictionaries used at learning times for target variables
+     *
+     * @return map with target variable names as key and dictionaries as variables
+     */
+    Map<String, String[]> dictionaries();
+
+    default String[] dictionary(String key) {
+        return dictionaries().get(key);
+    }
+
+    /**
+     * Returns dictionaries used at learning times for first target variables
+     *
+     * @return map with target variable names as key and dictionaries as variables
+     */
+    default String[] firstDictionary() {
+        return dictionaries().get(firstTargetName());
+    }
+
+    default String firstDictionary(int pos) {
+        return dictionaries().get(firstTargetName())[pos];
+    }
 
     /**
      * Fit a classifier on instances specified by frame, with row weights
-     * equal to 1 and target as targetNames.
+     * equal to 1 and target as targetName.
      *
      * @param df         data set instances
      * @param targetVars target variables
@@ -79,7 +147,7 @@ public interface Classifier extends Printable, Serializable {
     }
 
     /**
-     * Fit a classifier on instances specified by frame, with row weights and targetNames
+     * Fit a classifier on instances specified by frame, with row weights and targetName
      *
      * @param df             train frame
      * @param weights        instance weights
@@ -105,36 +173,4 @@ public interface Classifier extends Printable, Serializable {
      * @param withDistributions generate densities for classes
      */
     CResult predict(Frame df, boolean withClasses, boolean withDistributions);
-
-    /**
-     * Returns target variables names built at learning time
-     *
-     * @return target variable names
-     */
-    String[] targetNames();
-
-    /**
-     * Returns first target variable built at learning time
-     *
-     * @return target variable names
-     */
-    default String firstTargetName() {
-        return targetNames()[0];
-    }
-
-    /**
-     * Returns dictionaries used at learning times for target variables
-     *
-     * @return map with target variable names as key and dictionaries as variables
-     */
-    Map<String, String[]> dictionaries();
-
-    /**
-     * Returns dictionaries used at learning times for first target variables
-     *
-     * @return map with target variable names as key and dictionaries as variables
-     */
-    default String[] firstDictionary() {
-        return dictionaries().get(firstTargetName());
-    }
 }

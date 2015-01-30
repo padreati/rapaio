@@ -41,4 +41,9 @@ public class SplineKernel extends AbstractKernel {
         }
         return value;
     }
+
+    @Override
+    public Kernel newInstance() {
+        return new SplineKernel();
+    }
 }

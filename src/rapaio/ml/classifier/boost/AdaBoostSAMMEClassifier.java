@@ -20,19 +20,16 @@
 
 package rapaio.ml.classifier.boost;
 
-import rapaio.core.sample.Sampling;
+import rapaio.core.sample.SamplingTool;
 import rapaio.data.*;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.RunningClassifier;
 import rapaio.ml.classifier.tree.ctree.CTree;
-import rapaio.ml.common.VarSelector;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -65,7 +62,6 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         return new AdaBoostSAMMEClassifier()
                 .withClassifier(this.base.newInstance())
                 .withRuns(this.runs)
-                .withVarSelector(this.varSelector)
                 .withStopOnError(stopOnError)
                 .withSampling(sampling);
     }
@@ -83,11 +79,6 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         }
         return String.format("AdaBoost.SAMME (base: %s, runs: %d, sampling: false, stopOnError: %s)",
                 base.fullName(), runs, String.valueOf(stopOnError));
-    }
-
-    public AdaBoostSAMMEClassifier withVarSelector(VarSelector varSelector) {
-        this.varSelector = varSelector;
-        return this;
     }
 
     public AdaBoostSAMMEClassifier withClassifier(Classifier weak) {
@@ -112,7 +103,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
     private int[] getSamplingRows(Frame df) {
         if (sampling > 0.0) {
-            return Sampling.sampleWR((int) (df.rowCount() * sampling), df.rowCount());
+            return SamplingTool.sampleWR((int) (df.rowCount() * sampling), df.rowCount());
         }
         int[] rows = new int[df.rowCount()];
         for (int i = 0; i < rows.length; i++) {
@@ -123,15 +114,15 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
     @Override
     public void learn(Frame df, Var weights, String... targetVars) {
-        List<String> targetVarList = new VarRange(targetVars).parseVarNames(df);
-        if (targetVarList.isEmpty()) {
+
+        prepareLearning(df, weights, targetVars);
+
+        if (targetNames().length == 0) {
             throw new IllegalArgumentException("tree classifier must specify a target variable");
         }
-        if (targetVarList.size() > 1) {
+        if (targetNames().length > 1) {
             throw new IllegalArgumentException("tree classifier can't fit more than one target variable");
         }
-        this.targetNames = targetVarList.toArray(new String[targetVarList.size()]);
-        dict = Arrays.stream(this.targetNames).collect(Collectors.toMap(s -> s, s -> df.var(s).dictionary()));
 
         k = firstDictionary().length - 1;
 
@@ -156,7 +147,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         List<String> targetVarList = new VarRange(targetVarsRange).parseVarNames(df);
         String[] targetVars = targetVarList.toArray(new String[targetVarList.size()]);
 
-        if (w != null && this.targetNames != null && dict != null) {
+        if (w != null && this.targetNames() != null && firstDictionary() != null) {
             // if prev trained on something else than we have a problem
             if ((!targetVars[0].equals(firstTargetName()) ||
                     k != firstDictionary().length - 1)) {
@@ -186,7 +177,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         Numeric dfWeights = (Numeric) w.mapRows(rows).solidCopy();
 
         Classifier hh = base.newInstance();
-        hh.learn(dfTrain, dfWeights, targetNames);
+        hh.learn(dfTrain, dfWeights, targetNames());
         CResult p = hh.predict(df, true, false);
         double err = 0;
         for (int j = 0; j < df.rowCount(); j++) {
@@ -260,6 +251,5 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
         sb.append("prediction:\n");
         sb.append("weak learners built: ").append(h.size()).append("\n");
-
     }
 }

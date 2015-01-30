@@ -25,7 +25,7 @@ import org.junit.Test;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class SamplingTest {
+public class SamplingToolTest {
 
 	//    @Test
 	public void worTest() {
@@ -39,8 +39,8 @@ public class SamplingTest {
 		final int TRIALS = 1_000_000;
 		final int SAMPLES = 2;
 		for (int i = 0; i < TRIALS; i++) {
-			for (int next : Sampling.sampleWeightedWOR(SAMPLES, w)) {
-				freq[next]++;
+            for (int next : SamplingTool.sampleWeightedWOR(SAMPLES, w)) {
+                freq[next]++;
 //                System.out.print(next + " ");
 			}
 //            System.out.println();
@@ -62,8 +62,8 @@ public class SamplingTest {
 		final int TRIALS = 100_000;
 		final int SAMPLES = 100;
 		for (int i = 0; i < TRIALS; i++) {
-			for (int next : Sampling.sampleWeightedWR(SAMPLES, w)) {
-				freq[next]++;
+            for (int next : SamplingTool.sampleWeightedWR(SAMPLES, w)) {
+                freq[next]++;
 			}
 		}
 		for (int i = 0; i < freq.length; i++) {
@@ -79,8 +79,8 @@ public class SamplingTest {
 		final int TRIALS = 100_000;
 		final int SAMPLES = 3;
 		for (int i = 0; i < TRIALS; i++) {
-			for (int next : Sampling.sampleWOR(SAMPLES, 10)) {
-				freq[next]++;
+            for (int next : SamplingTool.sampleWOR(SAMPLES, 10)) {
+                freq[next]++;
 			}
 		}
 		for (double f : freq) {

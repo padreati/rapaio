@@ -59,4 +59,9 @@ public class RBFKernel extends AbstractKernel {
         double value = deltaDotProd(df1, row1, df2, row2);
         return 1.0 / Math.pow(Math.E, factor * value * value);
     }
+
+    @Override
+    public Kernel newInstance() {
+        return new RBFKernel(sigma);
+    }
 }

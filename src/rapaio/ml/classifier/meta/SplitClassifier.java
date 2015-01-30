@@ -20,7 +20,10 @@
 
 package rapaio.ml.classifier.meta;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.MappedFrame;
+import rapaio.data.Mapping;
+import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CResult;
@@ -28,7 +31,6 @@ import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.RunningClassifier;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -84,17 +86,11 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
 
     @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
-
-        List<String> list = new VarRange(targetVarNames).parseVarNames(df);
-        this.targetNames = list.toArray(new String[list.size()]);
-        this.dict = new HashMap<>();
-        for (String targetVar : targetNames) {
-            dict.put(targetVar, df.var(targetVar).dictionary());
-        }
-
+        prepareLearning(df, weights, targetVarNames);
         if (splits.isEmpty()) {
             throw new IllegalArgumentException("No splits defined");
         }
+
         List<Mapping> maps = new ArrayList<>();
         for (int i = 0; i < splits.size(); i++) {
             maps.add(Mapping.newEmpty());
@@ -125,7 +121,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
             if (split.classifier instanceof RunningClassifier) {
                 ((RunningClassifier) split.classifier).withRuns(runs);
             }
-            split.classifier.learn(frames.get(i), weightList.get(i), targetNames);
+            split.classifier.learn(frames.get(i), weightList.get(i), targetNames());
         }
     }
 
@@ -139,8 +135,8 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
     public CResult predict(Frame df, boolean withClasses, boolean withDensities) {
 
         CResult pred = CResult.newEmpty(this, df, withClasses, withDensities);
-        for (String targetVar : targetNames) {
-            pred.addTarget(targetVar, dict.get(targetVar));
+        for (String targetVar : targetNames()) {
+            pred.addTarget(targetVar, dictionaries().get(targetVar));
         }
 
         df.stream().forEach(spot -> {
@@ -151,14 +147,14 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
                     CResult p = split.classifier.predict(f, withClasses, withDensities);
 
                     if (withClasses) {
-                        for (String targetVar : targetNames) {
+                        for (String targetVar : targetNames()) {
                             pred.classes(targetVar).setLabel(spot.row(), p.classes(targetVar).label(0));
                         }
                     }
                     if (withDensities) {
-                        for (String targetVar : targetNames) {
-                            for (int j = 0; j < dict.get(targetVar).length; j++) {
-                                pred.densities().get(targetVar).setValue(spot.row(), dict.get(targetVar)[j], p.densities().get(targetVar).value(0, dict.get(targetVar)[j]));
+                        for (String targetVar : targetNames()) {
+                            for (int j = 0; j < dictionary(targetVar).length; j++) {
+                                pred.densities().get(targetVar).setValue(spot.row(), dictionary(targetVar)[j], p.densities().get(targetVar).value(0, dictionary(targetVar)[j]));
                             }
                         }
                     }

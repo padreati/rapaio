@@ -41,4 +41,9 @@ public class ChiSquareKernel extends AbstractKernel {
         }
         return 1 - result;
     }
+
+    @Override
+    public Kernel newInstance() {
+        return new ChiSquareKernel();
+    }
 }

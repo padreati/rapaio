@@ -20,7 +20,7 @@
 
 package rapaio.ml.classifier.tree;
 
-import rapaio.core.sample.Sampling;
+import rapaio.core.sample.SamplingTool;
 import rapaio.data.*;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CResult;
@@ -35,7 +35,6 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -58,19 +57,17 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
 
     public static CForest buildRandomForest(int runs, int mcols, double sampling) {
         return new CForest()
-                .withClassifier(CTree.newCART())
+                .withClassifier(CTree.newCART().withVarSelector(new VarSelector.Random(mcols)))
                 .withBaggingMethod(BaggingMethods.VOTING)
                 .withRuns(runs)
-                .withVarSelector(new VarSelector.Random(mcols))
                 .withSampling(sampling);
     }
 
     public static CForest buildRandomForest(int runs, double sampling) {
         return new CForest()
-                .withClassifier(CTree.newCART())
+                .withClassifier(CTree.newCART().withVarSelector(new VarSelector.Random()))
                 .withBaggingMethod(BaggingMethods.VOTING)
                 .withRuns(runs)
-                .withVarSelector(new VarSelector.Random())
                 .withSampling(sampling);
     }
 
@@ -79,7 +76,6 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
                 .withClassifier(c)
                 .withBaggingMethod(BaggingMethods.VOTING)
                 .withRuns(runs)
-                .withVarSelector(new VarSelector.Random(mcols))
                 .withSampling(sampling);
     }
 
@@ -95,7 +91,6 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
     @Override
     public Classifier newInstance() {
         return new CForest()
-                .withVarSelector(varSelector.newInstance())
                 .withRuns(runs)
                 .withBaggingMethod(baggingMethod)
                 .withSampling(sampling)
@@ -113,17 +108,10 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
         StringBuilder sb = new StringBuilder();
         sb.append(name()).append("{");
         sb.append("baggingMethod=").append(baggingMethod.name()).append(",");
-        sb.append("varSelector=").append(varSelector.name()).append(",");
         sb.append("runs=").append(runs).append(",");
         sb.append("c=").append(c.fullName());
         sb.append("}");
         return sb.toString();
-    }
-
-    @Override
-    public CForest withVarSelector(VarSelector varSelector) {
-        this.varSelector = varSelector;
-        return this;
     }
 
     public CForest withRuns(int runs) {
@@ -193,7 +181,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
         weightsList.add(Numeric.newEmpty());
         weightsList.add(Numeric.newEmpty());
 
-        int[] sample = Sampling.sampleWR((int) (df.rowCount() * sampling), df.rowCount());
+        int[] sample = SamplingTool.sampleWR((int) (df.rowCount() * sampling), df.rowCount());
         HashSet<Integer> rows = new HashSet<>();
         for (int row : sample) {
             rows.add(row);
@@ -215,13 +203,10 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
     @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
 
-        List<String> targetVarsList = new VarRange(targetVarNames).parseVarNames(df);
-        if (targetVarsList.size() != 1) {
+        prepareLearning(df, weights, targetVarNames);
+        if (targetNames().length != 1) {
             throw new IllegalArgumentException("Forest classifiers can learn only one target variable");
         }
-        this.targetNames = targetVarsList.toArray(new String[targetVarsList.size()]);
-        this.dict = new HashMap<>();
-        this.dict.put(firstTargetName(), df.var(firstTargetName()).dictionary());
 
         predictors.clear();
 
@@ -238,7 +223,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
     @Override
     public void learnFurther(Frame df, Var weights, String targetVars, int additionalRuns) {
 
-        if (this.targetNames != null && dict != null) {
+        if (this.targetNames() != null && dictionaries() != null) {
             this.runs += additionalRuns;
         } else {
             this.runs = additionalRuns;
@@ -250,7 +235,6 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
 
     private void buildWeakPredictor(Frame df, Var weights) {
         Classifier weak = c.newInstance();
-        weak.withVarSelector(varSelector);
 
         Pair<List<Frame>, List<Var>> ss = produceSamples(df, weights);
 

@@ -20,7 +20,7 @@
 
 package rapaio.ml.regressor.boost;
 
-import rapaio.core.sample.Sampling;
+import rapaio.core.sample.SamplingTool;
 import rapaio.data.*;
 import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.RResult;
@@ -159,7 +159,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
             Mapping bootstrapMapping = null;
             if (useBootstrap) {
                 bootstrapMapping = Mapping.newEmpty();
-                int[] sample = Sampling.sampleWOR((int) (bootstrapSize * xmLearn.rowCount()), xmLearn.rowCount());
+                int[] sample = SamplingTool.sampleWOR((int) (bootstrapSize * xmLearn.rowCount()), xmLearn.rowCount());
                 for (int aSample : sample) {
                     bootstrapMapping.add(aSample);
                 }
@@ -245,7 +245,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
             Mapping bootstrapMapping = null;
             if (useBootstrap) {
                 bootstrapMapping = Mapping.newEmpty();
-                int[] sample = Sampling.sampleWOR((int) (bootstrapSize * xmLearn.rowCount()), xmLearn.rowCount());
+                int[] sample = SamplingTool.sampleWOR((int) (bootstrapSize * xmLearn.rowCount()), xmLearn.rowCount());
                 for (int aSample : sample) {
                     bootstrapMapping.add(aSample);
                 }

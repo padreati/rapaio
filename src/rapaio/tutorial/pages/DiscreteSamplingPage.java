@@ -22,7 +22,7 @@ package rapaio.tutorial.pages;
 
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.empirical.KDE;
-import rapaio.core.sample.Sampling;
+import rapaio.core.sample.SamplingTool;
 import rapaio.data.*;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.*;
@@ -115,7 +115,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "fairly simple since it is based on a basic operation provided by " +
                 "Java language (<code>java.util.Random.nextInt(int n);</code>)");
 
-        int[] sample = Sampling.sampleWR(1000, 6);
+        int[] sample = SamplingTool.sampleWR(1000, 6);
         Var var = Index.newWrapOf(sample);
         draw(new Plot().add(new Histogram(var).bins(6).prob(false)), 500, 200);
 
@@ -160,7 +160,7 @@ public class DiscreteSamplingPage implements TutorialPage {
         vars[1] = Numeric.newEmpty(SAMPLE_SIZE * TRIALS).withName("winning number");
 
         for (int i = 0; i < TRIALS; i++) {
-            int[] numbers = Sampling.sampleWOR(SAMPLE_SIZE, POPULATION_SIZE);
+            int[] numbers = SamplingTool.sampleWOR(SAMPLE_SIZE, POPULATION_SIZE);
             for (int j = 0; j < numbers.length; j++) {
                 vars[0].setValue(i * SAMPLE_SIZE + j, i + 1);
                 vars[1].setValue(i * SAMPLE_SIZE + j, numbers[j] + 1);
@@ -219,7 +219,7 @@ public class DiscreteSamplingPage implements TutorialPage {
         double count = 0;
         double total = 0;
         for (int i = 0; i < 300; i++) {
-            int[] samples = Sampling.sampleWeightedWR(1, new double[]{0.6, 0.4});
+            int[] samples = SamplingTool.sampleWeightedWR(1, new double[]{0.6, 0.4});
             if (samples[0] == 0) count++;
             total++;
             value.setValue(i, count / total);
@@ -293,7 +293,7 @@ public class DiscreteSamplingPage implements TutorialPage {
             prob[i] = 10;
         }
         for (int i = 0; i < TRIALS; i++) {
-            int[] numbers = Sampling.sampleWeightedWOR(SAMPLE_SIZE, prob);
+            int[] numbers = SamplingTool.sampleWeightedWOR(SAMPLE_SIZE, prob);
             for (int j = 0; j < numbers.length; j++) {
                 vars[0].setValue(i * SAMPLE_SIZE + j, i + 1);
                 vars[1].setValue(i * SAMPLE_SIZE + j, numbers[j] + 1);

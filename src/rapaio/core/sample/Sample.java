@@ -18,35 +18,26 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.svm.kernel;
+package rapaio.core.sample;
 
 import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.Var;
 
 /**
- * Log Kernel
- * <p>
- * The Log kernel seems to be particularly interesting for images, but is only
- * conditionally positive definite.
- * <p>
- * k(x,y) = - log (\lVert x-y \rVert ^d + 1)
- * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
-public class LogKernel extends AbstractKernel {
+public final class Sample {
 
-    private final double degree;
+    public final Frame df;
 
-    public LogKernel(double degree) {
-        this.degree = degree;
-    }
+    public final Var weights;
 
-    @Override
-    public double eval(Frame df1, int row1, Frame df2, int row2) {
-        return -Math.log1p(Math.pow(deltaDotProd(df1, row1, df2, row2), degree));
-    }
+    public final Mapping mapping;
 
-    @Override
-    public Kernel newInstance() {
-        return new LogKernel(degree);
+    public Sample(Frame df, Var weights, Mapping mapping) {
+        this.df = df;
+        this.weights = weights;
+        this.mapping = mapping;
     }
 }

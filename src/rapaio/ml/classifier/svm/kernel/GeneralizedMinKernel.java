@@ -53,4 +53,9 @@ public class GeneralizedMinKernel extends AbstractKernel {
         }
         return sum;
     }
+
+    @Override
+    public Kernel newInstance() {
+        return new GeneralizedMinKernel(alpha, beta);
+    }
 }

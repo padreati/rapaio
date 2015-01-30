@@ -64,7 +64,7 @@ public interface Regressor extends Printable, Serializable {
 
     /**
      * Fit a classifier on instances specified by frame, with row weights
-     * equal to 1 and target as targetNames.
+     * equal to 1 and target as targetName.
      *
      * @param df         data set instances
      * @param targetVars target variables
@@ -75,7 +75,7 @@ public interface Regressor extends Printable, Serializable {
     }
 
     /**
-     * Fit a classifier on instances specified by frame, with row weights and targetNames
+     * Fit a classifier on instances specified by frame, with row weights and targetName
      *
      * @param df             train frame
      * @param weights        instance weights

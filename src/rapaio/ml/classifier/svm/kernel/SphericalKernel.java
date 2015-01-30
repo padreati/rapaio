@@ -49,4 +49,9 @@ public class SphericalKernel extends AbstractKernel {
         double f = dot / sigma;
         return 1 - 3 * f / 2 + Math.pow(f, 3) / 2;
     }
+
+    @Override
+    public Kernel newInstance() {
+        return new SphericalKernel(sigma);
+    }
 }

@@ -20,7 +20,7 @@
 
 package rapaio.ml.common;
 
-import rapaio.core.sample.Sampling;
+import rapaio.core.sample.SamplingTool;
 import rapaio.data.Frame;
 import rapaio.data.VarRange;
 
@@ -58,6 +58,7 @@ public interface VarSelector extends Serializable {
 
         @Override
         public synchronized void initialize(Frame df, VarRange except) {
+
             String[] all = df.varNames();
             List<Integer> ex = except == null ? new ArrayList<>() : except.parseVarIndexes(df);
             selection = new String[all.length - ex.size()];
@@ -117,7 +118,7 @@ public interface VarSelector extends Serializable {
         @Override
         public synchronized String[] nextVarNames() {
             int m = (mVars < 1) ? Math.max((int) Math.sqrt(candidates.length), 1) : mVars;
-            int[] indexes = Sampling.sampleWR(m, candidates.length);
+            int[] indexes = SamplingTool.sampleWR(m, candidates.length);
             String[] result = new String[m];
             for (int i = 0; i < indexes.length; i++) {
                 result[i] = candidates[indexes[i]];

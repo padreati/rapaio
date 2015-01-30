@@ -55,12 +55,12 @@ public class CTreeTest {
         String testName = root.getBestCandidate().getTestName();
         if ("petal-width".equals(testName)) {
             assertEquals("petal-width", root.getBestCandidate().getTestName());
-            assertEquals("petal-width <= 0.600000", root.getBestCandidate().getGroupNames().get(0));
-            assertEquals("petal-width > 0.600000", root.getBestCandidate().getGroupNames().get(1));
+            assertEquals("petal-width <= 0.800000", root.getBestCandidate().getGroupNames().get(0));
+            assertEquals("petal-width > 0.800000", root.getBestCandidate().getGroupNames().get(1));
         } else {
             assertEquals("petal-length", root.getBestCandidate().getTestName());
-            assertEquals("petal-length <= 1.900000", root.getBestCandidate().getGroupNames().get(0));
-            assertEquals("petal-length > 1.900000", root.getBestCandidate().getGroupNames().get(1));
+            assertEquals("petal-length <= 2.450000", root.getBestCandidate().getGroupNames().get(0));
+            assertEquals("petal-length > 2.450000", root.getBestCandidate().getGroupNames().get(1));
         }
     }
 

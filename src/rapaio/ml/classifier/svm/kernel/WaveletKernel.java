@@ -82,4 +82,9 @@ public class WaveletKernel extends AbstractKernel {
         }
         return result;
     }
+
+    @Override
+    public Kernel newInstance() {
+        return new WaveletKernel(invariant, dilation, translation, wavelet);
+    }
 }

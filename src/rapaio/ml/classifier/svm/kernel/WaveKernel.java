@@ -59,4 +59,9 @@ public class WaveKernel extends AbstractKernel {
         double dot = dotProd(df1, row1, df2, row2);
         return theta * Math.sin(dot / theta) / dot;
     }
+
+    @Override
+    public Kernel newInstance() {
+        return new WaveKernel(theta);
+    }
 }

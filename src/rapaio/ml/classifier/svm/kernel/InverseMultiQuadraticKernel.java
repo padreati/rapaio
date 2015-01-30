@@ -46,4 +46,9 @@ public class InverseMultiQuadraticKernel extends AbstractKernel {
         double dot = deltaDotProd(df1, row1, df2, row2);
         return 1.0 / Math.sqrt(dot * dot + c * c);
     }
+
+    @Override
+    public Kernel newInstance() {
+        return new InverseMultiQuadraticKernel(c);
+    }
 }

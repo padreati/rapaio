@@ -26,22 +26,20 @@ package rapaio.ml.classifier.svm;
 
 import rapaio.core.MathBase;
 import rapaio.core.RandomSource;
+import rapaio.core.sample.Sample;
+import rapaio.core.sample.Sampler;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.data.VarRange;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.svm.kernel.Kernel;
 import rapaio.ml.classifier.svm.kernel.PolyKernel;
-import rapaio.ml.common.VarSelector;
 import rapaio.printer.Printer;
 
 import java.io.Serializable;
 import java.util.BitSet;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Class for building a binary support vector machine.
@@ -64,14 +62,12 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
     protected Frame train;
     protected Var weights;
-    protected String[] varNames;
-
 
     protected int classIndex;
     /**
      * Weight vector for linear machine.
      */
-    protected double[] m_weights;
+    protected double[] linear_weights;
 
     /**
      * Variables to hold weight vector in sparse form.
@@ -109,7 +105,12 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
     @Override
     public Classifier newInstance() {
-        return null;
+        return new BinarySMO()
+                .withSampler(sampler())
+                .withKernel(kernel.newInstance())
+                .withC(C)
+                .withTol(m_tol)
+                .withMaxRuns(maxRuns);
     }
 
     public BinarySMO withKernel(Kernel value) {
@@ -133,25 +134,29 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     }
 
     @Override
+    public BinarySMO withSampler(Sampler sampler) {
+        return (BinarySMO) super.withSampler(sampler);
+    }
+
+    @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
 
-        List<String> targetVarsList = new VarRange(targetVarNames).parseVarNames(df);
-        if (targetVarsList.size() != 1) {
+        prepareLearning(df, weights, targetVarNames);
+        if (targetNames().length != 1) {
             throw new IllegalArgumentException("Binary classifiers can learn only one target variable");
         }
-        this.targetNames = targetVarsList.toArray(new String[targetVarsList.size()]);
-        this.dict = new HashMap<>();
-        this.dict.put(firstTargetName(), df.var(firstTargetName()).dictionary());
-
-        this.varSelector = new VarSelector.Standard();
-        this.varSelector.initialize(df, new VarRange(targetVarNames));
-        this.varNames = varSelector.nextVarNames();
 
         // filter out other classes
 
         Mapping map = df.stream().filter(s -> s.index(firstTargetName()) == cl1 || s.index(firstTargetName()) == cl2).collectMapping();
         df = df.mapRows(map);
         weights = weights.mapRows(map);
+
+        // perform sampling
+
+        Sample sample = sampler().newSample(df, weights);
+        df = sample.df;
+        weights = sample.weights;
 
         if (df.rowCount() == 0) {
             throw new IllegalArgumentException("After filtering other classes, there " +
@@ -168,7 +173,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         bLow = 1;
         b = 0;
         alpha = null;
-        m_weights = null;
+        linear_weights = null;
         fCache = null;
         I0 = null;
         I1 = null;
@@ -224,9 +229,9 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         // If machine is linear, reserve space for weights
 
         if (kernel.isLinear()) {
-            m_weights = new double[varNames.length];
+            linear_weights = new double[inputNames().length];
         } else {
-            m_weights = null;
+            linear_weights = null;
         }
 
         // Initialize alpha array to zero
@@ -245,7 +250,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         sparseIndices = null;
 
         // init kernel
-        kernel.buildKernel(varNames, df);
+        kernel.buildKernel(inputNames(), df);
 
         // Initialize error cache
         fCache = new double[df.rowCount()];
@@ -348,12 +353,12 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             target = null;
 
             // Convert weight vector
-            double[] sparseWeights = new double[m_weights.length];
-            int[] sparseIndices = new int[m_weights.length];
+            double[] sparseWeights = new double[linear_weights.length];
+            int[] sparseIndices = new int[linear_weights.length];
             int counter = 0;
-            for (int i = 0; i < m_weights.length; i++) {
-                if (m_weights[i] != 0.0) {
-                    sparseWeights[counter] = m_weights[i];
+            for (int i = 0; i < linear_weights.length; i++) {
+                if (linear_weights[i] != 0.0) {
+                    sparseWeights[counter] = linear_weights[i];
                     sparseIndices[counter] = i;
                     counter++;
                 }
@@ -364,7 +369,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             System.arraycopy(sparseIndices, 0, this.sparseIndices, 0, counter);
 
             // Clean out weight vector
-            m_weights = null;
+            linear_weights = null;
 
             // We don't need the alphas in the linear case
             alpha = null;
@@ -409,14 +414,14 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
             // Is weight vector stored in sparse format?
             if (sparseWeights == null) {
-                int n1 = varNames.length;
+                int n1 = inputNames().length;
                 for (int p = 0; p < n1; p++) {
                     if (p != classIndex) {
-                        result += m_weights[p] * df.value(row, p);
+                        result += linear_weights[p] * df.value(row, p);
                     }
                 }
             } else {
-                int n1 = varSelector.nextVarNames().length;
+                int n1 = inputNames().length;
                 int n2 = sparseWeights.length;
                 for (int p1 = 0, p2 = 0; p1 < n1 && p2 < n2; ) {
                     int ind1 = p1;
@@ -677,14 +682,14 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
         // Update weight vector to reflect change a1 and a2, if linear SVM
         if (kernel.isLinear()) {
-            for (int p1 = 0; p1 < varSelector.nextVarNames().length; p1++) {
+            for (int p1 = 0; p1 < inputNames().length; p1++) {
                 if (p1 != classIndex) {
-                    m_weights[p1] += y1 * (a1 - alph1) * train.value(i1, p1);
+                    linear_weights[p1] += y1 * (a1 - alph1) * train.value(i1, p1);
                 }
             }
-            for (int p2 = 0; p2 < varSelector.nextVarNames().length; p2++) {
+            for (int p2 = 0; p2 < inputNames().length; p2++) {
                 if (p2 != classIndex) {
-                    m_weights[p2] += y2 * (a2 - alph2) * train.value(i2, p2);
+                    linear_weights[p2] += y2 * (a2 - alph2) * train.value(i2, p2);
                 }
             }
         }
@@ -773,14 +778,14 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                 // We can assume that the weight vector is stored in sparse
                 // format because the classifier has been built
                 for (int i = 0; i < sparseWeights.length; i++) {
-                    if (sparseIndices[i] != (int) classIndex) {
+                    if (sparseIndices[i] != classIndex) {
                         if (printed > 0) {
                             sb.append(" + ");
                         } else {
                             sb.append("   ");
                         }
                         sb.append(Printer.formatDecShort.format(sparseWeights[i])).append(" * ");
-                        sb.append("var with index=").append(sparseIndices[i]).append(", name=").append(varNames[sparseIndices[i]]).append("\n");
+                        sb.append("var with index=").append(sparseIndices[i]).append(", name=").append(inputNames(sparseIndices[i])).append("\n");
                         printed++;
                     }
                 }
@@ -796,9 +801,9 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                             sb.append(" - ");
                         }
                         sb.append(Printer.formatDecLong.format(val)).append(" * <");
-                        for (int j = 0; j < varNames.length; j++) {
-                            sb.append(Printer.formatDecShort.format(train.value(i, varNames[j])));
-                            if (j != varNames.length - 1) {
+                        for (int j = 0; j < inputNames().length; j++) {
+                            sb.append(Printer.formatDecShort.format(train.value(i, inputNames()[j])));
+                            if (j != inputNames().length - 1) {
                                 sb.append(" ");
                             }
                         }

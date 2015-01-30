@@ -40,4 +40,9 @@ public class MinKernel extends AbstractKernel {
         }
         return sum;
     }
+
+    @Override
+    public Kernel newInstance() {
+        return new MinKernel();
+    }
 }

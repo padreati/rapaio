@@ -45,4 +45,9 @@ public class GeneralizedStudentTKernel extends AbstractKernel {
         double dot = deltaDotProd(df1, row1, df2, row2);
         return 1.0 / (1.0 + Math.pow(dot, degree));
     }
+
+    @Override
+    public Kernel newInstance() {
+        return new GeneralizedStudentTKernel(degree);
+    }
 }

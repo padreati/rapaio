@@ -52,6 +52,11 @@ public class PolyKernel extends AbstractKernel {
         return MathBase.eq(exponent, 1.0);
     }
 
+    @Override
+    public Kernel newInstance() {
+        return new PolyKernel(exponent, bias, slope);
+    }
+
     public PolyKernel(double exponent) {
         this(exponent, 1.0, 1.0);
     }

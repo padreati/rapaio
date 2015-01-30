@@ -21,14 +21,16 @@
 package rapaio.ml.classifier.rule;
 
 import rapaio.core.RandomSource;
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.Index;
+import rapaio.data.RowComparators;
+import rapaio.data.Var;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.tools.DensityVector;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -65,23 +67,17 @@ public class OneRule extends AbstractClassifier {
     @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
 
-        List<String> list = new VarRange(targetVarNames).parseVarNames(df);
-        if (list.size() < 1) {
+        prepareLearning(df, weights, targetVarNames);
+
+        if (targetNames().length < 1) {
             throw new IllegalArgumentException("target variable names must not be empty");
         }
-        if (list.size() > 1) {
+        if (targetNames().length > 1) {
             throw new IllegalArgumentException("OneRule algorithm can't handle multiple targets");
         }
 
-        this.targetNames = new String[]{list.get(0)};
-        this.dict = new HashMap<>();
-        this.dict.put(firstTargetName(), df.var(firstTargetName()).dictionary());
-
         bestRuleSet = null;
-        for (String testCol : df.varNames()) {
-            if (testCol.equals(firstTargetName())) {
-                continue;
-            }
+        for (String testCol : inputNames()) {
             RuleSet ruleSet = df.var(testCol).type().isNominal() ?
                     buildNominal(testCol, df, weights) :
                     buildNumeric(testCol, df, weights);

@@ -20,7 +20,7 @@
 
 package rapaio.ml.classifier.boost;
 
-import rapaio.core.sample.Sampling;
+import rapaio.core.sample.SamplingTool;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
@@ -35,7 +35,6 @@ import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
 import rapaio.ml.regressor.tree.rtree.RTree;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -104,19 +103,13 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
 
     @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
-        List<String> list = new VarRange(targetVarNames).parseVarNames(df);
-        this.targetNames = list.toArray(new String[list.size()]);
-
-        if (targetNames.length != 1) {
+        prepareLearning(df, weights, targetVarNames);
+        if (targetNames().length != 1) {
             throw new IllegalArgumentException("This classifier accepts one and only one target variable.");
         }
-
         if (runs <= 0) {
             throw new IllegalArgumentException("runs parameter must be greater than 0");
         }
-
-        this.dict = new HashMap<>();
-        this.dict.put(firstTargetName(), df.var(firstTargetName()).dictionary());
 
         // algorithm described by ESTL pag. 387
 
@@ -134,18 +127,10 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
 
     @Override
     public void learnFurther(Frame df, Var weights, String targetVarNames, int runs) {
-        List<String> list = new VarRange(targetVarNames).parseVarNames(df);
-
-        if (list.size() != 1) {
-            throw new IllegalArgumentException("This classifier accepts one and only one target variable.");
-        }
-        if (targetNames == null) {
+        if (targetNames() == null) {
             withRuns(runs);
             learn(df, weights, targetVarNames);
             return;
-        }
-        if (!list.get(0).equals(targetNames[0])) {
-            throw new IllegalArgumentException("Learn further called with different target var name");
         }
 
         if (runs <= 0) {
@@ -191,7 +176,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
                 r.addValue(y_i - p[i][k]);
             }
 
-            Frame x = df.removeVars(new VarRange(targetNames));
+            Frame x = df.removeVars(new VarRange(targetNames()));
             Frame train = x.bindVars(r);
 
             BTRegressor tree = classifier.newInstance();
@@ -201,7 +186,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
             Frame bootX = x;
             Var bootR = r;
             if (useBootstrap) {
-                int[] map = Sampling.sampleWR((int) (bootstrapSize * df.rowCount()), df.rowCount());
+                int[] map = SamplingTool.sampleWR((int) (bootstrapSize * df.rowCount()), df.rowCount());
                 bootTrain = train.mapRows(map);
                 bootWeights = weights.mapRows(map);
                 bootX = x.mapRows(map);
@@ -223,7 +208,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
     @Override
     public CResult predict(Frame df, boolean withClasses, boolean withDistributions) {
         CResult cr = CResult.newEmpty(this, df, withClasses, withDistributions);
-        for (String targetName : targetNames) {
+        for (String targetName : targetNames()) {
             cr.addTarget(targetName, dictionaries().get(targetName));
         }
 

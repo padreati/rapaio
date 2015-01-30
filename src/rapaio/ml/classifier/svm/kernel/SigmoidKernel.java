@@ -59,4 +59,9 @@ public class SigmoidKernel extends AbstractKernel {
     public double eval(Frame df1, int row1, Frame df2, int row2) {
         return Math.atan(alpha * dotProd(df1, row1, df2, row2) + c);
     }
+
+    @Override
+    public Kernel newInstance() {
+        return new SigmoidKernel(alpha, c);
+    }
 }

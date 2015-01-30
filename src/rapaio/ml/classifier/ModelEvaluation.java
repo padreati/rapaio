@@ -21,7 +21,7 @@
 package rapaio.ml.classifier;
 
 import rapaio.core.RandomSource;
-import rapaio.core.sample.Sampling;
+import rapaio.core.sample.SamplingTool;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
@@ -170,7 +170,7 @@ public class ModelEvaluation {
         double total = 0;
         double count = 0;
         for (int i = 0; i < bootstraps; i++) {
-            int[] rows = Sampling.sampleWR(((int) (df.rowCount() * p)), df.rowCount());
+            int[] rows = SamplingTool.sampleWR(((int) (df.rowCount() * p)), df.rowCount());
             Frame train = MappedFrame.newByRow(df, rows);
             Mapping others = Mapping.newEmpty();
             Set<Integer> set = new HashSet<>();

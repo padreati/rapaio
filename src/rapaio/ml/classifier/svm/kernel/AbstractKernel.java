@@ -157,6 +157,9 @@ class SolidKernelCache implements KernelCache {
             return;
         }
         if (df1 == this.df) {
+            if (cache == null) {
+                throw new IllegalArgumentException();
+            }
             cache[row1][row2] = value;
         }
     }

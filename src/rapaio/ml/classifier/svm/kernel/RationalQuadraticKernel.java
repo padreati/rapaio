@@ -44,4 +44,9 @@ public class RationalQuadraticKernel extends AbstractKernel {
         double square = dot * dot;
         return 1.0 - square / (square + c);
     }
+
+    @Override
+    public Kernel newInstance() {
+        return new RationalQuadraticKernel(c);
+    }
 }

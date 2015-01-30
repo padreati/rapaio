@@ -51,4 +51,9 @@ public class CircularKernel extends AbstractKernel {
         double f = dot / sigma;
         return 2 * (Math.acos(-f) - f * Math.sqrt(1 - f * f)) / Math.PI;
     }
+
+    @Override
+    public Kernel newInstance() {
+        return new CircularKernel(sigma);
+    }
 }
