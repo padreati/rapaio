@@ -20,8 +20,11 @@
 
 package rapaio.ml.classifier.boost;
 
-import rapaio.core.sample.SamplingTool;
-import rapaio.data.*;
+import rapaio.core.sample.Sample;
+import rapaio.core.sample.Sampler;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarRange;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.Classifier;
@@ -40,9 +43,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
     // parameters
 
-    private Classifier base = CTree.newDecisionStump();
+    private Classifier weak = CTree.newDecisionStump();
     private int runs = 0;
-    private double sampling = 0;
     private boolean stopOnError = false;
 
     // model artifacts
@@ -60,10 +62,9 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     @Override
     public AdaBoostSAMMEClassifier newInstance() {
         return new AdaBoostSAMMEClassifier()
-                .withClassifier(this.base.newInstance())
+                .withClassifier(this.weak.newInstance())
                 .withRuns(this.runs)
-                .withStopOnError(stopOnError)
-                .withSampling(sampling);
+                .withSampler(sampler());
     }
 
     @Override
@@ -73,16 +74,18 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
     @Override
     public String fullName() {
-        if (sampling > 0) {
-            return String.format("AdaBoost.SAMME (base: %s, runs: %d, sampling: true, sampling ratio: %.2f, stopOnError: %s)",
-                    base.fullName(), runs, sampling, String.valueOf(stopOnError));
-        }
-        return String.format("AdaBoost.SAMME (base: %s, runs: %d, sampling: false, stopOnError: %s)",
-                base.fullName(), runs, String.valueOf(stopOnError));
+        StringBuilder sb = new StringBuilder();
+        sb.append("AdaBoost.SAMME{");
+        sb.append("weak: ").append(weak.fullName()).append(", ");
+        sb.append("runs: ").append(runs).append(", ");
+        sb.append("sampler: ").append(sampler().name()).append(", ");
+        sb.append("stopOnError: ").append(stopOnError).append(", ");
+        sb.append("}");
+        return sb.toString();
     }
 
     public AdaBoostSAMMEClassifier withClassifier(Classifier weak) {
-        this.base = weak;
+        this.weak = weak;
         return this;
     }
 
@@ -91,25 +94,13 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         return this;
     }
 
-    public AdaBoostSAMMEClassifier withSampling(double ratio) {
-        this.sampling = ratio;
-        return this;
+    public AdaBoostSAMMEClassifier withSampler(Sampler sampler) {
+        return (AdaBoostSAMMEClassifier) super.withSampler(sampler);
     }
 
     public AdaBoostSAMMEClassifier withStopOnError(boolean stopOnError) {
         this.stopOnError = stopOnError;
         return this;
-    }
-
-    private int[] getSamplingRows(Frame df) {
-        if (sampling > 0.0) {
-            return SamplingTool.sampleWR((int) (df.rowCount() * sampling), df.rowCount());
-        }
-        int[] rows = new int[df.rowCount()];
-        for (int i = 0; i < rows.length; i++) {
-            rows[i] = i;
-        }
-        return rows;
     }
 
     @Override
@@ -124,7 +115,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
             throw new IllegalArgumentException("tree classifier can't fit more than one target variable");
         }
 
-        k = firstDictionary().length - 1;
+        k = firstDict().length - 1;
 
         h = new ArrayList<>();
         a = new ArrayList<>();
@@ -147,10 +138,10 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         List<String> targetVarList = new VarRange(targetVarsRange).parseVarNames(df);
         String[] targetVars = targetVarList.toArray(new String[targetVarList.size()]);
 
-        if (w != null && this.targetNames() != null && firstDictionary() != null) {
+        if (w != null && this.targetNames() != null && firstDict() != null) {
             // if prev trained on something else than we have a problem
             if ((!targetVars[0].equals(firstTargetName()) ||
-                    k != firstDictionary().length - 1)) {
+                    k != firstDict().length - 1)) {
                 throw new IllegalArgumentException("previous classifier trained on different target");
             }
             runs += additionalRuns;
@@ -172,11 +163,11 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     }
 
     private boolean learnRound(Frame df) {
-        int[] rows = getSamplingRows(df);
-        Frame dfTrain = MappedFrame.newByRow(df, rows);
-        Numeric dfWeights = (Numeric) w.mapRows(rows).solidCopy();
+        Sample sample = sampler().newSample(df, w);
+        Frame dfTrain = sample.df;
+        Var dfWeights = sample.weights.solidCopy();
 
-        Classifier hh = base.newInstance();
+        Classifier hh = weak.newInstance();
         hh.learn(dfTrain, dfWeights, targetNames());
         CResult p = hh.predict(df, true, false);
         double err = 0;
@@ -214,7 +205,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     @Override
     public CResult predict(Frame df, boolean withClasses, boolean withDistributions) {
         CResult p = CResult.newEmpty(this, df, withClasses, true);
-        p.addTarget(firstTargetName(), firstDictionary());
+        p.addTarget(firstTargetName(), firstDict());
 
         for (int i = 0; i < h.size(); i++) {
             CResult hp = h.get(i).predict(df, true, false);

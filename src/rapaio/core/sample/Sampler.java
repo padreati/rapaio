@@ -20,7 +20,6 @@
 
 package rapaio.core.sample;
 
-import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -32,7 +31,7 @@ import rapaio.printer.Printer;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/29/15.
  */
-public interface Sampler extends Printable {
+public interface Sampler {
 
     /**
      * Builds a new sample from the given data frame
@@ -42,8 +41,8 @@ public interface Sampler extends Printable {
      */
     Sample newSample(Frame df, Var weight);
 
-    default void buildSummary(StringBuilder sb) {
-        sb.append("NotImplemented");
+    default String name() {
+        return "CustomSampler";
     }
 
     // static implementations
@@ -56,14 +55,18 @@ public interface Sampler extends Printable {
         }
 
         @Override
-        public void buildSummary(StringBuilder sb) {
-            sb.append("Sampler.Identity\n");
+        public String name() {
+            return "Identity";
         }
     }
 
     public static final class Bootstrap implements Sampler {
 
         private double percent = 1.0;
+
+        public Bootstrap(double percent) {
+            this.percent = percent;
+        }
 
         public Bootstrap withPercent(double p) {
             this.percent = p;
@@ -77,8 +80,8 @@ public interface Sampler extends Printable {
         }
 
         @Override
-        public void buildSummary(StringBuilder sb) {
-            sb.append("Sampler.Bootstrap{p=").append(Printer.formatDecShort.format(percent)).append("}\n");
+        public String name() {
+            return "Bootstrap(p=" + Printer.formatDecShort.format(percent) + ")";
         }
     }
 }

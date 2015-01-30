@@ -20,8 +20,11 @@
 
 package rapaio.ml.classifier.tree;
 
-import rapaio.core.sample.SamplingTool;
-import rapaio.data.*;
+import rapaio.core.sample.Sample;
+import rapaio.core.sample.Sampler;
+import rapaio.data.Frame;
+import rapaio.data.Nominal;
+import rapaio.data.Var;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.Classifier;
@@ -30,12 +33,10 @@ import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.ml.classifier.tree.ctree.CTree;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.ConfusionMatrix;
-import rapaio.util.Pair;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -47,7 +48,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
     int runs = 0;
     boolean oobCompute = false;
     Classifier c = CTree.newC45();
-    double sampling = 1;
+    Sampler sampler = new Sampler.Bootstrap(1.0);
     BaggingMethod baggingMethod = BaggingMethods.VOTING;
     //
     double totalOobInstances = 0;
@@ -55,37 +56,20 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
     double oobError = Double.NaN;
     List<Classifier> predictors = new ArrayList<>();
 
-    public static CForest buildRandomForest(int runs, int mcols, double sampling) {
+    public static CForest newRF(int runs, int mcols, Sampler sampler) {
         return new CForest()
                 .withClassifier(CTree.newCART().withVarSelector(new VarSelector.Random(mcols)))
                 .withBaggingMethod(BaggingMethods.VOTING)
                 .withRuns(runs)
-                .withSampling(sampling);
+                .withSampler(sampler);
     }
 
-    public static CForest buildRandomForest(int runs, double sampling) {
+    public static CForest newRF(int runs, Sampler sampler) {
         return new CForest()
                 .withClassifier(CTree.newCART().withVarSelector(new VarSelector.Random()))
                 .withBaggingMethod(BaggingMethods.VOTING)
                 .withRuns(runs)
-                .withSampling(sampling);
-    }
-
-    public static CForest buildRandomForest(int runs, int mcols, double sampling, Classifier c) {
-        return new CForest()
-                .withClassifier(c)
-                .withBaggingMethod(BaggingMethods.VOTING)
-                .withRuns(runs)
-                .withSampling(sampling);
-    }
-
-    public static CForest buildBagging(int runs, double sampling, Classifier c) {
-        return new CForest()
-                .withClassifier(c)
-                .withRuns(runs)
-                .withSampling(sampling)
-                .withBaggingMethod(BaggingMethods.VOTING)
-                .withOobError(false);
+                .withSampler(sampler);
     }
 
     @Override
@@ -93,7 +77,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
         return new CForest()
                 .withRuns(runs)
                 .withBaggingMethod(baggingMethod)
-                .withSampling(sampling)
+                .withSampler(sampler())
                 .withOobError(oobCompute)
                 .withClassifier(c);
     }
@@ -133,13 +117,9 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
         return oobError;
     }
 
-    public CForest withSampling(double sampling) {
-        this.sampling = sampling;
+    public CForest withSampler(Sampler sampler) {
+        this.sampler = sampler;
         return this;
-    }
-
-    public double getSampling() {
-        return sampling;
     }
 
     public BaggingMethod getBaggingMethod() {
@@ -158,46 +138,6 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
     public CForest withClassifier(Classifier c) {
         this.c = c;
         return this;
-    }
-
-    public Pair<List<Frame>, List<Var>> produceSamples(Frame df, Var weights) {
-        List<Frame> frames = new ArrayList<>();
-        List<Var> weightsList = new ArrayList<>();
-
-        if (sampling <= 0) {
-            // no sampling
-            frames.add(df.stream().toMappedFrame());
-            frames.add(MappedFrame.newByRow(df));
-
-            weightsList.add(weights);
-            weightsList.add(Numeric.newEmpty());
-
-            return new Pair<>(frames, weightsList);
-        }
-
-        Mapping train = Mapping.newEmpty();
-        Mapping oob = Mapping.newEmpty();
-
-        weightsList.add(Numeric.newEmpty());
-        weightsList.add(Numeric.newEmpty());
-
-        int[] sample = SamplingTool.sampleWR((int) (df.rowCount() * sampling), df.rowCount());
-        HashSet<Integer> rows = new HashSet<>();
-        for (int row : sample) {
-            rows.add(row);
-            train.add(row);
-            weightsList.get(0).addValue(weights.value(row));
-        }
-        for (int i = 0; i < df.rowCount(); i++) {
-            if (rows.contains(i)) continue;
-            oob.add(i);
-            weightsList.get(1).addValue(weights.value(i));
-        }
-
-        frames.add(MappedFrame.newByRow(df, train));
-        frames.add(MappedFrame.newByRow(df, oob));
-
-        return new Pair<>(frames, weightsList);
     }
 
     @Override
@@ -236,14 +176,18 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
     private void buildWeakPredictor(Frame df, Var weights) {
         Classifier weak = c.newInstance();
 
-        Pair<List<Frame>, List<Var>> ss = produceSamples(df, weights);
+        Sample sample = sampler.newSample(df, weights);
 
-        weak.learn(ss.first.get(0), ss.second.get(0), firstTargetName());
+        Frame trainFrame = sample.df;
+        Var trainWeights = sample.weights;
+        Frame oobFrame = df.removeRows(sample.mapping);
+
+        weak.learn(trainFrame, trainWeights, firstTargetName());
         if (oobCompute) {
-            CResult cp = weak.predict(ss.first.get(1));
-            double oobError = new ConfusionMatrix(ss.first.get(1).var(firstTargetName()), cp.firstClasses()).errorCases();
+            CResult cp = weak.predict(oobFrame);
+            double oobError = new ConfusionMatrix(oobFrame.var(firstTargetName()), cp.firstClasses()).errorCases();
             synchronized (this) {
-                totalOobInstances += ss.first.get(1).rowCount();
+                totalOobInstances += oobFrame.rowCount();
                 totalOobError += oobError;
             }
         }
@@ -255,7 +199,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
     @Override
     public CResult predict(Frame df, boolean withClasses, boolean withDensities) {
         CResult cp = CResult.newEmpty(this, df, true, true);
-        cp.addTarget(firstTargetName(), firstDictionary());
+        cp.addTarget(firstTargetName(), firstDict());
 
         List<Frame> treeDensities = new ArrayList<>();
         predictors.forEach(p -> {
@@ -263,7 +207,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
             treeDensities.add(cpTree.firstDensity());
         });
 
-        baggingMethod.computeDensity(firstDictionary(), treeDensities, cp.firstClasses(), cp.firstDensity());
+        baggingMethod.computeDensity(firstDict(), treeDensities, cp.firstClasses(), cp.firstDensity());
         return cp;
     }
 

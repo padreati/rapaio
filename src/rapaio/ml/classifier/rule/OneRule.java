@@ -90,7 +90,7 @@ public class OneRule extends AbstractClassifier {
     @Override
     public CResult predict(final Frame test, final boolean withClasses, final boolean withDensities) {
         CResult pred = CResult.newEmpty(this, test, withClasses, withDensities);
-        pred.addTarget(firstTargetName(), firstDictionary());
+        pred.addTarget(firstTargetName(), firstDict());
 
         for (int i = 0; i < test.rowCount(); i++) {
             String label = "";
@@ -152,7 +152,7 @@ public class OneRule extends AbstractClassifier {
         int len = df.var(testCol).dictionary().length;
         DensityVector[] dvs = new DensityVector[len];
         for (int i = 0; i < len; i++) {
-            dvs[i] = new DensityVector(firstDictionary());
+            dvs[i] = new DensityVector(firstDict());
         }
         for (int i = 0; i < df.rowCount(); i++) {
             dvs[df.index(i, testCol)].update(df.index(i, firstTargetName()), weights.value(i));
@@ -162,7 +162,7 @@ public class OneRule extends AbstractClassifier {
             dv.normalize(true);
             int j = dv.findBestIndex();
             String[] colValues = df.var(testCol).dictionary();
-            set.rules.add(new NominalRule(colValues[i], firstDictionary()[j], dv.sum(true), dv.sum(true) - dv.get(j)));
+            set.rules.add(new NominalRule(colValues[i], firstDict()[j], dv.sum(true), dv.sum(true) - dv.get(j)));
         }
         return set;
     }
@@ -182,7 +182,7 @@ public class OneRule extends AbstractClassifier {
 
         // first process missing values
         if (pos > 0) {
-            double[] hist = new double[firstDictionary().length];
+            double[] hist = new double[firstDict().length];
             for (int i = 0; i < pos; i++) {
                 hist[df.index(sort.index(i), firstTargetName())] += weights.value(sort.index(i));
             }
@@ -202,7 +202,7 @@ public class OneRule extends AbstractClassifier {
                 }
             }
             int next = RandomSource.nextInt(best.size());
-            set.rules.add(new NumericRule(Double.NaN, Double.NaN, true, firstDictionary()[next], total, total - max));
+            set.rules.add(new NumericRule(Double.NaN, Double.NaN, true, firstDict()[next], total, total - max));
         }
 
         // now learn isNumeric intervals
@@ -214,7 +214,7 @@ public class OneRule extends AbstractClassifier {
         while (i < sort.rowCount()) {
             // start a new bucket
             int startIndex = i;
-            double[] hist = new double[firstDictionary().length];
+            double[] hist = new double[firstDict().length];
 
             do { // fill it until it has enough of the majority class
                 index = df.index(sort.index(i), firstTargetName());
@@ -269,7 +269,7 @@ public class OneRule extends AbstractClassifier {
             }
 
             candidates.add(new NumericRule(minValue, maxValue, false,
-                    firstDictionary()[best.get(next)],
+                    firstDict()[best.get(next)],
                     total,
                     total - max));
         }

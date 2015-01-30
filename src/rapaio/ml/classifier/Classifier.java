@@ -126,11 +126,11 @@ public interface Classifier extends Printable, Serializable {
      *
      * @return map with target variable names as key and dictionaries as variables
      */
-    default String[] firstDictionary() {
+    default String[] firstDict() {
         return dictionaries().get(firstTargetName());
     }
 
-    default String firstDictionary(int pos) {
+    default String firstDict(int pos) {
         return dictionaries().get(firstTargetName())[pos];
     }
 

@@ -22,7 +22,6 @@ package rapaio.ml.classifier.tree.ctree;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.VarRange;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.tools.DensityVector;
@@ -231,7 +230,7 @@ public class CTree extends AbstractClassifier {
 
         prepareLearning(df, weights, targetVars);
 
-        this.varSelector.initialize(df, new VarRange(targetNames()));
+        this.varSelector.initialize(inputNames());
 
         if (targetNames().length == 0) {
             throw new IllegalArgumentException("tree classifier must specify a target variable");
@@ -242,7 +241,7 @@ public class CTree extends AbstractClassifier {
 
         rows = df.rowCount();
 
-        testCounter.initialize(df, firstTargetName());
+        testCounter.initialize(df, inputNames());
 
         root = new CTreeNode(null, "root", spot -> true);
         root.learn(this, df, weights, maxDepth);
@@ -252,14 +251,14 @@ public class CTree extends AbstractClassifier {
     public CResult predict(Frame df, boolean withClasses, boolean withDensities) {
 
         CResult prediction = CResult.newEmpty(this, df, withClasses, withDensities);
-        prediction.addTarget(firstTargetName(), firstDictionary());
+        prediction.addTarget(firstTargetName(), firstDict());
 
         df.stream().forEach(spot -> {
             Pair<Integer, DensityVector> result = predictor.predict(this, spot, root);
             if (withClasses)
                 prediction.firstClasses().setIndex(spot.row(), result.first);
             if (withDensities)
-                for (int j = 0; j < firstDictionary().length; j++) {
+                for (int j = 0; j < firstDict().length; j++) {
                     prediction.firstDensity().setValue(spot.row(), j, result.second.get(j));
                 }
         });
@@ -288,10 +287,10 @@ public class CTree extends AbstractClassifier {
             sb.append("root").append(" ");
             sb.append(node.getDensity().sum(true)).append("/");
             sb.append(node.getDensity().sumExcept(node.getBestIndex(), true)).append(" ");
-            sb.append(firstDictionary()[node.getBestIndex()]).append(" (");
+            sb.append(firstDict()[node.getBestIndex()]).append(" (");
             DensityVector d = node.getDensity().solidCopy();
             d.normalize(false);
-            for (int i = 1; i < firstDictionary().length; i++) {
+            for (int i = 1; i < firstDict().length; i++) {
                 sb.append(String.format("%.6f", d.get(i))).append(" ");
             }
             sb.append(") ");
@@ -304,10 +303,10 @@ public class CTree extends AbstractClassifier {
 
             sb.append(node.getDensity().sum(true)).append("/");
             sb.append(node.getDensity().sumExcept(node.getBestIndex(), true)).append(" ");
-            sb.append(firstDictionary()[node.getBestIndex()]).append(" (");
+            sb.append(firstDict()[node.getBestIndex()]).append(" (");
             DensityVector d = node.getDensity().solidCopy();
             d.normalize(false);
-            for (int i = 1; i < firstDictionary().length; i++) {
+            for (int i = 1; i < firstDict().length; i++) {
                 sb.append(String.format("%.6f", d.get(i))).append(" ");
             }
             sb.append(") ");

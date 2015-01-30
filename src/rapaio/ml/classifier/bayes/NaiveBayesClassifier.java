@@ -106,16 +106,16 @@ public class NaiveBayesClassifier extends AbstractClassifier {
         // build priors
 
         priors = new HashMap<>();
-        DensityVector dv = new DensityVector(firstDictionary());
+        DensityVector dv = new DensityVector(firstDict());
         df.stream().forEach(s -> dv.update(s.index(firstTargetName()), weights.value(s.row())));
 
         // laplace add-one smoothing
-        for (int i = 0; i < firstDictionary().length; i++) {
+        for (int i = 0; i < firstDict().length; i++) {
             dv.update(i, 1.0);
         }
         dv.normalize(false);
-        for (int i = 1; i < firstDictionary().length; i++) {
-            priors.put(firstDictionary()[i], dv.get(i));
+        for (int i = 1; i < firstDict().length; i++) {
+            priors.put(firstDict()[i], dv.get(i));
         }
 
         // build conditional probabilities
@@ -146,19 +146,19 @@ public class NaiveBayesClassifier extends AbstractClassifier {
     public CResult predict(Frame df, final boolean withClasses, final boolean withDensities) {
 
         CResult pred = CResult.newEmpty(this, df, withClasses, withDensities);
-        pred.addTarget(firstTargetName(), firstDictionary());
+        pred.addTarget(firstTargetName(), firstDict());
 
         for (int i = 0; i < df.rowCount(); i++) {
-            DensityVector dv = new DensityVector(firstDictionary());
-            for (int j = 1; j < firstDictionary().length; j++) {
-                double sumLog = Math.log(priors.get(firstDictionary(j)));
+            DensityVector dv = new DensityVector(firstDict());
+            for (int j = 1; j < firstDict().length; j++) {
+                double sumLog = Math.log(priors.get(firstDict(j)));
                 for (String testCol : cvpEstimatorMap.keySet()) {
                     if (df.missing(i, testCol)) continue;
-                    sumLog += cvpEstimatorMap.get(testCol).cpValue(df.value(i, testCol), firstDictionary(j));
+                    sumLog += cvpEstimatorMap.get(testCol).cpValue(df.value(i, testCol), firstDict(j));
                 }
                 for (String testCol : dvpEstimatorMap.keySet()) {
                     if (df.missing(i, testCol)) continue;
-                    sumLog += dvpEstimatorMap.get(testCol).cpValue(df.label(i, testCol), firstDictionary(j));
+                    sumLog += dvpEstimatorMap.get(testCol).cpValue(df.label(i, testCol), firstDict(j));
                 }
                 dv.update(j, sumLog);
             }
@@ -167,7 +167,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
                 pred.firstClasses().setIndex(i, dv.findBestIndex());
             }
             if (withDensities) {
-                for (int j = 0; j < firstDictionary().length; j++) {
+                for (int j = 0; j < firstDict().length; j++) {
                     pred.firstDensity().setValue(i, j, dv.get(j));
                 }
             }

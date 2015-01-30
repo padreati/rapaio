@@ -113,7 +113,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
 
         // algorithm described by ESTL pag. 387
 
-        K = firstDictionary().length - 1;
+        K = firstDict().length - 1;
         f = new double[df.rowCount()][K];
         p = new double[df.rowCount()][K];
         trees = new ArrayList<>();

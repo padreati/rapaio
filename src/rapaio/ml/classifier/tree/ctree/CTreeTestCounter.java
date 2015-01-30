@@ -35,7 +35,7 @@ public interface CTreeTestCounter extends Serializable {
 
     String name();
 
-    void initialize(Frame df, String targetName);
+    void initialize(Frame df, String... inputNames);
 
     boolean canUse(String name);
 
@@ -50,13 +50,9 @@ public interface CTreeTestCounter extends Serializable {
             return "MNominalMNumeric";
         }
 
-        public void initialize(Frame df, String targetName) {
+        public void initialize(Frame df, String... inputNames) {
             counters = new ConcurrentHashMap<>();
-            Arrays.stream(df.varNames()).forEach(colName -> {
-                if (targetName.equals(colName))
-                    return;
-                counters.put(colName, -1);
-            });
+            Arrays.stream(inputNames).forEach(colName -> counters.put(colName, -1));
         }
 
         public boolean canUse(String name) {
@@ -79,11 +75,9 @@ public interface CTreeTestCounter extends Serializable {
         }
 
         @Override
-        public void initialize(Frame df, String targetName) {
+        public void initialize(Frame df, String... inputNames) {
             counters = new HashMap<>();
-            Arrays.stream(df.varNames()).forEach(colName -> {
-                if (targetName.equals(colName))
-                    return;
+            Arrays.stream(inputNames).forEach(colName -> {
                 if (df.var(colName).type().isNominal()) {
                     counters.put(colName, 1);
                 } else {
@@ -117,13 +111,9 @@ public interface CTreeTestCounter extends Serializable {
         }
 
         @Override
-        public void initialize(Frame df, String targetName) {
+        public void initialize(Frame df, String... inputNames) {
             counters = new HashMap<>();
-            Arrays.stream(df.varNames()).forEach(colName -> {
-                if (targetName.equals(colName))
-                    return;
-                counters.put(colName, 1);
-            });
+            Arrays.stream(inputNames).forEach(colName -> counters.put(colName, 1));
         }
 
         @Override
@@ -139,6 +129,6 @@ public interface CTreeTestCounter extends Serializable {
             if (count <= 0) return;
             counters.put(name, count - 1);
         }
-    };
+    }
 }
 

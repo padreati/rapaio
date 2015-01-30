@@ -22,6 +22,7 @@ package rapaio.sandbox;
 
 import rapaio.WS;
 import rapaio.core.RandomSource;
+import rapaio.core.sample.Sampler;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.data.Frame;
@@ -72,7 +73,7 @@ public class IrisContour {
         Frame df = SolidFrame.newWrapOf(v1, v2, v3);
 
 
-        Classifier c = CForest.buildRandomForest(400, 2, 0.9);
+        Classifier c = CForest.newRF(400, 2, new Sampler.Bootstrap(0.9));
 //        c = new NaiveBayesClassifier();
 //        c = new GBTClassifier()
 //                .withTree(RTree.buildCART().withMaxDepth(6))

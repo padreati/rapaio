@@ -380,19 +380,19 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     @Override
     public CResult predict(Frame df, boolean withClasses, boolean withDistributions) {
         CResult cr = CResult.newEmpty(this, df, withClasses, withDistributions);
-        cr.addTarget(firstTargetName(), firstDictionary());
+        cr.addTarget(firstTargetName(), firstDict());
 
         for (int i = 0; i < df.rowCount(); i++) {
             try {
                 double pred = predict(df, i);
                 if (MathBase.sm(pred, 0)) {
                     cr.firstClasses().setIndex(i, cl1);
-                    cr.firstDensity().setValue(i, firstDictionary()[cl1], -pred);
-                    cr.firstDensity().setValue(i, firstDictionary()[cl2], pred);
+                    cr.firstDensity().setValue(i, firstDict(cl1), -pred);
+                    cr.firstDensity().setValue(i, firstDict(cl2), pred);
                 } else {
                     cr.firstClasses().setIndex(i, cl2);
-                    cr.firstDensity().setValue(i, firstDictionary()[cl1], -pred);
-                    cr.firstDensity().setValue(i, firstDictionary()[cl2], pred);
+                    cr.firstDensity().setValue(i, firstDict(cl1), -pred);
+                    cr.firstDensity().setValue(i, firstDict(cl2), pred);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

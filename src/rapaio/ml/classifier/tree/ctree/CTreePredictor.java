@@ -66,7 +66,7 @@ public interface CTreePredictor extends Serializable {
                 }
             }
 
-            String[] dict = tree.firstDictionary();
+            String[] dict = tree.firstDict();
             DensityVector dv = new DensityVector(dict);
             for (CTreeNode child : node.getChildren()) {
                 DensityVector d = predict(tree, spot, child).second;

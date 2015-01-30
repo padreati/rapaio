@@ -21,6 +21,7 @@
 package rapaio.tutorial.pages;
 
 import rapaio.core.RandomSource;
+import rapaio.core.sample.Sampler;
 import rapaio.core.sample.SamplingTool;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
@@ -134,11 +135,11 @@ public class ROCCurvesPage implements TutorialPage {
 
         p("The second prediction model is a random forest with 20 random trees. ");
 
-        CForest rf = CForest.buildRandomForest(20, 10, 0);
+        CForest rf = CForest.newRF(20, 10, new Sampler.Identity());
         rf.learn(train, "spam");
         CResult crRF = rf.predict(test);
 
-        code("        CForest rf = CForest.buildRandomForest(20, 10, 0);\n" +
+        code("        CForest rf = CForest.newRF(20, 10, 0);\n" +
                 "        rf.learn(train, \"spam\");\n" +
                 "        CResult crRF = rf.predict(test);\n");
 

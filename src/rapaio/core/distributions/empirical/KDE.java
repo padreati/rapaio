@@ -27,7 +27,6 @@ import rapaio.data.filter.var.VFSort;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -63,10 +62,11 @@ public class KDE implements Serializable {
         if (from < 0) from = -from - 1;
         int to = Arrays.binarySearch(values, kernel.getMaxValue(x, bandwidth));
         if (to < 0) to = -to - 1;
-        return IntStream.range(from, to)
-                .parallel()
-                .mapToDouble(i -> kernel.pdf(x, values[i], bandwidth))
-                .sum() / (values.length * bandwidth);
+        double sum = 0;
+        for (int i = from; i < to; i++) {
+            sum += kernel.pdf(x, values[i], bandwidth);
+        }
+        return sum / (values.length * bandwidth);
     }
 
     public Function<Double, Double> getPdf() {

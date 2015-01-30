@@ -49,7 +49,7 @@
 //
 //        classifiers.put("DecisionStump", TreeClassifier.newDecisionStump());
 //        classifiers.put("C45", TreeClassifier.newC45());
-//        classifiers.put("RF(1000,ID3)", CForest.buildRandomForest(1000, 2, 0.9, TreeClassifier.newC45()));
+//        classifiers.put("RF(1000,ID3)", CForest.newRF(1000, 2, 0.9, TreeClassifier.newC45()));
 //        classifiers.put("AdaBoost(1000,CART)", new AdaBoostSAMMEClassifier()
 //                .withClassifier(TreeClassifier.newCART())
 //                .withRuns(1000));

@@ -21,12 +21,8 @@
 package rapaio.ml.common;
 
 import rapaio.core.sample.SamplingTool;
-import rapaio.data.Frame;
-import rapaio.data.VarRange;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -37,7 +33,7 @@ public interface VarSelector extends Serializable {
 
     VarSelector newInstance();
 
-    void initialize(Frame df, VarRange except);
+    void initialize(String... varNames);
 
     String[] nextVarNames();
 
@@ -57,20 +53,8 @@ public interface VarSelector extends Serializable {
         }
 
         @Override
-        public synchronized void initialize(Frame df, VarRange except) {
-
-            String[] all = df.varNames();
-            List<Integer> ex = except == null ? new ArrayList<>() : except.parseVarIndexes(df);
-            selection = new String[all.length - ex.size()];
-            int p = 0;
-            int s = 0;
-            for (int i = 0; i < all.length; i++) {
-                if (p < ex.size() && i == ex.get(p)) {
-                    p++;
-                    continue;
-                }
-                selection[s++] = all[i];
-            }
+        public void initialize(String... varNames) {
+            selection = varNames;
         }
 
         @Override
@@ -94,29 +78,21 @@ public interface VarSelector extends Serializable {
 
         @Override
         public VarSelector newInstance() {
-            return new Random();
+            Random vs = new Random(mVars);
+            vs.initialize(candidates);
+            return vs;
         }
 
         public String name() {
             return "Random[" + mVars + "]";
         }
 
-        public synchronized void initialize(Frame df, VarRange except) {
-            List<Integer> exceptColumns = except == null ? new ArrayList<>() : except.parseVarIndexes(df);
-            candidates = new String[df.varCount() - exceptColumns.size()];
-            int pos = 0;
-            int expos = 0;
-            for (int i = 0; i < df.varCount(); i++) {
-                if (expos < exceptColumns.size() && i == exceptColumns.get(expos)) {
-                    expos++;
-                    continue;
-                }
-                candidates[pos++] = df.varNames()[i];
-            }
+        public void initialize(final String... varNames) {
+            candidates = varNames;
         }
 
         @Override
-        public synchronized String[] nextVarNames() {
+        public String[] nextVarNames() {
             int m = (mVars < 1) ? Math.max((int) Math.sqrt(candidates.length), 1) : mVars;
             int[] indexes = SamplingTool.sampleWR(m, candidates.length);
             String[] result = new String[m];

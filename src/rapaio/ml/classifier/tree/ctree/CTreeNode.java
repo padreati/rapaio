@@ -111,7 +111,6 @@ public class CTreeNode implements Serializable {
         }
 
         List<CTreeCandidate> candidateList = new ArrayList<>();
-        tree.varSelector().initialize(df, null);
 
         ConcurrentLinkedQueue<CTreeCandidate> candidates = new ConcurrentLinkedQueue<>();
         Arrays.stream(tree.varSelector().nextVarNames()).parallel().forEach(testCol -> {

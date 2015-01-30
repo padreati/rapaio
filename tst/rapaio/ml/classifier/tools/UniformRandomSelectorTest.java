@@ -24,7 +24,6 @@ import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.SolidFrame;
-import rapaio.data.VarRange;
 import rapaio.ml.common.VarSelector;
 
 import java.util.HashMap;
@@ -51,7 +50,7 @@ public class UniformRandomSelectorTest {
         int mcols = 4;
 
         VarSelector colSelector = new VarSelector.Random(mcols);
-        colSelector.initialize(df, new VarRange(classColName));
+        colSelector.initialize("a", "b", "c", "d", "e", "f", "g", "h");
 
         final int TESTS = 10_000;
         HashMap<String, Integer> counter = new HashMap<>();
