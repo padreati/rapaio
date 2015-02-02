@@ -31,12 +31,12 @@ import java.util.ArrayList;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-public class Grid extends HostFigure {
+public class GridLayer extends HostFigure {
 
     final int rows;
     final int cols;
 
-    public Grid(int rows, int cols) {
+    public GridLayer(int rows, int cols) {
         this.rows = rows;
         this.cols = cols;
     }
@@ -48,7 +48,7 @@ public class Grid extends HostFigure {
         return null;
     }
 
-    public Grid add(int x, int y, HostFigure figure) {
+    public GridLayer add(int x, int y, HostFigure figure) {
         list.add(new G(y, x, 1, 1, figure));
         return this;
     }

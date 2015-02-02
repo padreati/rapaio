@@ -52,7 +52,11 @@ public class Summary {
             code(buffer.toString());
             return;
         }
-        buffer.append(String.format("rowCount: %d, colCount: %d%n", df.rowCount(), df.varCount()));
+
+        buffer.append("rowCount: ").append(df.rowCount()).append("\n");
+        buffer.append("complete: ").append(df.stream().complete().count()).append("/").append(df.rowCount()).append("\n");
+        buffer.append("varCount: ").append(df.varCount()).append("\n");
+        buffer.append("varNames: ").append(Arrays.deepToString(df.varNames())).append("\n");
 
         String[][] first = new String[names.length][7];
         String[][] second = new String[names.length][7];

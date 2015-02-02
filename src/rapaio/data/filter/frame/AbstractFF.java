@@ -32,7 +32,7 @@ public abstract class AbstractFF implements FrameFilter {
 
     protected final String[] varNames;
 
-    public AbstractFF(String[] varNames) {
+    public AbstractFF(String... varNames) {
         this.varNames = varNames;
     }
 

@@ -72,6 +72,15 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
                 .withSampler(sampler);
     }
 
+    public static CForest newBagging(int runs, Sampler sampler, Classifier c) {
+        return new CForest()
+                .withClassifier(c)
+                .withRuns(runs)
+                .withBaggingMethod(BaggingMethods.VOTING)
+                .withOobError(false)
+                .withSampler(sampler);
+    }
+
     @Override
     public Classifier newInstance() {
         return new CForest()
@@ -233,7 +242,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
                 treeDensities.forEach(d -> {
                     for (int i = 0; i < d.rowCount(); i++) {
                         DensityVector dv = new DensityVector(dictionary);
-                        for (int j = 0; j < dictionary.length; j++) {
+                        for (int j = 1; j < dictionary.length; j++) {
                             dv.update(j, d.value(i, j));
                         }
                         int best = dv.findBestIndex();
@@ -242,11 +251,11 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
                 });
                 for (int i = 0; i < classes.rowCount(); i++) {
                     DensityVector dv = new DensityVector(dictionary);
-                    for (int j = 0; j < dictionary.length; j++) {
+                    for (int j = 1; j < dictionary.length; j++) {
                         dv.update(j, densities.value(i, j));
                     }
                     dv.normalize(false);
-                    for (int j = 0; j < dictionary.length; j++) {
+                    for (int j = 1; j < dictionary.length; j++) {
                         densities.setValue(i, j, dv.get(j));
                     }
                     classes.setValue(i, dv.findBestIndex());

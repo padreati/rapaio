@@ -29,7 +29,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFJitter;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.Grid;
+import rapaio.graphics.GridLayer;
 import rapaio.graphics.Plot;
 import rapaio.graphics.QQPlot;
 import rapaio.graphics.plot.ABLine;
@@ -107,7 +107,7 @@ public class IrisExplorePage implements TutorialPage {
                 "        }\n" +
                 "        draw(grid, 600, 400);\n");
 
-        Grid grid = new Grid(2, 2);
+        GridLayer grid = new GridLayer(2, 2);
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
                 grid.add(i + 1, j + 1, new Plot()
@@ -129,7 +129,7 @@ public class IrisExplorePage implements TutorialPage {
                 "        }\n" +
                 "        draw(grid, 600, 400);\n");
 
-        grid = new Grid(2, 2);
+        grid = new GridLayer(2, 2);
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
                 grid.add(i + 1, j + 1, new Plot()
@@ -158,7 +158,7 @@ public class IrisExplorePage implements TutorialPage {
                 "        }\n" +
                 "        draw(grid, 600, 400);\n");
 
-        grid = new Grid(2, 2);
+        grid = new GridLayer(2, 2);
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
                 Plot p = new Plot();

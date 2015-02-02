@@ -445,7 +445,6 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             }
         }
         result -= b;
-
         return result;
     }
 

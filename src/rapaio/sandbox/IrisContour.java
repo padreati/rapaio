@@ -20,14 +20,15 @@
 
 package rapaio.sandbox;
 
-import rapaio.WS;
 import rapaio.core.RandomSource;
 import rapaio.core.sample.Sampler;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.data.Frame;
 import rapaio.data.*;
+import rapaio.data.filter.frame.FFStandardize;
 import rapaio.data.grid.MeshGrid1D;
+import rapaio.graphics.GridLayer;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.MeshContour;
 import rapaio.graphics.plot.Points;
@@ -42,6 +43,8 @@ import rapaio.ml.eval.ConfusionMatrix;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
+
+import static rapaio.WS.draw;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/23/15.
@@ -72,6 +75,15 @@ public class IrisContour {
 
         Frame df = SolidFrame.newWrapOf(v1, v2, v3);
 
+//        df = Datasets.loadIrisDataset().mapVars("0~1,4").solidCopy();
+
+        GridLayer layer = new GridLayer(2, 1);
+        layer.add(1, 1, new Plot().add(new Points(df.var(0), df.var(1))));
+
+        df = new FFStandardize("all").fitApply(df.solidCopy());
+        layer.add(2, 1, new Plot().add(new Points(df.var(0), df.var(1))));
+
+        draw(layer);
 
         Classifier c = CForest.newRF(400, 2, new Sampler.Bootstrap(0.9));
 //        c = new NaiveBayesClassifier();
@@ -131,6 +143,6 @@ public class IrisContour {
         p.add(new MeshContour(mg.compute(0, Double.POSITIVE_INFINITY), true, false).color(0).lwd(2f));
         p.title("test");
 
-        WS.draw(p.add(new Points(df.var(0), df.var(1)).color(df.var(2))));
+//        draw(p.add(new Points(df.var(0), df.var(1)).color(df.var(2))));
     }
 }

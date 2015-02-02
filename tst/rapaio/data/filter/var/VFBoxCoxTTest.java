@@ -26,7 +26,7 @@ import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Uniform;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.graphics.Grid;
+import rapaio.graphics.GridLayer;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Histogram;
 
@@ -45,7 +45,7 @@ public class VFBoxCoxTTest {
 
         Var b = new VFBoxCoxT(5, 10).fitApply(a.solidCopy());
 
-        WS.draw(new Grid(1, 2)
+        WS.draw(new GridLayer(1, 2)
                         .add(1, 1, new Plot().add(new Histogram(a)).title("original"))
                         .add(1, 2, new Plot().add(new Histogram(b)).title("transformed"))
         );

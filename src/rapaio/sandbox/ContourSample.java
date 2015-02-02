@@ -29,12 +29,14 @@ import rapaio.data.grid.MeshGrid1D;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.MeshContour;
 import rapaio.graphics.plot.Points;
+import rapaio.printer.IdeaPrinter;
 
 import java.awt.*;
 import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 
 import static rapaio.WS.draw;
+import static rapaio.WS.setPrinter;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
@@ -43,12 +45,13 @@ public class ContourSample {
 
     public static void main(String[] args) {
 
-//        setPrinter(new IdeaPrinter());
+        setPrinter(new IdeaPrinter());
 
         Frame xy = SolidFrame.newWrapOf(
                 Numeric.newWrapOf(3, -1, -2).withName("x"),
                 Numeric.newWrapOf(3, -1, 6).withName("y")
         );
+        xy.summary();
         Normal d = new Normal(0, 2);
 
         BiFunction<Double, Double, Double> bi = (x, y) ->

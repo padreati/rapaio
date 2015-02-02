@@ -28,12 +28,13 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.util.Pair;
 
+import java.io.Serializable;
 import java.util.function.BiFunction;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/22/15.
  */
-public class MeshGrid1D {
+public class MeshGrid1D implements Serializable {
 
     final Var x;
     final Var y;

@@ -22,10 +22,12 @@ package rapaio.data.grid;
 
 import rapaio.data.Var;
 
+import java.io.Serializable;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/27/15.
  */
-public interface MeshGrid {
+public interface MeshGrid extends Serializable {
 
     Var x();
 

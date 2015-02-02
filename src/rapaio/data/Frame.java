@@ -20,7 +20,9 @@
 
 package rapaio.data;
 
+import rapaio.core.Printable;
 import rapaio.data.stream.FSpots;
+import rapaio.ws.Summary;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -38,7 +40,7 @@ import java.util.stream.IntStream;
  *
  * @author Aurelian Tutuianu
  */
-public interface Frame extends Serializable {
+public interface Frame extends Serializable, Printable {
 
     /**
      * Number of observations contained in frame. Observations are accessed by position.
@@ -404,4 +406,14 @@ public interface Frame extends Serializable {
      * @return a stream of FSpot
      */
     public FSpots stream();
+
+    @Override
+    default void summary() {
+        Summary.summary(this);
+    }
+
+    @Override
+    default void buildSummary(StringBuilder sb) {
+//
+    }
 }
