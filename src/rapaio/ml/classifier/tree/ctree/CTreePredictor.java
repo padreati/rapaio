@@ -51,6 +51,11 @@ public interface CTreePredictor extends Serializable {
 
         @Override
         public Pair<Integer, DensityVector> predict(CTree tree, FSpot spot, CTreeNode node) {
+            try {
+                node.getCounter().sum(false);
+            } catch (Throwable throwable) {
+                System.out.println();
+            }
             if (node.getCounter().sum(false) == 0)
                 if (node.getParent() == null) {
                     throw new RuntimeException("Something bad happened at learning time");

@@ -20,25 +20,22 @@
 
 package rapaio.sandbox;
 
+import rapaio.WS;
 import rapaio.core.RandomSource;
-import rapaio.core.sample.Sampler;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
-import rapaio.data.Frame;
 import rapaio.data.*;
-import rapaio.data.filter.frame.FFStandardize;
+import rapaio.data.Frame;
 import rapaio.data.grid.MeshGrid1D;
-import rapaio.graphics.GridLayer;
+import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.MeshContour;
 import rapaio.graphics.plot.Points;
 import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.Classifier;
-import rapaio.ml.classifier.svm.BinarySMO;
-import rapaio.ml.classifier.svm.kernel.RBFKernel;
-import rapaio.ml.classifier.svm.kernel.WaveletKernel;
-import rapaio.ml.classifier.tree.CForest;
-import rapaio.ml.eval.ConfusionMatrix;
+import rapaio.ml.classifier.linear.BinaryLogistic;
+import rapaio.printer.IdeaPrinter;
+import rapaio.ws.Summary;
 
 import java.awt.*;
 import java.io.IOException;
@@ -54,95 +51,60 @@ public class IrisContour {
     public static void main(String[] args) throws IOException, URISyntaxException {
 
         RandomSource.setSeed(1);
+        WS.setPrinter(new IdeaPrinter());
 
-        String xlab = "x";
-        String ylab = "y";
+        final String X = "sepal-length";
+        final String Y = "petal-width";
 
+        Frame iris = Datasets.loadIrisDataset();
+        iris = iris.mapVars(X, Y, "class");
+        iris = iris.stream().filter(s -> s.index(2) != 3).toMappedFrame();
 
-        Var v1 = Numeric.newEmpty().withName(xlab);
-        Var v2 = Numeric.newEmpty().withName(ylab);
-        Var v3 = Nominal.newEmpty().withName("class");
+        Var trimmedClass = Nominal.newEmpty().withName("class");
+        iris.var("class").stream().forEach(s -> trimmedClass.addLabel(s.label()));
 
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                for (int k = 0; k < 100; k++) {
-                    v1.addValue(RandomSource.nextDouble() + i);
-                    v2.addValue(RandomSource.nextDouble() + j);
-                    v3.addLabel((i + j) % 2 == 0 ? "True" : "False");
-                }
-            }
-        }
+        iris = BoundFrame.newByVars(iris.var(X), iris.var(Y), trimmedClass).solidCopy();
 
-        Frame df = SolidFrame.newWrapOf(v1, v2, v3);
+        Summary.summary(iris);
 
-//        df = Datasets.loadIrisDataset().mapVars("0~1,4").solidCopy();
+        draw(new Plot().add(new Points(iris.var(X), iris.var(Y)).color(iris.var(2))));
 
-        GridLayer layer = new GridLayer(2, 1);
-        layer.add(1, 1, new Plot().add(new Points(df.var(0), df.var(1))));
+        Classifier smo = new BinaryLogistic();
+        smo.learn(iris, "class");
 
-        df = new FFStandardize("all").fitApply(df.solidCopy());
-        layer.add(2, 1, new Plot().add(new Points(df.var(0), df.var(1))));
+        Numeric x = Numeric.newSeq(new Minimum(iris.var(X)).value(), new Maximum(iris.var(X)).value(), 0.05).withName(X);
+        Numeric y = Numeric.newSeq(new Minimum(iris.var(Y)).value(), new Maximum(iris.var(Y)).value(), 0.05).withName(Y);
+        MeshGrid1D mg1 = new MeshGrid1D(x, y);
 
-        draw(layer);
+        // build a classification data sets with all required points
 
-        Classifier c = CForest.newRF(400, 2, new Sampler.Bootstrap(0.9));
-//        c = new NaiveBayesClassifier();
-//        c = new GBTClassifier()
-//                .withTree(RTree.buildCART().withMaxDepth(6))
-//                .withRuns(1000);
-
-//        c = new BinarySMO().withKernel(new PolyKernel(1, 1)).withMaxRuns(100);
-//        c = new BinarySMO().withKernel(new PolyKernel(2, 1));
-        c = new BinarySMO().withKernel(new RBFKernel(0.01)).withC(0.2);
-//        c = new BinarySMO().withKernel(new WaveletKernel(0.5)).withC(1);
-        c = new BinarySMO().withKernel(new WaveletKernel(0.5));
-//        c = new BinarySMO().withKernel(new WaveletKernel(2));
-//        c = new BinarySMO().withKernel(new ChiSquareKernel());
-//        c = new BinarySMO().withKernel(new MinKernel());
-//        c = new BinarySMO().withKernel(new SigmoidKernel(0.1, 1)).withMaxRuns(1000);
-
-
-        c.learn(df, "class");
-
-        new ConfusionMatrix(df.var("class"), c.predict(df).firstClasses()).summary();
-
-        Var x = Numeric.newSeq(new Minimum(df.var(0)).value() - 1, new Maximum(df.var(0)).value() + 1, 0.05).withName(xlab);
-        Var y = Numeric.newSeq(new Minimum(df.var(1)).value() - 1, new Maximum(df.var(1)).value() + 1, 0.05).withName(ylab);
-
-        MeshGrid1D mg = new MeshGrid1D(x, y);
-
-        Var x1 = Numeric.newEmpty().withName(xlab);
-        Var y1 = Numeric.newEmpty().withName(ylab);
-
+        Numeric sl = Numeric.newEmpty().withName(X);
+        Numeric sw = Numeric.newEmpty().withName(Y);
         for (int i = 0; i < x.rowCount(); i++) {
             for (int j = 0; j < y.rowCount(); j++) {
-                x1.addValue(x.value(i));
-                y1.addValue(y.value(j));
+                sl.addValue(mg1.getX().value(i));
+                sw.addValue(mg1.getY().value(j));
             }
         }
-
-        Frame grid = SolidFrame.newWrapOf(x1, y1);
-        CResult cr = c.predict(grid, true, true);
-
+        CResult cr2 = smo.predict(SolidFrame.newWrapOf(sl, sw));
         int pos = 0;
         for (int i = 0; i < x.rowCount(); i++) {
             for (int j = 0; j < y.rowCount(); j++) {
-                mg.setValue(i, j, cr.firstDensity().value(pos, 1) - cr.firstDensity().value(pos, 2));
-                pos++;
-//                mg.setValue(i, j, cr.firstClasses().value(pos++));
+                if (pos == 4067) {
+                    System.out.println();
+                }
+                mg1.setValue(i, j, cr2.firstDensity().value(pos++, 1));
             }
         }
 
         Plot p = new Plot();
-        double[] pp = new double[]{0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1};
-        double[] qq = mg.quantiles(pp);
-
+        double[] qq = Numeric.newSeq(0, 1, 0.1).stream().mapToDouble().toArray();
         for (int i = 0; i < qq.length - 1; i++) {
-            p.add(new MeshContour(mg.compute(qq[i], qq[i + 1]), false, true).color(new Color(0f, 0f, 1f, (float) pp[i + 1])));
+            p.add(new MeshContour(mg1.compute(qq[i], qq[i + 1]), false, true).lwd(0.3f).color(new Color(0f, 0f, 1f, 0.7f * (1f - i / 10.f))));
         }
-        p.add(new MeshContour(mg.compute(0, Double.POSITIVE_INFINITY), true, false).color(0).lwd(2f));
-        p.title("test");
+        p.add(new MeshContour(mg1.compute(0.5, Double.POSITIVE_INFINITY), true, false).lwd(1.2f));
+        p.add(new Points(iris.var(0), iris.var(1)).color(iris.var(2)));
 
-//        draw(p.add(new Points(df.var(0), df.var(1)).color(df.var(2))));
+        draw(p);
     }
 }

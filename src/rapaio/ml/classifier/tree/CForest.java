@@ -38,6 +38,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.IntStream;
 
 /**
@@ -179,7 +180,10 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
             learn(df, targetVars);
             return;
         }
-        IntStream.range(0, runs).parallel().forEach(s -> buildWeakPredictor(df, weights));
+        ForkJoinPool pool = new ForkJoinPool(Math.max(1, Runtime.getRuntime().availableProcessors() - 1));
+        pool.execute(() -> {
+            IntStream.range(0, runs).parallel().forEach(s -> buildWeakPredictor(df, weights));
+        });
     }
 
     private void buildWeakPredictor(Frame df, Var weights) {

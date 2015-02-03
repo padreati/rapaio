@@ -22,6 +22,9 @@ package rapaio.core;
 
 import rapaio.core.distributions.Normal;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 /**
  * Utility class which simplifies access to common java math utilities and also
  * enrich the mathematical operations set.
@@ -709,4 +712,21 @@ public class MathBase {
         return (a - b > SMALL_ERR);
     }
 
+    public static String doubleToString(double value, int width, int decimals) {
+        char[] fmt = new char[decimals + 2];
+        for (int i = 0; i < fmt.length; i++) {
+            fmt[i] = '#';
+        }
+        fmt[1] = '.';
+        NumberFormat nf = new DecimalFormat(String.valueOf(fmt));
+        String result = nf.format(value);
+        if (result.length() < width) {
+            char[] prefix = new char[width - result.length()];
+            for (int i = 0; i < prefix.length; i++) {
+                prefix[i] = ' ';
+            }
+            return String.valueOf(prefix) + result;
+        }
+        return result;
+    }
 }

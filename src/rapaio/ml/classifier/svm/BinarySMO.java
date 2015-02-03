@@ -95,12 +95,16 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
     @Override
     public String name() {
-        return "SMO";
+        return "BinarySMO";
     }
 
     @Override
     public String fullName() {
-        return "not implemented";
+        StringBuilder sb = new StringBuilder();
+        sb.append(name()).append("{");
+
+        sb.append("}");
+        return sb.toString();
     }
 
     @Override

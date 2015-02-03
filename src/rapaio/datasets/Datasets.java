@@ -108,4 +108,12 @@ public class Datasets {
 //                .withTypes(VarType.BINARY, "CHAS")
                 .read(Datasets.class, "housing.csv");
     }
+
+    public static Frame loadLifeScience() throws IOException {
+        return new Csv()
+                .withSeparatorChar(',')
+                .withDefaultTypes(VarType.NUMERIC)
+                .withTypes(VarType.NOMINAL, "class")
+                .read(Datasets.class.getResourceAsStream("life_science.csv"));
+    }
 }

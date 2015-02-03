@@ -29,12 +29,10 @@ import rapaio.util.Pair;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
@@ -112,8 +110,8 @@ public class CTreeNode implements Serializable {
 
         List<CTreeCandidate> candidateList = new ArrayList<>();
 
-        ConcurrentLinkedQueue<CTreeCandidate> candidates = new ConcurrentLinkedQueue<>();
-        Arrays.stream(tree.varSelector().nextVarNames()).parallel().forEach(testCol -> {
+        LinkedList<CTreeCandidate> candidates = new LinkedList<>();
+        for (String testCol : tree.varSelector().nextVarNames()) {
             if (testCol.equals(tree.firstTargetName())) return;
             if (!tree.testCounter.canUse(testCol)) return;
 
@@ -126,7 +124,7 @@ public class CTreeNode implements Serializable {
                         tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction())
                         .forEach(candidates::add);
             }
-        });
+        }
         candidateList.addAll(candidates);
         Collections.sort(candidateList);
 
@@ -147,12 +145,10 @@ public class CTreeNode implements Serializable {
 
         Pair<List<Frame>, List<Numeric>> frames = tree.getSplitter().performSplit(df, weights, bestCandidate);
 
-        IntStream.range(0, frames.first.size()).parallel().forEach(i -> {
+        for (int i = 0; i < frames.first.size(); i++) {
             CTreeNode child = new CTreeNode(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
-            synchronized (children) {
-                children.add(child);
-            }
+            children.add(child);
             child.learn(tree, frames.first.get(i), frames.second.get(i), depth - 1);
-        });
+        }
     }
 }

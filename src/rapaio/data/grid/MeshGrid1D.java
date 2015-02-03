@@ -45,7 +45,7 @@ public class MeshGrid1D implements Serializable {
     public MeshGrid1D(Var x, Var y) {
         this.x = x;
         this.y = y;
-        this.len = x.rowCount();
+        this.len = y.rowCount();
 
         this.grid = Numeric.newEmpty(x.rowCount() * y.rowCount());
     }
@@ -67,6 +67,9 @@ public class MeshGrid1D implements Serializable {
     }
 
     public void setValue(int i, int j, double value) {
+        if (i * len + j == 4067) {
+            System.out.println();
+        }
         grid.setValue(i * len + j, value);
     }
 

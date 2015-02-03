@@ -56,6 +56,7 @@ StatSampling
 * Ensemble: Random Forests
 * Bayesian: NaiveBayes (Gaussian, Empirical, Multinomial)
 * SVM: BinarySMO
+* Linear: BinaryLogistic
 
 **Regression**
 

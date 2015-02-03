@@ -128,12 +128,20 @@ public class Matrix {
         data.get(j).setValue(i, x);
     }
 
+    public void increment(int i, int j, double v) {
+        data.get(j).setValue(i, v + get(i, j));
+    }
+
     public int getRows() {
         return m;
     }
 
     public int getCols() {
         return n;
+    }
+
+    public Matrix solidCopy() {
+        return new Matrix(getArrayCopy());
     }
 
     /**
