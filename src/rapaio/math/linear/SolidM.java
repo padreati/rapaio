@@ -23,15 +23,35 @@ package rapaio.math.linear;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
  */
-public interface Matrix {
+public class SolidM implements M {
 
-    int rows();
+    private final int rows;
+    private final int cols;
+    private final double[] values;
 
-    int cols();
+    SolidM(int rows, int cols) {
+        this.rows = rows;
+        this.cols = cols;
+        this.values = new double[rows * cols];
+    }
 
-    double value(int row, int col);
+    @Override
+    public int rows() {
+        return rows;
+    }
 
-    void setValue(int row, int col, double value);
+    @Override
+    public int cols() {
+        return cols;
+    }
 
-    Matrix t();
+    @Override
+    public double get(int i, int j) {
+        return values[i * cols + j];
+    }
+
+    @Override
+    public void set(int i, int j, double value) {
+        values[i * cols + j] = value;
+    }
 }

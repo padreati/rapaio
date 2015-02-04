@@ -21,35 +21,37 @@
 package rapaio.math.linear;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
  */
-public class SolidMatrix implements Matrix {
+public class TransposeM implements M {
+    private final M ref;
 
-    boolean transposed = false;
-
+    TransposeM(M ref) {
+        this.ref = ref;
+    }
 
     @Override
     public int rows() {
-        return 0;
+        return ref.cols();
     }
 
     @Override
     public int cols() {
-        return 0;
+        return ref.rows();
     }
 
     @Override
-    public double value(int row, int col) {
-        return 0;
+    public double get(int i, int j) {
+        return ref.get(j, i);
     }
 
     @Override
-    public void setValue(int row, int col, double value) {
-
+    public void set(int i, int j, double value) {
+        ref.set(j, i, value);
     }
 
     @Override
-    public Matrix t() {
-        return null;
+    public M t() {
+        return ref;
     }
 }

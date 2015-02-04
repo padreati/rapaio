@@ -53,7 +53,7 @@ public class IrisContour {
         RandomSource.setSeed(1);
         WS.setPrinter(new IdeaPrinter());
 
-        final String X = "sepal-length";
+        final String X = "petal-length";
         final String Y = "petal-width";
 
         Frame iris = Datasets.loadIrisDataset();
@@ -69,11 +69,11 @@ public class IrisContour {
 
         draw(new Plot().add(new Points(iris.var(X), iris.var(Y)).color(iris.var(2))));
 
-        Classifier smo = new BinaryLogistic();
+        Classifier smo = new BinaryLogistic().withTol(1e-7);
         smo.learn(iris, "class");
 
-        Numeric x = Numeric.newSeq(new Minimum(iris.var(X)).value(), new Maximum(iris.var(X)).value(), 0.05).withName(X);
-        Numeric y = Numeric.newSeq(new Minimum(iris.var(Y)).value(), new Maximum(iris.var(Y)).value(), 0.05).withName(Y);
+        Numeric x = Numeric.newSeq(new Minimum(iris.var(X)).value(), new Maximum(iris.var(X)).value(), 0.1).withName(X);
+        Numeric y = Numeric.newSeq(new Minimum(iris.var(Y)).value(), new Maximum(iris.var(Y)).value(), 0.1).withName(Y);
         MeshGrid1D mg1 = new MeshGrid1D(x, y);
 
         // build a classification data sets with all required points
@@ -87,6 +87,7 @@ public class IrisContour {
             }
         }
         CResult cr2 = smo.predict(SolidFrame.newWrapOf(sl, sw));
+        cr2.summary();
         int pos = 0;
         for (int i = 0; i < x.rowCount(); i++) {
             for (int j = 0; j < y.rowCount(); j++) {

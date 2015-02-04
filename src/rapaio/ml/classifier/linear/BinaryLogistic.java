@@ -37,12 +37,14 @@ import java.util.function.Function;
 public class BinaryLogistic extends AbstractClassifier {
 
     private Numeric coef;
-    private int maxRuns = Integer.MAX_VALUE;
-    private double tol = 1e-4;
+    private int maxRuns = 10_000;
+    private double tol = 1e-5;
 
     @Override
     public BinaryLogistic newInstance() {
-        return new BinaryLogistic();
+        return new BinaryLogistic()
+                .withMaxRuns(maxRuns)
+                .withTol(tol);
     }
 
     @Override
@@ -52,18 +54,26 @@ public class BinaryLogistic extends AbstractClassifier {
 
     @Override
     public String fullName() {
-        return null;
+        StringBuilder sb = new StringBuilder();
+        sb.append(name()).append("{");
+        sb.append("tol=").append(tol).append(", ");
+        sb.append("maxRuns=").append(maxRuns).append(", ");
+        sb.append("}");
+        return sb.toString();
     }
 
+    /**
+     * Maximum number of iterations if optimum was not met yet
+     * (default value is 10_000)
+     */
     public BinaryLogistic withMaxRuns(int maxRuns) {
         this.maxRuns = maxRuns;
         return this;
     }
 
     /**
-     * Tolerance used to check the solution optimality.
-     *
-     * @param tol tolerance, default 1e-4
+     * Tolerance used to check the solution optimality
+     * (default value 1e-5).
      */
     public BinaryLogistic withTol(double tol) {
         this.tol = tol;
