@@ -35,7 +35,14 @@ public class SandBoxM {
         }
         m.summary();
 
-        M sel = m.mapRows(1, 3).mapCols(2, 4).t().removeCols(0);
-        sel.summary();
+        M mm = m.mapRows(2, 4, 6).mapCols(6, 9, 1, 2).t();
+
+        mm.summary();
+
+        LUDecomposition lu = new LUDecomposition(mm);
+
+        lu.getL().summary();
+        lu.getU().summary();
+        lu.getDoublePivot();
     }
 }

@@ -22,8 +22,8 @@ package rapaio.math.optimization;
 
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.data.matrix.LUDecomposition;
-import rapaio.data.matrix.Matrix;
+import rapaio.math.linear.LUDecomposition;
+import rapaio.math.linear.M;
 
 import java.util.List;
 import java.util.function.Function;
@@ -38,14 +38,14 @@ public class IRLSOptimizer {
     /**
      * The hessian matrix
      */
-    private Matrix hessian;
+    private M hessian;
     /**
      * Contains the values of the coefficients for each data point
      */
-    private Matrix coef;
-    private Numeric derivatives;
-    private Numeric err;
-    private Numeric grad;
+    private M coef;
+    private M derivatives;
+    private M err;
+    private M grad;
 
     /**
      * Performs optimization on the given inputs to find the minima of the function.
@@ -62,8 +62,8 @@ public class IRLSOptimizer {
     public Numeric optimize(double eps, int iterationLimit, Function<Var, Double> f,
                             Function<Var, Double> fd, Numeric vars, List<Var> inputs, Numeric outputs) {
 
-        hessian = new Matrix(vars.rowCount(), vars.rowCount());
-        coef = new Matrix(inputs.size(), vars.rowCount());
+        hessian = M.newEmpty(vars.rowCount(), vars.rowCount());
+        coef = M.newEmpty(inputs.size(), vars.rowCount());
         for (int i = 0; i < inputs.size(); i++) {
             Var x_i = inputs.get(i);
             coef.set(i, 0, 1.0);
@@ -71,9 +71,9 @@ public class IRLSOptimizer {
                 coef.set(i, j, x_i.value(j - 1));
         }
 
-        derivatives = Numeric.newFill(inputs.size(), 0);
-        err = Numeric.newFill(outputs.rowCount(), 0);
-        grad = Numeric.newFill(vars.rowCount(), 0);
+        derivatives = M.newEmptyVector(inputs.size());
+        err = M.newEmptyVector(outputs.rowCount());
+        grad = M.newEmptyVector(vars.rowCount());
 
         double maxChange = Double.MAX_VALUE;
         while (!Double.isNaN(maxChange) && maxChange > eps && iterationLimit-- > 0) {
@@ -87,41 +87,39 @@ public class IRLSOptimizer {
             Var x_i = inputs.get(i);
             double y = f.apply(x_i);
             double error = y - outputs.value(i);
-            err.setValue(i, error);
-
-            derivatives.setValue(i, fd.apply(x_i));
+            err.set(i, error);
+            derivatives.set(i, fd.apply(x_i));
         }
 
-        for (int j = 0; j < hessian.getRows(); j++) {
+        for (int j = 0; j < hessian.rows(); j++) {
             double gradTmp = 0;
-            for (int k = 0; k < coef.getRows(); k++) {
+            for (int k = 0; k < coef.rows(); k++) {
                 double coefficient_kj = coef.get(k, j);
-                gradTmp += coefficient_kj * err.value(k);
+                gradTmp += coefficient_kj * err.get(k);
 
-                double multFactor = derivatives.value(k) * coefficient_kj;
+                double factor = derivatives.get(k) * coefficient_kj;
 
-                for (int i = 0; i < hessian.getRows(); i++)
-                    hessian.increment(j, i, coef.get(k, i) * multFactor);
+                for (int i = 0; i < hessian.rows(); i++)
+                    hessian.increment(j, i, coef.get(k, i) * factor);
             }
-            grad.setValue(j, gradTmp);
+            grad.set(j, gradTmp);
         }
 
-        LUDecomposition lupDecomp = new LUDecomposition(hessian);
+        LUDecomposition lu = new LUDecomposition(hessian);
+
         //We sent a clone of the hessian b/c we make incremental updates every iteration
-        Matrix delta;
-        if (Math.abs(lupDecomp.det()) < 1e-14) {
+        if (Math.abs(lu.det()) < 1e-14) {
             //TODO use a pesudo inverse instead of giving up
             return Double.NaN;//Indicate that we need to stop
-        } else { //normal case, solve!
-            delta = lupDecomp.solve(new Matrix(grad));
         }
+        M delta = lu.solve(grad);
 
         for (int i = 0; i < vars.rowCount(); i++)
             vars.setValue(i, vars.value(i) - delta.get(i, 0));
 
-        double max = Math.max(delta.get(0, 0), Math.abs(delta.get(0, 0)));
-        for (int i = 1; i < delta.getRows(); i++) {
-            max = Math.max(max, Math.max(delta.get(i, 0), Math.abs(delta.get(i, 0))));
+        double max = Math.abs(delta.get(0));
+        for (int i = 1; i < delta.rows(); i++) {
+            max = Math.max(max, Math.abs(delta.get(i)));
         }
         return max;
     }

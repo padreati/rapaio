@@ -1,4 +1,4 @@
-rapaio-java
+rapaio
 ===========
 Statistics, data mining and machine learning toolbox in Java
 

@@ -21,7 +21,7 @@
 package rapaio.sandbox;
 
 import rapaio.WS;
-import rapaio.core.RandomSource;
+import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.data.*;
@@ -50,11 +50,11 @@ public class IrisContour {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
 
-        RandomSource.setSeed(1);
+//        RandomSource.setSeed(1);
         WS.setPrinter(new IdeaPrinter());
 
         final String X = "petal-length";
-        final String Y = "petal-width";
+        final String Y = "sepal-width";
 
         Frame iris = Datasets.loadIrisDataset();
         iris = iris.mapVars(X, Y, "class");
@@ -65,11 +65,22 @@ public class IrisContour {
 
         iris = BoundFrame.newByVars(iris.var(X), iris.var(Y), trimmedClass).solidCopy();
 
+        Normal g1 = new Normal(0, 2);
+        Normal g2 = new Normal(0, 5);
+
+        for (int i = 0; i < iris.rowCount(); i++) {
+            if (iris.index(i, 2) == 1) {
+                iris.setValue(i, 0, g1.sampleNext());
+                iris.setValue(i, 1, g2.sampleNext());
+            } else {
+                iris.setValue(i, 0, 4 + g1.sampleNext());
+                iris.setValue(i, 1, 9 + g2.sampleNext());
+            }
+        }
+
         Summary.summary(iris);
 
-        draw(new Plot().add(new Points(iris.var(X), iris.var(Y)).color(iris.var(2))));
-
-        Classifier smo = new BinaryLogistic().withTol(1e-7);
+        Classifier smo = new BinaryLogistic().withTol(1e-8).withMaxRuns(100_000);
         smo.learn(iris, "class");
 
         Numeric x = Numeric.newSeq(new Minimum(iris.var(X)).value(), new Maximum(iris.var(X)).value(), 0.1).withName(X);

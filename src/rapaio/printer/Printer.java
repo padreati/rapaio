@@ -29,9 +29,17 @@ import java.text.DecimalFormat;
  */
 public interface Printer {
 
-    static DecimalFormat formatDecShort = new DecimalFormat("0.000");
+    DecimalFormat formatDecShort = new DecimalFormat() {{
+        setMinimumIntegerDigits(1);
+        setMinimumFractionDigits(3);
+        setMaximumFractionDigits(3);
+    }};
 
-    static DecimalFormat formatDecLong = new DecimalFormat("0.###############################");
+    DecimalFormat formatDecLong = new DecimalFormat() {{
+        setMinimumFractionDigits(30);
+        setMaximumFractionDigits(30);
+        setMinimumIntegerDigits(1);
+    }};
 
     int getTextWidth();
 
