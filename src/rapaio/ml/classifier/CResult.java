@@ -24,6 +24,7 @@ import rapaio.core.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
 import rapaio.data.SolidFrame;
+import rapaio.ml.eval.ConfusionMatrix;
 
 import java.util.*;
 
@@ -201,12 +202,18 @@ public class CResult implements Printable {
         sb.append("\n");
 
         sb.append("Predicted frame summary:\n");
-        sb.append("- rows: ").append(df.rowCount()).append("\n");
-        sb.append("- vars: ").append(df.varCount()).append("\n");
-        sb.append("- targets: ").append(Arrays.deepToString(model.targetNames())).append("\n");
+        sb.append("> rows: ").append(df.rowCount()).append("\n");
+        sb.append("> vars: ").append(df.varCount()).append("\n");
+        sb.append("> targets: ").append(Arrays.deepToString(model.targetNames())).append("\n");
+        sb.append("> inputs: ").append(Arrays.deepToString(model.inputNames())).append("\n");
         sb.append("\n");
 
         sb.append("Classification results:").append("\n");
-        sb.append("TO BE DONE").append("\n");
+        if (Arrays.asList(df.varNames()).contains(firstTargetVar())) {
+            new ConfusionMatrix(df.var(model.firstTargetName()), firstClasses()).buildSummary(sb);
+        } else {
+            sb.append("data frame does not contain target variable.");
+        }
+
     }
 }

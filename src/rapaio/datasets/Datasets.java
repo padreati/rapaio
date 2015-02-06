@@ -116,4 +116,11 @@ public class Datasets {
                 .withTypes(VarType.NOMINAL, "class")
                 .read(Datasets.class.getResourceAsStream("life_science.csv"));
     }
+
+    public static Frame loadISLAdvertising() throws IOException {
+        return new Csv()
+                .withDefaultTypes(VarType.NUMERIC)
+                .withTypes(VarType.NOMINAL, "ID")
+                .read(Datasets.class.getResourceAsStream("ISL/advertising.csv"));
+    }
 }

@@ -230,10 +230,6 @@ public class MeshContour extends PlotComponent {
                         }
 
                         if (fill) {
-
-                            g2d.setColor(getCol(0));
-                            g2d.setBackground(getCol(0));
-
                             Path2D.Double path = new Path2D.Double();
                             Point2D.Double start = null;
 
@@ -252,8 +248,10 @@ public class MeshContour extends PlotComponent {
                                 continue;
                             }
                             path.lineTo(start.x, start.y);
-//                            g2d.setStroke(new BasicStroke(0.05f));
-//                            g2d.draw(path);
+
+                            g2d.setColor(getCol(0));
+                            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getAlpha()));
+                            g2d.draw(path);
                             g2d.fill(path);
                         }
                 }

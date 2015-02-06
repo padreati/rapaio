@@ -21,37 +21,27 @@
 package rapaio.math.linear;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
  */
-public class TransposeM implements M {
-    private final M ref;
+public interface V extends M {
 
-    TransposeM(M ref) {
-        this.ref = ref;
+    default double get(int i) {
+        if (rowCount() == 1)
+            return get(0, i);
+        if (colCount() == 1)
+            return get(i, 0);
+        throw new IllegalArgumentException("This shortcut method can be called only for vectors or special matrices");
     }
 
-    @Override
-    public int rowCount() {
-        return ref.colCount();
-    }
-
-    @Override
-    public int colCount() {
-        return ref.rowCount();
-    }
-
-    @Override
-    public double get(int i, int j) {
-        return ref.get(j, i);
-    }
-
-    @Override
-    public void set(int i, int j, double value) {
-        ref.set(j, i, value);
-    }
-
-    @Override
-    public M t() {
-        return ref;
+    default void set(int i, double value) {
+        if (rowCount() == 1) {
+            set(0, i, value);
+            return;
+        }
+        if (colCount() == 1) {
+            set(i, 0, value);
+            return;
+        }
+        throw new IllegalArgumentException("This shortcut method can be called only for vectors");
     }
 }

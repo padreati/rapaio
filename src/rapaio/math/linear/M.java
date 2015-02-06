@@ -21,8 +21,8 @@
 package rapaio.math.linear;
 
 import rapaio.WS;
+import rapaio.core.MathBase;
 import rapaio.core.Printable;
-import rapaio.data.Var;
 import rapaio.printer.Printer;
 
 import java.io.Serializable;
@@ -36,63 +36,15 @@ import java.util.stream.Collectors;
  */
 public interface M extends Serializable, Printable {
 
-    // builders
-
-    /**
-     * Builds a new 0 filled matrix with given rows and cols
-     *
-     * @param rows number of rows
-     * @param cols number of columns
-     * @return new matrix object
-     */
-    static M newEmpty(int rows, int cols) {
-        return new SolidM(rows, cols);
-    }
-
-    /**
-     * Builds a new matrix with given rows and cols, fillen with given value
-     *
-     * @param rows number of rows
-     * @param cols number of columns
-     * @param fill initial value for all matrix cells
-     * @return new matrix object
-     */
-    static M newFill(int rows, int cols, double fill) {
-        if (fill == 0) {
-            return newEmpty(rows, cols);
-        }
-        M m = new SolidM(rows, cols);
-        for (int i = 0; i < m.rows(); i++) {
-            for (int j = 0; j < m.cols(); j++) {
-                m.set(i, j, fill);
-            }
-        }
-        return m;
-    }
-
-    static M newVectorCopyOf(Var var) {
-        M m = new SolidM(var.rowCount(), 1);
-        for (int i = 0; i < var.rowCount(); i++) {
-            m.set(i, var.value(i));
-        }
-        return m;
-    }
-
-    static M newEmptyVector(int rows) {
-        return new SolidM(rows, 1);
-    }
-
-    // data
-
     /**
      * @return number of rows the matrix has
      */
-    int rows();
+    int rowCount();
 
     /**
      * @return number of columns the matrix has
      */
-    int cols();
+    int colCount();
 
     /**
      * Gets the value from a specified position
@@ -103,14 +55,6 @@ public interface M extends Serializable, Printable {
      */
     double get(int i, int j);
 
-    default double get(int i) {
-        if (rows() == 1)
-            return get(0, i);
-        if (cols() == 1)
-            return get(i, 0);
-        throw new IllegalArgumentException("This shortcut method can be called only for vectors or special matrices");
-    }
-
     /**
      * Sets the value from a given position in the matrix
      *
@@ -120,17 +64,6 @@ public interface M extends Serializable, Printable {
      */
     void set(int i, int j, double value);
 
-    default void set(int i, double value) {
-        if (rows() == 1) {
-            set(0, i, value);
-            return;
-        }
-        if (cols() == 1) {
-            set(i, 0, value);
-            return;
-        }
-        throw new IllegalArgumentException("This shortcut method can be called only for vectors");
-    }
     // methods
 
     /**
@@ -141,6 +74,10 @@ public interface M extends Serializable, Printable {
      */
     default M mapRows(int... indexes) {
         return new MappedM(this, true, indexes);
+    }
+
+    default V mapRow(int index) {
+        return new MappedV(this, true, index);
     }
 
     default M rangeRows(int start, int end) {
@@ -159,9 +96,9 @@ public interface M extends Serializable, Printable {
      */
     default M removeRows(int... indexes) {
         Set<Integer> rem = Arrays.stream(indexes).boxed().collect(Collectors.toSet());
-        int[] rows = new int[rows() - rem.size()];
+        int[] rows = new int[rowCount() - rem.size()];
         int pos = 0;
-        for (int i = 0; i < rows(); i++) {
+        for (int i = 0; i < rowCount(); i++) {
             if (rem.contains(i))
                 continue;
             rows[pos++] = i;
@@ -171,6 +108,10 @@ public interface M extends Serializable, Printable {
 
     default M mapCols(int... indexes) {
         return new MappedM(this, false, indexes);
+    }
+
+    default V mapCol(int index) {
+        return new MappedV(this, false, index);
     }
 
     default M rangeCols(int start, int end) {
@@ -183,9 +124,9 @@ public interface M extends Serializable, Printable {
 
     default M removeCols(int... indexes) {
         Set<Integer> rem = Arrays.stream(indexes).boxed().collect(Collectors.toSet());
-        int[] cols = new int[cols() - rem.size()];
+        int[] cols = new int[colCount() - rem.size()];
         int pos = 0;
-        for (int i = 0; i < cols(); i++) {
+        for (int i = 0; i < colCount(); i++) {
             if (rem.contains(i))
                 continue;
             cols[pos++] = i;
@@ -194,9 +135,9 @@ public interface M extends Serializable, Printable {
     }
 
     default M solidCopy() {
-        M m = new SolidM(rows(), cols());
-        for (int i = 0; i < rows(); i++) {
-            for (int j = 0; j < cols(); j++) {
+        M m = new SolidM(rowCount(), colCount());
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
                 m.set(i, j, get(i, j));
             }
         }
@@ -209,9 +150,38 @@ public interface M extends Serializable, Printable {
         return new TransposeM(this);
     }
 
+    default double det() {
+        return new LUDecomposition(this, LUDecomposition.Method.GAUSSIAN_ELIMINATION).det();
+    }
+
     default void increment(int i, int j, double value) {
         double old = get(i, j);
         set(i, j, old + value);
+    }
+
+    /**
+     * Does not override equals since this is a costly
+     * algorithm and can slow down processing as a side effect.
+     *
+     * @param m given matrix
+     * @return true if dimension and elements are equal
+     */
+    default boolean isEqual(M m) {
+        return isEqual(m, 1e-12);
+    }
+
+    default boolean isEqual(M m, double tol) {
+        if (rowCount() != m.rowCount())
+            return false;
+        if (colCount() != m.colCount())
+            return false;
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                if (!MathBase.eq(get(i, j), m.get(i, j), tol))
+                    return false;
+            }
+        }
+        return true;
     }
 
     // summary
@@ -220,60 +190,58 @@ public interface M extends Serializable, Printable {
 
         DecimalFormat f = Printer.formatDecShort;
 
-        String[][] m = new String[rows()][cols()];
+        String[][] m = new String[rowCount()][colCount()];
         int max = 0;
-        for (int i = 0; i < rows(); i++) {
-            for (int j = 0; j < cols(); j++) {
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
                 m[i][j] = f.format(get(i, j));
                 max = Math.max(max, m[i][j].length() + 1);
             }
         }
-        max = Math.max(max, String.format("[,%d]", rows()).length());
-        max = Math.max(max, String.format("[%d,]", cols()).length());
-
-        String fm = "%-" + max + "s";
+        max = Math.max(max, String.format("[,%d]", rowCount()).length());
+        max = Math.max(max, String.format("[%d,]", colCount()).length());
 
         int hCount = (int) Math.floor(WS.getPrinter().getTextWidth() / (double) max);
-        int vCount = Math.min(rows() + 1, 21);
+        int vCount = Math.min(rowCount() + 1, 21);
         int hLast = 0;
         while (true) {
 
             // take vertical stripes
-            if (hLast >= cols())
+            if (hLast >= colCount())
                 break;
 
             int hStart = hLast;
-            int hEnd = Math.min(hLast + hCount, cols());
+            int hEnd = Math.min(hLast + hCount, colCount());
             int vLast = 0;
 
             while (true) {
 
                 // print rows
-                if (vLast >= rows())
+                if (vLast >= rowCount())
                     break;
 
                 int vStart = vLast;
-                int vEnd = Math.min(vLast + vCount, rows());
+                int vEnd = Math.min(vLast + vCount, rowCount());
 
                 for (int i = vStart; i <= vEnd; i++) {
                     for (int j = hStart; j <= hEnd; j++) {
                         if (i == vStart && j == hStart) {
-                            WS.print(String.format("%" + (max + 1) + "s", ""));
+                            sb.append(String.format("%" + (max + 1) + "s", ""));
                             continue;
                         }
                         if (i == vStart) {
-                            WS.print(String.format("[ ,%" + (max - 4) + "d]", j - 1));
+                            sb.append(String.format("[ ,%" + (max - 4) + "d]", j - 1));
                             continue;
                         }
                         if (j == hStart) {
-                            WS.print(String.format("[%" + (max - 4) + "d, ]", i - 1));
+                            sb.append(String.format("[%" + (max - 4) + "d, ]", i - 1));
                             continue;
                         }
-                        WS.print(String.format("%" + max + "s", m[i - 1][j - 1]));
+                        sb.append(String.format("%" + max + "s", m[i - 1][j - 1]));
                     }
-                    WS.print("\n");
+                    sb.append("\n");
                 }
-                WS.print("\n");
+                sb.append("\n");
                 vLast = vEnd;
             }
             hLast = hEnd;

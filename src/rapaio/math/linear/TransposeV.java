@@ -21,49 +21,38 @@
 package rapaio.math.linear;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
  */
-public class MappedM implements M {
+public class TransposeV implements V {
 
-    private final M ref;
-    private final int[] rowIndexes;
-    private final int[] colIndexes;
+    private final V ref;
 
-    MappedM(M ref, boolean byRow, int... indexes) {
-        if (byRow) {
-            this.ref = ref;
-            this.rowIndexes = indexes;
-            this.colIndexes = new int[ref.colCount()];
-            for (int i = 0; i < ref.colCount(); i++) {
-                this.colIndexes[i] = i;
-            }
-        } else {
-            this.ref = ref;
-            this.rowIndexes = new int[ref.rowCount()];
-            for (int i = 0; i < ref.rowCount(); i++) {
-                this.rowIndexes[i] = i;
-            }
-            this.colIndexes = indexes;
-        }
+    TransposeV(V ref) {
+        this.ref = ref;
     }
 
     @Override
     public int rowCount() {
-        return rowIndexes.length;
+        return ref.colCount();
     }
 
     @Override
     public int colCount() {
-        return colIndexes.length;
+        return ref.rowCount();
     }
 
     @Override
     public double get(int i, int j) {
-        return ref.get(rowIndexes[i], colIndexes[j]);
+        return ref.get(j, i);
     }
 
     @Override
     public void set(int i, int j, double value) {
-        ref.set(rowIndexes[i], colIndexes[j], value);
+        ref.set(j, i, value);
+    }
+
+    @Override
+    public V t() {
+        return ref;
     }
 }

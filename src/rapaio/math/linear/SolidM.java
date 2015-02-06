@@ -25,33 +25,33 @@ package rapaio.math.linear;
  */
 public class SolidM implements M {
 
-    private final int rows;
-    private final int cols;
+    private final int rowCount;
+    private final int colCount;
     private final double[] values;
 
-    SolidM(int rows, int cols) {
-        this.rows = rows;
-        this.cols = cols;
-        this.values = new double[rows * cols];
+    SolidM(int rowCount, int colCount) {
+        this.rowCount = rowCount;
+        this.colCount = colCount;
+        this.values = new double[rowCount * colCount];
     }
 
     @Override
-    public int rows() {
-        return rows;
+    public int rowCount() {
+        return rowCount;
     }
 
     @Override
-    public int cols() {
-        return cols;
+    public int colCount() {
+        return colCount;
     }
 
     @Override
     public double get(int i, int j) {
-        return values[i * cols + j];
+        return values[i * colCount + j];
     }
 
     @Override
     public void set(int i, int j, double value) {
-        values[i * cols + j] = value;
+        values[i * colCount + j] = value;
     }
 }

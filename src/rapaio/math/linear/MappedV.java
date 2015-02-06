@@ -21,49 +21,49 @@
 package rapaio.math.linear;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
  */
-public class MappedM implements M {
+public class MappedV implements V {
 
     private final M ref;
-    private final int[] rowIndexes;
-    private final int[] colIndexes;
+    private final boolean isRow;
+    private final int index;
 
-    MappedM(M ref, boolean byRow, int... indexes) {
-        if (byRow) {
-            this.ref = ref;
-            this.rowIndexes = indexes;
-            this.colIndexes = new int[ref.colCount()];
-            for (int i = 0; i < ref.colCount(); i++) {
-                this.colIndexes[i] = i;
-            }
-        } else {
-            this.ref = ref;
-            this.rowIndexes = new int[ref.rowCount()];
-            for (int i = 0; i < ref.rowCount(); i++) {
-                this.rowIndexes[i] = i;
-            }
-            this.colIndexes = indexes;
-        }
+    MappedV(M ref, boolean isRow, int index) {
+        this.ref = ref;
+        this.isRow = isRow;
+        this.index = index;
     }
 
     @Override
     public int rowCount() {
-        return rowIndexes.length;
+        return isRow ? 1 : ref.rowCount();
     }
 
     @Override
     public int colCount() {
-        return colIndexes.length;
+        return isRow ? ref.colCount() : 1;
     }
 
     @Override
     public double get(int i, int j) {
-        return ref.get(rowIndexes[i], colIndexes[j]);
+        if (isRow && i == 0) {
+            return ref.get(index, j);
+        }
+        if (!isRow && j == 0) {
+            return ref.get(i, index);
+        }
+        throw new IllegalArgumentException("This operation is valid only for mapped vectors");
     }
 
     @Override
     public void set(int i, int j, double value) {
-        ref.set(rowIndexes[i], colIndexes[j], value);
+        if (isRow && i == 0) {
+            ref.set(index, j, value);
+        }
+        if (!isRow && j == 0) {
+            ref.set(i, index, value);
+        }
+        throw new IllegalArgumentException("This operation is valid only for mapped vectors");
     }
 }

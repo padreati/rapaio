@@ -20,29 +20,37 @@
 
 package rapaio.math.linear;
 
+import rapaio.data.Frame;
+import rapaio.datasets.Datasets;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
  */
 public class SandBoxM {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, URISyntaxException {
 
-        M m = M.newFill(10, 10, 1);
-        for (int i = 0; i < m.rows(); i++) {
-            for (int j = 0; j < m.cols(); j++) {
-                m.set(i, j, Math.pow(i, Math.sqrt(j)));
-            }
-        }
+        Frame df = Datasets.loadIrisDataset().removeVars("class");
+
+        M m = MV.newMCopyOf(df);
         m.summary();
 
-        M mm = m.mapRows(2, 4, 6).mapCols(6, 9, 1, 2).t();
+        long start = System.currentTimeMillis();
+        LUDecomposition lu1 = new LUDecomposition(m);
+        System.out.println((System.currentTimeMillis() - start) / 1000 + " seconds");
+        lu1.summary();
 
-        mm.summary();
+        start = System.currentTimeMillis();
+        LUDecomposition lu2 = new LUDecomposition(m, LUDecomposition.Method.GAUSSIAN_ELIMINATION);
+        System.out.println((System.currentTimeMillis() - start) / 1000 + " seconds");
+        lu2.summary();
 
-        LUDecomposition lu = new LUDecomposition(mm);
+        System.out.println(lu1.getL().isEqual(lu2.getL()));
+        System.out.println(lu1.getU().isEqual(lu2.getU()));
 
-        lu.getL().summary();
-        lu.getU().summary();
-        lu.getDoublePivot();
+        System.out.println(lu1.getU().det());
     }
 }
