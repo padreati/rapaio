@@ -23,124 +23,124 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <title>Correlations</title>
 <style type="text/css">
-    body, td {
-    font-family: sans-serif;
-    background-color: white;
-    font-size: 14px;
-    margin: 8px;
-    width: 800px;
-    }
-    tt, code, pre {
-    font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
-    }
-    h1 { font-size:2.2em; }
-    h2 { font-size:1.8em; }
-    h3 { font-size:1.4em; }
-    h4 { font-size:1.0em; }
-    h5 { font-size:0.9em; }
-    h6 {
-    font-size:0.8em;
-    }
-    a:visited {
-    color: rgb(50%, 0%, 50%);
-    }
-    pre {
-    font-size: 0.9em;
-    margin-top: 0;
-    max-width: 95%;
-    border: 1px solid #ccc;
-    white-space: pre-wrap;
-    }
-    pre code {
-    display: block; padding: 0.5em;
-    }
-    code.r, code.java {
-    background-color: #F8F8F8;
-    }
-    table, td, th {
-    border: none;
-    }
-    blockquote {
-    color:#666666;
-    margin:0;
-    padding-left: 1em;
-    border-left: 0.5em #EEE solid;
-    }
-    hr {
-    height: 0px;
-    border-bottom: none;
-    border-top-width: thin;
-    border-top-style: dotted;
-    border-top-color: #999999;
-    }
-    @media print {
-    * {
-    background: transparent !important;
-    color: black !important;
-    filter:none !important;
-    -ms-filter: none !important;
-    }
-    body {
-    font-size:12pt;
-    max-width:100%;
-    }
+   body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 14px;
+   margin: 8px;
+   width: 800px;
+   }
+   tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+   }
+   h1 { font-size:2.2em; }
+   h2 { font-size:1.8em; }
+   h3 { font-size:1.4em; }
+   h4 { font-size:1.0em; }
+   h5 { font-size:0.9em; }
+   h6 {
+   font-size:0.8em;
+   }
+   a:visited {
+   color: rgb(50%, 0%, 50%);
+   }
+   pre {
+   font-size: 0.9em;
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+   }
+   pre code {
+   display: block; padding: 0.5em;
+   }
+   code.r, code.java {
+   background-color: #F8F8F8;
+   }
+   table, td, th {
+   border: none;
+   }
+   blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+   }
+   hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+   }
+   @media print {
+   * {
+   background: transparent !important;
+   color: black !important;
+   filter:none !important;
+   -ms-filter: none !important;
+   }
+   body {
+   font-size:12pt;
+   max-width:100%;
+   }
 
-    a, a:visited {
-    text-decoration: underline;
-    }
-    hr {
-    visibility: hidden;
-    page-break-before: always;
-    }
-    pre, blockquote {
-    padding-right: 1em;
-    page-break-inside: avoid;
-    }
-    tr, img {
-    page-break-inside: avoid;
-    }
-    img {
-    max-width: 100% !important;
-    }
-    @page :left {
-    margin: 15mm 20mm 15mm 10mm;
-    }
+   a, a:visited {
+   text-decoration: underline;
+   }
+   hr {
+   visibility: hidden;
+   page-break-before: always;
+   }
+   pre, blockquote {
+   padding-right: 1em;
+   page-break-inside: avoid;
+   }
+   tr, img {
+   page-break-inside: avoid;
+   }
+   img {
+   max-width: 100% !important;
+   }
+   @page :left {
+   margin: 15mm 20mm 15mm 10mm;
+   }
 
-    @page :right {
-    margin: 15mm 10mm 15mm 20mm;
-    }
-    p, h2, h3 {
-    orphans: 3; widows: 3;
-    }
-    h2, h3 {
-    page-break-after: avoid;
-    }
-    }
+   @page :right {
+   margin: 15mm 10mm 15mm 20mm;
+   }
+   p, h2, h3 {
+   orphans: 3; widows: 3;
+   }
+   h2, h3 {
+   page-break-after: avoid;
+   }
+   }
 </style>
 <!-- Styles for R syntax highlighter -->
 <style getType="text/css">
-    pre .operator,
-    pre .paren {
-    color: rgb(104, 118, 135)
-    }
-    pre .literal {
-    color: rgb(88, 72, 246)
-    }
-    pre .number {
-    color: rgb(0, 0, 205);
-    }
-    pre .comment {
-    color: rgb(76, 136, 107);
-    }
-    pre .keyword {
-    color: rgb(0, 0, 255);
-    }
-    pre .identifier {
-    color: rgb(0, 0, 0);
-    }
-    pre .string {
-    color: rgb(3, 106, 7);
-    }
+   pre .operator,
+   pre .paren {
+   color: rgb(104, 118, 135)
+   }
+   pre .literal {
+   color: rgb(88, 72, 246)
+   }
+   pre .number {
+   color: rgb(0, 0, 205);
+   }
+   pre .comment {
+   color: rgb(76, 136, 107);
+   }
+   pre .keyword {
+   color: rgb(0, 0, 255);
+   }
+   pre .identifier {
+   color: rgb(0, 0, 0);
+   }
+   pre .string {
+   color: rgb(3, 106, 7);
+   }
 </style>
 <!-- R syntax highlighter -->
 <script getType="text/javascript">
@@ -155,57 +155,57 @@ hljs.initHighlightingOnLoad();
 <h2>Introduction</h2>
 
 <p>This tutorial presents you the tools built in rapaio library which enables you to compute correlation
-    coefficients.</p>
+   coefficients.</p>
 
 <p>We will use the classical iris data set. The numerical columns of this data set are:</p><pre><code class="Java">>
-    names(frame)
-    sepal-length
-    sepal-width
-    petal-length
-    petal-width
+   names(frame)
+   sepal-length
+   sepal-width
+   petal-length
+   petal-width
 </code></pre>
 <pre><code class="Java"> final Frame df = new FFRetainTypes(VarType.NUMERIC).fitApply(Datasets.loadIrisDataset());
-    names(df);
+   names(df);
 </code></pre>
 <h2>Pearson product-moment correlation</h2>
 
 <p>Pearson product-moment correlation measures the linear correlation between two random variables. Among other types of
-    correlation measures, the Pearson product-moment measures only linear correlations. </p><h4>Definition</h4>
+   correlation measures, the Pearson product-moment measures only linear correlations. </p><h4>Definition</h4>
 
 <p>Pearson product-moment coefficient measures the linear correlation between two random variables \(X\) and \(Y\),
-    giving a value in \([+1,−1]\), where \(1\) is perfect positive linear correlation, \(0\) is no correlation, and
-    \(−1\) is perfect negative linear correlation.</p>
+   giving a value in \([+1,?1]\), where \(1\) is perfect positive linear correlation, \(0\) is no correlation, and
+   \(?1\) is perfect negative linear correlation.</p>
 
 <p>Pearson's correlation coefficient when applied to a population is commonly represented by the Greek letter \(
-    ho\) (rho) and may be referred to as the population correlation coefficient or the population Pearson correlation
-    coefficient. The formula for \(\rho\) is:</p>$$ \rho_{X,Y} = \frac{cov(X,Y)}{\sigma_X\sigma_Y} =
+   ho\) (rho) and may be referred to as the population correlation coefficient or the population Pearson correlation
+   coefficient. The formula for \(\rho\) is:</p>$$ \rho_{X,Y} = \frac{cov(X,Y)}{\sigma_X\sigma_Y} =
 \frac{E[(X-\mu_X)(Y-\mu_Y)]}{\sigma_X\sigma_Y} $$<p>Pearson's correlation coefficient when applied to a sample is
-    commonly represented by the letter \(r\) and may be referred to as the sample correlation coefficient or the sample
-    Pearson correlation coefficient. We can obtain a formula for \(r\) by substituting estimates of the covariances and
-    variances based on a sample into the formula above. That formula for \(r\) is:</p>$$ r = \frac{\sum ^n
+   commonly represented by the letter \(r\) and may be referred to as the sample correlation coefficient or the sample
+   Pearson correlation coefficient. We can obtain a formula for \(r\) by substituting estimates of the covariances and
+   variances based on a sample into the formula above. That formula for \(r\) is:</p>$$ r = \frac{\sum ^n
 _{i=1}(X_i-\bar{X})(Y_i-\bar{Y})}{\sqrt{\sum ^n _{i=1}(X_i - \bar{X})^2} \sqrt{\sum ^n _{i=1}(Y_i - \bar{Y})^2}} $$<p>
-    The interpretation of a correlation coefficient depends on the context and purposes. A correlation of \(0.8\) may be
-    very low if one is verifying a physical law using high-quality instruments, but may be regarded as very high in the
-    social sciences where there may be a greater contribution from complicating factors.</p>
+   The interpretation of a correlation coefficient depends on the context and purposes. A correlation of \(0.8\) may be
+   very low if one is verifying a physical law using high-quality instruments, but may be regarded as very high in the
+   social sciences where there may be a greater contribution from complicating factors.</p>
 
 <h2>How to compute Pearson correlation coefficient</h2>
 
 <p>Rapaio library allows one to compute Pearson \(r\) for more then one variable at a time. Thus the result will be a
-    matrix with computed \(r\) values between vectors, using vectors index position as indexes in resulted matrix. </p><pre><code
+   matrix with computed \(r\) values between vectors, using vectors index position as indexes in resulted matrix. </p><pre><code
         class="Java">> pearson[[sepal-length, sepal-width, petal-length, petal-width]] - Pearson product-moment
-    correlation coefficient
-    1.sepal-length 2.sepal-width 3.petal-length 4.petal-width
-    1. x -0.109 0.872 0.818
-    2. -0.109 x -0.421 -0.357
-    3. 0.872 -0.421 x 0.963
-    4. 0.818 -0.357 0.963 x
+   correlation coefficient
+   1.sepal-length 2.sepal-width 3.petal-length 4.petal-width
+   1. x -0.109 0.872 0.818
+   2. -0.109 x -0.421 -0.357
+   3. 0.872 -0.421 x 0.963
+   4. 0.818 -0.357 0.963 x
 </code></pre>
 <pre><code class="Java"> final PearsonRCorrelation r = new PearsonRCorrelation(df);
-    summary(r);
+   summary(r);
 </code></pre>
 <p>We can note by visual inspection that many of the attributes are linearly correlated. For example we can find from
-    the correlation summary that petal-length and petal-width variables have a very strong linear correlation. Let's
-    check this intuition with a plot:</p>
+   the correlation summary that petal-length and petal-width variables have a very strong linear correlation. Let's
+   check this intuition with a plot:</p>
 
 <p>
 <center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAEsCAYAAADtt+XCAAA4j0lEQVR42u2dAcwUxfn/ay1SRMRX
@@ -466,7 +466,7 @@ RAghhARECCGEBEQIIYQERAghhARECCGEkIAIIYSQgAghhKg//wssU9OnaraCOQAAAABJRU5ErkJg
 gg==" alt="graphics"/></center>
 </p>
 <p>Another \(r\) coefficient which has a value close to \(1\) is the sample correlation between sepal-length and
-    petal-length. Let's check that with a plot, also: </p>
+   petal-length. Let's check that with a plot, also: </p>
 
 <p>
 <center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAEsCAYAAADtt+XCAAA1RklEQVR42u2dDewUxf3/VUREJIgi
@@ -712,7 +712,7 @@ hBBCAiKEEEICIoQQQkhAhBBCSECEEEJIQIQQQkhAhBBCSECEEEIICYgQQggJiBBCiPrzvwzNekyt
 5NkyAAAAAElFTkSuQmCC" alt="graphics"/></center>
 </p>
 <p>Finally, we plot again, but this time using a coefficient which is closer to 0, which could mean that the variables
-    are not linearly correlated. We have such kind of value between sepal-length and sepal-width variables. </p>
+   are not linearly correlated. We have such kind of value between sepal-length and sepal-width variables. </p>
 
 <p>
 <center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAEsCAYAAADtt+XCAAA6TklEQVR42u2dDcwVxRm2tRQpUkqx
@@ -982,36 +982,36 @@ EhAhhBASECGEEBIQIYQQQgIihBBCAiKEEKJY/g97FW0OhdDnpwAAAABJRU5ErkJggg==" alt="graph
 <h2>Spearman's rank correlation coefficient</h2>
 
 <p>Often denoted by the Greek letter \(\rho\) (rho) or as \(r_s\), this correlation coefficient is a non-parametric
-    measure of statistical dependence between two variables. It assesses how well the relationship between two variables
-    can be described using a monotonic function. If there are no repeated data values, a perfect Spearman correlation of
-    \(+1\) or \({−1}\) occurs when each of the variables is a perfect monotone function of the other.</p><h4>
-    Definition</h4>
+   measure of statistical dependence between two variables. It assesses how well the relationship between two variables
+   can be described using a monotonic function. If there are no repeated data values, a perfect Spearman correlation of
+   \(+1\) or \({?1}\) occurs when each of the variables is a perfect monotone function of the other.</p><h4>
+   Definition</h4>
 
 <p>The Spearman correlation coefficient is defined as the Pearson correlation coefficient between the ranked variables.
-    For a sample of size \(n\), the \(n\) sample values \(X_i\), \(Y_i\) are converted to ranks \(x_i\), \(y_i\), and
-    \(\rho\) is computed on the ranked values:</p>$$ \rho = \frac{\sum_i(x_i-\bar{x})(y_i-\bar{y})}{\sqrt{\sum_i
+   For a sample of size \(n\), the \(n\) sample values \(X_i\), \(Y_i\) are converted to ranks \(x_i\), \(y_i\), and
+   \(\rho\) is computed on the ranked values:</p>$$ \rho = \frac{\sum_i(x_i-\bar{x})(y_i-\bar{y})}{\sqrt{\sum_i
 (x_i-\bar{x})^2 \sum_i(y_i-\bar{y})^2}} $$<p>Identical values (rank ties or value duplicates) are assigned a rank equal
-    to the average of their positions in the ascending order of the values.</p>
+   to the average of their positions in the ascending order of the values.</p>
 
 <h2>Use Rapaio to compute Spearman's rank correlation</h2>
 
 <p>Rapaio library allows one to compute Spearman \(\rho\) for more then \(1\) variable at a time. Thus the result will
-    be a matrix with computed \(\rho\) values between given variables, using variables' index positions as indexes in
-    the resulted matrix. </p><pre><code class="Java">spearman[[sepal-length, sepal-width, petal-length, petal-width]] -
-    Spearman's rank correlation coefficient
-    1.sepal-length 2.sepal-width 3.petal-length 4.petal-width
-    1. x -0.154 0.879 0.831
-    2. -0.154 x -0.293 -0.266
-    3. 0.879 -0.293 x 0.930
-    4. 0.831 -0.266 0.930 x
+   be a matrix with computed \(\rho\) values between given variables, using variables' index positions as indexes in the
+   resulted matrix. </p><pre><code class="Java">spearman[[sepal-length, sepal-width, petal-length, petal-width]] -
+   Spearman's rank correlation coefficient
+   1.sepal-length 2.sepal-width 3.petal-length 4.petal-width
+   1. x -0.154 0.879 0.831
+   2. -0.154 x -0.293 -0.266
+   3. 0.879 -0.293 x 0.930
+   4. 0.831 -0.266 0.930 x
 </code></pre>
 <pre><code class="Java">> pearson[[sepal-length, sepal-width, petal-length, petal-width]] - Pearson product-moment
-    correlation coefficient
-    1.sepal-length 2.sepal-width 3.petal-length 4.petal-width
-    1. x -0.109 0.872 0.818
-    2. -0.109 x -0.421 -0.357
-    3. 0.872 -0.421 x 0.963
-    4. 0.818 -0.357 0.963 x
+   correlation coefficient
+   1.sepal-length 2.sepal-width 3.petal-length 4.petal-width
+   1. x -0.109 0.872 0.818
+   2. -0.109 x -0.421 -0.357
+   3. 0.872 -0.421 x 0.963
+   4. 0.818 -0.357 0.963 x
 </code></pre>
 <p>>>>This tutorial is generated with Rapaio document printer facilities.<<<</p><br/>
 

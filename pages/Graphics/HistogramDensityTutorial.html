@@ -23,124 +23,124 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <title>Histogram and Kernel Density Estimation Tutorial</title>
 <style type="text/css">
-    body, td {
-    font-family: sans-serif;
-    background-color: white;
-    font-size: 14px;
-    margin: 8px;
-    width: 800px;
-    }
-    tt, code, pre {
-    font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
-    }
-    h1 { font-size:2.2em; }
-    h2 { font-size:1.8em; }
-    h3 { font-size:1.4em; }
-    h4 { font-size:1.0em; }
-    h5 { font-size:0.9em; }
-    h6 {
-    font-size:0.8em;
-    }
-    a:visited {
-    color: rgb(50%, 0%, 50%);
-    }
-    pre {
-    font-size: 0.9em;
-    margin-top: 0;
-    max-width: 95%;
-    border: 1px solid #ccc;
-    white-space: pre-wrap;
-    }
-    pre code {
-    display: block; padding: 0.5em;
-    }
-    code.r, code.java {
-    background-color: #F8F8F8;
-    }
-    table, td, th {
-    border: none;
-    }
-    blockquote {
-    color:#666666;
-    margin:0;
-    padding-left: 1em;
-    border-left: 0.5em #EEE solid;
-    }
-    hr {
-    height: 0px;
-    border-bottom: none;
-    border-top-width: thin;
-    border-top-style: dotted;
-    border-top-color: #999999;
-    }
-    @media print {
-    * {
-    background: transparent !important;
-    color: black !important;
-    filter:none !important;
-    -ms-filter: none !important;
-    }
-    body {
-    font-size:12pt;
-    max-width:100%;
-    }
+   body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 14px;
+   margin: 8px;
+   width: 800px;
+   }
+   tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+   }
+   h1 { font-size:2.2em; }
+   h2 { font-size:1.8em; }
+   h3 { font-size:1.4em; }
+   h4 { font-size:1.0em; }
+   h5 { font-size:0.9em; }
+   h6 {
+   font-size:0.8em;
+   }
+   a:visited {
+   color: rgb(50%, 0%, 50%);
+   }
+   pre {
+   font-size: 0.9em;
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+   }
+   pre code {
+   display: block; padding: 0.5em;
+   }
+   code.r, code.java {
+   background-color: #F8F8F8;
+   }
+   table, td, th {
+   border: none;
+   }
+   blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+   }
+   hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+   }
+   @media print {
+   * {
+   background: transparent !important;
+   color: black !important;
+   filter:none !important;
+   -ms-filter: none !important;
+   }
+   body {
+   font-size:12pt;
+   max-width:100%;
+   }
 
-    a, a:visited {
-    text-decoration: underline;
-    }
-    hr {
-    visibility: hidden;
-    page-break-before: always;
-    }
-    pre, blockquote {
-    padding-right: 1em;
-    page-break-inside: avoid;
-    }
-    tr, img {
-    page-break-inside: avoid;
-    }
-    img {
-    max-width: 100% !important;
-    }
-    @page :left {
-    margin: 15mm 20mm 15mm 10mm;
-    }
+   a, a:visited {
+   text-decoration: underline;
+   }
+   hr {
+   visibility: hidden;
+   page-break-before: always;
+   }
+   pre, blockquote {
+   padding-right: 1em;
+   page-break-inside: avoid;
+   }
+   tr, img {
+   page-break-inside: avoid;
+   }
+   img {
+   max-width: 100% !important;
+   }
+   @page :left {
+   margin: 15mm 20mm 15mm 10mm;
+   }
 
-    @page :right {
-    margin: 15mm 10mm 15mm 20mm;
-    }
-    p, h2, h3 {
-    orphans: 3; widows: 3;
-    }
-    h2, h3 {
-    page-break-after: avoid;
-    }
-    }
+   @page :right {
+   margin: 15mm 10mm 15mm 20mm;
+   }
+   p, h2, h3 {
+   orphans: 3; widows: 3;
+   }
+   h2, h3 {
+   page-break-after: avoid;
+   }
+   }
 </style>
 <!-- Styles for R syntax highlighter -->
 <style getType="text/css">
-    pre .operator,
-    pre .paren {
-    color: rgb(104, 118, 135)
-    }
-    pre .literal {
-    color: rgb(88, 72, 246)
-    }
-    pre .number {
-    color: rgb(0, 0, 205);
-    }
-    pre .comment {
-    color: rgb(76, 136, 107);
-    }
-    pre .keyword {
-    color: rgb(0, 0, 255);
-    }
-    pre .identifier {
-    color: rgb(0, 0, 0);
-    }
-    pre .string {
-    color: rgb(3, 106, 7);
-    }
+   pre .operator,
+   pre .paren {
+   color: rgb(104, 118, 135)
+   }
+   pre .literal {
+   color: rgb(88, 72, 246)
+   }
+   pre .number {
+   color: rgb(0, 0, 205);
+   }
+   pre .comment {
+   color: rgb(76, 136, 107);
+   }
+   pre .keyword {
+   color: rgb(0, 0, 255);
+   }
+   pre .identifier {
+   color: rgb(0, 0, 0);
+   }
+   pre .string {
+   color: rgb(3, 106, 7);
+   }
 </style>
 <!-- R syntax highlighter -->
 <script getType="text/javascript">
@@ -156,33 +156,36 @@ hljs.initHighlightingOnLoad();
 <h3>Data set used</h3>
 
 <p>First we need to load a frame with data. For convenience we don't use input/output facilities. Instead, we load a set
-    of data already built-in the library (the classical Pearson father-son data set).</p><pre><code class="Java">>
-    summary(frame, [Father, Son])
-    rowCount: 1078, colCount: 2
-    Father Son
-    Min. : 59.000 Min. : 58.500
-    1st Qu. : 65.800 1st Qu. : 66.900
-    Median : 67.800 Median : 68.600
-    Mean : 67.687 Mean : 68.684
-    2nd Qu. : 69.600 2nd Qu. : 70.500
-    Max. : 75.400 Max. : 78.400
+   of data already built-in the library (the classical Pearson father-son data set).</p><pre><code class="Java">>
+   summary(frame, [Father, Son])
+   rowCount: 1078
+   complete: 1078/1078
+   varCount: 2
+   varNames: [Father, Son]
+   Father Son
+   Min. : 59.000 Min. : 58.500
+   1st Qu. : 65.800 1st Qu. : 66.900
+   Median : 67.800 Median : 68.600
+   Mean : 67.687 Mean : 68.684
+   2nd Qu. : 69.600 2nd Qu. : 70.500
+   Max. : 75.400 Max. : 78.400
                                    
 </code></pre>
 <p>We have two continuous random variables which observes heights of pairs of father and sons. </p>
 
 <p>The 5-number summaries gives us some hints on how the densities of the values for the two random variables looks
-    like. We note that the mean and median are very close which leads us to think that the densities of the values are
-    somehow symmetric. </p>
+   like. We note that the mean and median are very close which leads us to think that the densities of the values are
+   somehow symmetric. </p>
 
 <h3>Histograms</h3>
 
 <p>One of the most important and usual tools to obtain information about the densities of a random variable is the
-    histogram. </p>
+   histogram. </p>
 
 <p>In statistics, a histogram is a graphical representation of the densities of data. It is an estimate of the
-    probability densities of a continuous variable and was first introduced by Karl Pearson. A histogram is a
-    representation of tabulated frequencies, shown as adjacent rectangles, erected over discrete intervals (bins), with
-    an area equal to the frequency of the observations in the interval. </p>
+   probability densities of a continuous variable and was first introduced by Karl Pearson. A histogram is a
+   representation of tabulated frequencies, shown as adjacent rectangles, erected over discrete intervals (bins), with
+   an area equal to the frequency of the observations in the interval. </p>
 
 <p>We draw histograms with rapaio toolbox in the following way:</p>
 
@@ -303,13 +306,13 @@ QOgAAIDQAQAAoQMAAEIHAIDQAQAAoQMAAEIHAACEDgAAoQMAAEIHAACEDgAACB0AAEIHAACEDgAA
 <pre><code class="Java"> WS.draw(new Plot().add(new Histogram(df.var("Father"))));
 </code></pre>
 <p>The height of a rectangle is also equal to the frequency density of the interval, i.e., the frequency divided by the
-    width of the interval. The total area of the histogram is equal to the number of data. </p>
+   width of the interval. The total area of the histogram is equal to the number of data. </p>
 
 <p>The previous code uses the simplest form of building a histogram. There are some parameters which can help tuning the
-    output. </p>
+   output. </p>
 
 <p>By default the number of bins is computed using the Freedman-Diaconis estimator. However, one can specify directly
-    the number of bins. </p>
+   the number of bins. </p>
 
 <p>
 <center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAZGklEQVR42u3df2Rc6f7A8RJRFRWh
@@ -430,11 +433,11 @@ AACA0AEAAKEDAEDoAACA0AEAwA7y/7aUEyy2B5QoAAAAAElFTkSuQmCC" alt="graphics"/></cent
 <pre><code class="Java"> draw(new Plot().add(new Histogram(df.var("Father")).bins(100).prob(false)));
 </code></pre>
 <p>Note that on the vertical axis we can see frequency values which are counters. This means that on y axis we have the
-    number of elements found in bins. This is useful when we want to have an absolute value image of the histogram.
-    However, if we are interested to see the proportions of values in bins on y axis, we can change the default value
-    for prob parameter. This computes on y axis the the proportion, and makes the whole graph of the histogram to have a
-    total area of 1, which is a desirable property if the histograms are compared to other similar tools like
-    densities. </p>
+   number of elements found in bins. This is useful when we want to have an absolute value image of the histogram.
+   However, if we are interested to see the proportions of values in bins on y axis, we can change the default value for
+   prob parameter. This computes on y axis the the proportion, and makes the whole graph of the histogram to have a
+   total area of 1, which is a desirable property if the histograms are compared to other similar tools like
+   densities. </p>
 
 <p>
 <center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAYIklEQVR42u3df2Rc6f7A8VJREVVh
@@ -551,7 +554,7 @@ AACA0AEAAKEDAABCBwCA0AEAAKEDAABCBwAAhA4AAKEDAABCBwAAhA4AAAgdAABCBwAAhA4AALaR
 <pre><code class="Java"> draw(new Plot().add(new Histogram(df.var("Father")).prob(true)));
 </code></pre>
 <p>An alternative to the histogram is kernel density estimation, which uses a kernel function to smooth samples. This
-    will construct a smooth probability density function estimation.</p>
+   will construct a smooth probability density function estimation.</p>
 
 <p>One can draw also the kernel density approximation, over a histogram or as a separate plot.</p>
 
@@ -721,21 +724,21 @@ AKEDAAAgdAAAAEDoAAAAgNABAAAAoQMAACB0AAAAQOgAAABQQv4/5Cr/u2ka/OEAAAAASUVORK5C
 YII=" alt="graphics"/></center>
 </p>
 <pre><code class="Java"> final Var col = df.var("Father");
-    draw(new Plot()
-    .add(new Histogram(col).color(Index.newSeq(1, 255)))
-    .add(new DensityLine(col)));
+   draw(new Plot()
+   .add(new Histogram(col).color(Index.newSeq(1, 255)))
+   .add(new DensityLine(col)));
 </code></pre>
 <p>In statistics, kernel density estimation (KDE) is a non-parametric way to estimate the probability density function
-    of a random variable. Kernel density estimation is a fundamental data smoothing problem where inferences about the
-    population are made, based on a finite data sample. In some fields such as signal processing and econometrics it is
-    also termed the Parzen–Rosenblatt window method, after Emanuel Parzen and Murray Rosenblatt, who are usually
-    credited with independently creating it in its current form.</p>
+   of a random variable. Kernel density estimation is a fundamental data smoothing problem where inferences about the
+   population are made, based on a finite data sample. In some fields such as signal processing and econometrics it is
+   also termed the Parzen?Rosenblatt window method, after Emanuel Parzen and Murray Rosenblatt, who are usually credited
+   with independently creating it in its current form.</p>
 
 <p>In it's default implementation, used without parameters, the Rapaio toolbox learn a kernel density estimation with
-    Gaussian kernels and with bandwidth approximated by Silverman's rule of thumb.</p>
+   Gaussian kernels and with bandwidth approximated by Silverman's rule of thumb.</p>
 
 <p>However one can use a different value for bandwidth in order to obtain a smoother or less smoother approximation of
-    the density function.</p>
+   the density function.</p>
 
 <p>
 <center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAEsCAYAAAAfPc2WAABQ7ElEQVR42u2dDXQUZbrn62I8Hg6X
@@ -1105,10 +1108,10 @@ AADBAgAAAACAYAEAAAAAQLAAAAAAAAAECwAAAAAAggUAAAAAAMECAAAAAAAQLAAAAAAACBYAAAAA
 QJry/wGneSlkTgU+AgAAAABJRU5ErkJggg==" alt="graphics"/></center>
 </p>
 <p>Another thing one can try with kernel density estimator is to change the kernel function, which is the function used
-    to disperse in a small neighborhood around a point the probability mass initially assigned to the points of the
-    discrete sample. The kernel choices are: uniform, triangular, Epanechnikov, biweight, triweight, tricube, Gaussian
-    and cosine. Of course, it is easy to implement your own smoothing method once you implement a custom kernel
-    function. </p>
+   to disperse in a small neighborhood around a point the probability mass initially assigned to the points of the
+   discrete sample. The kernel choices are: uniform, triangular, Epanechnikov, biweight, triweight, tricube, Gaussian
+   and cosine. Of course, it is easy to implement your own smoothing method once you implement a custom kernel
+   function. </p>
 
 <p>
 <center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAYt0lEQVR42u3df0ge9x3A8YKTToIT
@@ -1226,14 +1229,14 @@ AIIOAAAIOgAAIOgAABB0AABA0AEAAEEHAAAEHQAAgg4AAMz0f0Moiqm1RPfAAAAAAElFTkSuQmCC
 " alt="graphics"/></center>
 </p>
 <p>We could agree that my implementation of kernel function is ugly and maybe no so useful, however you have to note
-    that the purpose of Rapaio toolbox is to give you sharp and precise standard tools and, in the same time, the
-    opportunity to experiment with your owns.</p>
+   that the purpose of Rapaio toolbox is to give you sharp and precise standard tools and, in the same time, the
+   opportunity to experiment with your owns.</p>
 
 <p>One final graph will show the kernel approximation of density functions for both numerical variables that we have:
-    father's heights and son's heights.</p>
+   father's heights and son's heights.</p>
 
 <p>Blue line represents density approximation of father's heights, red line represents density approximation of son's
-    heights.</p>
+   heights.</p>
 
 <p>
 <center><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAAD6CAYAAABXq7VOAAAgN0lEQVR42u3dDWhVZ57H8YKEIYiE
