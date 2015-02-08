@@ -43,15 +43,6 @@ public interface MeshGrid extends Serializable {
     int side(int i, int j);
 
     /**
-     * Computes the side of the saddle point from the square (i,j) and (i+1,j+1)
-     *
-     * @param i index of the x coordinate of the top left corner
-     * @param j index of the y coordinate of the top left corner
-     * @return 0 if below isoBand, 1 if inside isoBand, 2 if above isoBand
-     */
-    int saddleSide(int i, int j);
-
-    /**
      * Computes x coordinate of the low threshold between
      * grid points with indexes (i,j) and (i+1,j)
      *

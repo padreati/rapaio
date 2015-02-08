@@ -20,13 +20,9 @@
 
 package rapaio.data.grid;
 
-import rapaio.core.stat.Maximum;
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Minimum;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.util.Pair;
 
 import java.io.Serializable;
 import java.util.function.BiFunction;
@@ -56,10 +52,6 @@ public class MeshGrid1D implements Serializable {
 
     public Var getY() {
         return y;
-    }
-
-    public Pair<Double, Double> valueRange() {
-        return new Pair<>(new Minimum(grid).value(), new Maximum(grid).value());
     }
 
     public double value(int i, int j) {
@@ -131,27 +123,6 @@ class MeshGrid1DImpl implements MeshGrid {
             return 0;
         }
         if (g.value(i, j) > high) {
-            return 2;
-        }
-        return 1;
-    }
-
-    @Override
-    public int saddleSide(int i, int j) {
-        return saddleSideCompute(i, j);
-    }
-
-    public int saddleSideCompute(int i, int j) {
-        Numeric sample = Numeric.newEmpty();
-        sample.addValue(g.value(i, j));
-        sample.addValue(g.value(i + 1, j));
-        sample.addValue(g.value(i + 1, j + 1));
-        sample.addValue(g.value(i, j + 1));
-        double mean = new Mean(sample).value();
-        if (mean < low) {
-            return 0;
-        }
-        if (mean > high) {
             return 2;
         }
         return 1;

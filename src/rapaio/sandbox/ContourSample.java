@@ -27,6 +27,7 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.grid.MeshGrid1D;
 import rapaio.graphics.Plot;
+import rapaio.graphics.opt.BiColorGradient;
 import rapaio.graphics.plot.MeshContour;
 import rapaio.graphics.plot.Points;
 import rapaio.printer.IdeaPrinter;
@@ -68,11 +69,13 @@ public class ContourSample {
         Plot p = new Plot();
         Var q = Numeric.newSeq(0, 1, 0.05);
         double[] qq = mg.quantiles(q.stream().mapToDouble().toArray());
-        qq[qq.length - 1] = Double.POSITIVE_INFINITY;
+        qq[qq.length - 1] = 1;
+        BiColorGradient gradient = new BiColorGradient(
+                new Color(0, 0, 255), new Color(0, 128, 0), q.stream().mapToDouble().toArray());
 
         for (int i = 0; i < q.rowCount() - 1; i++) {
             p.add(new MeshContour(mg.compute(qq[i], qq[i + 1]), true, true)
-                            .color(new Color(0.f, 0.f, 1f, (float) qq[i])).lwd(0.5f)
+                            .color(gradient.getColor(i)).lwd(0.2f)
             );
         }
         p.add(new Points(xy.var("x"), xy.var("y")));

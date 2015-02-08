@@ -57,10 +57,12 @@ public class MeshContour extends PlotComponent {
 
     @Override
     public void paint(Graphics2D g2d) {
-        g2d.setColor(getCol(0));
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getAlpha()));
 
         Var x = mg.x();
         Var y = mg.y();
+
+        LinkedList<Point2D.Double> lines = new LinkedList<>();
 
         for (int i = 0; i < mg.x().rowCount() - 1; i++) {
             for (int j = 0; j < mg.y().rowCount() - 1; j++) {
@@ -87,15 +89,16 @@ public class MeshContour extends PlotComponent {
                         // no contour
                         // full fill
                         if (fill) {
-                            g2d.setColor(getCol(0));
                             Path2D.Double path = new Path2D.Double();
                             path.moveTo(parent.xScale(x.value(i)), parent.yScale(y.value(j)));
                             path.lineTo(parent.xScale(x.value(i + 1)), parent.yScale(y.value(j)));
                             path.lineTo(parent.xScale(x.value(i + 1)), parent.yScale(y.value(j + 1)));
                             path.lineTo(parent.xScale(x.value(i)), parent.yScale(y.value(j + 1)));
                             path.lineTo(parent.xScale(x.value(i)), parent.yScale(y.value(j)));
-//                            g2d.setStroke(new BasicStroke(0.000001f));
-//                            g2d.draw(path);
+
+                            g2d.setColor(getCol(0));
+                            g2d.setStroke(new BasicStroke());
+                            g2d.draw(path);
                             g2d.fill(path);
                         }
                         break;
@@ -205,29 +208,6 @@ public class MeshContour extends PlotComponent {
                             sides[11] = 2;
                         }
 
-                        if (contour) {
-                            LinkedList<Point2D.Double> list = new LinkedList<>();
-                            for (int q = 0; q < points.length; q++) {
-                                Point2D.Double p = points[q];
-                                if (p == null || q % 3 == 0)
-                                    continue;
-                                list.add(p);
-                            }
-                            Point2D.Double p = list.pollLast();
-                            list.addFirst(p);
-
-                            g2d.setColor(Color.BLACK);
-
-                            while (!list.isEmpty()) {
-
-                                Point2D.Double from = list.pollLast();
-                                Point2D.Double to = list.pollLast();
-
-                                g2d.setStroke(new BasicStroke(getLwd()));
-                                g2d.draw(new Line2D.Double(from, to));
-                            }
-
-                        }
 
                         if (fill) {
                             Path2D.Double path = new Path2D.Double();
@@ -250,12 +230,39 @@ public class MeshContour extends PlotComponent {
                             path.lineTo(start.x, start.y);
 
                             g2d.setColor(getCol(0));
-                            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getAlpha()));
+                            g2d.setStroke(new BasicStroke());
                             g2d.draw(path);
                             g2d.fill(path);
+                        }
+
+                        if (contour) {
+                            LinkedList<Point2D.Double> list = new LinkedList<>();
+                            LinkedList<Integer> sideList = new LinkedList<>();
+                            for (int q = 0; q < points.length; q++) {
+                                Point2D.Double p = points[q];
+                                if (p == null || q % 3 == 0)
+                                    continue;
+                                list.add(p);
+                                sideList.add(sides[q]);
+                            }
+                            if (sideList.size() > 1 && (sideList.get(0) != sideList.get(1))) {
+                                Point2D.Double p = list.pollLast();
+                                list.addFirst(p);
+                            }
+                            lines.addAll(list);
                         }
                 }
             }
         }
+
+        while (!lines.isEmpty()) {
+            Point2D.Double from = lines.pollLast();
+            Point2D.Double to = lines.pollLast();
+
+            g2d.setColor(Color.BLACK);
+            g2d.setStroke(new BasicStroke(getLwd()));
+            g2d.draw(new Line2D.Double(from, to));
+        }
+
     }
 }

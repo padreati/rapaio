@@ -37,7 +37,6 @@ import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.classifier.svm.BinarySMO;
-import rapaio.ml.classifier.svm.kernel.CauchyKernel;
 import rapaio.ml.classifier.svm.kernel.RBFKernel;
 import rapaio.printer.IdeaPrinter;
 import rapaio.ws.Summary;
@@ -90,11 +89,13 @@ public class IrisContour {
         Classifier c = new BinaryLogistic().withTol(1e-8).withMaxRuns(100_000);
         c = new BinarySMO().withKernel(new RBFKernel(1)).withC(1.5);
         c = new BinarySMO().withKernel(new RBFKernel(4)).withC(1.5);
-        c = new BinarySMO().withKernel(new CauchyKernel(8)).withC(5);
+        c = new BinarySMO().withKernel(new RBFKernel(20)).withC(1.5);
+        c = new BinarySMO().withKernel(new RBFKernel(100000)).withC(0.2);
+//        c = new BinarySMO().withKernel(new CauchyKernel(8)).withC(5);
         c.learn(iris, "class");
 
-        Numeric x = Numeric.newSeq(new Minimum(iris.var(X)).value(), new Maximum(iris.var(X)).value(), 0.5).withName(X);
-        Numeric y = Numeric.newSeq(new Minimum(iris.var(Y)).value(), new Maximum(iris.var(Y)).value(), 0.5).withName(Y);
+        Numeric x = Numeric.newSeq(new Minimum(iris.var(X)).value(), new Maximum(iris.var(X)).value(), 0.1).withName(X);
+        Numeric y = Numeric.newSeq(new Minimum(iris.var(Y)).value(), new Maximum(iris.var(Y)).value(), 0.2).withName(Y);
         MeshGrid1D mg1 = new MeshGrid1D(x, y);
 
         // build a classification data sets with all required points
@@ -124,11 +125,11 @@ public class IrisContour {
         }
 
         Plot p = new Plot();
-        double[] qq = Numeric.newSeq(0, 1, 0.1).stream().mapToDouble().toArray();
+        double[] qq = Numeric.newSeq(0, 1, 0.05).stream().mapToDouble().toArray();
         qq[qq.length - 1] = Double.POSITIVE_INFINITY;
-        BiColorGradient bcg = new BiColorGradient(Color.cyan, Color.orange, qq);
+        BiColorGradient bcg = new BiColorGradient(new Color(0, 128, 255), new Color(255, 128, 0), qq);
         for (int i = 0; i < qq.length - 1; i++) {
-            p.add(new MeshContour(mg1.compute(qq[i], qq[i + 1]), false, true)
+            p.add(new MeshContour(mg1.compute(qq[i], qq[i + 1]), true, true)
                             .lwd(0.3f)
                             .color(bcg.getColor(i))
             );
