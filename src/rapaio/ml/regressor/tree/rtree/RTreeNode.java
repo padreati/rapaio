@@ -100,7 +100,7 @@ public class RTreeNode {
         List<RTreeCandidate> candidateList = new ArrayList<>();
 
         ConcurrentLinkedQueue<RTreeCandidate> candidates = new ConcurrentLinkedQueue<>();
-        Arrays.stream(tree.getVarSelector().nextVarNames()).parallel().forEach(testCol -> {
+        Arrays.stream(tree.varSelector.nextVarNames()).parallel().forEach(testCol -> {
             if (testCol.equals(tree.firstTargetName())) return;
 
             if (df.var(testCol).type().isNumeric()) {

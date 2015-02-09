@@ -21,10 +21,10 @@
 package rapaio.ml.regressor;
 
 import rapaio.core.Printable;
+import rapaio.core.sample.Sampler;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.ml.common.VarSelector;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.Serializable;
@@ -57,10 +57,51 @@ public interface Regressor extends Printable, Serializable {
      */
     String fullName();
 
+    Sampler sampler();
 
-    VarSelector getVarSelector();
+    /**
+     * Specifies the sampler to be used at learning time.
+     *
+     * @param sampler instance of a new sampler
+     */
+    AbstractRegressor withSampler(Sampler sampler);
 
-    Regressor withVarSelector(VarSelector varSelector);
+    /**
+     * Returns input variable names built at learning time
+     *
+     * @return input variable names
+     */
+    String[] inputNames();
+
+    default String inputName(int pos) {
+        return inputNames()[pos];
+    }
+
+    /**
+     * Returns target variables names built at learning time
+     *
+     * @return target variable names
+     */
+    String[] targetNames();
+
+    /**
+     * Returns first target variable built at learning time
+     *
+     * @return target variable names
+     */
+    default String firstTargetName() {
+        return targetNames()[0];
+    }
+
+    /**
+     * Returns the name of the target variable at the given position
+     *
+     * @param pos position of the target variable name
+     * @return name of the target variable
+     */
+    default String targetName(int pos) {
+        return targetNames()[pos];
+    }
 
     /**
      * Fit a classifier on instances specified by frame, with row weights
@@ -94,22 +135,6 @@ public interface Regressor extends Printable, Serializable {
      * @param withResiduals if residuals will be computed or not
      */
     RResult predict(Frame df, boolean withResiduals);
-
-    /**
-     * Returns target variables built at learning time
-     *
-     * @return target variable names
-     */
-    String[] targetNames();
-
-    /**
-     * Returns first target variable built at learning time
-     *
-     * @return target variable names
-     */
-    default String firstTargetName() {
-        return targetNames()[0];
-    }
 
     default void buildSummary(StringBuilder sb) {
         throw new NotImplementedException();

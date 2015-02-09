@@ -37,6 +37,9 @@ import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.classifier.svm.BinarySMO;
+import rapaio.ml.classifier.svm.kernel.CauchyKernel;
+import rapaio.ml.classifier.svm.kernel.GeneralizedStudentTKernel;
+import rapaio.ml.classifier.svm.kernel.InverseMultiQuadraticKernel;
 import rapaio.ml.classifier.svm.kernel.RBFKernel;
 import rapaio.printer.IdeaPrinter;
 import rapaio.ws.Summary;
@@ -90,8 +93,9 @@ public class IrisContour {
         c = new BinarySMO().withKernel(new RBFKernel(1)).withC(1.5);
         c = new BinarySMO().withKernel(new RBFKernel(4)).withC(1.5);
         c = new BinarySMO().withKernel(new RBFKernel(20)).withC(1.5);
-        c = new BinarySMO().withKernel(new RBFKernel(100000)).withC(0.2);
-//        c = new BinarySMO().withKernel(new CauchyKernel(8)).withC(5);
+        c = new BinarySMO().withKernel(new CauchyKernel(8)).withC(5);
+        c = new BinarySMO().withKernel(new GeneralizedStudentTKernel(0.1));
+        c = new BinarySMO().withKernel(new InverseMultiQuadraticKernel(5));
         c.learn(iris, "class");
 
         Numeric x = Numeric.newSeq(new Minimum(iris.var(X)).value(), new Maximum(iris.var(X)).value(), 0.1).withName(X);

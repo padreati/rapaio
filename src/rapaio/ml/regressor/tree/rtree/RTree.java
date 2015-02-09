@@ -22,15 +22,13 @@ package rapaio.ml.regressor.tree.rtree;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.VarRange;
+import rapaio.ml.common.VarSelector;
 import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.RResult;
 import rapaio.ml.regressor.boost.gbt.BTRegressor;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
 import rapaio.printer.Printer;
 import rapaio.util.Pair;
-
-import java.util.List;
 
 /**
  * Implements a regression tree.
@@ -47,6 +45,7 @@ public class RTree extends AbstractRegressor implements BTRegressor {
     RTreeTestFunction function = RTreeTestFunction.VARIANCE_SUM;
     RTreeSplitter splitter = RTreeSplitter.REMAINS_IGNORED;
     RTreePredictor predictor = RTreePredictor.STANDARD;
+    VarSelector varSelector = new VarSelector.Standard();
 
     // tree root node
     private RTreeNode root;
@@ -77,8 +76,7 @@ public class RTree extends AbstractRegressor implements BTRegressor {
                 .withNominalMethod(RTreeNominalMethod.BINARY)
                 .withNumericMethod(RTreeNumericMethod.BINARY)
                 .withSplitter(RTreeSplitter.REMAINS_TO_RANDOM)
-                .withMinCount(2)
-                ;
+                .withMinCount(2);
     }
 
     @Override
@@ -88,7 +86,7 @@ public class RTree extends AbstractRegressor implements BTRegressor {
 
     @Override
     public BTRegressor newInstance() {
-        return (BTRegressor) new RTree()
+        return new RTree()
                 .withMinCount(minCount)
                 .withNumericMethod(numericMethod)
                 .withNominalMethod(nominalMethod)
@@ -120,6 +118,11 @@ public class RTree extends AbstractRegressor implements BTRegressor {
         sb.append("predictor=").append(predictor.name());
         sb.append(")");
         return sb.toString();
+    }
+
+    public RTree withVarSelector(VarSelector varSelector) {
+        this.varSelector = varSelector;
+        return this;
     }
 
     public RTree withMinCount(int minCount) {
@@ -158,18 +161,19 @@ public class RTree extends AbstractRegressor implements BTRegressor {
     @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
 
-        List<String> targetVarList = new VarRange(targetVarNames).parseVarNames(df);
-        if (targetVarList.isEmpty()) {
+        prepareLearning(df, weights, targetVarNames);
+
+        if (targetNames().length == 0) {
             throw new IllegalArgumentException("tree classifier must specify a target variable");
         }
-        if (targetVarList.size() > 1) {
+        if (targetNames().length > 1) {
             throw new IllegalArgumentException("tree classifier can't fit more than one target variable");
         }
-        this.targetNames = targetVarList.toArray(new String[targetVarList.size()]);
 
         rows = df.rowCount();
 
         root = new RTreeNode(null, "root", spot -> true);
+        this.varSelector.initialize(inputNames());
         root.learn(this, df, weights, maxDepth);
     }
 

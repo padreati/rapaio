@@ -61,13 +61,14 @@ public class OLSRegressor extends AbstractRegressor {
     @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
 
-        List<String> list = new VarRange(targetVarNames).parseVarNames(df);
-        if (list.isEmpty()) {
+        prepareLearning(df, weights, targetVarNames);
+        if (targetNames().length == 0) {
             throw new IllegalArgumentException("OLS must specify at least one target variable name");
         }
-        targetNames = list.toArray(new String[list.size()]);
+
         predictors = Arrays.stream(df.varNames())
-                .filter(c -> !list.contains(c) && df.var(c).type().isNumeric())
+                .filter(c -> !Arrays.asList(df.varNames()).contains(c))
+                .filter(c -> df.var(c).type().isNumeric())
                 .collect(Collectors.toList());
 
         Matrix X = buildX(df);
@@ -83,7 +84,7 @@ public class OLSRegressor extends AbstractRegressor {
     }
 
     private Matrix buildY(Frame df) {
-        return new Matrix(Arrays.stream(targetNames)
+        return new Matrix(Arrays.stream(targetNames())
                 .map(colName -> (Numeric) df.var(colName))
                 .collect(Collectors.toList())
         );
@@ -104,7 +105,7 @@ public class OLSRegressor extends AbstractRegressor {
     @Override
     public RResultOLS predict(Frame df, boolean withResiduals) {
         RResultOLS rp = RResultOLS.newEmpty(this, df, withResiduals);
-        Arrays.stream(targetNames).forEach(rp::addTarget);
+        Arrays.stream(targetNames()).forEach(rp::addTarget);
         for (int i = 0; i < df.rowCount(); i++) {
             double acc = 0;
             for (int k = 0; k < predictors.size(); k++) {

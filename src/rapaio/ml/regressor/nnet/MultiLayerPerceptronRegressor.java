@@ -23,14 +23,12 @@ package rapaio.ml.regressor.nnet;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.VarRange;
 import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.RResult;
 import rapaio.ml.regressor.Regressor;
 import rapaio.printer.Printer;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -42,7 +40,6 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor {
     private TFunction function = TFunction.SIGMOID;
     private double learningRate = 1.0;
 
-    String[] inputNames;
     int runs = 0;
 
     @Override
@@ -130,38 +127,35 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor {
 
     @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
+        prepareLearning(df, weights, targetVarNames);
 
-        List<String> list = new VarRange(targetVarNames).parseVarNames(df);
-
-        this.targetNames = list.toArray(new String[list.size()]);
-        this.inputNames = new String[df.varCount() - targetNames.length];
-        int pos = 0;
         for (String varName : df.varNames()) {
-            if (list.contains(varName)) continue;
-            if (df.var(varName).type().isNominal()) continue;
-            inputNames[pos++] = varName;
+            if (df.var(varName).type().isNominal()) {
+                throw new IllegalArgumentException("perceptrons can't learn nominal features");
+            }
         }
 
         // validate
 
-        if (this.targetNames.length != net[net.length - 1].length) {
+        if (this.targetNames().length != net[net.length - 1].length) {
             throw new IllegalArgumentException("target var names does not fit output nodes");
         }
-        if (inputNames.length != net[0].length - 1) {
+        if (inputNames().length != net[0].length - 1) {
             throw new IllegalArgumentException("input var names does not fit input nodes");
         }
 
         // learn network
 
+        int pos;
         for (int kk = 0; kk < runs; kk++) {
             pos = RandomSource.nextInt(df.rowCount());
 
             // set inputs
-            for (int i = 0; i < inputNames.length; i++) {
-                if (df.missing(pos, inputNames[i])) {
+            for (int i = 0; i < inputNames().length; i++) {
+                if (df.missing(pos, inputName(i))) {
                     throw new RuntimeException("detected NaN in input values");
                 }
-                net[0][i + 1].value = df.value(pos, inputNames[i]);
+                net[0][i + 1].value = df.value(pos, inputName(i));
             }
 
             // feed forward
@@ -187,7 +181,7 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor {
 
             int last = net.length - 1;
             for (int i = 0; i < net[last].length; i++) {
-                double expected = df.value(pos, targetNames[i]);
+                double expected = df.value(pos, targetName(i));
                 double actual = net[last][i].value;
                 net[last][i].gamma = function.differential(actual) * (expected - actual);
             }
@@ -217,15 +211,15 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor {
     @Override
     public RResult predict(final Frame df, final boolean withResiduals) {
         RResult pred = RResult.newEmpty(this, df, withResiduals);
-        for (String targetName : targetNames) {
+        for (String targetName : targetNames()) {
             pred.addTarget(targetName);
         }
 
         for (int pos = 0; pos < df.rowCount(); pos++) {
 
             // set inputs
-            for (int i = 0; i < inputNames.length; i++) {
-                net[0][i + 1].value = df.value(pos, inputNames[i]);
+            for (int i = 0; i < inputNames().length; i++) {
+                net[0][i + 1].value = df.value(pos, inputName(i));
             }
 
             // feed forward
@@ -240,8 +234,8 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor {
                     }
                 }
             }
-            for (int i = 0; i < targetNames.length; i++) {
-                pred.fit(targetNames[i]).setValue(pos, net[net.length - 1][i].value);
+            for (int i = 0; i < targetNames().length; i++) {
+                pred.fit(targetName(i)).setValue(pos, net[net.length - 1][i].value);
             }
         }
         pred.buildComplete();

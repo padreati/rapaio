@@ -23,12 +23,9 @@ package rapaio.ml.regressor.simple;
 import rapaio.core.stat.Mean;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.VarRange;
 import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.RResult;
 import rapaio.ml.regressor.Regressor;
-
-import java.util.List;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -54,11 +51,10 @@ public class L2Regressor extends AbstractRegressor {
 
     @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
-        List<String> list = new VarRange(targetVarNames).parseVarNames(df);
-        targetNames = list.toArray(new String[list.size()]);
-        means = new double[targetNames.length];
-        for (int i = 0; i < targetNames.length; i++) {
-            double mean = new Mean(df.var(targetNames[i])).value();
+        prepareLearning(df, weights, targetVarNames);
+        means = new double[targetNames().length];
+        for (int i = 0; i < targetNames().length; i++) {
+            double mean = new Mean(df.var(targetName(i))).value();
             means[i] = mean;
         }
     }
@@ -66,12 +62,12 @@ public class L2Regressor extends AbstractRegressor {
     @Override
     public RResult predict(final Frame df, final boolean withResiduals) {
         RResult pred = RResult.newEmpty(this, df, withResiduals);
-        for (String targetName : targetNames) {
+        for (String targetName : targetNames()) {
             pred.addTarget(targetName);
         }
-        for (int i = 0; i < targetNames.length; i++) {
+        for (int i = 0; i < targetNames().length; i++) {
             double mean = means[i];
-            pred.fit(targetNames[i]).stream().forEach(s -> s.setValue(mean));
+            pred.fit(targetName(i)).stream().forEach(s -> s.setValue(mean));
         }
         pred.buildComplete();
         return pred;

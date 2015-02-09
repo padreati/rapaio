@@ -23,12 +23,9 @@ package rapaio.ml.regressor.simple;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.VarRange;
 import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.RResult;
 import rapaio.ml.regressor.Regressor;
-
-import java.util.List;
 
 /**
  * Simple regressor which predicts with the median value of the target columns.
@@ -62,11 +59,10 @@ public class L1Regressor extends AbstractRegressor {
 
     @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
-        List<String> varNames = new VarRange(targetVarNames).parseVarNames(df);
-        this.targetNames = varNames.toArray(new String[varNames.size()]);
-        medians = new double[targetNames.length];
-        for (int i = 0; i < targetNames.length; i++) {
-            String target = targetNames[i];
+        prepareLearning(df, weights, targetVarNames);
+        medians = new double[targetNames().length];
+        for (int i = 0; i < targetNames().length; i++) {
+            String target = targetName(i);
             medians[i] = new Quantiles(df.var(target), new double[]{0.5}).values()[0];
         }
     }
@@ -74,11 +70,11 @@ public class L1Regressor extends AbstractRegressor {
     @Override
     public RResult predict(final Frame df, final boolean withResiduals) {
         RResult pred = RResult.newEmpty(this, df, withResiduals);
-        for (String targetName : targetNames) {
+        for (String targetName : targetNames()) {
             pred.addTarget(targetName);
         }
-        for (int i = 0; i < targetNames.length; i++) {
-            String target = targetNames[i];
+        for (int i = 0; i < targetNames().length; i++) {
+            String target = targetName(i);
             double median = medians[i];
             pred.fit(target).stream().forEach(s -> s.setValue(median));
         }

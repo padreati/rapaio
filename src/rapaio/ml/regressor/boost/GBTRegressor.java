@@ -127,12 +127,11 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
     @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
 
-        List<String> list = new VarRange(targetVarNames).parseVarNames(df);
-        if (list.size() != 1) {
+        prepareLearning(df, weights, targetVarNames);
+
+        if (targetVarNames.length != 1) {
             throw new IllegalArgumentException("GBT accepts a single target variable");
         }
-
-        this.targetNames = new String[]{list.get(0)};
 
         Var y = df.var(firstTargetName());
         Frame x = df.removeVars(new VarRange(firstTargetName()));
@@ -213,14 +212,14 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
 
         // we have learned nothing before
 
-        if (targetNames == null) {
+        if (targetNames() == null) {
             learn(df, ignored, targetVarNames);
             return;
         }
 
         // we learned something that does not fit
 
-        if (!targetNames[0].equals(list.get(0))) {
+        if (!targetName(0).equals(list.get(0))) {
             throw new IllegalArgumentException("Incompatible previously fit");
         }
 
@@ -290,7 +289,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
     @Override
     public RResult predict(final Frame df, final boolean withResiduals) {
         RResult pred = RResult.newEmpty(this, df, withResiduals);
-        for (String targetName : targetNames) {
+        for (String targetName : targetNames()) {
             pred.addTarget(targetName);
         }
 

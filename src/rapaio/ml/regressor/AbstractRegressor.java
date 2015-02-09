@@ -20,7 +20,15 @@
 
 package rapaio.ml.regressor;
 
-import rapaio.ml.common.VarSelector;
+import rapaio.core.sample.Sampler;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarRange;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Abstract class needed to implement prerequisites for all regression algorithms.
@@ -29,22 +37,38 @@ import rapaio.ml.common.VarSelector;
  */
 public abstract class AbstractRegressor implements Regressor {
 
-    protected VarSelector varSelector = new VarSelector.Standard();
-    protected String[] targetNames;
+    private String[] inputNames;
+    private String[] targetNames;
+    private Sampler sampler = new Sampler.Identity();
 
     @Override
-    public VarSelector getVarSelector() {
-        return varSelector;
-    }
-
-    @Override
-    public Regressor withVarSelector(VarSelector varSelector) {
-        this.varSelector = varSelector;
-        return this;
+    public String[] inputNames() {
+        return inputNames;
     }
 
     @Override
     public String[] targetNames() {
         return targetNames;
+    }
+
+    @Override
+    public Sampler sampler() {
+        return sampler;
+    }
+
+    @Override
+    public AbstractRegressor withSampler(Sampler sampler) {
+        this.sampler = sampler;
+        return this;
+    }
+
+
+    public void prepareLearning(Frame df, Var weights, String... targetVarNames) {
+        List<String> targetVarsList = new VarRange(targetVarNames).parseVarNames(df);
+        this.targetNames = targetVarsList.toArray(new String[targetVarsList.size()]);
+
+        HashSet<String> targets = new HashSet<>(targetVarsList);
+        List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targets.contains(varName)).collect(Collectors.toList());
+        this.inputNames = inputs.toArray(new String[inputs.size()]);
     }
 }
