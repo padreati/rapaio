@@ -22,11 +22,15 @@ package rapaio.math.linear;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.math.linear.impl.SolidM;
+import rapaio.math.linear.impl.SolidV;
+
+import java.util.function.BiFunction;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
  */
-public final class MV {
+public final class LA {
 
     /**
      * Builds a new 0 filled matrix with given rows and cols
@@ -37,6 +41,10 @@ public final class MV {
      */
     public static M newMEmpty(int rowCount, int colCount) {
         return new SolidM(rowCount, colCount);
+    }
+
+    public static M newMWrapOf(int rowCount, int colCount, double... values) {
+        return new SolidM(rowCount, colCount, values);
     }
 
     /**
@@ -55,6 +63,16 @@ public final class MV {
         for (int i = 0; i < m.rowCount(); i++) {
             for (int j = 0; j < m.colCount(); j++) {
                 m.set(i, j, fill);
+            }
+        }
+        return m;
+    }
+
+    public static M newMFill(int rowCount, int colCount, BiFunction<Integer, Integer, Double> f) {
+        M m = new SolidM(rowCount, colCount);
+        for (int i = 0; i < rowCount; i++) {
+            for (int j = 0; j < colCount; j++) {
+                m.set(i, j, f.apply(i, j));
             }
         }
         return m;

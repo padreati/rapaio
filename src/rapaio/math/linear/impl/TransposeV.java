@@ -18,40 +18,43 @@
  *    limitations under the License.
  */
 
-package rapaio.math.linear;
+package rapaio.math.linear.impl;
+
+import rapaio.math.linear.V;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
  */
-public class SolidM implements M {
+public class TransposeV implements V {
 
-    private final int rowCount;
-    private final int colCount;
-    private final double[] values;
+    private final V ref;
 
-    SolidM(int rowCount, int colCount) {
-        this.rowCount = rowCount;
-        this.colCount = colCount;
-        this.values = new double[rowCount * colCount];
+    TransposeV(V ref) {
+        this.ref = ref;
     }
 
     @Override
     public int rowCount() {
-        return rowCount;
+        return ref.colCount();
     }
 
     @Override
     public int colCount() {
-        return colCount;
+        return ref.rowCount();
     }
 
     @Override
     public double get(int i, int j) {
-        return values[i * colCount + j];
+        return ref.get(j, i);
     }
 
     @Override
     public void set(int i, int j, double value) {
-        values[i * colCount + j] = value;
+        ref.set(j, i, value);
+    }
+
+    @Override
+    public V t() {
+        return ref;
     }
 }

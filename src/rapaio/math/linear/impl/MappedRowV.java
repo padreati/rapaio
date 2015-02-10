@@ -18,41 +18,47 @@
  *    limitations under the License.
  */
 
-package rapaio.math.linear;
+package rapaio.math.linear.impl;
+
+import rapaio.math.linear.M;
+import rapaio.math.linear.V;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/9/15.
  */
-public class TransposeV implements V {
+public class MappedRowV implements V {
 
-    private final V ref;
+    private final M ref;
+    private final int row;
 
-    TransposeV(V ref) {
+    public MappedRowV(M ref, int row) {
         this.ref = ref;
+        this.row = row;
     }
 
     @Override
     public int rowCount() {
-        return ref.colCount();
+        return 1;
     }
 
     @Override
     public int colCount() {
-        return ref.rowCount();
+        return ref.colCount();
     }
 
     @Override
     public double get(int i, int j) {
-        return ref.get(j, i);
+        if (i == 0) {
+            return ref.get(row, j);
+        }
+        throw new IllegalArgumentException("Operation with given arguments is not available on mapped row vectors.");
     }
 
     @Override
     public void set(int i, int j, double value) {
-        ref.set(j, i, value);
-    }
-
-    @Override
-    public V t() {
-        return ref;
+        if (i == 0) {
+            ref.set(row, j, value);
+        }
+        throw new IllegalArgumentException("Operation with given arguments not available on mapped row vectors.");
     }
 }

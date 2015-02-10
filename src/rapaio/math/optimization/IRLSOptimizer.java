@@ -22,9 +22,9 @@ package rapaio.math.optimization;
 
 import rapaio.data.Numeric;
 import rapaio.data.Var;
+import rapaio.math.linear.LA;
 import rapaio.math.linear.LUDecomposition;
 import rapaio.math.linear.M;
-import rapaio.math.linear.MV;
 import rapaio.math.linear.V;
 
 import java.util.List;
@@ -64,8 +64,8 @@ public class IRLSOptimizer {
     public Numeric optimize(double eps, int iterationLimit, Function<Var, Double> f,
                             Function<Var, Double> fd, Numeric vars, List<Var> inputs, Numeric outputs) {
 
-        hessian = MV.newMEmpty(vars.rowCount(), vars.rowCount());
-        coef = MV.newMEmpty(inputs.size(), vars.rowCount());
+        hessian = LA.newMEmpty(vars.rowCount(), vars.rowCount());
+        coef = LA.newMEmpty(inputs.size(), vars.rowCount());
         for (int i = 0; i < inputs.size(); i++) {
             Var x_i = inputs.get(i);
             coef.set(i, 0, 1.0);
@@ -73,9 +73,9 @@ public class IRLSOptimizer {
                 coef.set(i, j, x_i.value(j - 1));
         }
 
-        derivatives = MV.newVEmpty(inputs.size());
-        err = MV.newVEmpty(outputs.rowCount());
-        grad = MV.newVEmpty(vars.rowCount());
+        derivatives = LA.newVEmpty(inputs.size());
+        err = LA.newVEmpty(outputs.rowCount());
+        grad = LA.newVEmpty(vars.rowCount());
 
         double maxChange = Double.MAX_VALUE;
         while (!Double.isNaN(maxChange) && maxChange > eps && iterationLimit-- > 0) {

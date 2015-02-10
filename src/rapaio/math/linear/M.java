@@ -23,6 +23,7 @@ package rapaio.math.linear;
 import rapaio.WS;
 import rapaio.core.MathBase;
 import rapaio.core.Printable;
+import rapaio.math.linear.impl.*;
 import rapaio.printer.Printer;
 
 import java.io.Serializable;
@@ -77,7 +78,7 @@ public interface M extends Serializable, Printable {
     }
 
     default V mapRow(int index) {
-        return new MappedV(this, true, index);
+        return new MappedRowV(this, index);
     }
 
     default M rangeRows(int start, int end) {
@@ -111,7 +112,7 @@ public interface M extends Serializable, Printable {
     }
 
     default V mapCol(int index) {
-        return new MappedV(this, false, index);
+        return new MappedColV(this, index);
     }
 
     default M rangeCols(int start, int end) {

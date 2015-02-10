@@ -18,9 +18,10 @@
  *    limitations under the License.
  */
 
-package rapaio.math.linear;
+package rapaio.math.linear.impl;
 
 import rapaio.data.Var;
+import rapaio.math.linear.V;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
@@ -31,13 +32,13 @@ public class SolidV implements V {
     final int cols;
     final double[] data;
 
-    SolidV(int rows) {
+    public SolidV(int rows) {
         this.rows = rows;
         this.cols = 1;
         this.data = new double[rows];
     }
 
-    SolidV(Var var) {
+    public SolidV(Var var) {
         this.rows = var.rowCount();
         this.cols = 1;
         this.data = new double[var.rowCount()];

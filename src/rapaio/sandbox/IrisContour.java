@@ -26,25 +26,20 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.data.*;
-import rapaio.data.Frame;
 import rapaio.data.grid.MeshGrid1D;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
-import rapaio.graphics.opt.BiColorGradient;
+import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.plot.MeshContour;
 import rapaio.graphics.plot.Points;
 import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.classifier.svm.BinarySMO;
-import rapaio.ml.classifier.svm.kernel.CauchyKernel;
-import rapaio.ml.classifier.svm.kernel.GeneralizedStudentTKernel;
-import rapaio.ml.classifier.svm.kernel.InverseMultiQuadraticKernel;
-import rapaio.ml.classifier.svm.kernel.RBFKernel;
+import rapaio.ml.classifier.svm.kernel.MinKernel;
 import rapaio.printer.IdeaPrinter;
 import rapaio.ws.Summary;
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -90,12 +85,13 @@ public class IrisContour {
         Summary.summary(iris);
 
         Classifier c = new BinaryLogistic().withTol(1e-8).withMaxRuns(100_000);
-        c = new BinarySMO().withKernel(new RBFKernel(1)).withC(1.5);
-        c = new BinarySMO().withKernel(new RBFKernel(4)).withC(1.5);
-        c = new BinarySMO().withKernel(new RBFKernel(20)).withC(1.5);
-        c = new BinarySMO().withKernel(new CauchyKernel(8)).withC(5);
-        c = new BinarySMO().withKernel(new GeneralizedStudentTKernel(0.1));
-        c = new BinarySMO().withKernel(new InverseMultiQuadraticKernel(5));
+//        c = new BinarySMO().withKernel(new RBFKernel(1)).withC(1.5);
+//        c = new BinarySMO().withKernel(new RBFKernel(4)).withC(1.5);
+//        c = new BinarySMO().withKernel(new RBFKernel(20)).withC(1.5);
+//        c = new BinarySMO().withKernel(new CauchyKernel(8)).withC(5);
+//        c = new BinarySMO().withKernel(new GeneralizedStudentTKernel(0.1));
+//        c = new BinarySMO().withKernel(new InverseMultiQuadraticKernel(5));
+        c = new BinarySMO().withKernel(new MinKernel());
         c.learn(iris, "class");
 
         Numeric x = Numeric.newSeq(new Minimum(iris.var(X)).value(), new Maximum(iris.var(X)).value(), 0.1).withName(X);
@@ -124,23 +120,24 @@ public class IrisContour {
                         1 / (1 +
                                 Math.exp(cr2.firstDensity().value(pos, 1) -
                                         cr2.firstDensity().value(pos, 2))));
+//                mg1.setValue(i, j, cr2.firstDensity().value(pos, 1));
                 pos++;
             }
         }
 
         Plot p = new Plot();
-        double[] qq = Numeric.newSeq(0, 1, 0.05).stream().mapToDouble().toArray();
+        double[] qq = Numeric.newSeq(0, 1, 0.02).stream().mapToDouble().toArray();
         qq[qq.length - 1] = Double.POSITIVE_INFINITY;
-        BiColorGradient bcg = new BiColorGradient(new Color(0, 128, 255), new Color(255, 128, 0), qq);
+        ColorGradient bcg = ColorGradient.newHueGradient(qq);
         for (int i = 0; i < qq.length - 1; i++) {
-            p.add(new MeshContour(mg1.compute(qq[i], qq[i + 1]), true, true)
-                            .lwd(0.3f)
+            p.add(new MeshContour(mg1.compute(qq[i], qq[i + 1]), false, true)
+                            .lwd(0.1f)
                             .color(bcg.getColor(i))
             );
         }
 //        p.add(new MeshContour(mg1.compute(0.5, Double.POSITIVE_INFINITY), true, false)
 //                .lwd(1.2f).alpha(0.1f));
-        p.add(new Points(iris.var(0), iris.var(1)).color(iris.var(2)));
+        p.add(new Points(iris.var(0), iris.var(1)).color(iris.var(2)).pch(2));
 
         draw(p);
     }

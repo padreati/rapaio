@@ -63,7 +63,7 @@ public class LUDecomposition implements Serializable, Printable {
                     }
                     lu.pivSign = 1;
                     V LUrowi;
-                    V LUcolj = MV.newVEmpty(lu.m);
+                    V LUcolj = LA.newVEmpty(lu.m);
 
                     // Outer loop.
                     for (int j = 0; j < lu.n; j++) {
@@ -216,7 +216,7 @@ public class LUDecomposition implements Serializable, Printable {
      * @return L
      */
     public M getL() {
-        M L = MV.newMEmpty(m, n);
+        M L = LA.newMEmpty(m, n);
         for (int i = 0; i < m; i++) {
             for (int j = 0; j <= i && j < n; j++) {
                 if (i > j) {
@@ -235,7 +235,7 @@ public class LUDecomposition implements Serializable, Printable {
      * @return U
      */
     public M getU() {
-        M U = MV.newMEmpty(n, n);
+        M U = LA.newMEmpty(n, n);
         for (int i = 0; i < n; i++) {
             for (int j = i; j < n; j++) {
                 if (i <= j) {

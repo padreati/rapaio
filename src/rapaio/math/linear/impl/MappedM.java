@@ -18,7 +18,9 @@
  *    limitations under the License.
  */
 
-package rapaio.math.linear;
+package rapaio.math.linear.impl;
+
+import rapaio.math.linear.M;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
@@ -29,7 +31,7 @@ public class MappedM implements M {
     private final int[] rowIndexes;
     private final int[] colIndexes;
 
-    MappedM(M ref, boolean byRow, int... indexes) {
+    public MappedM(M ref, boolean byRow, int... indexes) {
         if (byRow) {
             this.ref = ref;
             this.rowIndexes = indexes;

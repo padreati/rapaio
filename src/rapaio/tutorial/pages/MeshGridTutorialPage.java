@@ -30,7 +30,7 @@ import rapaio.data.Frame;
 import rapaio.data.grid.MeshGrid1D;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
-import rapaio.graphics.opt.BiColorGradient;
+import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.plot.MeshContour;
 import rapaio.graphics.plot.Points;
 import rapaio.ml.classifier.CResult;
@@ -162,7 +162,7 @@ public class MeshGridTutorialPage implements TutorialPage {
         Var q = Numeric.newSeq(0, 1, 0.1);
         double[] qq = mg.quantiles(q.stream().mapToDouble().toArray());
         qq[qq.length - 1] = Double.POSITIVE_INFINITY;
-        BiColorGradient gradient = new BiColorGradient(new Color(0, 0, 200), new Color(255, 255, 255), q.stream().mapToDouble().toArray());
+        ColorGradient gradient = ColorGradient.newBiColorGradient(new Color(0, 0, 200), new Color(255, 255, 255), q.stream().mapToDouble().toArray());
 
         for (int i = 0; i < q.rowCount() - 1; i++) {
             p.add(new MeshContour(mg.compute(qq[i], qq[i + 1]), true, true).color(gradient.getColor(i)).lwd(0.2f));
@@ -174,7 +174,7 @@ public class MeshGridTutorialPage implements TutorialPage {
                 "        Var q = Numeric.newSeq(0, 1, 0.1);\n" +
                 "        double[] qq = mg.quantiles(q.stream().mapToDouble().toArray());\n" +
                 "        qq[qq.length - 1] = Double.POSITIVE_INFINITY;\n" +
-                "        BiColorGradient gradient = new BiColorGradient(new Color(0, 0, 200), new Color(255, 255, 255), q.stream().mapToDouble().toArray());\n" +
+                "        ColorGradient gradient = ColorGradient.newBiColorGradient(new Color(0, 0, 200), new Color(255, 255, 255), q.stream().mapToDouble().toArray());" +
                 "\n" +
                 "        for (int i = 0; i < q.rowCount() - 1; i++) {\n" +
                 "            p.add(new MeshContour(mg.compute(qq[i], qq[i + 1]), true, true).color(gradient.getColor(i)).lwd(0.2f));\n" +
@@ -253,7 +253,7 @@ public class MeshGridTutorialPage implements TutorialPage {
 
         p = new Plot();
         qq = mg1.quantiles(Numeric.newSeq(0, 1, 0.1).stream().mapToDouble().toArray());
-        gradient = new BiColorGradient(new Color(0, 0, 200), new Color(255, 255, 255), Numeric.newSeq(0, 1, 0.1).stream().mapToDouble().toArray());
+        gradient = ColorGradient.newBiColorGradient(new Color(0, 0, 200), new Color(255, 255, 255), Numeric.newSeq(0, 1, 0.1).stream().mapToDouble().toArray());
         for (int i = 0; i < qq.length - 1; i++) {
             p.add(new MeshContour(mg1.compute(qq[i], qq[i + 1]), true, true).lwd(0.3f).color(gradient.getColor(i)));
         }
@@ -335,7 +335,7 @@ public class MeshGridTutorialPage implements TutorialPage {
         p = new Plot();
         double[] pp = new double[]{0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1};
         qq = mg.quantiles(pp);
-        gradient = new BiColorGradient(new Color(84, 112, 240), new Color(255, 255, 255), pp);
+        gradient = ColorGradient.newBiColorGradient(new Color(84, 112, 240), new Color(255, 255, 255), pp);
         for (int i = 0; i < qq.length - 1; i++) {
             p.add(new MeshContour(mg.compute(qq[i], qq[i + 1]), true, true).color(gradient.getColor(i)).lwd(0.2f));
         }
@@ -408,7 +408,7 @@ public class MeshGridTutorialPage implements TutorialPage {
                 "        p = new Plot();\n" +
                 "        double[] pp = new double[]{0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1};\n" +
                 "        qq = mg.quantiles(pp);\n" +
-                "        gradient = new BiColorGradient(new Color(84, 112, 240), new Color(255, 255, 255), pp);\n" +
+                "        gradient = ColorGradient.newBiColorGradient(new Color(84, 112, 240), new Color(255, 255, 255), pp);\n" +
                 "        for (int i = 0; i < qq.length - 1; i++) {\n" +
                 "            p.add(new MeshContour(mg.compute(qq[i], qq[i + 1]), true, true).color(gradient.getColor(i)).lwd(0.2f));\n" +
                 "        }\n" +

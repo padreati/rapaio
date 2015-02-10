@@ -54,6 +54,20 @@ final class StandardPchPalette implements Mapping {
     private final java.util.List<Drawer> pchs = new ArrayList<Drawer>() {{
         add((g2d, x, y, sz) -> g2d.draw(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2)));
         add((g2d, x, y, sz) -> g2d.fill(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2)));
+        add((g2d, x, y, sz) -> {
+            Color fill = g2d.getColor();
+            BasicStroke stroke = null;
+            if (g2d.getStroke() instanceof BasicStroke)
+                stroke = (BasicStroke) g2d.getStroke();
+            g2d.fill(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2));
+            if (g2d.getStroke() instanceof BasicStroke)
+                g2d.setStroke(new BasicStroke(1f));
+            g2d.setColor(Color.BLACK);
+            g2d.draw(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2));
+            g2d.setColor(fill);
+            if (g2d.getStroke() instanceof BasicStroke)
+                g2d.setStroke(stroke);
+        });
     }};
 
     @Override

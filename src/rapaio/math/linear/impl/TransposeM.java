@@ -18,52 +18,42 @@
  *    limitations under the License.
  */
 
-package rapaio.math.linear;
+package rapaio.math.linear.impl;
+
+import rapaio.math.linear.M;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
  */
-public class MappedV implements V {
-
+public class TransposeM implements M {
     private final M ref;
-    private final boolean isRow;
-    private final int index;
 
-    MappedV(M ref, boolean isRow, int index) {
+    public TransposeM(M ref) {
         this.ref = ref;
-        this.isRow = isRow;
-        this.index = index;
     }
 
     @Override
     public int rowCount() {
-        return isRow ? 1 : ref.rowCount();
+        return ref.colCount();
     }
 
     @Override
     public int colCount() {
-        return isRow ? ref.colCount() : 1;
+        return ref.rowCount();
     }
 
     @Override
     public double get(int i, int j) {
-        if (isRow && i == 0) {
-            return ref.get(index, j);
-        }
-        if (!isRow && j == 0) {
-            return ref.get(i, index);
-        }
-        throw new IllegalArgumentException("This operation is valid only for mapped vectors");
+        return ref.get(j, i);
     }
 
     @Override
     public void set(int i, int j, double value) {
-        if (isRow && i == 0) {
-            ref.set(index, j, value);
-        }
-        if (!isRow && j == 0) {
-            ref.set(i, index, value);
-        }
-        throw new IllegalArgumentException("This operation is valid only for mapped vectors");
+        ref.set(j, i, value);
+    }
+
+    @Override
+    public M t() {
+        return ref;
     }
 }

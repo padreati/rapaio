@@ -20,11 +20,12 @@
 
 package rapaio.math.linear;
 
-import rapaio.data.Frame;
-import rapaio.datasets.Datasets;
+import rapaio.printer.IdeaPrinter;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+
+import static rapaio.WS.setPrinter;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
@@ -33,24 +34,7 @@ public class SandBoxM {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
 
-        Frame df = Datasets.loadIrisDataset().removeVars("class");
+        setPrinter(new IdeaPrinter());
 
-        M m = MV.newMCopyOf(df);
-        m.summary();
-
-        long start = System.currentTimeMillis();
-        LUDecomposition lu1 = new LUDecomposition(m);
-        System.out.println((System.currentTimeMillis() - start) / 1000 + " seconds");
-        lu1.summary();
-
-        start = System.currentTimeMillis();
-        LUDecomposition lu2 = new LUDecomposition(m, LUDecomposition.Method.GAUSSIAN_ELIMINATION);
-        System.out.println((System.currentTimeMillis() - start) / 1000 + " seconds");
-        lu2.summary();
-
-        System.out.println(lu1.getL().isEqual(lu2.getL()));
-        System.out.println(lu1.getU().isEqual(lu2.getU()));
-
-        System.out.println(lu1.getU().det());
     }
 }
