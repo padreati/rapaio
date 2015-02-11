@@ -4,6 +4,8 @@
  * http://www.apache.org/licenses/
  *
  *    Copyright 2013 Aurelian Tutuianu
+ *    Copyright 2014 Aurelian Tutuianu
+ *    Copyright 2015 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -37,7 +39,7 @@ import java.util.function.Function;
 public class BinaryLogistic extends AbstractClassifier {
 
     private Numeric coef;
-    private int maxRuns = 10_000;
+    private int maxRuns = 1_000_000;
     private double tol = 1e-5;
 
     @Override
@@ -112,6 +114,10 @@ public class BinaryLogistic extends AbstractClassifier {
     @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
         prepareLearning(df, weights, targetVarNames);
+
+        if (df.stream().complete().count() != df.rowCount()) {
+            throw new IllegalArgumentException("Incomplete data set is not allowed in binary logistic");
+        }
 
         List<Var> inputs = new ArrayList<>(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {

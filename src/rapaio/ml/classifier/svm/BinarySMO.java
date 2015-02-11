@@ -4,6 +4,8 @@
  * http://www.apache.org/licenses/
  *
  *    Copyright 2013 Aurelian Tutuianu
+ *    Copyright 2014 Aurelian Tutuianu
+ *    Copyright 2015 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -51,23 +53,22 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     protected int iLow, iUp; // indices for bLow and bUp
 
     // class indices
-    protected int cl1 = 1;
-    protected int cl2 = 2;
-    protected int maxRuns = Integer.MAX_VALUE;
+    private int classIndex1 = 1;
+    private int classIndex2 = 2;
+    private boolean oneVsAll = false;
+    private int maxRuns = Integer.MAX_VALUE;
 
-    protected double C = 1.0; // complexity parameter
-    protected double eps = 1e-12; // epsilon for rounding
-    protected double m_tol = 1e-3; // tolerance of accuracy
-    protected static double m_Del = 1000 * Double.MIN_VALUE; // precision constant for updating sets
+    private double C = 1.0; // complexity parameter
+    private double tol = 1e-3; // tolerance of accuracy
 
-    protected Frame train;
-    protected Var weights;
+    private Frame train;
+    private Var weights;
 
-    protected int classIndex;
+    private int targetIndex;
     /**
      * Weight vector for linear machine.
      */
-    protected double[] linear_weights;
+    private double[] linear_weights;
 
     /**
      * Variables to hold weight vector in sparse form.
@@ -100,11 +101,17 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
     @Override
     public String fullName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name()).append("{");
-
-        sb.append("}");
-        return sb.toString();
+        return name() +
+                "{" +
+                "sampler=" + sampler().name() + ", " +
+                "kernel=" + kernel.name() + ", " +
+                "C=" + Printer.formatDecShort.format(C) + ", " +
+                "tol=" + Printer.formatDecShort.format(tol) + ", " +
+                "classIndex1=" + classIndex1 + ", " +
+                "classIndex2=" + classIndex2 + ", " +
+                "oneVsAll=" + oneVsAll + ", " +
+                "maxRuns=" + maxRuns +
+                "}";
     }
 
     @Override
@@ -113,7 +120,10 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                 .withSampler(sampler())
                 .withKernel(kernel.newInstance())
                 .withC(C)
-                .withTol(m_tol)
+                .withTol(tol)
+                .withFirstClassIndex(classIndex1)
+                .withSecondClassIndex(classIndex2)
+                .withOneVsAll(oneVsAll)
                 .withMaxRuns(maxRuns);
     }
 
@@ -128,7 +138,36 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     }
 
     public BinarySMO withTol(double tol) {
-        this.m_tol = tol;
+        this.tol = tol;
+        return this;
+    }
+
+    /**
+     * Set target index of the first class.
+     */
+    public BinarySMO withFirstClassIndex(int classIndex1) {
+        this.classIndex1 = classIndex1;
+        return this;
+    }
+
+    /**
+     * Sets target index of the second class, used only when
+     * oneVsAll if false
+     */
+    public BinarySMO withSecondClassIndex(int classIndex2) {
+        this.classIndex2 = classIndex2;
+        return this;
+    }
+
+    /**
+     * If true then first class index is classified against
+     * all other target classes, if false than first class index
+     * is classified against second class index.
+     *
+     * @param oneVsAll true for one vs all classification
+     */
+    public BinarySMO withOneVsAll(boolean oneVsAll) {
+        this.oneVsAll = oneVsAll;
         return this;
     }
 
@@ -150,9 +189,22 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             throw new IllegalArgumentException("Binary classifiers can learn only one target variable");
         }
 
-        // filter out other classes
+        // process classes
 
-        Mapping map = df.stream().filter(s -> s.index(firstTargetName()) == cl1 || s.index(firstTargetName()) == cl2).collectMapping();
+        if (classIndex1 == classIndex2) {
+            throw new IllegalArgumentException("Indexes for first and second target " +
+                    "class labels are equal, which is not allowed.");
+        }
+
+        Mapping map;
+        if (!oneVsAll) {
+            map = df
+                    .stream()
+                    .filter(s -> s.index(firstTargetName()) == classIndex1 || s.index(firstTargetName()) == classIndex2)
+                    .collectMapping();
+        } else {
+            map = Mapping.newRangeOf(0, df.rowCount());
+        }
         df = df.mapRows(map);
         weights = weights.mapRows(map);
 
@@ -195,10 +247,10 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         iUp = -1;
         iLow = -1;
         for (int i = 0; i < train.rowCount(); i++) {
-            if (df.var(firstTargetName()).index(i) == cl1) {
+            if (df.var(firstTargetName()).index(i) == classIndex1) {
                 target[i] = -1;
                 iLow = i;
-            } else if (df.var(firstTargetName()).index(i) == cl2) {
+            } else {
                 target[i] = 1;
                 iUp = i;
             }
@@ -228,7 +280,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         }
 
 
-        classIndex = df.varIndex(firstTargetName());
+        targetIndex = df.varIndex(firstTargetName());
 
         // If machine is linear, reserve space for weights
 
@@ -307,7 +359,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 //                            numChanged++;
 //                        }
 ////                        Is optimality on unbound vectors obtained?
-//                        if (bUp > bLow - 2 * m_tol) {
+//                        if (bUp > bLow - 2 * tol) {
 //                            numChanged = 0;
 //                            break;
 //                        }
@@ -317,7 +369,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                 //This is the code for Modification 2 from Keerthi et al.'s paper
                 boolean innerLoopSuccess = true;
                 numChanged = 0;
-                while ((bUp < bLow - 2 * m_tol) && innerLoopSuccess) {
+                while ((bUp < bLow - 2 * tol) && innerLoopSuccess) {
                     innerLoopSuccess = takeStep(iUp, iLow);
                     if (innerLoopSuccess) {
                         numChanged++;
@@ -387,21 +439,16 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         cr.addTarget(firstTargetName(), firstDict());
 
         for (int i = 0; i < df.rowCount(); i++) {
-            try {
-                double pred = predict(df, i);
-                if (MathBase.sm(pred, 0)) {
-                    cr.firstClasses().setIndex(i, cl1);
-                    cr.firstDensity().setValue(i, firstDict(cl1), -pred);
-                    cr.firstDensity().setValue(i, firstDict(cl2), pred);
-                } else {
-                    cr.firstClasses().setIndex(i, cl2);
-                    cr.firstDensity().setValue(i, firstDict(cl1), -pred);
-                    cr.firstDensity().setValue(i, firstDict(cl2), pred);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            double pred = predict(df, i);
+            if (MathBase.sm(pred, 0)) {
+                cr.firstClasses().setIndex(i, classIndex1);
+                cr.firstDensity().setValue(i, firstDict(classIndex1), -pred);
+                cr.firstDensity().setValue(i, firstDict(classIndex2), pred);
+            } else {
+                cr.firstClasses().setIndex(i, classIndex2);
+                cr.firstDensity().setValue(i, firstDict(classIndex1), -pred);
+                cr.firstDensity().setValue(i, firstDict(classIndex2), pred);
             }
-
         }
         return cr;
     }
@@ -420,7 +467,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             if (sparseWeights == null) {
                 int n1 = inputNames().length;
                 for (int p = 0; p < n1; p++) {
-                    if (p != classIndex) {
+                    if (p != targetIndex) {
                         result += linear_weights[p] * df.value(row, p);
                     }
                 }
@@ -431,7 +478,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                     int ind1 = p1;
                     int ind2 = sparseIndices[p2];
                     if (ind1 == ind2) {
-                        if (ind1 != classIndex) {
+                        if (ind1 != targetIndex) {
                             result += df.value(row, p1) * sparseWeights[p2];
                         }
                         p1++;
@@ -486,13 +533,13 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         // with i2...
         boolean optimal = true;
         if (I0.get(i2) || I1.get(i2) || I2.get(i2)) {
-            if (bLow - F2 > 2 * m_tol) {
+            if (bLow - F2 > 2 * tol) {
                 optimal = false;
                 i1 = iLow;
             }
         }
         if (I0.get(i2) || I3.get(i2) || I4.get(i2)) {
-            if (F2 - bUp > 2 * m_tol) {
+            if (F2 - bUp > 2 * tol) {
                 optimal = false;
                 i1 = iUp;
             }
@@ -566,6 +613,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         double a1, a2;
 
         // Check if second derivative is negative
+        double eps = 1e-12;
         if (eta < 0) {
 
             // Compute unconstrained maximum
@@ -605,6 +653,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         }
 
         // To prevent precision problems
+        double m_Del = 1000 * Double.MIN_VALUE;
         if (a2 > C2 - m_Del * C2) {
             a2 = C2;
         } else if (a2 <= m_Del * C2) {
@@ -686,12 +735,12 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         // Update weight vector to reflect change a1 and a2, if linear SVM
         if (kernel.isLinear()) {
             for (int p1 = 0; p1 < inputNames().length; p1++) {
-                if (p1 != classIndex) {
+                if (p1 != targetIndex) {
                     linear_weights[p1] += y1 * (a1 - alph1) * train.value(i1, p1);
                 }
             }
             for (int p2 = 0; p2 < inputNames().length; p2++) {
-                if (p2 != classIndex) {
+                if (p2 != targetIndex) {
                     linear_weights[p2] += y2 * (a2 - alph2) * train.value(i2, p2);
                 }
             }
@@ -772,23 +821,29 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             return;
         }
         try {
-            sb.append("BinarySMO\n\n");
+            sb.append("BinarySMO model\n");
+            sb.append("===============\n");
+            sb.append("**Parameters**\n");
+            sb.append(fullName()).append("\n\n");
 
+            sb.append("**Decision function**\n");
             // If machine linear, print weight vector
             if (kernel.isLinear()) {
-                sb.append("Machine linear: showing attribute weights, not support vectors.\n\n");
+                sb.append("Linear support vector: use attribute weights folding instead of kernel dot products.\n");
 
                 // We can assume that the weight vector is stored in sparse
                 // format because the classifier has been built
                 for (int i = 0; i < sparseWeights.length; i++) {
-                    if (sparseIndices[i] != classIndex) {
+                    if (sparseIndices[i] != targetIndex) {
                         if (printed > 0) {
-                            sb.append(" + ");
+                            if (sparseWeights[i] >= 0)
+                                sb.append(" + ");
+                            else sb.append(" - ");
                         } else {
                             sb.append("   ");
                         }
-                        sb.append(Printer.formatDecShort.format(sparseWeights[i])).append(" * ");
-                        sb.append("var with index=").append(sparseIndices[i]).append(", name=").append(inputNames(sparseIndices[i])).append("\n");
+                        sb.append(Printer.formatDecLong.format(Math.abs(sparseWeights[i]))).append(" * ");
+                        sb.append("[").append(inputNames(sparseIndices[i])).append("]\n");
                         printed++;
                     }
                 }
@@ -799,30 +854,32 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                         if (target[i] == 1) {
                             if (printed > 0) {
                                 sb.append(" + ");
+                            } else {
+                                sb.append("   ");
                             }
                         } else {
                             sb.append(" - ");
                         }
-                        sb.append(Printer.formatDecLong.format(val)).append(" * <");
+                        sb.append(Printer.formatDecLong.format(val)).append(" * <[");
                         for (int j = 0; j < inputNames().length; j++) {
                             sb.append(Printer.formatDecShort.format(train.value(i, inputNames()[j])));
                             if (j != inputNames().length - 1) {
-                                sb.append(" ");
+                                sb.append(",");
                             }
                         }
-                        sb.append("> * X]\n");
+                        sb.append("], X>\n");
                         printed++;
                     }
                 }
             }
             if (b > 0) {
-                sb.append(" - " + Printer.formatDecShort.format(b));
+                sb.append(" - ").append(Printer.formatDecLong.format(b));
             } else {
-                sb.append(" + " + Printer.formatDecShort.format(-b));
+                sb.append(" + ").append(Printer.formatDecLong.format(-b));
             }
 
             if (!kernel.isLinear()) {
-                sb.append("\n\nNumber of support vectors: " + supportVectors.cardinality());
+                sb.append("\n\nNumber of support vectors: ").append(supportVectors.cardinality());
             }
 //            int numEval = 0;
 //            int numCacheHits = -1;

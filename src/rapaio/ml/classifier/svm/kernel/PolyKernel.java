@@ -4,6 +4,8 @@
  * http://www.apache.org/licenses/
  *
  *    Copyright 2013 Aurelian Tutuianu
+ *    Copyright 2014 Aurelian Tutuianu
+ *    Copyright 2015 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -22,6 +24,7 @@ package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.core.MathBase;
 import rapaio.data.Frame;
+import rapaio.printer.Printer;
 
 /**
  * The Polynomial kernel is a non-stationary kernel. Polynomial kernels
@@ -63,6 +66,15 @@ public class PolyKernel extends AbstractKernel {
 
     public PolyKernel(double exponent, double bias) {
         this(exponent, bias, 1.0);
+    }
+
+    @Override
+    public String name() {
+        return "PolyKernel(" +
+                "exp=" + Printer.formatDecShort.format(exponent) + "," +
+                "bias=" + Printer.formatDecShort.format(bias) + "," +
+                "slope=" + Printer.formatDecShort.format(slope) +
+                ")";
     }
 
     public PolyKernel(double exponent, double bias, double slope) {

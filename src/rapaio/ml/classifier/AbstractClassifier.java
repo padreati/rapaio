@@ -4,6 +4,8 @@
  * http://www.apache.org/licenses/
  *
  *    Copyright 2013 Aurelian Tutuianu
+ *    Copyright 2014 Aurelian Tutuianu
+ *    Copyright 2015 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -66,6 +68,9 @@ public abstract class AbstractClassifier implements Classifier {
 
     public void prepareLearning(Frame df, Var weights, String... targetVarNames) {
 
+        if (targetVarNames.length == 0) {
+            throw new IllegalArgumentException("At least a target var name should be specified at learning time.");
+        }
         List<String> targetVarsList = new VarRange(targetVarNames).parseVarNames(df);
         this.targetNames = targetVarsList.toArray(new String[targetVarsList.size()]);
         this.dict = new HashMap<>();

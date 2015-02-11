@@ -4,6 +4,8 @@
  * http://www.apache.org/licenses/
  *
  *    Copyright 2013 Aurelian Tutuianu
+ *    Copyright 2014 Aurelian Tutuianu
+ *    Copyright 2015 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -27,6 +29,12 @@ import rapaio.data.Frame;
  */
 public interface Kernel {
 
+    Kernel newInstance();
+
+    default String name() {
+        return "not implemented";
+    }
+
     boolean isLinear();
 
     void buildKernel(String[] varNames, Frame df);
@@ -35,6 +43,4 @@ public interface Kernel {
 
     default void clean() {
     }
-
-    Kernel newInstance();
 }

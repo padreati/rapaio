@@ -347,7 +347,7 @@
 //    /**
 //     * The class index from the training data
 //     */
-//    protected int classIndex = -1;
+//    protected int targetIndex = -1;
 //
 //    /**
 //     * The class attribute
@@ -479,7 +479,7 @@
 //            boolean onlyNumeric = true;
 //            if (!m_checksTurnedOff) {
 //                for (int i = 0; i < insts.numAttributes(); i++) {
-//                    if (i != insts.classIndex()) {
+//                    if (i != insts.targetIndex()) {
 //                        if (!insts.attribute(i).isNumeric()) {
 //                            onlyNumeric = false;
 //                            break;
@@ -511,7 +511,7 @@
 //            m_Filter = null;
 //        }
 //
-//        classIndex = insts.classIndex();
+//        targetIndex = insts.targetIndex();
 //        m_classAttribute = insts.classAttribute();
 //        m_KernelIsLinear = (kernel instanceof PolyKernel) && (((PolyKernel) kernel).getExponent() == 1.0);
 //

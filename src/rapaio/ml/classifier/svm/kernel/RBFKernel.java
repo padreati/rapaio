@@ -4,6 +4,8 @@
  * http://www.apache.org/licenses/
  *
  *    Copyright 2013 Aurelian Tutuianu
+ *    Copyright 2014 Aurelian Tutuianu
+ *    Copyright 2015 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -21,6 +23,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.printer.Printer;
 
 /**
  * The Gaussian kernel is an example of radial basis function kernel.
@@ -45,13 +48,14 @@ public class RBFKernel extends AbstractKernel {
     private final double sigma;
     private final double factor;
 
-    public RBFKernel() {
-        this(7);
-    }
-
     public RBFKernel(double sigma) {
         this.sigma = sigma;
         this.factor = 1.0 / (2.0 * sigma * sigma);
+    }
+
+    @Override
+    public String name() {
+        return "RBF(sigma=" + Printer.formatDecShort.format(sigma) + ")";
     }
 
     @Override
