@@ -36,7 +36,7 @@ public abstract class HostFigure extends BaseFigure {
     protected static final Font TITLE_FONT = new Font("Verdana", Font.BOLD, 18);
     protected static final Font MARKERS_FONT = new Font("Verdana", Font.PLAIN, 13);
     protected static final Font LABELS_FONT = new Font("Verdana", Font.BOLD, 16);
-    protected static final double DEFAULT_THICKER_MIN_SPACE = 50.;
+    protected static final double DEFAULT_THICKER_MIN_SPACE = 120.;
     protected static final int THICKER_PAD = 7;
     protected static final int MARKER_PAD = 15;
     protected static final int LABEL_PAD = 30;

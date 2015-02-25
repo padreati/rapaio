@@ -26,6 +26,8 @@ import rapaio.core.Printable;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
 
+import java.util.DoubleSummaryStatistics;
+
 /**
  * Compensated version of arithmetic mean of values from a {@code Vector}.
  * <p>
@@ -44,12 +46,13 @@ public final class Mean implements Printable {
     }
 
     private double compute(final Var var) {
-        final double count = var.stream().complete().mapToDouble().count();
+        DoubleSummaryStatistics dss = var.stream().complete().mapToDouble().summaryStatistics();
+        final double count = dss.getCount();
         if (count == 0) {
             return Double.NaN;
         }
-        final double sum = var.stream().complete().mapToDouble().sum() / count;
-        return sum + var.stream().complete().mapToDouble(s -> s.value() - sum).sum() / count;
+        final double mean = dss.getSum() / count;
+        return mean + var.stream().complete().mapToDouble(s -> s.value() - mean).sum() / count;
     }
 
     /**

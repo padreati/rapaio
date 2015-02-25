@@ -24,12 +24,14 @@ package rapaio.core.stat;
 
 import org.junit.Test;
 import rapaio.data.Frame;
+import rapaio.data.Numeric;
 import rapaio.data.VarType;
 import rapaio.io.Csv;
 
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -48,5 +50,19 @@ public class CoreStatTest {
         assertEquals(Double.valueOf("1.0012615815492349469"), Math.sqrt(new Variance(df.var(0)).value()), 1e-12);
         assertEquals(996.343866540788, new Minimum(df.var(0)).value(), 1e-12);
         assertEquals(1004.24956126934, new Maximum(df.var(0)).value(), 1e-12);
+    }
+
+    @Test
+    public void testEmptyMean() {
+        Numeric num1 = Numeric.newCopyOf(Double.NaN, Double.NaN, Double.NaN);
+        double mean = new Mean(num1).value();
+        assertTrue(Double.isNaN(mean));
+
+        Numeric num2 = Numeric.newWrapOf(1, 2, 3, 4);
+        StringBuilder sb = new StringBuilder();
+        new Mean(num2).buildSummary(sb);
+
+        assertEquals("> mean['null']\n" +
+                "2.500000000000000000000000000000\n", sb.toString());
     }
 }

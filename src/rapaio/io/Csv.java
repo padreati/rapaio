@@ -45,6 +45,8 @@ public class Csv {
     private VarType[] defaultTypes = new VarType[]{VarType.BINARY, VarType.INDEX, VarType.NUMERIC, VarType.NOMINAL};
     private int startRow = 0;
     private int endRow = Integer.MAX_VALUE;
+    private HashSet<Integer> skipRows = new HashSet<>();
+    private HashSet<Integer> skipCols = new HashSet<>();
 
     public Csv() {
         naValues.add("?");
@@ -85,6 +87,26 @@ public class Csv {
         return this;
     }
 
+    public Csv skipRows(int... rows) {
+        if (rows != null && rows.length > 0) {
+            for (int row : rows) {
+                skipRows.add(row);
+            }
+        }
+
+        return this;
+    }
+
+    public Csv skipCols(int... cols) {
+        if (cols != null && cols.length > 0) {
+            for (int col : cols) {
+                skipCols.add(col);
+            }
+        }
+
+        return this;
+    }
+
     public Csv withTypes(VarType varType, String... fields) {
         Arrays.stream(fields).forEach(field -> typeFieldHints.put(field, varType));
         return this;
@@ -111,10 +133,15 @@ public class Csv {
 
     public Frame read(InputStream inputStream) throws IOException {
         int rows = 0;
+        int allRowsNum = 0;
         List<String> names = new ArrayList<>();
         List<VarSlot> varSlots = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+            while (skipRows.contains(allRowsNum)) {
+                reader.readLine();
+                allRowsNum += 1;
+            }
 
             if (header) {
                 String line = reader.readLine();
@@ -127,6 +154,12 @@ public class Csv {
             boolean first = true;
             while (true) {
                 String line = reader.readLine();
+                allRowsNum += 1;
+
+                if (skipRows.contains(allRowsNum)) {
+                    continue;
+                }
+
                 if (line == null) {
                     break;
                 }
@@ -181,6 +214,7 @@ public class Csv {
     public List<String> parseLine(String line) {
         List<String> data = new ArrayList<>();
         int start = 0;
+        int colNum = 0;
         int end;
         while (start < line.length()) {
             end = start;
@@ -212,8 +246,13 @@ public class Csv {
                     break;
                 }
             }
-            data.add(clean(line.substring(start, end)));
+
+            if (!skipCols.contains(colNum)) {
+                data.add(clean(line.substring(start, end)));
+            }
+
             start = end + 1;
+            colNum += 1;
         }
         return data;
     }

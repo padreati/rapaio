@@ -25,6 +25,13 @@ package rapaio.data;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 
 /**
  * Builds a numeric variable. Numeric variables stores data as double values
@@ -178,6 +185,39 @@ public final class Numeric extends AbstractVar {
         }
         return num;
     }
+
+    // stream collectors
+
+    public static Collector<Number, Numeric, Numeric> collector() {
+
+        return new Collector<Number, Numeric, Numeric>() {
+            @Override
+            public Supplier<Numeric> supplier() {
+                return Numeric::newEmpty;
+            }
+
+            @Override
+            public BiConsumer<Numeric, Number> accumulator() {
+                return (numeric, number) -> numeric.addValue(number.doubleValue());
+            }
+
+            @Override
+            public BinaryOperator<Numeric> combiner() {
+                return (left, right) -> (Numeric) left.bindRows(right);
+            }
+
+            @Override
+            public Function<Numeric, Numeric> finisher() {
+                return Numeric::solidCopy;
+            }
+
+            @Override
+            public Set<Collector.Characteristics> characteristics() {
+                return EnumSet.of(Collector.Characteristics.CONCURRENT, Collector.Characteristics.IDENTITY_FINISH);
+            }
+        };
+    }
+
     // private constructor
 
     @Override
