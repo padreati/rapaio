@@ -29,16 +29,11 @@ import java.util.Set;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/16/15.
  */
-public class JsonObject extends JsonValue {
+public final class JsonObject extends AbstractJsonValue {
 
     public static final JsonObject NULL = new JsonObject();
 
     private Map<String, JsonValue> map = new HashMap<>();
-
-    @Override
-    public JsonType type() {
-        return JsonType.OBJECT;
-    }
 
     public void addValue(String key, JsonValue value) {
         map.put(key, value);
@@ -48,7 +43,7 @@ public class JsonObject extends JsonValue {
         if (map.containsKey(key)) {
             return map.get(key);
         }
-        return JsonObject.NULL;
+        return JsonValue.NULL;
     }
 
     public Set<String> keySet() {
@@ -58,7 +53,7 @@ public class JsonObject extends JsonValue {
     @Override
     public String stringValue(String key) {
         if (map.containsKey(key))
-            return map.get(key).leaf().stringValue();
+            return map.get(key).stringValue();
         return "";
     }
 
@@ -85,6 +80,31 @@ public class JsonObject extends JsonValue {
             sb.append('\"').append(entry.getKey()).append("\":").append(entry.getValue().toString());
         }
         sb.append('}');
+        return sb.toString();
+    }
+
+    @Override
+    protected String pretty(int level) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(tabs(level)).append("{\n");
+        boolean first = true;
+        for (String key : keySet()) {
+            sb.append(tabs(level + 1)).append('\"').append(key).append("\":");
+
+            AbstractJsonValue value = (AbstractJsonValue) getValue(key);
+            if (value.isObject() || value.isArray()) {
+                sb.append('\n');
+                sb.append(value.pretty(level + 1));
+            } else {
+                sb.append(value.pretty(level + 1));
+            }
+            if (first) {
+                first = false;
+                sb.append(",");
+            }
+            sb.append("\n");
+        }
+        sb.append(tabs(level)).append("}");
         return sb.toString();
     }
 }

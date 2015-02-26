@@ -23,13 +23,37 @@
 package rapaio.experiment.json.tree;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/19/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/26/15.
  */
-public enum JsonType {
+public final class JsonNull extends AbstractJsonValue {
 
-    LITERAL,
-    STRING,
-    NUMERIC,
-    ARRAY,
-    OBJECT
+    @Override
+    public String stringValue(String key) {
+        return "";
+    }
+
+    @Override
+    public String stringValue() {
+        return "";
+    }
+
+    @Override
+    public String toString() {
+        return "null";
+    }
+
+    @Override
+    protected String pretty(int level) {
+        return "";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return this == o || !(o == null || getClass() != o.getClass());
+    }
+
+    @Override
+    public int hashCode() {
+        return 1;
+    }
 }

@@ -32,9 +32,49 @@ import java.util.stream.StreamSupport;
 import java.util.zip.GZIPInputStream;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/18/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/20/15.
  */
-public final class StreamJsonParser implements JsonParser {
+public final class Json {
+
+    public static final char LEFT_SQUARE = '[';
+    public static final char RIGHT_SQUARE = ']';
+    public static final char LEFT_CURLY = '{';
+    public static final char RIGHT_CURLY = '}';
+    public static final char COLON = ':';
+    public static final char COMMA = ',';
+    public static final String KEY_TRUE = "true";
+    public static final String KEY_FALSE = "false";
+    public static final String KEY_NULL = "null";
+    public static final char[] WHITE_CHARS = new char[]{' ', '\t', '\n', '\r'};
+
+    static boolean isNumeric(int next) {
+        switch ((char) next) {
+            case '+':
+            case '-':
+            case '.':
+            case 'e':
+            case 'E':
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                return true;
+        }
+        return false;
+    }
+
+    static boolean isWhite(int ch) {
+        for (char w : WHITE_CHARS)
+            if (ch == w)
+                return true;
+        return false;
+    }
 
     public static Stream<JsonValue> stream(InputStream... iss) {
         return StreamSupport.stream(new JsonSpliterator(iss), true);
@@ -70,9 +110,10 @@ public final class StreamJsonParser implements JsonParser {
         w.flush();
 //        w.close();
     }
+
 }
 
-class JsonSpliterator implements Spliterator<JsonValue>, JsonParser {
+class JsonSpliterator implements Spliterator<JsonValue> {
 
     private LinkedList<Reader> readers;
     int _next = ' ';
@@ -91,7 +132,7 @@ class JsonSpliterator implements Spliterator<JsonValue>, JsonParser {
 
     private void skipWhite() throws IOException {
         if (!readers.isEmpty())
-            while (isWhite(_next)) _next = readers.getFirst().read();
+            while (Json.isWhite(_next)) _next = readers.getFirst().read();
     }
 
     private JsonValue parseStream() throws IOException {
@@ -109,14 +150,16 @@ class JsonSpliterator implements Spliterator<JsonValue>, JsonParser {
             skipWhite();
             if ('\"' == _next) {
                 return readString();
-            } else if (LEFT_CURLY == _next) {
+            } else if (Json.LEFT_CURLY == _next) {
                 return readObject();
-            } else if (isNumeric(_next)) {
+            } else if (Json.isNumeric(_next)) {
                 return readNumeric();
-            } else if (LEFT_SQUARE == _next) {
+            } else if (Json.LEFT_SQUARE == _next) {
                 return readArray();
-            } else if (_next == 'n' || _next == 't' || _next == 'f') {
-                return readLiteral();
+            } else if (_next == 't' || _next == 'f') {
+                return readBool();
+            } else if (_next == 'n') {
+                return readNull();
             }
         }
         return null;
@@ -129,22 +172,24 @@ class JsonSpliterator implements Spliterator<JsonValue>, JsonParser {
         JsonValue value;
         while (true) {
             skipWhite();
-            if (_next == RIGHT_SQUARE) {
+            if (_next == Json.RIGHT_SQUARE) {
                 _next = ' ';
                 return array;
             }
-            while (_next == COMMA || isWhite(_next)) _next = readers.getFirst().read();
+            while (_next == Json.COMMA || Json.isWhite(_next)) _next = readers.getFirst().read();
 
             if ('\"' == _next) {
                 value = readString();
-            } else if (LEFT_CURLY == _next) {
+            } else if (Json.LEFT_CURLY == _next) {
                 value = readObject();
-            } else if (isNumeric(_next)) {
+            } else if (Json.isNumeric(_next)) {
                 value = readNumeric();
-            } else if (LEFT_SQUARE == _next) {
+            } else if (Json.LEFT_SQUARE == _next) {
                 value = readArray();
-            } else if (_next == 'n' || _next == 't' || _next == 'f') {
-                value = readLiteral();
+            } else if (_next == 't' || _next == 'f') {
+                value = readBool();
+            } else if (_next == 'n') {
+                value = readNull();
             } else {
                 value = null;
             }
@@ -159,18 +204,18 @@ class JsonSpliterator implements Spliterator<JsonValue>, JsonParser {
         String key;
         while (true) {
             skipWhite();
-            if (_next == RIGHT_CURLY) {
+            if (_next == Json.RIGHT_CURLY) {
                 _next = ' ';
                 return obj;
             }
-            while (_next == COMMA || isWhite(_next)) _next = readers.getFirst().read();
+            while (_next == Json.COMMA || Json.isWhite(_next)) _next = readers.getFirst().read();
 
             if ('"' != _next) {
                 throw new IllegalArgumentException("objects contains key value pairs, parsed object: " + obj.toString() + ", next char: " + ((char) _next));
             }
             key = readString().stringValue();
-            while (isWhite(_next)) _next = readers.getFirst().read();
-            if (_next != COLON) {
+            while (Json.isWhite(_next)) _next = readers.getFirst().read();
+            if (_next != Json.COLON) {
                 throw new IllegalArgumentException("A colon should follow, object: " + obj + ", key: " + key);
             }
 
@@ -179,61 +224,85 @@ class JsonSpliterator implements Spliterator<JsonValue>, JsonParser {
 
             if ('\"' == _next) {
                 obj.addValue(key, readString());
-            } else if (LEFT_CURLY == _next) {
+            } else if (Json.LEFT_CURLY == _next) {
                 obj.addValue(key, readObject());
-            } else if (isNumeric(_next)) {
+            } else if (Json.isNumeric(_next)) {
                 obj.addValue(key, readNumeric());
-            } else if (LEFT_SQUARE == _next) {
+            } else if (Json.LEFT_SQUARE == _next) {
                 obj.addValue(key, readArray());
-            } else if (_next == 'n' || _next == 't' || _next == 'f') {
-                obj.addValue(key, readLiteral());
+            } else if (_next == 't' || _next == 'f') {
+                obj.addValue(key, readBool());
+            } else if (_next == 'n') {
+                obj.addValue(key, readNull());
             } else {
                 obj.addValue(key, null);
             }
         }
     }
 
-    private JsonLeaf readLiteral() throws IOException {
+    private JsonBool readBool() throws IOException {
         StringBuilder sb = new StringBuilder();
         sb.append((char) _next);
         while (true) {
             _next = readers.getFirst().read();
-            if (isWhite(_next) || _next == COMMA || _next == COLON || _next == RIGHT_CURLY || _next == LEFT_CURLY || _next == RIGHT_SQUARE || _next == LEFT_SQUARE)
+            if (Json.isWhite(_next) || _next == Json.COMMA ||
+                    _next == Json.COLON || _next == Json.RIGHT_CURLY ||
+                    _next == Json.LEFT_CURLY || _next == Json.RIGHT_SQUARE ||
+                    _next == Json.LEFT_SQUARE)
                 break;
             sb.append((char) _next);
         }
         String value = sb.toString();
         switch (value) {
-            case KEY_TRUE:
-            case KEY_FALSE:
-            case KEY_NULL:
-                return new JsonLeaf(JsonType.LITERAL, value);
+            case Json.KEY_TRUE:
+            case Json.KEY_FALSE:
+                return new JsonBool(value);
         }
         throw new IllegalArgumentException("parsing literal exception, parsed value: " + value);
     }
 
-    private JsonLeaf readNumeric() throws IOException {
+    private JsonNull readNull() throws IOException {
+        StringBuilder sb = new StringBuilder();
+        sb.append((char) _next);
+        while (true) {
+            _next = readers.getFirst().read();
+            if (Json.isWhite(_next) || _next == Json.COMMA ||
+                    _next == Json.COLON || _next == Json.RIGHT_CURLY ||
+                    _next == Json.LEFT_CURLY || _next == Json.RIGHT_SQUARE ||
+                    _next == Json.LEFT_SQUARE)
+                break;
+            sb.append((char) _next);
+        }
+        String value = sb.toString();
+        switch (value) {
+            case Json.KEY_NULL:
+                return JsonValue.NULL;
+        }
+        throw new IllegalArgumentException("parsing literal exception, parsed value: " + value);
+    }
+
+    private JsonNumber readNumeric() throws IOException {
         StringBuilder sb = new StringBuilder();
         sb.append((char) _next);
 
         while (true) {
             _next = readers.getFirst().read();
-            if (isNumeric(_next)) {
+            if (Json.isNumeric(_next)) {
                 sb.append((char) _next);
                 continue;
             }
             break;
         }
-        return new JsonLeaf(JsonType.NUMERIC, sb.toString());
+        return new JsonNumber(sb.toString());
     }
 
-    private JsonLeaf readString() throws IOException {
+    private JsonString readString() throws IOException {
         StringBuilder sb = new StringBuilder();
         while (true) {
             _next = readers.getFirst().read();
             if (_next == -1 || _next == '\"') {
                 _next = ' ';
-                return new JsonLeaf(JsonType.STRING, sb.toString());
+                return new JsonString(sb.toString());
             }
             if (_next == '\\') {
                 sb.append((char) _next);

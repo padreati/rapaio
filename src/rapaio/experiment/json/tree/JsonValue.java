@@ -27,41 +27,53 @@ import java.util.Set;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/16/15.
  */
-public abstract class JsonValue {
+public interface JsonValue {
 
-    public abstract JsonType type();
+    JsonNull NULL = new JsonNull();
 
-    public JsonObject object() {
+    default JsonObject object() {
         return (JsonObject) this;
     }
 
-    public JsonArray array() {
+    default JsonArray array() {
         return (JsonArray) this;
     }
 
-    public JsonLeaf leaf() {
-        return (JsonLeaf) this;
+    default boolean isObject() {
+        return this instanceof JsonObject;
     }
 
-    public JsonValue getValue(String key) {
+    default boolean isArray() {
+        return this instanceof JsonArray;
+    }
+
+    default JsonValue getValue(String key) {
         return JsonObject.NULL;
     }
 
-    public Set<String> keySet() {
+    default Set<String> keySet() {
         return object().keySet();
     }
 
-    public String singleKey() {
+    default String singleKey() {
         if (object().keySet().size() == 1)
             return object().keySet().iterator().next();
         return "";
     }
 
-    public abstract String stringValue(String key);
-
-    public abstract String stringValue();
-
-    public boolean isObject() {
-        return this instanceof JsonObject;
+    default String stringValue(String key) {
+        return "";
     }
+
+    default double doubleValue() {
+        return Double.NaN;
+    }
+
+    default boolean boolValue() {
+        return false;
+    }
+
+    String stringValue();
+
+    String pretty();
 }

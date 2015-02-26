@@ -28,14 +28,9 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/17/15.
  */
-public class JsonArray extends JsonValue {
+public final class JsonArray extends AbstractJsonValue {
 
     List<JsonValue> array = new ArrayList<>();
-
-    @Override
-    public JsonType type() {
-        return JsonType.ARRAY;
-    }
 
     public void addValue(JsonValue value) {
         array.add(value);
@@ -66,6 +61,23 @@ public class JsonArray extends JsonValue {
             sb.append(js.toString());
         }
         sb.append(']');
+        return sb.toString();
+    }
+
+    @Override
+    protected String pretty(int level) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(tabs(level)).append("[\n");
+        for (int i = 0; i < array.size(); i++) {
+            AbstractJsonValue value = (AbstractJsonValue) array.get(i);
+            sb.append(tabs(level + 1));
+            sb.append(value.pretty(level + 1));
+            if (i != array.size() - 1) {
+                sb.append(",");
+            }
+            sb.append("\n");
+        }
+        sb.append(tabs(level)).append("]");
         return sb.toString();
     }
 }
