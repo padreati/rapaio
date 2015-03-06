@@ -27,53 +27,65 @@ import java.util.Set;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/16/15.
  */
-public interface JsonValue {
+public abstract class JsonValue {
 
-    JsonNull NULL = new JsonNull();
+    public static JsonNull NULL = new JsonNull();
 
-    default JsonObject object() {
+    public final JsonObject object() {
         return (JsonObject) this;
     }
 
-    default JsonArray array() {
+    public JsonArray array() {
         return (JsonArray) this;
     }
 
-    default boolean isObject() {
+    public boolean isObject() {
         return this instanceof JsonObject;
     }
 
-    default boolean isArray() {
+    public boolean isArray() {
         return this instanceof JsonArray;
     }
 
-    default JsonValue getValue(String key) {
+    public JsonValue getValue(String key) {
         return JsonObject.NULL;
     }
 
-    default Set<String> keySet() {
+    public Set<String> keySet() {
         return object().keySet();
     }
 
-    default String singleKey() {
+    public String singleKey() {
         if (object().keySet().size() == 1)
             return object().keySet().iterator().next();
         return "";
     }
 
-    default String stringValue(String key) {
+    public String stringValue(String key) {
         return "";
     }
 
-    default double doubleValue() {
+    public double doubleValue() {
         return Double.NaN;
     }
 
-    default boolean boolValue() {
+    public boolean boolValue() {
         return false;
     }
 
-    String stringValue();
+    public abstract String stringValue();
 
-    String pretty();
+    public String pretty() {
+        return pretty(0);
+    }
+
+    protected abstract String pretty(int level);
+
+    protected String tabs(int level) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < level; i++) {
+            sb.append("\t");
+        }
+        return sb.toString();
+    }
 }

@@ -25,7 +25,7 @@ package rapaio.experiment.json.tree;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/26/15.
  */
-public class JsonNumber extends AbstractJsonValue {
+public class JsonNumber extends JsonValue {
 
     private final String original;
 

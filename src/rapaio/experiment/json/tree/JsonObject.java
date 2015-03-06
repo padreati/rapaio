@@ -29,7 +29,7 @@ import java.util.Set;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/16/15.
  */
-public final class JsonObject extends AbstractJsonValue {
+public final class JsonObject extends JsonValue {
 
     public static final JsonObject NULL = new JsonObject();
 
@@ -40,10 +40,8 @@ public final class JsonObject extends AbstractJsonValue {
     }
 
     public JsonValue getValue(String key) {
-        if (map.containsKey(key)) {
-            return map.get(key);
-        }
-        return JsonValue.NULL;
+        JsonValue value = map.get(key);
+        return (value != null) ? value : JsonValue.NULL;
     }
 
     public Set<String> keySet() {
@@ -52,9 +50,8 @@ public final class JsonObject extends AbstractJsonValue {
 
     @Override
     public String stringValue(String key) {
-        if (map.containsKey(key))
-            return map.get(key).stringValue();
-        return "";
+        JsonValue value = map.get(key);
+        return (value != null) ? value.stringValue() : "";
     }
 
     @Override
@@ -91,7 +88,7 @@ public final class JsonObject extends AbstractJsonValue {
         for (String key : keySet()) {
             sb.append(tabs(level + 1)).append('\"').append(key).append("\":");
 
-            AbstractJsonValue value = (AbstractJsonValue) getValue(key);
+            JsonValue value = getValue(key);
             if (value.isObject() || value.isArray()) {
                 sb.append('\n');
                 sb.append(value.pretty(level + 1));

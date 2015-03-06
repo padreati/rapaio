@@ -20,25 +20,18 @@
  *    limitations under the License.
  */
 
-package rapaio.experiment.json.tree;
+package rapaio.experiment.json;
+
+import rapaio.experiment.json.tree.JsonValue;
+
+import java.util.Spliterator;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/26/15.
+ * Created by tutuianu on 3/6/15.
  */
-public abstract class AbstractJsonValue implements JsonValue {
+public interface JsonSpliterator extends Spliterator<JsonValue> {
 
-    @Override
-    public String pretty() {
-        return pretty(0);
-    }
+    boolean isParallel();
 
-    protected String tabs(int level) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < level; i++) {
-            sb.append("\t");
-        }
-        return sb.toString();
-    }
-
-    protected abstract String pretty(int level);
+    String[] getFileTypes();
 }

@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/17/15.
  */
-public final class JsonArray extends AbstractJsonValue {
+public final class JsonArray extends JsonValue {
 
     List<JsonValue> array = new ArrayList<>();
 
@@ -69,7 +69,7 @@ public final class JsonArray extends AbstractJsonValue {
         StringBuilder sb = new StringBuilder();
         sb.append(tabs(level)).append("[\n");
         for (int i = 0; i < array.size(); i++) {
-            AbstractJsonValue value = (AbstractJsonValue) array.get(i);
+            JsonValue value = array.get(i);
             sb.append(tabs(level + 1));
             sb.append(value.pretty(level + 1));
             if (i != array.size() - 1) {

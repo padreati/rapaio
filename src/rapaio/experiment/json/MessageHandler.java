@@ -20,40 +20,11 @@
  *    limitations under the License.
  */
 
-package rapaio.experiment.json.tree;
+package rapaio.experiment.json;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/26/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/27/15.
  */
-public final class JsonNull extends JsonValue {
-
-    @Override
-    public String stringValue(String key) {
-        return "";
-    }
-
-    @Override
-    public String stringValue() {
-        return "";
-    }
-
-    @Override
-    public String toString() {
-        return "null";
-    }
-
-    @Override
-    protected String pretty(int level) {
-        return "";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return this == o || !(o == null || getClass() != o.getClass());
-    }
-
-    @Override
-    public int hashCode() {
-        return 1;
-    }
+public interface MessageHandler {
+    void sendMessage(final String msg);
 }
