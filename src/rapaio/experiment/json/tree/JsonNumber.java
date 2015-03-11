@@ -65,4 +65,9 @@ public class JsonNumber extends JsonValue {
     public int hashCode() {
         return original != null ? original.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return original;
+    }
 }

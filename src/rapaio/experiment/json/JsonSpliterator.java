@@ -27,11 +27,9 @@ import rapaio.experiment.json.tree.JsonValue;
 import java.util.Spliterator;
 
 /**
- * Created by tutuianu on 3/6/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/6/15.
  */
 public interface JsonSpliterator extends Spliterator<JsonValue> {
 
     boolean isParallel();
-
-    String[] getFileTypes();
 }

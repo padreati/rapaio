@@ -34,7 +34,7 @@ import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
 /**
- * Created by tutuianu on 3/6/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/6/15.
  */
 public class ReaderJsonSpliterator implements JsonSpliterator {
 
@@ -70,11 +70,6 @@ public class ReaderJsonSpliterator implements JsonSpliterator {
     @Override
     public boolean isParallel() {
         return parallel;
-    }
-
-    @Override
-    public String[] getFileTypes() {
-        return new String[]{".gz", ".json"};
     }
 
     private boolean isNumeric(int ch) {

@@ -37,26 +37,35 @@ import java.util.stream.StreamSupport;
  */
 public final class Json {
 
-    public enum Decoder {
+    public enum Format {
         FLAT,
         GZIP,
         LZ4JSON
     }
 
-    public static Stream<JsonValue> stream(File root, FileFilter filter) {
-        return Json.stream(root, filter, msg -> {
+    public static Stream<JsonValue> stream(File root, Format format, FileFilter filter) {
+        return Json.stream(root, format, filter, msg -> {
         });
     }
 
-    public static Stream<JsonValue> stream(File root, FileFilter filter, MessageHandler ph) {
+    public static Stream<JsonValue> stream(File root, Format format, FileFilter filter, MessageHandler ph) {
         List<File> files = new ArrayList<>();
         if (root.isDirectory()) {
             files = Arrays.asList(root.listFiles()).stream().filter(filter::accept).collect(Collectors.toList());
         } else {
             files.add(root);
         }
-        JsonSpliterator spliterator = new ReaderJsonSpliterator(files, ph);
-        return StreamSupport.stream(spliterator, spliterator.isParallel());
+        switch (format) {
+            case FLAT:
+            case GZIP:
+                JsonSpliterator spliterator1 = new ReaderJsonSpliterator(files, ph);
+                return StreamSupport.stream(spliterator1, spliterator1.isParallel());
+            case LZ4JSON:
+                JsonSpliterator spliterator2 = new LzJsonSpliterator(files, ph);
+                return StreamSupport.stream(spliterator2, spliterator2.isParallel());
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     public static void write(OutputStream os, JsonValue js) throws IOException {

@@ -47,7 +47,7 @@ public class WS {
                     "\"logger\".useParentHandlers  =\n" +
                     ".level              = ALL\n" +
                     "\n" +
-                    "java.util.logging.ConsoleHandler.level     = ALL\n" +
+                    "java.util.logging.ConsoleHandler.level     = CONFIG\n" +
                     "java.util.logging.ConsoleHandler.filter    =\n" +
                     "java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter\n" +
                     "java.util.logging.ConsoleHandler.encoding  =").getBytes()));
