@@ -20,9 +20,9 @@
  *    limitations under the License.
  */
 
-package rapaio.experiment.json;
+package rapaio.io.json.stream;
 
-import rapaio.experiment.json.tree.*;
+import rapaio.io.json.tree.*;
 import rapaio.util.Pair;
 
 import java.io.Closeable;
@@ -81,9 +81,22 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
         os.writeByte(len);
     }
 
+    private int countLen(int len) {
+        int count = 0;
+        while (len >= 255) {
+            count++;
+            len -= 255;
+        }
+        return count + 1;
+    }
+
     private void writeBuff(byte[] buff) throws IOException {
         writeLen(buff.length);
         os.write(buff);
+    }
+
+    private int countBuff(byte[] buff) {
+        return countLen(buff.length) + buff.length;
     }
 
     private void writeBuffer() throws IOException {
@@ -137,7 +150,7 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
                 writeArray((JsonArray) js);
                 continue;
             }
-            writeObject((JsonObject) js);
+            writeObject((JsonObject) js, true);
         }
 
         objectBuffer.clear();
@@ -279,16 +292,20 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
                 writeArray((JsonArray) js);
                 continue;
             }
-            writeObject((JsonObject) js);
+            writeObject((JsonObject) js, false);
         }
     }
 
-    private void writeObject(JsonObject jsObject) throws IOException {
+    private void writeObject(JsonObject jsObject, boolean withLen) throws IOException {
         int size = jsObject.keySet().size();
         os.writeByte(TYPE_OBJECT);
         writeLen(size);
         for (String key : jsObject.keySet()) {
             writeString(new JsonString(key));
+            if (withLen) {
+                int len = computeLen(jsObject.getValue(key), 0);
+                writeLen(len);
+            }
             JsonValue js = jsObject.getValue(key);
             if (js instanceof JsonNull) {
                 writeNull();
@@ -310,8 +327,55 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
                 writeArray((JsonArray) js);
                 continue;
             }
-            writeObject((JsonObject) js);
+            writeObject((JsonObject) js, false);
         }
+    }
+
+    private int computeLen(JsonValue js, int count) {
+        if (js instanceof JsonNull) {
+            return count + 1;
+        }
+        if (js instanceof JsonBool) {
+            return count + 1;
+        }
+        if (js instanceof JsonNumber) {
+            String value = js.stringValue();
+            Integer pos = numTermIndex.get(value);
+            if (pos != null) {
+                return count + 1 + countLen(pos);
+            }
+            return count + 1 + countBuff(js.stringValue().getBytes());
+        }
+        if (js instanceof JsonString) {
+            String value = js.stringValue();
+            Integer pos = strTermIndex.get(value);
+            if (pos != null) {
+                return count + 1 + countLen(pos);
+            }
+            return count + 1 + countBuff(value.getBytes());
+        }
+        if (js instanceof JsonArray) {
+            JsonArray array = (JsonArray) js;
+            int size = array.values().size();
+            count += 1 + countLen(size);
+            for (JsonValue child : array.values()) {
+                count += computeLen(child, 0);
+            }
+            return count;
+        }
+        if (js instanceof JsonObject) {
+            JsonObject jsObject = (JsonObject) js;
+            int size = jsObject.keySet().size();
+            count += 1;
+            count += countLen(size);
+            for (String key : jsObject.keySet()) {
+                count += computeLen(new JsonString(key), 0);
+                JsonValue child = jsObject.getValue(key);
+                count += computeLen(child, 0);
+            }
+            return count;
+        }
+        return 0;
     }
 
     @Override

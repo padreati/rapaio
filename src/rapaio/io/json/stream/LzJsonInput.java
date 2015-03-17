@@ -20,30 +20,36 @@
  *    limitations under the License.
  */
 
-package rapaio.experiment.json;
+package rapaio.io.json.stream;
 
-import rapaio.experiment.json.tree.*;
+import rapaio.io.json.tree.*;
 
-import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Utility class able to produce json values from an input stream formatted as lzjson.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/9/15.
  */
-public class LzJsonInput extends LzJsonAlgorithm implements Closeable {
+public class LzJsonInput extends LzJsonAlgorithm implements JsonInput {
 
     private final DataInputStream is;
     private final List<String> strTermList = new ArrayList<>();
     private final List<String> numTermList = new ArrayList<>();
+    private final Function<String, Boolean> propFilter;
 
-    public LzJsonInput(InputStream is) {
+    public LzJsonInput(InputStream is, Function<String, Boolean> propFilter) {
         this.is = new DataInputStream(is);
+        this.propFilter = propFilter;
+    }
+
+    private boolean shouldParse(String key) {
+        return propFilter.apply(key);
     }
 
     private int readLen() throws IOException {
@@ -103,7 +109,7 @@ public class LzJsonInput extends LzJsonAlgorithm implements Closeable {
             case TYPE_ARRAY:
                 return readArray();
             case TYPE_OBJECT:
-                return readObject();
+                return readObject(true);
         }
         return null;
     }
@@ -152,7 +158,7 @@ public class LzJsonInput extends LzJsonAlgorithm implements Closeable {
                     array.addValue(readArray());
                     break;
                 case TYPE_OBJECT:
-                    array.addValue(readObject());
+                    array.addValue(readObject(false));
                     break;
                 case TYPE_NUMERIC:
                     array.addValue(readNumber());
@@ -165,7 +171,7 @@ public class LzJsonInput extends LzJsonAlgorithm implements Closeable {
         return array;
     }
 
-    private JsonObject readObject() throws IOException {
+    private JsonObject readObject(boolean withLen) throws IOException {
         JsonObject object = new JsonObject();
         int size = readLen();
         for (int i = 0; i < size; i++) {
@@ -181,6 +187,13 @@ public class LzJsonInput extends LzJsonAlgorithm implements Closeable {
                 default:
                     throw new IOException("invalid type for key of the object, type: " + type + ", object: " + object);
             }
+            if (withLen) {
+                int len = readLen();
+                if (!shouldParse(key)) {
+                    is.skipBytes(len);
+                    continue;
+                }
+            }
 
             type = is.readByte();
             switch (type) {
@@ -194,7 +207,7 @@ public class LzJsonInput extends LzJsonAlgorithm implements Closeable {
                     object.addValue(key, readArray());
                     break;
                 case TYPE_OBJECT:
-                    object.addValue(key, readObject());
+                    object.addValue(key, readObject(false));
                     break;
                 case TYPE_NULL:
                     object.addValue(key, VALUE_NULL);

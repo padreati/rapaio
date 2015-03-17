@@ -20,10 +20,11 @@
  *    limitations under the License.
  */
 
-package rapaio.experiment.json.tree;
+package rapaio.io.json.tree;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/17/15.
@@ -70,7 +71,8 @@ public final class JsonArray extends JsonValue {
         sb.append(tabs(level)).append("[\n");
         for (int i = 0; i < array.size(); i++) {
             JsonValue value = array.get(i);
-            sb.append(tabs(level + 1));
+            if (!(value.isArray() || value.isObject()))
+                sb.append(tabs(level + 1));
             sb.append(value.pretty(level + 1));
             if (i != array.size() - 1) {
                 sb.append(",");
@@ -79,5 +81,10 @@ public final class JsonArray extends JsonValue {
         }
         sb.append(tabs(level)).append("]");
         return sb.toString();
+    }
+
+    @Override
+    protected Stream<String> stringKeyValuePairs(String path) {
+        return array.stream().flatMap(js -> js.stringKeyValuePairs(path));
     }
 }

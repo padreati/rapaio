@@ -31,7 +31,6 @@ import rapaio.data.Var;
 import rapaio.data.filter.var.VFRefSort;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -133,7 +132,7 @@ public interface RTreeNumericMethod {
                             spot -> !spot.missing(testVarName) && spot.value(testVarName) > testValue);
                 }
             }
-            return (best != null) ? Arrays.asList(best) : Collections.EMPTY_LIST;
+            return (best != null) ? Collections.singletonList(best) : Collections.EMPTY_LIST;
         }
     };
 }

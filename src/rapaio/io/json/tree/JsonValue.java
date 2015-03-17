@@ -20,11 +20,14 @@
  *    limitations under the License.
  */
 
-package rapaio.experiment.json.tree;
+package rapaio.io.json.tree;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
+ * Base class for a json value. Json values are linked as top-down trees.
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/16/15.
  */
 public abstract class JsonValue {
@@ -88,4 +91,10 @@ public abstract class JsonValue {
         }
         return sb.toString();
     }
+
+    public final Stream<String> stringKeyValuePairs() {
+        return stringKeyValuePairs("");
+    }
+
+    protected abstract Stream<String> stringKeyValuePairs(String path);
 }

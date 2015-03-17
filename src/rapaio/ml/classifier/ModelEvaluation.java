@@ -32,7 +32,10 @@ import rapaio.data.filter.frame.FFShuffle;
 import rapaio.ml.eval.ConfusionMatrix;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static rapaio.WS.print;
 
 /**
@@ -44,7 +47,7 @@ public class ModelEvaluation {
         print("\nCrossValidation with " + folds + " folds\n");
         print("Model: " + c.fullName() + "\n");
 
-        List<Integer>[] strata = buildStrata(df, folds, classColName);
+        List<List<Integer>> strata = buildStrata(df, folds, classColName);
 
         double correct = 0;
 
@@ -53,9 +56,9 @@ public class ModelEvaluation {
             Mapping testMapping = Mapping.newEmpty();
             for (int j = 0; j < folds; j++) {
                 if (j == i) {
-                    testMapping.addAll(strata[j]);
+                    testMapping.addAll(strata.get(j));
                 } else {
-                    trainMapping.addAll(strata[j]);
+                    trainMapping.addAll(strata.get(j));
                 }
             }
             Frame train = MappedFrame.newByRow(df, trainMapping);
@@ -77,27 +80,24 @@ public class ModelEvaluation {
         return correct;
     }
 
-    private List<Integer>[] buildStrata(Frame df, int folds, String classColName) {
+    private List<List<Integer>> buildStrata(Frame df, int folds, String classColName) {
         String[] dict = df.var(classColName).dictionary();
-        List<Integer>[] rows = new List[dict.length];
-        for (int i = 0; i < dict.length; i++) {
-            rows[i] = new ArrayList<>();
-        }
+        List<List<Integer>> rows = IntStream.range(0, dict.length).boxed().map(ArrayList<Integer>::new).collect(toList());
         for (int i = 0; i < df.rowCount(); i++) {
-            rows[df.index(i, df.varIndex(classColName))].add(i);
+            rows.get(df.index(i, df.varIndex(classColName))).add(i);
         }
         List<Integer> shuffle = new ArrayList<>();
         for (int i = 0; i < dict.length; i++) {
-            Collections.shuffle(rows[i], RandomSource.getRandom());
-            shuffle.addAll(rows[i]);
+            Collections.shuffle(rows.get(i), RandomSource.getRandom());
+            shuffle.addAll(rows.get(i));
         }
-        List<Integer>[] strata = new List[folds];
-        for (int i = 0; i < strata.length; i++) {
-            strata[i] = new ArrayList<>();
+        List<List<Integer>> strata = new ArrayList<>();
+        for (int i = 0; i < folds; i++) {
+            strata.add(new ArrayList<>());
         }
         int fold = 0;
         for (int next : shuffle) {
-            strata[fold].add(next);
+            strata.get(fold).add(next);
             fold++;
             if (fold == folds) {
                 fold = 0;
@@ -175,10 +175,7 @@ public class ModelEvaluation {
             int[] rows = SamplingTool.sampleWR(((int) (df.rowCount() * p)), df.rowCount());
             Frame train = MappedFrame.newByRow(df, rows);
             Mapping others = Mapping.newEmpty();
-            Set<Integer> set = new HashSet<>();
-            for (int j = 0; j < rows.length; j++) {
-                set.add(rows[i]);
-            }
+            Set<Integer> set = Arrays.stream(rows).boxed().collect(toSet());
             for (int j = 0; j < df.rowCount(); j++) {
                 if (!set.contains(j)) others.add(j);
             }

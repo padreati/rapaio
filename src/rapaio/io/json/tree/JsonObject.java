@@ -20,11 +20,12 @@
  *    limitations under the License.
  */
 
-package rapaio.experiment.json.tree;
+package rapaio.io.json.tree;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/16/15.
@@ -74,7 +75,12 @@ public final class JsonObject extends JsonValue {
         for (Map.Entry<String, JsonValue> entry : map.entrySet()) {
             if (sb.length() > 1)
                 sb.append(",");
-            sb.append('\"').append(entry.getKey()).append("\":").append(entry.getValue().toString());
+            sb.append('\"').append(entry.getKey()).append("\":");
+            if (entry.getValue() != null) {
+                sb.append(entry.getValue().toString());
+            } else {
+                sb.append("<null>");
+            }
         }
         sb.append('}');
         return sb.toString();
@@ -103,5 +109,19 @@ public final class JsonObject extends JsonValue {
         }
         sb.append(tabs(level)).append("}");
         return sb.toString();
+    }
+
+    @Override
+    protected Stream<String> stringKeyValuePairs(String path) {
+        Stream<String> s = Stream.empty();
+        for (String key : keySet()) {
+            JsonValue js = getValue(key);
+            if (js instanceof JsonBool || js instanceof JsonNull || js instanceof JsonString) {
+                s = Stream.concat(s, Stream.of(path + "." + key + ":" + js.stringValue()));
+            } else {
+                s = Stream.concat(s, js.stringKeyValuePairs(path + "." + key));
+            }
+        }
+        return s;
     }
 }

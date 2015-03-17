@@ -20,18 +20,14 @@
  *    limitations under the License.
  */
 
-package rapaio.experiment.json.tree;
+package rapaio.io.json.tree;
+
+import java.util.stream.Stream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/26/15.
  */
-public final class JsonBool extends JsonValue {
-
-    private final boolean value;
-
-    public JsonBool(String original) {
-        value = "true".equals(original);
-    }
+public final class JsonNull extends JsonValue {
 
     @Override
     public String stringValue(String key) {
@@ -40,29 +36,31 @@ public final class JsonBool extends JsonValue {
 
     @Override
     public String stringValue() {
-        return value ? "true" : "false";
-    }
-
-    @Override
-    protected String pretty(int level) {
-        return stringValue();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        JsonBool jsonBool = (JsonBool) o;
-        return value == jsonBool.value;
-    }
-
-    @Override
-    public int hashCode() {
-        return (value ? 1 : 0);
+        return "";
     }
 
     @Override
     public String toString() {
-        return String.valueOf(value);
+        return "null";
+    }
+
+    @Override
+    protected String pretty(int level) {
+        return "";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return this == o || !(o == null || getClass() != o.getClass());
+    }
+
+    @Override
+    public int hashCode() {
+        return 1;
+    }
+
+    @Override
+    protected Stream<String> stringKeyValuePairs(String path) {
+        return Stream.empty();
     }
 }

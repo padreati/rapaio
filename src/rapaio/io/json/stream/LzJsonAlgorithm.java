@@ -20,11 +20,11 @@
  *    limitations under the License.
  */
 
-package rapaio.experiment.json;
+package rapaio.io.json.stream;
 
-import rapaio.experiment.json.tree.JsonBool;
-import rapaio.experiment.json.tree.JsonNull;
-import rapaio.experiment.json.tree.JsonValue;
+import rapaio.io.json.tree.JsonBool;
+import rapaio.io.json.tree.JsonNull;
+import rapaio.io.json.tree.JsonValue;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/7/15.
@@ -48,20 +48,4 @@ public abstract class LzJsonAlgorithm {
     protected static JsonValue VALUE_NULL = new JsonNull();
     protected static JsonValue VALUE_TRUE = new JsonBool("true");
     protected static JsonValue VALUE_FALSE = new JsonBool("false");
-
-    //
-
-    /*
-    null - 0
-    true - 1
-    false - 2
-    num - 3
-    num_term - 4
-    str - 5
-    str_term - 6
-    arr - 7
-    object - 8
-
-
-     */
 }

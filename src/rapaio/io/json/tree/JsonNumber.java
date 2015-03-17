@@ -20,7 +20,9 @@
  *    limitations under the License.
  */
 
-package rapaio.experiment.json.tree;
+package rapaio.io.json.tree;
+
+import java.util.stream.Stream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/26/15.
@@ -69,5 +71,10 @@ public class JsonNumber extends JsonValue {
     @Override
     public String toString() {
         return original;
+    }
+
+    @Override
+    protected Stream<String> stringKeyValuePairs(String path) {
+        return Stream.empty();
     }
 }

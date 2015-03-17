@@ -20,11 +20,19 @@
  *    limitations under the License.
  */
 
-package rapaio.experiment.json;
+package rapaio.util;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/27/15.
+ * General utilities class.
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/13/15.
  */
-public interface MessageHandler {
-    void sendMessage(final String msg);
+public class Util {
+
+    public static void measure(Runnable task) {
+        long start = System.currentTimeMillis();
+        task.run();
+        long stop = System.currentTimeMillis();
+        System.out.println((stop - start) / 60000 + " mins, " + (((stop - start) % 60000) / 1000) + " secs");
+    }
 }

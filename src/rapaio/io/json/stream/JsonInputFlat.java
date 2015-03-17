@@ -20,25 +20,21 @@
  *    limitations under the License.
  */
 
-package rapaio.experiment.json;
+package rapaio.io.json.stream;
 
-import rapaio.experiment.json.tree.*;
+import rapaio.io.json.tree.*;
 
 import java.io.*;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Spliterator;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/6/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/12/15.
  */
-public class ReaderJsonSpliterator implements JsonSpliterator {
+public class JsonInputFlat implements JsonInput {
 
-    private static final Logger logger = Logger.getLogger(ReaderJsonSpliterator.class.getName());
+    private static final Logger logger = Logger.getLogger(JsonInputFlat.class.getName());
 
     private static final char LEFT_SQUARE = '[';
     private static final char RIGHT_SQUARE = ']';
@@ -49,27 +45,19 @@ public class ReaderJsonSpliterator implements JsonSpliterator {
     private static final String KEY_TRUE = "true";
     private static final String KEY_FALSE = "false";
     private static final String KEY_NULL = "null";
+    private Consumer<String> messageHandler;
 
-    private LinkedList<File> files;
-    private final MessageHandler ph;
-    private final boolean parallel;
     private char[] buffer = new char[256];
     private int pos = 0;
 
-    private long estimateSize = Long.MAX_VALUE;
-    private Reader reader;
+    private final Reader reader;
     int _next = ' ';
 
-    public ReaderJsonSpliterator(List<File> files, MessageHandler ph) {
-        this.files = new LinkedList<>(files);
-        this.parallel = files.size() > 1;
-        this.ph = ph;
-        estimateSize = files.stream().mapToLong(File::length).sum();
-    }
-
-    @Override
-    public boolean isParallel() {
-        return parallel;
+    public JsonInputFlat(File file, Consumer<String> messageHandler) throws IOException {
+        this.reader = (file.getName().endsWith(".gz")) ?
+                new InputStreamReader(new GZIPInputStream(new BufferedInputStream(new FileInputStream(file), 1024 * 1024), 16 * 1024), "utf-8") :
+                new InputStreamReader(new BufferedInputStream(new FileInputStream(file), 16 * 1024), "utf-8");
+        this.messageHandler = messageHandler;
     }
 
     private boolean isNumeric(int ch) {
@@ -90,38 +78,15 @@ public class ReaderJsonSpliterator implements JsonSpliterator {
         return ch == ' ' || ch == '\n' || ch == '\t' || ch == '\r';
     }
 
-    private Reader buildReader(File source) throws IOException {
-        if (source.getName().endsWith(".gz")) {
-            return new InputStreamReader(new GZIPInputStream(new BufferedInputStream(new FileInputStream(source), 1024 * 1024), 16 * 1024), "utf-8");
-        }
-        return new InputStreamReader(new BufferedInputStream(new FileInputStream(source), 16 * 1024), "utf-8");
-    }
-
     private String getBuf() {
         return String.valueOf(buffer, 0, pos);
     }
 
     private int getNext() throws IOException {
-        if (reader != null) {
-            int next = reader.read();
-            if (next == -1) {
-                reader.close();
-                if (files.isEmpty())
-                    return -1;
-                ph.sendMessage("parsing (next): " + files.getFirst().getName());
-                estimateSize = files.stream().mapToLong(File::length).sum();
-                reader = buildReader(files.pollFirst());
-                return getNext();
-            }
-            return next;
-        } else {
-            if (files.isEmpty()) {
-                return -1;
-            }
-            ph.sendMessage("parsing (head): " + files.getFirst().getName());
-            estimateSize = files.stream().mapToLong(File::length).sum();
-            reader = buildReader(files.pollFirst());
-            return getNext();
+        try {
+            return reader.read();
+        } catch (IOException ex) {
+            return -1;
         }
     }
 
@@ -129,7 +94,8 @@ public class ReaderJsonSpliterator implements JsonSpliterator {
         while (isWhite(_next)) _next = getNext();
     }
 
-    private JsonValue parseStream() throws IOException {
+    @Override
+    public JsonValue read() throws IOException {
         while (true) {
             skipWhite();
             if (_next == -1) {
@@ -328,52 +294,12 @@ public class ReaderJsonSpliterator implements JsonSpliterator {
     }
 
     @Override
-    public boolean tryAdvance(Consumer<? super JsonValue> action) {
-        try {
-            JsonValue value = parseStream();
-            if (value == null)
-                return false;
-            action.accept(value);
-        } catch (IOException ex) {
-            logger.log(Level.SEVERE, "error at try advance", ex);
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public Spliterator<JsonValue> trySplit() {
-        if (files.size() > 1) {
-            int len = files.size() / 2;
-            LinkedList<File> splitFiles = new LinkedList<>(files.subList(files.size() - len, files.size()));
-            files = new LinkedList<>(files.subList(0, files.size() - len));
-            return new ReaderJsonSpliterator(splitFiles, ph);
-        }
-        return null;
-    }
-
-    @Override
-    public void forEachRemaining(Consumer<? super JsonValue> action) {
-        while (true) {
+    public void close() throws IOException {
+        if (reader != null) {
             try {
-                JsonValue value = parseStream();
-                if (value == null)
-                    return;
-                action.accept(value);
-            } catch (IOException e) {
-                logger.log(Level.SEVERE, "error at forEachRemaining", e);
-                return;
+                reader.close();
+            } catch (IOException ingored) {
             }
         }
-    }
-
-    @Override
-    public long estimateSize() {
-        return estimateSize;
-    }
-
-    @Override
-    public int characteristics() {
-        return CONCURRENT & SIZED & SUBSIZED & IMMUTABLE;
     }
 }

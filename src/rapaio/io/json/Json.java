@@ -20,16 +20,16 @@
  *    limitations under the License.
  */
 
-package rapaio.experiment.json;
+package rapaio.io.json;
 
-import rapaio.experiment.json.tree.JsonValue;
+import rapaio.io.json.stream.JsonSpliterator;
+import rapaio.io.json.tree.JsonValue;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
@@ -37,40 +37,40 @@ import java.util.stream.StreamSupport;
  */
 public final class Json {
 
-    public enum Format {
-        FLAT,
-        GZIP,
-        LZ4JSON
+    public static JsonStream stream(File root, FileFilter ff) {
+        return new JsonStream(Json.stream(root, ff, msg -> {
+        }, Json.allFilter()));
     }
 
-    public static Stream<JsonValue> stream(File root, Format format, FileFilter filter) {
-        return Json.stream(root, format, filter, msg -> {
-        });
+    public static JsonStream stream(File root, FileFilter ff, Function<String, Boolean> propFilter) {
+        return new JsonStream(Json.stream(root, ff, msg -> {
+        }, propFilter));
     }
 
-    public static Stream<JsonValue> stream(File root, Format format, FileFilter filter, MessageHandler ph) {
+    public static JsonStream stream(File root, FileFilter ff, Consumer<String> ph, Function<String, Boolean> propFilter) {
         List<File> files = new ArrayList<>();
         if (root.isDirectory()) {
-            files = Arrays.asList(root.listFiles()).stream().filter(filter::accept).collect(Collectors.toList());
+            files = Arrays.asList(root.listFiles()).stream().filter(ff::accept).collect(Collectors.toList());
         } else {
             files.add(root);
         }
-        switch (format) {
-            case FLAT:
-            case GZIP:
-                JsonSpliterator spliterator1 = new ReaderJsonSpliterator(files, ph);
-                return StreamSupport.stream(spliterator1, spliterator1.isParallel());
-            case LZ4JSON:
-                JsonSpliterator spliterator2 = new LzJsonSpliterator(files, ph);
-                return StreamSupport.stream(spliterator2, spliterator2.isParallel());
-            default:
-                throw new IllegalArgumentException();
-        }
+        JsonSpliterator spliterator = new JsonSpliterator(files, ph, propFilter);
+        return new JsonStream(StreamSupport.stream(spliterator, spliterator.isParallel()));
     }
 
     public static void write(OutputStream os, JsonValue js) throws IOException {
         Writer w = new OutputStreamWriter(os);
         w.append(js.toString()).append('\n');
         w.flush();
+    }
+
+    public static Function<String, Boolean> allFilter() {
+        return key -> true;
+    }
+
+    public static Function<String, Boolean> inFilter(String... keys) {
+        final HashSet<String> allow = new HashSet<>();
+        Collections.addAll(allow, keys);
+        return key -> allow.isEmpty() || allow.contains(key);
     }
 }

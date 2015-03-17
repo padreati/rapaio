@@ -105,10 +105,10 @@ public class JavaDBUtil {
 
         ResultSetMetaData md = rs.getMetaData();
         List<String> colNames = new ArrayList<>();
-        List<List> lists = new ArrayList<>();
+        List<List<Object>> lists = new ArrayList<>();
         for (int i = 0; i < md.getColumnCount(); i++) {
             colNames.add(md.getColumnLabel(i + 1));
-            lists.add(new ArrayList());
+            lists.add(new ArrayList<>());
         }
         while (rs.next()) {
             for (int i = 0; i < md.getColumnCount(); i++) {
