@@ -48,7 +48,7 @@ public class ContourSample {
 
     public static void main(String[] args) {
 
-        setPrinter(new IdeaPrinter());
+        setPrinter(new IdeaPrinter(true));
 
         Frame xy = SolidFrame.newWrapOf(
                 Numeric.newWrapOf(3, -1, -2).withName("x"),

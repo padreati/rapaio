@@ -36,7 +36,7 @@ public abstract class HostFigure extends BaseFigure {
     protected static final Font TITLE_FONT = new Font("Verdana", Font.BOLD, 18);
     protected static final Font MARKERS_FONT = new Font("Verdana", Font.PLAIN, 13);
     protected static final Font LABELS_FONT = new Font("Verdana", Font.BOLD, 16);
-    protected static final double DEFAULT_THICKER_MIN_SPACE = 120.;
+    protected static final double DEFAULT_THICKER_MIN_SPACE = 110.;
     protected static final int THICKER_PAD = 7;
     protected static final int MARKER_PAD = 15;
     protected static final int LABEL_PAD = 30;
@@ -303,6 +303,9 @@ public abstract class HostFigure extends BaseFigure {
         bottomMarkersMsg.clear();
 
         int xspots = (int) Math.floor(viewport.width / thickerMinSpace);
+        if (xspots < 1) {
+            xspots = 1;
+        }
         double xspotwidth = viewport.width / xspots;
 
         for (int i = 0; i <= xspots; i++) {
@@ -316,6 +319,9 @@ public abstract class HostFigure extends BaseFigure {
         leftMarkersMsg.clear();
 
         int yspots = (int) Math.floor(viewport.height / thickerMinSpace);
+        if (yspots < 1) {
+            yspots = 1;
+        }
         double yspotwidth = viewport.height / yspots;
 
         for (int i = 0; i <= yspots; i++) {

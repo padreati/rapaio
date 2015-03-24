@@ -31,6 +31,7 @@ public class CommandBytes implements Serializable {
 
     public static enum Type {
         DRAW,
+        IMAGE,
         CONFIG
     }
 
@@ -46,6 +47,10 @@ public class CommandBytes implements Serializable {
 
     public static CommandBytes newDraw(byte[] bytes) {
         return new CommandBytes(Type.DRAW, bytes);
+    }
+
+    public static CommandBytes newImage(byte[] bytes) {
+        return new CommandBytes(Type.IMAGE, bytes);
     }
 
     public static CommandBytes newConfig() {

@@ -45,7 +45,7 @@ public class OnlineStatTest {
     public void testVariance() {
 
 //        RandomSource.setSeed(1223);
-        setPrinter(new IdeaPrinter());
+        setPrinter(new IdeaPrinter(true));
 
         int LEN = 1_000;
         Var v = new Normal(0, 1).sample(LEN);

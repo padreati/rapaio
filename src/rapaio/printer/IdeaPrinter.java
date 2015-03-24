@@ -36,6 +36,15 @@ import java.net.Socket;
  */
 public class IdeaPrinter extends StandardPrinter {
     public static final int DEFAULT_PORT = 56339;
+    private final boolean sendFigure;
+
+    public IdeaPrinter() {
+        this(true);
+    }
+
+    public IdeaPrinter(boolean sendFigure) {
+        this.sendFigure = sendFigure;
+    }
 
     @Override
     public int getTextWidth() {
@@ -65,21 +74,20 @@ public class IdeaPrinter extends StandardPrinter {
     }
 
     @Override
-    public void draw(Figure figure, int width, int height) {
-        draw(figure);
-    }
-
-    @Override
     public void draw(Figure figure) {
         try (Socket s = new Socket("localhost", DEFAULT_PORT)) {
             new ClassMarshaller().marshallConfig(s.getOutputStream());
             CommandBytes cb = new ClassMarshaller().unmarshall(s.getInputStream());
             if (!(cb.getGraphicalWidth() == 0 || cb.getGraphicalHeight() == 0)) {
-                BufferedImage image = ImageUtility.buildImage(
-                        figure,
-                        cb.getGraphicalWidth(),
-                        cb.getGraphicalHeight());
-                new ClassMarshaller().marshallDraw(s.getOutputStream(), figure);
+                if (sendFigure) {
+                    new ClassMarshaller().marshallDraw(s.getOutputStream(), figure);
+                } else {
+                    BufferedImage image = ImageUtility.buildImage(
+                            figure,
+                            cb.getGraphicalWidth(),
+                            cb.getGraphicalHeight());
+                    new ClassMarshaller().marshallImage(s.getOutputStream(), image);
+                }
             }
         } catch (IOException | ClassNotFoundException ex) {
             ex.printStackTrace();

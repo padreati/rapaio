@@ -20,23 +20,31 @@
  *    limitations under the License.
  */
 
-package rapaio.math.linear;
+package rapaio.experiment.sandbox;
 
-import rapaio.printer.IdeaPrinter;
+import rapaio.WS;
+import rapaio.data.Frame;
+import rapaio.datasets.Datasets;
+import rapaio.graphics.Plot;
+import rapaio.graphics.plot.Histogram;
+import rapaio.stream.SCollectors;
+import rapaio.ws.Summary;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static rapaio.WS.setPrinter;
-
-/**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
- */
-public class SandBoxM {
-
+public class SandboxScript {
     public static void main(String[] args) throws IOException, URISyntaxException {
+        Frame df = Datasets.loadCarMpgDataset();
+        Summary.summary(df);
 
-        setPrinter(new IdeaPrinter(true));
+        Stream.of("Ion", "Ion", "Ana", "Vasile", "Ana", "Ion", "Andrei")
+                .collect(SCollectors.countingTop(Collectors.toSet()))
+                .entrySet()
+                .forEach(System.out::println);
 
+        WS.draw(new Plot().add(new Histogram(df.var("mpg"))));
     }
 }

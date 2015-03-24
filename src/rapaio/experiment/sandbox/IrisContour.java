@@ -55,7 +55,7 @@ public class IrisContour {
     public static void main(String[] args) throws IOException, URISyntaxException {
 
         RandomSource.setSeed((long) (Math.E * 100));
-        WS.setPrinter(new IdeaPrinter());
+        WS.setPrinter(new IdeaPrinter(true));
 
         final String X = "petal-length";
         final String Y = "sepal-width";

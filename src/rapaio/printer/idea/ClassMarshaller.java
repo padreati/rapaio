@@ -24,6 +24,8 @@ package rapaio.printer.idea;
 
 import rapaio.graphics.base.Figure;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 
 /**
@@ -42,6 +44,20 @@ public class ClassMarshaller {
             }
         }
         CommandBytes cb = CommandBytes.newDraw(bytes);
+        try (ObjectOutputStream oos2 = new ObjectOutputStream(out)) {
+            oos2.writeObject(cb);
+            oos2.flush();
+        }
+    }
+
+    public void marshallImage(OutputStream out, BufferedImage image) throws IOException {
+        byte[] bytes;
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            ImageIO.write(image, "png", baos);
+            baos.flush();
+            bytes = baos.toByteArray();
+        }
+        CommandBytes cb = CommandBytes.newImage(bytes);
         try (ObjectOutputStream oos2 = new ObjectOutputStream(out)) {
             oos2.writeObject(cb);
             oos2.flush();

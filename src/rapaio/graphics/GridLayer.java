@@ -50,6 +50,15 @@ public class GridLayer extends HostFigure {
         return null;
     }
 
+    /**
+     * Add a grid layer component to the given cell. Cells are indexed
+     * starting with 1.
+     *
+     * @param x      horizontal index of the cell
+     * @param y      vertical index of the cell
+     * @param figure figure to be drawn
+     * @return self reference
+     */
     public GridLayer add(int x, int y, HostFigure figure) {
         list.add(new G(y, x, 1, 1, figure));
         return this;
@@ -62,8 +71,7 @@ public class GridLayer extends HostFigure {
 
     @Override
     public void paint(Graphics2D g2d, Rectangle r) {
-
-//        super.paint(g2d, r);
+        super.paint(g2d, r);
 
         double h = r.getHeight() / rows;
         double w = r.getWidth() / cols;
