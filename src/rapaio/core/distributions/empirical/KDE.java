@@ -28,13 +28,13 @@ import rapaio.data.filter.var.VFSort;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.function.Function;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class KDE implements Serializable {
 
+    private static final long serialVersionUID = -9221394390068126299L;
     private final double[] values;
     private final KFunc kernel;
     private final double bandwidth;
@@ -69,10 +69,6 @@ public class KDE implements Serializable {
             sum += kernel.pdf(x, values[i], bandwidth);
         }
         return sum / (values.length * bandwidth);
-    }
-
-    public Function<Double, Double> getPdf() {
-        return this::pdf;
     }
 
     public KFunc getKernel() {

@@ -159,9 +159,9 @@ public class HistogramDensityTutorial implements TutorialPage {
 
         draw(new Plot()
                         .add(new Histogram(col).prob(true))
-                        .add(new FunctionLine(new KDE(col, 0.1).getPdf()).color(1))
-                        .add(new FunctionLine(new KDE(col, 0.5).getPdf()).color(2))
-                        .add(new FunctionLine(new KDE(col, 2).getPdf()).color(3))
+                        .add(new FunctionLine(new KDE(col, 0.1)::pdf).color(1))
+                        .add(new FunctionLine(new KDE(col, 0.5)::pdf).color(2))
+                        .add(new FunctionLine(new KDE(col, 2)::pdf).color(3))
                         .yLim(0, 0.18),
                 600, 300
         );
@@ -176,7 +176,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                 "once you implement a custom kernel function. ");
 
         draw(new Plot()
-                .add(new FunctionLine(new KDE(col).getPdf()).color(1))
+                .add(new FunctionLine(new KDE(col)::pdf).color(1))
                 .add(new DensityLine(col)
                         .kfunc(new KFunc() {
                             @Override

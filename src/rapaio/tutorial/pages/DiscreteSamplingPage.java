@@ -351,7 +351,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "density would help more. ");
 
         draw(new Plot()
-                        .add(new FunctionLine(new KDE(df2.var("winning number"), 3).getPdf())
+                        .add(new FunctionLine(new KDE(df2.var("winning number"), 3)::pdf)
                                 .color(Index.newScalar(1)))
                         .xLab("winning numbers")
                         .yLab("kernel probability density")

@@ -76,12 +76,12 @@ public class IdeaPrinter extends StandardPrinter {
     @Override
     public void draw(Figure figure) {
         try (Socket s = new Socket("localhost", DEFAULT_PORT)) {
-            new ClassMarshaller().marshallConfig(s.getOutputStream());
-            CommandBytes cb = new ClassMarshaller().unmarshall(s.getInputStream());
-            if (!(cb.getGraphicalWidth() == 0 || cb.getGraphicalHeight() == 0)) {
-                if (sendFigure) {
-                    new ClassMarshaller().marshallDraw(s.getOutputStream(), figure);
-                } else {
+            if (sendFigure) {
+                new ClassMarshaller().marshallDraw(s.getOutputStream(), figure);
+            } else {
+                new ClassMarshaller().marshallConfig(s.getOutputStream());
+                CommandBytes cb = new ClassMarshaller().unmarshall(s.getInputStream());
+                if (!(cb.getGraphicalWidth() == 0 || cb.getGraphicalHeight() == 0)) {
                     BufferedImage image = ImageUtility.buildImage(
                             figure,
                             cb.getGraphicalWidth(),

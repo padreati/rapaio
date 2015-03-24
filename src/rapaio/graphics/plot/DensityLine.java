@@ -32,12 +32,14 @@ import rapaio.util.Pin;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.util.function.Function;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class DensityLine extends PlotComponent {
 
+    private static final long serialVersionUID = -9207144655129877629L;
     private final Var var;
     private int points;
     private double bandwidth;
@@ -79,7 +81,7 @@ public class DensityLine extends PlotComponent {
         var.stream().filter(s -> !s.missing()).forEach(s -> {
             double xMin = kde.getKernel().getMinValue(s.value(), bandwidth);
             double xMax = kde.getKernel().getMaxValue(s.value(), bandwidth);
-            double yMax = kde.getPdf().apply(s.value());
+            double yMax = ((Function<Double, Double>) kde::pdf).apply(s.value());
             xmin.set(Double.isNaN(xmin.get()) ? xMin : Math.min(xmin.get(), xMin));
             xmax.set(Double.isNaN(xmax.get()) ? xMax : Math.max(xmax.get(), xMax));
             ymax.set(Double.isNaN(ymax.get()) ? yMax : Math.max(ymax.get(), yMax));
@@ -103,7 +105,7 @@ public class DensityLine extends PlotComponent {
         double xstep = (range.x2() - range.x1()) / points;
         for (int i = 0; i < x.rowCount(); i++) {
             x.setValue(i, range.x1() + i * xstep);
-            y.setValue(i, kde.getPdf().apply(x.value(i)));
+            y.setValue(i, ((Function<Double, Double>) kde::pdf).apply(x.value(i)));
         }
 
         for (int i = 1; i < x.rowCount(); i++) {
