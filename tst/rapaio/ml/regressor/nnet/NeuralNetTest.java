@@ -22,7 +22,7 @@
 
 package rapaio.ml.regressor.nnet;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;

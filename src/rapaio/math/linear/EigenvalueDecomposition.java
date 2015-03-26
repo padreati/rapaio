@@ -20,43 +20,31 @@
  *    limitations under the License.
  */
 
-package rapaio.data.matrix;
+package rapaio.math.linear;
+
+import java.io.Serializable;
 
 import static java.lang.StrictMath.hypot;
 
 /**
- * Eigenvalues and eigenvectors of a real rapaio.data.matrix.
+ * Eigenvalues and eigenvectors of a real matrix.
  * <p>
- * If A is symmetric, then A = V*D*V' where the eigenvalue .matrix D is diagonal
- * and the eigenvector rapaio.data.matrix V is orthogonal. I.e. A =
- * V.times(D.times(V.transpose())) and V.times(V.transpose()) equals the
- * identity rapaio.data.matrix.
+ * If A is symmetric, then A = V*D*V' where the eigenvalue matrix D is diagonal
+ * and the eigenvector matrix V is orthogonal. I.e. A = V.prod(D.prod(V.t())) and V.prod(V.prod()) equals the
+ * identity matrix.
  * <p>
- * If A is not symmetric, then the eigenvalue rapaio.data.matrix D is block diagonal with
+ * If A is not symmetric, then the eigenvalue matrix D is block diagonal with
  * the real eigenvalues in 1-by-1 blocks and any complex eigenvalues, lambda +
  * i*mu, in 2-by-2 blocks, [lambda, mu; -mu, lambda]. The columns of V represent
  * the eigenvectors in the sense that A*V = V*D, i.e. A.times(V) equals
- * V.times(D). The rapaio.data.matrix V may be badly conditioned, or even singular, so the
+ * V.times(D). The matrix V may be badly conditioned, or even singular, so the
  * validity of the equation A = V*D*inverse(V) depends upon V.cond().
  */
+public class EigenvalueDecomposition implements Serializable {
 
-public class EigenvalueDecomposition implements java.io.Serializable {
+    private static final long serialVersionUID = 3555538732524620364L;
 
-    /*
-     * ------------------------ Class variables ------------------------
-     */
-    /**
-     * Row and column dimension (square rapaio.data.matrix).
-     *
-     * @serial rapaio.data.matrix dimension.
-     */
     private int n;
-
-    /**
-     * Symmetry flag.
-     *
-     * @serial internal symmetry flag.
-     */
     private boolean issymmetric;
 
     /**
@@ -87,9 +75,6 @@ public class EigenvalueDecomposition implements java.io.Serializable {
      */
     private double[] ort;
 
-    /*
-     * ------------------------ Private Methods ------------------------
-     */
     // Symmetric Householder reduction to tridiagonal form.
     private void tred2() {
 
@@ -911,8 +896,8 @@ public class EigenvalueDecomposition implements java.io.Serializable {
      *
      * @return D
      */
-    public Matrix getD() {
-        Matrix D = new Matrix(n, n);
+    public M getD() {
+        M D = LA.newMEmpty(n, n);
         for (int i = 0; i < n; i++) {
             D.set(i, i, d[i]);
             if (e[i] > 0) {
@@ -923,6 +908,4 @@ public class EigenvalueDecomposition implements java.io.Serializable {
         }
         return D;
     }
-
-    private static final long serialVersionUID = 1;
 }

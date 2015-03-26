@@ -27,6 +27,12 @@ package rapaio.math.linear;
  */
 public interface V extends M {
 
+    /**
+     * Additional single index accessor for vector elements
+     *
+     * @param i position of the element
+     * @return value at the given position
+     */
     default double get(int i) {
         if (rowCount() == 1)
             return get(0, i);
@@ -35,6 +41,12 @@ public interface V extends M {
         throw new IllegalArgumentException("This shortcut method can be called only for vectors or special matrices");
     }
 
+    /**
+     * Additional single index setter for vector elements
+     *
+     * @param i     position of the elements
+     * @param value new value for the given position
+     */
     default void set(int i, double value) {
         if (rowCount() == 1) {
             set(0, i, value);
@@ -47,6 +59,15 @@ public interface V extends M {
         throw new IllegalArgumentException("This shortcut method can be called only for vectors");
     }
 
+    /**
+     * Dot product between two vectors is equal to the sum of the
+     * product of elements from each given position.
+     * <p>
+     * sum_{i=1}^{n}a_i*b_i
+     *
+     * @param b
+     * @return
+     */
     default double dotProd(V b) {
         int max = Math.min(Math.max(rowCount(), colCount()), Math.max(b.rowCount(), b.colCount()));
         double s = 0;

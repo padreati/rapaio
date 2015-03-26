@@ -68,11 +68,30 @@ public interface M extends Serializable, Printable {
      */
     void set(int i, int j, double value);
 
+    /**
+     * Sets value from a given position in the matrix using a function
+     *
+     * @param i      row number
+     * @param j      col number
+     * @param update update function, takes cell value and outputs transformed value
+     */
     default void set(int i, int j, Function<Double, Double> update) {
         set(i, j, update.apply(get(i, j)));
     }
 
-    // methods
+    /**
+     * Increment value from a given position with the increment value
+     *
+     * @param i     row number
+     * @param j     col number
+     * @param value value to be added to the cell value
+     */
+    default void increment(int i, int j, double value) {
+        double old = get(i, j);
+        set(i, j, old + value);
+    }
+
+    // transforming methods
 
     /**
      * Builds a new matrix having only the specified rows
@@ -142,17 +161,9 @@ public interface M extends Serializable, Printable {
         return new MappedM(this, false, cols);
     }
 
-    default M solidCopy() {
-        M m = new SolidM(rowCount(), colCount());
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < colCount(); j++) {
-                m.set(i, j, get(i, j));
-            }
-        }
-        return m;
-    }
-
-    // operations
+    ///////////////////////
+    // matrix operations
+    ///////////////////////
 
     default M t() {
         return new TransposeM(this);
@@ -160,11 +171,6 @@ public interface M extends Serializable, Printable {
 
     default double det() {
         return new LUDecomposition(this, LUDecomposition.Method.GAUSSIAN_ELIMINATION).det();
-    }
-
-    default void increment(int i, int j, double value) {
-        double old = get(i, j);
-        set(i, j, old + value);
     }
 
     /**
@@ -225,6 +231,9 @@ public interface M extends Serializable, Printable {
         return new SVDecomposition(this).rank();
     }
 
+    ///////////////////////
+    // other tools
+    ///////////////////////
 
     /**
      * Does not override equals since this is a costly
@@ -251,7 +260,24 @@ public interface M extends Serializable, Printable {
         return true;
     }
 
+    /**
+     * Makes a solid copy of the matrix
+     *
+     * @return new solid copy of the matrix
+     */
+    default M solidCopy() {
+        M m = new SolidM(rowCount(), colCount());
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                m.set(i, j, get(i, j));
+            }
+        }
+        return m;
+    }
+
+    //////////////////
     // summary
+    //////////////////
 
     default void buildSummary(StringBuilder sb) {
 
@@ -314,5 +340,4 @@ public interface M extends Serializable, Printable {
             hLast = hEnd;
         }
     }
-
 }

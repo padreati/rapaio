@@ -22,7 +22,7 @@
 
 package rapaio.core.tests;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.StudentT;

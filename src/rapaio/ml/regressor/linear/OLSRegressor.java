@@ -23,13 +23,13 @@
 package rapaio.ml.regressor.linear;
 
 import rapaio.data.*;
-import rapaio.data.matrix.Matrix;
-import rapaio.data.matrix.QRDecomposition;
+import rapaio.math.linear.LA;
+import rapaio.math.linear.M;
+import rapaio.math.linear.QRDecomposition;
 import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.Regressor;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -65,9 +65,9 @@ public class OLSRegressor extends AbstractRegressor {
             throw new IllegalArgumentException("OLS must specify at least one target variable name");
         }
 
-        Matrix X = buildX(df);
-        Matrix Y = buildY(df);
-        Matrix beta = new QRDecomposition(X).solve(Y);
+        M X = LA.newMCopyOf(df.mapVars(inputNames()));
+        M Y = LA.newMCopyOf(df.mapVars(targetNames()));
+        M beta = new QRDecomposition(X).solve(Y);
         Var betaN = Nominal.newEmpty().withName("Term");
         Var betaC = Numeric.newEmpty().withName("Coefficient");
         for (int i = 0; i < inputNames().length; i++) {
@@ -75,20 +75,6 @@ public class OLSRegressor extends AbstractRegressor {
             betaC.addValue(beta.get(i, 0));
         }
         coefficients = SolidFrame.newWrapOf(inputNames().length, betaN, betaC);
-    }
-
-    private Matrix buildY(Frame df) {
-        return new Matrix(Arrays.stream(targetNames())
-                .map(colName -> (Numeric) df.var(colName))
-                .collect(Collectors.toList())
-        );
-    }
-
-    private Matrix buildX(Frame df) {
-        return new Matrix(Arrays.stream(inputNames())
-                .map(colName -> (Numeric) df.var(colName))
-                .collect(Collectors.toList())
-        );
     }
 
     @Override

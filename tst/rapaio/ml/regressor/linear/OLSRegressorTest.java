@@ -28,10 +28,7 @@ import rapaio.core.distributions.StudentT;
 import rapaio.data.*;
 import rapaio.data.filter.frame.FFAddIntercept;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.LA;
-import rapaio.math.linear.M;
-import rapaio.math.linear.QRDecomposition;
-import rapaio.math.linear.V;
+import rapaio.math.linear.*;
 import rapaio.ws.Summary;
 
 import java.io.IOException;
@@ -78,8 +75,7 @@ public class OLSRegressorTest {
         Var betaPValue = Nominal.newEmpty().withName("Pr(>|t|)");
         Var betaSignificance = Nominal.newEmpty().withName("");
 
-        QRDecomposition qr2 = new QRDecomposition(X.t().mult(X));
-        M c = qr2.solve(LA.newId(X.colCount()));
+        M c = CholeskyDecomposition.chol2inv(qr1.getR());
 
         double sigma2 = 0;
         for (int i = 0; i < X.rowCount(); i++) {

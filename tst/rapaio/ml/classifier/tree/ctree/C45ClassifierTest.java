@@ -22,7 +22,7 @@
 
 package rapaio.ml.classifier.tree.ctree;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.VarType;

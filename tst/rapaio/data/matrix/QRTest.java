@@ -24,28 +24,26 @@ package rapaio.data.matrix;
 
 import org.junit.Test;
 import rapaio.data.Numeric;
-
-import java.text.DecimalFormat;
-
-import static rapaio.data.matrix.MathMatrix.times;
+import rapaio.math.linear.LA;
+import rapaio.math.linear.M;
+import rapaio.math.linear.QRDecomposition;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 public class QRTest {
 
-	@Test
-	public void testQR() {
-		Matrix x = new Matrix(new double[][]{
-				{1, 1, 1},
-				{1, 2, 4},
-				{1, 3, 9},
-				{1, 4, 16},
-				{1, 5, 25}
-		});
+    @Test
+    public void testQR() {
+        M x = LA.newMCopyOf(new double[][]{
+                {1, 1, 1},
+                {1, 2, 4},
+                {1, 3, 9},
+                {1, 4, 16},
+                {1, 5, 25}
+        });
 
-		Matrix y;
-        y = new Matrix(
+        M y = LA.newMCopyOf(
                 Numeric.newCopyOf(2.8, 3.2, 7.1, 6.8, 8.8),
                 Numeric.newCopyOf(2.8, 3.2, 7.1, 6.8, 8.9)
         );
@@ -60,9 +58,9 @@ public class QRTest {
 //        System.out.println("H");
 //        qr.getH().print(new DecimalFormat("0.000000000"), 14);
 
-		qr.solve(y).print(new DecimalFormat("0.000000000"), 14);
+        qr.solve(y).summary();
 
-		x.print(new DecimalFormat("0.000"), 10);
-		times(qr.getQ(), qr.getR()).print(new DecimalFormat("0.000"), 10);
-	}
+        x.summary();
+        qr.getQ().mult(qr.getR()).summary();
+    }
 }

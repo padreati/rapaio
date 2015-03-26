@@ -27,6 +27,7 @@ import rapaio.data.Var;
 import rapaio.math.linear.impl.SolidM;
 import rapaio.math.linear.impl.SolidV;
 
+import java.util.Arrays;
 import java.util.function.BiFunction;
 
 /**
@@ -49,7 +50,7 @@ public final class LA {
         return new SolidM(rowCount, colCount, values);
     }
 
-    public static M newCopyOf(double[][] source) {
+    public static M newMCopyOf(double[][] source) {
         return newMCopyOf(source, 0, source.length, 0, source[0].length);
     }
 
@@ -61,6 +62,27 @@ public final class LA {
             }
         }
         return mm;
+    }
+
+    public static M newMCopyOf(Frame df) {
+        M m = new SolidM(df.rowCount(), df.varCount());
+        for (int i = 0; i < df.rowCount(); i++) {
+            for (int j = 0; j < df.varCount(); j++) {
+                m.set(i, j, df.value(i, j));
+            }
+        }
+        return m;
+    }
+
+    public static M newMCopyOf(Var... vars) {
+        int rowCount = Arrays.stream(vars).mapToInt(Var::rowCount).min().getAsInt();
+        M m = new SolidM(rowCount, vars.length);
+        for (int i = 0; i < rowCount; i++) {
+            for (int j = 0; j < vars.length; j++) {
+                m.set(i, j, vars[j].value(i));
+            }
+        }
+        return m;
     }
 
     /**
@@ -89,16 +111,6 @@ public final class LA {
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < colCount; j++) {
                 m.set(i, j, f.apply(i, j));
-            }
-        }
-        return m;
-    }
-
-    public static M newMCopyOf(Frame df) {
-        M m = new SolidM(df.rowCount(), df.varCount());
-        for (int i = 0; i < df.rowCount(); i++) {
-            for (int j = 0; j < df.varCount(); j++) {
-                m.set(i, j, df.value(i, j));
             }
         }
         return m;

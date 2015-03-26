@@ -84,16 +84,11 @@ public class QRDecomposition implements java.io.Serializable {
         }
     }
 
-/* ------------------------
-   Public Methods
- * ------------------------ */
-
     /**
      * Is the matrix full rank?
      *
      * @return true if R, and hence A, has full rank.
      */
-
     public boolean isFullRank() {
         for (int j = 0; j < n; j++) {
             if (Rdiag[j] == 0)
@@ -107,7 +102,6 @@ public class QRDecomposition implements java.io.Serializable {
      *
      * @return Lower trapezoidal matrix whose columns define the reflections
      */
-
     public M getH() {
         M H = LA.newMEmpty(m, n);
         for (int i = 0; i < m; i++) {

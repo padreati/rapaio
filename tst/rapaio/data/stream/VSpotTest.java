@@ -27,7 +27,7 @@ import rapaio.core.stat.Sum;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
