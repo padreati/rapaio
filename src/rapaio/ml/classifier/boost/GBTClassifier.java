@@ -28,10 +28,10 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.Classifier;
+import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.RunningClassifier;
-import rapaio.ml.regressor.RResult;
+import rapaio.ml.regressor.RegressorFit;
 import rapaio.ml.regressor.boost.gbt.BTRegressor;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
 import rapaio.ml.regressor.tree.rtree.RTree;
@@ -197,7 +197,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
             tree.learn(bootTrain, bootWeights, "##tt##");
             tree.boostFit(bootX, bootR, bootR, new ClassifierLossFunction(K));
 
-            RResult rr = tree.predict(train, true);
+            RegressorFit rr = tree.predict(train, true);
 
             for (int i = 0; i < df.rowCount(); i++) {
                 f[i][k] += shrinkage * rr.firstFit().value(i);
@@ -208,8 +208,8 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
     }
 
     @Override
-    public CResult predict(Frame df, boolean withClasses, boolean withDistributions) {
-        CResult cr = CResult.newEmpty(this, df, withClasses, withDistributions);
+    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDistributions) {
+        ClassifierFit cr = ClassifierFit.newEmpty(this, df, withClasses, withDistributions);
         for (String targetName : targetNames()) {
             cr.addTarget(targetName, dictionaries().get(targetName));
         }
@@ -217,7 +217,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
         for (int k = 0; k < K; k++) {
             List<BTRegressor> predictors = trees.get(k);
             for (BTRegressor tree : predictors) {
-                RResult rr = tree.predict(df, false);
+                RegressorFit rr = tree.predict(df, false);
                 for (int i = 0; i < df.rowCount(); i++) {
                     double p = cr.firstDensity().value(i, k + 1);
                     p += shrinkage * rr.firstFit().value(i);

@@ -22,29 +22,16 @@
 
 package rapaio.experiment.sandbox;
 
-import rapaio.WS;
-import rapaio.data.Frame;
-import rapaio.datasets.Datasets;
-import rapaio.graphics.Plot;
-import rapaio.graphics.plot.Histogram;
-import rapaio.stream.SCollectors;
-import rapaio.ws.Summary;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SandboxScript {
     public static void main(String[] args) throws IOException, URISyntaxException {
-        Frame df = Datasets.loadCarMpgDataset();
-        Summary.summary(df);
 
-        Stream.of("Ion", "Ion", "Ana", "Vasile", "Ana", "Ion", "Andrei")
-                .collect(SCollectors.countingTop(Collectors.toSet()))
-                .entrySet()
-                .forEach(System.out::println);
+    }
 
-        WS.draw(new Plot().add(new Histogram(df.var("mpg"))));
+    private void foo() {
+        int i = 0;
+        System.out.println(i * i);
     }
 }

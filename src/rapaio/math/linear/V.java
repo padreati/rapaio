@@ -46,4 +46,13 @@ public interface V extends M {
         }
         throw new IllegalArgumentException("This shortcut method can be called only for vectors");
     }
+
+    default double dotProd(V b) {
+        int max = Math.min(Math.max(rowCount(), colCount()), Math.max(b.rowCount(), b.colCount()));
+        double s = 0;
+        for (int i = 0; i < max; i++) {
+            s += get(i) * b.get(i);
+        }
+        return s;
+    }
 }

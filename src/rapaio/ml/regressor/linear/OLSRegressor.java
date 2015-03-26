@@ -29,7 +29,6 @@ import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.Regressor;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -37,9 +36,7 @@ import java.util.stream.Collectors;
  */
 public class OLSRegressor extends AbstractRegressor {
 
-    List<String> predictors;
     Frame coefficients;
-    Var fittedValues;
 
     @Override
     public Regressor newInstance() {
@@ -68,21 +65,16 @@ public class OLSRegressor extends AbstractRegressor {
             throw new IllegalArgumentException("OLS must specify at least one target variable name");
         }
 
-        predictors = Arrays.stream(df.varNames())
-                .filter(c -> !Arrays.asList(df.varNames()).contains(c))
-                .filter(c -> df.var(c).type().isNumeric())
-                .collect(Collectors.toList());
-
         Matrix X = buildX(df);
         Matrix Y = buildY(df);
         Matrix beta = new QRDecomposition(X).solve(Y);
         Var betaN = Nominal.newEmpty().withName("Term");
         Var betaC = Numeric.newEmpty().withName("Coefficient");
-        for (int i = 0; i < predictors.size(); i++) {
-            betaN.addLabel(predictors.get(i));
+        for (int i = 0; i < inputNames().length; i++) {
+            betaN.addLabel(inputName(i));
             betaC.addValue(beta.get(i, 0));
         }
-        coefficients = SolidFrame.newWrapOf(predictors.size(), betaN, betaC);
+        coefficients = SolidFrame.newWrapOf(inputNames().length, betaN, betaC);
     }
 
     private Matrix buildY(Frame df) {
@@ -93,26 +85,26 @@ public class OLSRegressor extends AbstractRegressor {
     }
 
     private Matrix buildX(Frame df) {
-        return new Matrix(predictors.stream()
+        return new Matrix(Arrays.stream(inputNames())
                 .map(colName -> (Numeric) df.var(colName))
                 .collect(Collectors.toList())
         );
     }
 
     @Override
-    public RResultOLS predict(Frame df) {
+    public OLSRegressorFit predict(Frame df) {
         return predict(df, true);
     }
 
     @Override
-    public RResultOLS predict(Frame df, boolean withResiduals) {
-        RResultOLS rp = RResultOLS.newEmpty(this, df, withResiduals);
+    public OLSRegressorFit predict(Frame df, boolean withResiduals) {
+        OLSRegressorFit rp = OLSRegressorFit.newEmpty(this, df);
         Arrays.stream(targetNames()).forEach(rp::addTarget);
         for (int i = 0; i < df.rowCount(); i++) {
             double acc = 0;
-            for (int k = 0; k < predictors.size(); k++) {
+            for (int k = 0; k < inputNames().length; k++) {
                 double c = coefficients.value(k, "Coefficient");
-                double v = df.value(i, predictors.get(k));
+                double v = df.value(i, inputName(k));
                 acc += c * v;
             }
             rp.firstFit().setValue(i, acc);

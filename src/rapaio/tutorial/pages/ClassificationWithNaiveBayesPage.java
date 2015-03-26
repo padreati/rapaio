@@ -24,7 +24,7 @@ package rapaio.tutorial.pages;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.CResult;
+import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.bayes.NaiveBayesClassifier;
 import rapaio.ml.eval.ConfusionMatrix;
 
@@ -123,11 +123,11 @@ public class ClassificationWithNaiveBayesPage implements TutorialPage {
 
         NaiveBayesClassifier nb = new NaiveBayesClassifier();
         nb.learn(df, "class");
-        CResult cr = nb.predict(df, true, false);
+        ClassifierFit cr = nb.predict(df, true, false);
 
         code("        NaiveBayesClassifier nb = new NaiveBayesClassifier();\n" +
                 "        nb.learn(df, \"class\");\n" +
-                "        CResult cr = nb.predict(df, true, false);\n");
+                "        ClassifierFit cr = nb.predict(df, true, false);\n");
 
         p("Too see how the classifier worked, we can print the confusion matrix. ");
 

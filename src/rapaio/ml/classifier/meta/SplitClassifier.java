@@ -28,8 +28,8 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.Classifier;
+import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.RunningClassifier;
 
 import java.util.ArrayList;
@@ -134,9 +134,9 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
     }
 
     @Override
-    public CResult predict(Frame df, boolean withClasses, boolean withDensities) {
+    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDensities) {
 
-        CResult pred = CResult.newEmpty(this, df, withClasses, withDensities);
+        ClassifierFit pred = ClassifierFit.newEmpty(this, df, withClasses, withDensities);
         for (String targetVar : targetNames()) {
             pred.addTarget(targetVar, dictionaries().get(targetVar));
         }
@@ -146,7 +146,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
                 if (split.predicate.test(spot)) {
 
                     Frame f = MappedFrame.newByRow(df, spot.row());
-                    CResult p = split.classifier.predict(f, withClasses, withDensities);
+                    ClassifierFit p = split.classifier.predict(f, withClasses, withDensities);
 
                     if (withClasses) {
                         for (String targetVar : targetNames()) {

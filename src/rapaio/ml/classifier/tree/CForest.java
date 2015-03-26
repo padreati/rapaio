@@ -28,8 +28,8 @@ import rapaio.data.Frame;
 import rapaio.data.Nominal;
 import rapaio.data.Var;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.Classifier;
+import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.RunningClassifier;
 import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.ml.classifier.tree.ctree.CTree;
@@ -199,7 +199,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
 
         weak.learn(trainFrame, trainWeights, firstTargetName());
         if (oobCompute) {
-            CResult cp = weak.predict(oobFrame);
+            ClassifierFit cp = weak.predict(oobFrame);
             double oobError = new ConfusionMatrix(oobFrame.var(firstTargetName()), cp.firstClasses()).errorCases();
             synchronized (this) {
                 totalOobInstances += oobFrame.rowCount();
@@ -212,13 +212,13 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
     }
 
     @Override
-    public CResult predict(Frame df, boolean withClasses, boolean withDensities) {
-        CResult cp = CResult.newEmpty(this, df, true, true);
+    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDensities) {
+        ClassifierFit cp = ClassifierFit.newEmpty(this, df, true, true);
         cp.addTarget(firstTargetName(), firstDict());
 
         List<Frame> treeDensities = new ArrayList<>();
         predictors.forEach(p -> {
-            CResult cpTree = p.predict(df, true, true);
+            ClassifierFit cpTree = p.predict(df, true, true);
             treeDensities.add(cpTree.firstDensity());
         });
 

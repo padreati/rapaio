@@ -27,8 +27,8 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.regressor.AbstractRegressor;
-import rapaio.ml.regressor.RResult;
 import rapaio.ml.regressor.Regressor;
+import rapaio.ml.regressor.RegressorFit;
 import rapaio.ml.regressor.RunningRegressor;
 import rapaio.ml.regressor.tree.rtree.RTree;
 import rapaio.printer.Printer;
@@ -84,7 +84,7 @@ public class RForest extends AbstractRegressor implements RunningRegressor, Prin
     }
 
     @Override
-    public RResult predict(Frame df, boolean withResiduals) {
+    public RegressorFit predict(Frame df, boolean withResiduals) {
         return null;
     }
 

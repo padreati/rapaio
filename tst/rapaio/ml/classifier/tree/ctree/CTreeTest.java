@@ -27,7 +27,7 @@ import rapaio.data.Frame;
 import rapaio.data.VarType;
 import rapaio.data.filter.frame.FFRetainTypes;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.CResult;
+import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ws.Summary;
 
 import java.io.IOException;
@@ -101,7 +101,7 @@ public class CTreeTest {
         CTreePredictor predictor = new CTreePredictor.Standard();
         assertEquals("Standard", predictor.name());
 
-        CResult pred = tree.predict(df, true, true);
+        ClassifierFit pred = tree.predict(df, true, true);
         df = df.bindVars(pred.firstClasses().solidCopy().withName("predict"));
 
         Frame match = df.stream().filter(spot -> spot.index("class") == spot.index("predict")).toMappedFrame();

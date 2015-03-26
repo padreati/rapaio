@@ -31,7 +31,7 @@ import rapaio.datasets.Datasets;
 import rapaio.graphics.Plot;
 import rapaio.graphics.plot.Lines;
 import rapaio.graphics.plot.Points;
-import rapaio.ml.classifier.CResult;
+import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.tree.CForest;
 import rapaio.ml.classifier.tree.ctree.CTree;
 import rapaio.ml.common.VarSelector;
@@ -171,7 +171,7 @@ public class ClassificationWithRFPage implements TutorialPage {
             rf.withRuns(mTrees);
             rf.learn(train, "spam");
 
-            CResult cr = rf.predict(test);
+            ClassifierFit cr = rf.predict(test);
 
             index.addIndex(mTrees);
             errors.addValue(new ConfusionMatrix(
@@ -208,7 +208,7 @@ public class ClassificationWithRFPage implements TutorialPage {
                 "            rf.withRuns(mTrees);\n" +
                 "            rf.learn(train, \"spam\");\n" +
                 "\n" +
-                "            CResult cr = rf.predict(test);\n" +
+                "            ClassifierFit cr = rf.predict(test);\n" +
                 "\n" +
                 "            index.addIndex(mTrees);\n" +
                 "            errors.addValue(new ConfusionMatrix(\n" +
@@ -249,7 +249,7 @@ public class ClassificationWithRFPage implements TutorialPage {
                     .withOobError(true);
 
             rf.learn(train, "spam");
-            CResult cr = rf.predict(test);
+            ClassifierFit cr = rf.predict(test);
 
             index1.addIndex(mCol);
             errors1.addValue(new ConfusionMatrix(test.var("spam"), cr.firstClasses()).error());
@@ -279,7 +279,7 @@ public class ClassificationWithRFPage implements TutorialPage {
                 "                    .withOobError(true);\n" +
                 "\n" +
                 "            rf.learn(train, \"spam\");\n" +
-                "            CResult cr = rf.predict(test);\n" +
+                "            ClassifierFit cr = rf.predict(test);\n" +
                 "            \n" +
                 "            index1.addIndex(mCol);\n" +
                 "            errors1.addValue(new ConfusionMatrix(test.var(\"spam\"), cr.firstClasses()).error());\n" +

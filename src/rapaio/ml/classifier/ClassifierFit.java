@@ -33,7 +33,7 @@ import java.util.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class CResult implements Printable {
+public class ClassifierFit implements Printable {
 
     private final Classifier model;
     private final Frame df;
@@ -46,17 +46,17 @@ public class CResult implements Printable {
 
     // builder
 
-    public static CResult newEmpty(
+    public static ClassifierFit newEmpty(
             final Classifier model,
             final Frame df,
             final boolean withClasses,
             final boolean withDensities) {
-        return new CResult(model, df, withClasses, withDensities);
+        return new ClassifierFit(model, df, withClasses, withDensities);
     }
 
     // private constructor
 
-    private CResult(final Classifier model, final Frame df, final boolean withClasses, final boolean withDensities) {
+    private ClassifierFit(final Classifier model, final Frame df, final boolean withClasses, final boolean withDensities) {
         this.model = model;
         this.df = df;
         this.withClasses = withClasses;

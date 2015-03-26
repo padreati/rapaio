@@ -126,7 +126,7 @@ public interface Regressor extends Printable, Serializable {
      */
     void learn(Frame df, Var weights, String... targetVarNames);
 
-    default RResult predict(final Frame df) {
+    default RegressorFit predict(final Frame df) {
         return predict(df, true);
     }
 
@@ -136,7 +136,7 @@ public interface Regressor extends Printable, Serializable {
      * @param df            data set instances
      * @param withResiduals if residuals will be computed or not
      */
-    RResult predict(Frame df, boolean withResiduals);
+    RegressorFit predict(Frame df, boolean withResiduals);
 
     default void buildSummary(StringBuilder sb) {
         throw new NotImplementedException();

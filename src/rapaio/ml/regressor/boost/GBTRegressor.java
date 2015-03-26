@@ -25,8 +25,8 @@ package rapaio.ml.regressor.boost;
 import rapaio.core.sample.SamplingTool;
 import rapaio.data.*;
 import rapaio.ml.regressor.AbstractRegressor;
-import rapaio.ml.regressor.RResult;
 import rapaio.ml.regressor.Regressor;
+import rapaio.ml.regressor.RegressorFit;
 import rapaio.ml.regressor.RunningRegressor;
 import rapaio.ml.regressor.boost.gbt.BTRegressor;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
@@ -139,7 +139,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
         Frame x = df.removeVars(new VarRange(firstTargetName()));
 
         initRegressor.learn(df, firstTargetName());
-        RResult initPred = initRegressor.predict(df, false);
+        RegressorFit initPred = initRegressor.predict(df, false);
         trees = new ArrayList<>();
 
         fitLearn = Numeric.newFill(df.rowCount());
@@ -186,7 +186,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
 
             // add next prediction to the fit values
 
-            RResult treePred = tree.predict(df, false);
+            RegressorFit treePred = tree.predict(df, false);
             for (int j = 0; j < df.rowCount(); j++) {
                 fitLearn.setValue(j, fitLearn.value(j) + shrinkage * treePred.firstFit().value(j));
             }
@@ -272,7 +272,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
 
             // add next prediction to the fit values
 
-            RResult treePred = tree.predict(df, false);
+            RegressorFit treePred = tree.predict(df, false);
             for (int j = 0; j < df.rowCount(); j++) {
                 fitLearn.setValue(j, fitLearn.value(j) + shrinkage * treePred.firstFit().value(j));
             }
@@ -289,18 +289,18 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
     }
 
     @Override
-    public RResult predict(final Frame df, final boolean withResiduals) {
-        RResult pred = RResult.newEmpty(this, df, withResiduals);
+    public RegressorFit predict(final Frame df, final boolean withResiduals) {
+        RegressorFit pred = RegressorFit.newEmpty(this, df, withResiduals);
         for (String targetName : targetNames()) {
             pred.addTarget(targetName);
         }
 
-        RResult initPred = initRegressor.predict(df);
+        RegressorFit initPred = initRegressor.predict(df);
         for (int i = 0; i < df.rowCount(); i++) {
             pred.firstFit().setValue(i, initPred.firstFit().value(i));
         }
         for (BTRegressor tree : trees) {
-            RResult treePred = tree.predict(df);
+            RegressorFit treePred = tree.predict(df);
             for (int i = 0; i < df.rowCount(); i++) {
                 pred.firstFit().setValue(i, pred.firstFit().value(i) + shrinkage * treePred.firstFit().value(i));
             }

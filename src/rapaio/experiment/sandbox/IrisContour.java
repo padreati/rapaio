@@ -34,8 +34,8 @@ import rapaio.graphics.Plot;
 import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.plot.MeshContour;
 import rapaio.graphics.plot.Points;
-import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.Classifier;
+import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.classifier.svm.BinarySMO;
 import rapaio.ml.classifier.svm.kernel.CauchyKernel;
@@ -110,7 +110,7 @@ public class IrisContour {
                 sw.addValue(mg1.getY().value(j));
             }
         }
-        CResult cr2 = c.predict(SolidFrame.newWrapOf(sl, sw));
+        ClassifierFit cr2 = c.predict(SolidFrame.newWrapOf(sl, sw));
         c.predict(iris).summary();
         int pos = 0;
         for (int i = 0; i < x.rowCount(); i++) {

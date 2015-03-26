@@ -49,6 +49,20 @@ public final class LA {
         return new SolidM(rowCount, colCount, values);
     }
 
+    public static M newCopyOf(double[][] source) {
+        return newMCopyOf(source, 0, source.length, 0, source[0].length);
+    }
+
+    public static M newMCopyOf(double[][] source, int mFirst, int mLast, int nFirst, int nLast) {
+        M mm = new SolidM(mLast - mFirst, nLast - nFirst);
+        for (int i = mFirst; i < mLast; i++) {
+            for (int j = nFirst; j < nLast; j++) {
+                mm.set(i, j, source[i][j]);
+            }
+        }
+        return mm;
+    }
+
     /**
      * Builds a new matrix with given rows and cols, fillen with given value
      *
@@ -96,5 +110,13 @@ public final class LA {
 
     public static V newVEmpty(int rows) {
         return new SolidV(rows);
+    }
+
+    public static M newId(int n) {
+        M id = LA.newMEmpty(n, n);
+        for (int i = 0; i < n; i++) {
+            id.set(i, i, 1.0);
+        }
+        return id;
     }
 }

@@ -25,7 +25,7 @@ package rapaio.ml.classifier.rule;
 import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.*;
-import rapaio.ml.classifier.CResult;
+import rapaio.ml.classifier.ClassifierFit;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -58,7 +58,7 @@ public class OneRuleTest {
 
         oneRule = oneRule.withMinCount(1);
         oneRule.learn(df, "class");
-        CResult pred = oneRule.predict(df);
+        ClassifierFit pred = oneRule.predict(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
             Assert.assertEquals(labels[i], pred.firstClasses().label(i));

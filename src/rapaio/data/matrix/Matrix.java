@@ -48,6 +48,14 @@ public class Matrix {
         }
     }
 
+    public static Matrix newIdentity(int n) {
+        Matrix id = new Matrix(n, n);
+        for (int i = 0; i < n; i++) {
+            id.set(i, i, 1);
+        }
+        return id;
+    }
+
     public Matrix(Numeric... vectors) {
         m = vectors[0].rowCount();
         n = vectors.length;

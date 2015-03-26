@@ -26,8 +26,8 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.regressor.AbstractRegressor;
-import rapaio.ml.regressor.RResult;
 import rapaio.ml.regressor.Regressor;
+import rapaio.ml.regressor.RegressorFit;
 import rapaio.printer.Printer;
 
 import java.util.Arrays;
@@ -211,8 +211,8 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor {
     }
 
     @Override
-    public RResult predict(final Frame df, final boolean withResiduals) {
-        RResult pred = RResult.newEmpty(this, df, withResiduals);
+    public RegressorFit predict(final Frame df, final boolean withResiduals) {
+        RegressorFit pred = RegressorFit.newEmpty(this, df, withResiduals);
         for (String targetName : targetNames()) {
             pred.addTarget(targetName);
         }

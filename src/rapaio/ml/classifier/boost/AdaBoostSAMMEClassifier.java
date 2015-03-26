@@ -28,8 +28,8 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.Classifier;
+import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.RunningClassifier;
 import rapaio.ml.classifier.tree.ctree.CTree;
 
@@ -171,7 +171,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
         Classifier hh = weak.newInstance();
         hh.learn(dfTrain, dfWeights, targetNames());
-        CResult p = hh.predict(df, true, false);
+        ClassifierFit p = hh.predict(df, true, false);
         double err = 0;
         for (int j = 0; j < df.rowCount(); j++) {
             if (p.firstClasses().index(j) != df.var(firstTargetName()).index(j)) {
@@ -205,12 +205,12 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     }
 
     @Override
-    public CResult predict(Frame df, boolean withClasses, boolean withDistributions) {
-        CResult p = CResult.newEmpty(this, df, withClasses, true);
+    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDistributions) {
+        ClassifierFit p = ClassifierFit.newEmpty(this, df, withClasses, true);
         p.addTarget(firstTargetName(), firstDict());
 
         for (int i = 0; i < h.size(); i++) {
-            CResult hp = h.get(i).predict(df, true, false);
+            ClassifierFit hp = h.get(i).predict(df, true, false);
             for (int j = 0; j < df.rowCount(); j++) {
                 int index = hp.firstClasses().index(j);
                 p.firstDensity().setValue(j, index, p.firstDensity().value(j, index) + a.get(i));

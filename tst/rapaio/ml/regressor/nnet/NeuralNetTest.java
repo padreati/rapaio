@@ -28,8 +28,8 @@ import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
-import rapaio.ml.regressor.RResult;
 import rapaio.ml.regressor.Regressor;
+import rapaio.ml.regressor.RegressorFit;
 import rapaio.ws.Summary;
 
 
@@ -68,7 +68,7 @@ public class NeuralNetTest {
         for (int i = 0; i < 1000; i++) {
             nn.learn(df, "and");
         }
-        RResult pred = nn.predict(df);
+        RegressorFit pred = nn.predict(df);
 
         Summary.lines(pred.fitFrame());
 
@@ -92,7 +92,7 @@ public class NeuralNetTest {
         for (int i = 0; i < 1000; i++) {
             nn.learn(df, "xor");
         }
-        RResult rp = nn.predict(df);
+        RegressorFit rp = nn.predict(df);
 
         Summary.lines(rp.fitFrame());
 
@@ -137,7 +137,7 @@ public class NeuralNetTest {
         for (int i = 0; i < 10_000; i++) {
             nn.learn(df, "xorA,xorB");
         }
-        RResult rp = nn.predict(df);
+        RegressorFit rp = nn.predict(df);
 
         Assert.assertTrue(rp.fitFrame().var("xorA").value(0) < .5);
         Assert.assertTrue(rp.fitFrame().var("xorA").value(1) > .5);
@@ -169,7 +169,7 @@ public class NeuralNetTest {
             for (int j = 0; j < 4 * 2_000; j++) {
                 nn.learn(df, "xor");
             }
-            RResult rp = nn.predict(df);
+            RegressorFit rp = nn.predict(df);
             long stop = System.currentTimeMillis();
 
             Assert.assertTrue(rp.firstFit().value(0) > .95);

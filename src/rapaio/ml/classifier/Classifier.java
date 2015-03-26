@@ -162,7 +162,7 @@ public interface Classifier extends Printable, Serializable {
      *
      * @param df data set instances
      */
-    default CResult predict(Frame df) {
+    default ClassifierFit predict(Frame df) {
         return predict(df, true, true);
     }
 
@@ -174,5 +174,5 @@ public interface Classifier extends Printable, Serializable {
      * @param withClasses       generate classes
      * @param withDistributions generate densities for classes
      */
-    CResult predict(Frame df, boolean withClasses, boolean withDistributions);
+    ClassifierFit predict(Frame df, boolean withClasses, boolean withDistributions);
 }

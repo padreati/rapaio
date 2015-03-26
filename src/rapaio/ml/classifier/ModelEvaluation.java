@@ -65,7 +65,7 @@ public class ModelEvaluation {
             Frame test = MappedFrame.newByRow(df, testMapping);
 
             c.learn(train, classColName);
-            CResult cp = c.predict(test);
+            ClassifierFit cp = c.predict(test);
             double fcorrect = 0;
             for (int j = 0; j < test.rowCount(); j++) {
                 if (test.var(classColName).index(j) == cp.firstClasses().index(j)) {
@@ -139,7 +139,7 @@ public class ModelEvaluation {
                 Classifier c = classifiers.get(k);
 //                c = c.newInstance();
                 c.learn(train, classColName);
-                CResult cp = c.predict(test);
+                ClassifierFit cp = c.predict(test);
                 double acc = 0;
                 for (int j = 0; j < cp.firstClasses().rowCount(); j++) {
                     if (cp.firstClasses().index(j) == test.var(classColName).index(j)) {

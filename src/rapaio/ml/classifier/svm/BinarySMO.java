@@ -34,8 +34,8 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.Classifier;
+import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.svm.kernel.Kernel;
 import rapaio.ml.classifier.svm.kernel.PolyKernel;
 import rapaio.printer.Printer;
@@ -434,8 +434,8 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
 
     @Override
-    public CResult predict(Frame df, boolean withClasses, boolean withDistributions) {
-        CResult cr = CResult.newEmpty(this, df, withClasses, withDistributions);
+    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDistributions) {
+        ClassifierFit cr = ClassifierFit.newEmpty(this, df, withClasses, withDistributions);
         cr.addTarget(firstTargetName(), firstDict());
 
         for (int i = 0; i < df.rowCount(); i++) {

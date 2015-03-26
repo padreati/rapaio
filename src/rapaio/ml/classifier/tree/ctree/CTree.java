@@ -25,7 +25,7 @@ package rapaio.ml.classifier.tree.ctree;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.CResult;
+import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.ml.common.VarSelector;
 import rapaio.util.Pair;
@@ -250,9 +250,9 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    public CResult predict(Frame df, boolean withClasses, boolean withDensities) {
+    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDensities) {
 
-        CResult prediction = CResult.newEmpty(this, df, withClasses, withDensities);
+        ClassifierFit prediction = ClassifierFit.newEmpty(this, df, withClasses, withDensities);
         prediction.addTarget(firstTargetName(), firstDict());
 
         df.stream().forEach(spot -> {

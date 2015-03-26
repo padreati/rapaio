@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -66,6 +67,10 @@ public interface M extends Serializable, Printable {
      * @param value new value
      */
     void set(int i, int j, double value);
+
+    default void set(int i, int j, Function<Double, Double> update) {
+        set(i, j, update.apply(get(i, j)));
+    }
 
     // methods
 
@@ -161,6 +166,65 @@ public interface M extends Serializable, Printable {
         double old = get(i, j);
         set(i, j, old + value);
     }
+
+    /**
+     * Matrix multiplication of this matrix with the one given as parameter.
+     * The implementation uses a naive algorithm, it can be done much better
+     * al least by implementing Strassen algorithm.
+     *
+     * @param B matrix with which it will be multiplied.
+     * @return new matrix as a result of multiplication
+     */
+    default M mult(M B) {
+        if (colCount() != B.rowCount()) {
+            throw new IllegalArgumentException(String.format("Matrices are not conform for multiplication ([n,m]x[m,p] = [%d,%d]=[%d,%d])",
+                    rowCount(), colCount(), B.rowCount(), B.colCount()));
+        }
+        M C = LA.newMEmpty(rowCount(), B.colCount());
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < B.colCount(); j++) {
+                double s = 0;
+                for (int k = 0; k < colCount(); k++) {
+                    s += get(i, k) * B.get(k, j);
+                }
+                C.set(i, j, s);
+            }
+        }
+        return C;
+    }
+
+    /**
+     * Scalar matrix multiplication.
+     * It updates the current matrix so make a solid copy to not alter actual data.
+     *
+     * @param b scalar value used for multiplication
+     * @return current instance multiplied with a scalar
+     */
+    default M mult(double b) {
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                set(i, j, get(i, j) * b);
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Diagonal vector of values
+     */
+    default V diag() {
+        return new MappedDiagV(this);
+    }
+
+    /**
+     * Matrix rank
+     *
+     * @return effective numerical rank, obtained from SVD.
+     */
+    default int rank() {
+        return new SVDecomposition(this).rank();
+    }
+
 
     /**
      * Does not override equals since this is a costly

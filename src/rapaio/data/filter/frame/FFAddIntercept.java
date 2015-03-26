@@ -41,10 +41,10 @@ import java.util.List;
  */
 public class FFAddIntercept extends AbstractFF {
 
-    public static String INTERCEPT = "Intercept";
+    public static String INTERCEPT = "(Intercept)";
 
-    public FFAddIntercept(String[] varNames) {
-        super(varNames);
+    public FFAddIntercept() {
+        super();
     }
 
     @Override
@@ -53,8 +53,6 @@ public class FFAddIntercept extends AbstractFF {
     }
 
     public Frame apply(Frame df) {
-        checkEmptyVars(df, varNames);
-
         List<String> names = parse(df, "all");
         if (names.contains(INTERCEPT)) {
             return df;

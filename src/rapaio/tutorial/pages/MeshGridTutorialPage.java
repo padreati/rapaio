@@ -35,8 +35,8 @@ import rapaio.graphics.Plot;
 import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.plot.MeshContour;
 import rapaio.graphics.plot.Points;
-import rapaio.ml.classifier.CResult;
 import rapaio.ml.classifier.Classifier;
+import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.svm.BinarySMO;
 import rapaio.ml.classifier.svm.kernel.PolyKernel;
 import rapaio.ml.classifier.svm.kernel.WaveletKernel;
@@ -219,12 +219,12 @@ public class MeshGridTutorialPage implements TutorialPage {
 
         BinarySMO smo = new BinarySMO().withKernel(new PolyKernel(2));
         smo.learn(iris, "class");
-        CResult cr = smo.predict(iris);
+        ClassifierFit cr = smo.predict(iris);
         new ConfusionMatrix(iris.var("class"), cr.firstClasses()).summary();
 
         code("        BinarySMO smo = new BinarySMO().withKernel(new PolyKernel(2));\n" +
                 "        smo.learn(iris, \"class\");\n" +
-                "        CResult cr = smo.predict(iris);\n" +
+                "        ClassifierFit cr = smo.predict(iris);\n" +
                 "        new ConfusionMatrix(iris.var(\"class\"), cr.firstClasses()).summary();\n");
 
         p("It looks like there is no error there. However it is legitimate to ask yourself " +
@@ -244,7 +244,7 @@ public class MeshGridTutorialPage implements TutorialPage {
                 sw.addValue(mg1.getY().value(j));
             }
         }
-        CResult cr2 = smo.predict(SolidFrame.newWrapOf(sl, sw));
+        ClassifierFit cr2 = smo.predict(SolidFrame.newWrapOf(sl, sw));
         int pos = 0;
         for (int i = 0; i < x.rowCount(); i++) {
             for (int j = 0; j < y.rowCount(); j++) {

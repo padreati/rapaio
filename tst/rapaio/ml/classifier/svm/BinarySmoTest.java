@@ -27,7 +27,7 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.CResult;
+import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.svm.kernel.RBFKernel;
 
 import java.io.IOException;
@@ -147,7 +147,7 @@ public class BinarySmoTest {
                         "Number of support vectors: 31",
                 sb.toString());
 
-        CResult cr = smo.predict(iris);
+        ClassifierFit cr = smo.predict(iris);
 
         cr.summary();
 
