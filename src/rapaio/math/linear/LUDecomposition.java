@@ -43,7 +43,7 @@ import java.util.function.BiConsumer;
 public class LUDecomposition implements Serializable, Printable {
 
     private static final long serialVersionUID = -4226024886673558685L;
-    private M LU; // internal storage of decomposition.
+    private RMatrix LU; // internal storage of decomposition.
     private int m; // row dimension
     private int n; // col dimension
     private int pivSign; // pivot sign
@@ -54,7 +54,7 @@ public class LUDecomposition implements Serializable, Printable {
 
         CROUT {
             @Override
-            BiConsumer<LUDecomposition, M> method() {
+            BiConsumer<LUDecomposition, RMatrix> method() {
                 return (lu, A) -> {
 
                     lu.LU = A.solidCopy();
@@ -65,8 +65,8 @@ public class LUDecomposition implements Serializable, Printable {
                         lu.piv[i] = i;
                     }
                     lu.pivSign = 1;
-                    V LUrowi;
-                    V LUcolj = LA.newVEmpty(lu.m);
+                    RVector LUrowi;
+                    RVector LUcolj = LinAlg.newVectorEmpty(lu.m);
 
                     // Outer loop.
                     for (int j = 0; j < lu.n; j++) {
@@ -128,7 +128,7 @@ public class LUDecomposition implements Serializable, Printable {
          */
         GAUSSIAN_ELIMINATION {
             @Override
-            BiConsumer<LUDecomposition, M> method() {
+            BiConsumer<LUDecomposition, RMatrix> method() {
                 return (lu, A) -> {
 
                     // Initialize.
@@ -175,7 +175,7 @@ public class LUDecomposition implements Serializable, Printable {
             }
         };
 
-        abstract BiConsumer<LUDecomposition, M> method();
+        abstract BiConsumer<LUDecomposition, RMatrix> method();
     }
 
     /**
@@ -183,7 +183,7 @@ public class LUDecomposition implements Serializable, Printable {
      *
      * @param A input matrix
      */
-    public LUDecomposition(M A) {
+    public LUDecomposition(RMatrix A) {
         Method.GAUSSIAN_ELIMINATION.method().accept(this, A);
     }
 
@@ -191,7 +191,7 @@ public class LUDecomposition implements Serializable, Printable {
      * LU Decomposition, computed by Gaussian elimination. It computes L and U
      * with the "daxpy"-based elimination algorithm used in LINPACK and MATLAB.
      */
-    public LUDecomposition(M A, Method method) {
+    public LUDecomposition(RMatrix A, Method method) {
         method.method().accept(this, A);
     }
 
@@ -218,8 +218,8 @@ public class LUDecomposition implements Serializable, Printable {
      *
      * @return L
      */
-    public M getL() {
-        M L = LA.newMEmpty(m, n);
+    public RMatrix getL() {
+        RMatrix L = LinAlg.newMatrixEmpty(m, n);
         for (int i = 0; i < m; i++) {
             for (int j = 0; j <= i && j < n; j++) {
                 if (i > j) {
@@ -237,8 +237,8 @@ public class LUDecomposition implements Serializable, Printable {
      *
      * @return U
      */
-    public M getU() {
-        M U = LA.newMEmpty(n, n);
+    public RMatrix getU() {
+        RMatrix U = LinAlg.newMatrixEmpty(n, n);
         for (int i = 0; i < n; i++) {
             for (int j = i; j < n; j++) {
                 if (i <= j) {
@@ -298,7 +298,7 @@ public class LUDecomposition implements Serializable, Printable {
      * @throws IllegalArgumentException Matrix row dimensions must agree.
      * @throws RuntimeException         Matrix is singular.
      */
-    public M solve(M B) {
+    public RMatrix solve(RMatrix B) {
         if (B.rowCount() != m) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
@@ -308,7 +308,7 @@ public class LUDecomposition implements Serializable, Printable {
 
         // Copy right hand side with pivoting
         int nx = B.colCount();
-        M X = B.mapRows(piv).solidCopy();
+        RMatrix X = B.mapRows(piv).solidCopy();
 
         // Solve L*Y = B(piv,:)
 

@@ -50,10 +50,10 @@ public class CholeskyDecomposition implements Serializable {
      *
      * @param Arg Square, symmetric matrix.
      */
-    public CholeskyDecomposition(M Arg) {
+    public CholeskyDecomposition(RMatrix Arg) {
 
         // Initialize.
-        M A = Arg.solidCopy();
+        RMatrix A = Arg.solidCopy();
         n = Arg.rowCount();
         L = new double[n][n];
         isspd = (Arg.colCount() == n);
@@ -97,8 +97,8 @@ public class CholeskyDecomposition implements Serializable {
 //    /**
 //     * Cholesky algorithm for symmetric and positive definite matrix. Square, symmetric rapaio.data.matrix. @param rightflag Actual value ignored.
 //     */
-//    public CholeskyDecomposition(M Arg, int rightflag) { // Initialize.
-//        M A = Arg.solidCopy();
+//    public CholeskyDecomposition(RMatrix Arg, int rightflag) { // Initialize.
+//        RMatrix A = Arg.solidCopy();
 //        n = Arg.colCount();
 //        R = new
 //                double[n][n];
@@ -128,8 +128,8 @@ public class CholeskyDecomposition implements Serializable {
 //    /**
 //     * Return upper triangular factor. @return R
 //     */
-//    public M getR() {
-//        return LA.newCopyOf(R);
+//    public RMatrix getR() {
+//        return LinAlg.newCopyOf(R);
 //    }
 
 
@@ -147,8 +147,8 @@ public class CholeskyDecomposition implements Serializable {
      *
      * @return L
      */
-    public M getL() {
-        return LA.newMCopyOf(L);
+    public RMatrix getL() {
+        return LinAlg.newMatrixCopyOf(L);
     }
 
     /**
@@ -159,7 +159,7 @@ public class CholeskyDecomposition implements Serializable {
      * @throws IllegalArgumentException Matrix row dimensions must agree.
      * @throws RuntimeException         Matrix is not symmetric positive definite.
      */
-    public M solve(M B) {
+    public RMatrix solve(RMatrix B) {
         if (B.rowCount() != n) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
@@ -168,7 +168,7 @@ public class CholeskyDecomposition implements Serializable {
         }
 
         // Copy right hand side.
-        M X = B.solidCopy();
+        RMatrix X = B.solidCopy();
 
         // Solve L*Y = B;
         for (int k = 0; k < n; k++) {
@@ -191,40 +191,4 @@ public class CholeskyDecomposition implements Serializable {
         }
         return X;
     }
-
-    public static M chol2inv(M R) {
-        return chol2inv(R, LA.newId(R.rowCount()));
-    }
-
-    public static M chol2inv(M R, M B) {
-        M ref = R.t();
-        if (B.rowCount() != R.rowCount()) {
-            throw new IllegalArgumentException("Matrix row dimensions must agree.");
-        }
-
-        // Copy right hand side.
-        M X = B.solidCopy();
-
-        // Solve L*Y = B;
-        for (int k = 0; k < ref.rowCount(); k++) {
-            for (int j = 0; j < X.colCount(); j++) {
-                for (int i = 0; i < k; i++) {
-                    X.increment(k, j, -X.get(i, j) * ref.get(k, i));
-                }
-                X.set(k, j, X.get(k, j) / ref.get(k, k));
-            }
-        }
-
-        // Solve L'*X = Y;
-        for (int k = ref.rowCount() - 1; k >= 0; k--) {
-            for (int j = 0; j < X.colCount(); j++) {
-                for (int i = k + 1; i < ref.rowCount(); i++) {
-                    X.increment(k, j, -X.get(i, j) * ref.get(i, k));
-                }
-                X.set(k, j, X.get(k, j) / ref.get(k, k));
-            }
-        }
-        return X;
-    }
-
 }

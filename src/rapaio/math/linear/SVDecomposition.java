@@ -29,7 +29,7 @@ import static java.lang.StrictMath.hypot;
  * <p>
  * For an m-by-n rapaio.data.matrix A with m >= n, the singular value decomposition is an
  * m-by-n orthogonal rapaio.data.matrix U, an n-by-n diagonal rapaio.data.matrix S, and an n-by-n
- * orthogonal rapaio.data.matrix V so that A = U*S*V'.
+ * orthogonal rapaio.data.matrix RVector so that A = U*S*RVector'.
  * <p>
  * The singular values, sigma[k] = S[k][k], are ordered so that sigma[0] >=
  * sigma[1] >= ... >= sigma[n-1].
@@ -47,11 +47,11 @@ public class SVDecomposition implements java.io.Serializable {
     private double[] s;
     private int m, n;
 
-    public SVDecomposition(M Arg) {
+    public SVDecomposition(RMatrix Arg) {
 
         // Derived from LINPACK code.
         // Initialize.
-        M A = Arg.solidCopy();
+        RMatrix A = Arg.solidCopy();
         m = Arg.rowCount();
         n = Arg.colCount();
 
@@ -159,7 +159,7 @@ public class SVDecomposition implements java.io.Serializable {
                 }
                 if (wantv) {
 
-                    // Place the transformation in V for subsequent
+                    // Place the transformation in RVector for subsequent
                     // back multiplication.
                     for (int i = k + 1; i < n; i++) {
                         V[i][k] = e[i];
@@ -217,7 +217,7 @@ public class SVDecomposition implements java.io.Serializable {
             }
         }
 
-        // If required, generate V.
+        // If required, generate RVector.
         if (wantv) {
             for (int k = n - 1; k >= 0; k--) {
                 if ((k < nrt) & (e[k] != 0.0)) {
@@ -452,17 +452,17 @@ public class SVDecomposition implements java.io.Serializable {
         }
     }
 
-    public M getU() {
-        return LA.newMCopyOf(U, 0, m, 0, Math.min(m + 1, n));
+    public RMatrix getU() {
+        return LinAlg.newMatrixCopyOf(U, 0, m, 0, Math.min(m + 1, n));
     }
 
     /**
      * Return the right singular vectors
      *
-     * @return V
+     * @return RVector
      */
-    public M getV() {
-        return LA.newMCopyOf(V, 0, n, 0, n);
+    public RMatrix getV() {
+        return LinAlg.newMatrixCopyOf(V, 0, n, 0, n);
     }
 
     /**
@@ -479,8 +479,8 @@ public class SVDecomposition implements java.io.Serializable {
      *
      * @return S
      */
-    public M getS() {
-        M S = LA.newMEmpty(n, n);
+    public RMatrix getS() {
+        RMatrix S = LinAlg.newMatrixEmpty(n, n);
         for (int i = 0; i < n; i++) {
             S.set(i, i, this.s[i]);
         }

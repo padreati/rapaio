@@ -22,45 +22,49 @@
 
 package rapaio.math.linear.impl;
 
-import rapaio.math.linear.M;
-import rapaio.math.linear.V;
+import rapaio.math.linear.RMatrix;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
  */
-public class MappedColV implements V {
+public class SolidRMatrix implements RMatrix {
 
-    private final M ref;
-    private final int col;
+    private final int rowCount;
+    private final int colCount;
+    private final double[] values;
 
-    public MappedColV(M ref, int col) {
-        this.ref = ref;
-        this.col = col;
+    public SolidRMatrix(int rowCount, int colCount) {
+        this.rowCount = rowCount;
+        this.colCount = colCount;
+        this.values = new double[rowCount * colCount];
+    }
+
+    public SolidRMatrix(int rowCount, int colCount, double[] values) {
+        if (rowCount * colCount != values.length) {
+            throw new IllegalArgumentException("rows*cols does not match the number of given values");
+        }
+        this.rowCount = rowCount;
+        this.colCount = colCount;
+        this.values = values;
     }
 
     @Override
     public int rowCount() {
-        return ref.rowCount();
+        return rowCount;
     }
 
     @Override
     public int colCount() {
-        return 1;
+        return colCount;
     }
 
     @Override
     public double get(int i, int j) {
-        if (j == 0) {
-            return ref.get(i, col);
-        }
-        throw new IllegalArgumentException("This operation is valid only for mapped vectors");
+        return values[i * colCount + j];
     }
 
     @Override
     public void set(int i, int j, double value) {
-        if (j == 0) {
-            ref.set(i, col, value);
-        }
-        throw new IllegalArgumentException("This operation is valid only for mapped vectors");
+        values[i * colCount + j] = value;
     }
 }

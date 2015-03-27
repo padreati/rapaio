@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
  */
-public interface M extends Serializable, Printable {
+public interface RMatrix extends Serializable, Printable {
 
     /**
      * @return number of rows the matrix has
@@ -99,20 +99,20 @@ public interface M extends Serializable, Printable {
      * @param indexes row indexes
      * @return new mapped matrix containing all columns and selected rows
      */
-    default M mapRows(int... indexes) {
-        return new MappedM(this, true, indexes);
+    default RMatrix mapRows(int... indexes) {
+        return new MappedRMatrix(this, true, indexes);
     }
 
-    default V mapRow(int index) {
-        return new MappedRowV(this, index);
+    default RVector mapRow(int index) {
+        return new MappedRowRVector(this, index);
     }
 
-    default M rangeRows(int start, int end) {
+    default RMatrix rangeRows(int start, int end) {
         int[] rows = new int[end - start];
         for (int i = start; i < end; i++) {
             rows[i - start] = i;
         }
-        return new MappedM(this, true, rows);
+        return new MappedRMatrix(this, true, rows);
     }
 
     /**
@@ -121,7 +121,7 @@ public interface M extends Serializable, Printable {
      * @param indexes rows which will be removed
      * @return new mapped matrix containing all rows not specified by indexes
      */
-    default M removeRows(int... indexes) {
+    default RMatrix removeRows(int... indexes) {
         Set<Integer> rem = Arrays.stream(indexes).boxed().collect(Collectors.toSet());
         int[] rows = new int[rowCount() - rem.size()];
         int pos = 0;
@@ -130,26 +130,26 @@ public interface M extends Serializable, Printable {
                 continue;
             rows[pos++] = i;
         }
-        return new MappedM(this, true, rows);
+        return new MappedRMatrix(this, true, rows);
     }
 
-    default M mapCols(int... indexes) {
-        return new MappedM(this, false, indexes);
+    default RMatrix mapCols(int... indexes) {
+        return new MappedRMatrix(this, false, indexes);
     }
 
-    default V mapCol(int index) {
-        return new MappedColV(this, index);
+    default RVector mapCol(int index) {
+        return new MappedColRVector(this, index);
     }
 
-    default M rangeCols(int start, int end) {
+    default RMatrix rangeCols(int start, int end) {
         int[] cols = new int[end - start];
         for (int i = start; i < end; i++) {
             cols[i - start] = i;
         }
-        return new MappedM(this, false, cols);
+        return new MappedRMatrix(this, false, cols);
     }
 
-    default M removeCols(int... indexes) {
+    default RMatrix removeCols(int... indexes) {
         Set<Integer> rem = Arrays.stream(indexes).boxed().collect(Collectors.toSet());
         int[] cols = new int[colCount() - rem.size()];
         int pos = 0;
@@ -158,15 +158,15 @@ public interface M extends Serializable, Printable {
                 continue;
             cols[pos++] = i;
         }
-        return new MappedM(this, false, cols);
+        return new MappedRMatrix(this, false, cols);
     }
 
     ///////////////////////
     // matrix operations
     ///////////////////////
 
-    default M t() {
-        return new TransposeM(this);
+    default RMatrix t() {
+        return new TransposeRMatrix(this);
     }
 
     default double det() {
@@ -181,12 +181,12 @@ public interface M extends Serializable, Printable {
      * @param B matrix with which it will be multiplied.
      * @return new matrix as a result of multiplication
      */
-    default M mult(M B) {
+    default RMatrix mult(RMatrix B) {
         if (colCount() != B.rowCount()) {
             throw new IllegalArgumentException(String.format("Matrices are not conform for multiplication ([n,m]x[m,p] = [%d,%d]=[%d,%d])",
                     rowCount(), colCount(), B.rowCount(), B.colCount()));
         }
-        M C = LA.newMEmpty(rowCount(), B.colCount());
+        RMatrix C = LinAlg.newMatrixEmpty(rowCount(), B.colCount());
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < B.colCount(); j++) {
                 double s = 0;
@@ -206,7 +206,7 @@ public interface M extends Serializable, Printable {
      * @param b scalar value used for multiplication
      * @return current instance multiplied with a scalar
      */
-    default M mult(double b) {
+    default RMatrix mult(double b) {
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 set(i, j, get(i, j) * b);
@@ -218,8 +218,8 @@ public interface M extends Serializable, Printable {
     /**
      * Diagonal vector of values
      */
-    default V diag() {
-        return new MappedDiagV(this);
+    default RVector diag() {
+        return new MappedDiagRVector(this);
     }
 
     /**
@@ -239,21 +239,21 @@ public interface M extends Serializable, Printable {
      * Does not override equals since this is a costly
      * algorithm and can slow down processing as a side effect.
      *
-     * @param m given matrix
+     * @param RMatrix given matrix
      * @return true if dimension and elements are equal
      */
-    default boolean isEqual(M m) {
-        return isEqual(m, 1e-12);
+    default boolean isEqual(RMatrix RMatrix) {
+        return isEqual(RMatrix, 1e-12);
     }
 
-    default boolean isEqual(M m, double tol) {
-        if (rowCount() != m.rowCount())
+    default boolean isEqual(RMatrix RMatrix, double tol) {
+        if (rowCount() != RMatrix.rowCount())
             return false;
-        if (colCount() != m.colCount())
+        if (colCount() != RMatrix.colCount())
             return false;
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                if (!MathBase.eq(get(i, j), m.get(i, j), tol))
+                if (!MathBase.eq(get(i, j), RMatrix.get(i, j), tol))
                     return false;
             }
         }
@@ -265,14 +265,14 @@ public interface M extends Serializable, Printable {
      *
      * @return new solid copy of the matrix
      */
-    default M solidCopy() {
-        M m = new SolidM(rowCount(), colCount());
+    default RMatrix solidCopy() {
+        RMatrix RMatrix = new SolidRMatrix(rowCount(), colCount());
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                m.set(i, j, get(i, j));
+                RMatrix.set(i, j, get(i, j));
             }
         }
-        return m;
+        return RMatrix;
     }
 
     //////////////////

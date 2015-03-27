@@ -22,28 +22,32 @@
 
 package rapaio.math.linear;
 
+import java.io.Serializable;
+
 /**
  * QR Decomposition.
  * <p>
- * For an m-by-n rapaio.data.matrix A with m >= n, the QR decomposition is an m-by-n
- * orthogonal rapaio.data.matrix Q and an n-by-n upper triangular rapaio.data.matrix R so that
+ * For an m-by-n matrix A with m >= n, the QR decomposition is an m-by-n
+ * orthogonal matrix Q and an n-by-n upper triangular rapaio.data.matrix R so that
  * A = Q*R.
  * <p>
- * The QR decompostion always exists, even if the rapaio.data.matrix does not have
+ * The QR decompostion always exists, even if the matrix does not have
  * full rank, so the constructor will never fail.  The primary use of the
- * QR decomposition is in the least squares solution of nonsquare systems
+ * QR decomposition is in the least squares solution of non square systems
  * of simultaneous linear equations.  This will fail if isFullRank()
  * returns false.
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public class QRDecomposition implements java.io.Serializable {
+public class QRDecomposition implements Serializable {
 
-    private M QR;
+    private static final long serialVersionUID = -8322866575684242727L;
+
+    private RMatrix QR;
     private int m, n;
     private double[] Rdiag;
 
-    public QRDecomposition(M A) {
+    public QRDecomposition(RMatrix A) {
         // Initialize.
         QR = A.solidCopy();
         m = A.rowCount();
@@ -102,8 +106,8 @@ public class QRDecomposition implements java.io.Serializable {
      *
      * @return Lower trapezoidal matrix whose columns define the reflections
      */
-    public M getH() {
-        M H = LA.newMEmpty(m, n);
+    public RMatrix getH() {
+        RMatrix H = LinAlg.newMatrixEmpty(m, n);
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 if (i >= j) {
@@ -121,9 +125,8 @@ public class QRDecomposition implements java.io.Serializable {
      *
      * @return R
      */
-
-    public M getR() {
-        M R = LA.newMEmpty(n, n);
+    public RMatrix getR() {
+        RMatrix R = LinAlg.newMatrixEmpty(n, n);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (i < j) {
@@ -144,8 +147,8 @@ public class QRDecomposition implements java.io.Serializable {
      * @return Q
      */
 
-    public M getQ() {
-        M Q = LA.newMEmpty(m, n);
+    public RMatrix getQ() {
+        RMatrix Q = LinAlg.newMatrixEmpty(m, n);
         for (int k = n - 1; k >= 0; k--) {
             for (int i = 0; i < m; i++) {
                 Q.set(i, k, 0.0);
@@ -167,34 +170,33 @@ public class QRDecomposition implements java.io.Serializable {
         return Q;
     }
 
-    public M getQR() {
+    public RMatrix getQR() {
         return QR.solidCopy();
     }
 
     /**
      * Least squares solution of A*X = B
      *
-     * @param B A Matrix with as many getRowCount as A and any number of columns.
+     * @param B A Matrix with as many rows as A and any number of columns.
      * @return X that minimizes the two norm of Q*R*X-B.
      * @throws IllegalArgumentException Matrix row dimensions must agree.
      * @throws RuntimeException         Matrix is rank deficient.
      */
 
-    public M solve(M B) {
+    public RMatrix solve(RMatrix B) {
         if (B.rowCount() != m) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
-        if (!this.isFullRank()) {
+        if (!isFullRank()) {
             throw new RuntimeException("Matrix is rank deficient.");
         }
 
         // Copy right hand side
-        int nx = B.colCount();
-        M X = B.solidCopy();
+        RMatrix X = B.solidCopy();
 
         // Compute Y = transpose(Q)*B
         for (int k = 0; k < n; k++) {
-            for (int j = 0; j < nx; j++) {
+            for (int j = 0; j < B.colCount(); j++) {
                 double s = 0.0;
                 for (int i = k; i < m; i++) {
                     s += QR.get(i, k) * X.get(i, j);
@@ -205,17 +207,18 @@ public class QRDecomposition implements java.io.Serializable {
                 }
             }
         }
+
         // Solve R*X = Y;
         for (int k = n - 1; k >= 0; k--) {
-            for (int j = 0; j < nx; j++) {
+            for (int j = 0; j < B.colCount(); j++) {
                 X.set(k, j, X.get(k, j) / Rdiag[k]);
             }
             for (int i = 0; i < k; i++) {
-                for (int j = 0; j < nx; j++) {
+                for (int j = 0; j < B.colCount(); j++) {
                     X.set(i, j, X.get(i, j) - X.get(k, j) * QR.get(i, k));
                 }
             }
         }
-        return X.rangeRows(0, n).rangeCols(0, nx);
+        return X.rangeRows(0, n).rangeCols(0, B.colCount());
     }
 }

@@ -22,40 +22,45 @@
 
 package rapaio.math.linear.impl;
 
-import rapaio.math.linear.M;
+import rapaio.math.linear.RMatrix;
+import rapaio.math.linear.RVector;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
  */
-public class TransposeM implements M {
-    private final M ref;
+public class MappedColRVector implements RVector {
 
-    public TransposeM(M ref) {
+    private final RMatrix ref;
+    private final int col;
+
+    public MappedColRVector(RMatrix ref, int col) {
         this.ref = ref;
+        this.col = col;
     }
 
     @Override
     public int rowCount() {
-        return ref.colCount();
-    }
-
-    @Override
-    public int colCount() {
         return ref.rowCount();
     }
 
     @Override
+    public int colCount() {
+        return 1;
+    }
+
+    @Override
     public double get(int i, int j) {
-        return ref.get(j, i);
+        if (j == 0) {
+            return ref.get(i, col);
+        }
+        throw new IllegalArgumentException("This operation is valid only for mapped vectors");
     }
 
     @Override
     public void set(int i, int j, double value) {
-        ref.set(j, i, value);
-    }
-
-    @Override
-    public M t() {
-        return ref;
+        if (j == 0) {
+            ref.set(i, col, value);
+        }
+        throw new IllegalArgumentException("This operation is valid only for mapped vectors");
     }
 }

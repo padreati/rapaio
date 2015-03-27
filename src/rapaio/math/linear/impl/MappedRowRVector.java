@@ -22,18 +22,18 @@
 
 package rapaio.math.linear.impl;
 
-import rapaio.math.linear.M;
-import rapaio.math.linear.V;
+import rapaio.math.linear.RMatrix;
+import rapaio.math.linear.RVector;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/9/15.
  */
-public class MappedRowV implements V {
+public class MappedRowRVector implements RVector {
 
-    private final M ref;
+    private final RMatrix ref;
     private final int row;
 
-    public MappedRowV(M ref, int row) {
+    public MappedRowRVector(RMatrix ref, int row) {
         this.ref = ref;
         this.row = row;
     }

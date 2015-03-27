@@ -24,10 +24,10 @@ package rapaio.data.matrix;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.math.linear.LA;
 import rapaio.math.linear.LUDecomposition;
-import rapaio.math.linear.M;
+import rapaio.math.linear.LinAlg;
 import rapaio.math.linear.QRDecomposition;
+import rapaio.math.linear.RMatrix;
 
 import static org.junit.Assert.assertTrue;
 
@@ -36,27 +36,27 @@ import static org.junit.Assert.assertTrue;
  */
 public class MatrixMathTest {
 
-    M A, B, At, Bt, C;
+    RMatrix A, B, At, Bt, C;
 
     @Before
     public void setUp() throws Exception {
-        A = LA.newMWrapOf(2, 3,
+        A = LinAlg.newMatrixWrapOf(2, 3,
                 1, 3, 1,
                 1, 0, 0);
-        B = LA.newMWrapOf(2, 3,
+        B = LinAlg.newMatrixWrapOf(2, 3,
                 0, 0, 5,
                 7, 5, 0);
 
-        At = LA.newMWrapOf(3, 2,
+        At = LinAlg.newMatrixWrapOf(3, 2,
                 1, 1,
                 3, 0,
                 1, 0);
-        Bt = LA.newMWrapOf(3, 2,
+        Bt = LinAlg.newMatrixWrapOf(3, 2,
                 0, 7,
                 0, 5,
                 5, 0);
 
-        C = LA.newMWrapOf(3, 3,
+        C = LinAlg.newMatrixWrapOf(3, 3,
                 1, 2, 3,
                 4, 3, 0,
                 5, 2, 9);
@@ -94,12 +94,12 @@ public class MatrixMathTest {
     @Test
     public void testInverse() {
 
-        M I = LA.newMWrapOf(3, 3,
+        RMatrix I = LinAlg.newMatrixWrapOf(3, 3,
                 1, 0, 0,
                 0, 1, 0,
                 0, 0, 1);
 
-        M invC = new QRDecomposition(C).solve(I);
+        RMatrix invC = new QRDecomposition(C).solve(I);
         invC.summary();
         C.mult(invC);
         invC = new LUDecomposition(C).solve(I);

@@ -23,24 +23,24 @@
 package rapaio.math.linear.impl;
 
 import rapaio.data.Var;
-import rapaio.math.linear.V;
+import rapaio.math.linear.RVector;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
  */
-public class SolidV implements V {
+public class SolidRVector implements RVector {
 
     final int rows;
     final int cols;
     final double[] data;
 
-    public SolidV(int rows) {
+    public SolidRVector(int rows) {
         this.rows = rows;
         this.cols = 1;
         this.data = new double[rows];
     }
 
-    public SolidV(Var var) {
+    public SolidRVector(Var var) {
         this.rows = var.rowCount();
         this.cols = 1;
         this.data = new double[var.rowCount()];
@@ -82,7 +82,7 @@ public class SolidV implements V {
     }
 
     @Override
-    public V t() {
-        return new TransposeV(this);
+    public RVector t() {
+        return new TransposeRVector(this);
     }
 }

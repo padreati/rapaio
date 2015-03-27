@@ -22,19 +22,19 @@
 
 package rapaio.math.linear.impl;
 
-import rapaio.math.linear.M;
-import rapaio.math.linear.V;
+import rapaio.math.linear.RMatrix;
+import rapaio.math.linear.RVector;
 
 /**
  * Column vector obtained from the diagonal of a given matrix.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/26/15.
  */
-public class MappedDiagV implements V {
+public class MappedDiagRVector implements RVector {
     private final int n;
-    private final M ref;
+    private final RMatrix ref;
 
-    public MappedDiagV(M ref) {
+    public MappedDiagRVector(RMatrix ref) {
         this.ref = ref;
         this.n = Math.min(ref.rowCount(), ref.colCount());
     }

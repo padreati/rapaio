@@ -62,11 +62,11 @@ public class OLSRegressorTest {
         String[] inputNames = new String[]{"(Intercept)", "TV", "Radio", "Newspaper"};
 //        String[] inputNames = new String[]{"TV", "Radio", "Newspaper"};
 
-        M X = LA.newMCopyOf(df.mapVars(inputNames));
-        M Y = LA.newMCopyOf(df.mapVars(targetNames));
+        RMatrix X = LinAlg.newMatrixCopyOf(df.mapVars(inputNames));
+        RMatrix Y = LinAlg.newMatrixCopyOf(df.mapVars(targetNames));
 
         QRDecomposition qr1 = new QRDecomposition(X);
-        M beta = qr1.solve(Y);
+        RMatrix beta = qr1.solve(Y);
 
         Var betaTerm = Nominal.newEmpty().withName("Term");
         Var betaEstimate = Numeric.newEmpty().withName("Estimate");
@@ -75,7 +75,7 @@ public class OLSRegressorTest {
         Var betaPValue = Nominal.newEmpty().withName("Pr(>|t|)");
         Var betaSignificance = Nominal.newEmpty().withName("");
 
-        M c = CholeskyDecomposition.chol2inv(qr1.getR());
+        RMatrix c = CholeskyDecomposition.chol2inv(qr1.getR());
 
         double sigma2 = 0;
         for (int i = 0; i < X.rowCount(); i++) {
@@ -85,7 +85,7 @@ public class OLSRegressorTest {
 
         WS.println("sigma: " + Math.sqrt(sigma2));
 
-        V var = c.mult(sigma2).diag();
+        RVector var = c.mult(sigma2).diag();
 
         for (int i = 0; i < inputNames.length; i++) {
             betaTerm.addLabel(inputNames[i]);

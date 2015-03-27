@@ -23,9 +23,9 @@
 package rapaio.ml.regressor.linear;
 
 import rapaio.data.*;
-import rapaio.math.linear.LA;
-import rapaio.math.linear.M;
+import rapaio.math.linear.LinAlg;
 import rapaio.math.linear.QRDecomposition;
+import rapaio.math.linear.RMatrix;
 import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.Regressor;
 
@@ -65,9 +65,9 @@ public class OLSRegressor extends AbstractRegressor {
             throw new IllegalArgumentException("OLS must specify at least one target variable name");
         }
 
-        M X = LA.newMCopyOf(df.mapVars(inputNames()));
-        M Y = LA.newMCopyOf(df.mapVars(targetNames()));
-        M beta = new QRDecomposition(X).solve(Y);
+        RMatrix X = LinAlg.newMatrixCopyOf(df.mapVars(inputNames()));
+        RMatrix Y = LinAlg.newMatrixCopyOf(df.mapVars(targetNames()));
+        RMatrix beta = new QRDecomposition(X).solve(Y);
         Var betaN = Nominal.newEmpty().withName("Term");
         Var betaC = Numeric.newEmpty().withName("Coefficient");
         for (int i = 0; i < inputNames().length; i++) {

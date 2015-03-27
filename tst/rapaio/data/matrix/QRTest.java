@@ -24,9 +24,9 @@ package rapaio.data.matrix;
 
 import org.junit.Test;
 import rapaio.data.Numeric;
-import rapaio.math.linear.LA;
-import rapaio.math.linear.M;
+import rapaio.math.linear.LinAlg;
 import rapaio.math.linear.QRDecomposition;
+import rapaio.math.linear.RMatrix;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -35,7 +35,7 @@ public class QRTest {
 
     @Test
     public void testQR() {
-        M x = LA.newMCopyOf(new double[][]{
+        RMatrix x = LinAlg.newMatrixCopyOf(new double[][]{
                 {1, 1, 1},
                 {1, 2, 4},
                 {1, 3, 9},
@@ -43,7 +43,7 @@ public class QRTest {
                 {1, 5, 25}
         });
 
-        M y = LA.newMCopyOf(
+        RMatrix y = LinAlg.newMatrixCopyOf(
                 Numeric.newCopyOf(2.8, 3.2, 7.1, 6.8, 8.8),
                 Numeric.newCopyOf(2.8, 3.2, 7.1, 6.8, 8.9)
         );

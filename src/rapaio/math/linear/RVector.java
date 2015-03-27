@@ -25,7 +25,7 @@ package rapaio.math.linear;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
  */
-public interface V extends M {
+public interface RVector extends RMatrix {
 
     /**
      * Additional single index accessor for vector elements
@@ -68,7 +68,7 @@ public interface V extends M {
      * @param b
      * @return
      */
-    default double dotProd(V b) {
+    default double dotProd(RVector b) {
         int max = Math.min(Math.max(rowCount(), colCount()), Math.max(b.rowCount(), b.colCount()));
         double s = 0;
         for (int i = 0; i < max; i++) {
