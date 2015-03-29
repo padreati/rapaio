@@ -52,6 +52,6 @@
 //        AdaBoostSAMMEClassifier restored = (AdaBoostSAMMEClassifier) JavaSerialization.restoreFromFile(file.getAbsolutePath());
 //        restored.predict(df);
 //
-//        new ConfusionMatrix(df.var("spam"), restored.classes()).summary();
+//        new ConfusionMatrix(df.getVar("spam"), restored.classes()).summary();
 //    }
 //}

@@ -80,7 +80,7 @@ public class OneRule extends AbstractClassifier {
 
         bestRuleSet = null;
         for (String testCol : inputNames()) {
-            RuleSet ruleSet = df.var(testCol).type().isNominal() ?
+            RuleSet ruleSet = df.getVar(testCol).getType().isNominal() ?
                     buildNominal(testCol, df, weights) :
                     buildNumeric(testCol, df, weights);
             if (bestRuleSet == null || ruleSet.getAccuracy() > bestRuleSet.getAccuracy()) {
@@ -116,7 +116,7 @@ public class OneRule extends AbstractClassifier {
         }
         String colName = bestRuleSet.colName;
 
-        if (test.var(colName).type().isNominal()) {
+        if (test.getVar(colName).getType().isNominal()) {
             String value = test.label(row, test.varIndex(colName));
             for (Rule oneRule : bestRuleSet.rules) {
                 NominalRule nominal = (NominalRule) oneRule;
@@ -125,8 +125,8 @@ public class OneRule extends AbstractClassifier {
                 }
             }
         }
-        if (test.var(colName).type().isNumeric()) {
-            boolean missing = test.var(colName).missing(row);
+        if (test.getVar(colName).getType().isNumeric()) {
+            boolean missing = test.getVar(colName).missing(row);
             double value = test.value(row, test.varIndex(colName));
             for (Rule oneRule : bestRuleSet.rules) {
                 NumericRule numeric = (NumericRule) oneRule;
@@ -151,7 +151,7 @@ public class OneRule extends AbstractClassifier {
     private RuleSet buildNominal(String testCol, Frame df, Var weights) {
         RuleSet set = new RuleSet(testCol);
 
-        int len = df.var(testCol).dictionary().length;
+        int len = df.getVar(testCol).dictionary().length;
         DensityVector[] dvs = new DensityVector[len];
         for (int i = 0; i < len; i++) {
             dvs[i] = new DensityVector(firstDict());
@@ -163,7 +163,7 @@ public class OneRule extends AbstractClassifier {
             DensityVector dv = dvs[i];
             dv.normalize(true);
             int j = dv.findBestIndex();
-            String[] colValues = df.var(testCol).dictionary();
+            String[] colValues = df.getVar(testCol).dictionary();
             set.rules.add(new NominalRule(colValues[i], firstDict()[j], dv.sum(true), dv.sum(true) - dv.get(j)));
         }
         return set;
@@ -171,8 +171,8 @@ public class OneRule extends AbstractClassifier {
 
     private RuleSet buildNumeric(String testCol, Frame df, Var weights) {
         RuleSet set = new RuleSet(testCol);
-        Var sort = new VFRefSort(RowComparators.numeric(df.var(testCol), true),
-                RowComparators.nominal(df.var(firstTargetName()), true)).fitApply(Index.newSeq(weights.rowCount()));
+        Var sort = new VFRefSort(RowComparators.numeric(df.getVar(testCol), true),
+                RowComparators.nominal(df.getVar(firstTargetName()), true)).fitApply(Index.newSeq(weights.rowCount()));
         int pos = 0;
         while (pos < sort.rowCount()) {
             if (df.missing(sort.index(pos), testCol)) {

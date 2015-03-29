@@ -60,13 +60,13 @@ public class BoundFrame extends AbstractFrame {
                 _rowCount = Math.min(_rowCount, dfs[i].rowCount());
             }
             for (int j = 0; j < dfs[i].varCount(); j++) {
-                if (_namesSet.contains(dfs[i].var(j).name())) {
+                if (_namesSet.contains(dfs[i].getVar(j).name())) {
                     throw new IllegalArgumentException("bound frame does not allow variables with the same name");
                 }
-                _vars.add(dfs[i].var(j));
-                _names.add(dfs[i].var(j).name());
-                _namesSet.add(dfs[i].var(j).name());
-                _indexes.put(dfs[i].var(j).name(), pos++);
+                _vars.add(dfs[i].getVar(j));
+                _names.add(dfs[i].getVar(j).name());
+                _namesSet.add(dfs[i].getVar(j).name());
+                _indexes.put(dfs[i].getVar(j).name(), pos++);
             }
         }
         return new BoundFrame(_rowCount, _vars, _names.toArray(new String[_names.size()]), _indexes);
@@ -130,7 +130,7 @@ public class BoundFrame extends AbstractFrame {
             }
             for (String _name : _names) {
                 // throw an exception if the column does not exists
-                if (!dfs[i].var(_name).type().equals(dfs[0].var(_name).type())) {
+                if (!dfs[i].getVar(_name).getType().equals(dfs[0].getVar(_name).getType())) {
                     // column exists but does not have the same type
                     throw new IllegalArgumentException("can't bind by rows variable of different types");
                 }
@@ -149,7 +149,7 @@ public class BoundFrame extends AbstractFrame {
 
             for (int j = 0; j < dfs.length; j++) {
                 counts.add(dfs[j].rowCount()); // avoid to take rowCount from variable, but from frame
-                boundVars.add(dfs[j].var(_names[i]));
+                boundVars.add(dfs[j].getVar(_names[i]));
             }
 
             Var boundedVar = BoundVar.newFrom(counts, boundVars).withName(_names[i]);
@@ -190,12 +190,12 @@ public class BoundFrame extends AbstractFrame {
     }
 
     @Override
-    public Var var(int pos) {
+    public Var getVar(int pos) {
         return vars.get(pos);
     }
 
     @Override
-    public Var var(String name) {
+    public Var getVar(String name) {
         return vars.get(indexes.get(name));
     }
 
@@ -217,7 +217,7 @@ public class BoundFrame extends AbstractFrame {
         Map<String, Integer> _indexes = new HashMap<>();
         for (int i = 0; i < parseVarNames.size(); i++) {
             _names[i] = parseVarNames.get(i);
-            _vars.add(var(parseVarNames.get(i)));
+            _vars.add(getVar(parseVarNames.get(i)));
             _indexes.put(parseVarNames.get(i), i);
         }
         return new BoundFrame(rowCount, _vars, _names, _indexes);

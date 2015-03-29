@@ -47,7 +47,7 @@ public class FFStandardize extends AbstractFF {
         filters.clear();
         for (String varName : parse(df, varNames)) {
             VFStandardize filter = new VFStandardize();
-            filter.fit(df.var(varName));
+            filter.fit(df.getVar(varName));
             filters.put(varName, filter);
         }
     }
@@ -59,9 +59,9 @@ public class FFStandardize extends AbstractFF {
         int pos = 0;
         for (String varName : df.varNames()) {
             if (filters.containsKey(varName)) {
-                vars[pos++] = filters.get(varName).apply(df.var(varName));
+                vars[pos++] = filters.get(varName).apply(df.getVar(varName));
             } else {
-                vars[pos++] = df.var(varName);
+                vars[pos++] = df.getVar(varName);
             }
         }
         return BoundFrame.newByVars(vars);

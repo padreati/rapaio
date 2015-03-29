@@ -42,7 +42,7 @@ public class KSTestTest {
     @Test
     public void testPearson() throws IOException, URISyntaxException {
         Frame df = Datasets.loadPearsonHeightDataset();
-        KSTest test = new KSTest("2-sample pearson", df.var("Son"), df.var("Father"));
+        KSTest test = new KSTest("2-sample pearson", df.getVar("Son"), df.getVar("Father"));
         test.summary();
 
         Assert.assertEquals(0.150278, test.d(), 10e-5);

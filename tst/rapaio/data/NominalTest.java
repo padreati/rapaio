@@ -45,8 +45,8 @@ public class NominalTest {
         assertEquals(1, v.dictionary().length);
         assertEquals("?", v.dictionary()[0]);
 
-        assertTrue(v.type().isNominal());
-        assertFalse(v.type().isNumeric());
+        assertTrue(v.getType().isNominal());
+        assertFalse(v.getType().isNumeric());
 
         v = Nominal.newEmpty(1, "a");
         assertEquals(1, v.rowCount());

@@ -212,7 +212,7 @@ public class ClassifierFit implements Printable {
 
         sb.append("Classification results:").append("\n");
         if (Arrays.asList(df.varNames()).contains(firstTargetVar())) {
-            new ConfusionMatrix(df.var(model.firstTargetName()), firstClasses()).buildSummary(sb);
+            new ConfusionMatrix(df.getVar(model.firstTargetName()), firstClasses()).buildSummary(sb);
         } else {
             sb.append("data frame does not contain target variable.");
         }

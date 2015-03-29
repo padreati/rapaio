@@ -46,9 +46,9 @@ public class ISLSandbox {
         df.summary();
 
         GridLayer gl = new GridLayer(1, 3);
-        gl.add(1, 1, new Plot().add(new Points(df.var("TV"), df.var("Sales")).color(Color.RED).pch(2)));
-        gl.add(1, 2, new Plot().add(new Points(df.var("Radio"), df.var("Sales")).color(Color.RED).pch(2)));
-        gl.add(1, 3, new Plot().add(new Points(df.var("Newspaper"), df.var("Sales")).color(Color.cyan).pch(2)));
+        gl.add(1, 1, new Plot().add(new Points(df.getVar("TV"), df.getVar("Sales")).color(Color.RED).pch(2)));
+        gl.add(1, 2, new Plot().add(new Points(df.getVar("Radio"), df.getVar("Sales")).color(Color.RED).pch(2)));
+        gl.add(1, 3, new Plot().add(new Points(df.getVar("Newspaper"), df.getVar("Sales")).color(Color.cyan).pch(2)));
         draw(gl);
     }
 }

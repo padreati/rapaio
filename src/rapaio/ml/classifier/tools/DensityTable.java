@@ -69,8 +69,8 @@ public final class DensityTable implements Serializable {
     public DensityTable(Var test, Var target, Var weights) {
         this(test.dictionary(), target.dictionary());
 
-        if (!test.type().isNominal()) throw new IllegalArgumentException("test var must be nominal");
-        if (!target.type().isNominal()) throw new IllegalArgumentException("target var is not nominal");
+        if (!test.getType().isNominal()) throw new IllegalArgumentException("test var must be nominal");
+        if (!target.getType().isNominal()) throw new IllegalArgumentException("target var is not nominal");
         if (test.rowCount() != target.rowCount())
             throw new IllegalArgumentException("test and target must have same row count");
 
@@ -92,8 +92,8 @@ public final class DensityTable implements Serializable {
     public DensityTable(Var test, Var target, Var weights, String testLabel) {
         this(new String[]{"?", testLabel, "other"}, target.dictionary());
 
-        if (!test.type().isNominal()) throw new IllegalArgumentException("test var must be nominal");
-        if (!target.type().isNominal()) throw new IllegalArgumentException("target var is not nominal");
+        if (!test.getType().isNominal()) throw new IllegalArgumentException("test var must be nominal");
+        if (!target.getType().isNominal()) throw new IllegalArgumentException("target var is not nominal");
         if (test.rowCount() != target.rowCount())
             throw new IllegalArgumentException("test and target must have same row count");
 

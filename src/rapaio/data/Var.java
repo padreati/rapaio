@@ -56,7 +56,7 @@ public interface Var extends Serializable {
     /**
      * @return variable type
      */
-    VarType type();
+    VarType getType();
 
     /**
      * Number of observations contained by the variable.

@@ -127,7 +127,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
 
         for (String testCol : df.varNames()) {
             if (firstTargetName().equals(testCol)) continue;
-            if (df.var(testCol).type().isNumeric()) {
+            if (df.getVar(testCol).getType().isNumeric()) {
 
                 CvpEstimator estimator = cvpEstimator.newInstance();
                 estimator.learn(df, firstTargetName(), testCol);
@@ -135,7 +135,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
                 continue;
             }
 
-            if (df.var(testCol).type().isNominal()) {
+            if (df.getVar(testCol).getType().isNominal()) {
 
                 DvpEstimator estimator = dvpEstimator.newInstance();
                 estimator.learn(df, firstTargetName(), testCol);
@@ -216,13 +216,13 @@ public class NaiveBayesClassifier extends AbstractClassifier {
 
         @Override
         public void learn(Frame df, String targetCol, String testCol) {
-            String[] dict = df.var(targetCol).dictionary();
+            String[] dict = df.getVar(targetCol).dictionary();
             normals.clear();
 
             for (String classLabel : dict) {
                 if ("?".equals(classLabel)) continue;
                 Frame cond = df.stream().filter(s -> classLabel.equals(s.label(targetCol))).toMappedFrame();
-                Var v = cond.var(testCol);
+                Var v = cond.getVar(testCol);
                 double mu = new Mean(v).value();
                 double sd = Math.sqrt(new Variance(v).value());
                 normals.put(classLabel, new Normal(mu, sd));
@@ -263,10 +263,10 @@ public class NaiveBayesClassifier extends AbstractClassifier {
         public void learn(Frame df, String targetCol, String testCol) {
             kde.clear();
 
-            for (String classLabel : df.var(targetCol).dictionary()) {
+            for (String classLabel : df.getVar(targetCol).dictionary()) {
                 if ("?".equals(classLabel)) continue;
                 Frame cond = df.stream().filter(s -> classLabel.equals(s.label(targetCol))).toMappedFrame();
-                Var v = cond.var(testCol);
+                Var v = cond.getVar(testCol);
                 KDE k = new KDE(v, kfunc, (bandwidth == 0) ? KDE.getSilvermanBandwidth(v) : bandwidth);
 
                 kde.put(classLabel, k);
@@ -298,8 +298,8 @@ public class NaiveBayesClassifier extends AbstractClassifier {
         @Override
         public void learn(Frame df, String targetCol, String testCol) {
 
-            String[] targetDict = df.var(targetCol).dictionary();
-            String[] testDict = df.var(testCol).dictionary();
+            String[] targetDict = df.getVar(targetCol).dictionary();
+            String[] testDict = df.getVar(testCol).dictionary();
 
             invTreeTarget = new HashMap<>();
             invTreeTest = new HashMap<>();

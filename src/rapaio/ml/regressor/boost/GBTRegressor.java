@@ -135,7 +135,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
             throw new IllegalArgumentException("GBT accepts a single target variable");
         }
 
-        Var y = df.var(firstTargetName());
+        Var y = df.getVar(firstTargetName());
         Frame x = df.removeVars(new VarRange(firstTargetName()));
 
         initRegressor.learn(df, firstTargetName());
@@ -225,7 +225,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
             throw new IllegalArgumentException("Incompatible previously fit");
         }
 
-        Var y = df.var(firstTargetName());
+        Var y = df.getVar(firstTargetName());
         Frame x = df.removeVars(new VarRange(firstTargetName()));
 
         for (int i = trees.size(); i < runs; i++) {

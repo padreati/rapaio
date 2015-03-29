@@ -92,9 +92,9 @@ public class HistogramDensityTutorial implements TutorialPage {
 
         p("We draw histograms with rapaio toolbox in the following way:");
 
-        WS.draw(new Plot().add(new Histogram(df.var("Father"))));
+        WS.draw(new Plot().add(new Histogram(df.getVar("Father"))));
 
-        code("        WS.draw(new Plot().add(new Histogram(df.var(\"Father\"))));\n");
+        code("        WS.draw(new Plot().add(new Histogram(df.getVar(\"Father\"))));\n");
 
         p("The height of a rectangle is also equal to the frequency density of " +
                 "the interval, i.e., the frequency divided by the width of the interval. " +
@@ -106,9 +106,9 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("By default the number of bins is computed using the Freedman-Diaconis estimator. " +
                 "However, one can specify directly the number of bins. ");
 
-        draw(new Plot().add(new Histogram(df.var("Father")).bins(100)));
+        draw(new Plot().add(new Histogram(df.getVar("Father")).bins(100)));
 
-        code("        draw(new Plot().add(new Histogram(df.var(\"Father\")).bins(100).prob(false)));\n");
+        code("        draw(new Plot().add(new Histogram(df.getVar(\"Father\")).bins(100).prob(false)));\n");
 
         p("Note that on the vertical axis we can see frequency values which are " +
                 "counters. This means that on y axis we have the number of elements found in bins. " +
@@ -120,9 +120,9 @@ public class HistogramDensityTutorial implements TutorialPage {
                 "a desirable property if the histograms are compared to other " +
                 "similar tools like densities. ");
 
-        draw(new Plot().add(new Histogram(df.var("Father")).prob(true)));
+        draw(new Plot().add(new Histogram(df.getVar("Father")).prob(true)));
 
-        code("        draw(new Plot().add(new Histogram(df.var(\"Father\")).prob(true)));\n");
+        code("        draw(new Plot().add(new Histogram(df.getVar(\"Father\")).prob(true)));\n");
 
         p("An alternative to the histogram is kernel density estimation, " +
                 "which uses a kernel function to smooth samples. This will " +
@@ -130,12 +130,12 @@ public class HistogramDensityTutorial implements TutorialPage {
 
         p("One can draw also the kernel density approximation, over a histogram or as a separate plot.");
 
-        final Var col = df.var("Father");
+        final Var col = df.getVar("Father");
         draw(new Plot()
                 .add(new Histogram(col).prob(true).color(Index.newSeq(1, 255)))
                 .add(new DensityLine(col)));
 
-        code("        final Var col = df.var(\"Father\");\n" +
+        code("        final Var col = df.getVar(\"Father\");\n" +
                 "        draw(new Plot()\n" +
                 "                .add(new Histogram(col).color(Index.newSeq(1, 255)))\n" +
                 "                .add(new DensityLine(col)));\n");
@@ -212,8 +212,8 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("Blue line represents density approximation of father's heights, " +
                 "red line represents density approximation of son's heights.");
 
-        draw(new Plot().add(new DensityLine(df.var("Father")).color(6))
-                .add(new DensityLine(df.var("Son")).color(9))
+        draw(new Plot().add(new DensityLine(df.getVar("Father")).color(6))
+                .add(new DensityLine(df.getVar("Son")).color(9))
                 .yLim(0, 0.18)
                 .xLim(55, 80));
 

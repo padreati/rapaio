@@ -37,7 +37,7 @@ public final class Binary extends AbstractVar {
     private BitSet values;
 
     @Override
-    public VarType type() {
+    public VarType getType() {
         return VarType.BINARY;
     }
 

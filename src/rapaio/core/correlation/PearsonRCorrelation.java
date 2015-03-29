@@ -52,7 +52,7 @@ public class PearsonRCorrelation implements Printable {
         this.names = df.varNames();
         this.vars = new Var[df.varCount()];
         for (int i = 0; i < df.varCount(); i++) {
-            vars[i] = df.var(i);
+            vars[i] = df.getVar(i);
         }
         this.pearson = new double[vars.length][vars.length];
         for (int i = 0; i < vars.length; i++) {

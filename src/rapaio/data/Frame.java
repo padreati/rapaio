@@ -23,10 +23,12 @@
 package rapaio.data;
 
 import rapaio.core.Printable;
+import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
 import rapaio.ws.Summary;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -85,7 +87,7 @@ public interface Frame extends Serializable, Printable {
      * @param pos position of the column inside the frame
      * @return a var getType reference
      */
-    Var var(int pos);
+    Var getVar(int pos);
 
     /**
      * Returns a var object with given name
@@ -93,7 +95,7 @@ public interface Frame extends Serializable, Printable {
      * @param name name of the column inside the frame
      * @return a var getType reference
      */
-    Var var(String name);
+    Var getVar(String name);
 
     /**
      * Adds the given variables to the variables of the current frame to build a new frame.
@@ -166,7 +168,7 @@ public interface Frame extends Serializable, Printable {
      * @param df given frame with additional rows
      * @return new frame with additional rows
      */
-    public Frame bindRows(Frame df);
+    Frame bindRows(Frame df);
 
     default Frame mapRows(int... rows) {
         return mapRows(Mapping.newCopyOf(rows));
@@ -178,7 +180,7 @@ public interface Frame extends Serializable, Printable {
      * @param mapping a list of rows from a frame
      * @return new frame with selected rows
      */
-    public Frame mapRows(Mapping mapping);
+    Frame mapRows(Mapping mapping);
 
     /**
      * Builds a new frame only with rows not specified in mapping.
@@ -204,7 +206,7 @@ public interface Frame extends Serializable, Printable {
      * @return numeric setValue
      */
     default double value(int row, int col) {
-        return var(col).value(row);
+        return getVar(col).value(row);
     }
 
     /**
@@ -215,7 +217,7 @@ public interface Frame extends Serializable, Printable {
      * @return numeric value
      */
     default double value(int row, String varName) {
-        return var(varName).value(row);
+        return getVar(varName).value(row);
     }
 
     /**
@@ -226,7 +228,7 @@ public interface Frame extends Serializable, Printable {
      * @param value numeric value
      */
     default void setValue(int row, int col, double value) {
-        var(col).setValue(row, value);
+        getVar(col).setValue(row, value);
     }
 
     /**
@@ -237,7 +239,7 @@ public interface Frame extends Serializable, Printable {
      * @param value   numeric value
      */
     default void setValue(int row, String varName, double value) {
-        var(varName).setValue(row, value);
+        getVar(varName).setValue(row, value);
     }
 
 
@@ -249,7 +251,7 @@ public interface Frame extends Serializable, Printable {
      * @return setIndex value
      */
     default int index(int row, int col) {
-        return var(col).index(row);
+        return getVar(col).index(row);
     }
 
     /**
@@ -260,7 +262,7 @@ public interface Frame extends Serializable, Printable {
      * @return setIndex value
      */
     default int index(int row, String varName) {
-        return var(varName).index(row);
+        return getVar(varName).index(row);
     }
 
     /**
@@ -271,7 +273,7 @@ public interface Frame extends Serializable, Printable {
      * @param value setIndex value
      */
     default void setIndex(int row, int col, int value) {
-        var(col).setIndex(row, value);
+        getVar(col).setIndex(row, value);
     }
 
     /**
@@ -282,7 +284,7 @@ public interface Frame extends Serializable, Printable {
      * @param value   setIndex value
      */
     default void setIndex(int row, String varName, int value) {
-        var(varName).setIndex(row, value);
+        getVar(varName).setIndex(row, value);
     }
 
     /**
@@ -293,7 +295,7 @@ public interface Frame extends Serializable, Printable {
      * @return nominal label value
      */
     default String label(int row, int col) {
-        return var(col).label(row);
+        return getVar(col).label(row);
     }
 
     /**
@@ -304,7 +306,7 @@ public interface Frame extends Serializable, Printable {
      * @return nominal label value
      */
     default String label(int row, String varName) {
-        return var(varName).label(row);
+        return getVar(varName).label(row);
     }
 
     /**
@@ -315,7 +317,7 @@ public interface Frame extends Serializable, Printable {
      * @param value nominal label value
      */
     default void setLabel(int row, int col, String value) {
-        var(col).setLabel(row, value);
+        getVar(col).setLabel(row, value);
     }
 
     /**
@@ -326,23 +328,23 @@ public interface Frame extends Serializable, Printable {
      * @param value   nominal label value
      */
     default void setLabel(int row, String varName, String value) {
-        var(varName).setLabel(row, value);
+        getVar(varName).setLabel(row, value);
     }
 
     default boolean binary(int row, int var) {
-        return var(var).binary(row);
+        return getVar(var).binary(row);
     }
 
     default boolean binary(int row, String varName) {
-        return var(varName).binary(row);
+        return getVar(varName).binary(row);
     }
 
     default void setBinary(int row, int varIndex, boolean value) {
-        var(varIndex).setBinary(row, value);
+        getVar(varIndex).setBinary(row, value);
     }
 
     default void setBinary(int row, String varName, boolean value) {
-        var(varName).setBinary(row, value);
+        getVar(varName).setBinary(row, value);
     }
 
     /**
@@ -353,7 +355,7 @@ public interface Frame extends Serializable, Printable {
      * @return true if missing, false otherwise
      */
     default boolean missing(int row, int col) {
-        return var(col).missing(row);
+        return getVar(col).missing(row);
     }
 
     /**
@@ -364,7 +366,7 @@ public interface Frame extends Serializable, Printable {
      * @return true if missing, false otherwise
      */
     default boolean missing(int row, String varName) {
-        return var(varName).missing(row);
+        return getVar(varName).missing(row);
     }
 
     /**
@@ -375,7 +377,7 @@ public interface Frame extends Serializable, Printable {
      */
     default boolean missing(int row) {
         for (String colName : varNames()) {
-            if (var(colName).missing(row)) return true;
+            if (getVar(colName).missing(row)) return true;
         }
         return false;
     }
@@ -387,7 +389,7 @@ public interface Frame extends Serializable, Printable {
      * @param col column number
      */
     default void setMissing(int row, int col) {
-        var(col).setMissing(row);
+        getVar(col).setMissing(row);
     }
 
     /**
@@ -397,7 +399,7 @@ public interface Frame extends Serializable, Printable {
      * @param varName var name
      */
     default void setMissing(int row, String varName) {
-        var(varName).setMissing(row);
+        getVar(varName).setMissing(row);
     }
 
     SolidFrame solidCopy();
@@ -407,7 +409,15 @@ public interface Frame extends Serializable, Printable {
      *
      * @return a stream of FSpot
      */
-    public FSpots stream();
+    FSpots stream();
+
+    default List<FSpot> spotList() {
+        List<FSpot> list = new ArrayList<>(rowCount());
+        for (int i = 0; i < rowCount(); i++) {
+            list.add(new FSpot(this, i));
+        }
+        return list;
+    }
 
     @Override
     default void summary() {

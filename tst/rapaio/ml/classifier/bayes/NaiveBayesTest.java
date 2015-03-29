@@ -50,7 +50,7 @@ public class NaiveBayesTest {
         nb.learn(df, "class");
         ClassifierFit pred = nb.predict(df);
 
-        ConfusionMatrix cm = new ConfusionMatrix(df.var("class"), pred.firstClasses());
+        ConfusionMatrix cm = new ConfusionMatrix(df.getVar("class"), pred.firstClasses());
         cm.summary();
 
         assertTrue(cm.accuracy() >= 0.9);
@@ -74,7 +74,7 @@ public class NaiveBayesTest {
         nb.learn(df, "class");
         ClassifierFit pred = nb.predict(df);
 
-        ConfusionMatrix cm = new ConfusionMatrix(df.var("class"), pred.firstClasses());
+        ConfusionMatrix cm = new ConfusionMatrix(df.getVar("class"), pred.firstClasses());
         cm.summary();
 
         assertTrue(cm.accuracy() >= 0.9);
@@ -98,7 +98,7 @@ public class NaiveBayesTest {
         nb.learn(df, "classes");
         ClassifierFit cp = nb.predict(df);
 
-        ConfusionMatrix cm = new ConfusionMatrix(df.var("classes"), cp.firstClasses());
+        ConfusionMatrix cm = new ConfusionMatrix(df.getVar("classes"), cp.firstClasses());
         cm.summary();
 
         assertTrue(cm.accuracy() >= 0.89);

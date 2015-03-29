@@ -73,8 +73,8 @@ public interface CTreeNominalMethod extends Serializable {
         @Override
         public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function) {
             List<CTreeCandidate> result = new ArrayList<>();
-            Var test = df.var(testColName);
-            Var target = df.var(targetColName);
+            Var test = df.getVar(testColName);
+            Var target = df.getVar(targetColName);
 
             if (new DensityTable(test, target).countWithMinimum(false, c.getMinCount()) < 2) {
                 return result;
@@ -114,10 +114,10 @@ public interface CTreeNominalMethod extends Serializable {
 
             List<CTreeCandidate> result = new ArrayList<>();
             CTreeCandidate best = null;
-            for (int i = 1; i < df.var(testColName).dictionary().length; i++) {
-                Var test = df.var(testColName);
-                Var target = df.var(targetColName);
-                String testLabel = df.var(testColName).dictionary()[i];
+            for (int i = 1; i < df.getVar(testColName).dictionary().length; i++) {
+                Var test = df.getVar(testColName);
+                Var target = df.getVar(targetColName);
+                String testLabel = df.getVar(testColName).dictionary()[i];
 
                 if (new DensityTable(test, target).countWithMinimum(false, c.getMinCount()) < 2) {
                     return result;

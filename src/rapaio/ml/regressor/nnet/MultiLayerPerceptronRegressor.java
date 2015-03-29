@@ -132,7 +132,7 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor {
         prepareLearning(df, weights, targetVarNames);
 
         for (String varName : df.varNames()) {
-            if (df.var(varName).type().isNominal()) {
+            if (df.getVar(varName).getType().isNominal()) {
                 throw new IllegalArgumentException("perceptrons can't learn nominal features");
             }
         }

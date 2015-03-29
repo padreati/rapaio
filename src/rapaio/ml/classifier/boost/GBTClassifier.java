@@ -174,7 +174,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
 
             Numeric r = Numeric.newEmpty().withName("##tt##");
             for (int i = 0; i < df.rowCount(); i++) {
-                double y_i = (df.var(firstTargetName()).index(i) == k + 1) ? 1 : 0;
+                double y_i = (df.getVar(firstTargetName()).index(i) == k + 1) ? 1 : 0;
                 r.addValue(y_i - p[i][k]);
             }
 

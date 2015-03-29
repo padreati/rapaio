@@ -41,7 +41,7 @@ public class VFToNumeric extends AbstractVF {
     public Var apply(Var... vars) {
         checkSingleVar(vars);
         Var v = vars[0];
-        if (v.type().equals(VarType.NUMERIC)) {
+        if (v.getType().equals(VarType.NUMERIC)) {
             return v;
         }
         final Numeric result = Numeric.newEmpty();
@@ -49,7 +49,7 @@ public class VFToNumeric extends AbstractVF {
             if (vi.missing()) {
                 result.addMissing();
             } else {
-                switch (v.type()) {
+                switch (v.getType()) {
                     case NOMINAL:
                         try {
                             double value = Double.parseDouble(vi.label());

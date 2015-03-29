@@ -320,11 +320,11 @@ public class Csv {
                     if (j != 0) {
                         writer.append(separatorChar);
                     }
-                    if (df.var(j).missing(i)) {
+                    if (df.getVar(j).missing(i)) {
                         writer.append("?");
                         continue;
                     }
-                    if (df.var(j).type().isNominal() || df.var(j).type().equals(VarType.TEXT)) {
+                    if (df.getVar(j).getType().isNominal() || df.getVar(j).getType().equals(VarType.TEXT)) {
                         writer.append(unclean(df.label(i, j)));
                     } else {
                         writer.append(format.format(df.value(i, j)));
@@ -396,10 +396,10 @@ public class Csv {
                         return;
                     } catch (Throwable th) {
                         // if it's the last default type, than nothing else could be done
-                        if (var.type() == parent.defaultTypes[parent.defaultTypes.length - 1]) {
+                        if (var.getType() == parent.defaultTypes[parent.defaultTypes.length - 1]) {
                             throw new IllegalArgumentException(
                                     String.format("Could not parse value %s in type %s. Error: %s",
-                                            value, var.type(), th.getMessage()));
+                                            value, var.getType(), th.getMessage()));
                         }
                     }
 
@@ -407,7 +407,7 @@ public class Csv {
                     // find current default type position
                     int pos = 0;
                     for (int i = 0; i < parent.defaultTypes.length; i++) {
-                        if (!parent.defaultTypes[i].equals(var.type())) continue;
+                        if (!parent.defaultTypes[i].equals(var.getType())) continue;
                         pos = i + 1;
                         break;
                     }
@@ -425,7 +425,7 @@ public class Csv {
                             if (i == parent.defaultTypes.length - 1) {
                                 throw new IllegalArgumentException(
                                         String.format("Could not parse value %s in type %s. Error: %s",
-                                                value, var.type(), th.getMessage()));
+                                                value, var.getType(), th.getMessage()));
                             }
                         }
                     }
@@ -439,7 +439,7 @@ public class Csv {
                 } catch (Throwable th) {
                     throw new IllegalArgumentException(
                             String.format("Could not parse value %s in type %s. Error: %s",
-                                    value, var.type(), th.getMessage()));
+                                    value, var.getType(), th.getMessage()));
                 }
             }
         }

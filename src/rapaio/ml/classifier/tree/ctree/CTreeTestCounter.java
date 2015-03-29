@@ -80,7 +80,7 @@ public interface CTreeTestCounter extends Serializable {
         public void initialize(Frame df, String... inputNames) {
             counters = new HashMap<>();
             Arrays.stream(inputNames).forEach(colName -> {
-                if (df.var(colName).type().isNominal()) {
+                if (df.getVar(colName).getType().isNominal()) {
                     counters.put(colName, 1);
                 } else {
                     counters.put(colName, -1);
