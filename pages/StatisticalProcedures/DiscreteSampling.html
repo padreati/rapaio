@@ -5,6 +5,8 @@
   ~ http://www.apache.org/licenses/
   ~
   ~    Copyright 2013 Aurelian Tutuianu
+  ~    Copyright 2014 Aurelian Tutuianu
+  ~    Copyright 2015 Aurelian Tutuianu
   ~
   ~    Licensed under the Apache License, Version 2.0 (the "License");
   ~    you may not use this file except in compliance with the License.
@@ -723,7 +725,7 @@ CJYgCIIgCIIIliAIgiAIggiWIAiCIAiC8DH+P8jh91sKkHMyAAAAAElFTkSuQmCC" alt="graphics"
    }
 
    final Frame df = SolidFrame.newWrapOf(SAMPLE_SIZE * TRIALS, Arrays.asList(vars));
-   draw(new Plot().add(new Points(df.var(0), df.var(1)).pch(1).color(34).sz(2)), 600, 300);
+   draw(new Plot().add(new Points(df.getVar(0), df.getVar(1)).pch(1).color(34).sz(2)), 600, 300);
 </code></pre>
 <p>There is random in that plot. Everywhere. A summary on the data, however, can give us enough clues to understand that
    the densities of those numbers are still symmetric and somehow uniform. </p><pre><code class="Java">> summary(frame,
@@ -1312,7 +1314,7 @@ NIvXL/0AAAAASUVORK5CYII=" alt="graphics"/></center>
 
    final Frame df2 = SolidFrame.newWrapOf(SAMPLE_SIZE * TRIALS, vars);
    draw(new Plot()
-   .add(new Points(df2.var(0), df2.var(1)))
+   .add(new Points(df2.getVar(0), df2.getVar(1)))
    .pch(Index.newScalar(1))
    .sz(Numeric.newScalar(2))
    .color(34),

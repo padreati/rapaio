@@ -5,6 +5,8 @@
   ~ http://www.apache.org/licenses/
   ~
   ~    Copyright 2013 Aurelian Tutuianu
+  ~    Copyright 2014 Aurelian Tutuianu
+  ~    Copyright 2015 Aurelian Tutuianu
   ~
   ~    Licensed under the Apache License, Version 2.0 (the "License");
   ~    you may not use this file except in compliance with the License.
@@ -225,7 +227,7 @@ hljs.initHighlightingOnLoad();
     G: 0.582 (G-measure)
 
 </code></pre>
-<pre><code class="Java"> new ConfusionMatrix(test.var("spam"), crOneRule.firstClasses()).summary();
+<pre><code class="Java"> new ConfusionMatrix(test.getVar("spam"), crOneRule.firstClasses()).summary();
 </code></pre>
 <h4>Random Forest</h4>
 
@@ -780,10 +782,10 @@ EwABCwCyLlE4unz5clLBKhXq4uvp6XEThc6F8JqFmqYhnEcLAAELAHI2YAEAAQsACFgACFgAkDs0
 e3o4YSdzSAEgYAEAABCwAAAAQMACAAAgYAEAABCwAAAAQMACAAAgYAEAABCwAAAACFgAAAAgYAEA
 ABCwAAAACFgAAAAgYAEAABCwAAAACFgAAAAgYAEAAGTO/wFhVYtyK+Ja0gAAAABJRU5ErkJggg==" alt="graphics"/></center>
 </p>
-<pre><code class="Java"> ROC rocOR = new ROC(crOneRule.firstDensity().var("1"), test.var("spam"), "1");
-    ROC rocRF = new ROC(crRF.firstDensity().var("1"), test.var("spam"), "1");
-    ROC rocAB = new ROC(crAB.firstDensity().var("1"), test.var("spam"), "1");
-    ROC rocGBT = new ROC(crGBT.firstDensity().var("1"), test.var("spam"), "1");
+<pre><code class="Java"> ROC rocOR = new ROC(crOneRule.firstDensity().getVar("1"), test.getVar("spam"), "1");
+    ROC rocRF = new ROC(crRF.firstDensity().getVar("1"), test.getVar("spam"), "1");
+    ROC rocAB = new ROC(crAB.firstDensity().getVar("1"), test.getVar("spam"), "1");
+    ROC rocGBT = new ROC(crGBT.firstDensity().getVar("1"), test.getVar("spam"), "1");
 
     draw(new Plot()
     .add(new ROCCurve(rocOR).color(1))

@@ -5,6 +5,8 @@
   ~ http://www.apache.org/licenses/
   ~
   ~    Copyright 2013 Aurelian Tutuianu
+  ~    Copyright 2014 Aurelian Tutuianu
+  ~    Copyright 2015 Aurelian Tutuianu
   ~
   ~    Licensed under the Apache License, Version 2.0 (the "License");
   ~    you may not use this file except in compliance with the License.
@@ -713,7 +715,7 @@ BAGwIAiCIAiCAFgQBEEQBEGQ3/r/2rC9kpIyHfAAAAAASUVORK5CYII=" alt="graphics"/></cent
     .color(new Color(0.f, 0.f, 1f, (float) qq[i])).lwd(0.2f)
     );
     }
-    p.add(new Points(xy.var("x"), xy.var("y")));
+    p.add(new Points(xy.getVar("x"), xy.getVar("y")));
     draw(p, 600, 400);
 </code></pre>
 <h3>A more complete example: iris classification</h3>
@@ -896,7 +898,7 @@ AAAAIOgAAABgzP8DSdu9QLY8DfYAAAAASUVORK5CYII=" alt="graphics"/></center>
     iris = iris.stream().filter(s -> s.index(2)!=3).toMappedFrame();
     iris = iris.solidCopy();
 
-    draw(new Plot().add(new Points(iris.var(0), iris.var(1)).color(iris.var(2))));
+    draw(new Plot().add(new Points(iris.getVar(0), iris.getVar(1)).color(iris.getVar(2))));
 </code></pre>
 <p>Now we will build a SMO classifier, with a poly kernel of degree 2, we learn the train set and fit the trained SMO to
     the same train set to see how it works. </p><pre><code class="Java">> ConfusionMatrix
@@ -921,7 +923,7 @@ AAAAIOgAAABgzP8DSdu9QLY8DfYAAAAASUVORK5CYII=" alt="graphics"/></center>
 <pre><code class="Java"> BinarySMO smo = new BinarySMO().withKernel(new PolyKernel(2));
     smo.learn(iris, "class");
     CResult cr = smo.predict(iris);
-    new ConfusionMatrix(iris.var("class"), cr.firstClasses()).summary();
+    new ConfusionMatrix(iris.getVar("class"), cr.firstClasses()).summary();
 </code></pre>
 <p>It looks like there is no error there. However it is legitimate to ask yourself how it looks the decision function.
     One possibility is with iso lines. </p>
@@ -5392,12 +5394,14 @@ gUAgEAgEAoEICIFAIBAIBAKBQFiA+P8B4stRbvxtAqcAAAAASUVORK5CYII=" alt="graphics"/></
     Classifier c = new BinarySMO().withKernel(new WaveletKernel(0.55)).withC(0.1);
     c.learn(df, "class");
 
-    new ConfusionMatrix(df.var("class"), c.predict(df).firstClasses()).summary();
+    new ConfusionMatrix(df.getVar("class"), c.predict(df).firstClasses()).summary();
 
     // new build the mesh grid
 
-    x = Numeric.newSeq(new Minimum(df.var(0)).value() - 1, new Maximum(df.var(0)).value() + 1, 0.05).withName("x");
-    y = Numeric.newSeq(new Minimum(df.var(1)).value() - 1, new Maximum(df.var(1)).value() + 1, 0.05).withName("y");
+    x = Numeric.newSeq(new Minimum(df.getVar(0)).value() - 1, new Maximum(df.getVar(0)).value() + 1,
+    0.05).withName("x");
+    y = Numeric.newSeq(new Minimum(df.getVar(1)).value() - 1, new Maximum(df.getVar(1)).value() + 1,
+    0.05).withName("y");
 
     mg = new MeshGrid1D(x, y);
 
@@ -5435,7 +5439,7 @@ gUAgEAgEAoEICIFAIBAIBAKBQFiA+P8B4stRbvxtAqcAAAAASUVORK5CYII=" alt="graphics"/></
     }
     p.add(new MeshContour(mg.compute(0, Double.POSITIVE_INFINITY), true, false).color(0).lwd(2f));
 
-    WS.draw(p.add(new Points(df.var(0), df.var(1)).color(df.var(2))), 800, 600);
+    WS.draw(p.add(new Points(df.getVar(0), df.getVar(1)).color(df.getVar(2))), 800, 600);
 
 </code></pre>
 <p>>>>This tutorial is generated with Rapaio document printer facilities.<<<</p><br/>

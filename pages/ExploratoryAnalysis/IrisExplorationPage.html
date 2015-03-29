@@ -5,6 +5,8 @@
   ~ http://www.apache.org/licenses/
   ~
   ~    Copyright 2013 Aurelian Tutuianu
+  ~    Copyright 2014 Aurelian Tutuianu
+  ~    Copyright 2015 Aurelian Tutuianu
   ~
   ~    Licensed under the Apache License, Version 2.0 (the "License");
   ~    you may not use this file except in compliance with the License.
@@ -195,7 +197,7 @@ hljs.initHighlightingOnLoad();
     for (int i = 0; i < 2; i++) {
     for (int j = 0; j < 2; j++) {
     grid.add(i + 1, j + 1, new Plot()
-    .add(new Histogram(df.var(i * 2 + j)).bins(10)));
+    .add(new Histogram(df.getVar(i * 2 + j)).bins(10)));
     }
     }
     draw(grid, 600, 400);
@@ -467,7 +469,7 @@ wQIAAADAYAEAAAAABgsAAAAAgwUAAACAwQIAAACoNf4flxBZBEFmIw8AAAAASUVORK5CYII=" alt="g
     for (int i = 0; i < 2; i++) {
     for (int j = 0; j < 2; j++) {
     grid.add(i + 1, j + 1, new Plot()
-    .add(new DensityLine(df.var(i * 2 + j))));
+    .add(new DensityLine(df.getVar(i * 2 + j))));
     }
     }
     draw(grid, 600, 400);
@@ -741,7 +743,8 @@ AAAAAElFTkSuQmCC" alt="graphics"/></center>
     Plot p = new Plot();
     for (int k = 0; k < 3; k++) {
     int kk = k;
-    p.add(new DensityLine(df.stream().filter(s -> s.index("class") == kk + 1).toMappedFrame().var(i * 2 + j)).color(kk +
+    p.add(new DensityLine(df.stream().filter(s -> s.index("class") == kk + 1).toMappedFrame().getVar(i * 2 +
+    j)).color(kk +
     1));
     }
     grid.add(i + 1, j + 1, p);
@@ -1447,12 +1450,12 @@ gMACAAAAAAQWAAAAAAILAAAAAIEFAAAAAAgsAAAAAAQWAAAAAAILAAAAAIEFAAAAAAgsAAAAgDzz
     distributed on a normal curve. </p>
 
 <p>We estimate first the mean and the variance sepal-width sample values. </p><pre><code class="Java"> Var sw =
-    df.var("sepal-width");
+    df.getVar("sepal-width");
     new Mean(sw).summary();
     new Variance(sw).summary();
 
     draw(new QQPlot()
-    .add(df.var("sepal-width"), new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value())))
+    .add(df.getVar("sepal-width"), new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value())))
     .add(new ABLine(1, 0).color(Color.GRAY))
     );
 </code></pre>
@@ -1678,9 +1681,9 @@ AABAJvl/WZ8NNPCYazAAAAAASUVORK5CYII=" alt="graphics"/></center>
     measure. </p>
 
 <p>If we apply a jitter filter on these values, to emulate the true continuous measures, the situation does not
-    improve. </p><pre><code class="Java"> sw = new VFJitter(0.05).fitApply(df.var("sepal-width"));
+    improve. </p><pre><code class="Java"> sw = new VFJitter(0.05).fitApply(df.getVar("sepal-width"));
     draw(new QQPlot()
-    .add(df.var("sepal-width"), new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value())))
+    .add(df.getVar("sepal-width"), new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value())))
     .add(new ABLine(1, 0).color(Color.GRAY))
     );
     new KSTest("normality test", sw, new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value()))).summary();
