@@ -63,8 +63,8 @@ public interface RTreeNumericMethod {
 
         @Override
         public List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
-            Var test = df.getVar(testVarName);
-            Var target = df.getVar(targetVarName);
+            Var test = df.var(testVarName);
+            Var target = df.var(targetVarName);
 
             Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.newSeq(df.rowCount()));
 

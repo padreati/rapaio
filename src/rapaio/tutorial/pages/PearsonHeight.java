@@ -74,9 +74,9 @@ public class PearsonHeight implements TutorialPage {
         p("First we take a look at the histograms for the two dimensions");
 
         for (int i = 0; i < df.varCount(); i++) {
-            Normal normal = new Normal(new Mean(df.getVar(i)).value(), Math.sqrt(new Variance(df.getVar(i)).value()));
+            Normal normal = new Normal(new Mean(df.var(i)).value(), Math.sqrt(new Variance(df.var(i)).value()));
             draw(new Plot()
-                            .add(new Histogram(df.getVar(i)).bins(23).prob(true).minValue(57).maxValue(80))
+                            .add(new Histogram(df.var(i)).bins(23).prob(true).minValue(57).maxValue(80))
                             .add(new FunctionLine(normal::pdf).color(2))
                             .xLab(df.varNames()[i])
                             .xLim(57, 80).yLim(0, 0.20),
@@ -95,25 +95,25 @@ public class PearsonHeight implements TutorialPage {
                 + "is the quantile-quantile plot. ");
 
         for (int i = 0; i < df.varCount(); i++) {
-            final Var col = df.getVar(i);
+            final Var col = df.var(i);
             Normal normal = new Normal();
             draw(new QQPlot().add(col, normal).yLab(df.varNames()[i]), 500, 300);
         }
 
-        summary(new Mean(df.getVar("Father")));
-        summary(new Variance(df.getVar("Father")));
+        summary(new Mean(df.var("Father")));
+        summary(new Variance(df.var("Father")));
 
-        summary(new Mean(df.getVar("Son")));
-        summary(new Variance(df.getVar("Son")));
+        summary(new Mean(df.var("Son")));
+        summary(new Variance(df.var("Son")));
 
-        summary(new PearsonRCorrelation(df.getVar("Father"), df.getVar("Son")));
+        summary(new PearsonRCorrelation(df.var("Father"), df.var("Son")));
 
         double[] perc = new double[11];
         for (int i = 0; i < perc.length; i++) {
             perc[i] = i / (10.);
         }
-        final Quantiles fatherQuantiles = new Quantiles(df.getVar("Father"), perc);
-        final Quantiles sonQuantiles = new Quantiles(df.getVar("Son"), perc);
+        final Quantiles fatherQuantiles = new Quantiles(df.var("Father"), perc);
+        final Quantiles sonQuantiles = new Quantiles(df.var("Son"), perc);
         summary(fatherQuantiles);
         summary(sonQuantiles);
 
@@ -125,7 +125,7 @@ public class PearsonHeight implements TutorialPage {
         for (int i = 0; i < sonQuantiles.values().length; i++) {
             plot.add(new ABLine(sonQuantiles.values()[i], true).color(30));
         }
-        plot.add(new Points(df.getVar("Father"), df.getVar("Son")));
+        plot.add(new Points(df.var("Father"), df.var("Son")));
         draw(plot, 600, 600);
 
         p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");

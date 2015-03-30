@@ -127,8 +127,8 @@ public class CorrelationsPage implements TutorialPage {
 
         draw(new Plot()
                         .add(new Points(
-                                new VFJitter(0.01).fitApply(df.getVar("petal-length")),
-                                new VFJitter(0.01).fitApply(df.getVar("sepal-length"))).pch(1))
+                                new VFJitter(0.01).fitApply(df.var("petal-length")),
+                                new VFJitter(0.01).fitApply(df.var("sepal-length"))).pch(1))
                         .title("p correlation = " + r.values()[df.varIndex("petal-length")][df.varIndex("sepal-length")]),
                 400, 300
         );
@@ -138,8 +138,8 @@ public class CorrelationsPage implements TutorialPage {
 
         draw(new Plot()
                         .add(new Points(
-                                new VFJitter(0.01).fitApply(df.getVar("petal-length")),
-                                new VFJitter(0.01).fitApply(df.getVar("petal-width")))
+                                new VFJitter(0.01).fitApply(df.var("petal-length")),
+                                new VFJitter(0.01).fitApply(df.var("petal-width")))
                                 .pch(1))
                         .title("p correlation = " + r.values()[df.varIndex("petal-length")][df.varIndex("petal-width")]),
                 400, 300
@@ -151,8 +151,8 @@ public class CorrelationsPage implements TutorialPage {
 
         draw(new Plot()
                         .add(new Points(
-                                new VFJitter(0.01).fitApply(df.getVar("sepal-length")),
-                                new VFJitter(0.01).fitApply(df.getVar("sepal-width")))
+                                new VFJitter(0.01).fitApply(df.var("sepal-length")),
+                                new VFJitter(0.01).fitApply(df.var("sepal-width")))
                                 .pch(1))
                         .title("p correlation = " + r.values()[df.varIndex("sepal-length")][df.varIndex("sepal-width")]),
                 400, 300

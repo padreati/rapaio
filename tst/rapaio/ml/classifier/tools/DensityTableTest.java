@@ -41,7 +41,7 @@ public class DensityTableTest {
 
         Frame df = Datasets.loadPlay();
 
-        DensityTable id = new DensityTable(df.getVar("outlook"), df.getVar("class"), null);
+        DensityTable id = new DensityTable(df.var("outlook"), df.var("class"), null);
         assertEquals(0.940, id.getTargetEntropy(), 1e-3);
         assertEquals(0.694, id.getSplitEntropy(), 1e-3);
         assertEquals(0.246, id.getInfoGain(), 1e-3);
@@ -49,7 +49,7 @@ public class DensityTableTest {
         assertEquals(1.577, id.getSplitInfo(), 1e-3);
         assertEquals(0.156, id.getGainRatio(), 1e-3);
 
-        id = new DensityTable(df.getVar("windy"), df.getVar("class"), null);
+        id = new DensityTable(df.var("windy"), df.var("class"), null);
         assertEquals(0.940, id.getTargetEntropy(), 1e-3);
         assertEquals(0.892, id.getSplitEntropy(), 1e-3);
         assertEquals(0.048, id.getInfoGain(), 1e-3);
@@ -62,10 +62,10 @@ public class DensityTableTest {
     public void testPlayWithMissing() throws IOException {
 
         Frame df = Datasets.loadPlay();
-        df.getVar("outlook").setMissing(5);
+        df.var("outlook").setMissing(5);
         Summary.head(10000, df);
 
-        DensityTable id = new DensityTable(df.getVar("outlook"), df.getVar("class"), null);
+        DensityTable id = new DensityTable(df.var("outlook"), df.var("class"), null);
 
         assertEquals(0.892, id.getTargetEntropy(true), 1e-3);
         assertEquals(0.693, id.getSplitEntropy(true), 1e-3);

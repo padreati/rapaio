@@ -43,7 +43,7 @@ public class Mode implements Printable {
     }
 
     private String[] compute(Var var) {
-        if (!var.getType().isNominal()) {
+        if (!var.type().isNominal()) {
             throw new IllegalArgumentException("Can't compute mode for other than nominal vectors");
         }
         int[] freq = new int[var.dictionary().length];

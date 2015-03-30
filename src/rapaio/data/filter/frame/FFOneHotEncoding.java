@@ -59,9 +59,9 @@ public class FFOneHotEncoding extends AbstractFF {
         List<Var> vars = new ArrayList<>();
 
         for (String varName : df.varNames()) {
-            if (nameSet.contains(varName) && df.getVar(varName).getType().isNominal()) {
+            if (nameSet.contains(varName) && df.var(varName).type().isNominal()) {
                 // process one hot encoding
-                String[] dict = df.getVar(varName).dictionary();
+                String[] dict = df.var(varName).dictionary();
                 List<Var> oneHotVars = new ArrayList<>();
                 for (int i = 1; i < dict.length; i++) {
                     oneHotVars.add(Numeric.newFill(df.rowCount()).withName(varName + "." + dict[i]));
@@ -74,7 +74,7 @@ public class FFOneHotEncoding extends AbstractFF {
                 }
                 vars.addAll(oneHotVars);
             } else {
-                vars.add(df.getVar(varName));
+                vars.add(df.var(varName));
             }
         }
         return SolidFrame.newWrapOf(df.rowCount(), vars);

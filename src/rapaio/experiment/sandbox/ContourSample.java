@@ -80,7 +80,7 @@ public class ContourSample {
                             .color(gradient.getColor(i)).lwd(0.2f)
             );
         }
-        p.add(new Points(xy.getVar("x"), xy.getVar("y")));
+        p.add(new Points(xy.var("x"), xy.var("y")));
         draw(p);
     }
 }

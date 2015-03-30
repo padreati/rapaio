@@ -68,7 +68,7 @@ public class ModelEvaluation {
             ClassifierFit cp = c.predict(test);
             double fcorrect = 0;
             for (int j = 0; j < test.rowCount(); j++) {
-                if (test.getVar(classColName).index(j) == cp.firstClasses().index(j)) {
+                if (test.var(classColName).index(j) == cp.firstClasses().index(j)) {
                     fcorrect++;
                 }
             }
@@ -81,7 +81,7 @@ public class ModelEvaluation {
     }
 
     private List<List<Integer>> buildStrata(Frame df, int folds, String classColName) {
-        String[] dict = df.getVar(classColName).dictionary();
+        String[] dict = df.var(classColName).dictionary();
         List<List<Integer>> rows = IntStream.range(0, dict.length).boxed().map(ArrayList<Integer>::new).collect(toList());
         for (int i = 0; i < df.rowCount(); i++) {
             rows.get(df.index(i, df.varIndex(classColName))).add(i);
@@ -142,7 +142,7 @@ public class ModelEvaluation {
                 ClassifierFit cp = c.predict(test);
                 double acc = 0;
                 for (int j = 0; j < cp.firstClasses().rowCount(); j++) {
-                    if (cp.firstClasses().index(j) == test.getVar(classColName).index(j)) {
+                    if (cp.firstClasses().index(j) == test.var(classColName).index(j)) {
                         acc++;
                     }
                 }
@@ -184,7 +184,7 @@ public class ModelEvaluation {
             c.learn(train, classColName);
             c.predict(test);
             Var classes = c.predict(test).firstClasses();
-            double acc = new ConfusionMatrix(test.getVar(classColName), classes).accuracy();
+            double acc = new ConfusionMatrix(test.var(classColName), classes).accuracy();
             System.out.println(String.format("bootstrap(%d) : %.6f", i + 1, acc));
             total += acc;
             count++;

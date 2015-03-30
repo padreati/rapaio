@@ -115,7 +115,7 @@ public final class Numeric extends AbstractVar {
      */
     public static Numeric newCopyOf(Var source) {
         Numeric numeric = new Numeric(source.rowCount(), source.rowCount(), 0).withName(source.name());
-        if (source instanceof MappedVar || source.getType() != VarType.NUMERIC) {
+        if (source instanceof MappedVar || source.type() != VarType.NUMERIC) {
             for (int i = 0; i < source.rowCount(); i++) {
                 numeric.setValue(i, source.value(i));
             }
@@ -236,7 +236,7 @@ public final class Numeric extends AbstractVar {
     }
 
     @Override
-    public VarType getType() {
+    public VarType type() {
         return VarType.NUMERIC;
     }
 

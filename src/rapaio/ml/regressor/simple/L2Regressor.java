@@ -56,7 +56,7 @@ public class L2Regressor extends AbstractRegressor {
         prepareLearning(df, weights, targetVarNames);
         means = new double[targetNames().length];
         for (int i = 0; i < targetNames().length; i++) {
-            double mean = new Mean(df.getVar(targetName(i))).value();
+            double mean = new Mean(df.var(targetName(i))).value();
             means[i] = mean;
         }
     }

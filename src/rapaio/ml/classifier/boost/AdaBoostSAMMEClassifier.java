@@ -174,7 +174,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         ClassifierFit p = hh.predict(df, true, false);
         double err = 0;
         for (int j = 0; j < df.rowCount(); j++) {
-            if (p.firstClasses().index(j) != df.getVar(firstTargetName()).index(j)) {
+            if (p.firstClasses().index(j) != df.var(firstTargetName()).index(j)) {
                 err += w.value(j);
             }
         }
@@ -194,7 +194,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         a.add(alpha);
 
         for (int j = 0; j < w.rowCount(); j++) {
-            if (p.firstClasses().index(j) != df.getVar(firstTargetName()).index(j)) {
+            if (p.firstClasses().index(j) != df.var(firstTargetName()).index(j)) {
                 w.setValue(j, w.value(j) * Math.exp(alpha));
             }
         }

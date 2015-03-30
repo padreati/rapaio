@@ -95,10 +95,10 @@ public class CTreeNode implements Serializable {
     }
 
     public void learn(CTree tree, Frame df, Var weights, int depth) {
-        density = new DensityVector(df.getVar(tree.firstTargetName()), weights);
+        density = new DensityVector(df.var(tree.firstTargetName()), weights);
         density.normalize(false);
 
-        counter = new DensityVector(df.getVar(tree.firstTargetName()), Numeric.newFill(df.rowCount(), 1));
+        counter = new DensityVector(df.var(tree.firstTargetName()), Numeric.newFill(df.rowCount(), 1));
         bestIndex = density.findBestIndex();
 
 
@@ -117,7 +117,7 @@ public class CTreeNode implements Serializable {
             if (testCol.equals(tree.firstTargetName())) return;
             if (!tree.testCounter.canUse(testCol)) return;
 
-            if (df.getVar(testCol).getType().isNumeric()) {
+            if (df.var(testCol).type().isNumeric()) {
                 tree.getNumericMethod().computeCandidates(
                         tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction())
                         .forEach(candidates::add);

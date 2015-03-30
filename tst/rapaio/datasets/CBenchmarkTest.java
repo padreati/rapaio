@@ -89,7 +89,7 @@
 //
 //                    results.setValue(i, cName,
 //                            new ConfusionMatrix(
-//                                    task.testFrame().getVar(task.targetName()),
+//                                    task.testFrame().var(task.targetName()),
 //                                    c.classes()).accuracy());
 //                }
 //            }

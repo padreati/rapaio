@@ -43,18 +43,18 @@ public class SortVarTest {
     public void smokeTest() {
         Var v = Index.newEmpty();
         Var sorted = new VFRefSort(index(v, true)).fitApply(v);
-        assertTrue(sorted.getType().isNumeric());
-        assertFalse(sorted.getType().isNominal());
+        assertTrue(sorted.type().isNumeric());
+        assertFalse(sorted.type().isNominal());
 
         v = Numeric.newEmpty();
         sorted = new VFRefSort(numeric(v, true)).fitApply(v);
-        assertTrue(sorted.getType().isNumeric());
-        assertFalse(sorted.getType().isNominal());
+        assertTrue(sorted.type().isNumeric());
+        assertFalse(sorted.type().isNominal());
 
         v = Nominal.newEmpty(0);
         sorted = new VFRefSort(nominal(v, true)).fitApply(v);
-        assertFalse(sorted.getType().isNumeric());
-        assertTrue(sorted.getType().isNominal());
+        assertFalse(sorted.type().isNumeric());
+        assertTrue(sorted.type().isNominal());
     }
 
     @Test
@@ -140,9 +140,9 @@ public class SortVarTest {
                 .withTypes(VarType.INDEX, "y")
                 .read(SortVarTest.class, "sorted-frame.csv");
 
-        Var nominal = df.getVar(0);
-        Var index = df.getVar(1);
-        Var numeric = df.getVar(2);
+        Var nominal = df.var(0);
+        Var index = df.var(1);
+        Var numeric = df.var(2);
 
         // nominal
 

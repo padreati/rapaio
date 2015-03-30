@@ -49,7 +49,7 @@ public class VFSort extends AbstractVF {
     public Var apply(Var... vars) {
         checkSingleVar(vars);
 
-        switch (vars[0].getType()) {
+        switch (vars[0].type()) {
             case NUMERIC:
                 return new VFRefSort(RowComparators.numeric(vars[0], asc)).fitApply(vars);
             case NOMINAL:

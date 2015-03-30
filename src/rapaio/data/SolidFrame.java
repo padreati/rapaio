@@ -142,7 +142,7 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public Var getVar(int col) {
+    public Var var(int col) {
         if (col >= 0 && col < vars.length) {
             return vars[col];
         }
@@ -150,8 +150,8 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public Var getVar(String name) {
-        return getVar(varIndex(name));
+    public Var var(String name) {
+        return var(varIndex(name));
     }
 
     @Override
@@ -167,7 +167,7 @@ public class SolidFrame extends AbstractFrame {
     @Override
     public Frame mapVars(VarRange range) {
         List<String> varNames = range.parseVarNames(this);
-        List<Var> vars = varNames.stream().map(this::getVar).collect(Collectors.toList());
+        List<Var> vars = varNames.stream().map(this::var).collect(Collectors.toList());
         return SolidFrame.newWrapOf(rowCount(), vars);
     }
 

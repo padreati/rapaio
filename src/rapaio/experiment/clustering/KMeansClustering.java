@@ -137,9 +137,9 @@ public class KMeansClustering {
     private void validate(Frame df, String varNames) {
         List<String> nameList = new VarRange(varNames).parseVarNames(df);
         for (String varName : nameList) {
-            if (!df.getVar(varName).getType().isNumeric())
+            if (!df.var(varName).type().isNumeric())
                 throw new IllegalArgumentException("all matched vars must be numeric: check var " + varName);
-            if (df.getVar(varName).stream().complete().count() != df.rowCount()) {
+            if (df.var(varName).stream().complete().count() != df.rowCount()) {
                 throw new IllegalArgumentException("all matched vars must have non-missing values: check var " + varName);
             }
         }

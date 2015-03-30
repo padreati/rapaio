@@ -74,7 +74,7 @@ public abstract class AbstractClassifier implements Classifier {
         List<String> targetVarsList = new VarRange(targetVarNames).parseVarNames(df);
         this.targetNames = targetVarsList.toArray(new String[targetVarsList.size()]);
         this.dict = new HashMap<>();
-        this.dict.put(firstTargetName(), df.getVar(firstTargetName()).dictionary());
+        this.dict.put(firstTargetName(), df.var(firstTargetName()).dictionary());
 
         HashSet<String> targets = new HashSet<>(targetVarsList);
         List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targets.contains(varName)).collect(Collectors.toList());

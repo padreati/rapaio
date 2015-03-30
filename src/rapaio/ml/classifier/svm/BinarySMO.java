@@ -247,7 +247,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         iUp = -1;
         iLow = -1;
         for (int i = 0; i < train.rowCount(); i++) {
-            if (df.getVar(firstTargetName()).index(i) == classIndex1) {
+            if (df.var(firstTargetName()).index(i) == classIndex1) {
                 target[i] = -1;
                 iLow = i;
             } else {

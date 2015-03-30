@@ -54,7 +54,7 @@ public class FFRetainTypes extends AbstractFF {
         List<String> names = new ArrayList<>();
         for (String name : df.varNames()) {
             for (VarType type : types) {
-                if (df.getVar(name).getType().equals(type)) {
+                if (df.var(name).type().equals(type)) {
                     names.add(name);
                     break;
                 }

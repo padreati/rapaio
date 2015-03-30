@@ -39,8 +39,8 @@ public class IndexTest {
     @Test
     public void smokeTest() {
         Var index = Index.newEmpty(1);
-        assertTrue(index.getType().isNumeric());
-        assertFalse(index.getType().isNominal());
+        assertTrue(index.type().isNumeric());
+        assertFalse(index.type().isNominal());
 
         assertEquals(1, index.rowCount());
 

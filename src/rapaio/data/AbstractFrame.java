@@ -40,7 +40,7 @@ public abstract class AbstractFrame implements Frame {
         String[] names = varNames();
         Var[] vars = new Var[names.length];
         for (int i = 0; i < names.length; i++) {
-            vars[i] = getVar(names[i]).solidCopy().withName(names[i]);
+            vars[i] = var(names[i]).solidCopy().withName(names[i]);
         }
         return SolidFrame.newWrapOf(vars);
     }

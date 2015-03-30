@@ -131,7 +131,7 @@ public class TutorialWebsiteGenerator {
         p("There are also some tutorials which tries to do an exploration "
                 + "analysis, trying to put together the small pieces into something "
                 + "fluent and understandable as a whole. However, So, these pages does not "
-                + "contain a full exploration analysis or other getType of analysis. "
+                + "contain a full exploration analysis or other type of analysis. "
                 + "Its purpose is to illustrate how Rapaio toolbox could be used. "
                 + "They are not a golden-standard for how an exploration must be conduct.");
 

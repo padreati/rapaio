@@ -200,7 +200,7 @@ public class CForest extends AbstractClassifier implements RunningClassifier {
         weak.learn(trainFrame, trainWeights, firstTargetName());
         if (oobCompute) {
             ClassifierFit cp = weak.predict(oobFrame);
-            double oobError = new ConfusionMatrix(oobFrame.getVar(firstTargetName()), cp.firstClasses()).errorCases();
+            double oobError = new ConfusionMatrix(oobFrame.var(firstTargetName()), cp.firstClasses()).errorCases();
             synchronized (this) {
                 totalOobInstances += oobFrame.rowCount();
                 totalOobError += oobError;

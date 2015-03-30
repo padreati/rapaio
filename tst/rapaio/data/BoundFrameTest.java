@@ -163,11 +163,11 @@ public class BoundFrameTest {
         assertEquals("1/x", df.varNames()[1]);
 
         // check the properties of a bounded var after frame bind by rows
-        assertEquals(6, df.getVar(0).rowCount());
-        assertEquals(1., df.getVar(0).value(0), 1e-12);
-        assertEquals(6., df.getVar("x").value(5), 1e-12);
-        assertEquals(1 / 1., df.getVar(1).value(0), 1e-12);
-        assertEquals(1 / 6., df.getVar("1/x").value(5), 1e-12);
+        assertEquals(6, df.var(0).rowCount());
+        assertEquals(1., df.var(0).value(0), 1e-12);
+        assertEquals(6., df.var("x").value(5), 1e-12);
+        assertEquals(1 / 1., df.var(1).value(0), 1e-12);
+        assertEquals(1 / 6., df.var("1/x").value(5), 1e-12);
         assertEquals(0, df.varIndex("x"));
         assertEquals(1, df.varIndex("1/x"));
     }

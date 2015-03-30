@@ -139,15 +139,15 @@ public class NeuralNetTest {
         }
         RegressorFit rp = nn.predict(df);
 
-        Assert.assertTrue(rp.fitFrame().getVar("xorA").value(0) < .5);
-        Assert.assertTrue(rp.fitFrame().getVar("xorA").value(1) > .5);
-        Assert.assertTrue(rp.fitFrame().getVar("xorA").value(2) > .5);
-        Assert.assertTrue(rp.fitFrame().getVar("xorA").value(3) < .5);
+        Assert.assertTrue(rp.fitFrame().var("xorA").value(0) < .5);
+        Assert.assertTrue(rp.fitFrame().var("xorA").value(1) > .5);
+        Assert.assertTrue(rp.fitFrame().var("xorA").value(2) > .5);
+        Assert.assertTrue(rp.fitFrame().var("xorA").value(3) < .5);
 
-        Assert.assertTrue(rp.fitFrame().getVar("xorB").value(0) > .5);
-        Assert.assertTrue(rp.fitFrame().getVar("xorB").value(1) < .5);
-        Assert.assertTrue(rp.fitFrame().getVar("xorB").value(2) < .5);
-        Assert.assertTrue(rp.fitFrame().getVar("xorB").value(3) > .5);
+        Assert.assertTrue(rp.fitFrame().var("xorB").value(0) > .5);
+        Assert.assertTrue(rp.fitFrame().var("xorB").value(1) < .5);
+        Assert.assertTrue(rp.fitFrame().var("xorB").value(2) < .5);
+        Assert.assertTrue(rp.fitFrame().var("xorB").value(3) > .5);
 
         Summary.lines(rp.fitFrame());
     }

@@ -218,7 +218,7 @@ public final class FSpot implements Serializable {
      * @return label dictionary
      */
     public String[] dictionary(int varIndex) {
-        return df.getVar(varIndex).dictionary();
+        return df.var(varIndex).dictionary();
     }
 
     /**
@@ -227,6 +227,6 @@ public final class FSpot implements Serializable {
      * @return label dictionary
      */
     public String[] dictionary(String varName) {
-        return df.getVar(varName).dictionary();
+        return df.var(varName).dictionary();
     }
 }

@@ -59,7 +59,7 @@ public class FFAddIntercept extends AbstractFF {
         }
         List<Var> vars = new ArrayList<>();
         vars.add(Numeric.newFill(df.rowCount(), 1.0).withName(INTERCEPT));
-        Arrays.stream(df.varNames()).forEach(varName -> vars.add(df.getVar(varName)));
+        Arrays.stream(df.varNames()).forEach(varName -> vars.add(df.var(varName)));
         return SolidFrame.newWrapOf(df.rowCount(), vars);
     }
 }

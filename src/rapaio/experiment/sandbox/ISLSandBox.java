@@ -35,20 +35,21 @@ import java.io.IOException;
 import static rapaio.WS.draw;
 import static rapaio.WS.setPrinter;
 
-public class ISLSandbox {
+/**
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/30/15.
+ */
+public class ISLSandBox {
 
     public static void main(String[] args) throws IOException {
 
-        setPrinter(new IdeaPrinter(true));
-
+        setPrinter(new IdeaPrinter());
         Frame df = Datasets.loadISLAdvertising().removeVars("ID");
-
         df.summary();
-
         GridLayer gl = new GridLayer(1, 3);
-        gl.add(1, 1, new Plot().add(new Points(df.getVar("TV"), df.getVar("Sales")).color(Color.RED).pch(2)));
-        gl.add(1, 2, new Plot().add(new Points(df.getVar("Radio"), df.getVar("Sales")).color(Color.RED).pch(2)));
-        gl.add(1, 3, new Plot().add(new Points(df.getVar("Newspaper"), df.getVar("Sales")).color(Color.cyan).pch(2)));
+        gl.add(1, 1, new Plot().add(new Points(df.var("TV"), df.var("Sales")).color(Color.RED).pch(2)));
+        gl.add(1, 2, new Plot().add(new Points(df.var("Radio"), df.var("Sales")).color(Color.RED).pch(2)));
+        gl.add(1, 3, new Plot().add(new Points(df.var("Newspaper"), df.var("Sales")).color(Color.cyan).pch(2)));
         draw(gl);
+
     }
 }

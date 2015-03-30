@@ -105,6 +105,6 @@ public class NormalTest {
     public void testAttributes() {
         Normal distr = new Normal(1, 1);
         assertEquals(1., distr.getMu(), ERROR);
-        assertEquals(1., distr.getVar(), ERROR);
+        assertEquals(1., distr.var(), ERROR);
     }
 }

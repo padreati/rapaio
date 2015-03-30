@@ -65,7 +65,7 @@ public abstract class AbstractVar implements Var {
         // this implementation is useful for non-solid variables like bounded or mapped
         // all solid implementations have their own solidCopy method
 
-        switch (getType()) {
+        switch (type()) {
             case NOMINAL:
                 Nominal nom = Nominal.newEmpty(rowCount(), dictionary()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {

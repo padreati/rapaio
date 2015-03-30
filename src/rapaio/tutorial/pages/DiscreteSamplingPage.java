@@ -170,7 +170,7 @@ public class DiscreteSamplingPage implements TutorialPage {
         }
 
         final Frame df = SolidFrame.newWrapOf(SAMPLE_SIZE * TRIALS, Arrays.asList(vars));
-        draw(new Plot().add(new Points(df.getVar(0), df.getVar(1)).pch(1).color(34).sz(2)), 600, 300);
+        draw(new Plot().add(new Points(df.var(0), df.var(1)).pch(1).color(34).sz(2)), 600, 300);
 
         code("        final int TRIALS = 100;\n" +
                 "        final int SAMPLE_SIZE = 6;\n" +
@@ -188,7 +188,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "        }\n" +
                 "\n" +
                 "        final Frame df = SolidFrame.newWrapOf(SAMPLE_SIZE * TRIALS, Arrays.asList(vars));\n" +
-                "        draw(new Plot().add(new Points(df.getVar(0), df.getVar(1)).pch(1).color(34).sz(2)), 600, 300);\n");
+                "        draw(new Plot().add(new Points(df.var(0), df.var(1)).pch(1).color(34).sz(2)), 600, 300);\n");
 
         p("There is random in that plot. Everywhere. A summary on the data, however, " +
                 "can give us enough clues to understand that the densities " +
@@ -304,7 +304,7 @@ public class DiscreteSamplingPage implements TutorialPage {
 
         final Frame df2 = SolidFrame.newWrapOf(SAMPLE_SIZE * TRIALS, vars);
         draw(new Plot()
-                        .add(new Points(df2.getVar(0), df2.getVar(1)))
+                        .add(new Points(df2.var(0), df2.var(1)))
                         .pch(Index.newScalar(1))
                         .sz(Numeric.newScalar(2))
                         .color(34),
@@ -336,7 +336,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "\n" +
                 "        final Frame df2 = SolidFrame.newWrapOf(SAMPLE_SIZE * TRIALS, vars);\n" +
                 "        draw(new Plot()\n" +
-                "                        .add(new Points(df2.getVar(0), df2.getVar(1)))\n" +
+                "                        .add(new Points(df2.var(0), df2.var(1)))\n" +
                 "                        .pch(Index.newScalar(1))\n" +
                 "                        .sz(Numeric.newScalar(2))\n" +
                 "                        .color(34),\n" +
@@ -351,7 +351,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "density would help more. ");
 
         draw(new Plot()
-                        .add(new FunctionLine(new KDE(df2.getVar("winning number"), 3)::pdf)
+                        .add(new FunctionLine(new KDE(df2.var("winning number"), 3)::pdf)
                                 .color(Index.newScalar(1)))
                         .xLab("winning numbers")
                         .yLab("kernel probability density")
