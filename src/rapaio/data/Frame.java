@@ -28,7 +28,6 @@ import rapaio.data.stream.FSpots;
 import rapaio.ws.Summary;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -402,21 +401,22 @@ public interface Frame extends Serializable, Printable {
         var(varName).setMissing(row);
     }
 
-    SolidFrame solidCopy();
+    default SolidFrame solidCopy() {
+        String[] names = varNames();
+        Var[] vars = new Var[names.length];
+        for (int i = 0; i < names.length; i++) {
+            vars[i] = var(names[i]).solidCopy().withName(names[i]);
+        }
+        return SolidFrame.newWrapOf(vars);
+    }
 
     /**
      * Builds a stream of FSpots
      *
      * @return a stream of FSpot
      */
-    FSpots stream();
-
-    default List<FSpot> spotList() {
-        List<FSpot> list = new ArrayList<>(rowCount());
-        for (int i = 0; i < rowCount(); i++) {
-            list.add(new FSpot(this, i));
-        }
-        return list;
+    default FSpots stream() {
+        return new FSpots(IntStream.range(0, rowCount()).mapToObj(row -> new FSpot(this, row)), this);
     }
 
     @Override

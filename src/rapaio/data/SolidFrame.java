@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
  */
 public class SolidFrame extends AbstractFrame {
 
+    private static final long serialVersionUID = 4963238370571140813L;
     private final int rows;
     private final Var[] vars;
     private final HashMap<String, Integer> colIndex;
@@ -44,8 +45,8 @@ public class SolidFrame extends AbstractFrame {
 
     public static SolidFrame newWrapOf(List<Var> vars) {
         int rows = Integer.MAX_VALUE;
-        for (int i = 0; i < vars.size(); i++) {
-            rows = Math.min(rows, vars.get(i).rowCount());
+        for (Var var : vars) {
+            rows = Math.min(rows, var.rowCount());
         }
         if (rows == Integer.MAX_VALUE) rows = 0;
         return newWrapOf(rows, vars);
@@ -53,8 +54,8 @@ public class SolidFrame extends AbstractFrame {
 
     public static SolidFrame newWrapOf(Var... vars) {
         int rows = Integer.MAX_VALUE;
-        for (int i = 0; i < vars.length; i++) {
-            rows = Math.min(rows, vars[i].rowCount());
+        for (Var var : vars) {
+            rows = Math.min(rows, var.rowCount());
         }
         if (rows == Integer.MAX_VALUE) rows = 0;
         return new SolidFrame(rows, Arrays.asList(vars));
@@ -65,8 +66,8 @@ public class SolidFrame extends AbstractFrame {
     }
 
     public static SolidFrame newWrapOf(int rows, List<Var> vars) {
-        for (int i = 0; i < vars.size(); i++) {
-            rows = Math.min(rows, vars.get(i).rowCount());
+        for (Var var : vars) {
+            rows = Math.min(rows, var.rowCount());
         }
         return new SolidFrame(rows, vars);
     }

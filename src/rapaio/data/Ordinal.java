@@ -49,6 +49,8 @@ import java.util.HashMap;
  */
 public final class Ordinal extends FactorBase {
 
+    private static final long serialVersionUID = 5438713835700406847L;
+
     /**
      * Builds a new empty ordinal variable.
      *

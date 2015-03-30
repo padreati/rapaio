@@ -40,6 +40,7 @@ import java.util.stream.IntStream;
  */
 public class MappedFrame extends AbstractFrame {
 
+    private static final long serialVersionUID = 1368765233851124235L;
     private final Mapping mapping;
     private final Frame source;
     private final String[] names;

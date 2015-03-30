@@ -29,6 +29,7 @@ import java.util.*;
  */
 public class BoundFrame extends AbstractFrame {
 
+    private static final long serialVersionUID = -445349340356580788L;
     private final int rowCount;
     private final List<Var> vars;
     private final String[] names;
@@ -147,9 +148,9 @@ public class BoundFrame extends AbstractFrame {
             List<Integer> counts = new ArrayList<>();
             List<Var> boundVars = new ArrayList<>();
 
-            for (int j = 0; j < dfs.length; j++) {
-                counts.add(dfs[j].rowCount()); // avoid to take rowCount from variable, but from frame
-                boundVars.add(dfs[j].var(_names[i]));
+            for (Frame df : dfs) {
+                counts.add(df.rowCount()); // avoid to take rowCount from variable, but from frame
+                boundVars.add(df.var(_names[i]));
             }
 
             Var boundedVar = BoundVar.newFrom(counts, boundVars).withName(_names[i]);

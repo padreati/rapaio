@@ -22,21 +22,20 @@
 
 package rapaio.ml.regressor.linear;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.Var;
 import rapaio.math.linear.LinAlg;
 import rapaio.math.linear.QRDecomposition;
 import rapaio.math.linear.RMatrix;
 import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.Regressor;
 
-import java.util.Arrays;
-
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 public class OLSRegressor extends AbstractRegressor {
 
-    Frame coefficients;
+    RMatrix beta;
 
     @Override
     public Regressor newInstance() {
@@ -59,22 +58,13 @@ public class OLSRegressor extends AbstractRegressor {
 
     @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
-
         prepareLearning(df, weights, targetVarNames);
         if (targetNames().length == 0) {
             throw new IllegalArgumentException("OLS must specify at least one target variable name");
         }
-
         RMatrix X = LinAlg.newMatrixCopyOf(df.mapVars(inputNames()));
         RMatrix Y = LinAlg.newMatrixCopyOf(df.mapVars(targetNames()));
-        RMatrix beta = new QRDecomposition(X).solve(Y);
-        Var betaN = Nominal.newEmpty().withName("Term");
-        Var betaC = Numeric.newEmpty().withName("Coefficient");
-        for (int i = 0; i < inputNames().length; i++) {
-            betaN.addLabel(inputName(i));
-            betaC.addValue(beta.get(i, 0));
-        }
-        coefficients = SolidFrame.newWrapOf(inputNames().length, betaN, betaC);
+        beta = new QRDecomposition(X).solve(Y);
     }
 
     @Override
@@ -84,22 +74,8 @@ public class OLSRegressor extends AbstractRegressor {
 
     @Override
     public OLSRegressorFit predict(Frame df, boolean withResiduals) {
-        OLSRegressorFit rp = OLSRegressorFit.newEmpty(this, df);
-        Arrays.stream(targetNames()).forEach(rp::addTarget);
-        for (int i = 0; i < df.rowCount(); i++) {
-            double acc = 0;
-            for (int k = 0; k < inputNames().length; k++) {
-                double c = coefficients.value(k, "Coefficient");
-                double v = df.value(i, inputName(k));
-                acc += c * v;
-            }
-            rp.firstFit().setValue(i, acc);
-        }
+        OLSRegressorFit rp = new OLSRegressorFit(this, df);
         rp.buildComplete();
         return rp;
-    }
-
-    public Frame getCoefficients() {
-        return coefficients;
     }
 }

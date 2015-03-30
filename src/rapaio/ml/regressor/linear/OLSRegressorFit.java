@@ -34,11 +34,7 @@ public class OLSRegressorFit extends RegressorFit {
 
     private final OLSRegressor regressor;
 
-    public static OLSRegressorFit newEmpty(OLSRegressor model, Frame df) {
-        return new OLSRegressorFit(model, df);
-    }
-
-    private OLSRegressorFit(OLSRegressor model, Frame df) {
+    public OLSRegressorFit(OLSRegressor model, Frame df) {
         super(model, df, true);
         this.regressor = model;
     }
@@ -46,6 +42,10 @@ public class OLSRegressorFit extends RegressorFit {
     @Override
     public OLSRegressorFit addTarget(String targetName) {
         return (OLSRegressorFit) super.addTarget(targetName);
+    }
+
+    @Override
+    public void buildComplete() {
     }
 
     @Override

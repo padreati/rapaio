@@ -33,6 +33,7 @@ import java.util.stream.IntStream;
  */
 public abstract class AbstractVar implements Var {
 
+    private static final long serialVersionUID = 2607349261526552662L;
     private String name;
 
     public String name() {
@@ -67,11 +68,7 @@ public abstract class AbstractVar implements Var {
 
         switch (type()) {
             case NOMINAL:
-                Nominal nom = Nominal.newEmpty(rowCount(), dictionary()).withName(name());
-                for (int i = 0; i < rowCount(); i++) {
-                    nom.setLabel(i, label(i));
-                }
-                return nom;
+                return stream().map(VSpot::label).collect(Nominal.collector());
             case ORDINAL:
                 Ordinal ord = Ordinal.newEmpty(rowCount(), dictionary()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
@@ -91,11 +88,7 @@ public abstract class AbstractVar implements Var {
                 }
                 return stamp;
             case NUMERIC:
-                Numeric num = Numeric.newEmpty(rowCount()).withName(name());
-                for (int i = 0; i < rowCount(); i++) {
-                    num.setValue(i, value(i));
-                }
-                return num;
+                return stream().map(VSpot::value).collect(Numeric.collector());
             case BINARY:
                 Binary bin = Binary.newEmpty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {

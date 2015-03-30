@@ -35,6 +35,7 @@ public abstract class FactorBase extends AbstractVar {
 
     protected static final String missingValue = "?";
     protected static final int missingIndex = 0;
+    private static final long serialVersionUID = -7541719735879481349L;
 
     int rows = 0;
     List<String> dict;

@@ -23,6 +23,11 @@
 package rapaio.data;
 
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 
 /**
  * Nominal var contains values for categorical observations where order of labels is not important.
@@ -43,6 +48,8 @@ import java.util.*;
  * @author Aurelian Tutuianu
  */
 public final class Nominal extends FactorBase {
+
+    private static final long serialVersionUID = 1645571732133272467L;
 
     /**
      * Builds a new empty nominal variable
@@ -121,6 +128,37 @@ public final class Nominal extends FactorBase {
         }
         return copy;
     }
+
+    public static Collector<String, Nominal, Nominal> collector() {
+
+        return new Collector<String, Nominal, Nominal>() {
+            @Override
+            public Supplier<Nominal> supplier() {
+                return Nominal::newEmpty;
+            }
+
+            @Override
+            public BiConsumer<Nominal, String> accumulator() {
+                return FactorBase::addLabel;
+            }
+
+            @Override
+            public BinaryOperator<Nominal> combiner() {
+                return (left, right) -> (Nominal) left.bindRows(right);
+            }
+
+            @Override
+            public Function<Nominal, Nominal> finisher() {
+                return Nominal::solidCopy;
+            }
+
+            @Override
+            public Set<Collector.Characteristics> characteristics() {
+                return EnumSet.of(Collector.Characteristics.CONCURRENT, Collector.Characteristics.IDENTITY_FINISH);
+            }
+        };
+    }
+
 
     @Override
     public String toString() {

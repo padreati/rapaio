@@ -32,6 +32,7 @@ import java.util.BitSet;
  */
 public final class Binary extends AbstractVar {
 
+    private static final long serialVersionUID = -4977697633437126744L;
     private int rows;
     private BitSet missing;
     private BitSet values;

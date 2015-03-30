@@ -22,11 +22,6 @@
 
 package rapaio.data;
 
-import rapaio.data.stream.FSpot;
-import rapaio.data.stream.FSpots;
-
-import java.util.stream.IntStream;
-
 /**
  * Base abstract class for a frame, which provides behavior for the utility
  * access methods based on row and column indexes.
@@ -35,17 +30,5 @@ import java.util.stream.IntStream;
  */
 public abstract class AbstractFrame implements Frame {
 
-    @Override
-    public SolidFrame solidCopy() {
-        String[] names = varNames();
-        Var[] vars = new Var[names.length];
-        for (int i = 0; i < names.length; i++) {
-            vars[i] = var(names[i]).solidCopy().withName(names[i]);
-        }
-        return SolidFrame.newWrapOf(vars);
-    }
-
-    public FSpots stream() {
-        return new FSpots(IntStream.range(0, rowCount()).mapToObj(row -> new FSpot(this, row)), this);
-    }
+    private static final long serialVersionUID = -4375603852723666661L;
 }
