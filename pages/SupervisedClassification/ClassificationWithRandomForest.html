@@ -754,7 +754,7 @@ hBCi4vx/U02cray2jlMAAAAASUVORK5CYII=" alt="graphics"/></center>
 
     index.addIndex(mTrees);
     errors.addValue(new ConfusionMatrix(
-    test.getVar("spam"),
+    test.var("spam"),
     cr.firstClasses()
     ).error());
     oob.addValue(rf.getOobError());
@@ -1173,7 +1173,7 @@ AAAACCwAAAAAQGABAAAAILAAAAAAEFgAAAAACCwAAAAACIH/D7b/aAYTVerdAAAAAElFTkSuQmCC
     CResult cr = rf.predict(test);
 
     index1.addIndex(mCol);
-    errors1.addValue(new ConfusionMatrix(test.getVar("spam"), cr.firstClasses()).error());
+    errors1.addValue(new ConfusionMatrix(test.var("spam"), cr.firstClasses()).error());
     oob1.addValue(rf.getOobError());
     }
     draw(new Plot()

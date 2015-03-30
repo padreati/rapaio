@@ -221,7 +221,7 @@ hljs.initHighlightingOnLoad();
     CResult cr = nb.predict(df, true, false);
 </code></pre>
 <p>Too see how the classifier worked, we can print the confusion matrix. </p><pre><code class="Java"> new
-    ConfusionMatrix(df.getVar("class"), cr.firstClasses()).summary();
+    ConfusionMatrix(df.var("class"), cr.firstClasses()).summary();
 </code></pre>
 <pre><code class="Java">> ConfusionMatrix
 
