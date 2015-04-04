@@ -22,7 +22,7 @@
 
 package rapaio.io.json.tree;
 
-import java.util.stream.Stream;
+import java.util.Optional;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/26/15.
@@ -36,8 +36,47 @@ public class JsonString extends JsonValue {
     }
 
     @Override
-    public String stringValue() {
-        return original;
+    public JsonValue get(String key) {
+        return JsonValue.NULL;
+    }
+
+    @Override
+    public Optional<String> asString(String key) {
+        return Optional.empty();
+    }
+
+    public Optional<String> asString() {
+        return Optional.of(original);
+    }
+
+    @Override
+    public Optional<Double> asDouble(String key) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Double> asDouble() {
+        Double val = null;
+        try {
+            val = Double.parseDouble(original);
+        } catch (NumberFormatException ignored) {
+        }
+        return Optional.ofNullable(val);
+    }
+
+    @Override
+    public Optional<Boolean> asBool(String key) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Boolean> asBool() {
+        Boolean val = null;
+        try {
+            val = Boolean.parseBoolean(original);
+        } catch (NumberFormatException ignored) {
+        }
+        return Optional.ofNullable(val);
     }
 
     @Override
@@ -61,10 +100,5 @@ public class JsonString extends JsonValue {
     @Override
     public int hashCode() {
         return original != null ? original.hashCode() : 0;
-    }
-
-    @Override
-    protected Stream<String> stringKeyValuePairs(String path) {
-        return Stream.empty();
     }
 }

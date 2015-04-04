@@ -32,7 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,12 +47,12 @@ public class JsonSpliterator implements Spliterator<JsonValue> {
     private LinkedList<File> files;
     private final Consumer<String> messageHandler;
     private final boolean parallel;
-    private final Function<String, Boolean> propFilter;
+    private final Predicate<String> propFilter;
     private long estimateSize = Long.MAX_VALUE;
 
     private JsonInput input;
 
-    public JsonSpliterator(List<File> files, Consumer<String> messageHandler, Function<String, Boolean> propFilter) {
+    public JsonSpliterator(List<File> files, Consumer<String> messageHandler, Predicate<String> propFilter) {
         this.files = new LinkedList<>(files);
         this.parallel = files.size() > 1;
         this.messageHandler = messageHandler;
@@ -95,7 +95,7 @@ public class JsonSpliterator implements Spliterator<JsonValue> {
     private JsonInput buildInput(File file) throws IOException {
         if (file.getName().endsWith(".lzjson"))
             return new LzJsonInput(new BufferedInputStream(new FileInputStream(file)), propFilter);
-        return new JsonInputFlat(file, messageHandler);
+        return new JsonInputFlat(file);
     }
 
     @Override

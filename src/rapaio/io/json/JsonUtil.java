@@ -23,12 +23,15 @@
 package rapaio.io.json;
 
 import rapaio.io.json.stream.LzJsonOutput;
+import rapaio.io.json.tree.JsonValue;
+import rapaio.stream.StreamUtil;
 import rapaio.util.Pin;
 
 import java.io.*;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * Utility class for manipulating json files.
@@ -61,31 +64,24 @@ public class JsonUtil {
     }
 
     public static void balancedConvertToLz(File root, FileFilter ff, String prefix, int sliceCount, Consumer<String> messageHandler) {
-        Pin<Integer> insideCounter = new Pin<>(0);
-        Pin<LzJsonOutput> out = new Pin<>();
         Pin<Integer> fileCounter = new Pin<>(0);
-        Json.stream(root, ff).sequential().forEach(js -> {
-            try {
-                if (out.isEmpty()) {
-                    out.set(new LzJsonOutput(new BufferedOutputStream(new FileOutputStream(new File(root, prefix + "-" + fileCounter.get() + ".lzjson")))).withMaxObjectBuffer(5_000));
+        Stream<JsonValue> stream = Json.stream(root, ff).parallel();
+        StreamUtil.partition(stream, sliceCount).forEach(list -> {
+                    synchronized (fileCounter) {
+                        try {
+                            File file = new File(root, prefix + "-" + fileCounter.get() + ".lzjson");
+                            messageHandler.accept("write " + file.getName());
+                            fileCounter.set(fileCounter.get() + 1);
+                            LzJsonOutput out = new LzJsonOutput(new BufferedOutputStream(new FileOutputStream(file))).withMaxObjectBuffer(2_000);
+                            for (JsonValue js : list) {
+                                out.write(js);
+                            }
+                            out.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
-                if (insideCounter.get() >= sliceCount) {
-                    out.get().close();
-                    messageHandler.accept("starting .. " + fileCounter.get());
-                    fileCounter.set(fileCounter.get() + 1);
-                    insideCounter.set(0);
-                    out.set(new LzJsonOutput(new BufferedOutputStream(new FileOutputStream(new File(root, prefix + "-" + fileCounter.get() + ".lzjson")))).withMaxObjectBuffer(5_000));
-                }
-                out.get().write(js);
-                insideCounter.set(insideCounter.get() + 1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        try {
-            out.get().close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        );
     }
 }

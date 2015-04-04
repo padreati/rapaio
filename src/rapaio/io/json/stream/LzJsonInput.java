@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Utility class able to produce json values from an input stream formatted as lzjson.
@@ -41,18 +41,18 @@ public class LzJsonInput extends LzJsonAlgorithm implements JsonInput {
     private final DataInputStream is;
     private final List<String> strTermList = new ArrayList<>();
     private final List<String> numTermList = new ArrayList<>();
-    private final Function<String, Boolean> propFilter;
+    private final Predicate<String> propFilter;
 
-    public LzJsonInput(InputStream is, Function<String, Boolean> propFilter) {
+    public LzJsonInput(InputStream is, Predicate<String> propFilter) {
         this.is = new DataInputStream(is);
         this.propFilter = propFilter;
     }
 
     private boolean shouldParse(String key) {
-        return propFilter.apply(key);
+        return propFilter.test(key);
     }
 
-    private int readLen() throws IOException {
+    private int readInt() throws IOException {
         int len = 0;
         int last = 255;
         while (last == 255) {
@@ -63,7 +63,7 @@ public class LzJsonInput extends LzJsonAlgorithm implements JsonInput {
     }
 
     private byte[] readBuff() throws IOException {
-        int len = readLen();
+        int len = readInt();
         byte[] buff = new byte[len];
         is.readFully(buff);
         return buff;
@@ -126,15 +126,15 @@ public class LzJsonInput extends LzJsonAlgorithm implements JsonInput {
     }
 
     private JsonNumber readNumTerm() throws IOException {
-        return new JsonNumber(numTermList.get(readLen()));
+        return new JsonNumber(numTermList.get(readInt()));
     }
 
     private JsonString readStringTerm() throws IOException {
-        return new JsonString(strTermList.get(readLen()));
+        return new JsonString(strTermList.get(readInt()));
     }
 
     private JsonArray readArray() throws IOException {
-        int size = readLen();
+        int size = readInt();
         JsonArray array = new JsonArray();
         for (int i = 0; i < size; i++) {
             byte type = is.readByte();
@@ -173,22 +173,22 @@ public class LzJsonInput extends LzJsonAlgorithm implements JsonInput {
 
     private JsonObject readObject(boolean withLen) throws IOException {
         JsonObject object = new JsonObject();
-        int size = readLen();
+        int size = readInt();
         for (int i = 0; i < size; i++) {
             byte type = is.readByte();
             String key;
             switch (type) {
                 case TYPE_STRING:
-                    key = readString().stringValue();
+                    key = readString().asString().get();
                     break;
                 case TYPE_STRING_TERM:
-                    key = readStringTerm().stringValue();
+                    key = readStringTerm().asString().get();
                     break;
                 default:
                     throw new IOException("invalid type for key of the object, type: " + type + ", object: " + object);
             }
             if (withLen) {
-                int len = readLen();
+                int len = readInt();
                 if (!shouldParse(key)) {
                     is.skipBytes(len);
                     continue;

@@ -22,9 +22,7 @@
 
 package rapaio.io.json.tree;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -40,7 +38,7 @@ public final class JsonObject extends JsonValue {
         map.put(key, value);
     }
 
-    public JsonValue getValue(String key) {
+    public JsonValue get(String key) {
         JsonValue value = map.get(key);
         return (value != null) ? value : JsonValue.NULL;
     }
@@ -50,20 +48,37 @@ public final class JsonObject extends JsonValue {
     }
 
     @Override
-    public String stringValue(String key) {
-        JsonValue value = map.get(key);
-        return (value != null) ? value.stringValue() : "";
+    public Optional<String> asString(String key) {
+        return Optional.ofNullable(map.get(key)).orElse(JsonValue.NULL).asString();
     }
 
     @Override
-    public String stringValue() {
-        return "";
+    public Optional<String> asString() {
+        return Optional.of(toString());
+    }
+
+    public Optional<Double> asDouble(String key) {
+        return Optional.ofNullable(map.get(key)).orElse(JsonValue.NULL).asDouble();
+    }
+
+    @Override
+    public Optional<Double> asDouble() {
+        return Optional.empty();
+    }
+
+    public Optional<Boolean> asBool(String key) {
+        return Optional.ofNullable(map.get(key)).orElse(JsonValue.NULL).asBool();
+    }
+
+    @Override
+    public Optional<Boolean> asBool() {
+        return Optional.empty();
     }
 
     public JsonObject retain(String... keys) {
         JsonObject obj = new JsonObject();
         for (String key : keys) {
-            obj.addValue(key, getValue(key));
+            obj.addValue(key, get(key));
         }
         return obj;
     }
@@ -90,19 +105,19 @@ public final class JsonObject extends JsonValue {
     protected String pretty(int level) {
         StringBuilder sb = new StringBuilder();
         sb.append(tabs(level)).append("{\n");
-        boolean first = true;
-        for (String key : keySet()) {
+        List<String> keyList = new ArrayList<>(keySet());
+        for (int i = 0; i < keyList.size(); i++) {
+            String key = keyList.get(i);
             sb.append(tabs(level + 1)).append('\"').append(key).append("\":");
 
-            JsonValue value = getValue(key);
+            JsonValue value = get(key);
             if (value.isObject() || value.isArray()) {
                 sb.append('\n');
                 sb.append(value.pretty(level + 1));
             } else {
                 sb.append(value.pretty(level + 1));
             }
-            if (first) {
-                first = false;
+            if (i != keyList.size() - 1) {
                 sb.append(",");
             }
             sb.append("\n");
@@ -115,9 +130,9 @@ public final class JsonObject extends JsonValue {
     protected Stream<String> stringKeyValuePairs(String path) {
         Stream<String> s = Stream.empty();
         for (String key : keySet()) {
-            JsonValue js = getValue(key);
-            if (js instanceof JsonBool || js instanceof JsonNull || js instanceof JsonString) {
-                s = Stream.concat(s, Stream.of(path + "." + key + ":" + js.stringValue()));
+            JsonValue js = get(key);
+            if (js instanceof JsonBool || js instanceof JsonNull || js instanceof JsonString || js instanceof JsonNumber) {
+                s = Stream.concat(s, Stream.of(path + "." + key + ":" + js.asString().orElse("null")));
             } else {
                 s = Stream.concat(s, js.stringKeyValuePairs(path + "." + key));
             }

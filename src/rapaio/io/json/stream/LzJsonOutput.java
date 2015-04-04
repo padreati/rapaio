@@ -200,12 +200,12 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
 
     private void countJs(Map<String, Integer> counter, Map<String, Integer> numericCounter, JsonValue js) {
         if (js instanceof JsonString) {
-            Integer c = counter.get(js.stringValue());
+            Integer c = counter.get(js.toString());
             if (c == null) {
                 c = 0;
             }
             c++;
-            counter.put(js.stringValue(), c);
+            counter.put(js.toString(), c);
             return;
         }
         if (js instanceof JsonArray) {
@@ -221,11 +221,11 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
                 }
                 c++;
                 counter.put(key, c);
-                countJs(counter, numericCounter, obj.getValue(key));
+                countJs(counter, numericCounter, obj.get(key));
             }
         }
         if (js instanceof JsonNumber) {
-            String value = js.stringValue();
+            String value = js.asString().get();
             Integer c = numericCounter.get(value);
             if (c == null) {
                 c = 0;
@@ -240,11 +240,11 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
     }
 
     private void writeBool(JsonBool js) throws IOException {
-        os.writeByte(js.stringValue().equals("true") ? TYPE_TRUE : TYPE_FALSE);
+        os.writeByte(js.toString().equals("true") ? TYPE_TRUE : TYPE_FALSE);
     }
 
     private void writeNumeric(JsonNumber js) throws IOException {
-        String value = js.stringValue();
+        String value = js.asString().get();
         Integer pos = numTermIndex.get(value);
         if (pos != null) {
             os.writeByte(TYPE_NUMERIC_TERM);
@@ -252,11 +252,11 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
             return;
         }
         os.writeByte(TYPE_NUMERIC);
-        writeBuff(js.stringValue().getBytes());
+        writeBuff(js.asString().get().getBytes());
     }
 
     private void writeString(JsonString js) throws IOException {
-        String value = js.stringValue();
+        String value = js.asString().get();
         Integer pos = strTermIndex.get(value);
         if (pos != null) {
             os.writeByte(TYPE_STRING_TERM);
@@ -303,10 +303,10 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
         for (String key : jsObject.keySet()) {
             writeString(new JsonString(key));
             if (withLen) {
-                int len = computeLen(jsObject.getValue(key), 0);
+                int len = computeLen(jsObject.get(key), 0);
                 writeLen(len);
             }
-            JsonValue js = jsObject.getValue(key);
+            JsonValue js = jsObject.get(key);
             if (js instanceof JsonNull) {
                 writeNull();
                 continue;
@@ -339,15 +339,15 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
             return count + 1;
         }
         if (js instanceof JsonNumber) {
-            String value = js.stringValue();
+            String value = js.asString().get();
             Integer pos = numTermIndex.get(value);
             if (pos != null) {
                 return count + 1 + countLen(pos);
             }
-            return count + 1 + countBuff(js.stringValue().getBytes());
+            return count + 1 + countBuff(js.asString().get().getBytes());
         }
         if (js instanceof JsonString) {
-            String value = js.stringValue();
+            String value = js.asString().get();
             Integer pos = strTermIndex.get(value);
             if (pos != null) {
                 return count + 1 + countLen(pos);
@@ -370,7 +370,7 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
             count += countLen(size);
             for (String key : jsObject.keySet()) {
                 count += computeLen(new JsonString(key), 0);
-                JsonValue child = jsObject.getValue(key);
+                JsonValue child = jsObject.get(key);
                 count += computeLen(child, 0);
             }
             return count;

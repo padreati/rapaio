@@ -22,7 +22,7 @@
 
 package rapaio.io.json.tree;
 
-import java.util.stream.Stream;
+import java.util.Optional;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/26/15.
@@ -36,23 +36,43 @@ public class JsonNumber extends JsonValue {
     }
 
     @Override
-    public String stringValue(String key) {
-        return "";
+    public JsonValue get(String key) {
+        return JsonValue.NULL;
     }
 
     @Override
-    public String stringValue() {
-        return original;
+    public Optional<String> asString(String key) {
+        return Optional.of(original);
     }
 
     @Override
-    public double doubleValue() {
-        return Double.parseDouble(original);
+    public Optional<String> asString() {
+        return Optional.of(original);
+    }
+
+    @Override
+    public Optional<Double> asDouble(String key) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Double> asDouble() {
+        return Optional.ofNullable(Double.parseDouble(original));
+    }
+
+    @Override
+    public Optional<Boolean> asBool(String key) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Boolean> asBool() {
+        return Optional.empty();
     }
 
     @Override
     protected String pretty(int level) {
-        return stringValue();
+        return asString().get();
     }
 
     @Override
@@ -71,10 +91,5 @@ public class JsonNumber extends JsonValue {
     @Override
     public String toString() {
         return original;
-    }
-
-    @Override
-    protected Stream<String> stringKeyValuePairs(String path) {
-        return Stream.empty();
     }
 }

@@ -28,7 +28,7 @@ import rapaio.io.json.tree.JsonValue;
 import java.io.*;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -42,12 +42,12 @@ public final class Json {
         }, Json.allFilter()));
     }
 
-    public static JsonStream stream(File root, FileFilter ff, Function<String, Boolean> propFilter) {
+    public static JsonStream stream(File root, FileFilter ff, Predicate<String> propFilter) {
         return new JsonStream(Json.stream(root, ff, msg -> {
         }, propFilter));
     }
 
-    public static JsonStream stream(File root, FileFilter ff, Consumer<String> ph, Function<String, Boolean> propFilter) {
+    public static JsonStream stream(File root, FileFilter ff, Consumer<String> ph, Predicate<String> propFilter) {
         List<File> files = new ArrayList<>();
         if (root.isDirectory()) {
             files = Arrays.asList(root.listFiles()).stream().filter(ff::accept).collect(Collectors.toList());
@@ -64,11 +64,11 @@ public final class Json {
         w.flush();
     }
 
-    public static Function<String, Boolean> allFilter() {
+    public static Predicate<String> allFilter() {
         return key -> true;
     }
 
-    public static Function<String, Boolean> inFilter(String... keys) {
+    public static Predicate<String> inFilter(String... keys) {
         final HashSet<String> allow = new HashSet<>();
         Collections.addAll(allow, keys);
         return key -> allow.isEmpty() || allow.contains(key);

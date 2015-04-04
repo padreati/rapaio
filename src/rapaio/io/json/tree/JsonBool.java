@@ -22,32 +22,63 @@
 
 package rapaio.io.json.tree;
 
-import java.util.stream.Stream;
+import java.util.Optional;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/26/15.
  */
 public final class JsonBool extends JsonValue {
 
-    private final boolean value;
+    private final Boolean value;
+    private final String original;
 
     public JsonBool(String original) {
-        value = "true".equals(original);
+        this.original = original;
+        if ("true".equals(original))
+            this.value = true;
+        else if ("false".equals(original)) {
+            this.value = false;
+        } else
+            this.value = null;
     }
 
     @Override
-    public String stringValue(String key) {
-        return "";
+    public JsonValue get(String key) {
+        return JsonValue.NULL;
     }
 
     @Override
-    public String stringValue() {
-        return value ? "true" : "false";
+    public Optional<String> asString(String key) {
+        return Optional.of(original);
+    }
+
+    @Override
+    public Optional<String> asString() {
+        return Optional.of(original);
+    }
+
+    @Override
+    public Optional<Double> asDouble(String key) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Double> asDouble() {
+        return asBool().flatMap(value -> value ? Optional.of(1d) : Optional.of(0d));
+    }
+
+    @Override
+    public Optional<Boolean> asBool(String key) {
+        return Optional.empty();
+    }
+
+    public Optional<Boolean> asBool() {
+        return Optional.of(value);
     }
 
     @Override
     protected String pretty(int level) {
-        return stringValue();
+        return asString().get();
     }
 
     @Override
@@ -66,10 +97,5 @@ public final class JsonBool extends JsonValue {
     @Override
     public String toString() {
         return String.valueOf(value);
-    }
-
-    @Override
-    protected Stream<String> stringKeyValuePairs(String path) {
-        return Stream.empty();
     }
 }

@@ -30,6 +30,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -95,8 +96,75 @@ public class SCollectors {
             @Override
             public Function<Map<K, Long>, NavigableMap<Long, M>> finisher() {
                 return m1 -> m1.entrySet().stream()
-                        .collect(Collectors.groupingBy(Map.Entry::getValue, TreeMap::new, Collectors.mapping(Map.Entry::getKey, downstream)))
+                        .collect(Collectors.groupingBy(Map.Entry::getValue, TreeMap::new, mapping(Map.Entry::getKey, downstream)))
                         .descendingMap();
+            }
+
+            @Override
+            public Set<Characteristics> characteristics() {
+                return EnumSet.noneOf(Characteristics.class);
+            }
+        };
+    }
+
+    public static <T> Collector<T, List<List<T>>, List<List<T>>> slidingCollector(int size, int step) {
+        final int window = Math.max(size, step);
+
+        return new Collector<T, List<List<T>>, List<List<T>>>() {
+
+            private final Queue<T> buffer = new ArrayDeque<>();
+            private int totalIn = 0;
+
+            @Override
+            public Supplier<List<List<T>>> supplier() {
+                return ArrayList::new;
+            }
+
+            @Override
+            public BiConsumer<List<List<T>>, T> accumulator() {
+                return (lists, t) -> {
+                    buffer.offer(t);
+                    ++totalIn;
+                    if (buffer.size() == window) {
+                        dumpCurrent(lists);
+                        shiftBy(step);
+                    }
+                };
+            }
+
+            @Override
+            public Function<List<List<T>>, List<List<T>>> finisher() {
+                return lists -> {
+                    if (!buffer.isEmpty()) {
+                        final int totalOut = estimateTotalOut();
+                        if (totalOut > lists.size()) {
+                            dumpCurrent(lists);
+                        }
+                    }
+                    return lists;
+                };
+            }
+
+            private int estimateTotalOut() {
+                return Math.max(0, (totalIn + step - size - 1) / step) + 1;
+            }
+
+            private void dumpCurrent(List<List<T>> lists) {
+                final List<T> batch = buffer.stream().limit(size).collect(Collectors.toList());
+                lists.add(batch);
+            }
+
+            private void shiftBy(int by) {
+                for (int i = 0; i < by; i++) {
+                    buffer.remove();
+                }
+            }
+
+            @Override
+            public BinaryOperator<List<List<T>>> combiner() {
+                return (l1, l2) -> {
+                    throw new UnsupportedOperationException("Combining not possible");
+                };
             }
 
             @Override

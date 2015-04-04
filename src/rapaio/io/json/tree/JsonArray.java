@@ -24,6 +24,7 @@ package rapaio.io.json.tree;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -42,13 +43,38 @@ public final class JsonArray extends JsonValue {
     }
 
     @Override
-    public String stringValue(String key) {
-        return "";
+    public JsonValue get(String key) {
+        return JsonValue.NULL;
     }
 
     @Override
-    public String stringValue() {
-        return "";
+    public Optional<String> asString(String key) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> asString() {
+        return Optional.of(toString());
+    }
+
+    @Override
+    public Optional<Double> asDouble(String key) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Double> asDouble() {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Boolean> asBool(String key) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Boolean> asBool() {
+        return Optional.empty();
     }
 
     @Override

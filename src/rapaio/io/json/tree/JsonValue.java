@@ -22,6 +22,7 @@
 
 package rapaio.io.json.tree;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -34,49 +35,89 @@ public abstract class JsonValue {
 
     public static JsonNull NULL = new JsonNull();
 
-    public final JsonObject object() {
-        return (JsonObject) this;
-    }
-
-    public JsonArray array() {
-        return (JsonArray) this;
-    }
-
+    /**
+     * @return true if the current instance is of type {@link JsonObject}, false otherwise
+     */
     public boolean isObject() {
         return this instanceof JsonObject;
     }
 
+    /**
+     * @return true if the current instance is of type {@link JsonArray}, false otherwise
+     */
     public boolean isArray() {
         return this instanceof JsonArray;
     }
 
-    public JsonValue getValue(String key) {
-        return JsonObject.NULL;
+    /**
+     * @return true if the current instance is of type {@link JsonString}, false otherwise
+     */
+    public boolean isString() {
+        return this instanceof JsonString;
     }
+
+    /**
+     * @return true if the current instance is of type {@link JsonBool}, false otherwise
+     */
+    public boolean isBool() {
+        return this instanceof JsonBool;
+    }
+
+    /**
+     * @return true if the current instance is of type {@link JsonNumber}, false otherwise
+     */
+    public boolean isNumber() {
+        return this instanceof JsonNumber;
+    }
+
+    /**
+     * @return true if the current instance is of type {@link JsonNull}, false otherwise
+     */
+    public boolean isNull() {
+        return this instanceof JsonNull;
+    }
+
+    /**
+     * @return the same instance casted to {@link JsonObject} class
+     */
+    public final JsonObject getObject() {
+        return (JsonObject) this;
+    }
+
+    /**
+     * @return the same instance casted to {@link JsonArray} class
+     */
+    public JsonArray getArray() {
+        return (JsonArray) this;
+    }
+
+    /**
+     * Get from object the value from specified property
+     *
+     * @param key property name
+     * @return value instance, if property not defined returns {@link JsonValue#NULL}
+     */
+    public abstract JsonValue get(String key);
 
     public Set<String> keySet() {
-        return object().keySet();
+        return getObject().keySet();
     }
 
-    public String singleKey() {
-        if (object().keySet().size() == 1)
-            return object().keySet().iterator().next();
-        return "";
+    public Optional<String> findAnyKey() {
+        return getObject().keySet().stream().findAny();
     }
 
-    public String stringValue(String key) {
-        return "";
-    }
+    public abstract Optional<String> asString(String key);
 
-    public double doubleValue() {
-        return Double.NaN;
-    }
+    public abstract Optional<String> asString();
 
-    public boolean boolValue() {
-        return false;
-    }
+    public abstract Optional<Double> asDouble(String key);
 
-    public abstract String stringValue();
+    public abstract Optional<Double> asDouble();
+
+    public abstract Optional<Boolean> asBool(String key);
+
+    public abstract Optional<Boolean> asBool();
 
     public String pretty() {
         return pretty(0);
@@ -96,5 +137,7 @@ public abstract class JsonValue {
         return stringKeyValuePairs("");
     }
 
-    protected abstract Stream<String> stringKeyValuePairs(String path);
+    protected Stream<String> stringKeyValuePairs(String path) {
+        return Stream.empty();
+    }
 }

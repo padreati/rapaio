@@ -22,7 +22,7 @@
 
 package rapaio.io.json.tree;
 
-import java.util.stream.Stream;
+import java.util.Optional;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/26/15.
@@ -30,13 +30,38 @@ import java.util.stream.Stream;
 public final class JsonNull extends JsonValue {
 
     @Override
-    public String stringValue(String key) {
-        return "";
+    public JsonValue get(String key) {
+        return JsonValue.NULL;
     }
 
     @Override
-    public String stringValue() {
-        return "";
+    public Optional<String> asString(String key) {
+        return Optional.of("null");
+    }
+
+    @Override
+    public Optional<String> asString() {
+        return Optional.of("null");
+    }
+
+    @Override
+    public Optional<Double> asDouble(String key) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Double> asDouble() {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Boolean> asBool(String key) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Boolean> asBool() {
+        return Optional.empty();
     }
 
     @Override
@@ -57,10 +82,5 @@ public final class JsonNull extends JsonValue {
     @Override
     public int hashCode() {
         return 1;
-    }
-
-    @Override
-    protected Stream<String> stringKeyValuePairs(String path) {
-        return Stream.empty();
     }
 }

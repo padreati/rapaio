@@ -25,7 +25,6 @@ package rapaio.io.json.stream;
 import rapaio.io.json.tree.*;
 
 import java.io.*;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
@@ -45,7 +44,6 @@ public class JsonInputFlat implements JsonInput {
     private static final String KEY_TRUE = "true";
     private static final String KEY_FALSE = "false";
     private static final String KEY_NULL = "null";
-    private Consumer<String> messageHandler;
 
     private char[] buffer = new char[256];
     private int pos = 0;
@@ -53,11 +51,10 @@ public class JsonInputFlat implements JsonInput {
     private final Reader reader;
     int _next = ' ';
 
-    public JsonInputFlat(File file, Consumer<String> messageHandler) throws IOException {
+    public JsonInputFlat(File file) throws IOException {
         this.reader = (file.getName().endsWith(".gz")) ?
                 new InputStreamReader(new GZIPInputStream(new BufferedInputStream(new FileInputStream(file), 1024 * 1024), 16 * 1024), "utf-8") :
                 new InputStreamReader(new BufferedInputStream(new FileInputStream(file), 16 * 1024), "utf-8");
-        this.messageHandler = messageHandler;
     }
 
     private boolean isNumeric(int ch) {
@@ -167,7 +164,7 @@ public class JsonInputFlat implements JsonInput {
             if ('"' != _next) {
                 throw new IllegalArgumentException("objects contains key value pairs, parsed object: " + obj.toString() + ", next char: " + ((char) _next));
             }
-            key = readString().stringValue();
+            key = readString().asString().get();
             while (isWhite(_next)) _next = getNext();
 
             if (_next != COLON) {
