@@ -43,7 +43,6 @@ public class Histogram extends PlotComponent {
 
     private final Var v;
     int bins = 30;
-    boolean prob = false;
     double[] freqTable;
     double minValue = Double.NaN;
     double maxValue = Double.NaN;
@@ -71,7 +70,7 @@ public class Histogram extends PlotComponent {
     public void initialize(Plot parent) {
         super.initialize(parent);
 
-        parent.yLab(prob ? "density" : "frequency");
+        parent.yLab(options.getProb() ? "density" : "frequency");
         parent.xLab(v.name());
         parent.leftThick(true);
         parent.leftMarkers(true);
@@ -125,7 +124,7 @@ public class Histogram extends PlotComponent {
             freqTable[index]++;
         }
 
-        if (prob && (total != 0)) {
+        if (options.getProb() && (total != 0)) {
             for (int i = 0; i < freqTable.length; i++) {
                 freqTable[i] /= (total * step);
             }
