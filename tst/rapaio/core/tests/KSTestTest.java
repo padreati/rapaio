@@ -24,6 +24,7 @@ package rapaio.core.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
+import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.StudentT;
 import rapaio.core.distributions.Uniform;
@@ -41,6 +42,7 @@ public class KSTestTest {
 
     @Test
     public void testPearson() throws IOException, URISyntaxException {
+        RandomSource.setSeed(1);
         Frame df = Datasets.loadPearsonHeightDataset();
         KSTest test = new KSTest("2-sample pearson", df.var("Son"), df.var("Father"));
         test.summary();
@@ -51,6 +53,7 @@ public class KSTestTest {
 
     @Test
     public void testNormal() {
+        RandomSource.setSeed(1);
         Normal d = new Normal(0, 1);
         Numeric sample = d.sample(1000);
         KSTest test = new KSTest("normal sample", sample, d);
@@ -61,6 +64,7 @@ public class KSTestTest {
 
     @Test
     public void testUniform() {
+        RandomSource.setSeed(1);
         Numeric sample = new Uniform(0, 1).sample(1_000);
         KSTest test = new KSTest("uniform sample", sample, new Normal(0, 1));
         test.summary();
@@ -70,6 +74,7 @@ public class KSTestTest {
 
     @Test
     public void testStudentT() {
+        RandomSource.setSeed(1);
         StudentT d = new StudentT(3, 0, 1);
         Numeric sample = d.sample(1000);
         KSTest test = new KSTest("studentT sample", sample, new Normal(0, 1));

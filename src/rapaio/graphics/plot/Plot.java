@@ -24,13 +24,11 @@ package rapaio.graphics.plot;
 
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.data.Var;
+import rapaio.data.grid.MeshGrid;
 import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOpt;
-import rapaio.graphics.plot.plotcomp.ABLine;
-import rapaio.graphics.plot.plotcomp.DensityLine;
-import rapaio.graphics.plot.plotcomp.FunctionLine;
-import rapaio.graphics.plot.plotcomp.Lines;
+import rapaio.graphics.plot.plotcomp.*;
 import rapaio.ml.eval.ROC;
 
 import java.awt.*;
@@ -152,6 +150,11 @@ public class Plot extends HostFigure {
 
     public Plot rocCurve(ROC roc, GOpt... opts) {
         add(new ROCCurve(roc, opts));
+        return this;
+    }
+
+    public Plot meshContour(MeshGrid mg, boolean contour, boolean fill, GOpt... opts) {
+        add(new MeshContour(mg, contour, fill, opts));
         return this;
     }
 

@@ -22,13 +22,15 @@
 
 package rapaio.graphics;
 
+import rapaio.core.distributions.empirical.KFunc;
 import rapaio.data.Var;
 import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.opt.GOpts;
-import rapaio.graphics.plot.BarChart;
-import rapaio.graphics.plot.Histogram;
-import rapaio.graphics.plot.Plot;
-import rapaio.graphics.plot.Points;
+import rapaio.graphics.plot.*;
+import rapaio.graphics.plot.plotcomp.DensityLine;
+import rapaio.graphics.plot.plotcomp.FunctionLine;
+
+import java.util.function.Function;
 
 public final class Plotter2D {
 
@@ -45,12 +47,36 @@ public final class Plotter2D {
         return new Plot(mergedOpts(opts));
     }
 
+    public static QQPlot qqplot(GOpt... opts) {
+        return new QQPlot(mergedOpts(opts));
+    }
+
     public static Plot hist(Var v, GOpt... opts) {
         return plot().add(new Histogram(v, opts));
     }
 
     public static Plot hist(Var v, double minValue, double maxValue, GOpt... opts) {
         return plot().add(new Histogram(v, minValue, maxValue, opts));
+    }
+
+    public static Plot densityLine(Var var, GOpt... opts) {
+        return plot().add(new DensityLine(var, opts));
+    }
+
+    public static Plot densityLine(Var var, double bandwidth, GOpt... opts) {
+        return plot().add(new DensityLine(var, bandwidth, opts));
+    }
+
+    public static Plot densityLine(Var var, KFunc kfunc, GOpt... opts) {
+        return plot().add(new DensityLine(var, kfunc, opts));
+    }
+
+    public static Plot densityLine(Var var, KFunc kfunc, double bandwidth, GOpt... opts) {
+        return plot().add(new DensityLine(var, kfunc, bandwidth, opts));
+    }
+
+    public static Plot funLine(Function<Double, Double> f, GOpt... opts) {
+        return plot().add(new FunctionLine(f, opts));
     }
 
     public static Plot points(Var x, Var y, GOpt... opts) {

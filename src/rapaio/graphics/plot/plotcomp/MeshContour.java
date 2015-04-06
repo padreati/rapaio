@@ -251,7 +251,7 @@ public class MeshContour extends PlotComponent {
                                 list.add(p);
                                 sideList.add(sides[q]);
                             }
-                            if (sideList.size() > 1 && (Math.abs(sideList.get(0 - sideList.get(1))) < 1e-20)) {
+                            if (sideList.size() > 1 && (Math.abs(sideList.get(0) - sideList.get(1)) < 1e-20)) {
                                 Point2D.Double p = list.pollLast();
                                 list.addFirst(p);
                             }
