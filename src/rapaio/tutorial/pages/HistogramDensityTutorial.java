@@ -132,7 +132,7 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("One can draw also the kernel density approximation, over a histogram or as a separate plot.");
 
         final Var col = df.var("Father");
-        draw(new Plot().hist(col, prob(true), color(Index.newSeq(1, 255))).densityLine(col));
+        draw(plot().hist(col, prob(true), color(Index.newSeq(1, 255))).densityLine(col));
 
         code("        final Var col = df.var(\"Father\");\n" +
                 "        draw(new Plot().hist(col, prob(true), color(Index.newSeq(1, 255))).densityLine(col));\n");
