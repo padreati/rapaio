@@ -30,10 +30,10 @@ import rapaio.core.stat.Minimum;
 import rapaio.data.*;
 import rapaio.data.grid.MeshGrid1D;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.Plot;
 import rapaio.graphics.opt.ColorGradient;
-import rapaio.graphics.plot.MeshContour;
+import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.Points;
+import rapaio.graphics.plot.plotcomp.MeshContour;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.linear.BinaryLogistic;
@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static rapaio.WS.draw;
+import static rapaio.graphics.opt.GOpt.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/23/15.
@@ -132,14 +133,10 @@ public class IrisContour {
         qq[qq.length - 1] = Double.POSITIVE_INFINITY;
         ColorGradient bcg = ColorGradient.newHueGradient(qq);
         for (int i = 0; i < qq.length - 1; i++) {
-            p.add(new MeshContour(mg1.compute(qq[i], qq[i + 1]), true, true)
-                            .lwd(0.1f)
-                            .color(bcg.getColor(i))
-            );
+            p.add(new MeshContour(mg1.compute(qq[i], qq[i + 1]), true, true,
+                    lwd(0.1f), color(bcg.getColor(i))));
         }
-//        p.add(new MeshContour(mg1.compute(0.5, Double.POSITIVE_INFINITY), true, false)
-//                .lwd(1.2f).alpha(0.1f));
-        p.add(new Points(iris.var(0), iris.var(1)).color(iris.var(2)).pch(2));
+        p.add(new Points(iris.var(0), iris.var(1), color(iris.var(2)), pch(2)));
 
         draw(p);
     }

@@ -22,9 +22,9 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
+import rapaio.graphics.opt.GOpt;
 import rapaio.ml.eval.ROC;
 
 import java.awt.*;
@@ -35,10 +35,12 @@ import java.awt.geom.Line2D;
  */
 public class ROCCurve extends PlotComponent {
 
+    private static final long serialVersionUID = 4110642211338491615L;
     private final ROC roc;
 
-    public ROCCurve(ROC roc) {
+    public ROCCurve(ROC roc, GOpt... opts) {
         this.roc = roc;
+        this.options.apply(opts);
     }
 
     @Override
@@ -55,12 +57,12 @@ public class ROCCurve extends PlotComponent {
 
     @Override
     public void paint(Graphics2D g2d) {
-        g2d.setColor(getCol(0));
-        g2d.setStroke(new BasicStroke(getLwd()));
+        g2d.setColor(options.getColor(0));
+        g2d.setStroke(new BasicStroke(options.getLwd()));
         g2d.setBackground(ColorPalette.STANDARD.getColor(255));
 
         for (int i = 1; i < roc.getData().rowCount(); i++) {
-            g2d.setColor(getCol(i));
+            g2d.setColor(options.getColor(i));
             double x1 = parent.xScale(roc.getData().value(i - 1, "fpr"));
             double y1 = parent.yScale(roc.getData().value(i - 1, "tpr"));
             double x2 = parent.xScale(roc.getData().value(i, "fpr"));
@@ -77,6 +79,6 @@ public class ROCCurve extends PlotComponent {
             }
         }
 
-        g2d.setColor(getCol(0));
+        g2d.setColor(options.getColor(0));
     }
 }

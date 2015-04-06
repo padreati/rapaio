@@ -287,7 +287,7 @@ public interface Var extends Serializable {
      */
     VSpots stream();
 
-    public static Collector<Double, Numeric, Numeric> numericCollector() {
+    static Collector<Double, Numeric, Numeric> numericCollector() {
         return new Collector<Double, Numeric, Numeric>() {
             @Override
             public Supplier<Numeric> supplier() {
@@ -319,7 +319,7 @@ public interface Var extends Serializable {
         };
     }
 
-    public static Collector<Integer, Index, Index> indexCollector() {
+    static Collector<Integer, Index, Index> indexCollector() {
         return new Collector<Integer, Index, Index>() {
             @Override
             public Supplier<Index> supplier() {
@@ -351,4 +351,15 @@ public interface Var extends Serializable {
         };
     }
 
+    default boolean fullEquals(Var var) {
+        if (rowCount() != var.rowCount())
+            return false;
+        if (type() != var.type())
+            return false;
+        for (int i = 0; i < rowCount(); i++) {
+            if (!label(i).equals(var.label(i)))
+                return false;
+        }
+        return true;
+    }
 }

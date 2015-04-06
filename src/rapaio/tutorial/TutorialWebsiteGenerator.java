@@ -24,7 +24,8 @@ package rapaio.tutorial;
 
 import rapaio.WS;
 import rapaio.printer.HTMLPrinter;
-import rapaio.tutorial.pages.*;
+import rapaio.tutorial.pages.ClassificationWithNaiveBayesPage;
+import rapaio.tutorial.pages.TutorialPage;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,23 +72,23 @@ public class TutorialWebsiteGenerator {
         pages.put("ExploratoryAnalysis", Arrays.asList(
 //                new PearsonHeight(),
 //                new StudentTDistribution()
-                new IrisExplorePage(),
-                new LawOfLargeNumbersPage()
+//                new IrisExplorePage(),
+//                new LawOfLargeNumbersPage()
         ));
 
         pages.put("Graphics", Arrays.asList(
-                new HistogramDensityTutorial(),
-                new MeshGridTutorialPage()
+//                new HistogramDensityTutorial(),
+//                new MeshGridTutorialPage()
         ));
 
         pages.put("StatisticalProcedures", Arrays.asList(
-                new DiscreteSamplingPage(),
-                new CorrelationsPage(),
-                new ROCCurvesPage()
+//                new DiscreteSamplingPage(),
+//                new CorrelationsPage(),
+//                new ROCCurvesPage()
         ));
 
         pages.put("SupervisedClassification", Arrays.asList(
-                new ClassificationWithRFPage(),
+//                new ClassificationWithRFPage(),
                 new ClassificationWithNaiveBayesPage()
         ));
 

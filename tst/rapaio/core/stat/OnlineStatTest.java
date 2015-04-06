@@ -28,13 +28,15 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.graphics.Plot;
+import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.Points;
 import rapaio.printer.IdeaPrinter;
 
 import static org.junit.Assert.assertEquals;
 import static rapaio.WS.draw;
 import static rapaio.WS.setPrinter;
+import static rapaio.graphics.opt.GOpt.color;
+import static rapaio.graphics.opt.GOpt.sz;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -75,11 +77,10 @@ public class OnlineStatTest {
         }
 
         draw(new Plot()
-                        .add(new Points(index, varLeft).color(1))
-                        .add(new Points(index, varRight).color(2))
-                        .add(new Points(index, varSum).color(3))
+                        .add(new Points(index, varLeft, color(1), sz(0.4)))
+                        .add(new Points(index, varRight, color(2), sz(0.4)))
+                        .add(new Points(index, varSum, color(3), sz(0.4)))
                         .yLim(0.5, 1.5)
-                        .sz(0.4)
         );
     }
 

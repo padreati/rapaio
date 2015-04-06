@@ -23,8 +23,8 @@
 package rapaio.graphics.plot;
 
 import rapaio.data.Var;
-import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
+import rapaio.graphics.opt.GOpt;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -34,6 +34,7 @@ import java.awt.geom.Rectangle2D;
  */
 public class Histogram2D extends PlotComponent {
 
+    private static final long serialVersionUID = 136436073834179971L;
     private final Var x;
     private final Var y;
     private int xBins = 10;
@@ -41,9 +42,10 @@ public class Histogram2D extends PlotComponent {
     private int[][] freq;
     private int maxFreq;
 
-    public Histogram2D(Var x, Var y) {
+    public Histogram2D(Var x, Var y, GOpt... opts) {
         this.x = x;
         this.y = y;
+        this.options.apply(opts);
     }
 
     @Override
@@ -116,7 +118,8 @@ public class Histogram2D extends PlotComponent {
         for (int i = 0; i < xBins; i++) {
             for (int j = 0; j < yBins; j++) {
                 int blue = (int) (255 * freq[i][j] / (1.0 * maxFreq));
-                Color color = new Color(getCol(0).getRed(), getCol(0).getGreen(), getCol(0).getBlue(), blue);
+                Color c = options.getColor(0);
+                Color color = new Color(c.getRed(), c.getGreen(), c.getBlue(), blue);
                 g2d.setColor(color);
                 Rectangle2D.Double rr = new Rectangle2D.Double(
                         parent.xScale(range.x1() + w * i),

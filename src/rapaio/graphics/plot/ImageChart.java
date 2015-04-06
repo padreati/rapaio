@@ -22,34 +22,33 @@
 
 package rapaio.graphics.plot;
 
+import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
 
 import java.awt.*;
-import java.awt.geom.Path2D;
+import java.awt.image.BufferedImage;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/26/15.
+ * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class SandboxComponent extends PlotComponent {
+@Deprecated
+public class ImageChart extends HostFigure {
 
-    @Override
-    protected Range buildRange() {
-        return new Range(0, 0, 100, 100);
+    private final BufferedImage image;
+
+    public ImageChart(BufferedImage image) {
+        this.image = image;
     }
 
     @Override
-    public void paint(Graphics2D g2d) {
+    public Range buildRange() {
+        return null;
+    }
 
-        Path2D.Double path = new Path2D.Double();
-        path.moveTo(parent.xScale(0), parent.yScale(0));
-        path.lineTo(parent.xScale(0), parent.yScale(70));
-        path.lineTo(parent.xScale(100), parent.yScale(30));
-        path.lineTo(parent.xScale(100), parent.yScale(100));
-        path.lineTo(parent.xScale(70), parent.yScale(100));
-        path.lineTo(parent.xScale(20), parent.yScale(0));
-        path.lineTo(parent.xScale(0), parent.yScale(0));
+    @Override
+    public void paint(Graphics2D g2d, Rectangle rect) {
+        super.paint(g2d, rect);
 
-        g2d.setColor(Color.blue);
-        g2d.fill(path);
+        g2d.drawImage(image, null, 0, 0);
     }
 }

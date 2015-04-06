@@ -20,7 +20,7 @@
  *    limitations under the License.
  */
 
-package rapaio.graphics;
+package rapaio.graphics.plot;
 
 import rapaio.graphics.base.Figure;
 import rapaio.graphics.base.HostFigure;

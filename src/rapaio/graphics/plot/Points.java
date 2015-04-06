@@ -24,8 +24,8 @@ package rapaio.graphics.plot;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Var;
-import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
+import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.opt.PchPalette;
 
 import java.awt.*;
@@ -38,12 +38,15 @@ import java.util.List;
  */
 public class Points extends PlotComponent {
 
+    private static final long serialVersionUID = -4766079423843859315L;
+
     private final Var x;
     private final Var y;
 
-    public Points(Var x, Var y) {
+    public Points(Var x, Var y, GOpt... opts) {
         this.x = x;
         this.y = y;
+        this.options.apply(opts);
     }
 
     @Override
@@ -82,13 +85,13 @@ public class Points extends PlotComponent {
             if (x.missing(i) || y.missing(i)) {
                 continue;
             }
-            g2d.setColor(getCol(i));
-            g2d.setStroke(new BasicStroke(getLwd()));
-            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getAlpha()));
+            g2d.setColor(options.getColor(i));
+            g2d.setStroke(new BasicStroke(options.getLwd()));
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
             PchPalette.STANDARD.draw(g2d,
                     parent.xScale(x.value(i)),
                     parent.yScale(y.value(i)),
-                    getSize(i), getPch(i));
+                    options.getSize(i), options.getPch(i));
         }
     }
 }

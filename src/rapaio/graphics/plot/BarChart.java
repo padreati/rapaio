@@ -20,7 +20,7 @@
  *    limitations under the License.
  */
 
-package rapaio.graphics;
+package rapaio.graphics.plot;
 
 import rapaio.data.Index;
 import rapaio.data.Nominal;
@@ -29,15 +29,21 @@ import rapaio.data.Var;
 import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+import static rapaio.graphics.opt.GOpt.color;
+
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class BarChart extends HostFigure {
+
+    private static final long serialVersionUID = -3953248625109450364L;
 
     private final Var category;
     private final Var condition;
@@ -47,16 +53,17 @@ public class BarChart extends HostFigure {
     private int[] sel;
     private double[][] hits;
     private double[] totals;
+    private final GOpts options = new GOpts().apply(color(0));
 
-    public BarChart(Var category) {
-        this(category, null);
+    public BarChart(Var category, GOpt... opts) {
+        this(category, null, opts);
     }
 
-    public BarChart(Var category, Var condition) {
-        this(category, condition, null);
+    public BarChart(Var category, Var condition, GOpt... opts) {
+        this(category, condition, null, opts);
     }
 
-    public BarChart(Var category, Var condition, Var numeric) {
+    public BarChart(Var category, Var condition, Var numeric, GOpt... opts) {
         if (!category.type().isNominal()) {
             throw new IllegalArgumentException("categories are nominal only");
         }
@@ -83,13 +90,13 @@ public class BarChart extends HostFigure {
         bottomMarkers(true);
 
         int shift = 9;
-        color(Index.newSeq(shift, condition.dictionary().length));
+        options.apply(color(Index.newSeq(shift, condition.dictionary().length)));
+        options.apply(opts);
     }
 
     private SortType sort = SortType.NONE;
 
-    public static enum SortType {
-
+    public enum SortType {
         NONE, ASC, DESC
     }
 
@@ -261,7 +268,7 @@ public class BarChart extends HostFigure {
                         (int) yScale(ystart),
                         (int) yScale(ystart)};
 
-                g2d.setColor(getCol(j));
+                g2d.setColor(options.getColor(j));
                 g2d.fillPolygon(x, y, 4);
 
                 ystart = yend;

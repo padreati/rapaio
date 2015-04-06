@@ -96,18 +96,19 @@ public class StandardPrinter extends AbstractPrinter {
     @Override
     public void draw(Figure figure, int width, int height) {
         FigurePanel figurePanel = new FigurePanel(figure);
-        JDialog frame = new JDialog();
+        JFrame frame = new JFrame("rapaio graphic window");
         frame.setContentPane(figurePanel);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         frame.setLayout(new BorderLayout());
         frame.setAutoRequestFocus(true);
+        frame.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
 
         frame.setSize(width, height);
         while (true) {
             try {
                 Thread.sleep(10);
-            } catch (InterruptedException ex) {
+            } catch (InterruptedException ignored) {
             }
             if (!frame.isVisible()) {
                 break;

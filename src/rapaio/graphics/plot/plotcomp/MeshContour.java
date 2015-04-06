@@ -20,11 +20,13 @@
  *    limitations under the License.
  */
 
-package rapaio.graphics.plot;
+package rapaio.graphics.plot.plotcomp;
 
 import rapaio.data.Var;
 import rapaio.data.grid.MeshGrid;
 import rapaio.graphics.base.Range;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -37,14 +39,16 @@ import java.util.LinkedList;
  */
 public class MeshContour extends PlotComponent {
 
+    private static final long serialVersionUID = -642370269224702175L;
     private final MeshGrid mg;
     private boolean contour = false;
     private boolean fill = false;
 
-    public MeshContour(MeshGrid mg, boolean contour, boolean fill) {
+    public MeshContour(MeshGrid mg, boolean contour, boolean fill, GOpt... opts) {
         this.mg = mg;
         this.contour = contour;
         this.fill = fill;
+        this.options.apply(opts);
     }
 
     @Override
@@ -59,7 +63,7 @@ public class MeshContour extends PlotComponent {
 
     @Override
     public void paint(Graphics2D g2d) {
-        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getAlpha()));
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
 
         Var x = mg.x();
         Var y = mg.y();
@@ -98,7 +102,7 @@ public class MeshContour extends PlotComponent {
                             path.lineTo(parent.xScale(x.value(i)), parent.yScale(y.value(j + 1)));
                             path.lineTo(parent.xScale(x.value(i)), parent.yScale(y.value(j)));
 
-                            g2d.setColor(getCol(0));
+                            g2d.setColor(options.getColor(0));
                             g2d.setStroke(new BasicStroke());
                             g2d.draw(path);
                             g2d.fill(path);
@@ -231,7 +235,7 @@ public class MeshContour extends PlotComponent {
                             }
                             path.lineTo(start.x, start.y);
 
-                            g2d.setColor(getCol(0));
+                            g2d.setColor(options.getColor(0));
                             g2d.setStroke(new BasicStroke());
                             g2d.draw(path);
                             g2d.fill(path);
@@ -247,7 +251,7 @@ public class MeshContour extends PlotComponent {
                                 list.add(p);
                                 sideList.add(sides[q]);
                             }
-                            if (sideList.size() > 1 && (sideList.get(0) != sideList.get(1))) {
+                            if (sideList.size() > 1 && (Math.abs(sideList.get(0 - sideList.get(1))) < 1e-20)) {
                                 Point2D.Double p = list.pollLast();
                                 list.addFirst(p);
                             }
@@ -262,7 +266,7 @@ public class MeshContour extends PlotComponent {
             Point2D.Double to = lines.pollLast();
 
             g2d.setColor(Color.BLACK);
-            g2d.setStroke(new BasicStroke(getLwd()));
+            g2d.setStroke(new BasicStroke(options.getLwd()));
             g2d.draw(new Line2D.Double(from, to));
         }
 

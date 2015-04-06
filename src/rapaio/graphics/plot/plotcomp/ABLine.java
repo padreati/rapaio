@@ -20,9 +20,11 @@
  *    limitations under the License.
  */
 
-package rapaio.graphics.plot;
+package rapaio.graphics.plot.plotcomp;
 
 import rapaio.graphics.base.Range;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -32,23 +34,26 @@ import java.awt.geom.Line2D;
  */
 public class ABLine extends PlotComponent {
 
+    private static final long serialVersionUID = 8980967297314815554L;
     private final double a;
     private final double b;
     private final boolean h;
     private final boolean v;
 
-    public ABLine(double a, boolean horiz) {
+    public ABLine(double a, boolean horiz, GOpt... opts) {
         this.a = a;
         this.b = a;
         this.h = horiz;
         this.v = !horiz;
+        this.options.apply(opts);
     }
 
-    public ABLine(double a, double b) {
+    public ABLine(double a, double b, GOpt... opts) {
         this.a = a;
         this.b = b;
         this.h = false;
         this.v = false;
+        this.options.apply(opts);
     }
 
     @Override
@@ -65,7 +70,7 @@ public class ABLine extends PlotComponent {
     @Override
     public void paint(Graphics2D g2d) {
         Range range = parent.getRange();
-        g2d.setColor(getCol(0));
+        g2d.setColor(options.getColor(0));
 
         double x1, x2, y1, y2;
         if (!h && !v) {
@@ -102,7 +107,7 @@ public class ABLine extends PlotComponent {
             }
         }
         Stroke oldStroke = g2d.getStroke();
-        g2d.setStroke(new BasicStroke(getLwd()));
+        g2d.setStroke(new BasicStroke(options.getLwd()));
         g2d.draw(new Line2D.Double(x1, y1, x2, y2));
         g2d.setStroke(oldStroke);
     }

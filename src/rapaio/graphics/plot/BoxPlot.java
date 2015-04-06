@@ -20,7 +20,7 @@
  *    limitations under the License.
  */
 
-package rapaio.graphics;
+package rapaio.graphics.plot;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
@@ -29,6 +29,8 @@ import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.opt.GOpts;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -39,24 +41,19 @@ import java.util.List;
  */
 public class BoxPlot extends HostFigure {
 
+    private static final long serialVersionUID = 8868603141563818477L;
+
     private final Var[] vars;
     private final String[] labels;
+    private final GOpts options = new GOpts();
 
-    public BoxPlot(Frame df) {
-        this(df, null);
+    public BoxPlot(Var v, String label, GOpt... opts) {
+        this(new Var[]{v}, new String[]{label}, opts);
     }
 
-    public BoxPlot(Var v, String label) {
-        vars = new Var[1];
-        vars[0] = v;
-        labels = new String[1];
-        labels[0] = label;
-        initialize();
-    }
-
-    public BoxPlot(Var numeric, Var nominal) {
-        labels = nominal.dictionary();
-        vars = new Var[labels.length];
+    public BoxPlot(Var numeric, Var nominal, GOpt... opts) {
+        this.labels = nominal.dictionary();
+        this.vars = new Var[labels.length];
         int[] count = new int[labels.length];
         for (int i = 0; i < numeric.rowCount(); i++) {
             count[nominal.index(i)]++;
@@ -69,16 +66,22 @@ public class BoxPlot extends HostFigure {
             vars[nominal.index(i)].setValue(pos[nominal.index(i)], numeric.value(i));
             pos[nominal.index(i)]++;
         }
+        this.options.apply(opts);
         initialize();
     }
 
-    public BoxPlot(Var[] vars, String[] labels) {
+    public BoxPlot(Var[] vars, String[] labels, GOpt... opts) {
         this.vars = vars;
         this.labels = labels;
+        this.options.apply(opts);
         initialize();
     }
 
-    public BoxPlot(Frame df, VarRange varRange) {
+    public BoxPlot(Frame df, GOpt... opts) {
+        this(df, new VarRange("all"), opts);
+    }
+
+    public BoxPlot(Frame df, VarRange varRange, GOpt... opts) {
         if (varRange == null) {
             int len = 0;
             for (int i = 0; i < df.varCount(); i++) {
@@ -96,8 +99,8 @@ public class BoxPlot extends HostFigure {
             varRange = new VarRange(indexes);
         }
         List<Integer> indexes = varRange.parseVarIndexes(df);
-        vars = new Var[indexes.size()];
-        labels = new String[indexes.size()];
+        this.vars = new Var[indexes.size()];
+        this.labels = new String[indexes.size()];
 
         int pos = 0;
         for (int index : indexes) {
@@ -105,7 +108,7 @@ public class BoxPlot extends HostFigure {
             labels[pos] = df.varNames()[index];
             pos++;
         }
-
+        this.options.apply(opts);
         initialize();
     }
 
@@ -114,7 +117,6 @@ public class BoxPlot extends HostFigure {
         leftThick(true);
         bottomMarkers(true);
         bottomThick(true);
-        color(0);
     }
 
     @Override
@@ -168,14 +170,14 @@ public class BoxPlot extends HostFigure {
             double x2 = i + 0.5;
             double x3 = i + 0.5 + 0.3;
 
-            g2d.setColor(getCol(i));
+            g2d.setColor(options.getColor(i));
             // median
-            g2d.setStroke(new BasicStroke(getLwd() * 2));
+            g2d.setStroke(new BasicStroke(options.getLwd() * 2));
             g2d.draw(new Line2D.Double(
                     xScale(x1), yScale(q[1]), xScale(x3), yScale(q[1])));
 
             // box
-            g2d.setStroke(new BasicStroke(getLwd()));
+            g2d.setStroke(new BasicStroke(options.getLwd()));
             g2d.draw(new Line2D.Double(xScale(x1), yScale(q[0]), xScale(x3), yScale(q[0])));
             g2d.draw(new Line2D.Double(xScale(x1), yScale(q[2]), xScale(x3), yScale(q[2])));
             g2d.draw(new Line2D.Double(xScale(x1), yScale(q[0]), xScale(x1), yScale(q[2])));
@@ -188,7 +190,7 @@ public class BoxPlot extends HostFigure {
                 double point = v.value(j);
                 if ((point > q[2] + outerFence) || (point < q[0] - outerFence)) {
                     // big outlier
-                    int width = (int) (3 * getSize(i));
+                    int width = (int) (3 * options.getSize(i));
                     g2d.fillOval(
                             (int) xScale(x2) - width / 2 - 1,
                             (int) yScale(point) - width / 2 - 1,
@@ -197,7 +199,7 @@ public class BoxPlot extends HostFigure {
                 }
                 if ((point > q[2] + innerFence) || (point < q[0] - innerFence)) {
                     // outlier
-                    int width = (int) (3.5 * getSize(i));
+                    int width = (int) (3.5 * options.getSize(i));
                     g2d.drawOval(
                             (int) xScale(x2) - width / 2 - 1,
                             (int) yScale(point) - width / 2 - 1,
@@ -216,7 +218,7 @@ public class BoxPlot extends HostFigure {
             g2d.draw(new Line2D.Double(xScale(x1), yScale(upperwhisker), xScale(x3), yScale(upperwhisker)));
             g2d.draw(new Line2D.Double(xScale(x1), yScale(lowerqhisker), xScale(x3), yScale(lowerqhisker)));
 
-            g2d.setStroke(new BasicStroke(getLwd(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[]{8}, 0));
+            g2d.setStroke(new BasicStroke(options.getLwd(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1f, new float[]{8}, 0));
             g2d.draw(new Line2D.Double(xScale(x2), yScale(q[2]), xScale(x2), yScale(upperwhisker)));
             g2d.draw(new Line2D.Double(xScale(x2), yScale(q[0]), xScale(x2), yScale(lowerqhisker)));
         }

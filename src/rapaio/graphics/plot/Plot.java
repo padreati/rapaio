@@ -20,28 +20,38 @@
  *    limitations under the License.
  */
 
-package rapaio.graphics;
+package rapaio.graphics.plot;
 
+import rapaio.core.distributions.empirical.KFunc;
+import rapaio.data.Var;
 import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
-import rapaio.graphics.plot.PlotComponent;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.plot.plotcomp.ABLine;
+import rapaio.graphics.plot.plotcomp.DensityLine;
+import rapaio.graphics.plot.plotcomp.FunctionLine;
+import rapaio.graphics.plot.plotcomp.Lines;
+import rapaio.ml.eval.ROC;
 
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * @author tutuianu
  */
 public class Plot extends HostFigure {
 
+    private static final long serialVersionUID = 1898871481989584539L;
     private final List<PlotComponent> components = new LinkedList<>();
 
-    public Plot() {
+    public Plot(GOpt... opts) {
         bottomThick(true);
         bottomMarkers(true);
         leftThick(true);
         leftMarkers(true);
+        this.options.apply(opts);
     }
 
     @Override
@@ -77,6 +87,71 @@ public class Plot extends HostFigure {
     public Plot add(PlotComponent pc) {
         pc.initialize(this);
         components.add(pc);
+        return this;
+    }
+
+    public Plot hist(Var v, GOpt... opts) {
+        add(new Histogram(v, opts));
+        return this;
+    }
+
+    public Plot hist(Var v, double minValue, double maxValue, GOpt... opts) {
+        add(new Histogram(v, minValue, maxValue, opts));
+        return this;
+    }
+
+    public Plot points(Var x, Var y, GOpt... opts) {
+        add(new Points(x, y, opts));
+        return this;
+    }
+
+    public Plot lines(Var y, GOpt... opts) {
+        add(new Lines(y, opts));
+        return this;
+    }
+
+    public Plot lines(Var x, Var y, GOpt... opts) {
+        add(new Lines(x, y, opts));
+        return this;
+    }
+
+    public Plot abLine(double a, boolean horiz, GOpt... opts) {
+        add(new ABLine(a, horiz, opts));
+        return this;
+    }
+
+    public Plot abLine(double a, double b, GOpt... opts) {
+        add(new ABLine(a, b, opts));
+        return this;
+    }
+
+    public Plot funLine(Function<Double, Double> f, GOpt... opts) {
+        add(new FunctionLine(f, opts));
+        return this;
+    }
+
+    public Plot densityLine(Var var, GOpt... opts) {
+        add(new DensityLine(var, opts));
+        return this;
+    }
+
+    public Plot densityLine(Var var, double bandwidth, GOpt... opts) {
+        add(new DensityLine(var, bandwidth, opts));
+        return this;
+    }
+
+    public Plot densityLine(Var var, KFunc kfunc, GOpt... opts) {
+        add(new DensityLine(var, kfunc, opts));
+        return this;
+    }
+
+    public Plot densityLine(Var var, KFunc kfunc, double bandwidth, GOpt... opts) {
+        add(new DensityLine(var, kfunc, bandwidth, opts));
+        return this;
+    }
+
+    public Plot rocCurve(ROC roc, GOpt... opts) {
+        add(new ROCCurve(roc, opts));
         return this;
     }
 

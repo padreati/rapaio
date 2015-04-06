@@ -22,10 +22,7 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.data.Var;
-import rapaio.graphics.Plot;
 import rapaio.graphics.base.BaseFigure;
-import rapaio.graphics.opt.ColorPalette;
 
 import java.awt.*;
 
@@ -34,6 +31,7 @@ import java.awt.*;
  */
 public abstract class PlotComponent extends BaseFigure {
 
+    private static final long serialVersionUID = -797168275849511614L;
     protected Plot parent;
 
     public void initialize(Plot parent) {
@@ -41,70 +39,8 @@ public abstract class PlotComponent extends BaseFigure {
             throw new IllegalArgumentException("parent plot reference is null");
         }
         this.parent = parent;
+        this.options.parent(parent.getOptions());
     }
 
     public abstract void paint(Graphics2D g2d);
-
-    @Override
-    public PlotComponent color(int index) {
-        super.color(index);
-        return this;
-    }
-
-    @Override
-    public PlotComponent color(Color color) {
-        super.color(color);
-        return this;
-    }
-
-    @Override
-    public PlotComponent color(Var color) {
-        super.color(color);
-        return this;
-    }
-
-    @Override
-    public PlotComponent lwd(float lwd) {
-        super.lwd(lwd);
-        return this;
-    }
-
-    @Override
-    public PlotComponent sz(Var sizeIndex) {
-        super.sz(sizeIndex);
-        return this;
-    }
-
-    @Override
-    public PlotComponent sz(double size) {
-        super.sz(size);
-        return this;
-    }
-
-    @Override
-    public PlotComponent pch(Var pchIndex) {
-        super.pch(pchIndex);
-        return this;
-    }
-
-    @Override
-    public PlotComponent pch(int pch) {
-        super.pch(pch);
-        return this;
-    }
-
-    @Override
-    public PlotComponent alpha(float alpha) {
-        return (PlotComponent)super.alpha(alpha);
-    }
-
-    @Override
-    public float getAlpha() {
-        return super.getAlpha();
-    }
-
-    @Override
-    public PlotComponent colorPalette(ColorPalette colorPalette) {
-        return (PlotComponent) super.colorPalette(colorPalette);
-    }
 }

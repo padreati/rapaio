@@ -20,22 +20,27 @@
  *    limitations under the License.
  */
 
-package rapaio.graphics;
+package rapaio.graphics.plot;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFSort;
-import rapaio.graphics.plot.Points;
+import rapaio.graphics.opt.GOpt;
+
+import static rapaio.graphics.opt.GOpt.color;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class QQPlot extends Plot {
 
-    public QQPlot() {
+    private static final long serialVersionUID = -3244871850592508515L;
+
+    public QQPlot(GOpt... opts) {
         yLab("StatSampling Quantiles");
         xLab("Theoretical Quantiles");
+        this.options.apply(opts);
     }
 
     public QQPlot add(Var points, Distribution distribution) {
@@ -45,10 +50,7 @@ public class QQPlot extends Plot {
             double p = (i + 1) / (y.rowCount() + 1.);
             y.setValue(i, distribution.quantile(p));
         }
-
-        Points pts = new Points(y, x);
-        add(pts);
-        pts.color(0);
+        add(new Points(y, x, color(0)));
         return this;
     }
 }

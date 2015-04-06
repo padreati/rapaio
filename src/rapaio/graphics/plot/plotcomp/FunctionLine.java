@@ -20,31 +20,33 @@
  *    limitations under the License.
  */
 
-package rapaio.graphics.plot;
+package rapaio.graphics.plot.plotcomp;
 
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.util.function.Function;
+
+import static rapaio.graphics.opt.GOpt.points;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class FunctionLine extends PlotComponent {
 
+    private static final long serialVersionUID = 8388944194915495215L;
     private final Function<Double, Double> f;
-    private final int points;
 
-    public FunctionLine(Function<Double, Double> f) {
-        this(f, 1024);
-    }
-
-    public FunctionLine(Function<Double, Double> f, int points) {
+    public FunctionLine(Function<Double, Double> f, GOpt... opts) {
         this.f = f;
-        this.points = points;
+        // apply default values for function line
+        this.options.apply(points(1024));
+        this.options.apply(opts);
     }
 
     @Override
@@ -55,9 +57,9 @@ public class FunctionLine extends PlotComponent {
     @Override
     public void paint(Graphics2D g2d) {
         Range range = parent.getRange();
-        Var x = Numeric.newFill(points + 1, 0);
-        Var y = Numeric.newFill(points + 1, 0);
-        double xstep = (range.x2() - range.x1()) / points;
+        Var x = Numeric.newFill(options.getPoints() + 1, 0);
+        Var y = Numeric.newFill(options.getPoints() + 1, 0);
+        double xstep = (range.x2() - range.x1()) / options.getPoints();
         for (int i = 0; i < x.rowCount(); i++) {
             x.setValue(i, range.x1() + i * xstep);
             y.setValue(i, f.apply(x.value(i)));
@@ -65,8 +67,8 @@ public class FunctionLine extends PlotComponent {
 
         for (int i = 1; i < x.rowCount(); i++) {
             if (range.contains(x.value(i - 1), y.value(i - 1)) && range.contains(x.value(i), y.value(i))) {
-                g2d.setColor(getCol(i));
-                g2d.setStroke(new BasicStroke(getLwd()));
+                g2d.setColor(options.getColor(i));
+                g2d.setStroke(new BasicStroke(options.getLwd()));
                 g2d.draw(new Line2D.Double(
                         parent.xScale(x.value(i - 1)),
                         parent.yScale(y.value(i - 1)),

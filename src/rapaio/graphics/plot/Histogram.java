@@ -24,17 +24,22 @@ package rapaio.graphics.plot;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
-import rapaio.graphics.Plot;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
+import rapaio.graphics.opt.GOpt;
 
 import java.awt.*;
 import java.util.Arrays;
+
+import static rapaio.graphics.opt.GOpt.bins;
+import static rapaio.graphics.opt.GOpt.color;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class Histogram extends PlotComponent {
+
+    private static final long serialVersionUID = -7990247895216501553L;
 
     private final Var v;
     int bins = 30;
@@ -43,16 +48,23 @@ public class Histogram extends PlotComponent {
     double minValue = Double.NaN;
     double maxValue = Double.NaN;
 
-    public Histogram(Var v) {
-        this.v = v;
-        this.bins = (int) computeFreedmanDiaconisEstimation(v);
-        color(7);
+    public Histogram(Var v, GOpt... opts) {
+        this(v, Double.NaN, Double.NaN, opts);
     }
 
-    private double computeFreedmanDiaconisEstimation(Var v) {
+    public Histogram(Var v, double minValue, double maxValue, GOpt... opts) {
+        this.v = v;
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+        // default values for histogram
+        options.apply(bins(computeFreedmanDiaconisEstimation(v)), color(7));
+        options.apply(opts);
+    }
+
+    private int computeFreedmanDiaconisEstimation(Var v) {
         double[] q = new Quantiles(v, 0, 0.25, 0.75, 1).values();
         double iqr = q[2] - q[1];
-        return Math.ceil((q[3] - q[0]) / (2 * iqr * Math.pow(v.stream().complete().count(), -1.0 / 3.0)));
+        return (int) Math.ceil((q[3] - q[0]) / (2 * iqr * Math.pow(v.stream().complete().count(), -1.0 / 3.0)));
     }
 
     @Override
@@ -65,24 +77,6 @@ public class Histogram extends PlotComponent {
         parent.leftMarkers(true);
         parent.bottomThick(true);
         parent.bottomMarkers(true);
-    }
-
-    public int getBins() {
-        return bins;
-    }
-
-    public Histogram bins(int bins) {
-        this.bins = bins;
-        return this;
-    }
-
-    public boolean isProb() {
-        return prob;
-    }
-
-    public Histogram prob(boolean prob) {
-        this.prob = prob;
-        return this;
     }
 
     public Histogram minValue(double minValue) {
@@ -162,7 +156,7 @@ public class Histogram extends PlotComponent {
                 continue;
             }
             Composite old = g2d.getComposite();
-            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, getAlpha()));
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
             int[] x;
             int[] y;
             g2d.setColor(ColorPalette.STANDARD.getColor(0));
@@ -194,7 +188,7 @@ public class Histogram extends PlotComponent {
                         (int) parent.yScale(mind) + ((d == mind) ? 1 : -2),
                         (int) parent.yScale(0),
                         (int) parent.yScale(0)};
-                g2d.setColor(getCol(i));
+                g2d.setColor(options.getColor(i));
                 g2d.fillPolygon(x, y, 5);
             }
 

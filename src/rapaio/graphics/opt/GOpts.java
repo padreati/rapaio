@@ -27,6 +27,7 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -34,19 +35,26 @@ import java.util.Arrays;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/31/15.
  */
-public class GraphicalOptions {
+public class GOpts implements Serializable {
 
-    private static final ColorPalette DEFAULT_PALETTE = ColorPalette.STANDARD;
-    private static final Color[] DEFAULT_COLORS = new Color[]{Color.BLACK};
-    private static final Float DEFAULT_LWD = 1.2f;
-    private static final Var DEFAULT_SIZE = Numeric.newScalar(3);
-    private static final Var DEFAULT_PCH = Index.newScalar(0);
-    private static final Float DEFAULT_ALPHA = 1.0f;
-    private static final Integer DEFAULT_BINS = -1;
-    private static final boolean DEFAULT_PROB = false;
-    private static final int DEFAULT_POINTS = 256;
+    private static final long serialVersionUID = -8407683729055712796L;
+    GOpts parent;
+    public static final GOpts DEFAULTS;
 
-    GraphicalOptions parent;
+    static {
+        DEFAULTS = new GOpts();
+        DEFAULTS.palette = ColorPalette.STANDARD;
+        DEFAULTS.colors = new Color[]{Color.black};
+        DEFAULTS.lwd = 1.2f;
+        DEFAULTS.sizeIndex = Numeric.newScalar(3);
+        DEFAULTS.pchIndex = Index.newScalar(0);
+        DEFAULTS.alpha = 1.0f;
+        DEFAULTS.bins = -1;
+        DEFAULTS.prob = false;
+        DEFAULTS.points = 512;
+    }
+
+    //
     ColorPalette palette;
     Color[] colors;
     Float lwd;
@@ -57,104 +65,97 @@ public class GraphicalOptions {
     Boolean prob;
     Integer points;
 
-    public GraphicalOptions(GraphicalOption... options) {
+    public GOpts apply(GOpt... options) {
         Arrays.stream(options).forEach(o -> o.apply(this));
+        return this;
     }
 
-    public GraphicalOptions parent(GraphicalOptions parent) {
+    public GOpt[] toArray() {
+        return new GOpt[]{
+                GOpt.palette(palette),
+                GOpt.color(colors),
+                GOpt.lwd(lwd),
+                GOpt.sz(sizeIndex),
+                GOpt.pch(pchIndex),
+                GOpt.alpha(alpha),
+                GOpt.bins(bins),
+                GOpt.prob(prob),
+                GOpt.points(points)
+        };
+    }
+
+    public GOpts parent(GOpts parent) {
         this.parent = parent;
         return this;
+    }
+
+    public GOpts defaults() {
+        if (parent != null)
+            return parent.defaults();
+        return DEFAULTS;
     }
 
     // getters
 
     public ColorPalette getPalette() {
         if (palette == null) {
-            if (parent != null) {
-                return parent.getPalette();
-            } else {
-                return DEFAULT_PALETTE;
-            }
+            return parent != null ? parent.getPalette() : DEFAULTS.palette;
         }
         return palette;
     }
 
     public Color getColor(int row) {
         if (colors == null) {
-            if (parent != null) {
-                parent.getColor(row);
-            } else {
-                return DEFAULT_COLORS[row % DEFAULT_COLORS.length];
-            }
+            return parent != null ? parent.getColor(row) : DEFAULTS.colors[row % DEFAULTS.colors.length];
         }
         return colors[row % colors.length];
     }
 
     public float getLwd() {
         if (lwd == null) {
-            if (parent != null) {
-                return parent.getLwd();
-            } else {
-                return DEFAULT_LWD;
-            }
+            return parent != null ? parent.getLwd() : DEFAULTS.lwd;
         }
         return lwd;
     }
 
     public double getSize(int row) {
         if (sizeIndex == null) {
-            if (parent != null) {
-                return parent.getSize(row);
-            } else {
-                return DEFAULT_SIZE.value(row % DEFAULT_SIZE.rowCount());
-            }
+            return parent != null ? parent.getSize(row) : DEFAULTS.sizeIndex.value(row % DEFAULTS.sizeIndex.rowCount());
         }
         return sizeIndex.value(row % sizeIndex.rowCount());
     }
 
     public int getPch(int row) {
         if (pchIndex == null) {
-            if (parent != null) {
-                return parent.getPch(row);
-            } else {
-                return DEFAULT_PCH.index(row % DEFAULT_PCH.rowCount());
-            }
+            return parent != null ? parent.getPch(row) : DEFAULTS.pchIndex.index(row % DEFAULTS.pchIndex.rowCount());
         }
         return pchIndex.index(row % pchIndex.rowCount());
     }
 
     public float getAlpha() {
         if (alpha == null) {
-            if (parent != null) {
-                return parent.getAlpha();
-            } else {
-                return DEFAULT_ALPHA;
-            }
+            return parent != null ? parent.getAlpha() : DEFAULTS.alpha;
         }
         return alpha;
     }
 
     public int getBins() {
         if (bins == null) {
-            return (parent != null) ? parent.getBins() : DEFAULT_BINS;
+            return parent != null ? parent.getBins() : DEFAULTS.bins;
         }
         return bins;
     }
 
     public boolean getProb() {
         if (prob == null) {
-            if (parent != null) {
-                return parent.getProb();
-            } else {
-                return DEFAULT_PROB;
-            }
+            return parent != null ? parent.getProb() : DEFAULTS.prob;
         }
         return prob;
     }
 
     public int getPoints() {
         if (points == null)
-            return parent != null ? parent.getPoints() : DEFAULT_POINTS;
+            return parent != null ? parent.getPoints() : DEFAULTS.points;
         return points;
     }
 }

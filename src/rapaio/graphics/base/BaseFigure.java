@@ -22,142 +22,17 @@
 
 package rapaio.graphics.base;
 
-import rapaio.data.Index;
-import rapaio.data.Numeric;
-import rapaio.data.Var;
-import rapaio.graphics.opt.ColorPalette;
+import rapaio.graphics.opt.GOpts;
 
-import java.awt.*;
-
-/**
- * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/14/14.
- */
 public abstract class BaseFigure implements Figure {
 
-    protected static Color[] DEFAULT_COLOR = new Color[]{Color.BLACK};
-
-    //
-    private ColorPalette colorPalette = ColorPalette.STANDARD;
-    private Color[] colors;
-    private Float lwd;
-    private Var sizeIndex;
-    private Var pchIndex = Index.newScalar(0);
-    private Float alpha = 1.0f;
-    //
+    private static final long serialVersionUID = 4161041064084793962L;
+    protected GOpts options = new GOpts();
     private Range range;
 
-
-    // color palette
-
-    public BaseFigure colorPalette(ColorPalette colorPalette) {
-        this.colorPalette = colorPalette;
-        return this;
+    public GOpts getOptions() {
+        return options;
     }
-
-    // color
-
-    public BaseFigure color(int index) {
-        colors = new Color[]{colorPalette.getColor(index)};
-        return this;
-    }
-
-    public BaseFigure color(Color color) {
-        colors = new Color[]{color};
-        return this;
-    }
-
-    public BaseFigure color(Var color) {
-        colors = new Color[color.rowCount()];
-        for (int i = 0; i < color.rowCount(); i++) {
-            colors[i] = colorPalette.getColor(color.index(i));
-        }
-        return this;
-    }
-
-    protected Color getCol(int row) {
-        if (colors == null) {
-            return DEFAULT_COLOR[row % DEFAULT_COLOR.length];
-        }
-        return colors[row % colors.length];
-    }
-
-    // lwd
-
-    protected float getDefaultLwd() {
-        return 1.2f;
-    }
-
-    protected boolean isDefaultLwd() {
-        return lwd == null;
-    }
-
-    public float getLwd() {
-        if (lwd == null) {
-            return getDefaultLwd();
-        }
-        return lwd;
-    }
-
-    public BaseFigure lwd(float lwd) {
-        this.lwd = lwd;
-        return this;
-    }
-
-    // size
-
-    protected Var getDefaultSize() {
-        return Numeric.newScalar(3);
-    }
-
-    public BaseFigure sz(Var sizeIndex) {
-        this.sizeIndex = sizeIndex;
-        return this;
-    }
-
-    public BaseFigure sz(double size) {
-        this.sizeIndex = Numeric.newScalar(size);
-        return this;
-    }
-
-    public double getSize(int row) {
-        if (sizeIndex == null) {
-            return getDefaultSize().value(row % getDefaultSize().rowCount());
-        }
-        return sizeIndex.value(row % sizeIndex.rowCount());
-    }
-
-    // pch
-
-    protected Index getDefaultPch() {
-        return Index.newScalar(0);
-    }
-
-    public BaseFigure pch(Var pchIndex) {
-        this.pchIndex = pchIndex;
-        return this;
-    }
-
-    public BaseFigure pch(int pch) {
-        this.pchIndex = Index.newScalar(pch);
-        return this;
-    }
-
-    public int getPch(int row) {
-        if (pchIndex == null) {
-            return getDefaultPch().index(row % getDefaultPch().rowCount());
-        }
-        return pchIndex.index(row % pchIndex.rowCount());
-    }
-
-    public BaseFigure alpha(float alpha) {
-        this.alpha = alpha;
-        return this;
-    }
-
-    public float getAlpha() {
-        return alpha;
-    }
-
 
     protected abstract Range buildRange();
 
@@ -171,6 +46,4 @@ public abstract class BaseFigure implements Figure {
     protected void setRange(Range range) {
         this.range = range;
     }
-
-
 }

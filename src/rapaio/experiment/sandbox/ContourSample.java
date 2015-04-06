@@ -28,10 +28,10 @@ import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.data.grid.MeshGrid1D;
-import rapaio.graphics.Plot;
 import rapaio.graphics.opt.ColorGradient;
-import rapaio.graphics.plot.MeshContour;
+import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.Points;
+import rapaio.graphics.plot.plotcomp.MeshContour;
 import rapaio.printer.IdeaPrinter;
 
 import java.awt.*;
@@ -40,6 +40,8 @@ import java.util.stream.IntStream;
 
 import static rapaio.WS.draw;
 import static rapaio.WS.setPrinter;
+import static rapaio.graphics.opt.GOpt.color;
+import static rapaio.graphics.opt.GOpt.lwd;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
@@ -76,9 +78,8 @@ public class ContourSample {
                 new Color(0, 0, 255), new Color(0, 128, 0), q.stream().mapToDouble().toArray());
 
         for (int i = 0; i < q.rowCount() - 1; i++) {
-            p.add(new MeshContour(mg.compute(qq[i], qq[i + 1]), true, true)
-                            .color(gradient.getColor(i)).lwd(0.2f)
-            );
+            p.add(new MeshContour(mg.compute(qq[i], qq[i + 1]), true, true,
+                    color(gradient.getColor(i)), lwd(0.2f)));
         }
         p.add(new Points(xy.var("x"), xy.var("y")));
         draw(p);

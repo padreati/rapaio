@@ -27,57 +27,64 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class GOptions {
-    public static GraphicalOption palette(ColorPalette colorPalette) {
+public interface GOpt extends Serializable {
+    void apply(GOpts opt);
+
+    static GOpt palette(ColorPalette colorPalette) {
         return opt -> opt.palette = colorPalette;
     }
 
-    public static GraphicalOption color(int index) {
-        return opt -> opt.colors = new Color[]{opt.palette.getColor(index)};
+    static GOpt color(int index) {
+        return opt -> opt.colors = new Color[]{opt.getPalette().getColor(index)};
     }
 
-    public static GraphicalOption color(Color color) {
+    static GOpt color(Color color) {
         return opt -> opt.colors = new Color[]{color};
     }
 
-    public static GraphicalOption color(Var color) {
+    static GOpt color(Color[] colors) {
+        return opt -> opt.colors = colors;
+    }
+
+    static GOpt color(Var color) {
         return opt -> opt.colors = new Color[color.rowCount()];
     }
 
-    public static GraphicalOption lwd(float lwd) {
+    static GOpt lwd(float lwd) {
         return opt -> opt.lwd = lwd;
     }
 
-    public static GraphicalOption sz(Var sizeIndex) {
+    static GOpt sz(Var sizeIndex) {
         return opt -> opt.sizeIndex = sizeIndex;
     }
 
-    public static GraphicalOption sz(double size) {
+    static GOpt sz(double size) {
         return opt -> opt.sizeIndex = Numeric.newScalar(size);
     }
 
-    public static GraphicalOption pch(Var pchIndex) {
+    static GOpt pch(Var pchIndex) {
         return opt -> opt.pchIndex = pchIndex;
     }
 
-    public static GraphicalOption pch(int pch) {
+    static GOpt pch(int pch) {
         return opt -> opt.pchIndex = Index.newScalar(pch);
     }
 
-    public static GraphicalOption alpha(float alpha) {
+    static GOpt alpha(float alpha) {
         return opt -> opt.alpha = alpha;
     }
 
-    public static GraphicalOption bins(int bins) {
+    static GOpt bins(int bins) {
         return opt -> opt.bins = bins;
     }
 
-    public static GraphicalOption prob(boolean prob) {
+    static GOpt prob(boolean prob) {
         return opt -> opt.prob = prob;
     }
 
-    public static GraphicalOption points(int points) {
+    static GOpt points(int points) {
         return opt -> opt.points = points;
     }
 }

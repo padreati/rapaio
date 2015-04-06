@@ -20,7 +20,7 @@
  *    limitations under the License.
  */
 
-package rapaio.graphics.plot;
+package rapaio.graphics.plot.plotcomp;
 
 import rapaio.core.distributions.empirical.KDE;
 import rapaio.core.distributions.empirical.KFunc;
@@ -28,6 +28,8 @@ import rapaio.core.distributions.empirical.KFuncGaussian;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.plot.PlotComponent;
 import rapaio.util.Pin;
 
 import java.awt.*;
@@ -41,34 +43,26 @@ public class DensityLine extends PlotComponent {
 
     private static final long serialVersionUID = -9207144655129877629L;
     private final Var var;
-    private int points;
-    private double bandwidth;
-    private KFunc kfunc;
-    private KDE kde;
+    private final double bandwidth;
+    private final KDE kde;
 
-    public DensityLine(Var var) {
+    public DensityLine(Var var, GOpt... opts) {
+        this(var, new KFuncGaussian(), KDE.getSilvermanBandwidth(var), opts);
+    }
+
+    public DensityLine(Var var, double bandwidth, GOpt... opts) {
+        this(var, new KFuncGaussian(), bandwidth, opts);
+    }
+
+    public DensityLine(Var var, KFunc kfunc, GOpt... opts) {
+        this(var, kfunc, KDE.getSilvermanBandwidth(var), opts);
+    }
+
+    public DensityLine(Var var, KFunc kfunc, double bandwidth, GOpt... opts) {
         this.var = var;
-        this.points = 256;
-        this.bandwidth = KDE.getSilvermanBandwidth(var);
-        this.kfunc = new KFuncGaussian();
-        this.kde = new KDE(var, kfunc, bandwidth);
-    }
-
-    public DensityLine points(int points) {
-        this.points = points;
-        return this;
-    }
-
-    public DensityLine kfunc(KFunc kfunc) {
-        this.kfunc = kfunc;
-        this.kde = new KDE(var, kfunc, bandwidth);
-        return this;
-    }
-
-    public DensityLine bandwidth(double bandwidth) {
         this.bandwidth = bandwidth;
         this.kde = new KDE(var, kfunc, bandwidth);
-        return this;
+        this.options.apply(opts);
     }
 
     @Override
@@ -100,9 +94,9 @@ public class DensityLine extends PlotComponent {
     public void paint(Graphics2D g2d) {
         buildRange();
         Range range = parent.getRange();
-        Var x = Numeric.newFill(points + 1, 0);
-        Var y = Numeric.newFill(points + 1, 0);
-        double xstep = (range.x2() - range.x1()) / points;
+        Var x = Numeric.newFill(options.getPoints() + 1, 0);
+        Var y = Numeric.newFill(options.getPoints() + 1, 0);
+        double xstep = (range.x2() - range.x1()) / options.getPoints();
         for (int i = 0; i < x.rowCount(); i++) {
             x.setValue(i, range.x1() + i * xstep);
             y.setValue(i, ((Function<Double, Double>) kde::pdf).apply(x.value(i)));
@@ -110,8 +104,8 @@ public class DensityLine extends PlotComponent {
 
         for (int i = 1; i < x.rowCount(); i++) {
             if (range.contains(x.value(i - 1), y.value(i - 1)) && range.contains(x.value(i), y.value(i))) {
-                g2d.setColor(getCol(i));
-                g2d.setStroke(new BasicStroke(getLwd()));
+                g2d.setColor(options.getColor(i));
+                g2d.setStroke(new BasicStroke(options.getLwd()));
                 g2d.draw(new Line2D.Double(
                         parent.xScale(x.value(i - 1)),
                         parent.yScale(y.value(i - 1)),

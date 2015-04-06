@@ -24,8 +24,8 @@ package rapaio.experiment.sandbox;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.GridLayer;
-import rapaio.graphics.Plot;
+import rapaio.graphics.plot.GridLayer;
+import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.Points;
 import rapaio.printer.IdeaPrinter;
 
@@ -34,6 +34,8 @@ import java.io.IOException;
 
 import static rapaio.WS.draw;
 import static rapaio.WS.setPrinter;
+import static rapaio.graphics.opt.GOpt.color;
+import static rapaio.graphics.opt.GOpt.pch;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/30/15.
@@ -46,9 +48,9 @@ public class ISLSandBox {
         Frame df = Datasets.loadISLAdvertising().removeVars("ID");
         df.summary();
         GridLayer gl = new GridLayer(1, 3);
-        gl.add(1, 1, new Plot().add(new Points(df.var("TV"), df.var("Sales")).color(Color.RED).pch(2)));
-        gl.add(1, 2, new Plot().add(new Points(df.var("Radio"), df.var("Sales")).color(Color.RED).pch(2)));
-        gl.add(1, 3, new Plot().add(new Points(df.var("Newspaper"), df.var("Sales")).color(Color.cyan).pch(2)));
+        gl.add(1, 1, new Plot().add(new Points(df.var("TV"), df.var("Sales"), color(Color.RED), pch(2))));
+        gl.add(1, 2, new Plot().add(new Points(df.var("Radio"), df.var("Sales"), color(Color.RED), pch(2))));
+        gl.add(1, 3, new Plot().add(new Points(df.var("Newspaper"), df.var("Sales"), color(Color.cyan), pch(2))));
         draw(gl);
 
     }

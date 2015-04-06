@@ -28,9 +28,9 @@ import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Uniform;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.graphics.GridLayer;
-import rapaio.graphics.Plot;
+import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Histogram;
+import rapaio.graphics.plot.Plot;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.

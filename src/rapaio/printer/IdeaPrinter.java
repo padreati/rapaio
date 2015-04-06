@@ -74,6 +74,11 @@ public class IdeaPrinter extends StandardPrinter {
     }
 
     @Override
+    public void draw(Figure figure, int width, int height) {
+        draw(figure);
+    }
+
+    @Override
     public void draw(Figure figure) {
         try (Socket s = new Socket("localhost", DEFAULT_PORT)) {
             if (sendFigure) {
