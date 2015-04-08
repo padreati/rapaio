@@ -20,29 +20,43 @@
  *    limitations under the License.
  */
 
-package rapaio.data.stream;
+package rapaio.math.linear.impl;
 
-import org.junit.Test;
-import rapaio.core.stat.Sum;
-import rapaio.data.Numeric;
-import rapaio.data.Var;
-
-import static org.junit.Assert.assertEquals;
+import rapaio.math.linear.RV;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
  */
-public class RVectorSpotTest {
+public class TransposeRV implements RV {
 
-    @Test
-    public void testNumericStream() {
-        Var x = Numeric.newWrapOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        Var y = x.solidCopy().stream().transValue(Math::sqrt).toMappedVar();
+    private final RV ref;
 
-        double v = 0;
-        for (int i = 0; i < 10; i++) {
-            v += Math.sqrt(x.value(i));
-        }
-        assertEquals(v, new Sum(y).value(), 1e-12);
+    TransposeRV(RV ref) {
+        this.ref = ref;
+    }
+
+    @Override
+    public int rowCount() {
+        return ref.colCount();
+    }
+
+    @Override
+    public int colCount() {
+        return ref.rowCount();
+    }
+
+    @Override
+    public double get(int i, int j) {
+        return ref.get(j, i);
+    }
+
+    @Override
+    public void set(int i, int j, double value) {
+        ref.set(j, i, value);
+    }
+
+    @Override
+    public RV t() {
+        return ref;
     }
 }

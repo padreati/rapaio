@@ -22,45 +22,45 @@
 
 package rapaio.math.linear.impl;
 
-import rapaio.math.linear.RMatrix;
-import rapaio.math.linear.RVector;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/9/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
  */
-public class MappedRowRVector implements RVector {
+public class MappedColRV implements RV {
 
-    private final RMatrix ref;
-    private final int row;
+    private final RM ref;
+    private final int col;
 
-    public MappedRowRVector(RMatrix ref, int row) {
+    public MappedColRV(RM ref, int col) {
         this.ref = ref;
-        this.row = row;
+        this.col = col;
     }
 
     @Override
     public int rowCount() {
-        return 1;
+        return ref.rowCount();
     }
 
     @Override
     public int colCount() {
-        return ref.colCount();
+        return 1;
     }
 
     @Override
     public double get(int i, int j) {
-        if (i == 0) {
-            return ref.get(row, j);
+        if (j == 0) {
+            return ref.get(i, col);
         }
-        throw new IllegalArgumentException("Operation with given arguments is not available on mapped row vectors.");
+        throw new IllegalArgumentException("This operation is valid only for mapped vectors");
     }
 
     @Override
     public void set(int i, int j, double value) {
-        if (i == 0) {
-            ref.set(row, j, value);
+        if (j == 0) {
+            ref.set(i, col, value);
         }
-        throw new IllegalArgumentException("Operation with given arguments not available on mapped row vectors.");
+        throw new IllegalArgumentException("This operation is valid only for mapped vectors");
     }
 }

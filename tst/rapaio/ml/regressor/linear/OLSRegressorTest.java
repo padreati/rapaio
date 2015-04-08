@@ -28,10 +28,10 @@ import rapaio.core.distributions.StudentT;
 import rapaio.data.*;
 import rapaio.data.filter.frame.FFAddIntercept;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.LinAlg;
+import rapaio.math.linear.Linear;
 import rapaio.math.linear.QRDecomposition;
-import rapaio.math.linear.RMatrix;
-import rapaio.math.linear.RVector;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 import rapaio.ws.Summary;
 
 import java.io.IOException;
@@ -65,11 +65,11 @@ public class OLSRegressorTest {
         String[] inputNames = new String[]{"(Intercept)", "TV", "Radio", "Newspaper"};
 //        String[] inputNames = new String[]{"TV", "Radio", "Newspaper"};
 
-        RMatrix X = LinAlg.newMatrixCopyOf(df.mapVars(inputNames));
-        RMatrix Y = LinAlg.newMatrixCopyOf(df.mapVars(targetNames));
+        RM X = Linear.newRMCopyOf(df.mapVars(inputNames));
+        RM Y = Linear.newRMCopyOf(df.mapVars(targetNames));
 
         QRDecomposition qr1 = new QRDecomposition(X);
-        RMatrix beta = qr1.solve(Y);
+        RM beta = qr1.solve(Y);
 
         Var betaTerm = Nominal.newEmpty().withName("Term");
         Var betaEstimate = Numeric.newEmpty().withName("Estimate");
@@ -78,7 +78,7 @@ public class OLSRegressorTest {
         Var betaPValue = Nominal.newEmpty().withName("Pr(>|t|)");
         Var betaSignificance = Nominal.newEmpty().withName("");
 
-        RMatrix c = LinAlg.chol2inv(qr1.getR());
+        RM c = Linear.chol2inv(qr1.getR());
 
         double sigma2 = 0;
         for (int i = 0; i < X.rowCount(); i++) {
@@ -88,7 +88,7 @@ public class OLSRegressorTest {
 
         WS.println("sigma: " + Math.sqrt(sigma2));
 
-        RVector var = c.mult(sigma2).diag();
+        RV var = c.mult(sigma2).diag();
 
         for (int i = 0; i < inputNames.length; i++) {
             betaTerm.addLabel(inputNames[i]);

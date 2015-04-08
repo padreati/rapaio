@@ -57,6 +57,10 @@ public class JsonInputFlat implements JsonInput {
                 new InputStreamReader(new BufferedInputStream(new FileInputStream(file), 16 * 1024), "utf-8");
     }
 
+    public JsonInputFlat(String text) throws IOException {
+        this.reader = new CharArrayReader(text.toCharArray());
+    }
+
     private boolean isNumeric(int ch) {
         if (ch >= '0' && ch <= '9')
             return true;

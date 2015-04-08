@@ -155,7 +155,7 @@
 // * <pre> -M
 // *  Fit logistic models to SVM outputs. </pre>
 // * <p>
-// * <pre> -RVector &lt;double&gt;
+// * <pre> -RV &lt;double&gt;
 // *  The number of folds for the internal
 // *  cross-validation. (default -1, use training data)</pre>
 // * <p>
@@ -815,7 +815,7 @@
 //                "\tThe number of folds for the internal\n" +
 //                        "\tcross-validation. " +
 //                        "(default -1, use training data)",
-//                "RVector", 1, "-RVector <double>"));
+//                "RV", 1, "-RV <double>"));
 //
 //        result.addElement(new Option(
 //                "\tThe random number seed. " +
@@ -873,7 +873,7 @@
 //     * <pre> -M
 //     *  Fit logistic models to SVM outputs. </pre>
 //     * <p>
-//     * <pre> -RVector &lt;double&gt;
+//     * <pre> -RV &lt;double&gt;
 //     *  The number of folds for the internal
 //     *  cross-validation. (default -1, use training data)</pre>
 //     * <p>
@@ -946,7 +946,7 @@
 //
 //        setBuildLogisticModels(Utils.getFlag('M', options));
 //
-//        tmpStr = Utils.getOption('RVector', options);
+//        tmpStr = Utils.getOption('RV', options);
 //        if (tmpStr.length() != 0)
 //            setNumFolds(Integer.parseInt(tmpStr));
 //        else
@@ -1002,7 +1002,7 @@
 //        if (getBuildLogisticModels())
 //            result.add("-M");
 //
-//        result.add("-RVector");
+//        result.add("-RV");
 //        result.add("" + getNumFolds());
 //
 //        result.add("-W");

@@ -25,6 +25,7 @@ package rapaio.data.stream;
 import rapaio.data.MappedVar;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
+import rapaio.stream.StreamUtil;
 
 import java.io.Serializable;
 import java.util.Comparator;
@@ -276,6 +277,10 @@ public class VSpots implements Stream<VSpot>, Serializable {
      */
     public VSpots incomplete() {
         return new VSpots(stream.filter(VSpot::missing), source);
+    }
+
+    public Stream<VSpots> group(int groupSize) {
+        return StreamUtil.partition(stream, groupSize).map(list -> new VSpots(list.stream(), source));
     }
 
     /**

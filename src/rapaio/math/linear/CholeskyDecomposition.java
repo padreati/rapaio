@@ -50,10 +50,10 @@ public class CholeskyDecomposition implements Serializable {
      *
      * @param Arg Square, symmetric matrix.
      */
-    public CholeskyDecomposition(RMatrix Arg) {
+    public CholeskyDecomposition(RM Arg) {
 
         // Initialize.
-        RMatrix A = Arg.solidCopy();
+        RM A = Arg.solidCopy();
         n = Arg.rowCount();
         L = new double[n][n];
         isspd = (Arg.colCount() == n);
@@ -97,8 +97,8 @@ public class CholeskyDecomposition implements Serializable {
 //    /**
 //     * Cholesky algorithm for symmetric and positive definite matrix. Square, symmetric rapaio.data.matrix. @param rightflag Actual value ignored.
 //     */
-//    public CholeskyDecomposition(RMatrix Arg, int rightflag) { // Initialize.
-//        RMatrix A = Arg.solidCopy();
+//    public CholeskyDecomposition(RM Arg, int rightflag) { // Initialize.
+//        RM A = Arg.solidCopy();
 //        n = Arg.colCount();
 //        R = new
 //                double[n][n];
@@ -128,8 +128,8 @@ public class CholeskyDecomposition implements Serializable {
 //    /**
 //     * Return upper triangular factor. @return R
 //     */
-//    public RMatrix getR() {
-//        return LinAlg.newCopyOf(R);
+//    public RM getR() {
+//        return Linear.newCopyOf(R);
 //    }
 
 
@@ -147,8 +147,8 @@ public class CholeskyDecomposition implements Serializable {
      *
      * @return L
      */
-    public RMatrix getL() {
-        return LinAlg.newMatrixCopyOf(L);
+    public RM getL() {
+        return Linear.newRMCopyOf(L);
     }
 
     /**
@@ -159,7 +159,7 @@ public class CholeskyDecomposition implements Serializable {
      * @throws IllegalArgumentException Matrix row dimensions must agree.
      * @throws RuntimeException         Matrix is not symmetric positive definite.
      */
-    public RMatrix solve(RMatrix B) {
+    public RM solve(RM B) {
         if (B.rowCount() != n) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
@@ -168,7 +168,7 @@ public class CholeskyDecomposition implements Serializable {
         }
 
         // Copy right hand side.
-        RMatrix X = B.solidCopy();
+        RM X = B.solidCopy();
 
         // Solve L*Y = B;
         for (int k = 0; k < n; k++) {

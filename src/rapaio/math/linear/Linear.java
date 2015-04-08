@@ -24,16 +24,19 @@ package rapaio.math.linear;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.math.linear.impl.SolidRMatrix;
-import rapaio.math.linear.impl.SolidRVector;
+import rapaio.math.linear.impl.SolidRM;
+import rapaio.math.linear.impl.SolidRV;
 
 import java.util.Arrays;
 import java.util.function.BiFunction;
 
 /**
+ * Linear algebra tool bag class.
+ * Contains various utilities to create and manipulate linear algbra constructs like {@link RM} or {@link RV}
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
  */
-public final class LinAlg {
+public final class Linear {
 
     /**
      * Builds a new 0 filled matrix with given rows and cols
@@ -42,20 +45,20 @@ public final class LinAlg {
      * @param colCount number of columns
      * @return new matrix object
      */
-    public static RMatrix newMatrixEmpty(int rowCount, int colCount) {
-        return new SolidRMatrix(rowCount, colCount);
+    public static RM newRMEmpty(int rowCount, int colCount) {
+        return new SolidRM(rowCount, colCount);
     }
 
-    public static RMatrix newMatrixWrapOf(int rowCount, int colCount, double... values) {
-        return new SolidRMatrix(rowCount, colCount, values);
+    public static RM newRMWrapOf(int rowCount, int colCount, double... values) {
+        return new SolidRM(rowCount, colCount, values);
     }
 
-    public static RMatrix newMatrixCopyOf(double[][] source) {
-        return newMatrixCopyOf(source, 0, source.length, 0, source[0].length);
+    public static RM newRMCopyOf(double[][] source) {
+        return newRMCopyOf(source, 0, source.length, 0, source[0].length);
     }
 
-    public static RMatrix newMatrixCopyOf(double[][] source, int mFirst, int mLast, int nFirst, int nLast) {
-        RMatrix mm = new SolidRMatrix(mLast - mFirst, nLast - nFirst);
+    public static RM newRMCopyOf(double[][] source, int mFirst, int mLast, int nFirst, int nLast) {
+        RM mm = new SolidRM(mLast - mFirst, nLast - nFirst);
         for (int i = mFirst; i < mLast; i++) {
             for (int j = nFirst; j < nLast; j++) {
                 mm.set(i, j, source[i][j]);
@@ -64,25 +67,25 @@ public final class LinAlg {
         return mm;
     }
 
-    public static RMatrix newMatrixCopyOf(Frame df) {
-        RMatrix RMatrix = new SolidRMatrix(df.rowCount(), df.varCount());
+    public static RM newRMCopyOf(Frame df) {
+        RM RM = new SolidRM(df.rowCount(), df.varCount());
         for (int i = 0; i < df.rowCount(); i++) {
             for (int j = 0; j < df.varCount(); j++) {
-                RMatrix.set(i, j, df.value(i, j));
+                RM.set(i, j, df.value(i, j));
             }
         }
-        return RMatrix;
+        return RM;
     }
 
-    public static RMatrix newMatrixCopyOf(Var... vars) {
+    public static RM newRMCopyOf(Var... vars) {
         int rowCount = Arrays.stream(vars).mapToInt(Var::rowCount).min().getAsInt();
-        RMatrix RMatrix = new SolidRMatrix(rowCount, vars.length);
+        RM RM = new SolidRM(rowCount, vars.length);
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < vars.length; j++) {
-                RMatrix.set(i, j, vars[j].value(i));
+                RM.set(i, j, vars[j].value(i));
             }
         }
-        return RMatrix;
+        return RM;
     }
 
     /**
@@ -93,39 +96,39 @@ public final class LinAlg {
      * @param fill     initial value for all matrix cells
      * @return new matrix object
      */
-    public static RMatrix newMatrixFill(int rowCount, int colCount, double fill) {
+    public static RM newRMFill(int rowCount, int colCount, double fill) {
         if (fill == 0) {
-            return newMatrixEmpty(rowCount, colCount);
+            return newRMEmpty(rowCount, colCount);
         }
-        RMatrix RMatrix = new SolidRMatrix(rowCount, colCount);
-        for (int i = 0; i < RMatrix.rowCount(); i++) {
-            for (int j = 0; j < RMatrix.colCount(); j++) {
-                RMatrix.set(i, j, fill);
+        RM RM = new SolidRM(rowCount, colCount);
+        for (int i = 0; i < RM.rowCount(); i++) {
+            for (int j = 0; j < RM.colCount(); j++) {
+                RM.set(i, j, fill);
             }
         }
-        return RMatrix;
+        return RM;
     }
 
-    public static RMatrix newMatrixFill(int rowCount, int colCount, BiFunction<Integer, Integer, Double> f) {
-        RMatrix RMatrix = new SolidRMatrix(rowCount, colCount);
+    public static RM newRMFill(int rowCount, int colCount, BiFunction<Integer, Integer, Double> f) {
+        RM RM = new SolidRM(rowCount, colCount);
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < colCount; j++) {
-                RMatrix.set(i, j, f.apply(i, j));
+                RM.set(i, j, f.apply(i, j));
             }
         }
-        return RMatrix;
+        return RM;
     }
 
-    public static RVector newVectorCopyOf(Var var) {
-        return new SolidRVector(var);
+    public static RV newRVCopyOf(Var var) {
+        return new SolidRV(var);
     }
 
-    public static RVector newVectorEmpty(int rows) {
-        return new SolidRVector(rows);
+    public static RV newRVEmpty(int rows) {
+        return new SolidRV(rows);
     }
 
-    public static RMatrix newMatrixId(int n) {
-        RMatrix id = LinAlg.newMatrixEmpty(n, n);
+    public static RM newRMId(int n) {
+        RM id = Linear.newRMEmpty(n, n);
         for (int i = 0; i < n; i++) {
             id.set(i, i, 1.0);
         }
@@ -134,18 +137,18 @@ public final class LinAlg {
 
     // tools
 
-    public static RMatrix chol2inv(RMatrix R) {
-        return chol2inv(R, LinAlg.newMatrixId(R.rowCount()));
+    public static RM chol2inv(RM R) {
+        return chol2inv(R, Linear.newRMId(R.rowCount()));
     }
 
-    public static RMatrix chol2inv(RMatrix R, RMatrix B) {
-        RMatrix ref = R.t();
+    public static RM chol2inv(RM R, RM B) {
+        RM ref = R.t();
         if (B.rowCount() != R.rowCount()) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
 
         // Copy right hand side.
-        RMatrix X = B.solidCopy();
+        RM X = B.solidCopy();
 
         // Solve L*Y = B;
         for (int k = 0; k < ref.rowCount(); k++) {

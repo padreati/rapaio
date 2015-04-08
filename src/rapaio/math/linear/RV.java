@@ -23,9 +23,11 @@
 package rapaio.math.linear;
 
 /**
+ * Real valued vector interface
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
  */
-public interface RVector extends RMatrix {
+public interface RV extends RM {
 
     /**
      * Additional single index accessor for vector elements
@@ -59,6 +61,10 @@ public interface RVector extends RMatrix {
         throw new IllegalArgumentException("This shortcut method can be called only for vectors");
     }
 
+    default void increment(int i, double increment) {
+        set(i, get(i) + increment);
+    }
+
     /**
      * Dot product between two vectors is equal to the sum of the
      * product of elements from each given position.
@@ -68,7 +74,7 @@ public interface RVector extends RMatrix {
      * @param b
      * @return
      */
-    default double dotProd(RVector b) {
+    default double dotProd(RV b) {
         int max = Math.min(Math.max(rowCount(), colCount()), Math.max(b.rowCount(), b.colCount()));
         double s = 0;
         for (int i = 0; i < max; i++) {

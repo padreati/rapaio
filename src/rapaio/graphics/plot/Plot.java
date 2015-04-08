@@ -82,6 +82,25 @@ public class Plot extends HostFigure {
         return range;
     }
 
+    @Override
+    public void paint(Graphics2D g2d, Rectangle rect) {
+        buildRange();
+        super.paint(g2d, rect);
+        for (PlotComponent pc : components) {
+            pc.paint(g2d);
+        }
+    }
+
+    @Override
+    protected void buildLeftMarkers() {
+        buildNumericLeftMarkers();
+    }
+
+    @Override
+    protected void buildBottomMarkers() {
+        buildNumericBottomMarkers();
+    }
+
     public Plot add(PlotComponent pc) {
         pc.initialize(this);
         components.add(pc);
@@ -156,23 +175,5 @@ public class Plot extends HostFigure {
     public Plot meshContour(MeshGrid mg, boolean contour, boolean fill, GOpt... opts) {
         add(new MeshContour(mg, contour, fill, opts));
         return this;
-    }
-
-    @Override
-    public void paint(Graphics2D g2d, Rectangle rect) {
-        super.paint(g2d, rect);
-        for (PlotComponent pc : components) {
-            pc.paint(g2d);
-        }
-    }
-
-    @Override
-    protected void buildLeftMarkers() {
-        buildNumericLeftMarkers();
-    }
-
-    @Override
-    protected void buildBottomMarkers() {
-        buildNumericBottomMarkers();
     }
 }

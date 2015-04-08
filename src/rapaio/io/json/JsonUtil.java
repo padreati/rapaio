@@ -22,6 +22,7 @@
 
 package rapaio.io.json;
 
+import rapaio.io.json.stream.JsonInputFlat;
 import rapaio.io.json.stream.LzJsonOutput;
 import rapaio.io.json.tree.JsonValue;
 import rapaio.stream.StreamUtil;
@@ -29,6 +30,7 @@ import rapaio.util.Pin;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -39,6 +41,22 @@ import java.util.stream.Stream;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/12/15.
  */
 public class JsonUtil {
+
+    public static Optional<JsonValue> parseTextOpt(String text) {
+        try {
+            return Optional.of(new JsonInputFlat(text).read());
+        } catch (IOException ex) {
+            return Optional.empty();
+        }
+    }
+
+    public static JsonValue parseText(String text) {
+        try {
+            return new JsonInputFlat(text).read();
+        } catch (IOException ex) {
+            return JsonValue.NULL;
+        }
+    }
 
     public static void convertToLz(File root, FileFilter fnf, Function<String, String> rename, Consumer<String> mh) {
         File[] children = root.listFiles(fnf);

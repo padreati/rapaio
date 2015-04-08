@@ -22,52 +22,45 @@
 
 package rapaio.math.linear.impl;
 
-import rapaio.math.linear.RMatrix;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/9/15.
  */
-public class MappedRMatrix implements RMatrix {
+public class MappedRowRV implements RV {
 
-    private final RMatrix ref;
-    private final int[] rowIndexes;
-    private final int[] colIndexes;
+    private final RM ref;
+    private final int row;
 
-    public MappedRMatrix(RMatrix ref, boolean byRow, int... indexes) {
-        if (byRow) {
-            this.ref = ref;
-            this.rowIndexes = indexes;
-            this.colIndexes = new int[ref.colCount()];
-            for (int i = 0; i < ref.colCount(); i++) {
-                this.colIndexes[i] = i;
-            }
-        } else {
-            this.ref = ref;
-            this.rowIndexes = new int[ref.rowCount()];
-            for (int i = 0; i < ref.rowCount(); i++) {
-                this.rowIndexes[i] = i;
-            }
-            this.colIndexes = indexes;
-        }
+    public MappedRowRV(RM ref, int row) {
+        this.ref = ref;
+        this.row = row;
     }
 
     @Override
     public int rowCount() {
-        return rowIndexes.length;
+        return 1;
     }
 
     @Override
     public int colCount() {
-        return colIndexes.length;
+        return ref.colCount();
     }
 
     @Override
     public double get(int i, int j) {
-        return ref.get(rowIndexes[i], colIndexes[j]);
+        if (i == 0) {
+            return ref.get(row, j);
+        }
+        throw new IllegalArgumentException("Operation with given arguments is not available on mapped row vectors.");
     }
 
     @Override
     public void set(int i, int j, double value) {
-        ref.set(rowIndexes[i], colIndexes[j], value);
+        if (i == 0) {
+            ref.set(row, j, value);
+        }
+        throw new IllegalArgumentException("Operation with given arguments not available on mapped row vectors.");
     }
 }

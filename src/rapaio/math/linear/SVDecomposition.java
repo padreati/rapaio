@@ -29,7 +29,7 @@ import static java.lang.StrictMath.hypot;
  * <p>
  * For an m-by-n rapaio.data.matrix A with m >= n, the singular value decomposition is an
  * m-by-n orthogonal rapaio.data.matrix U, an n-by-n diagonal rapaio.data.matrix S, and an n-by-n
- * orthogonal rapaio.data.matrix RVector so that A = U*S*RVector'.
+ * orthogonal rapaio.data.matrix RV so that A = U*S*RV'.
  * <p>
  * The singular values, sigma[k] = S[k][k], are ordered so that sigma[0] >=
  * sigma[1] >= ... >= sigma[n-1].
@@ -47,11 +47,11 @@ public class SVDecomposition implements java.io.Serializable {
     private double[] s;
     private int m, n;
 
-    public SVDecomposition(RMatrix Arg) {
+    public SVDecomposition(RM Arg) {
 
         // Derived from LINPACK code.
         // Initialize.
-        RMatrix A = Arg.solidCopy();
+        RM A = Arg.solidCopy();
         m = Arg.rowCount();
         n = Arg.colCount();
 
@@ -159,7 +159,7 @@ public class SVDecomposition implements java.io.Serializable {
                 }
                 if (wantv) {
 
-                    // Place the transformation in RVector for subsequent
+                    // Place the transformation in RV for subsequent
                     // back multiplication.
                     for (int i = k + 1; i < n; i++) {
                         V[i][k] = e[i];
@@ -217,7 +217,7 @@ public class SVDecomposition implements java.io.Serializable {
             }
         }
 
-        // If required, generate RVector.
+        // If required, generate RV.
         if (wantv) {
             for (int k = n - 1; k >= 0; k--) {
                 if ((k < nrt) & (e[k] != 0.0)) {
@@ -452,17 +452,17 @@ public class SVDecomposition implements java.io.Serializable {
         }
     }
 
-    public RMatrix getU() {
-        return LinAlg.newMatrixCopyOf(U, 0, m, 0, Math.min(m + 1, n));
+    public RM getU() {
+        return Linear.newRMCopyOf(U, 0, m, 0, Math.min(m + 1, n));
     }
 
     /**
      * Return the right singular vectors
      *
-     * @return RVector
+     * @return RV
      */
-    public RMatrix getV() {
-        return LinAlg.newMatrixCopyOf(V, 0, n, 0, n);
+    public RM getV() {
+        return Linear.newRMCopyOf(V, 0, n, 0, n);
     }
 
     /**
@@ -479,8 +479,8 @@ public class SVDecomposition implements java.io.Serializable {
      *
      * @return S
      */
-    public RMatrix getS() {
-        RMatrix S = LinAlg.newMatrixEmpty(n, n);
+    public RM getS() {
+        RM S = Linear.newRMEmpty(n, n);
         for (int i = 0; i < n; i++) {
             S.set(i, i, this.s[i]);
         }

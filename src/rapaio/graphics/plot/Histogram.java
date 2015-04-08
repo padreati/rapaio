@@ -42,7 +42,6 @@ public class Histogram extends PlotComponent {
     private static final long serialVersionUID = -7990247895216501553L;
 
     private final Var v;
-    int bins = 30;
     double[] freqTable;
     double minValue = Double.NaN;
     double maxValue = Double.NaN;
@@ -56,7 +55,7 @@ public class Histogram extends PlotComponent {
         this.minValue = minValue;
         this.maxValue = maxValue;
         // default values for histogram
-        options.apply(bins(computeFreedmanDiaconisEstimation(v)), color(7));
+        options.apply(color(7));
         options.apply(opts);
     }
 
@@ -76,6 +75,9 @@ public class Histogram extends PlotComponent {
         parent.leftMarkers(true);
         parent.bottomThick(true);
         parent.bottomMarkers(true);
+        if (options.getBins() == -1) {
+            options.apply(bins(computeFreedmanDiaconisEstimation(v)));
+        }
     }
 
     public Histogram minValue(double minValue) {
@@ -107,8 +109,8 @@ public class Histogram extends PlotComponent {
             }
         }
 
-        double step = (maxValue - minValue) / (1. * bins);
-        freqTable = new double[bins];
+        double step = (maxValue - minValue) / (1. * options.getBins());
+        freqTable = new double[options.getBins()];
         double total = 0;
         for (int i = 0; i < v.rowCount(); i++) {
             if (v.missing(i)) {
@@ -134,7 +136,6 @@ public class Histogram extends PlotComponent {
     @Override
     public Range buildRange() {
         rebuild();
-
         Range range = new Range();
         range.union(minValue, Double.NaN);
         range.union(maxValue, Double.NaN);
@@ -197,7 +198,7 @@ public class Histogram extends PlotComponent {
 
     private double binStart(int i) {
         double value = minValue;
-        double fraction = 1. * (maxValue - minValue) / (1. * bins);
+        double fraction = 1. * (maxValue - minValue) / (1. * options.getBins());
         return value + fraction * (i);
     }
 }

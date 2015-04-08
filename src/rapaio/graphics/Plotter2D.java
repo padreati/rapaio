@@ -79,6 +79,14 @@ public final class Plotter2D {
         return plot().add(new FunctionLine(f, opts));
     }
 
+    public static Plot lines(Var x, Var y, GOpt... opts) {
+        return plot().lines(x, y, opts);
+    }
+
+    public static Plot lines(Var y, GOpt... opts) {
+        return plot().lines(y, opts);
+    }
+
     public static Plot points(Var x, Var y, GOpt... opts) {
         return plot().add(new Points(x, y, opts));
     }

@@ -25,9 +25,9 @@ package rapaio.math.optimization;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.math.linear.LUDecomposition;
-import rapaio.math.linear.LinAlg;
-import rapaio.math.linear.RMatrix;
-import rapaio.math.linear.RVector;
+import rapaio.math.linear.Linear;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 
 import java.util.List;
 import java.util.function.Function;
@@ -42,14 +42,14 @@ public class IRLSOptimizer {
     /**
      * The hessian matrix
      */
-    private RMatrix hessian;
+    private RM hessian;
     /**
      * Contains the values of the coefficients for each data point
      */
-    private RMatrix coef;
-    private RVector derivatives;
-    private RVector err;
-    private RVector grad;
+    private RM coef;
+    private RV derivatives;
+    private RV err;
+    private RV grad;
 
     /**
      * Performs optimization on the given inputs to find the minima of the function.
@@ -66,8 +66,8 @@ public class IRLSOptimizer {
     public Numeric optimize(double eps, int iterationLimit, Function<Var, Double> f,
                             Function<Var, Double> fd, Numeric vars, List<Var> inputs, Numeric outputs) {
 
-        hessian = LinAlg.newMatrixEmpty(vars.rowCount(), vars.rowCount());
-        coef = LinAlg.newMatrixEmpty(inputs.size(), vars.rowCount());
+        hessian = Linear.newRMEmpty(vars.rowCount(), vars.rowCount());
+        coef = Linear.newRMEmpty(inputs.size(), vars.rowCount());
         for (int i = 0; i < inputs.size(); i++) {
             Var x_i = inputs.get(i);
             coef.set(i, 0, 1.0);
@@ -75,9 +75,9 @@ public class IRLSOptimizer {
                 coef.set(i, j, x_i.value(j - 1));
         }
 
-        derivatives = LinAlg.newVectorEmpty(inputs.size());
-        err = LinAlg.newVectorEmpty(outputs.rowCount());
-        grad = LinAlg.newVectorEmpty(vars.rowCount());
+        derivatives = Linear.newRVEmpty(inputs.size());
+        err = Linear.newRVEmpty(outputs.rowCount());
+        grad = Linear.newRVEmpty(vars.rowCount());
 
         double maxChange = Double.MAX_VALUE;
         while (!Double.isNaN(maxChange) && maxChange > eps && iterationLimit-- > 0) {
@@ -116,7 +116,7 @@ public class IRLSOptimizer {
             //TODO use a pesudo inverse instead of giving up
             return Double.NaN;//Indicate that we need to stop
         }
-        RVector delta = lu.solve(grad).mapCol(0);
+        RV delta = lu.solve(grad).mapCol(0);
 
         for (int i = 0; i < vars.rowCount(); i++)
             vars.setValue(i, vars.value(i) - delta.get(i, 0));

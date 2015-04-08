@@ -36,9 +36,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
+ * Real value matrix interface
+ *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
  */
-public interface RMatrix extends Serializable, Printable {
+public interface RM extends Serializable, Printable {
 
     /**
      * @return number of rows the matrix has
@@ -84,11 +86,11 @@ public interface RMatrix extends Serializable, Printable {
      *
      * @param i     row number
      * @param j     col number
-     * @param value value to be added to the cell value
+     * @param increment value to be added to the cell value
      */
-    default void increment(int i, int j, double value) {
+    default void increment(int i, int j, double increment) {
         double old = get(i, j);
-        set(i, j, old + value);
+        set(i, j, old + increment);
     }
 
     // transforming methods
@@ -99,20 +101,20 @@ public interface RMatrix extends Serializable, Printable {
      * @param indexes row indexes
      * @return new mapped matrix containing all columns and selected rows
      */
-    default RMatrix mapRows(int... indexes) {
-        return new MappedRMatrix(this, true, indexes);
+    default RM mapRows(int... indexes) {
+        return new MappedRM(this, true, indexes);
     }
 
-    default RVector mapRow(int index) {
-        return new MappedRowRVector(this, index);
+    default RV mapRow(int index) {
+        return new MappedRowRV(this, index);
     }
 
-    default RMatrix rangeRows(int start, int end) {
+    default RM rangeRows(int start, int end) {
         int[] rows = new int[end - start];
         for (int i = start; i < end; i++) {
             rows[i - start] = i;
         }
-        return new MappedRMatrix(this, true, rows);
+        return new MappedRM(this, true, rows);
     }
 
     /**
@@ -121,7 +123,7 @@ public interface RMatrix extends Serializable, Printable {
      * @param indexes rows which will be removed
      * @return new mapped matrix containing all rows not specified by indexes
      */
-    default RMatrix removeRows(int... indexes) {
+    default RM removeRows(int... indexes) {
         Set<Integer> rem = Arrays.stream(indexes).boxed().collect(Collectors.toSet());
         int[] rows = new int[rowCount() - rem.size()];
         int pos = 0;
@@ -130,26 +132,26 @@ public interface RMatrix extends Serializable, Printable {
                 continue;
             rows[pos++] = i;
         }
-        return new MappedRMatrix(this, true, rows);
+        return new MappedRM(this, true, rows);
     }
 
-    default RMatrix mapCols(int... indexes) {
-        return new MappedRMatrix(this, false, indexes);
+    default RM mapCols(int... indexes) {
+        return new MappedRM(this, false, indexes);
     }
 
-    default RVector mapCol(int index) {
-        return new MappedColRVector(this, index);
+    default RV mapCol(int index) {
+        return new MappedColRV(this, index);
     }
 
-    default RMatrix rangeCols(int start, int end) {
+    default RM rangeCols(int start, int end) {
         int[] cols = new int[end - start];
         for (int i = start; i < end; i++) {
             cols[i - start] = i;
         }
-        return new MappedRMatrix(this, false, cols);
+        return new MappedRM(this, false, cols);
     }
 
-    default RMatrix removeCols(int... indexes) {
+    default RM removeCols(int... indexes) {
         Set<Integer> rem = Arrays.stream(indexes).boxed().collect(Collectors.toSet());
         int[] cols = new int[colCount() - rem.size()];
         int pos = 0;
@@ -158,15 +160,15 @@ public interface RMatrix extends Serializable, Printable {
                 continue;
             cols[pos++] = i;
         }
-        return new MappedRMatrix(this, false, cols);
+        return new MappedRM(this, false, cols);
     }
 
     ///////////////////////
     // matrix operations
     ///////////////////////
 
-    default RMatrix t() {
-        return new TransposeRMatrix(this);
+    default RM t() {
+        return new TransposeRM(this);
     }
 
     default double det() {
@@ -181,12 +183,12 @@ public interface RMatrix extends Serializable, Printable {
      * @param B matrix with which it will be multiplied.
      * @return new matrix as a result of multiplication
      */
-    default RMatrix mult(RMatrix B) {
+    default RM mult(RM B) {
         if (colCount() != B.rowCount()) {
             throw new IllegalArgumentException(String.format("Matrices are not conform for multiplication ([n,m]x[m,p] = [%d,%d]=[%d,%d])",
                     rowCount(), colCount(), B.rowCount(), B.colCount()));
         }
-        RMatrix C = LinAlg.newMatrixEmpty(rowCount(), B.colCount());
+        RM C = Linear.newRMEmpty(rowCount(), B.colCount());
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < B.colCount(); j++) {
                 double s = 0;
@@ -206,7 +208,7 @@ public interface RMatrix extends Serializable, Printable {
      * @param b scalar value used for multiplication
      * @return current instance multiplied with a scalar
      */
-    default RMatrix mult(double b) {
+    default RM mult(double b) {
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 set(i, j, get(i, j) * b);
@@ -218,8 +220,8 @@ public interface RMatrix extends Serializable, Printable {
     /**
      * Diagonal vector of values
      */
-    default RVector diag() {
-        return new MappedDiagRVector(this);
+    default RV diag() {
+        return new MappedDiagRV(this);
     }
 
     /**
@@ -239,21 +241,21 @@ public interface RMatrix extends Serializable, Printable {
      * Does not override equals since this is a costly
      * algorithm and can slow down processing as a side effect.
      *
-     * @param RMatrix given matrix
+     * @param RM given matrix
      * @return true if dimension and elements are equal
      */
-    default boolean isEqual(RMatrix RMatrix) {
-        return isEqual(RMatrix, 1e-12);
+    default boolean isEqual(RM RM) {
+        return isEqual(RM, 1e-12);
     }
 
-    default boolean isEqual(RMatrix RMatrix, double tol) {
-        if (rowCount() != RMatrix.rowCount())
+    default boolean isEqual(RM RM, double tol) {
+        if (rowCount() != RM.rowCount())
             return false;
-        if (colCount() != RMatrix.colCount())
+        if (colCount() != RM.colCount())
             return false;
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                if (!MathBase.eq(get(i, j), RMatrix.get(i, j), tol))
+                if (!MathBase.eq(get(i, j), RM.get(i, j), tol))
                     return false;
             }
         }
@@ -265,14 +267,14 @@ public interface RMatrix extends Serializable, Printable {
      *
      * @return new solid copy of the matrix
      */
-    default RMatrix solidCopy() {
-        RMatrix RMatrix = new SolidRMatrix(rowCount(), colCount());
+    default RM solidCopy() {
+        RM RM = new SolidRM(rowCount(), colCount());
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                RMatrix.set(i, j, get(i, j));
+                RM.set(i, j, get(i, j));
             }
         }
-        return RMatrix;
+        return RM;
     }
 
     //////////////////

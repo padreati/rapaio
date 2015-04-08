@@ -22,49 +22,52 @@
 
 package rapaio.math.linear.impl;
 
-import rapaio.math.linear.RMatrix;
+import rapaio.math.linear.RM;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/4/15.
  */
-public class SolidRMatrix implements RMatrix {
+public class MappedRM implements RM {
 
-    private final int rowCount;
-    private final int colCount;
-    private final double[] values;
+    private final RM ref;
+    private final int[] rowIndexes;
+    private final int[] colIndexes;
 
-    public SolidRMatrix(int rowCount, int colCount) {
-        this.rowCount = rowCount;
-        this.colCount = colCount;
-        this.values = new double[rowCount * colCount];
-    }
-
-    public SolidRMatrix(int rowCount, int colCount, double[] values) {
-        if (rowCount * colCount != values.length) {
-            throw new IllegalArgumentException("rows*cols does not match the number of given values");
+    public MappedRM(RM ref, boolean byRow, int... indexes) {
+        if (byRow) {
+            this.ref = ref;
+            this.rowIndexes = indexes;
+            this.colIndexes = new int[ref.colCount()];
+            for (int i = 0; i < ref.colCount(); i++) {
+                this.colIndexes[i] = i;
+            }
+        } else {
+            this.ref = ref;
+            this.rowIndexes = new int[ref.rowCount()];
+            for (int i = 0; i < ref.rowCount(); i++) {
+                this.rowIndexes[i] = i;
+            }
+            this.colIndexes = indexes;
         }
-        this.rowCount = rowCount;
-        this.colCount = colCount;
-        this.values = values;
     }
 
     @Override
     public int rowCount() {
-        return rowCount;
+        return rowIndexes.length;
     }
 
     @Override
     public int colCount() {
-        return colCount;
+        return colIndexes.length;
     }
 
     @Override
     public double get(int i, int j) {
-        return values[i * colCount + j];
+        return ref.get(rowIndexes[i], colIndexes[j]);
     }
 
     @Override
     public void set(int i, int j, double value) {
-        values[i * colCount + j] = value;
+        ref.set(rowIndexes[i], colIndexes[j], value);
     }
 }

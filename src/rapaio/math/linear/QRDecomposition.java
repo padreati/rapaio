@@ -43,22 +43,19 @@ public class QRDecomposition implements Serializable {
 
     private static final long serialVersionUID = -8322866575684242727L;
 
-    private RMatrix QR;
-    private int m, n;
-    private double[] Rdiag;
+    private RM QR;
+    private RV Rdiag;
 
-    public QRDecomposition(RMatrix A) {
+    public QRDecomposition(RM A) {
         // Initialize.
         QR = A.solidCopy();
-        m = A.rowCount();
-        n = A.colCount();
-        Rdiag = new double[n];
+        Rdiag = Linear.newRVEmpty(QR.colCount());
 
         // Main loop.
-        for (int k = 0; k < n; k++) {
+        for (int k = 0; k < QR.colCount(); k++) {
             // Compute 2-norm of k-th column without under/overflow.
             double nrm = 0;
-            for (int i = k; i < m; i++) {
+            for (int i = k; i < QR.rowCount(); i++) {
                 nrm = StrictMath.hypot(nrm, QR.get(i, k));
             }
 
@@ -67,24 +64,24 @@ public class QRDecomposition implements Serializable {
                 if (QR.get(k, k) < 0) {
                     nrm = -nrm;
                 }
-                for (int i = k; i < m; i++) {
+                for (int i = k; i < QR.rowCount(); i++) {
                     QR.set(i, k, QR.get(i, k) / nrm);
                 }
                 QR.set(k, k, QR.get(k, k) + 1.0);
 
                 // Apply transformation to remaining columns.
-                for (int j = k + 1; j < n; j++) {
+                for (int j = k + 1; j < QR.colCount(); j++) {
                     double s = 0.0;
-                    for (int i = k; i < m; i++) {
+                    for (int i = k; i < QR.rowCount(); i++) {
                         s += QR.get(i, k) * QR.get(i, j);
                     }
                     s = -s / QR.get(k, k);
-                    for (int i = k; i < m; i++) {
+                    for (int i = k; i < QR.rowCount(); i++) {
                         QR.set(i, j, QR.get(i, j) + s * QR.get(i, k));
                     }
                 }
             }
-            Rdiag[k] = -nrm;
+            Rdiag.increment(k, -nrm);
         }
     }
 
@@ -94,8 +91,8 @@ public class QRDecomposition implements Serializable {
      * @return true if R, and hence A, has full rank.
      */
     public boolean isFullRank() {
-        for (int j = 0; j < n; j++) {
-            if (Rdiag[j] == 0)
+        for (int j = 0; j < QR.colCount(); j++) {
+            if (Rdiag.get(j) == 0)
                 return false;
         }
         return true;
@@ -106,10 +103,10 @@ public class QRDecomposition implements Serializable {
      *
      * @return Lower trapezoidal matrix whose columns define the reflections
      */
-    public RMatrix getH() {
-        RMatrix H = LinAlg.newMatrixEmpty(m, n);
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
+    public RM getH() {
+        RM H = Linear.newRMEmpty(QR.rowCount(), QR.colCount());
+        for (int i = 0; i < QR.rowCount(); i++) {
+            for (int j = 0; j < QR.colCount(); j++) {
                 if (i >= j) {
                     H.set(i, j, QR.get(i, j));
                 } else {
@@ -125,14 +122,14 @@ public class QRDecomposition implements Serializable {
      *
      * @return R
      */
-    public RMatrix getR() {
-        RMatrix R = LinAlg.newMatrixEmpty(n, n);
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
+    public RM getR() {
+        RM R = Linear.newRMEmpty(QR.colCount(), QR.colCount());
+        for (int i = 0; i < QR.colCount(); i++) {
+            for (int j = 0; j < QR.colCount(); j++) {
                 if (i < j) {
                     R.set(i, j, QR.get(i, j));
                 } else if (i == j) {
-                    R.set(i, j, Rdiag[i]);
+                    R.set(i, j, Rdiag.get(i));
                 } else {
                     R.set(i, j, 0.0);
                 }
@@ -147,21 +144,21 @@ public class QRDecomposition implements Serializable {
      * @return Q
      */
 
-    public RMatrix getQ() {
-        RMatrix Q = LinAlg.newMatrixEmpty(m, n);
-        for (int k = n - 1; k >= 0; k--) {
-            for (int i = 0; i < m; i++) {
+    public RM getQ() {
+        RM Q = Linear.newRMEmpty(QR.rowCount(), QR.colCount());
+        for (int k = QR.colCount() - 1; k >= 0; k--) {
+            for (int i = 0; i < QR.rowCount(); i++) {
                 Q.set(i, k, 0.0);
             }
             Q.set(k, k, 1.0);
-            for (int j = k; j < n; j++) {
+            for (int j = k; j < QR.colCount(); j++) {
                 if (QR.get(k, k) != 0) {
                     double s = 0.0;
-                    for (int i = k; i < m; i++) {
+                    for (int i = k; i < QR.rowCount(); i++) {
                         s += QR.get(i, k) * Q.get(i, j);
                     }
                     s = -s / QR.get(k, k);
-                    for (int i = k; i < m; i++) {
+                    for (int i = k; i < QR.rowCount(); i++) {
                         Q.set(i, j, Q.get(i, j) + s * QR.get(i, k));
                     }
                 }
@@ -170,7 +167,7 @@ public class QRDecomposition implements Serializable {
         return Q;
     }
 
-    public RMatrix getQR() {
+    public RM getQR() {
         return QR.solidCopy();
     }
 
@@ -183,8 +180,8 @@ public class QRDecomposition implements Serializable {
      * @throws RuntimeException         Matrix is rank deficient.
      */
 
-    public RMatrix solve(RMatrix B) {
-        if (B.rowCount() != m) {
+    public RM solve(RM B) {
+        if (B.rowCount() != QR.rowCount()) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
         }
         if (!isFullRank()) {
@@ -192,26 +189,26 @@ public class QRDecomposition implements Serializable {
         }
 
         // Copy right hand side
-        RMatrix X = B.solidCopy();
+        RM X = B.solidCopy();
 
         // Compute Y = transpose(Q)*B
-        for (int k = 0; k < n; k++) {
+        for (int k = 0; k < QR.colCount(); k++) {
             for (int j = 0; j < B.colCount(); j++) {
                 double s = 0.0;
-                for (int i = k; i < m; i++) {
+                for (int i = k; i < QR.rowCount(); i++) {
                     s += QR.get(i, k) * X.get(i, j);
                 }
                 s = -s / QR.get(k, k);
-                for (int i = k; i < m; i++) {
+                for (int i = k; i < QR.rowCount(); i++) {
                     X.set(i, j, X.get(i, j) + s * QR.get(i, k));
                 }
             }
         }
 
         // Solve R*X = Y;
-        for (int k = n - 1; k >= 0; k--) {
+        for (int k = QR.colCount() - 1; k >= 0; k--) {
             for (int j = 0; j < B.colCount(); j++) {
-                X.set(k, j, X.get(k, j) / Rdiag[k]);
+                X.set(k, j, X.get(k, j) / Rdiag.get(k));
             }
             for (int i = 0; i < k; i++) {
                 for (int j = 0; j < B.colCount(); j++) {
@@ -219,6 +216,6 @@ public class QRDecomposition implements Serializable {
                 }
             }
         }
-        return X.rangeRows(0, n).rangeCols(0, B.colCount());
+        return X.rangeRows(0, QR.colCount()).rangeCols(0, B.colCount());
     }
 }

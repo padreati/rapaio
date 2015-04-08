@@ -22,41 +22,57 @@
 
 package rapaio.math.linear.impl;
 
-import rapaio.math.linear.RVector;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
+ * Column vector obtained from the diagonal of a given matrix.
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/26/15.
  */
-public class TransposeRVector implements RVector {
+public class MappedDiagRV implements RV {
+    private final int n;
+    private final RM ref;
 
-    private final RVector ref;
-
-    TransposeRVector(RVector ref) {
+    public MappedDiagRV(RM ref) {
         this.ref = ref;
+        this.n = Math.min(ref.rowCount(), ref.colCount());
     }
 
     @Override
     public int rowCount() {
-        return ref.colCount();
+        return n;
     }
 
     @Override
     public int colCount() {
-        return ref.rowCount();
+        return n;
     }
 
     @Override
     public double get(int i, int j) {
-        return ref.get(j, i);
+        if (j == 0) {
+            return ref.get(i, i);
+        }
+        throw new IllegalArgumentException("This operation is valid only for mapped vectors");
     }
 
     @Override
     public void set(int i, int j, double value) {
-        ref.set(j, i, value);
+        if (j == 0) {
+            ref.set(i, i, value);
+            return;
+        }
+        throw new IllegalArgumentException("This operation is valid only for mapped vectors");
     }
 
     @Override
-    public RVector t() {
-        return ref;
+    public double get(int i) {
+        return get(i, 0);
+    }
+
+    @Override
+    public void set(int i, double value) {
+        set(i, 0, value);
     }
 }
