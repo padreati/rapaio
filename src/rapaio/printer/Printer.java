@@ -43,6 +43,12 @@ public interface Printer {
         setMinimumIntegerDigits(1);
     }};
 
+    DecimalFormat formatDecFlex = new DecimalFormat() {{
+        setMinimumFractionDigits(0);
+        setMaximumFractionDigits(30);
+        setMinimumIntegerDigits(1);
+    }};
+
     int getTextWidth();
 
     void setTextWidth(int chars);

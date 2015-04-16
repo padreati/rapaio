@@ -20,7 +20,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.tree.ctree;
+package rapaio.ml.classifier.tree;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
@@ -29,6 +29,8 @@ import rapaio.ml.classifier.tools.DensityTable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -40,9 +42,11 @@ public interface CTreeNominalMethod extends Serializable {
 
     CTreeNominalMethod newInstance();
 
-    List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function);
+    List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function, CTreeNominalTerms terms);
 
-    public static class Ignore implements CTreeNominalMethod {
+    class Ignore implements CTreeNominalMethod {
+        private static final long serialVersionUID = -4880331163848862999L;
+
         @Override
         public String name() {
             return "Ignore";
@@ -54,12 +58,14 @@ public interface CTreeNominalMethod extends Serializable {
         }
 
         @Override
-        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function) {
+        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function, CTreeNominalTerms terms) {
             return new ArrayList<>();
         }
-    };
+    }
 
-    public static class Full implements CTreeNominalMethod {
+    class Full implements CTreeNominalMethod {
+        private static final long serialVersionUID = 1440419101927544578L;
+
         @Override
         public String name() {
             return "Full";
@@ -71,15 +77,15 @@ public interface CTreeNominalMethod extends Serializable {
         }
 
         @Override
-        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function) {
-            List<CTreeCandidate> result = new ArrayList<>();
+        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function, CTreeNominalTerms terms) {
             Var test = df.var(testColName);
             Var target = df.var(targetColName);
 
-            if (new DensityTable(test, target).countWithMinimum(false, c.getMinCount()) < 2) {
-                return result;
+            if (!new DensityTable(test, target).hasCountWithMinimum(false, c.getMinCount(), 2)) {
+                return Collections.emptyList();
             }
 
+            List<CTreeCandidate> result = new ArrayList<>();
             DensityTable dt = new DensityTable(test, target, weights);
             double value = function.compute(dt);
 
@@ -95,9 +101,11 @@ public interface CTreeNominalMethod extends Serializable {
             result.add(candidate);
             return result;
         }
-    };
+    }
 
-    public static class Binary implements CTreeNominalMethod {
+    class Binary implements CTreeNominalMethod {
+
+        private static final long serialVersionUID = -2139837342128959674L;
 
         @Override
         public String name() {
@@ -110,18 +118,28 @@ public interface CTreeNominalMethod extends Serializable {
         }
 
         @Override
-        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function) {
+        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function, CTreeNominalTerms terms) {
+
+            Var test = df.var(testColName);
+            Var target = df.var(targetColName);
+            if (!(new DensityTable(test, target).hasCountWithMinimum(false, c.getMinCount(), 2))) {
+                return Collections.emptyList();
+            }
 
             List<CTreeCandidate> result = new ArrayList<>();
             CTreeCandidate best = null;
-            for (int i = 1; i < df.var(testColName).dictionary().length; i++) {
-                Var test = df.var(testColName);
-                Var target = df.var(targetColName);
-                String testLabel = df.var(testColName).dictionary()[i];
 
-                if (new DensityTable(test, target).countWithMinimum(false, c.getMinCount()) < 2) {
-                    return result;
+            int[] termCount = new int[test.dictionary().length];
+            test.stream().forEach(s -> termCount[s.index()]++);
+
+            Iterator<Integer> indexes = terms.indexes(testColName).iterator();
+            while (indexes.hasNext()) {
+                int i = indexes.next();
+                if (termCount[i] < c.getMinCount()) {
+                    indexes.remove();
+                    continue;
                 }
+                String testLabel = df.var(testColName).dictionary()[i];
 
                 DensityTable dt = new DensityTable(test, target, weights, testLabel);
                 double value = function.compute(dt);
@@ -143,5 +161,5 @@ public interface CTreeNominalMethod extends Serializable {
                 result.add(best);
             return result;
         }
-    };
+    }
 }

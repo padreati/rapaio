@@ -35,10 +35,11 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractClassifier implements Classifier {
 
-    private String[] inputNames;
-    private String[] targetNames;
-    private Map<String, String[]> dict;
-    private Sampler sampler = new Sampler.Identity();
+    private static final long serialVersionUID = -6866948033065091047L;
+    protected String[] inputNames;
+    protected String[] targetNames;
+    protected Map<String, String[]> dict;
+    protected Sampler sampler = new Sampler.Identity();
 
     @Override
     public Sampler sampler() {

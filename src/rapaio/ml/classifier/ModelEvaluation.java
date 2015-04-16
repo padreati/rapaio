@@ -24,18 +24,16 @@ package rapaio.ml.classifier;
 
 import rapaio.core.RandomSource;
 import rapaio.core.sample.SamplingTool;
-import rapaio.data.Frame;
-import rapaio.data.MappedFrame;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
+import rapaio.data.*;
 import rapaio.data.filter.frame.FFShuffle;
 import rapaio.ml.eval.ConfusionMatrix;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 import static rapaio.WS.print;
 
 /**
@@ -107,7 +105,6 @@ public class ModelEvaluation {
     }
 
     public void multiCv(Frame df, String classColName, List<Classifier> classifiers, int folds) {
-        print("\n<pre><code>\n");
         print("CrossValidation with " + folds + " folds\n");
         df = new FFShuffle().fitApply(df);
         double[] tacc = new double[classifiers.size()];
@@ -136,19 +133,14 @@ public class ModelEvaluation {
             Frame test = MappedFrame.newByRow(df, testMapping);
 
             for (int k = 0; k < classifiers.size(); k++) {
-                Classifier c = classifiers.get(k);
-//                c = c.newInstance();
+                Classifier c = classifiers.get(k).newInstance();
                 c.learn(train, classColName);
                 ClassifierFit cp = c.predict(test);
-                double acc = 0;
-                for (int j = 0; j < cp.firstClasses().rowCount(); j++) {
-                    if (cp.firstClasses().index(j) == test.var(classColName).index(j)) {
-                        acc++;
-                    }
-                }
-                acc /= (1. * cp.firstClasses().rowCount());
+                ConfusionMatrix cm = new ConfusionMatrix(test.var(classColName), cp.firstClasses());
+//                cm.summary();
+                double acc = cm.accuracy();
                 tacc[k] += acc;
-                print(String.format("CV %d, classifier[%d] - accuracy:%.6f\n", i + 1, k + 1, acc));
+                print(String.format("CV %d, accuracy:%.6f, classifier:%s\n", i + 1, acc, c.fullName()));
             }
             print("-----------\n");
 
@@ -156,38 +148,48 @@ public class ModelEvaluation {
 
         for (int k = 0; k < classifiers.size(); k++) {
             tacc[k] /= (1. * folds);
-            print(String.format("Mean accuracy for classifier[%d] :%.6f\n", k + 1, tacc[k]));
+            print(String.format("Mean accuracy %.6f, for classifier: %s\n", tacc[k], classifiers.get(k).fullName()));
         }
-
-
-        print("</code></pre>\n");
     }
 
     public void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps) {
-        bootstrapValidation(df, classColName, c, bootstraps, 1.0);
+        Var weights = Numeric.newFill(df.rowCount(), 1.0);
+        bootstrapValidation(df, weights, classColName, c, bootstraps, 1.0);
+    }
+
+    public void bootstrapValidation(Frame df, Var weights, String classColName, Classifier c, int bootstraps) {
+        bootstrapValidation(df, weights, classColName, c, bootstraps, 1.0);
     }
 
     public void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps, double p) {
+        Var weights = Numeric.newFill(df.rowCount(), 1.0d);
+        bootstrapValidation(df, weights, classColName, c, bootstraps, p);
+    }
+
+    public void bootstrapValidation(Frame df, Var weights, String classColName, Classifier c, int bootstraps, double p) {
         print(bootstraps + " bootstrap evaluation\n");
         double total = 0;
         double count = 0;
         for (int i = 0; i < bootstraps; i++) {
-            int[] rows = SamplingTool.sampleWR(((int) (df.rowCount() * p)), df.rowCount());
-            Frame train = MappedFrame.newByRow(df, rows);
-            Mapping others = Mapping.newEmpty();
-            Set<Integer> set = Arrays.stream(rows).boxed().collect(toSet());
-            for (int j = 0; j < df.rowCount(); j++) {
-                if (!set.contains(j)) others.add(j);
-            }
-            Frame test = MappedFrame.newByRow(df, others);
-
-            c.learn(train, classColName);
-            c.predict(test);
-            Var classes = c.predict(test).firstClasses();
-            double acc = new ConfusionMatrix(test.var(classColName), classes).accuracy();
+//            System.out.println("get sample...");
+            int[] rows = SamplingTool.sampleWR((int) (df.rowCount() * p), df.rowCount());
+//            System.out.println("build train set ...");
+            Frame train = df.mapRows(rows);
+//            System.out.println("build test set ...");
+            Frame test = df.removeRows(rows);
+//            System.out.println("learn train set ...");
+            Classifier cc = c.newInstance();
+            cc.learn(train, weights.mapRows(rows), classColName);
+//            System.out.println("predict test cases ...");
+            Var classes = cc.predict(test).firstClasses();
+//            System.out.println("build confusion matrix ...");
+            ConfusionMatrix cm = new ConfusionMatrix(test.var(classColName), classes);
+            cm.summary();
+            double acc = cm.accuracy();
             System.out.println(String.format("bootstrap(%d) : %.6f", i + 1, acc));
             total += acc;
             count++;
+            System.out.flush();
         }
         System.out.println(String.format("Average accuracy: %.6f", total / count));
     }

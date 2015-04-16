@@ -72,7 +72,7 @@ public class RForest extends AbstractRegressor implements RunningRegressor, Prin
         if (!sampling.equals(Sampling.NONE)) {
             sb.append("samplePercent=").append(Printer.formatDecShort.format(samplePercent)).append(", ");
         }
-        sb.append("oobCompute=").append(oobCompute).append(", ");
+        sb.append("oobComp=").append(oobCompute).append(", ");
         sb.append("runs=").append(runs).append(", ");
         sb.append("}");
         return sb.toString();

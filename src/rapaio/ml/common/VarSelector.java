@@ -29,79 +29,53 @@ import java.io.Serializable;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public interface VarSelector extends Serializable {
+public class VarSelector implements Serializable {
+    private static final long serialVersionUID = -6800363806127327947L;
 
-    String name();
+    private static final int M_ALL = 0;
+    private static final int M_AUTO = -1;
 
-    VarSelector newInstance();
+    private final int mVars;
+    private String[] varNames = new String[]{};
 
-    void initialize(String... varNames);
+    public static VarSelector ALL = new VarSelector(M_ALL);
+    public static VarSelector AUTO = new VarSelector(M_AUTO);
 
-    String[] nextVarNames();
-
-    // built-in instances
-
-    public static final class Standard implements VarSelector {
-
-        private String[] selection;
-
-        public String name() {
-            return "Std";
-        }
-
-        @Override
-        public VarSelector newInstance() {
-            return new Standard();
-        }
-
-        @Override
-        public void initialize(String... varNames) {
-            selection = varNames;
-        }
-
-        @Override
-        public String[] nextVarNames() {
-            return selection;
-        }
+    public VarSelector() {
+        this(M_ALL);
     }
 
-    public static final class Random implements VarSelector {
+    public VarSelector(int mVars) {
+        this.mVars = mVars;
+    }
 
-        private final int mVars;
-        private String[] candidates;
+    public VarSelector newInstance() {
+        return new VarSelector(mVars).withVarNames(varNames);
+    }
 
-        public Random() {
-            this.mVars = -1;
+    public VarSelector withVarNames(final String... varNames) {
+        this.varNames = varNames;
+        return this;
+    }
+
+    public String name() {
+        if (mVars == M_ALL)
+            return "VarSelector[ALL]";
+        if (mVars == M_AUTO)
+            return "VarSelector[AUTO]";
+        return "VarSelector[" + mVars + "]";
+    }
+
+    public String[] nextVarNames() {
+        if (mVars == M_ALL) {
+            return varNames;
         }
-
-        public Random(int mVars) {
-            this.mVars = mVars;
+        int m = (mVars == M_AUTO) ? Math.max((int) Math.sqrt(varNames.length), 1) : mVars;
+        int[] indexes = SamplingTool.sampleWR(m, varNames.length);
+        String[] result = new String[m];
+        for (int i = 0; i < indexes.length; i++) {
+            result[i] = varNames[indexes[i]];
         }
-
-        @Override
-        public VarSelector newInstance() {
-            Random vs = new Random(mVars);
-            vs.initialize(candidates);
-            return vs;
-        }
-
-        public String name() {
-            return "Random[" + mVars + "]";
-        }
-
-        public void initialize(final String... varNames) {
-            candidates = varNames;
-        }
-
-        @Override
-        public String[] nextVarNames() {
-            int m = (mVars < 1) ? Math.max((int) Math.sqrt(candidates.length), 1) : mVars;
-            int[] indexes = SamplingTool.sampleWR(m, candidates.length);
-            String[] result = new String[m];
-            for (int i = 0; i < indexes.length; i++) {
-                result[i] = candidates[indexes[i]];
-            }
-            return result;
-        }
+        return result;
     }
 }

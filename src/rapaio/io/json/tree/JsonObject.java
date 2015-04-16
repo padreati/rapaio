@@ -106,6 +106,7 @@ public final class JsonObject extends JsonValue {
         StringBuilder sb = new StringBuilder();
         sb.append(tabs(level)).append("{\n");
         List<String> keyList = new ArrayList<>(keySet());
+        Collections.sort(keyList);
         for (int i = 0; i < keyList.size(); i++) {
             String key = keyList.get(i);
             sb.append(tabs(level + 1)).append('\"').append(key).append("\":");

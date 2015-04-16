@@ -53,13 +53,7 @@ public class LzJsonInput extends LzJsonAlgorithm implements JsonInput {
     }
 
     private int readInt() throws IOException {
-        int len = 0;
-        int last = 255;
-        while (last == 255) {
-            last = is.readUnsignedByte();
-            len += last;
-        }
-        return len;
+        return encoding.readInt(is);
     }
 
     private byte[] readBuff() throws IOException {

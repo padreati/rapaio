@@ -51,8 +51,8 @@ public class UniformRandomSelectorTest {
         String classColName = "class";
         int mcols = 4;
 
-        VarSelector colSelector = new VarSelector.Random(mcols);
-        colSelector.initialize("a", "b", "c", "d", "e", "f", "g", "h");
+        VarSelector colSelector = new VarSelector(mcols);
+        colSelector.withVarNames("a", "b", "c", "d", "e", "f", "g", "h");
 
         final int TESTS = 10_000;
         HashMap<String, Integer> counter = new HashMap<>();

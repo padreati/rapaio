@@ -49,7 +49,7 @@ public interface Sampler {
 
     // static implementations
 
-    public static class Identity implements Sampler {
+    class Identity implements Sampler {
 
         @Override
         public Sample newSample(Frame df, Var weights) {
@@ -62,7 +62,7 @@ public interface Sampler {
         }
     }
 
-    public static final class Bootstrap implements Sampler {
+    final class Bootstrap implements Sampler {
 
         private double percent = 1.0;
 
@@ -77,13 +77,13 @@ public interface Sampler {
 
         @Override
         public Sample newSample(Frame df, Var weights) {
-            Mapping map = Mapping.newCopyOf(SamplingTool.sampleWR(df.rowCount(), (int) (percent * df.rowCount())));
+            Mapping map = Mapping.newCopyOf(SamplingTool.sampleWR((int) (percent * df.rowCount()), df.rowCount()));
             return new Sample(df.mapRows(map), weights.mapRows(map), map);
         }
 
         @Override
         public String name() {
-            return "Bootstrap(p=" + Printer.formatDecShort.format(percent) + ")";
+            return "Bootstrap(p=" + Printer.formatDecFlex.format(percent) + ")";
         }
     }
 }

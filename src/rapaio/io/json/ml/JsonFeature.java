@@ -20,23 +20,31 @@
  *    limitations under the License.
  */
 
-package rapaio.experiment.sandbox;
+package rapaio.io.json.ml;
 
-import rapaio.data.Frame;
-import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.ModelEvaluation;
-import rapaio.ml.classifier.ensemble.CRForest;
+import rapaio.data.Var;
+import rapaio.io.json.tree.JsonValue;
 
-import java.io.IOException;
+import java.util.function.BiConsumer;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/10/15.
  */
-public class LifeScience {
+public class JsonFeature {
 
-    public static void main(String[] args) throws IOException {
+    private final Var collector;
+    private final BiConsumer<JsonValue, Var> consumer;
 
-        Frame df = Datasets.loadLifeScience();
-        new ModelEvaluation().cv(df, "class", new CRForest().withRuns(4).withBootstrap(0.9), 10);
+    public JsonFeature(Var collector, BiConsumer<JsonValue, Var> consumer) {
+        this.collector = collector;
+        this.consumer = consumer;
+    }
+
+    public void apply(JsonValue js) {
+        consumer.accept(js, collector);
+    }
+
+    public Var getResult() {
+        return collector;
     }
 }

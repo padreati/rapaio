@@ -102,4 +102,25 @@ public class JsonUtil {
                 }
         );
     }
+
+    public static void balancedConvertToLz(Stream<JsonValue> stream, File root, String prefix, int sliceCount, Consumer<String> messageHandler) {
+        Pin<Integer> fileCounter = new Pin<>(0);
+        StreamUtil.partition(stream, sliceCount).forEach(list -> {
+                    synchronized (fileCounter) {
+                        try {
+                            File file = new File(root, prefix + "-" + fileCounter.get() + ".lzjson");
+                            messageHandler.accept("write " + file.getName());
+                            fileCounter.set(fileCounter.get() + 1);
+                            LzJsonOutput out = new LzJsonOutput(new BufferedOutputStream(new FileOutputStream(file))).withMaxObjectBuffer(2_000);
+                            for (JsonValue js : list) {
+                                out.write(js);
+                            }
+                            out.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+        );
+    }
 }

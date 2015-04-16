@@ -24,6 +24,7 @@ package rapaio.core.stat;
 
 import rapaio.core.Printable;
 import rapaio.data.Var;
+import rapaio.printer.Printer;
 
 /**
  * Finds the minimum value from a {@link rapaio.data.Var} of values.
@@ -57,6 +58,6 @@ public class Minimum implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append(String.format("minimum[%s]=%.10f", varName, value));
+        sb.append(String.format("> minimum['%s']\n%s\n", varName, Printer.formatDecFlex.format(value)));
     }
 }

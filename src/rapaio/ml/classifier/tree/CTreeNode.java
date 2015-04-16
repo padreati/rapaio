@@ -20,7 +20,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.tree.ctree;
+package rapaio.ml.classifier.tree;
 
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
@@ -40,6 +40,7 @@ import java.util.function.Predicate;
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
 public class CTreeNode implements Serializable {
+    private static final long serialVersionUID = -5045581827808911763L;
     private final CTreeNode parent;
     private final String groupName;
     private final Predicate<FSpot> predicate;
@@ -94,7 +95,7 @@ public class CTreeNode implements Serializable {
         return bestCandidate;
     }
 
-    public void learn(CTree tree, Frame df, Var weights, int depth) {
+    public void learn(CTree tree, Frame df, Var weights, int depth, CTreeNominalTerms terms) {
         density = new DensityVector(df.var(tree.firstTargetName()), weights);
         density.normalize(false);
 
@@ -123,7 +124,7 @@ public class CTreeNode implements Serializable {
                         .forEach(candidates::add);
             } else {
                 tree.getNominalMethod().computeCandidates(
-                        tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction())
+                        tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction(), terms)
                         .forEach(candidates::add);
             }
         }
@@ -150,7 +151,7 @@ public class CTreeNode implements Serializable {
         for (int i = 0; i < frames.first.size(); i++) {
             CTreeNode child = new CTreeNode(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
             children.add(child);
-            child.learn(tree, frames.first.get(i), frames.second.get(i), depth - 1);
+            child.learn(tree, frames.first.get(i), frames.second.get(i), depth - 1, terms.solidCopy());
         }
     }
 }

@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.zip.GZIPOutputStream;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -57,8 +58,8 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
     private Map<String, Integer> numTermIndex = new HashMap<>();
 
 
-    public LzJsonOutput(OutputStream os) {
-        this.os = new DataOutputStream(os);
+    public LzJsonOutput(OutputStream os) throws IOException {
+        this.os = new DataOutputStream(new GZIPOutputStream(os));
     }
 
     public LzJsonOutput withMaxObjectBuffer(int maxObjectBuffer) {
@@ -74,20 +75,11 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
     }
 
     private void writeLen(int len) throws IOException {
-        while (len >= 255) {
-            os.writeByte(255);
-            len -= 255;
-        }
-        os.writeByte(len);
+        encoding.writeInt(len, os);
     }
 
     private int countLen(int len) {
-        int count = 0;
-        while (len >= 255) {
-            count++;
-            len -= 255;
-        }
-        return count + 1;
+        return encoding.countLen(len);
     }
 
     private void writeBuff(byte[] buff) throws IOException {

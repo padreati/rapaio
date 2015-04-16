@@ -230,21 +230,22 @@ public final class DensityTable implements Serializable {
      * @param useMissing if on counting the missing row is used
      * @return number of columns which meet criteria
      */
-    public int countWithMinimum(boolean useMissing, double minWeight) {
+    public boolean hasCountWithMinimum(boolean useMissing, double minWeight, int minCounts) {
         int start = useMissing ? 0 : 1;
-        double[] totals = new double[testLabels.length];
-        for (int i = start; i < testLabels.length; i++) {
-            for (int j = 1; j < targetLabels.length; j++) {
-                totals[i] += values[i][j];
-            }
-        }
         int count = 0;
-        for (int i = 1; i < totals.length; i++) {
-            if (totals[i] >= minWeight) {
+        for (int i = start; i < testLabels.length; i++) {
+            double total = 0;
+            for (int j = 1; j < targetLabels.length; j++) {
+                total += values[i][j];
+            }
+            if (total >= minWeight) {
                 count++;
+                if (count >= minCounts) {
+                    return true;
+                }
             }
         }
-        return count;
+        return false;
     }
 
     public double getGiniIndex() {

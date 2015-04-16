@@ -198,12 +198,21 @@ public final class Numeric extends AbstractVar {
 
             @Override
             public BiConsumer<Numeric, Number> accumulator() {
-                return (numeric, number) -> numeric.addValue(number.doubleValue());
+                return (numeric, number) -> {
+                    synchronized (this) {
+                        numeric.addValue(number.doubleValue());
+                    }
+                };
             }
 
             @Override
             public BinaryOperator<Numeric> combiner() {
-                return (left, right) -> (Numeric) left.bindRows(right);
+                return (left, right) -> {
+                    synchronized (this) {
+                        right.stream().sequential().forEach(v -> left.addValue(v.value()));
+                        return right;
+                    }
+                };
             }
 
             @Override

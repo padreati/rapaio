@@ -31,7 +31,7 @@ import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.RunningClassifier;
-import rapaio.ml.classifier.tree.ctree.CTree;
+import rapaio.ml.classifier.tree.CTree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     // parameters
 
     private Classifier weak = CTree.newDecisionStump();
-    private int runs = 0;
+    private int runs = 10;
     private boolean stopOnError = false;
 
     // model artifacts
@@ -77,7 +77,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     @Override
     public String fullName() {
         StringBuilder sb = new StringBuilder();
-        sb.append("AdaBoost.SAMME{");
+        sb.append("AdaBoost.SAMME {");
         sb.append("weak: ").append(weak.fullName()).append(", ");
         sb.append("runs: ").append(runs).append(", ");
         sb.append("sampler: ").append(sampler().name()).append(", ");
@@ -124,7 +124,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         w = weights.solidCopy();
 
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
-        w.stream().transValue(x -> x / total);
+        w = w.stream().transValue(x -> x / total).toMappedVar();
 
         for (int i = 0; i < runs; i++) {
             boolean success = learnRound(df);
@@ -154,7 +154,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         }
 
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
-        w.stream().transValue(x -> x / total);
+        w = w.stream().transValue(x -> x / total).toMappedVar();
 
         for (int i = h.size(); i < runs; i++) {
             boolean success = learnRound(df);

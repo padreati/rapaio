@@ -44,7 +44,7 @@ import java.util.List;
  */
 public class GBTClassifier extends AbstractClassifier implements RunningClassifier {
 
-    private int runs = 0;
+    private int runs = 10;
     private double shrinkage = 1.0;
     private boolean useBootstrap = true;
     private double bootstrapSize = 1.0;

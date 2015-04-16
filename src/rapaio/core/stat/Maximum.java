@@ -25,6 +25,7 @@ package rapaio.core.stat;
 import rapaio.core.Printable;
 import rapaio.data.Var;
 import rapaio.data.stream.VSpot;
+import rapaio.printer.Printer;
 
 /**
  * Finds the maximum value from a {@link rapaio.data.Var} of values.
@@ -56,6 +57,6 @@ public class Maximum implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append(String.format("> maximum['%s']\n%.10f\n", varName, value));
+        sb.append(String.format("> maximum['%s']\n%s\n", varName, Printer.formatDecFlex.format(value)));
     }
 }

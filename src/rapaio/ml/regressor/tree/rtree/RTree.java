@@ -39,6 +39,8 @@ import rapaio.util.Pair;
  */
 public class RTree extends AbstractRegressor implements BTRegressor {
 
+    private static final long serialVersionUID = -2748764643670512376L;
+
     int minCount = 1;
     int maxDepth = Integer.MAX_VALUE;
 
@@ -47,7 +49,7 @@ public class RTree extends AbstractRegressor implements BTRegressor {
     RTreeTestFunction function = RTreeTestFunction.VARIANCE_SUM;
     RTreeSplitter splitter = RTreeSplitter.REMAINS_IGNORED;
     RTreePredictor predictor = RTreePredictor.STANDARD;
-    VarSelector varSelector = new VarSelector.Standard();
+    VarSelector varSelector = VarSelector.ALL;
 
     // tree root node
     private RTreeNode root;
@@ -175,7 +177,7 @@ public class RTree extends AbstractRegressor implements BTRegressor {
         rows = df.rowCount();
 
         root = new RTreeNode(null, "root", spot -> true);
-        this.varSelector.initialize(inputNames());
+        this.varSelector.withVarNames(inputNames());
         root.learn(this, df, weights, maxDepth);
     }
 

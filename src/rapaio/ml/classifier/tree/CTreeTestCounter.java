@@ -20,7 +20,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.tree.ctree;
+package rapaio.ml.classifier.tree;
 
 import rapaio.data.Frame;
 
@@ -43,7 +43,7 @@ public interface CTreeTestCounter extends Serializable {
 
     void markUse(String name);
 
-    public static class MNominalMNumeric implements CTreeTestCounter {
+    class MNominalMNumeric implements CTreeTestCounter {
 
         private Map<String, Integer> counters = new ConcurrentHashMap<>();
 
@@ -67,7 +67,7 @@ public interface CTreeTestCounter extends Serializable {
         }
     }
 
-    public static class OneNominalMNumeric implements CTreeTestCounter {
+    class OneNominalMNumeric implements CTreeTestCounter {
 
         private Map<String, Integer> counters = new HashMap<>();
 
@@ -103,7 +103,7 @@ public interface CTreeTestCounter extends Serializable {
         }
     }
 
-    public static class OneNominalOneNumeric implements CTreeTestCounter {
+    class OneNominalOneNumeric implements CTreeTestCounter {
 
         private Map<String, Integer> counters = new HashMap<>();
 

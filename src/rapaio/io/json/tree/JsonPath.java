@@ -20,23 +20,37 @@
  *    limitations under the License.
  */
 
-package rapaio.experiment.sandbox;
+package rapaio.io.json.tree;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.ModelEvaluation;
-import rapaio.ml.classifier.ensemble.CRForest;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/8/15.
  */
-public class LifeScience {
+public class JsonPath {
 
-    public static void main(String[] args) throws IOException {
+    public static final String SEP = ".";
 
-        Frame df = Datasets.loadLifeScience();
-        new ModelEvaluation().cv(df, "class", new CRForest().withRuns(4).withBootstrap(0.9), 10);
+    private final List<String> tokens;
+
+    public JsonPath(String path) {
+        this.tokens = Arrays.stream(path.split(",", -1)).map(String::trim).filter(String::isEmpty).collect(toList());
+    }
+
+    public boolean hasPrefix() {
+        return false;
+    }
+
+    public static void main(String[] args) throws IOException, URISyntaxException {
+        Frame df = Datasets.loadCarMpgDataset();
+        df.summary();
     }
 }

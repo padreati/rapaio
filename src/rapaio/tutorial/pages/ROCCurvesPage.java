@@ -23,7 +23,6 @@
 package rapaio.tutorial.pages;
 
 import rapaio.core.RandomSource;
-import rapaio.core.sample.Sampler;
 import rapaio.core.sample.SamplingTool;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
@@ -31,8 +30,8 @@ import rapaio.graphics.plot.Legend;
 import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.boost.AdaBoostSAMMEClassifier;
 import rapaio.ml.classifier.boost.GBTClassifier;
+import rapaio.ml.classifier.ensemble.CRForest;
 import rapaio.ml.classifier.rule.OneRule;
-import rapaio.ml.classifier.tree.CForest;
 import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.ml.eval.ROC;
 
@@ -137,11 +136,11 @@ public class ROCCurvesPage implements TutorialPage {
 
         p("The second prediction model is a random forest with 20 random trees. ");
 
-        CForest rf = CForest.newRF(20, 10, new Sampler.Identity());
+        CRForest rf = new CRForest().withRuns(20).withNoSampling();
         rf.learn(train, "spam");
         ClassifierFit crRF = rf.predict(test);
 
-        code("        CForest rf = CForest.newRF(20, 10, 0);\n" +
+        code("        CEnsemble rf = CEnsemble.newRF(20, 10, 0);\n" +
                 "        rf.learn(train, \"spam\");\n" +
                 "        ClassifierFit crRF = rf.predict(test);\n");
 

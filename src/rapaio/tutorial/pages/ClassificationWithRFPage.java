@@ -29,9 +29,8 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.ClassifierFit;
-import rapaio.ml.classifier.tree.CForest;
-import rapaio.ml.classifier.tree.ctree.CTree;
-import rapaio.ml.common.VarSelector;
+import rapaio.ml.classifier.ensemble.CRForest;
+import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.ws.Summary;
 
@@ -162,9 +161,9 @@ public class ClassificationWithRFPage implements TutorialPage {
         final Var errors = Numeric.newEmpty();
         final Var oob = Numeric.newEmpty();
 
-        CForest rf = new CForest()
-                .withClassifier(CTree.newC45().withVarSelector(new VarSelector.Random(2)))
-                .withOobError(true);
+        CRForest rf = new CRForest()
+                .withClassifier(CTree.newC45().withMCols(2))
+                .withOobComp(true);
 
         for (int mTrees = 1; mTrees < 20; mTrees += 1) {
             rf.withRuns(mTrees);
@@ -195,9 +194,9 @@ public class ClassificationWithRFPage implements TutorialPage {
                 "However, the improvement stops at some point and " +
                 "become useless to add new trees.");
 
-        code("        CForest rf = new CForest()\n" +
+        code("        CEnsemble rf = new CEnsemble()\n" +
                 "                .withClassifier(CTree.newC45().withVarSelector(new VarSelector.Random(2)))\n" +
-                "                .withOobError(true);\n" +
+                "                .withOobComp(true);\n" +
                 "\n" +
                 "        for (int mTrees = 1; mTrees < 20; mTrees += 1) {\n" +
                 "            rf.withRuns(mTrees);\n" +
@@ -238,10 +237,10 @@ public class ClassificationWithRFPage implements TutorialPage {
 
         for (int mCol = 1; mCol <= 10; mCol++) {
 
-            rf = new CForest()
-                    .withClassifier(CTree.newC45().withVarSelector(new VarSelector.Random(mCol)))
+            rf = new CRForest()
                     .withRuns(30)
-                    .withOobError(true);
+                    .withClassifier(CTree.newC45().withMCols(mCol))
+                    .withOobComp(true);
 
             rf.learn(train, "spam");
             ClassifierFit cr = rf.predict(test);
@@ -268,10 +267,10 @@ public class ClassificationWithRFPage implements TutorialPage {
                 "\n" +
                 "        for (int mCol = 1; mCol <= 10; mCol++) {\n" +
                 "\n" +
-                "            rf = new CForest()\n" +
+                "            rf = new CEnsemble()\n" +
                 "                    .withClassifier(CTree.newC45().withVarSelector(new VarSelector.Random(mCol)))\n" +
                 "                    .withRuns(30)\n" +
-                "                    .withOobError(true);\n" +
+                "                    .withOobComp(true);\n" +
                 "\n" +
                 "            rf.learn(train, \"spam\");\n" +
                 "            ClassifierFit cr = rf.predict(test);\n" +

@@ -22,6 +22,7 @@
 
 package rapaio.io.json.stream;
 
+import rapaio.io.json.stream.impl.IntEncoding;
 import rapaio.io.json.tree.JsonBool;
 import rapaio.io.json.tree.JsonNull;
 import rapaio.io.json.tree.JsonValue;
@@ -48,4 +49,6 @@ public abstract class LzJsonAlgorithm {
     protected static JsonValue VALUE_NULL = new JsonNull();
     protected static JsonValue VALUE_TRUE = new JsonBool("true");
     protected static JsonValue VALUE_FALSE = new JsonBool("false");
+
+    protected static IntEncoding encoding = IntEncoding.ENCODE_MIX;
 }

@@ -20,7 +20,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.tree.ctree;
+package rapaio.ml.classifier.tree;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -37,11 +37,13 @@ import rapaio.util.Pair;
  */
 public class CTree extends AbstractClassifier {
 
+    private static final long serialVersionUID = 1203926824359387358L;
+
     // parameter default values
     int minCount = 1;
     int maxDepth = Integer.MAX_VALUE;
 
-    VarSelector varSelector = new VarSelector.Standard();
+    VarSelector varSelector = VarSelector.ALL;
     CTreeTestCounter testCounter = new CTreeTestCounter.MNominalMNumeric();
     CTreeNominalMethod nominalMethod = new CTreeNominalMethod.Full();
     CTreeNumericMethod numericMethod = new CTreeNumericMethod.Binary();
@@ -59,7 +61,7 @@ public class CTree extends AbstractClassifier {
         return new CTree()
                 .withTestCounter(new CTreeTestCounter.OneNominalOneNumeric())
                 .withMaxDepth(Integer.MAX_VALUE)
-                .withVarSelector(new VarSelector.Standard())
+                .withVarSelector(VarSelector.AUTO)
                 .withSplitter(new CTreeSplitter.RemainsIgnored())
                 .withNominalMethod(new CTreeNominalMethod.Full())
                 .withNumericMethod(new CTreeNumericMethod.Ignore())
@@ -81,7 +83,7 @@ public class CTree extends AbstractClassifier {
     public static CTree newDecisionStump() {
         return new CTree()
                 .withMaxDepth(1)
-                .withVarSelector(new VarSelector.Standard())
+                .withVarSelector(VarSelector.AUTO)
                 .withTestCounter(new CTreeTestCounter.OneNominalOneNumeric())
                 .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
                 .withNominalMethod(new CTreeNominalMethod.Binary())
@@ -92,7 +94,7 @@ public class CTree extends AbstractClassifier {
     public static CTree newCART() {
         return new CTree()
                 .withMaxDepth(Integer.MAX_VALUE)
-                .withVarSelector(new VarSelector.Standard())
+                .withVarSelector(VarSelector.AUTO)
                 .withTestCounter(new CTreeTestCounter.MNominalMNumeric())
                 .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
                 .withNominalMethod(new CTreeNominalMethod.Binary())
@@ -120,6 +122,16 @@ public class CTree extends AbstractClassifier {
 
     public VarSelector varSelector() {
         return varSelector;
+    }
+
+    public CTree withMCols() {
+        this.varSelector = VarSelector.AUTO;
+        return this;
+    }
+
+    public CTree withMCols(int mcols) {
+        this.varSelector = new VarSelector(mcols);
+        return this;
     }
 
     public CTree withVarSelector(VarSelector varSelector) {
@@ -232,7 +244,7 @@ public class CTree extends AbstractClassifier {
 
         prepareLearning(df, weights, targetVars);
 
-        this.varSelector.initialize(inputNames());
+        this.varSelector.withVarNames(inputNames());
 
         if (targetNames().length == 0) {
             throw new IllegalArgumentException("tree classifier must specify a target variable");
@@ -246,7 +258,7 @@ public class CTree extends AbstractClassifier {
         testCounter.initialize(df, inputNames());
 
         root = new CTreeNode(null, "root", spot -> true);
-        root.learn(this, df, weights, maxDepth);
+        root.learn(this, df, weights, maxDepth, new CTreeNominalTerms().init(df));
     }
 
     @Override

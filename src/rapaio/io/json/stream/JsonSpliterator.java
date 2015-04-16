@@ -35,6 +35,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.GZIPInputStream;
 
 /**
  * JsonSpliterator
@@ -94,7 +95,7 @@ public class JsonSpliterator implements Spliterator<JsonValue> {
 
     private JsonInput buildInput(File file) throws IOException {
         if (file.getName().endsWith(".lzjson"))
-            return new LzJsonInput(new BufferedInputStream(new FileInputStream(file)), propFilter);
+            return new LzJsonInput(new BufferedInputStream(new GZIPInputStream(new FileInputStream(file))), propFilter);
         return new JsonInputFlat(file);
     }
 
