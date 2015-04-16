@@ -20,7 +20,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.tree;
+package rapaio.ml.classifier.tree.impl;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;

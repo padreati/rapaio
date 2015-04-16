@@ -29,7 +29,7 @@ import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.RunningClassifier;
-import rapaio.ml.classifier.tree.CTree;
+import rapaio.ml.classifier.tree.impl.CTree;
 import rapaio.ml.eval.ConfusionMatrix;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 

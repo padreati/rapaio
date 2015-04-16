@@ -31,7 +31,7 @@ import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.RunningClassifier;
-import rapaio.ml.classifier.tree.CTree;
+import rapaio.ml.classifier.tree.DecisionStump;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,11 +41,12 @@ import java.util.List;
  */
 public class AdaBoostSAMMEClassifier extends AbstractClassifier implements RunningClassifier {
 
+    private static final long serialVersionUID = -9154973036108114765L;
     final double delta_error = 10e-10;
 
     // parameters
 
-    private Classifier weak = CTree.newDecisionStump();
+    private Classifier weak = new DecisionStump();
     private int runs = 10;
     private boolean stopOnError = false;
 

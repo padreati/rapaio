@@ -43,7 +43,7 @@ public class ClassifiersTest {
         Frame df = Datasets.loadIrisDataset();
 
         List<Classifier> classifiers = new ArrayList<>();
-//        classifiers.add(new CRForest().withRuns(100).withBootstrap(0.5));
+//        classifiers.add(new CForest().withRuns(100).withBootstrap(0.5));
         classifiers.add(new CBagging().withRuns(100).withBootstrap(1));
         classifiers.add(new CBagging().withRuns(100).withBootstrap(1).withClassifier(new NaiveBayesClassifier()));
 //        classifiers.add(new NaiveBayesClassifier());

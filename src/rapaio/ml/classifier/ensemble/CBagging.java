@@ -26,7 +26,7 @@ import rapaio.core.sample.Sampler;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.ensemble.impl.BaggingMode;
 import rapaio.ml.classifier.ensemble.impl.CEnsemble;
-import rapaio.ml.classifier.tree.CTree;
+import rapaio.ml.classifier.tree.impl.CTree;
 import rapaio.ml.common.VarSelector;
 
 /**

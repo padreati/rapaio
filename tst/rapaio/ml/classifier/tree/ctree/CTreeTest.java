@@ -28,7 +28,7 @@ import rapaio.data.VarType;
 import rapaio.data.filter.frame.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.ClassifierFit;
-import rapaio.ml.classifier.tree.*;
+import rapaio.ml.classifier.tree.impl.*;
 import rapaio.ws.Summary;
 
 import java.io.IOException;

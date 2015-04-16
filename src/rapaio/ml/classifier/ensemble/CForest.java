@@ -26,7 +26,7 @@ import rapaio.core.sample.Sampler;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.ensemble.impl.BaggingMode;
 import rapaio.ml.classifier.ensemble.impl.CEnsemble;
-import rapaio.ml.classifier.tree.CTree;
+import rapaio.ml.classifier.tree.impl.CTree;
 import rapaio.ml.common.VarSelector;
 
 /**
@@ -34,11 +34,11 @@ import rapaio.ml.common.VarSelector;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/15.
  */
-public class CRForest extends CEnsemble {
+public class CForest extends CEnsemble {
 
     private static final long serialVersionUID = 5249758525162975861L;
 
-    public CRForest() {
+    public CForest() {
         this.runs = 10;
         this.baggingMode = BaggingMode.VOTING;
         this.c = CTree.newCART().withVarSelector(VarSelector.AUTO);
@@ -48,7 +48,7 @@ public class CRForest extends CEnsemble {
 
     @Override
     public String name() {
-        return "CRForest";
+        return "CForest";
     }
 
     @Override
@@ -67,7 +67,7 @@ public class CRForest extends CEnsemble {
 
     @Override
     public Classifier newInstance() {
-        return new CRForest()
+        return new CForest()
                 .withRuns(runs)
                 .withBaggingMode(baggingMode)
                 .withClassifier((CTree) c)
@@ -75,57 +75,57 @@ public class CRForest extends CEnsemble {
     }
 
     @Override
-    public CRForest withRuns(int runs) {
+    public CForest withRuns(int runs) {
         this.runs = runs;
         return this;
     }
 
     @Override
-    public CRForest withOobComp(boolean oobCompute) {
-        return (CRForest) super.withOobComp(oobCompute);
+    public CForest withOobComp(boolean oobCompute) {
+        return (CForest) super.withOobComp(oobCompute);
     }
 
-    public CRForest withBaggingMode(BaggingMode baggingMode) {
-        return (CRForest) super.withBaggingMode(baggingMode);
+    public CForest withBaggingMode(BaggingMode baggingMode) {
+        return (CForest) super.withBaggingMode(baggingMode);
     }
 
-    public CRForest withBootstrap() {
+    public CForest withBootstrap() {
         return withSampler(new Sampler.Bootstrap(1));
     }
 
-    public CRForest withBootstrap(double p) {
+    public CForest withBootstrap(double p) {
         return withSampler(new Sampler.Bootstrap(p));
     }
 
-    public CRForest withNoSampling() {
+    public CForest withNoSampling() {
         return withSampler(new Sampler.Identity());
     }
 
     @Override
-    public CRForest withSampler(Sampler sampler) {
-        return (CRForest) super.withSampler(sampler);
+    public CForest withSampler(Sampler sampler) {
+        return (CForest) super.withSampler(sampler);
     }
 
-    public CRForest withClassifier(CTree c) {
+    public CForest withClassifier(CTree c) {
         this.c = c;
         return this;
     }
 
-    public CRForest withMCols() {
+    public CForest withMCols() {
         if (c instanceof CTree) {
             ((CTree) c).withMCols();
         }
         return this;
     }
 
-    public CRForest withMCols(int mcols) {
+    public CForest withMCols(int mcols) {
         if (c instanceof CTree) {
             ((CTree) c).withMCols(mcols);
         }
         return this;
     }
 
-    public CRForest withVarSelector(VarSelector varSelector) {
+    public CForest withVarSelector(VarSelector varSelector) {
         if (c instanceof CTree) {
             ((CTree) c).withVarSelector(varSelector);
         }

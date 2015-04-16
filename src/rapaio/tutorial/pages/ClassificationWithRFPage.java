@@ -29,8 +29,8 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.ClassifierFit;
-import rapaio.ml.classifier.ensemble.CRForest;
-import rapaio.ml.classifier.tree.CTree;
+import rapaio.ml.classifier.ensemble.CForest;
+import rapaio.ml.classifier.tree.impl.CTree;
 import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.ws.Summary;
 
@@ -161,7 +161,7 @@ public class ClassificationWithRFPage implements TutorialPage {
         final Var errors = Numeric.newEmpty();
         final Var oob = Numeric.newEmpty();
 
-        CRForest rf = new CRForest()
+        CForest rf = new CForest()
                 .withClassifier(CTree.newC45().withMCols(2))
                 .withOobComp(true);
 
@@ -237,7 +237,7 @@ public class ClassificationWithRFPage implements TutorialPage {
 
         for (int mCol = 1; mCol <= 10; mCol++) {
 
-            rf = new CRForest()
+            rf = new CForest()
                     .withRuns(30)
                     .withClassifier(CTree.newC45().withMCols(mCol))
                     .withOobComp(true);

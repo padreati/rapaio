@@ -25,7 +25,7 @@ package rapaio.experiment.sandbox;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.ModelEvaluation;
-import rapaio.ml.classifier.ensemble.CRForest;
+import rapaio.ml.classifier.ensemble.CForest;
 
 import java.io.IOException;
 
@@ -37,6 +37,6 @@ public class LifeScience {
     public static void main(String[] args) throws IOException {
 
         Frame df = Datasets.loadLifeScience();
-        new ModelEvaluation().cv(df, "class", new CRForest().withRuns(4).withBootstrap(0.9), 10);
+        new ModelEvaluation().cv(df, "class", new CForest().withRuns(4).withBootstrap(0.9), 10);
     }
 }
