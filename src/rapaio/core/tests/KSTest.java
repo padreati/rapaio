@@ -172,7 +172,7 @@ public class KSTest implements Printable {
         if (ties > 0)
             sb.append(" (warning: p-values will not be exact because of ties)\n");
 
-        sb.append(String.format("densities: %s\n", cdf.getName()));
+        sb.append(String.format("densities: %s\n", cdf.name()));
         sb.append(String.format("D statistic: %.6f\n", D));
         sb.append(String.format("p-value: %.12f %s\n", pValue, getPValueStars()));
         sb.append("\n");

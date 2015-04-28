@@ -52,7 +52,7 @@ public class OrdinalTest {
         assertEquals(1, v.rowCount());
         assertEquals("?", v.label(0));
 
-        assertEquals("Ordinal[10]", Ordinal.newEmpty(10).toString());
+        assertEquals("Ordinal[name:null, rowCount:10]", Ordinal.newEmpty(10).toString());
     }
 
     @Test

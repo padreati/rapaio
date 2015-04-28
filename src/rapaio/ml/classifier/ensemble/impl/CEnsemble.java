@@ -29,8 +29,9 @@ import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.RunningClassifier;
-import rapaio.ml.classifier.tree.impl.CTree;
+import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.eval.ConfusionMatrix;
+import rapaio.util.func.SFunction;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
@@ -46,14 +47,17 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
     private static final long serialVersionUID = -145958939373105497L;
 
     protected int runs = 0;
+    protected int topRuns = Integer.MAX_VALUE;
     protected boolean oobComp = false;
     protected Classifier c = CTree.newC45();
+    protected SFunction<Classifier, Double> topSelector;
     protected BaggingMode baggingMode = BaggingMode.VOTING;
     //
     protected double totalOobInstances = 0;
     protected double totalOobError = 0;
     protected double oobError = Double.NaN;
     protected List<Classifier> predictors = new ArrayList<>();
+    protected List<Double> predictorScores = new ArrayList<>();
 
     public CEnsemble withOobComp(boolean oobCompute) {
         this.oobComp = oobCompute;
@@ -71,6 +75,12 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
 
     public CEnsemble withBaggingMode(BaggingMode baggingMode) {
         this.baggingMode = baggingMode;
+        return this;
+    }
+
+    public CEnsemble withTopSelector(int topRuns, SFunction<Classifier, Double> topSelector) {
+        this.topRuns = topRuns;
+        this.topSelector = topSelector;
         return this;
     }
 
@@ -121,6 +131,7 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
 
         weak.learn(trainFrame, trainWeights, firstTargetName());
         if (oobComp) {
+            System.out.println("This must be corrected, right now is wrong!@@@@@@");
             ClassifierFit cp = weak.predict(oobFrame);
             double oobError = new ConfusionMatrix(oobFrame.var(firstTargetName()), cp.firstClasses()).errorCases();
             synchronized (this) {
@@ -128,8 +139,31 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
                 totalOobError += oobError;
             }
         }
-        synchronized (this) {
-            predictors.add(weak);
+        if (topRuns >= runs) {
+            synchronized (this) {
+                predictors.add(weak);
+            }
+        } else {
+            synchronized (this) {
+                double score = topSelector.apply(weak);
+                if (predictors.size() < topRuns) {
+                    predictors.add(weak);
+                    predictorScores.add(score);
+                } else {
+                    int minIndex = -1;
+                    for (int i = 0; i < predictors.size(); i++) {
+                        if (predictorScores.get(i) < score) {
+                            if (minIndex == -1 || predictorScores.get(i) < predictorScores.get(minIndex)) {
+                                minIndex = i;
+                            }
+                        }
+                    }
+                    if (minIndex != -1) {
+                        predictors.set(minIndex, weak);
+                        predictorScores.set(minIndex, score);
+                    }
+                }
+            }
         }
     }
 

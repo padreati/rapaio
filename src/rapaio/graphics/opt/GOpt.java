@@ -49,7 +49,12 @@ public interface GOpt extends Serializable {
     }
 
     static GOpt color(Var color) {
-        return opt -> opt.colors = new Color[color.rowCount()];
+        return opt -> {
+            opt.colors = new Color[color.rowCount()];
+            for (int i = 0; i < opt.colors.length; i++) {
+                opt.colors[i] = opt.getPalette().getColor(color.index(i));
+            }
+        };
     }
 
     static GOpt lwd(float lwd) {

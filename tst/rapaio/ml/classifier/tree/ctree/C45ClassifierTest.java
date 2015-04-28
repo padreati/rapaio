@@ -30,7 +30,7 @@ import rapaio.data.filter.frame.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.tools.DensityTable;
-import rapaio.ml.classifier.tree.impl.CTree;
+import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.ws.Summary;
 

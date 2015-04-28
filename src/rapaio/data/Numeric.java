@@ -400,6 +400,6 @@ public final class Numeric extends AbstractVar {
 
     @Override
     public String toString() {
-        return "Numeric[" + rowCount() + "]";
+        return "Numeric[name:" + name() + ", rowCount:" + rowCount() + "]";
     }
 }

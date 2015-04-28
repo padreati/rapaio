@@ -20,7 +20,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.tree.impl;
+package rapaio.ml.classifier.tree;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -61,7 +61,7 @@ public class CTree extends AbstractClassifier {
         return new CTree()
                 .withTestCounter(new CTreeTestCounter.OneNominalOneNumeric())
                 .withMaxDepth(Integer.MAX_VALUE)
-                .withVarSelector(VarSelector.AUTO)
+                .withVarSelector(VarSelector.ALL)
                 .withSplitter(new CTreeSplitter.RemainsIgnored())
                 .withNominalMethod(new CTreeNominalMethod.Full())
                 .withNumericMethod(new CTreeNumericMethod.Ignore())
@@ -73,6 +73,7 @@ public class CTree extends AbstractClassifier {
         return new CTree()
                 .withTestCounter(new CTreeTestCounter.OneNominalOneNumeric())
                 .withMaxDepth(Integer.MAX_VALUE)
+                .withVarSelector(VarSelector.ALL)
                 .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
                 .withNominalMethod(new CTreeNominalMethod.Full())
                 .withNumericMethod(new CTreeNumericMethod.Binary())
@@ -83,7 +84,7 @@ public class CTree extends AbstractClassifier {
     public static CTree newDecisionStump() {
         return new CTree()
                 .withMaxDepth(1)
-                .withVarSelector(VarSelector.AUTO)
+                .withVarSelector(VarSelector.ALL)
                 .withTestCounter(new CTreeTestCounter.OneNominalOneNumeric())
                 .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
                 .withNominalMethod(new CTreeNominalMethod.Binary())
@@ -94,7 +95,7 @@ public class CTree extends AbstractClassifier {
     public static CTree newCART() {
         return new CTree()
                 .withMaxDepth(Integer.MAX_VALUE)
-                .withVarSelector(VarSelector.AUTO)
+                .withVarSelector(VarSelector.ALL)
                 .withTestCounter(new CTreeTestCounter.MNominalMNumeric())
                 .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
                 .withNominalMethod(new CTreeNominalMethod.Binary())

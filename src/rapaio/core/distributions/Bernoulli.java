@@ -41,7 +41,7 @@ public class Bernoulli implements Distribution {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return "Bernoulli(theta=" + theta + ")";
     }
 

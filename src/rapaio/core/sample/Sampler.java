@@ -27,13 +27,15 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
 
+import java.io.Serializable;
+
 /**
  * Interface which defines a function which produces a data frame with a sample
  * of rows from the given data frame.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/29/15.
  */
-public interface Sampler {
+public interface Sampler extends Serializable {
 
     /**
      * Builds a new sample from the given data frame

@@ -47,7 +47,7 @@ public class SortedFrameTest {
     @Before
     public void init() throws IOException, URISyntaxException {
         df = new Csv()
-                .withQuotas(false)
+                .withQuotes(false)
                 .withTypes(VarType.NUMERIC, "z")
                 .withTypes(VarType.INDEX, "y")
                 .read(SortedFrameTest.class, "sorted-frame.csv");

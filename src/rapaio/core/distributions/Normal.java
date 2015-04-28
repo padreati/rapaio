@@ -34,7 +34,7 @@ public class Normal implements Distribution {
     private final double var;
 
     @Override
-    public String getName() {
+    public String name() {
         return String.format("Normal(mu=%s, sd=%s)", Printer.formatDecShort.format(mu), Printer.formatDecShort.format(sd));
     }
 

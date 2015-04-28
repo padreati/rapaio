@@ -30,7 +30,7 @@ import rapaio.data.VarType;
 import rapaio.data.filter.frame.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.tools.DensityTable;
-import rapaio.ml.classifier.tree.impl.*;
+import rapaio.ml.classifier.tree.*;
 import rapaio.ws.Summary;
 
 import java.io.IOException;

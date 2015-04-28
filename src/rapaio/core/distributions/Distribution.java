@@ -37,7 +37,7 @@ public interface Distribution extends Serializable {
     /**
      * @return canonical name of the densities with parameter values
      */
-    String getName();
+    String name();
 
     /**
      * @return true if the distribution is discrete.
@@ -71,7 +71,10 @@ public interface Distribution extends Serializable {
     double cdf(double x);
 
     /**
-     * Computes quantile for the given probability value
+     * Computes quantile for the given probability value.
+     * Quantile function is the inverse of the cdf, aka it
+     * returns the value for which the cdf evaluates to
+     * a given probability.
      *
      * @param p given probability
      * @return quantile value

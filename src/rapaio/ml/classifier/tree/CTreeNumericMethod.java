@@ -20,7 +20,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.tree.impl;
+package rapaio.ml.classifier.tree;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
@@ -45,7 +45,7 @@ public interface CTreeNumericMethod extends Serializable {
 
     List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function);
 
-    public static class Ignore implements CTreeNumericMethod {
+    class Ignore implements CTreeNumericMethod {
         @Override
         public String name() {
             return "Ignore";
@@ -62,9 +62,7 @@ public interface CTreeNumericMethod extends Serializable {
         }
     }
 
-    ;
-
-    public static class Binary implements CTreeNumericMethod {
+    class Binary implements CTreeNumericMethod {
 
         @Override
         public String name() {
@@ -140,9 +138,7 @@ public interface CTreeNumericMethod extends Serializable {
         }
     }
 
-    ;
-
-    public static class Skip implements CTreeNumericMethod {
+    class Skip implements CTreeNumericMethod {
 
         private final int skip;
 

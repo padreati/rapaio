@@ -162,6 +162,6 @@ public final class Nominal extends FactorBase {
 
     @Override
     public String toString() {
-        return "Nominal[" + rowCount() + "]";
+        return "Nominal[name:" + name() + ", rowCount:" + rowCount() + "]";
     }
 }

@@ -20,14 +20,14 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.tree.impl;
+package rapaio.ml.classifier.tree;
 
 import rapaio.data.stream.FSpot;
+import rapaio.util.func.SPredicate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
@@ -38,7 +38,7 @@ public class CTreeCandidate implements Comparable<CTreeCandidate>, Serializable 
     private final int sign;
     private final String testName;
     private final List<String> groupNames = new ArrayList<>();
-    private final List<Predicate<FSpot>> groupPredicates = new ArrayList<>();
+    private final List<SPredicate<FSpot>> groupPredicates = new ArrayList<>();
 
     public CTreeCandidate(double score, int sign, String testName) {
         this.score = score;
@@ -46,7 +46,7 @@ public class CTreeCandidate implements Comparable<CTreeCandidate>, Serializable 
         this.testName = testName;
     }
 
-    public void addGroup(String name, Predicate<FSpot> predicate) {
+    public void addGroup(String name, SPredicate<FSpot> predicate) {
         if (groupNames.contains(name)) {
             throw new IllegalArgumentException("group name already defined");
         }
@@ -58,7 +58,7 @@ public class CTreeCandidate implements Comparable<CTreeCandidate>, Serializable 
         return groupNames;
     }
 
-    public List<Predicate<FSpot>> getGroupPredicates() {
+    public List<SPredicate<FSpot>> getGroupPredicates() {
         return groupPredicates;
     }
 

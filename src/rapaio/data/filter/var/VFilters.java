@@ -22,41 +22,27 @@
 
 package rapaio.data.filter.var;
 
-import rapaio.data.RowComparators;
+import rapaio.core.distributions.Distribution;
 import rapaio.data.Var;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
+ * Utility class which offers static shortcut methods for filters.
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/21/15.
  */
-public class VFSort extends AbstractVF {
+public final class VFilters {
 
-    private boolean asc;
-
-    public VFSort() {
-        this.asc = true;
+    public static Var jitter(Var x) {
+        return new VFJitter().fitApply(x);
     }
 
-    public VFSort(boolean asc) {
-        this.asc = asc;
+    public static Var jitter(double sd, Var x) {
+        return new VFJitter(sd).fitApply(x);
     }
 
-    @Override
-    public void fit(Var... vars) {
-        checkSingleVar(vars);
+    public static Var jitter(Distribution d, Var x) {
+        return new VFJitter(d).fitApply(x);
     }
 
-    @Override
-    public Var apply(Var... vars) {
-        checkSingleVar(vars);
 
-        switch (vars[0].type()) {
-            case NUMERIC:
-            case INDEX:
-            case BINARY:
-                return new VFRefSort(RowComparators.numeric(vars[0], asc)).fitApply(vars);
-            case NOMINAL:
-                return new VFRefSort(RowComparators.nominal(vars[0], asc)).fitApply(vars);
-        }
-        return null;
-    }
 }

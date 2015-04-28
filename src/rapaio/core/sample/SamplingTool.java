@@ -67,15 +67,16 @@ public final class SamplingTool {
             throw new IllegalArgumentException("Can't draw a sample without replacement bigger than population size.");
         }
         int[] sample = new int[sampleSize];
-        if (sampleSize == populationSize) {
-            for (int i = 0; i < sampleSize; i++) {
-                sample[i] = i;
-            }
-            return sample;
-        }
         for (int i = 0; i < sampleSize; i++) {
             sample[i] = i;
         }
+        for (int i = sampleSize; i > 1; i--) {
+            int j = RandomSource.nextInt(i);
+            int tmp = sample[i - 1];
+            sample[i - 1] = sample[j];
+            sample[j] = tmp;
+        }
+
         for (int i = sampleSize; i < populationSize; i++) {
             int j = RandomSource.nextInt(i + 1);
             if (j < sampleSize) {

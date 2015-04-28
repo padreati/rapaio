@@ -35,6 +35,8 @@ import static rapaio.core.MathBase.*;
  */
 public class StudentT implements Distribution {
 
+    private static final long serialVersionUID = 2573925611489986427L;
+
     private final double df;
     private final double mu;
     private final double sigma;
@@ -50,7 +52,7 @@ public class StudentT implements Distribution {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return "StudentT(df=" + df + ", mu=" + mu + ", sigma=" + sigma + ")";
     }
 
@@ -80,6 +82,9 @@ public class StudentT implements Distribution {
     public double quantile(double p) {
         if (p < 0 || p > 1) {
             throw new IllegalArgumentException("Probability must be in the range [0,1]");
+        }
+        if (p + 1e-20 >= 0.5 && p - 1e-20 <= 0.5) {
+            return mu;
         }
         double x = invBetaIncReg(2 * Math.min(p, 1 - p), df / 2, 0.5);
         x = sigma * Math.sqrt(df * (1 - x) / x);

@@ -20,7 +20,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.tree.impl;
+package rapaio.ml.classifier.tree;
 
 import rapaio.data.stream.FSpot;
 import rapaio.ml.classifier.tools.DensityVector;

@@ -122,6 +122,6 @@ public final class Ordinal extends FactorBase {
 
     @Override
     public String toString() {
-        return "Ordinal[" + rowCount() + "]";
+        return "Ordinal[name:" + name() + ", rowCount:" + rowCount() + "]";
     }
 }

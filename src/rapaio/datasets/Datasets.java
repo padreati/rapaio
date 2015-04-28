@@ -50,7 +50,7 @@ public class Datasets {
     public static Frame loadChestDataset() throws IOException, URISyntaxException {
         return new Csv()
                 .withSeparatorChar(',')
-                .withQuotas(true)
+                .withQuotes(true)
                 .withDefaultTypes(VarType.NUMERIC)
                 .read(Datasets.class, "chest.csv");
     }
@@ -59,7 +59,7 @@ public class Datasets {
         return new Csv()
                 .withSeparatorChar(',')
                 .withHeader(true)
-                .withQuotas(true)
+                .withQuotes(true)
                 .withDefaultTypes(VarType.NUMERIC)
                 .withTypes(VarType.NOMINAL, "carname")
                 .read(Datasets.class, "carmpg.csv");
@@ -75,7 +75,7 @@ public class Datasets {
         return new Csv()
                 .withSeparatorChar(',')
                 .withHeader(true)
-                .withQuotas(false)
+                .withQuotes(false)
                 .read(Datasets.class, "mushrooms.csv");
     }
 
@@ -83,7 +83,7 @@ public class Datasets {
         return new Csv()
                 .withSeparatorChar(',')
                 .withHeader(true)
-                .withQuotas(false)
+                .withQuotes(false)
                 .withTypes(VarType.NUMERIC, "temp", "humidity")
                 .withTypes(VarType.NOMINAL, "windy")
                 .read(Datasets.class, "play.csv");
@@ -91,7 +91,7 @@ public class Datasets {
 
     public static Frame loadOlympic() throws IOException {
         return new Csv()
-                .withQuotas(false)
+                .withQuotes(false)
                 .withTypes(VarType.NUMERIC, "Edition")
                 .read(Datasets.class, "olympic.csv");
     }

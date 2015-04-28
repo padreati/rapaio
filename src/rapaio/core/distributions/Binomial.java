@@ -25,7 +25,7 @@ package rapaio.core.distributions;
 import rapaio.core.MathBase;
 
 import static java.lang.Math.*;
-import static jdistlib.math.Constants.DBL_EPSILON;
+import static rapaio.core.Constants.DBL_EPSILON;
 
 /**
  * Binomial distribution.
@@ -51,7 +51,7 @@ public class Binomial implements Distribution {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return "Binomial(p=" + ((int) p) + ",n=" + ((int) n) + ")";
     }
 
@@ -98,7 +98,7 @@ public class Binomial implements Distribution {
         sigma = sqrt(n * pr * q);
         gamma = (q - pr) / sigma;
 
-		/* Note : "same" code in qpois.c, qbinom.c, qnbinom.c --
+	/* Note : "same" code in qpois.c, qbinom.c, qnbinom.c --
          * FIXME: This is far from optimal [cancellation for p ~= 1, etc]: */
         /* temporary hack --- FIXME --- */
         if (p + 1.01 * DBL_EPSILON >= 1.) return n;

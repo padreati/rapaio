@@ -69,7 +69,7 @@
 //        Frame totalResults = SolidFrame.newWrapOf(resultCols);
 //        for (int i = 0; i < tasks.size(); i++) {
 //            CTask task = tasks.get(i);
-//            totalResults.setLabel(i, "data set", task.getName());
+//            totalResults.setLabel(i, "data set", task.name());
 //        }
 //
 //        final double ROUNDS = 5;
@@ -78,7 +78,7 @@
 //
 //            for (int i = 0; i < tasks.size(); i++) {
 //                CTask task = tasks.get(i);
-//                results.setLabel(i, "data set", task.getName());
+//                results.setLabel(i, "data set", task.name());
 //
 //                task.reSample(0.7, false);
 //

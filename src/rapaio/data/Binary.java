@@ -270,7 +270,7 @@ public final class Binary extends AbstractVar {
 
     @Override
     public String[] dictionary() {
-        throw new IllegalArgumentException("Operation not implemented on binary variables");
+        return new String[]{"?", "true", "false"};
     }
 
     @Override

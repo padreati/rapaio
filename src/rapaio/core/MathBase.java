@@ -448,8 +448,8 @@ public class MathBase {
         return f_n;
     }
 
-    private static double betaIncRegFunc(double... x) {
-        return betaIncReg(x[0], x[1], x[2]) - x[3];
+    private static double betaIncRegFunc(double p, double a, double b, double c) {
+        return betaIncReg(p, a, b) - c;
     }
 
     /**
@@ -473,12 +473,8 @@ public class MathBase {
         int maxIterations = 1000;
         double x1 = 0;
         double x2 = 1;
-        double[] args = new double[]{p, a, b, p};
-
-        args[0] = x1;
-        double fx1 = betaIncRegFunc(args);
-        args[0] = x2;
-        double fx2 = betaIncRegFunc(args);
+        double fx1 = betaIncRegFunc(x1, a, b, p);
+        double fx2 = betaIncRegFunc(x2, a, b, p);
         double halfEps = eps * 0.5;
 
         if (fx1 * fx2 >= 0) {
@@ -488,14 +484,9 @@ public class MathBase {
         double dif = 1;//Measure the change interface values
         while (Math.abs(x1 - x2) > eps && maxIterations-- > 0) {
             double x3 = (x1 + x2) * 0.5;
-
-            args[0] = x3;
-            double fx3 = betaIncRegFunc(args);
-
+            double fx3 = betaIncRegFunc(x3, a, b, p);
             double x4 = x3 + (x3 - x1) * Math.signum(fx1 - fx2) * fx3 / Math.sqrt(fx3 * fx3 - fx1 * fx2);
-
-            args[0] = x4;
-            double fx4 = betaIncRegFunc(args);
+            double fx4 = betaIncRegFunc(x4, a, b, p);
             if (fx3 * fx4 < 0) {
                 x1 = x3;
                 fx1 = fx3;

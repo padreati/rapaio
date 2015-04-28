@@ -20,7 +20,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.tree.impl;
+package rapaio.ml.classifier.tree;
 
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
@@ -28,6 +28,7 @@ import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
 import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.util.Pair;
+import rapaio.util.func.SPredicate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class CTreeNode implements Serializable {
     private static final long serialVersionUID = -5045581827808911763L;
     private final CTreeNode parent;
     private final String groupName;
-    private final Predicate<FSpot> predicate;
+    private final SPredicate<FSpot> predicate;
 
     private boolean leaf = true;
     private final List<CTreeNode> children = new ArrayList<>();
@@ -53,7 +54,7 @@ public class CTreeNode implements Serializable {
     private CTreeCandidate bestCandidate;
 
     public CTreeNode(final CTreeNode parent,
-                     final String groupName, final Predicate<FSpot> predicate) {
+                     final String groupName, final SPredicate<FSpot> predicate) {
         this.parent = parent;
         this.groupName = groupName;
         this.predicate = predicate;

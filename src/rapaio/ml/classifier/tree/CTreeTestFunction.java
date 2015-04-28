@@ -20,7 +20,7 @@
  *    limitations under the License.
  */
 
-package rapaio.ml.classifier.tree.impl;
+package rapaio.ml.classifier.tree;
 
 import rapaio.ml.classifier.tools.DensityTable;
 
@@ -39,8 +39,9 @@ public interface CTreeTestFunction extends Serializable {
 
     int sign();
 
+    class Entropy implements CTreeTestFunction {
 
-    public static class Entropy implements CTreeTestFunction {
+        private static final long serialVersionUID = 6818050916634872153L;
 
         @Override
         public String name() {
@@ -63,7 +64,9 @@ public interface CTreeTestFunction extends Serializable {
         }
     };
 
-    public static class InfoGain implements CTreeTestFunction {
+    class InfoGain implements CTreeTestFunction {
+
+        private static final long serialVersionUID = -632310330804645110L;
 
         @Override
         public String name() {
@@ -86,7 +89,9 @@ public interface CTreeTestFunction extends Serializable {
         }
     };
 
-    public static class GainRatio implements CTreeTestFunction {
+    class GainRatio implements CTreeTestFunction {
+
+        private static final long serialVersionUID = 4570579508597802935L;
 
         @Override
         public String name() {
@@ -109,7 +114,9 @@ public interface CTreeTestFunction extends Serializable {
         }
     };
 
-    public static class GiniGain implements CTreeTestFunction {
+    class GiniGain implements CTreeTestFunction {
+
+        private static final long serialVersionUID = 3527719507451545704L;
 
         @Override
         public String name() {

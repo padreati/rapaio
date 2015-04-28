@@ -35,7 +35,7 @@ public class DUniformTest {
     public void testDUniformPdf() {
         DUniform u = new DUniform(0, 5);
 
-        assertEquals("DUniform(a=0,b=5)", u.getName());
+        assertEquals("DUniform(a=0,b=5)", u.name());
 
         assertEquals(0.0, u.pdf(-1), 1e-12);
         assertEquals(0.0, u.pdf(0.5), 1e-12);
@@ -49,7 +49,7 @@ public class DUniformTest {
     public void testDUniformCdf() {
         DUniform u = new DUniform(0, 5);
 
-        assertEquals("DUniform(a=0,b=5)", u.getName());
+        assertEquals("DUniform(a=0,b=5)", u.name());
 
         assertEquals(0.0, u.cdf(-1), 1e-12);
         assertEquals(1 / 6.0, u.cdf(0.5), 1e-12);
@@ -63,7 +63,7 @@ public class DUniformTest {
     public void testDUniformQuantile() {
         DUniform u = new DUniform(0, 5);
 
-        assertEquals("DUniform(a=0,b=5)", u.getName());
+        assertEquals("DUniform(a=0,b=5)", u.name());
 
         assertEquals(0, u.quantile(1 / 6.0), 1e-12);
         assertEquals(1, u.quantile(1.2 / 6.0), 1e-12);

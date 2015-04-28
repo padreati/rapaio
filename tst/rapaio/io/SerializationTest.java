@@ -47,9 +47,9 @@
 //
 //        File file = File.createTempFile("test", "data");
 //
-//        JavaSerialization.storeToFile(c, file.getAbsolutePath());
+//        JavaIO.storeToFile(c, file.getAbsolutePath());
 //
-//        AdaBoostSAMMEClassifier restored = (AdaBoostSAMMEClassifier) JavaSerialization.restoreFromFile(file.getAbsolutePath());
+//        AdaBoostSAMMEClassifier restored = (AdaBoostSAMMEClassifier) JavaIO.restoreFromFile(file.getAbsolutePath());
 //        restored.predict(df);
 //
 //        new ConfusionMatrix(df.var("spam"), restored.classes()).summary();

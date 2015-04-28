@@ -26,8 +26,9 @@ import rapaio.core.sample.Sampler;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.ensemble.impl.BaggingMode;
 import rapaio.ml.classifier.ensemble.impl.CEnsemble;
-import rapaio.ml.classifier.tree.impl.CTree;
+import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.common.VarSelector;
+import rapaio.util.func.SFunction;
 
 /**
  * Breiman random forest implementation.
@@ -130,5 +131,10 @@ public class CForest extends CEnsemble {
             ((CTree) c).withVarSelector(varSelector);
         }
         return this;
+    }
+
+    @Override
+    public CForest withTopSelector(int topRuns, SFunction<Classifier, Double> topSelector) {
+        return (CForest) super.withTopSelector(topRuns, topSelector);
     }
 }

@@ -334,6 +334,6 @@ public final class Index extends AbstractVar {
 
     @Override
     public String toString() {
-        return "Index[" + rowCount() + "]";
+        return "Index[name:" + name() + ", rowCount:" + rowCount() + "]";
     }
 }

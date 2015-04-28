@@ -27,7 +27,7 @@ import java.io.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class JavaSerialization {
+public class JavaIO {
 
     public static Object restoreFromFile(String file) throws IOException, ClassNotFoundException {
         FileInputStream fileIn = new FileInputStream(file);

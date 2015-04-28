@@ -48,7 +48,7 @@ public class RandomValueRegressor extends AbstractRegressor {
 
     @Override
     public String fullName() {
-        return name() + String.format("(%s)", distribution.getName());
+        return name() + String.format("(%s)", distribution.name());
     }
 
     public Distribution distribution() {

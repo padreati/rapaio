@@ -63,39 +63,39 @@ public class CsvTest {
 
     @Test
     public void testLineWithoutQuotas() {
-        checkLine(new Csv().withSeparatorChar(',').withQuotas(false).withTrimSpaces(false),
+        checkLine(new Csv().withSeparatorChar(',').withQuotes(false).withTrimSpaces(false),
                 "  , ,,,", new String[]{"  ", " ", "", ""});
-        checkLine(new Csv().withSeparatorChar(',').withQuotas(false).withTrimSpaces(true),
+        checkLine(new Csv().withSeparatorChar(',').withQuotes(false).withTrimSpaces(true),
                 "  , ,,,", new String[]{"", "", "", ""});
 
-        checkLine(new Csv().withSeparatorChar(',').withQuotas(false).withTrimSpaces(true),
+        checkLine(new Csv().withSeparatorChar(',').withQuotes(false).withTrimSpaces(true),
                 " ana , are , mere ", new String[]{"ana", "are", "mere"});
 
-        checkLine(new Csv().withSeparatorChar(',').withQuotas(false).withTrimSpaces(false),
+        checkLine(new Csv().withSeparatorChar(',').withQuotes(false).withTrimSpaces(false),
                 " ana , are , mere ", new String[]{" ana ", " are ", " mere "});
 
-        checkLine(new Csv().withSeparatorChar(',').withQuotas(false).withTrimSpaces(false),
+        checkLine(new Csv().withSeparatorChar(',').withQuotes(false).withTrimSpaces(false),
                 "ana,are,mere", new String[]{"ana", "are", "mere"});
     }
 
     @Test
     public void testLineWithQuotas() {
-        checkLine(new Csv().withSeparatorChar(',').withQuotas(true).withTrimSpaces(true).withEscapeChar('\\'),
+        checkLine(new Csv().withSeparatorChar(',').withQuotes(true).withTrimSpaces(true).withEscapeChar('\\'),
                 " \"ana", new String[]{"ana"});
-        checkLine(new Csv().withSeparatorChar(',').withQuotas(true).withTrimSpaces(true).withEscapeChar('\\'),
+        checkLine(new Csv().withSeparatorChar(',').withQuotes(true).withTrimSpaces(true).withEscapeChar('\\'),
                 " \"ana\", \"ana again\"", new String[]{"ana", "ana again"});
-        checkLine(new Csv().withSeparatorChar(',').withQuotas(true).withTrimSpaces(true).withEscapeChar('\\'),
+        checkLine(new Csv().withSeparatorChar(',').withQuotes(true).withTrimSpaces(true).withEscapeChar('\\'),
                 " \"ana\", \"ana,again\"", new String[]{"ana", "ana,again"});
-        checkLine(new Csv().withSeparatorChar(',').withQuotas(true).withTrimSpaces(true).withEscapeChar('\\'),
+        checkLine(new Csv().withSeparatorChar(',').withQuotes(true).withTrimSpaces(true).withEscapeChar('\\'),
                 " \"ana\", \"ana\\\"again\"", new String[]{"ana", "ana\"again"});
-        checkLine(new Csv().withSeparatorChar(',').withQuotas(true).withTrimSpaces(true).withEscapeChar('\"'),
+        checkLine(new Csv().withSeparatorChar(',').withQuotes(true).withTrimSpaces(true).withEscapeChar('\"'),
                 " \"ana\", \"ana\"\"again\"", new String[]{"ana", "ana\"again"});
     }
 
     @Test
     public void testFullFrame() {
         try {
-            persistence.withQuotas(true);
+            persistence.withQuotes(true);
             Frame df = persistence.read(getClass(), "csv-test.csv");
             assertNotNull(df);
             assertEquals(5, df.varCount());

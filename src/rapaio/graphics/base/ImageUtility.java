@@ -22,8 +22,11 @@
 
 package rapaio.graphics.base;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -48,5 +51,10 @@ public class ImageUtility {
         Rectangle rect = new Rectangle(newImage.getWidth(), newImage.getHeight());
         figure.paint(g2d, rect);
         return newImage;
+    }
+
+    public static void saveImage(Figure figure, int width, int height, String fileName) throws IOException {
+        BufferedImage bi = buildImage(figure, width, height);
+        ImageIO.write(bi, "png", new File(fileName));
     }
 }

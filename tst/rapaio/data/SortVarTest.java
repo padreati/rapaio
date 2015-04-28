@@ -135,7 +135,7 @@ public class SortVarTest {
     public void testGetterSetter() throws IOException, URISyntaxException {
 
         Frame df = new Csv()
-                .withQuotas(false)
+                .withQuotes(false)
                 .withTypes(VarType.NUMERIC, "z")
                 .withTypes(VarType.INDEX, "y")
                 .read(SortVarTest.class, "sorted-frame.csv");

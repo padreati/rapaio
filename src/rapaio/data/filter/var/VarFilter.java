@@ -30,7 +30,7 @@ import java.io.Serializable;
 /**
  * This defines a filter for variables.
  * <p>
- * A filter isa transformation of one or multiple variables into
+ * A filter is a transformation of one or multiple variables into
  * a single output variable. A filter can
  * take any number of parameters given at construction time.
  * However, it is possible for a filter to tune its parameters

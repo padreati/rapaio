@@ -52,7 +52,7 @@ public class DUniform implements Distribution {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return String.format("DUniform(a=%d,b=%d)", (int) a, (int) b);
     }
 

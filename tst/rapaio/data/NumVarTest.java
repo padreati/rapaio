@@ -49,7 +49,7 @@ public class NumVarTest {
         } catch (Throwable ignored) {
         }
 
-        assertEquals("Numeric[1]", Numeric.newEmpty(1).toString());
+        assertEquals("Numeric[name:null, rowCount:1]", Numeric.newEmpty(1).toString());
     }
 
     @Test

@@ -27,6 +27,7 @@ import rapaio.data.*;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Comma separated file reader and writer utility.
@@ -37,7 +38,7 @@ public class Csv {
 
     private boolean trimSpaces = true;
     private boolean header = true;
-    private boolean quotas = true;
+    private boolean quotes = true;
     private char separatorChar = ',';
     private char escapeChar = '\"';
     private HashMap<String, VarType> typeFieldHints = new HashMap<>();
@@ -62,8 +63,8 @@ public class Csv {
         return this;
     }
 
-    public Csv withQuotas(boolean quotas) {
-        this.quotas = quotas;
+    public Csv withQuotes(boolean quotes) {
+        this.quotes = quotes;
         return this;
     }
 
@@ -121,6 +122,14 @@ public class Csv {
         this.naValues = new HashSet<>();
         Collections.addAll(naValues, values);
         return this;
+    }
+
+    public Frame read(File file) throws IOException {
+        return read(new FileInputStream(file));
+    }
+
+    public Frame readGz(File file) throws IOException {
+        return read(new GZIPInputStream(new FileInputStream(file)));
     }
 
     public Frame read(String fileName) throws IOException {
@@ -259,7 +268,7 @@ public class Csv {
 
     /**
      * Clean the string token. - remove trailing and leading spaces, before and
-     * after removing quotas - remove leading and trailing quotas - remove
+     * after removing quotes - remove leading and trailing quotes - remove
      * escape quota character
      *
      * @param tok if (trimSpaces) {
@@ -269,7 +278,7 @@ public class Csv {
         if (trimSpaces) {
             tok = tok.trim();
         }
-        if (quotas && !tok.isEmpty()) {
+        if (quotes && !tok.isEmpty()) {
             if (tok.charAt(0) == '\"') {
                 tok = tok.substring(1);
             }
@@ -277,7 +286,7 @@ public class Csv {
                 tok = tok.substring(0, tok.length() - 1);
             }
         }
-        if (quotas) {
+        if (quotes) {
             char[] line = new char[tok.length()];
             int len = 0;
             for (int i = 0; i < tok.length(); i++) {
@@ -294,6 +303,12 @@ public class Csv {
             tok = tok.trim();
         }
         return tok;
+    }
+
+    public void write(Frame df, File file) throws IOException {
+        try (OutputStream os = new FileOutputStream(file)) {
+            write(df, os);
+        }
     }
 
     public void write(Frame df, String fileName) throws IOException {
@@ -346,7 +361,7 @@ public class Csv {
             line[len++] = label.charAt(i);
         }
         label = String.valueOf(line, 0, len);
-        if (quotas) {
+        if (quotes) {
             label = "\"" + label + "\"";
         }
         return label;

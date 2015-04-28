@@ -48,7 +48,7 @@ public class Uniform implements Distribution {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return String.format("Uniform(a=%s,b=%s)",
                 Printer.formatDecShort.format(getA()),
                 Printer.formatDecShort.format(getB()));
