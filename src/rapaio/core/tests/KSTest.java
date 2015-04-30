@@ -55,7 +55,26 @@ public class KSTest implements Printable {
      *
      * @param cdf the densities to compare against
      */
-    public KSTest(String testName, Var sample, Distribution cdf) {
+    public static KSTest newOneSampleTest(String testName, Var sample, Distribution cdf) {
+        return new KSTest(testName, sample, cdf);
+    }
+
+    /**
+     * Two-samples K-S test
+     * <p>
+     * D is the maximum distance between ECDF(v1) and ECDF(v2)
+     * pValue is the p-value for the 2 sample KS test
+     * The null hypothesis of this test is that both data sets comes from the same densities,
+     * The alternative hypothesis is that the two samples comes from different densities.
+     *
+     * @param sample1 first sample
+     * @param sample2 second sample
+     */
+    public static KSTest twoSamplesTest(String testName, Var sample1, Var sample2) {
+        return new KSTest(testName, sample1, sample2);
+    }
+
+    private KSTest(String testName, Var sample, Distribution cdf) {
         this.testName = testName;
         this.v1 = new VFSort().fitApply(sample);
         this.cdf = cdf;
@@ -77,18 +96,7 @@ public class KSTest implements Printable {
         pValue = probks((n + 0.12 + 0.11 / n) * D);
     }
 
-    /**
-     * Two-samples K-S test
-     * <p>
-     * D is the maximum distance between ECDF(v1) and ECDF(v2)
-     * pValue is the p-value for the 2 sample KS test
-     * The null hypothesis of this test is that both data sets comes from the same densities,
-     * The alternative hypothesis is that the two samples comes from different densities.
-     *
-     * @param sample1 first sample
-     * @param sample2 second sample
-     */
-    public KSTest(String testName, Var sample1, Var sample2) {
+    private KSTest(String testName, Var sample1, Var sample2) {
         this.testName = testName;
         this.v1 = new VFSort().fitApply(sample1);
         this.v2 = new VFSort().fitApply(sample2);

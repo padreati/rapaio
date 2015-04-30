@@ -24,18 +24,42 @@
 package rapaio.core.tests;
 
 import rapaio.WS;
+import rapaio.core.Printable;
 import rapaio.core.distributions.ChiSquare;
 import rapaio.data.Numeric;
+import rapaio.data.Var;
+import rapaio.data.stream.VSpot;
 import rapaio.graphics.Plotter2D;
 import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.plot.Plot;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
 import static rapaio.graphics.opt.GOpt.color;
 
 /**
+ * Chi-Squared tests
+ *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/29/15.
  */
-public class ChiSquareTest {
+public class ChiSquareTest implements Printable {
+
+
+    public static ChiSquareTest newIndependenceTest(Var firstCat, Var secondCat) {
+        return new ChiSquareTest(firstCat, secondCat);
+    }
+
+    public ChiSquareTest(Var firstCat, Var secondCat) {
+//        String[] first = firstCat.stream().complete().collect(groupingBy(VSpot::label, HashMap::new, counting())).keySet().toArray();
+//        HashMap<String, Long> second = secondCat.stream().complete().collect(groupingBy(VSpot::label, HashMap::new, counting()));
+
+    }
+
 
 
     public static void main(String[] args) {
@@ -52,5 +76,10 @@ public class ChiSquareTest {
         }
 
         WS.draw(plot.yLim(0, 0.5));
+    }
+
+    @Override
+    public void buildSummary(StringBuilder sb) {
+
     }
 }
