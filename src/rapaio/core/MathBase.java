@@ -27,6 +27,8 @@ import rapaio.core.distributions.Normal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
+import static rapaio.core.Constants.*;
+
 /**
  * Utility class which simplifies access to common java math utilities and also
  * enrich the mathematical operations set.
@@ -513,6 +515,105 @@ public class MathBase {
         }
         return x2;
     }
+
+    /**
+     * Returns the Incomplete Gamma function; formerly named <tt>igamma</tt>.
+     *
+     * @param a the parameter of the gamma distribution.
+     * @param x the integration end point.
+     */
+    static public double incompleteGamma(double a, double x) throws ArithmeticException {
+
+        double ans, ax, c, r;
+
+        if (x <= 0 || a <= 0)
+            return 0.0;
+
+        if (x > 1.0 && x > a)
+            return 1.0 - incompleteGammaComplement(a, x);
+
+        /* Compute x**a * exp(-x) / gamma(a) */
+        ax = a * Math.log(x) - x - lnGamma(a);
+        if (ax < -MAXLOG)
+            return (0.0);
+
+        ax = Math.exp(ax);
+
+        /* power series */
+        r = a;
+        c = 1.0;
+        ans = 1.0;
+
+        do {
+            r += 1.0;
+            c *= x / r;
+            ans += c;
+        } while (c / ans > MACHEP);
+        return (ans * ax / a);
+    }
+
+    /**
+     * Returns the Complemented Incomplete Gamma function; formerly named
+     * <tt>igamc</tt>.
+     *
+     * @param a the parameter of the gamma distribution.
+     * @param x the integration start point.
+     */
+    static public double incompleteGammaComplement(double a, double x) throws ArithmeticException {
+        double ans, ax, c, yc, r, t, y, z;
+        double pk, pkm1, pkm2, qk, qkm1, qkm2;
+
+        if (x <= 0 || a <= 0)
+            return 1.0;
+
+        if (x < 1.0 || x < a)
+            return 1.0 - incompleteGamma(a, x);
+
+        ax = a * Math.log(x) - x - lnGamma(a);
+        if (ax < -MAXLOG)
+            return 0.0;
+
+        ax = Math.exp(ax);
+
+        /* continued fraction */
+        y = 1.0 - a;
+        z = x + y + 1.0;
+        c = 0.0;
+        pkm2 = 1.0;
+        qkm2 = x;
+        pkm1 = x + 1.0;
+        qkm1 = z * x;
+        ans = pkm1 / qkm1;
+
+        do {
+            c += 1.0;
+            y += 1.0;
+            z += 2.0;
+            yc = y * c;
+            pk = pkm1 * z - pkm2 * yc;
+            qk = qkm1 * z - qkm2 * yc;
+            if (qk != 0) {
+                r = pk / qk;
+                t = Math.abs((ans - r) / r);
+                ans = r;
+            } else
+                t = 1.0;
+
+            pkm2 = pkm1;
+            pkm1 = pk;
+            qkm2 = qkm1;
+            qkm1 = qk;
+            if (Math.abs(pk) > big) {
+                pkm2 *= biginv;
+                pkm1 *= biginv;
+                qkm2 *= biginv;
+                qkm1 *= biginv;
+            }
+        } while (t > MACHEP);
+
+        return ans * ax;
+    }
+
 
     /**
      * 1/2 * log(2 &#960;).

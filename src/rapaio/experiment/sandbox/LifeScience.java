@@ -37,6 +37,6 @@ public class LifeScience {
     public static void main(String[] args) throws IOException {
 
         Frame df = Datasets.loadLifeScience();
-        new ModelEvaluation().cv(df, "class", new CForest().withRuns(4).withBootstrap(0.9), 10);
+        new ModelEvaluation().cv(df, "class", new CForest().withRuns(100).withBootstrap(0.9), 10);
     }
 }
