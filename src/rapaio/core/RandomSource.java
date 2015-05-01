@@ -54,8 +54,6 @@ public final class RandomSource implements Serializable {
     public static Random getRandom() {
         return rand;
     }
-
-    ;
 }
 
 /**
@@ -256,8 +254,8 @@ strictfp class MersenneTwister extends java.util.Random {
     public Object clone() {
         try {
             MersenneTwister f = (MersenneTwister) (super.clone());
-            f.mt = (int[]) (mt.clone());
-            f.mag01 = (int[]) (mag01.clone());
+            f.mt = mt.clone();
+            f.mag01 = mag01.clone();
             return f;
         } catch (CloneNotSupportedException e) {
             throw new InternalError();

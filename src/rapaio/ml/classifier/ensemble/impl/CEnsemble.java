@@ -35,7 +35,9 @@ import rapaio.util.func.SFunction;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.IntStream;
 
@@ -173,12 +175,13 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
         cp.addTarget(firstTargetName(), firstDict());
 
         List<Frame> treeDensities = new ArrayList<>();
-        predictors.forEach(p -> {
-            ClassifierFit cpTree = p.predict(df, true, true);
+        Iterator<Classifier> it = predictors.iterator();
+        while (it.hasNext()) {
+            ClassifierFit cpTree = it.next().predict(df, true, true);
             treeDensities.add(cpTree.firstDensity());
-        });
+        }
 
-        baggingMode.computeDensity(firstDict(), treeDensities, cp.firstClasses(), cp.firstDensity());
+        baggingMode.computeDensity(firstDict(), new ArrayList<>(treeDensities), cp.firstClasses(), cp.firstDensity());
         return cp;
     }
 
