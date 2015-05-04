@@ -1,0 +1,20 @@
+
+TO BE DEPRECATED FIRST
+
+rapaio.data.Index;
+rapaio.data.Frame;
+rapaio.data.Mapping;
+rapaio.data.Numeric;
+rapaio.data.SolidFrame;
+rapaio.data.Var;
+rapaio.data.VarRange;
+rapaio.data.VarType;
+rapaio.core.stat.Mean; 100%
+rapaio.core.stat.Variance;
+rapaio.util.Pair;
+rapaio.io.Csv;
+rapaio.WS;
+rapaio.printer.HTMLPrinter;
+rapaio.graphics.plot.Plot;
+rapaio.graphics.plot.plotcomp.ABLine;
+rapaio.graphics.plot.plotcomp.Lines;
