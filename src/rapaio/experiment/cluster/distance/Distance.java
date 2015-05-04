@@ -33,7 +33,6 @@ import rapaio.data.Frame;
  * To change this template use File | Settings | File Templates.
  */
 @Deprecated
-@Deprecated
 public interface Distance {
     public double getDistance(Frame from, int fromRow, Frame targetFrame, int targetRow);
 }

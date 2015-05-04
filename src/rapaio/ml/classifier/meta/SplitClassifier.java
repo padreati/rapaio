@@ -136,8 +136,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
     }
 
     @Override
-    @Deprecated
-    public classifierFit predict(Frame df, boolean withClasses, boolean withDensities) {
+    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDensities) {
 
         ClassifierFit pred = ClassifierFit.newEmpty(this, df, withClasses, withDensities);
         for (String targetVar : targetNames()) {

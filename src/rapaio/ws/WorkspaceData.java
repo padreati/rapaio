@@ -32,7 +32,6 @@ import java.util.*;
  * @author tutuianu
  */
 @Deprecated
-@Deprecated
 public class WorkspaceData implements Serializable {
 
     private final HashMap<String, Frame> frames = new HashMap<>();

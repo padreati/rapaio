@@ -208,8 +208,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     }
 
     @Override
-    @Deprecated
-    public classifierFit predict(Frame df, boolean withClasses, boolean withDistributions) {
+    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDistributions) {
         ClassifierFit p = ClassifierFit.newEmpty(this, df, withClasses, true);
         p.addTarget(firstTargetName(), firstDict());
 

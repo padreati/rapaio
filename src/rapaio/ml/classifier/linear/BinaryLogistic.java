@@ -138,8 +138,7 @@ public class BinaryLogistic extends AbstractClassifier {
     }
 
     @Override
-    @Deprecated
-    public classifierFit predict(Frame df, boolean withClasses, boolean withDistributions) {
+    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDistributions) {
         if (coef == null)
             throw new IllegalArgumentException("Model has not yet been trained");
 

@@ -37,7 +37,6 @@ import java.util.List;
  * Time: 12:53 PM
  */
 @Deprecated
-@Deprecated
 public class KMeans {
     private int clusterNumber;
     private Distance distance;

@@ -56,7 +56,6 @@ import java.util.Arrays;
  * @author Tom Gibara
  */
 @Deprecated
-@Deprecated
 public class CannyEdgeDetector {
 
     // statics

@@ -265,8 +265,7 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    @Deprecated
-    public classifierFit predict(Frame df, boolean withClasses, boolean withDensities) {
+    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDensities) {
 
         ClassifierFit prediction = ClassifierFit.newEmpty(this, df, withClasses, withDensities);
         prediction.addTarget(firstTargetName(), firstDict());

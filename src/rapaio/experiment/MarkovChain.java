@@ -32,7 +32,6 @@ import java.util.Map;
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 @Deprecated
-@Deprecated
 public class MarkovChain {
 
     private final List<String> states;

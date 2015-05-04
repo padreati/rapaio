@@ -24,32 +24,32 @@
 package rapaio.data;
 
 /**
- * Represents the type of variable and some accepted categories.
+ * Represents the type of variable.
  * <p>
- * A variable holds data of a certain Java type. However, the type of the stored data
+ * A variable holds data of a certain Java type. However, the Java type of the stored data
  * does not characterize completely the behavior of the variable. This happens because
  * the statistical procedures and machine learning algorithms uses variable values
  * in different ways, depending on the meaning of the data.
  * <p>
  * Suppose a given variable X has 3 possible values: 1, 2, 3. All these values
  * are integer numbers. As a consequence, one can consider a numerical
- * representation to be a best fit for this variable. However, it is not
- * possible that these values to be the result of an encoding of a category
+ * representation to be a best fit for this variable. However, it is also
+ * possible that those values to be the result of a category encoding
  * where the textual corresponding labels are: low, medium and high.
- * Thus values like 1.5 are not possible under this meaning. And even if we
+ * Thus, values like 1.5 are not possible under this meaning. And even if we
  * consider that there is an order on those values, a possible set of
  * categories could have labels for red, green and blue. In the latter case
  * no ordering makes sense so operations like average are meaningless.
  * <p>
- * Thus a variable has a type which defines also the Java types used for
+ * Thus a variable has a type which defines the Java types used for
  * storing values and operations allowed on the values of that variable.
  * What operations are allowed depends on the programs which uses variables,
  * however some hints are provided also by type class.
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public enum VarType {
+
     /**
      * Numeric values stored in double precision
      */
@@ -74,6 +74,7 @@ public enum VarType {
             return Numeric.newEmpty(rows);
         }
     },
+
     /**
      * Integer values on 32 bits
      */
@@ -98,6 +99,9 @@ public enum VarType {
             return Index.newEmpty(rows);
         }
     },
+    /**
+     * Time stamp long integer values.
+     */
     STAMP {
         @Override
         public boolean isNumeric() {
@@ -119,6 +123,7 @@ public enum VarType {
             return Stamp.newEmpty(rows);
         }
     },
+
     /**
      * Unordered categories: has label representation and
      * also positive integer representation.
@@ -144,6 +149,7 @@ public enum VarType {
             return Nominal.newEmpty(rows);
         }
     },
+
     /**
      * Ordered categories: has label representation and
      * also positive integer representation, comparison
@@ -195,6 +201,7 @@ public enum VarType {
             return Binary.newEmpty(rows);
         }
     },
+
     /**
      * Variable type used only to store text.
      */
@@ -220,11 +227,27 @@ public enum VarType {
         }
     };
 
+    /**
+     * @return true if the variable type allows numerical manipulations.
+     */
     public abstract boolean isNumeric();
 
+    /**
+     * @return true if the variable represents a categorical variable
+     */
     public abstract boolean isNominal();
 
+    /**
+     * Builds a new empty instance of the given type
+     *
+     * @return new empty instance
+     */
     public abstract Var newInstance();
 
+    /**
+     * Builds a new empty instance of given size
+     * @param rows size of the new variable
+     * @return new empty instance of given size
+     */
     public abstract Var newInstance(int rows);
 }

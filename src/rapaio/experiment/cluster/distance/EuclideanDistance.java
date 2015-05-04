@@ -35,7 +35,6 @@ import java.util.List;
  * Time: 12:58 PM
  */
 @Deprecated
-@Deprecated
 public class EuclideanDistance implements Distance {
 
     private VarRange range;

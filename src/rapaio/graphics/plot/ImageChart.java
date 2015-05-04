@@ -33,7 +33,6 @@ import java.awt.image.BufferedImage;
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
 @Deprecated
-@Deprecated
 public class ImageChart extends HostFigure {
 
     private final BufferedImage image;

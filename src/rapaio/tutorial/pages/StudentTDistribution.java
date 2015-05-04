@@ -37,7 +37,6 @@ import static rapaio.graphics.opt.GOpt.color;
  * @author Aurelian Tutuianu
  */
 @Deprecated
-@Deprecated
 public class StudentTDistribution implements TutorialPage {
 
     @Override

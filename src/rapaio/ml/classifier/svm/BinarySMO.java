@@ -117,8 +117,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     }
 
     @Override
-    @Deprecated
-    public classifier newInstance() {
+    public Classifier newInstance() {
         return new BinarySMO()
                 .withSampler(sampler())
                 .withKernel(kernel.newInstance())
@@ -437,8 +436,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
 
     @Override
-    @Deprecated
-    public classifierFit predict(Frame df, boolean withClasses, boolean withDistributions) {
+    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDistributions) {
         ClassifierFit cr = ClassifierFit.newEmpty(this, df, withClasses, withDistributions);
         cr.addTarget(firstTargetName(), firstDict());
 

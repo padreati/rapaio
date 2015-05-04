@@ -35,7 +35,6 @@ import java.util.List;
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 @Deprecated
-@Deprecated
 public class KMeansClustering {
 
     private int k = 2;

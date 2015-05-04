@@ -147,8 +147,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
     }
 
     @Override
-    @Deprecated
-    public classifierFit predict(Frame df, final boolean withClasses, final boolean withDensities) {
+    public ClassifierFit predict(Frame df, final boolean withClasses, final boolean withDensities) {
 
         ClassifierFit pred = ClassifierFit.newEmpty(this, df, withClasses, withDensities);
         pred.addTarget(firstTargetName(), firstDict());

@@ -69,8 +69,7 @@ public class CForest extends CEnsemble {
     }
 
     @Override
-    @Deprecated
-    public classifier newInstance() {
+    public Classifier newInstance() {
         return new CForest()
                 .withRuns(runs)
                 .withBaggingMode(baggingMode)
