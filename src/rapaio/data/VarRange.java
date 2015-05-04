@@ -27,37 +27,41 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Utility tool to easy the specification of column specification by column ranges.
- * Column ranges can be specified directly as a list of column indexes or as a list of column ranges.
+ * Utility tool to ease the specification of selection of variable,
+ * based on lists or ranges of variable names.
+ * Variable ranges can be specified directly as a list of variable indexes
+ * or as a list of variable ranges.
  * <p>
- * Column ranges syntax uses as range separator "-", and as column
- * range delimiter the comma ",".
+ * Variable ranges syntax uses as range separator "~", and as column
+ * range delimiter the comma ",". Thus "a~d" means all the variables, starting
+ * with variable a and ending with variable d, inclusive. A single variable
+ * name is also a range.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
 public class VarRange {
 
-    private static final String COL_DELIMITER = ",";
-    private static final String COL_RANGE = "~";
-    private static final String COL_ALL = "all";
+    private static final String DELIMITER = ",";
+    private static final String RANGE = "~";
+    private static final String ALL = "all";
     private final String rawColumnRange;
 
     /**
      * Builds a var range directly from a list of var indexes.
      *
-     * @param varIndexes list of var indexes
+     * @param indexes list of var indexes
      */
-    public VarRange(int... varIndexes) {
-        if (varIndexes.length == 0) {
+    public VarRange(int... indexes) {
+        if (indexes.length == 0) {
             throw new IllegalArgumentException("No column indexes specified.");
         }
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < varIndexes.length; i++) {
+        for (int i = 0; i < indexes.length; i++) {
             if (i > 0) {
                 sb.append(",");
             }
-            sb.append(String.valueOf(varIndexes[i]));
+            sb.append(String.valueOf(indexes[i]));
         }
         this.rawColumnRange = sb.toString();
     }
@@ -65,13 +69,13 @@ public class VarRange {
     /**
      * Builds a var range from var ranges formatted as strings with the required syntax.
      *
-     * @param varRanges var ranges specified in string format
+     * @param ranges var ranges specified in string format
      */
-    public VarRange(String... varRanges) {
+    public VarRange(String... ranges) {
         StringBuilder sb = new StringBuilder();
-        Arrays.stream(varRanges).forEach(s -> {
+        Arrays.stream(ranges).forEach(s -> {
             if (sb.length() > 0)
-                sb.append(COL_DELIMITER);
+                sb.append(DELIMITER);
             sb.append(s);
         });
         this.rawColumnRange = sb.toString();
@@ -85,13 +89,13 @@ public class VarRange {
      */
     public List<Integer> parseVarIndexes(Frame df) {
         List<Integer> colIndexes = new ArrayList<>();
-        if (COL_ALL.equals(rawColumnRange)) {
+        if (ALL.equals(rawColumnRange)) {
             for (int i = 0; i < df.varCount(); i++) {
                 colIndexes.add(i);
             }
             return colIndexes;
         }
-        String[] ranges = rawColumnRange.split(COL_DELIMITER);
+        String[] ranges = rawColumnRange.split(DELIMITER);
 
         HashSet<String> colNames = new HashSet<>();
         for (int i = 0; i < df.varNames().length; i++) {
@@ -101,8 +105,8 @@ public class VarRange {
         for (String range : ranges) {
             int start, end;
 
-            if (range.contains(COL_RANGE)) {
-                String[] parts = range.split(COL_RANGE);
+            if (range.contains(RANGE)) {
+                String[] parts = range.split(RANGE);
                 if (!colNames.contains(parts[0])) {
                     start = Integer.parseInt(parts[0]);
                 } else {

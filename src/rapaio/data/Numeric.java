@@ -24,7 +24,10 @@
 package rapaio.data;
 
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -35,12 +38,11 @@ import java.util.stream.Collector;
  * Builds a numeric variable. Numeric variables stores data as double values
  * and allows modelling of any type of continuous or discrete numeric variable.
  * <p>
- * The placeholder for missing value is Double.NaN. Any form of usage of this variable
- * on set/add value will result in a missing value.
+ * The placeholder for missing value is Double.NaN. Any form of usage of Double.NaN
+ * on set/add operation will result in a missing value.
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public final class Numeric extends AbstractVar {
 
     private static final double missingValue = Double.NaN;
@@ -114,7 +116,7 @@ public final class Numeric extends AbstractVar {
      */
     public static Numeric newCopyOf(Var source) {
         Numeric numeric = new Numeric(source.rowCount(), source.rowCount(), 0).withName(source.name());
-        if (source instanceof MappedVar || source.type() != VarType.NUMERIC) {
+        if (!(source instanceof Numeric)) {
             for (int i = 0; i < source.rowCount(); i++) {
                 numeric.setValue(i, source.value(i));
             }

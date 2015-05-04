@@ -30,31 +30,34 @@ import rapaio.printer.Printer;
 import java.util.DoubleSummaryStatistics;
 
 /**
- * Compensated version of arithmetic mean of values from a {@code Vector}.
+ * Compensated version of arithmetic mean of values from a {@code Var}.
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  * Date: 9/7/13
  * Time: 12:21 PM
  */
-@Deprecated
 public final class Mean implements Printable {
 
     private final String varName;
     private final double value;
+    private int rowCount = 0;
+    private int missingCount = 0;
+    private int completeCount = 0;
 
     public Mean(Var var) {
         this.varName = var.name();
-        this.value = compute(var);
-    }
-
-    private double compute(final Var var) {
-        DoubleSummaryStatistics dss = var.stream().complete().mapToDouble().summaryStatistics();
-        final double count = dss.getCount();
-        if (count == 0) {
-            return Double.NaN;
+        double sum = 0.0;
+        for (int i = 0; i < var.rowCount(); i++) {
+            rowCount++;
+            if (var.missing(i)) {
+                missingCount++;
+            } else {
+                completeCount++;
+                sum += var.value(i);
+            }
         }
-        final double mean = dss.getSum() / count;
-        return mean + var.stream().complete().mapToDouble(s -> s.value() - mean).sum() / count;
+        final double mean = sum / (1.0 * completeCount);
+        this.value = mean + var.stream().complete().mapToDouble(s -> s.value() - mean).sum() / (1.0 * completeCount);
     }
 
     /**
@@ -68,6 +71,9 @@ public final class Mean implements Printable {
 
     @Override
     public void buildSummary(StringBuilder sb) {
-        sb.append(String.format("> mean['%s']\n%s\n", varName, Printer.formatDecLong.format(value)));
+        sb.append(String.format("> mean['%s']\n", varName));
+        sb.append(String.format("total rows: %d\n", rowCount));
+        sb.append(String.format("complete: %d, missing: %d\n", completeCount, missingCount));
+        sb.append(String.format("mean: %s\n", Printer.formatDecFlex.format(value)));
     }
 }

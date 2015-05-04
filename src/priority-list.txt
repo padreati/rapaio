@@ -1,14 +1,8 @@
 
 TO BE DE-DEPRECATED FIRST
 
-rapaio.data.Index;
 rapaio.data.Frame;
-rapaio.data.Numeric;
 rapaio.data.SolidFrame;
-rapaio.data.VarRange;
-rapaio.core.stat.Mean;
-rapaio.core.stat.Variance;
-rapaio.util.Pair;
 rapaio.io.Csv;
 rapaio.WS;
 rapaio.printer.HTMLPrinter;

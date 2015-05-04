@@ -35,12 +35,14 @@ import java.util.stream.Collector;
 /**
  * Builds a numeric variable which stores values as 32-bit integers.
  * There are two general usage scenarios: use variable as an
- * positive integer index and save storage for numeric
+ * positive integer index or save storage for numeric
  * variables from Z loosing decimal precision.
+ * <p>
+ * Missing value is {@link Integer#MIN_VALUE}. Any use of this value in
+ * add/set operations will lead to missing values.
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public final class Index extends AbstractVar {
 
     private static final int MISSING_VALUE = Integer.MIN_VALUE;
@@ -192,16 +194,6 @@ public final class Index extends AbstractVar {
     @Override
     public int rowCount() {
         return rows;
-    }
-
-    @Override
-    public Var bindRows(Var var) {
-        return BoundVar.newFrom(this, var);
-    }
-
-    @Override
-    public Var mapRows(Mapping mapping) {
-        return MappedVar.newByRows(this, mapping);
     }
 
     @Override

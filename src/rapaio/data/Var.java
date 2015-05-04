@@ -23,10 +23,12 @@
 
 package rapaio.data;
 
+import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * Random access list of observed values (observations) for a specific variable.
@@ -66,7 +68,9 @@ public interface Var extends Serializable {
      * @param var given var with additional rows
      * @return new var with all union of rows
      */
-    Var bindRows(Var var);
+    default Var bindRows(Var var) {
+        return BoundVar.newFrom(this, var);
+    }
 
     /**
      * Builds a new frame only with rows specified in mapping.
@@ -74,7 +78,9 @@ public interface Var extends Serializable {
      * @param mapping a list of rows from a frame
      * @return new frame with selected rows
      */
-    Var mapRows(Mapping mapping);
+    default Var mapRows(Mapping mapping) {
+        return MappedVar.newByRows(this, mapping);
+    }
 
     /**
      * Builds a new variable only with rows specified in mapping.
@@ -306,7 +312,9 @@ public interface Var extends Serializable {
     /**
      * @return a stream of variables spots
      */
-    VSpots stream();
+    default VSpots stream() {
+        return new VSpots(IntStream.range(0, rowCount()).mapToObj(row -> new VSpot(row, this)), this);
+    }
 
     /**
      * Tests if two variables has identical content, it does not matter the implementation.

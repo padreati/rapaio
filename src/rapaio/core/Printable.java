@@ -26,7 +26,7 @@ package rapaio.core;
 import rapaio.WS;
 
 /**
- * Interface implemented by all objects which outputs summaries about themselves
+ * Interface implemented by all objects which outputs information about themselves
  * for exploratory purposes or for other reasons.
  * <p>
  * Implementations of this interface works directly with default printer and
@@ -37,7 +37,6 @@ import rapaio.WS;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public interface Printable {
 
     /**

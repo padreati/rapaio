@@ -30,7 +30,6 @@ import java.io.Serializable;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Pair<T1, T2> implements Serializable {
 
     public final T1 first;

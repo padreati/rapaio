@@ -33,11 +33,12 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static rapaio.core.stat.BaseStat.mean;
+import static rapaio.core.stat.BaseStat.var;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class CoreStatTest {
 
     private final Frame df;
@@ -48,7 +49,9 @@ public class CoreStatTest {
 
     @Test
     public void testRReference() throws IOException {
-        assertEquals(Double.valueOf("999.98132402093892779"), new Mean(df.var(0)).value(), 1e-12);
+        mean(df.var(0)).summary();
+        var(df.var(0)).summary();
+        assertEquals(Double.valueOf("999.98132402093892779"), mean(df.var(0)).value(), 1e-12);
         assertEquals(Double.valueOf("1.0012615815492349469"), Math.sqrt(new Variance(df.var(0)).value()), 1e-12);
         assertEquals(996.343866540788, new Minimum(df.var(0)).value(), 1e-12);
         assertEquals(1004.24956126934, new Maximum(df.var(0)).value(), 1e-12);
@@ -57,14 +60,27 @@ public class CoreStatTest {
     @Test
     public void testEmptyMean() {
         Numeric num1 = Numeric.newCopyOf(Double.NaN, Double.NaN, Double.NaN);
-        double mean = new Mean(num1).value();
+        double mean = mean(num1).value();
         assertTrue(Double.isNaN(mean));
 
         Numeric num2 = Numeric.newWrapOf(1, 2, 3, 4);
         StringBuilder sb = new StringBuilder();
-        new Mean(num2).buildSummary(sb);
+        mean(num2).buildSummary(sb);
 
         assertEquals("> mean['null']\n" +
-                "2.500000000000000000000000000000\n", sb.toString());
+                "total rows: 4\n" +
+                "complete: 4, missing: 0\n" +
+                "mean: 2.5\n", sb.toString());
+        sb = new StringBuilder();
+        var(num2).buildSummary(sb);
+        assertEquals("> variance['null']\n" +
+                        "total rows: 4\n" +
+                        "complete: 4, missing: 0\n" +
+                        "variance: 1.6666666666666667\n" +
+                        "sd: 1.2909944487358056\n",
+                sb.toString());
+
+        mean(num2).summary();
+        var(num2).summary();
     }
 }

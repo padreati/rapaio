@@ -24,15 +24,11 @@
 package rapaio.data;
 
 import rapaio.data.stream.VSpot;
-import rapaio.data.stream.VSpots;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import java.util.stream.IntStream;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public abstract class AbstractVar implements Var {
 
     private static final long serialVersionUID = 2607349261526552662L;
@@ -48,25 +44,10 @@ public abstract class AbstractVar implements Var {
     }
 
     @Override
-    public Var bindRows(Var var) {
-        return BoundVar.newFrom(this, var);
-    }
-
-    @Override
-    public Var mapRows(Mapping mapping) {
-        return MappedVar.newByRows(this, mapping);
-    }
-
-    @Override
-    public VSpots stream() {
-        return new VSpots(IntStream.range(0, rowCount()).mapToObj(row -> new VSpot(row, this)), this);
-    }
-
-    @Override
     public Var solidCopy() {
 
         // this implementation is useful for non-solid variables like bounded or mapped
-        // all solid implementations have their own solidCopy method
+        // all solid implementations have their own version of solidCopy method
 
         switch (type()) {
             case NOMINAL:

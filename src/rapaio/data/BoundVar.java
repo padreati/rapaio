@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
-@Deprecated
 public class BoundVar extends AbstractVar {
 
     private final int rowCount;
@@ -140,11 +139,6 @@ public class BoundVar extends AbstractVar {
         } else {
             return BoundVar.newFrom(this, var);
         }
-    }
-
-    @Override
-    public Var mapRows(Mapping mapping) {
-        return MappedVar.newByRows(this, mapping);
     }
 
     @Override

@@ -26,7 +26,7 @@ package rapaio.data;
 import java.util.stream.Collectors;
 
 /**
- * A variable which wraps another variable and the row selection
+ * A variable which wraps rows from another variable. The row selection
  * and order is specified by a mapping given at construction time.
  * <p>
  * This variable does not hold actual values, it delegates the behavior to the
@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class MappedVar extends AbstractVar {
 
     private final Var source;
@@ -92,16 +91,6 @@ public class MappedVar extends AbstractVar {
 
     public Mapping mapping() {
         return mapping;
-    }
-
-    @Override
-    public Var bindRows(Var var) {
-        return BoundVar.newFrom(this, var);
-    }
-
-    @Override
-    public Var mapRows(Mapping mapping) {
-        return MappedVar.newByRows(this, mapping);
     }
 
     @Override
