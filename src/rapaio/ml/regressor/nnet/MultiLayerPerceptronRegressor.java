@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.ml.regressor.nnet;
@@ -35,6 +36,7 @@ import java.util.Arrays;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public class MultiLayerPerceptronRegressor extends AbstractRegressor {
 
     private final int[] layerSizes;
@@ -245,6 +247,7 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor {
     }
 }
 
+@Deprecated
 class NetNode {
 
     double value = RandomSource.nextDouble() / 10.;

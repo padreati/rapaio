@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.ml.classifier.tree;
@@ -29,6 +30,7 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toSet;
 
+@Deprecated
 public class CTreeNominalTerms {
 
     private final Map<String, Set<Integer>> indexes = new HashMap<>();

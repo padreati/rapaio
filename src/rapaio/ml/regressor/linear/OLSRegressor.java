@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.ml.regressor.linear;
@@ -33,6 +34,7 @@ import rapaio.ml.regressor.Regressor;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public class OLSRegressor extends AbstractRegressor {
 
     RM beta;

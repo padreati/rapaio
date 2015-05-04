@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.graphics.plot.plotcomp;
@@ -39,6 +40,7 @@ import java.util.function.Function;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class DensityLine extends PlotComponent {
 
     private static final long serialVersionUID = -9207144655129877629L;

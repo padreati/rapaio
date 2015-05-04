@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.io.json;
@@ -35,6 +36,7 @@ import java.util.stream.StreamSupport;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/20/15.
  */
+@Deprecated
 public final class Json {
 
     public static JsonStream stream(File root, FileFilter ff) {

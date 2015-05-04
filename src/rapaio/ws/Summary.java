@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.ws;
@@ -39,6 +40,7 @@ import static rapaio.WS.getPrinter;
 /**
  * @author tutuianu
  */
+@Deprecated
 public class Summary {
 
     public static void summary(Frame df) {

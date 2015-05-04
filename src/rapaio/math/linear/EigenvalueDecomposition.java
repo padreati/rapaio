@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.math.linear;
@@ -40,6 +41,7 @@ import static java.lang.StrictMath.hypot;
  * RV.times(D). The matrix RV may be badly conditioned, or even singular, so the
  * validity of the equation A = RV*D*inverse(RV) depends upon RV.cond().
  */
+@Deprecated
 public class EigenvalueDecomposition implements Serializable {
 
     private static final long serialVersionUID = 3555538732524620364L;

@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.ml.classifier.svm;
@@ -46,6 +47,7 @@ import java.util.BitSet;
 /**
  * Class for building a binary support vector machine.
  */
+@Deprecated
 public class BinarySMO extends AbstractClassifier implements Serializable {
 
     protected double[] alpha; // Lagrange multipliers from dual
@@ -115,7 +117,8 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     }
 
     @Override
-    public Classifier newInstance() {
+    @Deprecated
+    public classifier newInstance() {
         return new BinarySMO()
                 .withSampler(sampler())
                 .withKernel(kernel.newInstance())
@@ -434,7 +437,8 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
 
     @Override
-    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDistributions) {
+    @Deprecated
+    public classifierFit predict(Frame df, boolean withClasses, boolean withDistributions) {
         ClassifierFit cr = ClassifierFit.newEmpty(this, df, withClasses, withDistributions);
         cr.addTarget(firstTargetName(), firstDict());
 

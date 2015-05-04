@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.graphics.plot.plotcomp;
@@ -37,6 +38,7 @@ import java.util.LinkedList;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/20/15.
  */
+@Deprecated
 public class MeshContour extends PlotComponent {
 
     private static final long serialVersionUID = -642370269224702175L;

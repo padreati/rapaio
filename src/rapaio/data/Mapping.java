@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.data;
@@ -41,6 +42,7 @@ import java.util.stream.IntStream;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public interface Mapping extends Serializable {
 
     // static builders
@@ -124,6 +126,7 @@ public interface Mapping extends Serializable {
     IntStream rowStream();
 }
 
+@Deprecated
 final class ListMapping implements Mapping {
 
     private final List<Integer> mapping;
@@ -163,6 +166,7 @@ final class ListMapping implements Mapping {
     }
 }
 
+@Deprecated
 final class IntervalMapping implements Mapping {
 
     final int start;

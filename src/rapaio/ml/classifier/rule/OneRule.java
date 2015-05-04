@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.ml.classifier.rule;
@@ -39,6 +40,7 @@ import java.util.logging.Logger;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class OneRule extends AbstractClassifier {
 
     private static final Logger log = Logger.getLogger(OneRule.class.getName());
@@ -302,6 +304,7 @@ public class OneRule extends AbstractClassifier {
 
 }
 
+@Deprecated
 class RuleSet {
 
     final String colName;
@@ -327,6 +330,7 @@ class RuleSet {
     }
 }
 
+@Deprecated
 interface Rule {
 
     String getPredictedClass();
@@ -336,6 +340,7 @@ interface Rule {
     double getTotalCount();
 }
 
+@Deprecated
 class NominalRule implements Rule {
 
     private final String colValue;
@@ -380,6 +385,7 @@ class NominalRule implements Rule {
     }
 }
 
+@Deprecated
 class NumericRule implements Rule {
 
     private final double minValue;

@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.graphics.plot;
@@ -29,6 +30,7 @@ import java.awt.*;
 /**
  * @author Aurelian Tutuianu
  */
+@Deprecated
 public abstract class PlotComponent extends BaseFigure {
 
     private static final long serialVersionUID = -797168275849511614L;

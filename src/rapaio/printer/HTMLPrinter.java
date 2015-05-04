@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.printer;
@@ -33,6 +34,7 @@ import java.io.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class HTMLPrinter extends AbstractPrinter {
 
     private final String title;
@@ -168,6 +170,7 @@ public class HTMLPrinter extends AbstractPrinter {
     }
 }
 
+@Deprecated
 class Template {
 
     static final String KEY_TITLE = "#TITLE#";

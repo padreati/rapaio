@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.ml.classifier.rule;
@@ -30,6 +31,7 @@ import rapaio.ml.classifier.ClassifierFit;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
+@Deprecated
 public class OneRuleTest {
 
     private static final int SIZE = 6;

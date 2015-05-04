@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.experiment.sandbox;
@@ -35,6 +36,7 @@ import java.util.stream.Stream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/19/15.
  */
+@Deprecated
 public class Sandbox {
 
     public static void main(String[] args) throws IOException, URISyntaxException {

@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.ml.common;
@@ -29,6 +30,7 @@ import java.io.Serializable;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
+@Deprecated
 public class VarSelector implements Serializable {
     private static final long serialVersionUID = -6800363806127327947L;
 

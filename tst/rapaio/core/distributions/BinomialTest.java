@@ -33,7 +33,7 @@
 ///**
 // * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
 // */
-//public class BinomialTest {
+//@Deprecated public class BinomialTest {
 //
 ////    private double[] compute(String cmd, int n, double p, double factor) {
 ////

@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.stream;
@@ -28,6 +29,7 @@ import java.util.Spliterator;
 import java.util.Spliterators.AbstractSpliterator;
 import java.util.function.Consumer;
 
+@Deprecated
 public class PartitioningSpliterator<E> extends AbstractSpliterator<List<E>> {
     private final Spliterator<E> spliterator;
     private final int partitionSize;

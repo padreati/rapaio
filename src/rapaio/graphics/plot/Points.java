@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.graphics.plot;
@@ -36,6 +37,7 @@ import java.util.List;
 /**
  * @author tutuianu
  */
+@Deprecated
 public class Points extends PlotComponent {
 
     private static final long serialVersionUID = -4766079423843859315L;

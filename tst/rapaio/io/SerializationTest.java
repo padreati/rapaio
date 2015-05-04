@@ -32,7 +32,7 @@
 ///**
 // * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
 // */
-//public class SerializationTest {
+//@Deprecated public class SerializationTest {
 //
 //    @Test
 //    public void testAdaboost() throws Exception {

@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.ws;
@@ -30,6 +31,7 @@ import java.util.*;
 /**
  * @author tutuianu
  */
+@Deprecated
 @Deprecated
 public class WorkspaceData implements Serializable {
 

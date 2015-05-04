@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.graphics.base;
@@ -28,6 +29,7 @@ import java.io.Serializable;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public interface Figure extends Serializable {
 
     default void paint(Graphics2D g2d, Rectangle rect) {

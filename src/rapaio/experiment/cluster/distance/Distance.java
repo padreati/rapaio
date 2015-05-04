@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.experiment.cluster.distance;
@@ -31,6 +32,7 @@ import rapaio.data.Frame;
  * Time: 12:56 PM
  * To change this template use File | Settings | File Templates.
  */
+@Deprecated
 @Deprecated
 public interface Distance {
     public double getDistance(Frame from, int fromRow, Frame targetFrame, int targetRow);

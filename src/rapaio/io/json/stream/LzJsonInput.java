@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.io.json.stream;
@@ -36,6 +37,7 @@ import java.util.function.Predicate;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/9/15.
  */
+@Deprecated
 public class LzJsonInput extends LzJsonAlgorithm implements JsonInput {
 
     private final DataInputStream is;

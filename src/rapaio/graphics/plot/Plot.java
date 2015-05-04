@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.graphics.plot;
@@ -39,6 +40,7 @@ import java.util.function.Function;
 /**
  * @author tutuianu
  */
+@Deprecated
 public class Plot extends HostFigure {
 
     private static final long serialVersionUID = 1898871481989584539L;

@@ -37,7 +37,7 @@
 ///**
 // * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
 // */
-//public class CBenchmarkTest {
+//@Deprecated public class CBenchmarkTest {
 //
 //    @Test
 //    public void testAll() throws IOException {

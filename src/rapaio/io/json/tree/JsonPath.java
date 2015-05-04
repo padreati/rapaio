@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.io.json.tree;
@@ -35,6 +36,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/8/15.
  */
+@Deprecated
 public class JsonPath {
 
     public static final String SEP = ".";

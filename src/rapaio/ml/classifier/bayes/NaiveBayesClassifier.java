@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.ml.classifier.bayes;
@@ -41,6 +42,7 @@ import java.util.Map;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class NaiveBayesClassifier extends AbstractClassifier {
 
     // algorithm parameters
@@ -145,7 +147,8 @@ public class NaiveBayesClassifier extends AbstractClassifier {
     }
 
     @Override
-    public ClassifierFit predict(Frame df, final boolean withClasses, final boolean withDensities) {
+    @Deprecated
+    public classifierFit predict(Frame df, final boolean withClasses, final boolean withDensities) {
 
         ClassifierFit pred = ClassifierFit.newEmpty(this, df, withClasses, withDensities);
         pred.addTarget(firstTargetName(), firstDict());

@@ -31,6 +31,7 @@ import rapaio.core.RandomSource;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/29/15.
  */
+@Deprecated
 public class ChiSquare implements Distribution {
 
     private final double df;

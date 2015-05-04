@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.graphics.opt;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public enum PchPalette implements Serializable {
 
     STANDARD(new StandardPchPalette());
@@ -47,10 +49,12 @@ public enum PchPalette implements Serializable {
 
 }
 
+@Deprecated
 interface Mapping {
     void draw(Graphics2D g2d, double x, double y, double size, int pch);
 }
 
+@Deprecated
 final class StandardPchPalette implements Mapping {
 
     private final java.util.List<Drawer> pchs = new ArrayList<Drawer>() {{
@@ -84,6 +88,7 @@ final class StandardPchPalette implements Mapping {
     }
 }
 
+@Deprecated
 interface Drawer extends Serializable {
 
     void draw(Graphics2D g2d, double x, double y, double size);

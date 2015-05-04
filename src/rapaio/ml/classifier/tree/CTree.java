@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.ml.classifier.tree;
@@ -35,6 +36,7 @@ import rapaio.util.Pair;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class CTree extends AbstractClassifier {
 
     private static final long serialVersionUID = 1203926824359387358L;
@@ -263,7 +265,8 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDensities) {
+    @Deprecated
+    public classifierFit predict(Frame df, boolean withClasses, boolean withDensities) {
 
         ClassifierFit prediction = ClassifierFit.newEmpty(this, df, withClasses, withDensities);
         prediction.addTarget(firstTargetName(), firstDict());

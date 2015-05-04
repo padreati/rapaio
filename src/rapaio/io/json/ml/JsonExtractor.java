@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.io.json.ml;
@@ -36,6 +37,7 @@ import java.util.stream.Stream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/10/15.
  */
+@Deprecated
 public class JsonExtractor {
 
     private final List<JsonFeature> features = new ArrayList<>();

@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.core.stat;
@@ -35,6 +36,7 @@ import rapaio.printer.Printer;
  * Date: 9/7/13
  * Time: 12:26 PM
  */
+@Deprecated
 public class Variance implements Printable {
 
     private final String varName;

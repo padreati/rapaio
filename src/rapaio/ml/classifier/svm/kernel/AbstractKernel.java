@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.ml.classifier.svm.kernel;
@@ -30,6 +31,7 @@ import java.util.Map;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
+@Deprecated
 public abstract class AbstractKernel implements Kernel {
 
     protected String[] varNames;
@@ -85,6 +87,7 @@ public abstract class AbstractKernel implements Kernel {
     }
 }
 
+@Deprecated
 interface KernelCache {
 
     Double retrieve(Frame df1, int row1, Frame df2, int row2);
@@ -94,6 +97,7 @@ interface KernelCache {
     void clear();
 }
 
+@Deprecated
 class MapKernelCache implements KernelCache {
 
     private Map<Frame, Map<Frame, Map<Long, Double>>> cache = new HashMap<>();
@@ -123,6 +127,7 @@ class MapKernelCache implements KernelCache {
     }
 }
 
+@Deprecated
 class SolidKernelCache implements KernelCache {
 
     private final Frame df;

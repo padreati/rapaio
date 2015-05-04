@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.io.json.stream;
@@ -44,6 +45,7 @@ import static java.util.stream.Collectors.toMap;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/9/15.
  */
+@Deprecated
 public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
 
     private final DataOutputStream os;

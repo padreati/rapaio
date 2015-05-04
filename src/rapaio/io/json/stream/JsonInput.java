@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.io.json.stream;
@@ -30,6 +31,7 @@ import java.io.IOException;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/12/15.
  */
+@Deprecated
 public interface JsonInput extends Closeable {
 
     JsonValue read() throws IOException;

@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.experiment.cluster.algorithm;
@@ -35,6 +36,7 @@ import java.util.List;
  * Date: 2/4/14
  * Time: 12:53 PM
  */
+@Deprecated
 @Deprecated
 public class KMeans {
     private int clusterNumber;

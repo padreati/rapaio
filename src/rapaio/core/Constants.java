@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.core;
@@ -28,6 +29,7 @@ import static java.lang.Math.sqrt;
  * Class defining constants.
  */
 
+@Deprecated
 public class Constants {
 
 	/* 30 Decimal-place constants computed with bc -l (scale=32; proper round) */

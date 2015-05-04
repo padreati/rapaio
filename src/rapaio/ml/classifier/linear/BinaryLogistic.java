@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.ml.classifier.linear;
@@ -36,6 +37,7 @@ import java.util.function.Function;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
  */
+@Deprecated
 public class BinaryLogistic extends AbstractClassifier {
 
     private Numeric coef;
@@ -136,7 +138,8 @@ public class BinaryLogistic extends AbstractClassifier {
     }
 
     @Override
-    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDistributions) {
+    @Deprecated
+    public classifierFit predict(Frame df, boolean withClasses, boolean withDistributions) {
         if (coef == null)
             throw new IllegalArgumentException("Model has not yet been trained");
 

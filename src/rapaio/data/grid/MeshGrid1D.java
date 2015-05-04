@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.data.grid;
@@ -32,6 +33,7 @@ import java.util.function.BiFunction;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/22/15.
  */
+@Deprecated
 public class MeshGrid1D implements Serializable {
 
     final Var x;
@@ -84,7 +86,7 @@ public class MeshGrid1D implements Serializable {
     }
 }
 
-
+@Deprecated
 class MeshGrid1DImpl implements MeshGrid {
 
     private final MeshGrid1D g;

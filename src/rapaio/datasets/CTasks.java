@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.datasets;
@@ -41,6 +42,7 @@ import java.util.stream.IntStream;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class CTasks {
 
     private List<CTask> tasks = new ArrayList<>();
@@ -59,7 +61,7 @@ public class CTasks {
     }
 }
 
-
+@Deprecated
 class IrisUCITask extends CTask {
 
     public IrisUCITask() throws IOException {

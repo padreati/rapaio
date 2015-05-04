@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.io.json.tree;
@@ -31,6 +32,7 @@ import java.util.stream.Stream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/16/15.
  */
+@Deprecated
 public abstract class JsonValue {
 
     public static JsonNull NULL = new JsonNull();

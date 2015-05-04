@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.ml.classifier.meta;
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public class SplitClassifier extends AbstractClassifier implements RunningClassifier {
 
     boolean ignoreUncovered = true;
@@ -134,7 +136,8 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
     }
 
     @Override
-    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDensities) {
+    @Deprecated
+    public classifierFit predict(Frame df, boolean withClasses, boolean withDensities) {
 
         ClassifierFit pred = ClassifierFit.newEmpty(this, df, withClasses, withDensities);
         for (String targetVar : targetNames()) {

@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.graphics.plot;
@@ -32,6 +33,7 @@ import java.awt.geom.Rectangle2D;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
+@Deprecated
 public class Histogram2D extends PlotComponent {
 
     private static final long serialVersionUID = 136436073834179971L;

@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.ml.classifier.boost;
@@ -42,6 +43,7 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/12/14.
  */
+@Deprecated
 public class GBTClassifier extends AbstractClassifier implements RunningClassifier {
 
     private int runs = 10;
@@ -58,7 +60,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
     private List<List<BTRegressor>> trees;
 
     @Override
-    public Classifier newInstance() {
+    public GBTClassifier newInstance() {
         return new GBTClassifier()
                 .withRuns(runs);
     }
@@ -256,6 +258,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
     }
 }
 
+@Deprecated
 class ClassifierLossFunction implements GBTLossFunction {
 
     private final double K;

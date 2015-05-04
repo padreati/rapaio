@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.data;
@@ -39,6 +40,7 @@ import java.util.stream.Collector;
  *
  * @author Aurelian Tutuianu
  */
+@Deprecated
 public interface Var extends Serializable {
 
     /**

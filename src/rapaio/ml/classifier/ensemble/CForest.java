@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.ml.classifier.ensemble;
@@ -35,6 +36,7 @@ import rapaio.util.func.SFunction;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/15.
  */
+@Deprecated
 public class CForest extends CEnsemble {
 
     private static final long serialVersionUID = 5249758525162975861L;
@@ -67,7 +69,8 @@ public class CForest extends CEnsemble {
     }
 
     @Override
-    public Classifier newInstance() {
+    @Deprecated
+    public classifier newInstance() {
         return new CForest()
                 .withRuns(runs)
                 .withBaggingMode(baggingMode)

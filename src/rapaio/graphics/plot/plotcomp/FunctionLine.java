@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.graphics.plot.plotcomp;
@@ -37,6 +38,7 @@ import static rapaio.graphics.opt.GOpt.points;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class FunctionLine extends PlotComponent {
 
     private static final long serialVersionUID = 8388944194915495215L;

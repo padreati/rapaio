@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.util.func;
@@ -28,5 +29,6 @@ import java.util.function.Predicate;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/22/15.
  */
+@Deprecated
 public interface SPredicate<T> extends Predicate<T>, Serializable {
 }

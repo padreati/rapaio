@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio;
@@ -33,6 +34,7 @@ import java.util.logging.LogManager;
 /**
  * @author tutuianu
  */
+@Deprecated
 public class WS {
 
     private static final LogManager logManager = LogManager.getLogManager();

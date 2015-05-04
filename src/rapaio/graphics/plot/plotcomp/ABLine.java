@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.graphics.plot.plotcomp;
@@ -32,6 +33,7 @@ import java.awt.geom.Line2D;
 /**
  * @author Aurelian Tutuianu
  */
+@Deprecated
 public class ABLine extends PlotComponent {
 
     private static final long serialVersionUID = 8980967297314815554L;

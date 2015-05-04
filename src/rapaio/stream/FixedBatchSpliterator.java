@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.stream;
@@ -28,6 +29,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.StreamSupport.stream;
 
+@Deprecated
 public class FixedBatchSpliterator<T> extends FixedBatchSpliteratorBase<T> {
     private final Spliterator<T> spliterator;
 

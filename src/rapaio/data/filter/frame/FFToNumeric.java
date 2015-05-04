@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.data.filter.frame;
@@ -36,6 +37,7 @@ import java.util.Set;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
+@Deprecated
 public class FFToNumeric extends AbstractFF {
 
     public FFToNumeric(String... varNames) {

@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.tutorial;
@@ -42,6 +43,7 @@ import static rapaio.WS.*;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public class TutorialWebsiteGenerator {
 
     private static final Logger logger = Logger.getLogger("rapaio");

@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.data;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
  *
  * @author Aurelian Tutuianu
  */
+@Deprecated
 public class SolidFrame extends AbstractFrame {
 
     private static final long serialVersionUID = 4963238370571140813L;

@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.ml.classifier.boost;
@@ -39,6 +40,7 @@ import java.util.List;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
+@Deprecated
 public class AdaBoostSAMMEClassifier extends AbstractClassifier implements RunningClassifier {
 
     private static final long serialVersionUID = -9154973036108114765L;
@@ -206,7 +208,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     }
 
     @Override
-    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDistributions) {
+    @Deprecated
+    public classifierFit predict(Frame df, boolean withClasses, boolean withDistributions) {
         ClassifierFit p = ClassifierFit.newEmpty(this, df, withClasses, true);
         p.addTarget(firstTargetName(), firstDict());
 
