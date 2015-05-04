@@ -1,5 +1,5 @@
 
-TO BE DEPRECATED FIRST
+TO BE DE-DEPRECATED FIRST
 
 rapaio.data.Index;
 rapaio.data.Frame;
