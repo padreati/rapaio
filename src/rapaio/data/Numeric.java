@@ -24,10 +24,7 @@
 package rapaio.data;
 
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -190,41 +187,35 @@ public final class Numeric extends AbstractVar {
 
     // stream collectors
 
-    public static Collector<Number, Numeric, Numeric> collector() {
+    public static Collector<Double, Numeric, Numeric> collector() {
 
-        return new Collector<Number, Numeric, Numeric>() {
+        return new Collector<Double, Numeric, Numeric>() {
             @Override
             public Supplier<Numeric> supplier() {
                 return Numeric::newEmpty;
             }
 
             @Override
-            public BiConsumer<Numeric, Number> accumulator() {
-                return (numeric, number) -> {
-                    synchronized (this) {
-                        numeric.addValue(number.doubleValue());
-                    }
-                };
+            public BiConsumer<Numeric, Double> accumulator() {
+                return Numeric::addValue;
             }
 
             @Override
             public BinaryOperator<Numeric> combiner() {
-                return (left, right) -> {
-                    synchronized (this) {
-                        right.stream().sequential().forEach(v -> left.addValue(v.value()));
-                        return right;
-                    }
+                return (x, y) -> {
+                    y.stream().forEach(s -> x.addValue(s.value()));
+                    return x;
                 };
             }
 
             @Override
             public Function<Numeric, Numeric> finisher() {
-                return Numeric::solidCopy;
+                return x -> x;
             }
 
             @Override
-            public Set<Collector.Characteristics> characteristics() {
-                return EnumSet.of(Collector.Characteristics.CONCURRENT, Collector.Characteristics.IDENTITY_FINISH);
+            public Set<Characteristics> characteristics() {
+                return new HashSet<>();
             }
         };
     }

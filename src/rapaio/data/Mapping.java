@@ -32,7 +32,7 @@ import java.util.stream.IntStream;
 
 /**
  * A mapping is a collection of row numbers used to build a mapped frame as a
- * wrapped frame another one as a selection of rows.
+ * wrapped selection of rows.
  * <p>
  * The mapping holds the rows which needs to be kept in the mapped frame.
  * <p>
@@ -42,7 +42,6 @@ import java.util.stream.IntStream;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public interface Mapping extends Serializable {
 
     // static builders
@@ -114,7 +113,7 @@ public interface Mapping extends Serializable {
     /**
      * Adds at the end of mapping the given indexes contained in collection
      *
-     * @param rows
+     * @param rows collection of row numbers to be added to the mapping
      */
     void addAll(Collection<Integer> rows);
 
@@ -126,7 +125,6 @@ public interface Mapping extends Serializable {
     IntStream rowStream();
 }
 
-@Deprecated
 final class ListMapping implements Mapping {
 
     private final List<Integer> mapping;
@@ -166,7 +164,6 @@ final class ListMapping implements Mapping {
     }
 }
 
-@Deprecated
 final class IntervalMapping implements Mapping {
 
     final int start;

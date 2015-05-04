@@ -42,7 +42,6 @@ import java.util.stream.*;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public class VSpots implements Stream<VSpot>, Serializable {
 
     private final Stream<VSpot> stream;
@@ -50,6 +49,7 @@ public class VSpots implements Stream<VSpot>, Serializable {
 
     /**
      * Builds a stream of variable spots based on a standard java stream of spots
+     *
      * @param stream nested stream
      */
     public VSpots(Stream<VSpot> stream, Var source) {
@@ -84,10 +84,29 @@ public class VSpots implements Stream<VSpot>, Serializable {
 
     /**
      * Map the observations to the numerical value given by {@link VSpot#value()}
+     *
      * @return stream of numerical values
      */
     public DoubleStream mapToDouble() {
         return mapToDouble(VSpot::value);
+    }
+
+    /**
+     * Map the observations to the index value given by {@link VSpot#index()}
+     *
+     * @return stream of integer values
+     */
+    public IntStream mapToInt() {
+        return mapToInt(VSpot::index);
+    }
+
+    /**
+     * Map the observations to the label value given by {@link VSpot#label()}
+     *
+     * @return stream of label values
+     */
+    public Stream<String> mapToString() {
+        return map(VSpot::label);
     }
 
     @Override
@@ -267,6 +286,7 @@ public class VSpots implements Stream<VSpot>, Serializable {
 
     /**
      * Filters the spot stream by removing all spots which contains missing values
+     *
      * @return stream with complete spots
      */
     public VSpots complete() {
@@ -275,18 +295,26 @@ public class VSpots implements Stream<VSpot>, Serializable {
 
     /**
      * Filters the spot stream by removing all spots which does not contain missing values
+     *
      * @return stream with spots with missing values
      */
     public VSpots incomplete() {
         return new VSpots(stream.filter(VSpot::missing), source);
     }
 
+    /**
+     * Builds a stream of spot streams, each stream having the size given by {@param groupSize}
+     *
+     * @param groupSize the size of the groups which forms each stream
+     * @return a stream of streams
+     */
     public Stream<VSpots> group(int groupSize) {
         return StreamUtil.partition(stream, groupSize).map(list -> new VSpots(list.stream(), source));
     }
 
     /**
      * Makes a string which contains a concatenation of mapped values
+     *
      * @param mapper mapper used to transform a spot into a specific value
      * @return a string made from the concatenation of mapped values
      */
@@ -302,6 +330,7 @@ public class VSpots implements Stream<VSpot>, Serializable {
 
     /**
      * Applies a given transformation to all the numerical values of the underlying variable
+     *
      * @param trans given transformation
      */
     public VSpots transValue(Function<Double, Double> trans) {
@@ -313,6 +342,7 @@ public class VSpots implements Stream<VSpot>, Serializable {
 
     /**
      * Applies a given transformation to all index values of the underlying variable
+     *
      * @param trans given transformation
      */
     public VSpots transIndex(Function<Integer, Integer> trans) {
@@ -324,6 +354,7 @@ public class VSpots implements Stream<VSpot>, Serializable {
 
     /**
      * Applies a given transformation to all label values of the underlying variable
+     *
      * @param trans given transformation
      */
     public VSpots transLabel(Function<String, String> trans) {
@@ -334,14 +365,12 @@ public class VSpots implements Stream<VSpot>, Serializable {
     }
 
     /**
-     * Builds a mapped variable which contains all the observations from the stream
+     * Builds a mapped variable which contains all the observations from the stream.
+     * This is a terminal operation.
+     *
      * @return new mapped variable
      */
     public MappedVar toMappedVar() {
-        Mapping map = Mapping.newEmpty();
-        stream.forEach(s -> {
-            map.add(s.row());
-        });
-        return MappedVar.newByRows(source, map);
+        return MappedVar.newByRows(source, Mapping.newWrapOf(stream.map(VSpot::row).collect(Collectors.toList())));
     }
 }

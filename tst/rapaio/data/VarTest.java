@@ -29,13 +29,14 @@ import rapaio.data.filter.var.VFSort;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
-@Deprecated
 public class VarTest {
 
     @Test
@@ -60,29 +61,21 @@ public class VarTest {
 
     @Test
     public void testNumericCollector() {
-        Var x = Numeric.newWrapOf(1, 2, 3, 4, 5);
-        Var y = Arrays.stream(new double[]{1, 2, 3, 4, 5}).mapToObj(d -> d).parallel().collect(Var.numericCollector());
+        double[] src = IntStream.range(0, 100_000).mapToDouble(x -> x).toArray();
+        Var x = Numeric.newWrapOf(src);
+        Var y = Arrays.stream(src).boxed().parallel().collect(Numeric.collector());
         y = new VFSort().fitApply(y);
 
-        assertEquals(5, x.rowCount());
-        assertEquals(5, y.rowCount());
-
-        for (int i = 0; i < 5; i++) {
-            assertEquals(x.value(i), y.value(i), 1e-12);
-        }
+        assertTrue(x.deepEquals(y));
     }
 
     @Test
     public void testIndexCollector() {
-        Var x = Index.newWrapOf(1, 2, 3, 4, 5);
-        Var y = Arrays.stream(new int[]{1, 2, 3, 4, 5}).mapToObj(d -> d).parallel().collect(Var.indexCollector());
+        int[] src = IntStream.range(0, 100_000).toArray();
+        Var x = Index.newWrapOf(src);
+        Var y = Arrays.stream(src).boxed().parallel().collect(Index.collector());
         y = new VFSort().fitApply(y);
 
-        assertEquals(5, x.rowCount());
-        assertEquals(5, y.rowCount());
-
-        for (int i = 0; i < 5; i++) {
-            assertEquals(x.value(i), y.value(i), 1e-12);
-        }
+        assertTrue(x.deepEquals(y));
     }
 }

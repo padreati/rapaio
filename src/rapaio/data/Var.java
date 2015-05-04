@@ -26,21 +26,13 @@ package rapaio.data;
 import rapaio.data.stream.VSpots;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
 
 /**
  * Random access list of observed values (observations) for a specific variable.
  *
  * @author Aurelian Tutuianu
  */
-@Deprecated
 public interface Var extends Serializable {
 
     /**
@@ -106,42 +98,50 @@ public interface Var extends Serializable {
     double value(int row);
 
     /**
-     * Set numeric setValue for the observation specified by {@param row} to {@param setValue}.
+     * Set numeric value for the observation specified by {@param row} to {@param value}.
      * <p>
      * Returns valid values for numerical var types, otherwise the method
-     * returns unspeified values.
+     * returns unspecified values.
      *
      * @param row   position of the observation
-     * @param value numeric setValue from position {@param row}
+     * @param value numeric value from position {@param row}
      */
     void setValue(int row, double value);
 
-
+    /**
+     * Adds a new value to the last position of the variable.
+     *
+     * @param value value to be added variable
+     */
     void addValue(double value);
 
     /**
-     * Returns index setValue for the observation specified by {@param row}
+     * Returns index value for the observation specified by {@param row}
      *
      * @param row position of the observation
-     * @return index setValue
+     * @return index value
      */
     int index(int row);
 
     /**
-     * Set index setValue for the observation specified by {@param row}.
+     * Set index value for the observation specified by {@param row}.
      *
      * @param row   position of the observation
-     * @param value index setValue for the observation
+     * @param value index value for the observation
      */
     void setIndex(int row, int value);
 
+    /**
+     * Adds an index value to the last position of the variable
+     * @param value value to be added at the end of the variable
+     */
     void addIndex(int value);
 
     /**
      * Returns nominal label for the observation specified by {@param row}.
      *
      * @param row position of the observation
-     * @return label setValue for the observation
+     * @return label value for the observation
      */
     String label(int row);
 
@@ -149,10 +149,15 @@ public interface Var extends Serializable {
      * Set nominal label for the observation specified by {@param row}.
      *
      * @param row   position of the observation
-     * @param value label setValue of the observation
+     * @param value label value of the observation
      */
     void setLabel(int row, String value);
 
+    /**
+     * Adds an index value to the last position of the variable, updates dictionary
+     * if is necessary.
+     * @param value text label to be added at the end of the variable
+     */
     void addLabel(String value);
 
     /**
@@ -183,10 +188,24 @@ public interface Var extends Serializable {
      * when replaced with dictionary x,y,x will have as a result the following
      * labels: x,y,x,x,x,x and indexes 1,2,1,1,1,1
      *
-     * @param dict array fo terms which comprises the new dictionary
+     * @param dict array of terms which comprises the new dictionary
      */
     void setDictionary(String... dict);
 
+    /**
+     * Replace the used dictionary with a new one. A mapping between the
+     * old values of the dictionary with the new values is done. The mapping
+     * is done based on position.
+     * <p>
+     * The new dictionary can have repeated terms. This feature can be used
+     * to unite multiple old labels with new ones. However the actual new
+     * dictionary used will have only unique terms and indexed accordingly.
+     * Thus a nominal with labels a,b,a,c,a,c which will have dictionary a,b,c,
+     * when replaced with dictionary x,y,x will have as a result the following
+     * labels: x,y,x,x,x,x and indexes 1,2,1,1,1,1
+     *
+     * @param dict list of terms which comprises the new dictionary
+     */
     default void setDictionary(List<String> dict) {
         String[] vector = new String[dict.size()];
         for (int i = 0; i < vector.length; i++) {
@@ -289,71 +308,13 @@ public interface Var extends Serializable {
      */
     VSpots stream();
 
-    static Collector<Double, Numeric, Numeric> numericCollector() {
-        return new Collector<Double, Numeric, Numeric>() {
-            @Override
-            public Supplier<Numeric> supplier() {
-                return Numeric::newEmpty;
-            }
-
-            @Override
-            public BiConsumer<Numeric, Double> accumulator() {
-                return Numeric::addValue;
-            }
-
-            @Override
-            public BinaryOperator<Numeric> combiner() {
-                return (x, y) -> {
-                    y.stream().forEach(s -> x.addValue(s.value()));
-                    return x;
-                };
-            }
-
-            @Override
-            public Function<Numeric, Numeric> finisher() {
-                return x -> x;
-            }
-
-            @Override
-            public Set<Characteristics> characteristics() {
-                return new HashSet<>();
-            }
-        };
-    }
-
-    static Collector<Integer, Index, Index> indexCollector() {
-        return new Collector<Integer, Index, Index>() {
-            @Override
-            public Supplier<Index> supplier() {
-                return Index::newEmpty;
-            }
-
-            @Override
-            public BiConsumer<Index, Integer> accumulator() {
-                return Index::addIndex;
-            }
-
-            @Override
-            public BinaryOperator<Index> combiner() {
-                return (x, y) -> {
-                    y.stream().forEach(s -> x.addValue(s.value()));
-                    return x;
-                };
-            }
-
-            @Override
-            public Function<Index, Index> finisher() {
-                return x -> x;
-            }
-
-            @Override
-            public Set<Characteristics> characteristics() {
-                return new HashSet<>();
-            }
-        };
-    }
-
-    default boolean fullEquals(Var var) {
+    /**
+     * Tests if two variables has identical content, it does not matter the implementation.
+     *
+     * @param var variable on which the deep equals applied
+     * @return true if type, size and content is identical
+     */
+    default boolean deepEquals(Var var) {
         if (rowCount() != var.rowCount())
             return false;
         if (type() != var.type())

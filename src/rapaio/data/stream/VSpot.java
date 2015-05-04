@@ -28,11 +28,10 @@ import rapaio.data.Var;
 import java.io.Serializable;
 
 /**
- * Variable spots are pointer to a single observation of a given variable and are used in the context of streams.
+ * A variable spot is a pointer to a single observation of a given variable and is used in the context of streams.
  *
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public class VSpot implements Serializable {
 
     private final int row;
@@ -49,8 +48,6 @@ public class VSpot implements Serializable {
     }
 
     /**
-     * Row of the spotted observation
-     *
      * @return row of the spotted variable
      */
     public int row() {
@@ -58,16 +55,14 @@ public class VSpot implements Serializable {
     }
 
     /**
-     * Returns the underlying variable
-     * @return support variable
+     * @return underlying support variable
      */
     public Var var() {
         return var;
     }
 
     /**
-     * Returns true if the spotted observation value is missing / not specified
-     * @return true if value is missing, false otherwise
+     * @return true if the observation is missing, false otherwise
      */
     public boolean missing() {
         return var.missing(row);
@@ -81,15 +76,14 @@ public class VSpot implements Serializable {
     }
 
     /**
-     * Returns the observation value as a numerical double value
-     * @return numeric value
+     * @return numeric double value of the observation
      */
     public double value() {
         return var.value(row);
     }
 
     /**
-     * Assigns a numeric value to the observation value
+     * Assigns a numeric value to the observation
      * @param value given numeric value
      */
     public void setValue(final double value) {
@@ -97,8 +91,7 @@ public class VSpot implements Serializable {
     }
 
     /**
-     * Returns the index value of the observation
-     * @return index value
+     * @return index value of the observation
      */
     public int index() {
         return var.index(row);
@@ -113,8 +106,7 @@ public class VSpot implements Serializable {
     }
 
     /**
-     * Returns the label value of the observation
-     * @return label value
+     * @return label value of the observation
      */
     public String label() {
         return var.label(row);
@@ -129,16 +121,7 @@ public class VSpot implements Serializable {
     }
 
     /**
-     * Returns the label dictionary used by given variable
-     * @return dictionary of the variable
-     */
-    public String[] dictionary() {
-        return var.dictionary();
-    }
-
-    /**
-     * Returns binary value of the observation
-     * @return binary value
+     * @return binary value of the observation
      */
     public boolean binary() {
         return var.binary(row);
@@ -153,8 +136,7 @@ public class VSpot implements Serializable {
     }
 
     /**
-     * Returns stamp value of the current observation
-     * @return stamp value
+     * @return stamp value of the observation
      */
     public long stamp() {
         return var.stamp(row);

@@ -24,6 +24,13 @@
 package rapaio.data;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 
 /**
  * Builds a numeric variable which stores values as 32-bit integers.
@@ -337,5 +344,37 @@ public final class Index extends AbstractVar {
     @Override
     public String toString() {
         return "Index[name:" + name() + ", rowCount:" + rowCount() + "]";
+    }
+
+    public static Collector<? super Integer, Index, Index> collector() {
+        return new Collector<Integer, Index, Index>() {
+            @Override
+            public Supplier<Index> supplier() {
+                return Index::newEmpty;
+            }
+
+            @Override
+            public BiConsumer<Index, Integer> accumulator() {
+                return Index::addIndex;
+            }
+
+            @Override
+            public BinaryOperator<Index> combiner() {
+                return (x, y) -> {
+                    y.stream().forEach(s -> x.addValue(s.value()));
+                    return x;
+                };
+            }
+
+            @Override
+            public Function<Index, Index> finisher() {
+                return x -> x;
+            }
+
+            @Override
+            public Set<Characteristics> characteristics() {
+                return new HashSet<>();
+            }
+        };
     }
 }
