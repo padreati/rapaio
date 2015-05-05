@@ -118,6 +118,26 @@ public interface Mapping extends Serializable {
     void addAll(Collection<Integer> rows);
 
     /**
+     * Removes the element from the given position.
+     *
+     * @param pos position of the element which will be removed
+     */
+    void remove(int pos);
+
+    /**
+     * Removes all elements from the mapping
+     *
+     * @param positions collection with positions which will be removed
+     */
+    void removeAll(Collection<Integer> positions);
+
+    /**
+     * Removes all elements from mapping
+     */
+    void clear();
+
+
+    /**
      * Builds a stream of indexes values
      *
      * @return a stream of indexed values
@@ -159,6 +179,21 @@ final class ListMapping implements Mapping {
         mapping.addAll(pos);
     }
 
+    @Override
+    public void remove(int pos) {
+        mapping.remove(pos);
+    }
+
+    @Override
+    public void removeAll(Collection<Integer> positions) {
+        positions.forEach(mapping::remove);
+    }
+
+    @Override
+    public void clear() {
+        mapping.clear();
+    }
+
     public IntStream rowStream() {
         return mapping.stream().mapToInt(i -> i);
     }
@@ -168,6 +203,8 @@ final class IntervalMapping implements Mapping {
 
     final int start;
     final int end;
+    boolean onList = false;
+    ListMapping listMapping;
 
     IntervalMapping(int start, int end) {
         this.start = start;
@@ -176,26 +213,67 @@ final class IntervalMapping implements Mapping {
 
     @Override
     public int size() {
+        if (onList)
+            return listMapping.size();
         return end - start;
     }
 
     @Override
     public int get(int pos) {
+        if (onList)
+            return listMapping.get(pos);
         return pos + start;
     }
 
     @Override
     public void add(int row) {
-        throw new IllegalArgumentException("This is not allowed for interval mappings");
+        if (!onList) {
+            onList = true;
+            listMapping = new ListMapping(IntStream.range(start, end).toArray());
+        }
+        listMapping.add(row);
     }
 
     @Override
     public void addAll(Collection<Integer> rows) {
-        throw new IllegalArgumentException("This is not allowed for interval mappings");
+        if (!onList) {
+            onList = true;
+            listMapping = new ListMapping(IntStream.range(start, end).toArray());
+        }
+        listMapping.addAll(rows);
+    }
+
+    @Override
+    public void remove(int pos) {
+        if (!onList) {
+            onList = true;
+            listMapping = new ListMapping(IntStream.range(start, end).toArray());
+        }
+        listMapping.remove(pos);
+    }
+
+    @Override
+    public void removeAll(Collection<Integer> positions) {
+        if (!onList) {
+            onList = true;
+            listMapping = new ListMapping(IntStream.range(start, end).toArray());
+        }
+        listMapping.removeAll(positions);
+    }
+
+    @Override
+    public void clear() {
+        if (!onList) {
+            onList = true;
+            listMapping = new ListMapping(IntStream.range(start, end).toArray());
+        }
+        listMapping.clear();
     }
 
     @Override
     public IntStream rowStream() {
+        if (onList)
+            return listMapping.rowStream();
         return IntStream.range(start, end);
     }
 }

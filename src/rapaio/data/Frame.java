@@ -44,7 +44,6 @@ import java.util.stream.IntStream;
  *
  * @author Aurelian Tutuianu
  */
-@Deprecated
 public interface Frame extends Serializable, Printable {
 
     /**
@@ -404,8 +403,8 @@ public interface Frame extends Serializable, Printable {
     }
 
     default SolidFrame solidCopy() {
-        String[] names = varNames();
-        Var[] vars = new Var[names.length];
+        final String[] names = varNames();
+        final Var[] vars = new Var[names.length];
         for (int i = 0; i < names.length; i++) {
             vars[i] = var(names[i]).solidCopy().withName(names[i]);
         }
