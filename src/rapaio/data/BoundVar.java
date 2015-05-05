@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
  */
 public class BoundVar extends AbstractVar {
 
+    private static final long serialVersionUID = 5449912906816640189L;
     private final int rowCount;
     private final VarType varType;
     private final List<Integer> counts;

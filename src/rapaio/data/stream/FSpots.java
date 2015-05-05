@@ -37,9 +37,9 @@ import java.util.stream.*;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public class FSpots implements Stream<FSpot>, Serializable {
 
+    private static final long serialVersionUID = -1062266227832968382L;
     private final Stream<FSpot> stream;
     private final Frame source;
 
@@ -253,7 +253,7 @@ public class FSpots implements Stream<FSpot>, Serializable {
      * @return list of complete (non-missing) frame spots
      */
     public FSpots complete() {
-        return filter((FSpot fi) -> !fi.missing());
+        return filter(s -> !s.missing());
     }
 
     /**
@@ -291,10 +291,6 @@ public class FSpots implements Stream<FSpot>, Serializable {
      * @return mapped frame with spots from the stream
      */
     public Frame toMappedFrame() {
-        final Mapping mapping = Mapping.newEmpty();
-        forEach(spot -> {
-            mapping.add(spot.row());
-        });
-        return MappedFrame.newByRow(source, mapping);
+        return MappedFrame.newByRow(source, collectMapping());
     }
 }

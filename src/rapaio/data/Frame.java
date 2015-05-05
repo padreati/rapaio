@@ -39,10 +39,9 @@ import java.util.stream.IntStream;
  * Random access list of observed values for multiple variables.
  * <p>
  * The observed values are represented in a tabular format.
- * Rows corresponds to observations and columns corresponds to
- * observed (measured) statistical variables.
+ * Rows corresponds to observations and columns corresponds to observed variables.
  *
- * @author Aurelian Tutuianu
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public interface Frame extends Serializable, Printable {
 
@@ -99,6 +98,7 @@ public interface Frame extends Serializable, Printable {
 
     /**
      * Adds the given variables to the variables of the current frame to build a new frame.
+     * New variables must have the same number of rows.
      *
      * @param vars variables added to the current frame variables
      * @return new frame with current frame variables and given variables added
@@ -107,6 +107,7 @@ public interface Frame extends Serializable, Printable {
 
     /**
      * Adds the variables from the given frame to the variables of the current frame to build a new frame.
+     * New variables from the given frame must have the same row count.
      *
      * @param df given frame with variables which will be added
      * @return new frame with the current frame variables and given frame variables
@@ -163,13 +164,20 @@ public interface Frame extends Serializable, Printable {
     }
 
     /**
-     * Builds a new frame having rows of the current frame, followed by the rows of the binded frame.
+     * Builds a new frame having rows of the current frame, followed by the rows of the bounded frame.
+     * The new frame must has the same variable definitions as the current frame.
      *
      * @param df given frame with additional rows
      * @return new frame with additional rows
      */
     Frame bindRows(Frame df);
 
+    /**
+     * Builds a new mapped frame having the given rows.
+     *
+     * @param rows given rows to be selected
+     * @return new mapped frame with given rows
+     */
     default Frame mapRows(int... rows) {
         return mapRows(Mapping.newCopyOf(rows));
     }
@@ -199,21 +207,21 @@ public interface Frame extends Serializable, Printable {
     }
 
     /**
-     * Returns double value corresponding to given row and var number
+     * Returns double value corresponding to given row and var index
      *
-     * @param row row number
-     * @param col column number
-     * @return numeric setValue
+     * @param row      row number
+     * @param varIndex variable index
+     * @return numeric value
      */
-    default double value(int row, int col) {
-        return var(col).value(row);
+    default double value(int row, int varIndex) {
+        return var(varIndex).value(row);
     }
 
     /**
      * Returns double value from given row and varName
      *
      * @param row     row number
-     * @param varName column name
+     * @param varName variable name
      * @return numeric value
      */
     default double value(int row, String varName) {
@@ -221,18 +229,18 @@ public interface Frame extends Serializable, Printable {
     }
 
     /**
-     * Set double value for given row and column
+     * Set double value for given row and var index
      *
      * @param row   row number
-     * @param col   column number
+     * @param varIndex   var index
      * @param value numeric value
      */
-    default void setValue(int row, int col, double value) {
-        var(col).setValue(row, value);
+    default void setValue(int row, int varIndex, double value) {
+        var(varIndex).setValue(row, value);
     }
 
     /**
-     * Convenient shortcut method to call {@link Var#setValue(int, double)} for a given column.
+     * Convenient shortcut method to call {@link Var#setValue(int, double)} for a given variable.
      *
      * @param row     row number
      * @param varName var name
@@ -244,65 +252,65 @@ public interface Frame extends Serializable, Printable {
 
 
     /**
-     * Convenient shortcut method for calling {@link Var#index(int)} for a given column.
+     * Convenient shortcut method for calling {@link Var#index(int)} for a given variable.
      *
      * @param row row number
-     * @param col column number
-     * @return setIndex value
+     * @param varIndex column number
+     * @return index value
      */
-    default int index(int row, int col) {
-        return var(col).index(row);
+    default int index(int row, int varIndex) {
+        return var(varIndex).index(row);
     }
 
     /**
-     * Convenient shortcut method for calling {@link Var#index(int)} for a given column.
+     * Convenient shortcut method for calling {@link Var#index(int)} for a given variable.
      *
      * @param row     row number
      * @param varName var name
-     * @return setIndex value
+     * @return index value
      */
     default int index(int row, String varName) {
         return var(varName).index(row);
     }
 
     /**
-     * Convenient shortcut method for calling {@link Var#setIndex(int, int)} for given column.
+     * Convenient shortcut method for calling {@link Var#setIndex(int, int)} for given variable.
      *
      * @param row   row number
-     * @param col   column number
+     * @param varIndex   var index
      * @param value setIndex value
      */
-    default void setIndex(int row, int col, int value) {
-        var(col).setIndex(row, value);
+    default void setIndex(int row, int varIndex, int value) {
+        var(varIndex).setIndex(row, value);
     }
 
     /**
-     * Convenient shortcut method for calling {@link Var#setIndex(int, int)} for given column.
+     * Convenient shortcut method for calling {@link Var#setIndex(int, int)} for given variable.
      *
      * @param row     row number
      * @param varName var name
-     * @param value   setIndex value
+     * @param value   index value
      */
     default void setIndex(int row, String varName, int value) {
         var(varName).setIndex(row, value);
     }
 
     /**
-     * Convenient shortcut method for calling {@link Var#label(int)} for given column.
+     * Convenient shortcut method for calling {@link Var#label(int)} for given variable.
      *
      * @param row row number
-     * @param col column number
+     * @param varIndex var index
      * @return nominal label value
      */
-    default String label(int row, int col) {
-        return var(col).label(row);
+    default String label(int row, int varIndex) {
+        return var(varIndex).label(row);
     }
 
     /**
-     * Convenient shortcut method for calling {@link Var#label(int)} for given column.
+     * Convenient shortcut method for calling {@link Var#label(int)} for given variable.
      *
      * @param row     row number
-     * @param varName column name
+     * @param varName var name
      * @return nominal label value
      */
     default String label(int row, String varName) {
@@ -310,18 +318,18 @@ public interface Frame extends Serializable, Printable {
     }
 
     /**
-     * Convenient shortcut method for calling {@link Var#setLabel(int, String)} for given column.
+     * Convenient shortcut method for calling {@link Var#setLabel(int, String)} for given variable.
      *
      * @param row   row number
-     * @param col   column number
+     * @param varIndex   var index
      * @param value nominal label value
      */
-    default void setLabel(int row, int col, String value) {
-        var(col).setLabel(row, value);
+    default void setLabel(int row, int varIndex, String value) {
+        var(varIndex).setLabel(row, value);
     }
 
     /**
-     * Convenient shortcut method for calling {@link Var#setLabel(int, String)} for given column.
+     * Convenient shortcut method for calling {@link Var#setLabel(int, String)} for given variable.
      *
      * @param row     row number
      * @param varName column name
@@ -331,18 +339,43 @@ public interface Frame extends Serializable, Printable {
         var(varName).setLabel(row, value);
     }
 
-    default boolean binary(int row, int var) {
-        return var(var).binary(row);
+    /**
+     * Returns binary value from the given cell
+     *
+     * @param row      row number
+     * @param varIndex variable index
+     * @return binary value found
+     */
+    default boolean binary(int row, int varIndex) {
+        return var(varIndex).binary(row);
     }
 
+    /**
+     * Returns binary value from given cell
+     * @param row row number
+     * @param varName var name
+     * @return binary value found
+     */
     default boolean binary(int row, String varName) {
         return var(varName).binary(row);
     }
 
+    /**
+     * Binary value setter for given cell
+     * @param row row number
+     * @param varIndex var index
+     * @param value value to be set
+     */
     default void setBinary(int row, int varIndex, boolean value) {
         var(varIndex).setBinary(row, value);
     }
 
+    /**
+     * Binary value setter for given cell
+     * @param row row number
+     * @param varName var name
+     * @param value value to be set
+     */
     default void setBinary(int row, String varName, boolean value) {
         var(varName).setBinary(row, value);
     }
@@ -412,8 +445,6 @@ public interface Frame extends Serializable, Printable {
     }
 
     /**
-     * Builds a stream of FSpots
-     *
      * @return a stream of FSpot
      */
     default FSpots stream() {

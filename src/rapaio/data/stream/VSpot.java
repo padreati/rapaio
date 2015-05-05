@@ -28,12 +28,13 @@ import rapaio.data.Var;
 import java.io.Serializable;
 
 /**
- * A variable spot is a pointer to a single observation of a given variable and is used in the context of streams.
+ * A variable spot is a reference to an observation from a variable and is used in the context of streams.
  *
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 public class VSpot implements Serializable {
 
+    private static final long serialVersionUID = -6730609711071770571L;
     private final int row;
     private final Var var;
 

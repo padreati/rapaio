@@ -28,7 +28,6 @@ import java.util.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class BoundFrame extends AbstractFrame {
 
     private static final long serialVersionUID = -445349340356580788L;

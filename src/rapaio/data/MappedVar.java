@@ -195,11 +195,11 @@ public class MappedVar extends AbstractVar {
 
     @Override
     public void remove(int row) {
-        throw new IllegalArgumentException("operation not available on mapped vectors");
+        mapping.remove(row);
     }
 
     @Override
     public void clear() {
-        throw new IllegalArgumentException("operation not available on mapped vectors");
+        mapping.clear();
     }
 }

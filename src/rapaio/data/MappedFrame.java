@@ -35,11 +35,10 @@ import java.util.stream.IntStream;
  * <p>
  * This frame does not hold actual values, it delegates the behavior
  * to the wrapped frame, thus the wrapping affects only the rows
- * selected anf the order of these rows.
+ * selected and the order of these rows.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class MappedFrame extends AbstractFrame {
 
     private static final long serialVersionUID = 1368765233851124235L;
@@ -125,13 +124,13 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public Var var(int col) {
-        return vars[col];
+    public Var var(int varIndex) {
+        return vars[varIndex];
     }
 
     @Override
-    public Var var(String name) {
-        return var(varIndex(name));
+    public Var var(String varName) {
+        return var(varIndex(varName));
     }
 
     @Override

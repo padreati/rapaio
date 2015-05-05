@@ -28,19 +28,20 @@ import rapaio.data.Frame;
 import java.io.Serializable;
 
 /**
- * Frame spot is a reference to an observation from a frame.
+ * Frame spot is a reference to an observation from a frame and usually is used in context of streams
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public final class FSpot implements Serializable {
 
+    private static final long serialVersionUID = 5414699690274410204L;
     private final Frame df;
     private final int row;
 
     /**
      * Builds a frame spot for a given frame and a given row of the observation
-     * @param df given data frame
+     *
+     * @param df  given data frame
      * @param row given row
      */
     public FSpot(final Frame df, final int row) {
@@ -50,14 +51,16 @@ public final class FSpot implements Serializable {
 
     /**
      * Returns the underlying frame of the spot
+     *
      * @return the underlying frame
      */
-    public Frame getFrame() {
+    public Frame frame() {
         return df;
     }
 
     /**
      * Returns the row of the observation referenced by spot
+     *
      * @return row number
      */
     public int row() {
@@ -65,7 +68,6 @@ public final class FSpot implements Serializable {
     }
 
     /**
-     * Returns if the spot has a missing value on any variable
      * @return true if missing value on any variable, false otherwise
      */
     public boolean missing() {
@@ -74,6 +76,7 @@ public final class FSpot implements Serializable {
 
     /**
      * Returns true if the spot has a missing value on the variable specified
+     *
      * @param varIndex index of the variable
      * @return true if is missing, false otherwise
      */
@@ -83,6 +86,7 @@ public final class FSpot implements Serializable {
 
     /**
      * Returns true if the spot has a missing value on the variable specified
+     *
      * @param varName variable name
      * @return true is missing value, false otherwise
      */
@@ -92,6 +96,7 @@ public final class FSpot implements Serializable {
 
     /**
      * Sets missing value on given variable
+     *
      * @param varIndex index of the variable
      */
     public void setMissing(int varIndex) {
@@ -100,6 +105,7 @@ public final class FSpot implements Serializable {
 
     /**
      * Sets missing value for given variable
+     *
      * @param varName variable name
      */
     public void setMissing(String varName) {
@@ -108,6 +114,7 @@ public final class FSpot implements Serializable {
 
     /**
      * Returns numeric value of the given variable
+     *
      * @param varIndex index of the variable
      * @return numerical value of the given variable on the current spot
      */
@@ -117,6 +124,7 @@ public final class FSpot implements Serializable {
 
     /**
      * Returns numeric value of the given variable on the current spot
+     *
      * @param varName variable name
      * @return numeric value of the given variable on the current spot
      */
@@ -126,8 +134,9 @@ public final class FSpot implements Serializable {
 
     /**
      * Sets numeric value of the given variable on the current spot
+     *
      * @param varIndex index of the variable
-     * @param value given numeric value
+     * @param value    given numeric value
      */
     public void setValue(int varIndex, double value) {
         df.setValue(row, varIndex, value);
@@ -135,8 +144,9 @@ public final class FSpot implements Serializable {
 
     /**
      * Sets numeric value of the given variable on the current spot
+     *
      * @param varName variable name
-     * @param value given numeric value
+     * @param value   given numeric value
      */
     public void setValue(String varName, double value) {
         df.setValue(row, varName, value);
@@ -144,6 +154,7 @@ public final class FSpot implements Serializable {
 
     /**
      * Returns index value of the given variable
+     *
      * @param varIndex index of the variable
      * @return index value of the given variable on the current spot
      */
@@ -153,6 +164,7 @@ public final class FSpot implements Serializable {
 
     /**
      * Returns index value of the given variable
+     *
      * @param varName variable name
      * @return index value of the given variable on the current spot
      */
@@ -162,8 +174,9 @@ public final class FSpot implements Serializable {
 
     /**
      * Sets the index value of the given variable on the current spot
+     *
      * @param varIndex index of the variable
-     * @param value given index value
+     * @param value    given index value
      */
     public void setIndex(int varIndex, int value) {
         df.setIndex(row, varIndex, value);
@@ -171,8 +184,9 @@ public final class FSpot implements Serializable {
 
     /**
      * Sets the index value of the given variable on the current spot
+     *
      * @param varName variable name
-     * @param value given index value
+     * @param value   given index value
      */
     public void setIndex(String varName, int value) {
         df.setIndex(row, varName, value);
@@ -180,6 +194,7 @@ public final class FSpot implements Serializable {
 
     /**
      * Returns label of the given variable on the current spot
+     *
      * @param varIndex index of the variable
      * @return label value
      */
@@ -189,6 +204,7 @@ public final class FSpot implements Serializable {
 
     /**
      * Returns label of the given variable on the current spot
+     *
      * @param varName variable name
      * @return label value
      */
@@ -198,8 +214,9 @@ public final class FSpot implements Serializable {
 
     /**
      * Sets label value of the given variable on the current spot
+     *
      * @param varIndex index of the variable
-     * @param value given label value
+     * @param value    given label value
      */
     public void setLabel(int varIndex, String value) {
         df.setLabel(row, varIndex, value);
@@ -207,8 +224,9 @@ public final class FSpot implements Serializable {
 
     /**
      * Sets label value of the given variable on the current spot
+     *
      * @param varName variable name
-     * @param value given label value
+     * @param value   given label value
      */
     public void setLabel(String varName, String value) {
         df.setLabel(row, varName, value);
@@ -216,6 +234,7 @@ public final class FSpot implements Serializable {
 
     /**
      * Returns label dictionary of the given variable
+     *
      * @param varIndex index of the variable
      * @return label dictionary
      */
@@ -225,6 +244,7 @@ public final class FSpot implements Serializable {
 
     /**
      * Returns label dictionary of the given variable
+     *
      * @param varName variable name
      * @return label dictionary
      */
