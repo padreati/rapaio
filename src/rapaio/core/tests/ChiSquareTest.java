@@ -24,21 +24,13 @@
 package rapaio.core.tests;
 
 import rapaio.WS;
-import rapaio.core.Printable;
+import rapaio.printer.Printable;
 import rapaio.core.distributions.ChiSquare;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.data.stream.VSpot;
 import rapaio.graphics.Plotter2D;
-import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.plot.Plot;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
 import static rapaio.graphics.opt.GOpt.color;
 

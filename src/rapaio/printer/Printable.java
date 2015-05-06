@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.core;
+package rapaio.printer;
 
 import rapaio.WS;
 

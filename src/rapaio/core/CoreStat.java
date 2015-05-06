@@ -21,16 +21,18 @@
  *
  */
 
-package rapaio.core.stat;
+package rapaio.core;
 
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
 import rapaio.data.Var;
 
 /**
  * Utility class for calling basic statistics on variables.
  * <p>
- * Created by tutuianu on 5/4/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/4/15.
  */
-public final class BaseStat {
+public final class CoreStat {
 
     public static Mean mean(Var var) {
         return new Mean(var);

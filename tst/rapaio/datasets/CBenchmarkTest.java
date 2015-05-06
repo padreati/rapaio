@@ -93,7 +93,7 @@
 //                                    c.classes()).accuracy());
 //                }
 //            }
-//            Summary.lines(results);
+//            Summary.printLines(results);
 //
 //            for (int i = 1; i < totalResults.varCount(); i++) {
 //                for (int j = 0; j < totalResults.rowCount(); j++) {
@@ -111,7 +111,7 @@
 //        }
 //
 //        WS.println("Average after " + ((int)ROUNDS) + " rounds");
-//        Summary.lines(totalResults);
+//        Summary.printLines(totalResults);
 //
 //    }
 //}

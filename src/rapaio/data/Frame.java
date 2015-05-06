@@ -23,7 +23,7 @@
 
 package rapaio.data;
 
-import rapaio.core.Printable;
+import rapaio.printer.Printable;
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
 import rapaio.ws.Summary;
@@ -31,6 +31,7 @@ import rapaio.ws.Summary;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -242,9 +243,9 @@ public interface Frame extends Serializable, Printable {
     /**
      * Set double value for given row and var index
      *
-     * @param row   row number
-     * @param varIndex   var index
-     * @param value numeric value
+     * @param row      row number
+     * @param varIndex var index
+     * @param value    numeric value
      */
     default void setValue(int row, int varIndex, double value) {
         var(varIndex).setValue(row, value);
@@ -265,7 +266,7 @@ public interface Frame extends Serializable, Printable {
     /**
      * Convenient shortcut method for calling {@link Var#index(int)} for a given variable.
      *
-     * @param row row number
+     * @param row      row number
      * @param varIndex column number
      * @return index value
      */
@@ -287,9 +288,9 @@ public interface Frame extends Serializable, Printable {
     /**
      * Convenient shortcut method for calling {@link Var#setIndex(int, int)} for given variable.
      *
-     * @param row   row number
-     * @param varIndex   var index
-     * @param value setIndex value
+     * @param row      row number
+     * @param varIndex var index
+     * @param value    setIndex value
      */
     default void setIndex(int row, int varIndex, int value) {
         var(varIndex).setIndex(row, value);
@@ -309,7 +310,7 @@ public interface Frame extends Serializable, Printable {
     /**
      * Convenient shortcut method for calling {@link Var#label(int)} for given variable.
      *
-     * @param row row number
+     * @param row      row number
      * @param varIndex var index
      * @return nominal label value
      */
@@ -331,9 +332,9 @@ public interface Frame extends Serializable, Printable {
     /**
      * Convenient shortcut method for calling {@link Var#setLabel(int, String)} for given variable.
      *
-     * @param row   row number
-     * @param varIndex   var index
-     * @param value nominal label value
+     * @param row      row number
+     * @param varIndex var index
+     * @param value    nominal label value
      */
     default void setLabel(int row, int varIndex, String value) {
         var(varIndex).setLabel(row, value);
@@ -363,7 +364,8 @@ public interface Frame extends Serializable, Printable {
 
     /**
      * Returns binary value from given cell
-     * @param row row number
+     *
+     * @param row     row number
      * @param varName var name
      * @return binary value found
      */
@@ -373,9 +375,10 @@ public interface Frame extends Serializable, Printable {
 
     /**
      * Binary value setter for given cell
-     * @param row row number
+     *
+     * @param row      row number
      * @param varIndex var index
-     * @param value value to be set
+     * @param value    value to be set
      */
     default void setBinary(int row, int varIndex, boolean value) {
         var(varIndex).setBinary(row, value);
@@ -383,9 +386,10 @@ public interface Frame extends Serializable, Printable {
 
     /**
      * Binary value setter for given cell
-     * @param row row number
+     *
+     * @param row     row number
      * @param varName var name
-     * @param value value to be set
+     * @param value   value to be set
      */
     default void setBinary(int row, String varName, boolean value) {
         var(varName).setBinary(row, value);
@@ -467,8 +471,39 @@ public interface Frame extends Serializable, Printable {
         Summary.summary(this);
     }
 
+    default void printLines() {
+        Var[] vars = new Var[varCount()];
+        String[] names = varNames();
+        for (int i = 0; i < vars.length; i++) {
+            vars[i] = var(i);
+        }
+        Summary.head(rowCount(), vars, names);
+    }
+
     @Override
     default void buildSummary(StringBuilder sb) {
 //
+    }
+
+    default boolean deepEquals(Frame df) {
+        if (rowCount() != df.rowCount())
+            return false;
+        if (varCount() != df.varCount())
+            return false;
+        String[] names = varNames();
+        String[] dfNames = df.varNames();
+        if (names.length != dfNames.length)
+            return false;
+        for (int i = 0; i < names.length; i++) {
+            if (!(names[i].equals(dfNames[i]))) {
+                return false;
+            }
+        }
+        for (int i = 0; i < names.length; i++) {
+            if (!(var(names[i]).deepEquals(df.var(dfNames[i])))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

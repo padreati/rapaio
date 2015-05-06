@@ -23,11 +23,9 @@
 
 package rapaio.core.stat;
 
-import rapaio.core.Printable;
+import rapaio.printer.Printable;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
-
-import java.util.DoubleSummaryStatistics;
 
 /**
  * Compensated version of arithmetic mean of values from a {@code Var}.

@@ -23,7 +23,7 @@
 
 package rapaio.core.stat;
 
-import rapaio.core.Printable;
+import rapaio.printer.Printable;
 import rapaio.data.Var;
 
 import java.util.Arrays;

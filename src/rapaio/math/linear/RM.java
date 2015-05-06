@@ -25,7 +25,7 @@ package rapaio.math.linear;
 
 import rapaio.WS;
 import rapaio.core.MathBase;
-import rapaio.core.Printable;
+import rapaio.printer.Printable;
 import rapaio.math.linear.impl.*;
 import rapaio.printer.Printer;
 

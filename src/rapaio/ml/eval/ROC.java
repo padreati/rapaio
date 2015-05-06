@@ -23,7 +23,7 @@
 
 package rapaio.ml.eval;
 
-import rapaio.core.Printable;
+import rapaio.printer.Printable;
 import rapaio.data.*;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.printer.Printer;

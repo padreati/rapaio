@@ -23,7 +23,7 @@
 
 package rapaio.core.correlation;
 
-import rapaio.core.Printable;
+import rapaio.printer.Printable;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;

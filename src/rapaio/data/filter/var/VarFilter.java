@@ -23,7 +23,7 @@
 
 package rapaio.data.filter.var;
 
-import rapaio.core.Printable;
+import rapaio.printer.Printable;
 import rapaio.data.Var;
 
 import java.io.Serializable;

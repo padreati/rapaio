@@ -29,6 +29,5 @@ import java.util.function.Predicate;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/22/15.
  */
-@Deprecated
 public interface SPredicate<T> extends Predicate<T>, Serializable {
 }

@@ -26,6 +26,5 @@ package rapaio.util.func;
 import java.io.Serializable;
 import java.util.function.BiFunction;
 
-@Deprecated
 public interface SBiFunction<T, U, R> extends BiFunction<T, U, R>, Serializable {
 }

@@ -33,8 +33,8 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static rapaio.core.stat.BaseStat.mean;
-import static rapaio.core.stat.BaseStat.var;
+import static rapaio.core.CoreStat.mean;
+import static rapaio.core.CoreStat.var;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

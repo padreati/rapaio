@@ -81,7 +81,7 @@ public class Lines extends PlotComponent {
             double x2 = parent.xScale(x.value(i));
             double y2 = parent.yScale(y.value(i));
 
-            //TODO improve this crap to clip only parts of lines outside of the data range
+            //TODO improve this crap to clip only parts of printLines outside of the data range
             if (parent.getRange().contains(x.value(i - 1), y.value(i - 1))
                     && parent.getRange().contains(x.value(i), y.value(i))) {
                 g2d.draw(new Line2D.Double(x1, y1, x2, y2));

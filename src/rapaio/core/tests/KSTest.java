@@ -23,7 +23,7 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.Printable;
+import rapaio.printer.Printable;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFSort;

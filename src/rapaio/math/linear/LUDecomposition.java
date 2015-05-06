@@ -23,7 +23,7 @@
 
 package rapaio.math.linear;
 
-import rapaio.core.Printable;
+import rapaio.printer.Printable;
 
 import java.io.Serializable;
 import java.util.function.BiConsumer;

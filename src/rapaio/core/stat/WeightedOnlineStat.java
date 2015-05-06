@@ -23,7 +23,7 @@
 
 package rapaio.core.stat;
 
-import rapaio.core.Printable;
+import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 

@@ -24,18 +24,20 @@
 package rapaio.io;
 
 import rapaio.data.*;
+import rapaio.util.func.SPredicate;
 
 import java.io.*;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
 
+import static java.util.stream.Collectors.toSet;
+
 /**
  * Comma separated file reader and writer utility.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Csv {
 
     private boolean trimSpaces = true;
@@ -48,8 +50,8 @@ public class Csv {
     private VarType[] defaultTypes = new VarType[]{VarType.BINARY, VarType.INDEX, VarType.NUMERIC, VarType.NOMINAL};
     private int startRow = 0;
     private int endRow = Integer.MAX_VALUE;
-    private HashSet<Integer> skipRows = new HashSet<>();
-    private HashSet<Integer> skipCols = new HashSet<>();
+    private SPredicate<Integer> skipRows = row -> false;
+    private SPredicate<Integer> skipCols = row -> false;
 
     public Csv() {
         naValues.add("?");
@@ -90,23 +92,25 @@ public class Csv {
         return this;
     }
 
-    public Csv skipRows(int... rows) {
-        if (rows != null && rows.length > 0) {
-            for (int row : rows) {
-                skipRows.add(row);
-            }
-        }
-
+    public Csv withSkipRows(int... rows) {
+        final Set<Integer> skip = Arrays.stream(rows).boxed().collect(toSet());
+        skipRows = row -> skipRows.or(skip::contains).test(row);
         return this;
     }
 
-    public Csv skipCols(int... cols) {
-        if (cols != null && cols.length > 0) {
-            for (int col : cols) {
-                skipCols.add(col);
-            }
-        }
+    public Csv withSkipRows(SPredicate<Integer> p) {
+        skipRows = p;
+        return this;
+    }
 
+    public Csv withSkipCols(int... cols) {
+        final Set<Integer> skip = Arrays.stream(cols).boxed().collect(toSet());
+        skipCols = row -> skipCols.or(skip::contains).test(row);
+        return this;
+    }
+
+    public Csv withSkipCols(SPredicate<Integer> p) {
+        skipCols = p;
         return this;
     }
 
@@ -149,10 +153,6 @@ public class Csv {
         List<VarSlot> varSlots = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-            while (skipRows.contains(allRowsNum)) {
-                reader.readLine();
-                allRowsNum += 1;
-            }
 
             if (header) {
                 String line = reader.readLine();
@@ -162,12 +162,16 @@ public class Csv {
                 names = parseLine(line);
             }
 
+            while (skipRows.test(allRowsNum)) {
+                reader.readLine();
+                allRowsNum += 1;
+            }
+
             boolean first = true;
             while (true) {
                 String line = reader.readLine();
                 allRowsNum += 1;
-
-                if (skipRows.contains(allRowsNum)) {
+                if (skipRows.test(allRowsNum - 1)) {
                     continue;
                 }
 
@@ -258,7 +262,7 @@ public class Csv {
                 }
             }
 
-            if (!skipCols.contains(colNum)) {
+            if (!skipCols.test(colNum)) {
                 data.add(clean(line.substring(start, end)));
             }
 
@@ -274,7 +278,7 @@ public class Csv {
      * escape quota character
      *
      * @param tok if (trimSpaces) {
-     * @return
+     * @return string cleaned
      */
     private String clean(String tok) {
         if (trimSpaces) {

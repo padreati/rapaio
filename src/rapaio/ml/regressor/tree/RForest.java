@@ -23,7 +23,7 @@
 
 package rapaio.ml.regressor.tree;
 
-import rapaio.core.Printable;
+import rapaio.printer.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.Classifier;

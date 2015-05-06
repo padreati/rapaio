@@ -23,7 +23,7 @@
 
 package rapaio.ws;
 
-import rapaio.core.Printable;
+import rapaio.printer.Printable;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;

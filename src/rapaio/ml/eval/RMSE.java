@@ -23,7 +23,7 @@
 
 package rapaio.ml.eval;
 
-import rapaio.core.Printable;
+import rapaio.printer.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;

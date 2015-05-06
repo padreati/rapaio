@@ -37,7 +37,6 @@ import static org.junit.Assert.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class CsvTest {
 
     private Csv persistence;
@@ -172,5 +171,23 @@ public class CsvTest {
         assertEquals("?", df.label(4, "x4"));
         assertEquals("2", df.label(5, "x4"));
         assertEquals("3", df.label(6, "x4"));
+    }
+
+    @Test
+    public void testSkip() throws IOException {
+
+        Frame full = new Csv().withTrimSpaces(true).withEscapeChar('\"').read(CsvTest.class, "csv-test.csv");
+
+        Frame df1 = new Csv().withTrimSpaces(true).withEscapeChar('\"').withSkipCols(row -> row % 2 == 0).read(CsvTest.class, "csv-test.csv");
+        assertTrue(full.mapVars("Make", "Description").deepEquals(df1));
+
+        Frame df2 = new Csv().withTrimSpaces(true).withEscapeChar('\"').withSkipCols(row -> row == 0 || row == 4).read(CsvTest.class, "csv-test.csv");
+        assertTrue(full.mapVars("Make", "Model", "Description").deepEquals(df2));
+
+        Frame df3 = new Csv().withTrimSpaces(true).withEscapeChar('\"').withSkipRows(row -> row == 0).read(CsvTest.class, "csv-test.csv");
+        assertTrue(full.removeRows(0).deepEquals(df3));
+
+        Frame df4 = new Csv().withTrimSpaces(true).withEscapeChar('\"').withSkipRows(row -> row == 3).read(CsvTest.class, "csv-test.csv");
+        assertTrue(full.removeRows(3).deepEquals(df4));
     }
 }

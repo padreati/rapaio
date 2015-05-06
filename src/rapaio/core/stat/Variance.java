@@ -23,11 +23,11 @@
 
 package rapaio.core.stat;
 
-import rapaio.core.Printable;
+import rapaio.printer.Printable;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
 
-import static rapaio.core.stat.BaseStat.mean;
+import static rapaio.core.CoreStat.mean;
 
 /**
  * Compensated version of the algorithm for calculation of

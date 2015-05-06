@@ -96,7 +96,7 @@ public class NeuralNetTest {
 //        }
 //        RegressorFit rp = nn.predict(df);
 //
-//        Summary.lines(rp.fitFrame());
+//        Summary.printLines(rp.fitFrame());
 //
 //        Assert.assertTrue(rp.firstFit().value(0) > .5);
 //        Assert.assertTrue(rp.firstFit().value(1) < .5);

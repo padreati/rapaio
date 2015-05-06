@@ -23,7 +23,7 @@
 
 package rapaio.ml.regressor;
 
-import rapaio.core.Printable;
+import rapaio.printer.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
