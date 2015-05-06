@@ -21,26 +21,22 @@
  *
  */
 
-package rapaio.data;
+package rapaio.core.stat;
 
-import org.junit.Test;
-import rapaio.datasets.Datasets;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import static org.junit.Assert.assertEquals;
+import rapaio.data.Var;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
+ * Utility class for calling basic statistics on variables.
+ * <p>
+ * Created by tutuianu on 5/4/15.
  */
-public class AbstractFrameTest {
+public final class BaseStat {
 
-    @Test
-    public void testStreamOnAbstractFrame() throws IOException, URISyntaxException {
+    public static Mean mean(Var var) {
+        return new Mean(var);
+    }
 
-        Frame df = Datasets.loadIrisDataset();
-        int count = (int) df.stream().count();
-        assertEquals(150, count);
+    public static Variance var(Var var) {
+        return new Variance(var);
     }
 }

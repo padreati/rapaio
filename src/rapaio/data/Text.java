@@ -33,9 +33,9 @@ import java.util.stream.IntStream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Text extends AbstractVar {
 
+    private static final long serialVersionUID = -7130782019269889796L;
     private List<String> values = new ArrayList<>();
 
     //
@@ -90,6 +90,13 @@ public class Text extends AbstractVar {
     @Override
     public int rowCount() {
         return values.size();
+    }
+
+    @Override
+    public void addRows(int rowCount) {
+        for (int i = 0; i < rowCount(); i++) {
+            addLabel("");
+        }
     }
 
     @Override
@@ -209,5 +216,15 @@ public class Text extends AbstractVar {
             text.setLabel(i, label(i));
         }
         return text;
+    }
+
+    @Override
+    public Var newInstance() {
+        return null;
+    }
+
+    @Override
+    public Var newInstance(int rows) {
+        return null;
     }
 }

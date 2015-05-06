@@ -41,7 +41,6 @@ import static rapaio.data.RowComparators.numeric;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class SortedFrameTest {
 
     private Frame df;

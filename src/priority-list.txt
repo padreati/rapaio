@@ -1,8 +1,6 @@
 
 TO BE DE-DEPRECATED FIRST
 
-rapaio.data.Frame;
-rapaio.data.SolidFrame;
 rapaio.io.Csv;
 rapaio.WS;
 rapaio.printer.HTMLPrinter;

@@ -34,7 +34,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class SolidFrameTest {
 
     @Test

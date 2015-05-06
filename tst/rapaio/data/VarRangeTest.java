@@ -33,7 +33,6 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
-@Deprecated
 public class VarRangeTest {
 
     @Test

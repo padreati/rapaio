@@ -34,11 +34,10 @@ import java.util.stream.Collectors;
  *
  * @author Aurelian Tutuianu
  */
-@Deprecated
 public class SolidFrame extends AbstractFrame {
 
     private static final long serialVersionUID = 4963238370571140813L;
-    private final int rows;
+    private int rows;
     private final Var[] vars;
     private final HashMap<String, Integer> colIndex;
     private final String[] names;
@@ -72,6 +71,22 @@ public class SolidFrame extends AbstractFrame {
             rows = Math.min(rows, var.rowCount());
         }
         return new SolidFrame(rows, vars);
+    }
+
+    /**
+     * Builds a new frame with missing values, having the same variables
+     * as in the source frame and having given row count.
+     *
+     * @param rowCount row count
+     * @param src      source frame
+     * @return new instance of solid frame built according with the source frame variables
+     */
+    public static SolidFrame newEmptyFrom(Frame src, int rowCount) {
+        Var[] vars = new Var[src.varCount()];
+        for (int i = 0; i < vars.length; i++) {
+            vars[i] = src.var(i).type().newInstance(rowCount);
+        }
+        return SolidFrame.newWrapOf(vars);
     }
 
     /**
@@ -172,6 +187,20 @@ public class SolidFrame extends AbstractFrame {
         List<String> varNames = range.parseVarNames(this);
         List<Var> vars = varNames.stream().map(this::var).collect(Collectors.toList());
         return SolidFrame.newWrapOf(rowCount(), vars);
+    }
+
+    @Override
+    public Frame addRows(int rowCount) {
+        for (int i = 1; i < vars.length; i++) {
+            if (vars[i - 1].rowCount() != vars[i].rowCount()) {
+                throw new IllegalArgumentException("variables must have the same size");
+            }
+        }
+        for (int i = 0; i < vars.length; i++) {
+            vars[i].addRows(rowCount);
+        }
+        this.rows += rowCount;
+        return null;
     }
 
     @Override

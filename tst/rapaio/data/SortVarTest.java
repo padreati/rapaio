@@ -38,7 +38,6 @@ import static rapaio.data.RowComparators.*;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class SortVarTest {
 
     @Test

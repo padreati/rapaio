@@ -35,7 +35,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
-@Deprecated
 public class MappingTest {
 
     @Test
@@ -55,18 +54,18 @@ public class MappingTest {
     }
 
     @Test
-    public void testIntervalMappingReadOnly() {
+    public void testIntervalMappingNotReadOnly() {
         Mapping m = Mapping.newRangeOf(0, 100);
         try {
             m.add(100);
-            assertTrue("should raise an exception", false);
         } catch (IllegalArgumentException ignored) {
+            assertTrue("should not raise an exception", false);
         }
 
         try {
             m.addAll(Arrays.asList(1, 0));
-            assertTrue("should raise an exception", false);
         } catch (IllegalArgumentException ignored) {
+            assertTrue("should not raise an exception", false);
         }
     }
 

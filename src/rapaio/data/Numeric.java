@@ -263,6 +263,15 @@ public final class Numeric extends AbstractVar {
     }
 
     @Override
+    public void addRows(int rowCount) {
+        ensureCapacity(this.rows + rowCount + 1);
+        for (int i = 0; i < rowCount; i++) {
+            data[rows + i] = Numeric.missingValue;
+        }
+        rows += rowCount;
+    }
+
+    @Override
     public double value(int row) {
         return data[row];
     }
@@ -391,6 +400,16 @@ public final class Numeric extends AbstractVar {
     @Override
     public Numeric solidCopy() {
         return Numeric.newCopyOf(this);
+    }
+
+    @Override
+    public Var newInstance() {
+        return Numeric.newEmpty();
+    }
+
+    @Override
+    public Var newInstance(int rows) {
+        return Numeric.newEmpty(rows);
     }
 
     @Override

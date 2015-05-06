@@ -197,6 +197,15 @@ public final class Index extends AbstractVar {
     }
 
     @Override
+    public void addRows(int rowCount) {
+        ensureCapacityInternal(this.rows + rowCount + 1);
+        for (int i = 0; i < rowCount; i++) {
+            data[rows + i] = Index.MISSING_VALUE;
+        }
+        rows += rowCount;
+    }
+
+    @Override
     public int index(int row) {
         return data[row];
     }
@@ -331,6 +340,16 @@ public final class Index extends AbstractVar {
             copy.setIndex(i, index(i));
         }
         return copy;
+    }
+
+    @Override
+    public Var newInstance() {
+        return Index.newEmpty();
+    }
+
+    @Override
+    public Var newInstance(int rows) {
+        return Index.newEmpty(rows);
     }
 
     @Override

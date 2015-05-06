@@ -125,7 +125,7 @@ public class BoundVar extends AbstractVar {
             List<Var> newVars = new ArrayList<>();
             int last = 0;
             for (int i = 0; i < counts.size(); i++) {
-                newCounts.add(counts.get(i)-last);
+                newCounts.add(counts.get(i) - last);
                 newVars.add(vars.get(i));
                 last = counts.get(i);
             }
@@ -140,6 +140,11 @@ public class BoundVar extends AbstractVar {
         } else {
             return BoundVar.newFrom(this, var);
         }
+    }
+
+    @Override
+    public void addRows(int rowCount) {
+        bindRows(newInstance(rowCount));
     }
 
     @Override
@@ -263,5 +268,19 @@ public class BoundVar extends AbstractVar {
     @Override
     public void clear() {
         throw new IllegalArgumentException("This operation is not available for bound variable");
+    }
+
+    @Override
+    public Var newInstance() {
+        if (vars.isEmpty())
+            throw new IllegalArgumentException("this operation is not available for a bounded var with no rows");
+        return vars.get(0).newInstance();
+    }
+
+    @Override
+    public Var newInstance(int rows) {
+        if (vars.isEmpty())
+            throw new IllegalArgumentException("this operation is not available for a bounded var with no rows");
+        return vars.get(0).newInstance(rows);
     }
 }

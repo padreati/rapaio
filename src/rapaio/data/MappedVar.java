@@ -67,8 +67,8 @@ public class MappedVar extends AbstractVar {
     private MappedVar(Var var, Mapping mapping) {
         withName(var.name());
         if (var instanceof MappedVar) {
-            this.mapping = Mapping.newWrapOf(mapping.rowStream().map(row -> ((MappedVar)var).mapping().get(row)).mapToObj(row -> row).collect(Collectors.toList()));
-            this.source = ((MappedVar)var).source();
+            this.mapping = Mapping.newWrapOf(mapping.rowStream().map(row -> ((MappedVar) var).mapping().get(row)).mapToObj(row -> row).collect(Collectors.toList()));
+            this.source = ((MappedVar) var).source();
         } else {
             this.mapping = mapping;
             this.source = var;
@@ -83,6 +83,11 @@ public class MappedVar extends AbstractVar {
     @Override
     public int rowCount() {
         return mapping.size();
+    }
+
+    @Override
+    public void addRows(int rowCount) {
+        throw new IllegalArgumentException("operation not available on mapped vectors");
     }
 
     public Var source() {
@@ -201,5 +206,15 @@ public class MappedVar extends AbstractVar {
     @Override
     public void clear() {
         mapping.clear();
+    }
+
+    @Override
+    public Var newInstance() {
+        return source.newInstance();
+    }
+
+    @Override
+    public Var newInstance(int rows) {
+        return source.newInstance(rows);
     }
 }

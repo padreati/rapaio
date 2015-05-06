@@ -31,7 +31,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>.
  */
-@Deprecated
 public class BoundFrameTest {
 
     // frame with first rows

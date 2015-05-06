@@ -48,7 +48,6 @@ import java.util.HashMap;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public final class Ordinal extends FactorBase {
 
     private static final long serialVersionUID = 5438713835700406847L;
@@ -114,12 +113,31 @@ public final class Ordinal extends FactorBase {
     }
 
     @Override
+    public void addRows(int rowCount) {
+        grow(rows + rowCount);
+        for (int i = 0; i < rowCount; i++) {
+            data[rows + i] = 0;
+        }
+        rows += rowCount;
+    }
+
+    @Override
     public Ordinal solidCopy() {
         Ordinal copy = Ordinal.newEmpty(rowCount(), dictionary()).withName(name());
         for (int i = 0; i < rowCount(); i++) {
             copy.setLabel(i, label(i));
         }
         return copy;
+    }
+
+    @Override
+    public Var newInstance() {
+        return Ordinal.newEmpty(0, dictionary());
+    }
+
+    @Override
+    public Var newInstance(int rows) {
+        return Ordinal.newEmpty(rows, dictionary());
     }
 
     @Override

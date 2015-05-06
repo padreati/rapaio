@@ -35,9 +35,9 @@ import java.util.Arrays;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Stamp extends AbstractVar {
 
+    private static final long serialVersionUID = -6387573611986137666L;
     public static final long MISSING_VALUE = Long.MIN_VALUE;
     private long[] data;
     private int rows;
@@ -208,6 +208,15 @@ public class Stamp extends AbstractVar {
     }
 
     @Override
+    public void addRows(int rowCount) {
+        ensureCapacityInternal(this.rows + rowCount + 1);
+        for (int i = 0; i < rowCount; i++) {
+            data[rows + i] = Stamp.MISSING_VALUE;
+        }
+        rows += rowCount;
+    }
+
+    @Override
     public int index(int row) {
         return (int) stamp(row);
     }
@@ -333,6 +342,16 @@ public class Stamp extends AbstractVar {
             copy.setStamp(i, index(i));
         }
         return copy;
+    }
+
+    @Override
+    public Var newInstance() {
+        return Stamp.newEmpty();
+    }
+
+    @Override
+    public Var newInstance(int rows) {
+        return Stamp.newEmpty(rows);
     }
 
     @Override

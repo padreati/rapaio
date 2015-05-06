@@ -149,6 +149,11 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
+    public Frame addRows(int rowCount) {
+        return BoundFrame.newByRows(this, SolidFrame.newEmptyFrom(this, rowCount));
+    }
+
+    @Override
     public Frame bindRows(Frame df) {
         return BoundFrame.newByRows(this, df);
     }

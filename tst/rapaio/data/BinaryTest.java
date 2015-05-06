@@ -33,7 +33,6 @@ import static org.junit.Assert.*;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public class BinaryTest {
 
     @Test

@@ -48,7 +48,6 @@ import java.util.stream.Collector;
  *
  * @author Aurelian Tutuianu
  */
-@Deprecated
 public final class Nominal extends FactorBase {
 
     private static final long serialVersionUID = 1645571732133272467L;
@@ -123,12 +122,31 @@ public final class Nominal extends FactorBase {
     }
 
     @Override
+    public void addRows(int rowCount) {
+        grow(rows + rowCount);
+        for (int i = 0; i < rowCount; i++) {
+            data[rows + i] = 0;
+        }
+        rows += rowCount;
+    }
+
+    @Override
     public Nominal solidCopy() {
         Nominal copy = Nominal.newEmpty(rowCount(), dictionary()).withName(name());
         for (int i = 0; i < rowCount(); i++) {
             copy.setLabel(i, label(i));
         }
         return copy;
+    }
+
+    @Override
+    public Var newInstance() {
+        return Nominal.newEmpty(0, dictionary());
+    }
+
+    @Override
+    public Var newInstance(int rows) {
+        return Nominal.newEmpty(rows, dictionary());
     }
 
     public static Collector<String, Nominal, Nominal> collector() {

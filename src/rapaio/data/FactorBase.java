@@ -32,7 +32,6 @@ import java.util.*;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public abstract class FactorBase extends AbstractVar {
 
     protected static final String missingValue = "?";
@@ -54,7 +53,7 @@ public abstract class FactorBase extends AbstractVar {
         rows = 0;
     }
 
-    private void grow(int minCapacity) {
+    protected void grow(int minCapacity) {
         if (minCapacity - data.length <= 0) return;
 
         // overflow-conscious code

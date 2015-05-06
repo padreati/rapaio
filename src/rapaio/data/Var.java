@@ -92,6 +92,8 @@ public interface Var extends Serializable {
         return mapRows(Mapping.newCopyOf(rows));
     }
 
+    void addRows(int rowCount);
+
     /**
      * Returns numeric value for the observation specified by row.
      * <p>
@@ -308,6 +310,21 @@ public interface Var extends Serializable {
      * @return a solid copy of the current variable
      */
     Var solidCopy();
+
+    /**
+     * Builds a new empty instance of the given type
+     *
+     * @return new empty instance
+     */
+    Var newInstance();
+
+    /**
+     * Builds a new empty instance of given size
+     *
+     * @param rows size of the new variable
+     * @return new empty instance of given size
+     */
+    Var newInstance(int rows);
 
     /**
      * @return a stream of variables spots

@@ -164,6 +164,17 @@ public interface Frame extends Serializable, Printable {
     }
 
     /**
+     * Adds the following rowCount at the end of the frame.
+     * The effect depends on the implementation, for solid frames
+     * it increases rowCount, for other types it creates
+     * a bounded frame.
+     *
+     * @param rowCount number of rowCount to be added
+     * @return new frame with rowCount appended
+     */
+    Frame addRows(int rowCount);
+
+    /**
      * Builds a new frame having rows of the current frame, followed by the rows of the bounded frame.
      * The new frame must has the same variable definitions as the current frame.
      *

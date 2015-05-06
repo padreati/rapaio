@@ -31,7 +31,6 @@ import java.util.BitSet;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public final class Binary extends AbstractVar {
 
     private static final long serialVersionUID = -4977697633437126744L;
@@ -146,6 +145,15 @@ public final class Binary extends AbstractVar {
     @Override
     public int rowCount() {
         return rows;
+    }
+
+    @Override
+    public void addRows(int rowCount) {
+        increaseCapacity(rows + rowCount);
+        for (int i = 0; i < rowCount; i++) {
+            missing.set(i + rows);
+        }
+        rows += rowCount;
     }
 
     @Override
@@ -380,5 +388,15 @@ public final class Binary extends AbstractVar {
                 copy.setBinary(i, binary(i));
         }
         return copy;
+    }
+
+    @Override
+    public Var newInstance() {
+        return Binary.newEmpty();
+    }
+
+    @Override
+    public Var newInstance(int rows) {
+        return Binary.newEmpty(rows);
     }
 }
