@@ -58,7 +58,7 @@ public class IndexTest {
         } catch (Throwable ignored) {
         }
 
-        assertEquals("Index[name:null, rowCount:1]", Index.newEmpty(1).toString());
+        assertEquals("Index[name:?, rowCount:1]", Index.newEmpty(1).toString());
     }
 
     @Test

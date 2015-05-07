@@ -28,12 +28,15 @@ import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.VarType;
 import rapaio.io.Csv;
+import rapaio.printer.Printer;
+import rapaio.ws.Summary;
 
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static rapaio.core.CoreStat.mean;
+import static rapaio.core.CoreStat.quantiles;
 import static rapaio.core.CoreStat.var;
 
 /**
@@ -67,20 +70,28 @@ public class CoreStatTest {
         StringBuilder sb = new StringBuilder();
         mean(num2).buildPrintSummary(sb);
 
-        assertEquals("> mean['null']\n" +
-                "total rows: 4\n" +
-                "complete: 4, missing: 0\n" +
+        assertEquals("> mean[?]\n" +
+                "total rows: 4 (complete: 4, missing: 0)\n" +
                 "mean: 2.5\n", sb.toString());
         sb = new StringBuilder();
         var(num2).buildPrintSummary(sb);
-        assertEquals("> variance['null']\n" +
-                        "total rows: 4\n" +
-                        "complete: 4, missing: 0\n" +
-                        "variance: 1.6666666666666667\n" +
-                        "sd: 1.2909944487358056\n",
+        assertEquals("> variance[?]\n" +
+                        "total rows: 4 (complete: 4, missing: 0)\n" +
+                        "variance: 1.6666667\n" +
+                        "sd: 1.2909944\n",
                 sb.toString());
 
         mean(num2).printSummary();
         var(num2).printSummary();
+    }
+
+    @Test
+    public void testQuantiles() {
+        Numeric v = Numeric.newSeq(0, 1, 0.001);
+        Quantiles quantiles = quantiles(v, Numeric.newSeq(0, 1, 0.001));
+//        for (int i = 0; i < v.rowCount(); i++) {
+//            System.out.println(Printer.formatDecFlex.format(v.value(i))+" v " + Printer.formatDecFlex.format(quantiles.values()[i]));
+//        }
+        assertTrue(v.deepEquals(Numeric.newWrapOf(quantiles.values())));
     }
 }

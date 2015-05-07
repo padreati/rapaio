@@ -82,9 +82,8 @@ public class Variance implements Printable {
 
     @Override
     public void buildPrintSummary(StringBuilder sb) {
-        sb.append(String.format("> variance['%s']\n", varName));
-        sb.append(String.format("total rows: %d\n", rowCount));
-        sb.append(String.format("complete: %d, missing: %d\n", completeCount, missingCount));
+        sb.append(String.format("> variance[%s]\n", varName));
+        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", rowCount, completeCount, missingCount));
         sb.append(String.format("variance: %s\n", Printer.formatDecFlex.format(value)));
         sb.append(String.format("sd: %s\n", Printer.formatDecFlex.format(sdValue())));
     }

@@ -141,6 +141,7 @@ public interface Var extends Serializable {
 
     /**
      * Adds an index value to the last position of the variable
+     *
      * @param value value to be added at the end of the variable
      */
     void addIndex(int value);
@@ -164,6 +165,7 @@ public interface Var extends Serializable {
     /**
      * Adds an index value to the last position of the variable, updates dictionary
      * if is necessary.
+     *
      * @param value text label to be added at the end of the variable
      */
     void addLabel(String value);
@@ -345,8 +347,13 @@ public interface Var extends Serializable {
         if (type() != var.type())
             return false;
         for (int i = 0; i < rowCount(); i++) {
-            if (!label(i).equals(var.label(i)))
-                return false;
+            if (var.type().isNumeric()) {
+                if (Math.abs(value(i) - var.value(i)) > 1e-12)
+                    return false;
+            } else {
+                if (!label(i).equals(var.label(i)))
+                    return false;
+            }
         }
         return true;
     }

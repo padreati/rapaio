@@ -24,6 +24,7 @@
 package rapaio.data;
 
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -180,7 +181,7 @@ public final class Numeric extends AbstractVar {
 
     public static Numeric newSeq(double start, double end, double step) {
         Numeric num = Numeric.newEmpty();
-        while (start <= end) {
+        while (start <= end || Math.abs(end - start) < 1e-10) {
             num.addValue(start);
             start += step;
         }

@@ -69,9 +69,8 @@ public final class Mean implements Printable {
 
     @Override
     public void buildPrintSummary(StringBuilder sb) {
-        sb.append(String.format("> mean['%s']\n", varName));
-        sb.append(String.format("total rows: %d\n", rowCount));
-        sb.append(String.format("complete: %d, missing: %d\n", completeCount, missingCount));
+        sb.append(String.format("> mean[%s]\n", varName));
+        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", rowCount, completeCount, missingCount));
         sb.append(String.format("mean: %s\n", Printer.formatDecFlex.format(value)));
     }
 }

@@ -34,7 +34,12 @@ import java.util.stream.IntStream;
 /**
  * Estimates quantiles from a numerical {@link rapaio.data.Var} of values.
  * <p>
- * The estimated quantiles implements R-8, SciPy-(1/3,1/3) version of estimating quantiles.
+ * The estimated quantiles implements two version of the algorithms:
+ * R-7, Excel, SciPy-(1,1), Maple-6
+ * R-8, SciPy-(1/3,1/3) version of estimating quantiles.
+ * <p>
+ * Default type is R-7, but is can be changed.
+ * <p>
  * <p>
  * For further reference see:
  * http://en.wikipedia.org/wiki/Quantile
@@ -48,10 +53,16 @@ public class Quantiles implements Printable {
     private final double[] quantiles;
     private int completeCount;
     private int missingCount;
+    private final Type type;
 
     public Quantiles(Var var, double... percentiles) {
+        this(var, Type.R7, percentiles);
+    }
+
+    public Quantiles(Var var, Type type, double... percentiles) {
         this.varName = var.name();
         this.percentiles = percentiles;
+        this.type = type;
         this.quantiles = compute(var);
     }
 
@@ -69,22 +80,31 @@ public class Quantiles implements Printable {
             }
             return values;
         }
-        Var sorted = new VFSort().fitApply(complete);
+        Var x = new VFSort().fitApply(complete);
         double[] values = new double[percentiles.length];
         for (int i = 0; i < percentiles.length; i++) {
-            int N = sorted.rowCount();
-            double h = (N + 1. / 3.) * percentiles[i] + 1. / 3.;
-            int hfloor = (int) Math.floor(h);
+            double p = percentiles[i];
+            if (type.equals(Type.R8)) {
+                int N = x.rowCount();
+                double h = (N + 1. / 3.) * p + 1. / 3.;
+                int hfloor = (int) StrictMath.floor(h);
 
-            if (percentiles[i] < (2. / 3.) / (N + 1. / 3.)) {
-                values[i] = sorted.value(0);
-                continue;
+                if (p < (2. / 3.) / (N + 1. / 3.)) {
+                    values[i] = x.value(0);
+                    continue;
+                }
+                if (p >= (N - 1. / 3.) / (N + 1. / 3.)) {
+                    values[i] = x.value(x.rowCount() - 1);
+                    continue;
+                }
+                values[i] = x.value(hfloor - 1) + (h - hfloor) * (x.value(hfloor) - x.value(hfloor - 1));
             }
-            if (percentiles[i] >= (N - 1. / 3.) / (N + 1. / 3.)) {
-                values[i] = sorted.value(sorted.rowCount() - 1);
-                continue;
+            if (type.equals(Type.R7)) {
+                int N = x.rowCount();
+                double h = (N - 1.0) * p + 1;
+                int hfloor = (int) Math.min(StrictMath.floor(h), x.rowCount() - 1);
+                values[i] = x.value(hfloor - 1) + (h - hfloor) * (x.value(hfloor) - x.value(hfloor - 1));
             }
-            values[i] = sorted.value(hfloor - 1) + (h - hfloor) * (sorted.value(hfloor) - sorted.value(hfloor - 1));
         }
         return values;
     }
@@ -96,10 +116,14 @@ public class Quantiles implements Printable {
     @Override
     public void buildPrintSummary(StringBuilder sb) {
         sb.append(String.format("> quantiles[%s] - estimated quantiles\n", varName));
-        sb.append(String.format("total rows: %d\n", completeCount + missingCount));
-        sb.append(String.format("complete: %d, missing: %d\n", completeCount, missingCount));
+        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
         for (int i = 0; i < quantiles.length; i++) {
-            sb.append(String.format("quantile[%f = %f\n", percentiles[i], quantiles[i]));
+            sb.append(String.format("quantile[%s] = %s\n", Printer.formatDecFlex.format(percentiles[i]), Printer.formatDecFlex.format(quantiles[i])));
         }
+    }
+
+    public enum Type {
+        R7,
+        R8
     }
 }

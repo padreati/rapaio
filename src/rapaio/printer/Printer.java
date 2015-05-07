@@ -47,7 +47,7 @@ public interface Printer {
 
     DecimalFormat formatDecFlex = new DecimalFormat() {{
         setMinimumFractionDigits(0);
-        setMaximumFractionDigits(30);
+        setMaximumFractionDigits(7);
         setMinimumIntegerDigits(1);
     }};
 

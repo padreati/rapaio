@@ -68,8 +68,7 @@ public class Sum implements Printable {
     @Override
     public void buildPrintSummary(StringBuilder sb) {
         sb.append(String.format("> sum['%s']\n", varName));
-        sb.append(String.format("total rows: %d\n", completeCount + missingCount));
-        sb.append(String.format("complete: %d, missing: %d\n", completeCount, missingCount));
+        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
         sb.append(String.format("sum: %s\n", Printer.formatDecFlex.format(value)));
     }
 }

@@ -1,7 +1,0 @@
-
-TO BE DE-DEPRECATED FIRST
-
-rapaio.printer.HTMLPrinter;
-rapaio.graphics.plot.Plot;
-rapaio.graphics.plot.plotcomp.ABLine;
-rapaio.graphics.plot.plotcomp.Lines;

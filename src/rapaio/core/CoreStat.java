@@ -24,6 +24,7 @@
 package rapaio.core;
 
 import rapaio.core.stat.*;
+import rapaio.data.Numeric;
 import rapaio.data.Var;
 
 /**
@@ -55,5 +56,9 @@ public final class CoreStat {
 
     public static Quantiles quantiles(Var var, double... p) {
         return new Quantiles(var, p);
+    }
+
+    public static Quantiles quantiles(Var var, Numeric p) {
+        return new Quantiles(var, p.stream().mapToDouble().toArray());
     }
 }

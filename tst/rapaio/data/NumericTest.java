@@ -50,7 +50,7 @@ public class NumericTest {
         } catch (Throwable ignored) {
         }
 
-        assertEquals("Numeric[name:null, rowCount:1]", Numeric.newEmpty(1).toString());
+        assertEquals("Numeric[name:?, rowCount:1]", Numeric.newEmpty(1).toString());
     }
 
     @Test

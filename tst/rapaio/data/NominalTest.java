@@ -53,7 +53,7 @@ public class NominalTest {
         assertEquals(1, v.rowCount());
         assertEquals("?", v.label(0));
 
-        assertEquals("Nominal[name:null, rowCount:10]", Nominal.newEmpty(10).toString());
+        assertEquals("Nominal[name:?, rowCount:10]", Nominal.newEmpty(10).toString());
     }
 
     @Test

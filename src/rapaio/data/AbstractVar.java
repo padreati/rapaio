@@ -32,7 +32,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public abstract class AbstractVar implements Var {
 
     private static final long serialVersionUID = 2607349261526552662L;
-    private String name;
+    private String name = "?";
 
     public String name() {
         return name;
