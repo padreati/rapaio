@@ -36,22 +36,27 @@ import rapaio.printer.Printer;
  * Date: 9/7/13
  * Time: 12:36 PM
  */
-@Deprecated
 public class Minimum implements Printable {
 
     private final String varName;
     private final double value;
+    private int completeCount;
+    private int missingCount;
 
     public Minimum(Var var) {
         this.varName = var.name();
-        this.value = compute(var);
-    }
-
-    private double compute(Var var) {
-        if (var.stream().complete().count() == 0) {
-            return Double.NaN;
+        for (int i = 0; i < var.rowCount(); i++) {
+            if (var.missing(i)) {
+                missingCount++;
+            } else {
+                completeCount++;
+            }
         }
-        return var.stream().complete().mapToDouble().min().getAsDouble();
+        if (var.stream().complete().count() == 0) {
+            value = Double.NaN;
+        } else {
+            value = var.stream().complete().mapToDouble().min().getAsDouble();
+        }
     }
 
     public double value() {
@@ -60,6 +65,9 @@ public class Minimum implements Printable {
 
     @Override
     public void buildPrintSummary(StringBuilder sb) {
-        sb.append(String.format("> minimum['%s']\n%s\n", varName, Printer.formatDecFlex.format(value)));
+        sb.append(String.format("> minimum['%s']\n", varName));
+        sb.append(String.format("total rows: %d\n", completeCount + missingCount));
+        sb.append(String.format("complete: %d, missing: %d\n", completeCount, missingCount));
+        sb.append(String.format("minimum: %s\n", Printer.formatDecFlex.format(value)));
     }
 }

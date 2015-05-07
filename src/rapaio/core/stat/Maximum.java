@@ -35,22 +35,27 @@ import rapaio.printer.Printer;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Maximum implements Printable {
 
     private final String varName;
     private final double value;
+    private int completeCount;
+    private int missingCount;
 
     public Maximum(Var var) {
         this.varName = var.name();
-        this.value = compute(var);
-    }
-
-    private double compute(Var var) {
-        if (var.stream().allMatch(VSpot::missing)) {
-            return Double.NaN;
+        for (int i = 0; i < var.rowCount(); i++) {
+            if (var.missing(i)) {
+                missingCount++;
+            } else {
+                completeCount++;
+            }
         }
-        return var.stream().complete().mapToDouble().max().getAsDouble();
+        if (completeCount == 0) {
+            value = Double.NaN;
+        } else {
+            value = var.stream().complete().mapToDouble().max().getAsDouble();
+        }
     }
 
     public double value() {
@@ -59,6 +64,9 @@ public class Maximum implements Printable {
 
     @Override
     public void buildPrintSummary(StringBuilder sb) {
-        sb.append(String.format("> maximum['%s']\n%s\n", varName, Printer.formatDecFlex.format(value)));
+        sb.append(String.format("> maximum['%s']\n", varName));
+        sb.append(String.format("total rows: %d\n", completeCount + missingCount));
+        sb.append(String.format("complete: %d, missing: %d\n", completeCount, missingCount));
+        sb.append(String.format("maximum: %s\n", Printer.formatDecFlex.format(value)));
     }
 }

@@ -26,6 +26,7 @@ package rapaio.core.stat;
 import rapaio.printer.Printable;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFSort;
+import rapaio.printer.Printer;
 
 import java.util.stream.IntStream;
 
@@ -40,12 +41,13 @@ import java.util.stream.IntStream;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Quantiles implements Printable {
 
     private final String varName;
     private final double[] percentiles;
     private final double[] quantiles;
+    private int completeCount;
+    private int missingCount;
 
     public Quantiles(Var var, double... percentiles) {
         this.varName = var.name();
@@ -54,43 +56,35 @@ public class Quantiles implements Printable {
     }
 
     private double[] compute(final Var var) {
-        if (var.rowCount() == 0) {
+        Var complete = var.stream().complete().toMappedVar();
+        missingCount = var.rowCount() - complete.rowCount();
+        completeCount = complete.rowCount();
+        if (complete.rowCount() == 0) {
             return IntStream.range(0, percentiles.length).mapToDouble(i -> Double.NaN).toArray();
         }
-        if (var.rowCount() == 1) {
+        if (complete.rowCount() == 1) {
             double[] values = new double[percentiles.length];
             for (int i = 0; i < values.length; i++) {
-                values[i] = var.value(0);
+                values[i] = complete.value(0);
             }
             return values;
         }
-        Var sorted = new VFSort().fitApply(var);
-        int start = 0;
-        while (sorted.missing(start)) {
-            start++;
-            if (start == sorted.rowCount()) {
-                break;
-            }
-        }
+        Var sorted = new VFSort().fitApply(complete);
         double[] values = new double[percentiles.length];
-        if (start == sorted.rowCount()) {
-            return values;
-        }
         for (int i = 0; i < percentiles.length; i++) {
-            int N = sorted.rowCount() - start;
+            int N = sorted.rowCount();
             double h = (N + 1. / 3.) * percentiles[i] + 1. / 3.;
             int hfloor = (int) Math.floor(h);
 
             if (percentiles[i] < (2. / 3.) / (N + 1. / 3.)) {
-                values[i] = sorted.value(start);
+                values[i] = sorted.value(0);
                 continue;
             }
             if (percentiles[i] >= (N - 1. / 3.) / (N + 1. / 3.)) {
                 values[i] = sorted.value(sorted.rowCount() - 1);
                 continue;
             }
-            values[i] = sorted.value(start + hfloor - 1)
-                    + (h - hfloor) * (sorted.value(start + hfloor) - sorted.value(start + hfloor - 1));
+            values[i] = sorted.value(hfloor - 1) + (h - hfloor) * (sorted.value(hfloor) - sorted.value(hfloor - 1));
         }
         return values;
     }
@@ -102,6 +96,8 @@ public class Quantiles implements Printable {
     @Override
     public void buildPrintSummary(StringBuilder sb) {
         sb.append(String.format("> quantiles[%s] - estimated quantiles\n", varName));
+        sb.append(String.format("total rows: %d\n", completeCount + missingCount));
+        sb.append(String.format("complete: %d, missing: %d\n", completeCount, missingCount));
         for (int i = 0; i < quantiles.length; i++) {
             sb.append(String.format("quantile[%f = %f\n", percentiles[i], quantiles[i]));
         }

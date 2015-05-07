@@ -1,8 +1,6 @@
 
 TO BE DE-DEPRECATED FIRST
 
-rapaio.io.Csv;
-rapaio.WS;
 rapaio.printer.HTMLPrinter;
 rapaio.graphics.plot.Plot;
 rapaio.graphics.plot.plotcomp.ABLine;

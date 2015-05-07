@@ -36,11 +36,12 @@ import static rapaio.core.MathBase.validNumber;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Sum implements Printable {
 
     private final String varName;
     private final double value;
+    private int completeCount;
+    private int missingCount;
 
     public Sum(Var var) {
         this.varName = var.name();
@@ -50,7 +51,10 @@ public class Sum implements Printable {
     private double compute(Var var) {
         double sum = 0;
         for (int i = 0; i < var.rowCount(); i++) {
-            if (validNumber(var.value(i))) {
+            if (var.missing(i)) {
+                missingCount++;
+            } else {
+                completeCount++;
                 sum += var.value(i);
             }
         }
@@ -63,6 +67,9 @@ public class Sum implements Printable {
 
     @Override
     public void buildPrintSummary(StringBuilder sb) {
-        sb.append(String.format("> sum[%s]\n%sf\n", varName, Printer.formatDecLong.format(value)));
+        sb.append(String.format("> sum['%s']\n", varName));
+        sb.append(String.format("total rows: %d\n", completeCount + missingCount));
+        sb.append(String.format("complete: %d, missing: %d\n", completeCount, missingCount));
+        sb.append(String.format("sum: %s\n", Printer.formatDecFlex.format(value)));
     }
 }

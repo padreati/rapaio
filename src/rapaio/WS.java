@@ -27,36 +27,35 @@ import rapaio.graphics.base.Figure;
 import rapaio.printer.Printer;
 import rapaio.printer.StandardPrinter;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.logging.LogManager;
 
 /**
- * @author tutuianu
+ * WS tool.
+ *
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class WS {
 
     private static final LogManager logManager = LogManager.getLogManager();
 
-    static {
-        try {
-            logManager.readConfiguration(new ByteArrayInputStream(("\n" +
-                    "handlers = java.util.logging.ConsoleHandler\n" +
-                    "config   =\n" +
-                    "\n" +
-                    "\"logger\".handlers           =\n" +
-                    "\"logger\".useParentHandlers  =\n" +
-                    ".level              = ALL\n" +
-                    "\n" +
-                    "java.util.logging.ConsoleHandler.level     = CONFIG\n" +
-                    "java.util.logging.ConsoleHandler.filter    =\n" +
-                    "java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter\n" +
-                    "java.util.logging.ConsoleHandler.encoding  =").getBytes()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    static {
+//        try {
+//            logManager.readConfiguration(new ByteArrayInputStream(("\n" +
+//                    "handlers = java.util.logging.ConsoleHandler\n" +
+//                    "config   =\n" +
+//                    "\n" +
+//                    "\"logger\".handlers           =\n" +
+//                    "\"logger\".useParentHandlers  =\n" +
+//                    ".level              = ALL\n" +
+//                    "\n" +
+//                    "java.util.logging.ConsoleHandler.level     = CONFIG\n" +
+//                    "java.util.logging.ConsoleHandler.filter    =\n" +
+//                    "java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter\n" +
+//                    "java.util.logging.ConsoleHandler.encoding  =").getBytes()));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     private static Printer printer = new StandardPrinter();
 

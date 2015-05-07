@@ -23,8 +23,7 @@
 
 package rapaio.core;
 
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
+import rapaio.core.stat.*;
 import rapaio.data.Var;
 
 /**
@@ -40,5 +39,21 @@ public final class CoreStat {
 
     public static Variance var(Var var) {
         return new Variance(var);
+    }
+
+    public static Maximum max(Var var) {
+        return new Maximum(var);
+    }
+
+    public static Minimum min(Var var) {
+        return new Minimum(var);
+    }
+
+    public static Sum sum(Var var) {
+        return new Sum(var);
+    }
+
+    public static Quantiles quantiles(Var var, double... p) {
+        return new Quantiles(var, p);
     }
 }
