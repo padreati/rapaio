@@ -58,7 +58,7 @@ public class ContourSample {
                 Numeric.newWrapOf(3, -1, -2).withName("x"),
                 Numeric.newWrapOf(3, -1, 6).withName("y")
         );
-        xy.summary();
+        xy.printSummary();
         Normal d = new Normal(0, 2);
 
         BiFunction<Double, Double, Double> bi = (x, y) ->

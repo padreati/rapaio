@@ -105,7 +105,7 @@ public class MAE implements Printable {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
         sb.append("> mean absolute error").append("\n");
         sb.append("MAE: %sf").append(Printer.formatDecLong.format(value)).append("\n");
     }

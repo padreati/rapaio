@@ -94,7 +94,8 @@ public class Csv {
 
     public Csv withSkipRows(int... rows) {
         final Set<Integer> skip = Arrays.stream(rows).boxed().collect(toSet());
-        skipRows = row -> skipRows.or(skip::contains).test(row);
+        SPredicate<Integer> old = skipRows;
+        skipRows = row -> old.test(row) || skip.contains(row);
         return this;
     }
 
@@ -105,7 +106,8 @@ public class Csv {
 
     public Csv withSkipCols(int... cols) {
         final Set<Integer> skip = Arrays.stream(cols).boxed().collect(toSet());
-        skipCols = row -> skipCols.or(skip::contains).test(row);
+        SPredicate<Integer> old = skipCols;
+        skipCols = row -> old.test(row) || skip.contains(row);
         return this;
     }
 

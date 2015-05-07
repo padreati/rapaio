@@ -160,7 +160,7 @@ public class KSTest implements Printable {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
         if (cdf != null) oneSampleSummary(sb);
         else twoSamplesSummary(sb);
     }

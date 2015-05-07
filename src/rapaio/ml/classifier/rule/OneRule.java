@@ -144,7 +144,7 @@ public class OneRule extends AbstractClassifier {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
         sb.append("Classification: OneRule\n");
         sb.append("Parameters:{minCount:").append(minCount).append("}\n");
         sb.append("Best one rule:").append(bestRuleSet.toString()).append("\n");

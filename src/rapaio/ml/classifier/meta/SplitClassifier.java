@@ -170,7 +170,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
         sb.append("NotImplementedYet");
     }
 

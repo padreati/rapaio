@@ -207,7 +207,7 @@ public class MeshGridTutorialPage implements TutorialPage {
 
         iris = BoundFrame.newByVars(iris.var(0), iris.var(1), trimmedClass).solidCopy();
 
-        Summary.summary(iris);
+        Summary.printSummary(iris);
 
         draw(points(iris.var(0), iris.var(1), color(iris.var(2))));
 
@@ -220,7 +220,7 @@ public class MeshGridTutorialPage implements TutorialPage {
                 "\n" +
                 "        iris = BoundFrame.newByVars(iris.var(0), iris.var(1), trimmedClass).solidCopy();\n" +
                 "\n" +
-                "        Summary.summary(iris);\n");
+                "        Summary.printSummary(iris);\n");
 
         p("Now we will build a SMO classifier, with a poly kernel of degree 2, we learn the train set " +
                 "and fit the trained SMO to the same train set to see how it works. ");
@@ -228,12 +228,12 @@ public class MeshGridTutorialPage implements TutorialPage {
         BinarySMO smo = new BinarySMO().withKernel(new PolyKernel(2));
         smo.learn(iris, "class");
         ClassifierFit cr = smo.predict(iris);
-        new ConfusionMatrix(iris.var("class"), cr.firstClasses()).summary();
+        new ConfusionMatrix(iris.var("class"), cr.firstClasses()).printSummary();
 
         code("        BinarySMO smo = new BinarySMO().withKernel(new PolyKernel(2));\n" +
                 "        smo.learn(iris, \"class\");\n" +
                 "        ClassifierFit cr = smo.predict(iris);\n" +
-                "        new ConfusionMatrix(iris.var(\"class\"), cr.firstClasses()).summary();\n");
+                "        new ConfusionMatrix(iris.var(\"class\"), cr.firstClasses()).printSummary();\n");
 
         p("It looks like there is no error there. However it is legitimate to ask yourself " +
                 "how it looks the decision function. One possibility is with iso lines. ");
@@ -308,7 +308,7 @@ public class MeshGridTutorialPage implements TutorialPage {
         Classifier c = new BinarySMO().withKernel(new WaveletKernel(0.55)).withC(0.1);
         c.learn(df, "class");
 
-        new ConfusionMatrix(df.var("class"), c.predict(df).firstClasses()).summary();
+        new ConfusionMatrix(df.var("class"), c.predict(df).firstClasses()).printSummary();
 
         // new build the mesh grid
 
@@ -381,7 +381,7 @@ public class MeshGridTutorialPage implements TutorialPage {
                 "        Classifier c = new BinarySMO().withKernel(new WaveletKernel(0.55)).withC(0.1);\n" +
                 "        c.learn(df, \"class\");\n" +
                 "\n" +
-                "        new ConfusionMatrix(df.var(\"class\"), c.predict(df).firstClasses()).summary();\n" +
+                "        new ConfusionMatrix(df.var(\"class\"), c.predict(df).firstClasses()).printSummary();\n" +
                 "\n" +
                 "        // new build the mesh grid\n" +
                 "        \n" +

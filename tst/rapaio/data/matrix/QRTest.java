@@ -60,9 +60,9 @@ public class QRTest {
 //        System.out.println("H");
 //        qr.getH().print(new DecimalFormat("0.000000000"), 14);
 
-        qr.solve(y).summary();
+        qr.solve(y).printSummary();
 
-        x.summary();
-        qr.getQ().mult(qr.getR()).summary();
+        x.printSummary();
+        qr.getQ().mult(qr.getR()).printSummary();
     }
 }

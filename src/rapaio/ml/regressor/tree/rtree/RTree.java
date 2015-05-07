@@ -196,7 +196,7 @@ public class RTree extends AbstractRegressor implements BTRegressor {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
         sb.append("> ").append(fullName()).append("\n");
 
         sb.append(String.format("n=%d\n", rows));

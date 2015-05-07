@@ -67,7 +67,7 @@ public class Covariance implements Printable {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
         sb.append(String.format("> cov[%s,%s]\n%s",
                 varName1, varName2,
                 Printer.formatDecLong.format(value)));

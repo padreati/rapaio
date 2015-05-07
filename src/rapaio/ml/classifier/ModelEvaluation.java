@@ -139,7 +139,7 @@ public class ModelEvaluation {
                 c.learn(train, classColName);
                 ClassifierFit cp = c.predict(test);
                 ConfusionMatrix cm = new ConfusionMatrix(test.var(classColName), cp.firstClasses());
-//                cm.summary();
+//                cm.printSummary();
                 double acc = cm.accuracy();
                 tacc[k] += acc;
                 print(String.format("CV %d, accuracy:%.6f, classifier:%s\n", i + 1, acc, c.fullName()));
@@ -186,7 +186,7 @@ public class ModelEvaluation {
             Var classes = cc.predict(test).firstClasses();
 //            System.out.println("build confusion matrix ...");
             ConfusionMatrix cm = new ConfusionMatrix(test.var(classColName), classes);
-            cm.summary();
+            cm.printSummary();
             double acc = cm.accuracy();
             System.out.println(String.format("bootstrap(%d) : %.6f", i + 1, acc));
             total += acc;

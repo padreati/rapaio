@@ -49,8 +49,8 @@ public class CoreStatTest {
 
     @Test
     public void testRReference() throws IOException {
-        mean(df.var(0)).summary();
-        var(df.var(0)).summary();
+        mean(df.var(0)).printSummary();
+        var(df.var(0)).printSummary();
         assertEquals(Double.valueOf("999.98132402093892779"), mean(df.var(0)).value(), 1e-12);
         assertEquals(Double.valueOf("1.0012615815492349469"), Math.sqrt(new Variance(df.var(0)).value()), 1e-12);
         assertEquals(996.343866540788, new Minimum(df.var(0)).value(), 1e-12);
@@ -65,14 +65,14 @@ public class CoreStatTest {
 
         Numeric num2 = Numeric.newWrapOf(1, 2, 3, 4);
         StringBuilder sb = new StringBuilder();
-        mean(num2).buildSummary(sb);
+        mean(num2).buildPrintSummary(sb);
 
         assertEquals("> mean['null']\n" +
                 "total rows: 4\n" +
                 "complete: 4, missing: 0\n" +
                 "mean: 2.5\n", sb.toString());
         sb = new StringBuilder();
-        var(num2).buildSummary(sb);
+        var(num2).buildPrintSummary(sb);
         assertEquals("> variance['null']\n" +
                         "total rows: 4\n" +
                         "complete: 4, missing: 0\n" +
@@ -80,7 +80,7 @@ public class CoreStatTest {
                         "sd: 1.2909944487358056\n",
                 sb.toString());
 
-        mean(num2).summary();
-        var(num2).summary();
+        mean(num2).printSummary();
+        var(num2).printSummary();
     }
 }

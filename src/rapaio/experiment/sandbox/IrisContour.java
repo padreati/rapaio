@@ -87,7 +87,7 @@ public class IrisContour {
             }
         }
 
-        Summary.summary(iris);
+        Summary.printSummary(iris);
 
         Classifier c = new BinaryLogistic().withTol(1e-8).withMaxRuns(100_000);
 //        c = new BinarySMO().withKernel(new RBFKernel(1)).withC(1.5);
@@ -114,7 +114,7 @@ public class IrisContour {
             }
         }
         ClassifierFit cr2 = c.predict(SolidFrame.newWrapOf(sl, sw));
-        c.predict(iris).summary();
+        c.predict(iris).printSummary();
         int pos = 0;
         for (int i = 0; i < x.rowCount(); i++) {
             for (int j = 0; j < y.rowCount(); j++) {

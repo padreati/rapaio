@@ -87,14 +87,14 @@ public class IrisExplorePage implements TutorialPage {
 
         code("        Summary.names(df);\n");
 
-        Summary.names(df);
+        Summary.printNames(df);
 
         p("Measurements include length and width of sepal and petal species. " +
-                "Below is a summary of the data set in question.");
+                "Below is a printSummary of the data set in question.");
 
-        code("        Summary.summary(df);\n");
+        code("        Summary.printSummary(df);\n");
 
-        Summary.summary(df);
+        Summary.printSummary(df);
 
         heading(3, "Distributions with histograms and density lines");
 
@@ -202,8 +202,8 @@ public class IrisExplorePage implements TutorialPage {
         p("We estimate first the mean and the variance sepal-width sample values. ");
 
         code("        Var sw = df.var(\"sepal-width\");\n" +
-                "        new Mean(sw).summary();\n" +
-                "        new Variance(sw).summary();\n" +
+                "        new Mean(sw).printSummary();\n" +
+                "        new Variance(sw).printSummary();\n" +
                 "\n" +
                 "        draw(qqplot()\n" +
                 "                .add(df.var(\"sepal-width\"), new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value())))\n" +
@@ -211,8 +211,8 @@ public class IrisExplorePage implements TutorialPage {
                 "        );\n");
 
         Var sw = df.var("sepal-width");
-        new Mean(sw).summary();
-        new Variance(sw).summary();
+        new Mean(sw).printSummary();
+        new Variance(sw).printSummary();
 
         draw(qqplot()
                         .add(df.var("sepal-width"), new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value())))
@@ -224,9 +224,9 @@ public class IrisExplorePage implements TutorialPage {
                 "to check further this assumption, we can use Kolmogorov-Smirnof " +
                 "one-sample test. ");
 
-        code("        new KSTest(\"normality test\", sw, new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value()))).summary();\n");
+        code("        new KSTest(\"normality test\", sw, new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value()))).printSummary();\n");
 
-        KSTest.newOneSampleTest("normality test", sw, new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value()))).summary();
+        KSTest.newOneSampleTest("normality test", sw, new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value()))).printSummary();
 
         p("The KS Test gives us a p-value of 0.078 which is more than the usual 0.05 threshold value. " +
                 "Note however that there is some departure from normality caused by the fact that " +
@@ -244,14 +244,14 @@ public class IrisExplorePage implements TutorialPage {
                 "                        .add(df.var(\"sepal-width\"), new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value())))\n" +
                 "                        .add(new ABLine(1, 0, color(Color.GRAY)))\n" +
                 "        );\n" +
-                "        new KSTest(\"normality test\", sw, new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value()))).summary();\n");
+                "        new KSTest(\"normality test\", sw, new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value()))).printSummary();\n");
 
         sw = new VFJitter(0.05).fitApply(df.var("sepal-width"));
         draw(new QQPlot()
                         .add(df.var("sepal-width"), new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value())))
                         .add(new ABLine(1, 0, color(Color.GRAY)))
         );
-        KSTest.newOneSampleTest("normality test", sw, new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value()))).summary();
+        KSTest.newOneSampleTest("normality test", sw, new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value()))).printSummary();
 
 
         p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");

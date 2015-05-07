@@ -51,9 +51,9 @@ public class OLSRegressorFit extends RegressorFit {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
 
-        sb.append("OLS regressor fit summary\n");
+        sb.append("OLS regressor fit printSummary\n");
         sb.append("======================\n");
         sb.append("\n");
 
@@ -61,7 +61,7 @@ public class OLSRegressorFit extends RegressorFit {
         sb.append("Model instance: ").append(regressor.fullName()).append("\n");
         sb.append("\n");
 
-        sb.append("Predicted frame summary:\n");
+        sb.append("Predicted frame printSummary:\n");
         sb.append(" - rows: ").append(getFrame().rowCount()).append("\n");
         sb.append(" - cols: ").append(getFrame().varCount()).append("\n");
         sb.append(" - inputs: ").append(Arrays.toString(regressor.inputNames())).append("\n");

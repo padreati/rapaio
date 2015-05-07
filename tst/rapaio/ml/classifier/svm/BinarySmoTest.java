@@ -64,7 +64,7 @@ public class BinarySmoTest {
 
         smo.learn(iris, "class");
         StringBuilder sb = new StringBuilder();
-        smo.buildSummary(sb);
+        smo.buildPrintSummary(sb);
 
         assertEquals("BinarySMO model\n" +
                         "===============\n" +
@@ -105,7 +105,7 @@ public class BinarySmoTest {
 
         smo.learn(iris, "class");
         StringBuilder sb = new StringBuilder();
-        smo.buildSummary(sb);
+        smo.buildPrintSummary(sb);
 
         assertEquals("BinarySMO model\n" +
                         "===============\n" +
@@ -151,7 +151,7 @@ public class BinarySmoTest {
 
         ClassifierFit cr = smo.predict(iris);
 
-        cr.summary();
+        cr.printSummary();
 
         System.out.println(sb.toString());
     }

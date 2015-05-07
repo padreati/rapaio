@@ -58,7 +58,7 @@ public class WeightedOnlineStat implements Printable {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
         sb.append("WeightedOnlineStat\n");
         sb.append("total weight: ").append(Printer.formatDecShort.format(w1)).append("\n");
         sb.append("mean: ").append(Printer.formatDecShort.format(mean())).append("\n");

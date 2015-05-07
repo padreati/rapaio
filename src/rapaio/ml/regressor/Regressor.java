@@ -140,7 +140,7 @@ public interface Regressor extends Printable, Serializable {
      */
     RegressorFit predict(Frame df, boolean withResiduals);
 
-    default void buildSummary(StringBuilder sb) {
+    default void buildPrintSummary(StringBuilder sb) {
         throw new NotImplementedException();
     }
 }

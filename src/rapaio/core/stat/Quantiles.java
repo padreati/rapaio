@@ -100,7 +100,7 @@ public class Quantiles implements Printable {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
         sb.append(String.format("> quantiles[%s] - estimated quantiles\n", varName));
         for (int i = 0; i < quantiles.length; i++) {
             sb.append(String.format("quantile[%f = %f\n", percentiles[i], quantiles[i]));

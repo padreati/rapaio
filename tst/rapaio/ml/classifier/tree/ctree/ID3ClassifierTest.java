@@ -45,7 +45,7 @@ public class ID3ClassifierTest {
     @Test
     public void testBasicID3Entropy() throws IOException {
         Frame df = Datasets.loadPlay();
-        Summary.summary(df);
+        Summary.printSummary(df);
         df = new FFRetainTypes(VarType.NOMINAL).fitApply(df);
         final String className = "class";
 
@@ -56,10 +56,10 @@ public class ID3ClassifierTest {
         DensityTable dtWindy = new DensityTable(df.var("windy"), df.var("class"));
         DensityTable dtOutlook = new DensityTable(df.var("outlook"), df.var("class"));
         String splitCol = (dtWindy.getSplitEntropy() < dtOutlook.getSplitEntropy()) ? "windy" : "outlook";
-        id3.summary();
+        id3.printSummary();
         Assert.assertTrue(id3.getRoot().getChildren().get(0).getGroupName().startsWith(splitCol));
 
-        Summary.summary(id3);
+        Summary.printSummary(id3);
     }
 
     @Test
@@ -75,13 +75,13 @@ public class ID3ClassifierTest {
                 .withFunction(new CTreeTestFunction.InfoGain());
         id3.learn(df, className);
         id3.predict(df);
-        id3.summary();
+        id3.printSummary();
 
         DensityTable dtWindy = new DensityTable(df.var("windy"), df.var("class"));
         DensityTable dtOutlook = new DensityTable(df.var("outlook"), df.var("class"));
         String splitCol = (dtWindy.getInfoGain() > dtOutlook.getInfoGain()) ? "windy" : "outlook";
         Assert.assertTrue(id3.getRoot().getChildren().get(0).getGroupName().startsWith(splitCol));
 
-        Summary.summary(id3);
+        Summary.printSummary(id3);
     }
 }

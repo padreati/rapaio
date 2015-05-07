@@ -180,7 +180,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
 
     }
 

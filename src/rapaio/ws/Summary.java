@@ -43,14 +43,14 @@ import static rapaio.WS.getPrinter;
 @Deprecated
 public class Summary {
 
-    public static void summary(Frame df) {
-        summary(df, df.varNames());
+    public static void printSummary(Frame df) {
+        printSummary(df, df.varNames());
     }
 
-    public static void summary(Frame df, String... names) {
+    public static void printSummary(Frame df, String... names) {
 
         StringBuilder buffer = new StringBuilder();
-        buffer.append(String.format("> summary(frame, %s)\n", Arrays.deepToString(names)));
+        buffer.append(String.format("> printSummary(frame, %s)\n", Arrays.deepToString(names)));
         if (df == null) {
             buffer.append("null instance of frame.\n");
             code(buffer.toString());
@@ -243,10 +243,10 @@ public class Summary {
         code(buffer.toString());
     }
 
-    public static void summary(Var v) {
+    public static void printSummary(Var v) {
 
         StringBuilder buffer = new StringBuilder();
-        buffer.append("> summary(var)\n");
+        buffer.append("> printSummary(var)\n");
 
         String[] first = new String[7];
         String[] second = new String[7];
@@ -396,9 +396,9 @@ public class Summary {
         code(buffer.toString());
     }
 
-    public static void names(Frame df) {
+    public static void printNames(Frame df) {
         StringBuilder buffer = new StringBuilder();
-        buffer.append(String.format("> names(frame)\n"));
+        buffer.append("> names(frame)\n");
         for (int i = 0; i < df.varCount(); i++) {
             buffer.append(df.varNames()[i]).append("\n");
         }
@@ -423,8 +423,8 @@ public class Summary {
         // learn numerical columns
     }
 
-    public static void summary(Printable result) {
-        result.summary();
+    public static void printSummary(Printable result) {
+        result.printSummary();
     }
 
     public static void lines(Var v) {

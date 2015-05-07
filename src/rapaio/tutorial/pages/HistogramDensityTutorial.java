@@ -70,7 +70,7 @@ public class HistogramDensityTutorial implements TutorialPage {
 
         final Frame df = Datasets.loadPearsonHeightDataset();
 
-        Summary.summary(df);
+        Summary.printSummary(df);
 
         p("We have two continuous random variables which observes heights of pairs " +
                 "of father and sons. ");

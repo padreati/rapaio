@@ -81,7 +81,7 @@ public class Mode implements Printable {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
         sb.append(String.format("mode[%s]\n%s", varName, Arrays.deepToString(modes)));
     }
 }

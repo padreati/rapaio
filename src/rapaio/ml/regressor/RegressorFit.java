@@ -162,7 +162,7 @@ public class RegressorFit implements Printable {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
 
         sb.append("> Regression Result Summary").append("\n");
         sb.append("  =========================\n");
@@ -172,7 +172,7 @@ public class RegressorFit implements Printable {
         sb.append("Model instance: ").append(model.fullName()).append("\n");
         sb.append("\n");
 
-        sb.append("Predicted frame summary:\n");
+        sb.append("Predicted frame printSummary:\n");
         sb.append("- rows: ").append(df.rowCount()).append("\n");
         sb.append("- vars: ").append(df.varCount()).append("\n");
         sb.append("- targets: ").append(Arrays.deepToString(model.targetNames())).append("\n");

@@ -106,7 +106,7 @@ public class RMSE implements Printable {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
         sb.append("> Root Mean Squared Error").append("\n");
         sb.append("RMSE: ").append(Printer.formatDecLong.format(value)).append("\n");
     }

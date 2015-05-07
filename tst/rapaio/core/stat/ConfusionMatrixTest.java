@@ -74,6 +74,6 @@ public class ConfusionMatrixTest {
 
 
         ConfusionMatrix cm = new ConfusionMatrix(actual, predict);
-        cm.summary();
+        cm.printSummary();
     }
 }

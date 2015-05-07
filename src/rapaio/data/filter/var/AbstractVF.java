@@ -69,7 +69,7 @@ public abstract class AbstractVF implements VarFilter {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
         sb.append("Not Implemented Yet!");
     }
 }

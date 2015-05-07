@@ -58,10 +58,10 @@ public class C45ClassifierTest {
         String splitCol = (dtWindy.getInfoGain() > dtOutlook.getInfoGain()) ? "windy" : "outlook";
         Assert.assertTrue(classifier.getRoot().getBestCandidate().getGroupNames().get(0).contains(splitCol));
 
-        Summary.summary(classifier);
+        Summary.printSummary(classifier);
 
         ConfusionMatrix cm = new ConfusionMatrix(df.var("class"), pred.firstClasses());
-        Summary.summary(cm);
+        Summary.printSummary(cm);
     }
 
     @Test
@@ -72,12 +72,12 @@ public class C45ClassifierTest {
 
         CTree classifier = CTree.newC45();
         classifier.learn(df, className);
-        Summary.summary(classifier);
+        Summary.printSummary(classifier);
 
         ClassifierFit pred = classifier.predict(df);
 
         ConfusionMatrix cm = new ConfusionMatrix(df.var("class"), pred.firstClasses());
-        Summary.summary(cm);
+        Summary.printSummary(cm);
     }
 
     @Test
@@ -87,12 +87,12 @@ public class C45ClassifierTest {
 
         CTree classifier = CTree.newC45().withMinCount(1);
         classifier.learn(df, className);
-        Summary.summary(classifier);
+        Summary.printSummary(classifier);
 
         ClassifierFit pred = classifier.predict(df);
 
         ConfusionMatrix cm = new ConfusionMatrix(df.var("class"), pred.firstClasses());
-        Summary.summary(cm);
+        Summary.printSummary(cm);
     }
 
 }

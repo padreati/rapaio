@@ -118,7 +118,7 @@ public class ConfusionMatrix implements Printable {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
         addConfusionMatrix(sb);
         addDetails(sb);
     }

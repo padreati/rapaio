@@ -42,7 +42,7 @@ import java.net.URISyntaxException;
 import static rapaio.WS.*;
 import static rapaio.graphics.Plotter2D.plot;
 import static rapaio.graphics.opt.GOpt.*;
-import static rapaio.ws.Summary.summary;
+import static rapaio.ws.Summary.printSummary;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -69,7 +69,7 @@ public class PearsonHeight implements TutorialPage {
         p("This exploratory analysis is provided as a sample of analysis produced with Rapaio system.");
         p("The studied data set contains " + df.rowCount() + " observations and has " + df.varCount() + " columns.");
 
-        Summary.summary(df);
+        Summary.printSummary(df);
 
         p("First we take a look at the histograms for the two dimensions");
 
@@ -100,13 +100,13 @@ public class PearsonHeight implements TutorialPage {
             draw(new QQPlot().add(col, normal).yLab(df.varNames()[i]), 500, 300);
         }
 
-        summary(new Mean(df.var("Father")));
-        summary(new Variance(df.var("Father")));
+        printSummary(new Mean(df.var("Father")));
+        printSummary(new Variance(df.var("Father")));
 
-        summary(new Mean(df.var("Son")));
-        summary(new Variance(df.var("Son")));
+        printSummary(new Mean(df.var("Son")));
+        printSummary(new Variance(df.var("Son")));
 
-        summary(new PearsonRCorrelation(df.var("Father"), df.var("Son")));
+        printSummary(new PearsonRCorrelation(df.var("Father"), df.var("Son")));
 
         double[] perc = new double[11];
         for (int i = 0; i < perc.length; i++) {
@@ -114,8 +114,8 @@ public class PearsonHeight implements TutorialPage {
         }
         final Quantiles fatherQuantiles = new Quantiles(df.var("Father"), perc);
         final Quantiles sonQuantiles = new Quantiles(df.var("Son"), perc);
-        summary(fatherQuantiles);
-        summary(sonQuantiles);
+        printSummary(fatherQuantiles);
+        printSummary(sonQuantiles);
 
         Plot plot = (Plot) new Plot().xLim(55, 80).yLim(55, 80);
         for (int i = 0; i < fatherQuantiles.values().length; i++) {

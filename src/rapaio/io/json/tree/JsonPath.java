@@ -53,6 +53,6 @@ public class JsonPath {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
         Frame df = Datasets.loadCarMpgDataset();
-        df.summary();
+        df.printSummary();
     }
 }

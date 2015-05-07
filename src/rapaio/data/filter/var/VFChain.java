@@ -68,11 +68,11 @@ public class VFChain extends AbstractVF {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
         sb.append("VarFilterChain(filterCount=").append(filters.size()).append(")\n");
         for (VarFilter filter : filters) {
             sb.append("- ");
-            filter.buildSummary(sb);
+            filter.buildPrintSummary(sb);
             sb.append("\n");
         }
         sb.append("\n");

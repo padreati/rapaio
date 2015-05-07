@@ -193,11 +193,11 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "        final Frame df = SolidFrame.newWrapOf(SAMPLE_SIZE * TRIALS, Arrays.asList(vars));\n" +
                 "        draw(points(df.var(0), df.var(1), pch(1), color(34), sz(2)), 600, 300);\n");
 
-        p("There is random in that plot. Everywhere. A summary on the data, however, " +
+        p("There is random in that plot. Everywhere. A printSummary on the data, however, " +
                 "can give us enough clues to understand that the densities " +
                 "of those numbers are still symmetric and somehow uniform. ");
 
-        Summary.summary(df);
+        Summary.printSummary(df);
 
         heading(2, "Weighted random sample with replacement");
 

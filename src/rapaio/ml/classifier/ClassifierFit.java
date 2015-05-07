@@ -194,7 +194,7 @@ public class ClassifierFit implements Printable {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
 
 
         sb.append("Classification Result Summary").append("\n");
@@ -205,7 +205,7 @@ public class ClassifierFit implements Printable {
         sb.append("Model instance: ").append(model.fullName()).append("\n");
         sb.append("\n");
 
-        sb.append("Predicted frame summary:\n");
+        sb.append("Predicted frame printSummary:\n");
         sb.append("> rows: ").append(df.rowCount()).append("\n");
         sb.append("> vars: ").append(df.varCount()).append("\n");
         sb.append("> targets: ").append(Arrays.deepToString(model.targetNames())).append("\n");
@@ -214,7 +214,7 @@ public class ClassifierFit implements Printable {
 
         sb.append("Classification results:").append("\n");
         if (Arrays.asList(df.varNames()).contains(firstTargetVar())) {
-            new ConfusionMatrix(df.var(model.firstTargetName()), firstClasses()).buildSummary(sb);
+            new ConfusionMatrix(df.var(model.firstTargetName()), firstClasses()).buildPrintSummary(sb);
         } else {
             sb.append("data frame does not contain target variable.");
         }

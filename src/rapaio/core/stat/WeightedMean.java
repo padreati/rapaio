@@ -79,7 +79,7 @@ public final class WeightedMean implements Printable {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
         sb.append(String.format("> weightedMean['%s']\n%s\n", varName, Printer.formatDecLong.format(mean)));
     }
 }

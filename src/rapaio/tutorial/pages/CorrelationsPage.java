@@ -37,8 +37,8 @@ import java.net.URISyntaxException;
 import static rapaio.WS.*;
 import static rapaio.graphics.Plotter2D.plot;
 import static rapaio.graphics.opt.GOpt.pch;
-import static rapaio.ws.Summary.names;
-import static rapaio.ws.Summary.summary;
+import static rapaio.ws.Summary.printNames;
+import static rapaio.ws.Summary.printSummary;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -64,7 +64,7 @@ public class CorrelationsPage implements TutorialPage {
         p("We will use the classical iris data set. The numerical columns of this data set are:");
 
         final Frame df = new FFRetainTypes(VarType.NUMERIC).fitApply(Datasets.loadIrisDataset());
-        names(df);
+        printNames(df);
 
         code("        final Frame df = new FFRetainTypes(VarType.NUMERIC).fitApply(Datasets.loadIrisDataset());\n" +
                 "        names(df);\n");
@@ -107,13 +107,13 @@ public class CorrelationsPage implements TutorialPage {
                 "using vectors index position as indexes in resulted matrix. ");
 
         final PearsonRCorrelation r = new PearsonRCorrelation(df);
-        summary(r);
+        printSummary(r);
 
         code("        final PearsonRCorrelation r = new PearsonRCorrelation(df);\n" +
-                "        summary(r);\n");
+                "        printSummary(r);\n");
 
         p("We can note by visual inspection that many of the attributes are linearly correlated. " +
-                "For example we can find from the correlation summary that petal-length and " +
+                "For example we can find from the correlation printSummary that petal-length and " +
                 "petal-width variables have a very strong linear correlation. Let's check " +
                 "this intuition with a plot:");
 
@@ -181,8 +181,8 @@ public class CorrelationsPage implements TutorialPage {
                 "using variables' index positions as indexes in the resulted matrix. ");
 
         RhoCorr rho = new RhoCorr(df);
-        summary(rho);
-        summary(r);
+        printSummary(rho);
+        printSummary(r);
 
         p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");
     }

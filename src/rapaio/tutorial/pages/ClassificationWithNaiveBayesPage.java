@@ -133,9 +133,9 @@ public class ClassificationWithNaiveBayesPage implements TutorialPage {
 
         p("Too see how the classifier worked, we can print the confusion matrix. ");
 
-        code("        new ConfusionMatrix(df.var(\"class\"), cr.firstClasses()).summary();\n");
+        code("        new ConfusionMatrix(df.var(\"class\"), cr.firstClasses()).printSummary();\n");
 
-        new ConfusionMatrix(df.var("class"), cr.firstClasses()).summary();
+        new ConfusionMatrix(df.var("class"), cr.firstClasses()).printSummary();
 
         heading(3, "Some notes on the parameters");
 

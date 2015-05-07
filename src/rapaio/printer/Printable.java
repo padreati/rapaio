@@ -40,14 +40,14 @@ import rapaio.WS;
 public interface Printable {
 
     /**
-     * Prints a summary of the object to the system printer configured
+     * Prints a printSummary of the object to the system printer configured
      * with {@link rapaio.WS#setPrinter(rapaio.printer.Printer)}.
      */
-    default void summary() {
+    default void printSummary() {
         StringBuilder sb = new StringBuilder();
-        buildSummary(sb);
+        buildPrintSummary(sb);
         WS.code(sb.toString());
     }
 
-    void buildSummary(StringBuilder sb);
+    void buildPrintSummary(StringBuilder sb);
 }

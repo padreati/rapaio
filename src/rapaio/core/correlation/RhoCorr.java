@@ -103,7 +103,7 @@ public class RhoCorr implements Printable {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
         switch (vars.length) {
             case 1:
                 summaryOne(sb);

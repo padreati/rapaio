@@ -31,7 +31,6 @@ import rapaio.ws.Summary;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -162,6 +161,13 @@ public interface Frame extends Serializable, Printable {
      */
     default Frame removeVars(String varRange) {
         return removeVars(new VarRange(varRange));
+    }
+
+    /**
+     * Builds a new frame with all the variables except ones in the given var indexes
+     */
+    default Frame removeVars(int... varIndexes) {
+        return removeVars(new VarRange(varIndexes));
     }
 
     /**
@@ -467,8 +473,8 @@ public interface Frame extends Serializable, Printable {
     }
 
     @Override
-    default void summary() {
-        Summary.summary(this);
+    default void printSummary() {
+        Summary.printSummary(this);
     }
 
     default void printLines() {
@@ -481,7 +487,7 @@ public interface Frame extends Serializable, Printable {
     }
 
     @Override
-    default void buildSummary(StringBuilder sb) {
+    default void buildPrintSummary(StringBuilder sb) {
 //
     }
 

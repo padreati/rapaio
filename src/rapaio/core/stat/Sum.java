@@ -62,7 +62,7 @@ public class Sum implements Printable {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
         sb.append(String.format("> sum[%s]\n%sf\n", varName, Printer.formatDecLong.format(value)));
     }
 }

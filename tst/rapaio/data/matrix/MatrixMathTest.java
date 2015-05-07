@@ -102,10 +102,10 @@ public class MatrixMathTest {
                 0, 0, 1);
 
         RM invC = new QRDecomposition(C).solve(I);
-        invC.summary();
+        invC.printSummary();
         C.mult(invC);
         invC = new LUDecomposition(C).solve(I);
-        invC.summary();
+        invC.printSummary();
         C.mult(invC);
     }
 }

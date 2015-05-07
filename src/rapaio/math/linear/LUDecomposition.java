@@ -338,14 +338,14 @@ public class LUDecomposition implements Serializable, Printable {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
 
-        sb.append("LU decomposition summary\n");
+        sb.append("LU decomposition printSummary\n");
         sb.append("========================\n");
 
         sb.append("L matrix\n");
-        getL().buildSummary(sb);
+        getL().buildPrintSummary(sb);
         sb.append("U matrix\n");
-        getU().buildSummary(sb);
+        getU().buildPrintSummary(sb);
     }
 }

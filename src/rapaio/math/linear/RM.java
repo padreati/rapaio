@@ -280,10 +280,10 @@ public interface RM extends Serializable, Printable {
     }
 
     //////////////////
-    // summary
+    // printSummary
     //////////////////
 
-    default void buildSummary(StringBuilder sb) {
+    default void buildPrintSummary(StringBuilder sb) {
 
         DecimalFormat f = Printer.formatDecShort;
 

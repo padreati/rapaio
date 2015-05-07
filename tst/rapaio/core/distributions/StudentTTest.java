@@ -45,7 +45,7 @@ public class StudentTTest {
                 .withDefaultTypes(VarType.NUMERIC)
                 .withQuotes(false)
                 .read(StudentTTest.class, "student-density.csv");
-        df.summary();
+        df.printSummary();
 
         for (int i = 0; i < df.rowCount(); i++) {
             assertEquals(df.value(i, "y1"), new StudentT(1).pdf(df.value(i, "x")), 1e-15);
@@ -68,7 +68,7 @@ public class StudentTTest {
                 .withDefaultTypes(VarType.NUMERIC)
                 .withQuotes(false)
                 .read(StudentTTest.class, "student-distribution.csv");
-        df.summary();
+        df.printSummary();
 
         for (int i = 0; i < df.rowCount(); i++) {
             assertEquals(df.value(i, "y1"), new StudentT(1).cdf(df.value(i, "x")), 1e-15);
@@ -91,7 +91,7 @@ public class StudentTTest {
                 .withDefaultTypes(VarType.NUMERIC)
                 .withQuotes(false)
                 .read(StudentTTest.class, "student-quantile.csv");
-        df.summary();
+        df.printSummary();
 
         for (int i = 0; i < df.rowCount(); i++) {
             assertEquals(df.value(i, "y1"), new StudentT(1).quantile(df.value(i, "x")), 1e-12);

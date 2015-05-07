@@ -50,13 +50,13 @@ public class OLSRegressorTest {
     public void testHappy() throws IOException {
 
         Frame df = Datasets.loadISLAdvertising().mapVars("TV", "Radio", "Newspaper", "Sales");
-        Summary.summary(df);
+        Summary.printSummary(df);
 
         OLSRegressor ols = new OLSRegressor();
         ols.learn(df, "Sales");
         OLSRegressorFit rr = ols.predict(df, true);
 
-        rr.summary();
+        rr.printSummary();
     }
 
     @Test

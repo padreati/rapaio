@@ -18,6 +18,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
 package rapaio.ml.classifier.ensemble.impl;
@@ -186,7 +187,7 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
         throw new NotImplementedException();
     }
 }

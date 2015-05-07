@@ -42,7 +42,7 @@ public class Sandbox {
     public static void main(String[] args) throws IOException, URISyntaxException {
 
         Frame df = Datasets.loadIrisDataset();
-        Summary.summary(df);
+        Summary.printSummary(df);
 
         df.stream()
                 .collect(SCollectors.countingTop(s -> s.label("class")))

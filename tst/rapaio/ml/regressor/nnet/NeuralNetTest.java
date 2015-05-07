@@ -186,7 +186,7 @@ public class NeuralNetTest {
             stat.setValue(i, "xor4err", 1. - rp.firstFit().value(3));
         }
 
-        Summary.summary(stat);
+        Summary.printSummary(stat);
 
     }
 }

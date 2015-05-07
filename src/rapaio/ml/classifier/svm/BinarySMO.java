@@ -815,7 +815,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     }
 
     @Override
-    public void buildSummary(StringBuilder sb) {
+    public void buildPrintSummary(StringBuilder sb) {
         int printed = 0;
 
         if ((alpha == null) && (sparseWeights == null)) {

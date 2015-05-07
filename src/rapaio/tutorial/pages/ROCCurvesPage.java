@@ -35,6 +35,7 @@ import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.classifier.rule.OneRule;
 import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.ml.eval.ROC;
+import rapaio.ws.Summary;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -43,7 +44,6 @@ import java.util.List;
 import static rapaio.WS.*;
 import static rapaio.graphics.Plotter2D.plot;
 import static rapaio.graphics.opt.GOpt.color;
-import static rapaio.ws.Summary.summary;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -98,7 +98,7 @@ public class ROCCurvesPage implements TutorialPage {
                 "numeric features in this data set. We use " +
                 "only the first 4 numerical features for prediction.");
 
-        summary(spam);
+        Summary.printSummary(spam);
 
         p("Now we can do some predictions.");
 
@@ -130,9 +130,9 @@ public class ROCCurvesPage implements TutorialPage {
                 + "With rapaio library one way to compute the accuracy is " +
                 "to summarize the confusion matrix.");
 
-        new ConfusionMatrix(test.var("spam"), crOneRule.firstClasses()).summary();
+        new ConfusionMatrix(test.var("spam"), crOneRule.firstClasses()).printSummary();
 
-        code("        new ConfusionMatrix(test.var(\"spam\"), crOneRule.firstClasses()).summary();\n");
+        code("        new ConfusionMatrix(test.var(\"spam\"), crOneRule.firstClasses()).printSummary();\n");
 
         heading(4, "Random Forest");
 
@@ -146,7 +146,7 @@ public class ROCCurvesPage implements TutorialPage {
                 "        rf.learn(train, \"spam\");\n" +
                 "        ClassifierFit crRF = rf.predict(test);\n");
 
-        new ConfusionMatrix(test.var("spam"), crRF.firstClasses()).summary();
+        new ConfusionMatrix(test.var("spam"), crRF.firstClasses()).printSummary();
 
         heading(4, "AdaBoost.SAMME");
 
@@ -163,7 +163,7 @@ public class ROCCurvesPage implements TutorialPage {
                 "        ab.learn(train, \"spam\");\n" +
                 "        ClassifierFit crAB = ab.predict(test);\n");
 
-        new ConfusionMatrix(test.var("spam"), crAB.firstClasses()).summary();
+        new ConfusionMatrix(test.var("spam"), crAB.firstClasses()).printSummary();
 
         heading(4, "GBTClassifier");
 
@@ -179,7 +179,7 @@ public class ROCCurvesPage implements TutorialPage {
                 "        gbt.learn(train, \"spam\");\n" +
                 "        ClassifierFit crGBT = gbt.predict(test);\n");
 
-        new ConfusionMatrix(test.var("spam"), crGBT.firstClasses()).summary();
+        new ConfusionMatrix(test.var("spam"), crGBT.firstClasses()).printSummary();
 
         heading(2, "ROC Curves");
 

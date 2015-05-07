@@ -53,7 +53,7 @@ public class CTreeTest {
 
         tree.learn(df, "class");
 
-        tree.summary();
+        tree.printSummary();
         CTreeNode root = tree.getRoot();
         assertEquals("root", root.getGroupName());
 
@@ -72,10 +72,10 @@ public class CTreeTest {
     @Test
     public void testBuilderID3() throws IOException, URISyntaxException {
         Frame df = Datasets.loadMushrooms();
-        Summary.names(df);
+        Summary.printNames(df);
         df = new FFRetainTypes(VarType.NOMINAL).fitApply(df);
 
-        Summary.summary(df);
+        Summary.printSummary(df);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class CTreeTest {
         Frame df = Datasets.loadIrisDataset();
         CTree tree = CTree.newCART().withMaxDepth(10000).withMinCount(1).withTestCounter(new CTreeTestCounter.MNominalMNumeric());
         tree.learn(df, "class");
-        tree.summary();
+        tree.printSummary();
         CTreePredictor predictor = new CTreePredictor.Standard();
         assertEquals("Standard", predictor.name());
 

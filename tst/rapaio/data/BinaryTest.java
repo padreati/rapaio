@@ -71,7 +71,7 @@ public class BinaryTest {
     @Test
     public void testNumericStats() {
         Binary b = Binary.newCopyOf(1, 1, 0, 0, 1, 0, 1, 1);
-        Summary.summary(b);
+        Summary.printSummary(b);
         assertEquals(0.625, new Mean(b).value(), 10e-10);
     }
 

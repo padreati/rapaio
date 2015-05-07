@@ -126,16 +126,16 @@ public class ClassificationWithRFPage implements TutorialPage {
         code("        Frame all = Datasets.loadSpamBase();\n" +
                 "        all = all.mapVars(\"0~19,spam\"); // keep only some columns\n" +
                 "\n" +
-                "        Summary.summary(all.mapVars(\"0~4\")); // summary of first 5 columns\n" +
-                "        Summary.summary(all.mapVars(\"spam\"));\n" +
+                "        Summary.printSummary(all.mapVars(\"0~4\")); // printSummary of first 5 columns\n" +
+                "        Summary.printSummary(all.mapVars(\"spam\"));\n" +
                 "\n" +
-                "        Summary.summary(all);\n");
+                "        Summary.printSummary(all);\n");
 
         Frame all = Datasets.loadSpamBase();
         all = all.mapVars("0~19,spam"); // keep only some columns
 
-        Summary.summary(all.mapVars("0~4")); // summary of first 5 columns
-        Summary.summary(all.mapVars("spam"));
+        Summary.printSummary(all.mapVars("0~4")); // printSummary of first 5 columns
+        Summary.printSummary(all.mapVars("spam"));
 
         p("Above you see some 5-number summaries of the data. ");
 

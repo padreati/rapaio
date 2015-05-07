@@ -48,7 +48,7 @@ public class ISLSandBox {
 
         setPrinter(new IdeaPrinter());
         Frame df = Datasets.loadISLAdvertising().removeVars("ID");
-        df.summary();
+        df.printSummary();
         GridLayer gl = new GridLayer(1, 3);
         gl.add(1, 1, new Plot().add(new Points(df.var("TV"), df.var("Sales"), color(Color.RED), pch(2))));
         gl.add(1, 2, new Plot().add(new Points(df.var("Radio"), df.var("Sales"), color(Color.RED), pch(2))));

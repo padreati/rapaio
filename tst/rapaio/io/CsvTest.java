@@ -189,5 +189,11 @@ public class CsvTest {
 
         Frame df4 = new Csv().withTrimSpaces(true).withEscapeChar('\"').withSkipRows(row -> row == 3).read(CsvTest.class, "csv-test.csv");
         assertTrue(full.removeRows(3).deepEquals(df4));
+
+        Frame df5 = new Csv().withTrimSpaces(true).withEscapeChar('\"').withSkipCols(1, 4).withSkipRows(1, 4).read(CsvTest.class, "csv-test.csv");
+        assertTrue(full.removeRows(1, 4).removeVars(1, 4).deepEquals(df5));
+
+        Frame df6 = new Csv().withTrimSpaces(true).withEscapeChar('\"').withSkipCols(col -> col == 1 || col == 4).withSkipRows(row -> row == 1 || row == 4).read(CsvTest.class, "csv-test.csv");
+        assertTrue(full.removeRows(1, 4).removeVars(1, 4).deepEquals(df5));
     }
 }
