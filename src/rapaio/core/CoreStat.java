@@ -61,4 +61,12 @@ public final class CoreStat {
     public static Quantiles quantiles(Var var, Numeric p) {
         return new Quantiles(var, p.stream().mapToDouble().toArray());
     }
+
+    public static Modes modes(Var var) {
+        return new Modes(var, false);
+    }
+
+    public static Modes modes(Var var, boolean missing) {
+        return new Modes(var, missing);
+    }
 }

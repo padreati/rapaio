@@ -25,20 +25,22 @@ package rapaio.core.stat;
 
 import rapaio.printer.Printable;
 import rapaio.data.Var;
+import rapaio.printer.Printer;
 
 import java.util.Arrays;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
-public class Mode implements Printable {
+public class Modes implements Printable {
 
     private final String varName;
     private final boolean includeMissing;
     private final String[] modes;
+    private int completeCount;
+    private int missingCount;
 
-    public Mode(Var var, boolean includeMissing) {
+    public Modes(Var var, boolean includeMissing) {
         this.varName = var.name();
         this.includeMissing = includeMissing;
         this.modes = compute(var);
@@ -51,10 +53,12 @@ public class Mode implements Printable {
         int[] freq = new int[var.dictionary().length];
         for (int i = 0; i < var.rowCount(); i++) {
             if (var.missing(i)) {
+                missingCount++;
                 continue;
             }
             freq[var.index(i)]++;
         }
+        completeCount = var.rowCount() - missingCount;
         int max = 0;
         int start = includeMissing ? 0 : 1;
         for (int i = start; i < freq.length; i++) {
@@ -82,6 +86,8 @@ public class Mode implements Printable {
 
     @Override
     public void buildPrintSummary(StringBuilder sb) {
-        sb.append(String.format("mode[%s]\n%s", varName, Arrays.deepToString(modes)));
+        sb.append(String.format("> mode[%s]\n", varName));
+        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
+        sb.append(String.format("modes: %s\n", Arrays.deepToString(modes)));
     }
 }

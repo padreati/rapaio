@@ -25,6 +25,7 @@ package rapaio.core.stat;
 
 import org.junit.Test;
 import rapaio.data.Frame;
+import rapaio.data.Nominal;
 import rapaio.data.Numeric;
 import rapaio.data.VarType;
 import rapaio.io.Csv;
@@ -32,12 +33,11 @@ import rapaio.printer.Printer;
 import rapaio.ws.Summary;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static rapaio.core.CoreStat.mean;
-import static rapaio.core.CoreStat.quantiles;
-import static rapaio.core.CoreStat.var;
+import static rapaio.core.CoreStat.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -93,5 +93,14 @@ public class CoreStatTest {
 //            System.out.println(Printer.formatDecFlex.format(v.value(i))+" v " + Printer.formatDecFlex.format(quantiles.values()[i]));
 //        }
         assertTrue(v.deepEquals(Numeric.newWrapOf(quantiles.values())));
+    }
+
+    @Test
+    public void testMode() {
+        assertEquals("[a, b]", Arrays.deepToString(modes(Nominal.newCopyOf("a", "a", "b", "a", "b", "c", "b")).values()));
+        assertEquals("[a]", Arrays.deepToString(modes(Nominal.newCopyOf("a")).values()));
+        assertEquals("[a]", Arrays.deepToString(modes(Nominal.newCopyOf("a", "a", "a", "b", "c", "b")).values()));
+        assertEquals("[a, c, b]", Arrays.deepToString(modes(Nominal.newCopyOf("a", "c", "b")).values()));
+        assertEquals("[]", Arrays.deepToString(modes(Nominal.newCopyOf()).values()));
     }
 }
