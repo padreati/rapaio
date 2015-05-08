@@ -178,7 +178,7 @@ public class ROC implements Printable, Serializable {
 
         final String fmt = "%-10s";
 
-        sb.append("> ROC printSummary").append("\n");
+        sb.append("\n > ROC printSummary").append("\n");
         sb.append("\n");
         for (int j = 0; j < data.varCount(); j++) {
             if (j > 0) {

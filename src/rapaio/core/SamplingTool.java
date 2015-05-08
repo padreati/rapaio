@@ -21,9 +21,8 @@
  *
  */
 
-package rapaio.core.sample;
+package rapaio.core;
 
-import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
@@ -40,7 +39,6 @@ import static rapaio.core.RandomSource.nextDouble;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public final class SamplingTool {
 
     /**
@@ -340,10 +338,10 @@ public final class SamplingTool {
         Collections.shuffle(left, RandomSource.getRandom());
         Collections.shuffle(right, RandomSource.getRandom());
 
-        return new ArrayList<Frame>() {{
-            add(df.mapRows(Mapping.newWrapOf(left)));
-            add(df.mapRows(Mapping.newWrapOf(right)));
-        }};
+        List<Frame> list = new ArrayList<>();
+        list.add(df.mapRows(Mapping.newWrapOf(left)));
+        list.add(df.mapRows(Mapping.newWrapOf(right)));
+        return list;
     }
 
     public static Frame randomBootstrap(Frame frame) {

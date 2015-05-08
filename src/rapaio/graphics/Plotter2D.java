@@ -36,7 +36,6 @@ import java.util.function.Function;
 @Deprecated
 public final class Plotter2D {
 
-
     private static GOpt[] mergedOpts(GOpt... opts) {
         GOpt[] defaults = GOpts.DEFAULTS.toArray();
         GOpt[] op = new GOpt[defaults.length + opts.length];

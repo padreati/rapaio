@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.data.tools;
+package rapaio.experiment;
 
 import rapaio.data.Frame;
 import rapaio.data.Nominal;

@@ -284,7 +284,7 @@ public class CTree extends AbstractClassifier {
 
     @Override
     public void buildPrintSummary(StringBuilder sb) {
-        sb.append("> ").append(fullName()).append("\n");
+        sb.append("\n > ").append(fullName()).append("\n");
 
         sb.append(String.format("n=%d\n", rows));
 

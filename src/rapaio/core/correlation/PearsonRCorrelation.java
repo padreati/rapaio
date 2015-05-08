@@ -117,20 +117,20 @@ public class PearsonRCorrelation implements Printable {
     }
 
     private void summaryOne(StringBuilder sb) {
-        sb.append(String.format("> pearson[%s] - Pearson product-moment correlation coefficient\n",
+        sb.append(String.format("\n > pearson[%s] - Pearson product-moment correlation coefficient\n",
                 names[0]));
         sb.append("1\n");
         sb.append("pearson correlation is 1 for identical vectors\n");
     }
 
     private void summaryTwo(StringBuilder sb) {
-        sb.append(String.format("> pearson[%s, %s] - Pearson product-moment correlation coefficient\n",
+        sb.append(String.format("\n > pearson[%s, %s] - Pearson product-moment correlation coefficient\n",
                 names[0], names[1]));
         sb.append(formatFlex(pearson[0][1])).append("\n");
     }
 
     private void summaryMore(StringBuilder sb) {
-        sb.append(String.format("> pearson[%s] - Pearson product-moment correlation coefficient\n",
+        sb.append(String.format("\n > pearson[%s] - Pearson product-moment correlation coefficient\n",
                 Arrays.deepToString(names)));
 
         String[][] table = new String[vars.length + 1][vars.length + 1];

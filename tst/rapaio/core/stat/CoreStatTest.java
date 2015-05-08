@@ -25,14 +25,8 @@ package rapaio.core.stat;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.core.stat.Maximum;
-import rapaio.core.stat.Minimum;
-import rapaio.core.stat.Quantiles;
-import rapaio.core.stat.Variance;
 import rapaio.data.*;
 import rapaio.io.Csv;
-import rapaio.printer.Printer;
-import rapaio.ws.Summary;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -40,7 +34,7 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static rapaio.core.CoreStat.*;
-import static rapaio.core.distributions.Distributions.normal;
+import static rapaio.core.Distributions.normal;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -73,12 +67,12 @@ public class CoreStatTest {
         StringBuilder sb = new StringBuilder();
         mean(num2).buildPrintSummary(sb);
 
-        assertEquals("> mean[?]\n" +
+        assertEquals("\n > mean[?]\n" +
                 "total rows: 4 (complete: 4, missing: 0)\n" +
                 "mean: 2.5\n", sb.toString());
         sb = new StringBuilder();
         var(num2).buildPrintSummary(sb);
-        assertEquals("> variance[?]\n" +
+        assertEquals("\n > variance[?]\n" +
                         "total rows: 4 (complete: 4, missing: 0)\n" +
                         "variance: 1.6666667\n" +
                         "sd: 1.2909944\n",

@@ -25,7 +25,7 @@ package rapaio.experiment.sandbox;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.stream.SCollectors;
+import rapaio.util.stream.SCollectors;
 import rapaio.ws.Summary;
 
 import java.io.IOException;

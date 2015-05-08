@@ -23,10 +23,13 @@
 
 package rapaio.core.tests;
 
+import rapaio.data.filter.var.VFilters;
 import rapaio.printer.Printable;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFSort;
+
+import static rapaio.WS.formatFlex;
 
 /**
  * Creates a new statistical Kolmogorov-Smirnoff test. The 1 sample test, with <tt>v</tt>
@@ -36,7 +39,6 @@ import rapaio.data.filter.var.VFSort;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public class KSTest implements Printable {
 
     private final Distribution cdf;
@@ -44,7 +46,6 @@ public class KSTest implements Printable {
     private final Var v2;
     private double D; // maximum distance between ECDF1 and F, or ECDF1 and ECFD2
     private final double pValue;
-    private final String testName;
 
     /**
      * One-sample K-S test.
@@ -57,8 +58,8 @@ public class KSTest implements Printable {
      *
      * @param cdf the densities to compare against
      */
-    public static KSTest newOneSampleTest(String testName, Var sample, Distribution cdf) {
-        return new KSTest(testName, sample, cdf);
+    public static KSTest newOneSampleTest(Var sample, Distribution cdf) {
+        return new KSTest(sample, cdf);
     }
 
     /**
@@ -72,12 +73,11 @@ public class KSTest implements Printable {
      * @param sample1 first sample
      * @param sample2 second sample
      */
-    public static KSTest twoSamplesTest(String testName, Var sample1, Var sample2) {
-        return new KSTest(testName, sample1, sample2);
+    public static KSTest twoSamplesTest(Var sample1, Var sample2) {
+        return new KSTest(sample1, sample2);
     }
 
-    private KSTest(String testName, Var sample, Distribution cdf) {
-        this.testName = testName;
+    private KSTest(Var sample, Distribution cdf) {
         this.v1 = new VFSort().fitApply(sample);
         this.cdf = cdf;
         this.v2 = null;
@@ -98,8 +98,7 @@ public class KSTest implements Printable {
         pValue = probks((n + 0.12 + 0.11 / n) * D);
     }
 
-    private KSTest(String testName, Var sample1, Var sample2) {
-        this.testName = testName;
+    private KSTest(Var sample1, Var sample2) {
         this.v1 = new VFSort().fitApply(sample1);
         this.v2 = new VFSort().fitApply(sample2);
         this.cdf = null;
@@ -151,7 +150,7 @@ public class KSTest implements Printable {
     }
 
     /**
-     * Gets pValue for the given test
+     * Gets p-value for the given test
      *
      * @return p-value
      */
@@ -174,7 +173,7 @@ public class KSTest implements Printable {
     }
 
     private void oneSampleSummary(StringBuilder sb) {
-        sb.append("> Kolmogorov-Smirnoff 1-sample test: ").append(testName).append("\n");
+        sb.append("\n > Kolmogorov-Smirnoff 1-sample test\n");
 
         int ties = (int) (v1.rowCount() - v1.stream().mapToDouble().distinct().count());
         sb.append(String.format("sample size: %d, ties: %d\n",
@@ -183,13 +182,13 @@ public class KSTest implements Printable {
             sb.append(" (warning: p-values will not be exact because of ties)\n");
 
         sb.append(String.format("densities: %s\n", cdf.name()));
-        sb.append(String.format("D statistic: %.6f\n", D));
-        sb.append(String.format("p-value: %.12f %s\n", pValue, getPValueStars()));
+        sb.append("D statistic: ").append(formatFlex(D)).append("\n");
+        sb.append("p-value: ").append(formatFlex(pValue)).append(" ").append(getPValueStars()).append("\n");
         sb.append("\n");
     }
 
     private void twoSamplesSummary(StringBuilder sb) {
-        sb.append("> Kolmogorov-Smirnoff 2-sample test: ").append(testName).append("\n");
+        sb.append("\n > Kolmogorov-Smirnoff 2-sample test\n");
 
         int ties1 = (int) (v1.rowCount() - v1.stream().mapToDouble().distinct().count());
         int ties2 = (int) (v2.rowCount() - v2.stream().mapToDouble().distinct().count());

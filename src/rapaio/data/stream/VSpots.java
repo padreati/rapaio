@@ -26,7 +26,7 @@ package rapaio.data.stream;
 import rapaio.data.MappedVar;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.stream.StreamUtil;
+import rapaio.util.stream.StreamUtil;
 
 import java.io.Serializable;
 import java.util.Comparator;

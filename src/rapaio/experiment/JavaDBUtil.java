@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.db;
+package rapaio.experiment;
 
 import rapaio.data.*;
 

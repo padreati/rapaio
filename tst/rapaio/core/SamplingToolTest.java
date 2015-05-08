@@ -21,14 +21,18 @@
  *
  */
 
-package rapaio.core.sample;
+package rapaio.core;
 
 import org.junit.Test;
+import rapaio.core.SamplingTool;
+import rapaio.core.tests.KSTest;
+import rapaio.data.Numeric;
+
+import static rapaio.core.Distributions.dunif;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class SamplingToolTest {
 
 	//    @Test
@@ -82,14 +86,17 @@ public class SamplingToolTest {
 		double[] freq = new double[10];
 		final int TRIALS = 100_000;
 		final int SAMPLES = 3;
-		for (int i = 0; i < TRIALS; i++) {
+        Numeric v = Numeric.newEmpty();
+        for (int i = 0; i < TRIALS; i++) {
             for (int next : SamplingTool.sampleWOR(SAMPLES, 10)) {
                 freq[next]++;
-			}
+                v.addValue(next);
+            }
 		}
 		for (double f : freq) {
 			System.out.print(String.format("%.6f, ", f / (1. * TRIALS * SAMPLES)));
 		}
-		System.out.println();
+        KSTest.newOneSampleTest(v, dunif(0, 9)).printSummary();
+        System.out.println();
 	}
 }

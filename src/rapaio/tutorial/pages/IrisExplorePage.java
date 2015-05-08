@@ -226,7 +226,7 @@ public class IrisExplorePage implements TutorialPage {
 
         code("        new KSTest(\"normality test\", sw, new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value()))).printSummary();\n");
 
-        KSTest.newOneSampleTest("normality test", sw, new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value()))).printSummary();
+        KSTest.newOneSampleTest(sw, new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value()))).printSummary();
 
         p("The KS Test gives us a p-value of 0.078 which is more than the usual 0.05 threshold value. " +
                 "Note however that there is some departure from normality caused by the fact that " +
@@ -251,7 +251,7 @@ public class IrisExplorePage implements TutorialPage {
                         .add(df.var("sepal-width"), new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value())))
                         .add(new ABLine(1, 0, color(Color.GRAY)))
         );
-        KSTest.newOneSampleTest("normality test", sw, new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value()))).printSummary();
+        KSTest.newOneSampleTest(sw, new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value()))).printSummary();
 
 
         p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");

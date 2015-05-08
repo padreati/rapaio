@@ -23,7 +23,7 @@
 
 package rapaio.datasets;
 
-import rapaio.core.sample.SamplingTool;
+import rapaio.core.SamplingTool;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import rapaio.datasets.UCI.UCI;

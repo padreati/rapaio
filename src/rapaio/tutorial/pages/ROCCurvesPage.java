@@ -24,7 +24,7 @@
 package rapaio.tutorial.pages;
 
 import rapaio.core.RandomSource;
-import rapaio.core.sample.SamplingTool;
+import rapaio.core.SamplingTool;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.Legend;

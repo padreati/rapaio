@@ -25,6 +25,7 @@ package rapaio.core.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
+import rapaio.core.Distributions;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.StudentT;
@@ -36,6 +37,8 @@ import rapaio.datasets.Datasets;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import static rapaio.core.Distributions.normal;
+
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
@@ -46,7 +49,7 @@ public class KSTestTest {
     public void testPearson() throws IOException, URISyntaxException {
         RandomSource.setSeed(1);
         Frame df = Datasets.loadPearsonHeightDataset();
-        KSTest test = KSTest.twoSamplesTest("2-sample pearson", df.var("Son"), df.var("Father"));
+        KSTest test = KSTest.twoSamplesTest(df.var("Son"), df.var("Father"));
         test.printSummary();
 
         Assert.assertEquals(0.150278, test.d(), 10e-5);
@@ -56,9 +59,9 @@ public class KSTestTest {
     @Test
     public void testNormal() {
         RandomSource.setSeed(1);
-        Normal d = new Normal(0, 1);
+        Normal d = normal();
         Numeric sample = d.sample(1000);
-        KSTest test = KSTest.newOneSampleTest("normal sample", sample, d);
+        KSTest test = KSTest.newOneSampleTest(sample, d);
         test.printSummary();
         Assert.assertTrue(test.d() < 0.4);
         Assert.assertTrue(test.pValue() > 0.08);
@@ -68,7 +71,7 @@ public class KSTestTest {
     public void testUniform() {
         RandomSource.setSeed(1);
         Numeric sample = new Uniform(0, 1).sample(1_000);
-        KSTest test = KSTest.newOneSampleTest("uniform sample", sample, new Normal(0, 1));
+        KSTest test = KSTest.newOneSampleTest(sample, normal());
         test.printSummary();
         Assert.assertTrue(test.d() > 0.4);
         Assert.assertTrue(test.pValue() < 0.001);
@@ -79,7 +82,7 @@ public class KSTestTest {
         RandomSource.setSeed(1);
         StudentT d = new StudentT(3, 0, 1);
         Numeric sample = d.sample(1000);
-        KSTest test = KSTest.newOneSampleTest("studentT sample", sample, new Normal(0, 1));
+        KSTest test = KSTest.newOneSampleTest(sample, normal());
         test.printSummary();
         Assert.assertTrue(test.d() > 0.04);
         Assert.assertTrue(test.pValue() < 0.05);

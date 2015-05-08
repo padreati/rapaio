@@ -23,10 +23,10 @@
 
 package rapaio.core.sample;
 
+import rapaio.core.SamplingTool;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
-import rapaio.printer.Printer;
 
 import java.io.Serializable;
 
@@ -38,7 +38,6 @@ import static rapaio.WS.formatFlex;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/29/15.
  */
-@Deprecated
 public interface Sampler extends Serializable {
 
     /**
@@ -55,7 +54,9 @@ public interface Sampler extends Serializable {
 
     // static implementations
 
-    class Identity implements Sampler {
+    final class Identity implements Sampler {
+
+        private static final long serialVersionUID = -1133893495082466752L;
 
         @Override
         public Sample newSample(Frame df, Var weights) {
@@ -70,6 +71,7 @@ public interface Sampler extends Serializable {
 
     final class Bootstrap implements Sampler {
 
+        private static final long serialVersionUID = -7987373317949449262L;
         private double percent = 1.0;
 
         public Bootstrap(double percent) {

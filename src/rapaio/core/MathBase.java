@@ -27,7 +27,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import static rapaio.core.Constants.*;
-import static rapaio.core.distributions.Distributions.normal;
+import static rapaio.core.Distributions.normal;
 
 /**
  * Utility class which simplifies access to common java math utilities and also

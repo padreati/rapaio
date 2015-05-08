@@ -243,7 +243,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
 
     @Override
     public void buildPrintSummary(StringBuilder sb) {
-        sb.append("> ").append(fullName()).append("\n");
+        sb.append("\n > ").append(fullName()).append("\n");
 
         sb.append("prediction:\n");
         sb.append("weak learners built: ").append(h.size()).append("\n");

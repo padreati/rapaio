@@ -23,7 +23,7 @@
 
 package rapaio.experiment.clustering;
 
-import rapaio.core.sample.SamplingTool;
+import rapaio.core.SamplingTool;
 import rapaio.core.stat.Mean;
 import rapaio.data.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;

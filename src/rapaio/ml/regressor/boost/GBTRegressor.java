@@ -23,7 +23,7 @@
 
 package rapaio.ml.regressor.boost;
 
-import rapaio.core.sample.SamplingTool;
+import rapaio.core.SamplingTool;
 import rapaio.data.*;
 import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.Regressor;
@@ -33,7 +33,6 @@ import rapaio.ml.regressor.boost.gbt.BTRegressor;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
 import rapaio.ml.regressor.simple.L2Regressor;
 import rapaio.ml.regressor.tree.rtree.RTree;
-import rapaio.printer.Printer;
 
 import java.util.ArrayList;
 import java.util.List;

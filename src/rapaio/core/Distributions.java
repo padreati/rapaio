@@ -21,7 +21,10 @@
  *
  */
 
-package rapaio.core.distributions;
+package rapaio.core;
+
+import rapaio.core.distributions.DUniform;
+import rapaio.core.distributions.Normal;
 
 /**
  * Utility class to facilitate creation of distribition objects.
@@ -36,5 +39,9 @@ public class Distributions {
 
     public static Normal normal(double mu, double sd) {
         return new Normal(mu, sd);
+    }
+
+    public static DUniform dunif(int a, int b) {
+        return new DUniform(a, b);
     }
 }

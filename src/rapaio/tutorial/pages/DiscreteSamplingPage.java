@@ -25,7 +25,7 @@ package rapaio.tutorial.pages;
 
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.empirical.KDE;
-import rapaio.core.sample.SamplingTool;
+import rapaio.core.SamplingTool;
 import rapaio.data.*;
 import rapaio.ws.Summary;
 

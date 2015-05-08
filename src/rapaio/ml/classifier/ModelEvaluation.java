@@ -24,7 +24,7 @@
 package rapaio.ml.classifier;
 
 import rapaio.core.RandomSource;
-import rapaio.core.sample.SamplingTool;
+import rapaio.core.SamplingTool;
 import rapaio.data.*;
 import rapaio.data.filter.frame.FFShuffle;
 import rapaio.ml.eval.ConfusionMatrix;

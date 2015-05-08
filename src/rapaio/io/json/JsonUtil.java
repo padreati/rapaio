@@ -26,7 +26,7 @@ package rapaio.io.json;
 import rapaio.io.json.stream.JsonInputFlat;
 import rapaio.io.json.stream.LzJsonOutput;
 import rapaio.io.json.tree.JsonValue;
-import rapaio.stream.StreamUtil;
+import rapaio.util.stream.StreamUtil;
 import rapaio.util.Pin;
 
 import java.io.*;

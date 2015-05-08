@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.stream;
+package rapaio.util.stream;
 
 import java.util.Spliterator;
 import java.util.function.Consumer;

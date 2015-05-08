@@ -30,7 +30,6 @@ import rapaio.data.Var;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
-@Deprecated
 public final class Sample {
 
     public final Frame df;

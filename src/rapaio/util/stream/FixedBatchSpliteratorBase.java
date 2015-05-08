@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.stream;
+package rapaio.util.stream;
 
 import java.util.Comparator;
 import java.util.Spliterator;

@@ -164,7 +164,7 @@ public class RegressorFit implements Printable {
     @Override
     public void buildPrintSummary(StringBuilder sb) {
 
-        sb.append("> Regression Result Summary").append("\n");
+        sb.append("\n > Regression Result Summary").append("\n");
         sb.append("  =========================\n");
         sb.append("\n");
 

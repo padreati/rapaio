@@ -31,8 +31,8 @@ import static rapaio.WS.formatFlex;
 
 /**
  * Gamma distribution;
- * <A HREF="http://wwwinfo.cern.ch/asdoc/shortwrupsdir/g106/top.html"> math definition</A>,
- * <A HREF="http://www.cern.ch/RD11/rkb/AN16pp/node96.html#SECTION000960000000000000000"> definition of gamma function</A>
+ * <A HREF="http://wwwinfo.cern.ch/asdoc/shortwrupsdir/g106/top.html"\n > math definition</A>,
+ * <A HREF="http://www.cern.ch/RD11/rkb/AN16pp/node96.html#SECTION000960000000000000000"\n > definition of gamma function</A>
  * and
  * <A HREF="http://www.statsoft.com/textbook/glosf.html#Gamma Distribution">animated definition</A>.
  * <p>

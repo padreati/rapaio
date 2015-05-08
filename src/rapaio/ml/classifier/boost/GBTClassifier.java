@@ -23,13 +23,12 @@
 
 package rapaio.ml.classifier.boost;
 
-import rapaio.core.sample.SamplingTool;
+import rapaio.core.SamplingTool;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.RunningClassifier;
 import rapaio.ml.regressor.RegressorFit;

@@ -23,7 +23,7 @@
 
 package rapaio.tutorial.pages;
 
-import rapaio.core.sample.SamplingTool;
+import rapaio.core.SamplingTool;
 import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.Numeric;

@@ -50,7 +50,7 @@ public class Summary {
     public static void printSummary(Frame df, String... names) {
 
         StringBuilder buffer = new StringBuilder();
-        buffer.append(String.format("> printSummary(frame, %s)\n", Arrays.deepToString(names)));
+        buffer.append(String.format("\n > printSummary(frame, %s)\n", Arrays.deepToString(names)));
         if (df == null) {
             buffer.append("null instance of frame.\n");
             code(buffer.toString());
@@ -246,7 +246,7 @@ public class Summary {
     public static void printSummary(Var v) {
 
         StringBuilder buffer = new StringBuilder();
-        buffer.append("> printSummary(var)\n");
+        buffer.append("\n > printSummary(var)\n");
 
         String[] first = new String[7];
         String[] second = new String[7];
@@ -398,7 +398,7 @@ public class Summary {
 
     public static void printNames(Frame df) {
         StringBuilder buffer = new StringBuilder();
-        buffer.append("> names(frame)\n");
+        buffer.append("\n > names(frame)\n");
         for (int i = 0; i < df.varCount(); i++) {
             buffer.append(df.varNames()[i]).append("\n");
         }

@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.data.tools;
+package rapaio.math.linear;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;

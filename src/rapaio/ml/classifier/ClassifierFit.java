@@ -206,10 +206,10 @@ public class ClassifierFit implements Printable {
         sb.append("\n");
 
         sb.append("Predicted frame printSummary:\n");
-        sb.append("> rows: ").append(df.rowCount()).append("\n");
-        sb.append("> vars: ").append(df.varCount()).append("\n");
-        sb.append("> targets: ").append(Arrays.deepToString(model.targetNames())).append("\n");
-        sb.append("> inputs: ").append(Arrays.deepToString(model.inputNames())).append("\n");
+        sb.append("\n > rows: ").append(df.rowCount()).append("\n");
+        sb.append("\n > vars: ").append(df.varCount()).append("\n");
+        sb.append("\n > targets: ").append(Arrays.deepToString(model.targetNames())).append("\n");
+        sb.append("\n > inputs: ").append(Arrays.deepToString(model.inputNames())).append("\n");
         sb.append("\n");
 
         sb.append("Classification results:").append("\n");
