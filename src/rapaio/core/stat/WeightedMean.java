@@ -34,11 +34,12 @@ import static rapaio.WS.formatFlex;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/25/14.
  */
-@Deprecated
 public final class WeightedMean implements Printable {
 
     private final String varName;
     private final double mean;
+    private int missingCount;
+    private int completeCount;
 
     public WeightedMean(final Var var, final Var weights) {
         this.varName = var.name();
@@ -49,15 +50,16 @@ public final class WeightedMean implements Printable {
         if (var.rowCount() != weights.rowCount()) {
             throw new IllegalArgumentException("weights must have the same count as values");
         }
-        int count = 0;
         double total = 0;
         for (int i = 0; i < var.rowCount(); i++) {
-            if (var.missing(i) || weights.missing(i))
+            if (var.missing(i) || weights.missing(i)) {
+                missingCount++;
                 continue;
-            count++;
+            }
+            completeCount++;
             total += weights.value(i);
         }
-        if (count == 0 || total == 0) {
+        if (completeCount == 0 || total == 0) {
             return Double.NaN;
         }
         double sum = 0;
@@ -82,6 +84,8 @@ public final class WeightedMean implements Printable {
 
     @Override
     public void buildPrintSummary(StringBuilder sb) {
-        sb.append(String.format("> weightedMean['%s']\n%s\n", varName, formatFlex(mean)));
+        sb.append(String.format("> weightedMean[%s]\n", varName));
+        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
+        sb.append(String.format("weightedMean: %s\n", formatFlex(mean)));
     }
 }

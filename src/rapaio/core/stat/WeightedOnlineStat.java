@@ -32,7 +32,6 @@ import static rapaio.WS.formatFlex;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/13/15.
  */
-@Deprecated
 public class WeightedOnlineStat implements Printable {
 
     double m1 = Double.NaN;

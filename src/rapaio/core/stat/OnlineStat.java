@@ -43,7 +43,6 @@ package rapaio.core.stat;
  *
  * @author Aurelian Tutuianu
  */
-@Deprecated
 public class OnlineStat {
 
     double n; // number of elements

@@ -288,7 +288,7 @@ public interface RM extends Serializable, Printable {
     default void buildPrintSummary(StringBuilder sb) {
 
         String[][] m = new String[rowCount()][colCount()];
-        int max = 0;
+        int max = 1;
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 m[i][j] = formatFlex(get(i, j));
@@ -327,11 +327,11 @@ public interface RM extends Serializable, Printable {
                             continue;
                         }
                         if (i == vStart) {
-                            sb.append(String.format("[ ,%" + (max - 4) + "d]", j - 1));
+                            sb.append(String.format("[ ,%" + Math.max(1, max - 4) + "d]", j - 1));
                             continue;
                         }
                         if (j == hStart) {
-                            sb.append(String.format("[%" + (max - 4) + "d, ]", i - 1));
+                            sb.append(String.format("[%" + Math.max(1, max - 4) + "d, ]", i - 1));
                             continue;
                         }
                         sb.append(String.format("%" + max + "s", m[i - 1][j - 1]));

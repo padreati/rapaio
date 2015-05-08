@@ -58,9 +58,13 @@ public class Covariance implements Printable {
     private double compute(final Var x, final Var y) {
 
         Mapping map = Mapping.newWrapOf(IntStream.range(0, Math.min(x.rowCount(), y.rowCount())).filter(row -> !x.missing(row) && !y.missing(row)).boxed().collect(toList()));
-
         completeCount = map.size();
         missingCount = Math.max(x.rowCount(), y.rowCount()) - completeCount;
+
+        if (map.size() < 2) {
+            return 0;
+        }
+
         Var xx = x.mapRows(map);
         Var yy = y.mapRows(map);
 

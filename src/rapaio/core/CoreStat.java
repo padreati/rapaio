@@ -34,6 +34,10 @@ import rapaio.data.Var;
  */
 public final class CoreStat {
 
+    public static OnlineStat newOnlineStat() {
+        return new OnlineStat();
+    }
+
     public static Mean mean(Var var) {
         return new Mean(var);
     }

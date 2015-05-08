@@ -54,7 +54,7 @@ public class Uniform implements Distribution {
 
     @Override
     public String name() {
-        return "Uniform(a=" + formatFlex(getA()) + ",b=%" + formatFlex(getB()) + ")";
+        return "Uniform(a=" + formatFlex(getA()) + ",b=" + formatFlex(getB()) + ")";
     }
 
     @Override

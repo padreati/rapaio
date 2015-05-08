@@ -38,7 +38,7 @@ public class UniformTest {
     public void testUniformPdf() {
         Distribution u = new Uniform(0, 2);
 
-        assertEquals("Uniform(a=0.000,b=2.000)", u.name());
+        assertEquals("Uniform(a=0,b=2)", u.name());
 
         assertEquals(0, u.pdf(-1), 1e-12);
         assertEquals(0.5, u.pdf(0), 1e-12);

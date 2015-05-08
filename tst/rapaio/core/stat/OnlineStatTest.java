@@ -42,7 +42,6 @@ import static rapaio.graphics.opt.GOpt.sz;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-@Deprecated
 public class OnlineStatTest {
 
     @Test

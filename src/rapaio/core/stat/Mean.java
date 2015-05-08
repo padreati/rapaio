@@ -40,7 +40,6 @@ public final class Mean implements Printable {
 
     private final String varName;
     private final double value;
-    private int rowCount = 0;
     private int missingCount = 0;
     private int completeCount = 0;
 
@@ -48,7 +47,6 @@ public final class Mean implements Printable {
         this.varName = var.name();
         double sum = 0.0;
         for (int i = 0; i < var.rowCount(); i++) {
-            rowCount++;
             if (var.missing(i)) {
                 missingCount++;
             } else {
@@ -72,7 +70,7 @@ public final class Mean implements Printable {
     @Override
     public void buildPrintSummary(StringBuilder sb) {
         sb.append(String.format("> mean[%s]\n", varName));
-        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", rowCount, completeCount, missingCount));
+        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
         sb.append(String.format("mean: %s\n", formatFlex(value)));
     }
 }

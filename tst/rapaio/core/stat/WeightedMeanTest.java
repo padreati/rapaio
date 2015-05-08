@@ -32,7 +32,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/25/14.
  */
-@Deprecated
 public class WeightedMeanTest {
 
     @Test
