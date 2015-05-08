@@ -41,7 +41,6 @@ import static rapaio.core.CoreStat.mean;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/24/15.
  */
-@Deprecated
 public class Covariance implements Printable {
 
     private final String varName1;
