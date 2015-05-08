@@ -27,7 +27,6 @@ import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.data.stream.FSpot;
 import rapaio.util.Pair;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.Serializable;
 import java.util.*;
@@ -234,7 +233,8 @@ public interface CTreeSplitter extends Serializable {
         }
     }
 
-    public static final class RemainsWithSurrogates implements CTreeSplitter {
+    @Deprecated
+    final class RemainsWithSurrogates implements CTreeSplitter {
 
         @Override
         public String name() {
@@ -249,7 +249,7 @@ public interface CTreeSplitter extends Serializable {
         @Override
         public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Var weights, CTreeCandidate candidate) {
             // TODO partition tree classifier - remains surrogates
-            throw new NotImplementedException();
+            throw new IllegalArgumentException("not implemented");
         }
     };
 }

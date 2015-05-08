@@ -24,7 +24,6 @@
 package rapaio.data;
 
 import rapaio.data.stream.VSpot;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -79,7 +78,7 @@ public abstract class AbstractVar implements Var {
                 }
                 return bin;
             default:
-                throw new NotImplementedException();
+                throw new IllegalArgumentException("not implemented");
         }
     }
 }

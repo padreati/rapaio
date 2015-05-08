@@ -23,12 +23,11 @@
 
 package rapaio.ml.regressor;
 
-import rapaio.printer.Printable;
 import rapaio.core.sample.Sampler;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import rapaio.printer.Printable;
 
 import java.io.Serializable;
 
@@ -141,6 +140,6 @@ public interface Regressor extends Printable, Serializable {
     RegressorFit predict(Frame df, boolean withResiduals);
 
     default void buildPrintSummary(StringBuilder sb) {
-        throw new NotImplementedException();
+        throw new IllegalArgumentException("not implemented");
     }
 }

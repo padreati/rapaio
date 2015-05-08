@@ -24,8 +24,6 @@
 package rapaio.core.stat;
 
 import rapaio.printer.Printable;
-import rapaio.printer.Printer;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import static rapaio.WS.formatFlex;
 
@@ -55,7 +53,7 @@ public class WeightedOnlineStat implements Printable {
     }
 
     public double variance() {
-        throw new NotImplementedException();
+        throw new IllegalArgumentException("not implemented");
     }
 
     @Override

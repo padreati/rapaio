@@ -26,7 +26,6 @@ package rapaio.experiment.clustering;
 import rapaio.core.SamplingTool;
 import rapaio.core.stat.Mean;
 import rapaio.data.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -161,7 +160,7 @@ public class KMeansClustering {
         }, RandomPartition {
             @Override
             public void init(Frame df, Frame centroids) {
-                throw new NotImplementedException();
+                throw new IllegalArgumentException("not implemented");
             }
         };
 

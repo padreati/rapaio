@@ -33,12 +33,10 @@ import rapaio.ml.classifier.RunningClassifier;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.util.func.SFunction;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.IntStream;
 
@@ -188,6 +186,6 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
 
     @Override
     public void buildPrintSummary(StringBuilder sb) {
-        throw new NotImplementedException();
+        throw new IllegalArgumentException("not implemented");
     }
 }

@@ -23,8 +23,6 @@
 
 package rapaio.core.distributions;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import static rapaio.core.MathBase.*;
 
 /**
@@ -149,6 +147,6 @@ public class StudentT implements Distribution {
     @Override
     public double entropy() {
         // take a look at the wiki page - it's scary
-        throw new NotImplementedException();
+        throw new IllegalArgumentException("not implemented");
     }
 }
