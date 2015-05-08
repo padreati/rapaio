@@ -24,9 +24,9 @@
 package rapaio.core.distributions.empirical;
 
 /**
+ * BiCubic kernel function
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class KFuncBiWeight implements KFunc {
 
     @Override
@@ -36,7 +36,7 @@ public class KFuncBiWeight implements KFunc {
     }
 
     @Override
-    public double getMinValue(double x0, double bandwidth) {
+    public double minValue(double x0, double bandwidth) {
         return x0 - bandwidth;
     }
 

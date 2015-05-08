@@ -31,9 +31,12 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 /**
+ * Kernel density estimator.
+ * Given a sample of values, based on a given kernel and bandwidth it creates
+ * an estimation of a density function.
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class KDE implements Serializable {
 
     private static final long serialVersionUID = -9221394390068126299L;
@@ -62,7 +65,7 @@ public class KDE implements Serializable {
     }
 
     public double pdf(double x) {
-        int from = Arrays.binarySearch(values, kernel.getMinValue(x, bandwidth));
+        int from = Arrays.binarySearch(values, kernel.minValue(x, bandwidth));
         if (from < 0) from = -from - 1;
         int to = Arrays.binarySearch(values, kernel.getMaxValue(x, bandwidth));
         if (to < 0) to = -to - 1;

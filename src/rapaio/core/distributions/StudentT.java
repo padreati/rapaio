@@ -34,7 +34,6 @@ import static rapaio.core.MathBase.*;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class StudentT implements Distribution {
 
     private static final long serialVersionUID = 2573925611489986427L;

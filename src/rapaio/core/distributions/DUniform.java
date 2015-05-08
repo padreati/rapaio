@@ -28,9 +28,9 @@ package rapaio.core.distributions;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class DUniform implements Distribution {
 
+    private static final long serialVersionUID = -6164593855805329051L;
     private final double a;
     private final double b;
     private final double n;

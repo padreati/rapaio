@@ -23,16 +23,14 @@
 
 package rapaio.core.distributions;
 
-import rapaio.printer.Printer;
-
 import static rapaio.WS.formatFlex;
 
 /**
- * @author Aurelian Tutuianu
+ * @author <a href="mailto:padreatiyahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Normal implements Distribution {
 
+    private static final long serialVersionUID = 3618971055326379083L;
     private final double mu;
     private final double sd;
     private final double var;

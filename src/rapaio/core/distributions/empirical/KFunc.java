@@ -26,14 +26,36 @@ package rapaio.core.distributions.empirical;
 import java.io.Serializable;
 
 /**
+ * Kernel function used in kernel density estimator
+ *
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public interface KFunc extends Serializable {
 
+    /**
+     * pdf of the kernel
+     *
+     * @param x         x coordinate of the point where is evaluated
+     * @param x0        x coordinate of the kernel center
+     * @param bandwidth band width of the kernel
+     * @return pdf value for x0
+     */
     double pdf(double x, double x0, double bandwidth);
 
-    double getMinValue(double x0, double bandwidth);
+    /**
+     * Computes smallest x coordinate value for which the kernel function has an influence
+     *
+     * @param x0        center point of the kernel
+     * @param bandwidth bandwidth of the kernel
+     * @return minimum value where is an influence
+     */
+    double minValue(double x0, double bandwidth);
 
+    /**
+     * Computes largest x coordinate value for which the kernel function has an influence
+     * @param x0 center point of the kernel
+     * @param bandwidth bandwidth of the kernel
+     * @return maximum value where is an influence
+     */
     double getMaxValue(double x0, double bandwidth);
 }

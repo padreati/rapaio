@@ -35,9 +35,9 @@ import static rapaio.core.Constants.DBL_EPSILON;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Binomial implements Distribution {
 
+    private static final long serialVersionUID = 8813621560796556828L;
 
     private final double p;
     private final double n;

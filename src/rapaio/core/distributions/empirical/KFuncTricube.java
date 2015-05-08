@@ -24,10 +24,13 @@
 package rapaio.core.distributions.empirical;
 
 /**
+ * Tri-cubic kernel function
+ *
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class KFuncTricube implements KFunc {
+
+    private static final long serialVersionUID = 3788981779668937261L;
 
     @Override
     public double pdf(double x, double x0, double bandwidth) {
@@ -40,7 +43,7 @@ public class KFuncTricube implements KFunc {
     }
 
     @Override
-    public double getMinValue(double x0, double bandwidth) {
+    public double minValue(double x0, double bandwidth) {
         return x0 - bandwidth;
     }
 

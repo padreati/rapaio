@@ -31,13 +31,12 @@ import rapaio.core.RandomSource;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/29/15.
  */
-@Deprecated
 public class ChiSquare implements Distribution {
 
+    private static final long serialVersionUID = 2967287812574824823L;
     private final double df;
     private final double b;
     private final double vm;
-    private final double vp;
     private final double vd;
 
     public ChiSquare(double df) {
@@ -48,8 +47,7 @@ public class ChiSquare implements Distribution {
         this.b = Math.sqrt(df - 1.0);
         double vm1 = -0.6065306597 * (1.0 - 0.25 / (b * b + 1.0));
         this.vm = (-b > vm1) ? -b : vm1;
-        this.vp = 0.6065306597 * (0.7071067812 + b) / (0.5 + b);
-        this.vd = vp - vm;
+        this.vd = 0.6065306597 * (0.7071067812 + b) / (0.5 + b) - vm;
     }
 
     @Override

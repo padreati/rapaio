@@ -26,10 +26,13 @@ package rapaio.core.distributions.empirical;
 import rapaio.core.distributions.Normal;
 
 /**
+ * Gaussian kernel function
+ *
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class KFuncGaussian implements KFunc {
+
+    private static final long serialVersionUID = 4766872325548110258L;
 
     private final Normal normal = new Normal();
 
@@ -39,7 +42,7 @@ public class KFuncGaussian implements KFunc {
     }
 
     @Override
-    public double getMinValue(double x0, double bandwidth) {
+    public double minValue(double x0, double bandwidth) {
         return x0 - 4 * bandwidth;
     }
 

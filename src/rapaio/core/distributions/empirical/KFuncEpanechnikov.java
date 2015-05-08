@@ -24,10 +24,12 @@
 package rapaio.core.distributions.empirical;
 
 /**
+ * Epanechnikov kernel function
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class KFuncEpanechnikov implements KFunc {
+
+    private static final long serialVersionUID = 8568853478296387174L;
 
     @Override
     public double pdf(double x, double x0, double bandwidth) {
@@ -36,7 +38,7 @@ public class KFuncEpanechnikov implements KFunc {
     }
 
     @Override
-    public double getMinValue(double x0, double bandwidth) {
+    public double minValue(double x0, double bandwidth) {
         return x0 - bandwidth;
     }
 

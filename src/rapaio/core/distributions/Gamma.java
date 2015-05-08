@@ -77,9 +77,9 @@ import static rapaio.WS.formatFlex;
  * @author wolfgang.hoschek@cern.ch
  * @version 1.0, 09/24/99
  */
-@Deprecated
 public class Gamma implements Distribution {
 
+    private static final long serialVersionUID = -7748384822665249829L;
     private final double alpha;
     private final double beta;
 

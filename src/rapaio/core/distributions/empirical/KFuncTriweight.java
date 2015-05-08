@@ -24,10 +24,13 @@
 package rapaio.core.distributions.empirical;
 
 /**
+ * Triweight kernel function
+ *
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class KFuncTriweight implements KFunc {
+
+    private static final long serialVersionUID = 6194654792689206173L;
 
     @Override
     public double pdf(double x, double x0, double bandwidth) {
@@ -40,7 +43,7 @@ public class KFuncTriweight implements KFunc {
     }
 
     @Override
-    public double getMinValue(double x0, double bandwidth) {
+    public double minValue(double x0, double bandwidth) {
         return x0 - bandwidth;
     }
 

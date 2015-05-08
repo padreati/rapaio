@@ -25,10 +25,12 @@ package rapaio.core.distributions.empirical;
 
 
 /**
+ * Cosine kernel function
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class KFuncCosine implements KFunc {
+
+    private static final long serialVersionUID = -7574263625299448350L;
 
     @Override
     public double pdf(double x, double x0, double bandwidth) {
@@ -41,7 +43,7 @@ public class KFuncCosine implements KFunc {
     }
 
     @Override
-    public double getMinValue(double x0, double bandwidth) {
+    public double minValue(double x0, double bandwidth) {
         return x0 - bandwidth;
     }
 

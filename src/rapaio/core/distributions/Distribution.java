@@ -33,7 +33,6 @@ import java.io.Serializable;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 11/3/14.
  */
-@Deprecated
 public interface Distribution extends Serializable {
 
     /**
@@ -97,12 +96,17 @@ public interface Distribution extends Serializable {
      */
     double max();
 
+    /**
+     * Generates a random value from this distribution
+     *
+     * @return new random value
+     */
     default double sampleNext() {
         return quantile(RandomSource.nextDouble());
     }
 
     /**
-     * Generate a sample for this densities
+     * Generate a sample for this distribution with the given size
      *
      * @param n number of elements in sample
      * @return sample values
@@ -139,7 +143,7 @@ public interface Distribution extends Serializable {
     }
 
     /**
-     * @return variance of the distribution, or NaN if it is not defined
+     * @return variance of the distribution.
      */
     double var();
 

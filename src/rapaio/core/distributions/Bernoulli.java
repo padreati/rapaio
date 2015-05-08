@@ -28,8 +28,9 @@ package rapaio.core.distributions;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Bernoulli implements Distribution {
+
+    private static final long serialVersionUID = -180129876504915848L;
 
     private final double theta;
 

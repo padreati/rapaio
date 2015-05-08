@@ -184,7 +184,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                     }
 
                     @Override
-                    public double getMinValue(double x0, double bandwidth) {
+                    public double minValue(double x0, double bandwidth) {
                         return x0 + bandwidth;
                     }
 

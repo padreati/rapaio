@@ -33,9 +33,9 @@ import static rapaio.WS.formatFlex;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Uniform implements Distribution {
 
+    private static final long serialVersionUID = -6077483164719205038L;
     private final double a;
     private final double b;
 
