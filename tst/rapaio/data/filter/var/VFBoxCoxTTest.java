@@ -49,9 +49,9 @@ public class VFBoxCoxTTest {
 
         Var b = new VFBoxCoxT(5, 10).fitApply(a.solidCopy());
 
-        WS.draw(new GridLayer(1, 2)
-                        .add(1, 1, new Plot().add(new Histogram(a)).title("original"))
-                        .add(1, 2, new Plot().add(new Histogram(b)).title("transformed"))
-        );
+//        WS.draw(new GridLayer(1, 2)
+//                        .add(1, 1, new Plot().add(new Histogram(a)).title("original"))
+//                        .add(1, 2, new Plot().add(new Histogram(b)).title("transformed"))
+//        );
     }
 }

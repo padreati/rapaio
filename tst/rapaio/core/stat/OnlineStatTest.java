@@ -25,6 +25,7 @@ package rapaio.core.stat;
 
 import org.junit.Test;
 import rapaio.WS;
+import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
@@ -47,8 +48,7 @@ public class OnlineStatTest {
     @Test
     public void testVariance() {
 
-//        RandomSource.setSeed(1223);
-        setPrinter(new IdeaPrinter(true));
+        RandomSource.setSeed(1223);
 
         int LEN = 1_000;
         Var v = new Normal(0, 1).sample(LEN);
@@ -76,13 +76,6 @@ public class OnlineStatTest {
         for (int i = 0; i < LEN; i++) {
             varSum.setValue(i, (varLeft.value(i) + varRight.value(i)) / 2);
         }
-
-        draw(new Plot()
-                        .add(new Points(index, varLeft, color(1), sz(0.4)))
-                        .add(new Points(index, varRight, color(2), sz(0.4)))
-                        .add(new Points(index, varSum, color(3), sz(0.4)))
-                        .yLim(0.5, 1.5)
-        );
     }
 
     @Test
