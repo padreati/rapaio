@@ -30,7 +30,6 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 11/4/14.
  */
-@Deprecated
 public class DUniformTest {
 
     @Test

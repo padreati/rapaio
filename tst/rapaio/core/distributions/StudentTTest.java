@@ -36,7 +36,6 @@ import static org.junit.Assert.assertEquals;
  * Test for
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/28/15.
  */
-@Deprecated
 public class StudentTTest {
 
     @Test

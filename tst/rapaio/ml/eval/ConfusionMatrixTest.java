@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.core.stat;
+package rapaio.ml.eval;
 
 import org.junit.Test;
 import rapaio.data.Nominal;

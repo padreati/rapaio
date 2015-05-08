@@ -37,7 +37,6 @@ import static org.junit.Assert.assertFalse;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class NormalTest {
 
     private static final double ERROR = 1e-9;

@@ -31,7 +31,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 11/4/14.
  */
-@Deprecated
 public class UniformTest {
 
     @Test
