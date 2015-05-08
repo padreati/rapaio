@@ -32,6 +32,8 @@ import rapaio.printer.Printer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static rapaio.WS.formatFlex;
+
 /**
  * Regression evaluation tool which enables one to compute
  * sum of absolute differences between actual and prediction '
@@ -107,6 +109,6 @@ public class MAE implements Printable {
     @Override
     public void buildPrintSummary(StringBuilder sb) {
         sb.append("> mean absolute error").append("\n");
-        sb.append("MAE: %sf").append(Printer.formatDecLong.format(value)).append("\n");
+        sb.append("MAE: %sf").append(formatFlex(value)).append("\n");
     }
 }

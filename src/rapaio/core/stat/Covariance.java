@@ -23,9 +23,18 @@
 
 package rapaio.core.stat;
 
+import rapaio.data.Mapping;
 import rapaio.printer.Printable;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.toList;
+import static rapaio.WS.formatFlex;
+import static rapaio.core.CoreStat.mean;
 
 /**
  * Compute covariance of two variables
@@ -38,6 +47,8 @@ public class Covariance implements Printable {
     private final String varName1;
     private final String varName2;
     private final double value;
+    private int completeCount;
+    private int missingCount;
 
     public Covariance(Var var1, Var var2) {
         this.varName1 = var1.name();
@@ -45,21 +56,22 @@ public class Covariance implements Printable {
         this.value = compute(var1, var2);
     }
 
-    private double compute(final Var var1, final Var var2) {
+    private double compute(final Var x, final Var y) {
 
-        double m1 = var1.value(0);
-        double m2 = var2.value(0);
-        double c = 0;
+        Mapping map = Mapping.newWrapOf(IntStream.range(0, Math.min(x.rowCount(), y.rowCount())).filter(row -> !x.missing(row) && !y.missing(row)).boxed().collect(toList()));
 
-        for (int i = 1; i < Math.min(var1.rowCount(), var2.rowCount()); i++) {
-            double n = i + 1;
-            double m1_new = m1 + (var1.value(i) - m1) / n;
-            double m2_new = m2 + (var2.value(i) - m2) / n;
-            c += (var1.value(i) - m1_new) * (var2.value(i) - m2);
-            m1 = m1_new;
-            m2 = m2_new;
+        completeCount = map.size();
+        missingCount = Math.max(x.rowCount(), y.rowCount()) - completeCount;
+        Var xx = x.mapRows(map);
+        Var yy = y.mapRows(map);
+
+        double m1 = mean(xx).value();
+        double m2 = mean(yy).value();
+        double cov = 0;
+        for (int i = 0; i < completeCount; i++) {
+            cov += (xx.value(i) - m1) * (yy.value(i) - m2);
         }
-        return c;
+        return cov / (completeCount - 1.0);
     }
 
     public double value() {
@@ -68,12 +80,8 @@ public class Covariance implements Printable {
 
     @Override
     public void buildPrintSummary(StringBuilder sb) {
-        sb.append(String.format("> cov[%s,%s]\n%s",
-                varName1, varName2,
-                Printer.formatDecLong.format(value)));
-    }
-
-    public double sdValue() {
-        return Math.sqrt(value);
+        sb.append(String.format("> cov[%s, %s]\n", varName1, varName2));
+        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
+        sb.append(String.format("covariance: %s\n", formatFlex(value)));
     }
 }

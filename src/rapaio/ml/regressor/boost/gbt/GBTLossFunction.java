@@ -31,6 +31,8 @@ import rapaio.printer.Printer;
 
 import java.io.Serializable;
 
+import static rapaio.WS.formatFlex;
+
 /**
  * Loss function used by gradient boosting algorithm.
  * <p>
@@ -95,11 +97,13 @@ public interface GBTLossFunction extends Serializable {
         }
     }
 
-    public static class Huber implements GBTLossFunction {
+    class Huber implements GBTLossFunction {
+
+        private static final long serialVersionUID = -8624877244857556563L;
 
         @Override
         public String name() {
-            return "Huber(alpha=" + Printer.formatDecShort.format(alpha) + ")";
+            return "Huber(alpha=" + formatFlex(alpha) + ")";
         }
 
         double alpha = 0.25;

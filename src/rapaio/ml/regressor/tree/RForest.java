@@ -37,6 +37,8 @@ import rapaio.printer.Printer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static rapaio.WS.formatFlex;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/15/15.
  */
@@ -72,7 +74,7 @@ public class RForest extends AbstractRegressor implements RunningRegressor, Prin
         sb.append("r=").append(r.fullName()).append(", ");
         sb.append("sampling=").append(sampling).append(", ");
         if (!sampling.equals(Sampling.NONE)) {
-            sb.append("samplePercent=").append(Printer.formatDecShort.format(samplePercent)).append(", ");
+            sb.append("samplePercent=").append(formatFlex(samplePercent)).append(", ");
         }
         sb.append("oobComp=").append(oobCompute).append(", ");
         sb.append("runs=").append(runs).append(", ");

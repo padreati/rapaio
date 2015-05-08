@@ -23,12 +23,15 @@
 
 package rapaio.ml.eval;
 
+import rapaio.WS;
 import rapaio.printer.Printable;
 import rapaio.data.*;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.printer.Printer;
 
 import java.io.Serializable;
+
+import static rapaio.WS.formatFlex;
 
 
 /**
@@ -187,7 +190,7 @@ public class ROC implements Printable, Serializable {
 
         int[] rows = new int[11];
         rows[0] = 0;
-        rows[1] = 1 * data.rowCount() / 10;
+        rows[1] = data.rowCount() / 10;
         rows[2] = 2 * data.rowCount() / 10;
         rows[3] = 3 * data.rowCount() / 10;
         rows[4] = 4 * data.rowCount() / 10;
@@ -203,11 +206,11 @@ public class ROC implements Printable, Serializable {
                 if (j > 0) {
                     sb.append(", ");
                 }
-                sb.append(String.format(fmt, Printer.formatDecShort.format(data.value(i, j))));
+                sb.append(String.format(fmt, formatFlex(data.value(i, j))));
             }
             sb.append("\n");
         }
         sb.append("\n");
-        sb.append("AUC: ").append(Printer.formatDecShort.format(auc)).append("\n");
+        sb.append("AUC: ").append(formatFlex(auc)).append("\n");
     }
 }

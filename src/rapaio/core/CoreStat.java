@@ -69,4 +69,8 @@ public final class CoreStat {
     public static Modes modes(Var var, boolean missing) {
         return new Modes(var, missing);
     }
+
+    public static Covariance cov(Var x, Var y) {
+        return new Covariance(x, y);
+    }
 }

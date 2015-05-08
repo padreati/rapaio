@@ -27,6 +27,8 @@ import rapaio.core.MathBase;
 import rapaio.data.Frame;
 import rapaio.printer.Printer;
 
+import static rapaio.WS.formatFlex;
+
 /**
  * The Polynomial kernel is a non-stationary kernel. Polynomial kernels
  * are well suited for problems where all the training data is normalized.
@@ -73,9 +75,9 @@ public class PolyKernel extends AbstractKernel {
     @Override
     public String name() {
         return "PolyKernel(" +
-                "exp=" + Printer.formatDecShort.format(exponent) + "," +
-                "bias=" + Printer.formatDecShort.format(bias) + "," +
-                "slope=" + Printer.formatDecShort.format(slope) +
+                "exp=" + formatFlex(exponent) + "," +
+                "bias=" + formatFlex(bias) + "," +
+                "slope=" + formatFlex(slope) +
                 ")";
     }
 

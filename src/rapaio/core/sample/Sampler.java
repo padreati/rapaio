@@ -30,6 +30,8 @@ import rapaio.printer.Printer;
 
 import java.io.Serializable;
 
+import static rapaio.WS.formatFlex;
+
 /**
  * Interface which defines a function which produces a data frame with a sample
  * of rows from the given data frame.
@@ -87,7 +89,7 @@ public interface Sampler extends Serializable {
 
         @Override
         public String name() {
-            return "Bootstrap(p=" + Printer.formatDecFlex.format(percent) + ")";
+            return "Bootstrap(p=" + formatFlex(percent) + ")";
         }
     }
 }

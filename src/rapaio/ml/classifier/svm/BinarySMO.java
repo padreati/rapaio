@@ -44,6 +44,8 @@ import rapaio.printer.Printer;
 import java.io.Serializable;
 import java.util.BitSet;
 
+import static rapaio.WS.formatFlex;
+
 /**
  * Class for building a binary support vector machine.
  */
@@ -107,8 +109,8 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                 "{" +
                 "sampler=" + sampler().name() + ", " +
                 "kernel=" + kernel.name() + ", " +
-                "C=" + Printer.formatDecShort.format(C) + ", " +
-                "tol=" + Printer.formatDecShort.format(tol) + ", " +
+                "C=" + formatFlex(C) + ", " +
+                "tol=" + formatFlex(tol) + ", " +
                 "classIndex1=" + classIndex1 + ", " +
                 "classIndex2=" + classIndex2 + ", " +
                 "oneVsAll=" + oneVsAll + ", " +
@@ -844,7 +846,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                         } else {
                             sb.append("   ");
                         }
-                        sb.append(Printer.formatDecLong.format(Math.abs(sparseWeights[i]))).append(" * ");
+                        sb.append(formatFlex(Math.abs(sparseWeights[i]))).append(" * ");
                         sb.append("[").append(inputNames(sparseIndices[i])).append("]\n");
                         printed++;
                     }
@@ -862,9 +864,9 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                         } else {
                             sb.append(" - ");
                         }
-                        sb.append(Printer.formatDecLong.format(val)).append(" * <[");
+                        sb.append(formatFlex(val)).append(" * <[");
                         for (int j = 0; j < inputNames().length; j++) {
-                            sb.append(Printer.formatDecShort.format(train.value(i, inputNames()[j])));
+                            sb.append(formatFlex(train.value(i, inputNames()[j])));
                             if (j != inputNames().length - 1) {
                                 sb.append(",");
                             }
@@ -875,9 +877,9 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                 }
             }
             if (b > 0) {
-                sb.append(" - ").append(Printer.formatDecLong.format(b));
+                sb.append(" - ").append(formatFlex(b));
             } else {
-                sb.append(" + ").append(Printer.formatDecLong.format(-b));
+                sb.append(" + ").append(formatFlex(-b));
             }
 
             if (!kernel.isLinear()) {

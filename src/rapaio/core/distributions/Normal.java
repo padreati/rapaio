@@ -25,6 +25,8 @@ package rapaio.core.distributions;
 
 import rapaio.printer.Printer;
 
+import static rapaio.WS.formatFlex;
+
 /**
  * @author Aurelian Tutuianu
  */
@@ -37,7 +39,7 @@ public class Normal implements Distribution {
 
     @Override
     public String name() {
-        return String.format("Normal(mu=%s, sd=%s)", Printer.formatDecShort.format(mu), Printer.formatDecShort.format(sd));
+        return "Normal(mu=" + formatFlex(mu) + ", sd=" + formatFlex(sd) + ")";
     }
 
     @Override

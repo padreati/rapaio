@@ -27,6 +27,8 @@ import rapaio.printer.Printable;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
 
+import static rapaio.WS.formatFlex;
+
 /**
  * Compensated version of arithmetic mean of values from a {@code Var}.
  * <p>
@@ -71,6 +73,6 @@ public final class Mean implements Printable {
     public void buildPrintSummary(StringBuilder sb) {
         sb.append(String.format("> mean[%s]\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", rowCount, completeCount, missingCount));
-        sb.append(String.format("mean: %s\n", Printer.formatDecFlex.format(value)));
+        sb.append(String.format("mean: %s\n", formatFlex(value)));
     }
 }

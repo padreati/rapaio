@@ -27,6 +27,7 @@ import rapaio.graphics.base.Figure;
 import rapaio.printer.Printer;
 import rapaio.printer.StandardPrinter;
 
+import java.text.DecimalFormat;
 import java.util.logging.LogManager;
 
 /**
@@ -37,6 +38,21 @@ import java.util.logging.LogManager;
 public class WS {
 
     private static final LogManager logManager = LogManager.getLogManager();
+    private static DecimalFormat formatDecShort = new DecimalFormat();
+    private static DecimalFormat formatDecLong = new DecimalFormat();
+    private static DecimalFormat formatDecFlex = new DecimalFormat();
+
+    static {
+        formatDecShort.setMinimumIntegerDigits(1);
+        formatDecShort.setMinimumFractionDigits(3);
+        formatDecShort.setMaximumFractionDigits(3);
+        formatDecLong.setMinimumFractionDigits(30);
+        formatDecLong.setMaximumFractionDigits(30);
+        formatDecLong.setMinimumIntegerDigits(1);
+        formatDecFlex.setMinimumFractionDigits(0);
+        formatDecFlex.setMaximumFractionDigits(7);
+        formatDecFlex.setMinimumIntegerDigits(1);
+    }
 
 //    static {
 //        try {
@@ -73,6 +89,18 @@ public class WS {
 
     public static void closePrinter() {
         printer.closePrinter();
+    }
+
+    public static String formatFlex(double value) {
+        return formatDecFlex.format(value);
+    }
+
+    public static String formatShort(double value) {
+        return formatDecFlex.format(value);
+    }
+
+    public static String formatLong(double value) {
+        return formatDecFlex.format(value);
     }
 
     public static void print(String message) {

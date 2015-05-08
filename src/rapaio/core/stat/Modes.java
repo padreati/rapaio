@@ -86,7 +86,7 @@ public class Modes implements Printable {
 
     @Override
     public void buildPrintSummary(StringBuilder sb) {
-        sb.append(String.format("> mode[%s]\n", varName));
+        sb.append(String.format("> modes[%s]\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
         sb.append(String.format("modes: %s\n", Arrays.deepToString(modes)));
     }

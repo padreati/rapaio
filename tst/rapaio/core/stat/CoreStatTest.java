@@ -23,11 +23,13 @@
 
 package rapaio.core.stat;
 
+import org.junit.Assert;
 import org.junit.Test;
-import rapaio.data.Frame;
-import rapaio.data.Nominal;
-import rapaio.data.Numeric;
-import rapaio.data.VarType;
+import rapaio.core.stat.Maximum;
+import rapaio.core.stat.Minimum;
+import rapaio.core.stat.Quantiles;
+import rapaio.core.stat.Variance;
+import rapaio.data.*;
 import rapaio.io.Csv;
 import rapaio.printer.Printer;
 import rapaio.ws.Summary;
@@ -38,6 +40,7 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static rapaio.core.CoreStat.*;
+import static rapaio.core.distributions.Distributions.normal;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -56,8 +59,8 @@ public class CoreStatTest {
         var(df.var(0)).printSummary();
         assertEquals(Double.valueOf("999.98132402093892779"), mean(df.var(0)).value(), 1e-12);
         assertEquals(Double.valueOf("1.0012615815492349469"), Math.sqrt(new Variance(df.var(0)).value()), 1e-12);
-        assertEquals(996.343866540788, new Minimum(df.var(0)).value(), 1e-12);
-        assertEquals(1004.24956126934, new Maximum(df.var(0)).value(), 1e-12);
+        Assert.assertEquals(996.343866540788, new Minimum(df.var(0)).value(), 1e-12);
+        Assert.assertEquals(1004.24956126934, new Maximum(df.var(0)).value(), 1e-12);
     }
 
     @Test
@@ -89,9 +92,6 @@ public class CoreStatTest {
     public void testQuantiles() {
         Numeric v = Numeric.newSeq(0, 1, 0.001);
         Quantiles quantiles = quantiles(v, Numeric.newSeq(0, 1, 0.001));
-//        for (int i = 0; i < v.rowCount(); i++) {
-//            System.out.println(Printer.formatDecFlex.format(v.value(i))+" v " + Printer.formatDecFlex.format(quantiles.values()[i]));
-//        }
         assertTrue(v.deepEquals(Numeric.newWrapOf(quantiles.values())));
     }
 
@@ -102,5 +102,22 @@ public class CoreStatTest {
         assertEquals("[a]", Arrays.deepToString(modes(Nominal.newCopyOf("a", "a", "a", "b", "c", "b")).values()));
         assertEquals("[a, c, b]", Arrays.deepToString(modes(Nominal.newCopyOf("a", "c", "b")).values()));
         assertEquals("[]", Arrays.deepToString(modes(Nominal.newCopyOf()).values()));
+    }
+
+    @Test
+    public void testCovariance() {
+        Numeric v1 = Numeric.newSeq(0, 200, 0.1);
+        Numeric v2 = Numeric.newWrapOf(1, 201, 0.1);
+        assertEquals(cov(v1, v1).value(), var(v1).value(), 1e-12);
+
+        Numeric x = Numeric.newCopyOf(1, 2, 3, 4);
+        assertEquals(cov(x, x).value(), var(x).value(), 1e-12);
+
+        Numeric norm = normal().sample(20_000);
+        assertEquals(cov(norm, norm).value(), var(norm).value(), 1e-12);
+
+        Var x1 = Numeric.newSeq(0, 200, 1);
+        Var x2 = Numeric.newSeq(0, 50, 0.25);
+        assertEquals(845.875, cov(x1, x2).value(), 1e-12);
     }
 }

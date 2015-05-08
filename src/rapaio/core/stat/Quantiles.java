@@ -30,6 +30,8 @@ import rapaio.printer.Printer;
 
 import java.util.stream.IntStream;
 
+import static rapaio.WS.formatFlex;
+
 
 /**
  * Estimates quantiles from a numerical {@link rapaio.data.Var} of values.
@@ -118,7 +120,7 @@ public class Quantiles implements Printable {
         sb.append(String.format("> quantiles[%s] - estimated quantiles\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
         for (int i = 0; i < quantiles.length; i++) {
-            sb.append(String.format("quantile[%s] = %s\n", Printer.formatDecFlex.format(percentiles[i]), Printer.formatDecFlex.format(quantiles[i])));
+            sb.append(String.format("quantile[%s] = %s\n", formatFlex(percentiles[i]), formatFlex(quantiles[i])));
         }
     }
 

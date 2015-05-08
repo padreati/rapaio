@@ -30,6 +30,8 @@ import rapaio.ml.regressor.Regressor;
 import rapaio.ml.regressor.RegressorFit;
 import rapaio.printer.Printer;
 
+import static rapaio.WS.formatFlex;
+
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
@@ -50,7 +52,7 @@ public class ConstantRegressor extends AbstractRegressor {
 
     @Override
     public String fullName() {
-        return String.format("ConstantRegressor(constant=%s)", Printer.formatDecShort.format(constantValue));
+        return String.format("ConstantRegressor(constant=%s)", formatFlex(constantValue));
     }
 
     public double constantValue() {

@@ -36,6 +36,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static rapaio.WS.formatFlex;
+
 /**
  * Real value matrix interface
  *
@@ -285,13 +287,11 @@ public interface RM extends Serializable, Printable {
 
     default void buildPrintSummary(StringBuilder sb) {
 
-        DecimalFormat f = Printer.formatDecShort;
-
         String[][] m = new String[rowCount()][colCount()];
         int max = 0;
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                m[i][j] = f.format(get(i, j));
+                m[i][j] = formatFlex(get(i, j));
                 max = Math.max(max, m[i][j].length() + 1);
             }
         }

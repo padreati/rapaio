@@ -38,6 +38,8 @@ import rapaio.printer.Printer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static rapaio.WS.formatFlex;
+
 /**
  * Gradient Boosting Tree
  * <p>
@@ -85,9 +87,9 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
         sb.append("loss=").append(lossFunction.name()).append(", ");
         sb.append("initRegressor=").append(initRegressor.fullName()).append(", ");
         sb.append("regressor=").append(regressor.fullName()).append(", ");
-        sb.append("shrinkage=").append(Printer.formatDecShort.format(shrinkage)).append(", ");
+        sb.append("shrinkage=").append(formatFlex(shrinkage)).append(", ");
         sb.append("useBootstrap=").append(useBootstrap).append(", ");
-        sb.append("bootstrapSize=").append(Printer.formatDecShort.format(bootstrapSize)).append(", ");
+        sb.append("bootstrapSize=").append(formatFlex(bootstrapSize)).append(", ");
         sb.append("runs=").append(runs);
         sb.append("}");
         return sb.toString();

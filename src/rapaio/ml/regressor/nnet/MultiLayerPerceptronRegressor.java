@@ -33,6 +33,8 @@ import rapaio.printer.Printer;
 
 import java.util.Arrays;
 
+import static rapaio.WS.formatFlex;
+
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
@@ -108,7 +110,7 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor {
         StringBuilder sb = new StringBuilder();
         sb.append(name()).append("{");
         sb.append("function=").append(function.name()).append(", ");
-        sb.append("learningRate=").append(Printer.formatDecShort.format(learningRate)).append(", ");
+        sb.append("learningRate=").append(formatFlex(learningRate)).append(", ");
         sb.append("layerSizes=").append(Arrays.deepToString(Arrays.stream(layerSizes).mapToObj(i -> i).toArray()));
         sb.append("}");
         return sb.toString();

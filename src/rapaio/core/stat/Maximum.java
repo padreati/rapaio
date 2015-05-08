@@ -28,6 +28,8 @@ import rapaio.data.Var;
 import rapaio.data.stream.VSpot;
 import rapaio.printer.Printer;
 
+import static rapaio.WS.formatFlex;
+
 /**
  * Finds the maximum value from a {@link rapaio.data.Var} of values.
  * <p>
@@ -66,6 +68,6 @@ public class Maximum implements Printable {
     public void buildPrintSummary(StringBuilder sb) {
         sb.append(String.format("> maximum[%s]\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
-        sb.append(String.format("maximum: %s\n", Printer.formatDecFlex.format(value)));
+        sb.append(String.format("maximum: %s\n", formatFlex(value)));
     }
 }

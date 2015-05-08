@@ -27,6 +27,8 @@ import rapaio.printer.Printable;
 import rapaio.printer.Printer;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import static rapaio.WS.formatFlex;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/13/15.
  */
@@ -60,7 +62,7 @@ public class WeightedOnlineStat implements Printable {
     @Override
     public void buildPrintSummary(StringBuilder sb) {
         sb.append("WeightedOnlineStat\n");
-        sb.append("total weight: ").append(Printer.formatDecShort.format(w1)).append("\n");
-        sb.append("mean: ").append(Printer.formatDecShort.format(mean())).append("\n");
+        sb.append("total weight: ").append(formatFlex(w1)).append("\n");
+        sb.append("mean: ").append(formatFlex(mean())).append("\n");
     }
 }

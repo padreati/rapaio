@@ -27,6 +27,8 @@ import rapaio.printer.Printable;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
 
+import static rapaio.WS.formatFlex;
+
 /**
  * Compensated weighted mean.
  * <p>
@@ -80,6 +82,6 @@ public final class WeightedMean implements Printable {
 
     @Override
     public void buildPrintSummary(StringBuilder sb) {
-        sb.append(String.format("> weightedMean['%s']\n%s\n", varName, Printer.formatDecLong.format(mean)));
+        sb.append(String.format("> weightedMean['%s']\n%s\n", varName, formatFlex(mean)));
     }
 }

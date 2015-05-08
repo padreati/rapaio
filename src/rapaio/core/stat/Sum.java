@@ -27,6 +27,7 @@ import rapaio.printer.Printable;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
 
+import static rapaio.WS.formatFlex;
 import static rapaio.core.MathBase.validNumber;
 
 /**
@@ -69,6 +70,6 @@ public class Sum implements Printable {
     public void buildPrintSummary(StringBuilder sb) {
         sb.append(String.format("> sum['%s']\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
-        sb.append(String.format("sum: %s\n", Printer.formatDecFlex.format(value)));
+        sb.append(String.format("sum: %s\n", formatFlex(value)));
     }
 }

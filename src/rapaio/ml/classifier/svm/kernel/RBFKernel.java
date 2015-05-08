@@ -26,6 +26,8 @@ package rapaio.ml.classifier.svm.kernel;
 import rapaio.data.Frame;
 import rapaio.printer.Printer;
 
+import static rapaio.WS.formatFlex;
+
 /**
  * The Gaussian kernel is an example of radial basis function kernel.
  * <p>
@@ -57,7 +59,7 @@ public class RBFKernel extends AbstractKernel {
 
     @Override
     public String name() {
-        return "RBF(sigma=" + Printer.formatDecShort.format(sigma) + ")";
+        return "RBF(sigma=" + formatFlex(sigma) + ")";
     }
 
     @Override

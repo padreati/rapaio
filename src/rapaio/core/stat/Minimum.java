@@ -23,9 +23,12 @@
 
 package rapaio.core.stat;
 
+import rapaio.WS;
 import rapaio.printer.Printable;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
+
+import static rapaio.WS.formatFlex;
 
 /**
  * Finds the minimum value from a {@link rapaio.data.Var} of values.
@@ -67,6 +70,6 @@ public class Minimum implements Printable {
     public void buildPrintSummary(StringBuilder sb) {
         sb.append(String.format("> minimum[%s]\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
-        sb.append(String.format("minimum: %s\n", Printer.formatDecFlex.format(value)));
+        sb.append(String.format("minimum: %s\n", formatFlex(value)));
     }
 }

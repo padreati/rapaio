@@ -28,28 +28,12 @@ import rapaio.graphics.base.Figure;
 import java.text.DecimalFormat;
 
 /**
- * @author tutuianu
+ * Interface for the printing system.
+ *
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
 public interface Printer {
-
-    DecimalFormat formatDecShort = new DecimalFormat() {{
-        setMinimumIntegerDigits(1);
-        setMinimumFractionDigits(3);
-        setMaximumFractionDigits(3);
-    }};
-
-    DecimalFormat formatDecLong = new DecimalFormat() {{
-        setMinimumFractionDigits(30);
-        setMaximumFractionDigits(30);
-        setMinimumIntegerDigits(1);
-    }};
-
-    DecimalFormat formatDecFlex = new DecimalFormat() {{
-        setMinimumFractionDigits(0);
-        setMaximumFractionDigits(7);
-        setMinimumIntegerDigits(1);
-    }};
 
     int getTextWidth();
 

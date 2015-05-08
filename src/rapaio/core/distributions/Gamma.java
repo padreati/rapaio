@@ -27,6 +27,8 @@ import rapaio.core.MathBase;
 import rapaio.core.RandomSource;
 import rapaio.printer.Printer;
 
+import static rapaio.WS.formatFlex;
+
 /**
  * Gamma distribution;
  * <A HREF="http://wwwinfo.cern.ch/asdoc/shortwrupsdir/g106/top.html"> math definition</A>,
@@ -95,7 +97,7 @@ public class Gamma implements Distribution {
 
     @Override
     public String name() {
-        return "Gamma(alpha=" + Printer.formatDecFlex.format(alpha) + ", beta=" + Printer.formatDecFlex.format(beta) + ")";
+        return "Gamma(alpha=" + formatFlex(alpha) + ", beta=" + formatFlex(beta) + ")";
     }
 
     @Override

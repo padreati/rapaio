@@ -23,7 +23,10 @@
 
 package rapaio.core.distributions;
 
+import rapaio.WS;
 import rapaio.printer.Printer;
+
+import static rapaio.WS.formatFlex;
 
 /**
  * Continuous uniform distribution
@@ -51,9 +54,7 @@ public class Uniform implements Distribution {
 
     @Override
     public String name() {
-        return String.format("Uniform(a=%s,b=%s)",
-                Printer.formatDecShort.format(getA()),
-                Printer.formatDecShort.format(getB()));
+        return "Uniform(a=" + formatFlex(getA()) + ",b=%" + formatFlex(getB()) + ")";
     }
 
     @Override
