@@ -23,7 +23,10 @@
 
 package rapaio.core;
 
+import rapaio.core.correlation.PearsonRCorrelation;
+import rapaio.core.correlation.RhoCorr;
 import rapaio.core.stat.*;
+import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 
@@ -76,5 +79,21 @@ public final class CoreStat {
 
     public static Covariance cov(Var x, Var y) {
         return new Covariance(x, y);
+    }
+
+    public static PearsonRCorrelation corrPearson(Frame df) {
+        return new PearsonRCorrelation(df);
+    }
+
+    public static PearsonRCorrelation corrPearson(Var... vars) {
+        return new PearsonRCorrelation(vars);
+    }
+
+    public static RhoCorr corrSpearman(Frame df) {
+        return new RhoCorr(df);
+    }
+
+    public static RhoCorr corrSpearman(Var... vars) {
+        return new RhoCorr(vars);
     }
 }

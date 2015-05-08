@@ -32,7 +32,6 @@ import java.text.DecimalFormat;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public interface Printer {
 
     int getTextWidth();

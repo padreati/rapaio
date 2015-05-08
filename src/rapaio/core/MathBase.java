@@ -23,12 +23,11 @@
 
 package rapaio.core;
 
-import rapaio.core.distributions.Normal;
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import static rapaio.core.Constants.*;
+import static rapaio.core.distributions.Distributions.normal;
 
 /**
  * Utility class which simplifies access to common java math utilities and also
@@ -36,7 +35,6 @@ import static rapaio.core.Constants.*;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class MathBase {
 
     private static final double TWO_PI = 6.283185307179586476925286;
@@ -293,7 +291,7 @@ public class MathBase {
      * @return the erf of x
      */
     public static double erf(double x) {
-        return 2 * new Normal(0, 1).cdf(x * Math.sqrt(2.0)) - 1;
+        return 2 * normal().cdf(x * Math.sqrt(2.0)) - 1;
     }
 
     /**
@@ -309,7 +307,7 @@ public class MathBase {
      * @return the invErf of x
      */
     public static double inverf(double x) {
-        return new Normal(0, 1).quantile(x / 2 + 0.5) / Math.sqrt(2.0);
+        return normal(0, 1).quantile(x / 2 + 0.5) / Math.sqrt(2.0);
     }
 
     /**
@@ -323,7 +321,7 @@ public class MathBase {
      * @return the erf of x
      */
     public static double erfc(double x) {
-        return 2 * new Normal(0, 1).cdf(-x * Math.sqrt(2.0));
+        return 2 * normal().cdf(-x * Math.sqrt(2.0));
     }
 
     /**
@@ -339,7 +337,7 @@ public class MathBase {
      * @return the invErf of x
      */
     public static double inverfc(double x) {
-        return new Normal(0, 1).quantile(x / 2) / -Math.sqrt(2.0);
+        return normal().quantile(x / 2) / -Math.sqrt(2.0);
     }
 
     /**
@@ -485,7 +483,7 @@ public class MathBase {
             throw new ArithmeticException("The given interval does not appear to bracket the root");
         }
 
-        double dif = 1;//Measure the change interface values
+        double dif;//Measure the change interface values
         while (Math.abs(x1 - x2) > eps && maxIterations-- > 0) {
             double x3 = (x1 + x2) * 0.5;
             double fx3 = betaIncRegFunc(x3, a, b, p);
@@ -742,7 +740,7 @@ public class MathBase {
      * @param x the value at which the probability is evaluated.
      * @param n the number of trials.
      * @param p the probability of success.
-     * @return log(p(x)).
+     * @return log p(x)
      */
     public static double logBinomial(double x, double n, double p) {
         final double q = 1 - p;
@@ -793,13 +791,6 @@ public class MathBase {
         return (a - b < err) && (b - a < err);
     }
 
-    /**
-     * Tests if the first number is smaller than the second number
-     *
-     * @param a
-     * @param b
-     * @return
-     */
     public static boolean sm(double a, double b) {
         return (b - a > SMALL_ERR);
     }

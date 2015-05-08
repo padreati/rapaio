@@ -23,10 +23,8 @@
 
 package rapaio.core.stat;
 
-import rapaio.printer.Printable;
 import rapaio.data.Var;
-import rapaio.data.stream.VSpot;
-import rapaio.printer.Printer;
+import rapaio.printer.Printable;
 
 import static rapaio.WS.formatFlex;
 

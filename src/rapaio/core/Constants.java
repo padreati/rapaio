@@ -28,8 +28,6 @@ import static java.lang.Math.sqrt;
 /**
  * Class defining constants.
  */
-
-@Deprecated
 public class Constants {
 
 	/* 30 Decimal-place constants computed with bc -l (scale=32; proper round) */

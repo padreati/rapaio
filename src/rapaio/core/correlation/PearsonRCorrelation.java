@@ -23,12 +23,11 @@
 
 package rapaio.core.correlation;
 
-import rapaio.printer.Printable;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.printer.Printer;
+import rapaio.printer.Printable;
 
 import java.util.Arrays;
 
@@ -44,7 +43,6 @@ import static rapaio.WS.getPrinter;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class PearsonRCorrelation implements Printable {
 
     private final String[] names;

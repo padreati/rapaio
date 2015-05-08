@@ -36,9 +36,9 @@ import java.util.Random;
  *
  * @author Aurelian Tutuianu
  */
-@Deprecated
 public final class RandomSource implements Serializable {
 
+    private static final long serialVersionUID = -1201316989986445607L;
     private static final Random rand = new Random();
 
     public static void setSeed(long seed) {
@@ -223,7 +223,6 @@ public final class RandomSource implements Serializable {
  *
  * @version 20
  */
-@Deprecated
 strictfp class MersenneTwister extends java.util.Random {
     // Serialization
     private static final long serialVersionUID = -4035832775130174188L;  // locked as of Version 15
@@ -516,7 +515,7 @@ strictfp class MersenneTwister extends java.util.Random {
      * <p>This version preserves all possible random values in the double range.
      */
     public double nextDouble(boolean includeZero, boolean includeOne) {
-        double d = 0.0;
+        double d;
         do {
             d = nextDouble();                           // grab a value, initially from half-open [0.0, 1.0)
             if (includeOne && nextBoolean()) d += 1.0;  // if includeOne, with 1/2 probability, push to [1.0, 2.0)
@@ -550,7 +549,7 @@ strictfp class MersenneTwister extends java.util.Random {
      * <p>This version preserves all possible random values in the float range.
      */
     public float nextFloat(boolean includeZero, boolean includeOne) {
-        float d = 0.0f;
+        float d;
         do {
             d = nextFloat();                            // grab a value, initially from half-open [0.0f, 1.0f)
             if (includeOne && nextBoolean()) d += 1.0f; // if includeOne, with 1/2 probability, push to [1.0f, 2.0f)
@@ -680,7 +679,7 @@ strictfp class MersenneTwister extends java.util.Random {
         System.out.println("\nGrab 1000 booleans of increasing probability using nextBoolean(double)");
         r = new MersenneTwister(SEED);
         for (j = 0; j < 1000; j++) {
-            System.out.print(r.nextBoolean((double) (j / 999.0)) + " ");
+            System.out.print(r.nextBoolean(j / 999.0) + " ");
             if (j % 8 == 7) System.out.println();
         }
         if (!(j % 8 == 7)) System.out.println();
@@ -688,7 +687,7 @@ strictfp class MersenneTwister extends java.util.Random {
         System.out.println("\nGrab 1000 booleans of increasing probability using nextBoolean(float)");
         r = new MersenneTwister(SEED);
         for (j = 0; j < 1000; j++) {
-            System.out.print(r.nextBoolean((float) (j / 999.0f)) + " ");
+            System.out.print(r.nextBoolean(j / 999.0f) + " ");
             if (j % 8 == 7) System.out.println();
         }
         if (!(j % 8 == 7)) System.out.println();

@@ -31,7 +31,6 @@ import rapaio.data.Var;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/21/15.
  */
-@Deprecated
 public final class VFilters {
 
     public static Var jitter(Var x) {
