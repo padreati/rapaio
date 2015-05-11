@@ -29,7 +29,7 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.ClassifierFit;
+import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.RunningClassifier;
 import rapaio.ml.regressor.RegressorFit;
 import rapaio.ml.regressor.boost.gbt.BTRegressor;
@@ -209,8 +209,8 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
     }
 
     @Override
-    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDistributions) {
-        ClassifierFit cr = ClassifierFit.newEmpty(this, df, withClasses, withDistributions);
+    public CFit fit(Frame df, boolean withClasses, boolean withDistributions) {
+        CFit cr = CFit.newEmpty(this, df, withClasses, withDistributions);
         for (String targetName : targetNames()) {
             cr.addTarget(targetName, dictionaries().get(targetName));
         }

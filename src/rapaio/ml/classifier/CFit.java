@@ -32,10 +32,13 @@ import rapaio.ml.eval.ConfusionMatrix;
 import java.util.*;
 
 /**
+ * Classification fit result.
+ *
+ * This object holds the result of a classification fitting.
+ *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
-public class ClassifierFit implements Printable {
+public class CFit implements Printable {
 
     private final Classifier model;
     private final Frame df;
@@ -48,17 +51,17 @@ public class ClassifierFit implements Printable {
 
     // builder
 
-    public static ClassifierFit newEmpty(
+    public static CFit newEmpty(
             final Classifier model,
             final Frame df,
             final boolean withClasses,
             final boolean withDensities) {
-        return new ClassifierFit(model, df, withClasses, withDensities);
+        return new CFit(model, df, withClasses, withDensities);
     }
 
     // private constructor
 
-    private ClassifierFit(final Classifier model, final Frame df, final boolean withClasses, final boolean withDensities) {
+    private CFit(final Classifier model, final Frame df, final boolean withClasses, final boolean withDensities) {
         this.model = model;
         this.df = df;
         this.withClasses = withClasses;

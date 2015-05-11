@@ -35,7 +35,7 @@ import rapaio.datasets.Datasets;
 import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.plot.Plot;
 import rapaio.ml.classifier.Classifier;
-import rapaio.ml.classifier.ClassifierFit;
+import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.svm.BinarySMO;
 import rapaio.ml.classifier.svm.kernel.PolyKernel;
 import rapaio.ml.classifier.svm.kernel.WaveletKernel;
@@ -227,12 +227,12 @@ public class MeshGridTutorialPage implements TutorialPage {
 
         BinarySMO smo = new BinarySMO().withKernel(new PolyKernel(2));
         smo.learn(iris, "class");
-        ClassifierFit cr = smo.predict(iris);
+        CFit cr = smo.fit(iris);
         new ConfusionMatrix(iris.var("class"), cr.firstClasses()).printSummary();
 
         code("        BinarySMO smo = new BinarySMO().withKernel(new PolyKernel(2));\n" +
                 "        smo.learn(iris, \"class\");\n" +
-                "        ClassifierFit cr = smo.predict(iris);\n" +
+                "        CFit cr = smo.predict(iris);\n" +
                 "        new ConfusionMatrix(iris.var(\"class\"), cr.firstClasses()).printSummary();\n");
 
         p("It looks like there is no error there. However it is legitimate to ask yourself " +
@@ -252,7 +252,7 @@ public class MeshGridTutorialPage implements TutorialPage {
                 sw.addValue(mg1.getY().value(j));
             }
         }
-        ClassifierFit cr2 = smo.predict(SolidFrame.newWrapOf(sl, sw));
+        CFit cr2 = smo.fit(SolidFrame.newWrapOf(sl, sw));
         int pos = 0;
         for (int i = 0; i < x.rowCount(); i++) {
             for (int j = 0; j < y.rowCount(); j++) {
@@ -308,7 +308,7 @@ public class MeshGridTutorialPage implements TutorialPage {
         Classifier c = new BinarySMO().withKernel(new WaveletKernel(0.55)).withC(0.1);
         c.learn(df, "class");
 
-        new ConfusionMatrix(df.var("class"), c.predict(df).firstClasses()).printSummary();
+        new ConfusionMatrix(df.var("class"), c.fit(df).firstClasses()).printSummary();
 
         // new build the mesh grid
 
@@ -330,7 +330,7 @@ public class MeshGridTutorialPage implements TutorialPage {
         // fit the mesh grid values
 
         Frame grid = SolidFrame.newWrapOf(x1, y1);
-        cr = c.predict(grid, true, true);
+        cr = c.fit(grid, true, true);
 
         pos = 0;
         for (int i = 0; i < x.rowCount(); i++) {

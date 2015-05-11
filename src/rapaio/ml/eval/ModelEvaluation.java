@@ -21,12 +21,14 @@
  *
  */
 
-package rapaio.ml.classifier;
+package rapaio.ml.eval;
 
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTool;
 import rapaio.data.*;
 import rapaio.data.filter.frame.FFShuffle;
+import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.Classifier;
 import rapaio.ml.eval.ConfusionMatrix;
 
 import java.util.ArrayList;
@@ -65,7 +67,7 @@ public class ModelEvaluation {
             Frame test = MappedFrame.newByRow(df, testMapping);
 
             c.learn(train, classColName);
-            ClassifierFit cp = c.predict(test);
+            CFit cp = c.fit(test);
             double fcorrect = 0;
             for (int j = 0; j < test.rowCount(); j++) {
                 if (test.var(classColName).index(j) == cp.firstClasses().index(j)) {
@@ -137,7 +139,7 @@ public class ModelEvaluation {
             for (int k = 0; k < classifiers.size(); k++) {
                 Classifier c = classifiers.get(k).newInstance();
                 c.learn(train, classColName);
-                ClassifierFit cp = c.predict(test);
+                CFit cp = c.fit(test);
                 ConfusionMatrix cm = new ConfusionMatrix(test.var(classColName), cp.firstClasses());
 //                cm.printSummary();
                 double acc = cm.accuracy();
@@ -182,8 +184,8 @@ public class ModelEvaluation {
 //            System.out.println("learn train set ...");
             Classifier cc = c.newInstance();
             cc.learn(train, weights.mapRows(rows), classColName);
-//            System.out.println("predict test cases ...");
-            Var classes = cc.predict(test).firstClasses();
+//            System.out.println("fit test cases ...");
+            Var classes = cc.fit(test).firstClasses();
 //            System.out.println("build confusion matrix ...");
             ConfusionMatrix cm = new ConfusionMatrix(test.var(classColName), classes);
             cm.printSummary();

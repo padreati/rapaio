@@ -28,17 +28,17 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.Classifier;
-import rapaio.ml.classifier.ClassifierFit;
+import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.RunningClassifier;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.util.func.SFunction;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
 import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -115,10 +115,7 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
             learn(df, targetVars);
             return;
         }
-        ForkJoinPool pool = new ForkJoinPool(Math.max(1, Runtime.getRuntime().availableProcessors() - 1));
-        pool.execute(() -> {
-            IntStream.range(0, runs).parallel().forEach(s -> buildWeakPredictor(df, weights));
-        });
+        IntStream.range(0, runs).parallel().forEach(s -> buildWeakPredictor(df, weights));
     }
 
     private void buildWeakPredictor(Frame df, Var weights) {
@@ -132,8 +129,8 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
 
         weak.learn(trainFrame, trainWeights, firstTargetName());
         if (oobComp) {
-            System.out.println("This must be corrected, right now is wrong!@@@@@@");
-            ClassifierFit cp = weak.predict(oobFrame);
+            // TODO This must be corrected, right now is wrong!@@@@@@
+            CFit cp = weak.fit(oobFrame);
             double oobError = new ConfusionMatrix(oobFrame.var(firstTargetName()), cp.firstClasses()).errorCases();
             synchronized (this) {
                 totalOobInstances += oobFrame.rowCount();
@@ -169,17 +166,18 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
     }
 
     @Override
-    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDensities) {
-        ClassifierFit cp = ClassifierFit.newEmpty(this, df, true, true);
+    public CFit fit(Frame df, boolean withClasses, boolean withDensities) {
+        CFit cp = CFit.newEmpty(this, df, true, true);
         cp.addTarget(firstTargetName(), firstDict());
 
         List<Frame> treeDensities = new ArrayList<>();
-        Iterator<Classifier> it = predictors.iterator();
-        while (it.hasNext()) {
-            ClassifierFit cpTree = it.next().predict(df, true, true);
-            treeDensities.add(cpTree.firstDensity());
-        }
-
+        predictors.stream().parallel()
+                .map(pred -> pred.fit(df, true, true).firstDensity())
+                .forEach(frame -> {
+                    synchronized (treeDensities) {
+                        treeDensities.add(frame);
+                    }
+                });
         baggingMode.computeDensity(firstDict(), new ArrayList<>(treeDensities), cp.firstClasses(), cp.firstDensity());
         return cp;
     }

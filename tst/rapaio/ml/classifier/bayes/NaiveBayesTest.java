@@ -27,7 +27,7 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.ClassifierFit;
+import rapaio.ml.classifier.CFit;
 import rapaio.ml.eval.ConfusionMatrix;
 
 import java.io.IOException;
@@ -50,7 +50,7 @@ public class NaiveBayesTest {
         Frame df = Datasets.loadIrisDataset();
         NaiveBayesClassifier nb = new NaiveBayesClassifier();
         nb.learn(df, "class");
-        ClassifierFit pred = nb.predict(df);
+        CFit pred = nb.fit(df);
 
         ConfusionMatrix cm = new ConfusionMatrix(df.var("class"), pred.firstClasses());
         cm.printSummary();
@@ -74,7 +74,7 @@ public class NaiveBayesTest {
         Frame df = Datasets.loadIrisDataset();
         NaiveBayesClassifier nb = new NaiveBayesClassifier().withCvpEstimator(new NaiveBayesClassifier.CvpEstimatorKDE());
         nb.learn(df, "class");
-        ClassifierFit pred = nb.predict(df);
+        CFit pred = nb.fit(df);
 
         ConfusionMatrix cm = new ConfusionMatrix(df.var("class"), pred.firstClasses());
         cm.printSummary();
@@ -98,7 +98,7 @@ public class NaiveBayesTest {
 
         NaiveBayesClassifier nb = new NaiveBayesClassifier();
         nb.learn(df, "classes");
-        ClassifierFit cp = nb.predict(df);
+        CFit cp = nb.fit(df);
 
         ConfusionMatrix cm = new ConfusionMatrix(df.var("classes"), cp.firstClasses());
         cm.printSummary();

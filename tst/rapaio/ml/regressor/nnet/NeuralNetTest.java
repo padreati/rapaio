@@ -94,7 +94,7 @@ public class NeuralNetTest {
 //        for (int i = 0; i < 2000; i++) {
 //            nn.learn(df, "xor");
 //        }
-//        RegressorFit rp = nn.predict(df);
+//        RegressorFit rp = nn.fit(df);
 //
 //        Summary.printLines(rp.fitFrame());
 //

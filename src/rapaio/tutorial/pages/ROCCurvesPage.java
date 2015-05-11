@@ -28,7 +28,7 @@ import rapaio.core.SamplingTool;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.Legend;
-import rapaio.ml.classifier.ClassifierFit;
+import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.boost.AdaBoostSAMMEClassifier;
 import rapaio.ml.classifier.boost.GBTClassifier;
 import rapaio.ml.classifier.ensemble.CForest;
@@ -119,11 +119,11 @@ public class ROCCurvesPage implements TutorialPage {
 
         OneRule oneRule = new OneRule();
         oneRule.learn(train, "spam");
-        ClassifierFit crOneRule = oneRule.predict(test);
+        CFit crOneRule = oneRule.fit(test);
 
         code("        OneRule oneRule = new OneRule();\n" +
                 "        oneRule.learn(train, \"spam\");\n" +
-                "        ClassifierFit crOneRule = oneRule.predict(test);\n");
+                "        CFit crOneRule = oneRule.predict(test);\n");
 
         p("One of the most used ways to check the performance of a classifier is the accuracy. "
                 + "Accuracy is the percentage of cases with correct prediction from total number of cases. "
@@ -140,11 +140,11 @@ public class ROCCurvesPage implements TutorialPage {
 
         CForest rf = new CForest().withRuns(20).withNoSampling();
         rf.learn(train, "spam");
-        ClassifierFit crRF = rf.predict(test);
+        CFit crRF = rf.fit(test);
 
         code("        CEnsemble rf = CEnsemble.newRF(20, 10, 0);\n" +
                 "        rf.learn(train, \"spam\");\n" +
-                "        ClassifierFit crRF = rf.predict(test);\n");
+                "        CFit crRF = rf.predict(test);\n");
 
         new ConfusionMatrix(test.var("spam"), crRF.firstClasses()).printSummary();
 
@@ -157,11 +157,11 @@ public class ROCCurvesPage implements TutorialPage {
 
         AdaBoostSAMMEClassifier ab = new AdaBoostSAMMEClassifier().withRuns(20);
         ab.learn(train, "spam");
-        ClassifierFit crAB = ab.predict(test);
+        CFit crAB = ab.fit(test);
 
         code("        AdaBoostSAMMEClassifier ab = new AdaBoostSAMMEClassifier().withRuns(20);\n" +
                 "        ab.learn(train, \"spam\");\n" +
-                "        ClassifierFit crAB = ab.predict(test);\n");
+                "        CFit crAB = ab.predict(test);\n");
 
         new ConfusionMatrix(test.var("spam"), crAB.firstClasses()).printSummary();
 
@@ -173,11 +173,11 @@ public class ROCCurvesPage implements TutorialPage {
 
         GBTClassifier gbt = new GBTClassifier().withRuns(20);
         gbt.learn(train, "spam");
-        ClassifierFit crGBT = gbt.predict(test);
+        CFit crGBT = gbt.fit(test);
 
         code("        GBTClassifier gbt = new GBTClassifier().withRuns(20);\n" +
                 "        gbt.learn(train, \"spam\");\n" +
-                "        ClassifierFit crGBT = gbt.predict(test);\n");
+                "        CFit crGBT = gbt.predict(test);\n");
 
         new ConfusionMatrix(test.var("spam"), crGBT.firstClasses()).printSummary();
 

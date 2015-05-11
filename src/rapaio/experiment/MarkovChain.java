@@ -83,7 +83,7 @@ public class MarkovChain {
         }
     }
 
-//    public String predict(List<String> chain) {
+//    public String fit(List<String> chain) {
 //
 //    }
 }

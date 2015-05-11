@@ -26,7 +26,7 @@ package rapaio.ml.classifier.rule;
 import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.*;
-import rapaio.ml.classifier.ClassifierFit;
+import rapaio.ml.classifier.CFit;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -60,7 +60,7 @@ public class OneRuleTest {
 
         oneRule = oneRule.withMinCount(1);
         oneRule.learn(df, "class");
-        ClassifierFit pred = oneRule.predict(df);
+        CFit pred = oneRule.fit(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
             Assert.assertEquals(labels[i], pred.firstClasses().label(i));
@@ -68,7 +68,7 @@ public class OneRuleTest {
 
         oneRule.withMinCount(2);
         oneRule.learn(df, "class");
-        pred = oneRule.predict(df);
+        pred = oneRule.fit(df);
         labels = new String[]{"True", "True", "TrueFalse", "TrueFalse", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
             Assert.assertTrue(labels[i].contains(pred.firstClasses().label(i)));
@@ -76,7 +76,7 @@ public class OneRuleTest {
 
         oneRule.withMinCount(3);
         oneRule.learn(df, "class");
-        pred = oneRule.predict(df);
+        pred = oneRule.fit(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
             Assert.assertTrue(labels[i].equals(pred.firstClasses().label(i)));
@@ -84,7 +84,7 @@ public class OneRuleTest {
 
         oneRule.withMinCount(4);
         oneRule.learn(df, "class");
-        pred = oneRule.predict(df);
+        pred = oneRule.fit(df);
         for (int i = 1; i < SIZE; i++) {
             Assert.assertTrue(pred.firstClasses().label(i).equals(pred.firstClasses().label(0)));
         }

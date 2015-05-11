@@ -23,6 +23,7 @@
 
 package rapaio.experiment.sandbox;
 
+import rapaio.core.distributions.Binomial;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.util.stream.SCollectors;
@@ -33,6 +34,8 @@ import java.net.URISyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static rapaio.WS.formatFlex;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/19/15.
  */
@@ -41,17 +44,8 @@ public class Sandbox {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
 
-        Frame df = Datasets.loadIrisDataset();
-        Summary.printSummary(df);
-
-        df.stream()
-                .collect(SCollectors.countingTop(s -> s.label("class")))
-                .entrySet()
-                .forEach(System.out::println);
-
-        Stream.of("Ion", "Ion", "Ana", "Vasile", "Ana", "Ion", "Andrei")
-                .collect(SCollectors.countingTop(Collectors.toSet()))
-                .entrySet()
-                .forEach(System.out::println);
+        int n = 5;
+        Binomial bin = new Binomial(0.5, n);
+        System.out.println(formatFlex(bin.pdf(n)));
     }
 }

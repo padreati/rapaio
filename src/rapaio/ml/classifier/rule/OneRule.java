@@ -30,7 +30,7 @@ import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.ClassifierFit;
+import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.tools.DensityVector;
 
 import java.util.ArrayList;
@@ -92,8 +92,8 @@ public class OneRule extends AbstractClassifier {
     }
 
     @Override
-    public ClassifierFit predict(final Frame test, final boolean withClasses, final boolean withDensities) {
-        ClassifierFit pred = ClassifierFit.newEmpty(this, test, withClasses, withDensities);
+    public CFit fit(final Frame test, final boolean withClasses, final boolean withDensities) {
+        CFit pred = CFit.newEmpty(this, test, withClasses, withDensities);
         pred.addTarget(firstTargetName(), firstDict());
 
         for (int i = 0; i < test.rowCount(); i++) {

@@ -85,7 +85,7 @@
 //                for (String cName : cNames) {
 //                    Classifier c = classifiers.get(cName);
 //                    c.learn(task.trainFrame(), task.targetName());
-//                    c.predict(task.testFrame());
+//                    c.fit(task.testFrame());
 //
 //                    results.setValue(i, cName,
 //                            new ConfusionMatrix(

@@ -50,7 +50,7 @@
 //        JavaIO.storeToFile(c, file.getAbsolutePath());
 //
 //        AdaBoostSAMMEClassifier restored = (AdaBoostSAMMEClassifier) JavaIO.restoreFromFile(file.getAbsolutePath());
-//        restored.predict(df);
+//        restored.fit(df);
 //
 //        new ConfusionMatrix(df.var("spam"), restored.classes()).printSummary();
 //    }

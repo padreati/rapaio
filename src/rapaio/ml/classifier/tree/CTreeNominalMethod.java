@@ -93,7 +93,6 @@ public interface CTreeNominalMethod extends Serializable {
 
             CTreeCandidate candidate = new CTreeCandidate(value, function.sign(), testColName);
             for (int i = 1; i < test.dictionary().length; i++) {
-
                 final String label = test.dictionary()[i];
                 candidate.addGroup(
                         String.format("%s == %s", testColName, label),

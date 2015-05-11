@@ -40,7 +40,6 @@ import java.util.Map;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public interface Classifier extends Printable, Serializable {
 
     /**
@@ -72,10 +71,13 @@ public interface Classifier extends Printable, Serializable {
 
     /**
      * Specifies the sampler to be used at learning time.
+     * The sampler is responsible for selecting the instances to be learned.
+     * The default implementation is {@link rapaio.core.sample.Sampler.Identity}
+     * which gives all the original training instances.
      *
      * @param sampler instance of a new sampler
      */
-    AbstractClassifier withSampler(Sampler sampler);
+    Classifier withSampler(Sampler sampler);
 
     /**
      * Returns input variable names built at learning time
@@ -134,13 +136,13 @@ public interface Classifier extends Printable, Serializable {
         return dictionaries().get(firstTargetName());
     }
 
-    default String firstDict(int pos) {
+    default String firstDictTerm(int pos) {
         return dictionaries().get(firstTargetName())[pos];
     }
 
     /**
      * Fit a classifier on instances specified by frame, with row weights
-     * equal to 1 and target as targetName.
+     * equal to 1 and target specified by targetVars
      *
      * @param df         data set instances
      * @param targetVars target variables
@@ -151,30 +153,31 @@ public interface Classifier extends Printable, Serializable {
     }
 
     /**
-     * Fit a classifier on instances specified by frame, with row weights and targetName
+     * Fit a classifier on instances specified by frame, with row weights and targetVars
      *
      * @param df             train frame
      * @param weights        instance weights
-     * @param targetVarNames target variables
+     * @param targetVars target variables
      */
-    void learn(Frame df, Var weights, String... targetVarNames);
+    void learn(Frame df, Var weights, String... targetVars);
 
     /**
-     * Predict classes for new data set instances
+     * Predict classes for new data set instances, with
+     * default options to compute classes and densities for classes.
      *
      * @param df data set instances
      */
-    default ClassifierFit predict(Frame df) {
-        return predict(df, true, true);
+    default CFit fit(Frame df) {
+        return fit(df, true, true);
     }
 
     /**
      * Predict classes for given instances, generating classes if specified and
-     * generating densities if specified.
+     * distributions if specified.
      *
      * @param df                frame instances
      * @param withClasses       generate classes
      * @param withDistributions generate densities for classes
      */
-    ClassifierFit predict(Frame df, boolean withClasses, boolean withDistributions);
+    CFit fit(Frame df, boolean withClasses, boolean withDistributions);
 }

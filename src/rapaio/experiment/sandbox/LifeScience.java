@@ -25,7 +25,7 @@ package rapaio.experiment.sandbox;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.ModelEvaluation;
+import rapaio.ml.eval.ModelEvaluation;
 import rapaio.ml.classifier.ensemble.CForest;
 
 import java.io.IOException;

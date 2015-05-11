@@ -51,7 +51,7 @@ public class ID3ClassifierTest {
 
         CTree id3 = CTree.newID3();
         id3.learn(df, className);
-        id3.predict(df);
+        id3.fit(df);
 
         DensityTable dtWindy = new DensityTable(df.var("windy"), df.var("class"));
         DensityTable dtOutlook = new DensityTable(df.var("outlook"), df.var("class"));
@@ -74,7 +74,7 @@ public class ID3ClassifierTest {
                 .withSplitter(new CTreeSplitter.RemainsIgnored())
                 .withFunction(new CTreeTestFunction.InfoGain());
         id3.learn(df, className);
-        id3.predict(df);
+        id3.fit(df);
         id3.printSummary();
 
         DensityTable dtWindy = new DensityTable(df.var("windy"), df.var("class"));

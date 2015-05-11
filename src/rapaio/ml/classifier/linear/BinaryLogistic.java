@@ -28,7 +28,7 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.math.optimization.IRLSOptimizer;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.ClassifierFit;
+import rapaio.ml.classifier.CFit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,11 +138,11 @@ public class BinaryLogistic extends AbstractClassifier {
     }
 
     @Override
-    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDistributions) {
+    public CFit fit(Frame df, boolean withClasses, boolean withDistributions) {
         if (coef == null)
             throw new IllegalArgumentException("Model has not yet been trained");
 
-        ClassifierFit cr = ClassifierFit.newEmpty(this, df, withClasses, withDistributions);
+        CFit cr = CFit.newEmpty(this, df, withClasses, withDistributions);
         cr.addTarget(firstTargetName(), firstDict());
 
         for (int i = 0; i < df.rowCount(); i++) {

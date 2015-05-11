@@ -28,7 +28,7 @@ import rapaio.data.Frame;
 import rapaio.data.VarType;
 import rapaio.data.filter.frame.FFRetainTypes;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.ClassifierFit;
+import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.tree.*;
 import rapaio.ws.Summary;
 
@@ -104,7 +104,7 @@ public class CTreeTest {
         CTreePredictor predictor = new CTreePredictor.Standard();
         assertEquals("Standard", predictor.name());
 
-        ClassifierFit pred = tree.predict(df, true, true);
+        CFit pred = tree.fit(df, true, true);
         df = df.bindVars(pred.firstClasses().solidCopy().withName("predict"));
 
         Frame match = df.stream().filter(spot -> spot.index("class") == spot.index("predict")).toMappedFrame();
@@ -115,7 +115,7 @@ public class CTreeTest {
         df.setMissing(0, 2);
         df.setMissing(0, 3);
 
-        tree.predict(df, true, false);
+        tree.fit(df, true, false);
         match = df.stream().filter(spot -> spot.index("class") == spot.index("predict")).toMappedFrame();
         assertEquals(150, match.rowCount());
     }

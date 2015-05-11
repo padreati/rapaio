@@ -35,11 +35,10 @@ import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.ml.classifier.AbstractClassifier;
+import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
-import rapaio.ml.classifier.ClassifierFit;
 import rapaio.ml.classifier.svm.kernel.Kernel;
 import rapaio.ml.classifier.svm.kernel.PolyKernel;
-import rapaio.printer.Printer;
 
 import java.io.Serializable;
 import java.util.BitSet;
@@ -438,20 +437,20 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
 
     @Override
-    public ClassifierFit predict(Frame df, boolean withClasses, boolean withDistributions) {
-        ClassifierFit cr = ClassifierFit.newEmpty(this, df, withClasses, withDistributions);
+    public CFit fit(Frame df, boolean withClasses, boolean withDistributions) {
+        CFit cr = CFit.newEmpty(this, df, withClasses, withDistributions);
         cr.addTarget(firstTargetName(), firstDict());
 
         for (int i = 0; i < df.rowCount(); i++) {
             double pred = predict(df, i);
             if (MathBase.sm(pred, 0)) {
                 cr.firstClasses().setIndex(i, classIndex1);
-                cr.firstDensity().setValue(i, firstDict(classIndex1), -pred);
-                cr.firstDensity().setValue(i, firstDict(classIndex2), pred);
+                cr.firstDensity().setValue(i, firstDictTerm(classIndex1), -pred);
+                cr.firstDensity().setValue(i, firstDictTerm(classIndex2), pred);
             } else {
                 cr.firstClasses().setIndex(i, classIndex2);
-                cr.firstDensity().setValue(i, firstDict(classIndex1), -pred);
-                cr.firstDensity().setValue(i, firstDict(classIndex2), pred);
+                cr.firstDensity().setValue(i, firstDictTerm(classIndex1), -pred);
+                cr.firstDensity().setValue(i, firstDictTerm(classIndex2), pred);
             }
         }
         return cr;
