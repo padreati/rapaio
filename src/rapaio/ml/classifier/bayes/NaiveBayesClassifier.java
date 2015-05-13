@@ -24,6 +24,7 @@
 package rapaio.ml.classifier.bayes;
 
 import rapaio.WS;
+import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.empirical.KDE;
 import rapaio.core.distributions.empirical.KFunc;
@@ -37,6 +38,7 @@ import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.ml.common.Capabilities;
+import rapaio.ws.Summary;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -137,19 +139,21 @@ public class NaiveBayesClassifier extends AbstractClassifier {
             WS.println("start learning...");
         }
         Arrays.stream(df.varNames()).parallel().forEach(testCol -> {
-            WS.print(".");
-            if (firstTargetName().equals(testCol))
+            if (firstTargetName().equals(testCol)) {
                 return;
+            }
             if (df.var(testCol).type().isNumeric()) {
                 NumericEstimator estimator = numEstimator.newInstance();
                 estimator.learn(df, firstTargetName(), testCol);
                 numericEstimatorMap.put(testCol, estimator);
+                WS.print(".");
                 return;
             }
             if (df.var(testCol).type().isNominal()) {
                 NominalEstimator estimator = nomEstimator.newInstance();
                 estimator.learn(df, firstTargetName(), testCol);
                 nominalEstimatorMap.put(testCol, estimator);
+                WS.print(".");
             }
         });
         WS.println();
@@ -175,8 +179,9 @@ public class NaiveBayesClassifier extends AbstractClassifier {
                     if (df.missing(i, testCol)) continue;
                     sumLog += nominalEstimatorMap.get(testCol).cpValue(df.label(i, testCol), firstDictTerm(j));
                 }
-                dv.update(j, sumLog);
+                dv.update(j, Math.exp(sumLog));
             }
+            dv.normalize(false);
 
             if (withClasses) {
                 pred.firstClasses().setIndex(i, dv.findBestIndex());
@@ -200,8 +205,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
 
         String name();
 
-        default void learn(Frame df, String targetCol, String testCol) {
-        }
+        void learn(Frame df, String targetCol, String testCol);
 
         double cpValue(String testLabel, String classLabel);
 
@@ -246,6 +250,14 @@ public class NaiveBayesClassifier extends AbstractClassifier {
 
         @Override
         public double cpValue(double testValue, String classLabel) {
+            Distribution normal = normals.get(classLabel);
+            if (Math.abs(normal.var()) < 1e-20) {
+                if (Math.abs(normal.mean() - testValue) < 1e-20) {
+                    return Double.MAX_VALUE;
+                } else {
+                    return 0;
+                }
+            }
             return normals.get(classLabel).pdf(testValue);
         }
 
@@ -259,7 +271,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
 
         private static final long serialVersionUID = 7974390604811353859L;
 
-        private Map<String, KDE> kde = new HashMap<>();
+        private Map<String, KDE> kde = new ConcurrentHashMap<>();
         private KFunc kfunc = new KFuncGaussian();
         private double bandwidth = 0;
 
@@ -279,15 +291,14 @@ public class NaiveBayesClassifier extends AbstractClassifier {
         @Override
         public void learn(Frame df, String targetCol, String testCol) {
             kde.clear();
-
-            for (String classLabel : df.var(targetCol).dictionary()) {
-                if ("?".equals(classLabel)) continue;
+            Arrays.stream(df.var(targetCol).dictionary()).forEach(classLabel -> {
+                if ("?".equals(classLabel))
+                    return;
                 Frame cond = df.stream().filter(s -> classLabel.equals(s.label(targetCol))).toMappedFrame();
                 Var v = cond.var(testCol);
                 KDE k = new KDE(v, kfunc, (bandwidth == 0) ? KDE.getSilvermanBandwidth(v) : bandwidth);
-
                 kde.put(classLabel, k);
-            }
+            });
         }
 
         @Override
@@ -297,7 +308,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
 
         @Override
         public NumericEstimator newInstance() {
-            return new EmpiricKDE();
+            return new EmpiricKDE(kfunc, bandwidth);
         }
     }
 

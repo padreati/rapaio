@@ -105,4 +105,15 @@ final class G implements Serializable {
         this.height = height;
         this.fig = fig;
     }
+
+    @Override
+    public String toString() {
+        return "G{" +
+                "x=" + x +
+                ", y=" + y +
+                ", width=" + width +
+                ", height=" + height +
+                ", fig=" + fig +
+                '}';
+    }
 }

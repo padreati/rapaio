@@ -90,4 +90,12 @@ public class Variance implements Printable {
     public double sdValue() {
         return Math.sqrt(value);
     }
+
+    public int completeCount() {
+        return completeCount;
+    }
+
+    public int missingCount() {
+        return missingCount;
+    }
 }
