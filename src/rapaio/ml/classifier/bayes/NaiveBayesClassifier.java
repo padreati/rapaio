@@ -23,6 +23,7 @@
 
 package rapaio.ml.classifier.bayes;
 
+import rapaio.WS;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.empirical.KDE;
 import rapaio.core.distributions.empirical.KFunc;
@@ -33,34 +34,46 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.tools.DensityVector;
+import rapaio.ml.common.Capabilities;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.IntStream;
 
 /**
+ * Naive Bayes Classifier.
+ * <p>
+ * The base assumption for naive bayes is that all the variables are
+ * independent. Thus, the joint distribution
+ *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public class NaiveBayesClassifier extends AbstractClassifier {
+    private static final long serialVersionUID = -7602854063045679683L;
 
     // algorithm parameters
 
-    private CvpEstimator cvpEstimator = new CvpEstimatorGaussianEmpiric();
-    private DvpEstimator dvpEstimator = new DvpEstimatorMultinomial();
+    private boolean useLaplaceSmoother = true;
+    private NumericEstimator numEstimator = new Gaussian();
+    private NominalEstimator nomEstimator = new Multinomial();
 
     // prediction artifacts
 
     private Map<String, Double> priors;
-    private Map<String, CvpEstimator> cvpEstimatorMap;
-    private Map<String, DvpEstimator> dvpEstimatorMap;
+    private Map<String, NumericEstimator> numericEstimatorMap;
+    private Map<String, NominalEstimator> nominalEstimatorMap;
 
     @Override
     public NaiveBayesClassifier newInstance() {
         return new NaiveBayesClassifier()
-                .withCvpEstimator(cvpEstimator)
-                .withDvpEstimator(dvpEstimator);
+                .withNumEstimator(numEstimator)
+                .withNomEstimator(nomEstimator)
+                .withDebug(debug);
     }
 
     @Override
@@ -70,42 +83,35 @@ public class NaiveBayesClassifier extends AbstractClassifier {
 
     @Override
     public String fullName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name());
-        sb.append("(");
-        sb.append("cvpEstimator=").append(cvpEstimator.name());
-        sb.append(",");
-        sb.append("dvpEstimator=").append(dvpEstimator.name());
-        sb.append(")");
-        return sb.toString();
+        return name() + "(numEstimator=" + numEstimator.name() + ",nomEstimator=" + nomEstimator.name() + ")";
     }
 
-    public NaiveBayesClassifier withCvpEstimator(CvpEstimator cvpEstimator) {
-        this.cvpEstimator = cvpEstimator;
+    @Override
+    public Capabilities capabilities() {
+        return new Capabilities()
+                .withTargetCount(Capabilities.TargetCount.MULTIPLE_TARGETS)
+                .withTargetType(Capabilities.TargetType.MULTICLASS_CLASSIFIER);
+    }
+
+    @Override
+    public NaiveBayesClassifier withDebug(boolean debug) {
+        return (NaiveBayesClassifier) super.withDebug(debug);
+    }
+
+    public NaiveBayesClassifier withNumEstimator(NumericEstimator numEstimator) {
+        this.numEstimator = numEstimator;
         return this;
     }
 
-    public CvpEstimator getCvpEstimator() {
-        return cvpEstimator;
-    }
-
-    public NaiveBayesClassifier withDvpEstimator(DvpEstimator dvpEstimator) {
-        this.dvpEstimator = dvpEstimator;
+    public NaiveBayesClassifier withNomEstimator(NominalEstimator nomEstimator) {
+        this.nomEstimator = nomEstimator;
         return this;
-    }
-
-    public DvpEstimator getDvpEstimator() {
-        return dvpEstimator;
     }
 
     @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
 
         prepareLearning(df, weights, targetVarNames);
-
-        if (targetNames().length != 1) {
-            throw new IllegalArgumentException("NaiveBayes is able to predict only one target variable");
-        }
 
         // build priors
 
@@ -124,45 +130,50 @@ public class NaiveBayesClassifier extends AbstractClassifier {
 
         // build conditional probabilities
 
-        dvpEstimatorMap = new HashMap<>();
-        cvpEstimatorMap = new HashMap<>();
+        nominalEstimatorMap = new ConcurrentHashMap<>();
+        numericEstimatorMap = new ConcurrentHashMap<>();
 
-        for (String testCol : df.varNames()) {
-            if (firstTargetName().equals(testCol)) continue;
-            if (df.var(testCol).type().isNumeric()) {
-
-                CvpEstimator estimator = cvpEstimator.newInstance();
-                estimator.learn(df, firstTargetName(), testCol);
-                cvpEstimatorMap.put(testCol, estimator);
-                continue;
-            }
-
-            if (df.var(testCol).type().isNominal()) {
-
-                DvpEstimator estimator = dvpEstimator.newInstance();
-                estimator.learn(df, firstTargetName(), testCol);
-                dvpEstimatorMap.put(testCol, estimator);
-            }
+        if (debug) {
+            WS.println("start learning...");
         }
+        Arrays.stream(df.varNames()).parallel().forEach(testCol -> {
+            WS.print(".");
+            if (firstTargetName().equals(testCol))
+                return;
+            if (df.var(testCol).type().isNumeric()) {
+                NumericEstimator estimator = numEstimator.newInstance();
+                estimator.learn(df, firstTargetName(), testCol);
+                numericEstimatorMap.put(testCol, estimator);
+                return;
+            }
+            if (df.var(testCol).type().isNominal()) {
+                NominalEstimator estimator = nomEstimator.newInstance();
+                estimator.learn(df, firstTargetName(), testCol);
+                nominalEstimatorMap.put(testCol, estimator);
+            }
+        });
+        WS.println();
     }
 
     @Override
     public CFit fit(Frame df, final boolean withClasses, final boolean withDensities) {
 
+        if (debug) WS.println("start fitting values...");
+
         CFit pred = CFit.newEmpty(this, df, withClasses, withDensities);
         pred.addTarget(firstTargetName(), firstDict());
 
-        for (int i = 0; i < df.rowCount(); i++) {
+        IntStream.range(0, df.rowCount()).parallel().forEach(i -> {
             DensityVector dv = new DensityVector(firstDict());
             for (int j = 1; j < firstDict().length; j++) {
                 double sumLog = Math.log(priors.get(firstDictTerm(j)));
-                for (String testCol : cvpEstimatorMap.keySet()) {
+                for (String testCol : numericEstimatorMap.keySet()) {
                     if (df.missing(i, testCol)) continue;
-                    sumLog += cvpEstimatorMap.get(testCol).cpValue(df.value(i, testCol), firstDictTerm(j));
+                    sumLog += numericEstimatorMap.get(testCol).cpValue(df.value(i, testCol), firstDictTerm(j));
                 }
-                for (String testCol : dvpEstimatorMap.keySet()) {
+                for (String testCol : nominalEstimatorMap.keySet()) {
                     if (df.missing(i, testCol)) continue;
-                    sumLog += dvpEstimatorMap.get(testCol).cpValue(df.label(i, testCol), firstDictTerm(j));
+                    sumLog += nominalEstimatorMap.get(testCol).cpValue(df.label(i, testCol), firstDictTerm(j));
                 }
                 dv.update(j, sumLog);
             }
@@ -175,16 +186,17 @@ public class NaiveBayesClassifier extends AbstractClassifier {
                     pred.firstDensity().setValue(i, j, dv.get(j));
                 }
             }
-        }
+        });
         return pred;
     }
 
     @Override
     public void buildPrintSummary(StringBuilder sb) {
-
+        // TODO not implemented yet
+        throw new IllegalArgumentException("not implemented yet");
     }
 
-    public static interface DvpEstimator extends Serializable {
+    public interface NominalEstimator extends Serializable {
 
         String name();
 
@@ -193,10 +205,10 @@ public class NaiveBayesClassifier extends AbstractClassifier {
 
         double cpValue(String testLabel, String classLabel);
 
-        DvpEstimator newInstance();
+        NominalEstimator newInstance();
     }
 
-    public static interface CvpEstimator extends Serializable {
+    public interface NumericEstimator extends Serializable {
 
         String name();
 
@@ -204,30 +216,31 @@ public class NaiveBayesClassifier extends AbstractClassifier {
 
         double cpValue(double testValue, String classLabel);
 
-        CvpEstimator newInstance();
+        NumericEstimator newInstance();
     }
 
-    public static class CvpEstimatorGaussianEmpiric implements CvpEstimator {
+    public static class Gaussian implements NumericEstimator {
+
+        private static final long serialVersionUID = -5974296887792054267L;
 
         private final Map<String, Normal> normals = new HashMap<>();
 
         @Override
         public String name() {
-            return "GaussianEmpiric";
+            return "Gaussian";
         }
 
         @Override
         public void learn(Frame df, String targetCol, String testCol) {
-            String[] dict = df.var(targetCol).dictionary();
             normals.clear();
-
-            for (String classLabel : dict) {
-                if ("?".equals(classLabel)) continue;
-                Frame cond = df.stream().filter(s -> classLabel.equals(s.label(targetCol))).toMappedFrame();
-                Var v = cond.var(testCol);
+            for (String label : df.var(targetCol).dictionary()) {
+                if ("?".equals(label)) {
+                    continue;
+                }
+                Var v = df.stream().filter(s -> label.equals(s.label(targetCol))).toMappedFrame().var(testCol);
                 double mu = new Mean(v).value();
-                double sd = Math.sqrt(new Variance(v).value());
-                normals.put(classLabel, new Normal(mu, sd));
+                double sd = new Variance(v).sdValue();
+                normals.put(label, new Normal(mu, sd));
             }
         }
 
@@ -237,28 +250,30 @@ public class NaiveBayesClassifier extends AbstractClassifier {
         }
 
         @Override
-        public CvpEstimator newInstance() {
-            return new CvpEstimatorGaussianEmpiric();
+        public NumericEstimator newInstance() {
+            return new Gaussian();
         }
     }
 
-    public static class CvpEstimatorKDE implements CvpEstimator {
+    public static class EmpiricKDE implements NumericEstimator {
+
+        private static final long serialVersionUID = 7974390604811353859L;
 
         private Map<String, KDE> kde = new HashMap<>();
         private KFunc kfunc = new KFuncGaussian();
         private double bandwidth = 0;
 
-        public CvpEstimatorKDE() {
+        public EmpiricKDE() {
         }
 
-        public CvpEstimatorKDE(KFunc kfunc, double bandwidth) {
+        public EmpiricKDE(KFunc kfunc, double bandwidth) {
             this.kfunc = kfunc;
             this.bandwidth = bandwidth;
         }
 
         @Override
         public String name() {
-            return "KDE";
+            return "EmpiricKDE";
         }
 
         @Override
@@ -281,13 +296,14 @@ public class NaiveBayesClassifier extends AbstractClassifier {
         }
 
         @Override
-        public CvpEstimator newInstance() {
-            return new CvpEstimatorKDE();
+        public NumericEstimator newInstance() {
+            return new EmpiricKDE();
         }
     }
 
-    public static class DvpEstimatorMultinomial implements DvpEstimator {
+    public static class Multinomial implements NominalEstimator {
 
+        private static final long serialVersionUID = 3019563706421891472L;
         private double[][] density;
         private Map<String, Integer> invTreeTarget;
         private Map<String, Integer> invTreeTest;
@@ -343,8 +359,8 @@ public class NaiveBayesClassifier extends AbstractClassifier {
         }
 
         @Override
-        public DvpEstimator newInstance() {
-            return new DvpEstimatorMultinomial();
+        public NominalEstimator newInstance() {
+            return new Multinomial();
         }
     }
 }

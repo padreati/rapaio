@@ -32,6 +32,7 @@ import rapaio.data.filter.var.VFRefSort;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.tools.DensityVector;
+import rapaio.ml.common.Capabilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,11 @@ public class OneRule extends AbstractClassifier {
     @Override
     public OneRule newInstance() {
         return new OneRule().withMinCount(minCount);
+    }
+
+    @Override
+    public Capabilities capabilities() {
+        throw new IllegalArgumentException("not implemented yet");
     }
 
     public OneRule withMinCount(double minCount) {

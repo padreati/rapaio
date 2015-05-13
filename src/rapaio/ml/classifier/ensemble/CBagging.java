@@ -24,6 +24,8 @@
 package rapaio.ml.classifier.ensemble;
 
 import rapaio.core.sample.Sampler;
+import rapaio.data.Frame;
+import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.ensemble.impl.BaggingMode;
 import rapaio.ml.classifier.ensemble.impl.CEnsemble;

@@ -32,9 +32,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * Abstract base class for all classifiers.
+ *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public abstract class AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = -6866948033065091047L;
@@ -42,6 +43,7 @@ public abstract class AbstractClassifier implements Classifier {
     protected String[] targetNames;
     protected Map<String, String[]> dict;
     protected Sampler sampler = new Sampler.Identity();
+    protected boolean debug = false;
 
     @Override
     public Sampler sampler() {
@@ -51,6 +53,12 @@ public abstract class AbstractClassifier implements Classifier {
     @Override
     public AbstractClassifier withSampler(Sampler sampler) {
         this.sampler = sampler;
+        return this;
+    }
+
+    @Override
+    public Classifier withDebug(boolean debug) {
+        this.debug = debug;
         return this;
     }
 
@@ -69,12 +77,21 @@ public abstract class AbstractClassifier implements Classifier {
         return dict;
     }
 
-    public void prepareLearning(Frame df, Var weights, String... targetVarNames) {
+    /**
+     * This method is prepares learning phase. It is a generic method which works
+     * for all learners. It's taks includes initialization of target names,
+     * input names, check the capabilities at learning phase, etc.
+     *
+     * @param df         data frame
+     * @param weights    weights of instances
+     * @param targetVars target variable names
+     */
+    public void prepareLearning(Frame df, Var weights, String... targetVars) {
 
-        if (targetVarNames.length == 0) {
+        if (targetVars.length == 0) {
             throw new IllegalArgumentException("At least a target var name should be specified at learning time.");
         }
-        List<String> targetVarsList = new VarRange(targetVarNames).parseVarNames(df);
+        List<String> targetVarsList = new VarRange(targetVars).parseVarNames(df);
         this.targetNames = targetVarsList.toArray(new String[targetVarsList.size()]);
         this.dict = new HashMap<>();
         this.dict.put(firstTargetName(), df.var(firstTargetName()).dictionary());
@@ -82,5 +99,7 @@ public abstract class AbstractClassifier implements Classifier {
         HashSet<String> targets = new HashSet<>(targetVarsList);
         List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targets.contains(varName)).collect(Collectors.toList());
         this.inputNames = inputs.toArray(new String[inputs.size()]);
+
+        capabilities().checkAtLearnPhase(df, weights, targetVars);
     }
 }

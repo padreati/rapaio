@@ -148,9 +148,9 @@ public class ClassificationWithNaiveBayesPage implements TutorialPage {
                 "only a single implementation, the multinomial estimator, but at any time " +
                 "you can build your own discrete estimator and use it. ");
 
-        nb.withDvpEstimator(new NaiveBayesClassifier.DvpEstimatorMultinomial());
+        nb.withNomEstimator(new NaiveBayesClassifier.Multinomial());
 
-        code("        nb.withDvpEstimator(new NaiveBayesClassifier.DvpEstimatorMultinomial());\n");
+        code("        nb.withNomEstimator(new NaiveBayesClassifier.Multinomial());\n");
 
         p("For numeric variables we can also change the continuous density estimator. This time " +
                 "we have two built-in options: empirical density approximated by a kernel " +
@@ -159,11 +159,11 @@ public class ClassificationWithNaiveBayesPage implements TutorialPage {
                 "with the same note that it is always possible to implement your own continuous " +
                 "density estimator. ");
 
-        nb.withCvpEstimator(new NaiveBayesClassifier.CvpEstimatorKDE());
-        nb.withCvpEstimator(new NaiveBayesClassifier.CvpEstimatorGaussianEmpiric());
+        nb.withNumEstimator(new NaiveBayesClassifier.EmpiricKDE());
+        nb.withNumEstimator(new NaiveBayesClassifier.Gaussian());
 
-        code("        nb.withCvpEstimator(new NaiveBayesClassifier.CvpEstimatorKDE());\n" +
-                "        nb.withCvpEstimator(new NaiveBayesClassifier.CvpEstimatorGaussianEmpiric());\n");
+        code("        nb.withNumEstimator(new NaiveBayesClassifier.EmpiricKDE());\n" +
+                "        nb.withNumEstimator(new NaiveBayesClassifier.Gaussian());\n");
 
 
     }

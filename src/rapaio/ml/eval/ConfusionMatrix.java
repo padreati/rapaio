@@ -30,6 +30,7 @@ import rapaio.printer.Printer;
 import java.text.DecimalFormat;
 import java.util.stream.IntStream;
 
+import static rapaio.WS.formatFlex;
 import static rapaio.WS.formatShort;
 
 /**
@@ -127,13 +128,13 @@ public class ConfusionMatrix implements Printable {
 
     private void addDetails(StringBuilder sb) {
         sb.append(String.format("\nComplete cases %d from %d\n", (int) Math.rint(completeCases), actual.rowCount()));
-        sb.append(String.format("Acc: %s         (Accuracy )\n", formatShort(acc)));
+        sb.append(String.format("Acc: %s         (Accuracy )\n", formatFlex(acc)));
         if (binary) {
-            sb.append(String.format("F1:  %s         (F1 score / F-measure)\n", formatShort(f1)));
-            sb.append(String.format("MCC: %s         (Matthew correlation coefficient)\n", formatShort(mcc)));
-            sb.append(String.format("Pre: %s         (Precision)\n", formatShort(precision)));
-            sb.append(String.format("Rec: %s         (Recall)\n", formatShort(recall)));
-            sb.append(String.format("G:   %s         (G-measure)\n", formatShort(g)));
+            sb.append(String.format("F1:  %s         (F1 score / F-measure)\n", formatFlex(f1)));
+            sb.append(String.format("MCC: %s         (Matthew correlation coefficient)\n", formatFlex(mcc)));
+            sb.append(String.format("Pre: %s         (Precision)\n", formatFlex(precision)));
+            sb.append(String.format("Rec: %s         (Recall)\n", formatFlex(recall)));
+            sb.append(String.format("G:   %s         (G-measure)\n", formatFlex(g)));
         }
         sb.append("\n");
     }

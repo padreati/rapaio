@@ -33,6 +33,7 @@ import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.RunningClassifier;
 import rapaio.ml.classifier.tree.CTree;
+import rapaio.ml.common.Capabilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +88,11 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         sb.append("stopOnError: ").append(stopOnError).append(", ");
         sb.append("}");
         return sb.toString();
+    }
+
+    @Override
+    public Capabilities capabilities() {
+        throw new IllegalArgumentException("not implemented yet");
     }
 
     public AdaBoostSAMMEClassifier withClassifier(Classifier weak) {
@@ -239,6 +245,11 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
             p.firstClasses().setIndex(i, prediction);
         }
         return p;
+    }
+
+    @Override
+    public CFit fitFurther(CFit fit, Frame df) {
+        throw new IllegalArgumentException("not implemented yet");
     }
 
     @Override

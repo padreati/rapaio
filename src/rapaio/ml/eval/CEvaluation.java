@@ -43,7 +43,7 @@ import static rapaio.WS.print;
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
-public class ModelEvaluation {
+public class CEvaluation {
 
     public double cv(Frame df, String classColName, Classifier c, int folds) {
         print("\nCrossValidation with " + folds + " folds\n");

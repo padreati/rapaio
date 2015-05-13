@@ -40,7 +40,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
-@Deprecated
 public class NaiveBayesTest {
 
     @Test
@@ -72,7 +71,7 @@ public class NaiveBayesTest {
 
         RandomSource.setSeed(1L);
         Frame df = Datasets.loadIrisDataset();
-        NaiveBayesClassifier nb = new NaiveBayesClassifier().withCvpEstimator(new NaiveBayesClassifier.CvpEstimatorKDE());
+        NaiveBayesClassifier nb = new NaiveBayesClassifier().withNumEstimator(new NaiveBayesClassifier.EmpiricKDE());
         nb.learn(df, "class");
         CFit pred = nb.fit(df);
 

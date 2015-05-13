@@ -6,7 +6,7 @@ See tutorials [Rapaio Tutorials](http://padreati.github.io/rapaio/)
 
 Implemented Features
 ====================
-Implemented features are described by category. For each feature there are some
+For each feature there are some
 notes regarding the development stage. If there are no notes it means the feature
 is considered to be fully implemented and well tested.
 
@@ -15,32 +15,50 @@ is considered to be fully implemented and well tested.
 * Special Math functions
 * Maximum, Minimum, Mode (only for nominal values), Sum, Mean, Variance
 * Quantiles
-* Root Mean Squared Error
-* Median Absolute Error
-* Receiver Operator Characteristic - ROC curves and ROC Area
-* Confusion Matrix
 * Online Statistics: minimum, maximum, count, mean, variance, standard deviation, skewness, kurtosis
-
-**Distributions**
-
-* Normal Distribution
-* StudentT - not tested
-* Continuous Uniform
-* Discrete Uniform
-* Bernoulli
-* Binomial
 
 **Correlations**
 
 * Pearson product-moment coefficient
 * Spearman's rank correlation coefficient
 
+**Distributions**
+
+* Continuous/Discrete Uniform
+* Bernoulli
+* Binomial
+* Normal/Gaussian
+* StudentT
+* ChiSquare
+* Gamma
+* Empirical KDE (gaussian, epanechnikov, cosine, tricube, biweight, triweight, triangular, uniform)
+
 **Sampling**
 
-StatSampling
+* SamplingTool
+    * generates discrete integer samples with/without replacement, weighted/non-weighted
+    * offers utility methods for bootstraps, simple random, stratified sampling
+* Samplers used in machine learning algorithms
 
-* generates discrete integer samples with/without replacement, weighted/non-weighted
-* offers utility methods for bootstraps, simple random, stratified sampling
+**Classification**
+* Bayesian: NaiveBayes (Gaussian, Empirical, Multinomial)
+
+
+Experminental Stage Features
+============================
+
+**Core Statistics**
+
+* Root Mean Squared Error
+* Median Absolute Error
+* Receiver Operator Characteristic - ROC curves and ROC Area
+* Confusion Matrix
+
+**Hypothesis Testing**
+
+* ChiSquare goodness of fit / independence test
+* Kolmogorov Smirnoff one/two sample test
+
 
 **Classification**
 
@@ -54,7 +72,6 @@ StatSampling
 * Ensemble: SplitClassifier
 * Ensemble: Bagging
 * Ensemble: Random Forests
-* Bayesian: NaiveBayes (Gaussian, Empirical, Multinomial)
 * SVM: BinarySMO
 * Linear: BinaryLogistic
 
@@ -92,9 +109,3 @@ further improvements in order to make the utilization easier.
 * QQPlot
 * BarChart
 * BoxPlot
-
-
-**Other notes**
-
-Check JDistLib for distribution function implementations
-Added links to rcaller in order to test against R implementations.

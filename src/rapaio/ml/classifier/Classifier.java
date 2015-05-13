@@ -23,6 +23,7 @@
 
 package rapaio.ml.classifier;
 
+import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
 import rapaio.core.sample.Sampler;
 import rapaio.data.Frame;
@@ -63,6 +64,16 @@ public interface Classifier extends Printable, Serializable {
      * @return classifier algorithm name and parameters
      */
     String fullName();
+
+    Capabilities capabilities();
+
+    /**
+     * Builds classifier with debug info on console.
+     *
+     * @param debug true if shows debug info on console
+     * @return the classifier instance
+     */
+    Classifier withDebug(boolean debug);
 
     /**
      * @return the sampler instance used

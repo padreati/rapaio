@@ -29,6 +29,7 @@ import rapaio.data.Var;
 import rapaio.math.optimization.IRLSOptimizer;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
+import rapaio.ml.common.Capabilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +65,11 @@ public class BinaryLogistic extends AbstractClassifier {
         sb.append("maxRuns=").append(maxRuns).append(", ");
         sb.append("}");
         return sb.toString();
+    }
+
+    @Override
+    public Capabilities capabilities() {
+        throw new IllegalArgumentException("not implemented yet");
     }
 
     /**

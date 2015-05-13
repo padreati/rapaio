@@ -34,17 +34,17 @@ import java.io.Serializable;
  */
 public interface RunningClassifier extends Classifier, Serializable {
 
-
+    /**
+     * Specifies the number of runs for a classifier.
+     *
+     * @param runs number of runs
+     * @return classifier instance
+     */
     RunningClassifier withRuns(int runs);
 
     /**
-     * Builds a new classifier using artifacts from a previous classifier.
-     * The weights used comes from:
-     * <ul>
-     * <li>if prev classifier has weights, then these weights are used</li>
-     * <li>if not, but non-null weights are specified in this method, than
-     * weights given as parameters are used</li>
-     * <li>if not than weights equal with one are build and used as parameter</li>
+     * Builds classifier using artifacts from a previous classifier.
+     * All weights are equal with 1.
      * </ul>
      *
      * @param df         data set instances
@@ -55,5 +55,22 @@ public interface RunningClassifier extends Classifier, Serializable {
         learnFurther(df, Numeric.newFill(df.rowCount(), 1.0), targetVars, runs);
     }
 
+    /**
+     * Builds classifier using artifacts from a previous classifier.
+     *
+     * @param df         data set instances
+     * @param weights    weights of the instances
+     * @param targetVars target column name
+     * @param runs       additional runs to build
+     */
     void learnFurther(Frame df, Var weights, String targetVars, int runs);
+
+    /**
+     * Builds a new fit, using as starting point the previous fit object.
+     *
+     * @param fit previous fit object, if null a new fit is completed
+     * @param df  the frame to be fitted
+     * @return new fit object
+     */
+    CFit fitFurther(CFit fit, Frame df);
 }

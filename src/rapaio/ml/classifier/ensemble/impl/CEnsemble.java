@@ -31,6 +31,7 @@ import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.RunningClassifier;
 import rapaio.ml.classifier.tree.CTree;
+import rapaio.ml.common.Capabilities;
 import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.util.func.SFunction;
 
@@ -59,6 +60,11 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
     protected double oobError = Double.NaN;
     protected List<Classifier> predictors = new ArrayList<>();
     protected List<Double> predictorScores = new ArrayList<>();
+
+    @Override
+    public Capabilities capabilities() {
+        throw new IllegalArgumentException("not implemented yet");
+    }
 
     public CEnsemble withOobComp(boolean oobCompute) {
         this.oobComp = oobCompute;
@@ -180,6 +186,11 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
                 });
         baggingMode.computeDensity(firstDict(), new ArrayList<>(treeDensities), cp.firstClasses(), cp.firstDensity());
         return cp;
+    }
+
+    @Override
+    public CFit fitFurther(CFit fit, Frame df) {
+        throw new IllegalArgumentException("not implemented yet");
     }
 
     @Override

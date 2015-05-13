@@ -39,6 +39,7 @@ import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.svm.kernel.Kernel;
 import rapaio.ml.classifier.svm.kernel.PolyKernel;
+import rapaio.ml.common.Capabilities;
 
 import java.io.Serializable;
 import java.util.BitSet;
@@ -128,6 +129,11 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                 .withSecondClassIndex(classIndex2)
                 .withOneVsAll(oneVsAll)
                 .withMaxRuns(maxRuns);
+    }
+
+    @Override
+    public Capabilities capabilities() {
+        throw new IllegalArgumentException("not implemented yet");
     }
 
     public BinarySMO withKernel(Kernel value) {

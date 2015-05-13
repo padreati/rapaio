@@ -28,6 +28,7 @@ import rapaio.data.Var;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.tools.DensityVector;
+import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.util.Pair;
 
@@ -117,6 +118,11 @@ public class CTree extends AbstractClassifier {
                 .withPredictor(predictor.newInstance())
                 .withVarSelector(varSelector().newInstance())
                 .withSampler(sampler());
+    }
+
+    @Override
+    public Capabilities capabilities() {
+        throw new IllegalArgumentException("not implemented yet");
     }
 
     public CTreeNode getRoot() {

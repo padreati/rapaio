@@ -31,6 +31,7 @@ import rapaio.data.VarRange;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.RunningClassifier;
+import rapaio.ml.common.Capabilities;
 import rapaio.ml.regressor.RegressorFit;
 import rapaio.ml.regressor.boost.gbt.BTRegressor;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
@@ -76,6 +77,11 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
         sb.append("runs=").append(runs);
         sb.append("}");
         return sb.toString();
+    }
+
+    @Override
+    public Capabilities capabilities() {
+        throw new IllegalArgumentException("not implemented yet");
     }
 
     public GBTClassifier withTree(BTRegressor rTree) {
@@ -249,6 +255,11 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
             cr.firstClasses().setIndex(i, maxIndex);
         }
         return cr;
+    }
+
+    @Override
+    public CFit fitFurther(CFit fit, Frame df) {
+        throw new IllegalArgumentException("not implemented yet");
     }
 
     @Override
