@@ -24,9 +24,9 @@
 package rapaio.ml.classifier.tree;
 
 import rapaio.core.RandomSource;
+import rapaio.core.tools.DTable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.ml.classifier.tools.DensityTable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -83,12 +83,12 @@ public interface CTreeNominalMethod extends Serializable {
             Var test = df.var(testColName);
             Var target = df.var(targetColName);
 
-            if (!new DensityTable(test, target).hasCountWithMinimum(false, c.getMinCount(), 2)) {
+            if (!DTable.newFromCounts(test, target).hasCountWithMinimum(false, c.getMinCount(), 2)) {
                 return Collections.emptyList();
             }
 
             List<CTreeCandidate> result = new ArrayList<>();
-            DensityTable dt = new DensityTable(test, target, weights);
+            DTable dt = DTable.newFromWeights(test, target, weights);
             double value = function.compute(dt);
 
             CTreeCandidate candidate = new CTreeCandidate(value, function.sign(), testColName);
@@ -123,7 +123,7 @@ public interface CTreeNominalMethod extends Serializable {
 
             Var test = df.var(testColName);
             Var target = df.var(targetColName);
-            if (!(new DensityTable(test, target).hasCountWithMinimum(false, c.getMinCount(), 2))) {
+            if (!(DTable.newFromCounts(test, target).hasCountWithMinimum(false, c.getMinCount(), 2))) {
                 return Collections.emptyList();
             }
 
@@ -142,7 +142,7 @@ public interface CTreeNominalMethod extends Serializable {
                 }
                 String testLabel = df.var(testColName).dictionary()[i];
 
-                DensityTable dt = new DensityTable(test, target, weights, testLabel);
+                DTable dt = DTable.newBinaryFromWeights(test, target, weights, testLabel);
                 double value = function.compute(dt);
                 CTreeCandidate candidate = new CTreeCandidate(value, function.sign(), testColName);
                 if (best == null) {

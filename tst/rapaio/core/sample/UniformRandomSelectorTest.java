@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.classifier.tools;
+package rapaio.core.sample;
 
 import org.junit.Test;
 import rapaio.data.Frame;

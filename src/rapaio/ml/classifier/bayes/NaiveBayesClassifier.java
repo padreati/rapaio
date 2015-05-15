@@ -31,14 +31,12 @@ import rapaio.core.distributions.empirical.KFunc;
 import rapaio.core.distributions.empirical.KFuncGaussian;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
+import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
-import rapaio.ml.classifier.Classifier;
-import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.ml.common.Capabilities;
-import rapaio.ws.Summary;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -56,6 +54,7 @@ import java.util.stream.IntStream;
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 public class NaiveBayesClassifier extends AbstractClassifier {
+
     private static final long serialVersionUID = -7602854063045679683L;
 
     // algorithm parameters
@@ -72,10 +71,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
 
     @Override
     public NaiveBayesClassifier newInstance() {
-        return new NaiveBayesClassifier()
-                .withNumEstimator(numEstimator)
-                .withNomEstimator(nomEstimator)
-                .withDebug(debug);
+        return new NaiveBayesClassifier().withNumEstimator(numEstimator).withNomEstimator(nomEstimator).withDebug(debug);
     }
 
     @Override
@@ -90,9 +86,7 @@ public class NaiveBayesClassifier extends AbstractClassifier {
 
     @Override
     public Capabilities capabilities() {
-        return new Capabilities()
-                .withTargetCount(Capabilities.TargetCount.MULTIPLE_TARGETS)
-                .withTargetType(Capabilities.TargetType.MULTICLASS_CLASSIFIER);
+        return new Capabilities().withTargetCount(Capabilities.TargetCount.MULTIPLE_TARGETS).withTargetType(Capabilities.TargetType.MULTICLASS_CLASSIFIER);
     }
 
     @Override
@@ -118,12 +112,11 @@ public class NaiveBayesClassifier extends AbstractClassifier {
         // build priors
 
         priors = new HashMap<>();
-        DensityVector dv = new DensityVector(firstDict());
-        df.stream().forEach(s -> dv.update(s.index(firstTargetName()), weights.value(s.row())));
+        DVector dv = DVector.newFromWeights(df.var(firstTargetName()), weights, firstDict());
 
         // laplace add-one smoothing
         for (int i = 0; i < firstDict().length; i++) {
-            dv.update(i, 1.0);
+            dv.increment(i, 1.0);
         }
         dv.normalize(false);
         for (int i = 1; i < firstDict().length; i++) {
@@ -138,60 +131,65 @@ public class NaiveBayesClassifier extends AbstractClassifier {
         if (debug) {
             WS.println("start learning...");
         }
-        Arrays.stream(df.varNames()).parallel().forEach(testCol -> {
-            if (firstTargetName().equals(testCol)) {
-                return;
-            }
-            if (df.var(testCol).type().isNumeric()) {
-                NumericEstimator estimator = numEstimator.newInstance();
-                estimator.learn(df, firstTargetName(), testCol);
-                numericEstimatorMap.put(testCol, estimator);
-                WS.print(".");
-                return;
-            }
-            if (df.var(testCol).type().isNominal()) {
-                NominalEstimator estimator = nomEstimator.newInstance();
-                estimator.learn(df, firstTargetName(), testCol);
-                nominalEstimatorMap.put(testCol, estimator);
-                WS.print(".");
-            }
-        });
+        Arrays.stream(df.varNames()).parallel().forEach(
+                testCol -> {
+                    if (firstTargetName().equals(testCol)) {
+                        return;
+                    }
+                    if (df.var(testCol).type().isNumeric()) {
+                        NumericEstimator estimator = numEstimator.newInstance();
+                        estimator.learn(df, firstTargetName(), testCol);
+                        numericEstimatorMap.put(testCol, estimator);
+                        WS.print(".");
+                        return;
+                    }
+                    if (df.var(testCol).type().isNominal()) {
+                        NominalEstimator estimator = nomEstimator.newInstance();
+                        estimator.learn(df, firstTargetName(), testCol);
+                        nominalEstimatorMap.put(testCol, estimator);
+                        WS.print(".");
+                    }
+                });
         WS.println();
     }
 
     @Override
     public CFit fit(Frame df, final boolean withClasses, final boolean withDensities) {
 
-        if (debug) WS.println("start fitting values...");
+        if (debug)
+            WS.println("start fitting values...");
 
         CFit pred = CFit.newEmpty(this, df, withClasses, withDensities);
         pred.addTarget(firstTargetName(), firstDict());
 
-        IntStream.range(0, df.rowCount()).parallel().forEach(i -> {
-            DensityVector dv = new DensityVector(firstDict());
-            for (int j = 1; j < firstDict().length; j++) {
-                double sumLog = Math.log(priors.get(firstDictTerm(j)));
-                for (String testCol : numericEstimatorMap.keySet()) {
-                    if (df.missing(i, testCol)) continue;
-                    sumLog += numericEstimatorMap.get(testCol).cpValue(df.value(i, testCol), firstDictTerm(j));
-                }
-                for (String testCol : nominalEstimatorMap.keySet()) {
-                    if (df.missing(i, testCol)) continue;
-                    sumLog += nominalEstimatorMap.get(testCol).cpValue(df.label(i, testCol), firstDictTerm(j));
-                }
-                dv.update(j, Math.exp(sumLog));
-            }
-            dv.normalize(false);
+        IntStream.range(0, df.rowCount()).parallel().forEach(
+                i -> {
+                    DVector dv = DVector.newEmpty(firstDict());
+                    for (int j = 1; j < firstDict().length; j++) {
+                        double sumLog = Math.log(priors.get(firstDictTerm(j)));
+                        for (String testCol : numericEstimatorMap.keySet()) {
+                            if (df.missing(i, testCol))
+                                continue;
+                            sumLog += numericEstimatorMap.get(testCol).cpValue(df.value(i, testCol), firstDictTerm(j));
+                        }
+                        for (String testCol : nominalEstimatorMap.keySet()) {
+                            if (df.missing(i, testCol))
+                                continue;
+                            sumLog += nominalEstimatorMap.get(testCol).cpValue(df.label(i, testCol), firstDictTerm(j));
+                        }
+                        dv.increment(j, Math.exp(sumLog));
+                    }
+                    dv.normalize(false);
 
-            if (withClasses) {
-                pred.firstClasses().setIndex(i, dv.findBestIndex());
-            }
-            if (withDensities) {
-                for (int j = 0; j < firstDict().length; j++) {
-                    pred.firstDensity().setValue(i, j, dv.get(j));
-                }
-            }
-        });
+                    if (withClasses) {
+                        pred.firstClasses().setIndex(i, dv.findBestIndex(false));
+                    }
+                    if (withDensities) {
+                        for (int j = 0; j < firstDict().length; j++) {
+                            pred.firstDensity().setValue(i, j, dv.get(j));
+                        }
+                    }
+                });
         return pred;
     }
 
@@ -278,6 +276,11 @@ public class NaiveBayesClassifier extends AbstractClassifier {
         public EmpiricKDE() {
         }
 
+        public EmpiricKDE(KFunc kfunc) {
+            this.kfunc = kfunc;
+        }
+
+
         public EmpiricKDE(KFunc kfunc, double bandwidth) {
             this.kfunc = kfunc;
             this.bandwidth = bandwidth;
@@ -291,14 +294,15 @@ public class NaiveBayesClassifier extends AbstractClassifier {
         @Override
         public void learn(Frame df, String targetCol, String testCol) {
             kde.clear();
-            Arrays.stream(df.var(targetCol).dictionary()).forEach(classLabel -> {
-                if ("?".equals(classLabel))
-                    return;
-                Frame cond = df.stream().filter(s -> classLabel.equals(s.label(targetCol))).toMappedFrame();
-                Var v = cond.var(testCol);
-                KDE k = new KDE(v, kfunc, (bandwidth == 0) ? KDE.getSilvermanBandwidth(v) : bandwidth);
-                kde.put(classLabel, k);
-            });
+            Arrays.stream(df.var(targetCol).dictionary()).forEach(
+                    classLabel -> {
+                        if ("?".equals(classLabel))
+                            return;
+                        Frame cond = df.stream().filter(s -> classLabel.equals(s.label(targetCol))).toMappedFrame();
+                        Var v = cond.var(testCol);
+                        KDE k = new KDE(v, kfunc, (bandwidth == 0) ? KDE.getSilvermanBandwidth(v) : bandwidth);
+                        kde.put(classLabel, k);
+                    });
         }
 
         @Override

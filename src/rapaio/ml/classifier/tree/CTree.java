@@ -23,11 +23,11 @@
 
 package rapaio.ml.classifier.tree;
 
+import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
-import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.util.Pair;
@@ -277,7 +277,7 @@ public class CTree extends AbstractClassifier {
         prediction.addTarget(firstTargetName(), firstDict());
 
         df.stream().forEach(spot -> {
-            Pair<Integer, DensityVector> result = predictor.predict(this, spot, root);
+            Pair<Integer, DVector> result = predictor.predict(this, spot, root);
             if (withClasses)
                 prediction.firstClasses().setIndex(spot.row(), result.first);
             if (withDensities)
@@ -311,7 +311,7 @@ public class CTree extends AbstractClassifier {
             sb.append(node.getDensity().sum(true)).append("/");
             sb.append(node.getDensity().sumExcept(node.getBestIndex(), true)).append(" ");
             sb.append(firstDict()[node.getBestIndex()]).append(" (");
-            DensityVector d = node.getDensity().solidCopy();
+            DVector d = node.getDensity().solidCopy();
             d.normalize(false);
             for (int i = 1; i < firstDict().length; i++) {
                 sb.append(String.format("%.6f", d.get(i))).append(" ");
@@ -327,7 +327,7 @@ public class CTree extends AbstractClassifier {
             sb.append(node.getDensity().sum(true)).append("/");
             sb.append(node.getDensity().sumExcept(node.getBestIndex(), true)).append(" ");
             sb.append(firstDict()[node.getBestIndex()]).append(" (");
-            DensityVector d = node.getDensity().solidCopy();
+            DVector d = node.getDensity().solidCopy();
             d.normalize(false);
             for (int i = 1; i < firstDict().length; i++) {
                 sb.append(String.format("%.6f", d.get(i))).append(" ");

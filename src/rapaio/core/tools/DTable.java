@@ -21,8 +21,9 @@
  *
  */
 
-package rapaio.ml.classifier.tools;
+package rapaio.core.tools;
 
+import rapaio.data.Numeric;
 import rapaio.data.Var;
 
 import java.io.Serializable;
@@ -31,10 +32,15 @@ import java.util.Arrays;
 import static rapaio.core.MathBase.log2;
 
 /**
+ * Nominal distribution table.
+ * <p>
+ * Table tool class to facilitate various operations on two nominal variables regarding frequencies.
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
-public final class DensityTable implements Serializable {
+public final class DTable implements Serializable {
+
+    private static final long serialVersionUID = 4359080329548577980L;
 
     public static final String[] NUMERIC_DEFAULT_LABELS = new String[]{"?", "less-equals", "greater"};
 
@@ -50,14 +56,18 @@ public final class DensityTable implements Serializable {
      * @param testLabels   test labels for rows
      * @param targetLabels target labels for columns
      */
-    public DensityTable(String[] testLabels, String[] targetLabels) {
-        this.testLabels = testLabels;
-        this.targetLabels = targetLabels;
-        values = new double[testLabels.length][targetLabels.length];
+    public static DTable newEmpty(String[] testLabels, String[] targetLabels) {
+        return new DTable(testLabels, targetLabels);
     }
 
-    public DensityTable(Var test, Var target) {
-        this(test, target, null);
+    /**
+     * Builds a density table from two nominal vectors built from counts
+     *
+     * @param test   test var
+     * @param target target var
+     */
+    public static DTable newFromCounts(Var test, Var target) {
+        return new DTable(test, target, Numeric.newFill(test.rowCount(), 1));
     }
 
     /**
@@ -68,17 +78,8 @@ public final class DensityTable implements Serializable {
      * @param target  target var
      * @param weights weights used instead of counts, if not null
      */
-    public DensityTable(Var test, Var target, Var weights) {
-        this(test.dictionary(), target.dictionary());
-
-        if (!test.type().isNominal()) throw new IllegalArgumentException("test var must be nominal");
-        if (!target.type().isNominal()) throw new IllegalArgumentException("target var is not nominal");
-        if (test.rowCount() != target.rowCount())
-            throw new IllegalArgumentException("test and target must have same row count");
-
-        for (int i = 0; i < test.rowCount(); i++) {
-            update(test.index(i), target.index(i), weights != null ? weights.value(i) : 1);
-        }
+    public static DTable newFromWeights(Var test, Var target, Var weights) {
+        return new DTable(test, target, weights);
     }
 
     /**
@@ -91,7 +92,30 @@ public final class DensityTable implements Serializable {
      * @param weights   if not null, weights used instead of counts
      * @param testLabel test label used for binary split
      */
-    public DensityTable(Var test, Var target, Var weights, String testLabel) {
+    public static DTable newBinaryFromWeights(Var test, Var target, Var weights, String testLabel) {
+        return new DTable(test, target, weights, testLabel);
+    }
+
+    private DTable(String[] testLabels, String[] targetLabels) {
+        this.testLabels = testLabels;
+        this.targetLabels = targetLabels;
+        values = new double[testLabels.length][targetLabels.length];
+    }
+
+    private DTable(Var test, Var target, Var weights) {
+        this(test.dictionary(), target.dictionary());
+
+        if (!test.type().isNominal()) throw new IllegalArgumentException("test var must be nominal");
+        if (!target.type().isNominal()) throw new IllegalArgumentException("target var is not nominal");
+        if (test.rowCount() != target.rowCount())
+            throw new IllegalArgumentException("test and target must have same row count");
+
+        for (int i = 0; i < test.rowCount(); i++) {
+            update(test.index(i), target.index(i), weights != null ? weights.value(i) : 1);
+        }
+    }
+
+    private DTable(Var test, Var target, Var weights, String testLabel) {
         this(new String[]{"?", testLabel, "other"}, target.dictionary());
 
         if (!test.type().isNominal()) throw new IllegalArgumentException("test var must be nominal");
@@ -119,10 +143,6 @@ public final class DensityTable implements Serializable {
     public void move(int row1, int row2, int col, double weight) {
         update(row1, col, -weight);
         update(row2, col, weight);
-    }
-
-    public double getTargetEntropy() {
-        return getTargetEntropy(false);
     }
 
     public double getTargetEntropy(boolean useMissing) {
@@ -153,10 +173,6 @@ public final class DensityTable implements Serializable {
         return factor * entropy;
     }
 
-    public double getSplitEntropy() {
-        return getSplitEntropy(false);
-    }
-
     public double getSplitEntropy(boolean useMissing) {
         double[] totals = new double[testLabels.length];
         for (int i = 0; i < testLabels.length; i++) {
@@ -185,16 +201,8 @@ public final class DensityTable implements Serializable {
         return gain;
     }
 
-    public double getInfoGain() {
-        return getInfoGain(false);
-    }
-
     public double getInfoGain(boolean useMissing) {
         return getTargetEntropy(useMissing) - getSplitEntropy(useMissing);
-    }
-
-    public double getSplitInfo() {
-        return getSplitInfo(false);
     }
 
     public double getSplitInfo(boolean useMissing) {
@@ -216,10 +224,6 @@ public final class DensityTable implements Serializable {
             }
         }
         return splitInfo;
-    }
-
-    public double getGainRatio() {
-        return getGainRatio(false);
     }
 
     public double getGainRatio(boolean useMissing) {

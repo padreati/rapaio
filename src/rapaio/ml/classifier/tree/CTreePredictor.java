@@ -23,8 +23,8 @@
 
 package rapaio.ml.classifier.tree;
 
+import rapaio.core.tools.DVector;
 import rapaio.data.stream.FSpot;
-import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.util.Pair;
 
 import java.io.Serializable;
@@ -39,7 +39,7 @@ public interface CTreePredictor extends Serializable {
 
     CTreePredictor newInstance();
 
-    Pair<Integer, DensityVector> predict(CTree tree, FSpot spot, CTreeNode node);
+    Pair<Integer, DVector> predict(CTree tree, FSpot spot, CTreeNode node);
 
     public static final class Standard implements CTreePredictor {
 
@@ -54,7 +54,7 @@ public interface CTreePredictor extends Serializable {
         }
 
         @Override
-        public Pair<Integer, DensityVector> predict(CTree tree, FSpot spot, CTreeNode node) {
+        public Pair<Integer, DVector> predict(CTree tree, FSpot spot, CTreeNode node) {
             try {
                 node.getCounter().sum(false);
             } catch (Throwable throwable) {
@@ -76,15 +76,15 @@ public interface CTreePredictor extends Serializable {
             }
 
             String[] dict = tree.firstDict();
-            DensityVector dv = new DensityVector(dict);
+            DVector dv = DVector.newEmpty(dict);
             for (CTreeNode child : node.getChildren()) {
-                DensityVector d = predict(tree, spot, child).second;
+                DVector d = predict(tree, spot, child).second;
                 for (int i = 0; i < dict.length; i++) {
-                    dv.update(i, d.get(i) * child.getDensity().sum(false));
+                    dv.increment(i, d.get(i) * child.getDensity().sum(false));
                 }
             }
             dv.normalize(false);
-            return new Pair<>(dv.findBestIndex(), dv);
+            return new Pair<>(dv.findBestIndex(false), dv);
         }
     };
 }

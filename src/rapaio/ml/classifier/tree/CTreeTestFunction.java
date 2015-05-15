@@ -23,7 +23,7 @@
 
 package rapaio.ml.classifier.tree;
 
-import rapaio.ml.classifier.tools.DensityTable;
+import rapaio.core.tools.DTable;
 
 import java.io.Serializable;
 
@@ -37,7 +37,7 @@ public interface CTreeTestFunction extends Serializable {
 
     CTreeTestFunction newInstance();
 
-    double compute(DensityTable dt);
+    double compute(DTable dt);
 
     int sign();
 
@@ -56,7 +56,7 @@ public interface CTreeTestFunction extends Serializable {
         }
 
         @Override
-        public double compute(DensityTable dt) {
+        public double compute(DTable dt) {
             return dt.getSplitEntropy(false);
         }
 
@@ -86,7 +86,7 @@ public interface CTreeTestFunction extends Serializable {
         }
 
         @Override
-        public double compute(DensityTable dt) {
+        public double compute(DTable dt) {
             return dt.getInfoGain(false);
         }
     };
@@ -111,8 +111,8 @@ public interface CTreeTestFunction extends Serializable {
         }
 
         @Override
-        public double compute(DensityTable dt) {
-            return dt.getGainRatio();
+        public double compute(DTable dt) {
+            return dt.getGainRatio(false);
         }
     };
 
@@ -136,7 +136,7 @@ public interface CTreeTestFunction extends Serializable {
         }
 
         @Override
-        public double compute(DensityTable dt) {
+        public double compute(DTable dt) {
             return dt.getGiniIndex();
         }
     };

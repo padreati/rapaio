@@ -30,7 +30,7 @@
 //import rapaio.data.filter.frame.FFRetainTypes;
 //import rapaio.datasets.Datasets;
 //import rapaio.ml.classifier.CFit;
-//import rapaio.ml.classifier.tools.DensityTable;
+//import rapaio.core.tools.DTable;
 //import rapaio.ml.classifier.tree.CTree;
 //import rapaio.ml.eval.ConfusionMatrix;
 //import rapaio.ws.Summary;
@@ -53,8 +53,8 @@
 //        classifier.learn(df, className);
 //        CFit pred = classifier.fit(df);
 //
-//        DensityTable dtWindy = new DensityTable(df.var("windy"), df.var("class"));
-//        DensityTable dtOutlook = new DensityTable(df.var("outlook"), df.var("class"));
+//        DTable dtWindy = new DTable(df.var("windy"), df.var("class"));
+//        DTable dtOutlook = new DTable(df.var("outlook"), df.var("class"));
 //        String splitCol = (dtWindy.getInfoGain() > dtOutlook.getInfoGain()) ? "windy" : "outlook";
 //        Assert.assertTrue(classifier.getRoot().getBestCandidate().getGroupNames().get(0).contains(splitCol));
 //

@@ -24,6 +24,7 @@
 package rapaio.ml.classifier.rule;
 
 import rapaio.core.RandomSource;
+import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.RowComparators;
@@ -31,7 +32,6 @@ import rapaio.data.Var;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
-import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.ml.common.Capabilities;
 
 import java.util.ArrayList;
@@ -160,17 +160,17 @@ public class OneRule extends AbstractClassifier {
         RuleSet set = new RuleSet(testCol);
 
         int len = df.var(testCol).dictionary().length;
-        DensityVector[] dvs = new DensityVector[len];
+        DVector[] dvs = new DVector[len];
         for (int i = 0; i < len; i++) {
-            dvs[i] = new DensityVector(firstDict());
+            dvs[i] = DVector.newEmpty(firstDict());
         }
         for (int i = 0; i < df.rowCount(); i++) {
-            dvs[df.index(i, testCol)].update(df.index(i, firstTargetName()), weights.value(i));
+            dvs[df.index(i, testCol)].increment(df.index(i, firstTargetName()), weights.value(i));
         }
         for (int i = 0; i < len; i++) {
-            DensityVector dv = dvs[i];
+            DVector dv = dvs[i];
             dv.normalize(true);
-            int j = dv.findBestIndex();
+            int j = dv.findBestIndex(false);
             String[] colValues = df.var(testCol).dictionary();
             set.rules.add(new NominalRule(colValues[i], firstDict()[j], dv.sum(true), dv.sum(true) - dv.get(j)));
         }

@@ -30,7 +30,7 @@
 //import rapaio.data.VarType;
 //import rapaio.data.filter.frame.FFRetainTypes;
 //import rapaio.datasets.Datasets;
-//import rapaio.ml.classifier.tools.DensityTable;
+//import rapaio.core.tools.DTable;
 //import rapaio.ml.classifier.tree.*;
 //import rapaio.ws.Summary;
 //
@@ -53,8 +53,8 @@
 //        id3.learn(df, className);
 //        id3.fit(df);
 //
-//        DensityTable dtWindy = new DensityTable(df.var("windy"), df.var("class"));
-//        DensityTable dtOutlook = new DensityTable(df.var("outlook"), df.var("class"));
+//        DTable dtWindy = new DTable(df.var("windy"), df.var("class"));
+//        DTable dtOutlook = new DTable(df.var("outlook"), df.var("class"));
 //        String splitCol = (dtWindy.getSplitEntropy() < dtOutlook.getSplitEntropy()) ? "windy" : "outlook";
 //        id3.printSummary();
 //        Assert.assertTrue(id3.getRoot().getChildren().get(0).getGroupName().startsWith(splitCol));
@@ -77,8 +77,8 @@
 //        id3.fit(df);
 //        id3.printSummary();
 //
-//        DensityTable dtWindy = new DensityTable(df.var("windy"), df.var("class"));
-//        DensityTable dtOutlook = new DensityTable(df.var("outlook"), df.var("class"));
+//        DTable dtWindy = new DTable(df.var("windy"), df.var("class"));
+//        DTable dtOutlook = new DTable(df.var("outlook"), df.var("class"));
 //        String splitCol = (dtWindy.getInfoGain() > dtOutlook.getInfoGain()) ? "windy" : "outlook";
 //        Assert.assertTrue(id3.getRoot().getChildren().get(0).getGroupName().startsWith(splitCol));
 //

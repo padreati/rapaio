@@ -24,12 +24,12 @@
 package rapaio.ml.classifier.tree;
 
 import rapaio.core.RandomSource;
+import rapaio.core.tools.DTable;
 import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFRefSort;
-import rapaio.ml.classifier.tools.DensityTable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -48,6 +48,8 @@ public interface CTreeNumericMethod extends Serializable {
     List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function);
 
     class Ignore implements CTreeNumericMethod {
+        private static final long serialVersionUID = 1805587370887769471L;
+
         @Override
         public String name() {
             return "Ignore";
@@ -81,7 +83,7 @@ public interface CTreeNumericMethod extends Serializable {
             Var test = df.var(testColName);
             Var target = df.var(targetColName);
 
-            DensityTable dt = new DensityTable(DensityTable.NUMERIC_DEFAULT_LABELS, target.dictionary());
+            DTable dt = DTable.newEmpty(DTable.NUMERIC_DEFAULT_LABELS, target.dictionary());
             int misCount = 0;
             for (int i = 0; i < df.rowCount(); i++) {
                 int row = (test.missing(i)) ? 0 : 2;
@@ -171,7 +173,7 @@ public interface CTreeNumericMethod extends Serializable {
             Var test = df.var(testColName);
             Var target = df.var(targetColName);
 
-            DensityTable dt = new DensityTable(DensityTable.NUMERIC_DEFAULT_LABELS, target.dictionary());
+            DTable dt = DTable.newEmpty(DTable.NUMERIC_DEFAULT_LABELS, target.dictionary());
             int misCount = 0;
             for (int i = 0; i < df.rowCount(); i++) {
                 int row = (test.missing(i)) ? 0 : 2;

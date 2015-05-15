@@ -23,9 +23,9 @@
 
 package rapaio.ml.classifier.ensemble.impl;
 
+import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
-import rapaio.ml.classifier.tools.DensityVector;
 
 import java.io.Serializable;
 import java.util.List;
@@ -43,24 +43,24 @@ public enum BaggingMode implements Serializable {
         public void computeDensity(String[] dictionary, List<Frame> treeDensities, Nominal classes, Frame densities) {
             treeDensities.forEach(d -> {
                 for (int i = 0; i < d.rowCount(); i++) {
-                    DensityVector dv = new DensityVector(dictionary);
+                    DVector dv = DVector.newEmpty(dictionary);
                     for (int j = 1; j < dictionary.length; j++) {
-                        dv.update(j, d.value(i, j));
+                        dv.increment(j, d.value(i, j));
                     }
-                    int best = dv.findBestIndex();
+                    int best = dv.findBestIndex(false);
                     densities.setValue(i, best, densities.value(i, best) + 1);
                 }
             });
             for (int i = 0; i < classes.rowCount(); i++) {
-                DensityVector dv = new DensityVector(dictionary);
+                DVector dv = DVector.newEmpty(dictionary);
                 for (int j = 1; j < dictionary.length; j++) {
-                    dv.update(j, densities.value(i, j));
+                    dv.increment(j, densities.value(i, j));
                 }
                 dv.normalize(false);
                 for (int j = 1; j < dictionary.length; j++) {
                     densities.setValue(i, j, dv.get(j));
                 }
-                classes.setValue(i, dv.findBestIndex());
+                classes.setValue(i, dv.findBestIndex(false));
             }
         }
     },
@@ -84,15 +84,15 @@ public enum BaggingMode implements Serializable {
                 }
             });
             for (int i = 0; i < classes.rowCount(); i++) {
-                DensityVector dv = new DensityVector(dictionary);
+                DVector dv = DVector.newEmpty(dictionary);
                 for (int j = 0; j < dictionary.length; j++) {
-                    dv.update(j, densities.value(i, j));
+                    dv.increment(j, densities.value(i, j));
                 }
                 dv.normalize(false);
                 for (int j = 0; j < dictionary.length; j++) {
                     densities.setValue(i, j, dv.get(j));
                 }
-                classes.setValue(i, dv.findBestIndex());
+                classes.setValue(i, dv.findBestIndex(false));
             }
         }
     };

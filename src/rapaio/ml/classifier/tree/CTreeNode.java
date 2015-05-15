@@ -23,11 +23,11 @@
 
 package rapaio.ml.classifier.tree;
 
+import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
-import rapaio.ml.classifier.tools.DensityVector;
 import rapaio.util.Pair;
 import rapaio.util.func.SPredicate;
 
@@ -50,8 +50,8 @@ public class CTreeNode implements Serializable {
 
     private boolean leaf = true;
     private final List<CTreeNode> children = new ArrayList<>();
-    private DensityVector density;
-    private DensityVector counter;
+    private DVector density;
+    private DVector counter;
     private int bestIndex;
     private CTreeCandidate bestCandidate;
 
@@ -74,7 +74,7 @@ public class CTreeNode implements Serializable {
         return predicate;
     }
 
-    public DensityVector getCounter() {
+    public DVector getCounter() {
         return counter;
     }
 
@@ -82,7 +82,7 @@ public class CTreeNode implements Serializable {
         return bestIndex;
     }
 
-    public DensityVector getDensity() {
+    public DVector getDensity() {
         return density;
     }
 
@@ -99,18 +99,18 @@ public class CTreeNode implements Serializable {
     }
 
     public void learn(CTree tree, Frame df, Var weights, int depth, CTreeNominalTerms terms) {
-        density = new DensityVector(df.var(tree.firstTargetName()), weights);
+        density = DVector.newFromWeights(df.var(tree.firstTargetName()), weights);
         density.normalize(false);
 
-        counter = new DensityVector(df.var(tree.firstTargetName()), Numeric.newFill(df.rowCount(), 1));
-        bestIndex = density.findBestIndex();
+        counter = DVector.newFromWeights(df.var(tree.firstTargetName()), Numeric.newFill(df.rowCount(), 1));
+        bestIndex = density.findBestIndex(false);
 
 
         if (df.rowCount() == 0) {
             return;
         }
 
-        if (df.rowCount() <= tree.getMinCount() || counter.countValues(x -> x > 0) == 1 || depth < 1) {
+        if (df.rowCount() <= tree.getMinCount() || counter.countValues(x -> x > 0, false) == 1 || depth < 1) {
             return;
         }
 

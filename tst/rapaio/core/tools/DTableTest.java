@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.classifier.tools;
+package rapaio.core.tools;
 
 import org.junit.Test;
 import rapaio.data.Frame;
@@ -36,28 +36,28 @@ import static org.junit.Assert.assertEquals;
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
-public class DensityTableTest {
+public class DTableTest {
 
     @Test
     public void testPlayNoMissing() throws IOException {
 
         Frame df = Datasets.loadPlay();
 
-        DensityTable id = new DensityTable(df.var("outlook"), df.var("class"), null);
-        assertEquals(0.940, id.getTargetEntropy(), 1e-3);
-        assertEquals(0.694, id.getSplitEntropy(), 1e-3);
-        assertEquals(0.246, id.getInfoGain(), 1e-3);
+        DTable id = DTable.newFromCounts(df.var("outlook"), df.var("class"));
+        assertEquals(0.940, id.getTargetEntropy(false), 1e-3);
+        assertEquals(0.694, id.getSplitEntropy(false), 1e-3);
+        assertEquals(0.246, id.getInfoGain(false), 1e-3);
 
-        assertEquals(1.577, id.getSplitInfo(), 1e-3);
-        assertEquals(0.156, id.getGainRatio(), 1e-3);
+        assertEquals(1.577, id.getSplitInfo(false), 1e-3);
+        assertEquals(0.156, id.getGainRatio(false), 1e-3);
 
-        id = new DensityTable(df.var("windy"), df.var("class"), null);
-        assertEquals(0.940, id.getTargetEntropy(), 1e-3);
-        assertEquals(0.892, id.getSplitEntropy(), 1e-3);
-        assertEquals(0.048, id.getInfoGain(), 1e-3);
+        id = DTable.newFromCounts(df.var("windy"), df.var("class"));
+        assertEquals(0.940, id.getTargetEntropy(false), 1e-3);
+        assertEquals(0.892, id.getSplitEntropy(false), 1e-3);
+        assertEquals(0.048, id.getInfoGain(false), 1e-3);
 
-        assertEquals(0.985, id.getSplitInfo(), 1e-3);
-        assertEquals(0.048, id.getGainRatio(), 1e-3);
+        assertEquals(0.985, id.getSplitInfo(false), 1e-3);
+        assertEquals(0.048, id.getGainRatio(false), 1e-3);
     }
 
     @Test
@@ -67,7 +67,7 @@ public class DensityTableTest {
         df.var("outlook").setMissing(5);
         Summary.head(10000, df);
 
-        DensityTable id = new DensityTable(df.var("outlook"), df.var("class"), null);
+        DTable id = DTable.newFromCounts(df.var("outlook"), df.var("class"));
 
         assertEquals(0.892, id.getTargetEntropy(true), 1e-3);
         assertEquals(0.693, id.getSplitEntropy(true), 1e-3);
