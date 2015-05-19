@@ -115,7 +115,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     }
 
     @Override
-    public void learn(Frame df, Var weights, String... targetVars) {
+    public AdaBoostSAMMEClassifier learn(Frame df, Var weights, String... targetVars) {
 
         prepareLearning(df, weights, targetVars);
 
@@ -141,6 +141,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
                 break;
             }
         }
+        return this;
     }
 
     @Override

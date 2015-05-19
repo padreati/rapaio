@@ -111,7 +111,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
     }
 
     @Override
-    public void learn(Frame df, Var weights, String... targetVarNames) {
+    public GBTClassifier learn(Frame df, Var weights, String... targetVarNames) {
         prepareLearning(df, weights, targetVarNames);
         if (targetNames().length != 1) {
             throw new IllegalArgumentException("This classifier accepts one and only one target variable.");
@@ -132,6 +132,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
         for (int m = 0; m < runs; m++) {
             buildAdditionalTree(df, weights);
         }
+        return this;
     }
 
     @Override

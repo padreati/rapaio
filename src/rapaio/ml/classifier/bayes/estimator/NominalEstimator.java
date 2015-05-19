@@ -21,33 +21,27 @@
  *
  */
 
-package rapaio.core.distributions.empirical;
+package rapaio.ml.classifier.bayes.estimator;
 
-import rapaio.core.distributions.Normal;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+
+import java.io.Serializable;
 
 /**
- * GaussianPdf kernel function
- *
- * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * Nominal variable robability estimator
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/18/15.
  */
-public class KFuncGaussian implements KFunc {
+public interface NominalEstimator extends Serializable {
 
-    private static final long serialVersionUID = 4766872325548110258L;
+    NominalEstimator newInstance();
 
-    private final Normal normal = new Normal();
+    String name();
 
-    @Override
-    public double pdf(double x, double x0, double bandwidth) {
-        return normal.pdf((x - x0) / bandwidth);
-    }
+    String learningInfo();
 
-    @Override
-    public double minValue(double x0, double bandwidth) {
-        return x0 - 4 * bandwidth;
-    }
+    void learn(Frame df, Var weights, String targetVar, String testVar, String... targetLabels);
 
-    @Override
-    public double getMaxValue(double x0, double bandwidth) {
-        return x0 + 4 * bandwidth;
-    }
+    double cpValue(String testLabel, String targetLabel);
 }

@@ -249,7 +249,7 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    public void learn(Frame df, Var weights, String... targetVars) {
+    public CTree learn(Frame df, Var weights, String... targetVars) {
 
         prepareLearning(df, weights, targetVars);
 
@@ -268,6 +268,7 @@ public class CTree extends AbstractClassifier {
 
         root = new CTreeNode(null, "root", spot -> true);
         root.learn(this, df, weights, maxDepth, new CTreeNominalTerms().init(df));
+        return this;
     }
 
     @Override

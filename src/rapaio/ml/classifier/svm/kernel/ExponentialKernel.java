@@ -26,7 +26,7 @@ package rapaio.ml.classifier.svm.kernel;
 import rapaio.data.Frame;
 
 /**
- * The exponential kernel is closely related to the Gaussian kernel, with only the square of the norm left out. It is also a radial basis function kernel.
+ * The exponential kernel is closely related to the GaussianPdf kernel, with only the square of the norm left out. It is also a radial basis function kernel.
  * <p>
  * k(x, y) = \exp\left(-\frac{ \lVert x-y \rVert }{2\sigma^2}\right)
  * <p>

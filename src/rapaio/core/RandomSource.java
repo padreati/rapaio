@@ -246,7 +246,7 @@ strictfp class MersenneTwister extends java.util.Random {
     //private static final long GOOD_SEED = 4357;
 
     /* implemented here because there's a bug in Random's implementation
-       of the Gaussian code (divide by zero, and log(0), ugh!), yet its
+       of the GaussianPdf code (divide by zero, and log(0), ugh!), yet its
        gaussian variables are private so we can't access them here.  :-( */
 
     private double __nextNextGaussian;
@@ -315,7 +315,7 @@ strictfp class MersenneTwister extends java.util.Random {
         super.setSeed(seed);
 
         // Due to a bug in java.util.Random clear up to 1.2, we're
-        // doing our own Gaussian variable.
+        // doing our own GaussianPdf variable.
         __haveNextNextGaussian = false;
 
         mt = new int[N];

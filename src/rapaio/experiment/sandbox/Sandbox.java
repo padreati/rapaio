@@ -31,6 +31,7 @@ import rapaio.ws.Summary;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,8 +45,10 @@ public class Sandbox {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
 
-        int n = 5;
-        Binomial bin = new Binomial(0.5, n);
-        System.out.println(formatFlex(bin.pdf(n)));
+        Supplier<String> f = () -> {
+            int x = 10;
+            return String.valueOf(x);
+        };
+        System.out.println(f.get());
     }
 }

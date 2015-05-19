@@ -28,6 +28,7 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.bayes.estimator.KernelPdf;
 import rapaio.ml.eval.ConfusionMatrix;
 
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class NaiveBayesTest {
 
         RandomSource.setSeed(1L);
         Frame df = Datasets.loadIrisDataset();
-        NaiveBayesClassifier nb = new NaiveBayesClassifier();
+        NaiveBayes nb = new NaiveBayes();
         nb.learn(df, "class");
         CFit pred = nb.fit(df);
 
@@ -58,11 +59,11 @@ public class NaiveBayesTest {
 
         assertEquals(50, cm.matrix()[0][0], 10e-12);
         assertEquals(47, cm.matrix()[1][1], 10e-12);
-        assertEquals(46, cm.matrix()[2][2], 10e-12);
+        assertEquals(47, cm.matrix()[2][2], 10e-12);
 
-        assertEquals(1, cm.matrix()[1][0], 10e-12);
-        assertEquals(2, cm.matrix()[1][2], 10e-12);
-        assertEquals(4, cm.matrix()[2][1], 10e-12);
+        assertEquals(0, cm.matrix()[1][0], 10e-12);
+        assertEquals(3, cm.matrix()[1][2], 10e-12);
+        assertEquals(3, cm.matrix()[2][1], 10e-12);
 
     }
 
@@ -71,7 +72,7 @@ public class NaiveBayesTest {
 
         RandomSource.setSeed(1L);
         Frame df = Datasets.loadIrisDataset();
-        NaiveBayesClassifier nb = new NaiveBayesClassifier().withNumEstimator(new NaiveBayesClassifier.EmpiricKDE());
+        NaiveBayes nb = new NaiveBayes().withNumEstimator(new KernelPdf());
         nb.learn(df, "class");
         CFit pred = nb.fit(df);
 
@@ -82,11 +83,11 @@ public class NaiveBayesTest {
 
         assertEquals(50, cm.matrix()[0][0], 10e-12);
         assertEquals(48, cm.matrix()[1][1], 10e-12);
-        assertEquals(46, cm.matrix()[2][2], 10e-12);
+        assertEquals(47, cm.matrix()[2][2], 10e-12);
 
         assertEquals(0, cm.matrix()[1][0], 10e-12);
         assertEquals(2, cm.matrix()[1][2], 10e-12);
-        assertEquals(4, cm.matrix()[2][1], 10e-12);
+        assertEquals(3, cm.matrix()[2][1], 10e-12);
     }
 
     @Test
@@ -95,7 +96,7 @@ public class NaiveBayesTest {
         RandomSource.setSeed(1L);
         Frame df = Datasets.loadMushrooms();
 
-        NaiveBayesClassifier nb = new NaiveBayesClassifier();
+        NaiveBayes nb = new NaiveBayes();
         nb.learn(df, "classes");
         CFit cp = nb.fit(df);
 
@@ -104,9 +105,9 @@ public class NaiveBayesTest {
 
         assertTrue(cm.accuracy() >= 0.89);
 
-        assertEquals(3100, cm.matrix()[0][0], 10e-12);
-        assertEquals(816, cm.matrix()[0][1], 10e-12);
-        assertEquals(71, cm.matrix()[1][0], 10e-12);
-        assertEquals(4137, cm.matrix()[1][1], 10e-12);
+        assertEquals(3584, cm.matrix()[0][0], 10e-12);
+        assertEquals(332, cm.matrix()[0][1], 10e-12);
+        assertEquals(20, cm.matrix()[1][0], 10e-12);
+        assertEquals(4188, cm.matrix()[1][1], 10e-12);
     }
 }

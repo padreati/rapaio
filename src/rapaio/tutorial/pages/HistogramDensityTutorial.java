@@ -149,7 +149,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                 "with independently creating it in its current form.");
 
         p("In it's default implementation, used without parameters, " +
-                "the Rapaio toolbox learn a kernel density estimation with Gaussian " +
+                "the Rapaio toolbox learn a kernel density estimation with GaussianPdf " +
                 "kernels and with bandwidth approximated by Silverman's rule of thumb.");
 
         p("However one can use a different value for bandwidth in order to obtain a " +
@@ -169,7 +169,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                 "disperse in a small neighborhood around a point the " +
                 "probability mass initially assigned to the points of " +
                 "the discrete sample. The kernel choices are: uniform, triangular, " +
-                "Epanechnikov, biweight, triweight, tricube, Gaussian and cosine. " +
+                "Epanechnikov, biweight, triweight, tricube, GaussianPdf and cosine. " +
                 "Of course, it is easy to implement your own smoothing method " +
                 "once you implement a custom kernel function. ");
 

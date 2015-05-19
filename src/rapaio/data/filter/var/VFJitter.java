@@ -38,16 +38,16 @@ public class VFJitter extends AbstractVF {
     private final Distribution d;
 
     /**
-     * Builds a jitter filter with Gaussian distribution with mean=0 and sd=0.1
+     * Builds a jitter filter with GaussianPdf distribution with mean=0 and sd=0.1
      */
     public VFJitter() {
         this(new Normal(0, 0.1));
     }
 
     /**
-     * Builds a jitter filter with a Gaussian distribution with mean=0 and given standard deviation
+     * Builds a jitter filter with a GaussianPdf distribution with mean=0 and given standard deviation
      *
-     * @param sd standard deviation of zero mean Gaussian noise
+     * @param sd standard deviation of zero mean GaussianPdf noise
      */
     public VFJitter(double sd) {
         this(new Normal(0, sd));

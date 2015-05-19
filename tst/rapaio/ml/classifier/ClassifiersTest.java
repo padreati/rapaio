@@ -26,7 +26,7 @@
 //import org.junit.Test;
 //import rapaio.data.Frame;
 //import rapaio.datasets.Datasets;
-//import rapaio.ml.classifier.bayes.NaiveBayesClassifier;
+//import rapaio.ml.classifier.bayes.NaiveBayes;
 //import rapaio.ml.classifier.ensemble.CBagging;
 //import rapaio.ml.eval.CEvaluation;
 //
@@ -48,8 +48,8 @@
 //        List<Classifier> classifiers = new ArrayList<>();
 ////        classifiers.add(new CForest().withRuns(100).withBootstrap(0.5));
 //        classifiers.add(new CBagging().withRuns(100).withBootstrap(1));
-//        classifiers.add(new CBagging().withRuns(100).withBootstrap(1).withClassifier(new NaiveBayesClassifier()));
-////        classifiers.add(new NaiveBayesClassifier());
+//        classifiers.add(new CBagging().withRuns(100).withBootstrap(1).withClassifier(new NaiveBayes()));
+////        classifiers.add(new NaiveBayes());
 ////        classifiers.add(new BinaryLogistic());
 ////        classifiers.add(new BinarySMO().withKernel(new MinKernel()));
 ////        classifiers.add(new AdaBoostSAMMEClassifier());

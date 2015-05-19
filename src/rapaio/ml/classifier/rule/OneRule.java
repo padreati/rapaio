@@ -75,7 +75,7 @@ public class OneRule extends AbstractClassifier {
     }
 
     @Override
-    public void learn(Frame df, Var weights, String... targetVarNames) {
+    public OneRule learn(Frame df, Var weights, String... targetVarNames) {
 
         prepareLearning(df, weights, targetVarNames);
 
@@ -95,6 +95,7 @@ public class OneRule extends AbstractClassifier {
                 bestRuleSet = ruleSet;
             }
         }
+        return this;
     }
 
     @Override

@@ -31,6 +31,7 @@ import rapaio.core.MathBase;
 import rapaio.core.RandomSource;
 import rapaio.core.sample.Sample;
 import rapaio.core.sample.Sampler;
+import rapaio.data.Binary;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -191,7 +192,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     }
 
     @Override
-    public void learn(Frame df, Var weights, String... targetVarNames) {
+    public BinarySMO learn(Frame df, Var weights, String... targetVarNames) {
 
         prepareLearning(df, weights, targetVarNames);
         if (targetNames().length != 1) {
@@ -274,7 +275,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                 b = 1;
             } else {
                 target = null;
-                return;
+                return this;
             }
             if (kernel.isLinear()) {
                 sparseWeights = new double[0];
@@ -285,7 +286,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                 alpha = new double[0];
                 target = new double[0];
             }
-            return;
+            return this;
         }
 
 
@@ -439,6 +440,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             // We don't need the alphas in the linear case
             alpha = null;
         }
+        return this;
     }
 
 

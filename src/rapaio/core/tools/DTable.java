@@ -38,6 +38,7 @@ import static rapaio.core.MathBase.log2;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
+@Deprecated
 public final class DTable implements Serializable {
 
     private static final long serialVersionUID = 4359080329548577980L;

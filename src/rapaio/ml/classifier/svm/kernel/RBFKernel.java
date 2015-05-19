@@ -29,7 +29,7 @@ import rapaio.printer.Printer;
 import static rapaio.WS.formatFlex;
 
 /**
- * The Gaussian kernel is an example of radial basis function kernel.
+ * The GaussianPdf kernel is an example of radial basis function kernel.
  * <p>
  * k(x, y) = \exp\left(-\frac{ \lVert x-y \rVert ^2}{2\sigma^2}\right)
  * <p>

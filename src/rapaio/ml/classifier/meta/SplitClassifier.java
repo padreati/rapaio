@@ -95,7 +95,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
     }
 
     @Override
-    public void learn(Frame df, Var weights, String... targetVarNames) {
+    public SplitClassifier learn(Frame df, Var weights, String... targetVarNames) {
         prepareLearning(df, weights, targetVarNames);
         if (splits.isEmpty()) {
             throw new IllegalArgumentException("No splits defined");
@@ -133,6 +133,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
             }
             split.classifier.learn(frames.get(i), weightList.get(i), targetNames());
         }
+        return this;
     }
 
     @Override

@@ -120,7 +120,7 @@ public class BinaryLogistic extends AbstractClassifier {
     }
 
     @Override
-    public void learn(Frame df, Var weights, String... targetVarNames) {
+    public BinaryLogistic learn(Frame df, Var weights, String... targetVarNames) {
         prepareLearning(df, weights, targetVarNames);
 
         if (df.stream().complete().count() != df.rowCount()) {
@@ -141,6 +141,7 @@ public class BinaryLogistic extends AbstractClassifier {
         IRLSOptimizer optimizer = new IRLSOptimizer();
 
         coef = optimizer.optimize(tol, maxRuns, logitF, logitFD, coef, inputs, targetValues);
+        return this;
     }
 
     @Override

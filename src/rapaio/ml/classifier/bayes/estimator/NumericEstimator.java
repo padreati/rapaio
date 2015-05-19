@@ -21,33 +21,24 @@
  *
  */
 
-package rapaio.core.distributions.empirical;
+package rapaio.ml.classifier.bayes.estimator;
 
-import rapaio.core.distributions.Normal;
+import rapaio.data.Frame;
+
+import java.io.Serializable;
 
 /**
- * GaussianPdf kernel function
- *
- * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * Numerical variable probability estimator
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/18/15.
  */
-public class KFuncGaussian implements KFunc {
+public interface NumericEstimator extends Serializable {
 
-    private static final long serialVersionUID = 4766872325548110258L;
+    String name();
 
-    private final Normal normal = new Normal();
+    void learn(Frame df, String targetVar, String testVar);
 
-    @Override
-    public double pdf(double x, double x0, double bandwidth) {
-        return normal.pdf((x - x0) / bandwidth);
-    }
+    double cpValue(double testValue, String targetLabel);
 
-    @Override
-    public double minValue(double x0, double bandwidth) {
-        return x0 - 4 * bandwidth;
-    }
-
-    @Override
-    public double getMaxValue(double x0, double bandwidth) {
-        return x0 + 4 * bandwidth;
-    }
+    NumericEstimator newInstance();
 }

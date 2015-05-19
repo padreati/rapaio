@@ -25,7 +25,7 @@
 //import rapaio.ml.eval.ConfusionMatrix;
 //import rapaio.data.*;
 //import rapaio.ml.classifier.Classifier;
-//import rapaio.ml.classifier.bayes.NaiveBayesClassifier;
+//import rapaio.ml.classifier.bayes.NaiveBayes;
 //import rapaio.ml.classifier.boost.AdaBoostSAMMEClassifier;
 //import rapaio.ml.classifier.ensemble.impl.CEnsemble;
 //import rapaio.ml.classifier.tree.TreeClassifier;
@@ -53,7 +53,7 @@
 //        classifiers.put("AdaBoost(1000,CART)", new AdaBoostSAMMEClassifier()
 //                .withClassifier(TreeClassifier.newCART())
 //                .withRuns(1000));
-//        classifiers.put("NaiveBayes", new NaiveBayesClassifier());
+//        classifiers.put("NaiveBayes", new NaiveBayes());
 //
 //        List<String> cNames = new ArrayList<>(classifiers.keySet());
 //        List<CTask> tasks = bench.getDefaultTasks();

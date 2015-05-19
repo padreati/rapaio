@@ -41,7 +41,7 @@ is considered to be fully implemented and well tested.
 * Samplers used in machine learning algorithms
 
 **Classification**
-* Bayesian: NaiveBayes (Gaussian, Empirical, Multinomial)
+* Bayesian: NaiveBayes (GaussianPdf, EmpiricalPdf, MultinomialPmf)
 
 
 Experminental Stage Features

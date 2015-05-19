@@ -125,7 +125,7 @@ public class LUDecomposition implements Serializable, Printable {
         },
 
         /**
-         * LU Decomposition, computed by Gaussian elimination. It computes L and U
+         * LU Decomposition, computed by GaussianPdf elimination. It computes L and U
          * with the "daxpy"-based elimination algorithm used in LINPACK and MATLAB.
          */
         GAUSSIAN_ELIMINATION {
@@ -190,7 +190,7 @@ public class LUDecomposition implements Serializable, Printable {
     }
 
     /**
-     * LU Decomposition, computed by Gaussian elimination. It computes L and U
+     * LU Decomposition, computed by GaussianPdf elimination. It computes L and U
      * with the "daxpy"-based elimination algorithm used in LINPACK and MATLAB.
      */
     public LUDecomposition(RM A, Method method) {

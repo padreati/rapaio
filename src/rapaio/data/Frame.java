@@ -159,7 +159,7 @@ public interface Frame extends Serializable, Printable {
      * @param varRange variable range as string
      * @return new frame with the non-deleted variables
      */
-    default Frame removeVars(String varRange) {
+    default Frame removeVars(String... varRange) {
         return removeVars(new VarRange(varRange));
     }
 

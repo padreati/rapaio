@@ -44,6 +44,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
+@Deprecated
 public abstract class CEnsemble extends AbstractClassifier implements RunningClassifier {
 
     private static final long serialVersionUID = -145958939373105497L;
@@ -92,7 +93,7 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
     }
 
     @Override
-    public void learn(Frame df, Var weights, String... targetVarNames) {
+    public CEnsemble learn(Frame df, Var weights, String... targetVarNames) {
 
         prepareLearning(df, weights, targetVarNames);
         if (targetNames().length != 1) {
@@ -109,6 +110,7 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
         if (oobComp) {
             oobError = totalOobError / totalOobInstances;
         }
+        return this;
     }
 
     @Override

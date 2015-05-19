@@ -26,7 +26,10 @@ package rapaio.tutorial.pages;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.CFit;
-import rapaio.ml.classifier.bayes.NaiveBayesClassifier;
+import rapaio.ml.classifier.bayes.NaiveBayes;
+import rapaio.ml.classifier.bayes.estimator.GaussianPdf;
+import rapaio.ml.classifier.bayes.estimator.KernelPdf;
+import rapaio.ml.classifier.bayes.estimator.MultinomialPmf;
 import rapaio.ml.eval.ConfusionMatrix;
 
 import java.io.IOException;
@@ -53,7 +56,7 @@ public class ClassificationWithNaiveBayesPage implements TutorialPage {
     @Override
     public void render() throws IOException, URISyntaxException {
 
-        heading(1, "Classification with NaiveBayesClassifier");
+        heading(1, "Classification with NaiveBayes");
 
         heading(2, "Probabilistic Bayesian models");
 
@@ -85,7 +88,7 @@ public class ClassificationWithNaiveBayesPage implements TutorialPage {
 
         p("$$ p(t|x_1,x_2,..,x_n) \\propto p(t)p(x_1,x_2,..,x_n|t) = p(t,x_1,x_2,..x_n) = p(t)p(x_1|t)p(x_2|t,x_1)..p(x_n|t,x_1,x_2,..,x_{n-1}) $$");
 
-        heading(2, "Intuition behind NaiveBayesClassifier");
+        heading(2, "Intuition behind NaiveBayes");
 
         p("In front of the complex problem of determining all those conditional probabilities, " +
                 "the NaiveBayes approach is to simplify formulas using an independence assumption. " +
@@ -110,7 +113,7 @@ public class ClassificationWithNaiveBayesPage implements TutorialPage {
 
         p("The conditional estimators for the independent features could be the maximal " +
                 "conditional frequencies for nominal case or for numerical variable a KDE " +
-                "estimator or a Gaussian estimator. ");
+                "estimator or a GaussianPdf estimator. ");
 
         heading(2, "NaiveBayes in practice");
 
@@ -123,11 +126,11 @@ public class ClassificationWithNaiveBayesPage implements TutorialPage {
         p("Then we build a Naive Bayes classifier from the data set and predict the " +
                 "classifier on the same training data.");
 
-        NaiveBayesClassifier nb = new NaiveBayesClassifier();
+        NaiveBayes nb = new NaiveBayes();
         nb.learn(df, "class");
         CFit cr = nb.fit(df, true, false);
 
-        code("        NaiveBayesClassifier nb = new NaiveBayesClassifier();\n" +
+        code("        NaiveBayes nb = new NaiveBayes();\n" +
                 "        nb.learn(df, \"class\");\n" +
                 "        CFit cr = nb.predict(df, true, false);\n");
 
@@ -148,22 +151,22 @@ public class ClassificationWithNaiveBayesPage implements TutorialPage {
                 "only a single implementation, the multinomial estimator, but at any time " +
                 "you can build your own discrete estimator and use it. ");
 
-        nb.withNomEstimator(new NaiveBayesClassifier.Multinomial());
+        nb.withNomEstimator(new MultinomialPmf());
 
-        code("        nb.withNomEstimator(new NaiveBayesClassifier.Multinomial());\n");
+        code("        nb.withNomEstimator(new NaiveBayes.Multinomial());\n");
 
         p("For numeric variables we can also change the continuous density estimator. This time " +
                 "we have two built-in options: empirical density approximated by a kernel " +
-                "density estimator and a Gaussian density with parameters (mean and variance) computed from " +
+                "density estimator and a GaussianPdf density with parameters (mean and variance) computed from " +
                 "the sample values. Below is a code which shows how those estimators can be used, " +
                 "with the same note that it is always possible to implement your own continuous " +
                 "density estimator. ");
 
-        nb.withNumEstimator(new NaiveBayesClassifier.EmpiricKDE());
-        nb.withNumEstimator(new NaiveBayesClassifier.Gaussian());
+        nb.withNumEstimator(new KernelPdf());
+        nb.withNumEstimator(new GaussianPdf());
 
-        code("        nb.withNumEstimator(new NaiveBayesClassifier.EmpiricKDE());\n" +
-                "        nb.withNumEstimator(new NaiveBayesClassifier.Gaussian());\n");
+        code("        nb.withNumEstimator(new NaiveBayes.EmpiricKDE());\n" +
+                "        nb.withNumEstimator(new NaiveBayes.GaussianPdf());\n");
 
 
     }

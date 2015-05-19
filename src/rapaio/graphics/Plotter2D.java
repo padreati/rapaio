@@ -30,6 +30,7 @@ import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.*;
 import rapaio.graphics.plot.plotcomp.DensityLine;
 import rapaio.graphics.plot.plotcomp.FunctionLine;
+import rapaio.ml.eval.ROC;
 
 import java.util.function.Function;
 
@@ -90,6 +91,10 @@ public final class Plotter2D {
 
     public static Plot points(Var x, Var y, GOpt... opts) {
         return plot().add(new Points(x, y, opts));
+    }
+
+    public static Plot rocCurve(ROC roc, GOpt... opts) {
+        return plot().rocCurve(roc, opts);
     }
 
     public static BarChart barChart(Var categ, GOpt... opts) {

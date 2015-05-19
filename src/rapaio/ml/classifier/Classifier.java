@@ -158,9 +158,9 @@ public interface Classifier extends Printable, Serializable {
      * @param df         data set instances
      * @param targetVars target variables
      */
-    default void learn(Frame df, String... targetVars) {
+    default Classifier learn(Frame df, String... targetVars) {
         Numeric weights = Numeric.newFill(df.rowCount(), 1);
-        learn(df, weights, targetVars);
+        return learn(df, weights, targetVars);
     }
 
     /**
@@ -170,7 +170,7 @@ public interface Classifier extends Printable, Serializable {
      * @param weights        instance weights
      * @param targetVars target variables
      */
-    void learn(Frame df, Var weights, String... targetVars);
+    Classifier learn(Frame df, Var weights, String... targetVars);
 
     /**
      * Predict classes for new data set instances, with

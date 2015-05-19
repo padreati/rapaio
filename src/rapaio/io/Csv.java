@@ -42,7 +42,7 @@ public class Csv {
 
     private boolean trimSpaces = true;
     private boolean header = true;
-    private boolean quotes = true;
+    private boolean quotes = false;
     private char separatorChar = ',';
     private char escapeChar = '\"';
     private HashMap<String, VarType> typeFieldHints = new HashMap<>();

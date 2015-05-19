@@ -28,7 +28,7 @@ import rapaio.data.Frame;
 /**
  * Inverse Multiquadric Kernel
  * <p>
- * The Inverse Multi Quadric kernel. As with the Gaussian kernel,
+ * The Inverse Multi Quadric kernel. As with the GaussianPdf kernel,
  * it results in a kernel matrix with full rank (Micchelli, 1986)
  * and thus forms a infinite dimension feature space.
  * <p>

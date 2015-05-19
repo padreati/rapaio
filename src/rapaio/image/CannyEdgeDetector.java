@@ -199,7 +199,7 @@ public class CannyEdgeDetector {
     }
 
     /**
-     * The number of pixels across which the Gaussian kernel is applied.
+     * The number of pixels across which the GaussianPdf kernel is applied.
      * The default value is 16.
      *
      * @return the radius of the convolution operation in pixels
@@ -210,7 +210,7 @@ public class CannyEdgeDetector {
     }
 
     /**
-     * The number of pixels across which the Gaussian kernel is applied.
+     * The number of pixels across which the GaussianPdf kernel is applied.
      * This implementation will reduce the radius if the contribution of pixel
      * values is deemed negligable, so this is actually a maximum radius.
      *
@@ -224,10 +224,10 @@ public class CannyEdgeDetector {
     }
 
     /**
-     * The radius of the Gaussian convolution kernel used to smooth the source
+     * The radius of the GaussianPdf convolution kernel used to smooth the source
      * image prior to gradient calculation. The default value is 16.
      *
-     * @return the Gaussian kernel radius in pixels
+     * @return the GaussianPdf kernel radius in pixels
      */
 
     public float getGaussianKernelRadius() {
@@ -235,10 +235,10 @@ public class CannyEdgeDetector {
     }
 
     /**
-     * Sets the radius of the Gaussian convolution kernel used to smooth the
+     * Sets the radius of the GaussianPdf convolution kernel used to smooth the
      * source image prior to gradient calculation.
      *
-     * @return a Gaussian kernel radius in pixels, must exceed 0.1f.
+     * @return a GaussianPdf kernel radius in pixels, must exceed 0.1f.
      */
 
     public void setGaussianKernelRadius(float gaussianKernelRadius) {
