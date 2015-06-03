@@ -203,7 +203,7 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
             return;
         }
         if (js instanceof JsonArray) {
-            ((JsonArray) js).values().stream().forEach(jss -> countJs(counter, numericCounter, jss));
+            js.valueStream().forEach(jss -> countJs(counter, numericCounter, jss));
             return;
         }
         if (js instanceof JsonObject) {
@@ -262,10 +262,11 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
     }
 
     private void writeArray(JsonArray array) throws IOException {
-        int size = array.values().size();
+        List<JsonValue> valueList = array.valueList();
+        int size = valueList.size();
         os.writeByte(TYPE_ARRAY);
         writeLen(size);
-        for (JsonValue js : array.values()) {
+        for (JsonValue js : valueList) {
             if (js instanceof JsonNull) {
                 writeNull();
                 continue;
@@ -350,9 +351,10 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
         }
         if (js instanceof JsonArray) {
             JsonArray array = (JsonArray) js;
-            int size = array.values().size();
+            List<JsonValue> valueList = array.valueList();
+            int size = valueList.size();
             count += 1 + countLen(size);
-            for (JsonValue child : array.values()) {
+            for (JsonValue child : valueList) {
                 count += computeLen(child, 0);
             }
             return count;

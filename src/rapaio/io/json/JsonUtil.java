@@ -41,7 +41,6 @@ import java.util.stream.Stream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/12/15.
  */
-@Deprecated
 public class JsonUtil {
 
     public static Optional<JsonValue> parseTextOpt(String text) {
@@ -67,7 +66,7 @@ public class JsonUtil {
             File newFile = new File(newFileName);
             mh.accept("converting ... " + newFileName);
             try {
-                LzJsonOutput out = new LzJsonOutput(new BufferedOutputStream(new FileOutputStream(newFile))).withMaxObjectBuffer(20_000);
+                LzJsonOutput out = new LzJsonOutput(new BufferedOutputStream(new FileOutputStream(newFile))).withMaxObjectBuffer(50_000);
                 Json.stream(f, nf -> nf.getName().equals(f.getName()), Json.allFilter())
                         .forEach(js -> {
                             try {
@@ -87,19 +86,21 @@ public class JsonUtil {
         Pin<Integer> fileCounter = new Pin<>(0);
         Stream<JsonValue> stream = Json.stream(root, ff).parallel();
         StreamUtil.partition(stream, sliceCount).forEach(list -> {
+                    Pin<Integer> counter = new Pin<>();
                     synchronized (fileCounter) {
-                        try {
-                            File file = new File(root, prefix + "-" + fileCounter.get() + ".lzjson");
-                            messageHandler.accept("write " + file.getName());
-                            fileCounter.set(fileCounter.get() + 1);
-                            LzJsonOutput out = new LzJsonOutput(new BufferedOutputStream(new FileOutputStream(file))).withMaxObjectBuffer(2_000);
-                            for (JsonValue js : list) {
-                                out.write(js);
-                            }
-                            out.close();
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        counter.set(fileCounter.get());
+                    }
+                    try {
+                        File file = new File(root, prefix + "-" + counter.get() + ".lzjson");
+                        messageHandler.accept("write " + file.getName());
+                        fileCounter.set(fileCounter.get() + 1);
+                        LzJsonOutput out = new LzJsonOutput(new BufferedOutputStream(new FileOutputStream(file))).withMaxObjectBuffer(50_000);
+                        for (JsonValue js : list) {
+                            out.write(js);
                         }
+                        out.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
         );
@@ -113,7 +114,7 @@ public class JsonUtil {
                             File file = new File(root, prefix + "-" + fileCounter.get() + ".lzjson");
                             messageHandler.accept("write " + file.getName());
                             fileCounter.set(fileCounter.get() + 1);
-                            LzJsonOutput out = new LzJsonOutput(new BufferedOutputStream(new FileOutputStream(file))).withMaxObjectBuffer(2_000);
+                            LzJsonOutput out = new LzJsonOutput(new BufferedOutputStream(new FileOutputStream(file))).withMaxObjectBuffer(50_000);
                             for (JsonValue js : list) {
                                 out.write(js);
                             }

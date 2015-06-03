@@ -33,7 +33,9 @@ import java.io.Serializable;
 public enum ColorPalette implements Serializable {
 
     STANDARD(new StandardColorPalette()),
-    GRAY(new GrayColorPalette());
+    GRAY(new GrayColorPalette()),
+    HUE(new HueColorPalette()),
+    RED_BLUE_GRADIENT(new RedBlueGradient());
     //
     private final Mapping palette;
 
@@ -107,5 +109,28 @@ class GrayColorPalette implements ColorPalette.Mapping {
     public Color getColor(int index) {
         index %= 256;
         return new Color(index, index, index);
+    }
+}
+
+class HueColorPalette implements ColorPalette.Mapping {
+
+    @Override
+    public Color getColor(int index) {
+        return new Color(Color.HSBtoRGB((float) (index / 360.0), 1f, 1f));
+    }
+}
+
+class RedBlueGradient implements ColorPalette.Mapping {
+
+    @Override
+    public Color getColor(int index) {
+        Color start = Color.RED;
+        Color end = Color.BLUE;
+        double pp = index / 360.;
+        int r = (int) (start.getRed() * pp + end.getRed() * (1 - pp));
+        int g = (int) (start.getGreen() * pp + end.getGreen() * (1 - pp));
+        int b = (int) (start.getBlue() * pp + end.getBlue() * (1 - pp));
+        int a = (int) (start.getAlpha() * pp + end.getAlpha() * (1 - pp));
+        return new Color(r, g, b, a);
     }
 }

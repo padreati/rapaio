@@ -116,6 +116,11 @@ public class WS {
         printer.println();
     }
 
+    public static void println(long n) {
+        printer.print(String.valueOf(n));
+        printer.println();
+    }
+
     public static void printf(String message, Object... args) {
         printer.print(String.format(message, args));
     }

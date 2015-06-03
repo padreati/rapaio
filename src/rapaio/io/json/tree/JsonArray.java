@@ -23,15 +23,12 @@
 
 package rapaio.io.json.tree;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/17/15.
  */
-@Deprecated
 public final class JsonArray extends JsonValue {
 
     List<JsonValue> array = new ArrayList<>();
@@ -40,43 +37,23 @@ public final class JsonArray extends JsonValue {
         array.add(value);
     }
 
-    public List<JsonValue> values() {
+    @Override
+    public Set<JsonValue> valueSet() {
+        return new HashSet<>(array);
+    }
+
+    @Override
+    public List<JsonValue> valueList() {
         return array;
     }
 
-    @Override
-    public JsonValue get(String key) {
-        return JsonValue.NULL;
-    }
-
-    @Override
-    public Optional<String> asString(String key) {
-        return Optional.empty();
+    public Stream<JsonValue> valueStream() {
+        return array.stream();
     }
 
     @Override
     public Optional<String> asString() {
         return Optional.of(toString());
-    }
-
-    @Override
-    public Optional<Double> asDouble(String key) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Double> asDouble() {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Boolean> asBool(String key) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Boolean> asBool() {
-        return Optional.empty();
     }
 
     @Override
@@ -112,7 +89,7 @@ public final class JsonArray extends JsonValue {
     }
 
     @Override
-    protected Stream<String> stringKeyValuePairs(String path) {
-        return array.stream().flatMap(js -> js.stringKeyValuePairs(path));
+    protected Stream<String> stringPathStream(String path) {
+        return array.stream().flatMap(js -> js.stringPathStream(path));
     }
 }

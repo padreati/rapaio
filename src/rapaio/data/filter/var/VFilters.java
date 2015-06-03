@@ -24,7 +24,10 @@
 package rapaio.data.filter.var;
 
 import rapaio.core.distributions.Distribution;
+import rapaio.data.Numeric;
 import rapaio.data.Var;
+
+import java.util.function.Function;
 
 /**
  * Utility class which offers static shortcut methods for filters.
@@ -45,5 +48,15 @@ public final class VFilters {
         return new VFJitter(d).fitApply(x);
     }
 
+    public static Var divide(Var a, Var b) {
+        Numeric result = Numeric.newEmpty();
+        for (int i = 0; i < a.rowCount(); i++) {
+            result.addValue(a.value(i) / b.value(i));
+        }
+        return result;
+    }
 
+    public static Var valueUpdate(Var a, Function<Double, Double> f) {
+        return a.stream().mapToDouble().map(f::apply).boxed().collect(Numeric.collector());
+    }
 }

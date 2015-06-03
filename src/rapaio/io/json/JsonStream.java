@@ -34,7 +34,6 @@ import static java.util.stream.Collectors.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/13/15.
  */
-@Deprecated
 public class JsonStream implements Stream<JsonValue> {
 
     private final Stream<JsonValue> stream;

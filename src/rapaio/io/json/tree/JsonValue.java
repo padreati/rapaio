@@ -23,8 +23,7 @@
 
 package rapaio.io.json.tree;
 
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -32,7 +31,6 @@ import java.util.stream.Stream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/16/15.
  */
-@Deprecated
 public abstract class JsonValue {
 
     public static JsonNull NULL = new JsonNull();
@@ -99,27 +97,69 @@ public abstract class JsonValue {
      * @param key property name
      * @return value instance, if property not defined returns {@link JsonValue#NULL}
      */
-    public abstract JsonValue get(String key);
+    public JsonValue get(String key) {
+        return JsonValue.NULL;
+    }
 
     public Set<String> keySet() {
-        return getObject().keySet();
+        return Collections.emptySet();
     }
 
-    public Optional<String> findAnyKey() {
-        return getObject().keySet().stream().findAny();
+    public List<String> keyList() {
+        return Collections.emptyList();
     }
 
-    public abstract Optional<String> asString(String key);
+    public Stream<String> keyStream() {
+        return Stream.empty();
+    }
 
-    public abstract Optional<String> asString();
+    public Set<JsonValue> valueSet() {
+        return Collections.emptySet();
+    }
 
-    public abstract Optional<Double> asDouble(String key);
+    public List<JsonValue> valueList() {
+        return Collections.emptyList();
+    }
 
-    public abstract Optional<Double> asDouble();
+    public Stream<JsonValue> valueStream() {
+        return Stream.empty();
+    }
 
-    public abstract Optional<Boolean> asBool(String key);
+    public Set<Map.Entry<String, JsonValue>> entrySey() {
+        return Collections.emptySet();
+    }
 
-    public abstract Optional<Boolean> asBool();
+    public List<Map.Entry<String, JsonValue>> entryList() {
+        return Collections.emptyList();
+    }
+
+    public Stream<Map.Entry<String, JsonValue>> entryStream() {
+        return Stream.empty();
+    }
+
+    public Optional<String> asString(String key) {
+        return Optional.empty();
+    }
+
+    public Optional<String> asString() {
+        return Optional.empty();
+    }
+
+    public Optional<Double> asDouble(String key) {
+        return Optional.empty();
+    }
+
+    public Optional<Double> asDouble() {
+        return Optional.empty();
+    }
+
+    public Optional<Boolean> asBool(String key) {
+        return Optional.empty();
+    }
+
+    public Optional<Boolean> asBool() {
+        return Optional.empty();
+    }
 
     public String pretty() {
         return pretty(0);
@@ -135,11 +175,11 @@ public abstract class JsonValue {
         return sb.toString();
     }
 
-    public final Stream<String> stringKeyValuePairs() {
-        return stringKeyValuePairs("");
+    public final Stream<String> stringPathStream() {
+        return stringPathStream("");
     }
 
-    protected Stream<String> stringKeyValuePairs(String path) {
+    protected Stream<String> stringPathStream(String path) {
         return Stream.empty();
     }
 }

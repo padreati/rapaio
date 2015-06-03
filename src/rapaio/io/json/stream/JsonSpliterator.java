@@ -42,7 +42,6 @@ import java.util.zip.GZIPInputStream;
  * JsonSpliterator
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/6/15.
  */
-@Deprecated
 public class JsonSpliterator implements Spliterator<JsonValue> {
 
     private static final Logger logger = Logger.getLogger(JsonSpliterator.class.getName());
@@ -148,6 +147,6 @@ public class JsonSpliterator implements Spliterator<JsonValue> {
 
     @Override
     public int characteristics() {
-        return CONCURRENT & SIZED & SUBSIZED & IMMUTABLE;
+        return SIZED & SUBSIZED & IMMUTABLE;
     }
 }

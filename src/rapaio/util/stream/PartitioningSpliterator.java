@@ -24,6 +24,7 @@
 package rapaio.util.stream;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators.AbstractSpliterator;
@@ -48,7 +49,7 @@ public class PartitioningSpliterator<E> extends AbstractSpliterator<List<E>> {
         if (!spliterator.tryAdvance(holder)) {
             return false;
         }
-        final ArrayList<E> partition = new ArrayList<>(partitionSize);
+        final List<E> partition = new LinkedList<>();
         int j = 0;
         do {
             partition.add(holder.value);

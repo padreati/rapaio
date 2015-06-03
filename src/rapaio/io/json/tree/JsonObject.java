@@ -29,10 +29,7 @@ import java.util.stream.Stream;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/16/15.
  */
-@Deprecated
 public final class JsonObject extends JsonValue {
-
-    public static final JsonObject NULL = new JsonObject();
 
     private Map<String, JsonValue> map = new HashMap<>();
 
@@ -47,6 +44,46 @@ public final class JsonObject extends JsonValue {
 
     public Set<String> keySet() {
         return map.keySet();
+    }
+
+    @Override
+    public List<String> keyList() {
+        return new ArrayList<>(map.keySet());
+    }
+
+    @Override
+    public Stream<String> keyStream() {
+        return map.keySet().stream();
+    }
+
+    @Override
+    public Set<JsonValue> valueSet() {
+        return new HashSet<>(map.values());
+    }
+
+    @Override
+    public List<JsonValue> valueList() {
+        return new ArrayList<>(map.values());
+    }
+
+    @Override
+    public Stream<JsonValue> valueStream() {
+        return map.values().stream();
+    }
+
+    @Override
+    public Set<Map.Entry<String, JsonValue>> entrySey() {
+        return map.entrySet();
+    }
+
+    @Override
+    public List<Map.Entry<String, JsonValue>> entryList() {
+        return new ArrayList<>(map.entrySet());
+    }
+
+    @Override
+    public Stream<Map.Entry<String, JsonValue>> entryStream() {
+        return map.entrySet().stream();
     }
 
     @Override
@@ -130,14 +167,14 @@ public final class JsonObject extends JsonValue {
     }
 
     @Override
-    protected Stream<String> stringKeyValuePairs(String path) {
+    protected Stream<String> stringPathStream(String path) {
         Stream<String> s = Stream.empty();
         for (String key : keySet()) {
             JsonValue js = get(key);
             if (js instanceof JsonBool || js instanceof JsonNull || js instanceof JsonString || js instanceof JsonNumber) {
                 s = Stream.concat(s, Stream.of(path + "." + key + ":" + js.asString().orElse("null")));
             } else {
-                s = Stream.concat(s, js.stringKeyValuePairs(path + "." + key));
+                s = Stream.concat(s, js.stringPathStream(path + "." + key));
             }
         }
         return s;

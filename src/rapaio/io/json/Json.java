@@ -31,12 +31,12 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/20/15.
  */
-@Deprecated
 public final class Json {
 
     public static JsonStream stream(File root, FileFilter ff) {
@@ -52,7 +52,11 @@ public final class Json {
     public static JsonStream stream(File root, FileFilter ff, Consumer<String> ph, Predicate<String> propFilter) {
         List<File> files = new ArrayList<>();
         if (root.isDirectory()) {
-            files = Arrays.asList(root.listFiles()).stream().filter(ff::accept).collect(Collectors.toList());
+            File[] listFiles = root.listFiles();
+            if (listFiles == null) {
+                return new JsonStream(Stream.empty());
+            }
+            files = Arrays.asList(listFiles).stream().filter(ff::accept).collect(Collectors.toList());
         } else {
             files.add(root);
         }
