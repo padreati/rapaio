@@ -23,6 +23,7 @@
 
 package rapaio.ml.classifier.rule;
 
+import rapaio.WS;
 import rapaio.core.RandomSource;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
@@ -151,10 +152,12 @@ public class OneRule extends AbstractClassifier {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
+    public void printSummary() {
+        StringBuilder sb = new StringBuilder();
         sb.append("Classification: OneRule\n");
         sb.append("Parameters:{minCount:").append(minCount).append("}\n");
         sb.append("Best one rule:").append(bestRuleSet.toString()).append("\n");
+        WS.code(sb.toString());
     }
 
     private RuleSet buildNominal(String testCol, Frame df, Var weights) {

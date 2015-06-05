@@ -65,14 +65,14 @@ public class CoreStatTest {
 
         Numeric num2 = Numeric.newWrapOf(1, 2, 3, 4);
         StringBuilder sb = new StringBuilder();
-        mean(num2).buildPrintSummary(sb);
+        sb.append(mean(num2).summary());
 
-        assertEquals("\n > mean[?]\n" +
+        assertEquals("\n> mean[?]\n" +
                 "total rows: 4 (complete: 4, missing: 0)\n" +
                 "mean: 2.5\n", sb.toString());
         sb = new StringBuilder();
-        var(num2).buildPrintSummary(sb);
-        assertEquals("\n > variance[?]\n" +
+        sb.append(var(num2).summary());
+        assertEquals("\n> variance[?]\n" +
                         "total rows: 4 (complete: 4, missing: 0)\n" +
                         "variance: 1.6666667\n" +
                         "sd: 1.2909944\n",

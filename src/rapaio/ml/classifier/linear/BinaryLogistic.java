@@ -41,6 +41,7 @@ import java.util.function.Function;
 @Deprecated
 public class BinaryLogistic extends AbstractClassifier {
 
+    private static final long serialVersionUID = 1609956190070125059L;
     private Numeric coef;
     private int maxRuns = 1_000_000;
     private double tol = 1e-5;
@@ -163,10 +164,5 @@ public class BinaryLogistic extends AbstractClassifier {
             }
         }
         return cr;
-    }
-
-    @Override
-    public void buildPrintSummary(StringBuilder sb) {
-
     }
 }

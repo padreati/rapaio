@@ -198,7 +198,8 @@ public class RTree extends AbstractRegressor implements BTRegressor {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
+    public String summary() {
+        StringBuilder sb = new StringBuilder();
         sb.append("\n > ").append(fullName()).append("\n");
 
         sb.append(String.format("n=%d\n", rows));
@@ -208,6 +209,7 @@ public class RTree extends AbstractRegressor implements BTRegressor {
         sb.append("split, mean (total weight) [* if is leaf]\n\n");
 
         buildSummary(sb, root, 0);
+        return sb.toString();
     }
 
     private void buildSummary(StringBuilder sb, RTreeNode node, int level) {

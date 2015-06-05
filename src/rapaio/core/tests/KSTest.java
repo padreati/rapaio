@@ -23,6 +23,7 @@
 
 package rapaio.core.tests;
 
+import rapaio.WS;
 import rapaio.data.filter.var.VFilters;
 import rapaio.printer.Printable;
 import rapaio.core.distributions.Distribution;
@@ -159,9 +160,11 @@ public class KSTest implements Printable {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
+    public String summary() {
+        StringBuilder sb = new StringBuilder();
         if (cdf != null) oneSampleSummary(sb);
         else twoSamplesSummary(sb);
+        return sb.toString();
     }
 
     protected String getPValueStars() {

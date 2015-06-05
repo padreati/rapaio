@@ -139,7 +139,7 @@ public interface Regressor extends Printable, Serializable {
      */
     RegressorFit predict(Frame df, boolean withResiduals);
 
-    default void buildPrintSummary(StringBuilder sb) {
+    default String summary() {
         throw new IllegalArgumentException("not implemented");
     }
 }

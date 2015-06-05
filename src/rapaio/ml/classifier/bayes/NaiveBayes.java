@@ -192,10 +192,4 @@ public class NaiveBayes extends AbstractClassifier {
                 });
         return pred;
     }
-
-    @Override
-    public void buildPrintSummary(StringBuilder sb) {
-        // TODO not implemented yet
-        throw new IllegalArgumentException("not implemented yet");
-    }
 }

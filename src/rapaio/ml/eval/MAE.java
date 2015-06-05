@@ -23,6 +23,7 @@
 
 package rapaio.ml.eval;
 
+import rapaio.WS;
 import rapaio.printer.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -107,8 +108,9 @@ public class MAE implements Printable {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
-        sb.append("\n > mean absolute error").append("\n");
-        sb.append("MAE: %sf").append(formatFlex(value)).append("\n");
+    public String summary() {
+        return "\n" +
+                "> mean absolute error\n" +
+                "MAE: " + formatFlex(value) + "\n";
     }
 }

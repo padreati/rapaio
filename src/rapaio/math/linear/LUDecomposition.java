@@ -23,6 +23,7 @@
 
 package rapaio.math.linear;
 
+import rapaio.WS;
 import rapaio.printer.Printable;
 
 import java.io.Serializable;
@@ -338,14 +339,20 @@ public class LUDecomposition implements Serializable, Printable {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
+    public String summary() {
 
+        StringBuilder sb = new StringBuilder();
         sb.append("LU decomposition printSummary\n");
         sb.append("========================\n");
 
-        sb.append("L matrix\n");
-        getL().buildPrintSummary(sb);
-        sb.append("U matrix\n");
-        getU().buildPrintSummary(sb);
+        sb.append("\n" +
+                "L matrix\n");
+        WS.code(sb.toString());
+
+        getL().printSummary();
+        WS.code("\n" +
+                "U matrix:\n");
+        getU().printSummary();
+        return sb.toString();
     }
 }

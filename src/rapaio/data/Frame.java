@@ -473,8 +473,8 @@ public interface Frame extends Serializable, Printable {
     }
 
     @Override
-    default void printSummary() {
-        Summary.printSummary(this);
+    default String summary() {
+        return Summary.summary(this);
     }
 
     default void printLines() {
@@ -484,11 +484,6 @@ public interface Frame extends Serializable, Printable {
             vars[i] = var(i);
         }
         Summary.head(rowCount(), vars, names);
-    }
-
-    @Override
-    default void buildPrintSummary(StringBuilder sb) {
-//
     }
 
     default boolean deepEquals(Frame df) {

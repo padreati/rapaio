@@ -23,6 +23,7 @@
 
 package rapaio.core.stat;
 
+import rapaio.WS;
 import rapaio.printer.Printable;
 
 import static rapaio.WS.formatFlex;
@@ -57,9 +58,11 @@ public class WeightedOnlineStat implements Printable {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
+    public String summary() {
+        StringBuilder sb = new StringBuilder();
         sb.append("WeightedOnlineStat\n");
         sb.append("total weight: ").append(formatFlex(w1)).append("\n");
         sb.append("mean: ").append(formatFlex(mean())).append("\n");
+        return sb.toString();
     }
 }

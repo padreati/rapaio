@@ -285,7 +285,9 @@ public interface RM extends Serializable, Printable {
     // printSummary
     //////////////////
 
-    default void buildPrintSummary(StringBuilder sb) {
+    default String summary() {
+
+        StringBuilder sb = new StringBuilder();
 
         String[][] m = new String[rowCount()][colCount()];
         int max = 1;
@@ -343,5 +345,6 @@ public interface RM extends Serializable, Printable {
             }
             hLast = hEnd;
         }
+        return sb.toString();
     }
 }

@@ -123,6 +123,7 @@ public class Datasets {
 
     public static Frame loadISLAdvertising() throws IOException {
         return new Csv()
+                .withQuotes(true)
                 .withDefaultTypes(VarType.NUMERIC)
                 .withTypes(VarType.NOMINAL, "ID")
                 .read(Datasets.class.getResourceAsStream("ISL/advertising.csv"));

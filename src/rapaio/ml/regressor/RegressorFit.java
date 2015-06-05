@@ -23,6 +23,7 @@
 
 package rapaio.ml.regressor;
 
+import rapaio.WS;
 import rapaio.printer.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
@@ -162,23 +163,21 @@ public class RegressorFit implements Printable {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
+    public String summary() {
 
-        sb.append("\n > Regression Result Summary").append("\n");
-        sb.append("  =========================\n");
-        sb.append("\n");
-
-        sb.append("Model type: ").append(model.name()).append("\n");
-        sb.append("Model instance: ").append(model.fullName()).append("\n");
-        sb.append("\n");
-
-        sb.append("Predicted frame printSummary:\n");
-        sb.append("- rows: ").append(df.rowCount()).append("\n");
-        sb.append("- vars: ").append(df.varCount()).append("\n");
-        sb.append("- targets: ").append(Arrays.deepToString(model.targetNames())).append("\n");
-        sb.append("\n");
-
-        sb.append("Regression results:").append("\n");
-        sb.append("TO BE DONE").append("\n");
+        return "\n" +
+                "> Regression Result Summary\n" +
+                "=========================\n" +
+                "\n" +
+                "Model type: " + model.name() + "\n" +
+                "Model instance: " + model.fullName() + "\n" +
+                "\n" +
+                "Predicted frame printSummary:\n" +
+                "- rows: " + df.rowCount() + "\n" +
+                "- vars: " + df.varCount() + "\n" +
+                "- targets: " + Arrays.deepToString(model.targetNames()) + "\n" +
+                "\n" +
+                "Regression results:" + "\n" +
+                "TO BE DONE" + "\n";
     }
 }

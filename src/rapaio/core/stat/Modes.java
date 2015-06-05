@@ -23,6 +23,7 @@
 
 package rapaio.core.stat;
 
+import rapaio.WS;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
@@ -84,9 +85,11 @@ public class Modes implements Printable {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
+    public String summary() {
+        StringBuilder sb = new StringBuilder();
         sb.append(String.format("\n > modes[%s]\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
         sb.append(String.format("modes: %s\n", Arrays.deepToString(modes)));
+        return sb.toString();
     }
 }

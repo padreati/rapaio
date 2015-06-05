@@ -23,6 +23,7 @@
 
 package rapaio.ml.classifier.tree;
 
+import rapaio.WS;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -290,7 +291,8 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
+    public void printSummary() {
+        StringBuilder sb = new StringBuilder();
         sb.append("\n > ").append(fullName()).append("\n");
 
         sb.append(String.format("n=%d\n", rows));
@@ -300,6 +302,7 @@ public class CTree extends AbstractClassifier {
         sb.append("split, n/err, classes (densities) [* if is leaf]\n\n");
 
         buildSummary(sb, root, 0);
+        WS.code(sb.toString());
     }
 
     private void buildSummary(StringBuilder sb, CTreeNode node, int level) {

@@ -27,6 +27,7 @@ package rapaio.ml.classifier.svm;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
 
+import rapaio.WS;
 import rapaio.core.MathBase;
 import rapaio.core.RandomSource;
 import rapaio.core.sample.Sample;
@@ -824,7 +825,8 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
+    public void printSummary() {
+        StringBuilder sb = new StringBuilder();
         int printed = 0;
 
         if ((alpha == null) && (sparseWeights == null)) {
@@ -908,5 +910,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             e.printStackTrace();
             sb.append("Can't print BinarySMO classifier.");
         }
+
+        WS.code(sb.toString());
     }
 }

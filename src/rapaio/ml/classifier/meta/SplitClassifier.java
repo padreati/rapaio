@@ -181,11 +181,6 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
         throw new IllegalArgumentException("not implemented yet");
     }
 
-    @Override
-    public void buildPrintSummary(StringBuilder sb) {
-        sb.append("NotImplementedYet");
-    }
-
     public static class Split {
 
         private final Predicate<FSpot> predicate;

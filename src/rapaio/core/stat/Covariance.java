@@ -23,6 +23,7 @@
 
 package rapaio.core.stat;
 
+import rapaio.WS;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
@@ -79,9 +80,10 @@ public class Covariance implements Printable {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
-        sb.append(String.format("\n > cov[%s, %s]\n", varName1, varName2));
-        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
-        sb.append(String.format("covariance: %s\n", formatFlex(value)));
+    public String summary() {
+        return "\n" +
+                "> cov[" + varName1 + ", " + varName2 + "]\n" +
+                "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + " )\n" +
+                "covariance: " + formatFlex(value) + "\n";
     }
 }

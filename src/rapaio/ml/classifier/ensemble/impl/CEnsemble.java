@@ -194,9 +194,4 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
     public CFit fitFurther(CFit fit, Frame df) {
         throw new IllegalArgumentException("not implemented yet");
     }
-
-    @Override
-    public void buildPrintSummary(StringBuilder sb) {
-        throw new IllegalArgumentException("not implemented");
-    }
 }

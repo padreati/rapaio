@@ -102,4 +102,9 @@ public abstract class AbstractClassifier implements Classifier {
 
         capabilities().checkAtLearnPhase(df, weights, targetVars);
     }
+
+    @Override
+    public String summary() {
+        return "not implemented";
+    }
 }

@@ -23,6 +23,7 @@
 
 package rapaio.ml.eval;
 
+import rapaio.WS;
 import rapaio.printer.Printable;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
@@ -121,9 +122,11 @@ public class ConfusionMatrix implements Printable {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
+    public String summary() {
+        StringBuilder sb = new StringBuilder();
         addConfusionMatrix(sb);
         addDetails(sb);
+        return sb.toString();
     }
 
     private void addDetails(StringBuilder sb) {

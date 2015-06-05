@@ -262,11 +262,6 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
     public CFit fitFurther(CFit fit, Frame df) {
         throw new IllegalArgumentException("not implemented yet");
     }
-
-    @Override
-    public void buildPrintSummary(StringBuilder sb) {
-        sb.append("Not Implemented");
-    }
 }
 
 @Deprecated

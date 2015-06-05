@@ -23,6 +23,7 @@
 
 package rapaio.ml.classifier;
 
+import rapaio.WS;
 import rapaio.printer.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
@@ -197,8 +198,8 @@ public class CFit implements Printable {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
-
+    public String summary() {
+        StringBuilder sb = new StringBuilder();
 
         sb.append("Classification Result Summary").append("\n");
         sb.append("=============================\n");
@@ -217,10 +218,10 @@ public class CFit implements Printable {
 
         sb.append("Classification results:").append("\n");
         if (Arrays.asList(df.varNames()).contains(firstTargetVar())) {
-            new ConfusionMatrix(df.var(model.firstTargetName()), firstClasses()).buildPrintSummary(sb);
+            sb.append(new ConfusionMatrix(df.var(model.firstTargetName()), firstClasses()).summary());
         } else {
             sb.append("data frame does not contain target variable.");
         }
-
+        return sb.toString();
     }
 }

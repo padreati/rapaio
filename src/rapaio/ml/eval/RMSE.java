@@ -23,6 +23,7 @@
 
 package rapaio.ml.eval;
 
+import rapaio.WS;
 import rapaio.printer.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -108,8 +109,9 @@ public class RMSE implements Printable {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
-        sb.append("\n > Root Mean Squared Error").append("\n");
-        sb.append("RMSE: ").append(formatFlex(value)).append("\n");
+    public String summary() {
+        return "\n" +
+                "> Root Mean Squared Error\n" +
+                "RMSE: " + formatFlex(value) + "\n";
     }
 }

@@ -25,6 +25,8 @@ package rapaio.data;
 
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
+import rapaio.printer.Printable;
+import rapaio.ws.Summary;
 
 import java.io.Serializable;
 import java.util.List;
@@ -35,7 +37,7 @@ import java.util.stream.IntStream;
  *
  * @author Aurelian Tutuianu
  */
-public interface Var extends Serializable {
+public interface Var extends Serializable, Printable {
 
     /**
      * @return name of the variable
@@ -356,5 +358,10 @@ public interface Var extends Serializable {
             }
         }
         return true;
+    }
+
+    @Override
+    default String summary() {
+        return Summary.summary(this);
     }
 }

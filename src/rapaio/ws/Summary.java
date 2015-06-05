@@ -43,18 +43,17 @@ import static rapaio.WS.getPrinter;
 @Deprecated
 public class Summary {
 
-    public static void printSummary(Frame df) {
-        printSummary(df, df.varNames());
+    public static String summary(Frame df) {
+        return summary(df, df.varNames());
     }
 
-    public static void printSummary(Frame df, String... names) {
+    public static String summary(Frame df, String... names) {
 
         StringBuilder buffer = new StringBuilder();
         buffer.append(String.format("\n > printSummary(frame, %s)\n", Arrays.deepToString(names)));
         if (df == null) {
             buffer.append("null instance of frame.\n");
-            code(buffer.toString());
-            return;
+            return buffer.toString();
         }
 
         buffer.append("rowCount: ").append(df.rowCount()).append("\n");
@@ -240,10 +239,10 @@ public class Summary {
             pos = last;
         }
         buffer.append("\n");
-        code(buffer.toString());
+        return buffer.toString();
     }
 
-    public static void printSummary(Var v) {
+    public static String summary(Var v) {
 
         StringBuilder buffer = new StringBuilder();
         buffer.append("\n > printSummary(var)\n");
@@ -393,7 +392,7 @@ public class Summary {
             buffer.append(sb.toString());
         }
 
-        code(buffer.toString());
+        return buffer.toString();
     }
 
     public static void printNames(Frame df) {

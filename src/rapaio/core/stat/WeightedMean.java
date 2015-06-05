@@ -23,6 +23,7 @@
 
 package rapaio.core.stat;
 
+import rapaio.WS;
 import rapaio.printer.Printable;
 import rapaio.data.Var;
 import rapaio.printer.Printer;
@@ -83,9 +84,11 @@ public final class WeightedMean implements Printable {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
+    public String summary() {
+        StringBuilder sb = new StringBuilder();
         sb.append(String.format("\n > weightedMean[%s]\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
         sb.append(String.format("weightedMean: %s\n", formatFlex(mean)));
+        return sb.toString();
     }
 }

@@ -23,6 +23,7 @@
 
 package rapaio.ml.classifier.boost;
 
+import rapaio.WS;
 import rapaio.core.sample.Sample;
 import rapaio.core.sample.Sampler;
 import rapaio.data.Frame;
@@ -254,10 +255,12 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
+    public void printSummary() {
+        StringBuilder sb = new StringBuilder();
         sb.append("\n > ").append(fullName()).append("\n");
 
         sb.append("prediction:\n");
         sb.append("weak learners built: ").append(h.size()).append("\n");
+        WS.code(sb.toString());
     }
 }

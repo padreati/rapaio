@@ -23,6 +23,7 @@
 
 package rapaio.core.correlation;
 
+import rapaio.WS;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
@@ -103,7 +104,8 @@ public class PearsonRCorrelation implements Printable {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
+    public String summary() {
+        StringBuilder sb = new StringBuilder();
         switch (vars.length) {
             case 1:
                 summaryOne(sb);
@@ -114,6 +116,7 @@ public class PearsonRCorrelation implements Printable {
             default:
                 summaryMore(sb);
         }
+        return sb.toString();
     }
 
     private void summaryOne(StringBuilder sb) {

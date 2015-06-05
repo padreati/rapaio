@@ -34,6 +34,8 @@ import rapaio.data.Var;
 @Deprecated
 public abstract class AbstractVF implements VarFilter {
 
+    private static final long serialVersionUID = 5025493880643939145L;
+
     protected void checkEmptyVars(Var[] vars) {
         if (vars != null && vars.length > 0) {
             throw new IllegalArgumentException("Filter operation accepts no input variables");
@@ -66,10 +68,5 @@ public abstract class AbstractVF implements VarFilter {
         if (vars == null || vars.length < min || vars.length > max) {
             throw new IllegalArgumentException("Filter operation requires between " + min + " and " + max + " input variables");
         }
-    }
-
-    @Override
-    public void buildPrintSummary(StringBuilder sb) {
-        sb.append("Not Implemented Yet!");
     }
 }

@@ -23,6 +23,7 @@
 
 package rapaio.core.correlation;
 
+import rapaio.WS;
 import rapaio.data.*;
 import rapaio.data.filter.var.VFRefSort;
 import rapaio.printer.Printable;
@@ -102,7 +103,8 @@ public class RhoCorr implements Printable {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
+    public String summary() {
+        StringBuilder sb = new StringBuilder();
         switch (vars.length) {
             case 1:
                 summaryOne(sb);
@@ -113,6 +115,7 @@ public class RhoCorr implements Printable {
             default:
                 summaryMore(sb);
         }
+        return sb.toString();
     }
 
     private void summaryOne(StringBuilder sb) {

@@ -72,7 +72,7 @@ public class ChiSquareTest implements Printable {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
-
+    public String summary() {
+        return "not implemented";
     }
 }

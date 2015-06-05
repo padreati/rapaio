@@ -23,6 +23,7 @@
 
 package rapaio.core.stat;
 
+import rapaio.WS;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFSort;
 import rapaio.printer.Printable;
@@ -115,12 +116,14 @@ public class Quantiles implements Printable {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
+    public String summary() {
+        StringBuilder sb = new StringBuilder();
         sb.append(String.format("\n > quantiles[%s] - estimated quantiles\n", varName));
         sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
         for (int i = 0; i < quantiles.length; i++) {
             sb.append(String.format("quantile[%s] = %s\n", formatFlex(percentiles[i]), formatFlex(quantiles[i])));
         }
+        return sb.toString();
     }
 
     public enum Type {

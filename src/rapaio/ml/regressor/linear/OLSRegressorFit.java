@@ -23,6 +23,7 @@
 
 package rapaio.ml.regressor.linear;
 
+import rapaio.WS;
 import rapaio.data.Frame;
 import rapaio.ml.regressor.RegressorFit;
 
@@ -51,8 +52,9 @@ public class OLSRegressorFit extends RegressorFit {
     }
 
     @Override
-    public void buildPrintSummary(StringBuilder sb) {
+    public void printSummary() {
 
+        StringBuilder sb = new StringBuilder();
         sb.append("OLS regressor fit printSummary\n");
         sb.append("======================\n");
         sb.append("\n");
@@ -68,6 +70,6 @@ public class OLSRegressorFit extends RegressorFit {
         sb.append(" - targets: ").append(Arrays.toString(regressor.targetNames())).append("\n");
         sb.append("\n");
 
-
+        WS.code(sb.toString());
     }
 }

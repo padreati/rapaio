@@ -78,4 +78,9 @@ public interface VarFilter extends Serializable, Printable {
         fit(vars);
         return apply(vars);
     }
+
+    @Override
+    default String summary() {
+        return "not implemented";
+    }
 }

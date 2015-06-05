@@ -122,6 +122,7 @@ public class CsvTest {
     @Test
     public void testDefaults() throws IOException {
         Frame df = new Csv()
+                .withQuotes(true)
                 .withHeader(true)
                 .withDefaultTypes(VarType.BINARY, VarType.INDEX, VarType.NUMERIC, VarType.NOMINAL)
                 .read(this.getClass().getResourceAsStream("defaults-test.csv"));
