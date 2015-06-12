@@ -29,8 +29,10 @@ import rapaio.datasets.Datasets;
 import rapaio.util.stream.SCollectors;
 import rapaio.ws.Summary;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -50,5 +52,6 @@ public class Sandbox {
             return String.valueOf(x);
         };
         System.out.println(f.get());
+
     }
 }

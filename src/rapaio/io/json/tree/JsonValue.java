@@ -141,6 +141,10 @@ public abstract class JsonValue {
         return Optional.empty();
     }
 
+    public String getString(String key) {
+        return asString(key).get();
+    }
+
     public Optional<String> asString() {
         return Optional.empty();
     }
