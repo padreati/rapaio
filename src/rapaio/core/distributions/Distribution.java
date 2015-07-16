@@ -41,9 +41,16 @@ public interface Distribution extends Serializable {
     String name();
 
     /**
-     * @return true if the distribution is discrete.
+     * @return true if the distribution is discrete, false if it is continuous
      */
-    boolean isDiscrete();
+    boolean discrete();
+
+    /**
+     * @return true if the distribution is continuous, false if it is discrete
+     */
+    default boolean continuous() {
+        return !discrete();
+    }
 
     /**
      * Logarithm of the probability density/mass function

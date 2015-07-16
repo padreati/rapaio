@@ -39,7 +39,7 @@ public class Bernoulli implements Distribution {
     }
 
     @Override
-    public boolean isDiscrete() {
+    public boolean discrete() {
         return true;
     }
 

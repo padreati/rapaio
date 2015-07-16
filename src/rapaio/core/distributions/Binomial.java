@@ -23,10 +23,7 @@
 
 package rapaio.core.distributions;
 
-import rapaio.core.MathBase;
-
-import static java.lang.Math.*;
-import static rapaio.core.Constants.DBL_EPSILON;
+import static rapaio.core.MathBase.*;
 
 /**
  * Binomial distribution.
@@ -48,7 +45,7 @@ public class Binomial implements Distribution {
     }
 
     @Override
-    public boolean isDiscrete() {
+    public boolean discrete() {
         return true;
     }
 
@@ -60,13 +57,13 @@ public class Binomial implements Distribution {
     @Override
     public double pdf(double x) {
         if (x < min() || x > max()) return 0;
-        return Math.exp(MathBase.logBinomial(x, n, p));
+        return Math.exp(logBinomial(x, n, p));
     }
 
     @Override
     public double cdf(double x) {
         if (x == n) return 1.0;
-        return MathBase.betaIncReg(1 - p, n - x, x + 1);
+        return betaIncReg(1 - p, n - x, x + 1);
     }
 
     @Override
@@ -168,7 +165,7 @@ public class Binomial implements Distribution {
 
     @Override
     public double mode() {
-        double low = Math.floor((n + 1) * p);
+        double low = floor((n + 1) * p);
         double p1 = pdf(low - 1);
         double p2 = pdf(low);
         return (p1 > p2) ? low - 1 : low;
@@ -202,6 +199,6 @@ public class Binomial implements Distribution {
      */
     @Override
     public double entropy() {
-        return Math.log(2 * Math.PI * Math.E * n * p * (1 - p)) / (2.0 * Math.log(2));
+        return log(2 * Math.PI * Math.E * n * p * (1 - p)) / (2.0 * Math.log(2));
     }
 }

@@ -21,36 +21,24 @@
  *
  */
 
-package rapaio.experiment.sandbox;
-
-import rapaio.core.distributions.Binomial;
-import rapaio.data.Frame;
-import rapaio.datasets.Datasets;
-import rapaio.util.stream.SCollectors;
-import rapaio.ws.Summary;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static rapaio.WS.formatFlex;
+package rapaio.notebook.state;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/19/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/15/15.
  */
-@Deprecated
-public class Sandbox {
+public class NotebookConfig {
 
-    public static void main(String[] args) throws IOException, URISyntaxException {
+    private String root;
 
-        long a = 1_000_000_000_000L;
-        long b = 1L;
+    public NotebookConfig() {
+        this.root = System.getProperty("user.dir");
+    }
 
-        System.out.println(a / b >= 100);
+    public String getRoot() {
+        return root;
+    }
 
+    public void setRoot(String root) {
+        this.root = root;
     }
 }

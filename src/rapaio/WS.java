@@ -24,9 +24,13 @@
 package rapaio;
 
 import rapaio.graphics.base.Figure;
+import rapaio.graphics.base.ImageUtility;
 import rapaio.printer.Printer;
 import rapaio.printer.StandardPrinter;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.logging.LogManager;
 
@@ -54,24 +58,24 @@ public class WS {
         formatDecFlex.setMinimumIntegerDigits(1);
     }
 
-//    static {
-//        try {
-//            logManager.readConfiguration(new ByteArrayInputStream(("\n" +
-//                    "handlers = java.util.logging.ConsoleHandler\n" +
-//                    "config   =\n" +
-//                    "\n" +
-//                    "\"logger\".handlers           =\n" +
-//                    "\"logger\".useParentHandlers  =\n" +
-//                    ".level              = ALL\n" +
-//                    "\n" +
-//                    "java.util.logging.ConsoleHandler.level     = CONFIG\n" +
-//                    "java.util.logging.ConsoleHandler.filter    =\n" +
-//                    "java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter\n" +
-//                    "java.util.logging.ConsoleHandler.encoding  =").getBytes()));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    static {
+        try {
+            logManager.readConfiguration(new ByteArrayInputStream(("\n" +
+                    "handlers = java.util.logging.ConsoleHandler\n" +
+                    "config   =\n" +
+                    "\n" +
+                    "\"logger\".handlers           =\n" +
+                    "\"logger\".useParentHandlers  =\n" +
+                    ".level              = ALL\n" +
+                    "\n" +
+                    "java.util.logging.ConsoleHandler.level     = CONFIG\n" +
+                    "java.util.logging.ConsoleHandler.filter    =\n" +
+                    "java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter\n" +
+                    "java.util.logging.ConsoleHandler.encoding  =").getBytes()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private static Printer printer = new StandardPrinter();
 
@@ -156,5 +160,13 @@ public class WS {
 
     public static void draw(Figure figure) {
         printer.draw(figure);
+    }
+
+    public static BufferedImage image(Figure figure, int width, int height) {
+        return ImageUtility.buildImage(figure, width, height);
+    }
+
+    public static BufferedImage image(Figure figure) {
+        return ImageUtility.buildImage(figure, getPrinter().getGraphicWidth(), getPrinter().getGraphicHeight());
     }
 }

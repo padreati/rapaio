@@ -56,7 +56,7 @@ public class StudentT implements Distribution {
     }
 
     @Override
-    public boolean isDiscrete() {
+    public boolean discrete() {
         return false;
     }
 

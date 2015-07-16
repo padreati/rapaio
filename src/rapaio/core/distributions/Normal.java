@@ -41,7 +41,7 @@ public class Normal implements Distribution {
     }
 
     @Override
-    public boolean isDiscrete() {
+    public boolean discrete() {
         return false;
     }
 

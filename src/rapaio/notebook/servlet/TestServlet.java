@@ -21,36 +21,21 @@
  *
  */
 
-package rapaio.experiment.sandbox;
+package rapaio.notebook.servlet;
 
-import rapaio.core.distributions.Binomial;
-import rapaio.data.Frame;
-import rapaio.datasets.Datasets;
-import rapaio.util.stream.SCollectors;
-import rapaio.ws.Summary;
-
-import java.io.File;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static rapaio.WS.formatFlex;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/19/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/13/15.
  */
-@Deprecated
-public class Sandbox {
+public class TestServlet extends HttpServlet {
 
-    public static void main(String[] args) throws IOException, URISyntaxException {
-
-        long a = 1_000_000_000_000L;
-        long b = 1L;
-
-        System.out.println(a / b >= 100);
-
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.getWriter().append("hello world!");
     }
 }

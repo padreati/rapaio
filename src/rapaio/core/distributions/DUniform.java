@@ -41,7 +41,7 @@ public class DUniform implements Distribution {
         this.n = b - a + 1;
     }
 
-    public boolean isDiscrete() {
+    public boolean discrete() {
         return true;
     }
 
