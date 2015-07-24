@@ -23,7 +23,7 @@
 
 package rapaio.experiment.sandbox;
 
-import rapaio.graphics.Plotter2D;
+import rapaio.graphics.Plotter;
 import rapaio.sys.WS;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
@@ -136,9 +136,9 @@ public class IrisContour {
         ColorGradient bcg = ColorGradient.newHueGradient(qq);
         for (int i = 0; i < qq.length - 1; i++) {
             p.add(new MeshContour(mg1.compute(qq[i], qq[i + 1]), true, true,
-                    Plotter2D.lwd(0.1f), Plotter2D.color(bcg.getColor(i))));
+                    Plotter.lwd(0.1f), Plotter.color(bcg.getColor(i))));
         }
-        p.add(new Points(iris.var(0), iris.var(1), Plotter2D.color(iris.var(2)), Plotter2D.pch(2)));
+        p.add(new Points(iris.var(0), iris.var(1), Plotter.color(iris.var(2)), Plotter.pch(2)));
 
         draw(p);
     }

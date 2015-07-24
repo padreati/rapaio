@@ -27,10 +27,10 @@ import rapaio.core.distributions.Distribution;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.filter.VFSort;
-import rapaio.graphics.Plotter2D;
+import rapaio.graphics.Plotter;
 import rapaio.graphics.opt.GOpt;
 
-import static rapaio.graphics.Plotter2D.color;
+import static rapaio.graphics.Plotter.color;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -53,7 +53,7 @@ public class QQPlot extends Plot {
             double p = (i + 1) / (y.rowCount() + 1.);
             y.setValue(i, distribution.quantile(p));
         }
-        add(new Points(y, x, Plotter2D.color(0)));
+        add(new Points(y, x, Plotter.color(0)));
         return this;
     }
 }

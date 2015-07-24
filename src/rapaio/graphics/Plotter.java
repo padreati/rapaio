@@ -38,7 +38,7 @@ import rapaio.ml.eval.ROC;
 import java.awt.*;
 import java.util.function.Function;
 
-public final class Plotter2D {
+public final class Plotter {
 
     private static GOpt[] mergedOpts(GOpt... opts) {
         GOpt[] defaults = GOpts.DEFAULTS.toArray();

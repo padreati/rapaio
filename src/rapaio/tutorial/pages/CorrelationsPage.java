@@ -30,14 +30,14 @@ import rapaio.data.VarType;
 import rapaio.data.filter.FFAbstractRetainTypes;
 import rapaio.data.filter.VFJitter;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.Plotter2D;
+import rapaio.graphics.Plotter;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static rapaio.sys.WS.*;
-import static rapaio.graphics.Plotter2D.plot;
-import static rapaio.graphics.Plotter2D.pch;
+import static rapaio.graphics.Plotter.plot;
+import static rapaio.graphics.Plotter.pch;
 import static rapaio.ws.Summary.printNames;
 import static rapaio.ws.Summary.printSummary;
 
@@ -121,7 +121,7 @@ public class CorrelationsPage implements TutorialPage {
         draw(plot().points(
                         new VFJitter(0.01).filter(df.var("petal-length")),
                         new VFJitter(0.01).filter(df.var("sepal-length")),
-                        Plotter2D.pch(1)
+                        Plotter.pch(1)
                 )
                         .title("p correlation = " + r.values()[df.varIndex("petal-length")][df.varIndex("sepal-length")]),
                 400, 300
@@ -134,7 +134,7 @@ public class CorrelationsPage implements TutorialPage {
                         .points(
                                 new VFJitter(0.01).filter(df.var("petal-length")),
                                 new VFJitter(0.01).filter(df.var("petal-width")),
-                                Plotter2D.pch(1)
+                                Plotter.pch(1)
                         )
                         .title("p correlation = " + r.values()[df.varIndex("petal-length")][df.varIndex("petal-width")]),
                 400, 300
@@ -148,7 +148,7 @@ public class CorrelationsPage implements TutorialPage {
                         .points(
                                 new VFJitter(0.01).filter(df.var("sepal-length")),
                                 new VFJitter(0.01).filter(df.var("sepal-width")),
-                                Plotter2D.pch(1))
+                                Plotter.pch(1))
                         .title("p correlation = " + r.values()[df.varIndex("sepal-length")][df.varIndex("sepal-width")]),
                 400, 300
         );

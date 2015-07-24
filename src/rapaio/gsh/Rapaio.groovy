@@ -45,7 +45,7 @@ import static rapaio.sys.WS.*
 import rapaio.data.*
 import rapaio.core.*
 import rapaio.io.json.*
-import static rapaio.graphics.Plotter2D.*
+import static rapaio.graphics.Plotter.*
 import static rapaio.graphics.opt.GOpt.*
 import rapaio.datasets.*
         """
@@ -55,7 +55,7 @@ import rapaio.datasets.*
         imports.add("rapaio.data.*")
         imports.add("rapaio.core.*")
         imports.add("rapaio.io.json.*")
-        imports.add("static rapaio.graphics.Plotter2D.*")
+        imports.add("static rapaio.graphics.Plotter.*")
         imports.add("static rapaio.graphics.opt.GOpt.*")
         imports.add("rapaio.datasets.*")
         shell.imports = imports

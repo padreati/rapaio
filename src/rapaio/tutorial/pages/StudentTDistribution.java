@@ -25,14 +25,14 @@ package rapaio.tutorial.pages;
 
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.StudentT;
-import rapaio.graphics.Plotter2D;
+import rapaio.graphics.Plotter;
 
 import java.io.IOException;
 
 import static rapaio.sys.WS.*;
-import static rapaio.graphics.Plotter2D.funLine;
-import static rapaio.graphics.Plotter2D.plot;
-import static rapaio.graphics.Plotter2D.color;
+import static rapaio.graphics.Plotter.funLine;
+import static rapaio.graphics.Plotter.plot;
+import static rapaio.graphics.Plotter.color;
 
 /**
  * @author Aurelian Tutuianu
@@ -81,7 +81,7 @@ public class StudentTDistribution implements TutorialPage {
         p("The probability density function of a standard normal distribution "
                 + "looks like this: ");
 
-        draw(funLine(new Normal()::pdf, Plotter2D.color(1)).xLim(-4, 4).yLim(0, 0.5));
+        draw(funLine(new Normal()::pdf, Plotter.color(1)).xLim(-4, 4).yLim(0, 0.5));
 
         p("To understand it's mechanics you have to imagine a process, which produces a " +
                 "numeric value. If the only thing you would know about the value of the " +
@@ -115,7 +115,7 @@ public class StudentTDistribution implements TutorialPage {
                 + "to repeat the experiments enough time. ");
 
         draw(plot()
-                .funLine(new Normal()::pdf, Plotter2D.color(1))
+                .funLine(new Normal()::pdf, Plotter.color(1))
                 .funLine(new StudentT(3)::pdf)
                 .xLim(-4, 4)
                 .yLim(0, 0.5));

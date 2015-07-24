@@ -2,7 +2,7 @@ import static rapaio.sys.WS.*
 import rapaio.data.*
 import rapaio.core.*
 import rapaio.io.json.*
-import static rapaio.graphics.Plotter2D.*
+import static rapaio.graphics.Plotter.*
 import static rapaio.graphics.opt.GOpt.*
 import rapaio.datasets.*
 import rapaio.util.*

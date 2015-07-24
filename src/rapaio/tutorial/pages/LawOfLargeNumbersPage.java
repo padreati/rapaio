@@ -29,14 +29,14 @@ import rapaio.core.stat.OnlineStat;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.graphics.Plotter2D;
+import rapaio.graphics.Plotter;
 
 import java.io.IOException;
 
 import static rapaio.sys.WS.*;
-import static rapaio.graphics.Plotter2D.plot;
-import static rapaio.graphics.Plotter2D.color;
-import static rapaio.graphics.Plotter2D.lwd;
+import static rapaio.graphics.Plotter.plot;
+import static rapaio.graphics.Plotter.color;
+import static rapaio.graphics.Plotter.lwd;
 
 /**
  * @author Aurelian Tutuianu
@@ -104,8 +104,8 @@ public class LawOfLargeNumbersPage implements TutorialPage {
                 "the size of the sample grows.");
 
         draw(plot()
-                        .abLine(0, 3.5, lwd(1.5f), Plotter2D.color(1))
-                        .lines(Index.newSeq(1, N), mean, lwd(1.5f), Plotter2D.color(2))
+                        .abLine(0, 3.5, lwd(1.5f), Plotter.color(1))
+                        .lines(Index.newSeq(1, N), mean, lwd(1.5f), Plotter.color(2))
                         .yLim(2.5, 4.5),
                 800, 300
         );

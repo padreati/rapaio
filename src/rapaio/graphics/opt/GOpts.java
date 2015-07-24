@@ -26,7 +26,7 @@ package rapaio.graphics.opt;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.graphics.Plotter2D;
+import rapaio.graphics.Plotter;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -74,15 +74,15 @@ public class GOpts implements Serializable {
 
     public GOpt[] toArray() {
         return new GOpt[]{
-                Plotter2D.palette(palette),
-                Plotter2D.color(colors),
-                Plotter2D.lwd(lwd),
-                Plotter2D.sz(sizeIndex),
-                Plotter2D.pch(pchIndex),
-                Plotter2D.alpha(alpha),
-                Plotter2D.bins(bins),
-                Plotter2D.prob(prob),
-                Plotter2D.points(points)
+                Plotter.palette(palette),
+                Plotter.color(colors),
+                Plotter.lwd(lwd),
+                Plotter.sz(sizeIndex),
+                Plotter.pch(pchIndex),
+                Plotter.alpha(alpha),
+                Plotter.bins(bins),
+                Plotter.prob(prob),
+                Plotter.points(points)
         };
     }
 

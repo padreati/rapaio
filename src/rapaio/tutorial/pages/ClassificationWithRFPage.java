@@ -29,7 +29,7 @@ import rapaio.data.Index;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.Plotter2D;
+import rapaio.graphics.Plotter;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.classifier.tree.CTree;
@@ -41,8 +41,8 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import static rapaio.sys.WS.*;
-import static rapaio.graphics.Plotter2D.plot;
-import static rapaio.graphics.Plotter2D.color;
+import static rapaio.graphics.Plotter.plot;
+import static rapaio.graphics.Plotter.color;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -183,8 +183,8 @@ public class ClassificationWithRFPage implements TutorialPage {
         }
 
         draw(plot()
-                .lines(index, errors, Plotter2D.color(2))
-                .points(index, errors, Plotter2D.color(2))
+                .lines(index, errors, Plotter.color(2))
+                .points(index, errors, Plotter.color(2))
                 .lines(index, oob)
                 .points(index, oob)
                 .yLab("test (blue), oob (black)")
@@ -253,8 +253,8 @@ public class ClassificationWithRFPage implements TutorialPage {
             oob1.addValue(rf.getOobError());
         }
         draw(plot()
-                .lines(index1, errors1, Plotter2D.color(2))
-                .points(index1, errors1, Plotter2D.color(2))
+                .lines(index1, errors1, Plotter.color(2))
+                .points(index1, errors1, Plotter.color(2))
                 .lines(index1, oob1)
                 .points(index1, oob1)
                 .yLab("test (blue), oob (black")

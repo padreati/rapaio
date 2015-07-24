@@ -27,7 +27,7 @@ import rapaio.core.RandomSource;
 import rapaio.core.SamplingTool;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.Plotter2D;
+import rapaio.graphics.Plotter;
 import rapaio.graphics.plot.Legend;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.boost.AdaBoostSAMMEClassifier;
@@ -43,8 +43,8 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import static rapaio.sys.WS.*;
-import static rapaio.graphics.Plotter2D.plot;
-import static rapaio.graphics.Plotter2D.color;
+import static rapaio.graphics.Plotter.plot;
+import static rapaio.graphics.Plotter.color;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -209,10 +209,10 @@ public class ROCCurvesPage implements TutorialPage {
         ROC rocGBT = new ROC(crGBT.firstDensity().var("1"), test.var("spam"), "1");
 
         draw(plot()
-                        .rocCurve(rocOR, Plotter2D.color(1))
-                        .rocCurve(rocRF, Plotter2D.color(2))
-                        .rocCurve(rocAB, Plotter2D.color(3))
-                        .rocCurve(rocGBT, Plotter2D.color(4))
+                        .rocCurve(rocOR, Plotter.color(1))
+                        .rocCurve(rocRF, Plotter.color(2))
+                        .rocCurve(rocAB, Plotter.color(3))
+                        .rocCurve(rocGBT, Plotter.color(4))
                         .add(new Legend(0.6, 0.33,
                                 new String[]{"onerule", "rf", "adaboost.m1", "gbt"},
                                 new int[]{1, 2, 3, 4})),

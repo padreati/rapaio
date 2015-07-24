@@ -38,7 +38,7 @@ import static junit.framework.Assert.assertTrue;
 import static rapaio.core.CoreStat.mean;
 import static rapaio.core.CoreStat.var;
 import static rapaio.data.filter.Filters.*;
-import static rapaio.graphics.Plotter2D.hist;
+import static rapaio.graphics.Plotter.hist;
 import static rapaio.sys.WS.draw;
 
 /**
