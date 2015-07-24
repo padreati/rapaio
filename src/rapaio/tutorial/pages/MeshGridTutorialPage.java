@@ -23,7 +23,8 @@
 
 package rapaio.tutorial.pages;
 
-import rapaio.WS;
+import rapaio.graphics.Plotter2D;
+import rapaio.sys.WS;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Maximum;
@@ -48,11 +49,11 @@ import java.net.URISyntaxException;
 import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 
-import static rapaio.WS.*;
+import static rapaio.sys.WS.*;
 import static rapaio.graphics.Plotter2D.plot;
 import static rapaio.graphics.Plotter2D.points;
-import static rapaio.graphics.opt.GOpt.color;
-import static rapaio.graphics.opt.GOpt.lwd;
+import static rapaio.graphics.Plotter2D.color;
+import static rapaio.graphics.Plotter2D.lwd;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/28/15.
@@ -171,7 +172,7 @@ public class MeshGridTutorialPage implements TutorialPage {
         ColorGradient gradient = ColorGradient.newBiColorGradient(new Color(0, 0, 200), new Color(255, 255, 255), q.stream().mapToDouble().toArray());
 
         for (int i = 0; i < q.rowCount() - 1; i++) {
-            p.meshContour(mg.compute(qq[i], qq[i + 1]), true, true, color(gradient.getColor(i)), lwd(0.2f));
+            p.meshContour(mg.compute(qq[i], qq[i + 1]), true, true, Plotter2D.color(gradient.getColor(i)), lwd(0.2f));
         }
         p.points(xy.var("x"), xy.var("y"));
         draw(p, 600, 400);
@@ -209,7 +210,7 @@ public class MeshGridTutorialPage implements TutorialPage {
 
         Summary.printSummary(iris);
 
-        draw(points(iris.var(0), iris.var(1), color(iris.var(2))));
+        draw(points(iris.var(0), iris.var(1), Plotter2D.color(iris.var(2))));
 
         code("        Frame iris = Datasets.loadIrisDataset();\n" +
                 "        iris = iris.mapVars(\"sepal-length,sepal-width,class\");\n" +
@@ -265,10 +266,10 @@ public class MeshGridTutorialPage implements TutorialPage {
         qq = mg1.quantiles(Numeric.newSeq(0, 1, 0.1).stream().mapToDouble().toArray());
         gradient = ColorGradient.newBiColorGradient(new Color(0, 0, 200), new Color(255, 255, 255), Numeric.newSeq(0, 1, 0.1).stream().mapToDouble().toArray());
         for (int i = 0; i < qq.length - 1; i++) {
-            p.meshContour(mg1.compute(qq[i], qq[i + 1]), true, true, lwd(0.3f), color(gradient.getColor(i)));
+            p.meshContour(mg1.compute(qq[i], qq[i + 1]), true, true, lwd(0.3f), Plotter2D.color(gradient.getColor(i)));
         }
         p.meshContour(mg1.compute(0, Double.POSITIVE_INFINITY), true, false, lwd(1.2f));
-        p.points(iris.var(0), iris.var(1), color(iris.var(2)));
+        p.points(iris.var(0), iris.var(1), Plotter2D.color(iris.var(2)));
 
         draw(p, 600, 400);
 
@@ -347,11 +348,11 @@ public class MeshGridTutorialPage implements TutorialPage {
         qq = mg.quantiles(pp);
         gradient = ColorGradient.newBiColorGradient(new Color(84, 112, 240), new Color(255, 255, 255), pp);
         for (int i = 0; i < qq.length - 1; i++) {
-            p.meshContour(mg.compute(qq[i], qq[i + 1]), true, true, color(gradient.getColor(i)), lwd(0.2f));
+            p.meshContour(mg.compute(qq[i], qq[i + 1]), true, true, Plotter2D.color(gradient.getColor(i)), lwd(0.2f));
         }
-        p.meshContour(mg.compute(0, Double.POSITIVE_INFINITY), true, false, color(0));
+        p.meshContour(mg.compute(0, Double.POSITIVE_INFINITY), true, false, Plotter2D.color(0));
 
-        WS.draw(p.points(df.var(0), df.var(1), color(df.var(2))), 800, 600);
+        WS.draw(p.points(df.var(0), df.var(1), Plotter2D.color(df.var(2))), 800, 600);
 
 
         p("And the code which produced the last graph.");

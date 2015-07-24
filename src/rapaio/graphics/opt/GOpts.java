@@ -26,6 +26,7 @@ package rapaio.graphics.opt;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
+import rapaio.graphics.Plotter2D;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -36,7 +37,6 @@ import java.util.Arrays;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/31/15.
  */
-@Deprecated
 public class GOpts implements Serializable {
 
     private static final long serialVersionUID = -8407683729055712796L;
@@ -74,15 +74,15 @@ public class GOpts implements Serializable {
 
     public GOpt[] toArray() {
         return new GOpt[]{
-                GOpt.palette(palette),
-                GOpt.color(colors),
-                GOpt.lwd(lwd),
-                GOpt.sz(sizeIndex),
-                GOpt.pch(pchIndex),
-                GOpt.alpha(alpha),
-                GOpt.bins(bins),
-                GOpt.prob(prob),
-                GOpt.points(points)
+                Plotter2D.palette(palette),
+                Plotter2D.color(colors),
+                Plotter2D.lwd(lwd),
+                Plotter2D.sz(sizeIndex),
+                Plotter2D.pch(pchIndex),
+                Plotter2D.alpha(alpha),
+                Plotter2D.bins(bins),
+                Plotter2D.prob(prob),
+                Plotter2D.points(points)
         };
     }
 
@@ -159,5 +159,45 @@ public class GOpts implements Serializable {
         if (points == null)
             return parent != null ? parent.getPoints() : DEFAULTS.points;
         return points;
+    }
+
+    public void setParent(GOpts parent) {
+        this.parent = parent;
+    }
+
+    public void setPalette(ColorPalette palette) {
+        this.palette = palette;
+    }
+
+    public void setColors(Color[] colors) {
+        this.colors = colors;
+    }
+
+    public void setLwd(Float lwd) {
+        this.lwd = lwd;
+    }
+
+    public void setSizeIndex(Var sizeIndex) {
+        this.sizeIndex = sizeIndex;
+    }
+
+    public void setPchIndex(Var pchIndex) {
+        this.pchIndex = pchIndex;
+    }
+
+    public void setAlpha(Float alpha) {
+        this.alpha = alpha;
+    }
+
+    public void setBins(Integer bins) {
+        this.bins = bins;
+    }
+
+    public void setProb(Boolean prob) {
+        this.prob = prob;
+    }
+
+    public void setPoints(Integer points) {
+        this.points = points;
     }
 }

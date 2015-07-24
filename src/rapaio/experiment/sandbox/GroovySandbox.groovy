@@ -23,6 +23,7 @@
 
 package rapaio.experiment.sandbox
 
+import rapaio.graphics.Plotter2D
 import rapaio.io.json.Json
 
 
@@ -33,3 +34,5 @@ println Arrays.stream(new File("/home/ati/ws/rapaio-amzn/data/headers6may").list
 
 Json.stream(new File("/home/ati/ws/rapaio-amzn/data/headers6may"), {})
         .countingTop({ it.asString("").get() }).entrySet().forEach({ println(it.getValue().size()) })
+
+Plotter2D.bins(10)

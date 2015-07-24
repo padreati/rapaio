@@ -23,75 +23,8 @@
 
 package rapaio.graphics.opt;
 
-import rapaio.data.Index;
-import rapaio.data.Numeric;
-import rapaio.data.Var;
-
-import java.awt.*;
 import java.io.Serializable;
 
-@Deprecated
 public interface GOpt extends Serializable {
     void apply(GOpts opt);
-
-    static GOpt palette(ColorPalette colorPalette) {
-        return opt -> opt.palette = colorPalette;
-    }
-
-    static GOpt color(int index) {
-        return opt -> opt.colors = new Color[]{opt.getPalette().getColor(index)};
-    }
-
-    static GOpt color(Color color) {
-        return opt -> opt.colors = new Color[]{color};
-    }
-
-    static GOpt color(Color[] colors) {
-        return opt -> opt.colors = colors;
-    }
-
-    static GOpt color(Var color) {
-        return opt -> {
-            opt.colors = new Color[color.rowCount()];
-            for (int i = 0; i < opt.colors.length; i++) {
-                opt.colors[i] = opt.getPalette().getColor(color.index(i));
-            }
-        };
-    }
-
-    static GOpt lwd(float lwd) {
-        return opt -> opt.lwd = lwd;
-    }
-
-    static GOpt sz(Var sizeIndex) {
-        return opt -> opt.sizeIndex = sizeIndex;
-    }
-
-    static GOpt sz(double size) {
-        return opt -> opt.sizeIndex = Numeric.newScalar(size);
-    }
-
-    static GOpt pch(Var pchIndex) {
-        return opt -> opt.pchIndex = pchIndex;
-    }
-
-    static GOpt pch(int pch) {
-        return opt -> opt.pchIndex = Index.newScalar(pch);
-    }
-
-    static GOpt alpha(float alpha) {
-        return opt -> opt.alpha = alpha;
-    }
-
-    static GOpt bins(int bins) {
-        return opt -> opt.bins = bins;
-    }
-
-    static GOpt prob(boolean prob) {
-        return opt -> opt.prob = prob;
-    }
-
-    static GOpt points(int points) {
-        return opt -> opt.points = points;
-    }
 }

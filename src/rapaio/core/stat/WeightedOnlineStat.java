@@ -23,10 +23,9 @@
 
 package rapaio.core.stat;
 
-import rapaio.WS;
 import rapaio.printer.Printable;
 
-import static rapaio.WS.formatFlex;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/13/15.

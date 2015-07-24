@@ -30,7 +30,7 @@ import rapaio.data.Var;
 
 import java.io.Serializable;
 
-import static rapaio.WS.formatFlex;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * Interface which defines a function which produces a data frame with a sample

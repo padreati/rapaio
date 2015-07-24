@@ -27,7 +27,7 @@ import rapaio.core.distributions.DUniform;
 import rapaio.core.distributions.Normal;
 
 /**
- * Utility class to facilitate creation of distribition objects.
+ * Utility class to facilitate creation of distribution objects.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/8/15.
  */

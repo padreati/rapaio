@@ -27,12 +27,11 @@ package rapaio.ml.classifier.svm;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
 
-import rapaio.WS;
+import rapaio.sys.WS;
 import rapaio.core.MathBase;
 import rapaio.core.RandomSource;
 import rapaio.core.sample.Sample;
 import rapaio.core.sample.Sampler;
-import rapaio.data.Binary;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -46,7 +45,7 @@ import rapaio.ml.common.Capabilities;
 import java.io.Serializable;
 import java.util.BitSet;
 
-import static rapaio.WS.formatFlex;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * Class for building a binary support vector machine.

@@ -41,7 +41,7 @@ class Rapaio extends CommandSupport {
     Object execute(List<String> list) {
 
         """
-import static rapaio.WS.*
+import static rapaio.sys.WS.*
 import rapaio.data.*
 import rapaio.core.*
 import rapaio.io.json.*
@@ -51,7 +51,7 @@ import rapaio.datasets.*
         """
 
         def imports = shell.imports
-        imports.add("static rapaio.WS.*")
+        imports.add("static rapaio.sys.WS.*")
         imports.add("rapaio.data.*")
         imports.add("rapaio.core.*")
         imports.add("rapaio.io.json.*")

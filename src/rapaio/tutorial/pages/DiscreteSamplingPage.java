@@ -32,10 +32,9 @@ import rapaio.ws.Summary;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static rapaio.WS.*;
+import static rapaio.sys.WS.*;
 import static rapaio.graphics.Plotter2D.*;
 import static rapaio.graphics.Plotter2D.points;
-import static rapaio.graphics.opt.GOpt.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

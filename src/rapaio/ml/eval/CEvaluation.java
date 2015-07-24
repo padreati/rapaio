@@ -26,10 +26,9 @@ package rapaio.ml.eval;
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTool;
 import rapaio.data.*;
-import rapaio.data.filter.frame.FFShuffle;
+import rapaio.data.filter.FFShuffle;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
-import rapaio.ml.eval.ConfusionMatrix;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +36,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
-import static rapaio.WS.print;
+import static rapaio.sys.WS.print;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -110,7 +109,7 @@ public class CEvaluation {
 
     public void multiCv(Frame df, String classColName, List<Classifier> classifiers, int folds) {
         print("CrossValidation with " + folds + " folds\n");
-        df = new FFShuffle().fitApply(df);
+        df = new FFShuffle().filter(df);
         double[] tacc = new double[classifiers.size()];
 
         for (int i = 0; i < folds; i++) {

@@ -27,6 +27,7 @@ import rapaio.data.Index;
 import rapaio.data.Nominal;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
+import rapaio.graphics.Plotter2D;
 import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
@@ -37,7 +38,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-import static rapaio.graphics.opt.GOpt.color;
+import static rapaio.graphics.Plotter2D.color;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -55,7 +56,7 @@ public class BarChart extends HostFigure {
     private int[] sel;
     private double[][] hits;
     private double[] totals;
-    private final GOpts options = new GOpts().apply(color(0));
+    private final GOpts options = new GOpts().apply(Plotter2D.color(0));
 
     public BarChart(Var category, GOpt... opts) {
         this(category, null, opts);
@@ -92,7 +93,7 @@ public class BarChart extends HostFigure {
         bottomMarkers(true);
 
         int shift = 9;
-        options.apply(color(Index.newSeq(shift, condition.dictionary().length)));
+        options.apply(Plotter2D.color(Index.newSeq(shift, condition.dictionary().length)));
         options.apply(opts);
     }
 

@@ -27,16 +27,17 @@ import rapaio.core.correlation.PearsonRCorrelation;
 import rapaio.core.correlation.RhoCorr;
 import rapaio.data.Frame;
 import rapaio.data.VarType;
-import rapaio.data.filter.frame.FFRetainTypes;
-import rapaio.data.filter.var.VFJitter;
+import rapaio.data.filter.FFAbstractRetainTypes;
+import rapaio.data.filter.VFJitter;
 import rapaio.datasets.Datasets;
+import rapaio.graphics.Plotter2D;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.WS.*;
+import static rapaio.sys.WS.*;
 import static rapaio.graphics.Plotter2D.plot;
-import static rapaio.graphics.opt.GOpt.pch;
+import static rapaio.graphics.Plotter2D.pch;
 import static rapaio.ws.Summary.printNames;
 import static rapaio.ws.Summary.printSummary;
 
@@ -63,10 +64,10 @@ public class CorrelationsPage implements TutorialPage {
         p("This tutorial presents you the tools built in rapaio library which enables you to compute correlation coefficients.");
         p("We will use the classical iris data set. The numerical columns of this data set are:");
 
-        final Frame df = new FFRetainTypes(VarType.NUMERIC).fitApply(Datasets.loadIrisDataset());
+        final Frame df = new FFAbstractRetainTypes(VarType.NUMERIC).filter(Datasets.loadIrisDataset());
         printNames(df);
 
-        code("        final Frame df = new FFRetainTypes(VarType.NUMERIC).fitApply(Datasets.loadIrisDataset());\n" +
+        code("        final Frame df = new FFAbstractRetainTypes(VarType.NUMERIC).filter(Datasets.loadIrisDataset());\n" +
                 "        names(df);\n");
 
         heading(2, "Pearson product-moment correlation");
@@ -118,9 +119,9 @@ public class CorrelationsPage implements TutorialPage {
                 "this intuition with a plot:");
 
         draw(plot().points(
-                        new VFJitter(0.01).fitApply(df.var("petal-length")),
-                        new VFJitter(0.01).fitApply(df.var("sepal-length")),
-                        pch(1)
+                        new VFJitter(0.01).filter(df.var("petal-length")),
+                        new VFJitter(0.01).filter(df.var("sepal-length")),
+                        Plotter2D.pch(1)
                 )
                         .title("p correlation = " + r.values()[df.varIndex("petal-length")][df.varIndex("sepal-length")]),
                 400, 300
@@ -131,9 +132,9 @@ public class CorrelationsPage implements TutorialPage {
 
         draw(plot()
                         .points(
-                                new VFJitter(0.01).fitApply(df.var("petal-length")),
-                                new VFJitter(0.01).fitApply(df.var("petal-width")),
-                                pch(1)
+                                new VFJitter(0.01).filter(df.var("petal-length")),
+                                new VFJitter(0.01).filter(df.var("petal-width")),
+                                Plotter2D.pch(1)
                         )
                         .title("p correlation = " + r.values()[df.varIndex("petal-length")][df.varIndex("petal-width")]),
                 400, 300
@@ -145,9 +146,9 @@ public class CorrelationsPage implements TutorialPage {
 
         draw(plot()
                         .points(
-                                new VFJitter(0.01).fitApply(df.var("sepal-length")),
-                                new VFJitter(0.01).fitApply(df.var("sepal-width")),
-                                pch(1))
+                                new VFJitter(0.01).filter(df.var("sepal-length")),
+                                new VFJitter(0.01).filter(df.var("sepal-width")),
+                                Plotter2D.pch(1))
                         .title("p correlation = " + r.values()[df.varIndex("sepal-length")][df.varIndex("sepal-width")]),
                 400, 300
         );

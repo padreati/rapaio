@@ -30,7 +30,7 @@ import rapaio.core.stat.Variance;
 import rapaio.core.tests.KSTest;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.filter.var.VFJitter;
+import rapaio.data.filter.VFJitter;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.graphics.plot.Plot;
@@ -42,10 +42,9 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.WS.*;
+import static rapaio.sys.WS.*;
 import static rapaio.graphics.Plotter2D.*;
 import static rapaio.graphics.Plotter2D.points;
-import static rapaio.graphics.opt.GOpt.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -180,8 +179,8 @@ public class IrisExplorePage implements TutorialPage {
                 "the iris class. ");
 
         draw(points(
-                        new VFJitter(0.1).fitApply(df.var(2)),
-                        new VFJitter(0.1).fitApply(df.var(3)),
+                        new VFJitter(0.1).filter(df.var(2)),
+                        new VFJitter(0.1).filter(df.var(3)),
                         color(df.var("class")),
                         pch(1))
                         .title("Iris data points colored by species"),
@@ -239,14 +238,14 @@ public class IrisExplorePage implements TutorialPage {
         p("If we apply a jitter filter on these values, to emulate the true continuous measures, " +
                 "the situation does not improve. ");
 
-        code("        sw = new VFJitter(0.05).fitApply(df.var(\"sepal-width\"));\n" +
+        code("        sw = new VFJitter(0.05).filter(df.var(\"sepal-width\"));\n" +
                 "        draw(new QQPlot()\n" +
                 "                        .add(df.var(\"sepal-width\"), new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value())))\n" +
                 "                        .add(new ABLine(1, 0, color(Color.GRAY)))\n" +
                 "        );\n" +
                 "        new KSTest(\"normality test\", sw, new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value()))).printSummary();\n");
 
-        sw = new VFJitter(0.05).fitApply(df.var("sepal-width"));
+        sw = new VFJitter(0.05).filter(df.var("sepal-width"));
         draw(new QQPlot()
                         .add(df.var("sepal-width"), new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value())))
                         .add(new ABLine(1, 0, color(Color.GRAY)))

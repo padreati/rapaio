@@ -25,6 +25,7 @@ package rapaio.graphics.plot;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
+import rapaio.graphics.Plotter2D;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOpt;
@@ -32,8 +33,8 @@ import rapaio.graphics.opt.GOpt;
 import java.awt.*;
 import java.util.Arrays;
 
-import static rapaio.graphics.opt.GOpt.bins;
-import static rapaio.graphics.opt.GOpt.color;
+import static rapaio.graphics.Plotter2D.bins;
+import static rapaio.graphics.Plotter2D.color;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -57,7 +58,7 @@ public class Histogram extends PlotComponent {
         this.minValue = minValue;
         this.maxValue = maxValue;
         // default values for histogram
-        options.apply(color(7));
+        options.apply(Plotter2D.color(7));
         options.apply(opts);
     }
 

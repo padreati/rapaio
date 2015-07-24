@@ -24,7 +24,6 @@
 package rapaio.core;
 
 import org.junit.Test;
-import rapaio.core.SamplingTool;
 import rapaio.core.tests.KSTest;
 import rapaio.data.Numeric;
 

@@ -24,7 +24,10 @@
 package rapaio.graphics;
 
 import rapaio.core.distributions.empirical.KFunc;
+import rapaio.data.Index;
+import rapaio.data.Numeric;
 import rapaio.data.Var;
+import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.*;
@@ -32,9 +35,9 @@ import rapaio.graphics.plot.plotcomp.DensityLine;
 import rapaio.graphics.plot.plotcomp.FunctionLine;
 import rapaio.ml.eval.ROC;
 
+import java.awt.*;
 import java.util.function.Function;
 
-@Deprecated
 public final class Plotter2D {
 
     private static GOpt[] mergedOpts(GOpt... opts) {
@@ -107,5 +110,67 @@ public final class Plotter2D {
 
     public static BarChart barChart(Var categ, Var cond, Var numeric, GOpt... opts) {
         return new BarChart(categ, cond, numeric, opts);
+    }
+
+    public static GOpt palette(ColorPalette colorPalette) {
+        return opt -> opt.setPalette(colorPalette);
+    }
+
+    public static GOpt color(int index) {
+        return opt -> opt.setColors(new Color[]{opt.getPalette().getColor(index)});
+    }
+
+    public static GOpt color(Color color) {
+        return opt -> opt.setColors(new Color[]{color});
+    }
+
+    public static GOpt color(Color[] colors) {
+        return opt -> opt.setColors(colors);
+    }
+
+    public static GOpt color(Var color) {
+        return opt -> {
+            Color[] colors = new Color[color.rowCount()];
+            for (int i = 0; i < colors.length; i++) {
+                colors[i] = opt.getPalette().getColor(color.index(i));
+            }
+            opt.setColors(colors);
+        };
+    }
+
+    public static GOpt lwd(float lwd) {
+        return opt -> opt.setLwd(lwd);
+    }
+
+    public static GOpt sz(Var sizeIndex) {
+        return opt -> opt.setSizeIndex(sizeIndex);
+    }
+
+    public static GOpt sz(double size) {
+        return opt -> opt.setSizeIndex(Numeric.newScalar(size));
+    }
+
+    public static GOpt pch(Var pchIndex) {
+        return opt -> opt.setPchIndex(pchIndex);
+    }
+
+    public static GOpt pch(int pch) {
+        return opt -> opt.setPchIndex(Index.newScalar(pch));
+    }
+
+    public static GOpt alpha(float alpha) {
+        return opt -> opt.setAlpha(alpha);
+    }
+
+    public static GOpt bins(int bins) {
+        return opt -> opt.setBins(bins);
+    }
+
+    public static GOpt prob(boolean prob) {
+        return opt -> opt.setProb(prob);
+    }
+
+    public static GOpt points(int points) {
+        return opt -> opt.setPoints(points);
     }
 }

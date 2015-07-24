@@ -23,11 +23,10 @@
 
 package rapaio.core.stat;
 
-import rapaio.WS;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
-import static rapaio.WS.formatFlex;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * Computes the sum of elements for a {@link rapaio.data.Var} of values.

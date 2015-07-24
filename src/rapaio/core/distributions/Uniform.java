@@ -23,10 +23,7 @@
 
 package rapaio.core.distributions;
 
-import rapaio.WS;
-import rapaio.printer.Printer;
-
-import static rapaio.WS.formatFlex;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * Continuous uniform distribution

@@ -23,7 +23,8 @@
 
 package rapaio.experiment.sandbox;
 
-import rapaio.WS;
+import rapaio.graphics.Plotter2D;
+import rapaio.sys.WS;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Maximum;
@@ -46,8 +47,7 @@ import rapaio.ws.Summary;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.WS.draw;
-import static rapaio.graphics.opt.GOpt.*;
+import static rapaio.sys.WS.draw;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/23/15.
@@ -136,9 +136,9 @@ public class IrisContour {
         ColorGradient bcg = ColorGradient.newHueGradient(qq);
         for (int i = 0; i < qq.length - 1; i++) {
             p.add(new MeshContour(mg1.compute(qq[i], qq[i + 1]), true, true,
-                    lwd(0.1f), color(bcg.getColor(i))));
+                    Plotter2D.lwd(0.1f), Plotter2D.color(bcg.getColor(i))));
         }
-        p.add(new Points(iris.var(0), iris.var(1), color(iris.var(2)), pch(2)));
+        p.add(new Points(iris.var(0), iris.var(1), Plotter2D.color(iris.var(2)), Plotter2D.pch(2)));
 
         draw(p);
     }

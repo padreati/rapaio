@@ -100,4 +100,24 @@ public final class RowComparators implements Serializable {
             return sign * (var.index(row1) < var.index(row2) ? -1 : 1);
         };
     }
+
+    public static Comparator<Integer> stamp(final Var var, final boolean asc) {
+        final int sign = asc ? 1 : -1;
+
+        return (row1, row2) -> {
+            if (var.missing(row1) && var.missing(row2)) {
+                return 0;
+            }
+            if (var.missing(row1)) {
+                return -1 * sign;
+            }
+            if (var.missing(row2)) {
+                return sign;
+            }
+            if (var.stamp(row1) == var.stamp(row2)) {
+                return 0;
+            }
+            return sign * (var.stamp(row1) < var.stamp(row2) ? -1 : 1);
+        };
+    }
 }

@@ -24,6 +24,7 @@
 package rapaio.data;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * Variable which stores long 64-bit integer values.
@@ -352,6 +353,11 @@ public class Stamp extends AbstractVar {
     @Override
     public Var newInstance(int rows) {
         return Stamp.newEmpty(rows);
+    }
+
+    @Override
+    public Comparator<Integer> refComparator(boolean asc) {
+        return RowComparators.stamp(this, true);
     }
 
     @Override

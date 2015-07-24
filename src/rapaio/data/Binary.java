@@ -24,6 +24,7 @@
 package rapaio.data;
 
 import java.util.BitSet;
+import java.util.Comparator;
 
 /**
  * Numerical variable which store only 1,0 and missing values.
@@ -398,5 +399,10 @@ public final class Binary extends AbstractVar {
     @Override
     public Var newInstance(int rows) {
         return Binary.newEmpty(rows);
+    }
+
+    @Override
+    public Comparator<Integer> refComparator(boolean asc) {
+        return RowComparators.numeric(this, true);
     }
 }

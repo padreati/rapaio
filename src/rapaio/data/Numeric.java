@@ -25,10 +25,7 @@ package rapaio.data;
 
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -411,6 +408,11 @@ public final class Numeric extends AbstractVar {
     @Override
     public Var newInstance(int rows) {
         return Numeric.newEmpty(rows);
+    }
+
+    @Override
+    public Comparator<Integer> refComparator(boolean asc) {
+        return RowComparators.numeric(this, true);
     }
 
     @Override

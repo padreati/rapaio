@@ -26,10 +26,11 @@ package rapaio.graphics.plot;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.data.filter.var.VFSort;
+import rapaio.data.filter.VFSort;
+import rapaio.graphics.Plotter2D;
 import rapaio.graphics.opt.GOpt;
 
-import static rapaio.graphics.opt.GOpt.color;
+import static rapaio.graphics.Plotter2D.color;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -46,13 +47,13 @@ public class QQPlot extends Plot {
     }
 
     public QQPlot add(Var points, Distribution distribution) {
-        Var x = new VFSort().fitApply(points);
+        Var x = new VFSort().filter(points);
         Var y = Numeric.newEmpty(x.rowCount());
         for (int i = 0; i < y.rowCount(); i++) {
             double p = (i + 1) / (y.rowCount() + 1.);
             y.setValue(i, distribution.quantile(p));
         }
-        add(new Points(y, x, color(0)));
+        add(new Points(y, x, Plotter2D.color(0)));
         return this;
     }
 }

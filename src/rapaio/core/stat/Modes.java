@@ -23,7 +23,6 @@
 
 package rapaio.core.stat;
 
-import rapaio.WS;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 

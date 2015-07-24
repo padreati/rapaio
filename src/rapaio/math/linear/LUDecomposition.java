@@ -23,7 +23,7 @@
 
 package rapaio.math.linear;
 
-import rapaio.WS;
+import rapaio.sys.WS;
 import rapaio.printer.Printable;
 
 import java.io.Serializable;

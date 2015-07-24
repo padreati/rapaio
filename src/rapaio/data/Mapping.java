@@ -147,6 +147,7 @@ public interface Mapping extends Serializable {
 
 final class ListMapping implements Mapping {
 
+    private static final long serialVersionUID = 5485844129188037454L;
     private final List<Integer> mapping;
 
     public ListMapping() {

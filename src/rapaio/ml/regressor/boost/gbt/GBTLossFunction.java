@@ -27,11 +27,10 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.printer.Printer;
 
 import java.io.Serializable;
 
-import static rapaio.WS.formatFlex;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * Loss function used by gradient boosting algorithm.

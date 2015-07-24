@@ -23,16 +23,12 @@
 
 package rapaio.ml.eval;
 
-import rapaio.WS;
 import rapaio.printer.Printable;
 import rapaio.data.Var;
-import rapaio.printer.Printer;
 
-import java.text.DecimalFormat;
 import java.util.stream.IntStream;
 
-import static rapaio.WS.formatFlex;
-import static rapaio.WS.formatShort;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * Confusion matrix utility.

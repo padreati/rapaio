@@ -23,21 +23,8 @@
 
 package rapaio.experiment.sandbox;
 
-import rapaio.core.distributions.Binomial;
-import rapaio.data.Frame;
-import rapaio.datasets.Datasets;
-import rapaio.util.stream.SCollectors;
-import rapaio.ws.Summary;
-
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static rapaio.WS.formatFlex;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/19/15.

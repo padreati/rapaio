@@ -23,14 +23,13 @@
 
 package rapaio.core.stat;
 
-import rapaio.WS;
 import rapaio.data.Var;
-import rapaio.data.filter.var.VFSort;
+import rapaio.data.filter.VFSort;
 import rapaio.printer.Printable;
 
 import java.util.stream.IntStream;
 
-import static rapaio.WS.formatFlex;
+import static rapaio.sys.WS.formatFlex;
 
 
 /**
@@ -82,7 +81,7 @@ public class Quantiles implements Printable {
             }
             return values;
         }
-        Var x = new VFSort().fitApply(complete);
+        Var x = new VFSort().filter(complete);
         double[] values = new double[percentiles.length];
         for (int i = 0; i < percentiles.length; i++) {
             double p = percentiles[i];

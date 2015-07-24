@@ -23,17 +23,15 @@
 
 package rapaio.ml.eval;
 
-import rapaio.WS;
 import rapaio.printer.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
-import rapaio.printer.Printer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static rapaio.WS.formatFlex;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * Regression evaluation tool which enables one to compute

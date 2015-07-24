@@ -23,7 +23,8 @@
 
 package rapaio.tutorial.pages;
 
-import rapaio.WS;
+import rapaio.graphics.Plotter2D;
+import rapaio.sys.WS;
 import rapaio.core.distributions.empirical.KDE;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.data.Frame;
@@ -37,10 +38,9 @@ import rapaio.ws.Summary;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.WS.*;
+import static rapaio.sys.WS.*;
 import static rapaio.graphics.Plotter2D.hist;
 import static rapaio.graphics.Plotter2D.plot;
-import static rapaio.graphics.opt.GOpt.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -109,7 +109,7 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("By default the number of bins is computed using the Freedman-Diaconis estimator. " +
                 "However, one can specify directly the number of bins. ");
 
-        draw(hist(df.var("Father"), bins(100)));
+        draw(hist(df.var("Father"), Plotter2D.bins(100)));
 
         code("        draw(hist(df.var(\"Father\"), bins(100)));\n");
 
@@ -123,7 +123,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                 "a desirable property if the histograms are compared to other " +
                 "similar tools like densities. ");
 
-        draw(hist(df.var("Father"), prob(true)));
+        draw(hist(df.var("Father"), Plotter2D.prob(true)));
 
         code("        draw(hist(df.var(\"Father\"), prob(true)));\n");
 
@@ -134,7 +134,7 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("One can draw also the kernel density approximation, over a histogram or as a separate plot.");
 
         final Var col = df.var("Father");
-        draw(plot().hist(col, prob(true), color(Index.newSeq(1, 255))).densityLine(col));
+        draw(plot().hist(col, Plotter2D.prob(true), Plotter2D.color(Index.newSeq(1, 255))).densityLine(col));
 
         code("        final Var col = df.var(\"Father\");\n" +
                 "        draw(new Plot().hist(col, prob(true), color(Index.newSeq(1, 255))).densityLine(col));\n");
@@ -156,10 +156,10 @@ public class HistogramDensityTutorial implements TutorialPage {
                 "smoother or less smoother approximation of the density function.");
 
         draw(plot()
-                        .hist(col, prob(true))
-                        .funLine(new KDE(col, 0.1)::pdf, color(1))
-                        .funLine(new KDE(col, 0.5)::pdf, color(2))
-                        .funLine(new KDE(col, 2)::pdf, color(3))
+                        .hist(col, Plotter2D.prob(true))
+                        .funLine(new KDE(col, 0.1)::pdf, Plotter2D.color(1))
+                        .funLine(new KDE(col, 0.5)::pdf, Plotter2D.color(2))
+                        .funLine(new KDE(col, 2)::pdf, Plotter2D.color(3))
                         .yLim(0, 0.18),
                 600, 300
         );
@@ -174,7 +174,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                 "once you implement a custom kernel function. ");
 
         draw(plot()
-                .funLine(new KDE(col)::pdf, color(1))
+                .funLine(new KDE(col)::pdf, Plotter2D.color(1))
                 .densityLine(col, new KFunc() {
                     private static final long serialVersionUID = 2176030821754943447L;
 
@@ -192,7 +192,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                     public double getMaxValue(double x0, double bandwidth) {
                         return x0 - bandwidth;
                     }
-                }, 0.5, points(256))
+                }, 0.5, Plotter2D.points(256))
                 .yLim(0, 0.18)
                 .xLim(55, 80));
 
@@ -209,8 +209,8 @@ public class HistogramDensityTutorial implements TutorialPage {
         p("Blue line represents density approximation of father's heights, " +
                 "red line represents density approximation of son's heights.");
 
-        draw(plot().densityLine(df.var("Father"), color(6))
-                .densityLine(df.var("Son"), color(9))
+        draw(plot().densityLine(df.var("Father"), Plotter2D.color(6))
+                .densityLine(df.var("Son"), Plotter2D.color(9))
                 .yLim(0, 0.18)
                 .xLim(55, 80));
 

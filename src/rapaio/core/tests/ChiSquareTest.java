@@ -23,7 +23,7 @@
 
 package rapaio.core.tests;
 
-import rapaio.WS;
+import rapaio.sys.WS;
 import rapaio.printer.Printable;
 import rapaio.core.distributions.ChiSquare;
 import rapaio.data.Numeric;
@@ -32,7 +32,7 @@ import rapaio.graphics.Plotter2D;
 import rapaio.graphics.plot.Plot;
 
 import static java.util.stream.Collectors.groupingBy;
-import static rapaio.graphics.opt.GOpt.color;
+import static rapaio.graphics.Plotter2D.color;
 
 /**
  * Chi-Squared tests
@@ -65,7 +65,7 @@ public class ChiSquareTest implements Printable {
         for (int i = 1; i < 10; i++) {
             int df = i;
             Numeric y = x.stream().mapToDouble().map(x1 -> new ChiSquare(df+0.1).pdf(x1)).boxed().collect(Numeric.collector());
-            plot.lines(x, y, color(df));
+            plot.lines(x, y, Plotter2D.color(df));
         }
 
         WS.draw(plot.yLim(0, 0.5));

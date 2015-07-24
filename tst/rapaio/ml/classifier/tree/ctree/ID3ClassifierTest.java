@@ -28,7 +28,7 @@
 //import org.junit.Test;
 //import rapaio.data.Frame;
 //import rapaio.data.VarType;
-//import rapaio.data.filter.frame.FFRetainTypes;
+//import rapaio.data.filter.FFAbstractRetainTypes;
 //import rapaio.datasets.Datasets;
 //import rapaio.core.tools.DTable;
 //import rapaio.ml.classifier.tree.*;
@@ -46,7 +46,7 @@
 //    public void testBasicID3Entropy() throws IOException {
 //        Frame df = Datasets.loadPlay();
 //        Summary.printSummary(df);
-//        df = new FFRetainTypes(VarType.NOMINAL).fitApply(df);
+//        df = new FFAbstractRetainTypes(VarType.NOMINAL).filter(df);
 //        final String className = "class";
 //
 //        CTree id3 = CTree.newID3();
@@ -65,7 +65,7 @@
 //    @Test
 //    public void testBasicID3InfoGain() throws IOException {
 //        Frame df = Datasets.loadPlay();
-//        df = new FFRetainTypes(VarType.NOMINAL).fitApply(df);
+//        df = new FFAbstractRetainTypes(VarType.NOMINAL).filter(df);
 //        final String className = "class";
 //
 //        CTree id3 = new CTree()

@@ -23,7 +23,6 @@
 
 package rapaio.ml.classifier;
 
-import rapaio.WS;
 import rapaio.printer.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;

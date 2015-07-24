@@ -23,20 +23,18 @@
 
 package rapaio.math.linear;
 
-import rapaio.WS;
+import rapaio.sys.WS;
 import rapaio.core.MathBase;
 import rapaio.printer.Printable;
 import rapaio.math.linear.impl.*;
-import rapaio.printer.Printer;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static rapaio.WS.formatFlex;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * Real value matrix interface

@@ -31,7 +31,7 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 
 /**
- * Utility class for calling basic statistics on variables.
+ * Utility class for calling basic statistical tools on variables.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/4/15.
  */

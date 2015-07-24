@@ -24,10 +24,10 @@
 package rapaio.ml.regressor.linear;
 
 import org.junit.Test;
-import rapaio.WS;
+import rapaio.sys.WS;
 import rapaio.core.distributions.StudentT;
 import rapaio.data.*;
-import rapaio.data.filter.frame.FFAddIntercept;
+import rapaio.data.filter.FFAbstractAddIntercept;
 import rapaio.datasets.Datasets;
 import rapaio.math.linear.Linear;
 import rapaio.math.linear.QRDecomposition;
@@ -61,7 +61,7 @@ public class OLSRegressorTest {
 
     @Test
     public void testWork() throws IOException {
-        Frame df = new FFAddIntercept().fitApply(Datasets.loadISLAdvertising().mapVars("TV", "Radio", "Newspaper", "Sales"));
+        Frame df = new FFAbstractAddIntercept().filter(Datasets.loadISLAdvertising().mapVars("TV", "Radio", "Newspaper", "Sales"));
 //        Frame df = Datasets.loadISLAdvertising().mapVars("TV", "Radio", "Newspaper", "Sales");
         String[] targetNames = new String[]{"Sales"};
         String[] inputNames = new String[]{"(Intercept)", "TV", "Radio", "Newspaper"};

@@ -23,7 +23,6 @@
 
 package rapaio.core.correlation;
 
-import rapaio.WS;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
@@ -32,8 +31,8 @@ import rapaio.printer.Printable;
 
 import java.util.Arrays;
 
-import static rapaio.WS.formatFlex;
-import static rapaio.WS.getPrinter;
+import static rapaio.sys.WS.formatFlex;
+import static rapaio.sys.WS.getPrinter;
 
 /**
  * /**

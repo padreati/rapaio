@@ -23,12 +23,10 @@
 
 package rapaio.core.stat;
 
-import rapaio.WS;
 import rapaio.printer.Printable;
 import rapaio.data.Var;
-import rapaio.printer.Printer;
 
-import static rapaio.WS.formatFlex;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * Compensated weighted mean.

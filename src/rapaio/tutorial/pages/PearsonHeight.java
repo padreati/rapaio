@@ -31,6 +31,7 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
+import rapaio.graphics.Plotter2D;
 import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.Points;
 import rapaio.graphics.plot.QQPlot;
@@ -39,9 +40,8 @@ import rapaio.ws.Summary;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.WS.*;
+import static rapaio.sys.WS.*;
 import static rapaio.graphics.Plotter2D.plot;
-import static rapaio.graphics.opt.GOpt.*;
 import static rapaio.ws.Summary.printSummary;
 
 /**
@@ -76,8 +76,8 @@ public class PearsonHeight implements TutorialPage {
         for (int i = 0; i < df.varCount(); i++) {
             Normal normal = new Normal(new Mean(df.var(i)).value(), Math.sqrt(new Variance(df.var(i)).value()));
             draw(plot()
-                            .hist(df.var(i), 57, 80, bins(23), prob(true))
-                            .funLine(normal::pdf, color(2))
+                            .hist(df.var(i), 57, 80, Plotter2D.bins(23), Plotter2D.prob(true))
+                            .funLine(normal::pdf, Plotter2D.color(2))
                             .xLab(df.varNames()[i])
                             .xLim(57, 80).yLim(0, 0.20),
                     700, 300
@@ -119,10 +119,10 @@ public class PearsonHeight implements TutorialPage {
 
         Plot plot = (Plot) new Plot().xLim(55, 80).yLim(55, 80);
         for (int i = 0; i < fatherQuantiles.values().length; i++) {
-            plot.abLine(fatherQuantiles.values()[i], false, color(30));
+            plot.abLine(fatherQuantiles.values()[i], false, Plotter2D.color(30));
         }
         for (int i = 0; i < sonQuantiles.values().length; i++) {
-            plot.abLine(sonQuantiles.values()[i], true, color(30));
+            plot.abLine(sonQuantiles.values()[i], true, Plotter2D.color(30));
         }
         plot.add(new Points(df.var("Father"), df.var("Son")));
         draw(plot, 600, 600);

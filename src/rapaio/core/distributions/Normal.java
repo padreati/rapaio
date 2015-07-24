@@ -23,7 +23,7 @@
 
 package rapaio.core.distributions;
 
-import static rapaio.WS.formatFlex;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * @author <a href="mailto:padreatiyahoo.com">Aurelian Tutuianu</a>

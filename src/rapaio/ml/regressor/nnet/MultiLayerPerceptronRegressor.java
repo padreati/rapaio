@@ -29,11 +29,10 @@ import rapaio.data.Var;
 import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.Regressor;
 import rapaio.ml.regressor.RegressorFit;
-import rapaio.printer.Printer;
 
 import java.util.Arrays;
 
-import static rapaio.WS.formatFlex;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>

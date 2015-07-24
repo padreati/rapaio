@@ -24,21 +24,17 @@
 package rapaio.core.stat;
 
 import org.junit.Test;
-import rapaio.WS;
+import rapaio.sys.WS;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.graphics.plot.Plot;
-import rapaio.graphics.plot.Points;
-import rapaio.printer.IdeaPrinter;
 
 import static org.junit.Assert.assertEquals;
-import static rapaio.WS.draw;
-import static rapaio.WS.setPrinter;
-import static rapaio.graphics.opt.GOpt.color;
-import static rapaio.graphics.opt.GOpt.sz;
+import static rapaio.sys.WS.draw;
+import static rapaio.graphics.Plotter2D.color;
+import static rapaio.graphics.Plotter2D.sz;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>

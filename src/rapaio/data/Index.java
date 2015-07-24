@@ -24,6 +24,7 @@
 package rapaio.data;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -350,6 +351,11 @@ public final class Index extends AbstractVar {
     @Override
     public Var newInstance(int rows) {
         return Index.newEmpty(rows);
+    }
+
+    @Override
+    public Comparator<Integer> refComparator(boolean asc) {
+        return RowComparators.index(this, true);
     }
 
     @Override

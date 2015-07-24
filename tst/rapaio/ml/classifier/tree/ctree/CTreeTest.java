@@ -26,7 +26,7 @@
 //import org.junit.Test;
 //import rapaio.data.Frame;
 //import rapaio.data.VarType;
-//import rapaio.data.filter.frame.FFRetainTypes;
+//import rapaio.data.filter.FFAbstractRetainTypes;
 //import rapaio.datasets.Datasets;
 //import rapaio.ml.classifier.CFit;
 //import rapaio.ml.classifier.tree.*;
@@ -73,7 +73,7 @@
 //    public void testBuilderID3() throws IOException, URISyntaxException {
 //        Frame df = Datasets.loadMushrooms();
 //        Summary.printNames(df);
-//        df = new FFRetainTypes(VarType.NOMINAL).fitApply(df);
+//        df = new FFAbstractRetainTypes(VarType.NOMINAL).filter(df);
 //
 //        Summary.printSummary(df);
 //    }

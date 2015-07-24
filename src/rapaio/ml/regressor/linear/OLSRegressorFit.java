@@ -23,7 +23,7 @@
 
 package rapaio.ml.regressor.linear;
 
-import rapaio.WS;
+import rapaio.sys.WS;
 import rapaio.data.Frame;
 import rapaio.ml.regressor.RegressorFit;
 

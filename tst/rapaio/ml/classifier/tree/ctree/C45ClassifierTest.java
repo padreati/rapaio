@@ -27,7 +27,7 @@
 //import org.junit.Test;
 //import rapaio.data.Frame;
 //import rapaio.data.VarType;
-//import rapaio.data.filter.frame.FFRetainTypes;
+//import rapaio.data.filter.FFAbstractRetainTypes;
 //import rapaio.datasets.Datasets;
 //import rapaio.ml.classifier.CFit;
 //import rapaio.core.tools.DTable;
@@ -46,7 +46,7 @@
 //    @Test
 //    public void testNominalInfoGain() throws IOException {
 //        Frame df = Datasets.loadPlay();
-//        df = new FFRetainTypes(VarType.NOMINAL).fitApply(df);
+//        df = new FFAbstractRetainTypes(VarType.NOMINAL).filter(df);
 //        final String className = "class";
 //
 //        CTree classifier = CTree.newC45();

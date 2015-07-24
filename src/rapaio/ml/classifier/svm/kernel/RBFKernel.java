@@ -24,9 +24,8 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
-import rapaio.printer.Printer;
 
-import static rapaio.WS.formatFlex;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * The GaussianPdf kernel is an example of radial basis function kernel.

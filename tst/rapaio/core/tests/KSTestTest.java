@@ -25,7 +25,6 @@ package rapaio.core.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.core.Distributions;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.StudentT;

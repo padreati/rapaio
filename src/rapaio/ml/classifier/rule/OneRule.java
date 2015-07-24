@@ -23,14 +23,14 @@
 
 package rapaio.ml.classifier.rule;
 
-import rapaio.WS;
+import rapaio.data.filter.VFRefSort;
+import rapaio.sys.WS;
 import rapaio.core.RandomSource;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
-import rapaio.data.filter.var.VFRefSort;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.common.Capabilities;
@@ -184,7 +184,7 @@ public class OneRule extends AbstractClassifier {
     private RuleSet buildNumeric(String testCol, Frame df, Var weights) {
         RuleSet set = new RuleSet(testCol);
         Var sort = new VFRefSort(RowComparators.numeric(df.var(testCol), true),
-                RowComparators.nominal(df.var(firstTargetName()), true)).fitApply(Index.newSeq(weights.rowCount()));
+                RowComparators.nominal(df.var(firstTargetName()), true)).filter(Index.newSeq(weights.rowCount()));
         int pos = 0;
         while (pos < sort.rowCount()) {
             if (df.missing(sort.index(pos), testCol)) {

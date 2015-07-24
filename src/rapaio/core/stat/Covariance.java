@@ -23,7 +23,6 @@
 
 package rapaio.core.stat;
 
-import rapaio.WS;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
@@ -31,7 +30,7 @@ import rapaio.printer.Printable;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
-import static rapaio.WS.formatFlex;
+import static rapaio.sys.WS.formatFlex;
 import static rapaio.core.CoreStat.mean;
 
 /**

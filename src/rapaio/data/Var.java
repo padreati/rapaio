@@ -29,6 +29,7 @@ import rapaio.printer.Printable;
 import rapaio.ws.Summary;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -335,6 +336,25 @@ public interface Var extends Serializable, Printable {
      */
     default VSpots stream() {
         return new VSpots(IntStream.range(0, rowCount()).mapToObj(row -> new VSpot(row, this)), this);
+    }
+
+    default Comparator<Integer> refComparator() {
+        return refComparator(true);
+    }
+
+    default Comparator<Integer> refComparator(boolean asc) {
+        switch (this.type()) {
+            case TEXT:
+            case NOMINAL:
+                return RowComparators.nominal(this, asc);
+            case STAMP:
+                return RowComparators.stamp(this, asc);
+            case ORDINAL:
+            case INDEX:
+                return RowComparators.index(this, asc);
+            default:
+                return RowComparators.numeric(this, asc);
+        }
     }
 
     /**

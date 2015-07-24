@@ -23,7 +23,7 @@
 
 package rapaio.ml.classifier.bayes;
 
-import rapaio.WS;
+import rapaio.sys.WS;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;

@@ -32,12 +32,11 @@ import rapaio.ml.regressor.Regressor;
 import rapaio.ml.regressor.RegressorFit;
 import rapaio.ml.regressor.RunningRegressor;
 import rapaio.ml.regressor.tree.rtree.RTree;
-import rapaio.printer.Printer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static rapaio.WS.formatFlex;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/15/15.

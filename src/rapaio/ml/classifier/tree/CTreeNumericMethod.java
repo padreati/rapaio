@@ -29,7 +29,7 @@ import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
-import rapaio.data.filter.var.VFRefSort;
+import rapaio.data.filter.VFRefSort;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -91,7 +91,7 @@ public interface CTreeNumericMethod extends Serializable {
                 dt.update(row, target.index(i), weights.value(i));
             }
 
-            Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.newSeq(df.rowCount()));
+            Var sort = new VFRefSort(RowComparators.numeric(test, true)).filter(Index.newSeq(df.rowCount()));
 
             CTreeCandidate best = null;
 
@@ -181,7 +181,7 @@ public interface CTreeNumericMethod extends Serializable {
                 dt.update(row, target.index(i), weights.value(i));
             }
 
-            Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.newSeq(df.rowCount()));
+            Var sort = new VFRefSort(RowComparators.numeric(test, true)).filter(Index.newSeq(df.rowCount()));
 
             CTreeCandidate best = null;
 

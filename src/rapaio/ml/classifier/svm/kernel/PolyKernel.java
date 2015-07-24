@@ -25,9 +25,8 @@ package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.core.MathBase;
 import rapaio.data.Frame;
-import rapaio.printer.Printer;
 
-import static rapaio.WS.formatFlex;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * The Polynomial kernel is a non-stationary kernel. Polynomial kernels

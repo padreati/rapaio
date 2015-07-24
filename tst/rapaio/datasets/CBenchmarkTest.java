@@ -21,7 +21,7 @@
 //package rapaio.datasets;
 //
 //import org.junit.Test;
-//import rapaio.WS;
+//import rapaio.sys.WS;
 //import rapaio.ml.eval.ConfusionMatrix;
 //import rapaio.data.*;
 //import rapaio.ml.classifier.Classifier;

@@ -23,10 +23,7 @@
 
 package rapaio.data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -226,5 +223,10 @@ public class Text extends AbstractVar {
     @Override
     public Var newInstance(int rows) {
         return null;
+    }
+
+    @Override
+    public Comparator<Integer> refComparator(boolean asc) {
+        return RowComparators.nominal(this, asc);
     }
 }

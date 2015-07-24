@@ -33,7 +33,7 @@ import java.awt.*;
 import java.awt.geom.Line2D;
 import java.util.function.Function;
 
-import static rapaio.graphics.opt.GOpt.points;
+import static rapaio.graphics.Plotter2D.points;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

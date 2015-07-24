@@ -34,8 +34,8 @@ import rapaio.data.VarType;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import static rapaio.WS.code;
-import static rapaio.WS.getPrinter;
+import static rapaio.sys.WS.code;
+import static rapaio.sys.WS.getPrinter;
 
 /**
  * @author tutuianu

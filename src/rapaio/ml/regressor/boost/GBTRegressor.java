@@ -37,7 +37,7 @@ import rapaio.ml.regressor.tree.rtree.RTree;
 import java.util.ArrayList;
 import java.util.List;
 
-import static rapaio.WS.formatFlex;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * Gradient Boosting Tree

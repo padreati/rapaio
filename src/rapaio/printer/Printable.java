@@ -23,7 +23,7 @@
 
 package rapaio.printer;
 
-import rapaio.WS;
+import rapaio.sys.WS;
 
 /**
  * Interface implemented by all objects which outputs information about themselves
@@ -41,7 +41,7 @@ public interface Printable {
 
     /**
      * Prints a printSummary of the object to the system printer configured
-     * with {@link rapaio.WS#setPrinter(rapaio.printer.Printer)}.
+     * with {@link WS#setPrinter(rapaio.printer.Printer)}.
      */
     default void printSummary() {
         WS.code(summary());

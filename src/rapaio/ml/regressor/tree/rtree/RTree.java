@@ -30,10 +30,9 @@ import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.RegressorFit;
 import rapaio.ml.regressor.boost.gbt.BTRegressor;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
-import rapaio.printer.Printer;
 import rapaio.util.Pair;
 
-import static rapaio.WS.formatFlex;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * Implements a regression tree.

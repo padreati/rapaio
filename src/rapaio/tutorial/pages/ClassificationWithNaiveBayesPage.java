@@ -35,7 +35,7 @@ import rapaio.ml.eval.ConfusionMatrix;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.WS.*;
+import static rapaio.sys.WS.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
