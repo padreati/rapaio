@@ -91,11 +91,6 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         return sb.toString();
     }
 
-    @Override
-    public Capabilities capabilities() {
-        throw new IllegalArgumentException("not implemented yet");
-    }
-
     public AdaBoostSAMMEClassifier withClassifier(Classifier weak) {
         this.weak = weak;
         return this;

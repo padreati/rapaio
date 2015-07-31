@@ -81,11 +81,6 @@ public class NaiveBayes extends AbstractClassifier {
     }
 
     @Override
-    public Capabilities capabilities() {
-        return new Capabilities().withTargetCount(Capabilities.TargetCount.MULTIPLE_TARGETS).withTargetType(Capabilities.TargetType.MULTICLASS_CLASSIFIER);
-    }
-
-    @Override
     public NaiveBayes withDebug(boolean debug) {
         return (NaiveBayes) super.withDebug(debug);
     }

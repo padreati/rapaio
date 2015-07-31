@@ -65,11 +65,6 @@ public class OneRule extends AbstractClassifier {
         return new OneRule().withMinCount(minCount);
     }
 
-    @Override
-    public Capabilities capabilities() {
-        throw new IllegalArgumentException("not implemented yet");
-    }
-
     public OneRule withMinCount(double minCount) {
         this.minCount = minCount;
         return this;

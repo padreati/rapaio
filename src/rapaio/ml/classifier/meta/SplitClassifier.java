@@ -68,11 +68,6 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
                 .withSplits(splits);
     }
 
-    @Override
-    public Capabilities capabilities() {
-        throw new IllegalArgumentException("not implemented yet");
-    }
-
     public SplitClassifier withSplit(Predicate<FSpot> predicate, Classifier c) {
         this.splits.add(new Split(predicate, c));
         return this;

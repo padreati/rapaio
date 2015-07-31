@@ -79,11 +79,6 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
         return sb.toString();
     }
 
-    @Override
-    public Capabilities capabilities() {
-        throw new IllegalArgumentException("not implemented yet");
-    }
-
     public GBTClassifier withTree(BTRegressor rTree) {
         this.classifier = rTree;
         return this;

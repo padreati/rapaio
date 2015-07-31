@@ -30,17 +30,7 @@ public class Sandbox {
 
     public static void main(String[] args) {
 
-        F<List<String>> ana = ArrayList::new;
-        ana.areMere().add("are mere, da' nu da nici unul");
-        assert ana.areMere().size() == 0;
 
-        List<String> mimi = ana.areMere();
-        mimi.add("are pere");
-        assert mimi.size() == 1;
-    }
-
-    interface F<T> {
-        T areMere();
     }
 
 }

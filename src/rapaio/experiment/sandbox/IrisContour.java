@@ -24,6 +24,10 @@
 package rapaio.experiment.sandbox;
 
 import rapaio.graphics.Plotter;
+import rapaio.ml.classifier.bayes.NaiveBayes;
+import rapaio.ml.classifier.ensemble.CForest;
+import rapaio.ml.classifier.svm.kernel.MinKernel;
+import rapaio.ml.classifier.svm.kernel.RBFKernel;
 import rapaio.sys.WS;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
@@ -58,7 +62,7 @@ public class IrisContour {
     public static void main(String[] args) throws IOException, URISyntaxException {
 
         RandomSource.setSeed((long) (Math.E * 100));
-        WS.setPrinter(new IdeaPrinter(true));
+//        WS.setPrinter(new IdeaPrinter(true));
 
         final String X = "petal-length";
         final String Y = "sepal-width";
@@ -93,10 +97,12 @@ public class IrisContour {
 //        c = new BinarySMO().withKernel(new RBFKernel(1)).withC(1.5);
 //        c = new BinarySMO().withKernel(new RBFKernel(4)).withC(1.5);
 //        c = new BinarySMO().withKernel(new RBFKernel(20)).withC(1.5);
-        c = new BinarySMO().withKernel(new CauchyKernel(8)).withC(5);
+//        c = new BinarySMO().withKernel(new CauchyKernel(8)).withC(5);
 //        c = new BinarySMO().withKernel(new GeneralizedStudentTKernel(0.1));
 //        c = new BinarySMO().withKernel(new InverseMultiQuadraticKernel(5));
 //        c = new BinarySMO().withKernel(new MinKernel());
+//        c = new CForest().withMCols(1).withRuns(500);
+        c = new NaiveBayes();
         c.learn(iris, "class");
 
         Numeric x = Numeric.newSeq(new Minimum(iris.var(X)).value(), new Maximum(iris.var(X)).value(), 0.1).withName(X);

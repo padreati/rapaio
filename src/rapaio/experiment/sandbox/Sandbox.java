@@ -23,8 +23,22 @@
 
 package rapaio.experiment.sandbox;
 
+import rapaio.data.Frame;
+import rapaio.data.filter.Filters;
+import rapaio.datasets.Datasets;
+import rapaio.graphics.Plotter;
+import rapaio.printer.IdeaPrinter;
+import rapaio.sys.WS;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
+
+import static rapaio.data.filter.Filters.jitter;
+import static rapaio.graphics.Plotter.color;
+import static rapaio.graphics.Plotter.hist;
+import static rapaio.graphics.Plotter.points;
+import static rapaio.sys.WS.draw;
+import static rapaio.sys.WS.setPrinter;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/19/15.
@@ -34,10 +48,6 @@ public class Sandbox {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
 
-        long a = 1_000_000_000_000L;
-        long b = 1L;
-
-        System.out.println(a / b >= 100);
-
+        System.out.println(3.0 / 2);
     }
 }

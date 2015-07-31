@@ -65,7 +65,9 @@ public interface Classifier extends Printable, Serializable {
      */
     String fullName();
 
-    Capabilities capabilities();
+    default Capabilities capabilities() {
+        return null;
+    }
 
     /**
      * Builds classifier with debug info on console.

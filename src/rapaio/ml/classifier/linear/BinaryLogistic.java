@@ -68,11 +68,6 @@ public class BinaryLogistic extends AbstractClassifier {
         return sb.toString();
     }
 
-    @Override
-    public Capabilities capabilities() {
-        throw new IllegalArgumentException("not implemented yet");
-    }
-
     /**
      * Maximum number of iterations if optimum was not met yet
      * (default value is 10_000)

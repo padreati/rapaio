@@ -62,11 +62,6 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
     protected List<Classifier> predictors = new ArrayList<>();
     protected List<Double> predictorScores = new ArrayList<>();
 
-    @Override
-    public Capabilities capabilities() {
-        throw new IllegalArgumentException("not implemented yet");
-    }
-
     public CEnsemble withOobComp(boolean oobCompute) {
         this.oobComp = oobCompute;
         return this;

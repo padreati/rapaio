@@ -121,11 +121,6 @@ public class CTree extends AbstractClassifier {
                 .withSampler(sampler());
     }
 
-    @Override
-    public Capabilities capabilities() {
-        throw new IllegalArgumentException("not implemented yet");
-    }
-
     public CTreeNode getRoot() {
         return root;
     }

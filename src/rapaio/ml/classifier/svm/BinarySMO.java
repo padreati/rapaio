@@ -132,11 +132,6 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                 .withMaxRuns(maxRuns);
     }
 
-    @Override
-    public Capabilities capabilities() {
-        throw new IllegalArgumentException("not implemented yet");
-    }
-
     public BinarySMO withKernel(Kernel value) {
         kernel = value;
         return this;
