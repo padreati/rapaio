@@ -109,12 +109,12 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
     }
 
     @Override
-    public void learnFurther(Frame df, Var weights, String targetVars, int additionalRuns) {
+    public void learnFurther(int runs, Frame df, Var weights, String... targetVars) {
 
         if (this.targetNames() != null && dictionaries() != null) {
-            this.runs += additionalRuns;
+            this.runs += runs;
         } else {
-            this.runs = additionalRuns;
+            this.runs = runs;
             learn(df, targetVars);
             return;
         }

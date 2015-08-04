@@ -42,18 +42,27 @@ import java.util.stream.Collectors;
 public class Capabilities {
 
     private LearnType learnType;
-    private InputCount inputCount;
+    private Integer minInputCount;
+    private Integer maxInputCount;
     private Set<VarType> inputTypes;
-    private TargetCount targetCount;
+    private Integer minTargetCount;
+    private Integer maxTargetCount;
     private Set<VarType> targetTypes;
 
+    /**
+     * Specifies the type of learning algorithm
+     *
+     * @param learnType implemented learning type
+     * @return builder instance
+     */
     public Capabilities withLearnType(LearnType learnType) {
         this.learnType = learnType;
         return this;
     }
 
-    public Capabilities withInputCount(InputCount inputCount) {
-        this.inputCount = inputCount;
+    public Capabilities withInputCount(int minInputCount, int maxInputCount) {
+        this.minInputCount = minInputCount;
+        this.maxInputCount = maxInputCount;
         return this;
     }
 
@@ -62,8 +71,9 @@ public class Capabilities {
         return this;
     }
 
-    public Capabilities withTargetCount(TargetCount targetCount) {
-        this.targetCount = targetCount;
+    public Capabilities withTargetCount(int minTargetCount, int maxTargetCount) {
+        this.minTargetCount = minTargetCount;
+        this.maxTargetCount = maxTargetCount;
         return this;
     }
 
@@ -82,7 +92,13 @@ public class Capabilities {
     public void checkAtLearnPhase(Frame df, Var weights, String... targetVars) {
 
         // check if capabilities are well-specified
-        if (targetCount == null || learnType == null || targetTypes == null) {
+        if (learnType == null ||
+                inputTypes == null ||
+                targetTypes == null ||
+                minInputCount == null ||
+                maxInputCount == null ||
+                minTargetCount == null ||
+                maxTargetCount == null) {
             throw new IllegalArgumentException("Capabilities not initialized completely!");
         }
 
@@ -90,8 +106,8 @@ public class Capabilities {
         checkLearnType(df, weights, targetVars);
         checkTargetCount(df, weights, targetVars);
         checkTargetTypes(df, weights, targetVars);
-//        checkInputCount(df, weights, targetVars);
-//        checkInputTypes(df, weights, targetVars);
+        checkInputCount(df, weights, targetVars);
+        checkInputTypes(df, weights, targetVars);
     }
 
     private void checkLearnType(Frame df, Var weights, String... targetVars) {
@@ -127,22 +143,12 @@ public class Capabilities {
 
     private void checkTargetCount(Frame df, Var weights, String... targetVarNames) {
         List<String> varList = new VarRange(targetVarNames).parseVarNames(df);
-        switch (targetCount) {
-            case NONE:
-                if (!varList.isEmpty()) {
-                    throw new IllegalArgumentException("Algorithm does not allow specification of target variables.");
-                }
-                break;
-            case SINGLE:
-                if (varList.size() != 1) {
-                    throw new IllegalArgumentException("Algorithm requires specification of a single target variable.");
-                }
-                break;
-            case MULTIPLE:
-                if (varList.size() < 1) {
-                    throw new IllegalArgumentException("Algorithm requires specification of at least one target variable.");
-                }
-                break;
+        int size = varList.size();
+        if (size < minTargetCount) {
+            throw new IllegalArgumentException("Algorithm requires more than " + minInputCount + " target variables.");
+        }
+        if (size > maxTargetCount) {
+            throw new IllegalArgumentException("Algorithm does not allow more than " + maxInputCount + " target variables");
         }
     }
 
@@ -155,21 +161,38 @@ public class Capabilities {
         }
     }
 
+    private void checkInputCount(Frame df, Var weights, String... targetVars) {
+        List<String> inputNames = new VarRange(targetVars).parseInverseVarNames(df);
+        int size = inputNames.size();
+        if (size < minInputCount) {
+            throw new IllegalArgumentException("Algorithm requires more than " + minInputCount + " input variables.");
+        }
+        if (size > maxInputCount) {
+            throw new IllegalArgumentException("Algorithm does not allow more than " + maxInputCount + " input variables");
+        }
+    }
+
+    void checkInputTypes(Frame df, Var weights, String... targetVars) {
+        List<String> inputNames = new VarRange(targetVars).parseInverseVarNames(df);
+        StringBuilder sb = new StringBuilder();
+        for (String inputName : inputNames) {
+            Var inputVar = df.var(inputName);
+            if (!inputTypes.contains(inputVar.type())) {
+                if (sb.length() != 0) {
+                    sb.append(", ");
+                }
+                sb.append(inputName).append("[").append(inputVar.type().name()).append("]");
+            }
+        }
+        if (sb.length() > 0) {
+            throw new IllegalArgumentException("Algorithm does not allow input variables of give types: " + sb.toString());
+        }
+    }
+
+
     public enum LearnType {
         UNARY_CLASSIFIER,
         BINARY_CLASSIFIER,
         MULTICLASS_CLASSIFIER
-    }
-
-    public enum TargetCount {
-        NONE,
-        SINGLE,
-        MULTIPLE
-    }
-
-    public enum InputCount {
-        NONE,
-        SINGLE,
-        MULTIPLE
     }
 }

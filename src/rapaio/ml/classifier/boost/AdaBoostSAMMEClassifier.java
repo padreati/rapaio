@@ -141,7 +141,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     }
 
     @Override
-    public void learnFurther(Frame df, Var weights, String targetVarsRange, int additionalRuns) {
+    public void learnFurther(int runs, Frame df, Var weights, String... targetVarsRange) {
 
         List<String> targetVarList = new VarRange(targetVarsRange).parseVarNames(df);
         String[] targetVars = targetVarList.toArray(new String[targetVarList.size()]);
@@ -152,9 +152,9 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
                     k != firstDict().length - 1)) {
                 throw new IllegalArgumentException("previous classifier trained on different target");
             }
-            runs += additionalRuns;
+            this.runs += runs;
         } else {
-            runs = additionalRuns;
+            this.runs = runs;
             learn(df, weights, targetVarsRange);
             return;
         }

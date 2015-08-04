@@ -131,7 +131,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
     }
 
     @Override
-    public void learnFurther(Frame df, Var weights, String targetVarNames, int runs) {
+    public void learnFurther(int runs, Frame df, Var weights, String... targetVarNames) {
         if (targetNames() == null) {
             withRuns(runs);
             learn(df, weights, targetVarNames);

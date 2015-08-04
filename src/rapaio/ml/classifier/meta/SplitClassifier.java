@@ -132,7 +132,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
     }
 
     @Override
-    public void learnFurther(Frame df, Var weights, String targetVars, int runs) {
+    public void learnFurther(int runs, Frame df, Var weights, String... targetVars) {
         withRuns(runs);
         learn(df, weights, targetVars);
     }

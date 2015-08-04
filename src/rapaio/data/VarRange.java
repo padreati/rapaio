@@ -23,8 +23,11 @@
 
 package rapaio.data;
 
+import groovy.lang.IntRange;
+
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Utility tool to ease the specification of selection of variable,
@@ -135,5 +138,10 @@ public class VarRange {
 
     public List<String> parseVarNames(Frame df) {
         return parseVarIndexes(df).stream().map(i -> df.varNames()[i]).collect(Collectors.toList());
+    }
+
+    public List<String> parseInverseVarNames(Frame df) {
+        Set<Integer> indexes = new HashSet(parseVarIndexes(df));
+        return IntStream.range(0, df.varCount()).filter(i -> !indexes.contains(i)).boxed().map(i -> df.var(i).name()).collect(Collectors.toList());
     }
 }

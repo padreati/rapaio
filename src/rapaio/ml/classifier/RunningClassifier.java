@@ -30,6 +30,8 @@ import rapaio.data.Var;
 import java.io.Serializable;
 
 /**
+ * A running classifier is a classifier which can be built incrementally.
+ *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 public interface RunningClassifier extends Classifier, Serializable {
@@ -47,23 +49,23 @@ public interface RunningClassifier extends Classifier, Serializable {
      * All weights are equal with 1.
      * </ul>
      *
+     * @param runs       additional runs to build
      * @param df         data set instances
      * @param targetVars target column name
-     * @param runs       additional runs to build
      */
-    default void learnFurther(Frame df, String targetVars, int runs) {
-        learnFurther(df, Numeric.newFill(df.rowCount(), 1.0), targetVars, runs);
+    default void learnFurther(int runs, Frame df, String... targetVars) {
+        learnFurther(runs, df, Numeric.newFill(df.rowCount(), 1.0), targetVars);
     }
 
     /**
      * Builds classifier using artifacts from a previous classifier.
      *
+     * @param runs       additional runs to build
      * @param df         data set instances
      * @param weights    weights of the instances
      * @param targetVars target column name
-     * @param runs       additional runs to build
      */
-    void learnFurther(Frame df, Var weights, String targetVars, int runs);
+    void learnFurther(int runs, Frame df, Var weights, String... targetVars);
 
     /**
      * Builds a new fit, using as starting point the previous fit object.
