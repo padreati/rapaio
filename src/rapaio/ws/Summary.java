@@ -74,7 +74,7 @@ public class Summary {
             int i = df.varIndex(names[k]);
 
             Var v = df.getVar(i);
-            if (v.type().isNumeric()) {
+            if (v.getType().isNumeric()) {
                 double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
                 double[] perc = new Quantiles(v, p).values();
                 double mean = new Mean(v).value();
@@ -106,7 +106,7 @@ public class Summary {
                 }
             }
 
-            if (v.type().isNominal()) {
+            if (v.getType().isNominal()) {
                 int[] hits = new int[v.dictionary().length];
                 int[] indexes = new int[v.dictionary().length];
                 for (int j = 0; j < df.rowCount(); j++) {
@@ -254,7 +254,7 @@ public class Summary {
             second[i] = " ";
         }
 
-        if (v.type() == VarType.BINARY) {
+        if (v.getType() == VarType.BINARY) {
             first[0] = "0";
             first[1] = "1";
             first[2] = "NA's";
@@ -277,7 +277,7 @@ public class Summary {
             second[2] = String.valueOf(missing);
         }
 
-        if (v.type() == VarType.INDEX || v.type() == VarType.NUMERIC) {
+        if (v.getType() == VarType.INDEX || v.getType() == VarType.NUMERIC) {
             double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
             double[] perc = new Quantiles(v, p).values();
             double mean = new Mean(v).value();
@@ -309,7 +309,7 @@ public class Summary {
             }
         }
 
-        if (v.type().isNominal()) {
+        if (v.getType().isNominal()) {
             int[] hits = new int[v.rowCount() + 1];
             int[] indexes = new int[v.rowCount() + 1];
             for (int j = 0; j < v.rowCount(); j++) {
@@ -461,10 +461,10 @@ public class Summary {
         for (int i = 0; i < vars.length; i++) {
             max[i] = names[i].length() + 1;
             for (int j = 0; j < vars[i].rowCount(); j++) {
-                if (vars[i].type().isNominal() && max[i] < vars[i].label(j).length()) {
+                if (vars[i].getType().isNominal() && max[i] < vars[i].label(j).length()) {
                     max[i] = vars[i].label(j).length();
                 }
-                if (vars[i].type().isNumeric()) {
+                if (vars[i].getType().isNumeric()) {
                     String value = String.format("%s", String.format("%.10f", vars[i].value(j)));
                     if (max[i] < value.length()) {
                         max[i] = value.length();
@@ -494,7 +494,7 @@ public class Summary {
             for (int i = 0; i < lines; i++) {
                 for (int j = start; j <= pos; j++) {
                     String value;
-                    if (vars[j].type().isNominal()) {
+                    if (vars[j].getType().isNominal()) {
                         value = String.format("%" + max[j] + "s", vars[j].label(i));
                     } else {
                         value = String.format("%" + max[j] + "s", String.format("%.6f", vars[j].value(i)));

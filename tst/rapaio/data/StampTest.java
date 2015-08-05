@@ -40,8 +40,8 @@ public class StampTest {
     @Test
     public void smokeTest() {
         Var stamp = Stamp.newEmpty(1);
-        assertFalse(stamp.type().isNumeric());
-        assertFalse(stamp.type().isNominal());
+        assertFalse(stamp.getType().isNumeric());
+        assertFalse(stamp.getType().isNominal());
 
         try {
             stamp.dictionary();

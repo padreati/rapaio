@@ -56,7 +56,7 @@ public final class ExperimentalTools implements Serializable {
         for (int i = 0; i < source.size(); i++) {
             for (Frame frame : source) {
                 for (String colName : frame.varNames()) {
-                    if (!frame.getVar(colName).type().isNominal()) {
+                    if (!frame.getVar(colName).getType().isNominal()) {
                         continue;
                     }
                     if (!dicts.containsKey(colName)) {
@@ -74,7 +74,7 @@ public final class ExperimentalTools implements Serializable {
             for (int i = 0; i < frame.varCount(); i++) {
                 Var v = frame.getVar(i);
                 String colName = frame.varNames()[i];
-                if (!v.type().isNominal()) {
+                if (!v.getType().isNominal()) {
                     vars[i] = v;
                 } else {
                     vars[i] = Nominal.newEmpty(v.rowCount(), dicts.get(colName)).withName(colName);

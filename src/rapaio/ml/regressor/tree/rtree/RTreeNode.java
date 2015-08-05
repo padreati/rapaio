@@ -107,7 +107,7 @@ public class RTreeNode {
         Arrays.stream(tree.varSelector.nextVarNames()).parallel().forEach(testCol -> {
             if (testCol.equals(tree.firstTargetName())) return;
 
-            if (df.getVar(testCol).type().isNumeric()) {
+            if (df.getVar(testCol).getType().isNumeric()) {
                 tree.numericMethod.computeCandidates(
                         tree, df, weights, testCol, tree.firstTargetName(), tree.function)
                         .forEach(candidates::add);

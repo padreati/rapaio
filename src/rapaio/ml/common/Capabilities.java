@@ -115,7 +115,7 @@ public class Capabilities {
         List<String> varList = new VarRange(targetVars).parseVarNames(df);
         for (String varName : varList) {
             Var var = df.getVar(varName);
-            VarType type = var.type();
+            VarType type = var.getType();
             switch (learnType) {
 
                 // classifier allow a single term in dictionary (other than missing labels)
@@ -156,8 +156,8 @@ public class Capabilities {
     private void checkTargetTypes(Frame df, Var weights, String... targetVarNames) {
         List<String> varList = new VarRange(targetVarNames).parseVarNames(df);
         for (String varName : varList) {
-            if (!targetTypes.contains(df.getVar(varName).type())) {
-                throw new IllegalArgumentException("Algorithm does not allow " + df.getVar(varName).type().name() + " as target type vor var: " + varName);
+            if (!targetTypes.contains(df.getVar(varName).getType())) {
+                throw new IllegalArgumentException("Algorithm does not allow " + df.getVar(varName).getType().name() + " as target type vor var: " + varName);
             }
         }
     }
@@ -195,11 +195,11 @@ public class Capabilities {
         StringBuilder sb = new StringBuilder();
         for (String inputName : inputNames) {
             Var inputVar = df.getVar(inputName);
-            if (!inputTypes.contains(inputVar.type())) {
+            if (!inputTypes.contains(inputVar.getType())) {
                 if (sb.length() != 0) {
                     sb.append(", ");
                 }
-                sb.append(inputName).append("[").append(inputVar.type().name()).append("]");
+                sb.append(inputName).append("[").append(inputVar.getType().name()).append("]");
             }
         }
         if (sb.length() > 0) {

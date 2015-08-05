@@ -44,18 +44,18 @@ public class SortVarTest {
     public void smokeTest() {
         Var v = Index.newEmpty();
         Var sorted = new VFRefSort(index(v, true)).filter(v);
-        assertTrue(sorted.type().isNumeric());
-        assertFalse(sorted.type().isNominal());
+        assertTrue(sorted.getType().isNumeric());
+        assertFalse(sorted.getType().isNominal());
 
         v = Numeric.newEmpty();
         sorted = new VFRefSort(numeric(v, true)).filter(v);
-        assertTrue(sorted.type().isNumeric());
-        assertFalse(sorted.type().isNominal());
+        assertTrue(sorted.getType().isNumeric());
+        assertFalse(sorted.getType().isNominal());
 
         v = Nominal.newEmpty(0);
         sorted = new VFRefSort(nominal(v, true)).filter(v);
-        assertFalse(sorted.type().isNumeric());
-        assertTrue(sorted.type().isNominal());
+        assertFalse(sorted.getType().isNumeric());
+        assertTrue(sorted.getType().isNominal());
     }
 
     @Test

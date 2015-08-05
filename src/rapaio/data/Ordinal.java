@@ -105,7 +105,7 @@ public final class Ordinal extends FactorBase {
     }
 
     @Override
-    public VarType type() {
+    public VarType getType() {
         return VarType.ORDINAL;
     }
 

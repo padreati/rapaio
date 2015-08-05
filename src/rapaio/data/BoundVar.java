@@ -69,11 +69,11 @@ public class BoundVar extends AbstractVar {
             throw new IllegalArgumentException("List of counts is empty");
         if (vars.size() != counts.size())
             throw new IllegalArgumentException("List of counts is not equal with list of variables");
-        if (vars.stream().map(Var::type).distinct().count() != 1)
+        if (vars.stream().map(Var::getType).distinct().count() != 1)
             throw new IllegalArgumentException("It is not allowed to bind variables of different types");
 
         this.rowCount = counts.stream().mapToInt(i -> i).sum();
-        this.varType = vars.get(0).type();
+        this.varType = vars.get(0).getType();
         this.counts = new ArrayList<>();
         this.vars = new ArrayList<>();
 
@@ -109,7 +109,7 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    public VarType type() {
+    public VarType getType() {
         return varType;
     }
 

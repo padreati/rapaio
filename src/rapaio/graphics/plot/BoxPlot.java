@@ -87,14 +87,14 @@ public class BoxPlot extends HostFigure {
         if (varRange == null) {
             int len = 0;
             for (int i = 0; i < df.varCount(); i++) {
-                if (df.getVar(i).type().isNumeric()) {
+                if (df.getVar(i).getType().isNumeric()) {
                     len++;
                 }
             }
             int[] indexes = new int[len];
             len = 0;
             for (int i = 0; i < df.varCount(); i++) {
-                if (df.getVar(i).type().isNumeric()) {
+                if (df.getVar(i).getType().isNumeric()) {
                     indexes[len++] = i;
                 }
             }

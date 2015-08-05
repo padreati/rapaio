@@ -121,7 +121,7 @@ public class CTreeNode implements Serializable {
             if (testCol.equals(tree.firstTargetName())) return;
             if (!tree.testCounter.canUse(testCol)) return;
 
-            if (df.getVar(testCol).type().isNumeric()) {
+            if (df.getVar(testCol).getType().isNumeric()) {
                 tree.getNumericMethod().computeCandidates(
                         tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction())
                         .forEach(candidates::add);

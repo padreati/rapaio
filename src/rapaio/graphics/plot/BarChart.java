@@ -67,19 +67,19 @@ public class BarChart extends HostFigure {
     }
 
     public BarChart(Var category, Var condition, Var numeric, GOpt... opts) {
-        if (!category.type().isNominal()) {
+        if (!category.getType().isNominal()) {
             throw new IllegalArgumentException("categories are nominal only");
         }
         if (condition == null) {
             condition = Nominal.newEmpty(category.rowCount(), new HashSet<>());
         }
-        if (!condition.type().isNominal()) {
+        if (!condition.getType().isNominal()) {
             throw new IllegalArgumentException("conditions are nominal only");
         }
         if (numeric == null) {
             numeric = Numeric.newFill(category.rowCount(), 1);
         }
-        if (!numeric.type().isNumeric()) {
+        if (!numeric.getType().isNumeric()) {
             throw new IllegalArgumentException("Numeric var must be .. isNumeric");
         }
 

@@ -145,7 +145,7 @@ public class NaiveBayes extends AbstractClassifier {
                     if (firstTargetName().equals(testCol)) {
                         return;
                     }
-                    if (df.getVar(testCol).type().isNumeric()) {
+                    if (df.getVar(testCol).getType().isNumeric()) {
                         NumericEstimator estimator = numEstimator.newInstance();
                         estimator.learn(df, firstTargetName(), testCol);
                         numMap.put(testCol, estimator);
@@ -153,7 +153,7 @@ public class NaiveBayes extends AbstractClassifier {
                             WS.print(".");
                         return;
                     }
-                    if (df.getVar(testCol).type().isNominal()) {
+                    if (df.getVar(testCol).getType().isNominal()) {
                         NominalEstimator estimator = nomEstimator.newInstance();
                         estimator.learn(df, weights, firstTargetName(), testCol);
                         nomMap.put(testCol, estimator);

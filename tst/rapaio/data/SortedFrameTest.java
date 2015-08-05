@@ -143,7 +143,7 @@ public class SortedFrameTest {
             assertEquals(df.varNames()[i], sorted.varNames()[i]);
             assertEquals(df.varIndex(df.varNames()[i]), sorted.varIndex(sorted.varNames()[i]));
             assertEquals(df.varNames()[i], sorted.varNames()[i]);
-            assertEquals(df.getVar(df.varNames()[i]).type().isNominal(), sorted.getVar(sorted.varNames()[i]).type().isNominal());
+            assertEquals(df.getVar(df.varNames()[i]).getType().isNominal(), sorted.getVar(sorted.varNames()[i]).getType().isNominal());
         }
     }
 
@@ -154,7 +154,7 @@ public class SortedFrameTest {
         for (int i = 0; i < 10_000; i++) {
             int col = RandomSource.nextInt(sorted.varCount());
             boolean asc = RandomSource.nextDouble() >= .5;
-            Comparator<Integer> comp = sorted.getVar(col).type().isNominal() ?
+            Comparator<Integer> comp = sorted.getVar(col).getType().isNominal() ?
                     nominal(sorted.getVar(0), asc) :
                     numeric(sorted.getVar(0), asc);
             sorted = new FFAbstractRefSort(comp).filter(sorted);

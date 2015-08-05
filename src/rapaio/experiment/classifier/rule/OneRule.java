@@ -83,7 +83,7 @@ public class OneRule extends AbstractClassifier {
 
         bestRuleSet = null;
         for (String testCol : inputNames()) {
-            RuleSet ruleSet = df.getVar(testCol).type().isNominal() ?
+            RuleSet ruleSet = df.getVar(testCol).getType().isNominal() ?
                     buildNominal(testCol, df, weights) :
                     buildNumeric(testCol, df, weights);
             if (bestRuleSet == null || ruleSet.getAccuracy() > bestRuleSet.getAccuracy()) {
@@ -120,7 +120,7 @@ public class OneRule extends AbstractClassifier {
         }
         String colName = bestRuleSet.colName;
 
-        if (test.getVar(colName).type().isNominal()) {
+        if (test.getVar(colName).getType().isNominal()) {
             String value = test.label(row, test.varIndex(colName));
             for (Rule oneRule : bestRuleSet.rules) {
                 NominalRule nominal = (NominalRule) oneRule;
@@ -129,7 +129,7 @@ public class OneRule extends AbstractClassifier {
                 }
             }
         }
-        if (test.getVar(colName).type().isNumeric()) {
+        if (test.getVar(colName).getType().isNumeric()) {
             boolean missing = test.getVar(colName).missing(row);
             double value = test.value(row, test.varIndex(colName));
             for (Rule oneRule : bestRuleSet.rules) {

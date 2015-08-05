@@ -84,7 +84,7 @@ public class SolidFrame extends AbstractFrame {
     public static SolidFrame newEmptyFrom(Frame src, int rowCount) {
         Var[] vars = new Var[src.varCount()];
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = src.getVar(i).type().newInstance(rowCount);
+            vars[i] = src.getVar(i).getType().newInstance(rowCount);
         }
         return SolidFrame.newWrapOf(vars);
     }

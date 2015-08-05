@@ -35,6 +35,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * Random access list of observed values for multiple variables.
  * <p>
@@ -220,7 +222,7 @@ public interface Frame extends Serializable, Printable {
      */
     default Frame removeRows(Mapping mapping) {
         Set<Integer> remove = mapping.rowStream().mapToObj(i -> i).collect(Collectors.toSet());
-        List<Integer> map = IntStream.range(0, rowCount()).filter(row -> !remove.contains(row)).mapToObj(i -> i).collect(Collectors.toList());
+        List<Integer> map = IntStream.range(0, rowCount()).filter(row -> !remove.contains(row)).mapToObj(i -> i).collect(toList());
         return mapRows(Mapping.newWrapOf(map));
     }
 
@@ -470,6 +472,10 @@ public interface Frame extends Serializable, Printable {
      */
     default FSpots stream() {
         return new FSpots(IntStream.range(0, rowCount()).mapToObj(row -> new FSpot(this, row)), this);
+    }
+
+    default List<FSpot> spotList() {
+        return IntStream.range(0, rowCount()).mapToObj(row -> new FSpot(this, row)).collect(toList());
     }
 
     @Override

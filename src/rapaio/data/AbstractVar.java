@@ -48,7 +48,7 @@ public abstract class AbstractVar implements Var {
         // this implementation is useful for non-solid variables like bounded or mapped
         // all solid implementations have their own version of solidCopy method
 
-        switch (type()) {
+        switch (getType()) {
             case NOMINAL:
                 return stream().map(VSpot::label).collect(Nominal.collector());
             case ORDINAL:

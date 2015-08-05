@@ -132,7 +132,7 @@ public class BoundFrame extends AbstractFrame {
             }
             for (String _name : _names) {
                 // throw an exception if the column does not exists
-                if (!dfs[i].getVar(_name).type().equals(dfs[0].getVar(_name).type())) {
+                if (!dfs[i].getVar(_name).getType().equals(dfs[0].getVar(_name).getType())) {
                     // column exists but does not have the same type
                     throw new IllegalArgumentException("can't bind by rows variable of different types");
                 }
