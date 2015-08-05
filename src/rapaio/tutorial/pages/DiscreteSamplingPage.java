@@ -172,7 +172,7 @@ public class DiscreteSamplingPage implements TutorialPage {
         }
 
         final Frame df = SolidFrame.newWrapOf(SAMPLE_SIZE * TRIALS, Arrays.asList(vars));
-        draw(points(df.var(0), df.var(1), pch(1), color(34), sz(2)), 600, 300);
+        draw(points(df.getVar(0), df.getVar(1), pch(1), color(34), sz(2)), 600, 300);
 
         code("        final int TRIALS = 100;\n" +
                 "        final int SAMPLE_SIZE = 6;\n" +
@@ -190,7 +190,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "        }\n" +
                 "\n" +
                 "        final Frame df = SolidFrame.newWrapOf(SAMPLE_SIZE * TRIALS, Arrays.asList(vars));\n" +
-                "        draw(points(df.var(0), df.var(1), pch(1), color(34), sz(2)), 600, 300);\n");
+                "        draw(points(df.getVar(0), df.getVar(1), pch(1), color(34), sz(2)), 600, 300);\n");
 
         p("There is random in that plot. Everywhere. A printSummary on the data, however, " +
                 "can give us enough clues to understand that the densities " +
@@ -305,7 +305,7 @@ public class DiscreteSamplingPage implements TutorialPage {
         }
 
         final Frame df2 = SolidFrame.newWrapOf(SAMPLE_SIZE * TRIALS, vars);
-        draw(points(df2.var(0), df2.var(1), pch(1), sz(2), color(34)), 600, 300);
+        draw(points(df2.getVar(0), df2.getVar(1), pch(1), sz(2), color(34)), 600, 300);
 
         code("        vars[0] = Numeric.newEmpty(SAMPLE_SIZE * TRIALS).withName(\"loaded lottery\");\n" +
                 "        vars[1] = Numeric.newEmpty(SAMPLE_SIZE * TRIALS).withName(\"winning number\");\n" +
@@ -331,7 +331,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "        }\n" +
                 "\n" +
                 "        final Frame df2 = SolidFrame.newWrapOf(SAMPLE_SIZE * TRIALS, vars);\n" +
-                "        draw(points(df2.var(0), df2.var(1), pch(1), sz(2), color(34)), 600, 300);\n");
+                "        draw(points(df2.getVar(0), df2.getVar(1), pch(1), sz(2), color(34)), 600, 300);\n");
 
         p("This time we see more than random values there. There is a clear more dense " +
                 "region in the upper side of the graph. Also, we can note, perhaps " +
@@ -341,7 +341,7 @@ public class DiscreteSamplingPage implements TutorialPage {
                 "density would help more. ");
 
         draw(plot()
-                        .funLine(new KDE(df2.var("winning number"), 3)::pdf, color(Index.newScalar(1)))
+                        .funLine(new KDE(df2.getVar("winning number"), 3)::pdf, color(Index.newScalar(1)))
                         .xLab("winning numbers")
                         .yLab("kernel probability density")
                         .xLim(-10, 60).yLim(0, .05),

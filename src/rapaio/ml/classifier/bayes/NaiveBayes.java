@@ -23,6 +23,7 @@
 
 package rapaio.ml.classifier.bayes;
 
+import rapaio.data.VarType;
 import rapaio.sys.WS;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
@@ -44,8 +45,6 @@ import java.util.stream.IntStream;
 /**
  * Naive Bayes Classifier.
  * <p>
- * The base assumption for naive bayes is that all the variables are
- * independent. Thus, the joint distribution
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
@@ -67,7 +66,11 @@ public class NaiveBayes extends AbstractClassifier {
 
     @Override
     public NaiveBayes newInstance() {
-        return new NaiveBayes().withNumEstimator(numEstimator).withNomEstimator(nomEstimator).withDebug(debug);
+        return new NaiveBayes()
+                .withNumEstimator(numEstimator)
+                .withNomEstimator(nomEstimator)
+                .withLaplaceSmoother(useLaplaceSmoother)
+                .withDebug(debug);
     }
 
     @Override
@@ -77,7 +80,17 @@ public class NaiveBayes extends AbstractClassifier {
 
     @Override
     public String fullName() {
-        return name() + "(numEstimator=" + numEstimator.name() + ",nomEstimator=" + nomEstimator.name() + ")";
+        return name() + "(numEstimator=" + numEstimator.name() + ", nomEstimator=" + nomEstimator.name() + ")";
+    }
+
+    @Override
+    public Capabilities capabilities() {
+        return new Capabilities()
+                .withLearnType(Capabilities.LearnType.MULTICLASS_CLASSIFIER)
+                .withInputCount(0, Integer.MAX_VALUE)
+                .withInputTypes(VarType.NOMINAL, VarType.NUMERIC)
+                .withTargetCount(1, 1)
+                .withTargetTypes(VarType.NOMINAL);
     }
 
     @Override
@@ -95,6 +108,11 @@ public class NaiveBayes extends AbstractClassifier {
         return this;
     }
 
+    public NaiveBayes withLaplaceSmoother(boolean useLaplaceSmoother) {
+        this.useLaplaceSmoother = useLaplaceSmoother;
+        return this;
+    }
+
     @Override
     public NaiveBayes learn(Frame df, Var weights, String... targetVarNames) {
 
@@ -103,11 +121,11 @@ public class NaiveBayes extends AbstractClassifier {
         // build priors
 
         priors = new HashMap<>();
-        DVector dv = DVector.newFromWeights(df.var(firstTargetName()), weights, firstDict());
+        DVector dv = DVector.newFromWeights(df.getVar(firstTargetName()), weights, firstDict());
 
-        // laplace add-one smoothing
-        for (int i = 0; i < firstDict().length; i++) {
-            dv.increment(i, 1.0);
+        if (useLaplaceSmoother) {
+            // laplace add-one smoothing
+            IntStream.range(0, firstDict().length).forEach(i -> dv.increment(i, 1.0));
         }
         dv.normalize(false);
         for (int i = 1; i < firstDict().length; i++) {
@@ -127,7 +145,7 @@ public class NaiveBayes extends AbstractClassifier {
                     if (firstTargetName().equals(testCol)) {
                         return;
                     }
-                    if (df.var(testCol).type().isNumeric()) {
+                    if (df.getVar(testCol).type().isNumeric()) {
                         NumericEstimator estimator = numEstimator.newInstance();
                         estimator.learn(df, firstTargetName(), testCol);
                         numMap.put(testCol, estimator);
@@ -135,7 +153,7 @@ public class NaiveBayes extends AbstractClassifier {
                             WS.print(".");
                         return;
                     }
-                    if (df.var(testCol).type().isNominal()) {
+                    if (df.getVar(testCol).type().isNominal()) {
                         NominalEstimator estimator = nomEstimator.newInstance();
                         estimator.learn(df, weights, firstTargetName(), testCol);
                         nomMap.put(testCol, estimator);

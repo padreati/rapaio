@@ -31,6 +31,7 @@ import rapaio.ws.Summary;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -336,6 +337,13 @@ public interface Var extends Serializable, Printable {
      */
     default VSpots stream() {
         return new VSpots(IntStream.range(0, rowCount()).mapToObj(row -> new VSpot(row, this)), this);
+    }
+
+    /**
+     * @return a stream of variables spots
+     */
+    default List<VSpot> spotList() {
+        return IntStream.range(0, rowCount()).mapToObj(row -> new VSpot(row, this)).collect(Collectors.toList());
     }
 
     default Comparator<Integer> refComparator() {

@@ -37,9 +37,9 @@ import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.plot.Plot;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.CFit;
-import rapaio.ml.classifier.svm.BinarySMO;
-import rapaio.ml.classifier.svm.kernel.PolyKernel;
-import rapaio.ml.classifier.svm.kernel.WaveletKernel;
+import rapaio.experiment.classifier.svm.BinarySMO;
+import rapaio.experiment.classifier.svm.kernel.PolyKernel;
+import rapaio.experiment.classifier.svm.kernel.WaveletKernel;
 import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.ws.Summary;
 
@@ -174,7 +174,7 @@ public class MeshGridTutorialPage implements TutorialPage {
         for (int i = 0; i < q.rowCount() - 1; i++) {
             p.meshContour(mg.compute(qq[i], qq[i + 1]), true, true, Plotter.color(gradient.getColor(i)), lwd(0.2f));
         }
-        p.points(xy.var("x"), xy.var("y"));
+        p.points(xy.getVar("x"), xy.getVar("y"));
         draw(p, 600, 400);
 
         code("        Plot p = plot();\n" +
@@ -204,22 +204,22 @@ public class MeshGridTutorialPage implements TutorialPage {
         iris = iris.stream().filter(s -> s.index(2) != 3).toMappedFrame();
 
         Var trimmedClass = Nominal.newEmpty().withName("class");
-        iris.var("class").stream().forEach(s -> trimmedClass.addLabel(s.label()));
+        iris.getVar("class").stream().forEach(s -> trimmedClass.addLabel(s.label()));
 
-        iris = BoundFrame.newByVars(iris.var(0), iris.var(1), trimmedClass).solidCopy();
+        iris = BoundFrame.newByVars(iris.getVar(0), iris.getVar(1), trimmedClass).solidCopy();
 
         Summary.printSummary(iris);
 
-        draw(points(iris.var(0), iris.var(1), Plotter.color(iris.var(2))));
+        draw(points(iris.getVar(0), iris.getVar(1), Plotter.color(iris.getVar(2))));
 
         code("        Frame iris = Datasets.loadIrisDataset();\n" +
                 "        iris = iris.mapVars(\"sepal-length,sepal-width,class\");\n" +
                 "        iris = iris.stream().filter(s -> s.index(2) != 3).toMappedFrame();\n" +
                 "\n" +
                 "        Var trimmedClass = Nominal.newEmpty().withName(\"class\");\n" +
-                "        iris.var(\"class\").stream().forEach(s -> trimmedClass.addLabel(s.label()));\n" +
+                "        iris.getVar(\"class\").stream().forEach(s -> trimmedClass.addLabel(s.label()));\n" +
                 "\n" +
-                "        iris = BoundFrame.newByVars(iris.var(0), iris.var(1), trimmedClass).solidCopy();\n" +
+                "        iris = BoundFrame.newByVars(iris.getVar(0), iris.getVar(1), trimmedClass).solidCopy();\n" +
                 "\n" +
                 "        Summary.printSummary(iris);\n");
 
@@ -229,12 +229,12 @@ public class MeshGridTutorialPage implements TutorialPage {
         BinarySMO smo = new BinarySMO().withKernel(new PolyKernel(2));
         smo.learn(iris, "class");
         CFit cr = smo.fit(iris);
-        new ConfusionMatrix(iris.var("class"), cr.firstClasses()).printSummary();
+        new ConfusionMatrix(iris.getVar("class"), cr.firstClasses()).printSummary();
 
         code("        BinarySMO smo = new BinarySMO().withKernel(new PolyKernel(2));\n" +
                 "        smo.learn(iris, \"class\");\n" +
                 "        CFit cr = smo.predict(iris);\n" +
-                "        new ConfusionMatrix(iris.var(\"class\"), cr.firstClasses()).printSummary();\n");
+                "        new ConfusionMatrix(iris.getVar(\"class\"), cr.firstClasses()).printSummary();\n");
 
         p("It looks like there is no error there. However it is legitimate to ask yourself " +
                 "how it looks the decision function. One possibility is with iso lines. ");
@@ -269,7 +269,7 @@ public class MeshGridTutorialPage implements TutorialPage {
             p.meshContour(mg1.compute(qq[i], qq[i + 1]), true, true, lwd(0.3f), Plotter.color(gradient.getColor(i)));
         }
         p.meshContour(mg1.compute(0, Double.POSITIVE_INFINITY), true, false, lwd(1.2f));
-        p.points(iris.var(0), iris.var(1), Plotter.color(iris.var(2)));
+        p.points(iris.getVar(0), iris.getVar(1), Plotter.color(iris.getVar(2)));
 
         draw(p, 600, 400);
 
@@ -309,12 +309,12 @@ public class MeshGridTutorialPage implements TutorialPage {
         Classifier c = new BinarySMO().withKernel(new WaveletKernel(0.55)).withC(0.1);
         c.learn(df, "class");
 
-        new ConfusionMatrix(df.var("class"), c.fit(df).firstClasses()).printSummary();
+        new ConfusionMatrix(df.getVar("class"), c.fit(df).firstClasses()).printSummary();
 
         // new build the mesh grid
 
-        x = Numeric.newSeq(new Minimum(df.var(0)).value() - 1, new Maximum(df.var(0)).value() + 1, 0.05).withName("x");
-        y = Numeric.newSeq(new Minimum(df.var(1)).value() - 1, new Maximum(df.var(1)).value() + 1, 0.05).withName("y");
+        x = Numeric.newSeq(new Minimum(df.getVar(0)).value() - 1, new Maximum(df.getVar(0)).value() + 1, 0.05).withName("x");
+        y = Numeric.newSeq(new Minimum(df.getVar(1)).value() - 1, new Maximum(df.getVar(1)).value() + 1, 0.05).withName("y");
 
         mg = new MeshGrid1D(x, y);
 
@@ -352,7 +352,7 @@ public class MeshGridTutorialPage implements TutorialPage {
         }
         p.meshContour(mg.compute(0, Double.POSITIVE_INFINITY), true, false, Plotter.color(0));
 
-        WS.draw(p.points(df.var(0), df.var(1), Plotter.color(df.var(2))), 800, 600);
+        WS.draw(p.points(df.getVar(0), df.getVar(1), Plotter.color(df.getVar(2))), 800, 600);
 
 
         p("And the code which produced the last graph.");
@@ -386,8 +386,8 @@ public class MeshGridTutorialPage implements TutorialPage {
                 "\n" +
                 "        // new build the mesh grid\n" +
                 "        \n" +
-                "        x = Numeric.newSeq(new Minimum(df.var(0)).value() - 1, new Maximum(df.var(0)).value() + 1, 0.05).withName(\"x\");\n" +
-                "        y = Numeric.newSeq(new Minimum(df.var(1)).value() - 1, new Maximum(df.var(1)).value() + 1, 0.05).withName(\"y\");\n" +
+                "        x = Numeric.newSeq(new Minimum(df.getVar(0)).value() - 1, new Maximum(df.var(0)).value() + 1, 0.05).withName(\"x\");\n" +
+                "        y = Numeric.newSeq(new Minimum(df.getVar(1)).value() - 1, new Maximum(df.var(1)).value() + 1, 0.05).withName(\"y\");\n" +
                 "\n" +
                 "        mg = new MeshGrid1D(x, y);\n" +
                 "\n" +
@@ -425,7 +425,7 @@ public class MeshGridTutorialPage implements TutorialPage {
                 "        }\n" +
                 "        p.add(new MeshContour(mg.compute(0, Double.POSITIVE_INFINITY), true, false).color(0));\n" +
                 "\n" +
-                "        WS.draw(p.add(new Points(df.var(0), df.var(1)).color(df.var(2))), 800, 600);\n");
+                "        WS.draw(p.add(new Points(df.getVar(0), df.getVar(1)).color(df.getVar(2))), 800, 600);\n");
 
 
         p(">>>This tutorial is generated with Rapaio document printer facilities.<<<");

@@ -67,7 +67,7 @@ public class L1Regressor extends AbstractRegressor {
         medians = new double[targetNames().length];
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
-            medians[i] = new Quantiles(df.var(target), new double[]{0.5}).values()[0];
+            medians[i] = new Quantiles(df.getVar(target), new double[]{0.5}).values()[0];
         }
     }
 

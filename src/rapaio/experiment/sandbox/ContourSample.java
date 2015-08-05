@@ -86,7 +86,7 @@ public class ContourSample {
             p.add(new MeshContour(mg.compute(qq[i], qq[i + 1]), true, true,
                     Plotter.color(gradient.getColor(i)), lwd(0.2f)));
         }
-        p.add(new Points(xy.var("x"), xy.var("y")));
+        p.add(new Points(xy.getVar("x"), xy.getVar("y")));
         draw(p);
     }
 }

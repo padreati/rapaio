@@ -58,7 +58,7 @@ public class GaussianPdf implements NumericEstimator {
             }
             onlineStatMap.get(label).update(s.value(testVar));
         });
-        for (String label : df.var(targetVar).dictionary()) {
+        for (String label : df.getVar(targetVar).dictionary()) {
             if ("?".equals(label)) {
                 continue;
             }

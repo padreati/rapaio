@@ -94,7 +94,7 @@ public class RTreeNode {
     }
 
     public void learn(RTree tree, Frame df, Var weights, int depth) {
-        value = new WeightedMean(df.var(tree.firstTargetName()), weights).value();
+        value = new WeightedMean(df.getVar(tree.firstTargetName()), weights).value();
         weight = weights.stream().complete().mapToDouble().sum();
 
         if (df.rowCount() == 0 || df.rowCount() <= tree.minCount || depth <= 1) {
@@ -107,7 +107,7 @@ public class RTreeNode {
         Arrays.stream(tree.varSelector.nextVarNames()).parallel().forEach(testCol -> {
             if (testCol.equals(tree.firstTargetName())) return;
 
-            if (df.var(testCol).type().isNumeric()) {
+            if (df.getVar(testCol).type().isNumeric()) {
                 tree.numericMethod.computeCandidates(
                         tree, df, weights, testCol, tree.firstTargetName(), tree.function)
                         .forEach(candidates::add);

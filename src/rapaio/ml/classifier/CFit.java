@@ -217,7 +217,7 @@ public class CFit implements Printable {
 
         sb.append("Classification results:").append("\n");
         if (Arrays.asList(df.varNames()).contains(firstTargetVar())) {
-            sb.append(new ConfusionMatrix(df.var(model.firstTargetName()), firstClasses()).summary());
+            sb.append(new ConfusionMatrix(df.getVar(model.firstTargetName()), firstClasses()).summary());
         } else {
             sb.append("data frame does not contain target variable.");
         }

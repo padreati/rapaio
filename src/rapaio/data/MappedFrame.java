@@ -88,7 +88,7 @@ public class MappedFrame extends AbstractFrame {
         this.vars = new Var[names.length];
         IntStream.range(0, names.length).forEach(i -> {
             colIndex.put(names[i], i);
-            vars[i] = MappedVar.newByRows(this.source.var(names[i]), this.mapping).withName(names[i]);
+            vars[i] = MappedVar.newByRows(this.source.getVar(names[i]), this.mapping).withName(names[i]);
         });
     }
 
@@ -124,13 +124,13 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public Var var(int varIndex) {
+    public Var getVar(int varIndex) {
         return vars[varIndex];
     }
 
     @Override
-    public Var var(String varName) {
-        return var(varIndex(varName));
+    public Var getVar(String varName) {
+        return getVar(varIndex(varName));
     }
 
     @Override

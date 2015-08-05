@@ -65,8 +65,13 @@ public interface Classifier extends Printable, Serializable {
      */
     String fullName();
 
+    /**
+     * Describes the classification algorithm
+     *
+     * @return capabilities of the classification algorithm
+     */
     default Capabilities capabilities() {
-        return null;
+        return new Capabilities();
     }
 
     /**

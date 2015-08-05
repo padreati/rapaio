@@ -343,11 +343,11 @@ public class Csv {
                     if (j != 0) {
                         writer.append(separatorChar);
                     }
-                    if (df.var(j).missing(i)) {
+                    if (df.getVar(j).missing(i)) {
                         writer.append("?");
                         continue;
                     }
-                    if (df.var(j).type().isNominal() || df.var(j).type().equals(VarType.TEXT)) {
+                    if (df.getVar(j).type().isNominal() || df.getVar(j).type().equals(VarType.TEXT)) {
                         writer.append(unclean(df.label(i, j)));
                     } else {
                         writer.append(format.format(df.value(i, j)));

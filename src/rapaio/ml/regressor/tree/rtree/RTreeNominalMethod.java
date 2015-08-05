@@ -67,9 +67,9 @@ public interface RTreeNominalMethod {
 
             List<RTreeCandidate> result = new ArrayList<>();
             RTreeCandidate best = null;
-            for (int i = 1; i < df.var(testColName).dictionary().length; i++) {
+            for (int i = 1; i < df.getVar(testColName).dictionary().length; i++) {
 
-                Var testVar = df.var(testColName);
+                Var testVar = df.getVar(testColName);
                 String[] testDict = testVar.dictionary();
 
                 List<String> labels = new ArrayList<>();
@@ -87,7 +87,7 @@ public interface RTreeNominalMethod {
                 double[] variances = new double[labels.size()];
                 for (int j = 0; j < variances.length; j++) {
                     String label = labels.get(j);
-                    Var v = df.stream().filter(s -> s.label(testColName).equals(label)).toMappedFrame().var(targetColName);
+                    Var v = df.stream().filter(s -> s.label(testColName).equals(label)).toMappedFrame().getVar(targetColName);
                     variances[j] = new Variance(v).value();
                 }
 
@@ -130,8 +130,8 @@ public interface RTreeNominalMethod {
 
             List<RTreeCandidate> result = new ArrayList<>();
             RTreeCandidate best = null;
-            for (int i = 1; i < df.var(testColName).dictionary().length; i++) {
-                String testLabel = df.var(testColName).dictionary()[i];
+            for (int i = 1; i < df.getVar(testColName).dictionary().length; i++) {
+                String testLabel = df.getVar(testColName).dictionary()[i];
 
                 if (df.stream()
                         .filter(s -> !s.missing(testColName) && s.label(testColName).equals(testLabel))
@@ -145,11 +145,11 @@ public interface RTreeNominalMethod {
                 Var in = df.stream()
                         .filter(s -> !s.missing(testColName) && s.label(testColName).equals(testLabel))
                         .toMappedFrame()
-                        .var(targetColName);
+                        .getVar(targetColName);
                 Var out = df.stream()
                         .filter(s -> !s.missing(testColName) && !s.label(testColName).equals(testLabel))
                         .toMappedFrame()
-                        .var(targetColName);
+                        .getVar(targetColName);
 
 
                 double left = new Variance(in).value();

@@ -61,7 +61,7 @@ public class FFAbstractAddIntercept extends FFAbstract {
         }
         List<Var> vars = new ArrayList<>();
         vars.add(Numeric.newFill(df.rowCount(), 1.0).withName(INTERCEPT));
-        Arrays.stream(df.varNames()).forEach(varName -> vars.add(df.var(varName)));
+        Arrays.stream(df.varNames()).forEach(varName -> vars.add(df.getVar(varName)));
         return SolidFrame.newWrapOf(df.rowCount(), vars);
     }
 }

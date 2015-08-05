@@ -49,12 +49,12 @@ public class CoreStatTest {
 
     @Test
     public void testRReference() throws IOException {
-        mean(df.var(0)).printSummary();
-        var(df.var(0)).printSummary();
-        assertEquals(Double.valueOf("999.98132402093892779"), mean(df.var(0)).value(), 1e-12);
-        assertEquals(Double.valueOf("1.0012615815492349469"), Math.sqrt(new Variance(df.var(0)).value()), 1e-12);
-        Assert.assertEquals(996.343866540788, new Minimum(df.var(0)).value(), 1e-12);
-        Assert.assertEquals(1004.24956126934, new Maximum(df.var(0)).value(), 1e-12);
+        mean(df.getVar(0)).printSummary();
+        var(df.getVar(0)).printSummary();
+        assertEquals(Double.valueOf("999.98132402093892779"), mean(df.getVar(0)).value(), 1e-12);
+        assertEquals(Double.valueOf("1.0012615815492349469"), Math.sqrt(new Variance(df.getVar(0)).value()), 1e-12);
+        Assert.assertEquals(996.343866540788, new Minimum(df.getVar(0)).value(), 1e-12);
+        Assert.assertEquals(1004.24956126934, new Maximum(df.getVar(0)).value(), 1e-12);
     }
 
     @Test

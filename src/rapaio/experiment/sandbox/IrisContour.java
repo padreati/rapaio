@@ -25,10 +25,6 @@ package rapaio.experiment.sandbox;
 
 import rapaio.graphics.Plotter;
 import rapaio.ml.classifier.bayes.NaiveBayes;
-import rapaio.ml.classifier.ensemble.CForest;
-import rapaio.ml.classifier.svm.kernel.MinKernel;
-import rapaio.ml.classifier.svm.kernel.RBFKernel;
-import rapaio.sys.WS;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Maximum;
@@ -42,10 +38,7 @@ import rapaio.graphics.plot.Points;
 import rapaio.graphics.plot.plotcomp.MeshContour;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
-import rapaio.ml.classifier.linear.BinaryLogistic;
-import rapaio.ml.classifier.svm.BinarySMO;
-import rapaio.ml.classifier.svm.kernel.CauchyKernel;
-import rapaio.printer.IdeaPrinter;
+import rapaio.experiment.classifier.linear.BinaryLogistic;
 import rapaio.ws.Summary;
 
 import java.io.IOException;
@@ -72,9 +65,9 @@ public class IrisContour {
         iris = iris.stream().filter(s -> s.index(2) != 3).toMappedFrame();
 
         Var trimmedClass = Nominal.newEmpty().withName("class");
-        iris.var("class").stream().forEach(s -> trimmedClass.addLabel(s.label()));
+        iris.getVar("class").stream().forEach(s -> trimmedClass.addLabel(s.label()));
 
-        iris = BoundFrame.newByVars(iris.var(X), iris.var(Y), trimmedClass);
+        iris = BoundFrame.newByVars(iris.getVar(X), iris.getVar(Y), trimmedClass);
 
         iris = iris.bindRows(iris).bindRows(iris).solidCopy();
 
@@ -105,8 +98,8 @@ public class IrisContour {
         c = new NaiveBayes();
         c.learn(iris, "class");
 
-        Numeric x = Numeric.newSeq(new Minimum(iris.var(X)).value(), new Maximum(iris.var(X)).value(), 0.1).withName(X);
-        Numeric y = Numeric.newSeq(new Minimum(iris.var(Y)).value(), new Maximum(iris.var(Y)).value(), 0.2).withName(Y);
+        Numeric x = Numeric.newSeq(new Minimum(iris.getVar(X)).value(), new Maximum(iris.getVar(X)).value(), 0.1).withName(X);
+        Numeric y = Numeric.newSeq(new Minimum(iris.getVar(Y)).value(), new Maximum(iris.getVar(Y)).value(), 0.2).withName(Y);
         MeshGrid1D mg1 = new MeshGrid1D(x, y);
 
         // build a classification data sets with all required points
@@ -144,7 +137,7 @@ public class IrisContour {
             p.add(new MeshContour(mg1.compute(qq[i], qq[i + 1]), true, true,
                     Plotter.lwd(0.1f), Plotter.color(bcg.getColor(i))));
         }
-        p.add(new Points(iris.var(0), iris.var(1), Plotter.color(iris.var(2)), Plotter.pch(2)));
+        p.add(new Points(iris.getVar(0), iris.getVar(1), Plotter.color(iris.getVar(2)), Plotter.pch(2)));
 
         draw(p);
     }

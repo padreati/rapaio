@@ -73,7 +73,7 @@ public class Summary {
         for (int k = 0; k < names.length; k++) {
             int i = df.varIndex(names[k]);
 
-            Var v = df.var(i);
+            Var v = df.getVar(i);
             if (v.type().isNumeric()) {
                 double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
                 double[] perc = new Quantiles(v, p).values();
@@ -438,7 +438,7 @@ public class Summary {
         Var[] vars = new Var[df.varCount()];
         String[] names = df.varNames();
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = df.var(i);
+            vars[i] = df.getVar(i);
         }
         head(df.rowCount(), vars, names);
     }
@@ -447,7 +447,7 @@ public class Summary {
         Var[] vars = new Var[df.varCount()];
         String[] names = df.varNames();
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = df.var(i);
+            vars[i] = df.getVar(i);
         }
         head(Math.min(lines, df.rowCount()), vars, names);
     }

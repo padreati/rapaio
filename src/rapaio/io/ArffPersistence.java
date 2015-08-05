@@ -146,11 +146,11 @@ public class ArffPersistence {
                     if ("?".equals(tmp[j])) {
                         continue;
                     }
-                    if (df.var(j).type().isNumeric()) {
-                        df.var(j).setValue(i, Double.parseDouble(tmp[j]));
+                    if (df.getVar(j).type().isNumeric()) {
+                        df.getVar(j).setValue(i, Double.parseDouble(tmp[j]));
                     }
-                    if (df.var(j).type().isNominal()) {
-                        df.var(j).setLabel(i, fullTrim(tmp[j]));
+                    if (df.getVar(j).type().isNominal()) {
+                        df.getVar(j).setLabel(i, fullTrim(tmp[j]));
                     }
                 }
             }

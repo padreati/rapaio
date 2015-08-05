@@ -31,8 +31,8 @@ import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plotter;
 import rapaio.ml.classifier.CFit;
-import rapaio.ml.classifier.ensemble.CForest;
-import rapaio.ml.classifier.tree.CTree;
+import rapaio.experiment.classifier.ensemble.CForest;
+import rapaio.experiment.classifier.tree.CTree;
 import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.ws.Summary;
 
@@ -176,7 +176,7 @@ public class ClassificationWithRFPage implements TutorialPage {
 
             index.addIndex(mTrees);
             errors.addValue(new ConfusionMatrix(
-                    test.var("spam"),
+                    test.getVar("spam"),
                     cr.firstClasses()
             ).error());
             oob.addValue(rf.getOobError());
@@ -209,7 +209,7 @@ public class ClassificationWithRFPage implements TutorialPage {
                 "\n" +
                 "            index.addIndex(mTrees);\n" +
                 "            errors.addValue(new ConfusionMatrix(\n" +
-                "                    test.var(\"spam\"),\n" +
+                "                    test.getVar(\"spam\"),\n" +
                 "                    cr.firstClasses()\n" +
                 "            ).error());\n" +
                 "            oob.addValue(rf.getOobError());\n" +
@@ -249,7 +249,7 @@ public class ClassificationWithRFPage implements TutorialPage {
             CFit cr = rf.fit(test);
 
             index1.addIndex(mCol);
-            errors1.addValue(new ConfusionMatrix(test.var("spam"), cr.firstClasses()).error());
+            errors1.addValue(new ConfusionMatrix(test.getVar("spam"), cr.firstClasses()).error());
             oob1.addValue(rf.getOobError());
         }
         draw(plot()
@@ -279,7 +279,7 @@ public class ClassificationWithRFPage implements TutorialPage {
                 "            CFit cr = rf.predict(test);\n" +
                 "\n" +
                 "            index1.addIndex(mCol);\n" +
-                "            errors1.addValue(new ConfusionMatrix(test.var(\"spam\"), cr.firstClasses()).error());\n" +
+                "            errors1.addValue(new ConfusionMatrix(test.getVar(\"spam\"), cr.firstClasses()).error());\n" +
                 "            oob1.addValue(rf.getOobError());\n" +
                 "        }\n" +
                 "        draw(plot()\n" +

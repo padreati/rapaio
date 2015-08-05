@@ -155,7 +155,7 @@ public class RegressorFit implements Printable {
         if (withResiduals) {
             for (String targetVar : targetVars) {
                 for (int i = 0; i < df.rowCount(); i++) {
-                    residuals.get(targetVar).setValue(i, df.var(targetVar).value(i) - fit(targetVar).value(i));
+                    residuals.get(targetVar).setValue(i, df.getVar(targetVar).value(i) - fit(targetVar).value(i));
                 }
             }
         }
