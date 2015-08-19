@@ -45,7 +45,7 @@ public final class CoreStat {
         return new Mean(var);
     }
 
-    public static Variance var(Var var) {
+    public static Variance variance(Var var) {
         return new Variance(var);
     }
 

@@ -23,14 +23,20 @@
 
 package rapaio.experiment;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+
+import rapaio.data.Frame;
+import rapaio.datasets.Datasets;
+import rapaio.graphics.Plotter;
+import rapaio.sys.*;
 
 public class Sandbox {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        Frame df = Datasets.loadHousing();
+        df.printSummary();
 
-
+        WS.draw(Plotter.hist(df.getVar("CRIM")));
     }
 
 }

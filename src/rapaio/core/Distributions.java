@@ -31,7 +31,7 @@ import rapaio.core.distributions.Normal;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/8/15.
  */
-public class Distributions {
+public final class Distributions {
 
     public static Normal normal() {
         return new Normal(0, 1);
