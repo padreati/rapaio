@@ -484,12 +484,16 @@ public interface Frame extends Serializable, Printable {
     }
 
     default void printLines() {
+        printLines(rowCount());
+    }
+
+    default void printLines(int to) {
         Var[] vars = new Var[varCount()];
         String[] names = varNames();
         for (int i = 0; i < vars.length; i++) {
             vars[i] = getVar(i);
         }
-        Summary.head(rowCount(), vars, names);
+        Summary.head(to, vars, names);
     }
 
     default boolean deepEquals(Frame df) {
