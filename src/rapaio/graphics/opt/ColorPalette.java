@@ -112,6 +112,7 @@ class GrayColorPalette implements ColorPalette.Mapping {
     }
 }
 
+@Deprecated
 class HueColorPalette implements ColorPalette.Mapping {
 
     @Override
@@ -120,6 +121,7 @@ class HueColorPalette implements ColorPalette.Mapping {
     }
 }
 
+@Deprecated
 class RedBlueGradient implements ColorPalette.Mapping {
 
     @Override

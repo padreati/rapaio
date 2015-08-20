@@ -38,6 +38,7 @@ import rapaio.ml.eval.ROC;
 import java.awt.*;
 import java.util.function.Function;
 
+@Deprecated
 public final class Plotter {
 
     private static GOpt[] mergedOpts(GOpt... opts) {

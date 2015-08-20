@@ -25,6 +25,7 @@ package rapaio.graphics.opt;
 
 import java.io.Serializable;
 
+@Deprecated
 public interface GOpt extends Serializable {
     void apply(GOpts opt);
 }

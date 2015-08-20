@@ -37,6 +37,7 @@ import java.util.Arrays;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/31/15.
  */
+@Deprecated
 public class GOpts implements Serializable {
 
     private static final long serialVersionUID = -8407683729055712796L;
