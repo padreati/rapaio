@@ -121,7 +121,7 @@ public class NaiveBayes extends AbstractClassifier {
         // build priors
 
         priors = new HashMap<>();
-        DVector dv = DVector.newFromWeights(df.getVar(firstTargetName()), weights, firstDict());
+        DVector dv = DVector.newFromWeights(df.var(firstTargetName()), weights, firstDict());
 
         if (useLaplaceSmoother) {
             // laplace add-one smoothing
@@ -145,7 +145,7 @@ public class NaiveBayes extends AbstractClassifier {
                     if (firstTargetName().equals(testCol)) {
                         return;
                     }
-                    if (df.getVar(testCol).getType().isNumeric()) {
+                    if (df.var(testCol).type().isNumeric()) {
                         NumericEstimator estimator = numEstimator.newInstance();
                         estimator.learn(df, firstTargetName(), testCol);
                         numMap.put(testCol, estimator);
@@ -153,7 +153,7 @@ public class NaiveBayes extends AbstractClassifier {
                             WS.print(".");
                         return;
                     }
-                    if (df.getVar(testCol).getType().isNominal()) {
+                    if (df.var(testCol).type().isNominal()) {
                         NominalEstimator estimator = nomEstimator.newInstance();
                         estimator.learn(df, weights, firstTargetName(), testCol);
                         nomMap.put(testCol, estimator);

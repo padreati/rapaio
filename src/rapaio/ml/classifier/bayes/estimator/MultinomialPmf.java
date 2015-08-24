@@ -54,8 +54,8 @@ public class MultinomialPmf implements NominalEstimator {
     @Override
     public void learn(Frame df, Var weights, String targetVar, String testVar, String... targetLabels) {
 
-        String[] targetDict = df.getVar(targetVar).dictionary();
-        String[] testDict = df.getVar(testVar).dictionary();
+        String[] targetDict = df.var(targetVar).dictionary();
+        String[] testDict = df.var(testVar).dictionary();
 
         invTreeTarget = new HashMap<>();
         invTreeTest = new HashMap<>();

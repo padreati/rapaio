@@ -238,7 +238,7 @@ public final class Numeric extends AbstractVar {
     }
 
     @Override
-    public VarType getType() {
+    public VarType type() {
         return VarType.NUMERIC;
     }
 

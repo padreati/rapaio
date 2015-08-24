@@ -64,7 +64,7 @@ public class VFAbstractStandardize extends VFAbstract {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        if (!vars[0].getType().isNumeric()) {
+        if (!vars[0].type().isNumeric()) {
             return vars[0];
         }
         return vars[0].stream().transValue(x -> (x - mean) / sd).toMappedVar();

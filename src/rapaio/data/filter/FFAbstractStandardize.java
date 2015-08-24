@@ -48,7 +48,7 @@ public class FFAbstractStandardize extends FFAbstract {
         filters.clear();
         for (String varName : parse(df, varNames)) {
             VFAbstractStandardize filter = new VFAbstractStandardize();
-            filter.fit(df.getVar(varName));
+            filter.fit(df.var(varName));
             filters.put(varName, filter);
         }
     }
@@ -60,9 +60,9 @@ public class FFAbstractStandardize extends FFAbstract {
         int pos = 0;
         for (String varName : df.varNames()) {
             if (filters.containsKey(varName)) {
-                vars[pos++] = filters.get(varName).apply(df.getVar(varName));
+                vars[pos++] = filters.get(varName).apply(df.var(varName));
             } else {
-                vars[pos++] = df.getVar(varName);
+                vars[pos++] = df.var(varName);
             }
         }
         return BoundFrame.newByVars(vars);

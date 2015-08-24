@@ -32,28 +32,28 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static rapaio.core.CoreStat.*;
+import static rapaio.core.Core.*;
 import static rapaio.core.Distributions.normal;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class CoreStatTest {
+public class CoreTest {
 
     private final Frame df;
 
-    public CoreStatTest() throws IOException {
+    public CoreTest() throws IOException {
         this.df = new Csv().withHeader(true).withDefaultTypes(VarType.NUMERIC).read(getClass(), "core_stat.csv");
     }
 
     @Test
     public void testRReference() throws IOException {
-        mean(df.getVar(0)).printSummary();
-        variance(df.getVar(0)).printSummary();
-        assertEquals(Double.valueOf("999.98132402093892779"), mean(df.getVar(0)).value(), 1e-12);
-        assertEquals(Double.valueOf("1.0012615815492349469"), Math.sqrt(new Variance(df.getVar(0)).value()), 1e-12);
-        Assert.assertEquals(996.343866540788, new Minimum(df.getVar(0)).value(), 1e-12);
-        Assert.assertEquals(1004.24956126934, new Maximum(df.getVar(0)).value(), 1e-12);
+        mean(df.var(0)).printSummary();
+        var(df.var(0)).printSummary();
+        assertEquals(Double.valueOf("999.98132402093892779"), mean(df.var(0)).value(), 1e-12);
+        assertEquals(Double.valueOf("1.0012615815492349469"), Math.sqrt(new Variance(df.var(0)).value()), 1e-12);
+        Assert.assertEquals(996.343866540788, new Minimum(df.var(0)).value(), 1e-12);
+        Assert.assertEquals(1004.24956126934, new Maximum(df.var(0)).value(), 1e-12);
     }
 
     @Test
@@ -70,7 +70,7 @@ public class CoreStatTest {
                 "total rows: 4 (complete: 4, missing: 0)\n" +
                 "mean: 2.5\n", sb.toString());
         sb = new StringBuilder();
-        sb.append(variance(num2).summary());
+        sb.append(var(num2).summary());
         assertEquals("\n> variance[?]\n" +
                         "total rows: 4 (complete: 4, missing: 0)\n" +
                         "variance: 1.6666667\n" +
@@ -78,7 +78,7 @@ public class CoreStatTest {
                 sb.toString());
 
         mean(num2).printSummary();
-        variance(num2).printSummary();
+        var(num2).printSummary();
     }
 
     @Test
@@ -101,13 +101,13 @@ public class CoreStatTest {
     public void testCovariance() {
         Numeric v1 = Numeric.newSeq(0, 200, 0.1);
         Numeric v2 = Numeric.newWrapOf(1, 201, 0.1);
-        assertEquals(cov(v1, v1).value(), variance(v1).value(), 1e-12);
+        assertEquals(cov(v1, v1).value(), var(v1).value(), 1e-12);
 
         Numeric x = Numeric.newCopyOf(1, 2, 3, 4);
-        assertEquals(cov(x, x).value(), variance(x).value(), 1e-12);
+        assertEquals(cov(x, x).value(), var(x).value(), 1e-12);
 
         Numeric norm = normal().sample(20_000);
-        assertEquals(cov(norm, norm).value(), variance(norm).value(), 1e-12);
+        assertEquals(cov(norm, norm).value(), var(norm).value(), 1e-12);
 
         Var x1 = Numeric.newSeq(0, 200, 1);
         Var x2 = Numeric.newSeq(0, 50, 0.25);

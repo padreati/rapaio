@@ -21,22 +21,14 @@
  *
  */
 
-package rapaio.experiment;
+package rapaio.groovy
 
-import java.io.IOException;
+/**
+ * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 8/24/15.
+ */
+class TestClass {
 
-import rapaio.data.Frame;
-import rapaio.datasets.Datasets;
-import rapaio.graphics.Plotter;
-import rapaio.sys.*;
-
-public class Sandbox {
-
-    public static void main(String[] args) throws IOException {
-        Frame df = Datasets.loadHousing();
-        df.printSummary();
-
-        WS.draw(Plotter.hist(df.var("CRIM")));
+    def f(int x) {
+        x ^ 2
     }
-
 }

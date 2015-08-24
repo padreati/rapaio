@@ -23,7 +23,6 @@
 
 package rapaio.data;
 
-import java.util.Comparator;
 import java.util.stream.Collectors;
 
 /**
@@ -77,8 +76,8 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public VarType getType() {
-        return source.getType();
+    public VarType type() {
+        return source.type();
     }
 
     @Override

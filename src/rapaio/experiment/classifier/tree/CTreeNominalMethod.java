@@ -80,8 +80,8 @@ public interface CTreeNominalMethod extends Serializable {
 
         @Override
         public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function, CTreeNominalTerms terms) {
-            Var test = df.getVar(testColName);
-            Var target = df.getVar(targetColName);
+            Var test = df.var(testColName);
+            Var target = df.var(targetColName);
 
             if (!DTable.newFromCounts(test, target).hasCountWithMinimum(false, c.getMinCount(), 2)) {
                 return Collections.emptyList();
@@ -121,8 +121,8 @@ public interface CTreeNominalMethod extends Serializable {
         @Override
         public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function, CTreeNominalTerms terms) {
 
-            Var test = df.getVar(testColName);
-            Var target = df.getVar(targetColName);
+            Var test = df.var(testColName);
+            Var target = df.var(targetColName);
             if (!(DTable.newFromCounts(test, target).hasCountWithMinimum(false, c.getMinCount(), 2))) {
                 return Collections.emptyList();
             }
@@ -140,7 +140,7 @@ public interface CTreeNominalMethod extends Serializable {
                     indexes.remove();
                     continue;
                 }
-                String testLabel = df.getVar(testColName).dictionary()[i];
+                String testLabel = df.var(testColName).dictionary()[i];
 
                 DTable dt = DTable.newBinaryFromWeights(test, target, weights, testLabel);
                 double value = function.compute(dt);

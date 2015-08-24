@@ -112,7 +112,7 @@ public class IrisExplorePage implements TutorialPage {
         GridLayer grid = new GridLayer(2, 2);
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
-                grid.add(i + 1, j + 1, hist(df.getVar(i * 2 + j), bins(10)));
+                grid.add(i + 1, j + 1, hist(df.var(i * 2 + j), bins(10)));
             }
         }
         draw(grid, 600, 400);
@@ -132,7 +132,7 @@ public class IrisExplorePage implements TutorialPage {
         grid = new GridLayer(2, 2);
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
-                grid.add(i + 1, j + 1, densityLine(df.getVar(i * 2 + j)));
+                grid.add(i + 1, j + 1, densityLine(df.var(i * 2 + j)));
             }
         }
         draw(grid, 600, 400);
@@ -164,7 +164,7 @@ public class IrisExplorePage implements TutorialPage {
                 Plot p = new Plot();
                 for (int k = 0; k < 3; k++) {
                     int kk = k;
-                    p.densityLine(df.stream().filter(s -> s.index("class") == kk + 1).toMappedFrame().getVar(i * 2 + j), color(kk + 1))
+                    p.densityLine(df.stream().filter(s -> s.index("class") == kk + 1).toMappedFrame().var(i * 2 + j), color(kk + 1))
                             .xLab(df.varNames()[i * 2 + j]);
                 }
                 grid.add(i + 1, j + 1, p);
@@ -179,9 +179,9 @@ public class IrisExplorePage implements TutorialPage {
                 "the iris class. ");
 
         draw(points(
-                        new VFJitter(0.1).filter(df.getVar(2)),
-                        new VFJitter(0.1).filter(df.getVar(3)),
-                        color(df.getVar("class")),
+                        new VFJitter(0.1).filter(df.var(2)),
+                        new VFJitter(0.1).filter(df.var(3)),
+                        color(df.var("class")),
                         pch(1))
                         .title("Iris data points colored by species"),
                 600, 350
@@ -209,12 +209,12 @@ public class IrisExplorePage implements TutorialPage {
                 "                .add(new ABLine(1, 0, color(Color.GRAY)))\n" +
                 "        );\n");
 
-        Var sw = df.getVar("sepal-width");
+        Var sw = df.var("sepal-width");
         new Mean(sw).printSummary();
         new Variance(sw).printSummary();
 
         draw(qqplot()
-                        .add(df.getVar("sepal-width"), new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value())))
+                        .add(df.var("sepal-width"), new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value())))
                         .add(new ABLine(1, 0, color(Color.GRAY)))
         );
 
@@ -245,9 +245,9 @@ public class IrisExplorePage implements TutorialPage {
                 "        );\n" +
                 "        new KSTest(\"normality test\", sw, new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value()))).printSummary();\n");
 
-        sw = new VFJitter(0.05).filter(df.getVar("sepal-width"));
+        sw = new VFJitter(0.05).filter(df.var("sepal-width"));
         draw(new QQPlot()
-                        .add(df.getVar("sepal-width"), new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value())))
+                        .add(df.var("sepal-width"), new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value())))
                         .add(new ABLine(1, 0, color(Color.GRAY)))
         );
         KSTest.newOneSampleTest(sw, new Normal(new Mean(sw).value(), Math.sqrt(new Variance(sw).value()))).printSummary();

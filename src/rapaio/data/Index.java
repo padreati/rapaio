@@ -188,7 +188,7 @@ public final class Index extends AbstractVar {
     }
 
     @Override
-    public VarType getType() {
+    public VarType type() {
         return VarType.INDEX;
     }
 

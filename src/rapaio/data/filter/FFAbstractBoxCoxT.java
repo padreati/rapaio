@@ -53,7 +53,7 @@ public class FFAbstractBoxCoxT extends FFAbstract {
     public Frame apply(Frame df) {
         List<String> names = parse(df, varNames);
         for (String name : names) {
-            bct.filter(df.getVar(name));
+            bct.filter(df.var(name));
         }
         return df;
     }

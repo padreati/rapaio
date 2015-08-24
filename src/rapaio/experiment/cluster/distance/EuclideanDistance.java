@@ -52,8 +52,8 @@ public class EuclideanDistance implements Distance {
         }
         double distance = 0;
         for (int i = 0; i < sourceFields.size(); i++) {
-            distance += (Math.pow(from.getVar(sourceFields.get(i)).value(fromRow), 2) -
-                    Math.pow(targetFrame.getVar(targetFields.get(i)).value(targetRow), 2));
+            distance += (Math.pow(from.var(sourceFields.get(i)).value(fromRow), 2) -
+                    Math.pow(targetFrame.var(targetFields.get(i)).value(targetRow), 2));
         }
         return Math.sqrt(distance);
     }

@@ -69,8 +69,8 @@ public class RMSE implements Printable {
         predictVars = new ArrayList<>();
 
         for (String targetName : targetNames) {
-            actualVars.add(actual.getVar(targetName));
-            predictVars.add(predict.getVar(targetName));
+            actualVars.add(actual.var(targetName));
+            predictVars.add(predict.var(targetName));
         }
 
         compute();

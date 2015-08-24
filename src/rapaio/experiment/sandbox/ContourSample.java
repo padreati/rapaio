@@ -36,7 +36,6 @@ import rapaio.graphics.plot.Points;
 import rapaio.graphics.plot.plotcomp.MeshContour;
 import rapaio.printer.IdeaPrinter;
 
-import java.awt.*;
 import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 
@@ -86,7 +85,7 @@ public class ContourSample {
             p.add(new MeshContour(mg.compute(qq[i], qq[i + 1]), true, true,
                     Plotter.color(gradient.getColor(i)), lwd(0.2f)));
         }
-        p.add(new Points(xy.getVar("x"), xy.getVar("y")));
+        p.add(new Points(xy.var("x"), xy.var("y")));
         draw(p);
     }
 }

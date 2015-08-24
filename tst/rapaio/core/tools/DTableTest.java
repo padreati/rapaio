@@ -43,7 +43,7 @@ public class DTableTest {
 
         Frame df = Datasets.loadPlay();
 
-        DTable id = DTable.newFromCounts(df.getVar("outlook"), df.getVar("class"));
+        DTable id = DTable.newFromCounts(df.var("outlook"), df.var("class"));
         assertEquals(0.940, id.getTargetEntropy(false), 1e-3);
         assertEquals(0.694, id.getSplitEntropy(false), 1e-3);
         assertEquals(0.246, id.getInfoGain(false), 1e-3);
@@ -51,7 +51,7 @@ public class DTableTest {
         assertEquals(1.577, id.getSplitInfo(false), 1e-3);
         assertEquals(0.156, id.getGainRatio(false), 1e-3);
 
-        id = DTable.newFromCounts(df.getVar("windy"), df.getVar("class"));
+        id = DTable.newFromCounts(df.var("windy"), df.var("class"));
         assertEquals(0.940, id.getTargetEntropy(false), 1e-3);
         assertEquals(0.892, id.getSplitEntropy(false), 1e-3);
         assertEquals(0.048, id.getInfoGain(false), 1e-3);
@@ -64,10 +64,10 @@ public class DTableTest {
     public void testPlayWithMissing() throws IOException {
 
         Frame df = Datasets.loadPlay();
-        df.getVar("outlook").setMissing(5);
+        df.var("outlook").setMissing(5);
         Summary.head(10000, df);
 
-        DTable id = DTable.newFromCounts(df.getVar("outlook"), df.getVar("class"));
+        DTable id = DTable.newFromCounts(df.var("outlook"), df.var("class"));
 
         assertEquals(0.892, id.getTargetEntropy(true), 1e-3);
         assertEquals(0.693, id.getSplitEntropy(true), 1e-3);

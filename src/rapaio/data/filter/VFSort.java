@@ -51,7 +51,7 @@ public class VFSort extends VFAbstract {
     public Var apply(Var... vars) {
         checkSingleVar(vars);
 
-        switch (vars[0].getType()) {
+        switch (vars[0].type()) {
             case NUMERIC:
             case INDEX:
             case BINARY:

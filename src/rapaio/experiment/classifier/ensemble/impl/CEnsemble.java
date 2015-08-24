@@ -131,7 +131,7 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
         if (oobComp) {
             // TODO This must be corrected, right now is wrong!@@@@@@
             CFit cp = weak.fit(oobFrame);
-            double oobError = new ConfusionMatrix(oobFrame.getVar(firstTargetName()), cp.firstClasses()).errorCases();
+            double oobError = new ConfusionMatrix(oobFrame.var(firstTargetName()), cp.firstClasses()).errorCases();
             synchronized (this) {
                 totalOobInstances += oobFrame.rowCount();
                 totalOobError += oobError;

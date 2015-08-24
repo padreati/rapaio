@@ -56,7 +56,7 @@ public interface Var extends Serializable, Printable {
     /**
      * @return variable type
      */
-    VarType getType();
+    VarType type();
 
     /**
      * Number of observations contained by the variable.
@@ -351,7 +351,7 @@ public interface Var extends Serializable, Printable {
     }
 
     default Comparator<Integer> refComparator(boolean asc) {
-        switch (this.getType()) {
+        switch (this.type()) {
             case TEXT:
             case NOMINAL:
                 return RowComparators.nominal(this, asc);
@@ -374,10 +374,10 @@ public interface Var extends Serializable, Printable {
     default boolean deepEquals(Var var) {
         if (rowCount() != var.rowCount())
             return false;
-        if (getType() != var.getType())
+        if (type() != var.type())
             return false;
         for (int i = 0; i < rowCount(); i++) {
-            if (var.getType().isNumeric()) {
+            if (var.type().isNumeric()) {
                 if (Math.abs(value(i) - var.value(i)) > 1e-12)
                     return false;
             } else {

@@ -54,10 +54,10 @@ public class FFAbstractToNumeric extends FFAbstract {
         Set<String> nameSet = new HashSet<>(parse(df, varNames));
         Var[] vars = new Var[df.varCount()];
         for (int i = 0; i < vars.length; i++) {
-            if (nameSet.contains(df.getVar(i).name())) {
-                vars[i] = df.getVar(i);
+            if (nameSet.contains(df.var(i).name())) {
+                vars[i] = df.var(i);
             } else {
-                vars[i] = new VFAbstractToNumeric().filter(df.getVar(i));
+                vars[i] = new VFAbstractToNumeric().filter(df.var(i));
             }
         }
         return SolidFrame.newWrapOf(df.rowCount(), vars);

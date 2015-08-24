@@ -35,8 +35,8 @@ import java.util.stream.IntStream;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-import static rapaio.core.CoreStat.mean;
-import static rapaio.core.CoreStat.variance;
+import static rapaio.core.Core.mean;
+import static rapaio.core.Core.var;
 import static rapaio.data.filter.Filters.*;
 import static rapaio.graphics.Plotter.hist;
 import static rapaio.sys.WS.draw;
@@ -50,7 +50,7 @@ public class FiltersTest {
     public void testJitterStandard() {
         Var a = jitter(Numeric.newFill(100_000, 1));
         Mean mean = mean(a);
-        Variance var = variance(a);
+        Variance var = var(a);
         mean.printSummary();
         var.printSummary();
 
@@ -64,7 +64,7 @@ public class FiltersTest {
     public void testJitterStandardSd() {
         Var a = jitter(Numeric.newFill(100_000, 1), 2);
         Mean mean = mean(a);
-        Variance var = variance(a);
+        Variance var = var(a);
         mean.printSummary();
         var.printSummary();
 
@@ -78,7 +78,7 @@ public class FiltersTest {
     public void testJitterDistributed() {
         Var a = jitter(Numeric.newFill(100_000, 1), new ChiSquare(5));
         Mean mean = mean(a);
-        Variance var = variance(a);
+        Variance var = var(a);
         mean.printSummary();
         var.printSummary();
 

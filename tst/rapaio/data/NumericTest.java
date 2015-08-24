@@ -38,9 +38,9 @@ public class NumericTest {
     @Test
     public void smokeTest() {
         Var v = Numeric.newEmpty();
-        boolean flag = v.getType().isNumeric();
+        boolean flag = v.type().isNumeric();
         assertEquals(true, flag);
-        assertEquals(false, v.getType().isNominal());
+        assertEquals(false, v.type().isNominal());
 
         assertEquals(0, v.rowCount());
 

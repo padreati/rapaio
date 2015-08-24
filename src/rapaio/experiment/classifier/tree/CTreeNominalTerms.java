@@ -37,8 +37,8 @@ public class CTreeNominalTerms {
 
     public CTreeNominalTerms init(Frame df) {
         Arrays.stream(df.varNames())
-                .map(df::getVar)
-                .filter(var -> var.getType().isNominal())
+                .map(df::var)
+                .filter(var -> var.type().isNominal())
                 .forEach(var -> indexes.put(var.name(), IntStream.range(1, var.dictionary().length).boxed().collect(toSet())));
         return this;
     }

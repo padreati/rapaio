@@ -80,8 +80,8 @@ public interface CTreeNumericMethod extends Serializable {
 
         @Override
         public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function) {
-            Var test = df.getVar(testColName);
-            Var target = df.getVar(targetColName);
+            Var test = df.var(testColName);
+            Var target = df.var(targetColName);
 
             DTable dt = DTable.newEmpty(DTable.NUMERIC_DEFAULT_LABELS, target.dictionary());
             int misCount = 0;
@@ -170,8 +170,8 @@ public interface CTreeNumericMethod extends Serializable {
 
         @Override
         public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function) {
-            Var test = df.getVar(testColName);
-            Var target = df.getVar(targetColName);
+            Var test = df.var(testColName);
+            Var target = df.var(targetColName);
 
             DTable dt = DTable.newEmpty(DTable.NUMERIC_DEFAULT_LABELS, target.dictionary());
             int misCount = 0;

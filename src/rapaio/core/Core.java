@@ -35,7 +35,7 @@ import rapaio.data.Var;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/4/15.
  */
-public final class CoreStat {
+public final class Core {
 
     public static OnlineStat newOnlineStat() {
         return new OnlineStat();
@@ -45,7 +45,7 @@ public final class CoreStat {
         return new Mean(var);
     }
 
-    public static Variance variance(Var var) {
+    public static Variance var(Var var) {
         return new Variance(var);
     }
 

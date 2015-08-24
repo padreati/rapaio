@@ -43,7 +43,7 @@ public class VFAbstractToIndex extends VFAbstract {
     public Var apply(Var... vars) {
         checkSingleVar(vars);
         Var v = vars[0];
-        if (v.getType().equals(VarType.INDEX)) {
+        if (v.type().equals(VarType.INDEX)) {
             return (Index) v;
         }
         final Index result = Index.newEmpty();
@@ -51,7 +51,7 @@ public class VFAbstractToIndex extends VFAbstract {
             if (inst.missing()) {
                 result.addMissing();
             } else {
-                switch (v.getType()) {
+                switch (v.type()) {
                     case NUMERIC:
                         result.addIndex((int) Math.rint(inst.value()));
                         break;

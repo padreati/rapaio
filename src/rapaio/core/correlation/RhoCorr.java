@@ -60,7 +60,7 @@ public class RhoCorr implements Printable {
         this.names = df.varNames();
         this.vars = new Var[df.varCount()];
         for (int i = 0; i < df.varCount(); i++) {
-            vars[i] = df.getVar(i);
+            vars[i] = df.var(i);
         }
         this.rho = compute();
     }

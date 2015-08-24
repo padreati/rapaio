@@ -29,7 +29,6 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -114,8 +113,8 @@ public class Capabilities {
     private void checkLearnType(Frame df, Var weights, String... targetVars) {
         List<String> varList = new VarRange(targetVars).parseVarNames(df);
         for (String varName : varList) {
-            Var var = df.getVar(varName);
-            VarType type = var.getType();
+            Var var = df.var(varName);
+            VarType type = var.type();
             switch (learnType) {
 
                 // classifier allow a single term in dictionary (other than missing labels)
@@ -156,8 +155,8 @@ public class Capabilities {
     private void checkTargetTypes(Frame df, Var weights, String... targetVarNames) {
         List<String> varList = new VarRange(targetVarNames).parseVarNames(df);
         for (String varName : varList) {
-            if (!targetTypes.contains(df.getVar(varName).getType())) {
-                throw new IllegalArgumentException("Algorithm does not allow " + df.getVar(varName).getType().name() + " as target type vor var: " + varName);
+            if (!targetTypes.contains(df.var(varName).type())) {
+                throw new IllegalArgumentException("Algorithm does not allow " + df.var(varName).type().name() + " as target type vor var: " + varName);
             }
         }
     }
@@ -168,7 +167,7 @@ public class Capabilities {
         List<String> varList = new VarRange(targetVarNames).parseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String targetName : varList) {
-            if (df.getVar(targetName).stream().complete().count() != df.getVar(targetName).rowCount()) {
+            if (df.var(targetName).stream().complete().count() != df.var(targetName).rowCount()) {
                 if (sb.length() != 0) {
                     sb.append(", ");
                 }
@@ -194,12 +193,12 @@ public class Capabilities {
         List<String> inputNames = new VarRange(targetVars).parseInverseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String inputName : inputNames) {
-            Var inputVar = df.getVar(inputName);
-            if (!inputTypes.contains(inputVar.getType())) {
+            Var inputVar = df.var(inputName);
+            if (!inputTypes.contains(inputVar.type())) {
                 if (sb.length() != 0) {
                     sb.append(", ");
                 }
-                sb.append(inputName).append("[").append(inputVar.getType().name()).append("]");
+                sb.append(inputName).append("[").append(inputVar.type().name()).append("]");
             }
         }
         if (sb.length() > 0) {
@@ -213,7 +212,7 @@ public class Capabilities {
         List<String> varList = new VarRange(targetVarNames).parseInverseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String inputName : varList) {
-            if (df.getVar(inputName).stream().complete().count() != df.getVar(inputName).rowCount()) {
+            if (df.var(inputName).stream().complete().count() != df.var(inputName).rowCount()) {
                 if (sb.length() != 0) {
                     sb.append(", ");
                 }

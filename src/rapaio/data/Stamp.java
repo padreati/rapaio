@@ -180,7 +180,7 @@ public class Stamp extends AbstractVar {
     }
 
     @Override
-    public VarType getType() {
+    public VarType type() {
         return VarType.STAMP;
     }
 
