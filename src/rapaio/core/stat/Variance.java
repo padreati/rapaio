@@ -27,7 +27,7 @@ import rapaio.printer.Printable;
 import rapaio.data.Var;
 
 import static rapaio.sys.WS.formatFlex;
-import static rapaio.core.Core.mean;
+import static rapaio.core.CoreStat.mean;
 
 /**
  * Compensated version of the algorithm for calculation of

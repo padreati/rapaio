@@ -54,7 +54,7 @@ public class Maximum implements Printable {
         if (completeCount == 0) {
             value = Double.NaN;
         } else {
-            value = var.stream().complete().mapToDouble().max().getAsDouble();
+            value = var.spotStream().complete().mapToDouble().max().getAsDouble();
         }
     }
 

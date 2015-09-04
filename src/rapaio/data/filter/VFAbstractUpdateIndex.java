@@ -48,7 +48,7 @@ public class VFAbstractUpdateIndex extends VFAbstract {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        vars[0].stream().forEach(s -> s.setIndex(f.apply(s)));
+        vars[0].spotStream().forEach(s -> s.setIndex(f.apply(s)));
         return vars[0];
     }
 }

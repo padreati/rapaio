@@ -118,7 +118,7 @@ public class BinaryLogistic extends AbstractClassifier {
     public BinaryLogistic learn(Frame df, Var weights, String... targetVarNames) {
         prepareLearning(df, weights, targetVarNames);
 
-        if (df.stream().complete().count() != df.rowCount()) {
+        if (df.spotStream().complete().count() != df.rowCount()) {
             throw new IllegalArgumentException("Incomplete data set is not allowed in binary logistic");
         }
 
@@ -132,7 +132,7 @@ public class BinaryLogistic extends AbstractClassifier {
 
         coef = Numeric.newFill(inputNames().length + 1, 0);
         Numeric targetValues = Numeric.newEmpty();
-        df.var(firstTargetName()).stream().forEach(s -> targetValues.addValue(s.index() == 1 ? 0 : 1));
+        df.var(firstTargetName()).spotStream().forEach(s -> targetValues.addValue(s.index() == 1 ? 0 : 1));
         IRLSOptimizer optimizer = new IRLSOptimizer();
 
         coef = optimizer.optimize(tol, maxRuns, logitF, logitFD, coef, inputs, targetValues);

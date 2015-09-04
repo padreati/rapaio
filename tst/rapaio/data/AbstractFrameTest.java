@@ -40,7 +40,7 @@ public class AbstractFrameTest {
     public void testStreamOnAbstractFrame() throws IOException, URISyntaxException {
 
         Frame df = Datasets.loadIrisDataset();
-        int count = (int) df.stream().count();
+        int count = (int) df.spotStream().count();
         assertEquals(150, count);
     }
 }

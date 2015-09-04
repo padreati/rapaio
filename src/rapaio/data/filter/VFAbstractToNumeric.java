@@ -47,7 +47,7 @@ public class VFAbstractToNumeric extends VFAbstract {
             return v;
         }
         final Numeric result = Numeric.newEmpty();
-        v.stream().forEach((VSpot vi) -> {
+        v.spotStream().forEach((VSpot vi) -> {
             if (vi.missing()) {
                 result.addMissing();
             } else {

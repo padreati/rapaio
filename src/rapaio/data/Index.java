@@ -378,7 +378,7 @@ public final class Index extends AbstractVar {
             @Override
             public BinaryOperator<Index> combiner() {
                 return (x, y) -> {
-                    y.stream().forEach(s -> x.addValue(s.value()));
+                    y.spotStream().forEach(s -> x.addValue(s.value()));
                     return x;
                 };
             }

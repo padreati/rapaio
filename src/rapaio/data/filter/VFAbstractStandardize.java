@@ -67,6 +67,6 @@ public class VFAbstractStandardize extends VFAbstract {
         if (!vars[0].type().isNumeric()) {
             return vars[0];
         }
-        return vars[0].stream().transValue(x -> (x - mean) / sd).toMappedVar();
+        return vars[0].spotStream().transValue(x -> (x - mean) / sd).toMappedVar();
     }
 }

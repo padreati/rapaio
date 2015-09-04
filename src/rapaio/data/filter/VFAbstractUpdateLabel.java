@@ -48,7 +48,7 @@ public class VFAbstractUpdateLabel extends VFAbstract {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        vars[0].stream().forEach(s -> s.setLabel(f.apply(s)));
+        vars[0].spotStream().forEach(s -> s.setLabel(f.apply(s)));
         return vars[0];
     }
 }

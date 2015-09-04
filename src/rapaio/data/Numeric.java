@@ -203,7 +203,7 @@ public final class Numeric extends AbstractVar {
             @Override
             public BinaryOperator<Numeric> combiner() {
                 return (x, y) -> {
-                    y.stream().forEach(s -> x.addValue(s.value()));
+                    y.spotStream().forEach(s -> x.addValue(s.value()));
                     return x;
                 };
             }

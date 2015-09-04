@@ -71,7 +71,7 @@ public class L2Regressor extends AbstractRegressor {
         }
         for (int i = 0; i < targetNames().length; i++) {
             double mean = means[i];
-            pred.fit(targetName(i)).stream().forEach(s -> s.setValue(mean));
+            pred.fit(targetName(i)).spotStream().forEach(s -> s.setValue(mean));
         }
         pred.buildComplete();
         return pred;

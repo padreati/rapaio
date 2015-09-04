@@ -62,10 +62,10 @@ public class IrisContour {
 
         Frame iris = Datasets.loadIrisDataset();
         iris = iris.mapVars(X, Y, "class");
-        iris = iris.stream().filter(s -> s.index(2) != 3).toMappedFrame();
+        iris = iris.spotStream().filter(s -> s.index(2) != 3).toMappedFrame();
 
         Var trimmedClass = Nominal.newEmpty().withName("class");
-        iris.var("class").stream().forEach(s -> trimmedClass.addLabel(s.label()));
+        iris.var("class").spotStream().forEach(s -> trimmedClass.addLabel(s.label()));
 
         iris = BoundFrame.newByVars(iris.var(X), iris.var(Y), trimmedClass);
 
@@ -130,7 +130,7 @@ public class IrisContour {
         }
 
         Plot p = new Plot();
-        double[] qq = Numeric.newSeq(0, 1, 0.02).stream().mapToDouble().toArray();
+        double[] qq = Numeric.newSeq(0, 1, 0.02).spotStream().mapToDouble().toArray();
         qq[qq.length - 1] = Double.POSITIVE_INFINITY;
         ColorGradient bcg = ColorGradient.newHueGradient(qq);
         for (int i = 0; i < qq.length - 1; i++) {

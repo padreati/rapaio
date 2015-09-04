@@ -327,7 +327,7 @@ public final class SamplingTool {
         for (int i = 0; i < df.var(strataName).dictionary().length; i++) {
             maps.add(new ArrayList<>());
         }
-        df.var(strataName).stream().forEach(s -> maps.get(s.index()).add(s.row()));
+        df.var(strataName).spotStream().forEach(s -> maps.get(s.index()).add(s.row()));
         List<Integer> left = new ArrayList<>();
         List<Integer> right = new ArrayList<>();
         for (List<Integer> map : maps) {

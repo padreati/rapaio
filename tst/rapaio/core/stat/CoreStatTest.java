@@ -32,17 +32,17 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static rapaio.core.Core.*;
+import static rapaio.core.CoreStat.*;
 import static rapaio.core.Distributions.normal;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class CoreTest {
+public class CoreStatTest {
 
     private final Frame df;
 
-    public CoreTest() throws IOException {
+    public CoreStatTest() throws IOException {
         this.df = new Csv().withHeader(true).withDefaultTypes(VarType.NUMERIC).read(getClass(), "core_stat.csv");
     }
 

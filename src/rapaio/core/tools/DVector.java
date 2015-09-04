@@ -134,7 +134,7 @@ public class DVector implements Serializable {
 
     private DVector(String[] labels, Var var, Var weights) {
         this(labels);
-        var.stream().forEach(spot -> values[spot.index()] += weights.value(spot.row()));
+        var.spotStream().forEach(spot -> values[spot.index()] += weights.value(spot.row()));
         total = Arrays.stream(values).sum();
     }
 

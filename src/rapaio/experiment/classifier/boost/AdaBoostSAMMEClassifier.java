@@ -127,8 +127,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         a = new ArrayList<>();
         w = weights.solidCopy();
 
-        double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
-        w = w.stream().transValue(x -> x / total).toMappedVar();
+        double total = w.spotStream().mapToDouble().reduce(0.0, (x, y) -> x + y);
+        w = w.spotStream().transValue(x -> x / total).toMappedVar();
 
         for (int i = 0; i < runs; i++) {
             boolean success = learnRound(df);
@@ -158,8 +158,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
             return;
         }
 
-        double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
-        w = w.stream().transValue(x -> x / total).toMappedVar();
+        double total = w.spotStream().mapToDouble().reduce(0.0, (x, y) -> x + y);
+        w = w.spotStream().transValue(x -> x / total).toMappedVar();
 
         for (int i = h.size(); i < runs; i++) {
             boolean success = learnRound(df);
@@ -183,7 +183,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
                 err += w.value(j);
             }
         }
-        err /= w.stream().mapToDouble().sum();
+        err /= w.spotStream().mapToDouble().sum();
         double alpha = Math.log((1. - err) / err) + Math.log(k - 1);
         if (err == 0) {
             if (h.isEmpty()) {
@@ -203,8 +203,8 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
                 w.setValue(j, w.value(j) * Math.exp(alpha));
             }
         }
-        double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
-        w.stream().transValue(x -> x / total);
+        double total = w.spotStream().mapToDouble().reduce(0.0, (x, y) -> x + y);
+        w.spotStream().transValue(x -> x / total);
 
         return true;
     }

@@ -66,7 +66,7 @@ public interface CTreeSplitter extends Serializable {
                 weightsList.add(Numeric.newEmpty());
             }
 
-            df.stream().forEach(s -> {
+            df.spotStream().forEach(s -> {
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                     Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                     if (predicate.test(s)) {
@@ -107,7 +107,7 @@ public interface CTreeSplitter extends Serializable {
             }
 
             List<FSpot> missingSpots = new LinkedList<>();
-            df.stream().forEach(s -> {
+            df.spotStream().forEach(s -> {
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                     Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                     if (predicate.test(s)) {
@@ -162,7 +162,7 @@ public interface CTreeSplitter extends Serializable {
             }
 
             final Set<Integer> missingSpots = new HashSet<>();
-            df.stream().forEach(s -> {
+            df.spotStream().forEach(s -> {
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                     Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                     if (predicate.test(s)) {
@@ -216,7 +216,7 @@ public interface CTreeSplitter extends Serializable {
             }
 
             final Set<Integer> missingSpots = new HashSet<>();
-            df.stream().forEach(s -> {
+            df.spotStream().forEach(s -> {
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                     Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                     if (predicate.test(s)) {

@@ -272,7 +272,7 @@ public class CTree extends AbstractClassifier {
         CFit prediction = CFit.newEmpty(this, df, withClasses, withDensities);
         prediction.addTarget(firstTargetName(), firstDict());
 
-        df.stream().forEach(spot -> {
+        df.spotStream().forEach(spot -> {
             Pair<Integer, DVector> result = predictor.predict(this, spot, root);
             if (withClasses)
                 prediction.firstClasses().setIndex(spot.row(), result.first);

@@ -53,7 +53,7 @@ public class VFAbstractBoxCoxT extends VFAbstract {
     public Var apply(Var... vars) {
         checkSingleVar(vars);
 
-        return vars[0].stream().transValue(value -> {
+        return vars[0].spotStream().transValue(value -> {
             if (lambda == 0)
                 return Math.log(value + shift);
             else

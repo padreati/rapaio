@@ -73,7 +73,7 @@ public class MultinomialPmf implements NominalEstimator {
                 density[i][j] = 1.0;
             }
         }
-        df.stream().forEach(s -> density[s.index(targetVar)][s.index(testVar)]++);
+        df.spotStream().forEach(s -> density[s.index(targetVar)][s.index(testVar)]++);
         for (int i = 0; i < targetDict.length; i++) {
             double t = 0;
             for (int j = 0; j < testDict.length; j++) {

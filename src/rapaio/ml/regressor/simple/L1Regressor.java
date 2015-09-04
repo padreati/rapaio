@@ -80,7 +80,7 @@ public class L1Regressor extends AbstractRegressor {
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
             double median = medians[i];
-            pred.fit(target).stream().forEach(s -> s.setValue(median));
+            pred.fit(target).spotStream().forEach(s -> s.setValue(median));
         }
         pred.buildComplete();
         return pred;

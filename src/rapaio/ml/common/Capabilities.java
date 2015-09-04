@@ -167,7 +167,7 @@ public class Capabilities {
         List<String> varList = new VarRange(targetVarNames).parseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String targetName : varList) {
-            if (df.var(targetName).stream().complete().count() != df.var(targetName).rowCount()) {
+            if (df.var(targetName).spotStream().complete().count() != df.var(targetName).rowCount()) {
                 if (sb.length() != 0) {
                     sb.append(", ");
                 }
@@ -212,7 +212,7 @@ public class Capabilities {
         List<String> varList = new VarRange(targetVarNames).parseInverseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String inputName : varList) {
-            if (df.var(inputName).stream().complete().count() != df.var(inputName).rowCount()) {
+            if (df.var(inputName).spotStream().complete().count() != df.var(inputName).rowCount()) {
                 if (sb.length() != 0) {
                     sb.append(", ");
                 }

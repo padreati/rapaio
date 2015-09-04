@@ -31,7 +31,7 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 import static rapaio.sys.WS.formatFlex;
-import static rapaio.core.Core.mean;
+import static rapaio.core.CoreStat.mean;
 
 /**
  * Compute covariance of two variables

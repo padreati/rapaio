@@ -23,12 +23,18 @@
 
 package rapaio.groovy
 
+import rapaio.data.VarType
+import rapaio.io.Csv
+import rapaio.sys.WS
+
+import java.util.stream.Collectors
+
 /**
  * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 8/24/15.
  */
-class TestClass {
 
-    def f(int x) {
-        x ^ 2
-    }
-}
+
+WS.getPrinter().setTextWidth(200)
+root = new File("/home/ati/work/rapaio-kaggle/src/liberty/")
+tr = new Csv().withDefaultTypes(VarType.NUMERIC, VarType.NOMINAL).read(new File(root, "train.csv")).removeVars("Id")
+

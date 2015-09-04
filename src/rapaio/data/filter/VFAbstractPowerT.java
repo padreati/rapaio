@@ -47,7 +47,7 @@ public class VFAbstractPowerT extends VFAbstract {
         checkSingleVar(vars);
 
         double gm = gm(vars[0]);
-        return vars[0].stream().transValue(
+        return vars[0].spotStream().transValue(
                 x -> (lambda == 0) ?
                         gm * Math.log(x) :
                         (Math.pow(x, lambda) - 1.0) / (lambda * Math.pow(gm, lambda - 1))

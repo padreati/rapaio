@@ -53,10 +53,10 @@ public class Minimum implements Printable {
                 completeCount++;
             }
         }
-        if (var.stream().complete().count() == 0) {
+        if (var.spotStream().complete().count() == 0) {
             value = Double.NaN;
         } else {
-            value = var.stream().complete().mapToDouble().min().getAsDouble();
+            value = var.spotStream().complete().mapToDouble().min().getAsDouble();
         }
     }
 

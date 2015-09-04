@@ -35,8 +35,8 @@ import java.util.stream.IntStream;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-import static rapaio.core.Core.mean;
-import static rapaio.core.Core.var;
+import static rapaio.core.CoreStat.mean;
+import static rapaio.core.CoreStat.var;
 import static rapaio.data.filter.Filters.*;
 import static rapaio.graphics.Plotter.hist;
 import static rapaio.sys.WS.draw;
@@ -136,7 +136,7 @@ public class FiltersTest {
         Var first = Numeric.newEmpty();
         for (int i = 0; i < 100; i++) {
             Var y = shuffle(x);
-            double t = y.stream().mapToDouble().sum();
+            double t = y.spotStream().mapToDouble().sum();
             assertEquals(4950.0, t, 1e-30);
             first.addValue(y.value(0));
         }

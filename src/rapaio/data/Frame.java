@@ -29,11 +29,14 @@ import rapaio.data.stream.FSpots;
 import rapaio.ws.Summary;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 
@@ -470,12 +473,16 @@ public interface Frame extends Serializable, Printable {
     /**
      * @return a stream of FSpot
      */
-    default FSpots stream() {
+    default FSpots spotStream() {
         return new FSpots(IntStream.range(0, rowCount()).mapToObj(row -> new FSpot(this, row)), this);
     }
 
     default List<FSpot> spotList() {
         return IntStream.range(0, rowCount()).mapToObj(row -> new FSpot(this, row)).collect(toList());
+    }
+
+    default Stream<Var> varStream() {
+        return Arrays.stream(varNames()).map(this::var);
     }
 
     @Override

@@ -72,7 +72,7 @@ public class RandomValueRegressor extends AbstractRegressor {
         RegressorFit pred = RegressorFit.newEmpty(this, df, withResiduals);
         for (String targetName : targetNames()) {
             pred.addTarget(targetName);
-            pred.fit(targetName).stream().forEach(s -> s.setValue(distribution.sampleNext()));
+            pred.fit(targetName).spotStream().forEach(s -> s.setValue(distribution.sampleNext()));
         }
         pred.buildComplete();
         return pred;

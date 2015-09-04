@@ -35,7 +35,7 @@ import rapaio.data.Var;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/4/15.
  */
-public final class Core {
+public final class CoreStat {
 
     public static OnlineStat newOnlineStat() {
         return new OnlineStat();
@@ -66,7 +66,7 @@ public final class Core {
     }
 
     public static Quantiles quantiles(Var var, Numeric p) {
-        return new Quantiles(var, p.stream().mapToDouble().toArray());
+        return new Quantiles(var, p.spotStream().mapToDouble().toArray());
     }
 
     public static Modes modes(Var var) {

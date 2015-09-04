@@ -81,8 +81,8 @@ public class OnlineStatTest {
         Var ab = a.bindRows(b);
         OnlineStat soA = new OnlineStat();
         OnlineStat soB = new OnlineStat();
-        a.stream().forEach(s -> soA.update(s.value()));
-        b.stream().forEach(s -> soB.update(s.value()));
+        a.spotStream().forEach(s -> soA.update(s.value()));
+        b.spotStream().forEach(s -> soB.update(s.value()));
 
         soA.apply(soB);
 
@@ -96,7 +96,7 @@ public class OnlineStatTest {
         Var a = Numeric.newWrapOf(1, 1, 2, 2, 2, 3, 3, 3, 3, 4);
         OnlineStat so1 = new OnlineStat();
 
-        a.stream().forEach(s -> so1.update(s.value()));
+        a.spotStream().forEach(s -> so1.update(s.value()));
 
         assertEquals(2.4, so1.mean(), 10e-12);
         assertEquals(0.9333333333333331, so1.variance(), 10e-12);

@@ -47,7 +47,7 @@ public class VFAbstractToIndex extends VFAbstract {
             return (Index) v;
         }
         final Index result = Index.newEmpty();
-        v.stream().forEach((VSpot inst) -> {
+        v.spotStream().forEach((VSpot inst) -> {
             if (inst.missing()) {
                 result.addMissing();
             } else {

@@ -440,7 +440,7 @@ public class Csv {
                         try {
                             var = parent.defaultTypes[i].newInstance();
                             if (text != null && text.rowCount() > 0)
-                                text.stream().forEach(s -> var.addLabel(s.label()));
+                                text.spotStream().forEach(s -> var.addLabel(s.label()));
                             if (i == parent.defaultTypes.length - 1)
                                 text = null;
                             break;

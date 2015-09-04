@@ -48,7 +48,7 @@ public class VFSetMissing extends VFAbstract {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        vars[0].stream().forEach(s -> {
+        vars[0].spotStream().forEach(s -> {
             if (missingValues.contains(s.label()))
                 s.setMissing();
         });

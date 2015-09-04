@@ -50,7 +50,7 @@ public abstract class AbstractVar implements Var {
 
         switch (type()) {
             case NOMINAL:
-                return stream().map(VSpot::label).collect(Nominal.collector());
+                return spotStream().map(VSpot::label).collect(Nominal.collector());
             case ORDINAL:
                 Ordinal ord = Ordinal.newEmpty(rowCount(), dictionary()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
@@ -70,7 +70,7 @@ public abstract class AbstractVar implements Var {
                 }
                 return stamp;
             case NUMERIC:
-                return stream().map(VSpot::value).collect(Numeric.collector());
+                return spotStream().map(VSpot::value).collect(Numeric.collector());
             case BINARY:
                 Binary bin = Binary.newEmpty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {

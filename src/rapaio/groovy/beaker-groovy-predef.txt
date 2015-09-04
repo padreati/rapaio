@@ -8,6 +8,7 @@ rapaio.core.*
 rapaio.data.*
 rapaio.data.filter.*
 rapaio.datasets.*
+rapaio.graphics.*
 rapaio.io.*
 rapaio.sys.*
 java.awt.image.*

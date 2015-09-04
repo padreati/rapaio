@@ -203,7 +203,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         Mapping map;
         if (!oneVsAll) {
             map = df
-                    .stream()
+                    .spotStream()
                     .filter(s -> s.index(firstTargetName()) == classIndex1 || s.index(firstTargetName()) == classIndex2)
                     .collectMapping();
         } else {
@@ -244,7 +244,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         sparseIndices = null;
 
         // Store the sum of weights
-        sumOfWeights = weights.stream().mapToDouble().sum();
+        sumOfWeights = weights.spotStream().mapToDouble().sum();
 
         // Set class values
         target = new double[train.rowCount()];
