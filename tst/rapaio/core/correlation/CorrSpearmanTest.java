@@ -32,24 +32,24 @@ import static org.junit.Assert.assertEquals;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class RhoCorrTest {
+public class CorrSpearmanTest {
 
     private final Var iq = Numeric.newCopyOf(106, 86, 100, 101, 99, 103, 97, 113, 112, 110);
     private final Var tvHours = Numeric.newCopyOf(7, 0, 27, 50, 28, 29, 20, 12, 6, 17);
 
     @Test
     public void testFromWikipedia() {
-        RhoCorr sc = new RhoCorr(iq, tvHours);
+        CorrSpearman sc = new CorrSpearman(iq, tvHours);
         // according with wikipedia article rho must be −0.175757575
         assertEquals(-0.175757575, sc.values()[0][1], 1e-8);
     }
 
     @Test
     public void testSameVector() {
-        RhoCorr same = new RhoCorr(iq, iq);
+        CorrSpearman same = new CorrSpearman(iq, iq);
         assertEquals(1., same.values()[0][1], 1e-10);
 
-        same = new RhoCorr(tvHours, tvHours);
+        same = new CorrSpearman(tvHours, tvHours);
         assertEquals(1., same.values()[0][1], 1e-10);
     }
 }

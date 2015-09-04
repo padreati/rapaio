@@ -411,11 +411,6 @@ public final class Numeric extends AbstractVar {
     }
 
     @Override
-    public Comparator<Integer> refComparator(boolean asc) {
-        return RowComparators.numeric(this, true);
-    }
-
-    @Override
     public String toString() {
         return "Numeric[name:" + name() + ", rowCount:" + rowCount() + "]";
     }

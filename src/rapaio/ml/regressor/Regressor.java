@@ -23,7 +23,7 @@
 
 package rapaio.ml.regressor;
 
-import rapaio.core.sample.Sampler;
+import rapaio.data.sample.Sampler;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;

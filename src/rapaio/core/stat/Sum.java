@@ -23,6 +23,7 @@
 
 package rapaio.core.stat;
 
+import rapaio.core.MathTools;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
@@ -31,7 +32,7 @@ import static rapaio.sys.WS.formatFlex;
 /**
  * Computes the sum of elements for a {@link rapaio.data.Var} of values.
  * <p>
- * Ignore invalid numeric values. See {@link rapaio.core.MathBase#validNumber(double)}.
+ * Ignore invalid numeric values. See {@link MathTools#validNumber(double)}.
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */

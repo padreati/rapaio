@@ -23,7 +23,7 @@
 
 package rapaio.core.distributions;
 
-import rapaio.core.MathBase;
+import rapaio.core.MathTools;
 import rapaio.core.RandomSource;
 
 import static rapaio.sys.WS.formatFlex;
@@ -119,7 +119,7 @@ public class Gamma implements Distribution {
         if (alpha == 1.0)
             return Math.exp(-x / beta) / beta;
 
-        return Math.exp((alpha - 1.0) * Math.log(x / beta) - x / beta - MathBase.lnGamma(alpha)) / beta;
+        return Math.exp((alpha - 1.0) * Math.log(x / beta) - x / beta - MathTools.lnGamma(alpha)) / beta;
     }
 
     /**
@@ -128,7 +128,7 @@ public class Gamma implements Distribution {
     public double cdf(double x) {
         if (x < 0.0)
             return 0.0;
-        return MathBase.incompleteGamma(beta, alpha * x);
+        return MathTools.incompleteGamma(beta, alpha * x);
     }
 
     @Override
@@ -336,6 +336,6 @@ public class Gamma implements Distribution {
     @Override
     public double entropy() {
         throw new IllegalArgumentException("Not implemented");
-//        return alpha - Math.log(beta) + Math.log(Math.floor(Math.exp(MathBase.lnGamma(alpha)))) + (1.0-alpha)*\phi(alpha);
+//        return alpha - Math.log(beta) + Math.log(Math.floor(Math.exp(MathTools.lnGamma(alpha)))) + (1.0-alpha)*\phi(alpha);
     }
 }

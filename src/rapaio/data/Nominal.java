@@ -180,11 +180,6 @@ public final class Nominal extends FactorBase {
     }
 
     @Override
-    public Comparator<Integer> refComparator(boolean asc) {
-        return RowComparators.nominal(this, true);
-    }
-
-    @Override
     public String toString() {
         return "Nominal[name:" + name() + ", rowCount:" + rowCount() + "]";
     }

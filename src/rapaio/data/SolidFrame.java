@@ -191,16 +191,9 @@ public class SolidFrame extends AbstractFrame {
 
     @Override
     public Frame addRows(int rowCount) {
-        for (int i = 1; i < vars.length; i++) {
-            if (vars[i - 1].rowCount() != vars[i].rowCount()) {
-                throw new IllegalArgumentException("variables must have the same size");
-            }
-        }
-        for (int i = 0; i < vars.length; i++) {
-            vars[i].addRows(rowCount);
-        }
+        varStream().forEach(var -> var.addRows(rowCount));
         this.rows += rowCount;
-        return null;
+        return this;
     }
 
     @Override

@@ -23,7 +23,7 @@
 
 package rapaio.tutorial.pages;
 
-import rapaio.core.SamplingTool;
+import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
@@ -149,7 +149,7 @@ public class ClassificationWithRFPage implements TutorialPage {
                 "        Frame test = frames.get(1);\n");
 
 
-        List<Frame> frames = SamplingTool.randomSampleSlices(all, 0.15);
+        List<Frame> frames = SamplingTools.randomSampleSlices(all, 0.15);
         Frame train = frames.get(0);
         Frame test = frames.get(1);
 

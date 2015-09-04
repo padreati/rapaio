@@ -23,8 +23,8 @@
 
 package rapaio.math.linear;
 
+import rapaio.core.MathTools;
 import rapaio.sys.WS;
-import rapaio.core.MathBase;
 import rapaio.printer.Printable;
 import rapaio.math.linear.impl.*;
 
@@ -257,7 +257,7 @@ public interface RM extends Serializable, Printable {
             return false;
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                if (!MathBase.eq(get(i, j), RM.get(i, j), tol))
+                if (!MathTools.eq(get(i, j), RM.get(i, j), tol))
                     return false;
             }
         }

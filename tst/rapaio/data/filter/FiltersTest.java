@@ -35,8 +35,8 @@ import java.util.stream.IntStream;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-import static rapaio.core.CoreStat.mean;
-import static rapaio.core.CoreStat.var;
+import static rapaio.core.CoreTools.mean;
+import static rapaio.core.CoreTools.var;
 import static rapaio.data.filter.Filters.*;
 import static rapaio.graphics.Plotter.hist;
 import static rapaio.sys.WS.draw;

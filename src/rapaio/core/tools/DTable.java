@@ -29,7 +29,7 @@ import rapaio.data.Var;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import static rapaio.core.MathBase.log2;
+import static rapaio.core.MathTools.log2;
 
 /**
  * Nominal distribution table.

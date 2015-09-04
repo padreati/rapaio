@@ -23,7 +23,7 @@
 
 package rapaio.ml.common;
 
-import rapaio.core.SamplingTool;
+import rapaio.core.SamplingTools;
 
 import java.io.Serializable;
 
@@ -73,7 +73,7 @@ public class VarSelector implements Serializable {
             return varNames;
         }
         int m = (mVars == M_AUTO) ? Math.max((int) Math.sqrt(varNames.length), 1) : mVars;
-        int[] indexes = SamplingTool.sampleWR(m, varNames.length);
+        int[] indexes = SamplingTools.sampleWR(m, varNames.length);
         String[] result = new String[m];
         for (int i = 0; i < indexes.length; i++) {
             result[i] = varNames[indexes[i]];

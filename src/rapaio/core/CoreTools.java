@@ -23,8 +23,12 @@
 
 package rapaio.core;
 
-import rapaio.core.correlation.PearsonRCorrelation;
-import rapaio.core.correlation.RhoCorr;
+import rapaio.core.correlation.CorrPearson;
+import rapaio.core.correlation.CorrSpearman;
+import rapaio.core.distributions.Bernoulli;
+import rapaio.core.distributions.DUniform;
+import rapaio.core.distributions.Normal;
+import rapaio.core.distributions.Uniform;
 import rapaio.core.stat.*;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
@@ -35,7 +39,11 @@ import rapaio.data.Var;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/4/15.
  */
-public final class CoreStat {
+public final class CoreTools {
+
+    //
+    // statistical tools
+    //
 
     public static OnlineStat newOnlineStat() {
         return new OnlineStat();
@@ -81,19 +89,50 @@ public final class CoreStat {
         return new Covariance(x, y);
     }
 
-    public static PearsonRCorrelation corrPearson(Frame df) {
-        return new PearsonRCorrelation(df);
+    //
+    // correlations
+    //
+
+    public static CorrPearson corrPearson(Frame df) {
+        return new CorrPearson(df);
     }
 
-    public static PearsonRCorrelation corrPearson(Var... vars) {
-        return new PearsonRCorrelation(vars);
+    public static CorrPearson corrPearson(Var... vars) {
+        return new CorrPearson(vars);
     }
 
-    public static RhoCorr corrSpearman(Frame df) {
-        return new RhoCorr(df);
+    public static CorrSpearman corrSpearman(Frame df) {
+        return new CorrSpearman(df);
     }
 
-    public static RhoCorr corrSpearman(Var... vars) {
-        return new RhoCorr(vars);
+    public static CorrSpearman corrSpearman(Var... vars) {
+        return new CorrSpearman(vars);
+    }
+
+    ///
+    // distribution tools
+    //
+    public static Normal distNormal() {
+        return new Normal(0, 1);
+    }
+
+    public static Normal distNormal(double mu, double sd) {
+        return new Normal(mu, sd);
+    }
+
+    public static DUniform distDUnif(int a, int b) {
+        return new DUniform(a, b);
+    }
+
+    public static Uniform distUnif() {
+        return new Uniform(0, 1);
+    }
+
+    public static Uniform distUnif(double a, double b) {
+        return new Uniform(a, b);
+    }
+
+    public static Bernoulli distBer(double p) {
+        return new Bernoulli(p);
     }
 }

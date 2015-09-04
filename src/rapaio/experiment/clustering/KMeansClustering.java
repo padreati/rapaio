@@ -23,7 +23,7 @@
 
 package rapaio.experiment.clustering;
 
-import rapaio.core.SamplingTool;
+import rapaio.core.SamplingTools;
 import rapaio.core.stat.Mean;
 import rapaio.data.*;
 
@@ -149,7 +149,7 @@ public class KMeansClustering {
         Forgy {
             @Override
             public void init(Frame df, Frame centroids) {
-                int[] indexes = SamplingTool.sampleWOR(centroids.rowCount(), df.rowCount());
+                int[] indexes = SamplingTools.sampleWOR(centroids.rowCount(), df.rowCount());
                 for (int i = 0; i < indexes.length; i++) {
                     for (int j = 0; j < centroids.varNames().length; j++) {
                         centroids.setValue(i, j, df.value(indexes[i], centroids.varNames()[j]));

@@ -32,10 +32,10 @@ public class Bernoulli implements Distribution {
 
     private static final long serialVersionUID = -180129876504915848L;
 
-    private final double theta;
+    private final double p;
 
-    public Bernoulli(double theta) {
-        this.theta = theta;
+    public Bernoulli(double p) {
+        this.p = p;
     }
 
     @Override
@@ -45,12 +45,12 @@ public class Bernoulli implements Distribution {
 
     @Override
     public String name() {
-        return "Bernoulli(theta=" + theta + ")";
+        return "Bernoulli(p=" + p + ")";
     }
 
     @Override
     public double pdf(double x) {
-        return x < 1 ? 1 - theta : theta;
+        return x < 1 ? 1 - p : p;
     }
 
     @Override
@@ -58,13 +58,13 @@ public class Bernoulli implements Distribution {
         if (x < 0)
             return 0;
         if (x < 1)
-            return 1 - theta;
+            return 1 - p;
         return 1;
     }
 
     @Override
     public double quantile(double p) {
-        return (p <= 1 - theta) ? 0 : 1;
+        return (p <= 1 - p) ? 0 : 1;
     }
 
     @Override
@@ -79,36 +79,36 @@ public class Bernoulli implements Distribution {
 
     @Override
     public double mean() {
-        return theta;
+        return p;
     }
 
     @Override
     public double mode() {
-        if ((1 - theta) > theta)
+        if ((1 - p) > p)
             return 0;
-        if ((1 - theta) < theta)
+        if ((1 - p) < p)
             return 1;
         return 0.5; // this is possible?
     }
 
     @Override
     public double var() {
-        return theta * (1 - theta);
+        return p * (1 - p);
     }
 
     @Override
     public double skewness() {
-        return 1 / Math.sqrt((1 - theta) * theta);
+        return 1 / Math.sqrt((1 - p) * p);
     }
 
     @Override
     public double kurtosis() {
-        double prod = (1 - theta) * theta;
+        double prod = (1 - p) * p;
         return (1 - 6 * prod) / prod;
     }
 
     @Override
     public double entropy() {
-        return -theta * Math.log(theta) - (1 - theta) * Math.log(1 - theta);
+        return -p * Math.log(p) - (1 - p) * Math.log(1 - p);
     }
 }

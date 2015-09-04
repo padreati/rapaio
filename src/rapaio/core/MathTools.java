@@ -26,7 +26,7 @@ package rapaio.core;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-import static rapaio.core.Distributions.normal;
+import static rapaio.core.DistributionTools.normal;
 
 /**
  * Utility class which simplifies access to common java math utilities and also
@@ -34,7 +34,7 @@ import static rapaio.core.Distributions.normal;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class MathBase {
+public class MathTools {
 
 	/* 30 Decimal-place constants computed with bc -l (scale=32; proper round) */
 

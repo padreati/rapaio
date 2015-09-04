@@ -23,7 +23,7 @@
 
 package rapaio.experiment.classifier.svm.kernel;
 
-import rapaio.core.MathBase;
+import rapaio.core.MathTools;
 import rapaio.data.Frame;
 
 import static rapaio.sys.WS.formatFlex;
@@ -55,7 +55,7 @@ public class PolyKernel extends AbstractKernel {
 
     @Override
     public boolean isLinear() {
-        return MathBase.eq(exponent, 1.0);
+        return MathTools.eq(exponent, 1.0);
     }
 
     @Override

@@ -25,7 +25,7 @@ package rapaio.graphics.plot;
 
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.data.Var;
-import rapaio.data.grid.MeshGrid;
+import rapaio.experiment.grid.MeshGrid;
 import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOpt;

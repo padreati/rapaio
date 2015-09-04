@@ -95,7 +95,7 @@ public class IrisExplorePage implements TutorialPage {
 
         Summary.printSummary(df);
 
-        heading(3, "Distributions with histograms and density lines");
+        heading(3, "DistributionTools with histograms and density lines");
 
         p("Now we will take a look over the distribution of first numeric measurements. " +
                 "We will draw a grid plot with all histograms for all the four " +

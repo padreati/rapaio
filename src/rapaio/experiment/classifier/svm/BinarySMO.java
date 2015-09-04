@@ -27,11 +27,11 @@ package rapaio.experiment.classifier.svm;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
 
+import rapaio.core.MathTools;
 import rapaio.sys.WS;
-import rapaio.core.MathBase;
 import rapaio.core.RandomSource;
-import rapaio.core.sample.Sample;
-import rapaio.core.sample.Sampler;
+import rapaio.data.sample.Sample;
+import rapaio.data.sample.Sampler;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -445,7 +445,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
         for (int i = 0; i < df.rowCount(); i++) {
             double pred = predict(df, i);
-            if (MathBase.sm(pred, 0)) {
+            if (MathTools.sm(pred, 0)) {
                 cr.firstClasses().setIndex(i, classIndex1);
                 cr.firstDensity().setValue(i, firstDictTerm(classIndex1), -pred);
                 cr.firstDensity().setValue(i, firstDictTerm(classIndex2), pred);
@@ -605,7 +605,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             H = Math.min(C2, alph1 + alph2);
         }
 
-        if (MathBase.eq(L, H, 1e-10)) { // old condition was >=
+        if (MathTools.eq(L, H, 1e-10)) { // old condition was >=
             return false;
         }
 

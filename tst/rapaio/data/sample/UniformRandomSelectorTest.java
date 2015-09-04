@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.core.sample;
+package rapaio.data.sample;
 
 import org.junit.Test;
 import rapaio.data.Frame;

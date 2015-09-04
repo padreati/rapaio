@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.data.grid;
+package rapaio.experiment.grid;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Numeric;

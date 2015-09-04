@@ -28,7 +28,7 @@ import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
-import rapaio.data.grid.MeshGrid1D;
+import rapaio.experiment.grid.MeshGrid1D;
 import rapaio.graphics.Plotter;
 import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.plot.Plot;

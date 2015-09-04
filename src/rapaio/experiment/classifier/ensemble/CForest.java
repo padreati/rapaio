@@ -23,7 +23,7 @@
 
 package rapaio.experiment.classifier.ensemble;
 
-import rapaio.core.sample.Sampler;
+import rapaio.data.sample.Sampler;
 import rapaio.ml.classifier.Classifier;
 import rapaio.experiment.classifier.ensemble.impl.BaggingMode;
 import rapaio.experiment.classifier.ensemble.impl.CEnsemble;

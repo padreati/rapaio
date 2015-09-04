@@ -24,7 +24,7 @@
 package rapaio.graphics.plot.plotcomp;
 
 import rapaio.data.Var;
-import rapaio.data.grid.MeshGrid;
+import rapaio.experiment.grid.MeshGrid;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.plot.PlotComponent;

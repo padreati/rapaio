@@ -45,7 +45,7 @@ public class VFRefSort extends VFAbstract {
         if (rowComparators == null || rowComparators.length == 0) {
             throw new IllegalArgumentException("Filter requires at least a row comparator");
         }
-        aggregateComparator = RowComparators.aggregateComparator(rowComparators);
+        aggregateComparator = RowComparators.aggregate(rowComparators);
     }
 
     @Override

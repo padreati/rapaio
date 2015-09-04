@@ -31,7 +31,7 @@ import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.data.*;
 import rapaio.data.Frame;
-import rapaio.data.grid.MeshGrid1D;
+import rapaio.experiment.grid.MeshGrid1D;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.plot.Plot;

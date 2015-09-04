@@ -27,12 +27,12 @@ import org.junit.Test;
 import rapaio.core.tests.KSTest;
 import rapaio.data.Numeric;
 
-import static rapaio.core.Distributions.dunif;
+import static rapaio.core.DistributionTools.dunif;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class SamplingToolTest {
+public class SamplingToolsTest {
 
 	//    @Test
 	public void worTest() {
@@ -46,8 +46,8 @@ public class SamplingToolTest {
 		final int TRIALS = 1_000_000;
 		final int SAMPLES = 2;
 		for (int i = 0; i < TRIALS; i++) {
-            for (int next : SamplingTool.sampleWeightedWOR(SAMPLES, w)) {
-                freq[next]++;
+			for (int next : SamplingTools.sampleWeightedWOR(SAMPLES, w)) {
+				freq[next]++;
 //                System.out.print(next + " ");
 			}
 //            System.out.println();
@@ -69,8 +69,8 @@ public class SamplingToolTest {
 		final int TRIALS = 100_000;
 		final int SAMPLES = 100;
 		for (int i = 0; i < TRIALS; i++) {
-            for (int next : SamplingTool.sampleWeightedWR(SAMPLES, w)) {
-                freq[next]++;
+			for (int next : SamplingTools.sampleWeightedWR(SAMPLES, w)) {
+				freq[next]++;
 			}
 		}
 		for (int i = 0; i < freq.length; i++) {
@@ -87,8 +87,8 @@ public class SamplingToolTest {
 		final int SAMPLES = 3;
         Numeric v = Numeric.newEmpty();
         for (int i = 0; i < TRIALS; i++) {
-            for (int next : SamplingTool.sampleWOR(SAMPLES, 10)) {
-                freq[next]++;
+			for (int next : SamplingTools.sampleWOR(SAMPLES, 10)) {
+				freq[next]++;
                 v.addValue(next);
             }
 		}

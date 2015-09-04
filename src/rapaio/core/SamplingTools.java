@@ -39,7 +39,7 @@ import static rapaio.core.RandomSource.nextDouble;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-public final class SamplingTool {
+public final class SamplingTools {
 
     /**
      * Discrete sampling with repetition.
@@ -349,6 +349,6 @@ public final class SamplingTool {
     }
 
     public static Frame randomBootstrap(Frame frame, double percent) {
-        return MappedFrame.newByRow(frame, Mapping.newCopyOf(SamplingTool.sampleWR(frame.rowCount(), (int) (percent * frame.rowCount()))));
+        return MappedFrame.newByRow(frame, Mapping.newCopyOf(SamplingTools.sampleWR(frame.rowCount(), (int) (percent * frame.rowCount()))));
     }
 }

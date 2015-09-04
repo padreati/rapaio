@@ -25,7 +25,7 @@ package rapaio.ml.classifier;
 
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
-import rapaio.core.sample.Sampler;
+import rapaio.data.sample.Sampler;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
@@ -90,7 +90,7 @@ public interface Classifier extends Printable, Serializable {
     /**
      * Specifies the sampler to be used at learning time.
      * The sampler is responsible for selecting the instances to be learned.
-     * The default implementation is {@link rapaio.core.sample.Sampler.Identity}
+     * The default implementation is {@link rapaio.data.sample.Sampler.Identity}
      * which gives all the original training instances.
      *
      * @param sampler instance of a new sampler

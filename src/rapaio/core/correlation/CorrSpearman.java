@@ -41,13 +41,13 @@ import static rapaio.sys.WS.getPrinter;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class RhoCorr implements Printable {
+public class CorrSpearman implements Printable {
 
     private final String[] names;
     private final Var[] vars;
     private final double[][] rho;
 
-    public RhoCorr(Var... vars) {
+    public CorrSpearman(Var... vars) {
         this.names = new String[vars.length];
         for (int i = 0; i < names.length; i++) {
             names[i] = "V" + i;
@@ -56,7 +56,7 @@ public class RhoCorr implements Printable {
         this.rho = compute();
     }
 
-    public RhoCorr(Frame df) {
+    public CorrSpearman(Frame df) {
         this.names = df.varNames();
         this.vars = new Var[df.varCount()];
         for (int i = 0; i < df.varCount(); i++) {
@@ -94,7 +94,7 @@ public class RhoCorr implements Printable {
         }
 
         // compute Pearson on ranks
-        return new PearsonRCorrelation(ranks).values();
+        return new CorrPearson(ranks).values();
     }
 
     public double[][] values() {

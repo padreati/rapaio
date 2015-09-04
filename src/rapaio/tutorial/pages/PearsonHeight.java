@@ -23,7 +23,7 @@
 
 package rapaio.tutorial.pages;
 
-import rapaio.core.correlation.PearsonRCorrelation;
+import rapaio.core.correlation.CorrPearson;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
@@ -106,7 +106,7 @@ public class PearsonHeight implements TutorialPage {
         printSummary(new Mean(df.var("Son")));
         printSummary(new Variance(df.var("Son")));
 
-        printSummary(new PearsonRCorrelation(df.var("Father"), df.var("Son")));
+        printSummary(new CorrPearson(df.var("Father"), df.var("Son")));
 
         double[] perc = new double[11];
         for (int i = 0; i < perc.length; i++) {

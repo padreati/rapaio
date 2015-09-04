@@ -23,8 +23,8 @@
 
 package rapaio.tutorial.pages;
 
-import rapaio.core.correlation.PearsonRCorrelation;
-import rapaio.core.correlation.RhoCorr;
+import rapaio.core.correlation.CorrPearson;
+import rapaio.core.correlation.CorrSpearman;
 import rapaio.data.Frame;
 import rapaio.data.VarType;
 import rapaio.data.filter.FFAbstractRetainTypes;
@@ -107,10 +107,10 @@ public class CorrelationsPage implements TutorialPage {
                 "Thus the result will be a matrix with computed \\(r\\) values between vectors, " +
                 "using vectors index position as indexes in resulted matrix. ");
 
-        final PearsonRCorrelation r = new PearsonRCorrelation(df);
+        final CorrPearson r = new CorrPearson(df);
         printSummary(r);
 
-        code("        final PearsonRCorrelation r = new PearsonRCorrelation(df);\n" +
+        code("        final CorrPearson r = new CorrPearson(df);\n" +
                 "        printSummary(r);\n");
 
         p("We can note by visual inspection that many of the attributes are linearly correlated. " +
@@ -181,7 +181,7 @@ public class CorrelationsPage implements TutorialPage {
                 "Thus the result will be a matrix with computed \\(\\rho\\) values between given variables, " +
                 "using variables' index positions as indexes in the resulted matrix. ");
 
-        RhoCorr rho = new RhoCorr(df);
+        CorrSpearman rho = new CorrSpearman(df);
         printSummary(rho);
         printSummary(r);
 

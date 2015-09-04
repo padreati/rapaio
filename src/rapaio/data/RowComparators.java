@@ -29,11 +29,12 @@ import java.util.Comparator;
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public final class RowComparators implements Serializable {
 
+    private static final long serialVersionUID = -3396667513004042385L;
+
     @SafeVarargs
-    public static Comparator<Integer> aggregateComparator(final Comparator<Integer>... comparators) {
+    public static Comparator<Integer> aggregate(final Comparator<Integer>... comparators) {
         return (row1, row2) -> {
             for (Comparator<Integer> comparator : comparators) {
                 int comp = comparator.compare(row1, row2);

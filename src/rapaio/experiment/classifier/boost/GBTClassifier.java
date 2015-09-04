@@ -23,7 +23,7 @@
 
 package rapaio.experiment.classifier.boost;
 
-import rapaio.core.SamplingTool;
+import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
@@ -190,7 +190,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
             Frame bootX = x;
             Var bootR = r;
             if (useBootstrap) {
-                int[] map = SamplingTool.sampleWR((int) (bootstrapSize * df.rowCount()), df.rowCount());
+                int[] map = SamplingTools.sampleWR((int) (bootstrapSize * df.rowCount()), df.rowCount());
                 bootTrain = train.mapRows(map);
                 bootWeights = weights.mapRows(map);
                 bootX = x.mapRows(map);

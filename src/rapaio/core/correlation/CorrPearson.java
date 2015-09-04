@@ -30,6 +30,7 @@ import rapaio.data.Var;
 import rapaio.printer.Printable;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static rapaio.sys.WS.formatFlex;
 import static rapaio.sys.WS.getPrinter;
@@ -43,34 +44,32 @@ import static rapaio.sys.WS.getPrinter;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class PearsonRCorrelation implements Printable {
+public class CorrPearson implements Printable {
 
     private final String[] names;
-    private final Var[] vars;
     private final double[][] pearson;
 
-    public PearsonRCorrelation(Frame df) {
+    public CorrPearson(Frame df) {
+        List<Var> varList = df.varList();
         this.names = df.varNames();
-        this.vars = new Var[df.varCount()];
+        this.pearson = new double[varList.size()][varList.size()];
         for (int i = 0; i < df.varCount(); i++) {
-            vars[i] = df.var(i);
-        }
-        this.pearson = new double[vars.length][vars.length];
-        for (int i = 0; i < vars.length; i++) {
             pearson[i][i] = 1;
-            for (int j = i + 1; j < vars.length; j++) {
-                pearson[i][j] = compute(vars[i], vars[j]);
+            for (int j = i + 1; j < varList.size(); j++) {
+                pearson[i][j] = compute(varList.get(i), varList.get(j));
                 pearson[j][i] = pearson[i][j];
             }
         }
     }
 
-    public PearsonRCorrelation(Var... vars) {
+    public CorrPearson(Var... vars) {
+        List<Var> varList = Arrays.asList(vars);
         this.names = new String[vars.length];
         for (int i = 0; i < names.length; i++) {
-            names[i] = "V" + i;
+            names[i] = vars[i].name();
+            if (names[i].isEmpty())
+                names[i] = "V" + i;
         }
-        this.vars = vars;
         this.pearson = new double[vars.length][vars.length];
         for (int i = 0; i < vars.length; i++) {
             pearson[i][i] = 1;
@@ -105,7 +104,7 @@ public class PearsonRCorrelation implements Printable {
     @Override
     public String summary() {
         StringBuilder sb = new StringBuilder();
-        switch (vars.length) {
+        switch (names.length) {
             case 1:
                 summaryOne(sb);
                 break;
@@ -135,12 +134,12 @@ public class PearsonRCorrelation implements Printable {
         sb.append(String.format("\n > pearson[%s] - Pearson product-moment correlation coefficient\n",
                 Arrays.deepToString(names)));
 
-        String[][] table = new String[vars.length + 1][vars.length + 1];
+        String[][] table = new String[names.length + 1][names.length + 1];
         table[0][0] = "";
-        for (int i = 1; i < vars.length + 1; i++) {
+        for (int i = 1; i < names.length + 1; i++) {
             table[0][i] = i + ".";
             table[i][0] = i + "." + names[i - 1];
-            for (int j = 1; j < vars.length + 1; j++) {
+            for (int j = 1; j < names.length + 1; j++) {
                 table[i][j] = formatFlex(pearson[i - 1][j - 1]);
                 if (i == j) {
                     table[i][j] = "x";
@@ -157,7 +156,7 @@ public class PearsonRCorrelation implements Printable {
                 ws[i] = Math.max(ws[i], table[i][j].length());
             }
         }
-        while (start < vars.length + 1) {
+        while (start < names.length + 1) {
             int w = 0;
             while ((end < (table[0].length - 1)) && ws[end + 1] + w + 1 < width) {
                 w += ws[end + 1] + 1;

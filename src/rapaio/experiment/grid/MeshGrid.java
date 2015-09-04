@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.data.grid;
+package rapaio.experiment.grid;
 
 import rapaio.data.Var;
 

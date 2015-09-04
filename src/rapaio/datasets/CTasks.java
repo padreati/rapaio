@@ -23,7 +23,7 @@
 
 package rapaio.datasets;
 
-import rapaio.core.SamplingTool;
+import rapaio.core.SamplingTools;
 import rapaio.data.MappedFrame;
 import rapaio.data.Mapping;
 import rapaio.datasets.UCI.UCI;
@@ -74,8 +74,8 @@ class IrisUCITask extends CTask {
     @Override
     public boolean reSample(double p, boolean replacement) {
         int[] rows = replacement
-                ? SamplingTool.sampleWR((int) (full.rowCount() * p), full.rowCount())
-                : SamplingTool.sampleWOR((int) (full.rowCount() * p), full.rowCount());
+                ? SamplingTools.sampleWR((int) (full.rowCount() * p), full.rowCount())
+                : SamplingTools.sampleWOR((int) (full.rowCount() * p), full.rowCount());
         train = MappedFrame.newByRow(full, rows);
         Set<Integer> used = Arrays.stream(rows).mapToObj(row -> row).collect(Collectors.toSet());
         Mapping diff = Mapping.newCopyOf(IntStream.range(0, full.rowCount()).filter(row -> !used.contains(row)).toArray());

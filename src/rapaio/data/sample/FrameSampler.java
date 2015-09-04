@@ -21,9 +21,9 @@
  *
  */
 
-package rapaio.core.sample;
+package rapaio.data.sample;
 
-import rapaio.core.SamplingTool;
+import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -38,7 +38,7 @@ import static rapaio.sys.WS.formatFlex;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/29/15.
  */
-public interface Sampler extends Serializable {
+public interface FrameSampler extends Serializable {
 
     /**
      * Builds a new sample from the given data frame
@@ -46,7 +46,7 @@ public interface Sampler extends Serializable {
      * @param df source data frame
      * @return new sample
      */
-    Sample newSample(Frame df, Var weight);
+    FrameSample newSample(Frame df, Var weight);
 
     default String name() {
         return "CustomSampler";
@@ -54,13 +54,13 @@ public interface Sampler extends Serializable {
 
     // static implementations
 
-    final class Identity implements Sampler {
+    final class Identity implements FrameSampler {
 
         private static final long serialVersionUID = -1133893495082466752L;
 
         @Override
-        public Sample newSample(Frame df, Var weights) {
-            return new Sample(df, weights, Mapping.newRangeOf(0, df.rowCount()));
+        public FrameSample newSample(Frame df, Var weights) {
+            return new FrameSample(df, weights, Mapping.newRangeOf(0, df.rowCount()));
         }
 
         @Override
@@ -69,7 +69,7 @@ public interface Sampler extends Serializable {
         }
     }
 
-    final class Bootstrap implements Sampler {
+    final class Bootstrap implements FrameSampler {
 
         private static final long serialVersionUID = -7987373317949449262L;
         private double percent = 1.0;
@@ -84,9 +84,9 @@ public interface Sampler extends Serializable {
         }
 
         @Override
-        public Sample newSample(Frame df, Var weights) {
-            Mapping map = Mapping.newCopyOf(SamplingTool.sampleWR((int) (percent * df.rowCount()), df.rowCount()));
-            return new Sample(df.mapRows(map), weights.mapRows(map), map);
+        public FrameSample newSample(Frame df, Var weights) {
+            Mapping map = Mapping.newCopyOf(SamplingTools.sampleWR((int) (percent * df.rowCount()), df.rowCount()));
+            return new FrameSample(df.mapRows(map), weights.mapRows(map), map);
         }
 
         @Override

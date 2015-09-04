@@ -217,16 +217,11 @@ public class Text extends AbstractVar {
 
     @Override
     public Var newInstance() {
-        return null;
+        return Text.newEmpty();
     }
 
     @Override
     public Var newInstance(int rows) {
-        return null;
-    }
-
-    @Override
-    public Comparator<Integer> refComparator(boolean asc) {
-        return RowComparators.nominal(this, asc);
+        return Text.newEmpty(rows);
     }
 }

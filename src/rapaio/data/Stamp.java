@@ -356,11 +356,6 @@ public class Stamp extends AbstractVar {
     }
 
     @Override
-    public Comparator<Integer> refComparator(boolean asc) {
-        return RowComparators.stamp(this, true);
-    }
-
-    @Override
     public String toString() {
         return "Stamp[" + rowCount() + "]";
     }

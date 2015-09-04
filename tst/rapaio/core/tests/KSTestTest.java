@@ -36,7 +36,7 @@ import rapaio.datasets.Datasets;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.core.Distributions.normal;
+import static rapaio.core.DistributionTools.normal;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>

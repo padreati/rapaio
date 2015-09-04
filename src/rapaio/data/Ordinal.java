@@ -138,11 +138,6 @@ public final class Ordinal extends FactorBase {
     }
 
     @Override
-    public Comparator<Integer> refComparator(boolean asc) {
-        return RowComparators.numeric(this, true);
-    }
-
-    @Override
     public String toString() {
         return "Ordinal[name:" + name() + ", rowCount:" + rowCount() + "]";
     }

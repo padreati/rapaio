@@ -23,7 +23,7 @@
 
 package rapaio.core.distributions;
 
-import rapaio.core.MathBase;
+import rapaio.core.MathTools;
 import rapaio.core.RandomSource;
 
 /**
@@ -64,7 +64,7 @@ public class ChiSquare implements Distribution {
     public double pdf(double x) {
         if (x <= 0.0)
             return 0;
-        double logGamma = MathBase.lnGamma(df / 2.0);
+        double logGamma = MathTools.lnGamma(df / 2.0);
         return Math.exp((df / 2.0 - 1.0) * Math.log(x / 2.0) - x / 2.0 - logGamma) / 2.0;
     }
 
@@ -72,7 +72,7 @@ public class ChiSquare implements Distribution {
     public double cdf(double x) {
         if (x < 0.0 || df < 1.0)
             return 0.0;
-        return MathBase.incompleteGamma(df / 2.0, x / 2.0);
+        return MathTools.incompleteGamma(df / 2.0, x / 2.0);
     }
 
     @Override

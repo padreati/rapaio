@@ -23,7 +23,7 @@
 
 package rapaio.experiment.classifier.ensemble.impl;
 
-import rapaio.core.sample.Sample;
+import rapaio.data.sample.Sample;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.AbstractClassifier;

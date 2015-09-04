@@ -359,6 +359,7 @@ public interface Var extends Serializable, Printable {
                 return RowComparators.stamp(this, asc);
             case ORDINAL:
             case INDEX:
+            case BINARY:
                 return RowComparators.index(this, asc);
             default:
                 return RowComparators.numeric(this, asc);

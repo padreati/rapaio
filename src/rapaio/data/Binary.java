@@ -400,9 +400,4 @@ public final class Binary extends AbstractVar {
     public Var newInstance(int rows) {
         return Binary.newEmpty(rows);
     }
-
-    @Override
-    public Comparator<Integer> refComparator(boolean asc) {
-        return RowComparators.numeric(this, true);
-    }
 }

@@ -24,7 +24,7 @@
 package rapaio.ml.eval;
 
 import rapaio.core.RandomSource;
-import rapaio.core.SamplingTool;
+import rapaio.core.SamplingTools;
 import rapaio.data.*;
 import rapaio.data.filter.FFShuffle;
 import rapaio.ml.classifier.CFit;
@@ -175,7 +175,7 @@ public class CEvaluation {
         double count = 0;
         for (int i = 0; i < bootstraps; i++) {
 //            System.out.println("get sample...");
-            int[] rows = SamplingTool.sampleWR((int) (df.rowCount() * p), df.rowCount());
+            int[] rows = SamplingTools.sampleWR((int) (df.rowCount() * p), df.rowCount());
 //            System.out.println("build train set ...");
             Frame train = df.mapRows(rows);
 //            System.out.println("build test set ...");

@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.core.sample;
+package rapaio.data.sample;
 
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -30,7 +30,7 @@ import rapaio.data.Var;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
-public final class Sample {
+public final class FrameSample {
 
     public final Frame df;
 
@@ -38,7 +38,7 @@ public final class Sample {
 
     public final Mapping mapping;
 
-    public Sample(Frame df, Var weights, Mapping mapping) {
+    public FrameSample(Frame df, Var weights, Mapping mapping) {
         this.df = df;
         this.weights = weights;
         this.mapping = mapping;

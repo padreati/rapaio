@@ -354,11 +354,6 @@ public final class Index extends AbstractVar {
     }
 
     @Override
-    public Comparator<Integer> refComparator(boolean asc) {
-        return RowComparators.index(this, true);
-    }
-
-    @Override
     public String toString() {
         return "Index[name:" + name() + ", rowCount:" + rowCount() + "]";
     }

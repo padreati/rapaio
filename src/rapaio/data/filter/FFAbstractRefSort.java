@@ -43,7 +43,7 @@ public class FFAbstractRefSort extends FFAbstract {
 
     public FFAbstractRefSort(Comparator<Integer> comparators) {
         super();
-        this.aggregateComparator = RowComparators.aggregateComparator(comparators);
+        this.aggregateComparator = RowComparators.aggregate(comparators);
     }
 
     @Override

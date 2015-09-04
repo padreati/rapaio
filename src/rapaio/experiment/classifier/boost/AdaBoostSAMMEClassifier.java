@@ -24,8 +24,8 @@
 package rapaio.experiment.classifier.boost;
 
 import rapaio.sys.WS;
-import rapaio.core.sample.Sample;
-import rapaio.core.sample.Sampler;
+import rapaio.data.sample.Sample;
+import rapaio.data.sample.Sampler;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
