@@ -33,7 +33,6 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static rapaio.core.CoreTools.*;
-import static rapaio.core.DistributionTools.normal;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -106,7 +105,7 @@ public class CoreToolsTest {
         Numeric x = Numeric.newCopyOf(1, 2, 3, 4);
         assertEquals(cov(x, x).value(), var(x).value(), 1e-12);
 
-        Numeric norm = normal().sample(20_000);
+        Numeric norm = distNormal().sample(20_000);
         assertEquals(cov(norm, norm).value(), var(norm).value(), 1e-12);
 
         Var x1 = Numeric.newSeq(0, 200, 1);

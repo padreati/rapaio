@@ -90,7 +90,9 @@ public class NaiveBayes extends AbstractClassifier {
                 .withInputCount(0, Integer.MAX_VALUE)
                 .withInputTypes(VarType.NOMINAL, VarType.NUMERIC)
                 .withTargetCount(1, 1)
-                .withTargetTypes(VarType.NOMINAL);
+                .withTargetTypes(VarType.NOMINAL)
+                .withAllowMissingTargetValues(false)
+                .withAllowMissingInputValues(true);
     }
 
     @Override

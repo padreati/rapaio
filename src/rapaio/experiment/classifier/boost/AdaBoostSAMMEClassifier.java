@@ -24,8 +24,8 @@
 package rapaio.experiment.classifier.boost;
 
 import rapaio.sys.WS;
-import rapaio.data.sample.Sample;
-import rapaio.data.sample.Sampler;
+import rapaio.data.sample.FrameSample;
+import rapaio.data.sample.FrameSampler;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
@@ -100,7 +100,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         return this;
     }
 
-    public AdaBoostSAMMEClassifier withSampler(Sampler sampler) {
+    public AdaBoostSAMMEClassifier withSampler(FrameSampler sampler) {
         return (AdaBoostSAMMEClassifier) super.withSampler(sampler);
     }
 
@@ -170,7 +170,7 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     }
 
     private boolean learnRound(Frame df) {
-        Sample sample = sampler().newSample(df, w);
+        FrameSample sample = sampler().newSample(df, w);
         Frame dfTrain = sample.df;
         Var dfWeights = sample.weights.solidCopy();
 

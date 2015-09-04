@@ -23,7 +23,7 @@
 
 package rapaio.ml.regressor;
 
-import rapaio.data.sample.Sampler;
+import rapaio.data.sample.FrameSampler;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
@@ -43,7 +43,7 @@ public abstract class AbstractRegressor implements Regressor {
 
     private String[] inputNames;
     private String[] targetNames;
-    private Sampler sampler = new Sampler.Identity();
+    private FrameSampler sampler = new FrameSampler.Identity();
 
     @Override
     public String[] inputNames() {
@@ -56,12 +56,12 @@ public abstract class AbstractRegressor implements Regressor {
     }
 
     @Override
-    public Sampler sampler() {
+    public FrameSampler sampler() {
         return sampler;
     }
 
     @Override
-    public AbstractRegressor withSampler(Sampler sampler) {
+    public AbstractRegressor withSampler(FrameSampler sampler) {
         this.sampler = sampler;
         return this;
     }

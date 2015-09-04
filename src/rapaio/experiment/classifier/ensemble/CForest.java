@@ -23,7 +23,7 @@
 
 package rapaio.experiment.classifier.ensemble;
 
-import rapaio.data.sample.Sampler;
+import rapaio.data.sample.FrameSampler;
 import rapaio.ml.classifier.Classifier;
 import rapaio.experiment.classifier.ensemble.impl.BaggingMode;
 import rapaio.experiment.classifier.ensemble.impl.CEnsemble;
@@ -46,7 +46,7 @@ public class CForest extends CEnsemble {
         this.baggingMode = BaggingMode.VOTING;
         this.c = CTree.newCART().withVarSelector(VarSelector.AUTO);
         this.oobComp = false;
-        this.sampler = new Sampler.Bootstrap(1);
+        this.sampler = new FrameSampler.Bootstrap(1);
     }
 
     @Override
@@ -93,19 +93,19 @@ public class CForest extends CEnsemble {
     }
 
     public CForest withBootstrap() {
-        return withSampler(new Sampler.Bootstrap(1));
+        return withSampler(new FrameSampler.Bootstrap(1));
     }
 
     public CForest withBootstrap(double p) {
-        return withSampler(new Sampler.Bootstrap(p));
+        return withSampler(new FrameSampler.Bootstrap(p));
     }
 
     public CForest withNoSampling() {
-        return withSampler(new Sampler.Identity());
+        return withSampler(new FrameSampler.Identity());
     }
 
     @Override
-    public CForest withSampler(Sampler sampler) {
+    public CForest withSampler(FrameSampler sampler) {
         return (CForest) super.withSampler(sampler);
     }
 

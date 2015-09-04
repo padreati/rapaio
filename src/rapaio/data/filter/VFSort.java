@@ -50,18 +50,6 @@ public class VFSort extends VFAbstract {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-
-        switch (vars[0].type()) {
-            case NUMERIC:
-            case INDEX:
-            case BINARY:
-            case ORDINAL:
-            case STAMP:
-                return new VFRefSort(RowComparators.numeric(vars[0], asc)).filter(vars);
-            case NOMINAL:
-            case TEXT:
-                return new VFRefSort(RowComparators.nominal(vars[0], asc)).filter(vars);
-        }
-        return null;
+        return new VFRefSort(vars[0].refComparator(asc)).filter(vars);
     }
 }

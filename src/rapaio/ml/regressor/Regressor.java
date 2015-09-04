@@ -23,7 +23,7 @@
 
 package rapaio.ml.regressor;
 
-import rapaio.data.sample.Sampler;
+import rapaio.data.sample.FrameSampler;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
@@ -60,14 +60,14 @@ public interface Regressor extends Printable, Serializable {
      */
     String fullName();
 
-    Sampler sampler();
+    FrameSampler sampler();
 
     /**
      * Specifies the sampler to be used at learning time.
      *
      * @param sampler instance of a new sampler
      */
-    AbstractRegressor withSampler(Sampler sampler);
+    AbstractRegressor withSampler(FrameSampler sampler);
 
     /**
      * Returns input variable names built at learning time

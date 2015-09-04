@@ -23,7 +23,7 @@
 
 package rapaio.experiment.classifier.ensemble.impl;
 
-import rapaio.data.sample.Sample;
+import rapaio.data.sample.FrameSample;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.AbstractClassifier;
@@ -121,7 +121,7 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
     private void buildWeakPredictor(Frame df, Var weights) {
         Classifier weak = c.newInstance();
 
-        Sample sample = sampler.newSample(df, weights);
+        FrameSample sample = sampler.newSample(df, weights);
 
         Frame trainFrame = sample.df;
         Var trainWeights = sample.weights;

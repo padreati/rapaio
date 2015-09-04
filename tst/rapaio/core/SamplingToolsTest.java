@@ -27,7 +27,7 @@ import org.junit.Test;
 import rapaio.core.tests.KSTest;
 import rapaio.data.Numeric;
 
-import static rapaio.core.DistributionTools.dunif;
+import static rapaio.core.CoreTools.*;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -95,7 +95,7 @@ public class SamplingToolsTest {
 		for (double f : freq) {
 			System.out.print(String.format("%.6f, ", f / (1. * TRIALS * SAMPLES)));
 		}
-        KSTest.newOneSampleTest(v, dunif(0, 9)).printSummary();
-        System.out.println();
+		KSTest.newOneSampleTest(v, distDUnif(0, 9)).printSummary();
+		System.out.println();
 	}
 }

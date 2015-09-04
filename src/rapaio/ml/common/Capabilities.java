@@ -83,6 +83,16 @@ public class Capabilities {
         return this;
     }
 
+    public Capabilities withAllowMissingInputValues(boolean allow) {
+        this.allowMissingInputValues = allow;
+        return this;
+    }
+
+    public Capabilities withAllowMissingTargetValues(boolean allow) {
+        this.allowMissingTargetValues = allow;
+        return this;
+    }
+
     /**
      * This method evaluates the capabilities of the algorithm at the learning phase.
      *

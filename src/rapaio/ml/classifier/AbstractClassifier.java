@@ -23,7 +23,7 @@
 
 package rapaio.ml.classifier;
 
-import rapaio.data.sample.Sampler;
+import rapaio.data.sample.FrameSampler;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
@@ -42,16 +42,16 @@ public abstract class AbstractClassifier implements Classifier {
     protected String[] inputNames;
     protected String[] targetNames;
     protected Map<String, String[]> dict;
-    protected Sampler sampler = new Sampler.Identity();
+    protected FrameSampler sampler = new FrameSampler.Identity();
     protected boolean debug = false;
 
     @Override
-    public Sampler sampler() {
+    public FrameSampler sampler() {
         return sampler;
     }
 
     @Override
-    public AbstractClassifier withSampler(Sampler sampler) {
+    public AbstractClassifier withSampler(FrameSampler sampler) {
         this.sampler = sampler;
         return this;
     }

@@ -30,8 +30,8 @@ package rapaio.experiment.classifier.svm;
 import rapaio.core.MathTools;
 import rapaio.sys.WS;
 import rapaio.core.RandomSource;
-import rapaio.data.sample.Sample;
-import rapaio.data.sample.Sampler;
+import rapaio.data.sample.FrameSample;
+import rapaio.data.sample.FrameSampler;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
@@ -181,7 +181,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     }
 
     @Override
-    public BinarySMO withSampler(Sampler sampler) {
+    public BinarySMO withSampler(FrameSampler sampler) {
         return (BinarySMO) super.withSampler(sampler);
     }
 
@@ -214,7 +214,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
         // perform sampling
 
-        Sample sample = sampler().newSample(df, weights);
+        FrameSample sample = sampler().newSample(df, weights);
         df = sample.df;
         weights = sample.weights;
 
