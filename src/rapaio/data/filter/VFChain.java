@@ -26,6 +26,7 @@ package rapaio.data.filter;
 import rapaio.data.Var;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,17 +39,19 @@ import java.util.List;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
  */
-@Deprecated
-public class VFAbstractChain extends VFAbstract {
+public class VFChain extends VFAbstract {
+
+    private static final long serialVersionUID = 7759834710166702798L;
 
     private final List<VFilter> filters = new ArrayList<>();
 
-    public void clearFilters() {
+    public void clear() {
         filters.clear();
     }
 
-    public void addFilter(VFilter filter) {
-        filters.add(filter);
+    public VFChain add(VFilter... filter) {
+        Collections.addAll(filters, filter);
+        return this;
     }
 
     @Override

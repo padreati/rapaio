@@ -26,7 +26,7 @@ package rapaio.ml.eval;
 import rapaio.data.Numeric;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
-import rapaio.data.filter.VFAbstractCumSum;
+import rapaio.data.filter.VFCumulativeSum;
 import rapaio.data.filter.VFRefSort;
 
 import java.util.Comparator;
@@ -71,7 +71,7 @@ NormalizedGini <- function(solution, submission) {
         int n = sub.rowCount();
         Numeric rand = IntStream.range(1, n + 1).mapToDouble(x -> x / (double) n).boxed().collect(Numeric.collector());
         double totalPos = sol.spotStream().mapToDouble().sum();
-        Var cumPosFound = new VFAbstractCumSum().filter(sol.solidCopy());
+        Var cumPosFound = new VFCumulativeSum().filter(sol.solidCopy());
         Var lorentz = cumPosFound.spotStream().transValue(x -> x / totalPos).mapToDouble().boxed().collect(Numeric.collector());
         return IntStream.range(0, n).mapToDouble(row -> lorentz.value(row) - rand.value(row)).sum();
     }

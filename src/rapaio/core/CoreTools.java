@@ -53,6 +53,10 @@ public final class CoreTools {
         return new Mean(var);
     }
 
+    public static GeometricMean geometricMean(Var var) {
+        return new GeometricMean(var);
+    }
+
     public static Variance var(Var var) {
         return new Variance(var);
     }

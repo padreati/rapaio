@@ -29,17 +29,19 @@ import rapaio.data.Var;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.
  */
 @Deprecated
-public class VFAbstractPowerT extends VFAbstract {
+public class VFPowerTrans extends VFAbstract {
 
     private final double lambda;
+    private double gm = 0.0;
 
-    public VFAbstractPowerT(double lambda) {
+    public VFPowerTrans(double lambda) {
         this.lambda = lambda;
     }
 
     @Override
     public void fit(Var... vars) {
         checkSingleVar(vars);
+
     }
 
     @Override

@@ -112,4 +112,15 @@ public class CoreToolsTest {
         Var x2 = Numeric.newSeq(0, 50, 0.25);
         assertEquals(845.875, cov(x1, x2).value(), 1e-12);
     }
+
+    @Test
+    public void testGeometricMean() {
+        assertEquals(4, new GeometricMean(Numeric.newCopyOf(2, 8)).value(), 1e-20);
+        assertEquals(0.5, new GeometricMean(Numeric.newCopyOf(4, 1, 1 / 32.)).value(), 1e-16);
+        assertEquals(42.42640687119286, new GeometricMean(Numeric.newCopyOf(6, 50, 9, 1200)).value(), 1e-20);
+        new GeometricMean(Numeric.newCopyOf(6, 50, 9, 1200)).printSummary();
+
+        Assert.assertFalse(Double.NaN == new GeometricMean(Numeric.newCopyOf(1, -1)).value());
+        new GeometricMean(Numeric.newWrapOf(1, -1)).printSummary();
+    }
 }
