@@ -29,6 +29,17 @@ import rapaio.printer.Printable;
 import static rapaio.sys.WS.formatFlex;
 
 /**
+ * Core tool which computes geometric mean for a given numerical variable.
+ * Geometric mean is not defined for negative values, as such, when negative values
+ * are encountered in vector the {@link Double#NaN} value is returned and
+ * {@link #isDefined()} will return true. The geometric mean is also undefined
+ * when all the available values are negative or missing.
+ *
+ * The geometric mean is defined as the n-th square root of the product of
+ * all the values from the variable. The algorithm implied below uses
+ * the the logarithmic approach. As such the geometric mean is computed as
+ * \exp(\frac{1}{n}\sum{log{x_i}}).
+ *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/7/15.
  */
 public class GeometricMean implements Printable {
@@ -52,7 +63,7 @@ public class GeometricMean implements Printable {
             if (var.value(i) < 0)
                 negativeCount++;
         }
-        if (negativeCount > 0) {
+        if (negativeCount > 0 || completeCount == 0) {
             this.value = Double.NaN;
             return;
         }
@@ -66,6 +77,14 @@ public class GeometricMean implements Printable {
      */
     public double value() {
         return value;
+    }
+
+    /**
+     * @return true if the geometric mean is defined, false if there are negative elements
+     * or all elements are missing
+     */
+    public boolean isDefined() {
+        return negativeCount == 0;
     }
 
     @Override

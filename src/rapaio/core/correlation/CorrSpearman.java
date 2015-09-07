@@ -118,19 +118,22 @@ public class CorrSpearman implements Printable {
     }
 
     private void summaryOne(StringBuilder sb) {
-        sb.append(String.format("spearman[%s] - Spearman's rank correlation coefficient\n", names[0]));
+        sb.append(String.format("\n" +
+                "> spearman[%s] - Spearman's rank correlation coefficient\n", names[0]));
         sb.append("1\n");
         sb.append("spearman's rank correlation is 1 for identical vectors\n");
     }
 
     private void summaryTwo(StringBuilder sb) {
-        sb.append(String.format("spearman[%s, %s] - Spearman's rank correlation coefficient\n",
+        sb.append(String.format("\n" +
+                        "> spearman[%s, %s] - Spearman's rank correlation coefficient\n",
                 names[0], names[1]));
         sb.append(formatFlex(rho[0][1])).append("\n");
     }
 
     private void summaryMore(StringBuilder sb) {
-        sb.append(String.format("spearman[%s] - Spearman's rank correlation coefficient\n",
+        sb.append(String.format("\n" +
+                        "> spearman[%s] - Spearman's rank correlation coefficient\n",
                 Arrays.deepToString(names)));
 
         String[][] table = new String[vars.length + 1][vars.length + 1];

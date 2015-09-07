@@ -24,21 +24,23 @@
 package rapaio.data.filter;
 
 import org.junit.Test;
+import rapaio.core.RandomSource;
 import rapaio.core.distributions.ChiSquare;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Nominal;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
+import rapaio.graphics.plot.GridLayer;
+import rapaio.sys.WS;
 
 import java.util.stream.IntStream;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-import static rapaio.core.CoreTools.mean;
-import static rapaio.core.CoreTools.var;
+import static rapaio.core.CoreTools.*;
 import static rapaio.data.filter.Filters.*;
-import static rapaio.graphics.Plotter.hist;
+import static rapaio.graphics.Plotter.*;
 import static rapaio.sys.WS.draw;
 
 /**
@@ -132,7 +134,7 @@ public class FiltersTest {
 
     @Test
     public void testShuffle() {
-        Var x = IntStream.range(0, 100).mapToDouble(v -> v).boxed().collect(Numeric.collector());
+        Var x = IntStream.range(0, 1000).mapToDouble(v -> v).boxed().collect(Numeric.collector());
         Var first = Numeric.newEmpty();
         for (int i = 0; i < 100; i++) {
             Var y = shuffle(x);
@@ -142,5 +144,41 @@ public class FiltersTest {
         }
 //        setPrinter(new IdeaPrinter());
 //        draw(hist(first, bins(100)));
+    }
+
+    @Test
+    public void powerTransform() {
+//        Numeric x = Numeric.newSeq(1, 100);
+//        Var x1 = powerTranform(x.solidCopy(), 0);
+//        WS.draw(plot()
+//                        .lines(x, powerTranform(x.solidCopy(), -0.5), color(1))
+//                        .lines(x, powerTranform(x.solidCopy(), -0.1), color(2))
+//                        .lines(x, powerTranform(x.solidCopy(), 0), color(3))
+//                        .lines(x, powerTranform(x.solidCopy(), 0.1), color(4))
+//                        .lines(x, powerTranform(x.solidCopy(), 0.5), color(5))
+//                        .lines(x, powerTranform(x.solidCopy(), 1), color(6))
+//                        .lines(x, powerTranform(x.solidCopy(), 1.5), color(7))
+//                        .lines(x, powerTranform(x.solidCopy(), 2), color(8))
+//        );
+
+        RandomSource.setSeed(1);
+
+        Var x = distNormal().sample(1000).spotStream().mapToDouble(s -> Math.pow(s.value(), 2)).boxed().collect(Numeric.collector());
+        Var y = powerTranform(x.solidCopy(), 0.2);
+
+//        GridLayer gl = new GridLayer(2, 1);
+//        gl.add(1, 1, hist(x, bins(40)));
+//        gl.add(2, 1, hist(y, bins(40)));
+//        WS.draw(gl);
+
+        var(x).printSummary();
+        assertEquals(1.459663, var(x).sdValue(), 1e-6);
+        var(y).printSummary();
+        assertEquals(0.5788231, var(y).sdValue(), 1e-6);
+
+        corrPearson(x, y).printSummary();
+        assertEquals(0.8001133350403581, corrPearson(x, y).values()[0][1], 1e-6);
+        corrSpearman(x, y).printSummary();
+        assertEquals(1, corrSpearman(x, y).values()[0][1], 1e-6);
     }
 }

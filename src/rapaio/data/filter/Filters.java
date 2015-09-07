@@ -91,4 +91,8 @@ public class Filters {
     public static Frame shuffle(Frame x) {
         return new FFShuffle().filter(x);
     }
+
+    public static Var powerTranform(Var x, double lambda) {
+        return new VFPowerTrans(lambda).filter(x);
+    }
 }
