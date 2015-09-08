@@ -39,7 +39,7 @@ public class RVSpotTest {
     @Test
     public void testNumericStream() {
         Var x = Numeric.newWrapOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        Var y = x.solidCopy().spotStream().transValue(Math::sqrt).toMappedVar();
+        Var y = x.solidCopy().stream().transValue(Math::sqrt).toMappedVar();
 
         double v = 0;
         for (int i = 0; i < 10; i++) {

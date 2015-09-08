@@ -23,41 +23,40 @@
 
 package rapaio.data.filter;
 
-import rapaio.core.stat.GeometricMean;
 import rapaio.data.Var;
 
 /**
- * Filter to create monotonic transformations
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.
  */
-public class VFPowerTrans extends VFAbstract {
+public class VFTransformBoxCox extends VFAbstract {
 
-    private static final long serialVersionUID = -4496756339460112649L;
+    private static final long serialVersionUID = 1914770412929840529L;
     private final double lambda;
-    private double gm = 0.0;
+    private final double shift;
 
-    public VFPowerTrans(double lambda) {
+    public VFTransformBoxCox(double lambda) {
+        this(lambda, 0.0);
+    }
+
+    public VFTransformBoxCox(double lambda, double shift) {
         this.lambda = lambda;
+        this.shift = shift;
     }
 
     @Override
     public void fit(Var... vars) {
         checkSingleVar(vars);
-        GeometricMean mygm = new GeometricMean(vars[0]);
-        if (mygm.isDefined()) {
-            gm = mygm.value();
-        } else {
-            throw new IllegalArgumentException("The transformed variable " + vars[0].name() + "contains negative values, geometric mean cannot be computed");
-        }
     }
 
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        return vars[0].spotStream().transValue(x ->
-                        (lambda == 0) ?
-                        gm * Math.log(x) :
-                        (Math.pow(x, lambda) - 1.0) / (lambda * Math.pow(gm, lambda - 1))
-        ).toMappedVar();
+
+        return vars[0].stream().transValue(value -> {
+            if (lambda == 0)
+                return Math.log(value + shift);
+            else
+                return (Math.pow(value + shift, lambda) - 1) / lambda;
+        }).toMappedVar();
     }
 }

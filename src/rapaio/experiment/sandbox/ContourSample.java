@@ -74,12 +74,12 @@ public class ContourSample {
 
         Plot p = new Plot();
         Var q = Numeric.newSeq(0, 1, 0.05);
-        double[] qq = mg.quantiles(q.spotStream().mapToDouble().toArray());
+        double[] qq = mg.quantiles(q.stream().mapToDouble().toArray());
         qq[qq.length - 1] = 1;
 //        ColorGradient gradient = ColorGradient.newBiColorGradient(
 //                new Color(0, 0, 255), new Color(0, 128, 0), q.stream().mapToDouble().toArray());
 //
-        ColorGradient gradient = ColorGradient.newHueGradient(q.spotStream().mapToDouble().toArray());
+        ColorGradient gradient = ColorGradient.newHueGradient(q.stream().mapToDouble().toArray());
 
         for (int i = 0; i < q.rowCount() - 1; i++) {
             p.add(new MeshContour(mg.compute(qq[i], qq[i + 1]), true, true,

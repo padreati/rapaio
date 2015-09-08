@@ -37,7 +37,7 @@ import java.util.Arrays;
 public final class MathNumeric {
 
     public static Numeric sum(final Numeric num) {
-        return Numeric.newFill(1, num.spotStream().mapToDouble().sum());
+        return Numeric.newFill(1, num.stream().mapToDouble().sum());
     }
 
     public static Numeric mean(final Numeric num) {

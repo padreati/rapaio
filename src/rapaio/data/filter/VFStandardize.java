@@ -23,32 +23,51 @@
 
 package rapaio.data.filter;
 
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
 import rapaio.data.Var;
-import rapaio.data.stream.VSpot;
-
-import java.util.function.Function;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
-@Deprecated
-public class VFAbstractUpdateValue extends VFAbstract {
+public class VFStandardize extends VFAbstract {
 
-    private final Function<VSpot, Double> f;
+    private static final long serialVersionUID = -2817341319523250499L;
 
-    public VFAbstractUpdateValue(Function<VSpot, Double> f) {
-        this.f = f;
+    private double mean;
+    private double sd;
+
+    public VFStandardize() {
+        this(Double.NaN, Double.NaN);
+    }
+
+    public VFStandardize(double mean) {
+        this(mean, Double.NaN);
+    }
+
+    public VFStandardize(double mean, double sd) {
+        this.mean = mean;
+        this.sd = sd;
     }
 
     @Override
     public void fit(Var... vars) {
         checkSingleVar(vars);
+
+        if (Double.isNaN(mean)) {
+            mean = new Mean(vars[0]).value();
+        }
+        if (Double.isNaN(sd)) {
+            sd = new Variance(vars[0]).sdValue();
+        }
     }
 
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        vars[0].spotStream().forEach(s -> s.setValue(f.apply(s)));
-        return vars[0];
+        if (!vars[0].type().isNumeric()) {
+            return vars[0];
+        }
+        return vars[0].stream().transValue(x -> (x - mean) / sd).toMappedVar();
     }
 }

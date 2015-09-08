@@ -25,18 +25,21 @@ package rapaio.experiment;
 
 import java.io.IOException;
 
-import rapaio.data.Frame;
-import rapaio.datasets.Datasets;
-import rapaio.graphics.Plotter;
+import rapaio.core.CoreTools;
+import rapaio.data.Var;
 import rapaio.sys.*;
+
+import static rapaio.graphics.Plotter.bins;
+import static rapaio.graphics.Plotter.hist;
 
 public class Sandbox {
 
     public static void main(String[] args) throws IOException {
-        Frame df = Datasets.loadHousing();
-        df.printSummary();
 
-        WS.draw(Plotter.hist(df.var("CRIM")));
+
+        Var p = CoreTools.distNormal(0.5, 0.2).sample(10_000).stream().transValue(x -> 1 - Math.pow(x, 2)).toMappedVar();
+
+        WS.draw(hist(p, 0, 1, bins(100)));
     }
 
 }

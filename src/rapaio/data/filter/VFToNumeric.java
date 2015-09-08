@@ -23,22 +23,17 @@
 
 package rapaio.data.filter;
 
+import rapaio.data.Numeric;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.data.stream.VSpot;
-
-import java.util.function.Function;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-@Deprecated
-public class VFAbstractUpdateIndex extends VFAbstract {
+public class VFToNumeric extends VFAbstract {
 
-    private final Function<VSpot, Integer> f;
-
-    public VFAbstractUpdateIndex(Function<VSpot, Integer> f) {
-        this.f = f;
-    }
+    private static final long serialVersionUID = -6471901421507667237L;
 
     @Override
     public void fit(Var... vars) {
@@ -48,7 +43,30 @@ public class VFAbstractUpdateIndex extends VFAbstract {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        vars[0].spotStream().forEach(s -> s.setIndex(f.apply(s)));
-        return vars[0];
+        Var v = vars[0];
+        if (v.type().equals(VarType.NUMERIC)) {
+            return v;
+        }
+        final Numeric result = Numeric.newEmpty();
+        v.stream().forEach(s -> {
+            if (s.missing()) {
+                result.addMissing();
+            } else {
+                switch (v.type()) {
+                    case NOMINAL:
+                        try {
+                            double value = Double.parseDouble(s.label());
+                            result.addValue(value);
+                        } catch (NumberFormatException nfe) {
+                            result.addMissing();
+                        }
+                        break;
+                    case INDEX:
+                        result.addValue(s.index());
+                        break;
+                }
+            }
+        });
+        return result;
     }
 }

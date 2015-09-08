@@ -24,7 +24,6 @@
 package rapaio.data;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -373,7 +372,7 @@ public final class Index extends AbstractVar {
             @Override
             public BinaryOperator<Index> combiner() {
                 return (x, y) -> {
-                    y.spotStream().forEach(s -> x.addValue(s.value()));
+                    y.stream().forEach(s -> x.addValue(s.value()));
                     return x;
                 };
             }

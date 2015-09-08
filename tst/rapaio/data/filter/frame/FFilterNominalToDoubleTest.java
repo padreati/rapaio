@@ -27,7 +27,7 @@ import org.junit.Test;
 import rapaio.data.Nominal;
 import rapaio.data.Var;
 import rapaio.data.filter.FFAbstractRefSort;
-import rapaio.data.filter.VFAbstractToNumeric;
+import rapaio.data.filter.VFToNumeric;
 
 import java.util.HashSet;
 
@@ -52,7 +52,7 @@ public class FFilterNominalToDoubleTest {
             String value = String.valueOf(Math.pow(i, 1.5));
             v.setLabel(i, value);
         }
-        Var filtered = new VFAbstractToNumeric().filter(v);
+        Var filtered = new VFToNumeric().filter(v);
         for (int i = 0; i < v.rowCount(); i++) {
             double value = Math.pow(i, 1.5);
             assertEquals(value, filtered.value(i), 1e-10);
@@ -72,7 +72,7 @@ public class FFilterNominalToDoubleTest {
     public void testNFE() {
         Var filtered = Nominal.newEmpty(1, "abc");
         filtered.setLabel(0, "abc");
-        Var numeric = new VFAbstractToNumeric().filter(filtered);
+        Var numeric = new VFToNumeric().filter(filtered);
         assertEquals(numeric.value(0), numeric.value(0), 1e-10);
         assertTrue(numeric.missing(0));
     }

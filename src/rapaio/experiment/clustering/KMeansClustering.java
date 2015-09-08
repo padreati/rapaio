@@ -139,7 +139,7 @@ public class KMeansClustering {
         for (String varName : nameList) {
             if (!df.var(varName).type().isNumeric())
                 throw new IllegalArgumentException("all matched vars must be numeric: check var " + varName);
-            if (df.var(varName).spotStream().complete().count() != df.rowCount()) {
+            if (df.var(varName).stream().complete().count() != df.rowCount()) {
                 throw new IllegalArgumentException("all matched vars must have non-missing values: check var " + varName);
             }
         }

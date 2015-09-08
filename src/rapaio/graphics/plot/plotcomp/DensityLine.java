@@ -74,7 +74,7 @@ public class DensityLine extends PlotComponent {
         Pin<Double> ymin = new Pin<>(0.0);
         Pin<Double> ymax = new Pin<>(Double.NaN);
 
-        var.spotStream().filter(s -> !s.missing()).forEach(s -> {
+        var.stream().filter(s -> !s.missing()).forEach(s -> {
             double xMin = kde.getKernel().minValue(s.value(), bandwidth);
             double xMax = kde.getKernel().getMaxValue(s.value(), bandwidth);
             double yMax = ((Function<Double, Double>) kde::pdf).apply(s.value());

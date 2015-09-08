@@ -176,7 +176,7 @@ public class KSTest implements Printable {
     private void oneSampleSummary(StringBuilder sb) {
         sb.append("\n > Kolmogorov-Smirnoff 1-sample test\n");
 
-        int ties = (int) (v1.rowCount() - v1.spotStream().mapToDouble().distinct().count());
+        int ties = (int) (v1.rowCount() - v1.stream().mapToDouble().distinct().count());
         sb.append(String.format("sample size: %d, ties: %d\n",
                 v1.rowCount(), ties));
         if (ties > 0)
@@ -191,8 +191,8 @@ public class KSTest implements Printable {
     private void twoSamplesSummary(StringBuilder sb) {
         sb.append("\n > Kolmogorov-Smirnoff 2-sample test\n");
 
-        int ties1 = (int) (v1.rowCount() - v1.spotStream().mapToDouble().distinct().count());
-        int ties2 = (int) (v2.rowCount() - v2.spotStream().mapToDouble().distinct().count());
+        int ties1 = (int) (v1.rowCount() - v1.stream().mapToDouble().distinct().count());
+        int ties2 = (int) (v2.rowCount() - v2.stream().mapToDouble().distinct().count());
         sb.append(String.format("first sample size: %d, ties: %d\n",
                 v1.rowCount(), ties1));
         sb.append(String.format("second sample size: %d, ties: %d\n",

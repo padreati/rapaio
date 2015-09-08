@@ -24,24 +24,21 @@
 package rapaio.data.filter;
 
 import rapaio.data.Var;
+import rapaio.data.stream.VSpot;
+
+import java.util.function.Function;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-@Deprecated
-public class VFAbstractBoxCoxT extends VFAbstract {
+public class VFUpdateValue extends VFAbstract {
 
-    private final double lambda;
-    private final double shift;
+    private static final long serialVersionUID = 3929781693784001199L;
 
-    public VFAbstractBoxCoxT(double lambda) {
-        this.lambda = lambda;
-        this.shift = 0;
-    }
+    private final Function<VSpot, Double> f;
 
-    public VFAbstractBoxCoxT(double lambda, double shift) {
-        this.lambda = lambda;
-        this.shift = shift;
+    public VFUpdateValue(Function<VSpot, Double> f) {
+        this.f = f;
     }
 
     @Override
@@ -52,12 +49,7 @@ public class VFAbstractBoxCoxT extends VFAbstract {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-
-        return vars[0].spotStream().transValue(value -> {
-            if (lambda == 0)
-                return Math.log(value + shift);
-            else
-                return (Math.pow(value + shift, lambda) - 1) / lambda;
-        }).toMappedVar();
+        vars[0].stream().forEach(s -> s.setValue(f.apply(s)));
+        return vars[0];
     }
 }

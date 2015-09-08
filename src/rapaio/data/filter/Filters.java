@@ -92,7 +92,15 @@ public class Filters {
         return new FFShuffle().filter(x);
     }
 
-    public static Var powerTranform(Var x, double lambda) {
-        return new VFPowerTrans(lambda).filter(x);
+    public static Var transformPower(Var x, double lambda) {
+        return new VFTransformPower(lambda).filter(x);
+    }
+
+    public static Var transformBoxCox(Var x, double lambda) {
+        return new VFTransformBoxCox(lambda).filter(x);
+    }
+
+    public static Var transformBoxCox(Var x, double lambda, double shift) {
+        return new VFTransformBoxCox(lambda, shift).filter(x);
     }
 }

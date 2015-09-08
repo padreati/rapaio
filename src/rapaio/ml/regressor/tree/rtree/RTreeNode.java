@@ -95,7 +95,7 @@ public class RTreeNode {
 
     public void learn(RTree tree, Frame df, Var weights, int depth) {
         value = new WeightedMean(df.var(tree.firstTargetName()), weights).value();
-        weight = weights.spotStream().complete().mapToDouble().sum();
+        weight = weights.stream().complete().mapToDouble().sum();
 
         if (df.rowCount() == 0 || df.rowCount() <= tree.minCount || depth <= 1) {
             return;

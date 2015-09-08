@@ -45,7 +45,7 @@ public class KDE implements Serializable {
     private final double bandwidth;
 
     public KDE(Var values) {
-        this.values = values.spotStream().mapToDouble().toArray();
+        this.values = values.stream().mapToDouble().toArray();
         this.kernel = new KFuncGaussian();
         this.bandwidth = getSilvermanBandwidth(values);
     }
@@ -59,7 +59,7 @@ public class KDE implements Serializable {
     }
 
     public KDE(Var values, KFunc kernel, double bandwidth) {
-        this.values = new VFSort().filter(values).spotStream().filter(s -> !s.missing()).mapToDouble().toArray();
+        this.values = new VFSort().filter(values).stream().filter(s -> !s.missing()).mapToDouble().toArray();
         this.kernel = kernel;
         this.bandwidth = bandwidth;
     }

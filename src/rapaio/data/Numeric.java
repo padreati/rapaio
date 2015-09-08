@@ -24,7 +24,6 @@
 package rapaio.data;
 
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -203,7 +202,7 @@ public final class Numeric extends AbstractVar {
             @Override
             public BinaryOperator<Numeric> combiner() {
                 return (x, y) -> {
-                    y.spotStream().forEach(s -> x.addValue(s.value()));
+                    y.stream().forEach(s -> x.addValue(s.value()));
                     return x;
                 };
             }

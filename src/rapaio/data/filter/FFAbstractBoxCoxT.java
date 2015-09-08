@@ -33,7 +33,7 @@ import java.util.List;
 @Deprecated
 public class FFAbstractBoxCoxT extends FFAbstract {
 
-    private final VFAbstractBoxCoxT bct;
+    private final VFTransformBoxCox bct;
 
     public FFAbstractBoxCoxT(double lambda, String... varNames) {
         this(lambda, 0, varNames);
@@ -41,7 +41,7 @@ public class FFAbstractBoxCoxT extends FFAbstract {
 
     public FFAbstractBoxCoxT(double lambda, double shift, String... varNames) {
         super(varNames);
-        this.bct = new VFAbstractBoxCoxT(lambda, shift);
+        this.bct = new VFTransformBoxCox(lambda, shift);
     }
 
     @Override

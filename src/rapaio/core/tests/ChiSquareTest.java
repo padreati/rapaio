@@ -64,7 +64,7 @@ public class ChiSquareTest implements Printable {
         Plot plot = Plotter.plot();
         for (int i = 1; i < 10; i++) {
             int df = i;
-            Numeric y = x.spotStream().mapToDouble().map(x1 -> new ChiSquare(df + 0.1).pdf(x1)).boxed().collect(Numeric.collector());
+            Numeric y = x.stream().mapToDouble().map(x1 -> new ChiSquare(df + 0.1).pdf(x1)).boxed().collect(Numeric.collector());
             plot.lines(x, y, Plotter.color(df));
         }
 

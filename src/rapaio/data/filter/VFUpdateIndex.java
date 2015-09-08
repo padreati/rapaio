@@ -24,20 +24,21 @@
 package rapaio.data.filter;
 
 import rapaio.data.Var;
+import rapaio.data.stream.VSpot;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.function.Function;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFSetMissing extends VFAbstract {
+public class VFUpdateIndex extends VFAbstract {
 
-    private static final long serialVersionUID = 1972202115034494192L;
-    private final Collection<String> missingValues;
+    private static final long serialVersionUID = -9017598696178273627L;
 
-    public VFSetMissing(String... missingValues) {
-        this.missingValues = Arrays.asList(missingValues);
+    private final Function<VSpot, Integer> f;
+
+    public VFUpdateIndex(Function<VSpot, Integer> f) {
+        this.f = f;
     }
 
     @Override
@@ -48,10 +49,7 @@ public class VFSetMissing extends VFAbstract {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        vars[0].spotStream().forEach(s -> {
-            if (missingValues.contains(s.label()))
-                s.setMissing();
-        });
+        vars[0].stream().forEach(s -> s.setIndex(f.apply(s)));
         return vars[0];
     }
 }

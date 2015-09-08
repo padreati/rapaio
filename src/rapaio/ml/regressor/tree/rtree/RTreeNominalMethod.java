@@ -75,7 +75,7 @@ public interface RTreeNominalMethod {
                 List<String> labels = new ArrayList<>();
                 for (int j = 1; j < testVar.dictionary().length; j++) {
                     String testLabel = testDict[j];
-                    if (testVar.spotStream().filter(s -> s.label().equals(testLabel)).count() >= c.minCount) {
+                    if (testVar.stream().filter(s -> s.label().equals(testLabel)).count() >= c.minCount) {
                         labels.add(testLabel);
                     }
                 }

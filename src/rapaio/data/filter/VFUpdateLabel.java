@@ -31,12 +31,13 @@ import java.util.function.Function;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-@Deprecated
-public class VFAbstractUpdateLabel extends VFAbstract {
+public class VFUpdateLabel extends VFAbstract {
+
+    private static final long serialVersionUID = -8804231452563671594L;
 
     private final Function<VSpot, String> f;
 
-    public VFAbstractUpdateLabel(Function<VSpot, String> f) {
+    public VFUpdateLabel(Function<VSpot, String> f) {
         this.f = f;
     }
 
@@ -48,7 +49,7 @@ public class VFAbstractUpdateLabel extends VFAbstract {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        vars[0].spotStream().forEach(s -> s.setLabel(f.apply(s)));
+        vars[0].stream().forEach(s -> s.setLabel(f.apply(s)));
         return vars[0];
     }
 }

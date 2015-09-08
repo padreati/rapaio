@@ -31,8 +31,9 @@ import rapaio.data.stream.VSpot;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-@Deprecated
-public class VFAbstractToIndex extends VFAbstract {
+public class VFToIndex extends VFAbstract {
+
+    private static final long serialVersionUID = -699221182441440988L;
 
     @Override
     public void fit(Var... vars) {
@@ -44,19 +45,19 @@ public class VFAbstractToIndex extends VFAbstract {
         checkSingleVar(vars);
         Var v = vars[0];
         if (v.type().equals(VarType.INDEX)) {
-            return (Index) v;
+            return v;
         }
         final Index result = Index.newEmpty();
-        v.spotStream().forEach((VSpot inst) -> {
-            if (inst.missing()) {
+        v.stream().forEach(s -> {
+            if (s.missing()) {
                 result.addMissing();
             } else {
                 switch (v.type()) {
                     case NUMERIC:
-                        result.addIndex((int) Math.rint(inst.value()));
+                        result.addIndex((int) Math.rint(s.value()));
                         break;
                     case NOMINAL:
-                        int value = Integer.parseInt(inst.label());
+                        int value = Integer.parseInt(s.label());
                         result.addIndex(value);
                         break;
                 }

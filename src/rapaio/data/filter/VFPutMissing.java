@@ -23,16 +23,22 @@
 
 package rapaio.data.filter;
 
-import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.data.VarType;
-import rapaio.data.stream.VSpot;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-@Deprecated
-public class VFAbstractToNumeric extends VFAbstract {
+public class VFPutMissing extends VFAbstract {
+
+    private static final long serialVersionUID = 1972202115034494192L;
+    private final Collection<String> missingValues;
+
+    public VFPutMissing(String... missingValues) {
+        this.missingValues = Arrays.asList(missingValues);
+    }
 
     @Override
     public void fit(Var... vars) {
@@ -42,30 +48,10 @@ public class VFAbstractToNumeric extends VFAbstract {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        Var v = vars[0];
-        if (v.type().equals(VarType.NUMERIC)) {
-            return v;
-        }
-        final Numeric result = Numeric.newEmpty();
-        v.spotStream().forEach((VSpot vi) -> {
-            if (vi.missing()) {
-                result.addMissing();
-            } else {
-                switch (v.type()) {
-                    case NOMINAL:
-                        try {
-                            double value = Double.parseDouble(vi.label());
-                            result.addValue(value);
-                        } catch (NumberFormatException nfe) {
-                            result.addMissing();
-                        }
-                        break;
-                    case INDEX:
-                        result.addValue(vi.index());
-                        break;
-                }
-            }
+        vars[0].stream().forEach(s -> {
+            if (missingValues.contains(s.label()))
+                s.setMissing();
         });
-        return result;
+        return vars[0];
     }
 }

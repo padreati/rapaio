@@ -70,9 +70,9 @@ NormalizedGini <- function(solution, submission) {
         Var sub = new VFRefSort(cmp).filter(submission);
         int n = sub.rowCount();
         Numeric rand = IntStream.range(1, n + 1).mapToDouble(x -> x / (double) n).boxed().collect(Numeric.collector());
-        double totalPos = sol.spotStream().mapToDouble().sum();
+        double totalPos = sol.stream().mapToDouble().sum();
         Var cumPosFound = new VFCumulativeSum().filter(sol.solidCopy());
-        Var lorentz = cumPosFound.spotStream().transValue(x -> x / totalPos).mapToDouble().boxed().collect(Numeric.collector());
+        Var lorentz = cumPosFound.stream().transValue(x -> x / totalPos).mapToDouble().boxed().collect(Numeric.collector());
         return IntStream.range(0, n).mapToDouble(row -> lorentz.value(row) - rand.value(row)).sum();
     }
 

@@ -167,9 +167,9 @@ public class MeshGridTutorialPage implements TutorialPage {
 
         Plot p = plot();
         Var q = Numeric.newSeq(0, 1, 0.1);
-        double[] qq = mg.quantiles(q.spotStream().mapToDouble().toArray());
+        double[] qq = mg.quantiles(q.stream().mapToDouble().toArray());
         qq[qq.length - 1] = Double.POSITIVE_INFINITY;
-        ColorGradient gradient = ColorGradient.newBiColorGradient(new Color(0, 0, 200), new Color(255, 255, 255), q.spotStream().mapToDouble().toArray());
+        ColorGradient gradient = ColorGradient.newBiColorGradient(new Color(0, 0, 200), new Color(255, 255, 255), q.stream().mapToDouble().toArray());
 
         for (int i = 0; i < q.rowCount() - 1; i++) {
             p.meshContour(mg.compute(qq[i], qq[i + 1]), true, true, Plotter.color(gradient.getColor(i)), lwd(0.2f));
@@ -204,7 +204,7 @@ public class MeshGridTutorialPage implements TutorialPage {
         iris = iris.spotStream().filter(s -> s.index(2) != 3).toMappedFrame();
 
         Var trimmedClass = Nominal.newEmpty().withName("class");
-        iris.var("class").spotStream().forEach(s -> trimmedClass.addLabel(s.label()));
+        iris.var("class").stream().forEach(s -> trimmedClass.addLabel(s.label()));
 
         iris = BoundFrame.newByVars(iris.var(0), iris.var(1), trimmedClass).solidCopy();
 
@@ -263,8 +263,8 @@ public class MeshGridTutorialPage implements TutorialPage {
         }
 
         p = new Plot();
-        qq = mg1.quantiles(Numeric.newSeq(0, 1, 0.1).spotStream().mapToDouble().toArray());
-        gradient = ColorGradient.newBiColorGradient(new Color(0, 0, 200), new Color(255, 255, 255), Numeric.newSeq(0, 1, 0.1).spotStream().mapToDouble().toArray());
+        qq = mg1.quantiles(Numeric.newSeq(0, 1, 0.1).stream().mapToDouble().toArray());
+        gradient = ColorGradient.newBiColorGradient(new Color(0, 0, 200), new Color(255, 255, 255), Numeric.newSeq(0, 1, 0.1).stream().mapToDouble().toArray());
         for (int i = 0; i < qq.length - 1; i++) {
             p.meshContour(mg1.compute(qq[i], qq[i + 1]), true, true, lwd(0.3f), Plotter.color(gradient.getColor(i)));
         }

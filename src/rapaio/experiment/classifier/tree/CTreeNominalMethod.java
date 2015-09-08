@@ -131,7 +131,7 @@ public interface CTreeNominalMethod extends Serializable {
             CTreeCandidate best = null;
 
             int[] termCount = new int[test.dictionary().length];
-            test.spotStream().forEach(s -> termCount[s.index()]++);
+            test.stream().forEach(s -> termCount[s.index()]++);
 
             Iterator<Integer> indexes = terms.indexes(testColName).iterator();
             while (indexes.hasNext()) {

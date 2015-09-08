@@ -36,7 +36,7 @@ import java.util.Map;
 @Deprecated
 public class FFAbstractStandardize extends FFAbstract {
 
-    Map<String, VFAbstractStandardize> filters = new HashMap<>();
+    Map<String, VFStandardize> filters = new HashMap<>();
 
     public FFAbstractStandardize(String... varNames) {
         super(varNames);
@@ -47,7 +47,7 @@ public class FFAbstractStandardize extends FFAbstract {
 
         filters.clear();
         for (String varName : parse(df, varNames)) {
-            VFAbstractStandardize filter = new VFAbstractStandardize();
+            VFStandardize filter = new VFStandardize();
             filter.fit(df.var(varName));
             filters.put(varName, filter);
         }

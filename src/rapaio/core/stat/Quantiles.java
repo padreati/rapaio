@@ -68,7 +68,7 @@ public class Quantiles implements Printable {
     }
 
     private double[] compute(final Var var) {
-        Var complete = var.spotStream().complete().toMappedVar();
+        Var complete = var.stream().complete().toMappedVar();
         missingCount = var.rowCount() - complete.rowCount();
         completeCount = complete.rowCount();
         if (complete.rowCount() == 0) {

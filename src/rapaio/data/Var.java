@@ -335,7 +335,7 @@ public interface Var extends Serializable, Printable {
     /**
      * @return a stream of variables spots
      */
-    default VSpots spotStream() {
+    default VSpots stream() {
         return new VSpots(IntStream.range(0, rowCount()).mapToObj(row -> new VSpot(row, this)), this);
     }
 

@@ -244,7 +244,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         sparseIndices = null;
 
         // Store the sum of weights
-        sumOfWeights = weights.spotStream().mapToDouble().sum();
+        sumOfWeights = weights.stream().mapToDouble().sum();
 
         // Set class values
         target = new double[train.rowCount()];

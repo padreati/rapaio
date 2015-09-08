@@ -23,50 +23,41 @@
 
 package rapaio.data.filter;
 
-import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
+import rapaio.core.stat.GeometricMean;
 import rapaio.data.Var;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
+ * Filter to create monotonic power transformations
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.
  */
-@Deprecated
-public class VFAbstractStandardize extends VFAbstract {
+public class VFTransformPower extends VFAbstract {
 
-    private double mean;
-    private double sd;
+    private static final long serialVersionUID = -4496756339460112649L;
+    private final double lambda;
+    private double gm = 0.0;
 
-    public VFAbstractStandardize() {
-        this(Double.NaN, Double.NaN);
-    }
-
-    public VFAbstractStandardize(double mean) {
-        this(mean, Double.NaN);
-    }
-
-    public VFAbstractStandardize(double mean, double sd) {
-        this.mean = mean;
-        this.sd = sd;
+    public VFTransformPower(double lambda) {
+        this.lambda = lambda;
     }
 
     @Override
     public void fit(Var... vars) {
         checkSingleVar(vars);
-
-        if (Double.isNaN(mean)) {
-            mean = new Mean(vars[0]).value();
-        }
-        if (Double.isNaN(sd)) {
-            sd = new Variance(vars[0]).sdValue();
+        GeometricMean mygm = new GeometricMean(vars[0]);
+        if (mygm.isDefined()) {
+            gm = mygm.value();
+        } else {
+            throw new IllegalArgumentException("The transformed variable " + vars[0].name() + "contains negative values, geometric mean cannot be computed");
         }
     }
 
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        if (!vars[0].type().isNumeric()) {
-            return vars[0];
-        }
-        return vars[0].spotStream().transValue(x -> (x - mean) / sd).toMappedVar();
+        return vars[0].stream().transValue(x ->
+                        (lambda == 0) ?
+                        gm * Math.log(x) :
+                        (Math.pow(x, lambda) - 1.0) / (lambda * Math.pow(gm, lambda - 1))
+        ).toMappedVar();
     }
 }

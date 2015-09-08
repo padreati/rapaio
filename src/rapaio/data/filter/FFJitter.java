@@ -32,20 +32,21 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/10/14.
  */
-@Deprecated
-public class FFAbstractJitter extends FFAbstract {
+public class FFJitter extends FFAbstract {
+
+    private static final long serialVersionUID = 33367007274996702L;
 
     private final Distribution d;
 
-    public FFAbstractJitter(String... varNames) {
+    public FFJitter(String... varNames) {
         this(0.1, varNames);
     }
 
-    public FFAbstractJitter(double sd, String... varNames) {
+    public FFJitter(double sd, String... varNames) {
         this(new Normal(0, sd), varNames);
     }
 
-    public FFAbstractJitter(Distribution d, String... varNames) {
+    public FFJitter(Distribution d, String... varNames) {
         super(varNames);
         if (d == null) {
             throw new IllegalArgumentException("distribution parameter cannot be empty");
@@ -60,9 +61,7 @@ public class FFAbstractJitter extends FFAbstract {
 
     @Override
     public Frame apply(Frame df) {
-
         List<String> names = parse(df, varNames);
-
         for (int i = 0; i < df.rowCount(); i++) {
             for (String varName : names) {
                 df.setValue(i, varName, df.value(i, varName) + d.sampleNext());

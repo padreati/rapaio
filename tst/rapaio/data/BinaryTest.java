@@ -26,7 +26,6 @@ package rapaio.data;
 import org.junit.Test;
 import rapaio.core.stat.Mean;
 import rapaio.data.stream.VSpot;
-import rapaio.ws.Summary;
 
 import static org.junit.Assert.*;
 
@@ -45,27 +44,27 @@ public class BinaryTest {
         b.addMissing();
         b.addBinary(true);
 
-        assertEquals(1, b.spotStream().complete().filter(s -> !s.binary()).count());
-        assertEquals(3, b.spotStream().complete().filter(VSpot::binary).count());
-        assertEquals(2, b.spotStream().incomplete().count());
+        assertEquals(1, b.stream().complete().filter(s -> !s.binary()).count());
+        assertEquals(3, b.stream().complete().filter(VSpot::binary).count());
+        assertEquals(2, b.stream().incomplete().count());
 
-        assertEquals(10, Binary.newEmpty(10).spotStream().incomplete().count());
-        assertEquals(0, Binary.newEmpty().spotStream().incomplete().count());
+        assertEquals(10, Binary.newEmpty(10).stream().incomplete().count());
+        assertEquals(0, Binary.newEmpty().stream().incomplete().count());
     }
 
     @Test
     public void testFill() {
         Binary b = Binary.newFill(10, false);
 
-        assertEquals(0, b.spotStream().incomplete().count());
-        assertEquals(10, b.spotStream().complete().filter(s -> !s.binary()).count());
-        assertEquals(0, b.spotStream().complete().filter(VSpot::binary).count());
+        assertEquals(0, b.stream().incomplete().count());
+        assertEquals(10, b.stream().complete().filter(s -> !s.binary()).count());
+        assertEquals(0, b.stream().complete().filter(VSpot::binary).count());
 
         b = Binary.newFill(10, true);
 
-        assertEquals(0, b.spotStream().incomplete().count());
-        assertEquals(0, b.spotStream().complete().filter(s -> !s.binary()).count());
-        assertEquals(10, b.spotStream().complete().filter(VSpot::binary).count());
+        assertEquals(0, b.stream().incomplete().count());
+        assertEquals(0, b.stream().complete().filter(s -> !s.binary()).count());
+        assertEquals(10, b.stream().complete().filter(VSpot::binary).count());
     }
 
     @Test
