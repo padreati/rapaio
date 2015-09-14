@@ -27,12 +27,17 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
+import rapaio.io.JavaIO;
 import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.Classifier;
+import rapaio.ml.classifier.bayes.estimator.GaussianPdf;
 import rapaio.ml.classifier.bayes.estimator.KernelPdf;
 import rapaio.ml.eval.ConfusionMatrix;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -98,6 +103,9 @@ public class NaiveBayesTest {
 
         NaiveBayes nb = new NaiveBayes();
         nb.learn(df, "classes");
+
+        nb.printSummary();
+
         CFit cp = nb.fit(df);
 
         ConfusionMatrix cm = new ConfusionMatrix(df.var("classes"), cp.firstClasses());
@@ -109,5 +117,52 @@ public class NaiveBayesTest {
         assertEquals(332, cm.matrix()[0][1], 10e-12);
         assertEquals(20, cm.matrix()[1][0], 10e-12);
         assertEquals(4188, cm.matrix()[1][1], 10e-12);
+    }
+
+    @Test
+    public void testSummary() throws IOException, URISyntaxException {
+        Classifier nb = new NaiveBayes();
+        assertEquals("NaiveBayes model\n" +
+                "================\n" +
+                "\n" +
+                "Description:\n" +
+                "NaiveBayes(numEstimator=GaussianPdf, nomEstimator=MultinomialPmf)\n" +
+                "\n" +
+                "Capabilities:\n" +
+                "learning type: MULTICLASS_CLASSIFIER\n" +
+                "inputTypes: NUMERIC,NOMINAL\n" +
+                "minInputCount: 0, maxInputCount: 1000000\n" +
+                "allowMissingInputValues: true\n" +
+                "targetTypes: NOMINAL\n" +
+                "minTargetCount: 1, maxTargetCount: 1\n" +
+                "allowMissingTargetValues: false\n" +
+                "\n" +
+                "Learned model:\n" +
+                "Learning phase not called\n" +
+                "\n", nb.summary());
+
+        nb.learn(Datasets.loadIrisDataset(), "class");
+
+
+        nb.printSummary();
+    }
+
+    @Test
+    public void serializationTest() throws IOException, ClassNotFoundException, URISyntaxException {
+
+        NaiveBayes nb1 = new NaiveBayes().withNumEstimator(new KernelPdf());
+        Frame df = Datasets.loadIrisDataset();
+
+        nb1.learn(df, "class");
+        File file = File.createTempFile("test-", ".ser");
+        JavaIO.storeToFile(nb1, file);
+        NaiveBayes nb2 = (NaiveBayes) JavaIO.restoreFromFile(file);
+        assertEquals(nb1.summary(), nb2.summary());
+
+
+        CFit fit1 = nb1.fit(df, true, true);
+        CFit fit2 = nb2.fit(df, true, true);
+
+        assertTrue(fit1.deepEquals(fit2));
     }
 }

@@ -48,7 +48,7 @@ public class MultinomialPmf implements NominalEstimator {
 
     @Override
     public String learningInfo() {
-        return "NotImplemented";
+        return "MultinomialPmf";
     }
 
     @Override

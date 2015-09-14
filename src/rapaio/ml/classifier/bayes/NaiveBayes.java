@@ -24,6 +24,7 @@
 package rapaio.ml.classifier.bayes;
 
 import rapaio.data.VarType;
+import rapaio.printer.Printer;
 import rapaio.sys.WS;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
@@ -36,10 +37,14 @@ import rapaio.ml.classifier.bayes.estimator.NominalEstimator;
 import rapaio.ml.classifier.bayes.estimator.NumericEstimator;
 import rapaio.ml.common.Capabilities;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -70,7 +75,7 @@ public class NaiveBayes extends AbstractClassifier {
                 .withNumEstimator(numEstimator)
                 .withNomEstimator(nomEstimator)
                 .withLaplaceSmoother(useLaplaceSmoother)
-                .withDebug(debug);
+                .withDebug(debug());
     }
 
     @Override
@@ -87,7 +92,7 @@ public class NaiveBayes extends AbstractClassifier {
     public Capabilities capabilities() {
         return new Capabilities()
                 .withLearnType(Capabilities.LearnType.MULTICLASS_CLASSIFIER)
-                .withInputCount(0, Integer.MAX_VALUE)
+                .withInputCount(0, 1_000_000)
                 .withInputTypes(VarType.NOMINAL, VarType.NUMERIC)
                 .withTargetCount(1, 1)
                 .withTargetTypes(VarType.NOMINAL)
@@ -139,7 +144,7 @@ public class NaiveBayes extends AbstractClassifier {
         nomMap = new ConcurrentHashMap<>();
         numMap = new ConcurrentHashMap<>();
 
-        if (debug) {
+        if (debug()) {
             WS.println("start learning...");
         }
         Arrays.stream(df.varNames()).parallel().forEach(
@@ -151,7 +156,7 @@ public class NaiveBayes extends AbstractClassifier {
                         NumericEstimator estimator = numEstimator.newInstance();
                         estimator.learn(df, firstTargetName(), testCol);
                         numMap.put(testCol, estimator);
-                        if (debug)
+                        if (debug())
                             WS.print(".");
                         return;
                     }
@@ -159,11 +164,11 @@ public class NaiveBayes extends AbstractClassifier {
                         NominalEstimator estimator = nomEstimator.newInstance();
                         estimator.learn(df, weights, firstTargetName(), testCol);
                         nomMap.put(testCol, estimator);
-                        if (debug)
+                        if (debug())
                             WS.print(".");
                     }
                 });
-        if (debug)
+        if (debug())
             WS.println();
         return this;
     }
@@ -171,7 +176,7 @@ public class NaiveBayes extends AbstractClassifier {
     @Override
     public CFit fit(Frame df, final boolean withClasses, final boolean withDensities) {
 
-        if (debug)
+        if (debug())
             WS.println("start fitting values...");
 
         CFit pred = CFit.newEmpty(this, df, withClasses, withDensities);
@@ -206,5 +211,41 @@ public class NaiveBayes extends AbstractClassifier {
                     }
                 });
         return pred;
+    }
+
+    @Override
+    public String summary() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("NaiveBayes model\n");
+        sb.append("================\n\n");
+
+        sb.append("Description:\n");
+        sb.append(fullName()).append("\n\n");
+
+        sb.append("Capabilities:\n");
+        sb.append(capabilities().summary()).append("\n");
+
+        sb.append("Learned model:\n");
+
+        if (!isLearned()) {
+            sb.append("Learning phase not called\n\n");
+            return sb.toString();
+        }
+
+        sb.append(baseSummary());
+
+        sb.append("prior probabilities:\n");
+        String targetName = firstTargetName();
+        Arrays.stream(firstDict()).skip(1).forEach(label -> sb.append("> P(" + targetName + "='" + label + "')=" + WS.formatFlex(priors.get(label)) + "\n"));
+
+        if (!numMap.isEmpty()) {
+            sb.append("numerical estimators:\n");
+            numMap.entrySet().forEach(e -> sb.append("> " + e.getKey() + " : " + e.getValue().learningInfo() + "\n"));
+        }
+        if (!nomMap.isEmpty()) {
+            sb.append("nominal estimators:\n");
+            nomMap.entrySet().forEach(e -> sb.append("> " + e.getKey() + " : " + e.getValue().learningInfo() + "\n"));
+        }
+        return sb.toString();
     }
 }

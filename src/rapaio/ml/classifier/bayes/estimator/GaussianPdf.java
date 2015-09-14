@@ -30,6 +30,7 @@ import rapaio.data.Frame;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Numeric probability estimator, using pdf of normal distribution.
@@ -84,5 +85,10 @@ public class GaussianPdf implements NumericEstimator {
     @Override
     public NumericEstimator newInstance() {
         return new GaussianPdf();
+    }
+
+    @Override
+    public String learningInfo() {
+        return "GaussianPdf {" + normals.entrySet().stream().map(e -> e.getKey() + "~" + e.getValue().name()).collect(Collectors.joining(", ")) + '}';
     }
 }

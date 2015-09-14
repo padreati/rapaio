@@ -27,18 +27,21 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.data.VarType;
+import rapaio.printer.Printable;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.joining;
+
 /**
  * Capabilities describes what a machine learning algorithm can learn and fit.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/1/14.
  */
-public class Capabilities {
+public class Capabilities implements Printable {
 
     private LearnType learnType;
     private Integer minInputCount;
@@ -238,4 +241,18 @@ public class Capabilities {
         BINARY_CLASSIFIER,
         MULTICLASS_CLASSIFIER
     }
+
+    @Override
+    public String summary() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("learning type: ").append(learnType.name()).append("\n");
+        sb.append("inputTypes: ").append(inputTypes.stream().map(Enum::name).collect(joining(","))).append("\n");
+        sb.append("minInputCount: ").append(minInputCount).append(", maxInputCount: ").append(maxInputCount).append("\n");
+        sb.append("allowMissingInputValues: ").append(allowMissingInputValues).append("\n");
+        sb.append("targetTypes: ").append(targetTypes.stream().map(Enum::name).collect(joining(","))).append("\n");
+        sb.append("minTargetCount: ").append(minTargetCount).append(", maxTargetCount: ").append(maxTargetCount).append("\n");
+        sb.append("allowMissingTargetValues: ").append(allowMissingTargetValues).append("\n");
+        return sb.toString();
+    }
+
 }

@@ -21,17 +21,12 @@
  *
  */
 
-package rapaio.ml.classifier;
+package rapaio.io;
 
 /**
- * Interface which describes how a classification strategy can be used.
- * A classification strategy is able to receive one score for each possible
- * target classification label and produces the best class selected.
+ * Collection of utility methods which can be used into a
  * <p>
- * By default the strategy selects the class label which has the best score among
- * all the target labels.
- * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/19/15.
+ * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 9/14/15.
  */
-public interface ClassificationStrategy {
+public class JavaSerUtil {
 }

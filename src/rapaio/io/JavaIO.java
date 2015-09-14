@@ -32,12 +32,20 @@ import java.io.*;
 public class JavaIO {
 
     public static Object restoreFromFile(String file) throws IOException, ClassNotFoundException {
+        return restoreFromFile(new File(file));
+    }
+
+    public static Object restoreFromFile(File file) throws IOException, ClassNotFoundException {
         FileInputStream fileIn = new FileInputStream(file);
         ObjectInputStream in = new ObjectInputStream(fileIn);
         return in.readObject();
     }
 
     public static void storeToFile(Object object, String file) throws IOException {
+        storeToFile(object, new File(file));
+    }
+
+    public static void storeToFile(Object object, File file) throws IOException {
         FileOutputStream fileOut = new FileOutputStream(file);
         ObjectOutputStream out = new ObjectOutputStream(fileOut);
         out.writeObject(object);

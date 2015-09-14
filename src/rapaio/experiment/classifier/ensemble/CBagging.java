@@ -44,7 +44,7 @@ public class CBagging extends CEnsemble {
         this.runs = 10;
         this.baggingMode = BaggingMode.VOTING;
         this.oobComp = false;
-        this.sampler = new FrameSampler.Bootstrap(1);
+        this.withSampler(new FrameSampler.Bootstrap(1));
         this.c = CTree.newC45().withVarSelector(VarSelector.ALL);
     }
 
@@ -61,7 +61,7 @@ public class CBagging extends CEnsemble {
         sb.append("runs:").append(runs).append(",");
         sb.append("baggingMode:").append(baggingMode.name()).append(",");
         sb.append("oob:").append(oobComp).append(",");
-        sb.append("sampler:").append(sampler.name()).append(",");
+        sb.append("sampler:").append(sampler().name()).append(",");
         sb.append("weak:").append(c.fullName()).append("");
         sb.append("}");
         return sb.toString();

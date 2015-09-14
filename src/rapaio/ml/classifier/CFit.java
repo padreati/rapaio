@@ -33,9 +33,9 @@ import java.util.*;
 
 /**
  * Classification fit result.
- *
+ * <p>
  * This object holds the result of a classification fitting.
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class CFit implements Printable {
@@ -222,5 +222,29 @@ public class CFit implements Printable {
             sb.append("data frame does not contain target variable.");
         }
         return sb.toString();
+    }
+
+    public boolean deepEquals(CFit fit) {
+        if (targetVars.size() != fit.targetVars.size()) return false;
+        for (int i = 0; i < targetVars.size(); i++) if (!targetVars.get(i).equals(fit.targetVars.get(i))) return false;
+
+        if (withClasses != fit.withClasses) return false;
+        if (withDensities != fit.withDensities) return false;
+
+        Set<String> keys = new HashSet<>(classes.keySet());
+        keys.addAll(fit.classes.keySet());
+        for (String key : keys) {
+            if (!classes.containsKey(key)) return false;
+            if (!fit.classes.containsKey(key)) return false;
+            if (!classes(key).deepEquals(fit.classes(key))) return false;
+        }
+        keys = new HashSet<>(densities.keySet());
+        keys.addAll(fit.densities.keySet());
+        for (String key : keys) {
+            if (!densities.containsKey(key)) return false;
+            if (!fit.densities.containsKey(key)) return false;
+            if (!density(key).deepEquals(fit.density(key))) return false;
+        }
+        return true;
     }
 }

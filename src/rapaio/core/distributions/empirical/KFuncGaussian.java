@@ -27,7 +27,7 @@ import rapaio.core.distributions.Normal;
 
 /**
  * GaussianPdf kernel function
- *
+ * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class KFuncGaussian implements KFunc {
@@ -49,5 +49,10 @@ public class KFuncGaussian implements KFunc {
     @Override
     public double getMaxValue(double x0, double bandwidth) {
         return x0 + 4 * bandwidth;
+    }
+
+    @Override
+    public String summary() {
+        return "KFuncGaussian(" + normal.name() + ")";
     }
 }

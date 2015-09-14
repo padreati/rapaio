@@ -121,7 +121,7 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
     private void buildWeakPredictor(Frame df, Var weights) {
         Classifier weak = c.newInstance();
 
-        FrameSample sample = sampler.newSample(df, weights);
+        FrameSample sample = sampler().newSample(df, weights);
 
         Frame trainFrame = sample.df;
         Var trainWeights = sample.weights;

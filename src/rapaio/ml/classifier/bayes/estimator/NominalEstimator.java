@@ -29,7 +29,7 @@ import rapaio.data.Var;
 import java.io.Serializable;
 
 /**
- * Nominal variable robability estimator
+ * Nominal variable probability estimator
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/18/15.
  */

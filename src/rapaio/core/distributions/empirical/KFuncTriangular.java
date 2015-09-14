@@ -47,4 +47,9 @@ public class KFuncTriangular implements KFunc {
     public double getMaxValue(double x0, double bandwidth) {
         return x0 + bandwidth;
     }
+
+    @Override
+    public String summary() {
+        return "KFuncTriangular";
+    }
 }

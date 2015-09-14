@@ -109,7 +109,7 @@ public class BinaryLogistic extends AbstractClassifier {
             throw new IllegalArgumentException("Model has not been trained");
         Numeric inst = Numeric.newEmpty();
         for (int i = 0; i < inputNames().length; i++) {
-            inst.addValue(df.value(row, inputNames(i)));
+            inst.addValue(df.value(row, inputName(i)));
         }
         return logitReg(inst);
     }

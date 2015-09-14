@@ -40,5 +40,7 @@ public interface NumericEstimator extends Serializable {
 
     double cpValue(double testValue, String targetLabel);
 
+    String learningInfo();
+
     NumericEstimator newInstance();
 }

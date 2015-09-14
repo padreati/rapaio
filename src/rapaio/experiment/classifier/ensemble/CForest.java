@@ -46,7 +46,7 @@ public class CForest extends CEnsemble {
         this.baggingMode = BaggingMode.VOTING;
         this.c = CTree.newCART().withVarSelector(VarSelector.AUTO);
         this.oobComp = false;
-        this.sampler = new FrameSampler.Bootstrap(1);
+        this.withSampler(new FrameSampler.Bootstrap(1));
     }
 
     @Override
@@ -62,7 +62,7 @@ public class CForest extends CEnsemble {
         sb.append("runs:").append(runs).append(",");
         sb.append("baggingMode:").append(baggingMode.name()).append(",");
         sb.append("oob:").append(oobComp).append(",");
-        sb.append("sampler:").append(sampler.name()).append(",");
+        sb.append("sampler:").append(sampler().name()).append(",");
         sb.append("tree:").append(c.fullName()).append("");
         sb.append("}");
         return sb.toString();
@@ -74,7 +74,7 @@ public class CForest extends CEnsemble {
                 .withRuns(runs)
                 .withBaggingMode(baggingMode)
                 .withClassifier((CTree) c)
-                .withSampler(sampler);
+                .withSampler(sampler());
     }
 
     @Override

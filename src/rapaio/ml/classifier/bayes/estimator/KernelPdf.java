@@ -84,5 +84,11 @@ public class KernelPdf implements NumericEstimator {
     public NumericEstimator newInstance() {
         return new KernelPdf(kfunc, bandwidth);
     }
+
+    @Override
+    public String learningInfo() {
+        return name() + "{ " + kfunc.summary() + " }";
+    }
+
 }
 

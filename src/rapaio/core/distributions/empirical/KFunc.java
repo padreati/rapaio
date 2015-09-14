@@ -23,6 +23,8 @@
 
 package rapaio.core.distributions.empirical;
 
+import rapaio.printer.Printable;
+
 import java.io.Serializable;
 
 /**
@@ -30,7 +32,7 @@ import java.io.Serializable;
  *
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public interface KFunc extends Serializable {
+public interface KFunc extends Printable, Serializable {
 
     /**
      * pdf of the kernel

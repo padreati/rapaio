@@ -849,7 +849,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                             sb.append("   ");
                         }
                         sb.append(formatFlex(Math.abs(sparseWeights[i]))).append(" * ");
-                        sb.append("[").append(inputNames(sparseIndices[i])).append("]\n");
+                        sb.append("[").append(inputName(sparseIndices[i])).append("]\n");
                         printed++;
                     }
                 }

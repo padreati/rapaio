@@ -23,6 +23,7 @@
 
 package rapaio.ml.classifier;
 
+import rapaio.data.VarType;
 import rapaio.data.sample.FrameSampler;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
@@ -74,6 +75,8 @@ public interface Classifier extends Printable, Serializable {
         return new Capabilities();
     }
 
+    boolean debug();
+
     /**
      * Builds classifier with debug info on console.
      *
@@ -81,6 +84,11 @@ public interface Classifier extends Printable, Serializable {
      * @return the classifier instance
      */
     Classifier withDebug(boolean debug);
+
+    /**
+     * @return true if the classifier has learned from a sample
+     */
+    boolean isLearned();
 
     /**
      * @return the sampler instance used
@@ -104,8 +112,32 @@ public interface Classifier extends Printable, Serializable {
      */
     String[] inputNames();
 
-    default String inputNames(int pos) {
+    /**
+     * Shortcut method which returns input variable name at the
+     * given position
+     *
+     * @param pos given position
+     * @return variable name
+     */
+    default String inputName(int pos) {
         return inputNames()[pos];
+    }
+
+    /**
+     * Returns the types of input variables built at learning time
+     *
+     * @return array of input variable types
+     */
+    VarType[] inputTypes();
+
+    /**
+     * Shortcut method which returns the type of the input variable at the given position
+     *
+     * @param pos given position
+     * @return variable type
+     */
+    default VarType inputType(int pos) {
+        return inputTypes()[pos];
     }
 
     /**
@@ -132,6 +164,24 @@ public interface Classifier extends Printable, Serializable {
      */
     default String targetName(int pos) {
         return targetNames()[pos];
+    }
+
+    /**
+     * Returns target variable types built at learning time
+     *
+     * @return array of target types
+     */
+    VarType[] targetTypes();
+
+    /**
+     * Shortcut method which returns target variable type
+     * at the given position
+     *
+     * @param pos given position
+     * @return target variable type
+     */
+    default VarType targetType(int pos) {
+        return targetTypes()[pos];
     }
 
     /**

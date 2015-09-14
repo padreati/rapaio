@@ -176,6 +176,11 @@ public class HistogramDensityTutorial implements TutorialPage {
         draw(plot()
                 .funLine(new KDE(col)::pdf, Plotter.color(1))
                 .densityLine(col, new KFunc() {
+                    @Override
+                    public String summary() {
+                        return "custom kernel";
+                    }
+
                     private static final long serialVersionUID = 2176030821754943447L;
 
                     @Override
@@ -192,6 +197,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                     public double getMaxValue(double x0, double bandwidth) {
                         return x0 - bandwidth;
                     }
+
                 }, 0.5, Plotter.points(256))
                 .yLim(0, 0.18)
                 .xLim(55, 80));

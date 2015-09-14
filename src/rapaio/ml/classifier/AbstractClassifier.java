@@ -23,6 +23,7 @@
 
 package rapaio.ml.classifier;
 
+import rapaio.data.VarType;
 import rapaio.data.sample.FrameSampler;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -30,6 +31,9 @@ import rapaio.data.VarRange;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * Abstract base class for all classifiers.
@@ -39,11 +43,14 @@ import java.util.stream.Collectors;
 public abstract class AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = -6866948033065091047L;
-    protected String[] inputNames;
-    protected String[] targetNames;
-    protected Map<String, String[]> dict;
-    protected FrameSampler sampler = new FrameSampler.Identity();
-    protected boolean debug = false;
+    private String[] inputNames;
+    private VarType[] inputTypes;
+    private String[] targetNames;
+    private VarType[] targetTypes;
+    private Map<String, String[]> dict;
+    private FrameSampler sampler = new FrameSampler.Identity();
+    private boolean debug = false;
+    private boolean learned = false;
 
     @Override
     public FrameSampler sampler() {
@@ -54,6 +61,11 @@ public abstract class AbstractClassifier implements Classifier {
     public AbstractClassifier withSampler(FrameSampler sampler) {
         this.sampler = sampler;
         return this;
+    }
+
+    @Override
+    public boolean debug() {
+        return debug;
     }
 
     @Override
@@ -68,13 +80,27 @@ public abstract class AbstractClassifier implements Classifier {
     }
 
     @Override
+    public VarType[] inputTypes() {
+        return inputTypes;
+    }
+
+    @Override
     public String[] targetNames() {
         return targetNames;
     }
 
     @Override
+    public VarType[] targetTypes() {
+        return targetTypes;
+    }
+
+    @Override
     public Map<String, String[]> dictionaries() {
         return dict;
+    }
+
+    public boolean isLearned() {
+        return learned;
     }
 
     /**
@@ -86,25 +112,42 @@ public abstract class AbstractClassifier implements Classifier {
      * @param weights    weights of instances
      * @param targetVars target variable names
      */
-    public void prepareLearning(Frame df, Var weights, String... targetVars) {
+    public void prepareLearning(final Frame df, final Var weights, final String... targetVars) {
 
         if (targetVars.length == 0) {
             throw new IllegalArgumentException("At least a target var name should be specified at learning time.");
         }
-        List<String> targetVarsList = new VarRange(targetVars).parseVarNames(df);
-        this.targetNames = targetVarsList.toArray(new String[targetVarsList.size()]);
+        List<String> targets = new VarRange(targetVars).parseVarNames(df);
+        this.targetNames = targets.stream().toArray(String[]::new);
+        this.targetTypes = targets.stream().map(name -> df.var(name).type()).toArray(VarType[]::new);
         this.dict = new HashMap<>();
         this.dict.put(firstTargetName(), df.var(firstTargetName()).dictionary());
 
-        HashSet<String> targets = new HashSet<>(targetVarsList);
-        List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targets.contains(varName)).collect(Collectors.toList());
-        this.inputNames = inputs.toArray(new String[inputs.size()]);
+        HashSet<String> targetSet = new HashSet<>(targets);
+        List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
+        this.inputNames = inputs.stream().toArray(String[]::new);
+        this.inputTypes = inputs.stream().map(name -> df.var(name).type()).toArray(VarType[]::new);
 
         capabilities().checkAtLearnPhase(df, weights, targetVars);
+        learned = true;
     }
 
     @Override
     public String summary() {
         return "not implemented";
+    }
+
+    public String baseSummary() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("input vars: \n");
+        IntStream.range(0, inputNames().length).forEach(i ->
+                sb.append("> ").append(inputName(i)).append(" : ").append(inputType(i)).append("\n"));
+        sb.append("target vars:\n");
+        IntStream.range(0, targetNames().length).forEach(i -> sb.append("> ")
+                .append(targetName(i)).append(" : ")
+                .append(targetType(i))
+                .append(" (").append(Arrays.stream(dictionary(targetName(i))).collect(joining(","))).append(")")
+                .append("\n"));
+        return sb.toString();
     }
 }

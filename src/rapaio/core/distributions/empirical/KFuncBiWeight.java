@@ -29,6 +29,8 @@ package rapaio.core.distributions.empirical;
  */
 public class KFuncBiWeight implements KFunc {
 
+    private static final long serialVersionUID = -7870965133827784297L;
+
     @Override
     public double pdf(double x, double x0, double bandwidth) {
         double value = Math.abs(x - x0) / bandwidth;
@@ -43,5 +45,10 @@ public class KFuncBiWeight implements KFunc {
     @Override
     public double getMaxValue(double x0, double bandwidth) {
         return x0 + bandwidth;
+    }
+
+    @Override
+    public String summary() {
+        return "KFuncBiWeight";
     }
 }
