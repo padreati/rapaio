@@ -25,12 +25,15 @@ package rapaio.ml.classifier;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rapaio.data.Frame;
+import rapaio.data.*;
 import rapaio.datasets.Datasets;
 import rapaio.io.JavaIO;
 import rapaio.ml.classifier.bayes.NaiveBayes;
 import rapaio.ml.classifier.bayes.estimator.KernelPdf;
 import rapaio.ml.classifier.rule.OneRule;
+import rapaio.ml.classifier.tree.CTree;
+import rapaio.ml.classifier.tree.CTreeNominalMethod;
+import rapaio.ml.eval.ConfusionMatrix;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,17 +50,30 @@ public class ClassifierSerializationTest {
     @Test
     public void testOneRuleIris() throws IOException, URISyntaxException, ClassNotFoundException {
 
+        Var varModel = Nominal.newEmpty();
+        Var varData = Nominal.newEmpty();
+        Var varAcc = Numeric.newEmpty();
+
         Frame iris = Datasets.loadIrisDataset();
-        testModel(new OneRule(), iris, "class");
-        testModel(new NaiveBayes().withNumEstimator(new KernelPdf()), iris, "class");
+        testModel(new OneRule(), iris, "class", "iris", varModel, varData, varAcc);
+        testModel(new NaiveBayes().withNumEstimator(new KernelPdf()), iris, "class", "iris", varModel, varData, varAcc);
+        testModel(CTree.newC45(), iris, "class", "iris", varModel, varData, varAcc);
+        testModel(CTree.newCART(), iris, "class", "iris", varModel, varData, varAcc);
 
         Frame mushrooms = Datasets.loadMushrooms();
-        testModel(new OneRule(), mushrooms, "classes");
-        testModel(new NaiveBayes().withNumEstimator(new KernelPdf()), mushrooms, "classes");
+
+        testModel(new OneRule(), mushrooms, "classes", "mushrooms", varModel, varData, varAcc);
+        testModel(new NaiveBayes().withNumEstimator(new KernelPdf()), mushrooms, "classes", "mushrooms", varModel, varData, varAcc);
+        testModel(CTree.newC45(), mushrooms, "classes", "mushrooms", varModel, varData, varAcc);
+        testModel(CTree.newCART(), mushrooms, "classes", "mushrooms", varModel, varData, varAcc);
+
+        SolidFrame.newWrapOf(varData, varModel, varAcc).printLines();
     }
 
-    private <T extends Classifier> void testModel(T model, Frame df, String... targets) throws IOException, ClassNotFoundException {
-        model.learn(df, targets);
+    private <T extends Classifier> void testModel(T model, Frame df, String target, String dataName, Var varModel, Var varData, Var varAcc) throws IOException, ClassNotFoundException {
+        model.learn(df, target);
+        model.printSummary();
+
         File tmp = File.createTempFile("model-", "ser");
         JavaIO.storeToFile(model, tmp);
 
@@ -68,5 +84,9 @@ public class ClassifierSerializationTest {
 
         modelFit.printSummary();
         assertEquals(modelFit.summary(), shaddowFit.summary());
+
+        varData.addLabel(dataName);
+        varModel.addLabel(model.name());
+        varAcc.addValue(new ConfusionMatrix(df.var(target), modelFit.firstClasses()).accuracy());
     }
 }

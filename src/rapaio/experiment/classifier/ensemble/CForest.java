@@ -27,7 +27,7 @@ import rapaio.data.sample.FrameSampler;
 import rapaio.ml.classifier.Classifier;
 import rapaio.experiment.classifier.ensemble.impl.BaggingMode;
 import rapaio.experiment.classifier.ensemble.impl.CEnsemble;
-import rapaio.experiment.classifier.tree.CTree;
+import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.common.VarSelector;
 import rapaio.util.func.SFunction;
 

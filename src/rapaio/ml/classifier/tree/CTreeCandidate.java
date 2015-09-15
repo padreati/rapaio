@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.experiment.classifier.tree;
+package rapaio.ml.classifier.tree;
 
 import rapaio.data.stream.FSpot;
 import rapaio.util.func.SPredicate;
@@ -33,8 +33,9 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
-@Deprecated
 public class CTreeCandidate implements Comparable<CTreeCandidate>, Serializable {
+
+    private static final long serialVersionUID = -1547847207988912332L;
 
     private final double score;
     private final int sign;

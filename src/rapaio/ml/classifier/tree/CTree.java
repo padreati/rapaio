@@ -21,8 +21,10 @@
  *
  */
 
-package rapaio.experiment.classifier.tree;
+package rapaio.ml.classifier.tree;
 
+import rapaio.data.VarType;
+import rapaio.ml.common.Capabilities;
 import rapaio.sys.WS;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
@@ -32,19 +34,20 @@ import rapaio.ml.classifier.CFit;
 import rapaio.ml.common.VarSelector;
 import rapaio.util.Pair;
 
+import java.util.Arrays;
+
 /**
  * Tree classifier.
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public class CTree extends AbstractClassifier {
 
     private static final long serialVersionUID = 1203926824359387358L;
 
     // parameter default values
     int minCount = 1;
-    int maxDepth = Integer.MAX_VALUE;
+    int maxDepth = 10_000;
 
     VarSelector varSelector = VarSelector.ALL;
     CTreeTestCounter testCounter = new CTreeTestCounter.MNominalMNumeric();
@@ -63,7 +66,8 @@ public class CTree extends AbstractClassifier {
     public static CTree newID3() {
         return new CTree()
                 .withTestCounter(new CTreeTestCounter.OneNominalOneNumeric())
-                .withMaxDepth(Integer.MAX_VALUE)
+                .withMaxDepth(10_000)
+                .withMinCount(10)
                 .withVarSelector(VarSelector.ALL)
                 .withSplitter(new CTreeSplitter.RemainsIgnored())
                 .withNominalMethod(new CTreeNominalMethod.Full())
@@ -75,7 +79,8 @@ public class CTree extends AbstractClassifier {
     public static CTree newC45() {
         return new CTree()
                 .withTestCounter(new CTreeTestCounter.OneNominalOneNumeric())
-                .withMaxDepth(Integer.MAX_VALUE)
+                .withMaxDepth(10_000)
+                .withMinCount(10)
                 .withVarSelector(VarSelector.ALL)
                 .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
                 .withNominalMethod(new CTreeNominalMethod.Full())
@@ -87,9 +92,11 @@ public class CTree extends AbstractClassifier {
     public static CTree newDecisionStump() {
         return new CTree()
                 .withMaxDepth(1)
+                .withMinCount(10)
                 .withVarSelector(VarSelector.ALL)
                 .withTestCounter(new CTreeTestCounter.OneNominalOneNumeric())
                 .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
+                .withFunction(new CTreeTestFunction.InfoGain())
                 .withNominalMethod(new CTreeNominalMethod.Binary())
                 .withNumericMethod(new CTreeNumericMethod.Binary())
                 .withPredictor(new CTreePredictor.Standard());
@@ -97,12 +104,14 @@ public class CTree extends AbstractClassifier {
 
     public static CTree newCART() {
         return new CTree()
-                .withMaxDepth(Integer.MAX_VALUE)
+                .withMaxDepth(10_000)
+                .withMinCount(10)
                 .withVarSelector(VarSelector.ALL)
                 .withTestCounter(new CTreeTestCounter.MNominalMNumeric())
                 .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
                 .withNominalMethod(new CTreeNominalMethod.Binary())
                 .withNumericMethod(new CTreeNumericMethod.Binary())
+                .withFunction(new CTreeTestFunction.GiniGain())
                 .withPredictor(new CTreePredictor.Standard());
     }
 
@@ -244,18 +253,23 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
+    public Capabilities capabilities() {
+        return new Capabilities()
+                .withInputTypes(VarType.NOMINAL, VarType.INDEX, VarType.NUMERIC)
+                .withInputCount(1, 1_000_000)
+                .withAllowMissingInputValues(true)
+                .withTargetTypes(VarType.NOMINAL)
+                .withTargetCount(1, 1)
+                .withAllowMissingTargetValues(false)
+                .withLearnType(Capabilities.LearnType.MULTICLASS_CLASSIFIER);
+    }
+
+    @Override
     public CTree learn(Frame df, Var weights, String... targetVars) {
 
         prepareLearning(df, weights, targetVars);
 
         this.varSelector.withVarNames(inputNames());
-
-        if (targetNames().length == 0) {
-            throw new IllegalArgumentException("tree classifier must specify a target variable");
-        }
-        if (targetNames().length > 1) {
-            throw new IllegalArgumentException("tree classifier can't fit more than one target variable");
-        }
 
         rows = df.rowCount();
 
@@ -285,18 +299,34 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    public void printSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
-        sb.append("\n > ").append(fullName()).append("\n");
+        sb.append("CTree model\n");
+        sb.append("================\n\n");
 
-        sb.append(String.format("n=%d\n", rows));
+        sb.append("Description:\n");
+        sb.append(fullName()).append("\n\n");
+
+        sb.append("Capabilities:\n");
+        sb.append(capabilities().summary()).append("\n");
+
+        sb.append("Learned model:\n");
+
+        if (!isLearned()) {
+            sb.append("Learning phase not called\n\n");
+            return sb.toString();
+        }
+
+        sb.append(baseSummary());
 
         sb.append("\n");
         sb.append("description:\n");
         sb.append("split, n/err, classes (densities) [* if is leaf]\n\n");
 
         buildSummary(sb, root, 0);
-        WS.code(sb.toString());
+
+        return sb.toString();
+
     }
 
     private void buildSummary(StringBuilder sb, CTreeNode node, int level) {
@@ -306,13 +336,13 @@ public class CTree extends AbstractClassifier {
         }
         if (node.getParent() == null) {
             sb.append("root").append(" ");
-            sb.append(node.getDensity().sum(true)).append("/");
-            sb.append(node.getDensity().sumExcept(node.getBestIndex(), true)).append(" ");
+            sb.append(node.getCounter().sum(true)).append("/");
+            sb.append(node.getCounter().sumExcept(node.getBestIndex(), true)).append(" ");
             sb.append(firstDict()[node.getBestIndex()]).append(" (");
             DVector d = node.getDensity().solidCopy();
-            d.normalize(false);
+//            d.normalize(false);
             for (int i = 1; i < firstDict().length; i++) {
-                sb.append(String.format("%.6f", d.get(i))).append(" ");
+                sb.append(String.format("%.4f", d.get(i))).append(" ");
             }
             sb.append(") ");
             if (node.isLeaf()) sb.append("*");
@@ -322,13 +352,13 @@ public class CTree extends AbstractClassifier {
 
             sb.append(node.getGroupName()).append("  ");
 
-            sb.append(node.getDensity().sum(true)).append("/");
-            sb.append(node.getDensity().sumExcept(node.getBestIndex(), true)).append(" ");
+            sb.append(node.getCounter().sum(true)).append("/");
+            sb.append(node.getCounter().sumExcept(node.getBestIndex(), true)).append(" ");
             sb.append(firstDict()[node.getBestIndex()]).append(" (");
             DVector d = node.getDensity().solidCopy();
-            d.normalize(false);
+//            d.normalize(false);
             for (int i = 1; i < firstDict().length; i++) {
-                sb.append(String.format("%.6f", d.get(i))).append(" ");
+                sb.append(String.format("%.4f", d.get(i))).append(" ");
             }
             sb.append(") ");
             if (node.isLeaf()) sb.append("*");

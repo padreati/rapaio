@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.experiment.classifier.tree;
+package rapaio.ml.classifier.tree;
 
 import rapaio.core.tools.DVector;
 import rapaio.data.stream.FSpot;
@@ -32,7 +32,6 @@ import java.io.Serializable;
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
-@Deprecated
 public interface CTreePredictor extends Serializable {
 
     String name();
@@ -41,7 +40,9 @@ public interface CTreePredictor extends Serializable {
 
     Pair<Integer, DVector> predict(CTree tree, FSpot spot, CTreeNode node);
 
-    public static final class Standard implements CTreePredictor {
+    final class Standard implements CTreePredictor {
+
+        private static final long serialVersionUID = -2515884695305885633L;
 
         @Override
         public String name() {
@@ -86,5 +87,5 @@ public interface CTreePredictor extends Serializable {
             dv.normalize(false);
             return new Pair<>(dv.findBestIndex(false), dv);
         }
-    };
+    }
 }

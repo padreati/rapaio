@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.experiment.classifier.tree;
+package rapaio.ml.classifier.tree;
 
 import rapaio.data.Frame;
 
@@ -34,7 +34,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
-@Deprecated
 public interface CTreeTestCounter extends Serializable {
 
     String name();
@@ -47,6 +46,7 @@ public interface CTreeTestCounter extends Serializable {
 
     class MNominalMNumeric implements CTreeTestCounter {
 
+        private static final long serialVersionUID = -1963042115533761269L;
         private Map<String, Integer> counters = new ConcurrentHashMap<>();
 
         @Override
@@ -70,6 +70,8 @@ public interface CTreeTestCounter extends Serializable {
     }
 
     class OneNominalMNumeric implements CTreeTestCounter {
+
+        private static final long serialVersionUID = 2252374938153534866L;
 
         private Map<String, Integer> counters = new HashMap<>();
 
@@ -106,6 +108,8 @@ public interface CTreeTestCounter extends Serializable {
     }
 
     class OneNominalOneNumeric implements CTreeTestCounter {
+
+        private static final long serialVersionUID = -848000293987070583L;
 
         private Map<String, Integer> counters = new HashMap<>();
 

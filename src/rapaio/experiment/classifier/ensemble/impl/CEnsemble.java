@@ -30,7 +30,7 @@ import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.RunningClassifier;
-import rapaio.experiment.classifier.tree.CTree;
+import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.util.func.SFunction;
 

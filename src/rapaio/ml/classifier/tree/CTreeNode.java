@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.experiment.classifier.tree;
+package rapaio.ml.classifier.tree;
 
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
@@ -41,9 +41,10 @@ import java.util.function.Predicate;
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
-@Deprecated
 public class CTreeNode implements Serializable {
+
     private static final long serialVersionUID = -5045581827808911763L;
+
     private final CTreeNode parent;
     private final String groupName;
     private final SPredicate<FSpot> predicate;
@@ -118,8 +119,8 @@ public class CTreeNode implements Serializable {
 
         LinkedList<CTreeCandidate> candidates = new LinkedList<>();
         for (String testCol : tree.varSelector().nextVarNames()) {
-            if (testCol.equals(tree.firstTargetName())) return;
-            if (!tree.testCounter.canUse(testCol)) return;
+            if (testCol.equals(tree.firstTargetName())) break;
+            if (!tree.testCounter.canUse(testCol)) break;
 
             if (df.var(testCol).type().isNumeric()) {
                 tree.getNumericMethod().computeCandidates(
@@ -140,7 +141,7 @@ public class CTreeNode implements Serializable {
         leaf = false;
 
         bestCandidate = candidateList.get(0);
-        tree.testCounter.markUse(candidateList.get(0).getTestName());
+        tree.testCounter.markUse(bestCandidate.getTestName());
 
         // now that we have a best candidate, do the effective split
 

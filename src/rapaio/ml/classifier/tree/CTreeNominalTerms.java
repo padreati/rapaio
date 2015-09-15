@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.experiment.classifier.tree;
+package rapaio.ml.classifier.tree;
 
 import rapaio.data.Frame;
 
@@ -30,7 +30,6 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toSet;
 
-@Deprecated
 public class CTreeNominalTerms {
 
     private final Map<String, Set<Integer>> indexes = new HashMap<>();

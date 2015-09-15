@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.experiment.classifier.tree;
+package rapaio.ml.classifier.tree;
 
 import rapaio.core.RandomSource;
 import rapaio.data.*;
@@ -31,21 +31,23 @@ import rapaio.util.Pair;
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
-@Deprecated
 public interface CTreeSplitter extends Serializable {
 
     String name();
 
     CTreeSplitter newInstance();
 
-    public Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Var weights, CTreeCandidate candidate);
+    Pair<List<Frame>, List<Numeric>> performSplit(Frame df, Var weights, CTreeCandidate candidate);
 
-    public static class RemainsIgnored implements CTreeSplitter {
+    class RemainsIgnored implements CTreeSplitter {
+
+        private static final long serialVersionUID = 970548417166666400L;
 
         @Override
         public String name() {
@@ -76,16 +78,15 @@ public interface CTreeSplitter extends Serializable {
                     }
                 }
             });
-            List<Frame> frames = new ArrayList<>();
-            mappings.stream().forEach(mapping -> {
-                frames.add(MappedFrame.newByRow(df, mapping));
-            });
+            List<Frame> frames = mappings.stream().map(mapping -> MappedFrame.newByRow(df, mapping)).collect(toList());
             return new Pair<>(frames, weightsList);
         }
     }
 
 
-    public static class RemainsToMajority implements CTreeSplitter {
+    class RemainsToMajority implements CTreeSplitter {
+
+        private static final long serialVersionUID = 2368260844872900787L;
 
         @Override
         public String name() {
@@ -133,14 +134,14 @@ public interface CTreeSplitter extends Serializable {
                 weightsList.get(index).addValue(weights.value(spot.row()));
             });
             List<Frame> frames = new ArrayList<>();
-            mappings.stream().forEach(mapping -> {
-                frames.add(MappedFrame.newByRow(df, mapping));
-            });
+            mappings.stream().forEach(mapping -> frames.add(MappedFrame.newByRow(df, mapping)));
             return new Pair<>(frames, weightsList);
         }
     }
 
-    public static class RemainsToAllWeighted implements CTreeSplitter {
+    class RemainsToAllWeighted implements CTreeSplitter {
+
+        private static final long serialVersionUID = 3744338442112255639L;
 
         @Override
         public String name() {
@@ -189,12 +190,14 @@ public interface CTreeSplitter extends Serializable {
                     weightsList.get(ii).addValue(weights.value(missingRow) * p[ii]);
                 });
             }
-            List<Frame> frames = mappings.stream().map(mapping -> MappedFrame.newByRow(df, mapping)).collect(Collectors.toList());
+            List<Frame> frames = mappings.stream().map(mapping -> MappedFrame.newByRow(df, mapping)).collect(toList());
             return new Pair<>(frames, weightsList);
         }
     }
 
-    public static final class RemainsToRandom implements CTreeSplitter {
+    final class RemainsToRandom implements CTreeSplitter {
+
+        private static final long serialVersionUID = 4585624342047887184L;
 
         @Override
         public String name() {
@@ -228,13 +231,14 @@ public interface CTreeSplitter extends Serializable {
                 missingSpots.add(s.row());
             });
             missingSpots.forEach(rowId -> mappings.get(RandomSource.nextInt(mappings.size())).add(rowId));
-            List<Frame> frames = mappings.stream().map(mapping -> MappedFrame.newByRow(df, mapping)).collect(Collectors.toList());
+            List<Frame> frames = mappings.stream().map(mapping -> MappedFrame.newByRow(df, mapping)).collect(toList());
             return new Pair<>(frames, weightList);
         }
     }
 
-    @Deprecated
     final class RemainsWithSurrogates implements CTreeSplitter {
+
+        private static final long serialVersionUID = 5553690335711112553L;
 
         @Override
         public String name() {
@@ -251,6 +255,6 @@ public interface CTreeSplitter extends Serializable {
             // TODO partition tree classifier - remains surrogates
             throw new IllegalArgumentException("not implemented");
         }
-    };
+    }
 }
 

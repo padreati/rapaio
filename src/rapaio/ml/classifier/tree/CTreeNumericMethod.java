@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.experiment.classifier.tree;
+package rapaio.ml.classifier.tree;
 
 import rapaio.core.RandomSource;
 import rapaio.core.tools.DTable;
@@ -38,7 +38,6 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
-@Deprecated
 public interface CTreeNumericMethod extends Serializable {
 
     String name();
@@ -67,6 +66,8 @@ public interface CTreeNumericMethod extends Serializable {
     }
 
     class Binary implements CTreeNumericMethod {
+
+        private static final long serialVersionUID = -4809033882157832478L;
 
         @Override
         public String name() {
@@ -143,6 +144,8 @@ public interface CTreeNumericMethod extends Serializable {
     }
 
     class Skip implements CTreeNumericMethod {
+
+        private static final long serialVersionUID = 6415645608333763329L;
 
         private final int skip;
 

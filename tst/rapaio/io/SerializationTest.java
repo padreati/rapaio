@@ -22,7 +22,7 @@
 //
 //import org.junit.Test;
 //import rapaio.experiment.classifier.boost.AdaBoostSAMMEClassifier;
-//import rapaio.experiment.classifier.tree.TreeClassifier;
+//import rapaio.ml.classifier.tree.TreeClassifier;
 //import rapaio.ml.eval.ConfusionMatrix;
 //import rapaio.data.Frame;
 //import rapaio.datasets.Datasets;

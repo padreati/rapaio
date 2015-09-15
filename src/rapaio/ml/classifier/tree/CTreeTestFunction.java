@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.experiment.classifier.tree;
+package rapaio.ml.classifier.tree;
 
 import rapaio.core.tools.DTable;
 
@@ -30,7 +30,6 @@ import java.io.Serializable;
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
-@Deprecated
 public interface CTreeTestFunction extends Serializable {
 
     String name();

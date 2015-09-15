@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.experiment.classifier.tree;
+package rapaio.ml.classifier.tree;
 
 import rapaio.core.RandomSource;
 import rapaio.core.tools.DTable;
@@ -37,7 +37,6 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
-@Deprecated
 public interface CTreeNominalMethod extends Serializable {
 
     String name();
@@ -47,6 +46,7 @@ public interface CTreeNominalMethod extends Serializable {
     List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function, CTreeNominalTerms terms);
 
     class Ignore implements CTreeNominalMethod {
+
         private static final long serialVersionUID = -4880331163848862999L;
 
         @Override
@@ -66,6 +66,7 @@ public interface CTreeNominalMethod extends Serializable {
     }
 
     class Full implements CTreeNominalMethod {
+
         private static final long serialVersionUID = 1440419101927544578L;
 
         @Override
