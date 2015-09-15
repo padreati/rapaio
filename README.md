@@ -42,6 +42,7 @@ is considered to be fully implemented and well tested.
 
 **Classification**
 * Bayesian: NaiveBayes (GaussianPdf, EmpiricalPdf, MultinomialPmf)
+* Rule: OneRule
 
 
 Experminental Stage Features
@@ -66,7 +67,6 @@ Experminental Stage Features
 * Decision Trees: ID3
 * Decision Trees: C45 (no pruning)
 * Decision Trees: CART (no pruning)
-* Rule: OneRule
 * Boosting: AdaBoost.SAMME
 * Boosting: GBT (Gradient Boosting Trees) Classifier
 * Ensemble: SplitClassifier
