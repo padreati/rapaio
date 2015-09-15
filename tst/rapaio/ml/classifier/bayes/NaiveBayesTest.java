@@ -130,7 +130,7 @@ public class NaiveBayesTest {
                 "\n" +
                 "Capabilities:\n" +
                 "learning type: MULTICLASS_CLASSIFIER\n" +
-                "inputTypes: NUMERIC,NOMINAL\n" +
+                "inputTypes: NOMINAL,NUMERIC\n" +
                 "minInputCount: 0, maxInputCount: 1000000\n" +
                 "allowMissingInputValues: true\n" +
                 "targetTypes: NOMINAL\n" +
@@ -147,22 +147,4 @@ public class NaiveBayesTest {
         nb.printSummary();
     }
 
-    @Test
-    public void serializationTest() throws IOException, ClassNotFoundException, URISyntaxException {
-
-        NaiveBayes nb1 = new NaiveBayes().withNumEstimator(new KernelPdf());
-        Frame df = Datasets.loadIrisDataset();
-
-        nb1.learn(df, "class");
-        File file = File.createTempFile("test-", ".ser");
-        JavaIO.storeToFile(nb1, file);
-        NaiveBayes nb2 = (NaiveBayes) JavaIO.restoreFromFile(file);
-        assertEquals(nb1.summary(), nb2.summary());
-
-
-        CFit fit1 = nb1.fit(df, true, true);
-        CFit fit2 = nb2.fit(df, true, true);
-
-        assertTrue(fit1.deepEquals(fit2));
-    }
 }

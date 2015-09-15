@@ -62,7 +62,7 @@ public class IrisContour {
 
         Frame iris = Datasets.loadIrisDataset();
         iris = iris.mapVars(X, Y, "class");
-        iris = iris.spotStream().filter(s -> s.index(2) != 3).toMappedFrame();
+        iris = iris.stream().filter(s -> s.index(2) != 3).toMappedFrame();
 
         Var trimmedClass = Nominal.newEmpty().withName("class");
         iris.var("class").stream().forEach(s -> trimmedClass.addLabel(s.label()));

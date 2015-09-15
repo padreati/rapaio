@@ -118,7 +118,7 @@ public class BinaryLogistic extends AbstractClassifier {
     public BinaryLogistic learn(Frame df, Var weights, String... targetVarNames) {
         prepareLearning(df, weights, targetVarNames);
 
-        if (df.spotStream().complete().count() != df.rowCount()) {
+        if (df.stream().complete().count() != df.rowCount()) {
             throw new IllegalArgumentException("Incomplete data set is not allowed in binary logistic");
         }
 

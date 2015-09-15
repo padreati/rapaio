@@ -57,7 +57,7 @@ public interface RTreeSplitter {
                 weightsList.add(Numeric.newEmpty());
             }
 
-            df.spotStream().forEach(s -> {
+            df.stream().forEach(s -> {
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                     Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                     if (predicate.test(s)) {
@@ -92,7 +92,7 @@ public interface RTreeSplitter {
             }
 
             List<FSpot> missingSpots = new LinkedList<>();
-            df.spotStream().forEach(s -> {
+            df.stream().forEach(s -> {
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                     Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                     if (predicate.test(s)) {
@@ -142,7 +142,7 @@ public interface RTreeSplitter {
             }
 
             final Set<Integer> missingSpots = new HashSet<>();
-            df.spotStream().forEach(s -> {
+            df.stream().forEach(s -> {
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                     Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                     if (predicate.test(s)) {
@@ -191,7 +191,7 @@ public interface RTreeSplitter {
             }
 
             final Set<Integer> missingSpots = new HashSet<>();
-            df.spotStream().forEach(s -> {
+            df.stream().forEach(s -> {
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                     Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                     if (predicate.test(s)) {

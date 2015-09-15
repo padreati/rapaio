@@ -29,12 +29,11 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.printer.Printable;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Capabilities describes what a machine learning algorithm can learn and fit.
@@ -46,11 +45,11 @@ public class Capabilities implements Printable {
     private LearnType learnType;
     private Integer minInputCount;
     private Integer maxInputCount;
-    private Set<VarType> inputTypes;
+    private List<VarType> inputTypes;
     private Boolean allowMissingInputValues;
     private Integer minTargetCount;
     private Integer maxTargetCount;
-    private Set<VarType> targetTypes;
+    private List<VarType> targetTypes;
     private Boolean allowMissingTargetValues;
 
     /**
@@ -70,8 +69,9 @@ public class Capabilities implements Printable {
         return this;
     }
 
-    public Capabilities withInputTypes(VarType... inputTypes) {
-        this.inputTypes = Arrays.stream(inputTypes).collect(Collectors.toSet());
+    public Capabilities withInputTypes(VarType... types) {
+        this.inputTypes = Arrays.stream(types).collect(toList());
+        Collections.sort(this.inputTypes);
         return this;
     }
 
@@ -81,8 +81,9 @@ public class Capabilities implements Printable {
         return this;
     }
 
-    public Capabilities withTargetTypes(VarType... targetTypes) {
-        this.targetTypes = Arrays.stream(targetTypes).collect(Collectors.toSet());
+    public Capabilities withTargetTypes(VarType... types) {
+        this.targetTypes = Arrays.stream(types).collect(toList());
+        Collections.sort(this.inputTypes);
         return this;
     }
 
@@ -106,11 +107,32 @@ public class Capabilities implements Printable {
     public void checkAtLearnPhase(Frame df, Var weights, String... targetVars) {
 
         // check if capabilities are well-specified
-        if (learnType == null ||
-                inputTypes == null || minInputCount == null || maxInputCount == null || allowMissingInputValues == null ||
-                targetTypes == null || minTargetCount == null || maxTargetCount == null || allowMissingTargetValues == null
-                ) {
-            throw new IllegalArgumentException("Capabilities not initialized completely!");
+        if (learnType == null) {
+            throw new IllegalArgumentException("Capabilities not initialized completely: missing learnType");
+        }
+        if (inputTypes == null) {
+            throw new IllegalArgumentException("Capabilities not initialized completely: missing inputTypes");
+        }
+        if (minInputCount == null) {
+            throw new IllegalArgumentException("Capabilities not initialized completely: missing minInputCount");
+        }
+        if (maxInputCount == null) {
+            throw new IllegalArgumentException("Capabilities not initialized completely: missing maxInputCount");
+        }
+        if (allowMissingInputValues == null) {
+            throw new IllegalArgumentException("Capabilities not initialized completely: missing allowMissingInputValues");
+        }
+        if (targetTypes == null) {
+            throw new IllegalArgumentException("Capabilities not initialized completely: miaaing targetTypes");
+        }
+        if (minTargetCount == null) {
+            throw new IllegalArgumentException("Capabilities not initialized completely: missing minTargetCount");
+        }
+        if (maxTargetCount == null) {
+            throw new IllegalArgumentException("Capabilities not initialized completely: missing maxTargetCount");
+        }
+        if (allowMissingTargetValues == null) {
+            throw new IllegalArgumentException("Capabilities not initialized completely: missing allowMissingTargetValues");
         }
 
         // check target type

@@ -131,12 +131,13 @@ public class FiltersTest {
 
     @Test
     public void testShuffle() {
-        Var x = IntStream.range(0, 1000).mapToDouble(v -> v).boxed().collect(Numeric.collector());
+        double N = 1000.0;
+        Var x = Numeric.newSeq(0, N, 1);
         Var first = Numeric.newEmpty();
         for (int i = 0; i < 100; i++) {
             Var y = shuffle(x);
             double t = y.stream().mapToDouble().sum();
-            assertEquals(4950.0, t, 1e-30);
+            assertEquals(N * (N + 1) / 2, t, 1e-30);
             first.addValue(y.value(0));
         }
 //        setPrinter(new IdeaPrinter());

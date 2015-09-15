@@ -96,6 +96,10 @@ public class WS {
     }
 
     public static String formatFlex(double value) {
+        if (Double.isNaN(value))
+            return "?";
+        if (Double.isInfinite(value))
+            return Double.toString(value);
         return formatDecFlex.format(value);
     }
 

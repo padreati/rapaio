@@ -152,7 +152,7 @@ public class RTreeNode {
         for (int i = 0; i < children.size(); i++) {
             mapping[i] = Mapping.newEmpty();
         }
-        x.spotStream().forEach(spot -> {
+        x.stream().forEach(spot -> {
             for (int i = 0; i < children.size(); i++) {
                 RTreeNode child = children.get(i);
                 if (child.predicate.test(spot)) {

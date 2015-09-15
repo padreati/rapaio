@@ -85,7 +85,7 @@ public class CEvaluation {
         String[] dict = df.var(classColName).dictionary();
         List<List<Integer>> rows = IntStream.range(0, dict.length).boxed().map(ArrayList<Integer>::new).collect(toList());
         for (int i = 0; i < df.rowCount(); i++) {
-            rows.get(df.index(i, df.varIndex(classColName))).add(i);
+            rows.get(df.index(i, classColName)).add(i);
         }
         List<Integer> shuffle = new ArrayList<>();
         for (int i = 0; i < dict.length; i++) {

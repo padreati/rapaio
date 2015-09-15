@@ -146,7 +146,7 @@ public abstract class AbstractClassifier implements Classifier {
         IntStream.range(0, targetNames().length).forEach(i -> sb.append("> ")
                 .append(targetName(i)).append(" : ")
                 .append(targetType(i))
-                .append(" (").append(Arrays.stream(dictionary(targetName(i))).collect(joining(","))).append(")")
+                .append(" [").append(Arrays.stream(dictionary(targetName(i))).collect(joining(","))).append("]")
                 .append("\n"));
         return sb.toString();
     }

@@ -164,7 +164,7 @@ public class IrisExplorePage implements TutorialPage {
                 Plot p = new Plot();
                 for (int k = 0; k < 3; k++) {
                     int kk = k;
-                    p.densityLine(df.spotStream().filter(s -> s.index("class") == kk + 1).toMappedFrame().var(i * 2 + j), color(kk + 1))
+                    p.densityLine(df.stream().filter(s -> s.index("class") == kk + 1).toMappedFrame().var(i * 2 + j), color(kk + 1))
                             .xLab(df.varNames()[i * 2 + j]);
                 }
                 grid.add(i + 1, j + 1, p);

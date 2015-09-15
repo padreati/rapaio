@@ -51,9 +51,10 @@ package rapaio.data;
 public enum VarType {
 
     /**
-     * Numeric values stored in double precision
+     * Numeric values stored on 1 bit, encodes also
+     * boolean values. Possible values are 0,1 or true,false.
      */
-    NUMERIC {
+    BINARY {
         @Override
         public boolean isNumeric() {
             return true;
@@ -66,15 +67,14 @@ public enum VarType {
 
         @Override
         public Var newInstance() {
-            return Numeric.newEmpty();
+            return Binary.newEmpty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Numeric.newEmpty(rows);
+            return Binary.newEmpty(rows);
         }
     },
-
     /**
      * Integer values on 32 bits
      */
@@ -100,31 +100,6 @@ public enum VarType {
         }
     },
     /**
-     * Time stamp long integer values.
-     */
-    STAMP {
-        @Override
-        public boolean isNumeric() {
-            return false;
-        }
-
-        @Override
-        public boolean isNominal() {
-            return false;
-        }
-
-        @Override
-        public Var newInstance() {
-            return Stamp.newEmpty();
-        }
-
-        @Override
-        public Var newInstance(int rows) {
-            return Stamp.newEmpty(rows);
-        }
-    },
-
-    /**
      * Unordered categories: has label representation and
      * also positive integer representation.
      */
@@ -149,7 +124,30 @@ public enum VarType {
             return Nominal.newEmpty(rows);
         }
     },
+    /**
+     * Numeric values stored in double precision
+     */
+    NUMERIC {
+        @Override
+        public boolean isNumeric() {
+            return true;
+        }
 
+        @Override
+        public boolean isNominal() {
+            return false;
+        }
+
+        @Override
+        public Var newInstance() {
+            return Numeric.newEmpty();
+        }
+
+        @Override
+        public Var newInstance(int rows) {
+            return Numeric.newEmpty(rows);
+        }
+    },
     /**
      * Ordered categories: has label representation and
      * also positive integer representation, comparison
@@ -177,13 +175,12 @@ public enum VarType {
         }
     },
     /**
-     * Numeric values stored on 1 bit, encodes also
-     * boolean values. Possible values are 0,1 or true,false.
+     * Time stamp long integer values.
      */
-    BINARY {
+    STAMP {
         @Override
         public boolean isNumeric() {
-            return true;
+            return false;
         }
 
         @Override
@@ -193,15 +190,14 @@ public enum VarType {
 
         @Override
         public Var newInstance() {
-            return Binary.newEmpty();
+            return Stamp.newEmpty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Binary.newEmpty(rows);
+            return Stamp.newEmpty(rows);
         }
     },
-
     /**
      * Variable type used only to store text.
      */

@@ -100,7 +100,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
             maps.add(Mapping.newEmpty());
         }
         Mapping ignored = Mapping.newEmpty();
-        df.spotStream().forEach(s -> {
+        df.stream().forEach(s -> {
             for (int i = 0; i < splits.size(); i++) {
                 if (splits.get(i).predicate.test(s)) {
                     maps.get(i).add(s.row());
@@ -144,7 +144,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
             pred.addTarget(targetVar, dictionaries().get(targetVar));
         }
 
-        df.spotStream().forEach(spot -> {
+        df.stream().forEach(spot -> {
             for (Split split : splits) {
                 if (split.predicate.test(spot)) {
 

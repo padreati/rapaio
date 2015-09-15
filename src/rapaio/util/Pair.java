@@ -32,11 +32,18 @@ import java.io.Serializable;
  */
 public class Pair<T1, T2> implements Serializable {
 
+    private static final long serialVersionUID = -1594916059995575867L;
+
     public final T1 first;
     public final T2 second;
 
     public Pair(T1 first, T2 second) {
         this.first = first;
         this.second = second;
+    }
+
+    @Override
+    public String toString() {
+        return "Pair{" + first + ", " + second + "}";
     }
 }

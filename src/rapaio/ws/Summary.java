@@ -57,7 +57,7 @@ public class Summary {
         }
 
         buffer.append("rowCount: ").append(df.rowCount()).append("\n");
-        buffer.append("complete: ").append(df.spotStream().complete().count()).append("/").append(df.rowCount()).append("\n");
+        buffer.append("complete: ").append(df.stream().complete().count()).append("/").append(df.rowCount()).append("\n");
         buffer.append("varCount: ").append(df.varCount()).append("\n");
         buffer.append("varNames: ").append(Arrays.deepToString(df.varNames())).append("\n");
 

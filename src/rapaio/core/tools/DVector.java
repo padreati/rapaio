@@ -148,6 +148,10 @@ public class DVector implements Serializable {
         return values[pos];
     }
 
+    public String label(int pos) {
+        return labels[pos];
+    }
+
     /**
      * Updates the value from the given position {@param pos} by adding the {@param value}
      *
@@ -157,6 +161,15 @@ public class DVector implements Serializable {
     public void increment(int pos, double value) {
         values[pos] += value;
         total += value;
+    }
+
+    public void increment(DVector dv) {
+        if (values.length != dv.values.length)
+            throw new IllegalArgumentException("Cannot update density vector, row count is different");
+        for (int i = 0; i < values.length; i++) {
+            values[i] += dv.values[i];
+        }
+        total += dv.total;
     }
 
     /**
@@ -205,7 +218,7 @@ public class DVector implements Serializable {
      * @param useMissing true if missing cell is used, if exists, false otherwise
      */
     public void normalize(boolean useMissing) {
-        double total = 0.0;
+        total = 0.0;
         for (int i = getStart(useMissing); i < values.length; i++) {
             total += values[i];
         }
@@ -213,6 +226,7 @@ public class DVector implements Serializable {
         for (int i = getStart(useMissing); i < values.length; i++) {
             values[i] /= total;
         }
+        total = 1.0;
     }
 
     /**
@@ -309,4 +323,5 @@ public class DVector implements Serializable {
         }
         return true;
     }
+
 }

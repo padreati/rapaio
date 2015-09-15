@@ -470,7 +470,7 @@ public interface Frame extends Serializable, Printable {
     /**
      * @return a stream of FSpot
      */
-    default FSpots spotStream() {
+    default FSpots stream() {
         return new FSpots(IntStream.range(0, rowCount()).mapToObj(row -> new FSpot(this, row)), this);
     }
 

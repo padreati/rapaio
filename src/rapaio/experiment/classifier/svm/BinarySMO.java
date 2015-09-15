@@ -203,7 +203,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
         Mapping map;
         if (!oneVsAll) {
             map = df
-                    .spotStream()
+                    .stream()
                     .filter(s -> s.index(firstTargetName()) == classIndex1 || s.index(firstTargetName()) == classIndex2)
                     .collectMapping();
         } else {

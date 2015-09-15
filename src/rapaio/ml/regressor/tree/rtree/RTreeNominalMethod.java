@@ -87,7 +87,7 @@ public interface RTreeNominalMethod {
                 double[] variances = new double[labels.size()];
                 for (int j = 0; j < variances.length; j++) {
                     String label = labels.get(j);
-                    Var v = df.spotStream().filter(s -> s.label(testColName).equals(label)).toMappedFrame().var(targetColName);
+                    Var v = df.stream().filter(s -> s.label(testColName).equals(label)).toMappedFrame().var(targetColName);
                     variances[j] = new Variance(v).value();
                 }
 
@@ -133,20 +133,20 @@ public interface RTreeNominalMethod {
             for (int i = 1; i < df.var(testColName).dictionary().length; i++) {
                 String testLabel = df.var(testColName).dictionary()[i];
 
-                if (df.spotStream()
+                if (df.stream()
                         .filter(s -> !s.missing(testColName) && s.label(testColName).equals(testLabel))
                         .count() < c.minCount ||
-                        df.spotStream()
+                        df.stream()
                                 .filter(s -> !s.missing(testColName) && !s.label(testColName).equals(testLabel))
                                 .count() < c.minCount) {
                     continue;
                 }
 
-                Var in = df.spotStream()
+                Var in = df.stream()
                         .filter(s -> !s.missing(testColName) && s.label(testColName).equals(testLabel))
                         .toMappedFrame()
                         .var(targetColName);
-                Var out = df.spotStream()
+                Var out = df.stream()
                         .filter(s -> !s.missing(testColName) && !s.label(testColName).equals(testLabel))
                         .toMappedFrame()
                         .var(targetColName);
