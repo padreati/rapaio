@@ -56,8 +56,7 @@ public class CTreeNode implements Serializable {
     private int bestIndex;
     private CTreeCandidate bestCandidate;
 
-    public CTreeNode(final CTreeNode parent,
-                     final String groupName, final SPredicate<FSpot> predicate) {
+    public CTreeNode(final CTreeNode parent, final String groupName, final SPredicate<FSpot> predicate) {
         this.parent = parent;
         this.groupName = groupName;
         this.predicate = predicate;
@@ -141,12 +140,14 @@ public class CTreeNode implements Serializable {
         leaf = false;
 
         bestCandidate = candidateList.get(0);
-        tree.testCounter.markUse(bestCandidate.getTestName());
+        String testName = bestCandidate.getTestName();
+        tree.testCounter.use(testName);
 
         // now that we have a best candidate, do the effective split
 
         if (bestCandidate.getGroupNames().isEmpty()) {
             leaf = true;
+            tree.testCounter.free(testName);
             return;
         }
 
@@ -157,5 +158,6 @@ public class CTreeNode implements Serializable {
             children.add(child);
             child.learn(tree, frames.first.get(i), frames.second.get(i), depth - 1, terms.solidCopy());
         }
+        tree.testCounter.free(testName);
     }
 }

@@ -50,7 +50,7 @@ public class CTree extends AbstractClassifier {
     int maxDepth = 10_000;
 
     VarSelector varSelector = VarSelector.ALL;
-    CTreeTestCounter testCounter = new CTreeTestCounter.MNominalMNumeric();
+    CTreeTestCounter testCounter = new CTreeTestCounter(10_000, 10_000);
     CTreeNominalMethod nominalMethod = new CTreeNominalMethod.Full();
     CTreeNumericMethod numericMethod = new CTreeNumericMethod.Binary();
     CTreeTestFunction function = new CTreeTestFunction.InfoGain();
@@ -65,9 +65,9 @@ public class CTree extends AbstractClassifier {
 
     public static CTree newID3() {
         return new CTree()
-                .withTestCounter(new CTreeTestCounter.OneNominalOneNumeric())
+                .withTestCounter(new CTreeTestCounter(1, 1))
                 .withMaxDepth(10_000)
-                .withMinCount(10)
+                .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
                 .withSplitter(new CTreeSplitter.RemainsIgnored())
                 .withNominalMethod(new CTreeNominalMethod.Full())
@@ -78,9 +78,9 @@ public class CTree extends AbstractClassifier {
 
     public static CTree newC45() {
         return new CTree()
-                .withTestCounter(new CTreeTestCounter.OneNominalOneNumeric())
+                .withTestCounter(new CTreeTestCounter(1, 1))
                 .withMaxDepth(10_000)
-                .withMinCount(10)
+                .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
                 .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
                 .withNominalMethod(new CTreeNominalMethod.Full())
@@ -92,9 +92,9 @@ public class CTree extends AbstractClassifier {
     public static CTree newDecisionStump() {
         return new CTree()
                 .withMaxDepth(1)
-                .withMinCount(10)
+                .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
-                .withTestCounter(new CTreeTestCounter.OneNominalOneNumeric())
+                .withTestCounter(new CTreeTestCounter(1, 1))
                 .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
                 .withFunction(new CTreeTestFunction.InfoGain())
                 .withNominalMethod(new CTreeNominalMethod.Binary())
@@ -105,9 +105,9 @@ public class CTree extends AbstractClassifier {
     public static CTree newCART() {
         return new CTree()
                 .withMaxDepth(10_000)
-                .withMinCount(10)
+                .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
-                .withTestCounter(new CTreeTestCounter.MNominalMNumeric())
+                .withTestCounter(new CTreeTestCounter(10_000, 10_000))
                 .withSplitter(new CTreeSplitter.RemainsToAllWeighted())
                 .withNominalMethod(new CTreeNominalMethod.Binary())
                 .withNumericMethod(new CTreeNumericMethod.Binary())

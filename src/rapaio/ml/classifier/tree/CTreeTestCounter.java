@@ -34,109 +34,47 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
-public interface CTreeTestCounter extends Serializable {
+public class CTreeTestCounter implements Serializable {
 
-    String name();
+    private static final long serialVersionUID = 4088420847369668548L;
+    private Map<String, Integer> counters = new ConcurrentHashMap<>();
+    private final int maxNum;
+    private final int maxNom;
 
-    void initialize(Frame df, String... inputNames);
-
-    boolean canUse(String name);
-
-    void markUse(String name);
-
-    class MNominalMNumeric implements CTreeTestCounter {
-
-        private static final long serialVersionUID = -1963042115533761269L;
-        private Map<String, Integer> counters = new ConcurrentHashMap<>();
-
-        @Override
-        public String name() {
-            return "MNominalMNumeric";
-        }
-
-        public void initialize(Frame df, String... inputNames) {
-            counters = new ConcurrentHashMap<>();
-            Arrays.stream(inputNames).forEach(colName -> counters.put(colName, -1));
-        }
-
-        public boolean canUse(String name) {
-            return counters.containsKey(name);
-        }
-
-        public void markUse(String name) {
-            if (!counters.containsKey(name))
-                throw new IllegalArgumentException("can't mark a column for use as a test if it was not initialized");
-        }
+    public CTreeTestCounter(int maxNum, int maxNom) {
+        this.maxNum = maxNum;
+        this.maxNom = maxNom;
     }
 
-    class OneNominalMNumeric implements CTreeTestCounter {
-
-        private static final long serialVersionUID = 2252374938153534866L;
-
-        private Map<String, Integer> counters = new HashMap<>();
-
-        @Override
-        public String name() {
-            return "OneNominalMNumeric";
-        }
-
-        @Override
-        public void initialize(Frame df, String... inputNames) {
-            counters = new HashMap<>();
-            Arrays.stream(inputNames).forEach(colName -> {
-                if (df.var(colName).type().isNominal()) {
-                    counters.put(colName, 1);
-                } else {
-                    counters.put(colName, -1);
-                }
-            });
-        }
-
-        @Override
-        public boolean canUse(String name) {
-            return counters.containsKey(name) && counters.get(name) != 0;
-        }
-
-        @Override
-        public void markUse(String name) {
-            if (!counters.containsKey(name))
-                throw new IllegalArgumentException("can't mark a column for use as a test if it was not initialized");
-            int count = counters.get(name);
-            if (count <= 0) return;
-            counters.put(name, count - 1);
-        }
+    public String name() {
+        return "CTreeTestCounter(maxNom=" + maxNom + ",maxNum=" + maxNum + ")";
     }
 
-    class OneNominalOneNumeric implements CTreeTestCounter {
+    void initialize(Frame df, String... inputNames) {
+        counters = new HashMap<>();
+        Arrays.stream(inputNames).forEach(colName -> {
+            if (df.var(colName).type().isNominal()) {
+                counters.put(colName, maxNom);
+            } else {
+                counters.put(colName, maxNum);
+            }
+        });
+    }
 
-        private static final long serialVersionUID = -848000293987070583L;
+    public boolean canUse(String name) {
+        return counters.containsKey(name) && counters.get(name) > 0;
+    }
 
-        private Map<String, Integer> counters = new HashMap<>();
+    public void use(String name) {
+        if (!counters.containsKey(name))
+            throw new IllegalArgumentException("can't mark a column for use as a test if it was not initialized");
+        counters.put(name, counters.get(name) - 1);
+    }
 
-        @Override
-        public String name() {
-            return "OneNominalOneNumeric";
+    void free(String name) {
+        if (!counters.containsKey(name)) {
+            throw new IllegalArgumentException("can't mark a column for use as a test if it was not initialized");
         }
-
-        @Override
-        public void initialize(Frame df, String... inputNames) {
-            counters = new HashMap<>();
-            Arrays.stream(inputNames).forEach(colName -> counters.put(colName, 1));
-        }
-
-        @Override
-        public boolean canUse(String name) {
-            return counters.containsKey(name) && counters.get(name) != 0;
-        }
-
-        @Override
-        public void markUse(String name) {
-            if (!counters.containsKey(name))
-                throw new IllegalArgumentException("can't mark a column for use as a test if it was not initialized");
-            int count = counters.get(name);
-            if (count <= 0) return;
-            counters.put(name, count - 1);
-        }
+        counters.put(name, counters.get(name) + 1);
     }
 }
-
