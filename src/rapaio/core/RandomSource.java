@@ -24,6 +24,7 @@
 package rapaio.core;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Random;
 
 /**
@@ -51,6 +52,14 @@ public final class RandomSource implements Serializable {
 
     public static int nextInt(int n) {
         return rand.nextInt(n);
+    }
+
+    public static long nextLong() {
+        return rand.nextLong();
+    }
+
+    public static String nextString(int len) {
+        return new BigInteger(len, rand).toString();
     }
 
     public static Random getRandom() {

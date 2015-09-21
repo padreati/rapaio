@@ -23,10 +23,7 @@
 
 package rapaio.graphics.plot;
 
-import rapaio.data.Index;
-import rapaio.data.Nominal;
-import rapaio.data.Numeric;
-import rapaio.data.Var;
+import rapaio.data.*;
 import rapaio.graphics.Plotter;
 import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
@@ -67,7 +64,8 @@ public class BarChart extends HostFigure {
     }
 
     public BarChart(Var category, Var condition, Var numeric, GOpt... opts) {
-        if (!category.type().isNominal()) {
+        List<VarType> varTypes = Arrays.asList(VarType.BINARY, VarType.NOMINAL, VarType.ORDINAL);
+        if (!varTypes.contains(category.type())) {
             throw new IllegalArgumentException("categories are nominal only");
         }
         if (condition == null) {

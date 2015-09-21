@@ -128,4 +128,14 @@ public class Datasets {
                 .withTypes(VarType.NOMINAL, "ID")
                 .read(Datasets.class.getResourceAsStream("ISL/advertising.csv"));
     }
+
+    public static Frame loadRandom() throws IOException {
+        return new Csv()
+                .withTypes(VarType.BINARY, "bin")
+                .withTypes(VarType.INDEX, "index")
+                .withTypes(VarType.NUMERIC, "num")
+                .withTypes(VarType.STAMP, "stamp")
+                .withTypes(VarType.NOMINAL, "nom")
+                .read(Datasets.class.getResourceAsStream("random.csv"));
+    }
 }

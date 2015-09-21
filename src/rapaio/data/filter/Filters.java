@@ -26,8 +26,10 @@ package rapaio.data.filter;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.stream.VSpot;
 
 import java.util.Comparator;
+import java.util.function.Function;
 
 public class Filters {
 
@@ -102,5 +104,9 @@ public class Filters {
 
     public static Var transformBoxCox(Var x, double lambda, double shift) {
         return new VFTransformBoxCox(lambda, shift).filter(x);
+    }
+
+    public static Var updateValue(Function<VSpot, Double> f, Var x) {
+        return new VFUpdateValue(f).filter(x);
     }
 }

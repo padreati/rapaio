@@ -23,6 +23,11 @@
 
 package rapaio.experiment.sandbox;
 
+import rapaio.experiment.classifier.svm.BinarySMO;
+import rapaio.experiment.classifier.svm.kernel.InverseMultiQuadraticKernel;
+import rapaio.experiment.classifier.svm.kernel.MinKernel;
+import rapaio.experiment.classifier.svm.kernel.RBFKernel;
+import rapaio.experiment.classifier.svm.kernel.SigmoidKernel;
 import rapaio.graphics.Plotter;
 import rapaio.ml.classifier.bayes.NaiveBayes;
 import rapaio.core.RandomSource;
@@ -92,10 +97,10 @@ public class IrisContour {
 //        c = new BinarySMO().withKernel(new RBFKernel(20)).withC(1.5);
 //        c = new BinarySMO().withKernel(new CauchyKernel(8)).withC(5);
 //        c = new BinarySMO().withKernel(new GeneralizedStudentTKernel(0.1));
-//        c = new BinarySMO().withKernel(new InverseMultiQuadraticKernel(5));
+        c = new BinarySMO().withKernel(new SigmoidKernel(1, 1));
 //        c = new BinarySMO().withKernel(new MinKernel());
 //        c = new CForest().withMCols(1).withRuns(500);
-        c = new NaiveBayes();
+//        c = new NaiveBayes();
         c.learn(iris, "class");
 
         Numeric x = Numeric.newSeq(new Minimum(iris.var(X)).value(), new Maximum(iris.var(X)).value(), 0.1).withName(X);

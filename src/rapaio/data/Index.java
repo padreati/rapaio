@@ -23,7 +23,11 @@
 
 package rapaio.data;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -152,6 +156,14 @@ public final class Index extends AbstractVar {
         for (int i = 0; i < len; i++) {
             index.data[i] = s;
             s = s + step;
+        }
+        return index;
+    }
+
+    public static Index newFrom(int len, Supplier<Integer> supplier) {
+        Index index = new Index(len, len, 0);
+        for (int i = 0; i < index.data.length; i++) {
+            index.data[i] = supplier.get();
         }
         return index;
     }
@@ -388,4 +400,20 @@ public final class Index extends AbstractVar {
             }
         };
     }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.writeInt(rowCount());
+        for (int i = 0; i < rowCount(); i++) {
+            out.writeInt(data[i]);
+        }
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        rows = in.readInt();
+        data = new int[rows];
+        for (int i = 0; i < rows; i++) {
+            data[i] = in.readInt();
+        }
+    }
+
 }

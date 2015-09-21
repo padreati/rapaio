@@ -52,7 +52,7 @@
 ////        classifiers.add(new NaiveBayes());
 ////        classifiers.add(new BinaryLogistic());
 ////        classifiers.add(new BinarySMO().withKernel(new MinKernel()));
-////        classifiers.add(new AdaBoostSAMMEClassifier());
+////        classifiers.add(new AdaBoostSAMME());
 ////        classifiers.add(new GBTClassifier());
 //
 //        new CEvaluation().multiCv(df, "class", classifiers, 10);

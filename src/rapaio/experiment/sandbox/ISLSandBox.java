@@ -34,6 +34,7 @@ import rapaio.printer.IdeaPrinter;
 import java.awt.*;
 import java.io.IOException;
 
+import static rapaio.graphics.Plotter.points;
 import static rapaio.sys.WS.draw;
 import static rapaio.sys.WS.setPrinter;
 import static rapaio.graphics.Plotter.color;
@@ -47,13 +48,13 @@ public class ISLSandBox {
 
     public static void main(String[] args) throws IOException {
 
-        setPrinter(new IdeaPrinter());
+//        setPrinter(new IdeaPrinter());
         Frame df = Datasets.loadISLAdvertising().removeVars("ID");
         df.printSummary();
         GridLayer gl = new GridLayer(1, 3);
-        gl.add(1, 1, new Plot().add(new Points(df.var("TV"), df.var("Sales"), Plotter.color(Color.RED), Plotter.pch(2))));
-        gl.add(1, 2, new Plot().add(new Points(df.var("Radio"), df.var("Sales"), Plotter.color(Color.RED), Plotter.pch(2))));
-        gl.add(1, 3, new Plot().add(new Points(df.var("Newspaper"), df.var("Sales"), Plotter.color(Color.cyan), Plotter.pch(2))));
+        gl.add(1, 1, points(df.var("TV"), df.var("Sales"), color(Color.RED), pch(2)));
+        gl.add(1, 2, points(df.var("Radio"), df.var("Sales"), color(Color.RED), pch(2)));
+        gl.add(1, 3, points(df.var("Newspaper"), df.var("Sales"), color(Color.cyan), pch(2)));
         draw(gl);
 
     }

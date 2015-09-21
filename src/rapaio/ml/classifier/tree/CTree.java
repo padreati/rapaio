@@ -255,7 +255,7 @@ public class CTree extends AbstractClassifier {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withInputTypes(VarType.NOMINAL, VarType.INDEX, VarType.NUMERIC)
+                .withInputTypes(VarType.NOMINAL, VarType.INDEX, VarType.NUMERIC, VarType.BINARY)
                 .withInputCount(1, 1_000_000)
                 .withAllowMissingInputValues(true)
                 .withTargetTypes(VarType.NOMINAL)

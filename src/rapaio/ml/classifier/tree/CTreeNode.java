@@ -32,11 +32,9 @@ import rapaio.util.Pair;
 import rapaio.util.func.SPredicate;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
@@ -132,6 +130,23 @@ public class CTreeNode implements Serializable {
             }
         }
         candidateList.addAll(candidates);
+
+//         TODO test this better; parallel this can be broken here
+//
+//        LinkedList<CTreeCandidate> candidates = new LinkedList<>();
+//        Arrays.stream(tree.varSelector().nextVarNames())
+//                .parallel()
+//                .filter(testCol -> !testCol.equals(tree.firstTargetName()))
+//                .filter(tree.testCounter::canUse)
+//                .map(testCol -> {
+//                    return df.var(testCol).type().isNumeric() ?
+//                            tree.getNumericMethod().computeCandidates(tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction())
+//                            :
+//                            tree.getNominalMethod().computeCandidates(tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction(), terms);
+//
+//                }).collect(Collectors.toList()).stream().sequential().forEach(candidateList::addAll);
+
+
         Collections.sort(candidateList);
 
         if (candidateList.isEmpty()) {

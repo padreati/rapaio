@@ -21,7 +21,7 @@
 //package rapaio.io;
 //
 //import org.junit.Test;
-//import rapaio.experiment.classifier.boost.AdaBoostSAMMEClassifier;
+//import rapaio.ml.classifier.boost.AdaBoostSAMME;
 //import rapaio.ml.classifier.tree.TreeClassifier;
 //import rapaio.ml.eval.ConfusionMatrix;
 //import rapaio.data.Frame;
@@ -37,7 +37,7 @@
 //    @Test
 //    public void testAdaboost() throws Exception {
 //
-//        AdaBoostSAMMEClassifier c = new AdaBoostSAMMEClassifier()
+//        AdaBoostSAMME c = new AdaBoostSAMME()
 //                .withRuns(10)
 //                .withClassifier(TreeClassifier.newC45().withMaxDepth(3))
 //                .withSampling(0);
@@ -49,7 +49,7 @@
 //
 //        JavaIO.storeToFile(c, file.getAbsolutePath());
 //
-//        AdaBoostSAMMEClassifier restored = (AdaBoostSAMMEClassifier) JavaIO.restoreFromFile(file.getAbsolutePath());
+//        AdaBoostSAMME restored = (AdaBoostSAMME) JavaIO.restoreFromFile(file.getAbsolutePath());
 //        restored.fit(df);
 //
 //        new ConfusionMatrix(df.var("spam"), restored.classes()).printSummary();

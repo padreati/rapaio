@@ -30,7 +30,7 @@ import rapaio.datasets.Datasets;
 import rapaio.graphics.Plotter;
 import rapaio.graphics.plot.Legend;
 import rapaio.ml.classifier.CFit;
-import rapaio.experiment.classifier.boost.AdaBoostSAMMEClassifier;
+import rapaio.ml.classifier.boost.AdaBoostSAMME;
 import rapaio.experiment.classifier.boost.GBTClassifier;
 import rapaio.experiment.classifier.ensemble.CForest;
 import rapaio.ml.classifier.rule.OneRule;
@@ -156,11 +156,11 @@ public class ROCCurvesPage implements TutorialPage {
                 "and builds 50 boosting iterations. " +
                 "The following code shows how one can achieve that using rapaio.");
 
-        AdaBoostSAMMEClassifier ab = new AdaBoostSAMMEClassifier().withRuns(20);
+        AdaBoostSAMME ab = new AdaBoostSAMME().withRuns(20);
         ab.learn(train, "spam");
         CFit crAB = ab.fit(test);
 
-        code("        AdaBoostSAMMEClassifier ab = new AdaBoostSAMMEClassifier().withRuns(20);\n" +
+        code("        AdaBoostSAMME ab = new AdaBoostSAMME().withRuns(20);\n" +
                 "        ab.learn(train, \"spam\");\n" +
                 "        CFit crAB = ab.predict(test);\n");
 

@@ -23,8 +23,12 @@
 
 package rapaio.data;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.BitSet;
 import java.util.Comparator;
+import java.util.function.Supplier;
 
 /**
  * Numerical variable which store only 1,0 and missing values.
@@ -112,6 +116,15 @@ public final class Binary extends AbstractVar {
         }
         return b;
     }
+
+    public static Binary newFrom(int rows, Supplier<Integer> supplier) {
+        int[] data = new int[rows];
+        for (int i = 0; i < data.length; i++) {
+            data[i] = supplier.get();
+        }
+        return Binary.newCopyOf(data);
+    }
+
 
     /**
      * Private constructor to avoid instantiation from outside, other than statical builders.
@@ -399,5 +412,25 @@ public final class Binary extends AbstractVar {
     @Override
     public Var newInstance(int rows) {
         return Binary.newEmpty(rows);
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.writeInt(rowCount());
+        byte[] buff = values.toByteArray();
+        out.writeInt(buff.length);
+        out.write(buff);
+        buff = missing.toByteArray();
+        out.writeInt(buff.length);
+        out.write(buff);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        rows = in.readInt();
+        byte[] buff = new byte[in.readInt()];
+        in.readFully(buff);
+        values = BitSet.valueOf(buff);
+        buff = new byte[in.readInt()];
+        in.readFully(buff);
+        missing = BitSet.valueOf(buff);
     }
 }

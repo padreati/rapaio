@@ -23,6 +23,7 @@
 
 package rapaio.experiment.classifier.ensemble.impl;
 
+import rapaio.data.VarType;
 import rapaio.data.sample.FrameSample;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -31,6 +32,7 @@ import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.RunningClassifier;
 import rapaio.ml.classifier.tree.CTree;
+import rapaio.ml.common.Capabilities;
 import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.util.func.SFunction;
 
@@ -58,6 +60,18 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
     protected double oobError = Double.NaN;
     protected List<Classifier> predictors = new ArrayList<>();
     protected List<Double> predictorScores = new ArrayList<>();
+
+    @Override
+    public Capabilities capabilities() {
+        return new Capabilities()
+                .withLearnType(Capabilities.LearnType.MULTICLASS_CLASSIFIER)
+                .withInputCount(1, 1_000_000)
+                .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NOMINAL, VarType.ORDINAL, VarType.NUMERIC)
+                .withAllowMissingInputValues(true)
+                .withTargetCount(1, 1)
+                .withTargetTypes(VarType.NOMINAL)
+                .withAllowMissingTargetValues(false);
+    }
 
     public CEnsemble withOobComp(boolean oobCompute) {
         this.oobComp = oobCompute;

@@ -23,6 +23,9 @@
 
 package rapaio.data;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.*;
 
 /**
@@ -34,9 +37,10 @@ import java.util.*;
  */
 public abstract class FactorBase extends AbstractVar {
 
+    private static final long serialVersionUID = -7541719735879481349L;
+
     protected static final String missingValue = "?";
     protected static final int missingIndex = 0;
-    private static final long serialVersionUID = -7541719735879481349L;
 
     int rows = 0;
     List<String> dict;
@@ -226,5 +230,31 @@ public abstract class FactorBase extends AbstractVar {
 
     public void clear() {
         rows = 0;
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.writeInt(rowCount());
+        out.writeInt(dict.size());
+        for (int i = 0; i < dict.size(); i++) {
+            out.writeUTF(dict.get(i));
+        }
+        for (int i = 0; i < rowCount(); i++) {
+            out.writeInt(data[i]);
+        }
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        rows = in.readInt();
+        dict = new ArrayList<>();
+        reverse = new HashMap<>();
+        int len = in.readInt();
+        for (int i = 0; i < len; i++) {
+            dict.add(in.readUTF());
+            reverse.put(dict.get(i), i);
+        }
+        data = new int[rows];
+        for (int i = 0; i < rows; i++) {
+            data[i] = in.readInt();
+        }
     }
 }

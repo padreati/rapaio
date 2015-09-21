@@ -25,6 +25,7 @@ package rapaio.data;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.function.Supplier;
 
 /**
  * Variable which stores long 64-bit integer values.
@@ -151,6 +152,14 @@ public class Stamp extends AbstractVar {
         return stamp;
     }
 
+    public static Stamp newFrom(int rows, Supplier<Long> supplier) {
+        Stamp var = Stamp.newEmpty();
+        for (int i = 0; i < rows; i++) {
+            var.addStamp(supplier.get());
+        }
+        return var;
+    }
+
     // private constructor, only public static builders available
 
     private Stamp(int rows, int capacity, long fill) {
@@ -170,6 +179,8 @@ public class Stamp extends AbstractVar {
     }
 
     private void ensureCapacityInternal(int minCapacity) {
+        if (minCapacity <= data.length)
+            return;
         // overflow-conscious code
         int oldCapacity = data.length;
         int newCapacity = oldCapacity + (oldCapacity >> 1);

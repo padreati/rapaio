@@ -24,6 +24,7 @@
 package rapaio.data;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -65,6 +66,13 @@ public class Text extends AbstractVar {
         return text;
     }
 
+    public static Text newFrom(int rows, Supplier<String> supplier) {
+        Text text = new Text(rows);
+        for (int i = 0; i < rows; i++) {
+            text.values.set(i, supplier.get());
+        }
+        return text;
+    }
     //
     // private constructor
     //

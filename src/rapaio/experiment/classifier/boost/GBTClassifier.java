@@ -24,13 +24,11 @@
 package rapaio.experiment.classifier.boost;
 
 import rapaio.core.SamplingTools;
-import rapaio.data.Frame;
-import rapaio.data.Numeric;
-import rapaio.data.Var;
-import rapaio.data.VarRange;
+import rapaio.data.*;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.RunningClassifier;
+import rapaio.ml.common.Capabilities;
 import rapaio.ml.regressor.RegressorFit;
 import rapaio.ml.regressor.boost.gbt.BTRegressor;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
@@ -76,6 +74,18 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
         sb.append("runs=").append(runs);
         sb.append("}");
         return sb.toString();
+    }
+
+    @Override
+    public Capabilities capabilities() {
+        return new Capabilities()
+                .withLearnType(Capabilities.LearnType.MULTICLASS_CLASSIFIER)
+                .withInputCount(1, 1_000_000)
+                .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NOMINAL, VarType.ORDINAL, VarType.NUMERIC)
+                .withAllowMissingInputValues(true)
+                .withTargetCount(1, 1)
+                .withTargetTypes(VarType.NOMINAL)
+                .withAllowMissingTargetValues(false);
     }
 
     public GBTClassifier withTree(BTRegressor rTree) {

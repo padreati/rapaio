@@ -373,6 +373,8 @@ public interface Var extends Serializable, Printable {
      * @return true if type, size and content is identical
      */
     default boolean deepEquals(Var var) {
+        if (!name().equals(var.name()))
+            return false;
         if (rowCount() != var.rowCount())
             return false;
         if (type() != var.type())

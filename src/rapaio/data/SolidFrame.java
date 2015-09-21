@@ -45,11 +45,7 @@ public class SolidFrame extends AbstractFrame {
     // public builders
 
     public static SolidFrame newWrapOf(List<Var> vars) {
-        int rows = Integer.MAX_VALUE;
-        for (Var var : vars) {
-            rows = Math.min(rows, var.rowCount());
-        }
-        if (rows == Integer.MAX_VALUE) rows = 0;
+        int rows = vars.stream().mapToInt(Var::rowCount).min().orElse(0);
         return newWrapOf(rows, vars);
     }
 

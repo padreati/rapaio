@@ -25,6 +25,10 @@ package rapaio.data;
 
 import rapaio.data.stream.VSpot;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
@@ -38,6 +42,8 @@ public abstract class AbstractVar implements Var {
     }
 
     public AbstractVar withName(String name) {
+        if (name == null)
+            throw new IllegalArgumentException("variable name cannot be null");
         this.name = name;
         return this;
     }
@@ -80,5 +86,13 @@ public abstract class AbstractVar implements Var {
             default:
                 throw new IllegalArgumentException("not implemented");
         }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.writeUTF(name);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        name = in.readUTF();
     }
 }

@@ -23,6 +23,9 @@
 
 package rapaio.data;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.stream.Collectors;
 
 /**
@@ -216,5 +219,12 @@ public class MappedVar extends AbstractVar {
     @Override
     public Var newInstance(int rows) {
         return source.newInstance(rows);
+    }
+
+    @Override
+    public String toString() {
+        return "MappedVar:" + source.type() +
+                "[name:" + name() + ", rowCount:" + mapping.size() +
+                ']';
     }
 }

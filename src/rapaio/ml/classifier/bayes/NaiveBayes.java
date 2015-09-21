@@ -93,7 +93,7 @@ public class NaiveBayes extends AbstractClassifier {
         return new Capabilities()
                 .withLearnType(Capabilities.LearnType.MULTICLASS_CLASSIFIER)
                 .withInputCount(0, 1_000_000)
-                .withInputTypes(VarType.NOMINAL, VarType.NUMERIC)
+                .withInputTypes(VarType.NOMINAL, VarType.NUMERIC, VarType.INDEX, VarType.BINARY)
                 .withTargetCount(1, 1)
                 .withTargetTypes(VarType.NOMINAL)
                 .withAllowMissingTargetValues(false)

@@ -21,28 +21,29 @@
  *
  */
 
-package rapaio.experiment.classifier.boost;
+package rapaio.ml.classifier.boost;
 
-import rapaio.sys.WS;
+import rapaio.data.*;
 import rapaio.data.sample.FrameSample;
 import rapaio.data.sample.FrameSampler;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarRange;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.RunningClassifier;
 import rapaio.ml.classifier.tree.CTree;
+import rapaio.ml.common.Capabilities;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * AdaBoost SAMME classifier is the classical version of AdaBoost which has
+ * the correction which works for classification with multiple
+ * labels.
+ * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-@Deprecated
-public class AdaBoostSAMMEClassifier extends AbstractClassifier implements RunningClassifier {
+public class AdaBoostSAMME extends AbstractClassifier implements RunningClassifier {
 
     private static final long serialVersionUID = -9154973036108114765L;
     final double delta_error = 10e-10;
@@ -60,14 +61,14 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     private Var w;
     private double k;
 
-    public AdaBoostSAMMEClassifier() {
+    public AdaBoostSAMME() {
         this.a = new ArrayList<>();
         this.h = new ArrayList<>();
     }
 
     @Override
-    public AdaBoostSAMMEClassifier newInstance() {
-        return new AdaBoostSAMMEClassifier()
+    public AdaBoostSAMME newInstance() {
+        return new AdaBoostSAMME()
                 .withClassifier(this.weak.newInstance())
                 .withRuns(this.runs)
                 .withSampler(sampler());
@@ -90,36 +91,41 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
         return sb.toString();
     }
 
-    public AdaBoostSAMMEClassifier withClassifier(Classifier weak) {
+    @Override
+    public Capabilities capabilities() {
+        return new Capabilities()
+                .withLearnType(Capabilities.LearnType.MULTICLASS_CLASSIFIER)
+                .withInputTypes(VarType.NUMERIC, VarType.NOMINAL, VarType.INDEX, VarType.BINARY)
+                .withInputCount(1, 10_000)
+                .withAllowMissingInputValues(true)
+                .withTargetTypes(VarType.NOMINAL)
+                .withTargetCount(1, 1)
+                .withAllowMissingTargetValues(false);
+    }
+
+    public AdaBoostSAMME withClassifier(Classifier weak) {
         this.weak = weak;
         return this;
     }
 
-    public AdaBoostSAMMEClassifier withRuns(int runs) {
+    public AdaBoostSAMME withRuns(int runs) {
         this.runs = runs;
         return this;
     }
 
-    public AdaBoostSAMMEClassifier withSampler(FrameSampler sampler) {
-        return (AdaBoostSAMMEClassifier) super.withSampler(sampler);
+    public AdaBoostSAMME withSampler(FrameSampler sampler) {
+        return (AdaBoostSAMME) super.withSampler(sampler);
     }
 
-    public AdaBoostSAMMEClassifier withStopOnError(boolean stopOnError) {
+    public AdaBoostSAMME withStopOnError(boolean stopOnError) {
         this.stopOnError = stopOnError;
         return this;
     }
 
     @Override
-    public AdaBoostSAMMEClassifier learn(Frame df, Var weights, String... targetVars) {
+    public AdaBoostSAMME learn(Frame df, Var weights, String... targetVars) {
 
         prepareLearning(df, weights, targetVars);
-
-        if (targetNames().length == 0) {
-            throw new IllegalArgumentException("tree classifier must specify a target variable");
-        }
-        if (targetNames().length > 1) {
-            throw new IllegalArgumentException("tree classifier can't fit more than one target variable");
-        }
 
         k = firstDict().length - 1;
 
@@ -249,12 +255,12 @@ public class AdaBoostSAMMEClassifier extends AbstractClassifier implements Runni
     }
 
     @Override
-    public void printSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > ").append(fullName()).append("\n");
 
         sb.append("prediction:\n");
         sb.append("weak learners built: ").append(h.size()).append("\n");
-        WS.code(sb.toString());
+        return sb.toString();
     }
 }

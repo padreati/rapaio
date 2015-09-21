@@ -21,19 +21,21 @@
  *
  */
 
-package rapaio.experiment.sandbox;
+package rapaio.core.stat;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
+import org.junit.Test;
+import rapaio.data.Nominal;
 
-@Deprecated
-public class SandboxScript {
-    public static void main(String[] args) throws IOException, URISyntaxException {
+/**
+ * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 9/18/15.
+ */
+public class ContingencyTableTest {
 
-    }
+    @Test
+    public void testBase() {
 
-    private void foo() {
-        int i = 0;
-        System.out.println(i * i);
+        Nominal x = Nominal.newCopyOf("a", "a", "b", "c", "a", "b");
+        Nominal y = Nominal.newCopyOf("x", "y", "x", "y", "x", "y");
+        new ContingencyTable(x, y).printSummary();
     }
 }

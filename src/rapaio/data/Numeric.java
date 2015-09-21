@@ -24,6 +24,9 @@
 package rapaio.data;
 
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -41,6 +44,8 @@ import java.util.stream.Collector;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 public final class Numeric extends AbstractVar {
+
+    private static final long serialVersionUID = -3167416341273129670L;
 
     private static final double missingValue = Double.NaN;
     private double[] data;
@@ -182,6 +187,16 @@ public final class Numeric extends AbstractVar {
             start += step;
         }
         return num;
+    }
+
+    public static Numeric newFrom(int rows, Supplier<Double> supplier) {
+        Numeric numeric = new Numeric(0, 0, 0);
+        numeric.data = new double[rows];
+        numeric.rows = rows;
+        for (int i = 0; i < rows; i++) {
+            numeric.data[i] = supplier.get();
+        }
+        return numeric;
     }
 
     // stream collectors
@@ -413,4 +428,20 @@ public final class Numeric extends AbstractVar {
     public String toString() {
         return "Numeric[name:" + name() + ", rowCount:" + rowCount() + "]";
     }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.writeInt(rowCount());
+        for (int i = 0; i < rowCount(); i++) {
+            out.writeDouble(data[i]);
+        }
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        rows = in.readInt();
+        data = new double[rows];
+        for (int i = 0; i < rows; i++) {
+            data[i] = in.readDouble();
+        }
+    }
+
 }

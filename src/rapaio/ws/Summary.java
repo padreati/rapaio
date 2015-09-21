@@ -23,16 +23,17 @@
 
 package rapaio.ws;
 
+import rapaio.data.*;
 import rapaio.printer.Printable;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
-import rapaio.data.Frame;
-import rapaio.data.Nominal;
-import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.sys.WS;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.StreamSupport;
 
 import static rapaio.sys.WS.code;
 import static rapaio.sys.WS.getPrinter;
@@ -59,7 +60,33 @@ public class Summary {
         buffer.append("rowCount: ").append(df.rowCount()).append("\n");
         buffer.append("complete: ").append(df.stream().complete().count()).append("/").append(df.rowCount()).append("\n");
         buffer.append("varCount: ").append(df.varCount()).append("\n");
-        buffer.append("varNames: ").append(Arrays.deepToString(df.varNames())).append("\n");
+        buffer.append("varNames: \n");
+
+        int varCount = df.varCount();
+        int maxSize = df.varStream().mapToInt(var -> var.name().length()).max().orElse(0);
+        int offset = 18;
+
+        int cols = WS.getPrinter().getTextWidth() / (maxSize + offset);
+        int len = (int) Math.ceil(varCount * 1.0 / cols);
+
+        List<Var> vars = new ArrayList<>();
+        for (int i = 0; i < cols; i++) {
+            Var pos = Nominal.newEmpty().withName(String.format("%" + (i * 2 + 1) + "s", " "));
+            Var name = Nominal.newEmpty().withName(String.format("%" + (i * 2 + 2) + "s", " "));
+            for (int j = 0; j < len; j++) {
+                if (i * len + j < df.varCount()) {
+                    pos.addLabel(String.valueOf(i * len + j) + ".");
+                    name.addLabel(df.var(i * len + j).name() +
+                            String.format(" : %7s", df.var(i * len + j).type().name()));
+                } else {
+                    pos.addLabel("");
+                    name.addLabel("");
+                }
+            }
+            vars.add(pos);
+            vars.add(name);
+        }
+        buffer.append(Summary.headString(SolidFrame.newWrapOf(vars)));
 
         String[][] first = new String[names.length][7];
         String[][] second = new String[names.length][7];
@@ -404,24 +431,6 @@ public class Summary {
         code(buffer.toString());
     }
 
-    public static void contingencyTable(Var a, Var b) {
-        Var[] vars = new Var[b.rowCount() + 1];
-
-        // learn first column
-        HashSet<String> labels = new HashSet<>();
-        for (int i = 0; i < a.rowCount(); i++) {
-            labels.add(a.label(i));
-        }
-        labels.add("Totals");
-        vars[0] = Nominal.newEmpty(a.rowCount() + 1, labels);
-        for (int i = 0; i < a.dictionary().length; i++) {
-            vars[0].setLabel(i, a.dictionary()[i]);
-        }
-        vars[0].setLabel(a.rowCount(), "Totals");
-
-        // learn numerical columns
-    }
-
     public static void printSummary(Printable result) {
         result.printSummary();
     }
@@ -453,6 +462,14 @@ public class Summary {
     }
 
     public static void head(int lines, Var[] vars, String[] names) {
+        WS.code(headString(lines, vars, names));
+    }
+
+    public static String headString(Frame df) {
+        return headString(df.rowCount(), df.varStream().toArray(Var[]::new), df.varNames());
+    }
+
+    public static String headString(int lines, Var[] vars, String[] names) {
         if (lines == -1) {
             lines = vars[0].rowCount();
         }
@@ -465,7 +482,9 @@ public class Summary {
                     max[i] = vars[i].label(j).length();
                 }
                 if (vars[i].type().isNumeric()) {
-                    String value = String.format("%s", String.format("%.10f", vars[i].value(j)));
+                    String value = vars[i].type() == VarType.NUMERIC ?
+                            String.format("%.10f", vars[i].value(j)) :
+                            String.format("%d", vars[i].index(j));
                     if (max[i] < value.length()) {
                         max[i] = value.length();
                     }
@@ -497,7 +516,11 @@ public class Summary {
                     if (vars[j].type().isNominal()) {
                         value = String.format("%" + max[j] + "s", vars[j].label(i));
                     } else {
-                        value = String.format("%" + max[j] + "s", String.format("%.6f", vars[j].value(i)));
+                        value = String.format("%" + max[j] + "s",
+                                vars[j].type() == VarType.NUMERIC ?
+                                        String.format("%.6f", vars[j].value(i)) :
+                                        String.format("%d", vars[j].index(i))
+                        );
                     }
                     sb.append(value).append(" ");
                 }
@@ -506,7 +529,6 @@ public class Summary {
             pos++;
             sb.append("\n");
         }
-
-        code(sb.toString());
+        return sb.toString();
     }
 }
