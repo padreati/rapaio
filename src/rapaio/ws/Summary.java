@@ -271,8 +271,12 @@ public class Summary {
 
     public static String summary(Var v) {
 
-        StringBuilder buffer = new StringBuilder();
-        buffer.append("\n > printSummary(var)\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append("> printSummary(var: ").append(v.name()).append(")\n");
+        sb.append("name: ").append(v.name()).append("\n");
+        sb.append("type: ").append(v.type().name()).append("\n");
+        int complete = (int) v.stream().complete().count();
+        sb.append("rows: ").append(v.rowCount()).append(", complete: ").append(complete).append(", missing: ").append(v.rowCount() - complete).append("\n");
 
         String[] first = new String[7];
         String[] second = new String[7];
@@ -407,19 +411,19 @@ public class Summary {
 
         // output text from pos to last
         for (int j = 0; j < 7; j++) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(String.format("%" + wfirst + "s", first[j]));
+            StringBuilder sb2 = new StringBuilder();
+            sb2.append(String.format("%" + wfirst + "s", first[j]));
             if (" ".equals(first[j]) && " ".equals(second[j])) {
-                sb.append("   ");
+                sb2.append("   ");
             } else {
-                sb.append(" : ");
+                sb2.append(" : ");
             }
-            sb.append(String.format("%" + wsecond + "s", second[j]));
-            sb.append("\n");
-            buffer.append(sb.toString());
+            sb2.append(String.format("%" + wsecond + "s", second[j]));
+            sb2.append("\n");
+            sb.append(sb2.toString());
         }
 
-        return buffer.toString();
+        return sb.toString();
     }
 
     public static void printNames(Frame df) {
