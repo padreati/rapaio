@@ -30,6 +30,7 @@ import rapaio.data.Var;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.function.DoublePredicate;
+import java.util.stream.DoubleStream;
 
 /**
  * Nominal distribution vector.
@@ -294,6 +295,10 @@ public class DVector implements Serializable {
         if (useMissing)
             return 0;
         return ("?".equals(labels[0])) ? 1 : 0;
+    }
+
+    public DoubleStream streamValues() {
+        return Arrays.stream(values);
     }
 
     @Override

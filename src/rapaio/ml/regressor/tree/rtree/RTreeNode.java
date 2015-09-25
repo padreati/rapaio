@@ -30,23 +30,25 @@ import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
 import rapaio.util.Pair;
+import rapaio.util.func.SPredicate;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.function.Predicate;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
 @Deprecated
-public class RTreeNode {
+public class RTreeNode implements Serializable {
 
+    private static final long serialVersionUID = 385363626560575837L;
     private final RTreeNode parent;
     private final String groupName;
-    private final Predicate<FSpot> predicate;
+    private final SPredicate<FSpot> predicate;
 
     private boolean leaf = true;
     private double value;
@@ -55,7 +57,8 @@ public class RTreeNode {
     private RTreeCandidate bestCandidate;
 
     public RTreeNode(final RTreeNode parent,
-                     final String groupName, final Predicate<FSpot> predicate) {
+                     final String groupName,
+                     final SPredicate<FSpot> predicate) {
         this.parent = parent;
         this.groupName = groupName;
         this.predicate = predicate;
@@ -69,7 +72,7 @@ public class RTreeNode {
         return groupName;
     }
 
-    public Predicate<FSpot> getPredicate() {
+    public SPredicate<FSpot> getPredicate() {
         return predicate;
     }
 

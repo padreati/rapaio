@@ -26,9 +26,11 @@ package rapaio.experiment.classifier.linear;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.math.optimization.IRLSOptimizer;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
+import rapaio.ml.common.Capabilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +67,18 @@ public class BinaryLogistic extends AbstractClassifier {
         sb.append("maxRuns=").append(maxRuns).append(", ");
         sb.append("}");
         return sb.toString();
+    }
+
+    @Override
+    public Capabilities capabilities() {
+        return new Capabilities()
+                .withLearnType(Capabilities.LearnType.BINARY_CLASSIFIER)
+                .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NUMERIC, VarType.NOMINAL)
+                .withInputCount(1, 10000)
+                .withTargetTypes(VarType.NOMINAL)
+                .withTargetCount(1, 1)
+                .withAllowMissingInputValues(false)
+                .withAllowMissingTargetValues(true);
     }
 
     /**

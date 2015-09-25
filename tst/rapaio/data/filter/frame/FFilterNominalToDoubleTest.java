@@ -26,7 +26,7 @@ package rapaio.data.filter.frame;
 import org.junit.Test;
 import rapaio.data.Nominal;
 import rapaio.data.Var;
-import rapaio.data.filter.FFAbstractRefSort;
+import rapaio.data.filter.FFRefSort;
 import rapaio.data.filter.VFToNumeric;
 
 import java.util.HashSet;
@@ -62,7 +62,7 @@ public class FFilterNominalToDoubleTest {
     @Test
     public void testNullVector() {
         try {
-            new FFAbstractRefSort(null).filter(null);
+            new FFRefSort(null).filter(null);
         } catch (Exception ex) {
             assertTrue(true);
         }

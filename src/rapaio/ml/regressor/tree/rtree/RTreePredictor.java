@@ -29,11 +29,13 @@ import rapaio.data.Numeric;
 import rapaio.data.stream.FSpot;
 import rapaio.util.Pair;
 
+import java.io.Serializable;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
 @Deprecated
-public interface RTreePredictor {
+public interface RTreePredictor extends Serializable {
 
     String name();
 

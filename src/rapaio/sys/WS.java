@@ -119,6 +119,10 @@ public class WS {
         printer.println();
     }
 
+    public static void println(Boolean b) {
+        println(String.valueOf(b));
+    }
+
     public static void println(String message) {
         printer.print(message);
         printer.println();

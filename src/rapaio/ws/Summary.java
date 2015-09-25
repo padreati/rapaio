@@ -101,7 +101,30 @@ public class Summary {
             int i = df.varIndex(names[k]);
 
             Var v = df.var(i);
-            if (v.type().isNumeric()) {
+            if (v.type() == VarType.BINARY) {
+                first[k][0] = "0";
+                first[k][1] = "1";
+                first[k][2] = "NA's";
+
+                int ones = 0;
+                int zeros = 0;
+                int missing = 0;
+                for (int j = 0; j < v.rowCount(); j++) {
+                    if (v.missing(j)) {
+                        missing++;
+                    } else {
+                        if (v.binary(j))
+                            ones++;
+                        else
+                            zeros++;
+                    }
+                }
+                second[k][0] = String.valueOf(zeros);
+                second[k][1] = String.valueOf(ones);
+                second[k][2] = String.valueOf(missing);
+            }
+
+            if (v.type() == VarType.INDEX || v.type() == VarType.NUMERIC) {
                 double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
                 double[] perc = new Quantiles(v, p).values();
                 double mean = new Mean(v).value();
@@ -420,7 +443,9 @@ public class Summary {
             }
             sb2.append(String.format("%" + wsecond + "s", second[j]));
             sb2.append("\n");
-            sb.append(sb2.toString());
+            String next = sb2.toString();
+            if (!next.trim().isEmpty())
+                sb.append(next);
         }
 
         return sb.toString();

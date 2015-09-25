@@ -21,18 +21,30 @@
  *
  */
 
-package rapaio.experiment.cluster.distance;
+package rapaio.ml.clustering.distance;
 
 import rapaio.data.Frame;
+import rapaio.util.Tag;
+
+import java.io.Serializable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: tincu
- * Date: 2/4/14
- * Time: 12:56 PM
- * To change this template use File | Settings | File Templates.
+ * Distance interface
+ * <p>
+ * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 9/23/15.
  */
-@Deprecated
-public interface Distance {
-    public double getDistance(Frame from, int fromRow, Frame targetFrame, int targetRow);
+public interface Distance extends Serializable {
+
+    double distance(Frame s, int sRow, Frame t, int tRow, String... varNames);
+
+    Tag<Distance> EUCLIDEAN = Tag.valueOf("euclidean",
+            (Frame s, int sRow, Frame t, int tRow, String... varNames) -> {
+                double total = 0;
+                for (String varName : varNames) {
+                    if (s.missing(sRow) || t.missing(tRow))
+                        continue;
+                    total += Math.pow(s.value(sRow, varName) - t.value(tRow, varName), 2);
+                }
+                return Math.sqrt(total);
+            });
 }

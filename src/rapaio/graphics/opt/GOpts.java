@@ -54,7 +54,7 @@ public class GOpts implements Serializable {
         DEFAULTS.alpha = 1.0f;
         DEFAULTS.bins = -1;
         DEFAULTS.prob = false;
-        DEFAULTS.points = 512;
+        DEFAULTS.points = 256;
     }
 
     //

@@ -36,12 +36,13 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-@Deprecated
-public class FFAbstractRefSort extends FFAbstract {
+public class FFRefSort extends FFAbstract {
+
+    private static final long serialVersionUID = 3579078253849199109L;
 
     private final Comparator<Integer> aggregateComparator;
 
-    public FFAbstractRefSort(Comparator<Integer> comparators) {
+    public FFRefSort(Comparator<Integer> comparators) {
         super();
         this.aggregateComparator = RowComparators.aggregate(comparators);
     }

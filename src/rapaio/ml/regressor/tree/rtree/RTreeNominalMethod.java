@@ -28,6 +28,7 @@ import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,13 +36,15 @@ import java.util.List;
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
 @Deprecated
-public interface RTreeNominalMethod {
+public interface RTreeNominalMethod extends Serializable {
 
     String name();
 
     List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testColName, String targetColName, RTreeTestFunction function);
 
-    public RTreeNominalMethod IGNORE = new RTreeNominalMethod() {
+    RTreeNominalMethod IGNORE = new RTreeNominalMethod() {
+
+        private static final long serialVersionUID = 7275580448899976553L;
 
         @Override
         public String name() {
@@ -54,7 +57,9 @@ public interface RTreeNominalMethod {
         }
     };
 
-    public RTreeNominalMethod FULL = new RTreeNominalMethod() {
+    RTreeNominalMethod FULL = new RTreeNominalMethod() {
+
+        private static final long serialVersionUID = 2733570883914611103L;
 
         @Override
         public String name() {

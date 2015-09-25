@@ -57,6 +57,10 @@ public class Filters {
         return new VFJitter(d).filter(x);
     }
 
+    public static Frame refSort(Frame df, Comparator<Integer> comp) {
+        return new FFRefSort(comp).filter(df);
+    }
+
     /**
      * Sorts a variable using a default ascending sorting on labels
      * or numeric values.

@@ -105,6 +105,10 @@ public class HTMLPrinter extends AbstractPrinter {
         writer.close();
     }
 
+    public void flush() {
+        writer.flush();
+    }
+
     @Override
     public void print(String message) {
         writer.append(message);

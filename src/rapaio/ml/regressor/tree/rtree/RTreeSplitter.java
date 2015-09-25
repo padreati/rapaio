@@ -27,16 +27,17 @@ import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.data.stream.FSpot;
 import rapaio.util.Pair;
+import rapaio.util.func.SPredicate;
 
+import java.io.Serializable;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
 @Deprecated
-public interface RTreeSplitter {
+public interface RTreeSplitter extends Serializable {
 
     String name();
 
@@ -59,7 +60,7 @@ public interface RTreeSplitter {
 
             df.stream().forEach(s -> {
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                    Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
+                    SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                     if (predicate.test(s)) {
                         mappings.get(i).add(s.row());
                         weightsList.get(i).addValue(weights.value(s.row()));
@@ -94,7 +95,7 @@ public interface RTreeSplitter {
             List<FSpot> missingSpots = new LinkedList<>();
             df.stream().forEach(s -> {
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                    Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
+                    SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                     if (predicate.test(s)) {
                         mappings.get(i).add(s.row());
                         weightsList.get(i).addValue(weights.value(s.row()));
@@ -144,7 +145,7 @@ public interface RTreeSplitter {
             final Set<Integer> missingSpots = new HashSet<>();
             df.stream().forEach(s -> {
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                    Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
+                    SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                     if (predicate.test(s)) {
                         mappings.get(i).add(s.row());
                         weightsList.get(i).addValue(weights.value(s.row()));
@@ -193,7 +194,7 @@ public interface RTreeSplitter {
             final Set<Integer> missingSpots = new HashSet<>();
             df.stream().forEach(s -> {
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                    Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
+                    SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
                     if (predicate.test(s)) {
                         mappings.get(i).add(s.row());
                         return;

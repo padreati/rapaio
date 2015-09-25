@@ -31,6 +31,7 @@ import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.filter.VFRefSort;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +40,7 @@ import java.util.List;
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
 @Deprecated
-public interface RTreeNumericMethod {
+public interface RTreeNumericMethod extends Serializable {
 
     String name();
 

@@ -279,6 +279,8 @@ public interface Frame extends Serializable, Printable {
      * @return index value
      */
     default int index(int row, int varIndex) {
+        if (varIndex >= varCount())
+            throw new IllegalArgumentException("frame has " + varCount() + " variables, there is no var at index: " + varIndex);
         return var(varIndex).index(row);
     }
 

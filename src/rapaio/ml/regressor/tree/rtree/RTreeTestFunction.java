@@ -23,13 +23,14 @@
 
 package rapaio.ml.regressor.tree.rtree;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
 @Deprecated
-public interface RTreeTestFunction {
+public interface RTreeTestFunction extends Serializable {
 
     String name();
 
@@ -39,6 +40,8 @@ public interface RTreeTestFunction {
     // implementations
 
     RTreeTestFunction VARIANCE_SUM = new RTreeTestFunction() {
+
+        private static final long serialVersionUID = 5119966657929147020L;
 
         @Override
         public String name() {
@@ -52,6 +55,8 @@ public interface RTreeTestFunction {
     };
 
     RTreeTestFunction STD_SUM = new RTreeTestFunction() {
+
+        private static final long serialVersionUID = 4399865122423562865L;
 
         @Override
         public String name() {

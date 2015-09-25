@@ -21,30 +21,31 @@
  *
  */
 
-package rapaio.experiment.classifier.svm.kernel;
+package rapaio.ml.clustering;
 
+import org.junit.Test;
 import rapaio.data.Frame;
+import rapaio.datasets.Datasets;
 
-import java.io.Serializable;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
+ * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 9/25/15.
  */
-@Deprecated
-public interface Kernel extends Serializable {
+public class KMeansTest {
 
-    Kernel newInstance();
+    @Test
+    public void summaryTest() throws IOException, URISyntaxException {
+        Frame iris = Datasets.loadIrisDataset();
 
-    default String name() {
-        return "not implemented";
-    }
+        for (int i = 1; i < 5; i++) {
+            KMeans km = new KMeans()
+                    .withK(i)
+                    .withRuns(100);
+            km.cluster(iris, "petal-length", "petal-width");
 
-    boolean isLinear();
-
-    void buildKernel(String[] varNames, Frame df);
-
-    double compute(Frame df1, int row1, Frame df2, int row2);
-
-    default void clean() {
+            km.printSummary();
+        }
     }
 }

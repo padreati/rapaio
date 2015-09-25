@@ -21,30 +21,23 @@
  *
  */
 
-package rapaio.experiment.classifier.svm.kernel;
+package rapaio.ml.clustering.distance;
 
+import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
+import rapaio.util.Tag;
 
 import java.io.Serializable;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
+ * Function which produces initial centroids for KMeans algorithm
+ * <p>
+ * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 9/23/15.
  */
-@Deprecated
-public interface Kernel extends Serializable {
+public interface KMeansInitMethod extends Serializable {
 
-    Kernel newInstance();
+    Frame init(Frame df, String[] inputs, int k);
 
-    default String name() {
-        return "not implemented";
-    }
-
-    boolean isLinear();
-
-    void buildKernel(String[] varNames, Frame df);
-
-    double compute(Frame df1, int row1, Frame df2, int row2);
-
-    default void clean() {
-    }
+    Tag<KMeansInitMethod> FORGY = Tag.valueOf("forgy",
+            (Frame df, String[] inputs, int k) -> df.mapVars(inputs).mapRows(SamplingTools.sampleWOR(k, df.rowCount())).solidCopy());
 }

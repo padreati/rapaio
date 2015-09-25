@@ -25,6 +25,7 @@ package rapaio.experiment.classifier.svm.kernel;
 
 import rapaio.data.Frame;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -88,7 +89,7 @@ public abstract class AbstractKernel implements Kernel {
 }
 
 @Deprecated
-interface KernelCache {
+interface KernelCache extends Serializable {
 
     Double retrieve(Frame df1, int row1, Frame df2, int row2);
 
@@ -100,7 +101,7 @@ interface KernelCache {
 @Deprecated
 class MapKernelCache implements KernelCache {
 
-    private Map<Frame, Map<Frame, Map<Long, Double>>> cache = new HashMap<>();
+    transient private Map<Frame, Map<Frame, Map<Long, Double>>> cache = new HashMap<>();
 
     @Override
     public void store(Frame df1, int row1, Frame df2, int row2, double value) {
@@ -138,7 +139,7 @@ class SolidKernelCache implements KernelCache {
         cache = new Double[df.rowCount()][df.rowCount()];
         for (int i = 0; i < df.rowCount(); i++) {
             for (int j = 0; j < df.rowCount(); j++) {
-                cache[i][j] = null;
+                cache[i][j] = Double.NaN;
             }
         }
     }

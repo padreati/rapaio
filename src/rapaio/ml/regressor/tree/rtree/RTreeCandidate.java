@@ -24,11 +24,11 @@
 package rapaio.ml.regressor.tree.rtree;
 
 import rapaio.data.stream.FSpot;
+import rapaio.util.func.SPredicate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * RTree split candidate.
@@ -38,17 +38,18 @@ import java.util.function.Predicate;
 @Deprecated
 public class RTreeCandidate implements Comparable<RTreeCandidate>, Serializable {
 
+    private static final long serialVersionUID = 6698766675237089849L;
     private final double score;
     private final String testName;
     private final List<String> groupNames = new ArrayList<>();
-    private final List<Predicate<FSpot>> groupPredicates = new ArrayList<>();
+    private final List<SPredicate<FSpot>> groupPredicates = new ArrayList<>();
 
     public RTreeCandidate(double score, String testName) {
         this.score = score;
         this.testName = testName;
     }
 
-    public void addGroup(String name, Predicate<FSpot> predicate) {
+    public void addGroup(String name, SPredicate<FSpot> predicate) {
         if (groupNames.contains(name)) {
             throw new IllegalArgumentException("group name already defined");
         }
@@ -60,7 +61,7 @@ public class RTreeCandidate implements Comparable<RTreeCandidate>, Serializable 
         return groupNames;
     }
 
-    public List<Predicate<FSpot>> getGroupPredicates() {
+    public List<SPredicate<FSpot>> getGroupPredicates() {
         return groupPredicates;
     }
 
