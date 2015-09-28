@@ -166,7 +166,7 @@ public class CTreeNode implements Serializable {
             return;
         }
 
-        Pair<List<Frame>, List<Numeric>> frames = tree.getSplitter().performSplit(df, weights, bestCandidate);
+        Pair<List<Frame>, List<Var>> frames = tree.getSplitter().get().performSplit(df, weights, bestCandidate);
 
         for (int i = 0; i < frames.first.size(); i++) {
             CTreeNode child = new CTreeNode(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));

@@ -130,7 +130,7 @@ public class NaiveBayesTest {
                 "\n" +
                 "Capabilities:\n" +
                 "learning type: MULTICLASS_CLASSIFIER\n" +
-                "inputTypes: NOMINAL,NUMERIC\n" +
+                "inputTypes: BINARY,INDEX,NOMINAL,NUMERIC\n" +
                 "minInputCount: 0, maxInputCount: 1000000\n" +
                 "allowMissingInputValues: true\n" +
                 "targetTypes: NOMINAL\n" +

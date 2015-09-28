@@ -23,7 +23,6 @@
 
 package rapaio.ml.classifier.rule;
 
-import groovy.lang.IntRange;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.*;

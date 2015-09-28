@@ -58,7 +58,7 @@ public class AdaBoostSAMMETest {
 
         Numeric errTr = Numeric.newEmpty().withName("tr");
         Numeric errTe = Numeric.newEmpty().withName("te");
-        for (int i = 0; i < 300; i++) {
+        for (int i = 0; i < 50; i++) {
             ab.learnFurther(i + 1, tr, target);
             errTr.addValue(new ConfusionMatrix(tr.var(target), ab.fit(tr).classes(target)).error());
             errTe.addValue(new ConfusionMatrix(te.var(target), ab.fit(te).classes(target)).error());
