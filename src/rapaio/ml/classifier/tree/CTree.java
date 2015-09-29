@@ -25,7 +25,6 @@ package rapaio.ml.classifier.tree;
 
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
-import rapaio.sys.WS;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -34,8 +33,6 @@ import rapaio.ml.classifier.CFit;
 import rapaio.ml.common.VarSelector;
 import rapaio.util.Pair;
 import rapaio.util.Tag;
-
-import java.util.Arrays;
 
 /**
  * Tree classifier.
@@ -55,7 +52,7 @@ public class CTree extends AbstractClassifier {
     CTreeNominalMethod nominalMethod = new CTreeNominalMethod.Full();
     CTreeNumericMethod numericMethod = new CTreeNumericMethod.Binary();
     CTreeTestFunction function = new CTreeTestFunction.InfoGain();
-    Tag<CTreeSplitter> splitter = CTreeSplitter.RemainsIgnored;
+    Tag<CTreeSplitter> splitter = CTreeSplitter.MissingIgnored;
     CTreePredictor predictor = new CTreePredictor.Standard();
 
     // tree root node
@@ -70,7 +67,7 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(10_000)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
-                .withSplitter(CTreeSplitter.RemainsIgnored)
+                .withSplitter(CTreeSplitter.MissingIgnored)
                 .withNominalMethod(new CTreeNominalMethod.Full())
                 .withNumericMethod(new CTreeNumericMethod.Ignore())
                 .withFunction(new CTreeTestFunction.Entropy())
@@ -83,7 +80,7 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(10_000)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
-                .withSplitter(CTreeSplitter.RemainsToAllWeighted)
+                .withSplitter(CTreeSplitter.MissingToAllWeighted)
                 .withNominalMethod(new CTreeNominalMethod.Full())
                 .withNumericMethod(new CTreeNumericMethod.Binary())
                 .withFunction(new CTreeTestFunction.GainRatio())
@@ -96,7 +93,7 @@ public class CTree extends AbstractClassifier {
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
                 .withTestCounter(new CTreeTestCounter(1, 1))
-                .withSplitter(CTreeSplitter.RemainsToAllWeighted)
+                .withSplitter(CTreeSplitter.MissingToAllWeighted)
                 .withFunction(new CTreeTestFunction.InfoGain())
                 .withNominalMethod(new CTreeNominalMethod.Binary())
                 .withNumericMethod(new CTreeNumericMethod.Binary())
@@ -109,7 +106,7 @@ public class CTree extends AbstractClassifier {
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
                 .withTestCounter(new CTreeTestCounter(10_000, 10_000))
-                .withSplitter(CTreeSplitter.RemainsToRandom)
+                .withSplitter(CTreeSplitter.MissingToRandom)
                 .withNominalMethod(new CTreeNominalMethod.Binary())
                 .withNumericMethod(new CTreeNumericMethod.Binary())
                 .withFunction(new CTreeTestFunction.GiniGain())

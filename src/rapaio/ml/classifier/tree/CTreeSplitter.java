@@ -28,10 +28,12 @@ import rapaio.data.*;
 import rapaio.data.stream.FSpot;
 import rapaio.util.Pair;
 import rapaio.util.Tag;
+import rapaio.util.func.SPredicate;
 
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -42,50 +44,43 @@ public interface CTreeSplitter extends Serializable {
 
     Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, CTreeCandidate candidate);
 
-    Tag<CTreeSplitter> RemainsIgnored = Tag.valueOf("RemainsIgnored", (Frame df, Var weights, CTreeCandidate candidate) -> {
-        List<Mapping> mappings = new ArrayList<>();
-        List<Var> weightsList = new ArrayList<>();
-        for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-            mappings.add(Mapping.newEmpty());
-            weightsList.add(Numeric.newEmpty());
-        }
+    Tag<CTreeSplitter> MissingIgnored = Tag.valueOf("MissingIgnored", (Frame df, Var weights, CTreeCandidate candidate) -> {
+
+        List<SPredicate<FSpot>> p = candidate.getGroupPredicates();
+        List<Mapping> mappings = IntStream.range(0, p.size()).boxed().map(i -> Mapping.newEmpty()).collect(toList());
 
         df.stream().forEach(s -> {
-            for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
-                if (predicate.test(s)) {
+            for (int i = 0; i < p.size(); i++) {
+                if (p.get(i).test(s)) {
                     mappings.get(i).add(s.row());
-                    weightsList.get(i).addValue(weights.value(s.row()));
                     break;
                 }
             }
         });
-        List<Frame> frames = mappings.stream().map(mapping -> MappedFrame.newByRow(df, mapping)).collect(toList());
-        return new Pair<>(frames, weightsList);
+        return new Pair<>(
+                mappings.stream().map(df::mapRows).collect(toList()),
+                mappings.stream().map(weights::mapRows).collect(toList())
+        );
     });
 
 
-    Tag<CTreeSplitter> RemainsToMajority = Tag.valueOf("RemainsToMajority", (Frame df, Var weights, CTreeCandidate candidate) -> {
+    Tag<CTreeSplitter> MissingToMajority = Tag.valueOf("MissingToMajority", (Frame df, Var weights, CTreeCandidate candidate) -> {
 
-        List<Mapping> mappings = new ArrayList<>();
-        List<Var> weightsList = new ArrayList<>();
-        for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-            mappings.add(Mapping.newEmpty());
-            weightsList.add(Numeric.newEmpty());
-        }
+        List<SPredicate<FSpot>> p = candidate.getGroupPredicates();
+        List<Mapping> mappings = IntStream.range(0, p.size()).boxed().map(i -> Mapping.newEmpty()).collect(toList());
 
-        List<FSpot> missingSpots = new LinkedList<>();
+        List<Integer> missingSpots = new LinkedList<>();
         df.stream().forEach(s -> {
-            for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
-                if (predicate.test(s)) {
+            for (int i = 0; i < p.size(); i++) {
+                if (p.get(i).test(s)) {
                     mappings.get(i).add(s.row());
-                    weightsList.get(i).addValue(weights.value(s.row()));
                     return;
                 }
             }
-            missingSpots.add(s);
+            missingSpots.add(s.row());
         });
+        List<Integer> lens = mappings.stream().map(Mapping::size).collect(toList());
+        Collections.shuffle(lens);
         int majorityGroup = 0;
         int majoritySize = 0;
         for (int i = 0; i < mappings.size(); i++) {
@@ -96,36 +91,30 @@ public interface CTreeSplitter extends Serializable {
         }
         final int index = majorityGroup;
 
-        missingSpots.stream().forEach(spot -> {
-            mappings.get(index).add(spot.row());
-            weightsList.get(index).addValue(weights.value(spot.row()));
-        });
-        List<Frame> frames = new ArrayList<>();
-        mappings.stream().forEach(mapping -> frames.add(MappedFrame.newByRow(df, mapping)));
-        return new Pair<>(frames, weightsList);
+        mappings.get(index).addAll(missingSpots);
+
+        return new Pair<>(
+                mappings.stream().map(df::mapRows).collect(toList()),
+                mappings.stream().map(weights::mapRows).collect(toList())
+        );
     });
 
-    Tag<CTreeSplitter> RemainsToAllWeighted = Tag.valueOf("RemainsToAllWeighted", (Frame df, Var weights, CTreeCandidate candidate) -> {
+    Tag<CTreeSplitter> MissingToAllWeighted = Tag.valueOf("MissingToAllWeighted", (Frame df, Var weights, CTreeCandidate candidate) -> {
 
-        List<Mapping> mappings = new ArrayList<>();
-        List<Var> weightsList = new ArrayList<>();
-        for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-            mappings.add(Mapping.newEmpty());
-            weightsList.add(Numeric.newEmpty());
-        }
+        List<SPredicate<FSpot>> pred = candidate.getGroupPredicates();
+        List<Mapping> mappings = IntStream.range(0, pred.size()).boxed().map(i -> Mapping.newEmpty()).collect(toList());
 
-        final Set<Integer> missingSpots = new HashSet<>();
+        List<Integer> missingSpots = new ArrayList<>();
         df.stream().forEach(s -> {
-            for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
-                if (predicate.test(s)) {
+            for (int i = 0; i < pred.size(); i++) {
+                if (pred.get(i).test(s)) {
                     mappings.get(i).add(s.row());
-                    weightsList.get(i).addValue(weights.value(s.row()));
                     return;
                 }
             }
             missingSpots.add(s.row());
         });
+
         final double[] p = new double[mappings.size()];
         double n = 0;
         for (int i = 0; i < mappings.size(); i++) {
@@ -135,29 +124,27 @@ public interface CTreeSplitter extends Serializable {
         for (int i = 0; i < p.length; i++) {
             p[i] /= n;
         }
+        List<Var> weightsList = mappings.stream().map(weights::mapRows).map(Var::solidCopy).collect(toList());
         for (int i = 0; i < mappings.size(); i++) {
             final int ii = i;
-            missingSpots.forEach(missingRow -> {
-                mappings.get(ii).add(missingRow);
-                weightsList.get(ii).addValue(weights.value(missingRow) * p[ii]);
+            missingSpots.forEach(row -> {
+                mappings.get(ii).add(row);
+                weightsList.get(ii).addValue(weights.missing(row) ? p[ii] : weights.value(row) * p[ii]);
             });
         }
-        List<Frame> frames = mappings.stream().map(mapping -> MappedFrame.newByRow(df, mapping)).collect(toList());
+        List<Frame> frames = mappings.stream().map(df::mapRows).collect(toList());
         return new Pair<>(frames, weightsList);
     });
 
-    Tag<CTreeSplitter> RemainsToRandom = Tag.valueOf("RemainsToRandom", (Frame df, Var weights, CTreeCandidate candidate) -> {
+    Tag<CTreeSplitter> MissingToRandom = Tag.valueOf("MissingToRandom", (Frame df, Var weights, CTreeCandidate candidate) -> {
 
-        List<Mapping> mappings = new ArrayList<>();
-        for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-            mappings.add(Mapping.newEmpty());
-        }
+        List<SPredicate<FSpot>> pred = candidate.getGroupPredicates();
+        List<Mapping> mappings = IntStream.range(0, pred.size()).boxed().map(i -> Mapping.newEmpty()).collect(toList());
 
         final Set<Integer> missingSpots = new HashSet<>();
         df.stream().forEach(s -> {
-            for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                Predicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
-                if (predicate.test(s)) {
+            for (int i = 0; i < pred.size(); i++) {
+                if (pred.get(i).test(s)) {
                     mappings.get(i).add(s.row());
                     return;
                 }
@@ -168,12 +155,6 @@ public interface CTreeSplitter extends Serializable {
         List<Frame> frameList = mappings.stream().map(df::mapRows).collect(toList());
         List<Var> weightList = mappings.stream().map(weights::mapRows).collect(toList());
         return new Pair<>(frameList, weightList);
-    });
-
-    Tag<CTreeSplitter> RemainsWithSurrogates = Tag.valueOf("RemainsWithSurrogates", (Frame df, Var weights, CTreeCandidate candidate) -> {
-
-            // TODO partition tree classifier - remains surrogates
-        throw new IllegalArgumentException("not implemented");
     });
 }
 
