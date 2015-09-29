@@ -24,6 +24,7 @@
 package rapaio.experiment;
 
 import java.io.IOException;
+import java.util.function.UnaryOperator;
 
 import rapaio.core.CoreTools;
 import rapaio.data.Var;
@@ -36,10 +37,13 @@ public class Sandbox {
 
     public static void main(String[] args) throws IOException {
 
-
-        Var p = CoreTools.distNormal(0.5, 0.2).sample(10_000).stream().transValue(x -> 1 - Math.pow(x, 2)).toMappedVar();
-
-        WS.draw(hist(p, 0, 1, bins(100)));
+        new Sandbox().run();
     }
+
+    private void run() {
+
+
+    }
+
 
 }

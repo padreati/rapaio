@@ -172,14 +172,15 @@ public class Csv {
             boolean first = true;
             while (true) {
                 String line = reader.readLine();
+                if (line == null) {
+                    break;
+                }
+
                 allRowsNum += 1;
                 if (skipRows.test(allRowsNum - 1)) {
                     continue;
                 }
 
-                if (line == null) {
-                    break;
-                }
                 List<String> row = parseLine(line);
 
                 // build vectors with initial types
