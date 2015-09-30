@@ -41,7 +41,15 @@ public class CTreeTestCounter implements Serializable {
     private final int maxNum;
     private final int maxNom;
 
-    public CTreeTestCounter(int maxNum, int maxNom) {
+    public static CTreeTestCounter newFrom(int maxNum, int maxNom) {
+        return new CTreeTestCounter(maxNum, maxNom);
+    }
+
+    public static CTreeTestCounter newFrom(CTreeTestCounter cnt) {
+        return new CTreeTestCounter(cnt.maxNum, cnt.maxNom);
+    }
+
+    private CTreeTestCounter(int maxNum, int maxNom) {
         this.maxNum = maxNum;
         this.maxNom = maxNom;
     }

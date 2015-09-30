@@ -121,11 +121,11 @@ public class CTreeNode implements Serializable {
 
             if (df.var(testCol).type().isNumeric()) {
                 tree.getNumericMethod().get().computeCandidates(
-                        tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction())
+                        tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction().get())
                         .forEach(candidates::add);
             } else {
                 tree.getNominalMethod().get().computeCandidates(
-                        tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction(), terms)
+                        tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction().get(), terms)
                         .forEach(candidates::add);
             }
         }

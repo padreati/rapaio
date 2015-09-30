@@ -26,6 +26,7 @@ package rapaio.ml.classifier.tree;
 import rapaio.core.tools.DVector;
 import rapaio.data.stream.FSpot;
 import rapaio.util.Pair;
+import rapaio.util.Tag;
 
 import java.io.Serializable;
 
@@ -34,25 +35,9 @@ import java.io.Serializable;
  */
 public interface CTreePredictor extends Serializable {
 
-    String name();
-
-    CTreePredictor newInstance();
-
     Pair<Integer, DVector> predict(CTree tree, FSpot spot, CTreeNode node);
 
-    final class Standard implements CTreePredictor {
-
-        private static final long serialVersionUID = -2515884695305885633L;
-
-        @Override
-        public String name() {
-            return "Standard";
-        }
-
-        @Override
-        public CTreePredictor newInstance() {
-            return new Standard();
-        }
+    Tag<CTreePredictor> Standard = Tag.valueOf("Standard", (CTree tree, FSpot spot, CTreeNode node) -> new CTreePredictor() {
 
         @Override
         public Pair<Integer, DVector> predict(CTree tree, FSpot spot, CTreeNode node) {
@@ -72,14 +57,14 @@ public interface CTreePredictor extends Serializable {
 
             for (CTreeNode child : node.getChildren()) {
                 if (child.getPredicate().test(spot)) {
-                    return predict(tree, spot, child);
+                    return this.predict(tree, spot, child);
                 }
             }
 
             String[] dict = tree.firstDict();
             DVector dv = DVector.newEmpty(dict);
             for (CTreeNode child : node.getChildren()) {
-                DVector d = predict(tree, spot, child).second;
+                DVector d = this.predict(tree, spot, child).second;
                 for (int i = 0; i < dict.length; i++) {
                     dv.increment(i, d.get(i) * child.getDensity().sum(false));
                 }
@@ -87,5 +72,6 @@ public interface CTreePredictor extends Serializable {
             dv.normalize(false);
             return new Pair<>(dv.findBestIndex(false), dv);
         }
-    }
+    }.predict(tree, spot, node));
+
 }

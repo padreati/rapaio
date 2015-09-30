@@ -75,7 +75,7 @@ public interface CTreeNumericMethod extends Serializable {
                             i < df.rowCount() - c.getMinCount() &&
                             test.value(sort.index(i)) < test.value(sort.index(i + 1))) {
 
-                        CTreeCandidate current = new CTreeCandidate(function.compute(dt), function.sign(), testColName);
+                        CTreeCandidate current = new CTreeCandidate(function.compute(dt), testColName);
                         if (best == null) {
                             best = current;
 
@@ -147,7 +147,7 @@ public interface CTreeNumericMethod extends Serializable {
                             i < df.rowCount() - c.getMinCount() &&
                             test.value(sort.index(i)) < test.value(sort.index(i + 1))) {
 
-                        CTreeCandidate current = new CTreeCandidate(function.compute(dt), function.sign(), testColName);
+                        CTreeCandidate current = new CTreeCandidate(function.compute(dt), testColName);
                         if (best == null) {
                             best = current;
 

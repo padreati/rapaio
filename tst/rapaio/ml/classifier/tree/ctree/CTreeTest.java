@@ -30,6 +30,7 @@ import rapaio.data.filter.FFAbstractRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.tree.*;
+import rapaio.util.Tag;
 import rapaio.ws.Summary;
 
 import java.io.IOException;
@@ -79,13 +80,13 @@ public class CTreeTest {
 
     @Test
     public void testCandidate() {
-        CTreeCandidate candidate = new CTreeCandidate(1, 1, "test");
+        CTreeCandidate candidate = new CTreeCandidate(1, "test");
         candidate.addGroup("test <= 0", s -> s.value("test") <= 0);
         candidate.addGroup("test > 0", s -> s.value("test") > 0);
 
-        assertEquals(-1, candidate.compareTo(new CTreeCandidate(2, 1, "test")));
-        assertEquals(-1, candidate.compareTo(new CTreeCandidate(2, -1, "test")));
-        assertEquals(1, candidate.compareTo(new CTreeCandidate(0.5, 1, "test")));
+        assertEquals(-1, candidate.compareTo(new CTreeCandidate(2, "test")));
+        assertEquals(-1, candidate.compareTo(new CTreeCandidate(-2, "test")));
+        assertEquals(1, candidate.compareTo(new CTreeCandidate(0.5, "test")));
 
         try {
             candidate.addGroup("test <= 0", s -> true);
@@ -97,10 +98,10 @@ public class CTreeTest {
     @Test
     public void testPredictorStandard() throws IOException, URISyntaxException {
         Frame df = Datasets.loadIrisDataset();
-        CTree tree = CTree.newCART().withMaxDepth(10000).withMinCount(1).withTestCounter(new CTreeTestCounter(10_000, 10_000));
+        CTree tree = CTree.newCART().withMaxDepth(10000).withMinCount(1).withTestCounter(CTreeTestCounter.newFrom(10_000, 10_000));
         tree.learn(df, "class");
         tree.printSummary();
-        CTreePredictor predictor = new CTreePredictor.Standard();
+        Tag<CTreePredictor> predictor = CTreePredictor.Standard;
         assertEquals("Standard", predictor.name());
 
         CFit pred = tree.fit(df, true, true);

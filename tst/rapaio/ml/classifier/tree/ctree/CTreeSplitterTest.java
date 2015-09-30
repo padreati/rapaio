@@ -55,7 +55,7 @@ public class CTreeSplitterTest {
         Numeric values = Numeric.newWrapOf(1, 2, 3, 4, Double.NaN, Double.NaN, Double.NaN, -3, -2, -1);
         df = SolidFrame.newWrapOf(values.solidCopy().withName("x"));
         w = values.solidCopy().stream().transValue(x -> Double.isNaN(x) ? x : Math.abs(x)).toMappedVar().withName("w");
-        c = new CTreeCandidate(1, 1, "test");
+        c = new CTreeCandidate(1, "test");
         c.addGroup("> 0", s -> s.value("x") > 0);
         c.addGroup("< 0", s -> s.value("x") < 0);
     }

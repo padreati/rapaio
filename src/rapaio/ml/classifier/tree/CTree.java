@@ -48,43 +48,42 @@ public class CTree extends AbstractClassifier {
     int maxDepth = 10_000;
 
     VarSelector varSelector = VarSelector.ALL;
-    CTreeTestCounter testCounter = new CTreeTestCounter(10_000, 10_000);
+    CTreeTestCounter testCounter = CTreeTestCounter.newFrom(10_000, 10_000);
     Tag<CTreeNominalMethod> nominalMethod = CTreeNominalMethod.Full;
     Tag<CTreeNumericMethod> numericMethod = CTreeNumericMethod.Binary;
-    CTreeTestFunction function = new CTreeTestFunction.InfoGain();
+    Tag<CTreeTestFunction> function = CTreeTestFunction.InfoGain;
     Tag<CTreeSplitter> splitter = CTreeSplitter.MissingIgnored;
-    CTreePredictor predictor = new CTreePredictor.Standard();
+    Tag<CTreePredictor> predictor = CTreePredictor.Standard;
 
     // tree root node
     private CTreeNode root;
-    private int rows;
 
     // static builders
 
     public static CTree newID3() {
         return new CTree()
-                .withTestCounter(new CTreeTestCounter(1, 1))
+                .withTestCounter(CTreeTestCounter.newFrom(1, 1))
                 .withMaxDepth(10_000)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
                 .withSplitter(CTreeSplitter.MissingIgnored)
                 .withNominalMethod(CTreeNominalMethod.Full)
                 .withNumericMethod(CTreeNumericMethod.Ignore)
-                .withFunction(new CTreeTestFunction.Entropy())
-                .withPredictor(new CTreePredictor.Standard());
+                .withFunction(CTreeTestFunction.Entropy)
+                .withPredictor(CTreePredictor.Standard);
     }
 
     public static CTree newC45() {
         return new CTree()
-                .withTestCounter(new CTreeTestCounter(1, 1))
+                .withTestCounter(CTreeTestCounter.newFrom(1, 1))
                 .withMaxDepth(10_000)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
                 .withSplitter(CTreeSplitter.MissingToAllWeighted)
                 .withNominalMethod(CTreeNominalMethod.Full)
                 .withNumericMethod(CTreeNumericMethod.Binary)
-                .withFunction(new CTreeTestFunction.GainRatio())
-                .withPredictor(new CTreePredictor.Standard());
+                .withFunction(CTreeTestFunction.GainRatio)
+                .withPredictor(CTreePredictor.Standard);
     }
 
     public static CTree newDecisionStump() {
@@ -92,12 +91,12 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(1)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
-                .withTestCounter(new CTreeTestCounter(1, 1))
+                .withTestCounter(CTreeTestCounter.newFrom(1, 1))
                 .withSplitter(CTreeSplitter.MissingToAllWeighted)
-                .withFunction(new CTreeTestFunction.InfoGain())
+                .withFunction(CTreeTestFunction.InfoGain)
                 .withNominalMethod(CTreeNominalMethod.Binary)
                 .withNumericMethod(CTreeNumericMethod.Binary)
-                .withPredictor(new CTreePredictor.Standard());
+                .withPredictor(CTreePredictor.Standard);
     }
 
     public static CTree newCART() {
@@ -105,12 +104,12 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(10_000)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
-                .withTestCounter(new CTreeTestCounter(10_000, 10_000))
+                .withTestCounter(CTreeTestCounter.newFrom(10_000, 10_000))
                 .withSplitter(CTreeSplitter.MissingToRandom)
                 .withNominalMethod(CTreeNominalMethod.Binary)
                 .withNumericMethod(CTreeNumericMethod.Binary)
-                .withFunction(new CTreeTestFunction.GiniGain())
-                .withPredictor(new CTreePredictor.Standard());
+                .withFunction(CTreeTestFunction.GiniGain)
+                .withPredictor(CTreePredictor.Standard);
     }
 
     @Override
@@ -120,9 +119,10 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(maxDepth)
                 .withNominalMethod(nominalMethod)
                 .withNumericMethod(numericMethod)
-                .withFunction(function.newInstance())
+                .withFunction(function)
                 .withSplitter(splitter)
-                .withPredictor(predictor.newInstance())
+                .withPredictor(predictor)
+                .withTestCounter(CTreeTestCounter.newFrom(testCounter))
                 .withVarSelector(varSelector().newInstance())
                 .withSampler(sampler());
     }
@@ -201,11 +201,11 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
-    public CTreeTestFunction getFunction() {
+    public Tag<CTreeTestFunction> getFunction() {
         return function;
     }
 
-    public CTree withFunction(CTreeTestFunction function) {
+    public CTree withFunction(Tag<CTreeTestFunction> function) {
         this.function = function;
         return this;
     }
@@ -219,11 +219,11 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
-    public CTreePredictor getPredictor() {
+    public Tag<CTreePredictor> getPredictor() {
         return predictor;
     }
 
-    public CTree withPredictor(CTreePredictor predictor) {
+    public CTree withPredictor(Tag<CTreePredictor> predictor) {
         this.predictor = predictor;
         return this;
     }
@@ -269,7 +269,7 @@ public class CTree extends AbstractClassifier {
 
         this.varSelector.withVarNames(inputNames());
 
-        rows = df.rowCount();
+        int rows = df.rowCount();
 
         testCounter.initialize(df, inputNames());
 
@@ -285,7 +285,7 @@ public class CTree extends AbstractClassifier {
         prediction.addTarget(firstTargetName(), firstDict());
 
         df.stream().forEach(spot -> {
-            Pair<Integer, DVector> result = predictor.predict(this, spot, root);
+            Pair<Integer, DVector> result = predictor.get().predict(this, spot, root);
             if (withClasses)
                 prediction.firstClasses().setIndex(spot.row(), result.first);
             if (withDensities)

@@ -38,14 +38,12 @@ public class CTreeCandidate implements Comparable<CTreeCandidate>, Serializable 
     private static final long serialVersionUID = -1547847207988912332L;
 
     private final double score;
-    private final int sign;
     private final String testName;
     private final List<String> groupNames = new ArrayList<>();
     private final List<SPredicate<FSpot>> groupPredicates = new ArrayList<>();
 
-    public CTreeCandidate(double score, int sign, String testName) {
+    public CTreeCandidate(double score, String testName) {
         this.score = score;
-        this.sign = sign;
         this.testName = testName;
     }
 
@@ -69,10 +67,6 @@ public class CTreeCandidate implements Comparable<CTreeCandidate>, Serializable 
         return score;
     }
 
-    public int getSign() {
-        return sign;
-    }
-
     public String getTestName() {
         return testName;
     }
@@ -80,6 +74,6 @@ public class CTreeCandidate implements Comparable<CTreeCandidate>, Serializable 
     @Override
     public int compareTo(CTreeCandidate o) {
         if (o == null) return -1;
-        return new Double(score).compareTo(o.score) * sign;
+        return new Double(score).compareTo(o.score);
     }
 }

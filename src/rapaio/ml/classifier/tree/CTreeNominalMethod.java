@@ -58,7 +58,7 @@ public interface CTreeNominalMethod extends Serializable {
                 DTable dt = DTable.newFromWeights(test, target, weights);
                 double value = function.compute(dt);
 
-                CTreeCandidate candidate = new CTreeCandidate(value, function.sign(), testColName);
+                CTreeCandidate candidate = new CTreeCandidate(value, testColName);
                 for (int i = 1; i < test.dictionary().length; i++) {
                     final String label = test.dictionary()[i];
                     candidate.addGroup(
@@ -96,7 +96,7 @@ public interface CTreeNominalMethod extends Serializable {
 
                     DTable dt = DTable.newBinaryFromWeights(test, target, weights, testLabel);
                     double value = function.compute(dt);
-                    CTreeCandidate candidate = new CTreeCandidate(value, function.sign(), testColName);
+                    CTreeCandidate candidate = new CTreeCandidate(value, testColName);
                     if (best == null) {
                         best = candidate;
                         best.addGroup(testColName + " == " + testLabel, spot -> spot.label(testColName).equals(testLabel));

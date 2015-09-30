@@ -24,6 +24,7 @@
 package rapaio.ml.classifier.tree;
 
 import rapaio.core.tools.DTable;
+import rapaio.util.Tag;
 
 import java.io.Serializable;
 
@@ -32,112 +33,11 @@ import java.io.Serializable;
  */
 public interface CTreeTestFunction extends Serializable {
 
-    String name();
-
-    CTreeTestFunction newInstance();
-
     double compute(DTable dt);
 
-    int sign();
-
-    class Entropy implements CTreeTestFunction {
-
-        private static final long serialVersionUID = 6818050916634872153L;
-
-        @Override
-        public String name() {
-            return "Entropy";
-        }
-
-        @Override
-        public CTreeTestFunction newInstance() {
-            return new Entropy();
-        }
-
-        @Override
-        public double compute(DTable dt) {
-            return dt.getSplitEntropy(false);
-        }
-
-        @Override
-        public int sign() {
-            return 1;
-        }
-    };
-
-    class InfoGain implements CTreeTestFunction {
-
-        private static final long serialVersionUID = -632310330804645110L;
-
-        @Override
-        public String name() {
-            return "InfoGain";
-        }
-
-        @Override
-        public CTreeTestFunction newInstance() {
-            return new InfoGain();
-        }
-
-        @Override
-        public int sign() {
-            return -1;
-        }
-
-        @Override
-        public double compute(DTable dt) {
-            return dt.getInfoGain(false);
-        }
-    };
-
-    class GainRatio implements CTreeTestFunction {
-
-        private static final long serialVersionUID = 4570579508597802935L;
-
-        @Override
-        public String name() {
-            return "GainRatio";
-        }
-
-        @Override
-        public CTreeTestFunction newInstance() {
-            return new GainRatio();
-        }
-
-        @Override
-        public int sign() {
-            return -1;
-        }
-
-        @Override
-        public double compute(DTable dt) {
-            return dt.getGainRatio(false);
-        }
-    };
-
-    class GiniGain implements CTreeTestFunction {
-
-        private static final long serialVersionUID = 3527719507451545704L;
-
-        @Override
-        public String name() {
-            return "GiniGain";
-        }
-
-        @Override
-        public CTreeTestFunction newInstance() {
-            return new GiniGain();
-        }
-
-        @Override
-        public int sign() {
-            return -1;
-        }
-
-        @Override
-        public double compute(DTable dt) {
-            return dt.getGiniIndex();
-        }
-    };
+    Tag<CTreeTestFunction> Entropy = Tag.valueOf("Entropy", (DTable dt) -> dt.getSplitEntropy(false));
+    Tag<CTreeTestFunction> InfoGain = Tag.valueOf("InfoGain", (DTable dt) -> -dt.getInfoGain(false));
+    Tag<CTreeTestFunction> GainRatio = Tag.valueOf("GainRatio", (DTable dt) -> -dt.getGainRatio(false));
+    Tag<CTreeTestFunction> GiniGain = Tag.valueOf("GiniGain", (DTable dt) -> -dt.getGiniIndex());
 }
 

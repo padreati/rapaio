@@ -46,4 +46,8 @@ public class Pair<T1, T2> implements Serializable {
     public String toString() {
         return "Pair{" + first + ", " + second + "}";
     }
+
+    public static <U, V> Pair<U, V> valueOf(U u, V v) {
+        return new Pair<>(u, v);
+    }
 }
