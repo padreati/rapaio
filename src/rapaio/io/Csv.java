@@ -52,6 +52,7 @@ public class Csv {
     private int endRow = Integer.MAX_VALUE;
     private SPredicate<Integer> skipRows = row -> false;
     private SPredicate<Integer> skipCols = row -> false;
+    private Frame template;
 
     public Csv() {
         naValues.add("?");
@@ -132,6 +133,11 @@ public class Csv {
         return this;
     }
 
+    public Csv withTemplate(Frame template) {
+        this.template = template;
+        return this;
+    }
+
     public Frame read(File file) throws IOException {
         return read(new FileInputStream(file));
     }
@@ -190,6 +196,20 @@ public class Csv {
                         names.add("V" + (i + 1));
                     }
                     for (String colName : names) {
+                        if (template != null) {
+                            String[] vn = template.varNames();
+                            boolean found = false;
+                            for (int i = 0; i < vn.length; i++) {
+                                if (vn[i].equals(colName)) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (found) {
+                                varSlots.add(new VarSlot(this, template.var(colName)));
+                                continue;
+                            }
+                        }
                         if (typeFieldHints.containsKey(colName)) {
                             varSlots.add(new VarSlot(this, typeFieldHints.get(colName)));
                         } else {
@@ -398,6 +418,13 @@ public class Csv {
             this.parent = parent;
             this.type = varType;
             this.var = varType.newInstance();
+            this.text = null;
+        }
+
+        public VarSlot(Csv parent, Var template) {
+            this.parent = parent;
+            this.type = template.type();
+            this.var = template.newInstance(0);
             this.text = null;
         }
 

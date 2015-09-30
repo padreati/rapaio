@@ -68,8 +68,8 @@ public class ID3ClassifierTest {
         final String className = "class";
 
         CTree id3 = new CTree()
-                .withNominalMethod(new CTreeNominalMethod.Full())
-                .withNumericMethod(new CTreeNumericMethod.Ignore())
+                .withNominalMethod(CTreeNominalMethod.Full)
+                .withNumericMethod(CTreeNumericMethod.Ignore)
                 .withSplitter(CTreeSplitter.MissingIgnored)
                 .withFunction(new CTreeTestFunction.InfoGain());
         id3.learn(df, className);

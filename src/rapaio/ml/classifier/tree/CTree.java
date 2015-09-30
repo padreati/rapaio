@@ -23,13 +23,13 @@
 
 package rapaio.ml.classifier.tree;
 
-import rapaio.data.VarType;
-import rapaio.ml.common.Capabilities;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
+import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.util.Pair;
 import rapaio.util.Tag;
@@ -49,8 +49,8 @@ public class CTree extends AbstractClassifier {
 
     VarSelector varSelector = VarSelector.ALL;
     CTreeTestCounter testCounter = new CTreeTestCounter(10_000, 10_000);
-    CTreeNominalMethod nominalMethod = new CTreeNominalMethod.Full();
-    CTreeNumericMethod numericMethod = new CTreeNumericMethod.Binary();
+    Tag<CTreeNominalMethod> nominalMethod = CTreeNominalMethod.Full;
+    Tag<CTreeNumericMethod> numericMethod = CTreeNumericMethod.Binary;
     CTreeTestFunction function = new CTreeTestFunction.InfoGain();
     Tag<CTreeSplitter> splitter = CTreeSplitter.MissingIgnored;
     CTreePredictor predictor = new CTreePredictor.Standard();
@@ -68,8 +68,8 @@ public class CTree extends AbstractClassifier {
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
                 .withSplitter(CTreeSplitter.MissingIgnored)
-                .withNominalMethod(new CTreeNominalMethod.Full())
-                .withNumericMethod(new CTreeNumericMethod.Ignore())
+                .withNominalMethod(CTreeNominalMethod.Full)
+                .withNumericMethod(CTreeNumericMethod.Ignore)
                 .withFunction(new CTreeTestFunction.Entropy())
                 .withPredictor(new CTreePredictor.Standard());
     }
@@ -81,8 +81,8 @@ public class CTree extends AbstractClassifier {
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
                 .withSplitter(CTreeSplitter.MissingToAllWeighted)
-                .withNominalMethod(new CTreeNominalMethod.Full())
-                .withNumericMethod(new CTreeNumericMethod.Binary())
+                .withNominalMethod(CTreeNominalMethod.Full)
+                .withNumericMethod(CTreeNumericMethod.Binary)
                 .withFunction(new CTreeTestFunction.GainRatio())
                 .withPredictor(new CTreePredictor.Standard());
     }
@@ -95,8 +95,8 @@ public class CTree extends AbstractClassifier {
                 .withTestCounter(new CTreeTestCounter(1, 1))
                 .withSplitter(CTreeSplitter.MissingToAllWeighted)
                 .withFunction(new CTreeTestFunction.InfoGain())
-                .withNominalMethod(new CTreeNominalMethod.Binary())
-                .withNumericMethod(new CTreeNumericMethod.Binary())
+                .withNominalMethod(CTreeNominalMethod.Binary)
+                .withNumericMethod(CTreeNumericMethod.Binary)
                 .withPredictor(new CTreePredictor.Standard());
     }
 
@@ -107,8 +107,8 @@ public class CTree extends AbstractClassifier {
                 .withVarSelector(VarSelector.ALL)
                 .withTestCounter(new CTreeTestCounter(10_000, 10_000))
                 .withSplitter(CTreeSplitter.MissingToRandom)
-                .withNominalMethod(new CTreeNominalMethod.Binary())
-                .withNumericMethod(new CTreeNumericMethod.Binary())
+                .withNominalMethod(CTreeNominalMethod.Binary)
+                .withNumericMethod(CTreeNumericMethod.Binary)
                 .withFunction(new CTreeTestFunction.GiniGain())
                 .withPredictor(new CTreePredictor.Standard());
     }
@@ -118,8 +118,8 @@ public class CTree extends AbstractClassifier {
         return (CTree) new CTree()
                 .withMinCount(minCount)
                 .withMaxDepth(maxDepth)
-                .withNominalMethod(nominalMethod.newInstance())
-                .withNumericMethod(numericMethod.newInstance())
+                .withNominalMethod(nominalMethod)
+                .withNumericMethod(numericMethod)
                 .withFunction(function.newInstance())
                 .withSplitter(splitter)
                 .withPredictor(predictor.newInstance())
@@ -183,20 +183,20 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
-    public CTreeNominalMethod getNominalMethod() {
+    public Tag<CTreeNominalMethod> getNominalMethod() {
         return nominalMethod;
     }
 
-    public CTree withNominalMethod(CTreeNominalMethod methodNominal) {
+    public CTree withNominalMethod(Tag<CTreeNominalMethod> methodNominal) {
         this.nominalMethod = methodNominal;
         return this;
     }
 
-    public CTreeNumericMethod getNumericMethod() {
+    public Tag<CTreeNumericMethod> getNumericMethod() {
         return numericMethod;
     }
 
-    public CTree withNumericMethod(CTreeNumericMethod numericMethod) {
+    public CTree withNumericMethod(Tag<CTreeNumericMethod> numericMethod) {
         this.numericMethod = numericMethod;
         return this;
     }

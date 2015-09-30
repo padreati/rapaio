@@ -27,6 +27,7 @@ import rapaio.core.RandomSource;
 import rapaio.core.tools.DTable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.util.Tag;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -39,129 +40,78 @@ import java.util.List;
  */
 public interface CTreeNominalMethod extends Serializable {
 
-    String name();
-
-    CTreeNominalMethod newInstance();
-
     List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function, CTreeNominalTerms terms);
 
-    class Ignore implements CTreeNominalMethod {
+    Tag<CTreeNominalMethod> Ignore = Tag.valueOf("Ignore",
+            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function, CTreeNominalTerms terms) -> new ArrayList<>());
 
-        private static final long serialVersionUID = -4880331163848862999L;
+    Tag<CTreeNominalMethod> Full = Tag.valueOf("Full",
+            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function, CTreeNominalTerms terms) -> {
+                Var test = df.var(testColName);
+                Var target = df.var(targetColName);
 
-        @Override
-        public String name() {
-            return "Ignore";
-        }
-
-        @Override
-        public CTreeNominalMethod newInstance() {
-            return new Ignore();
-        }
-
-        @Override
-        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function, CTreeNominalTerms terms) {
-            return new ArrayList<>();
-        }
-    }
-
-    class Full implements CTreeNominalMethod {
-
-        private static final long serialVersionUID = 1440419101927544578L;
-
-        @Override
-        public String name() {
-            return "Full";
-        }
-
-        @Override
-        public CTreeNominalMethod newInstance() {
-            return new Full();
-        }
-
-        @Override
-        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function, CTreeNominalTerms terms) {
-            Var test = df.var(testColName);
-            Var target = df.var(targetColName);
-
-            if (!DTable.newFromCounts(test, target).hasCountWithMinimum(false, c.getMinCount(), 2)) {
-                return Collections.emptyList();
-            }
-
-            List<CTreeCandidate> result = new ArrayList<>();
-            DTable dt = DTable.newFromWeights(test, target, weights);
-            double value = function.compute(dt);
-
-            CTreeCandidate candidate = new CTreeCandidate(value, function.sign(), testColName);
-            for (int i = 1; i < test.dictionary().length; i++) {
-                final String label = test.dictionary()[i];
-                candidate.addGroup(
-                        String.format("%s == %s", testColName, label),
-                        spot -> !spot.missing(testColName) && spot.label(testColName).equals(label));
-            }
-
-            result.add(candidate);
-            return result;
-        }
-    }
-
-    class Binary implements CTreeNominalMethod {
-
-        private static final long serialVersionUID = -2139837342128959674L;
-
-        @Override
-        public String name() {
-            return "Binary";
-        }
-
-        @Override
-        public CTreeNominalMethod newInstance() {
-            return new Binary();
-        }
-
-        @Override
-        public List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function, CTreeNominalTerms terms) {
-
-            Var test = df.var(testColName);
-            Var target = df.var(targetColName);
-            if (!(DTable.newFromCounts(test, target).hasCountWithMinimum(false, c.getMinCount(), 2))) {
-                return Collections.emptyList();
-            }
-
-            List<CTreeCandidate> result = new ArrayList<>();
-            CTreeCandidate best = null;
-
-            int[] termCount = new int[test.dictionary().length];
-            test.stream().forEach(s -> termCount[s.index()]++);
-
-            Iterator<Integer> indexes = terms.indexes(testColName).iterator();
-            while (indexes.hasNext()) {
-                int i = indexes.next();
-                if (termCount[i] < c.getMinCount()) {
-                    indexes.remove();
-                    continue;
+                if (!DTable.newFromCounts(test, target).hasCountWithMinimum(false, c.getMinCount(), 2)) {
+                    return Collections.emptyList();
                 }
-                String testLabel = df.var(testColName).dictionary()[i];
 
-                DTable dt = DTable.newBinaryFromWeights(test, target, weights, testLabel);
+                List<CTreeCandidate> result = new ArrayList<>();
+                DTable dt = DTable.newFromWeights(test, target, weights);
                 double value = function.compute(dt);
+
                 CTreeCandidate candidate = new CTreeCandidate(value, function.sign(), testColName);
-                if (best == null) {
-                    best = candidate;
-                    best.addGroup(testColName + " == " + testLabel, spot -> spot.label(testColName).equals(testLabel));
-                    best.addGroup(testColName + " != " + testLabel, spot -> !spot.label(testColName).equals(testLabel));
-                } else {
-                    int comp = best.compareTo(candidate);
-                    if (comp < 0) continue;
-                    if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
-                    best = candidate;
-                    best.addGroup(testColName + " == " + testLabel, spot -> spot.label(testColName).equals(testLabel));
-                    best.addGroup(testColName + " != " + testLabel, spot -> !spot.label(testColName).equals(testLabel));
+                for (int i = 1; i < test.dictionary().length; i++) {
+                    final String label = test.dictionary()[i];
+                    candidate.addGroup(
+                            String.format("%s == %s", testColName, label),
+                            spot -> !spot.missing(testColName) && spot.label(testColName).equals(label));
                 }
-            }
-            if (best != null)
-                result.add(best);
-            return result;
-        }
-    }
+
+                result.add(candidate);
+                return result;
+            });
+
+    Tag<CTreeNominalMethod> Binary = Tag.valueOf("Binary",
+            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function, CTreeNominalTerms terms) -> {
+
+                Var test = df.var(testColName);
+                Var target = df.var(targetColName);
+                if (!(DTable.newFromCounts(test, target).hasCountWithMinimum(false, c.getMinCount(), 2))) {
+                    return Collections.emptyList();
+                }
+
+                List<CTreeCandidate> result = new ArrayList<>();
+                CTreeCandidate best = null;
+
+                int[] termCount = new int[test.dictionary().length];
+                test.stream().forEach(s -> termCount[s.index()]++);
+
+                Iterator<Integer> indexes = terms.indexes(testColName).iterator();
+                while (indexes.hasNext()) {
+                    int i = indexes.next();
+                    if (termCount[i] < c.getMinCount()) {
+                        indexes.remove();
+                        continue;
+                    }
+                    String testLabel = df.var(testColName).dictionary()[i];
+
+                    DTable dt = DTable.newBinaryFromWeights(test, target, weights, testLabel);
+                    double value = function.compute(dt);
+                    CTreeCandidate candidate = new CTreeCandidate(value, function.sign(), testColName);
+                    if (best == null) {
+                        best = candidate;
+                        best.addGroup(testColName + " == " + testLabel, spot -> spot.label(testColName).equals(testLabel));
+                        best.addGroup(testColName + " != " + testLabel, spot -> !spot.label(testColName).equals(testLabel));
+                    } else {
+                        int comp = best.compareTo(candidate);
+                        if (comp < 0) continue;
+                        if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
+                        best = candidate;
+                        best.addGroup(testColName + " == " + testLabel, spot -> spot.label(testColName).equals(testLabel));
+                        best.addGroup(testColName + " != " + testLabel, spot -> !spot.label(testColName).equals(testLabel));
+                    }
+                }
+                if (best != null)
+                    result.add(best);
+                return result;
+            });
 }
