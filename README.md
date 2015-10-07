@@ -40,10 +40,24 @@ is considered to be fully implemented and well tested.
     * offers utility methods for bootstraps, simple random, stratified sampling
 * Samplers used in machine learning algorithms
 
+**Analysis**
+
+* Principal Components Analysis
+* Fischer Linear Discriminant Analysis
+
 **Classification**
+
 * Bayesian: NaiveBayes (GaussianPdf, EmpiricalPdf, MultinomialPmf)
 * Rule: OneRule
+* Decision Trees: DecisionStump
+* Decision Trees: ID3
+* Decision Trees: C45 (no pruning)
+* Decision Trees: CART (no pruning)
+* Boosting: AdaBoost.SAMME
 
+**Clusterization**
+
+* KMeans clustering
 
 Experminental Stage Features
 ============================
@@ -63,11 +77,6 @@ Experminental Stage Features
 
 **Classification**
 
-* Decision Trees: DecisionStump
-* Decision Trees: ID3
-* Decision Trees: C45 (no pruning)
-* Decision Trees: CART (no pruning)
-* Boosting: AdaBoost.SAMME
 * Boosting: GBT (Gradient Boosting Trees) Classifier
 * Ensemble: SplitClassifier
 * Ensemble: Bagging
