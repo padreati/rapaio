@@ -32,7 +32,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 /**
- * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 9/29/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/29/15.
  */
 public class LoggingPrinter implements Printer {
 

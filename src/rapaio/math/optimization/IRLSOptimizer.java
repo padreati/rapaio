@@ -29,9 +29,11 @@ import rapaio.math.linear.LUDecomposition;
 import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
+import rapaio.sys.WS;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 /**
  * Iteratively Re-weighted Least Squares optimization algorithm.
@@ -40,6 +42,8 @@ import java.util.function.Function;
  */
 @Deprecated
 public class IRLSOptimizer {
+
+    private static final Logger logger = Logger.getLogger(IRLSOptimizer.class.getName());
 
     /**
      * The hessian matrix
@@ -84,6 +88,7 @@ public class IRLSOptimizer {
         double maxChange = Double.MAX_VALUE;
         while (!Double.isNaN(maxChange) && maxChange > eps && iterationLimit-- > 0) {
             maxChange = iterationStep(f, fd, vars, inputs, outputs);
+            logger.finer("IRLS maxChange: " + WS.formatFlex(maxChange));
         }
         return vars;
     }

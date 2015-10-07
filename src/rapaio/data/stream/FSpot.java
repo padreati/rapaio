@@ -233,22 +233,22 @@ public final class FSpot implements Serializable {
     }
 
     /**
-     * Returns label dictionary of the given variable
+     * Returns label levels of the given variable
      *
      * @param varIndex index of the variable
-     * @return label dictionary
+     * @return label levels
      */
     public String[] dictionary(int varIndex) {
-        return df.var(varIndex).dictionary();
+        return df.var(varIndex).levels();
     }
 
     /**
-     * Returns label dictionary of the given variable
+     * Returns label levels of the given variable
      *
      * @param varName variable name
-     * @return label dictionary
+     * @return label levels
      */
     public String[] dictionary(String varName) {
-        return df.var(varName).dictionary();
+        return df.var(varName).levels();
     }
 }

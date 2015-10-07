@@ -62,6 +62,7 @@ public class MappedRowRV implements RV {
     public void set(int i, int j, double value) {
         if (i == 0) {
             ref.set(row, j, value);
+            return;
         }
         throw new IllegalArgumentException("Operation with given arguments not available on mapped row vectors.");
     }

@@ -25,8 +25,10 @@ package rapaio.ml.classifier.bayes.estimator;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.ml.classifier.bayes.NaiveBayes;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Nominal variable probability estimator
@@ -41,7 +43,7 @@ public interface NominalEstimator extends Serializable {
 
     String learningInfo();
 
-    void learn(Frame df, Var weights, String targetVar, String testVar, String... targetLabels);
+    void learn(NaiveBayes nb, Frame df, Var weights, String targetVar, String testVar);
 
     double cpValue(String testLabel, String targetLabel);
 }

@@ -199,12 +199,12 @@ public class BoundVar extends AbstractVar {
     }
 
     @Override
-    public String[] dictionary() {
-        return vars.get(0).dictionary();
+    public String[] levels() {
+        return vars.get(0).levels();
     }
 
     @Override
-    public void setDictionary(String[] dict) {
+    public void setLevels(String[] dict) {
         throw new IllegalArgumentException("This operation is not available for bound variable");
     }
 

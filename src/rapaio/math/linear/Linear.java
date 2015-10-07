@@ -27,6 +27,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.math.linear.impl.SolidRM;
 import rapaio.math.linear.impl.SolidRV;
+import rapaio.util.Pair;
 
 import java.util.Arrays;
 import java.util.function.BiFunction;
@@ -37,7 +38,6 @@ import java.util.function.BiFunction;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
  */
-@Deprecated
 public final class Linear {
 
     /**
@@ -125,6 +125,14 @@ public final class Linear {
         return new SolidRV(var);
     }
 
+    public static RV newRVCopyOf(double... values) {
+        RV ret = new SolidRV(values.length);
+        for (int i = 0; i < values.length; i++) {
+            ret.set(i, values[i]);
+        }
+        return ret;
+    }
+
     public static RV newRVEmpty(int rows) {
         return new SolidRV(rows);
     }
@@ -150,7 +158,7 @@ public final class Linear {
         }
 
         // Copy right hand side.
-        RM X = B.solidCopy();
+        RM X = B.copy();
 
         // Solve L*Y = B;
         for (int k = 0; k < ref.rowCount(); k++) {
@@ -172,6 +180,45 @@ public final class Linear {
             }
         }
         return X;
+    }
+
+    public static EigenPair pdEigenDecomp(RM s, int maxRuns, double tol) {
+
+        // runs QR decomposition algoritm for maximum of iterations
+        // to provide a solution which has other than diagonals under
+        // tolerance
+
+        QR qr = s.qr();
+        s = qr.getR().dot(qr.getQ());
+        RM ev = qr.getQ();
+        for (int i = 0; i < maxRuns - 1; i++) {
+            qr = s.qr();
+            s = qr.getR().dot(qr.getQ());
+            ev = ev.dot(qr.getQ());
+            if (inTolerance(s, tol))
+                break;
+        }
+        return EigenPair.newFrom(s.diag(), ev.copy());
+    }
+
+    public static RM pdPower(RM s, double power, int maxRuns, double tol) {
+        EigenPair p = pdEigenDecomp(s, maxRuns, tol);
+        RM U = p.vectors();
+        RM lambda = p.expandedValues();
+        for (int i = 0; i < lambda.rowCount(); i++) {
+            lambda.set(i, i, Math.pow(lambda.get(i, i), power));
+        }
+        return U.dot(lambda).dot(U.t());
+    }
+
+    private static boolean inTolerance(RM s, double tol) {
+        for (int i = 0; i < s.rowCount(); i++) {
+            for (int j = i + 1; j < s.colCount(); j++) {
+                if (Math.abs(s.get(i, j)) > tol)
+                    return false;
+            }
+        }
+        return true;
     }
 
 }

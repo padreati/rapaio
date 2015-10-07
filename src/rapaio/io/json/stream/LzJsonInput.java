@@ -68,7 +68,7 @@ public class LzJsonInput extends LzJsonAlgorithm implements JsonInput {
     public JsonValue read() throws IOException {
         byte cmd = is.readByte();
         if (cmd == BLOCK_STR_TERM_LIST) {
-            // start reading dictionary
+            // start reading levels
             strTermList.clear();
             int size = is.readInt();
             for (int i = 0; i < size; i++) {
@@ -77,7 +77,7 @@ public class LzJsonInput extends LzJsonAlgorithm implements JsonInput {
             cmd = is.readByte();
         }
         if (cmd == BLOCK_NUM_TERM_LIST) {
-            // start reading dictionary
+            // start reading levels
             numTermList.clear();
             int size = is.readInt();
             for (int i = 0; i < size; i++) {

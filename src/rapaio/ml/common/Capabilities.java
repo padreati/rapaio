@@ -30,7 +30,6 @@ import rapaio.data.VarType;
 import rapaio.printer.Printable;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -152,23 +151,23 @@ public class Capabilities implements Printable {
             VarType type = var.type();
             switch (learnType) {
 
-                // classifier allow a single term in dictionary (other than missing labels)
+                // classifier allow a single term in levels (other than missing labels)
                 case UNARY_CLASSIFIER:
-                    if (var.dictionary().length != 2) {
+                    if (var.levels().length != 2) {
                         throw new IllegalArgumentException("The learning algorithm allows only unary nominal/ordinal targets");
                     }
                     break;
 
-                // classifier which allows only 2 terms in dictionary (other than missing label)
+                // classifier which allows only 2 levels in levels (other than missing label)
                 case BINARY_CLASSIFIER:
-                    if (var.dictionary().length != 3) {
+                    if (var.levels().length != 3) {
                         throw new IllegalArgumentException("The learning algorithm allows only binary nominal/ordinal targets");
                     }
                     break;
 
-                // classifier which allows more than 2 terms in dictionary (other than missing label)
+                // classifier which allows more than 2 levels in levels (other than missing label)
                 case MULTICLASS_CLASSIFIER:
-                    if (var.dictionary().length < 3) {
+                    if (var.levels().length < 3) {
                         throw new IllegalArgumentException("The learning algorithm allows binary or multi-class targets");
                     }
                     break;

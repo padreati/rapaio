@@ -142,7 +142,7 @@ public class CTreeNode implements Serializable {
 //                    return df.var(testCol).type().isNumeric() ?
 //                            tree.getNumericMethod().computeCandidates(tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction())
 //                            :
-//                            tree.getNominalMethod().computeCandidates(tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction(), terms);
+//                            tree.getNominalMethod().computeCandidates(tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction(), levels);
 //
 //                }).collect(Collectors.toList()).stream().sequential().forEach(candidateList::addAll);
 

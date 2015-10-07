@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 9/30/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/30/15.
  */
 public class LocalStorage {
 

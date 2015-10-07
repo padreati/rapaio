@@ -62,6 +62,7 @@ public class MappedColRV implements RV {
     public void set(int i, int j, double value) {
         if (j == 0) {
             ref.set(i, col, value);
+            return;
         }
         throw new IllegalArgumentException("This operation is valid only for mapped vectors");
     }

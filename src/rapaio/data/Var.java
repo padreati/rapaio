@@ -29,10 +29,12 @@ import rapaio.printer.Printable;
 import rapaio.ws.Summary;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Random access list of observed values (observations) for a specific variable.
@@ -167,7 +169,7 @@ public interface Var extends Serializable, Printable {
     void setLabel(int row, String value);
 
     /**
-     * Adds an index value to the last position of the variable, updates dictionary
+     * Adds an index value to the last position of the variable, updates levels
      * if is necessary.
      *
      * @param value text label to be added at the end of the variable
@@ -175,57 +177,57 @@ public interface Var extends Serializable, Printable {
     void addLabel(String value);
 
     /**
-     * Returns the term dictionary used by the nominal values.
+     * Returns the term levels used by the nominal values.
      * <p>
-     * Term dictionary contains all the nominal labels used by
+     * Term levels contains all the nominal labels used by
      * observations and might contain also additional nominal labels.
-     * Term dictionary defines the domain of the definition for the nominal var.
+     * Term levels defines the domain of the definition for the nominal var.
      * <p>
-     * The term dictionary contains nominal labels sorted in lexicografical order,
+     * The term levels contains nominal labels sorted in lexicografical order,
      * so binary search techniques may be used on this var.
      * <p>
      * For other var types like numerical ones this method returns nothing.
      *
-     * @return term dictionary defined by the nominal var.
+     * @return term levels defined by the nominal var.
      */
-    String[] dictionary();
+    String[] levels();
+
+    default Stream<String> streamLevels() {
+        return Arrays.stream(levels());
+    }
 
     /**
-     * Replace the used dictionary with a new one. A mapping between the
-     * old values of the dictionary with the new values is done. The mapping
+     * Replace the used levels with a new one. A mapping between the
+     * old values of the levels with the new values is done. The mapping
      * is done based on position.
      * <p>
-     * The new dictionary can have repeated terms. This feature can be used
+     * The new levels can have repeated levels. This feature can be used
      * to unite multiple old labels with new ones. However the actual new
-     * dictionary used will have only unique terms and indexed accordingly.
-     * Thus a nominal with labels a,b,a,c,a,c which will have dictionary a,b,c,
-     * when replaced with dictionary x,y,x will have as a result the following
+     * levels used will have only unique levels and indexed accordingly.
+     * Thus a nominal with labels a,b,a,c,a,c which will have levels a,b,c,
+     * when replaced with levels x,y,x will have as a result the following
      * labels: x,y,x,x,x,x and indexes 1,2,1,1,1,1
      *
-     * @param dict array of terms which comprises the new dictionary
+     * @param dict array of levels which comprises the new levels
      */
-    void setDictionary(String... dict);
+    void setLevels(String... dict);
 
     /**
-     * Replace the used dictionary with a new one. A mapping between the
-     * old values of the dictionary with the new values is done. The mapping
+     * Replace the used levels with a new one. A mapping between the
+     * old values of the levels with the new values is done. The mapping
      * is done based on position.
      * <p>
-     * The new dictionary can have repeated terms. This feature can be used
+     * The new levels can have repeated levels. This feature can be used
      * to unite multiple old labels with new ones. However the actual new
-     * dictionary used will have only unique terms and indexed accordingly.
-     * Thus a nominal with labels a,b,a,c,a,c which will have dictionary a,b,c,
-     * when replaced with dictionary x,y,x will have as a result the following
+     * levels used will have only unique levels and indexed accordingly.
+     * Thus a nominal with labels a,b,a,c,a,c which will have levels a,b,c,
+     * when replaced with levels x,y,x will have as a result the following
      * labels: x,y,x,x,x,x and indexes 1,2,1,1,1,1
      *
-     * @param dict list of terms which comprises the new dictionary
+     * @param dict list of levels which comprises the new levels
      */
-    default void setDictionary(List<String> dict) {
-        String[] vector = new String[dict.size()];
-        for (int i = 0; i < vector.length; i++) {
-            vector[i] = dict.get(i);
-        }
-        setDictionary(vector);
+    default void setLevels(List<String> dict) {
+        setLevels(dict.stream().toArray(String[]::new));
     }
 
     /**

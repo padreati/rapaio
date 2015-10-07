@@ -97,7 +97,7 @@ public class ClassificationWithNaiveBayesPage implements TutorialPage {
                 "One reason why this happens is that the natural data has a simple structure in general. ");
 
         p("The independence assumption means that when computing the conditional probabilities " +
-                "of the input features the conditional terms of the other features can be eliminated. ");
+                "of the input features the conditional levels of the other features can be eliminated. ");
 
         p("$$ p(x_i|t,x_1,x_2,..,x_{i-1}) = p(x_i|t) $$");
 

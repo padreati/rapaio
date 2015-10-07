@@ -26,6 +26,7 @@ package rapaio.ml.eval;
 import rapaio.printer.Printable;
 import rapaio.data.Var;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import static rapaio.sys.WS.formatFlex;
@@ -62,10 +63,10 @@ public class ConfusionMatrix implements Printable {
         validate(actual, predict);
         this.actual = actual;
         this.predict = predict;
-        this.dict = actual.dictionary();
+        this.dict = actual.levels();
         this.cmf = new int[dict.length - 1][dict.length - 1];
         this.percents = percents;
-        this.binary = actual.dictionary().length == 3;
+        this.binary = actual.levels().length == 3;
         compute();
     }
 
@@ -76,12 +77,15 @@ public class ConfusionMatrix implements Printable {
         if (!predict.type().isNominal()) {
             throw new IllegalArgumentException("predict values var must be nominal");
         }
-        if (actual.dictionary().length != predict.dictionary().length) {
-            throw new IllegalArgumentException("actual and predict does not have the same nominal dictionary");
+        if (actual.levels().length != predict.levels().length) {
+            throw new IllegalArgumentException("actual and predict does not have the same nominal levels");
         }
-        for (int i = 0; i < actual.dictionary().length; i++) {
-            if (!actual.dictionary()[i].equals(predict.dictionary()[i])) {
-                throw new IllegalArgumentException("actual and predict does not have the same nominal dictionary");
+        for (int i = 0; i < actual.levels().length; i++) {
+            if (!actual.levels()[i].equals(predict.levels()[i])) {
+                throw new IllegalArgumentException(
+                        String.format("not the same nominal levels (actual:%s, predict:%s)",
+                                Arrays.deepToString(actual.levels()),
+                                Arrays.deepToString(predict.levels())));
             }
         }
     }

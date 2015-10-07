@@ -27,13 +27,20 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
+import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 /**
  * fork join pool utility
  * <p>
- * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 9/23/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/23/15.
  */
 public class FJPool {
+
+    public static void runRangeParallel(int start, int end, Consumer<Integer> r) {
+        ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+        Optional.of(pool.submit(() -> IntStream.range(start, end).parallel().forEach(r::accept)));
+    }
 
     public static <T> Optional<T> compute(int threads, Callable<T> r) {
         ForkJoinPool pool = new ForkJoinPool(threads);

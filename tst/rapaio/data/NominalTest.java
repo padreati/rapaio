@@ -25,7 +25,7 @@ package rapaio.data;
 
 import org.junit.Test;
 
-import java.util.TreeSet;
+import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
@@ -38,13 +38,13 @@ public class NominalTest {
     public void testSmoke() {
         Var v = Nominal.newEmpty(0);
         assertEquals(0, v.rowCount());
-        assertEquals(1, v.dictionary().length);
-        assertEquals("?", v.dictionary()[0]);
+        assertEquals(1, v.levels().length);
+        assertEquals("?", v.levels()[0]);
 
         v = Nominal.newEmpty();
         assertEquals(0, v.rowCount());
-        assertEquals(1, v.dictionary().length);
-        assertEquals("?", v.dictionary()[0]);
+        assertEquals(1, v.levels().length);
+        assertEquals("?", v.levels()[0]);
 
         assertTrue(v.type().isNominal());
         assertFalse(v.type().isNumeric());
@@ -59,21 +59,21 @@ public class NominalTest {
     @Test
     public void testDictionary() {
         Var v = Nominal.newEmpty(0, "a", "a", "v", "a");
-        assertEquals(3, v.dictionary().length);
-        assertEquals("?", v.dictionary()[0]);
-        assertEquals("a", v.dictionary()[1]);
-        assertEquals("v", v.dictionary()[2]);
+        assertEquals(3, v.levels().length);
+        assertEquals("?", v.levels()[0]);
+        assertEquals("a", v.levels()[1]);
+        assertEquals("v", v.levels()[2]);
 
-        TreeSet<String> set = new TreeSet<>();
+        ArrayList<String> set = new ArrayList<>();
         set.add("a");
         set.add("v");
         set.add("a");
 
         v = Nominal.newEmpty(0, set);
-        assertEquals(3, v.dictionary().length);
-        assertEquals("?", v.dictionary()[0]);
-        assertEquals("a", v.dictionary()[1]);
-        assertEquals("v", v.dictionary()[2]);
+        assertEquals(3, v.levels().length);
+        assertEquals("?", v.levels()[0]);
+        assertEquals("a", v.levels()[1]);
+        assertEquals("v", v.levels()[2]);
     }
 
     @Test
@@ -265,9 +265,9 @@ public class NominalTest {
         x.addLabel("c");
         x.addLabel("a");
 
-        x.setDictionary("x", "y", "x");
+        x.setLevels("x", "y", "x");
 
-        assertEquals(3, x.dictionary().length);
+        assertEquals(3, x.levels().length);
         assertEquals("x", x.label(0));
         assertEquals("y", x.label(1));
         assertEquals("x", x.label(2));
@@ -285,9 +285,9 @@ public class NominalTest {
         x.addLabel("c");
         x.addLabel("a");
 
-        x.setDictionary("x", "y", "z", "p");
+        x.setLevels("x", "y", "z", "p");
 
-        assertEquals(5, x.dictionary().length);
+        assertEquals(5, x.levels().length);
         assertEquals("x", x.label(0));
         assertEquals("y", x.label(1));
         assertEquals("x", x.label(2));
@@ -295,7 +295,7 @@ public class NominalTest {
 
         try {
             Nominal y = Nominal.newEmpty(0, "a", "b");
-            y.setDictionary("x");
+            y.setLevels("x");
             assertTrue(false);
         } catch (Throwable ignored) {
         }

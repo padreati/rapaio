@@ -25,6 +25,7 @@ package rapaio.ml.classifier.bayes.estimator;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.ml.classifier.bayes.NaiveBayes;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +41,7 @@ public class MultinomialPmf implements NominalEstimator {
     private double[][] density;
     private Map<String, Integer> invTreeTarget;
     private Map<String, Integer> invTreeTest;
+    private double defaultP;
 
     @Override
     public String name() {
@@ -52,10 +54,12 @@ public class MultinomialPmf implements NominalEstimator {
     }
 
     @Override
-    public void learn(Frame df, Var weights, String targetVar, String testVar, String... targetLabels) {
+    public void learn(NaiveBayes nb, Frame df, Var weights, String targetVar, String testVar) {
 
-        String[] targetDict = df.var(targetVar).dictionary();
-        String[] testDict = df.var(testVar).dictionary();
+        String[] targetDict = df.var(targetVar).levels();
+        String[] testDict = df.var(testVar).levels();
+
+        defaultP = 1.0 / testDict.length;
 
         invTreeTarget = new HashMap<>();
         invTreeTest = new HashMap<>();
@@ -68,12 +72,14 @@ public class MultinomialPmf implements NominalEstimator {
         }
 
         density = new double[targetDict.length][testDict.length];
-        for (int i = 0; i < targetDict.length; i++) {
-            for (int j = 0; j < testDict.length; j++) {
-                density[i][j] = 1.0;
+        if (nb.usingLaplaceSmoother()) {
+            for (int i = 0; i < targetDict.length; i++) {
+                for (int j = 0; j < testDict.length; j++) {
+                    density[i][j] = 1.0;
+                }
             }
         }
-        df.stream().forEach(s -> density[s.index(targetVar)][s.index(testVar)]++);
+        df.stream().forEach(s -> density[s.index(targetVar)][s.index(testVar)] += weights.value(s.row()));
         for (int i = 0; i < targetDict.length; i++) {
             double t = 0;
             for (int j = 0; j < testDict.length; j++) {
@@ -88,10 +94,10 @@ public class MultinomialPmf implements NominalEstimator {
     @Override
     public double cpValue(String testLabel, String targetLabel) {
         if (!invTreeTarget.containsKey(targetLabel)) {
-            return 1e-10;
+            return defaultP;
         }
         if (!invTreeTest.containsKey(testLabel)) {
-            return 1e-10;
+            return defaultP;
         }
         return density[invTreeTarget.get(targetLabel)][invTreeTest.get(testLabel)];
     }

@@ -72,13 +72,13 @@ public interface RTreeNominalMethod extends Serializable {
 
             List<RTreeCandidate> result = new ArrayList<>();
             RTreeCandidate best = null;
-            for (int i = 1; i < df.var(testColName).dictionary().length; i++) {
+            for (int i = 1; i < df.var(testColName).levels().length; i++) {
 
                 Var testVar = df.var(testColName);
-                String[] testDict = testVar.dictionary();
+                String[] testDict = testVar.levels();
 
                 List<String> labels = new ArrayList<>();
-                for (int j = 1; j < testVar.dictionary().length; j++) {
+                for (int j = 1; j < testVar.levels().length; j++) {
                     String testLabel = testDict[j];
                     if (testVar.stream().filter(s -> s.label().equals(testLabel)).count() >= c.minCount) {
                         labels.add(testLabel);
@@ -135,8 +135,8 @@ public interface RTreeNominalMethod extends Serializable {
 
             List<RTreeCandidate> result = new ArrayList<>();
             RTreeCandidate best = null;
-            for (int i = 1; i < df.var(testColName).dictionary().length; i++) {
-                String testLabel = df.var(testColName).dictionary()[i];
+            for (int i = 1; i < df.var(testColName).levels().length; i++) {
+                String testLabel = df.var(testColName).levels()[i];
 
                 if (df.stream()
                         .filter(s -> !s.missing(testColName) && s.label(testColName).equals(testLabel))

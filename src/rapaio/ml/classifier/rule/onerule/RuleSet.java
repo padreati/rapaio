@@ -33,7 +33,7 @@ import java.util.List;
  * Set of rules for one rule algorithm, one rule algorithm builds all possible rule sets and
  * select only the best one for prediction.
  * <p>
- * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 9/14/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/15.
  */
 public class RuleSet implements Serializable {
 

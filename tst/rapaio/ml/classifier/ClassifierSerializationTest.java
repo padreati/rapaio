@@ -43,7 +43,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 9/15/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/15/15.
  */
 public class ClassifierSerializationTest {
 

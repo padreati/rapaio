@@ -21,30 +21,23 @@
  *
  */
 
-package rapaio.ml.clustering.distance;
+package rapaio.ml.common.distance;
 
+import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.util.Tag;
 
 import java.io.Serializable;
 
 /**
- * Distance interface
+ * Function which produces initial centroids for KMeans algorithm
  * <p>
- * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 9/23/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/23/15.
  */
-public interface Distance extends Serializable {
+public interface KMeansInitMethod extends Serializable {
 
-    double distance(Frame s, int sRow, Frame t, int tRow, String... varNames);
+    Frame init(Frame df, String[] inputs, int k);
 
-    Tag<Distance> EUCLIDEAN = Tag.valueOf("euclidean",
-            (Frame s, int sRow, Frame t, int tRow, String... varNames) -> {
-                double total = 0;
-                for (String varName : varNames) {
-                    if (s.missing(sRow) || t.missing(tRow))
-                        continue;
-                    total += Math.pow(s.value(sRow, varName) - t.value(tRow, varName), 2);
-                }
-                return Math.sqrt(total);
-            });
+    Tag<KMeansInitMethod> FORGY = Tag.valueOf("forgy",
+            (Frame df, String[] inputs, int k) -> df.mapVars(inputs).mapRows(SamplingTools.sampleWOR(k, df.rowCount())).solidCopy());
 }

@@ -33,12 +33,13 @@ import java.util.Map;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
-@Deprecated
-public class FFAbstractStandardize extends FFAbstract {
+public class FFStandardize extends FFAbstract {
+
+    private static final long serialVersionUID = -2447577449010618416L;
 
     Map<String, VFStandardize> filters = new HashMap<>();
 
-    public FFAbstractStandardize(String... varNames) {
+    public FFStandardize(String... varNames) {
         super(varNames);
     }
 

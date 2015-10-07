@@ -104,7 +104,7 @@ public final class DTable implements Serializable {
     }
 
     private DTable(Var test, Var target, Var weights) {
-        this(test.dictionary(), target.dictionary());
+        this(test.levels(), target.levels());
 
         if (!test.type().isNominal()) throw new IllegalArgumentException("test var must be nominal");
         if (!target.type().isNominal()) throw new IllegalArgumentException("target var is not nominal");
@@ -117,7 +117,7 @@ public final class DTable implements Serializable {
     }
 
     private DTable(Var test, Var target, Var weights, String testLabel) {
-        this(new String[]{"?", testLabel, "other"}, target.dictionary());
+        this(new String[]{"?", testLabel, "other"}, target.levels());
 
         if (!test.type().isNominal()) throw new IllegalArgumentException("test var must be nominal");
         if (!target.type().isNominal()) throw new IllegalArgumentException("target var is not nominal");

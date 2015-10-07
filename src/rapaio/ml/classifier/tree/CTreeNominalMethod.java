@@ -59,8 +59,8 @@ public interface CTreeNominalMethod extends Serializable {
                 double value = function.compute(dt);
 
                 CTreeCandidate candidate = new CTreeCandidate(value, testColName);
-                for (int i = 1; i < test.dictionary().length; i++) {
-                    final String label = test.dictionary()[i];
+                for (int i = 1; i < test.levels().length; i++) {
+                    final String label = test.levels()[i];
                     candidate.addGroup(
                             String.format("%s == %s", testColName, label),
                             spot -> !spot.missing(testColName) && spot.label(testColName).equals(label));
@@ -82,7 +82,7 @@ public interface CTreeNominalMethod extends Serializable {
                 List<CTreeCandidate> result = new ArrayList<>();
                 CTreeCandidate best = null;
 
-                int[] termCount = new int[test.dictionary().length];
+                int[] termCount = new int[test.levels().length];
                 test.stream().forEach(s -> termCount[s.index()]++);
 
                 Iterator<Integer> indexes = terms.indexes(testColName).iterator();
@@ -92,7 +92,7 @@ public interface CTreeNominalMethod extends Serializable {
                         indexes.remove();
                         continue;
                     }
-                    String testLabel = df.var(testColName).dictionary()[i];
+                    String testLabel = df.var(testColName).levels()[i];
 
                     DTable dt = DTable.newBinaryFromWeights(test, target, weights, testLabel);
                     double value = function.compute(dt);

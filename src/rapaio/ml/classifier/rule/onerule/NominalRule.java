@@ -29,7 +29,7 @@ import rapaio.sys.WS;
 /**
  * Rule from one rule based algorithm for nominal variables
  * <p>
- * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 9/14/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/15.
  */
 public class NominalRule extends Rule {
 

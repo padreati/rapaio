@@ -44,7 +44,7 @@ import static rapaio.sys.WS.print;
 @Deprecated
 public class CEvaluation {
 
-    public double cv(Frame df, String classColName, Classifier c, int folds) {
+    public static double cv(Frame df, String classColName, Classifier c, int folds) {
         print("\nCrossValidation with " + folds + " folds\n");
         print("Model: " + c.fullName() + "\n");
 
@@ -81,8 +81,8 @@ public class CEvaluation {
         return correct;
     }
 
-    private List<List<Integer>> buildStrata(Frame df, int folds, String classColName) {
-        String[] dict = df.var(classColName).dictionary();
+    private static List<List<Integer>> buildStrata(Frame df, int folds, String classColName) {
+        String[] dict = df.var(classColName).levels();
         List<List<Integer>> rows = IntStream.range(0, dict.length).boxed().map(ArrayList<Integer>::new).collect(toList());
         for (int i = 0; i < df.rowCount(); i++) {
             rows.get(df.index(i, classColName)).add(i);
@@ -107,7 +107,7 @@ public class CEvaluation {
         return strata;
     }
 
-    public void multiCv(Frame df, String classColName, List<Classifier> classifiers, int folds) {
+    public static void multiCv(Frame df, String classColName, List<Classifier> classifiers, int folds) {
         print("CrossValidation with " + folds + " folds\n");
         df = new FFShuffle().filter(df);
         double[] tacc = new double[classifiers.size()];
@@ -143,7 +143,7 @@ public class CEvaluation {
 //                cm.printSummary();
                 double acc = cm.accuracy();
                 tacc[k] += acc;
-                print(String.format("CV %d, accuracy:%.6f, classifier:%s\n", i + 1, acc, c.fullName()));
+                print(String.format("CV %d, accuracy:%.6f, classifier:%s\n", i + 1, acc, c.name()));
             }
             print("-----------\n");
 
@@ -151,25 +151,25 @@ public class CEvaluation {
 
         for (int k = 0; k < classifiers.size(); k++) {
             tacc[k] /= (1. * folds);
-            print(String.format("Mean accuracy %.6f, for classifier: %s\n", tacc[k], classifiers.get(k).fullName()));
+            print(String.format("Mean accuracy %.6f, for classifier: %s\n", tacc[k], classifiers.get(k).name()));
         }
     }
 
-    public void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps) {
+    public static void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps) {
         Var weights = Numeric.newFill(df.rowCount(), 1.0);
         bootstrapValidation(df, weights, classColName, c, bootstraps, 1.0);
     }
 
-    public void bootstrapValidation(Frame df, Var weights, String classColName, Classifier c, int bootstraps) {
+    public static void bootstrapValidation(Frame df, Var weights, String classColName, Classifier c, int bootstraps) {
         bootstrapValidation(df, weights, classColName, c, bootstraps, 1.0);
     }
 
-    public void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps, double p) {
+    public static void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps, double p) {
         Var weights = Numeric.newFill(df.rowCount(), 1.0d);
         bootstrapValidation(df, weights, classColName, c, bootstraps, p);
     }
 
-    public void bootstrapValidation(Frame df, Var weights, String classColName, Classifier c, int bootstraps, double p) {
+    public static void bootstrapValidation(Frame df, Var weights, String classColName, Classifier c, int bootstraps, double p) {
         print(bootstraps + " bootstrap evaluation\n");
         double total = 0;
         double count = 0;

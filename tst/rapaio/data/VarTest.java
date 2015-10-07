@@ -44,12 +44,12 @@ public class VarTest {
         Var x = Nominal.newCopyOf("x", "y", "x", "z");
         Var y = Nominal.newCopyOf("x", "y", "x", "z");
 
-        x.setDictionary("a", "b", "c");
+        x.setLevels("a", "b", "c");
         List<String> dict = new ArrayList<>();
         dict.add("a");
         dict.add("b");
         dict.add("c");
-        y.setDictionary(dict);
+        y.setLevels(dict);
 
         assertEquals(4, x.rowCount());
         assertEquals(4, y.rowCount());

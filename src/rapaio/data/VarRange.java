@@ -119,7 +119,11 @@ public class VarRange {
                 }
             } else {
                 if (!colNames.contains(range)) {
-                    start = Integer.parseInt(range);
+                    try {
+                        start = Integer.parseInt(range);
+                    } catch (NumberFormatException ex) {
+                        continue;
+                    }
                 } else {
                     start = df.varIndex(range);
                 }

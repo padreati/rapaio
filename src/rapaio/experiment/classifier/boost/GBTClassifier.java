@@ -190,7 +190,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
                 r.addValue(y_i - p[i][k]);
             }
 
-            Frame x = df.removeVars(new VarRange(targetNames()));
+            Frame x = df.removeVars(targetNames());
             Frame train = x.bindVars(r);
 
             BTRegressor tree = classifier.newInstance();
@@ -234,6 +234,20 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
                     double p = cr.firstDensity().value(i, k + 1);
                     p += shrinkage * rr.firstFit().value(i);
                     cr.firstDensity().setValue(i, k + 1, p);
+                }
+            }
+        }
+
+        // make probabilities
+
+        for (int i = 0; i < df.rowCount(); i++) {
+            double t = 0.0;
+            for (int k = 0; k < K; k++) {
+                t += Math.exp(cr.firstDensity().value(i, k + 1));
+            }
+            if (t != 0) {
+                for (int k = 0; k < K; k++) {
+                    cr.firstDensity().setValue(i, k + 1, Math.exp(cr.firstDensity().value(i, k + 1)) / t);
                 }
             }
         }

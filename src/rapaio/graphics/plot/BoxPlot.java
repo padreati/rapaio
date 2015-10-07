@@ -54,7 +54,7 @@ public class BoxPlot extends HostFigure {
     }
 
     public BoxPlot(Var numeric, Var nominal, GOpt... opts) {
-        this.labels = nominal.dictionary();
+        this.labels = nominal.levels();
         this.vars = new Var[labels.length];
         int[] count = new int[labels.length];
         for (int i = 0; i < numeric.rowCount(); i++) {

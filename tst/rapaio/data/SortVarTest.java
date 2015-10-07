@@ -164,13 +164,13 @@ public class SortVarTest {
 
         for (int i = 0; i < sort.rowCount(); i++) {
             sort.setIndex(i, 2);
-            assertEquals(nominal.dictionary()[2], nominal.label(i));
+            assertEquals(nominal.levels()[2], nominal.label(i));
             assertEquals(2, nominal.index(i));
         }
 
-        assertEquals(nominal.dictionary().length, sort.dictionary().length);
-        for (int i = 0; i < nominal.dictionary().length; i++) {
-            assertEquals(nominal.dictionary()[i], sort.dictionary()[i]);
+        assertEquals(nominal.levels().length, sort.levels().length);
+        for (int i = 0; i < nominal.levels().length; i++) {
+            assertEquals(nominal.levels()[i], sort.levels()[i]);
         }
 
         // numeric

@@ -293,12 +293,12 @@ public final class Binary extends AbstractVar {
     }
 
     @Override
-    public String[] dictionary() {
+    public String[] levels() {
         return new String[]{"?", "true", "false"};
     }
 
     @Override
-    public void setDictionary(String... dict) {
+    public void setLevels(String... dict) {
         throw new IllegalArgumentException("Operation not implemented on binary variables");
     }
 

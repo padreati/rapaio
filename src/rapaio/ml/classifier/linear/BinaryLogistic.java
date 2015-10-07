@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.experiment.classifier.linear;
+package rapaio.ml.classifier.linear;
 
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
@@ -31,6 +31,7 @@ import rapaio.math.optimization.IRLSOptimizer;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.common.Capabilities;
+import rapaio.util.func.SFunction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,7 @@ import java.util.function.Function;
 public class BinaryLogistic extends AbstractClassifier {
 
     private static final long serialVersionUID = 1609956190070125059L;
+
     private Numeric coef;
     private int maxRuns = 1_000_000;
     private double tol = 1e-5;
@@ -110,9 +112,9 @@ public class BinaryLogistic extends AbstractClassifier {
         return logit(z);
     }
 
-    private final Function<Var, Double> logitF = this::logitReg;
+    private final SFunction<Var, Double> logitF = this::logitReg;
 
-    private final Function<Var, Double> logitFD = var -> {
+    private final SFunction<Var, Double> logitFD = var -> {
         double y = logitReg(var);
         return y * (1 - y);
     };
@@ -168,7 +170,7 @@ public class BinaryLogistic extends AbstractClassifier {
             }
             if (withDistributions) {
                 cr.firstDensity().setValue(i, 1, 1 - p);
-                cr.firstDensity().setValue(i, 1, p);
+                cr.firstDensity().setValue(i, 2, p);
             }
         }
         return cr;

@@ -23,6 +23,8 @@
 
 package rapaio.math.linear;
 
+import rapaio.util.Pair;
+
 import java.io.Serializable;
 
 /**
@@ -41,16 +43,16 @@ import java.io.Serializable;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public class QRDecomposition implements Serializable {
+public class QR implements Serializable {
 
     private static final long serialVersionUID = -8322866575684242727L;
 
     private RM QR;
     private RV Rdiag;
 
-    public QRDecomposition(RM A) {
+    public QR(RM A) {
         // Initialize.
-        QR = A.solidCopy();
+        QR = A.copy();
         Rdiag = Linear.newRVEmpty(QR.colCount());
 
         // Main loop.
@@ -170,7 +172,11 @@ public class QRDecomposition implements Serializable {
     }
 
     public RM getQR() {
-        return QR.solidCopy();
+        return QR.copy();
+    }
+
+    public Pair<RM, RM> getPairQR() {
+        return Pair.valueOf(getQ(), getR());
     }
 
     /**
@@ -191,7 +197,7 @@ public class QRDecomposition implements Serializable {
         }
 
         // Copy right hand side
-        RM X = B.solidCopy();
+        RM X = B.copy();
 
         // Compute Y = transpose(Q)*B
         for (int k = 0; k < QR.colCount(); k++) {

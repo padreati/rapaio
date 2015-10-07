@@ -30,7 +30,7 @@ import rapaio.data.*;
 import rapaio.data.filter.FFAbstractAddIntercept;
 import rapaio.datasets.Datasets;
 import rapaio.math.linear.Linear;
-import rapaio.math.linear.QRDecomposition;
+import rapaio.math.linear.QR;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.ws.Summary;
@@ -70,7 +70,7 @@ public class OLSRegressorTest {
         RM X = Linear.newRMCopyOf(df.mapVars(inputNames));
         RM Y = Linear.newRMCopyOf(df.mapVars(targetNames));
 
-        QRDecomposition qr1 = new QRDecomposition(X);
+        QR qr1 = new QR(X);
         RM beta = qr1.solve(Y);
 
         Var betaTerm = Nominal.newEmpty().withName("Term");
@@ -90,7 +90,7 @@ public class OLSRegressorTest {
 
         WS.println("sigma: " + Math.sqrt(sigma2));
 
-        RV var = c.mult(sigma2).diag();
+        RV var = c.dot(sigma2).diag();
 
         for (int i = 0; i < inputNames.length; i++) {
             betaTerm.addLabel(inputNames[i]);

@@ -424,7 +424,7 @@ public class Csv {
         public VarSlot(Csv parent, Var template) {
             this.parent = parent;
             this.type = template.type();
-            this.var = template.newInstance(0);
+            this.var = template.newInstance();
             this.text = null;
         }
 

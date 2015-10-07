@@ -52,13 +52,13 @@ public abstract class AbstractVar implements Var {
     public Var solidCopy() {
 
         // this implementation is useful for non-solid variables like bounded or mapped
-        // all solid implementations have their own version of solidCopy method
+        // all solid implementations have their own version of copy method
 
         switch (type()) {
             case NOMINAL:
-                return stream().map(VSpot::label).collect(Nominal.collector());
+                return stream().map(VSpot::label).collect(Nominal.collector()).withName(name());
             case ORDINAL:
-                Ordinal ord = Ordinal.newEmpty(rowCount(), dictionary()).withName(name());
+                Ordinal ord = Ordinal.newEmpty(rowCount(), levels()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
                     ord.setLabel(i, label(i));
                 }
@@ -76,7 +76,7 @@ public abstract class AbstractVar implements Var {
                 }
                 return stamp;
             case NUMERIC:
-                return stream().map(VSpot::value).collect(Numeric.collector());
+                return stream().map(VSpot::value).collect(Numeric.collector()).withName(name());
             case BINARY:
                 Binary bin = Binary.newEmpty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {

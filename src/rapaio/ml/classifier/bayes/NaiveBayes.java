@@ -24,7 +24,6 @@
 package rapaio.ml.classifier.bayes;
 
 import rapaio.data.VarType;
-import rapaio.printer.Printer;
 import rapaio.sys.WS;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
@@ -36,15 +35,10 @@ import rapaio.ml.classifier.bayes.estimator.MultinomialPmf;
 import rapaio.ml.classifier.bayes.estimator.NominalEstimator;
 import rapaio.ml.classifier.bayes.estimator.NumericEstimator;
 import rapaio.ml.common.Capabilities;
+import rapaio.util.FJPool;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -120,6 +114,10 @@ public class NaiveBayes extends AbstractClassifier {
         return this;
     }
 
+    public boolean usingLaplaceSmoother() {
+        return useLaplaceSmoother;
+    }
+
     @Override
     public NaiveBayes learn(Frame df, Var weights, String... targetVarNames) {
 
@@ -162,7 +160,7 @@ public class NaiveBayes extends AbstractClassifier {
                     }
                     if (df.var(testCol).type().isNominal()) {
                         NominalEstimator estimator = nomEstimator.newInstance();
-                        estimator.learn(df, weights, firstTargetName(), testCol);
+                        estimator.learn(this, df, weights, firstTargetName(), testCol);
                         nomMap.put(testCol, estimator);
                         if (debug())
                             WS.print(".");
@@ -193,8 +191,9 @@ public class NaiveBayes extends AbstractClassifier {
                             sumLog += Math.log(numMap.get(testCol).cpValue(df.value(i, testCol), firstDictTerm(j)));
                         }
                         for (String testCol : nomMap.keySet()) {
-                            if (df.missing(i, testCol))
+                            if (df.missing(i, testCol)) {
                                 continue;
+                            }
                             sumLog += Math.log(nomMap.get(testCol).cpValue(df.label(i, testCol), firstDictTerm(j)));
                         }
                         dv.increment(j, Math.exp(sumLog));
@@ -205,7 +204,7 @@ public class NaiveBayes extends AbstractClassifier {
                         pred.firstClasses().setIndex(i, dv.findBestIndex(false));
                     }
                     if (withDensities) {
-                        for (int j = 0; j < firstDict().length; j++) {
+                        for (int j = 1; j < firstDict().length; j++) {
                             pred.firstDensity().setValue(i, j, dv.get(j));
                         }
                     }

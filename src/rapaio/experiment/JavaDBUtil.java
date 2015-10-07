@@ -138,7 +138,7 @@ public class JavaDBUtil {
                     vars.add(v1);
                     break;
                 default:
-                    HashSet<String> dict = new HashSet<>();
+                    ArrayList<String> dict = new ArrayList<>();
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         dict.add((String) lists.get(i).get(j));
                     }

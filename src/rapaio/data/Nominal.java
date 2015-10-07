@@ -23,9 +23,6 @@
 
 package rapaio.data;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -36,14 +33,14 @@ import java.util.stream.Collector;
 /**
  * Nominal var contains values for categorical observations where order of labels is not important.
  * <p>
- * The domain of the definition is called dictionary and is given at construction time or can be changed latter.
+ * The domain of the definition is called levels and is given at construction time or can be changed latter.
  * <p>
  * This type of variable accepts two value representation: as labels and as indexes.
  * <p>
  * Label representation is the natural representation since in experiments
  * the nominal vectors are given as string values.
  * <p>
- * The index representation is learn based on the term dictionary and is used often for performance
+ * The index representation is learn based on the term levels and is used often for performance
  * reasons instead of label representation, where the actual label value does not matter.
  * <p>
  * Even if index values is an integer number the order of the indexes for
@@ -65,10 +62,10 @@ public final class Nominal extends FactorBase {
     }
 
     /**
-     * Builds a new nominal variable of given size, with given term dictionary, filled with missing values.
+     * Builds a new nominal variable of given size, with given term levels, filled with missing values.
      *
      * @param rows variable size
-     * @param dict term dictionary
+     * @param dict term levels
      * @return new variable instance of nominal type
      */
     public static Nominal newEmpty(int rows, String... dict) {
@@ -76,13 +73,13 @@ public final class Nominal extends FactorBase {
     }
 
     /**
-     * Builds a new nominal variable of given size, with given term dictionary, filled with missing values.
+     * Builds a new nominal variable of given size, with given term levels, filled with missing values.
      *
      * @param rows variable size
-     * @param dict term dictionary
+     * @param dict term levels
      * @return new variable instance of nominal type
      */
-    public static Nominal newEmpty(int rows, Collection<String> dict) {
+    public static Nominal newEmpty(int rows, List<String> dict) {
         Nominal nominal = new Nominal();
         HashSet<String> used = new HashSet<>();
         used.add("?");
@@ -135,7 +132,7 @@ public final class Nominal extends FactorBase {
 
     @Override
     public Nominal solidCopy() {
-        Nominal copy = Nominal.newEmpty(rowCount(), dictionary()).withName(name());
+        Nominal copy = Nominal.newEmpty(rowCount(), levels()).withName(name());
         for (int i = 0; i < rowCount(); i++) {
             copy.setLabel(i, label(i));
         }
@@ -144,12 +141,12 @@ public final class Nominal extends FactorBase {
 
     @Override
     public Var newInstance() {
-        return Nominal.newEmpty(0, dictionary());
+        return Nominal.newEmpty(0, levels());
     }
 
     @Override
     public Var newInstance(int rows) {
-        return Nominal.newEmpty(rows, dictionary());
+        return Nominal.newEmpty(rows, levels());
     }
 
     public static Collector<String, Nominal, Nominal> collector() {

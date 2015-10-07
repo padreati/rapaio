@@ -341,12 +341,12 @@ public final class Numeric extends AbstractVar {
     }
 
     @Override
-    public String[] dictionary() {
+    public String[] levels() {
         throw new RuntimeException("Operation not available for numeric vectors.");
     }
 
     @Override
-    public void setDictionary(String[] dict) {
+    public void setLevels(String[] dict) {
         throw new RuntimeException("Operation not available for numeric vectors.");
     }
 

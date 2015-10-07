@@ -31,9 +31,7 @@ import rapaio.sys.WS;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.stream.StreamSupport;
 
 import static rapaio.sys.WS.code;
 import static rapaio.sys.WS.getPrinter;
@@ -70,7 +68,7 @@ public class Summary {
         int len = (int) Math.ceil(varCount * 1.0 / cols);
 
         List<Var> vars = new ArrayList<>();
-        for (int i = 0; i < cols; i++) {
+        for (int i = 0; i < Math.min(cols, varCount); i++) {
             Var pos = Nominal.newEmpty().withName(String.format("%" + (i * 2 + 1) + "s", " "));
             Var name = Nominal.newEmpty().withName(String.format("%" + (i * 2 + 2) + "s", " "));
             for (int j = 0; j < len; j++) {
@@ -157,8 +155,8 @@ public class Summary {
             }
 
             if (v.type().isNominal()) {
-                int[] hits = new int[v.dictionary().length];
-                int[] indexes = new int[v.dictionary().length];
+                int[] hits = new int[v.levels().length];
+                int[] indexes = new int[v.levels().length];
                 for (int j = 0; j < df.rowCount(); j++) {
                     hits[v.index(j)]++;
                     indexes[v.index(j)] = j;

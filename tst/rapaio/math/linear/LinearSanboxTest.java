@@ -21,23 +21,28 @@
  *
  */
 
-package rapaio.ml.clustering.distance;
+package rapaio.math.linear;
 
-import rapaio.core.SamplingTools;
-import rapaio.data.Frame;
-import rapaio.util.Tag;
-
-import java.io.Serializable;
+import org.junit.Test;
+import rapaio.sys.WS;
+import rapaio.util.Pair;
 
 /**
- * Function which produces initial centroids for KMeans algorithm
- * <p>
- * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 9/23/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/7/15.
  */
-public interface KMeansInitMethod extends Serializable {
+public class LinearSanboxTest {
 
-    Frame init(Frame df, String[] inputs, int k);
+    @Test
+    public void eigenValueTest() {
 
-    Tag<KMeansInitMethod> FORGY = Tag.valueOf("forgy",
-            (Frame df, String[] inputs, int k) -> df.mapVars(inputs).mapRows(SamplingTools.sampleWOR(k, df.rowCount())).solidCopy());
+        RM A = Linear.newRMWrapOf(4, 4,
+                52, 30, 49, 28,
+                30, 50, 8, 44,
+                49, 8, 46, 16,
+                28, 44, 16, 22);
+
+        EigenPair ep = Linear.pdEigenDecomp(A, 100, 1e-20);
+        ep.values().printSummary();
+        ep.vectors().printSummary();
+    }
 }

@@ -274,12 +274,12 @@ public class Stamp extends AbstractVar {
     }
 
     @Override
-    public String[] dictionary() {
+    public String[] levels() {
         throw new IllegalArgumentException("Operation not available for stamp variable");
     }
 
     @Override
-    public void setDictionary(String[] dict) {
+    public void setLevels(String[] dict) {
         throw new IllegalArgumentException("Operation not available for stamp variable");
     }
 

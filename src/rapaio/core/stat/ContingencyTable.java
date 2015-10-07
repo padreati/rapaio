@@ -30,10 +30,9 @@ import rapaio.ws.Summary;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 /**
- * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 9/18/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/18/15.
  */
 public class ContingencyTable implements Printable {
 
@@ -55,8 +54,8 @@ public class ContingencyTable implements Printable {
 
         xName = x.name();
         yName = y.name();
-        xNames = x.dictionary().clone();
-        yNames = y.dictionary().clone();
+        xNames = x.levels().clone();
+        yNames = y.levels().clone();
         freq = new int[xNames.length][yNames.length];
         perc = new double[xNames.length][yNames.length];
 

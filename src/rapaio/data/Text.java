@@ -150,12 +150,12 @@ public class Text extends AbstractVar {
     }
 
     @Override
-    public String[] dictionary() {
+    public String[] levels() {
         return new String[0];
     }
 
     @Override
-    public void setDictionary(String[] dict) {
+    public void setLevels(String[] dict) {
         throw new RuntimeException("This operation is not available for text variables");
     }
 

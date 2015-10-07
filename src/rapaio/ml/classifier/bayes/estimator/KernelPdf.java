@@ -64,7 +64,7 @@ public class KernelPdf implements NumericEstimator {
     @Override
     public void learn(Frame df, String targetVar, String testVar) {
         kde.clear();
-        Arrays.stream(df.var(targetVar).dictionary()).forEach(
+        Arrays.stream(df.var(targetVar).levels()).forEach(
                 classLabel -> {
                     if ("?".equals(classLabel))
                         return;

@@ -79,14 +79,14 @@ public class DVector implements Serializable {
      * Builds a distribution vector as a frequency table from a
      * given nominal variable. For each cell value it will hold
      * the number of appearances and will have the cell names
-     * from the dictionary of the nominal value given as input.
+     * from the levels of the nominal value given as input.
      *
      * @param var given nominal value
      * @return new distribution vector filled with counts
      */
     public static DVector newFromCount(Var var) {
         Var weights = Numeric.newFill(var.rowCount(), 1);
-        return new DVector(var.dictionary(), var, weights);
+        return new DVector(var.levels(), var, weights);
     }
 
     /**
@@ -99,7 +99,7 @@ public class DVector implements Serializable {
      * @return new distribution variable
      */
     public static DVector newFromWeights(Var var, Var weights) {
-        return new DVector(var.dictionary(), var, weights);
+        return new DVector(var.levels(), var, weights);
     }
 
     /**

@@ -28,14 +28,14 @@ import java.util.*;
 /**
  * Ordinal variables contains values for categorical observations where order of labels is important.
  * <p>
- * The domain of the definition is called dictionary and is given at construction time or can be changed latter.
+ * The domain of the definition is called levels and is given at construction time or can be changed latter.
  * <p>
  * This type of variable accepts two value representation: as labels and as indexes.
  * <p>
  * Label representation is the natural representation since in experiments
  * the nominal vectors are given as string values.
  * <p>
- * The index representation is learn based on the term dictionary and is used often for performance
+ * The index representation is learn based on the term levels and is used often for performance
  * reasons instead of label representation, where the actual label value does not matter.
  * <p>
  * Index values can be used to compare to values, however other numeric statistics such as mean
@@ -59,10 +59,10 @@ public final class Ordinal extends FactorBase {
     }
 
     /**
-     * Builds a new ordinal variable with given dictionary and of give size filled with missing values.
+     * Builds a new ordinal variable with given levels and of give size filled with missing values.
      *
      * @param rows variable size
-     * @param dict term dictionary
+     * @param dict term levels
      * @return new variable instance of ordinal type
      */
     public static Ordinal newEmpty(int rows, String... dict) {
@@ -70,10 +70,10 @@ public final class Ordinal extends FactorBase {
     }
 
     /**
-     * Builds a new  ordinal variable with given dictionary and of given size filled with missing values.
+     * Builds a new  ordinal variable with given levels and of given size filled with missing values.
      *
      * @param rows variable size
-     * @param dict term dictionary
+     * @param dict term levels
      * @return new variable instance of ordinal type
      */
     public static Ordinal newEmpty(int rows, Collection<String> dict) {
@@ -120,7 +120,7 @@ public final class Ordinal extends FactorBase {
 
     @Override
     public Ordinal solidCopy() {
-        Ordinal copy = Ordinal.newEmpty(rowCount(), dictionary()).withName(name());
+        Ordinal copy = Ordinal.newEmpty(rowCount(), levels()).withName(name());
         for (int i = 0; i < rowCount(); i++) {
             copy.setLabel(i, label(i));
         }
@@ -129,12 +129,12 @@ public final class Ordinal extends FactorBase {
 
     @Override
     public Var newInstance() {
-        return Ordinal.newEmpty(0, dictionary());
+        return Ordinal.newEmpty(0, levels());
     }
 
     @Override
     public Var newInstance(int rows) {
-        return Ordinal.newEmpty(rows, dictionary());
+        return Ordinal.newEmpty(rows, levels());
     }
 
     @Override

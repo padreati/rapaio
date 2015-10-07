@@ -23,6 +23,11 @@
 
 package rapaio.math.linear;
 
+import rapaio.math.linear.impl.MappedRM;
+import rapaio.math.linear.impl.MappedRowRV;
+import rapaio.math.linear.impl.SolidRM;
+import rapaio.math.linear.impl.SolidRV;
+
 /**
  * Real valued vector interface
  * <p>
@@ -84,4 +89,26 @@ public interface RV extends RM {
         }
         return s;
     }
+
+    /**
+     * Makes a solid copy of the matrix
+     *
+     * @return new solid copy of the matrix
+     */
+    default RV copy() {
+        if (rowCount() > colCount()) {
+            RV rv = new SolidRV(rowCount());
+            for (int i = 0; i < rowCount(); i++) {
+                rv.set(i, get(i));
+            }
+            return rv;
+        } else {
+            RV rv = new SolidRV(colCount());
+            for (int i = 0; i < colCount(); i++) {
+                rv.set(i, get(i));
+            }
+            return rv;
+        }
+    }
+
 }

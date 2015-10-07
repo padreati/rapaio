@@ -23,6 +23,8 @@
 
 package rapaio.data;
 
+import rapaio.math.linear.RM;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -111,6 +113,26 @@ public class SolidFrame extends AbstractFrame {
         return SolidFrame.newWrapOf(rows, vars);
     }
 
+    public static Frame newMatrix(RM rm, String... varNames) {
+        Frame df = newMatrix(rm.rowCount(), varNames);
+        for (int i = 0; i < rm.rowCount(); i++) {
+            for (int j = 0; j < rm.colCount(); j++) {
+                df.setValue(i, j, rm.get(i, j));
+            }
+        }
+        return df;
+    }
+
+    public static Frame newMatrix(RM rm, List<String> varNames) {
+        Frame df = newMatrix(rm.rowCount(), varNames);
+        for (int i = 0; i < rm.rowCount(); i++) {
+            for (int j = 0; j < rm.colCount(); j++) {
+                df.setValue(i, j, rm.get(i, j));
+            }
+        }
+        return df;
+    }
+
     // private constructor
 
     private SolidFrame(int rows, List<Var> vars) {
@@ -126,7 +148,7 @@ public class SolidFrame extends AbstractFrame {
         this.names = new String[vars.size()];
 
         for (int i = 0; i < vars.size(); i++) {
-            this.vars[i] = vars.get(i); //.solidCopy();
+            this.vars[i] = vars.get(i); //.copy();
             this.colIndex.put(this.vars[i].name(), i);
             this.names[i] = this.vars[i].name();
         }

@@ -27,7 +27,7 @@ import org.junit.Test;
 import rapaio.data.Nominal;
 
 /**
- * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 9/18/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/18/15.
  */
 public class ContingencyTableTest {
 

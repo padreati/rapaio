@@ -69,7 +69,7 @@ public class BarChart extends HostFigure {
             throw new IllegalArgumentException("categories are nominal only");
         }
         if (condition == null) {
-            condition = Nominal.newEmpty(category.rowCount(), new HashSet<>());
+            condition = Nominal.newEmpty(category.rowCount(), new ArrayList<>());
         }
         if (!condition.type().isNominal()) {
             throw new IllegalArgumentException("conditions are nominal only");
@@ -91,7 +91,7 @@ public class BarChart extends HostFigure {
         bottomMarkers(true);
 
         int shift = 9;
-        options.apply(Plotter.color(Index.newSeq(shift, condition.dictionary().length)));
+        options.apply(Plotter.color(Index.newSeq(shift, condition.levels().length)));
         options.apply(opts);
     }
 
@@ -122,8 +122,8 @@ public class BarChart extends HostFigure {
         if (range == null) {
 
             // learn preliminaries
-            int width = category.dictionary().length;
-            int height = condition.dictionary().length;
+            int width = category.levels().length;
+            int height = condition.levels().length;
 
             totals = new double[width];
             hits = new double[width][height];
@@ -222,7 +222,7 @@ public class BarChart extends HostFigure {
             if (totals[aSel] == 0)
                 continue;
             bottomMarkersPos.add(xspotwidth * (0.5 + cnt));
-            bottomMarkersMsg.add(category.dictionary()[aSel]);
+            bottomMarkersMsg.add(category.levels()[aSel]);
             cnt++;
         }
     }
@@ -237,7 +237,7 @@ public class BarChart extends HostFigure {
                 continue;
 
             double ystart = 0;
-            for (int j = 0; j < condition.dictionary().length; j++) {
+            for (int j = 0; j < condition.levels().length; j++) {
                 double yend = ystart + hits[aSel][j];
 
                 int[] x = {

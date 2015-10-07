@@ -23,15 +23,11 @@
 
 package rapaio.ml.clustering;
 
-import rapaio.core.CoreTools;
 import rapaio.core.stat.Mean;
-import rapaio.core.stat.Variance;
 import rapaio.data.*;
 import rapaio.data.filter.Filters;
-import rapaio.graphics.Plotter;
-import rapaio.graphics.plot.Plot;
-import rapaio.ml.clustering.distance.Distance;
-import rapaio.ml.clustering.distance.KMeansInitMethod;
+import rapaio.ml.common.distance.Distance;
+import rapaio.ml.common.distance.KMeansInitMethod;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
 import rapaio.util.Tag;
@@ -45,7 +41,6 @@ import java.util.stream.IntStream;
 import static java.util.stream.Collectors.toList;
 import static rapaio.core.CoreTools.mean;
 import static rapaio.core.CoreTools.var;
-import static rapaio.graphics.Plotter.plot;
 
 /**
  * KMeans clusterization algorithm

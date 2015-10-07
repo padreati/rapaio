@@ -27,7 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import rapaio.math.linear.LUDecomposition;
 import rapaio.math.linear.Linear;
-import rapaio.math.linear.QRDecomposition;
+import rapaio.math.linear.QR;
 import rapaio.math.linear.RM;
 
 import static org.junit.Assert.assertTrue;
@@ -101,11 +101,11 @@ public class MatrixMathTest {
                 0, 1, 0,
                 0, 0, 1);
 
-        RM invC = new QRDecomposition(C).solve(I);
+        RM invC = new QR(C).solve(I);
         invC.printSummary();
-        C.mult(invC);
+        C.dot(invC);
         invC = new LUDecomposition(C).solve(I);
         invC.printSummary();
-        C.mult(invC);
+        C.dot(invC);
     }
 }

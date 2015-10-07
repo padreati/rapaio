@@ -119,7 +119,7 @@ public class CFit implements Printable {
     }
 
     /**
-     * Returns dictionary used at learning times for first target variables
+     * Returns levels used at learning times for first target variables
      *
      * @return map with target variable names as key and dictionaries as variables
      */
@@ -128,7 +128,7 @@ public class CFit implements Printable {
     }
 
     /**
-     * Returns dictionary used at learning time for the given target variable
+     * Returns levels used at learning time for the given target variable
      */
     public String[] dictionary(String targetVar) {
         return dictionaries.get(targetVar);

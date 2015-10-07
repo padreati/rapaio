@@ -52,7 +52,7 @@ public final class ExperimentalTools implements Serializable {
     public static List<Frame> consolidate(List<Frame> source) {
 
         // learn reunion of labels for all columns
-        HashMap<String, HashSet<String>> dicts = new HashMap<>();
+        HashMap<String, ArrayList<String>> dicts = new HashMap<>();
         for (int i = 0; i < source.size(); i++) {
             for (Frame frame : source) {
                 for (String colName : frame.varNames()) {
@@ -60,9 +60,9 @@ public final class ExperimentalTools implements Serializable {
                         continue;
                     }
                     if (!dicts.containsKey(colName)) {
-                        dicts.put(colName, new HashSet<>());
+                        dicts.put(colName, new ArrayList<>());
                     }
-                    dicts.get(colName).addAll(Arrays.asList(frame.var(colName).dictionary()));
+                    dicts.get(colName).addAll(Arrays.asList(frame.var(colName).levels()));
                 }
             }
         }

@@ -29,6 +29,7 @@ import rapaio.data.Var;
 import rapaio.data.filter.FFRefSort;
 import rapaio.data.filter.VFToNumeric;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
@@ -43,7 +44,7 @@ public class FFilterNominalToDoubleTest {
     @Test
     public void testNormalCase() {
         int n = 10;
-        HashSet<String> dict = new HashSet<>();
+        ArrayList<String> dict = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             dict.add(String.valueOf(Math.pow(i, 1.5)));
         }

@@ -24,12 +24,8 @@
 package rapaio.experiment.sandbox;
 
 import rapaio.experiment.classifier.svm.BinarySMO;
-import rapaio.experiment.classifier.svm.kernel.InverseMultiQuadraticKernel;
-import rapaio.experiment.classifier.svm.kernel.MinKernel;
-import rapaio.experiment.classifier.svm.kernel.RBFKernel;
 import rapaio.experiment.classifier.svm.kernel.SigmoidKernel;
 import rapaio.graphics.Plotter;
-import rapaio.ml.classifier.bayes.NaiveBayes;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Maximum;
@@ -43,7 +39,7 @@ import rapaio.graphics.plot.Points;
 import rapaio.graphics.plot.plotcomp.MeshContour;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
-import rapaio.experiment.classifier.linear.BinaryLogistic;
+import rapaio.ml.classifier.linear.BinaryLogistic;
 import rapaio.ws.Summary;
 
 import java.io.IOException;

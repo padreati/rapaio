@@ -90,7 +90,7 @@ public class MappedVarTest {
     @Test
     public void testMappedNominal() {
         Var x = Nominal.newCopyOf("a").mapRows(0);
-        x.setDictionary("x");
+        x.setLevels("x");
         assertEquals("x", x.label(0));
     }
 

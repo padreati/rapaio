@@ -193,7 +193,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                 .withLearnType(Capabilities.LearnType.BINARY_CLASSIFIER)
                 .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NOMINAL, VarType.NUMERIC)
                 .withInputCount(1, 10000)
-                .withAllowMissingInputValues(false)
+                .withAllowMissingInputValues(true)
                 .withTargetTypes(VarType.NOMINAL)
                 .withTargetCount(1, 1)
                 .withAllowMissingTargetValues(false);

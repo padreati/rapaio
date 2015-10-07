@@ -212,12 +212,12 @@ public class BoundVarTest {
         } catch (Throwable ignore) {
         }
 
-        assertEquals("a", x.dictionary()[1]);
-        assertEquals("b", x.dictionary()[2]);
-        assertEquals(3, x.dictionary().length);
+        assertEquals("a", x.levels()[1]);
+        assertEquals("b", x.levels()[2]);
+        assertEquals(3, x.levels().length);
 
         try {
-            x.setDictionary("c", "d");
+            x.setLevels("c", "d");
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }

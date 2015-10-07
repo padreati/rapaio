@@ -135,12 +135,12 @@ public abstract class FactorBase extends AbstractVar {
     }
 
     @Override
-    public String[] dictionary() {
+    public String[] levels() {
         return dict.toArray(new String[dict.size()]);
     }
 
     @Override
-    public void setDictionary(String... dict) {
+    public void setLevels(String... dict) {
         List<String> oldDict = this.dict;
         if (dict.length > 0 && !dict[0].equals("?")) {
             String[] newDict = new String[dict.length + 1];
@@ -150,7 +150,7 @@ public abstract class FactorBase extends AbstractVar {
         }
 
         if (this.dict.size() > dict.length) {
-            throw new IllegalArgumentException("new dictionary does not contains all old labels");
+            throw new IllegalArgumentException("new levels does not contains all old labels");
         }
 
         this.dict = new ArrayList<>();

@@ -253,12 +253,12 @@ public class BinaryTest {
         } catch(Throwable ignored) {}
 
         try {
-            bin.setDictionary("a");
+            bin.setLevels("a");
             assertTrue("This should raise an exception", false);
         } catch(Throwable ignored) {}
 
         try {
-            bin.dictionary();
+            bin.levels();
             assertTrue("This should raise an exception", false);
         } catch(Throwable ignored) {}
     }

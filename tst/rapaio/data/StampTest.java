@@ -44,7 +44,7 @@ public class StampTest {
         assertFalse(stamp.type().isNominal());
 
         try {
-            stamp.dictionary();
+            stamp.levels();
             assertTrue(false);
         } catch (RuntimeException ex) {
             assertTrue(true);
@@ -215,7 +215,7 @@ public class StampTest {
     public void testSetDictionary() {
         Stamp x = Stamp.newCopyOf(1, 2, 3);
         expected.expect(IllegalArgumentException.class);
-        x.setDictionary(new String[]{"x"});
+        x.setLevels(new String[]{"x"});
     }
 
     @Test

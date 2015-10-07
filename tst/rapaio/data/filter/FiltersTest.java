@@ -147,16 +147,16 @@ public class FiltersTest {
     @Test
     public void powerTransform() {
 //        Numeric x = Numeric.newSeq(1, 100);
-//        Var x1 = transformPower(x.solidCopy(), 0);
+//        Var x1 = transformPower(x.copy(), 0);
 //        WS.draw(plot()
-//                        .lines(x, transformPower(x.solidCopy(), -0.5), color(1))
-//                        .lines(x, transformPower(x.solidCopy(), -0.1), color(2))
-//                        .lines(x, transformPower(x.solidCopy(), 0), color(3))
-//                        .lines(x, transformPower(x.solidCopy(), 0.1), color(4))
-//                        .lines(x, transformPower(x.solidCopy(), 0.5), color(5))
-//                        .lines(x, transformPower(x.solidCopy(), 1), color(6))
-//                        .lines(x, transformPower(x.solidCopy(), 1.5), color(7))
-//                        .lines(x, transformPower(x.solidCopy(), 2), color(8))
+//                        .lines(x, transformPower(x.copy(), -0.5), color(1))
+//                        .lines(x, transformPower(x.copy(), -0.1), color(2))
+//                        .lines(x, transformPower(x.copy(), 0), color(3))
+//                        .lines(x, transformPower(x.copy(), 0.1), color(4))
+//                        .lines(x, transformPower(x.copy(), 0.5), color(5))
+//                        .lines(x, transformPower(x.copy(), 1), color(6))
+//                        .lines(x, transformPower(x.copy(), 1.5), color(7))
+//                        .lines(x, transformPower(x.copy(), 2), color(8))
 //        );
 
         RandomSource.setSeed(1);

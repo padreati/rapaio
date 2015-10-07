@@ -30,7 +30,7 @@ import java.util.Optional;
  * Utility class for a tagged object. A tagged object is an object which has a name.
  * Tag objects has a name and a value.
  * <p>
- * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 9/25/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/25/15.
  */
 public final class Tag<T extends Serializable> implements Serializable {
 

@@ -95,7 +95,7 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
 
     private void writeBuffer() throws IOException {
 
-        // initialize dictionary
+        // initialize levels
         strTerms = new String[0];
         strTermDict = new HashMap<>();
         strTermIndex = new HashMap<>();
@@ -106,14 +106,14 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
         // here we build the term index
         buildDictionary();
 
-        // then we write the str term dictionary
+        // then we write the str term levels
         os.write(BLOCK_STR_TERM_LIST);
         os.writeInt(strTerms.length);
         for (String strTerm : strTerms) {
             writeBuff(strTermDict.get(strTerm));
         }
 
-        // then we write the num term dictionary
+        // then we write the num term levels
         os.write(BLOCK_NUM_TERM_LIST);
         os.writeInt(numTerms.length);
         for (String numTerm : numTerms) {

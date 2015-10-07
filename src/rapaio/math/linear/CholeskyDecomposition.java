@@ -40,22 +40,46 @@ import java.io.Serializable;
 @Deprecated
 public class CholeskyDecomposition implements Serializable {
 
-    private static final long serialVersionUID = -1126524427424976562L;
-    private double[][] L; // Array for internal storage of decomposition.
-    private int n; // Row and column dimension (square matrix).
-
-    private boolean isspd; // Symmetric and positive definite flag.
+    /*
+     * ------------------------ Class variables ------------------------
+     */
 
     /**
-     * Cholesky algorithm for symmetric and positive definite matrix. Structure
-     * to access L and isspd flag.
+     * Array for internal storage of decomposition.
+     *
+     * @serial internal array storage.
+     */
+    private double[][] L;
+
+    /**
+     * Row and column dimension (square matrix).
+     *
+     * @serial matrix dimension.
+     */
+    private int n;
+
+    /**
+     * Symmetric and positive definite flag.
+     *
+     * @serial is symmetric and positive definite flag.
+     */
+    private boolean isspd;
+
+    /*
+     * ------------------------ Constructor ------------------------
+     */
+
+    /**
+     * Cholesky algorithm for symmetric and positive definite matrix.
      *
      * @param Arg Square, symmetric matrix.
+     * @return Structure to access L and isspd flag.
      */
+
     public CholeskyDecomposition(RM Arg) {
 
         // Initialize.
-        RM A = Arg.solidCopy();
+        RM A = Arg.copy();
         n = Arg.rowCount();
         L = new double[n][n];
         isspd = (Arg.colCount() == n);
@@ -82,64 +106,52 @@ public class CholeskyDecomposition implements Serializable {
         }
     }
 
-//    /**
-//     * Right Triangular Cholesky Decomposition.
-//     * <p>
-//     * <P> For a symmetric,
-//     * positive definite matrix A, the Right Cholesky decomposition is an upper
-//     * triangular matrix R so that A = R'*R. This constructor computes R with
-//     * the Fortran inspired column oriented algorithm used in LINPACK and
-//     * MATLAB. In Java, we suspect a row oriented, lower triangular
-//     * decomposition is faster. We have temporarily included this constructor
-//     * here until timing experiments confirm this suspicion.
-//     */
-//     /* Array for internal storage of right triangular decomposition. */
-//    private transient double[][] R;
-//
-//    /**
-//     * Cholesky algorithm for symmetric and positive definite matrix. Square, symmetric rapaio.data.matrix. @param rightflag Actual value ignored.
-//     */
-//    public CholeskyDecomposition(RM Arg, int rightflag) { // Initialize.
-//        RM A = Arg.solidCopy();
-//        n = Arg.colCount();
-//        R = new
-//                double[n][n];
-//        isspd = (Arg.colCount() == n);
-//        // Main loop.
-//        for (int j = 0; j < n; j++) {
-//            double d = 0.0;
-//            for (int k = 0; k < j; k++) {
-//                double s = A.get(k, j);
-//                for (int i = 0; i < k; i++) {
-//                    s = s -
-//                            R[i][k] * R[i][j];
-//                }
-//                R[k][j] = s = s / R[k][k];
-//                d = d + s * s;
-//                isspd = isspd & (A.get(k, j) == A.get(j, k));
-//            }
-//            d = A.get(j, j) - d;
-//            isspd = isspd & (d > 0.0);
-//            R[j][j] = Math.sqrt(Math.max(d, 0.0));
-//            for (int k = j + 1; k < n; k++) {
-//                R[k][j] = 0.0;
-//            }
-//        }
-//    }
-//
-//    /**
-//     * Return upper triangular factor. @return R
-//     */
-//    public RM getR() {
-//        return Linear.newCopyOf(R);
-//    }
+    /*
+     * ------------------------ Temporary, experimental code.
+     * ------------------------ *\
+     *
+     * \** Right Triangular Cholesky Decomposition. <P> For a symmetric,
+     * positive definite matrix A, the Right Cholesky decomposition is an upper
+     * triangular matrix R so that A = R'*R. This constructor computes R with
+     * the Fortran inspired column oriented algorithm used in LINPACK and
+     * MATLAB. In Java, we suspect a row oriented, lower triangular
+     * decomposition is faster. We have temporarily included this constructor
+     * here until timing experiments confirm this suspicion. \
+     *
+     * \** Array for internal storage of right triangular decomposition. **\
+     * private transient double[][] R;
+     *
+     * \** Cholesky algorithm for symmetric and positive definite matrix. @param
+     * A Square, symmetric matrix. @param rightflag Actual value ignored.
+     * @return Structure to access R and isspd flag. \
+     *
+     * public CholeskyDecomposition (Matrix Arg, int rightflag) { // Initialize.
+     * double[][] A = Arg.getArray(); n = Arg.getColumnDimension(); R = new
+     * double[n][n]; isspd = (Arg.getColumnDimension() == n); // Main loop. for
+     * (int j = 0; j < n; j++) { double d = 0.0; for (int k = 0; k < j; k++) {
+     * double s = A[k][j]; for (int i = 0; i < k; i++) { s = s -
+     * R[i][k]*R[i][j]; } R[k][j] = s = s/R[k][k]; d = d + s*s; isspd = isspd &
+     * (A[k][j] == A[j][k]); } d = A[j][j] - d; isspd = isspd & (d > 0.0);
+     * R[j][j] = Math.sqrt(Math.max(d,0.0)); for (int k = j+1; k < n; k++) {
+     * R[k][j] = 0.0; } } }
+     *
+     * \** Return upper triangular factor. @return R \
+     *
+     * public Matrix getR () { return new Matrix(R,n,n); }
+     *  \* ------------------------ End of temporary code.
+     * ------------------------
+     */
 
+    /*
+     * ------------------------ Public Methods ------------------------
+     */
 
     /**
      * Is the matrix symmetric and positive definite?
      *
      * @return true if A is symmetric and positive definite.
      */
+
     public boolean isSPD() {
         return isspd;
     }
@@ -149,6 +161,7 @@ public class CholeskyDecomposition implements Serializable {
      *
      * @return L
      */
+
     public RM getL() {
         return Linear.newRMCopyOf(L);
     }
@@ -161,6 +174,7 @@ public class CholeskyDecomposition implements Serializable {
      * @throws IllegalArgumentException Matrix row dimensions must agree.
      * @throws RuntimeException         Matrix is not symmetric positive definite.
      */
+
     public RM solve(RM B) {
         if (B.rowCount() != n) {
             throw new IllegalArgumentException("Matrix row dimensions must agree.");
@@ -170,13 +184,14 @@ public class CholeskyDecomposition implements Serializable {
         }
 
         // Copy right hand side.
-        RM X = B.solidCopy();
+        RM X = B.copy();
+        int nx = B.colCount();
 
         // Solve L*Y = B;
         for (int k = 0; k < n; k++) {
-            for (int j = 0; j < X.colCount(); j++) {
+            for (int j = 0; j < nx; j++) {
                 for (int i = 0; i < k; i++) {
-                    X.increment(k, j, -X.get(i, j) * L[k][i]);
+                    X.set(k, j, X.get(k, j) - X.get(i, j) * L[k][i]);
                 }
                 X.set(k, j, X.get(k, j) / L[k][k]);
             }
@@ -184,13 +199,15 @@ public class CholeskyDecomposition implements Serializable {
 
         // Solve L'*X = Y;
         for (int k = n - 1; k >= 0; k--) {
-            for (int j = 0; j < X.colCount(); j++) {
+            for (int j = 0; j < nx; j++) {
                 for (int i = k + 1; i < n; i++) {
-                    X.increment(k, j, -X.get(i, j) * L[i][k]);
+                    X.set(k, j, X.get(k, j) - X.get(i, j) * L[i][k]);
                 }
                 X.set(k, j, X.get(k, j) / L[k][k]);
             }
         }
+
         return X;
     }
+
 }

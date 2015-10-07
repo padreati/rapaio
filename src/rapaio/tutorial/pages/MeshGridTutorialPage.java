@@ -219,7 +219,7 @@ public class MeshGridTutorialPage implements TutorialPage {
                 "        Var trimmedClass = Nominal.newEmpty().withName(\"class\");\n" +
                 "        iris.var(\"class\").stream().forEach(s -> trimmedClass.addLabel(s.label()));\n" +
                 "\n" +
-                "        iris = BoundFrame.newByVars(iris.var(0), iris.var(1), trimmedClass).solidCopy();\n" +
+                "        iris = BoundFrame.newByVars(iris.var(0), iris.var(1), trimmedClass).copy();\n" +
                 "\n" +
                 "        Summary.printSummary(iris);\n");
 

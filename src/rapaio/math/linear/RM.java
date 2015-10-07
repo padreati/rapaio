@@ -24,6 +24,9 @@
 package rapaio.math.linear;
 
 import rapaio.core.MathTools;
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
+import rapaio.data.Numeric;
 import rapaio.sys.WS;
 import rapaio.printer.Printable;
 import rapaio.math.linear.impl.*;
@@ -38,7 +41,7 @@ import static rapaio.sys.WS.formatFlex;
 
 /**
  * Real value matrix interface
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
  */
 @Deprecated
@@ -86,8 +89,8 @@ public interface RM extends Serializable, Printable {
     /**
      * Increment value from a given position with the increment value
      *
-     * @param i     row number
-     * @param j     col number
+     * @param i         row number
+     * @param j         col number
      * @param increment value to be added to the cell value
      */
     default void increment(int i, int j, double increment) {
@@ -185,7 +188,7 @@ public interface RM extends Serializable, Printable {
      * @param B matrix with which it will be multiplied.
      * @return new matrix as a result of multiplication
      */
-    default RM mult(RM B) {
+    default RM dot(RM B) {
         if (colCount() != B.rowCount()) {
             throw new IllegalArgumentException(String.format("Matrices are not conform for multiplication ([n,m]x[m,p] = [%d,%d]=[%d,%d])",
                     rowCount(), colCount(), B.rowCount(), B.colCount()));
@@ -203,6 +206,43 @@ public interface RM extends Serializable, Printable {
         return C;
     }
 
+    default RM plus(double x) {
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                increment(i, j, x);
+            }
+        }
+        return this;
+    }
+
+    default RM plus(RM B) {
+        if ((rowCount() != B.rowCount()) || (colCount() != B.colCount()))
+            throw new IllegalArgumentException(String.format(
+                    "Matrices are not conform for addition: [%d x %d] + [%d x %d]", rowCount(), colCount(), B.rowCount(), B.colCount()));
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                increment(i, j, B.get(i, j));
+            }
+        }
+        return this;
+    }
+
+    default RM minus(double x) {
+        return plus(-x);
+    }
+
+    default RM minus(RM B) {
+        if ((rowCount() != B.rowCount()) || (colCount() != B.colCount()))
+            throw new IllegalArgumentException(String.format(
+                    "Matrices are not conform for substraction: [%d x %d] + [%d x %d]", rowCount(), colCount(), B.rowCount(), B.colCount()));
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                increment(i, j, -B.get(i, j));
+            }
+        }
+        return this;
+    }
+
     /**
      * Scalar matrix multiplication.
      * It updates the current matrix so make a solid copy to not alter actual data.
@@ -210,7 +250,7 @@ public interface RM extends Serializable, Printable {
      * @param b scalar value used for multiplication
      * @return current instance multiplied with a scalar
      */
-    default RM mult(double b) {
+    default RM dot(double b) {
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 set(i, j, get(i, j) * b);
@@ -219,11 +259,64 @@ public interface RM extends Serializable, Printable {
         return this;
     }
 
+    default RM cov() {
+        RM scatter = Linear.newRMEmpty(colCount(), colCount());
+        RV mean = Linear.newRVEmpty(colCount());
+        for (int i = 0; i < colCount(); i++) {
+            mean.set(i, mapCol(i).mean().value());
+        }
+        for (int i = 0; i < rowCount(); i++) {
+
+            RM row = mapRow(i).copy();
+            row.minus(mean.t());
+
+            scatter.plus(row.t().dot(row));
+        }
+        return scatter.dot(1.0 / (rowCount() - 1));
+    }
+
+    default RM scaleUnit(boolean cols) {
+        RM src = cols ? this : this.t();
+
+        RV mean = Linear.newRVEmpty(src.colCount());
+        RV sd = Linear.newRVEmpty(src.colCount());
+        for (int i = 0; i < src.colCount(); i++) {
+            mean.set(i, src.mapCol(i).mean().value());
+            sd.set(i, src.mapCol(i).var().sdValue());
+        }
+        for (int i = 0; i < src.rowCount(); i++) {
+            for (int j = 0; j < src.colCount(); j++) {
+                src.set(i, j, (src.get(i, j) - mean.get(j)) / sd.get(j));
+            }
+        }
+        return this;
+    }
+
+    default RM scatter() {
+        RM scatter = Linear.newRMEmpty(colCount(), colCount());
+        RV mean = Linear.newRVEmpty(colCount());
+        for (int i = 0; i < colCount(); i++) {
+            mean.set(i, mapCol(i).mean().value());
+        }
+        for (int i = 0; i < rowCount(); i++) {
+
+            RM row = mapRow(i).copy();
+            row.minus(mean);
+
+            scatter.plus(row.dot(row.t()));
+        }
+        return scatter;
+    }
+
     /**
      * Diagonal vector of values
      */
     default RV diag() {
-        return new MappedDiagRV(this);
+        RV rv = Linear.newRVEmpty(rowCount());
+        for (int i = 0; i < rowCount(); i++) {
+            rv.set(i, get(i, i));
+        }
+        return rv;
     }
 
     /**
@@ -233,6 +326,30 @@ public interface RM extends Serializable, Printable {
      */
     default int rank() {
         return new SVDecomposition(this).rank();
+    }
+
+    default Mean mean() {
+        Numeric values = Numeric.newEmpty();
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                values.addValue(get(i, j));
+            }
+        }
+        return new Mean(values);
+    }
+
+    default Variance var() {
+        Numeric values = Numeric.newEmpty();
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                values.addValue(get(i, j));
+            }
+        }
+        return new Variance(values);
+    }
+
+    default QR qr() {
+        return new QR(this);
     }
 
     ///////////////////////
@@ -269,7 +386,7 @@ public interface RM extends Serializable, Printable {
      *
      * @return new solid copy of the matrix
      */
-    default RM solidCopy() {
+    default RM copy() {
         RM RM = new SolidRM(rowCount(), colCount());
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
@@ -299,7 +416,7 @@ public interface RM extends Serializable, Printable {
         max = Math.max(max, String.format("[%d,]", colCount()).length());
 
         int hCount = (int) Math.floor(WS.getPrinter().getTextWidth() / (double) max);
-        int vCount = Math.min(rowCount() + 1, 21);
+        int vCount = Math.min(rowCount() + 1, 101);
         int hLast = 0;
         while (true) {
 
@@ -323,22 +440,21 @@ public interface RM extends Serializable, Printable {
                 for (int i = vStart; i <= vEnd; i++) {
                     for (int j = hStart; j <= hEnd; j++) {
                         if (i == vStart && j == hStart) {
-                            sb.append(String.format("%" + (max + 1) + "s", ""));
+                            sb.append(String.format("%" + (max) + "s| ", ""));
                             continue;
                         }
                         if (i == vStart) {
-                            sb.append(String.format("[ ,%" + Math.max(1, max - 4) + "d]", j - 1));
+                            sb.append(String.format("%" + Math.max(1, max - 1) + "d|", j - 1));
                             continue;
                         }
                         if (j == hStart) {
-                            sb.append(String.format("[%" + Math.max(1, max - 4) + "d, ]", i - 1));
+                            sb.append(String.format("%" + Math.max(1, max - 1) + "d |", i - 1));
                             continue;
                         }
                         sb.append(String.format("%" + max + "s", m[i - 1][j - 1]));
                     }
                     sb.append("\n");
                 }
-                sb.append("\n");
                 vLast = vEnd;
             }
             hLast = hEnd;

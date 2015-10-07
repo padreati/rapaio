@@ -275,12 +275,12 @@ public final class Index extends AbstractVar {
     }
 
     @Override
-    public String[] dictionary() {
+    public String[] levels() {
         throw new IllegalArgumentException("Operation not available for index vectors.");
     }
 
     @Override
-    public void setDictionary(String[] dict) {
+    public void setLevels(String[] dict) {
         throw new IllegalArgumentException("Operation not available for index vectors.");
     }
 

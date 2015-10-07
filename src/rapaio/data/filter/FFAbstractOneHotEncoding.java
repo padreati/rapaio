@@ -63,7 +63,7 @@ public class FFAbstractOneHotEncoding extends FFAbstract {
         for (String varName : df.varNames()) {
             if (nameSet.contains(varName) && df.var(varName).type().isNominal()) {
                 // process one hot encoding
-                String[] dict = df.var(varName).dictionary();
+                String[] dict = df.var(varName).levels();
                 List<Var> oneHotVars = new ArrayList<>();
                 for (int i = 1; i < dict.length; i++) {
                     oneHotVars.add(Numeric.newFill(df.rowCount()).withName(varName + "." + dict[i]));

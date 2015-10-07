@@ -40,7 +40,7 @@ public class Datasets {
         return new Csv()
                 .withDefaultTypes(VarType.NUMERIC)
                 .withTypes(VarType.NOMINAL, "class")
-                .read(Datasets.class, "iris.csv");
+                .read(Datasets.class, "iris-r.csv");
     }
 
     public static Frame loadPearsonHeightDataset() throws IOException, URISyntaxException {

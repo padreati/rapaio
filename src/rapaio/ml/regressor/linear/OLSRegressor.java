@@ -26,7 +26,7 @@ package rapaio.ml.regressor.linear;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.math.linear.Linear;
-import rapaio.math.linear.QRDecomposition;
+import rapaio.math.linear.QR;
 import rapaio.math.linear.RM;
 import rapaio.ml.regressor.AbstractRegressor;
 import rapaio.ml.regressor.Regressor;
@@ -66,7 +66,7 @@ public class OLSRegressor extends AbstractRegressor {
         }
         RM X = Linear.newRMCopyOf(df.mapVars(inputNames()));
         RM Y = Linear.newRMCopyOf(df.mapVars(targetNames()));
-        beta = new QRDecomposition(X).solve(Y);
+        beta = new QR(X).solve(Y);
     }
 
     @Override

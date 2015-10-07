@@ -90,13 +90,13 @@ public class NumericTest {
         }
 
         try {
-            v.dictionary();
+            v.levels();
             assertTrue("should raise an exception", false);
         } catch (Throwable ignored) {
         }
 
         try {
-            v.setDictionary();
+            v.setLevels();
             assertTrue("should raise an exception", false);
         } catch (Throwable ignored) {
         }

@@ -79,7 +79,7 @@ public class ROC implements Printable, Serializable {
      * @param index  index of the class considered 1, all other index values are 0
      */
     public ROC(Var score, Var actual, int index) {
-        this(score, actual, actual.dictionary()[index]);
+        this(score, actual, actual.levels()[index]);
     }
 
     /**

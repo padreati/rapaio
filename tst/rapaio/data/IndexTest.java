@@ -46,7 +46,7 @@ public class IndexTest {
         assertEquals(1, index.rowCount());
 
         try {
-            index.dictionary();
+            index.levels();
             assertTrue(false);
         } catch (RuntimeException ex) {
             assertTrue(true);
@@ -205,7 +205,7 @@ public class IndexTest {
     public void testSetDictionary() {
         Index x = Index.newCopyOf(1, 2, 3);
         expected.expect(IllegalArgumentException.class);
-        x.setDictionary(new String[]{"x"});
+        x.setLevels(new String[]{"x"});
     }
 
     @Test

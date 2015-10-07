@@ -51,7 +51,7 @@ public interface CTreeNumericMethod extends Serializable {
                 Var test = df.var(testColName);
                 Var target = df.var(targetColName);
 
-                DTable dt = DTable.newEmpty(DTable.NUMERIC_DEFAULT_LABELS, target.dictionary());
+                DTable dt = DTable.newEmpty(DTable.NUMERIC_DEFAULT_LABELS, target.levels());
                 int misCount = 0;
                 for (int i = 0; i < df.rowCount(); i++) {
                     int row = (test.missing(i)) ? 0 : 2;
@@ -117,7 +117,7 @@ public interface CTreeNumericMethod extends Serializable {
                 Var test = df.var(testColName);
                 Var target = df.var(targetColName);
 
-                DTable dt = DTable.newEmpty(DTable.NUMERIC_DEFAULT_LABELS, target.dictionary());
+                DTable dt = DTable.newEmpty(DTable.NUMERIC_DEFAULT_LABELS, target.levels());
                 int misCount = 0;
                 for (int i = 0; i < df.rowCount(); i++) {
                     int row = (test.missing(i)) ? 0 : 2;

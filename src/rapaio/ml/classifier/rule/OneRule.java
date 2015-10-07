@@ -171,7 +171,7 @@ public class OneRule extends AbstractClassifier {
     private RuleSet buildNominal(String testVar, Frame df, Var weights) {
         RuleSet set = new RuleSet(testVar);
 
-        String[] testDict = df.var(testVar).dictionary();
+        String[] testDict = df.var(testVar).levels();
         String[] targetDict = firstDict();
 
         DVector[] dvs = IntStream.range(0, testDict.length).boxed().map(i -> DVector.newEmpty(targetDict)).toArray(DVector[]::new);

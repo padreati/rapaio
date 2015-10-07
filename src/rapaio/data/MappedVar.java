@@ -23,9 +23,6 @@
 
 package rapaio.data;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.stream.Collectors;
 
 /**
@@ -147,13 +144,13 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public String[] dictionary() {
-        return source.dictionary();
+    public String[] levels() {
+        return source.levels();
     }
 
     @Override
-    public void setDictionary(String[] dict) {
-        source.setDictionary(dict);
+    public void setLevels(String[] dict) {
+        source.setLevels(dict);
     }
 
     @Override

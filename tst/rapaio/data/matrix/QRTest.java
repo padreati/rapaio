@@ -26,7 +26,7 @@ package rapaio.data.matrix;
 import org.junit.Test;
 import rapaio.data.Numeric;
 import rapaio.math.linear.Linear;
-import rapaio.math.linear.QRDecomposition;
+import rapaio.math.linear.QR;
 import rapaio.math.linear.RM;
 
 /**
@@ -50,7 +50,7 @@ public class QRTest {
                 Numeric.newCopyOf(2.8, 3.2, 7.1, 6.8, 8.9)
         );
 
-        QRDecomposition qr = new QRDecomposition(x);
+        QR qr = new QR(x);
 //        System.out.println("Q");
 //        qr.getQ().print(new DecimalFormat("0.000000000"), 14);
 //        System.out.println("R");
@@ -63,6 +63,6 @@ public class QRTest {
         qr.solve(y).printSummary();
 
         x.printSummary();
-        qr.getQ().mult(qr.getR()).printSummary();
+        qr.getQ().dot(qr.getR()).printSummary();
     }
 }
