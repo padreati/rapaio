@@ -27,7 +27,7 @@
 //import rapaio.data.Frame;
 //import rapaio.datasets.Datasets;
 //import rapaio.ml.classifier.bayes.NaiveBayes;
-//import rapaio.experiment.classifier.ensemble.CBagging;
+//import rapaio.ml.ensemble.CBagging;
 //import rapaio.ml.eval.CEvaluation;
 //
 //import java.util.ArrayList;

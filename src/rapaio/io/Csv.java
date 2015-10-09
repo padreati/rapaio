@@ -95,8 +95,13 @@ public class Csv {
 
     public Csv withSkipRows(int... rows) {
         final Set<Integer> skip = Arrays.stream(rows).boxed().collect(toSet());
-        SPredicate<Integer> old = skipRows;
-        skipRows = row -> old.test(row) || skip.contains(row);
+        skipRows = skip::contains;
+        return this;
+    }
+
+    public Csv withRows(int... rows) {
+        final Set<Integer> skip = Arrays.stream(rows).boxed().collect(toSet());
+        skipRows = row -> !skip.contains(row);
         return this;
     }
 

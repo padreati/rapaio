@@ -67,7 +67,7 @@ public class CorrelationsPage implements TutorialPage {
         final Frame df = new FFAbstractRetainTypes(VarType.NUMERIC).filter(Datasets.loadIrisDataset());
         printNames(df);
 
-        code("        final Frame df = new FFAbstractRetainTypes(VarType.NUMERIC).filter(Datasets.loadIrisDataset());\n" +
+        code("        final Frame df = new FFAbstractRetainTypes(VarType.NUMERIC).fitApply(Datasets.loadIrisDataset());\n" +
                 "        names(df);\n");
 
         heading(2, "Pearson product-moment correlation");
@@ -119,8 +119,8 @@ public class CorrelationsPage implements TutorialPage {
                 "this intuition with a plot:");
 
         draw(plot().points(
-                        new VFJitter(0.01).filter(df.var("petal-length")),
-                        new VFJitter(0.01).filter(df.var("sepal-length")),
+                        new VFJitter(0.01).fitApply(df.var("petal-length")),
+                        new VFJitter(0.01).fitApply(df.var("sepal-length")),
                         Plotter.pch(1)
                 )
                         .title("p correlation = " + r.values()[df.varIndex("petal-length")][df.varIndex("sepal-length")]),
@@ -132,8 +132,8 @@ public class CorrelationsPage implements TutorialPage {
 
         draw(plot()
                         .points(
-                                new VFJitter(0.01).filter(df.var("petal-length")),
-                                new VFJitter(0.01).filter(df.var("petal-width")),
+                                new VFJitter(0.01).fitApply(df.var("petal-length")),
+                                new VFJitter(0.01).fitApply(df.var("petal-width")),
                                 Plotter.pch(1)
                         )
                         .title("p correlation = " + r.values()[df.varIndex("petal-length")][df.varIndex("petal-width")]),
@@ -146,8 +146,8 @@ public class CorrelationsPage implements TutorialPage {
 
         draw(plot()
                         .points(
-                                new VFJitter(0.01).filter(df.var("sepal-length")),
-                                new VFJitter(0.01).filter(df.var("sepal-width")),
+                                new VFJitter(0.01).fitApply(df.var("sepal-length")),
+                                new VFJitter(0.01).fitApply(df.var("sepal-width")),
                                 Plotter.pch(1))
                         .title("p correlation = " + r.values()[df.varIndex("sepal-length")][df.varIndex("sepal-width")]),
                 400, 300

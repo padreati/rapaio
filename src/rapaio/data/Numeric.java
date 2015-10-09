@@ -199,6 +199,16 @@ public final class Numeric extends AbstractVar {
         return numeric;
     }
 
+    public static Numeric newFrom(int rows, Function<Integer, Double> supplierFromRow) {
+        Numeric numeric = new Numeric(0, 0, 0);
+        numeric.data = new double[rows];
+        numeric.rows = rows;
+        for (int i = 0; i < rows; i++) {
+            numeric.data[i] = supplierFromRow.apply(i);
+        }
+        return numeric;
+    }
+
     // stream collectors
 
     public static Collector<Double, Numeric, Numeric> collector() {

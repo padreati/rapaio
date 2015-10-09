@@ -30,7 +30,7 @@ import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.tree.CTreeCandidate;
-import rapaio.ml.classifier.tree.CTreeSplitter;
+import rapaio.ml.classifier.tree.CTreeMissingHandler;
 import rapaio.util.Pair;
 
 import java.util.List;
@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/29/15.
  */
-public class CTreeSplitterTest {
+public class CTreeMissingHandlerTest {
 
     private Frame df;
     private Var w;
@@ -62,7 +62,7 @@ public class CTreeSplitterTest {
 
     @Test
     public void testIgnored() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.MissingIgnored.get().performSplit(df, w, c);
+        Pair<List<Frame>, List<Var>> pairs = CTreeMissingHandler.Ignored.get().performSplit(df, w, c);
         assertEquals(2, pairs.first.size());
         assertEquals(2, pairs.second.size());
 
@@ -75,7 +75,7 @@ public class CTreeSplitterTest {
 
     @Test
     public void testMajority() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.MissingToMajority.get().performSplit(df, w, c);
+        Pair<List<Frame>, List<Var>> pairs = CTreeMissingHandler.ToMajority.get().performSplit(df, w, c);
 
         assertEquals(2, pairs.first.size());
         assertEquals(2, pairs.second.size());
@@ -89,7 +89,7 @@ public class CTreeSplitterTest {
 
     @Test
     public void testToAllWeighted() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.MissingToAllWeighted.get().performSplit(df, w, c);
+        Pair<List<Frame>, List<Var>> pairs = CTreeMissingHandler.ToAllWeighted.get().performSplit(df, w, c);
 
         assertEquals(2, pairs.first.size());
         assertEquals(2, pairs.second.size());
@@ -106,7 +106,7 @@ public class CTreeSplitterTest {
 
     @Test
     public void testToRandom() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeSplitter.MissingToRandom.get().performSplit(df, w, c);
+        Pair<List<Frame>, List<Var>> pairs = CTreeMissingHandler.ToRandom.get().performSplit(df, w, c);
 
         assertEquals(2, pairs.first.size());
         assertEquals(2, pairs.second.size());

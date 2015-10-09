@@ -27,7 +27,7 @@
 //import rapaio.ml.classifier.Classifier;
 //import rapaio.ml.classifier.bayes.NaiveBayes;
 //import rapaio.ml.classifier.boost.AdaBoostSAMME;
-//import rapaio.experiment.classifier.ensemble.impl.CEnsemble;
+//import rapaio.ml.ensemble.impl.CEnsemble;
 //import rapaio.ml.classifier.tree.TreeClassifier;
 //import rapaio.ws.Summary;
 //

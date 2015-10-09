@@ -23,12 +23,10 @@
 
 package rapaio.data.filter;
 
-import rapaio.core.distributions.Distribution;
 import rapaio.printer.Printable;
 import rapaio.data.Var;
 
 import java.io.Serializable;
-import java.util.Comparator;
 
 /**
  * This defines a filter for variables.
@@ -49,7 +47,7 @@ import java.util.Comparator;
  * {@link #apply(Var...)} method.
  * <p>
  * However, ofter a filter is used only to alter the data into a single
- * step. For this purpose one can use {@link VFilter#filter(Var...)} method
+ * step. For this purpose one can use {@link VFilter#fitApply(Var...)} method
  * which executes both steps (fit and apply) with a single method call.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
@@ -80,7 +78,7 @@ public interface VFilter extends Serializable, Printable {
      * @param vars input variable
      * @return filtered/transformed variable
      */
-    default Var filter(Var... vars) {
+    default Var fitApply(Var... vars) {
         fit(vars);
         return apply(vars);
     }

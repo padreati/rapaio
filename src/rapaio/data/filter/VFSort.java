@@ -23,7 +23,6 @@
 
 package rapaio.data.filter;
 
-import rapaio.data.RowComparators;
 import rapaio.data.Var;
 
 /**
@@ -50,6 +49,6 @@ public class VFSort extends VFAbstract {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        return new VFRefSort(vars[0].refComparator(asc)).filter(vars);
+        return new VFRefSort(vars[0].refComparator(asc)).fitApply(vars);
     }
 }

@@ -145,8 +145,12 @@ public final class Binary extends AbstractVar {
     }
 
     void increaseCapacity(int minCapacity) {
+        if (minCapacity <= values.size()) {
+            rows = minCapacity;
+            return;
+        }
         if (minCapacity > rows) {
-            minCapacity = Math.max(minCapacity, rows + rows >> 1);
+            minCapacity = Math.max(minCapacity, rows + (rows >> 1));
             BitSet missingCopy = new BitSet(minCapacity);
             BitSet valuesCopy = new BitSet(minCapacity);
             missingCopy.or(missing);

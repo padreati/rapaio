@@ -77,7 +77,7 @@ public class KSTest implements Printable {
     }
 
     private KSTest(Var sample, Distribution cdf) {
-        this.v1 = new VFSort().filter(sample);
+        this.v1 = new VFSort().fitApply(sample);
         this.cdf = cdf;
         this.v2 = null;
 
@@ -98,8 +98,8 @@ public class KSTest implements Printable {
     }
 
     private KSTest(Var sample1, Var sample2) {
-        this.v1 = new VFSort().filter(sample1);
-        this.v2 = new VFSort().filter(sample2);
+        this.v1 = new VFSort().fitApply(sample1);
+        this.v2 = new VFSort().fitApply(sample2);
         this.cdf = null;
 
         D = 0;

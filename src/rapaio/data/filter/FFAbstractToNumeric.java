@@ -57,7 +57,7 @@ public class FFAbstractToNumeric extends FFAbstract {
             if (nameSet.contains(df.var(i).name())) {
                 vars[i] = df.var(i);
             } else {
-                vars[i] = new VFToNumeric().filter(df.var(i));
+                vars[i] = new VFToNumeric().fitApply(df.var(i));
             }
         }
         return SolidFrame.newWrapOf(df.rowCount(), vars);

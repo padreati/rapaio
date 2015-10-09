@@ -73,7 +73,7 @@ public class CorrSpearman implements Printable {
             for (int j = 0; j < vars[i].rowCount(); j++) {
                 index.addIndex(j);
             }
-            sorted[i] = new VFRefSort(RowComparators.numeric(vars[i], true)).filter(index);
+            sorted[i] = new VFRefSort(RowComparators.numeric(vars[i], true)).fitApply(index);
             ranks[i] = Numeric.newFill(vars[i].rowCount());
         }
 

@@ -23,23 +23,11 @@
 
 package rapaio.ml.analysis;
 
-import org.junit.Before;
 import org.junit.Test;
-import rapaio.core.CoreTools;
 import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
-import rapaio.data.filter.FFStandardize;
-import rapaio.data.stream.FSpot;
 import rapaio.datasets.Datasets;
-import rapaio.experiment.classifier.ensemble.CForest;
+import rapaio.ml.ensemble.CForest;
 import rapaio.graphics.plot.GridLayer;
-import rapaio.io.Csv;
-import rapaio.math.linear.CholeskyDecomposition;
-import rapaio.math.linear.Linear;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
-import rapaio.ml.classifier.boost.AdaBoostSAMME;
 import rapaio.ml.eval.CEvaluation;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
@@ -47,7 +35,6 @@ import rapaio.sys.WS;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.logging.Logger;
-import java.util.stream.IntStream;
 
 import static rapaio.graphics.Plotter.color;
 import static rapaio.graphics.Plotter.pch;

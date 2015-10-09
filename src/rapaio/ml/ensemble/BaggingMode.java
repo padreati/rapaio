@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.experiment.classifier.ensemble.impl;
+package rapaio.ml.ensemble;
 
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
@@ -35,7 +35,6 @@ import java.util.List;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/15.
  */
-@Deprecated
 public enum BaggingMode implements Serializable {
 
     VOTING {

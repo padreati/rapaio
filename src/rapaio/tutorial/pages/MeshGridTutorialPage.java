@@ -214,7 +214,7 @@ public class MeshGridTutorialPage implements TutorialPage {
 
         code("        Frame iris = Datasets.loadIrisDataset();\n" +
                 "        iris = iris.mapVars(\"sepal-length,sepal-width,class\");\n" +
-                "        iris = iris.stream().filter(s -> s.index(2) != 3).toMappedFrame();\n" +
+                "        iris = iris.stream().fitApply(s -> s.index(2) != 3).toMappedFrame();\n" +
                 "\n" +
                 "        Var trimmedClass = Nominal.newEmpty().withName(\"class\");\n" +
                 "        iris.var(\"class\").stream().forEach(s -> trimmedClass.addLabel(s.label()));\n" +

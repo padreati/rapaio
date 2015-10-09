@@ -32,7 +32,7 @@ import rapaio.graphics.plot.Legend;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.boost.AdaBoostSAMME;
 import rapaio.experiment.classifier.boost.GBTClassifier;
-import rapaio.experiment.classifier.ensemble.CForest;
+import rapaio.ml.ensemble.CForest;
 import rapaio.ml.classifier.rule.OneRule;
 import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.ml.eval.ROC;

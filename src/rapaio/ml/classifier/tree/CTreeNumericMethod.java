@@ -59,7 +59,7 @@ public interface CTreeNumericMethod extends Serializable {
                     dt.update(row, target.index(i), weights.value(i));
                 }
 
-                Var sort = new VFRefSort(RowComparators.numeric(test, true)).filter(Index.newSeq(df.rowCount()));
+                Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.newSeq(df.rowCount()));
 
                 CTreeCandidate best = null;
 
@@ -125,7 +125,7 @@ public interface CTreeNumericMethod extends Serializable {
                     dt.update(row, target.index(i), weights.value(i));
                 }
 
-                Var sort = new VFRefSort(RowComparators.numeric(test, true)).filter(Index.newSeq(df.rowCount()));
+                Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.newSeq(df.rowCount()));
 
                 CTreeCandidate best = null;
 

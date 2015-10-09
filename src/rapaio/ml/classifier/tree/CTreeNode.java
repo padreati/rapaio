@@ -35,6 +35,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
@@ -112,39 +113,27 @@ public class CTreeNode implements Serializable {
             return;
         }
 
-        List<CTreeCandidate> candidateList = new ArrayList<>();
+        List<CTreeCandidate> candidateList = Arrays.stream(tree.varSelector().nextVarNames())
+                .parallel()
+                .filter(tree.testCounter::canUse)
+                .filter(testCol -> !testCol.equals(tree.firstTargetName()))
+                .map(testCol -> {
+                    // replace gradually with new types
 
-        LinkedList<CTreeCandidate> candidates = new LinkedList<>();
-        for (String testCol : tree.varSelector().nextVarNames()) {
-            if (testCol.equals(tree.firstTargetName())) break;
-            if (!tree.testCounter.canUse(testCol)) break;
+                    if (tree.testMap.containsKey(df.var(testCol).type())) {
+                        return tree.testMap.get(df.var(testCol).type()).get().computeCandidates(
+                                tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction().get());
+                    }
 
-            if (df.var(testCol).type().isNumeric()) {
-                tree.getNumericMethod().get().computeCandidates(
-                        tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction().get())
-                        .forEach(candidates::add);
-            } else {
-                tree.getNominalMethod().get().computeCandidates(
-                        tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction().get(), terms)
-                        .forEach(candidates::add);
-            }
-        }
-        candidateList.addAll(candidates);
-
-//         TODO test this better; parallel this can be broken here
-//
-//        LinkedList<CTreeCandidate> candidates = new LinkedList<>();
-//        Arrays.stream(tree.varSelector().nextVarNames())
-//                .parallel()
-//                .filter(testCol -> !testCol.equals(tree.firstTargetName()))
-//                .filter(tree.testCounter::canUse)
-//                .map(testCol -> {
-//                    return df.var(testCol).type().isNumeric() ?
-//                            tree.getNumericMethod().computeCandidates(tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction())
-//                            :
-//                            tree.getNominalMethod().computeCandidates(tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction(), levels);
-//
-//                }).collect(Collectors.toList()).stream().sequential().forEach(candidateList::addAll);
+                    if (df.var(testCol).type().isNumeric()) {
+                        return tree.getNumericMethod().get().computeCandidates(
+                                tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction().get());
+                    } else {
+                        return tree.getNominalMethod().get().computeCandidates(
+                                tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction().get(), terms);
+                    }
+                }).flatMap(Collection::stream)
+                .collect(Collectors.toList());
 
 
         Collections.sort(candidateList);
@@ -171,8 +160,10 @@ public class CTreeNode implements Serializable {
         for (int i = 0; i < frames.first.size(); i++) {
             CTreeNode child = new CTreeNode(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
             children.add(child);
-            child.learn(tree, frames.first.get(i), frames.second.get(i), depth - 1, terms.solidCopy());
         }
+        IntStream.range(0, children.size())
+                .parallel()
+                .forEach(i -> children.get(i).learn(tree, frames.first.get(i), frames.second.get(i), depth - 1, terms.solidCopy()));
         tree.testCounter.free(testName);
     }
 }

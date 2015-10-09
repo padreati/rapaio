@@ -21,18 +21,19 @@
  *
  */
 
-package rapaio.experiment.classifier.ensemble.impl;
+package rapaio.ml.ensemble;
 
-import rapaio.data.VarType;
-import rapaio.data.sample.FrameSample;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.VarType;
+import rapaio.data.sample.FrameSample;
+import rapaio.data.sample.FrameSampler;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.CFit;
-import rapaio.ml.classifier.RunningClassifier;
+import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.common.Capabilities;
+import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.util.func.SFunction;
 
@@ -41,10 +42,11 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * Breiman random forest implementation.
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/16/15.
  */
-@Deprecated
-public abstract class CEnsemble extends AbstractClassifier implements RunningClassifier {
+public class CForest extends AbstractClassifier {
 
     private static final long serialVersionUID = -145958939373105497L;
 
@@ -61,6 +63,105 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
     protected List<Classifier> predictors = new ArrayList<>();
     protected List<Double> predictorScores = new ArrayList<>();
 
+    public CForest() {
+        this.runs = 10;
+        this.baggingMode = BaggingMode.VOTING;
+        this.c = CTree.newCART().withVarSelector(VarSelector.AUTO);
+        this.oobComp = false;
+        this.withSampler(new FrameSampler.Bootstrap(1));
+    }
+
+    @Override
+    public String name() {
+        return "CForest";
+    }
+
+    @Override
+    public String fullName() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(name());
+        sb.append(" {");
+        sb.append("runs:").append(runs).append(",");
+        sb.append("baggingMode:").append(baggingMode.name()).append(",");
+        sb.append("oob:").append(oobComp).append(",");
+        sb.append("sampler:").append(sampler().name()).append(",");
+        sb.append("tree:").append(c.fullName()).append("");
+        sb.append("}");
+        return sb.toString();
+    }
+
+    @Override
+    public Classifier newInstance() {
+        return new CForest()
+                .withRuns(runs)
+                .withBaggingMode(baggingMode)
+                .withClassifier((CTree) c.newInstance())
+                .withSampler(sampler());
+    }
+
+    public CForest withRuns(int runs) {
+        this.runs = runs;
+        return this;
+    }
+
+    public CForest withOobComp(boolean oobCompute) {
+        this.oobComp = oobCompute;
+        return this;
+    }
+
+    public CForest withBaggingMode(BaggingMode baggingMode) {
+        this.baggingMode = baggingMode;
+        return this;
+    }
+
+    public CForest withBootstrap() {
+        return withSampler(new FrameSampler.Bootstrap(1));
+    }
+
+    public CForest withBootstrap(double p) {
+        return withSampler(new FrameSampler.Bootstrap(p));
+    }
+
+    public CForest withNoSampling() {
+        return withSampler(new FrameSampler.Identity());
+    }
+
+    @Override
+    public CForest withSampler(FrameSampler sampler) {
+        return (CForest) super.withSampler(sampler);
+    }
+
+    public CForest withClassifier(CTree c) {
+        this.c = c;
+        return this;
+    }
+
+    public CForest withMCols() {
+        if (c instanceof CTree) {
+            ((CTree) c).withMCols();
+        }
+        return this;
+    }
+
+    public CForest withMCols(int mcols) {
+        if (c instanceof CTree) {
+            ((CTree) c).withMCols(mcols);
+        }
+        return this;
+    }
+
+    public CForest withVarSelector(VarSelector varSelector) {
+        if (c instanceof CTree) {
+            ((CTree) c).withVarSelector(varSelector);
+        }
+        return this;
+    }
+
+    public CForest withTopSelector(int topRuns, SFunction<Classifier, Double> topSelector) {
+        this.topSelector = topSelector;
+        return this;
+    }
+
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
@@ -73,33 +174,12 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
                 .withAllowMissingTargetValues(false);
     }
 
-    public CEnsemble withOobComp(boolean oobCompute) {
-        this.oobComp = oobCompute;
-        return this;
-    }
-
     public double getOobError() {
         return oobError;
     }
 
-    public CEnsemble withRuns(int runs) {
-        this.runs = runs;
-        return this;
-    }
-
-    public CEnsemble withBaggingMode(BaggingMode baggingMode) {
-        this.baggingMode = baggingMode;
-        return this;
-    }
-
-    public CEnsemble withTopSelector(int topRuns, SFunction<Classifier, Double> topSelector) {
-        this.topRuns = topRuns;
-        this.topSelector = topSelector;
-        return this;
-    }
-
     @Override
-    public CEnsemble learn(Frame df, Var weights, String... targetVarNames) {
+    public CForest learn(Frame df, Var weights, String... targetVarNames) {
 
         prepareLearning(df, weights, targetVarNames);
         if (targetNames().length != 1) {
@@ -117,19 +197,6 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
             oobError = totalOobError / totalOobInstances;
         }
         return this;
-    }
-
-    @Override
-    public void learnFurther(int runs, Frame df, Var weights, String... targetVars) {
-
-        if (this.targetNames() != null && dictionaries() != null) {
-            this.runs += runs;
-        } else {
-            this.runs = runs;
-            learn(df, targetVars);
-            return;
-        }
-        IntStream.range(0, runs).parallel().forEach(s -> buildWeakPredictor(df, weights));
     }
 
     private void buildWeakPredictor(Frame df, Var weights) {
@@ -196,8 +263,4 @@ public abstract class CEnsemble extends AbstractClassifier implements RunningCla
         return cp;
     }
 
-    @Override
-    public CFit fitFurther(CFit fit, Frame df) {
-        throw new IllegalArgumentException("not implemented yet");
-    }
 }

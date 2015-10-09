@@ -153,8 +153,9 @@ public class LDA implements Printable {
         EigenPair p = Linear.pdEigenDecomp(sbplus.dot(swi).dot(sbplus), maxRuns, tol);
 
         logger.fine("compute eigenvalues");
-        eigenValues = p.values();
+        eigenValues = p.values().mapCol(0);
         eigenVectors = sbminus.dot(p.vectors());
+//        eigenVectors = p.vectors();
 
         logger.fine("sort eigen values and vectors");
 

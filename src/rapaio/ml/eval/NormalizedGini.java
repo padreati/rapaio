@@ -66,12 +66,12 @@ NormalizedGini <- function(solution, submission) {
 
     private double sumModelGini(Var solution, Var submission) {
         Comparator<Integer> cmp = RowComparators.numeric(submission, false);
-        Var sol = new VFRefSort(cmp).filter(solution);
-        Var sub = new VFRefSort(cmp).filter(submission);
+        Var sol = new VFRefSort(cmp).fitApply(solution);
+        Var sub = new VFRefSort(cmp).fitApply(submission);
         int n = sub.rowCount();
         Numeric rand = IntStream.range(1, n + 1).mapToDouble(x -> x / (double) n).boxed().collect(Numeric.collector());
         double totalPos = sol.stream().mapToDouble().sum();
-        Var cumPosFound = new VFCumulativeSum().filter(sol.solidCopy());
+        Var cumPosFound = new VFCumulativeSum().fitApply(sol.solidCopy());
         Var lorentz = cumPosFound.stream().transValue(x -> x / totalPos).mapToDouble().boxed().collect(Numeric.collector());
         return IntStream.range(0, n).mapToDouble(row -> lorentz.value(row) - rand.value(row)).sum();
     }

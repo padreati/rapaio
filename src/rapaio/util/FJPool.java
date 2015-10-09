@@ -55,7 +55,7 @@ public class FJPool {
     public static void run(int threads, Runnable r) {
         ForkJoinPool pool = new ForkJoinPool(threads);
         try {
-            Optional.of(pool.submit(r).get());
+            pool.submit(r).get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }

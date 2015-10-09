@@ -81,7 +81,7 @@ public class Quantiles implements Printable {
             }
             return values;
         }
-        Var x = new VFSort().filter(complete);
+        Var x = new VFSort().fitApply(complete);
         double[] values = new double[percentiles.length];
         for (int i = 0; i < percentiles.length; i++) {
             double p = percentiles[i];

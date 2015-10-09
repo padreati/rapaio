@@ -69,7 +69,7 @@ public interface RTreeNumericMethod extends Serializable {
             Var test = df.var(testVarName);
             Var target = df.var(targetVarName);
 
-            Var sort = new VFRefSort(RowComparators.numeric(test, true)).filter(Index.newSeq(df.rowCount()));
+            Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.newSeq(df.rowCount()));
 
             double[] leftVar = new double[df.rowCount()];
             double[] rightVar = new double[df.rowCount()];

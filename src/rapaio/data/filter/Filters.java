@@ -38,7 +38,7 @@ public class Filters {
      * a numerical variable.
      */
     public static Var jitter(Var x) {
-        return new VFJitter().filter(x);
+        return new VFJitter().fitApply(x);
     }
 
     /**
@@ -46,7 +46,7 @@ public class Filters {
      * a numerical variable.
      */
     public static Var jitter(Var x, double sd) {
-        return new VFJitter(sd).filter(x);
+        return new VFJitter(sd).fitApply(x);
     }
 
     /**
@@ -54,7 +54,7 @@ public class Filters {
      * a numerical variable.
      */
     public static Var jitter(Var x, Distribution d) {
-        return new VFJitter(d).filter(x);
+        return new VFJitter(d).fitApply(x);
     }
 
     public static Frame refSort(Frame df, Comparator<Integer> comp) {
@@ -66,7 +66,7 @@ public class Filters {
      * or numeric values.
      */
     public static Var sort(Var x) {
-        return new VFSort().filter(x);
+        return new VFSort().fitApply(x);
     }
 
     /**
@@ -74,24 +74,24 @@ public class Filters {
      * or numeric values.
      */
     public static Var sort(Var x, boolean asc) {
-        return new VFSort(asc).filter(x);
+        return new VFSort(asc).fitApply(x);
     }
 
     @SafeVarargs
     public static Var refSort(Var x, Comparator<Integer>... comp) {
-        return new VFRefSort(comp).filter();
+        return new VFRefSort(comp).fitApply();
     }
 
     public static Var refSort(Var x, Var ref) {
-        return new VFRefSort(ref.refComparator()).filter(x);
+        return new VFRefSort(ref.refComparator()).fitApply(x);
     }
 
     public static Var refSort(Var x, Var ref, boolean asc) {
-        return new VFRefSort(ref.refComparator(asc)).filter(x);
+        return new VFRefSort(ref.refComparator(asc)).fitApply(x);
     }
 
     public static Var shuffle(Var x) {
-        return new VFShuffle().filter(x);
+        return new VFShuffle().fitApply(x);
     }
 
     public static Frame shuffle(Frame x) {
@@ -99,18 +99,18 @@ public class Filters {
     }
 
     public static Var transformPower(Var x, double lambda) {
-        return new VFTransformPower(lambda).filter(x);
+        return new VFTransformPower(lambda).fitApply(x);
     }
 
     public static Var transformBoxCox(Var x, double lambda) {
-        return new VFTransformBoxCox(lambda).filter(x);
+        return new VFTransformBoxCox(lambda).fitApply(x);
     }
 
     public static Var transformBoxCox(Var x, double lambda, double shift) {
-        return new VFTransformBoxCox(lambda, shift).filter(x);
+        return new VFTransformBoxCox(lambda, shift).fitApply(x);
     }
 
     public static Var updateValue(Function<VSpot, Double> f, Var x) {
-        return new VFUpdateValue(f).filter(x);
+        return new VFUpdateValue(f).fitApply(x);
     }
 }

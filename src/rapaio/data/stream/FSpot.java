@@ -251,4 +251,8 @@ public final class FSpot implements Serializable {
     public String[] dictionary(String varName) {
         return df.var(varName).levels();
     }
+
+    public boolean binary(String name) {
+        return df.var(name).binary(row);
+    }
 }

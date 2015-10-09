@@ -43,17 +43,17 @@ public class SortVarTest {
     @Test
     public void smokeTest() {
         Var v = Index.newEmpty();
-        Var sorted = new VFRefSort(index(v, true)).filter(v);
+        Var sorted = new VFRefSort(index(v, true)).fitApply(v);
         assertTrue(sorted.type().isNumeric());
         assertFalse(sorted.type().isNominal());
 
         v = Numeric.newEmpty();
-        sorted = new VFRefSort(numeric(v, true)).filter(v);
+        sorted = new VFRefSort(numeric(v, true)).fitApply(v);
         assertTrue(sorted.type().isNumeric());
         assertFalse(sorted.type().isNominal());
 
         v = Nominal.newEmpty(0);
-        sorted = new VFRefSort(nominal(v, true)).filter(v);
+        sorted = new VFRefSort(nominal(v, true)).fitApply(v);
         assertFalse(sorted.type().isNumeric());
         assertTrue(sorted.type().isNominal());
     }
@@ -66,17 +66,17 @@ public class SortVarTest {
         index.setIndex(0, 1);
 
         assertEquals(10, index.rowCount());
-        Var sort = new VFSort().filter(index);
+        Var sort = new VFSort().fitApply(index);
         for (int i = 1; i < sort.rowCount(); i++) {
             assertTrue(sort.index(i - 1) <= sort.index(i));
         }
 
-        sort = new VFSort(false).filter(index);
+        sort = new VFSort(false).fitApply(index);
         for (int i = 1; i < sort.rowCount(); i++) {
             assertTrue(sort.index(i - 1) >= sort.index(i));
         }
 
-        Var second = new VFSort().filter(index);
+        Var second = new VFSort().fitApply(index);
         for (int i = 1; i < second.rowCount(); i++) {
             assertTrue(second.index(i - 1) <= second.index(i));
         }
@@ -87,17 +87,17 @@ public class SortVarTest {
         Var numeric = Numeric.newCopyOf(2., 4., 1.2, 1.3, 1.2, 0., 100.);
 
         assertEquals(7, numeric.rowCount());
-        Var sort = new VFSort(true).filter(numeric);
+        Var sort = new VFSort(true).fitApply(numeric);
         for (int i = 1; i < sort.rowCount(); i++) {
             assertTrue(sort.value(i - 1) <= sort.value(i));
         }
 
-        sort = new VFSort(false).filter(numeric);
+        sort = new VFSort(false).fitApply(numeric);
         for (int i = 1; i < sort.rowCount(); i++) {
             assertTrue(sort.value(i - 1) >= sort.value(i));
         }
 
-        Var second = new VFSort(true).filter(numeric);
+        Var second = new VFSort(true).fitApply(numeric);
         for (int i = 1; i < second.rowCount(); i++) {
             assertTrue(second.index(i - 1) <= second.index(i));
         }
@@ -116,17 +116,17 @@ public class SortVarTest {
         nominal.setMissing(4);
         nominal.setMissing(5);
 
-        Var sort = new VFSort(true).filter(nominal);
+        Var sort = new VFSort(true).fitApply(nominal);
         for (int i = 1; i < sort.rowCount(); i++) {
             assertTrue(sort.label(i - 1).compareTo(sort.label(i)) <= 0);
         }
 
-        sort = new VFSort(false).filter(nominal);
+        sort = new VFSort(false).fitApply(nominal);
         for (int i = 1; i < sort.rowCount(); i++) {
             assertTrue(sort.label(i - 1).compareTo(sort.label(i)) >= 0);
         }
 
-        Var second = new VFSort(true).filter(nominal);
+        Var second = new VFSort(true).fitApply(nominal);
         for (int i = 1; i < second.rowCount(); i++) {
             assertTrue(second.label(i - 1).compareTo(second.label(i)) <= 0);
         }
@@ -152,7 +152,7 @@ public class SortVarTest {
         transform.put("b", "a");
         transform.put("c", "b");
         transform.put("d", "d");
-        Var sort = new VFSort().filter(nominal);
+        Var sort = new VFSort().fitApply(nominal);
         for (int i = 0; i < sort.rowCount(); i++) {
             sort.setLabel(i, transform.get(sort.label(i)));
         }
@@ -175,7 +175,7 @@ public class SortVarTest {
 
         // numeric
 
-        sort = new VFSort().filter(numeric);
+        sort = new VFSort().fitApply(numeric);
         for (int i = 0; i < sort.rowCount(); i++) {
             sort.setValue(i, sort.value(i) + Math.E);
         }
@@ -187,7 +187,7 @@ public class SortVarTest {
 
         // index
 
-        sort = new VFSort().filter(index);
+        sort = new VFSort().fitApply(index);
         for (int i = 0; i < sort.rowCount(); i++) {
             sort.setValue(i, sort.index(i) + 10);
         }
@@ -200,7 +200,7 @@ public class SortVarTest {
     @Test
     public void testMissing() {
         Var v = Index.newSeq(1, 10);
-        v = new VFRefSort(index(v, true)).filter(v);
+        v = new VFRefSort(index(v, true)).fitApply(v);
         for (int i = 0; i < 10; i += 3) {
             v.setMissing(i);
         }
