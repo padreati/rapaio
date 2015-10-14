@@ -28,6 +28,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.BitSet;
 import java.util.Comparator;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -117,14 +118,21 @@ public final class Binary extends AbstractVar {
         return b;
     }
 
-    public static Binary newFrom(int rows, Supplier<Integer> supplier) {
+    public static Binary newFromIndex(int rows, Function<Integer, Integer> supplier) {
         int[] data = new int[rows];
         for (int i = 0; i < data.length; i++) {
-            data[i] = supplier.get();
+            data[i] = supplier.apply(i);
         }
         return Binary.newCopyOf(data);
     }
 
+    public static Binary newFromBool(int rows, Function<Integer, Boolean> supplier) {
+        boolean[] data = new boolean[rows];
+        for (int i = 0; i < data.length; i++) {
+            data[i] = supplier.apply(i);
+        }
+        return Binary.newCopyOf(data);
+    }
 
     /**
      * Private constructor to avoid instantiation from outside, other than statical builders.
@@ -146,7 +154,6 @@ public final class Binary extends AbstractVar {
 
     void increaseCapacity(int minCapacity) {
         if (minCapacity <= values.size()) {
-            rows = minCapacity;
             return;
         }
         if (minCapacity > rows) {

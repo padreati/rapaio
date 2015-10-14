@@ -24,6 +24,7 @@
 package rapaio.ml.classifier;
 
 import rapaio.data.VarType;
+import rapaio.data.filter.FFilter;
 import rapaio.data.sample.FrameSampler;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
@@ -32,6 +33,7 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -75,25 +77,19 @@ public interface Classifier extends Printable, Serializable {
         return new Capabilities();
     }
 
-    boolean debug();
-
-    /**
-     * Builds classifier with debug info on console.
-     *
-     * @param debug true if shows debug info on console
-     * @return the classifier instance
-     */
-    Classifier withDebug(boolean debug);
-
     /**
      * @return true if the classifier has learned from a sample
      */
-    boolean isLearned();
+    boolean hasLearned();
 
     /**
      * @return the sampler instance used
      */
     FrameSampler sampler();
+
+    List<FFilter> inputFilters();
+
+    Classifier withInputFilters(FFilter... filters);
 
     /**
      * Specifies the sampler to be used at learning time.
@@ -185,27 +181,27 @@ public interface Classifier extends Printable, Serializable {
     }
 
     /**
-     * Returns dictionaries used at learning times for target variables
+     * Returns levels used at learning times for target variables
      *
-     * @return map with target variable names as key and dictionaries as variables
+     * @return map with target variable names as key and levels as variables
      */
-    Map<String, String[]> dictionaries();
+    Map<String, String[]> targetLevels();
 
-    default String[] dictionary(String key) {
-        return dictionaries().get(key);
+    default String[] targetLevels(String key) {
+        return targetLevels().get(key);
     }
 
     /**
-     * Returns dictionaries used at learning times for first target variables
+     * Returns levels used at learning times for first target variables
      *
-     * @return map with target variable names as key and dictionaries as variables
+     * @return map with target variable names as key and levels as variables
      */
-    default String[] firstDict() {
-        return dictionaries().get(firstTargetName());
+    default String[] firstTargetLevels() {
+        return targetLevels().get(firstTargetName());
     }
 
-    default String firstDictTerm(int pos) {
-        return dictionaries().get(firstTargetName())[pos];
+    default String firstTargetLevel(int pos) {
+        return targetLevels().get(firstTargetName())[pos];
     }
 
     /**
@@ -223,8 +219,8 @@ public interface Classifier extends Printable, Serializable {
     /**
      * Fit a classifier on instances specified by frame, with row weights and targetVars
      *
-     * @param df             train frame
-     * @param weights        instance weights
+     * @param df         train frame
+     * @param weights    instance weights
      * @param targetVars target variables
      */
     Classifier learn(Frame df, Var weights, String... targetVars);
@@ -248,4 +244,24 @@ public interface Classifier extends Printable, Serializable {
      * @param withDistributions generate densities for classes
      */
     CFit fit(Frame df, boolean withClasses, boolean withDistributions);
+
+    /**
+     * set the pool size for fork join tasks
+     * - poolSize == 0 it is executed in a single non fork join thread
+     * - poolSize < 0 pool size for fork join pool is the number of CPUs
+     * - poolSize > 0, pool size for fork join pool is this value
+     *
+     * @param poolSize specified pool size
+     */
+    Classifier withPoolSize(int poolSize);
+
+    /**
+     * Gets the configured pool size. Negative values are considered
+     * automatically as pool of number of available CPUs, zero means
+     * no pooling and positive values means pooling with a specified
+     * value.
+     *
+     * @return pool size to be used
+     */
+    int poolSize();
 }

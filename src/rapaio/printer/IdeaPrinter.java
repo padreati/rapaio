@@ -50,7 +50,7 @@ public class IdeaPrinter extends StandardPrinter {
 
     @Override
     public int getTextWidth() {
-        return 120;
+        return 180;
     }
 
     @Override

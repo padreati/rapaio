@@ -31,12 +31,15 @@ import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
+import rapaio.sys.WS;
 import rapaio.util.FJPool;
 import rapaio.util.Pair;
 import rapaio.util.Tag;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * Tree classifier.
@@ -53,9 +56,7 @@ public class CTree extends AbstractClassifier {
     int maxDepth = 10_000;
 
     VarSelector varSelector = VarSelector.ALL;
-    CTreeTestCounter testCounter = CTreeTestCounter.newFrom(10_000, 10_000);
-    Tag<CTreeNominalMethod> nominalMethod = CTreeNominalMethod.Full;
-    Tag<CTreeNumericMethod> numericMethod = CTreeNumericMethod.Binary;
+    Map<String, Tag<CTreeTest>> customTestMap = new HashMap<>();
     Map<VarType, Tag<CTreeTest>> testMap = new HashMap<>();
     Tag<CTreeTestFunction> function = CTreeTestFunction.InfoGain;
     Tag<CTreeMissingHandler> splitter = CTreeMissingHandler.Ignored;
@@ -68,26 +69,24 @@ public class CTree extends AbstractClassifier {
 
     public static CTree newID3() {
         return new CTree()
-                .withTestCounter(CTreeTestCounter.newFrom(1, 1))
                 .withMaxDepth(10_000)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
                 .withSplitter(CTreeMissingHandler.Ignored)
-                .withNominalMethod(CTreeNominalMethod.Full)
-                .withNumericMethod(CTreeNumericMethod.Ignore)
+                .withTest(VarType.NOMINAL, CTreeTest.Nominal_Full)
+                .withTest(VarType.NUMERIC, CTreeTest.Ignore)
                 .withFunction(CTreeTestFunction.Entropy)
                 .withPredictor(CTreePredictor.Standard);
     }
 
     public static CTree newC45() {
         return new CTree()
-                .withTestCounter(CTreeTestCounter.newFrom(1, 1))
                 .withMaxDepth(10_000)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
                 .withSplitter(CTreeMissingHandler.ToAllWeighted)
-                .withNominalMethod(CTreeNominalMethod.Full)
-                .withNumericMethod(CTreeNumericMethod.Binary)
+                .withTest(VarType.NOMINAL, CTreeTest.Nominal_Full)
+                .withTest(VarType.NUMERIC, CTreeTest.Numeric_Binary)
                 .withFunction(CTreeTestFunction.GainRatio)
                 .withPredictor(CTreePredictor.Standard);
     }
@@ -97,11 +96,10 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(1)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
-                .withTestCounter(CTreeTestCounter.newFrom(1, 1))
                 .withSplitter(CTreeMissingHandler.ToAllWeighted)
                 .withFunction(CTreeTestFunction.InfoGain)
-                .withNominalMethod(CTreeNominalMethod.Binary)
-                .withNumericMethod(CTreeNumericMethod.Binary)
+                .withTest(VarType.NOMINAL, CTreeTest.Nominal_Binary)
+                .withTest(VarType.NUMERIC, CTreeTest.Numeric_Binary)
                 .withPredictor(CTreePredictor.Standard);
     }
 
@@ -110,10 +108,9 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(10_000)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
-                .withTestCounter(CTreeTestCounter.newFrom(10_000, 10_000))
                 .withSplitter(CTreeMissingHandler.ToRandom)
-                .withNominalMethod(CTreeNominalMethod.Binary)
-                .withNumericMethod(CTreeNumericMethod.Binary)
+                .withTest(VarType.NOMINAL, CTreeTest.Nominal_Binary)
+                .withTest(VarType.NUMERIC, CTreeTest.Numeric_Binary)
                 .withFunction(CTreeTestFunction.GiniGain)
                 .withPredictor(CTreePredictor.Standard);
     }
@@ -123,22 +120,26 @@ public class CTree extends AbstractClassifier {
         CTree tree = (CTree) new CTree()
                 .withMinCount(minCount)
                 .withMaxDepth(maxDepth)
-                .withNominalMethod(nominalMethod)
-                .withNumericMethod(numericMethod)
                 .withFunction(function)
                 .withSplitter(splitter)
                 .withPredictor(predictor)
-                .withTestCounter(CTreeTestCounter.newFrom(testCounter))
                 .withVarSelector(varSelector().newInstance())
                 .withSampler(sampler());
+
         tree.testMap.clear();
         tree.testMap.putAll(testMap);
+
+        tree.customTestMap.clear();
+        tree.customTestMap.putAll(customTestMap);
         return tree;
     }
 
     public CTree() {
-        testMap.put(VarType.NUMERIC, CTreeTest.Numeric_Binary);
         testMap.put(VarType.BINARY, CTreeTest.Binary_Binary);
+        testMap.put(VarType.ORDINAL, CTreeTest.Numeric_Binary);
+        testMap.put(VarType.INDEX, CTreeTest.Numeric_Binary);
+        testMap.put(VarType.NUMERIC, CTreeTest.Numeric_Binary);
+        testMap.put(VarType.NOMINAL, CTreeTest.Nominal_Binary);
     }
 
     public CTreeNode getRoot() {
@@ -147,11 +148,6 @@ public class CTree extends AbstractClassifier {
 
     public VarSelector varSelector() {
         return varSelector;
-    }
-
-    public CTree withMCols() {
-        this.varSelector = VarSelector.AUTO;
-        return this;
     }
 
     public CTree withMCols(int mcols) {
@@ -188,40 +184,18 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
-    public CTreeTestCounter getCTreeTestCounter() {
-        return testCounter;
-    }
-
-    public CTree withTestCounter(CTreeTestCounter CTreeTestCounter) {
-        this.testCounter = CTreeTestCounter;
-        return this;
-    }
-
-    public Tag<CTreeNominalMethod> getNominalMethod() {
-        return nominalMethod;
-    }
-
-    public CTree withNominalMethod(Tag<CTreeNominalMethod> methodNominal) {
-        this.nominalMethod = methodNominal;
-        return this;
-    }
-
     public CTree withTest(VarType varType, Tag<CTreeTest> test) {
         this.testMap.put(varType, test);
         return this;
     }
 
-    public CTree withNoTests() {
-        this.testMap.clear();
+    public CTree withTest(String varName, Tag<CTreeTest> test) {
+        this.customTestMap.put(varName, test);
         return this;
     }
 
-    public Tag<CTreeNumericMethod> getNumericMethod() {
-        return numericMethod;
-    }
-
-    public CTree withNumericMethod(Tag<CTreeNumericMethod> numericMethod) {
-        this.numericMethod = numericMethod;
+    public CTree withNoTests() {
+        this.testMap.clear();
         return this;
     }
 
@@ -254,22 +228,26 @@ public class CTree extends AbstractClassifier {
 
     @Override
     public String name() {
-        return "TreeClassifier";
+        return "CTree";
     }
 
     @Override
     public String fullName() {
         StringBuilder sb = new StringBuilder();
-        sb.append("TreeClassifier{");
-        sb.append("varSelector=").append(varSelector().name()).append(",");
-        sb.append("minCount=").append(minCount).append(",");
-        sb.append("maxDepth=").append(maxDepth).append(",");
-        sb.append("testCounter=").append(testCounter.name()).append(",");
-        sb.append("numericMethod=").append(numericMethod.name()).append(",");
-        sb.append("nominalMethod=").append(nominalMethod.name()).append(",");
-        sb.append("function=").append(function.name()).append(",");
-        sb.append("splitter=").append(splitter.name()).append(",");
-        sb.append("predictor=").append(predictor.name());
+        sb.append("CTree {");
+        sb.append("varSelector=").append(varSelector().name()).append(";");
+        sb.append("minCount=").append(minCount).append(";");
+        sb.append("maxDepth=").append(maxDepth).append(";");
+        sb.append("tests=").append(testMap.entrySet().stream()
+                .map(e -> e.getKey().name() + ":" + e.getValue().name()).collect(joining(","))
+        ).append(";");
+        if (!customTestMap.isEmpty())
+            sb.append("customTest=").append(customTestMap.entrySet().stream()
+                    .map(e -> e.getKey() + ":" + e.getValue().name()).collect(joining(","))
+            ).append(";");
+        sb.append("func=").append(function.name()).append(";");
+        sb.append("split=").append(splitter.name()).append(";");
+        sb.append("pred=").append(predictor.name());
         sb.append("}");
         return sb.toString();
     }
@@ -287,37 +265,53 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    public CTree learn(Frame df, Var weights, String... targetVars) {
+    public CTree learn(Frame dfOld, Var weights, String... targetVars) {
 
-        prepareLearning(df, weights, targetVars);
+        Frame df = prepareLearning(dfOld, weights, targetVars);
+        additionalValidation(df);
 
         this.varSelector.withVarNames(inputNames());
 
         int rows = df.rowCount();
 
-        testCounter.initialize(df, inputNames());
-
         root = new CTreeNode(null, "root", spot -> true);
-        FJPool.run(4, () -> root.learn(this, df, weights, maxDepth, new CTreeNominalTerms().init(df)));
+        if (poolSize() == 0) {
+            root.learn(this, df, weights, maxDepth, new CTreeNominalTerms().init(df));
+        } else {
+            FJPool.run(poolSize(), () -> root.learn(this, df, weights, maxDepth, new CTreeNominalTerms().init(df)));
+        }
         return this;
     }
 
     @Override
-    public CFit fit(Frame df, boolean withClasses, boolean withDensities) {
+    public CFit fit(Frame dfOld, boolean withClasses, boolean withDensities) {
 
+        Frame df = prepareFit(dfOld);
         CFit prediction = CFit.newEmpty(this, df, withClasses, withDensities);
-        prediction.addTarget(firstTargetName(), firstDict());
+        prediction.addTarget(firstTargetName(), firstTargetLevels());
 
         df.stream().forEach(spot -> {
             Pair<Integer, DVector> result = predictor.get().predict(this, spot, root);
             if (withClasses)
                 prediction.firstClasses().setIndex(spot.row(), result.first);
             if (withDensities)
-                for (int j = 0; j < firstDict().length; j++) {
+                for (int j = 0; j < firstTargetLevels().length; j++) {
                     prediction.firstDensity().setValue(spot.row(), j, result.second.get(j));
                 }
         });
         return prediction;
+    }
+
+    private void additionalValidation(Frame df) {
+        df.varStream().forEach(var -> {
+            if (customTestMap.containsKey(var.name()))
+                return;
+            if (testMap.containsKey(var.type()))
+                return;
+            throw new IllegalArgumentException("can't learn ctree with no " +
+                    "tests for given variable: " + var.name() +
+                    " [" + var.type().name() + "]");
+        });
     }
 
     @Override
@@ -327,14 +321,14 @@ public class CTree extends AbstractClassifier {
         sb.append("================\n\n");
 
         sb.append("Description:\n");
-        sb.append(fullName()).append("\n\n");
+        sb.append(fullName().replaceAll(";", ";\n")).append("\n\n");
 
         sb.append("Capabilities:\n");
         sb.append(capabilities().summary()).append("\n");
 
         sb.append("Learned model:\n");
 
-        if (!isLearned()) {
+        if (!hasLearned()) {
             sb.append("Learning phase not called\n\n");
             return sb.toString();
         }
@@ -352,45 +346,23 @@ public class CTree extends AbstractClassifier {
     }
 
     private void buildSummary(StringBuilder sb, CTreeNode node, int level) {
-        sb.append("|");
+
+        sb.append(level == 0 ? "|- " : "|");
         for (int i = 0; i < level; i++) {
-            sb.append("   |");
+            sb.append((i == level - 1) ? "   |- " : "   |");
         }
-        if (node.getParent() == null) {
-            sb.append("root").append(" ");
-            sb.append(node.getCounter().sum(true)).append("/");
-            sb.append(node.getCounter().sumExcept(node.getBestIndex(), true)).append(" ");
-            sb.append(firstDict()[node.getBestIndex()]).append(" (");
-            DVector d = node.getDensity().solidCopy();
-//            d.normalize(false);
-            for (int i = 1; i < firstDict().length; i++) {
-                sb.append(String.format("%.4f", d.get(i))).append(" ");
-            }
-            sb.append(") ");
-            if (node.isLeaf()) sb.append("*");
-            sb.append("\n");
-
-        } else {
-
-            sb.append(node.getGroupName()).append("  ");
-
-            sb.append(node.getCounter().sum(true)).append("/");
-            sb.append(node.getCounter().sumExcept(node.getBestIndex(), true)).append(" ");
-            sb.append(firstDict()[node.getBestIndex()]).append(" (");
-            DVector d = node.getDensity().solidCopy();
-//            d.normalize(false);
-            for (int i = 1; i < firstDict().length; i++) {
-                sb.append(String.format("%.4f", d.get(i))).append(" ");
-            }
-            sb.append(") ");
-            if (node.isLeaf()) sb.append("*");
-            sb.append("\n");
+        sb.append(node.getGroupName()).append("    ");
+        sb.append(WS.formatFlexShort(node.getCounter().sum(true))).append("/");
+        sb.append(WS.formatFlexShort(node.getCounter().sumExcept(node.getBestIndex(), true))).append(" ");
+        sb.append(firstTargetLevels()[node.getBestIndex()]).append(" (");
+        DVector d = node.getDensity();
+        for (int i = 1; i < firstTargetLevels().length; i++) {
+            sb.append(WS.formatFlexShort(d.get(i))).append(" ");
         }
+        sb.append(") ");
+        if (node.isLeaf()) sb.append("*");
+        sb.append("\n");
 
-        // children
-
-        if (!node.isLeaf()) {
-            node.getChildren().stream().forEach(child -> buildSummary(sb, child, level + 1));
-        }
+        node.getChildren().stream().forEach(child -> buildSummary(sb, child, level + 1));
     }
 }

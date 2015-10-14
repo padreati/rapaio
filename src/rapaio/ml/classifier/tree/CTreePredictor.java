@@ -61,7 +61,7 @@ public interface CTreePredictor extends Serializable {
                 }
             }
 
-            String[] dict = tree.firstDict();
+            String[] dict = tree.firstTargetLevels();
             DVector dv = DVector.newEmpty(dict);
             for (CTreeNode child : node.getChildren()) {
                 DVector d = this.predict(tree, spot, child).second;

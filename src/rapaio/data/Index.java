@@ -160,10 +160,10 @@ public final class Index extends AbstractVar {
         return index;
     }
 
-    public static Index newFrom(int len, Supplier<Integer> supplier) {
+    public static Index newFrom(int len, Function<Integer, Integer> supplier) {
         Index index = new Index(len, len, 0);
         for (int i = 0; i < index.data.length; i++) {
-            index.data[i] = supplier.get();
+            index.data[i] = supplier.apply(i);
         }
         return index;
     }

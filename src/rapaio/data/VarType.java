@@ -66,6 +66,11 @@ public enum VarType {
         }
 
         @Override
+        public boolean isBinary() {
+            return true;
+        }
+
+        @Override
         public Var newInstance() {
             return Binary.newEmpty();
         }
@@ -232,6 +237,10 @@ public enum VarType {
      * @return true if the variable represents a categorical variable
      */
     public abstract boolean isNominal();
+
+    public boolean isBinary() {
+        return false;
+    }
 
     /**
      * Builds a new empty instance of the given type

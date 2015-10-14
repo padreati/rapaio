@@ -23,12 +23,14 @@
 
 package rapaio.core.tools;
 
-import rapaio.data.Numeric;
-import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.*;
+import rapaio.printer.Printable;
+import rapaio.ws.Summary;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static rapaio.core.MathTools.log2;
 
@@ -40,7 +42,7 @@ import static rapaio.core.MathTools.log2;
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 @Deprecated
-public final class DTable implements Serializable {
+public final class DTable implements Printable, Serializable {
 
     private static final long serialVersionUID = 4359080329548577980L;
 
@@ -114,8 +116,10 @@ public final class DTable implements Serializable {
         if (test.rowCount() != target.rowCount())
             throw new IllegalArgumentException("test and target must have same row count");
 
+        int testOff = test.type().equals(VarType.BINARY) ? 1 : 0;
+        int targetOff = target.type().equals(VarType.BINARY) ? 1 : 0;
         for (int i = 0; i < test.rowCount(); i++) {
-            update(test.index(i), target.index(i), weights != null ? weights.value(i) : 1);
+            update(test.index(i) + testOff, target.index(i) + targetOff, weights != null ? weights.value(i) : 1);
         }
     }
 
@@ -297,5 +301,21 @@ public final class DTable implements Serializable {
                 gini -= gini_k * testTotals[i] / testTotal;
         }
         return gini;
+    }
+
+
+    @Override
+    public String summary() {
+
+        List<Var> vars = new ArrayList<>();
+        vars.add(Nominal.newCopyOf(testLabels).withName(""));
+        for (int i = 0; i < targetLabels.length; i++) {
+            Var num = Numeric.newEmpty().withName(targetLabels[i]);
+            for (int j = 0; j < testLabels.length; j++) {
+                num.addValue(values[j][i]);
+            }
+            vars.add(num);
+        }
+        return Summary.headString(SolidFrame.newWrapOf(vars));
     }
 }

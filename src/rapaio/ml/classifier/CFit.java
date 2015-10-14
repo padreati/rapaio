@@ -110,9 +110,9 @@ public class CFit implements Printable {
     }
 
     /**
-     * Returns dictionaries used at learning times for target variables
+     * Returns levels used at learning times for target variables
      *
-     * @return map with target variable names as key and dictionaries as variables
+     * @return map with target variable names as key and levels as variables
      */
     public Map<String, String[]> dictionaries() {
         return dictionaries;
@@ -121,7 +121,7 @@ public class CFit implements Printable {
     /**
      * Returns levels used at learning times for first target variables
      *
-     * @return map with target variable names as key and dictionaries as variables
+     * @return map with target variable names as key and levels as variables
      */
     public String[] firstDictionary() {
         return dictionaries.get(firstTargetVar());

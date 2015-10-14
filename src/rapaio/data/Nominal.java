@@ -101,6 +101,14 @@ public final class Nominal extends FactorBase {
         return nominal;
     }
 
+    public static Nominal newFrom(int rows, Function<Integer, String> func, String... dict) {
+        Nominal nominal = Nominal.newEmpty(rows, dict);
+        for (int i = 0; i < rows; i++) {
+            nominal.setLabel(i, func.apply(i));
+        }
+        return nominal;
+    }
+
     private Nominal() {
         // set the missing value
         this.reverse = new HashMap<>();

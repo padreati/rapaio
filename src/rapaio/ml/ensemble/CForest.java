@@ -35,10 +35,11 @@ import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.ConfusionMatrix;
-import rapaio.util.func.SFunction;
+import rapaio.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -51,17 +52,14 @@ public class CForest extends AbstractClassifier {
     private static final long serialVersionUID = -145958939373105497L;
 
     protected int runs = 0;
-    protected int topRuns = Integer.MAX_VALUE;
     protected boolean oobComp = false;
     protected Classifier c = CTree.newC45();
-    protected SFunction<Classifier, Double> topSelector;
     protected BaggingMode baggingMode = BaggingMode.VOTING;
     //
     protected double totalOobInstances = 0;
     protected double totalOobError = 0;
     protected double oobError = Double.NaN;
     protected List<Classifier> predictors = new ArrayList<>();
-    protected List<Double> predictorScores = new ArrayList<>();
 
     public CForest() {
         this.runs = 10;
@@ -80,12 +78,12 @@ public class CForest extends AbstractClassifier {
     public String fullName() {
         StringBuilder sb = new StringBuilder();
         sb.append(name());
-        sb.append(" {");
-        sb.append("runs:").append(runs).append(",");
-        sb.append("baggingMode:").append(baggingMode.name()).append(",");
-        sb.append("oob:").append(oobComp).append(",");
-        sb.append("sampler:").append(sampler().name()).append(",");
-        sb.append("tree:").append(c.fullName()).append("");
+        sb.append("CForest {");
+        sb.append("runs:").append(runs).append(";");
+        sb.append("baggingMode:").append(baggingMode.name()).append(";");
+        sb.append("oob:").append(oobComp).append(";");
+        sb.append("sampler:").append(sampler().name()).append(";");
+        sb.append("tree:").append(c.fullName());
         sb.append("}");
         return sb.toString();
     }
@@ -95,7 +93,7 @@ public class CForest extends AbstractClassifier {
         return new CForest()
                 .withRuns(runs)
                 .withBaggingMode(baggingMode)
-                .withClassifier((CTree) c.newInstance())
+                .withClassifier(c.newInstance())
                 .withSampler(sampler());
     }
 
@@ -131,15 +129,8 @@ public class CForest extends AbstractClassifier {
         return (CForest) super.withSampler(sampler);
     }
 
-    public CForest withClassifier(CTree c) {
+    public CForest withClassifier(Classifier c) {
         this.c = c;
-        return this;
-    }
-
-    public CForest withMCols() {
-        if (c instanceof CTree) {
-            ((CTree) c).withMCols();
-        }
         return this;
     }
 
@@ -157,18 +148,14 @@ public class CForest extends AbstractClassifier {
         return this;
     }
 
-    public CForest withTopSelector(int topRuns, SFunction<Classifier, Double> topSelector) {
-        this.topSelector = topSelector;
-        return this;
-    }
-
     @Override
     public Capabilities capabilities() {
+        Capabilities cc = c.capabilities();
         return new Capabilities()
                 .withLearnType(Capabilities.LearnType.MULTICLASS_CLASSIFIER)
-                .withInputCount(1, 1_000_000)
-                .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NOMINAL, VarType.ORDINAL, VarType.NUMERIC)
-                .withAllowMissingInputValues(true)
+                .withInputCount(cc.getMinInputCount(), cc.getMaxInputCount())
+                .withInputTypes(cc.getInputTypes().stream().toArray(VarType[]::new))
+                .withAllowMissingInputValues(cc.getAllowMissingInputValues())
                 .withTargetCount(1, 1)
                 .withTargetTypes(VarType.NOMINAL)
                 .withAllowMissingTargetValues(false);
@@ -179,27 +166,23 @@ public class CForest extends AbstractClassifier {
     }
 
     @Override
-    public CForest learn(Frame df, Var weights, String... targetVarNames) {
+    public CForest learn(Frame dfOld, Var weights, String... targetVarNames) {
 
-        prepareLearning(df, weights, targetVarNames);
-        if (targetNames().length != 1) {
-            throw new IllegalArgumentException("Forest classifiers can learn only one target variable");
-        }
-
-        predictors.clear();
+        Frame df = prepareLearning(dfOld, weights, targetVarNames);
 
         totalOobInstances = 0;
         totalOobError = 0;
 
-        IntStream.range(0, runs).parallel().forEach(s -> buildWeakPredictor(df, weights));
-
+        predictors = Util.rangeStream(runs, poolSize() > 0).boxed()
+                .map(s -> buildWeakPredictor(df, weights))
+                .collect(Collectors.toList());
         if (oobComp) {
             oobError = totalOobError / totalOobInstances;
         }
         return this;
     }
 
-    private void buildWeakPredictor(Frame df, Var weights) {
+    private Classifier buildWeakPredictor(Frame df, Var weights) {
         Classifier weak = c.newInstance();
 
         FrameSample sample = sampler().newSample(df, weights);
@@ -218,49 +201,48 @@ public class CForest extends AbstractClassifier {
                 totalOobError += oobError;
             }
         }
-        if (topRuns >= runs) {
-            synchronized (this) {
-                predictors.add(weak);
-            }
-        } else {
-            synchronized (this) {
-                double score = topSelector.apply(weak);
-                if (predictors.size() < topRuns) {
-                    predictors.add(weak);
-                    predictorScores.add(score);
-                } else {
-                    int minIndex = -1;
-                    for (int i = 0; i < predictors.size(); i++) {
-                        if (predictorScores.get(i) < score) {
-                            if (minIndex == -1 || predictorScores.get(i) < predictorScores.get(minIndex)) {
-                                minIndex = i;
-                            }
-                        }
-                    }
-                    if (minIndex != -1) {
-                        predictors.set(minIndex, weak);
-                        predictorScores.set(minIndex, score);
-                    }
-                }
-            }
-        }
+        return weak;
     }
 
     @Override
-    public CFit fit(Frame df, boolean withClasses, boolean withDensities) {
-        CFit cp = CFit.newEmpty(this, df, true, true);
-        cp.addTarget(firstTargetName(), firstDict());
+    public CFit fit(Frame dfOld, boolean withClasses, boolean withDensities) {
 
-        List<Frame> treeDensities = new ArrayList<>();
-        predictors.stream().parallel()
-                .map(pred -> pred.fit(df, true, true).firstDensity())
-                .forEach(frame -> {
-                    synchronized (treeDensities) {
-                        treeDensities.add(frame);
-                    }
-                });
-        baggingMode.computeDensity(firstDict(), new ArrayList<>(treeDensities), cp.firstClasses(), cp.firstDensity());
+        Frame df = prepareFit(dfOld);
+        CFit cp = CFit.newEmpty(this, df, true, true);
+        cp.addTarget(firstTargetName(), firstTargetLevels());
+
+        List<Frame> treeDensities = predictors.stream().parallel()
+                .map(pred -> pred.fit(df, baggingMode.needsClass(), baggingMode.needsDensity()).firstDensity())
+                .collect(Collectors.toList());
+        baggingMode.computeDensity(firstTargetLevels(), new ArrayList<>(treeDensities), cp.firstClasses(), cp.firstDensity());
         return cp;
     }
 
+    @Override
+    public String summary() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("CForest model\n");
+        sb.append("================\n\n");
+
+        sb.append("Description:\n");
+        sb.append(fullName().replaceAll(";", ";\n")).append("\n\n");
+
+        sb.append("Capabilities:\n");
+        sb.append(capabilities().summary()).append("\n");
+
+        sb.append("Learned model:\n");
+
+        if (!hasLearned()) {
+            sb.append("Learning phase not called\n\n");
+            return sb.toString();
+        }
+
+        sb.append(baseSummary());
+
+        // stuff specific to rf
+        // todo
+
+
+        return sb.toString();
+    }
 }

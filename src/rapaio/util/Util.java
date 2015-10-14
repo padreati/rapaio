@@ -23,6 +23,9 @@
 
 package rapaio.util;
 
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
 /**
  * General utilities class.
  * <p>
@@ -36,5 +39,12 @@ public class Util {
         task.run();
         long stop = System.currentTimeMillis();
         System.out.println((stop - start) / 60000 + " mins, " + (((stop - start) % 60000) / 1000) + " secs");
+    }
+
+    public static IntStream rangeStream(int n, boolean parallel) {
+        if (parallel)
+            return IntStream.range(0, n).parallel();
+        else
+            return IntStream.range(0, n);
     }
 }

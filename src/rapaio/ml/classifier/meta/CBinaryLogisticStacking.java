@@ -24,26 +24,29 @@
 package rapaio.ml.classifier.meta;
 
 import rapaio.data.*;
-import rapaio.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
+import rapaio.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.common.Capabilities;
-import rapaio.sys.WS;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.logging.Logger;
 
 import static java.util.stream.Collectors.toList;
 
 /**
+ * Stacking with Binary Logistic as stacking classifier
+ *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/30/15.
  */
 public class CBinaryLogisticStacking extends AbstractClassifier {
 
     private static final long serialVersionUID = -9087871586729573030L;
+
+    private static final Logger logger = Logger.getLogger(CBinaryLogisticStacking.class.getName());
 
     private List<Classifier> weaks = new ArrayList<>();
     private BinaryLogistic log = new BinaryLogistic();
@@ -64,11 +67,6 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
     public CBinaryLogisticStacking withMaxRuns(int maxRuns) {
         this.maxRuns = maxRuns;
         return this;
-    }
-
-    @Override
-    public CBinaryLogisticStacking withDebug(boolean debug) {
-        return (CBinaryLogisticStacking) super.withDebug(debug);
     }
 
     @Override
@@ -100,16 +98,16 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
 
     @Override
     public Classifier learn(Frame df, Var weights, String... targetVars) {
-        if (debug()) WS.println("learn method called.");
+        logger.config("learn method called.");
         List<Var> vars = new ArrayList<>();
         int pos = 0;
-        if (debug()) WS.println("check learners for learning.... ");
+        logger.config("check learners for learning.... ");
         weaks.parallelStream().map(weak -> {
-            if (!weak.isLearned()) {
-                if (debug()) WS.println("started learning for weak learner ...");
+            if (!weak.hasLearned()) {
+                logger.config("started learning for weak learner ...");
                 weak.learn(df, weights, targetVars);
             }
-            if (debug()) WS.println("started fitting weak learner...");
+            logger.config("started fitting weak learner...");
             return weak.fit(df).firstDensity().var(1);
         }).collect(toList()).forEach(var -> vars.add(var.solidCopy().withName("V" + vars.size())));
 
@@ -121,22 +119,22 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
         List<String> targets = new VarRange(targetVars).parseVarNames(df);
         vars.add(df.var(targets.get(0)).solidCopy());
 
-        if (debug()) WS.println("started learning for binary logistic...");
+        logger.config("started learning for binary logistic...");
         log.withTol(tol);
         log.withMaxRuns(maxRuns);
         log.learn(SolidFrame.newWrapOf(vars), weights, targetVars);
 
-        if (debug()) WS.println("end learn method call");
+        logger.config("end learn method call");
         return this;
     }
 
     @Override
     public CFit fit(Frame df, boolean withClasses, boolean withDistributions) {
-        if (debug()) WS.println("fit method called.");
+        logger.config("fit method called.");
         List<Var> vars = new ArrayList<>();
 
         weaks.parallelStream().map(weak -> {
-            if (debug()) WS.println("started fitting weak learner ...");
+            logger.config("started fitting weak learner ...");
             return weak.fit(df).firstDensity().var(1);
         }).collect(toList()).forEach(var -> vars.add(var.solidCopy().withName("V" + vars.size())));
 
@@ -145,10 +143,10 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
                 .collect(toList());
         vars.addAll(quadratic);
 
-        if (debug()) WS.println("started fitting binary logistic regressor.. ");
+        logger.config("started fitting binary logistic regressor.. ");
         CFit fit = log.fit(SolidFrame.newWrapOf(vars));
 
-        if (debug()) WS.println("end fit method call");
+        logger.config("end fit method call");
         return fit;
     }
 }

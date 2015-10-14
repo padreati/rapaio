@@ -40,11 +40,15 @@ import rapaio.graphics.plot.plotcomp.MeshContour;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.linear.BinaryLogistic;
+import rapaio.ml.ensemble.CForest;
 import rapaio.ws.Summary;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import static rapaio.graphics.Plotter.color;
+import static rapaio.graphics.Plotter.lwd;
+import static rapaio.graphics.Plotter.pch;
 import static rapaio.sys.WS.draw;
 
 /**
@@ -55,22 +59,16 @@ public class IrisContour {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
 
-        RandomSource.setSeed((long) (Math.E * 100));
-//        WS.setPrinter(new IdeaPrinter(true));
+        RandomSource.setSeed(1);
 
         final String X = "petal-length";
         final String Y = "sepal-width";
 
-        Frame iris = Datasets.loadIrisDataset();
-        iris = iris.mapVars(X, Y, "class");
-        iris = iris.stream().filter(s -> s.index(2) != 3).toMappedFrame();
+        Frame iris = Datasets.loadIrisDataset().mapVars(X, Y, "class").stream().filter(s -> s.index(2) != 3).toMappedFrame();
 
-        Var trimmedClass = Nominal.newEmpty().withName("class");
-        iris.var("class").stream().forEach(s -> trimmedClass.addLabel(s.label()));
+        Var trimmedClass = Nominal.newFrom(iris.rowCount(), row -> iris.label(row, "class")).withName("class");
 
-        iris = BoundFrame.newByVars(iris.var(X), iris.var(Y), trimmedClass);
-
-        iris = iris.bindRows(iris).bindRows(iris).solidCopy();
+        Frame tr = BoundFrame.newByVars(iris.var(X), iris.var(Y), trimmedClass);
 
         Normal g1 = new Normal(0, 2);
         Normal g2 = new Normal(0, 5);
@@ -87,16 +85,8 @@ public class IrisContour {
 
         Summary.printSummary(iris);
 
-        Classifier c = new BinaryLogistic().withTol(1e-8).withMaxRuns(100_000);
-//        c = new BinarySMO().withKernel(new RBFKernel(1)).withC(1.5);
-//        c = new BinarySMO().withKernel(new RBFKernel(4)).withC(1.5);
-//        c = new BinarySMO().withKernel(new RBFKernel(20)).withC(1.5);
-//        c = new BinarySMO().withKernel(new CauchyKernel(8)).withC(5);
-//        c = new BinarySMO().withKernel(new GeneralizedStudentTKernel(0.1));
-        c = new BinarySMO().withKernel(new SigmoidKernel(1, 1));
-//        c = new BinarySMO().withKernel(new MinKernel());
-//        c = new CForest().withMCols(1).withRuns(500);
-//        c = new NaiveBayes();
+        Classifier c = new CForest().withMCols(1).withRuns(1_000);
+
         c.learn(iris, "class");
 
         Numeric x = Numeric.newSeq(new Minimum(iris.var(X)).value(), new Maximum(iris.var(X)).value(), 0.1).withName(X);
@@ -118,14 +108,7 @@ public class IrisContour {
         int pos = 0;
         for (int i = 0; i < x.rowCount(); i++) {
             for (int j = 0; j < y.rowCount(); j++) {
-                if (pos == 4067) {
-                    System.out.println();
-                }
-                mg1.setValue(i, j,
-                        1 / (1 +
-                                Math.exp(cr2.firstDensity().value(pos, 1) -
-                                        cr2.firstDensity().value(pos, 2))));
-//                mg1.setValue(i, j, cr2.firstDensity().value(pos, 1));
+                mg1.setValue(i, j, cr2.firstDensity().value(pos, 1));
                 pos++;
             }
         }
@@ -135,10 +118,10 @@ public class IrisContour {
         qq[qq.length - 1] = Double.POSITIVE_INFINITY;
         ColorGradient bcg = ColorGradient.newHueGradient(qq);
         for (int i = 0; i < qq.length - 1; i++) {
-            p.add(new MeshContour(mg1.compute(qq[i], qq[i + 1]), true, true,
-                    Plotter.lwd(0.1f), Plotter.color(bcg.getColor(i))));
+            p.add(new MeshContour(mg1.compute(qq[i], qq[i + 1]), false, true,
+                    lwd(0.1f), color(bcg.getColor(i))));
         }
-        p.add(new Points(iris.var(0), iris.var(1), Plotter.color(iris.var(2)), Plotter.pch(2)));
+        p.add(new Points(iris.var(0), iris.var(1), color(iris.var(2)), pch(2)));
 
         draw(p);
     }

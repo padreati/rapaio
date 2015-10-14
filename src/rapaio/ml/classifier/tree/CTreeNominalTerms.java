@@ -26,6 +26,7 @@ package rapaio.ml.classifier.tree;
 import rapaio.data.Frame;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toSet;
@@ -37,7 +38,7 @@ public class CTreeNominalTerms {
     public CTreeNominalTerms init(Frame df) {
         Arrays.stream(df.varNames())
                 .map(df::var)
-                .filter(var -> var.type().isNominal())
+                .filter(var -> var.type().isNominal() || var.type().isBinary())
                 .forEach(var -> indexes.put(var.name(), IntStream.range(1, var.levels().length).boxed().collect(toSet())));
         return this;
     }
@@ -46,9 +47,9 @@ public class CTreeNominalTerms {
         return indexes.get(key);
     }
 
-    public CTreeNominalTerms solidCopy() {
+    public CTreeNominalTerms copy() {
         CTreeNominalTerms terms = new CTreeNominalTerms();
-        this.indexes.entrySet().forEach(e -> terms.indexes.put(e.getKey(), new HashSet<>(e.getValue())));
+        this.indexes.entrySet().forEach(e -> terms.indexes.put(e.getKey(), new ConcurrentSkipListSet<>(e.getValue())));
         return terms;
     }
 

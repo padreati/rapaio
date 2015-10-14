@@ -263,6 +263,42 @@ public class Capabilities implements Printable {
         MULTICLASS_CLASSIFIER
     }
 
+    public LearnType getLearnType() {
+        return learnType;
+    }
+
+    public Integer getMinInputCount() {
+        return minInputCount;
+    }
+
+    public Integer getMaxInputCount() {
+        return maxInputCount;
+    }
+
+    public List<VarType> getInputTypes() {
+        return inputTypes;
+    }
+
+    public Boolean getAllowMissingInputValues() {
+        return allowMissingInputValues;
+    }
+
+    public Integer getMinTargetCount() {
+        return minTargetCount;
+    }
+
+    public Integer getMaxTargetCount() {
+        return maxTargetCount;
+    }
+
+    public List<VarType> getTargetTypes() {
+        return targetTypes;
+    }
+
+    public Boolean getAllowMissingTargetValues() {
+        return allowMissingTargetValues;
+    }
+
     @Override
     public String summary() {
         StringBuilder sb = new StringBuilder();

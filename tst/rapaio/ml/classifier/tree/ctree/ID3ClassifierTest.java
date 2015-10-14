@@ -32,6 +32,7 @@ import rapaio.data.filter.FFAbstractRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.core.tools.DTable;
 import rapaio.ml.classifier.tree.*;
+import rapaio.ml.classifier.tree.CTreeTest;
 import rapaio.ws.Summary;
 
 import java.io.IOException;
@@ -68,8 +69,8 @@ public class ID3ClassifierTest {
         final String className = "class";
 
         CTree id3 = new CTree()
-                .withNominalMethod(CTreeNominalMethod.Full)
-                .withNumericMethod(CTreeNumericMethod.Ignore)
+                .withTest(VarType.NOMINAL, CTreeTest.Nominal_Full)
+                .withTest(VarType.NUMERIC, CTreeTest.Ignore)
                 .withSplitter(CTreeMissingHandler.Ignored)
                 .withFunction(CTreeTestFunction.InfoGain);
         id3.learn(df, className);

@@ -455,18 +455,18 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     @Override
     public CFit fit(Frame df, boolean withClasses, boolean withDistributions) {
         CFit cr = CFit.newEmpty(this, df, withClasses, withDistributions);
-        cr.addTarget(firstTargetName(), firstDict());
+        cr.addTarget(firstTargetName(), firstTargetLevels());
 
         for (int i = 0; i < df.rowCount(); i++) {
             double pred = predict(df, i);
             if (MathTools.sm(pred, 0)) {
                 cr.firstClasses().setIndex(i, classIndex1);
-                cr.firstDensity().setValue(i, firstDictTerm(classIndex1), -pred);
-                cr.firstDensity().setValue(i, firstDictTerm(classIndex2), pred);
+                cr.firstDensity().setValue(i, firstTargetLevel(classIndex1), -pred);
+                cr.firstDensity().setValue(i, firstTargetLevel(classIndex2), pred);
             } else {
                 cr.firstClasses().setIndex(i, classIndex2);
-                cr.firstDensity().setValue(i, firstDictTerm(classIndex1), -pred);
-                cr.firstDensity().setValue(i, firstDictTerm(classIndex2), pred);
+                cr.firstDensity().setValue(i, firstTargetLevel(classIndex1), -pred);
+                cr.firstDensity().setValue(i, firstTargetLevel(classIndex2), pred);
             }
         }
         return cr;

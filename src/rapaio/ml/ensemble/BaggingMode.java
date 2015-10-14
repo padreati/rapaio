@@ -62,6 +62,16 @@ public enum BaggingMode implements Serializable {
                 classes.setValue(i, dv.findBestIndex(false));
             }
         }
+
+        @Override
+        boolean needsClass() {
+            return true;
+        }
+
+        @Override
+        boolean needsDensity() {
+            return false;
+        }
     },
     DISTRIBUTION {
         @Override
@@ -94,7 +104,21 @@ public enum BaggingMode implements Serializable {
                 classes.setValue(i, dv.findBestIndex(false));
             }
         }
+
+        @Override
+        boolean needsClass() {
+            return false;
+        }
+
+        @Override
+        boolean needsDensity() {
+            return true;
+        }
     };
 
     abstract void computeDensity(String[] dictionary, List<Frame> treeDensities, Nominal classes, Frame densities);
+
+    abstract boolean needsClass();
+
+    abstract boolean needsDensity();
 }

@@ -29,6 +29,7 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
 import rapaio.util.Pair;
+import rapaio.util.Util;
 import rapaio.util.func.SPredicate;
 
 import java.io.Serializable;
@@ -104,7 +105,6 @@ public class CTreeNode implements Serializable {
         counter = DVector.newFromWeights(df.var(tree.firstTargetName()), Numeric.newFill(df.rowCount(), 1));
         bestIndex = density.findBestIndex(false);
 
-
         if (df.rowCount() == 0) {
             return;
         }
@@ -115,25 +115,17 @@ public class CTreeNode implements Serializable {
 
         List<CTreeCandidate> candidateList = Arrays.stream(tree.varSelector().nextVarNames())
                 .parallel()
-                .filter(tree.testCounter::canUse)
                 .filter(testCol -> !testCol.equals(tree.firstTargetName()))
                 .map(testCol -> {
-                    // replace gradually with new types
-
-                    if (tree.testMap.containsKey(df.var(testCol).type())) {
-                        return tree.testMap.get(df.var(testCol).type()).get().computeCandidates(
-                                tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction().get());
+                    if (!tree.testMap.containsKey(df.var(testCol).type())) {
+                        throw new IllegalArgumentException("can't learn ctree with no " +
+                                "tests for given variable: " + df.var(testCol).name() +
+                                " [" + df.var(testCol).type().name() + "]");
                     }
-
-                    if (df.var(testCol).type().isNumeric()) {
-                        return tree.getNumericMethod().get().computeCandidates(
-                                tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction().get());
-                    } else {
-                        return tree.getNominalMethod().get().computeCandidates(
-                                tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction().get(), terms);
-                    }
-                }).flatMap(Collection::stream)
-                .collect(Collectors.toList());
+                    List<CTreeCandidate> c = tree.testMap.get(df.var(testCol).type()).get().computeCandidates(
+                            tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction().get(), terms);
+                    return (c == null || c.isEmpty()) ? null : c.get(0);
+                }).filter(c -> c != null).collect(Collectors.toList());
 
 
         Collections.sort(candidateList);
@@ -145,13 +137,11 @@ public class CTreeNode implements Serializable {
 
         bestCandidate = candidateList.get(0);
         String testName = bestCandidate.getTestName();
-        tree.testCounter.use(testName);
 
         // now that we have a best candidate, do the effective split
 
         if (bestCandidate.getGroupNames().isEmpty()) {
             leaf = true;
-            tree.testCounter.free(testName);
             return;
         }
 
@@ -161,9 +151,7 @@ public class CTreeNode implements Serializable {
             CTreeNode child = new CTreeNode(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
             children.add(child);
         }
-        IntStream.range(0, children.size())
-                .parallel()
-                .forEach(i -> children.get(i).learn(tree, frames.first.get(i), frames.second.get(i), depth - 1, terms.solidCopy()));
-        tree.testCounter.free(testName);
+        Util.rangeStream(children.size(), tree.poolSize() > 0)
+                .forEach(i -> children.get(i).learn(tree, frames.first.get(i), frames.second.get(i), depth - 1, terms.copy()));
     }
 }

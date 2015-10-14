@@ -141,7 +141,7 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
 
         CFit pred = CFit.newEmpty(this, df, withClasses, withDensities);
         for (String targetVar : targetNames()) {
-            pred.addTarget(targetVar, dictionaries().get(targetVar));
+            pred.addTarget(targetVar, targetLevels().get(targetVar));
         }
 
         df.stream().forEach(spot -> {
@@ -158,8 +158,8 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
                     }
                     if (withDensities) {
                         for (String targetVar : targetNames()) {
-                            for (int j = 0; j < dictionary(targetVar).length; j++) {
-                                pred.densities().get(targetVar).setValue(spot.row(), dictionary(targetVar)[j], p.densities().get(targetVar).value(0, dictionary(targetVar)[j]));
+                            for (int j = 0; j < targetLevels(targetVar).length; j++) {
+                                pred.densities().get(targetVar).setValue(spot.row(), targetLevels(targetVar)[j], p.densities().get(targetVar).value(0, targetLevels(targetVar)[j]));
                             }
                         }
                     }

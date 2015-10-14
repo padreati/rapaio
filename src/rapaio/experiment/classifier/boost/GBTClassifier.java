@@ -43,6 +43,7 @@ import java.util.List;
 @Deprecated
 public class GBTClassifier extends AbstractClassifier implements RunningClassifier {
 
+    private static final long serialVersionUID = -2979235364091072967L;
     private int runs = 10;
     private double shrinkage = 1.0;
     private boolean useBootstrap = true;
@@ -115,8 +116,8 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
     }
 
     @Override
-    public GBTClassifier learn(Frame df, Var weights, String... targetVarNames) {
-        prepareLearning(df, weights, targetVarNames);
+    public GBTClassifier learn(Frame dfOld, Var weights, String... targetVarNames) {
+        Frame df = prepareLearning(dfOld, weights, targetVarNames);
         if (targetNames().length != 1) {
             throw new IllegalArgumentException("This classifier accepts one and only one target variable.");
         }
@@ -126,7 +127,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
 
         // algorithm described by ESTL pag. 387
 
-        K = firstDict().length - 1;
+        K = firstTargetLevels().length - 1;
         f = new double[df.rowCount()][K];
         p = new double[df.rowCount()][K];
         trees = new ArrayList<>();
@@ -223,7 +224,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
     public CFit fit(Frame df, boolean withClasses, boolean withDistributions) {
         CFit cr = CFit.newEmpty(this, df, withClasses, withDistributions);
         for (String targetName : targetNames()) {
-            cr.addTarget(targetName, dictionaries().get(targetName));
+            cr.addTarget(targetName, targetLevels().get(targetName));
         }
 
         for (int k = 0; k < K; k++) {

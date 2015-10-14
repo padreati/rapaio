@@ -134,7 +134,7 @@ public class VarRange {
                 colIndexes.add(j);
             }
         }
-        Collections.sort(colIndexes);
+//        Collections.sort(colIndexes);
         return colIndexes;
     }
 

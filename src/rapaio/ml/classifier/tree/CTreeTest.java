@@ -30,6 +30,7 @@ import rapaio.data.Index;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
 import rapaio.data.filter.VFRefSort;
+import rapaio.sys.WS;
 import rapaio.util.Tag;
 
 import java.io.Serializable;
@@ -40,13 +41,13 @@ import java.util.*;
  */
 public interface CTreeTest extends Serializable {
 
-    List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var w, String testName, String targetName, CTreeTestFunction function);
+    List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var w, String testName, String targetName, CTreeTestFunction function, CTreeNominalTerms terms);
 
     Tag<CTreeTest> Ignore = Tag.valueOf("Ignore",
-            (CTree c, Frame df, Var w, String testName, String targetName, CTreeTestFunction function) -> new ArrayList<>());
+            (CTree c, Frame df, Var w, String testName, String targetName, CTreeTestFunction function, CTreeNominalTerms terms) -> new ArrayList<>());
 
     Tag<CTreeTest> Numeric_Binary = Tag.valueOf("Numeric_Binary",
-            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeTestFunction function) -> {
+            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeTestFunction function, CTreeNominalTerms terms) -> {
                 Var test = df.var(testName);
                 Var target = df.var(targetName);
 
@@ -60,9 +61,8 @@ public interface CTreeTest extends Serializable {
 
                 Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.newSeq(df.rowCount()));
 
+                CTreeCandidate best = null;
                 double bestScore = 0.0;
-                int bestIndex = 0;
-                double bestTestValue = 0;
 
                 for (int i = 0; i < df.rowCount(); i++) {
                     int row = sort.index(i);
@@ -77,29 +77,30 @@ public interface CTreeTest extends Serializable {
                             test.value(sort.index(i)) < test.value(sort.index(i + 1))) {
 
                         double currentScore = function.compute(dt);
-                        int comp = Double.compare(bestScore, currentScore);
-                        if (comp < 0) continue;
-                        if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
+                        if (best != null) {
+                            int comp = Double.compare(bestScore, currentScore);
+                            if (comp < 0) continue;
+                            if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
+                        }
+                        best = new CTreeCandidate(bestScore, testName);
+                        double testValue = (test.value(sort.index(i)) + test.value(sort.index(i + 1))) / 2.0;
+                        best.addGroup(
+                                String.format("%s <= %s", testName, WS.formatFlex(testValue)),
+                                spot -> !spot.missing(testName) && spot.value(testName) <= testValue);
+                        best.addGroup(
+                                String.format("%s > %s", testName, WS.formatFlex(testValue)),
+                                spot -> !spot.missing(testName) && spot.value(testName) > testValue);
 
                         bestScore = currentScore;
-                        bestTestValue = (test.value(sort.index(i)) + test.value(sort.index(i + 1))) / 2.0;
                     }
                 }
-                CTreeCandidate best = new CTreeCandidate(bestScore, testName);
-                double testValue = bestTestValue;
-                best.addGroup(
-                        String.format("%s <= %.6f", testName, testValue),
-                        spot -> !spot.missing(testName) && spot.value(testName) <= testValue);
-                best.addGroup(
-                        String.format("%s > %.6f", testName, bestTestValue),
-                        spot -> !spot.missing(testName) && spot.value(testName) > testValue);
                 return Collections.singletonList(best);
             });
 
     Tag<CTreeTest> Numeric_SkipHalf = Tag.valueOf("Numeric_SkipHalf",
-            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeTestFunction function) -> {
+            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeTestFunction function, CTreeNominalTerms terms) -> {
 
-                final int skip = 5;
+                final int skip = 2;
 
                 Var test = df.var(testName);
                 Var target = df.var(targetName);
@@ -145,18 +146,18 @@ public interface CTreeTest extends Serializable {
                     }
                 }
                 CTreeCandidate best = new CTreeCandidate(bestScore, testName);
-                double testValue = bestTestValue;
+                final double testValue = bestTestValue;
                 best.addGroup(
-                        String.format("%s <= %.6f", testName, testValue),
+                        String.format("%s <= %s", testName, WS.formatFlexShort(testValue)),
                         spot -> !spot.missing(testName) && spot.value(testName) <= testValue);
                 best.addGroup(
-                        String.format("%s > %.6f", testName, bestTestValue),
+                        String.format("%s > %s", testName, WS.formatFlexShort(bestTestValue)),
                         spot -> !spot.missing(testName) && spot.value(testName) > testValue);
                 return Collections.singletonList(best);
             });
 
     Tag<CTreeTest> Binary_Binary = Tag.valueOf("Binary_Binary",
-            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeTestFunction function) -> {
+            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeTestFunction function, CTreeNominalTerms terms) -> {
 
                 Var test = df.var(testName);
                 Var target = df.var(targetName);
@@ -171,4 +172,73 @@ public interface CTreeTest extends Serializable {
                 return Collections.singletonList(best);
             });
 
+    Tag<CTreeTest> Nominal_Full = Tag.valueOf("Nominal_Full",
+            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function, CTreeNominalTerms terms) -> {
+                Var test = df.var(testColName);
+                Var target = df.var(targetColName);
+
+                if (!DTable.newFromCounts(test, target).hasCountWithMinimum(false, c.getMinCount(), 2)) {
+                    return Collections.emptyList();
+                }
+
+                List<CTreeCandidate> result = new ArrayList<>();
+                DTable dt = DTable.newFromWeights(test, target, weights);
+                double value = function.compute(dt);
+
+                CTreeCandidate candidate = new CTreeCandidate(value, testColName);
+                for (int i = 1; i < test.levels().length; i++) {
+                    final String label = test.levels()[i];
+                    candidate.addGroup(
+                            String.format("%s == %s", testColName, label),
+                            spot -> !spot.missing(testColName) && spot.label(testColName).equals(label));
+                }
+
+                result.add(candidate);
+                return result;
+            });
+
+    Tag<CTreeTest> Nominal_Binary = Tag.valueOf("Nominal_Binary",
+            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function, CTreeNominalTerms terms) -> {
+
+                Var test = df.var(testColName);
+                Var target = df.var(targetColName);
+                if (!(DTable.newFromCounts(test, target).hasCountWithMinimum(false, c.getMinCount(), 2))) {
+                    return Collections.emptyList();
+                }
+
+                List<CTreeCandidate> result = new ArrayList<>();
+                CTreeCandidate best = null;
+
+                int[] termCount = new int[test.levels().length];
+                test.stream().forEach(s -> termCount[s.index()]++);
+
+                Iterator<Integer> indexes = terms.indexes(testColName).iterator();
+                while (indexes.hasNext()) {
+                    int i = indexes.next();
+                    if (termCount[i] < c.getMinCount()) {
+                        indexes.remove();
+                        continue;
+                    }
+                    String testLabel = df.var(testColName).levels()[i];
+
+                    DTable dt = DTable.newBinaryFromWeights(test, target, weights, testLabel);
+                    double value = function.compute(dt);
+                    CTreeCandidate candidate = new CTreeCandidate(value, testColName);
+                    if (best == null) {
+                        best = candidate;
+                        best.addGroup(testColName + " == " + testLabel, spot -> spot.label(testColName).equals(testLabel));
+                        best.addGroup(testColName + " != " + testLabel, spot -> !spot.label(testColName).equals(testLabel));
+                    } else {
+                        int comp = best.compareTo(candidate);
+                        if (comp < 0) continue;
+                        if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
+                        best = candidate;
+                        best.addGroup(testColName + " == " + testLabel, spot -> spot.label(testColName).equals(testLabel));
+                        best.addGroup(testColName + " != " + testLabel, spot -> !spot.label(testColName).equals(testLabel));
+                    }
+                }
+                if (best != null)
+                    result.add(best);
+                return result;
+            });
 }

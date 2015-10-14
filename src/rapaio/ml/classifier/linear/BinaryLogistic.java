@@ -35,7 +35,6 @@ import rapaio.util.func.SFunction;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
@@ -161,7 +160,7 @@ public class BinaryLogistic extends AbstractClassifier {
             throw new IllegalArgumentException("Model has not yet been trained");
 
         CFit cr = CFit.newEmpty(this, df, withClasses, withDistributions);
-        cr.addTarget(firstTargetName(), firstDict());
+        cr.addTarget(firstTargetName(), firstTargetLevels());
 
         for (int i = 0; i < df.rowCount(); i++) {
             double p = regress(df, i);

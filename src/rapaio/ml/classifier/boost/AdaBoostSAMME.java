@@ -127,7 +127,7 @@ public class AdaBoostSAMME extends AbstractClassifier implements RunningClassifi
 
         prepareLearning(df, weights, targetVars);
 
-        k = firstDict().length - 1;
+        k = firstTargetLevels().length - 1;
 
         h = new ArrayList<>();
         a = new ArrayList<>();
@@ -151,10 +151,10 @@ public class AdaBoostSAMME extends AbstractClassifier implements RunningClassifi
         List<String> targetVarList = new VarRange(targetVarsRange).parseVarNames(df);
         String[] targetVars = targetVarList.toArray(new String[targetVarList.size()]);
 
-        if (w != null && this.targetNames() != null && firstDict() != null) {
+        if (w != null && this.targetNames() != null && firstTargetLevels() != null) {
             // if prev trained on something else than we have a problem
             if ((!targetVars[0].equals(firstTargetName()) ||
-                    k != firstDict().length - 1)) {
+                    k != firstTargetLevels().length - 1)) {
                 throw new IllegalArgumentException("previous classifier trained on different target");
             }
             this.runs += runs;
@@ -218,7 +218,7 @@ public class AdaBoostSAMME extends AbstractClassifier implements RunningClassifi
     @Override
     public CFit fit(Frame df, boolean withClasses, boolean withDistributions) {
         CFit p = CFit.newEmpty(this, df, withClasses, true);
-        p.addTarget(firstTargetName(), firstDict());
+        p.addTarget(firstTargetName(), firstTargetLevels());
 
         for (int i = 0; i < h.size(); i++) {
             CFit hp = h.get(i).fit(df, true, false);

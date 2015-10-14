@@ -69,6 +69,6 @@ public final class Tag<T extends Serializable> implements Serializable {
 
     @Override
     public String toString() {
-        return "Tag{" + name + '=' + value + '}';
+        return "Tag{" + name + ':' + value.getClass().getName() + '}';
     }
 }

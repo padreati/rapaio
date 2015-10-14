@@ -45,6 +45,7 @@ public class WS {
     private static DecimalFormat formatDecShort = new DecimalFormat();
     private static DecimalFormat formatDecLong = new DecimalFormat();
     private static DecimalFormat formatDecFlex = new DecimalFormat();
+    private static DecimalFormat formatDecFlexShort = new DecimalFormat();
 
     static {
         formatDecShort.setMinimumIntegerDigits(1);
@@ -56,6 +57,9 @@ public class WS {
         formatDecFlex.setMinimumFractionDigits(0);
         formatDecFlex.setMaximumFractionDigits(7);
         formatDecFlex.setMinimumIntegerDigits(1);
+        formatDecFlexShort.setMinimumFractionDigits(0);
+        formatDecFlexShort.setMaximumFractionDigits(3);
+        formatDecFlexShort.setMinimumIntegerDigits(1);
     }
 
     static {
@@ -101,6 +105,14 @@ public class WS {
         if (Double.isInfinite(value))
             return Double.toString(value);
         return formatDecFlex.format(value);
+    }
+
+    public static String formatFlexShort(double value) {
+        if (Double.isNaN(value))
+            return "?";
+        if (Double.isInfinite(value))
+            return Double.toString(value);
+        return formatDecFlexShort.format(value);
     }
 
     public static String formatShort(double value) {
