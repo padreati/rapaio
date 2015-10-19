@@ -21,36 +21,38 @@
  *
  */
 
-package rapaio.experiment.classifier.svm.kernel;
+package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
 
 /**
- * The Multiquadric kernel can be used in the same situations as the Rational Quadratic kernel.
- * As is the case with the Sigmoid kernel, it is also an example of an
- * non-positive definite kernel.
+ * Inverse Multiquadric Kernel
  * <p>
- * k(x, y) = \sqrt{\lVert x-y \rVert^2 + c^2}
+ * The Inverse Multi Quadric kernel. As with the GaussianPdf kernel,
+ * it results in a kernel matrix with full rank (Micchelli, 1986)
+ * and thus forms a infinite dimension feature space.
+ * <p>
+ * k(x, y) = \frac{1}{\sqrt{\lVert x-y \rVert^2 + \theta^2}}
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 @Deprecated
-public class MultiQuadricKernel extends AbstractKernel {
+public class InverseMultiQuadraticKernel extends AbstractKernel {
 
     private final double c;
 
-    public MultiQuadricKernel(double c) {
+    public InverseMultiQuadraticKernel(double c) {
         this.c = c;
     }
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
         double dot = deltaDotProd(df1, row1, df2, row2);
-        return Math.sqrt(dot * dot + c * c);
+        return 1.0 / Math.sqrt(dot * dot + c * c);
     }
 
     @Override
     public Kernel newInstance() {
-        return new MultiQuadricKernel(c);
+        return new InverseMultiQuadraticKernel(c);
     }
 }

@@ -29,6 +29,7 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
 import rapaio.util.Pair;
+import rapaio.util.Tag;
 import rapaio.util.Util;
 import rapaio.util.func.SPredicate;
 
@@ -36,7 +37,6 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
@@ -109,7 +109,7 @@ public class CTreeNode implements Serializable {
             return;
         }
 
-        if (df.rowCount() <= tree.getMinCount() || counter.countValues(x -> x > 0, false) == 1 || depth < 1) {
+        if (df.rowCount() <= tree.minCount() || counter.countValues(x -> x > 0, false) == 1 || depth < 1) {
             return;
         }
 
@@ -117,12 +117,19 @@ public class CTreeNode implements Serializable {
                 .parallel()
                 .filter(testCol -> !testCol.equals(tree.firstTargetName()))
                 .map(testCol -> {
-                    if (!tree.testMap.containsKey(df.var(testCol).type())) {
+                    CTreeTest test = null;
+                    if (tree.customTestMap().containsKey(testCol)) {
+                        test = tree.customTestMap().get(testCol).get();
+                    }
+                    if (tree.testMap().containsKey(df.var(testCol).type())) {
+                        test = tree.testMap().get(df.var(testCol).type()).get();
+                    }
+                    if (test == null) {
                         throw new IllegalArgumentException("can't learn ctree with no " +
                                 "tests for given variable: " + df.var(testCol).name() +
                                 " [" + df.var(testCol).type().name() + "]");
                     }
-                    List<CTreeCandidate> c = tree.testMap.get(df.var(testCol).type()).get().computeCandidates(
+                    List<CTreeCandidate> c = test.computeCandidates(
                             tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction().get(), terms);
                     return (c == null || c.isEmpty()) ? null : c.get(0);
                 }).filter(c -> c != null).collect(Collectors.toList());

@@ -52,15 +52,15 @@ public class CTree extends AbstractClassifier {
 
     // parameter default values
 
-    int minCount = 1;
-    int maxDepth = 10_000;
+    private int minCount = 1;
+    private int maxDepth = 0;
 
-    VarSelector varSelector = VarSelector.ALL;
-    Map<String, Tag<CTreeTest>> customTestMap = new HashMap<>();
-    Map<VarType, Tag<CTreeTest>> testMap = new HashMap<>();
-    Tag<CTreeTestFunction> function = CTreeTestFunction.InfoGain;
-    Tag<CTreeMissingHandler> splitter = CTreeMissingHandler.Ignored;
-    Tag<CTreePredictor> predictor = CTreePredictor.Standard;
+    private VarSelector varSelector = VarSelector.ALL;
+    private Map<String, Tag<CTreeTest>> customTestMap = new HashMap<>();
+    private Map<VarType, Tag<CTreeTest>> testMap = new HashMap<>();
+    private Tag<CTreeTestFunction> function = CTreeTestFunction.InfoGain;
+    private Tag<CTreeMissingHandler> splitter = CTreeMissingHandler.Ignored;
+    private Tag<CTreePredictor> predictor = CTreePredictor.Standard;
 
     // tree root node
     private CTreeNode root;
@@ -69,7 +69,7 @@ public class CTree extends AbstractClassifier {
 
     public static CTree newID3() {
         return new CTree()
-                .withMaxDepth(10_000)
+                .withMaxDepth(-1)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
                 .withSplitter(CTreeMissingHandler.Ignored)
@@ -81,7 +81,7 @@ public class CTree extends AbstractClassifier {
 
     public static CTree newC45() {
         return new CTree()
-                .withMaxDepth(10_000)
+                .withMaxDepth(-1)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
                 .withSplitter(CTreeMissingHandler.ToAllWeighted)
@@ -105,7 +105,7 @@ public class CTree extends AbstractClassifier {
 
     public static CTree newCART() {
         return new CTree()
-                .withMaxDepth(10_000)
+                .withMaxDepth(-1)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
                 .withSplitter(CTreeMissingHandler.ToRandom)
@@ -160,7 +160,7 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
-    public int getMinCount() {
+    public int minCount() {
         return minCount;
     }
 
@@ -172,14 +172,11 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
-    public int getMaxDepth() {
+    public int maxDepth() {
         return maxDepth;
     }
 
     public CTree withMaxDepth(int maxDepth) {
-        if (maxDepth < 1) {
-            throw new IllegalArgumentException("max depth must be an integer greater than 0");
-        }
         this.maxDepth = maxDepth;
         return this;
     }
@@ -192,6 +189,14 @@ public class CTree extends AbstractClassifier {
     public CTree withTest(String varName, Tag<CTreeTest> test) {
         this.customTestMap.put(varName, test);
         return this;
+    }
+
+    public Map<VarType, Tag<CTreeTest>> testMap() {
+        return testMap;
+    }
+
+    public Map<String, Tag<CTreeTest>> customTestMap() {
+        return customTestMap;
     }
 
     public CTree withNoTests() {
@@ -276,9 +281,9 @@ public class CTree extends AbstractClassifier {
 
         root = new CTreeNode(null, "root", spot -> true);
         if (poolSize() == 0) {
-            root.learn(this, df, weights, maxDepth, new CTreeNominalTerms().init(df));
+            root.learn(this, df, weights, maxDepth() < 0 ? Integer.MAX_VALUE : maxDepth(), new CTreeNominalTerms().init(df));
         } else {
-            FJPool.run(poolSize(), () -> root.learn(this, df, weights, maxDepth, new CTreeNominalTerms().init(df)));
+            FJPool.run(poolSize(), () -> root.learn(this, df, weights, maxDepth < 0 ? Integer.MAX_VALUE : maxDepth, new CTreeNominalTerms().init(df)));
         }
         return this;
     }

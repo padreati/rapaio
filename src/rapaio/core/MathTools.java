@@ -892,7 +892,7 @@ public class MathTools {
     }
 
 
-    public static final double SMALL_ERR = 1e-6;
+    public static final double SMALL_ERR = 1e-10;
 
     /**
      * Tests if the double values are approximately equal

@@ -130,8 +130,8 @@ public class BinaryLogistic extends AbstractClassifier {
     }
 
     @Override
-    public BinaryLogistic learn(Frame df, Var weights, String... targetVarNames) {
-        prepareLearning(df, weights, targetVarNames);
+    public BinaryLogistic learn(Frame dfOld, Var weights, String... targetVarNames) {
+        Frame df = prepareLearning(dfOld, weights, targetVarNames);
 
         if (df.stream().complete().count() != df.rowCount()) {
             throw new IllegalArgumentException("Incomplete data set is not allowed in binary logistic");
@@ -155,9 +155,11 @@ public class BinaryLogistic extends AbstractClassifier {
     }
 
     @Override
-    public CFit fit(Frame df, boolean withClasses, boolean withDistributions) {
-        if (coef == null)
+    public CFit fit(Frame dfOld, boolean withClasses, boolean withDistributions) {
+        if (!hasLearned())
             throw new IllegalArgumentException("Model has not yet been trained");
+
+        Frame df = prepareFit(dfOld);
 
         CFit cr = CFit.newEmpty(this, df, withClasses, withDistributions);
         cr.addTarget(firstTargetName(), firstTargetLevels());

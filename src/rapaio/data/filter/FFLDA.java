@@ -24,44 +24,37 @@
 package rapaio.data.filter;
 
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
-import rapaio.data.SolidFrame;
 import rapaio.data.Var;
+import rapaio.data.VarRange;
+import rapaio.ml.analysis.LDA;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * Adds an intercept column: a numeric column with all values equal with 1.0,
- * used in general for linear regression like setups.
- * <p>
- * In case there is already a column called intercept, nothing will happen.
- *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
- */
-@Deprecated
-public class FFAbstractAddIntercept extends FFAbstract {
+import static java.util.stream.Collectors.toList;
 
-    public static String INTERCEPT = "(Intercept)";
+public class FFLDA implements FFilter {
 
-    public FFAbstractAddIntercept() {
-        super();
+    private final String[] draftTargetVars;
+    private final int k;
+    private String[] targetVars;
+    private LDA lda;
+
+    public FFLDA(int k, String... targetVars) {
+        this.k = k;
+        this.draftTargetVars = targetVars;
     }
 
     @Override
     public void fit(Frame df) {
+        targetVars = new VarRange(draftTargetVars).parseVarNames(df).stream().toArray(String[]::new);
 
+        lda = new LDA();
+        lda.learn(df, targetVars);
     }
 
+    @Override
     public Frame apply(Frame df) {
-        List<String> names = parse(df, "all");
-        if (names.contains(INTERCEPT)) {
-            return df;
-        }
-        List<Var> vars = new ArrayList<>();
-        vars.add(Numeric.newFill(df.rowCount(), 1.0).withName(INTERCEPT));
-        Arrays.stream(df.varNames()).forEach(varName -> vars.add(df.var(varName)));
-        return SolidFrame.newWrapOf(df.rowCount(), vars);
+        return lda.fit(df, k);
     }
 }

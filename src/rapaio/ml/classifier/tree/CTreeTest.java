@@ -72,8 +72,8 @@ public interface CTreeTest extends Serializable {
                     dt.update(2, target.index(row), -weights.value(row));
                     dt.update(1, target.index(row), +weights.value(row));
 
-                    if (i >= misCount + c.getMinCount() - 1 &&
-                            i < df.rowCount() - c.getMinCount() &&
+                    if (i >= misCount + c.minCount() - 1 &&
+                            i < df.rowCount() - c.minCount() &&
                             test.value(sort.index(i)) < test.value(sort.index(i + 1))) {
 
                         double currentScore = function.compute(dt);
@@ -132,8 +132,8 @@ public interface CTreeTest extends Serializable {
                     dt.update(2, target.index(row), -weights.value(row));
                     dt.update(1, target.index(row), +weights.value(row));
 
-                    if (i >= misCount + c.getMinCount() - 1 &&
-                            i < df.rowCount() - c.getMinCount() &&
+                    if (i >= misCount + c.minCount() - 1 &&
+                            i < df.rowCount() - c.minCount() &&
                             test.value(sort.index(i)) < test.value(sort.index(i + 1))) {
 
                         double currentScore = function.compute(dt);
@@ -162,7 +162,7 @@ public interface CTreeTest extends Serializable {
                 Var test = df.var(testName);
                 Var target = df.var(targetName);
                 DTable dt = DTable.newFromCounts(test, target);
-                if (!(dt.hasCountWithMinimum(false, c.getMinCount(), 2))) {
+                if (!(dt.hasCountWithMinimum(false, c.minCount(), 2))) {
                     return Collections.emptyList();
                 }
 
@@ -177,7 +177,7 @@ public interface CTreeTest extends Serializable {
                 Var test = df.var(testColName);
                 Var target = df.var(targetColName);
 
-                if (!DTable.newFromCounts(test, target).hasCountWithMinimum(false, c.getMinCount(), 2)) {
+                if (!DTable.newFromCounts(test, target).hasCountWithMinimum(false, c.minCount(), 2)) {
                     return Collections.emptyList();
                 }
 
@@ -202,7 +202,7 @@ public interface CTreeTest extends Serializable {
 
                 Var test = df.var(testColName);
                 Var target = df.var(targetColName);
-                if (!(DTable.newFromCounts(test, target).hasCountWithMinimum(false, c.getMinCount(), 2))) {
+                if (!(DTable.newFromCounts(test, target).hasCountWithMinimum(false, c.minCount(), 2))) {
                     return Collections.emptyList();
                 }
 
@@ -215,7 +215,7 @@ public interface CTreeTest extends Serializable {
                 Iterator<Integer> indexes = terms.indexes(testColName).iterator();
                 while (indexes.hasNext()) {
                     int i = indexes.next();
-                    if (termCount[i] < c.getMinCount()) {
+                    if (termCount[i] < c.minCount()) {
                         indexes.remove();
                         continue;
                     }

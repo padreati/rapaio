@@ -37,9 +37,9 @@ import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.plot.Plot;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.CFit;
-import rapaio.experiment.classifier.svm.BinarySMO;
-import rapaio.experiment.classifier.svm.kernel.PolyKernel;
-import rapaio.experiment.classifier.svm.kernel.WaveletKernel;
+import rapaio.ml.classifier.svm.BinarySMO;
+import rapaio.ml.classifier.svm.kernel.PolyKernel;
+import rapaio.ml.classifier.svm.kernel.WaveletKernel;
 import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.ws.Summary;
 

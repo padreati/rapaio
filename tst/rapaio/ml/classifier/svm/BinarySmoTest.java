@@ -21,7 +21,7 @@
 // *
 // */
 //
-//package rapaio.experiment.classifier.svm;
+//package rapaio.ml.classifier.svm;
 //
 //import org.junit.Assert;
 //import org.junit.Test;
@@ -29,7 +29,7 @@
 //import rapaio.data.Frame;
 //import rapaio.datasets.Datasets;
 //import rapaio.ml.classifier.CFit;
-//import rapaio.experiment.classifier.svm.kernel.RBFKernel;
+//import rapaio.ml.classifier.svm.kernel.RBFKernel;
 //
 //import java.io.IOException;
 //import java.net.URISyntaxException;

@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.experiment.classifier.svm.kernel;
+package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.core.MathTools;
 import rapaio.data.Frame;

@@ -21,37 +21,36 @@
  *
  */
 
-package rapaio.experiment.classifier.svm.kernel;
+package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
 
 /**
- * The Generalized T-Student Kernel has been proven to be a
- * Mercel Kernel, thus having a positive semi-definite Kernel
- * matrix (Boughorbel, 2004).
- * It is given by:
+ * The Multiquadric kernel can be used in the same situations as the Rational Quadratic kernel.
+ * As is the case with the Sigmoid kernel, it is also an example of an
+ * non-positive definite kernel.
  * <p>
- * k(x,y) = \frac{1}{1 + \lVert x-y \rVert ^d}
+ * k(x, y) = \sqrt{\lVert x-y \rVert^2 + c^2}
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 @Deprecated
-public class GeneralizedStudentTKernel extends AbstractKernel {
+public class MultiQuadricKernel extends AbstractKernel {
 
-    private final double degree;
+    private final double c;
 
-    public GeneralizedStudentTKernel(double degree) {
-        this.degree = degree;
+    public MultiQuadricKernel(double c) {
+        this.c = c;
     }
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
         double dot = deltaDotProd(df1, row1, df2, row2);
-        return 1.0 / (1.0 + Math.pow(dot, degree));
+        return Math.sqrt(dot * dot + c * c);
     }
 
     @Override
     public Kernel newInstance() {
-        return new GeneralizedStudentTKernel(degree);
+        return new MultiQuadricKernel(c);
     }
 }

@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.experiment.classifier.svm;
+package rapaio.ml.classifier.svm;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
@@ -30,7 +30,6 @@ package rapaio.experiment.classifier.svm;
 import rapaio.core.MathTools;
 import rapaio.data.VarType;
 import rapaio.ml.common.Capabilities;
-import rapaio.sys.WS;
 import rapaio.core.RandomSource;
 import rapaio.data.sample.FrameSample;
 import rapaio.data.sample.FrameSampler;
@@ -40,8 +39,8 @@ import rapaio.data.Var;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
-import rapaio.experiment.classifier.svm.kernel.Kernel;
-import rapaio.experiment.classifier.svm.kernel.PolyKernel;
+import rapaio.ml.classifier.svm.kernel.Kernel;
+import rapaio.ml.classifier.svm.kernel.PolyKernel;
 
 import java.io.Serializable;
 import java.util.BitSet;
@@ -51,8 +50,9 @@ import static rapaio.sys.WS.formatFlex;
 /**
  * Class for building a binary support vector machine.
  */
-@Deprecated
 public class BinarySMO extends AbstractClassifier implements Serializable {
+
+    private static final long serialVersionUID = 1208515184777030598L;
 
     protected double[] alpha; // Lagrange multipliers from dual
     protected double b, bLow, bUp; // thresholds
@@ -109,13 +109,13 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     public String fullName() {
         return name() +
                 "{" +
-                "sampler=" + sampler().name() + ", " +
-                "kernel=" + kernel.name() + ", " +
-                "C=" + formatFlex(C) + ", " +
-                "tol=" + formatFlex(tol) + ", " +
-                "classIndex1=" + classIndex1 + ", " +
-                "classIndex2=" + classIndex2 + ", " +
-                "oneVsAll=" + oneVsAll + ", " +
+                "sampler=" + sampler().name() + ";" +
+                "kernel=" + kernel.name() + ";" +
+                "C=" + formatFlex(C) + ";" +
+                "tol=" + formatFlex(tol) + ";" +
+                "classIndex1=" + classIndex1 + ";" +
+                "classIndex2=" + classIndex2 + ";" +
+                "oneVsAll=" + oneVsAll + ";" +
                 "maxRuns=" + maxRuns +
                 "}";
     }
@@ -193,7 +193,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                 .withLearnType(Capabilities.LearnType.BINARY_CLASSIFIER)
                 .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NOMINAL, VarType.NUMERIC)
                 .withInputCount(1, 10000)
-                .withAllowMissingInputValues(true)
+                .withAllowMissingInputValues(false)
                 .withTargetTypes(VarType.NOMINAL)
                 .withTargetCount(1, 1)
                 .withAllowMissingTargetValues(false);
@@ -203,9 +203,6 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     public BinarySMO learn(Frame df, Var weights, String... targetVarNames) {
 
         prepareLearning(df, weights, targetVarNames);
-        if (targetNames().length != 1) {
-            throw new IllegalArgumentException("Binary classifiers can learn only one target variable");
-        }
 
         // process classes
 
@@ -214,17 +211,14 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
                     "class labels are equal, which is not allowed.");
         }
 
-        Mapping map;
         if (!oneVsAll) {
-            map = df
+            Mapping map = df
                     .stream()
                     .filter(s -> s.index(firstTargetName()) == classIndex1 || s.index(firstTargetName()) == classIndex2)
                     .collectMapping();
-        } else {
-            map = Mapping.newRangeOf(0, df.rowCount());
+            df = df.mapRows(map);
+            weights = weights.mapRows(map);
         }
-        df = df.mapRows(map);
-        weights = weights.mapRows(map);
 
         // perform sampling
 
@@ -459,15 +453,25 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
         for (int i = 0; i < df.rowCount(); i++) {
             double pred = predict(df, i);
-            if (MathTools.sm(pred, 0)) {
-                cr.firstClasses().setIndex(i, classIndex1);
-                cr.firstDensity().setValue(i, firstTargetLevel(classIndex1), -pred);
-                cr.firstDensity().setValue(i, firstTargetLevel(classIndex2), pred);
-            } else {
-                cr.firstClasses().setIndex(i, classIndex2);
-                cr.firstDensity().setValue(i, firstTargetLevel(classIndex1), -pred);
-                cr.firstDensity().setValue(i, firstTargetLevel(classIndex2), pred);
-            }
+
+            // TODO generalize
+            pred = 1.0 / (1.0 + Math.exp(-pred));
+
+            cr.firstClasses().setIndex(i, (pred < 0.5) ? classIndex1 : classIndex2);
+            cr.firstDensity().setValue(i, firstTargetLevel(classIndex1), 1 - pred);
+            cr.firstDensity().setValue(i, firstTargetLevel(classIndex2), pred);
+
+            // this is the old distance variant
+
+//            if (pred < 0) {
+//                cr.firstClasses().setIndex(i, classIndex1);
+//                cr.firstDensity().setValue(i, firstTargetLevel(classIndex1), -pred);
+//                cr.firstDensity().setValue(i, firstTargetLevel(classIndex2), pred);
+//            } else {
+//                cr.firstClasses().setIndex(i, classIndex2);
+//                cr.firstDensity().setValue(i, firstTargetLevel(classIndex1), -pred);
+//                cr.firstDensity().setValue(i, firstTargetLevel(classIndex2), pred);
+//            }
         }
         return cr;
     }
@@ -832,13 +836,13 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     }
 
     @Override
-    public void printSummary() {
+    public String summary() {
         StringBuilder sb = new StringBuilder();
         int printed = 0;
 
         if ((alpha == null) && (sparseWeights == null)) {
             sb.append("BinarySMO: No model built yet.\n");
-            return;
+            return sb.toString();
         }
         try {
             sb.append("BinarySMO model\n");
@@ -918,6 +922,6 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             sb.append("Can't print BinarySMO classifier.");
         }
 
-        WS.code(sb.toString());
+        return sb.toString();
     }
 }

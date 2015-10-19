@@ -21,36 +21,32 @@
  *
  */
 
-package rapaio.experiment.classifier.svm.kernel;
+package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
 
 /**
- * The Rational Quadratic kernel is less computationally intensive than the GaussianPdf kernel
- * and can be used as an alternative when using the GaussianPdf becomes too expensive.
+ * The Histogram Intersection Kernel is also known as the Min Kernel
+ * and has been proven useful in image classification.
  * <p>
- * k(x, y) = 1 - \frac{\lVert x-y \rVert^2}{\lVert x-y \rVert^2 + c}
+ * k(x,y) = \sum_{i=1}^n \min(x_i,y_i)
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
 @Deprecated
-public class RationalQuadraticKernel extends AbstractKernel {
-
-    private final double c;
-
-    public RationalQuadraticKernel(double c) {
-        this.c = c;
-    }
+public class MinKernel extends AbstractKernel {
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double dot = deltaDotProd(df1, row1, df2, row2);
-        double square = dot * dot;
-        return 1.0 - square / (square + c);
+        double sum = 0;
+        for (String varName : varNames) {
+            sum += Math.min(df1.value(row1, varName), df2.value(row2, varName));
+        }
+        return sum;
     }
 
     @Override
     public Kernel newInstance() {
-        return new RationalQuadraticKernel(c);
+        return new MinKernel();
     }
 }

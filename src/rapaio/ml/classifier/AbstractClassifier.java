@@ -110,15 +110,16 @@ public abstract class AbstractClassifier implements Classifier {
      * for all learners. It's taks includes initialization of target names,
      * input names, check the capabilities at learning phase, etc.
      *
-     * @param df         data frame
+     * @param dfOld         data frame
      * @param weights    weights of instances
      * @param targetVars target variable names
      */
-    public Frame prepareLearning(Frame df, final Var weights, final String... targetVars) {
+    public Frame prepareLearning(Frame dfOld, final Var weights, final String... targetVars) {
 
         if (targetVars.length == 0) {
             throw new IllegalArgumentException("At least a target var name should be specified at learning time.");
         }
+        Frame df = dfOld;
         for (FFilter filter : inputFilters) {
             df = filter.filter(df);
         }
@@ -142,7 +143,7 @@ public abstract class AbstractClassifier implements Classifier {
     public Frame prepareFit(Frame df) {
         Frame result = df;
         for (FFilter filter : inputFilters) {
-            result = filter.apply(df);
+            result = filter.apply(result);
         }
         return result;
     }

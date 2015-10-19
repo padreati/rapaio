@@ -23,9 +23,6 @@
 
 package rapaio.experiment.sandbox;
 
-import rapaio.experiment.classifier.svm.BinarySMO;
-import rapaio.experiment.classifier.svm.kernel.SigmoidKernel;
-import rapaio.graphics.Plotter;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Maximum;
@@ -39,7 +36,6 @@ import rapaio.graphics.plot.Points;
 import rapaio.graphics.plot.plotcomp.MeshContour;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
-import rapaio.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.ensemble.CForest;
 import rapaio.ws.Summary;
 

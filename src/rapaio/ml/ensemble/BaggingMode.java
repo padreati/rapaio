@@ -26,6 +26,7 @@ package rapaio.ml.ensemble;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
+import rapaio.ml.classifier.CFit;
 
 import java.io.Serializable;
 import java.util.List;
@@ -39,14 +40,10 @@ public enum BaggingMode implements Serializable {
 
     VOTING {
         @Override
-        public void computeDensity(String[] dictionary, List<Frame> treeDensities, Nominal classes, Frame densities) {
-            treeDensities.forEach(d -> {
+        public void computeDensity(String[] dictionary, List<CFit> treeFits, Nominal classes, Frame densities) {
+            treeFits.stream().map(CFit::firstClasses).forEach(d -> {
                 for (int i = 0; i < d.rowCount(); i++) {
-                    DVector dv = DVector.newEmpty(dictionary);
-                    for (int j = 1; j < dictionary.length; j++) {
-                        dv.increment(j, d.value(i, j));
-                    }
-                    int best = dv.findBestIndex(false);
+                    int best = d.index(i);
                     densities.setValue(i, best, densities.value(i, best) + 1);
                 }
             });
@@ -75,13 +72,13 @@ public enum BaggingMode implements Serializable {
     },
     DISTRIBUTION {
         @Override
-        public void computeDensity(String[] dictionary, List<Frame> treeDensities, Nominal classes, Frame densities) {
+        public void computeDensity(String[] dictionary, List<CFit> treeFits, Nominal classes, Frame densities) {
             for (int i = 0; i < densities.rowCount(); i++) {
                 for (int j = 0; j < densities.varCount(); j++) {
                     densities.setValue(i, j, 0);
                 }
             }
-            treeDensities.forEach(d -> {
+            treeFits.stream().map(CFit::firstDensity).forEach(d -> {
                 for (int i = 0; i < densities.rowCount(); i++) {
                     double t = 0.0;
                     for (int j = 0; j < densities.varCount(); j++) {
@@ -116,7 +113,7 @@ public enum BaggingMode implements Serializable {
         }
     };
 
-    abstract void computeDensity(String[] dictionary, List<Frame> treeDensities, Nominal classes, Frame densities);
+    abstract void computeDensity(String[] dictionary, List<CFit> treeFits, Nominal classes, Frame densities);
 
     abstract boolean needsClass();
 

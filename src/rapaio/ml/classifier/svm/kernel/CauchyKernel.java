@@ -21,45 +21,45 @@
  *
  */
 
-package rapaio.experiment.classifier.svm.kernel;
+package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
 
 /**
- * The Generalized Histogram Intersection kernel is built based on
- * the Histogram Intersection Kernel for image classification but
- * applies in a much larger variety of contexts (Boughorbel, 2005).
- * It is given by:
+ * The Cauchy kernel comes from the Cauchy distribution (Basak, 2008).
+ * It is a long-tailed kernel and can be used to give long-range influence
+ * and sensitivity over the high dimension space.
  * <p>
- * k(x,y) = \sum_{i=1}^m \min(|x_i|^\alpha,|y_i|^\beta)
+ * k(x, y) = \frac{1}{1 + \frac{\lVert x-y \rVert^2}{\sigma^2} }
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
 @Deprecated
-public class GeneralizedMinKernel extends AbstractKernel {
+public class CauchyKernel extends AbstractKernel {
 
-    private final double alpha;
-    private final double beta;
+    private final double sigma;
 
-    public GeneralizedMinKernel(double alpha, double beta) {
-        this.alpha = alpha;
-        this.beta = beta;
+    /**
+     * The Cauchy kernel comes from the Cauchy distribution (Basak, 2008).
+     * It is a long-tailed kernel and can be used to give long-range influence
+     * and sensitivity over the high dimension space.
+     * <p>
+     * k(x, y) = \frac{1}{1 + \frac{\lVert x-y \rVert^2}{\sigma^2} }
+     *
+     * @param sigma sigma value
+     */
+    public CauchyKernel(double sigma) {
+        this.sigma = sigma;
     }
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double sum = 0;
-        for (String varName : varNames) {
-            sum += Math.min(
-                    Math.pow(Math.abs(df1.value(row1, varName)), alpha),
-                    Math.pow(Math.abs(df2.value(row2, varName)), beta)
-            );
-        }
-        return sum;
+        double dot = deltaDotProd(df1, row1, df2, row2);
+        return 1.0 / (1.0 + Math.pow(dot / sigma, 2));
     }
 
     @Override
     public Kernel newInstance() {
-        return new GeneralizedMinKernel(alpha, beta);
+        return new CauchyKernel(sigma);
     }
 }

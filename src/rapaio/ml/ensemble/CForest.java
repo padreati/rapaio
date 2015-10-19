@@ -211,10 +211,10 @@ public class CForest extends AbstractClassifier {
         CFit cp = CFit.newEmpty(this, df, true, true);
         cp.addTarget(firstTargetName(), firstTargetLevels());
 
-        List<Frame> treeDensities = predictors.stream().parallel()
-                .map(pred -> pred.fit(df, baggingMode.needsClass(), baggingMode.needsDensity()).firstDensity())
+        List<CFit> treeFits = predictors.stream().parallel()
+                .map(pred -> pred.fit(df, baggingMode.needsClass(), baggingMode.needsDensity()))
                 .collect(Collectors.toList());
-        baggingMode.computeDensity(firstTargetLevels(), new ArrayList<>(treeDensities), cp.firstClasses(), cp.firstDensity());
+        baggingMode.computeDensity(firstTargetLevels(), new ArrayList<>(treeFits), cp.firstClasses(), cp.firstDensity());
         return cp;
     }
 

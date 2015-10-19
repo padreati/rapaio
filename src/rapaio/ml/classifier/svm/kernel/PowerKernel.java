@@ -21,33 +21,35 @@
  *
  */
 
-package rapaio.experiment.classifier.svm.kernel;
+package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
 
 /**
- * The Chi-Square kernel comes from the Chi-Square distribution.
+ * The Power kernel is also known as the (unrectified) triangular kernel.
+ * It is an example of scale-invariant kernel (Sahbi and Fleuret, 2004)
+ * and is also only conditionally positive definite.
  * <p>
- * k(x,y) = 1 - \sum_{i=1}^n \frac{(x_i-y_i)^2}{\frac{1}{2}(x_i+y_i)}
+ * k(x,y) = - \lVert x-y \rVert ^d
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 @Deprecated
-public class ChiSquareKernel extends AbstractKernel {
+public class PowerKernel extends AbstractKernel {
+
+    private final double degree;
+
+    public PowerKernel(double degree) {
+        this.degree = degree;
+    }
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double result = 0;
-        for (String varName : varNames) {
-            double sum = df1.value(row1, varName) + df2.value(row2, varName);
-            double diff = df1.value(row1, varName) - df2.value(row2, varName);
-            result = 2 * Math.pow(diff, 2) / sum;
-        }
-        return 1 - result;
+        return -Math.pow(deltaDotProd(df1, row1, df2, row2), degree);
     }
 
     @Override
     public Kernel newInstance() {
-        return new ChiSquareKernel();
+        return new PowerKernel(degree);
     }
 }

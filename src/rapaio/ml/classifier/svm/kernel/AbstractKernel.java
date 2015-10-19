@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.experiment.classifier.svm.kernel;
+package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
 
@@ -72,7 +72,7 @@ public abstract class AbstractKernel implements Kernel {
     @Override
     public double compute(Frame df1, int row1, Frame df2, int row2) {
         Double value = cache.retrieve(df1, row1, df2, row2);
-        if (value == null) {
+        if (value == null || Double.isNaN(value)) {
             value = eval(df1, row1, df2, row2);
             cache.store(df1, row1, df2, row2, value);
         }

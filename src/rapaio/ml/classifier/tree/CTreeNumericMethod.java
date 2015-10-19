@@ -71,8 +71,8 @@ public interface CTreeNumericMethod extends Serializable {
                     dt.update(2, target.index(row), -weights.value(row));
                     dt.update(1, target.index(row), +weights.value(row));
 
-                    if (i >= misCount + c.getMinCount() - 1 &&
-                            i < df.rowCount() - c.getMinCount() &&
+                    if (i >= misCount + c.minCount() - 1 &&
+                            i < df.rowCount() - c.minCount() &&
                             test.value(sort.index(i)) < test.value(sort.index(i + 1))) {
 
                         CTreeCandidate current = new CTreeCandidate(function.compute(dt), testColName);
@@ -143,8 +143,8 @@ public interface CTreeNumericMethod extends Serializable {
                     dt.update(1, target.index(row), +weights.value(row));
 
                     if (count != 0) continue;
-                    if (i >= misCount + c.getMinCount() - 1 &&
-                            i < df.rowCount() - c.getMinCount() &&
+                    if (i >= misCount + c.minCount() - 1 &&
+                            i < df.rowCount() - c.minCount() &&
                             test.value(sort.index(i)) < test.value(sort.index(i + 1))) {
 
                         CTreeCandidate current = new CTreeCandidate(function.compute(dt), testColName);

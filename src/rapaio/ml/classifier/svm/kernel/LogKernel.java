@@ -21,40 +21,36 @@
  *
  */
 
-package rapaio.experiment.classifier.svm.kernel;
+package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
 
 /**
- * The exponential kernel is closely related to the GaussianPdf kernel, with only the square of the norm left out. It is also a radial basis function kernel.
+ * Log Kernel
  * <p>
- * k(x, y) = \exp\left(-\frac{ \lVert x-y \rVert }{2\sigma^2}\right)
+ * The Log kernel seems to be particularly interesting for images, but is only
+ * conditionally positive definite.
+ * <p>
+ * k(x,y) = - log (\lVert x-y \rVert ^d + 1)
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 @Deprecated
-public class ExponentialKernel extends AbstractKernel {
+public class LogKernel extends AbstractKernel {
 
-    private final double sigma;
-    private final double factor;
+    private final double degree;
 
-    public ExponentialKernel() {
-        this(7);
-    }
-
-    public ExponentialKernel(double sigma) {
-        this.sigma = sigma;
-        this.factor = 1.0 / (2.0 * sigma * sigma);
+    public LogKernel(double degree) {
+        this.degree = degree;
     }
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double value = deltaDotProd(df1, row1, df2, row2);
-        return 1.0 / Math.pow(Math.E, factor * value);
+        return -Math.log1p(Math.pow(deltaDotProd(df1, row1, df2, row2), degree));
     }
 
     @Override
     public Kernel newInstance() {
-        return new ExponentialKernel(sigma);
+        return new LogKernel(degree);
     }
 }

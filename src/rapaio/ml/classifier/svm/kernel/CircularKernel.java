@@ -21,32 +21,43 @@
  *
  */
 
-package rapaio.experiment.classifier.svm.kernel;
+package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
 
 /**
- * The Histogram Intersection Kernel is also known as the Min Kernel
- * and has been proven useful in image classification.
+ * Circular Kernel
  * <p>
- * k(x,y) = \sum_{i=1}^n \min(x_i,y_i)
+ * The circular kernel is used in geostatic applications.
+ * It is an example of an isotropic stationary kernel
+ * and is positive definite in R2.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
+ * k(x, y) = \frac{2}{\pi} \arccos ( - \frac{ \lVert x-y \rVert}{\sigma}) - \frac{2}{\pi} \frac{ \lVert x-y \rVert}{\sigma} \sqrt{1 - \left(\frac{ \lVert x-y \rVert}{\sigma} \right)^2}
+ * <p>
+ * \mbox{if}~ \lVert x-y \rVert < \sigma \mbox{, zero otherwise}
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 @Deprecated
-public class MinKernel extends AbstractKernel {
+public class CircularKernel extends AbstractKernel {
+
+    private final double sigma;
+
+    public CircularKernel(double sigma) {
+        this.sigma = sigma;
+    }
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double sum = 0;
-        for (String varName : varNames) {
-            sum += Math.min(df1.value(row1, varName), df2.value(row2, varName));
-        }
-        return sum;
+        double dot = deltaDotProd(df1, row1, df2, row2);
+        if (dot < sigma)
+            return 0;
+        double f = dot / sigma;
+        return 2 * (Math.acos(-f) - f * Math.sqrt(1 - f * f)) / Math.PI;
     }
 
     @Override
     public Kernel newInstance() {
-        return new MinKernel();
+        return new CircularKernel(sigma);
     }
 }

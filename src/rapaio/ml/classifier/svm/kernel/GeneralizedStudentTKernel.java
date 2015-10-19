@@ -21,30 +21,37 @@
  *
  */
 
-package rapaio.experiment.classifier.svm.kernel;
+package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
 
-import java.io.Serializable;
-
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
+ * The Generalized T-Student Kernel has been proven to be a
+ * Mercel Kernel, thus having a positive semi-definite Kernel
+ * matrix (Boughorbel, 2004).
+ * It is given by:
+ * <p>
+ * k(x,y) = \frac{1}{1 + \lVert x-y \rVert ^d}
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
 @Deprecated
-public interface Kernel extends Serializable {
+public class GeneralizedStudentTKernel extends AbstractKernel {
 
-    Kernel newInstance();
+    private final double degree;
 
-    default String name() {
-        return "not implemented";
+    public GeneralizedStudentTKernel(double degree) {
+        this.degree = degree;
     }
 
-    boolean isLinear();
+    @Override
+    public double eval(Frame df1, int row1, Frame df2, int row2) {
+        double dot = deltaDotProd(df1, row1, df2, row2);
+        return 1.0 / (1.0 + Math.pow(dot, degree));
+    }
 
-    void buildKernel(String[] varNames, Frame df);
-
-    double compute(Frame df1, int row1, Frame df2, int row2);
-
-    default void clean() {
+    @Override
+    public Kernel newInstance() {
+        return new GeneralizedStudentTKernel(degree);
     }
 }

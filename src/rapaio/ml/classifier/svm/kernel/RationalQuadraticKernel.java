@@ -21,33 +21,36 @@
  *
  */
 
-package rapaio.experiment.classifier.svm.kernel;
+package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
 
 /**
- * The Spline kernel is given as a piece-wise cubic polynomial, as derived in the works by Gunn (1998).
+ * The Rational Quadratic kernel is less computationally intensive than the GaussianPdf kernel
+ * and can be used as an alternative when using the GaussianPdf becomes too expensive.
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
+ * k(x, y) = 1 - \frac{\lVert x-y \rVert^2}{\lVert x-y \rVert^2 + c}
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
 @Deprecated
-public class SplineKernel extends AbstractKernel {
+public class RationalQuadraticKernel extends AbstractKernel {
+
+    private final double c;
+
+    public RationalQuadraticKernel(double c) {
+        this.c = c;
+    }
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-
-        double value = 1;
-        for (String varName : varNames) {
-            double x_i = df1.value(row1, varName);
-            double y_i = df2.value(row2, varName);
-            double min = Math.min(x_i, y_i);
-            value *= 1 + x_i * y_i + x_i * y_i * min - (x_i + y_i) * Math.pow(min, 2) / 2.0 + Math.pow(min, 3) / 3;
-        }
-        return value;
+        double dot = deltaDotProd(df1, row1, df2, row2);
+        double square = dot * dot;
+        return 1.0 - square / (square + c);
     }
 
     @Override
     public Kernel newInstance() {
-        return new SplineKernel();
+        return new RationalQuadraticKernel(c);
     }
 }

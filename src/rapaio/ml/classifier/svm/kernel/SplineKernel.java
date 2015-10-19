@@ -21,43 +21,33 @@
  *
  */
 
-package rapaio.experiment.classifier.svm.kernel;
+package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
 
 /**
- * Circular Kernel
+ * The Spline kernel is given as a piece-wise cubic polynomial, as derived in the works by Gunn (1998).
  * <p>
- * The circular kernel is used in geostatic applications.
- * It is an example of an isotropic stationary kernel
- * and is positive definite in R2.
- * <p>
- * k(x, y) = \frac{2}{\pi} \arccos ( - \frac{ \lVert x-y \rVert}{\sigma}) - \frac{2}{\pi} \frac{ \lVert x-y \rVert}{\sigma} \sqrt{1 - \left(\frac{ \lVert x-y \rVert}{\sigma} \right)^2}
- * <p>
- * \mbox{if}~ \lVert x-y \rVert < \sigma \mbox{, zero otherwise}
- * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
 @Deprecated
-public class CircularKernel extends AbstractKernel {
-
-    private final double sigma;
-
-    public CircularKernel(double sigma) {
-        this.sigma = sigma;
-    }
+public class SplineKernel extends AbstractKernel {
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
-        double dot = deltaDotProd(df1, row1, df2, row2);
-        if (dot < sigma)
-            return 0;
-        double f = dot / sigma;
-        return 2 * (Math.acos(-f) - f * Math.sqrt(1 - f * f)) / Math.PI;
+
+        double value = 1;
+        for (String varName : varNames) {
+            double x_i = df1.value(row1, varName);
+            double y_i = df2.value(row2, varName);
+            double min = Math.min(x_i, y_i);
+            value *= 1 + x_i * y_i + x_i * y_i * min - (x_i + y_i) * Math.pow(min, 2) / 2.0 + Math.pow(min, 3) / 3;
+        }
+        return value;
     }
 
     @Override
     public Kernel newInstance() {
-        return new CircularKernel(sigma);
+        return new SplineKernel();
     }
 }

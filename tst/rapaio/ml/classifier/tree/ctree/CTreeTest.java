@@ -49,7 +49,7 @@ public class CTreeTest {
         Frame df = Datasets.loadIrisDataset();
 
         CTree tree = CTree.newDecisionStump();
-        assertEquals(1, tree.getMaxDepth());
+        assertEquals(1, tree.maxDepth());
 
         tree.learn(df, "class");
 

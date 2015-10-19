@@ -33,6 +33,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 /**
  * WS tool.
@@ -76,6 +77,9 @@ public class WS {
                     "java.util.logging.ConsoleHandler.filter    =\n" +
                     "java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter\n" +
                     "java.util.logging.ConsoleHandler.encoding  =").getBytes()));
+//            logManager.reset();
+//            Logger logger = new Logger();
+//            logManager.addLogger(logger);
         } catch (IOException e) {
             e.printStackTrace();
         }
