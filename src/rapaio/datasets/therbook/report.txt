@@ -1,0 +1,52 @@
+*** WARNING ***
+
+The local copy of your roaming profile,
+stored in C:\Documents and Settings\raand,
+is currently larger than your profile quota setting.
+
+Profile quota = 10485760 bytes
+Current profile size = 3181769 bytes
+
+This may cause your personalized settings (such as e-mail
+preferences, desktop and start menu settings) to become corrupt,
+when you log off. In extreme cases, your settings may fail to save
+altogether, causing you to lose personalized settings the
+next time you log on.
+
+A large local profile may also cause logging on and off to
+become slower than normal.
+
+To resolve this, you should delete some large files from
+your local profile, or move them into your home directory
+(drive h:). Before you log off A list of the 5 largest files
+and 5 largest folders in your profile is shown below:
+
+The largest files in your local profile are:
+
+\.jpi_cache\jar\1.0\holomatix.jar-aa4d0eb-5db02c35.zip                                                   216315
+ \.jpi_cache\jar\1.0\holomatix2.jar-5bfc91fe-367faea5.zip                                                 205838
+ \.jpi_cache\jar\1.0\holomatix2.jar-78a0a969-5a1d7b84.zip                                                 205838
+ \Desktop\wlan.zip                                                                                        202862
+ \.jpi_cache\file\1.0\myell.jpg-2eb5c4ed-5b5eca22.jpg                                                     115236
+ \.jpi_cache\jar\1.0\adcontroller.jar-28e619a9-7b20945a.zip                                               111988
+
+
+The largest directories are:
+
+\.jpi_cache\jar\1.0\                                                                                    1022702
+ \Recent\                                                                                                 648210
+ \.jpi_cache\file\1.0\                                                                                    507746
+ \Desktop\                                                                                                267130
+ \Templates\                                                                                              183395
+
+
+Please note that all files / folders shown above can
+be found in C:\Documents and Settings\raand, however you may find that
+some of these directories may be hidden. To unhide them, 
+Open "My Computer" then go to Tools > Folder Options > View,
+then ensure that "Show hidden files and folders" is selected.
+
+If you require assistance reducing the size of your local profile,
+or if you do not understand this message, please contact
+ICT help on 49000, or e-mail service.desk@imperial.ac.uk
+

@@ -1,0 +1,3 @@
+Age	Genotype	Sex
+1	CloneC	male
+5	CloneC	male

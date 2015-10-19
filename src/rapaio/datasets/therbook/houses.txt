@@ -1,0 +1,13 @@
+Location	Price
+Ascot	325
+Sunninghill	201
+Bracknell	157
+Camberley	162
+Bagshot	164
+Staines	101
+Windsor	211
+Maidenhead	188
+Reading	95
+Winkfield	117
+Warfield	188
+Newbury	121

@@ -1,0 +1,20 @@
+%a    		Abbreviated weekday name
+  %A   		Full weekday name
+  %b    		Abbreviated month name
+  %B   		Full month name
+  %c    		Date and time, locale-specific
+  %d    		Day of the month as decimal number (01-31)
+  %H   		Hours as decimal number (00-23) on the 24-hour clock
+  %I    		Hours as decimal number (01-12) on the 12-hour clock
+  %j    		Day of year as decimal number (001-366)
+  %m   		Month as decimal number (01-12)
+  %M   		Minute as decimal number (00-59)
+  %p    		AM/PM indicator in the locale
+  %S    	Second as decimal number (00-61) allowing for two “leap seconds”
+  %U    	Week of the year (00-53) using the first Sunday as day 1 of week 1
+  %w    	Weekday as decimal number (0-6, Sunday is 0)
+  %W   	Week of the year (00-53) using the first Monday as day 1 of week 1
+  %x     	Date, locale-specific
+  %X    	Time, locale-specific
+  %Y    	Year with century
+   %Z    	Time zone as a character string (output only)

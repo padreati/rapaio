@@ -1,0 +1,16 @@
+yield	level
+7	A
+6	A
+7	A
+8	A
+8	A
+8	B
+7	B
+7	B
+8	B
+7	B
+12	C
+10	C
+8	C
+11	C
+10	C

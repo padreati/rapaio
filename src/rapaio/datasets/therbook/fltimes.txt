@@ -1,0 +1,7 @@
+     Genus       species flowering 
+     Acer   platanoides       May  
+     Ajuga       reptans      June 
+  Brassica         napus     April 
+ Chamerion angustifolium      July 
+    Conyza     bilbaoana    August 
+    Lamium         album   January 

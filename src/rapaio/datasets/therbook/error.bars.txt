@@ -1,0 +1,8 @@
+error.bars<-function(yv,z,nn){
+xv<-barplot(yv,ylim=c(0,(max(yv)+max(z))),names=nn,ylab=deparse(substitute(yv)))
+g=(max(xv)-min(xv))/50
+for (i in 1:length(xv)) {
+lines(c(xv[i],xv[i]),c(yv[i]+z[i],yv[i]-z[i]))
+lines(c(xv[i]-g,xv[i]+g),c(yv[i]+z[i], yv[i]+z[i]))
+lines(c(xv[i]-g,xv[i]+g),c(yv[i]-z[i], yv[i]-z[i]))
+}}
