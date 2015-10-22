@@ -30,7 +30,6 @@ import rapaio.util.Tag;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.function.BiConsumer;
 
 /**
  * Pruning techniques
