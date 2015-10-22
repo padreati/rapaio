@@ -36,7 +36,7 @@ import rapaio.graphics.plot.Points;
 import rapaio.graphics.plot.plotcomp.MeshContour;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
-import rapaio.ml.ensemble.CForest;
+import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ws.Summary;
 
 import java.io.IOException;

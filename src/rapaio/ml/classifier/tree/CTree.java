@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import static java.util.stream.Collectors.joining;
 
@@ -64,6 +65,7 @@ public class CTree extends AbstractClassifier {
     private Tag<CTreeFunction> function = CTreeFunction.InfoGain;
     private Tag<CTreeMissingHandler> splitter = CTreeMissingHandler.Ignored;
     private Tag<CTreePruning> pruning = CTreePruning.NONE;
+    private BiConsumer<CTree, Integer> runningHook = null;
 
     // tree root node
     private CTreeNode root;
@@ -122,6 +124,7 @@ public class CTree extends AbstractClassifier {
                 .withFunction(function)
                 .withMissingHandler(splitter)
                 .withVarSelector(varSelector().newInstance())
+                .withRunningHook(runningHook)
                 .withSampler(sampler());
 
         tree.testMap.clear();
@@ -207,6 +210,11 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
+    public CTree withRunningHook(BiConsumer<CTree, Integer> runningHook) {
+        this.runningHook = runningHook;
+        return this;
+    }
+
     public Tag<CTreeFunction> getFunction() {
         return function;
     }
@@ -218,6 +226,10 @@ public class CTree extends AbstractClassifier {
 
     public Tag<CTreeMissingHandler> getSplitter() {
         return splitter;
+    }
+
+    public BiConsumer<CTree, Integer> getRunningHook() {
+        return runningHook;
     }
 
     public CTree withMissingHandler(Tag<CTreeMissingHandler> splitter) {
@@ -281,8 +293,8 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
-    public void prune(Frame df) {
-        pruning.get().prune(this, df);
+    public void prune(Frame df, boolean all) {
+        pruning.get().prune(this, df, all);
     }
 
     @Override

@@ -27,9 +27,8 @@ import rapaio.data.*;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
-import rapaio.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.ensemble.CForest;
+import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.util.Util;
 
 import java.util.ArrayList;

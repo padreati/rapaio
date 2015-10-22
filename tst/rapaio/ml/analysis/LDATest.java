@@ -26,7 +26,7 @@ package rapaio.ml.analysis;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.ml.ensemble.CForest;
+import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.ml.eval.CEvaluation;
 import rapaio.printer.IdeaPrinter;

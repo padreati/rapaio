@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.ensemble;
+package rapaio.ml.classifier.ensemble;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -40,7 +40,6 @@ import rapaio.util.Util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Breiman random forest implementation.

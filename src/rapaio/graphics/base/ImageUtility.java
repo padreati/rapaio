@@ -32,7 +32,6 @@ import java.io.IOException;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class ImageUtility {
 
     public static BufferedImage buildImage(Figure figure, int width, int height) {

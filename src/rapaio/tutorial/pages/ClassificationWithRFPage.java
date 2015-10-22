@@ -31,7 +31,7 @@ import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plotter;
 import rapaio.ml.classifier.CFit;
-import rapaio.ml.ensemble.CForest;
+import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.ws.Summary;

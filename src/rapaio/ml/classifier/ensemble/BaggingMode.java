@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.ensemble;
+package rapaio.ml.classifier.ensemble;
 
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;

@@ -30,6 +30,7 @@ import rapaio.util.Tag;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.BiConsumer;
 
 /**
  * Pruning techniques
@@ -38,12 +39,12 @@ import java.util.*;
  */
 public interface CTreePruning extends Serializable {
 
-    CTree prune(CTree tree, Frame df);
+    CTree prune(CTree tree, Frame df, boolean all);
 
     /**
      * No pruning, default schema
      */
-    Tag<CTreePruning> NONE = Tag.valueOf("None", (tree, df) -> tree);
+    Tag<CTreePruning> NONE = Tag.valueOf("None", (tree, df, all) -> tree);
 
     /**
      * Reduced error pruning, according with Quinlan for ID3, Described in Tom Mitchell
@@ -53,7 +54,7 @@ public interface CTreePruning extends Serializable {
 
 class ReducedError {
 
-    public static CTree prune(CTree tree, Frame df) {
+    public static CTree prune(CTree tree, Frame df, boolean all) {
 
         // collect how current fitting works
 
@@ -82,10 +83,11 @@ class ReducedError {
         double rowCount = df.rowCount();
         while (found) {
             found = false;
-            double maxAcc = 0.0;
+            double maxAcc = -1;
             int maxId = -1;
 
             // find best cut point
+
             Iterator<Integer> it = ids.iterator();
             while (it.hasNext()) {
                 int id = it.next();
@@ -103,17 +105,23 @@ class ReducedError {
                     maxId = id;
                     found = true;
                 }
-                if (delta <= 0) {
+                if (!all && delta <= 0) {
                     pruned.add(id);
-//                    addToPruned(id, pruned, topDown, bottomUp, nodes);
                 }
             }
+
+            // if found than prune the tree and clear info on pruned nodes
+
             if (found) {
                 updateError(maxId, bottomUp, nodes, Pair.valueOf(
                         topDown.get(maxId).first - bottomUp.get(maxId).first,
                         topDown.get(maxId).second - bottomUp.get(maxId).second));
                 addToPruned(maxId, nodes.get(maxId), pruned, topDown, bottomUp, nodes);
                 nodes.get(maxId).cut();
+            }
+
+            if (tree.getRunningHook() != null) {
+                tree.getRunningHook().accept(tree, nodes.size());
             }
         }
 
