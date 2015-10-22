@@ -32,12 +32,22 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
+ * Pruning techniques
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/20/15.
  */
 public interface CTreePruning extends Serializable {
 
     CTree prune(CTree tree, Frame df);
 
+    /**
+     * No pruning, default schema
+     */
+    Tag<CTreePruning> NONE = Tag.valueOf("None", (tree, df) -> tree);
+
+    /**
+     * Reduced error pruning, according with Quinlan for ID3, Described in Tom Mitchell
+     */
     Tag<CTreePruning> REDUCED_ERROR = Tag.valueOf("ReducedError", ReducedError::prune);
 }
 

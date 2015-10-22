@@ -38,6 +38,8 @@ import rapaio.util.Pair;
 import rapaio.util.Tag;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.joining;
@@ -61,6 +63,7 @@ public class CTree extends AbstractClassifier {
     private Map<VarType, Tag<CTreeTest>> testMap = new HashMap<>();
     private Tag<CTreeFunction> function = CTreeFunction.InfoGain;
     private Tag<CTreeMissingHandler> splitter = CTreeMissingHandler.Ignored;
+    private Tag<CTreePruning> pruning = CTreePruning.NONE;
 
     // tree root node
     private CTreeNode root;
@@ -199,6 +202,11 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
+    public CTree withPruning(Tag<CTreePruning> pruning) {
+        this.pruning = pruning;
+        return this;
+    }
+
     public Tag<CTreeFunction> getFunction() {
         return function;
     }
@@ -271,6 +279,10 @@ public class CTree extends AbstractClassifier {
         }
         this.root.fillId(1);
         return this;
+    }
+
+    public void prune(Frame df) {
+        pruning.get().prune(this, df);
     }
 
     @Override
@@ -354,6 +366,21 @@ public class CTree extends AbstractClassifier {
         sb.append(baseSummary());
 
         sb.append("\n");
+
+        int nodeCount = 0;
+        int leaveCount = 0;
+        LinkedList<CTreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            CTreeNode node = queue.pollFirst();
+            nodeCount++;
+            if (node.isLeaf())
+                leaveCount++;
+            node.getChildren().forEach(queue::addLast);
+        }
+
+        sb.append("total number of nodes: ").append(nodeCount).append("\n");
+        sb.append("total number of leaves: ").append(leaveCount).append("\n");
         sb.append("description:\n");
         sb.append("split, n/err, classes (densities) [* if is leaf]\n\n");
 
