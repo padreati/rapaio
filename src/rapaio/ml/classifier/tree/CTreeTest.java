@@ -37,6 +37,8 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
+ * Impurity test implementation
+ *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/9/15.
  */
 public interface CTreeTest extends Serializable {

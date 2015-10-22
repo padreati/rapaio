@@ -99,12 +99,12 @@ class ReducedError {
                 if (topDown.get(id).second + topDown.get(id).first != bottomUp.get(id).second + bottomUp.get(id).first) {
                     throw new RuntimeException("problem");
                 }
-                if (delta > maxAcc) {
+                if (delta >= maxAcc) {
                     maxAcc = delta;
                     maxId = id;
                     found = true;
                 }
-                if (!all && delta <= 0) {
+                if (!all && delta < 0) {
                     pruned.add(id);
                 }
             }
