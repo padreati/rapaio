@@ -41,13 +41,13 @@ import java.util.*;
  */
 public interface CTreeTest extends Serializable {
 
-    List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var w, String testName, String targetName, CTreeTestFunction function, CTreeNominalTerms terms);
+    List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var w, String testName, String targetName, CTreeFunction function, CTreeNominalTerms terms);
 
     Tag<CTreeTest> Ignore = Tag.valueOf("Ignore",
-            (CTree c, Frame df, Var w, String testName, String targetName, CTreeTestFunction function, CTreeNominalTerms terms) -> new ArrayList<>());
+            (CTree c, Frame df, Var w, String testName, String targetName, CTreeFunction function, CTreeNominalTerms terms) -> new ArrayList<>());
 
     Tag<CTreeTest> Numeric_Binary = Tag.valueOf("Numeric_Binary",
-            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeTestFunction function, CTreeNominalTerms terms) -> {
+            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeFunction function, CTreeNominalTerms terms) -> {
                 Var test = df.var(testName);
                 Var target = df.var(targetName);
 
@@ -98,7 +98,7 @@ public interface CTreeTest extends Serializable {
             });
 
     Tag<CTreeTest> Numeric_SkipHalf = Tag.valueOf("Numeric_SkipHalf",
-            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeTestFunction function, CTreeNominalTerms terms) -> {
+            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeFunction function, CTreeNominalTerms terms) -> {
 
                 final int skip = 2;
 
@@ -157,7 +157,7 @@ public interface CTreeTest extends Serializable {
             });
 
     Tag<CTreeTest> Binary_Binary = Tag.valueOf("Binary_Binary",
-            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeTestFunction function, CTreeNominalTerms terms) -> {
+            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeFunction function, CTreeNominalTerms terms) -> {
 
                 Var test = df.var(testName);
                 Var target = df.var(targetName);
@@ -173,7 +173,7 @@ public interface CTreeTest extends Serializable {
             });
 
     Tag<CTreeTest> Nominal_Full = Tag.valueOf("Nominal_Full",
-            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function, CTreeNominalTerms terms) -> {
+            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeFunction function, CTreeNominalTerms terms) -> {
                 Var test = df.var(testColName);
                 Var target = df.var(targetColName);
 
@@ -198,7 +198,7 @@ public interface CTreeTest extends Serializable {
             });
 
     Tag<CTreeTest> Nominal_Binary = Tag.valueOf("Nominal_Binary",
-            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function, CTreeNominalTerms terms) -> {
+            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeFunction function, CTreeNominalTerms terms) -> {
 
                 Var test = df.var(testColName);
                 Var target = df.var(targetColName);

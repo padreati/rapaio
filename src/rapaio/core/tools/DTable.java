@@ -35,13 +35,12 @@ import java.util.List;
 import static rapaio.core.MathTools.log2;
 
 /**
- * Nominal distribution table.
+ * Distribution table.
  * <p>
- * Table tool class to facilitate various operations on two nominal variables regarding frequencies.
+ * Table tool class to facilitate various operations on two variables regarding frequencies.
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public final class DTable implements Printable, Serializable {
 
     private static final long serialVersionUID = 4359080329548577980L;
@@ -306,7 +305,6 @@ public final class DTable implements Printable, Serializable {
 
     @Override
     public String summary() {
-
         List<Var> vars = new ArrayList<>();
         vars.add(Nominal.newCopyOf(testLabels).withName(""));
         for (int i = 0; i < targetLabels.length; i++) {

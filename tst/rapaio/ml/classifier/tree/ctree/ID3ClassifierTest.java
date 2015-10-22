@@ -71,8 +71,8 @@ public class ID3ClassifierTest {
         CTree id3 = new CTree()
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Full)
                 .withTest(VarType.NUMERIC, CTreeTest.Ignore)
-                .withSplitter(CTreeMissingHandler.Ignored)
-                .withFunction(CTreeTestFunction.InfoGain);
+                .withMissingHandler(CTreeMissingHandler.Ignored)
+                .withFunction(CTreeFunction.InfoGain);
         id3.learn(df, className);
         id3.fit(df);
         id3.printSummary();

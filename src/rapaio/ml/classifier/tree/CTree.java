@@ -27,6 +27,7 @@ import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
+import rapaio.data.stream.FSpot;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.common.Capabilities;
@@ -58,9 +59,8 @@ public class CTree extends AbstractClassifier {
     private VarSelector varSelector = VarSelector.ALL;
     private Map<String, Tag<CTreeTest>> customTestMap = new HashMap<>();
     private Map<VarType, Tag<CTreeTest>> testMap = new HashMap<>();
-    private Tag<CTreeTestFunction> function = CTreeTestFunction.InfoGain;
+    private Tag<CTreeFunction> function = CTreeFunction.InfoGain;
     private Tag<CTreeMissingHandler> splitter = CTreeMissingHandler.Ignored;
-    private Tag<CTreePredictor> predictor = CTreePredictor.Standard;
 
     // tree root node
     private CTreeNode root;
@@ -72,11 +72,10 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(-1)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
-                .withSplitter(CTreeMissingHandler.Ignored)
+                .withMissingHandler(CTreeMissingHandler.Ignored)
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Full)
                 .withTest(VarType.NUMERIC, CTreeTest.Ignore)
-                .withFunction(CTreeTestFunction.Entropy)
-                .withPredictor(CTreePredictor.Standard);
+                .withFunction(CTreeFunction.Entropy);
     }
 
     public static CTree newC45() {
@@ -84,11 +83,10 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(-1)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
-                .withSplitter(CTreeMissingHandler.ToAllWeighted)
+                .withMissingHandler(CTreeMissingHandler.ToAllWeighted)
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Full)
                 .withTest(VarType.NUMERIC, CTreeTest.Numeric_Binary)
-                .withFunction(CTreeTestFunction.GainRatio)
-                .withPredictor(CTreePredictor.Standard);
+                .withFunction(CTreeFunction.GainRatio);
     }
 
     public static CTree newDecisionStump() {
@@ -96,11 +94,10 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(1)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
-                .withSplitter(CTreeMissingHandler.ToAllWeighted)
-                .withFunction(CTreeTestFunction.InfoGain)
+                .withMissingHandler(CTreeMissingHandler.ToAllWeighted)
+                .withFunction(CTreeFunction.InfoGain)
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Binary)
-                .withTest(VarType.NUMERIC, CTreeTest.Numeric_Binary)
-                .withPredictor(CTreePredictor.Standard);
+                .withTest(VarType.NUMERIC, CTreeTest.Numeric_Binary);
     }
 
     public static CTree newCART() {
@@ -108,11 +105,10 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(-1)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
-                .withSplitter(CTreeMissingHandler.ToRandom)
+                .withMissingHandler(CTreeMissingHandler.ToRandom)
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Binary)
                 .withTest(VarType.NUMERIC, CTreeTest.Numeric_Binary)
-                .withFunction(CTreeTestFunction.GiniGain)
-                .withPredictor(CTreePredictor.Standard);
+                .withFunction(CTreeFunction.GiniGain);
     }
 
     @Override
@@ -121,8 +117,7 @@ public class CTree extends AbstractClassifier {
                 .withMinCount(minCount)
                 .withMaxDepth(maxDepth)
                 .withFunction(function)
-                .withSplitter(splitter)
-                .withPredictor(predictor)
+                .withMissingHandler(splitter)
                 .withVarSelector(varSelector().newInstance())
                 .withSampler(sampler());
 
@@ -204,11 +199,11 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
-    public Tag<CTreeTestFunction> getFunction() {
+    public Tag<CTreeFunction> getFunction() {
         return function;
     }
 
-    public CTree withFunction(Tag<CTreeTestFunction> function) {
+    public CTree withFunction(Tag<CTreeFunction> function) {
         this.function = function;
         return this;
     }
@@ -217,17 +212,8 @@ public class CTree extends AbstractClassifier {
         return splitter;
     }
 
-    public CTree withSplitter(Tag<CTreeMissingHandler> splitter) {
+    public CTree withMissingHandler(Tag<CTreeMissingHandler> splitter) {
         this.splitter = splitter;
-        return this;
-    }
-
-    public Tag<CTreePredictor> getPredictor() {
-        return predictor;
-    }
-
-    public CTree withPredictor(Tag<CTreePredictor> predictor) {
-        this.predictor = predictor;
         return this;
     }
 
@@ -252,7 +238,6 @@ public class CTree extends AbstractClassifier {
             ).append(";");
         sb.append("func=").append(function.name()).append(";");
         sb.append("split=").append(splitter.name()).append(";");
-        sb.append("pred=").append(predictor.name());
         sb.append("}");
         return sb.toString();
     }
@@ -278,13 +263,13 @@ public class CTree extends AbstractClassifier {
         this.varSelector.withVarNames(inputNames());
 
         int rows = df.rowCount();
-
         root = new CTreeNode(null, "root", spot -> true);
         if (poolSize() == 0) {
             root.learn(this, df, weights, maxDepth() < 0 ? Integer.MAX_VALUE : maxDepth(), new CTreeNominalTerms().init(df));
         } else {
             FJPool.run(poolSize(), () -> root.learn(this, df, weights, maxDepth < 0 ? Integer.MAX_VALUE : maxDepth, new CTreeNominalTerms().init(df)));
         }
+        this.root.fillId(1);
         return this;
     }
 
@@ -296,7 +281,7 @@ public class CTree extends AbstractClassifier {
         prediction.addTarget(firstTargetName(), firstTargetLevels());
 
         df.stream().forEach(spot -> {
-            Pair<Integer, DVector> result = predictor.get().predict(this, spot, root);
+            Pair<Integer, DVector> result = fitPoint(this, spot, root);
             if (withClasses)
                 prediction.firstClasses().setIndex(spot.row(), result.first);
             if (withDensities)
@@ -305,6 +290,34 @@ public class CTree extends AbstractClassifier {
                 }
         });
         return prediction;
+    }
+
+    public Pair<Integer, DVector> fitPoint(CTree tree, FSpot spot, CTreeNode node) {
+        if (node.getCounter().sum(false) == 0)
+            if (node.getParent() == null) {
+                throw new RuntimeException("Something bad happened at learning time");
+            } else {
+                return new Pair<>(node.getParent().getBestIndex(), node.getParent().getDensity());
+            }
+        if (node.isLeaf())
+            return new Pair<>(node.getBestIndex(), node.getDensity());
+
+        for (CTreeNode child : node.getChildren()) {
+            if (child.getPredicate().test(spot)) {
+                return this.fitPoint(tree, spot, child);
+            }
+        }
+
+        String[] dict = tree.firstTargetLevels();
+        DVector dv = DVector.newEmpty(dict);
+        for (CTreeNode child : node.getChildren()) {
+            DVector d = this.fitPoint(tree, spot, child).second;
+            for (int i = 0; i < dict.length; i++) {
+                dv.increment(i, d.get(i) * child.getDensity().sum(false));
+            }
+        }
+        dv.normalize(false);
+        return new Pair<>(dv.findBestIndex(false), dv);
     }
 
     private void additionalValidation(Frame df) {
@@ -356,7 +369,7 @@ public class CTree extends AbstractClassifier {
         for (int i = 0; i < level; i++) {
             sb.append((i == level - 1) ? "   |- " : "   |");
         }
-        sb.append(node.getGroupName()).append("    ");
+        sb.append(node.getId()).append(". ").append(node.getGroupName()).append("    ");
         sb.append(WS.formatFlexShort(node.getCounter().sum(true))).append("/");
         sb.append(WS.formatFlexShort(node.getCounter().sumExcept(node.getBestIndex(), true))).append(" ");
         sb.append(firstTargetLevels()[node.getBestIndex()]).append(" (");

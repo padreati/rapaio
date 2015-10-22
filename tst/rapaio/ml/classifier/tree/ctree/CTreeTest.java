@@ -101,8 +101,6 @@ public class CTreeTest {
         CTree tree = CTree.newCART().withMaxDepth(10000).withMinCount(1);
         tree.learn(df, "class");
         tree.printSummary();
-        Tag<CTreePredictor> predictor = CTreePredictor.Standard;
-        assertEquals("Standard", predictor.name());
 
         CFit pred = tree.fit(df, true, true);
         df = df.bindVars(pred.firstClasses().solidCopy().withName("predict"));

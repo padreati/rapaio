@@ -29,7 +29,6 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
 import rapaio.util.Pair;
-import rapaio.util.Tag;
 import rapaio.util.Util;
 import rapaio.util.func.SPredicate;
 
@@ -45,6 +44,7 @@ public class CTreeNode implements Serializable {
 
     private static final long serialVersionUID = -5045581827808911763L;
 
+    private int id;
     private final CTreeNode parent;
     private final String groupName;
     private final SPredicate<FSpot> predicate;
@@ -64,6 +64,10 @@ public class CTreeNode implements Serializable {
 
     public CTreeNode getParent() {
         return parent;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getGroupName() {
@@ -98,6 +102,20 @@ public class CTreeNode implements Serializable {
         return bestCandidate;
     }
 
+    public int fillId(int index) {
+        id = index;
+        int next = index;
+        for (CTreeNode child : getChildren()) {
+            next = child.fillId(next + 1);
+        }
+        return next;
+    }
+
+    public void cut() {
+        leaf = true;
+        children.clear();
+    }
+
     public void learn(CTree tree, Frame df, Var weights, int depth, CTreeNominalTerms terms) {
         density = DVector.newFromWeights(df.var(tree.firstTargetName()), weights);
         density.normalize(false);
@@ -106,12 +124,17 @@ public class CTreeNode implements Serializable {
         bestIndex = density.findBestIndex(false);
 
         if (df.rowCount() == 0) {
+            bestIndex = parent.bestIndex;
+            return;
+        }
+        if (counter.countValues(x -> x > 0, false) == 1 || depth < 1) {
+            return;
+        }
+        if (df.rowCount() <= tree.minCount()) {
+//            bestIndex = parent.bestIndex;
             return;
         }
 
-        if (df.rowCount() <= tree.minCount() || counter.countValues(x -> x > 0, false) == 1 || depth < 1) {
-            return;
-        }
 
         List<CTreeCandidate> candidateList = Arrays.stream(tree.varSelector().nextVarNames())
                 .parallel()
@@ -138,6 +161,7 @@ public class CTreeNode implements Serializable {
         Collections.sort(candidateList);
 
         if (candidateList.isEmpty()) {
+//            bestIndex = parent.bestIndex;
             return;
         }
         leaf = false;
@@ -148,6 +172,7 @@ public class CTreeNode implements Serializable {
         // now that we have a best candidate, do the effective split
 
         if (bestCandidate.getGroupNames().isEmpty()) {
+//            bestIndex = parent.bestIndex;
             leaf = true;
             return;
         }

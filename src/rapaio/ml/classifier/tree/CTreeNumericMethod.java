@@ -41,13 +41,13 @@ import java.util.List;
  */
 public interface CTreeNumericMethod extends Serializable {
 
-    List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function);
+    List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeFunction function);
 
     Tag<CTreeNumericMethod> Ignore = Tag.valueOf("Ignore",
-            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function) -> new ArrayList<>());
+            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeFunction function) -> new ArrayList<>());
 
     Tag<CTreeNumericMethod> Binary = Tag.valueOf("Binary",
-            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function) -> {
+            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeFunction function) -> {
                 Var test = df.var(testColName);
                 Var target = df.var(targetColName);
 
@@ -110,7 +110,7 @@ public interface CTreeNumericMethod extends Serializable {
             });
 
     Tag<CTreeNumericMethod> SkipHalf = Tag.valueOf("SkipHalf",
-            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeTestFunction function) -> {
+            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeFunction function) -> {
 
                 final int skip = 2;
 
