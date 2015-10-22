@@ -36,7 +36,6 @@ import static rapaio.sys.WS.formatFlex;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class ConfusionMatrix implements Printable {
 
     private final Var actual;
