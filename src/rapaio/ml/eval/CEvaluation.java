@@ -175,7 +175,7 @@ public class CEvaluation {
         double count = 0;
         for (int i = 0; i < bootstraps; i++) {
 //            System.out.println("get sample...");
-            int[] rows = SamplingTools.sampleWR((int) (df.rowCount() * p), df.rowCount());
+            int[] rows = SamplingTools.sampleWR(df.rowCount(), (int) (df.rowCount() * p));
 //            System.out.println("build train set ...");
             Frame train = df.mapRows(rows);
 //            System.out.println("build test set ...");

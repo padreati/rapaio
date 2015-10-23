@@ -38,6 +38,10 @@ import java.util.*;
  */
 public interface CTreePruning extends Serializable {
 
+    default CTree prune(CTree tree, Frame df) {
+        return prune(tree, df, false);
+    }
+
     CTree prune(CTree tree, Frame df, boolean all);
 
     /**

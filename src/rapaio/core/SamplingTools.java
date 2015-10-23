@@ -45,12 +45,34 @@ public final class SamplingTools {
      * Discrete sampling with repetition.
      * Nothing special, just using the uniform discrete sampler offered by the system.
      */
-    public static int[] sampleWR(int sampleSize, final int populationSize) {
+    public static int[] sampleWR(final int populationSize, int sampleSize) {
         int[] sample = new int[sampleSize];
         for (int i = 0; i < sampleSize; i++) {
             sample[i] = RandomSource.nextInt(populationSize);
         }
         return sample;
+    }
+
+    /**
+     * Draws an uniform discrete sample without replacement.
+     * <p>
+     * Implements reservoir sampling.
+     *
+     * @param populationSize population size
+     * @param sampleSizes     sample size
+     * @return sampling indexes
+     */
+    public static int[][] multiSampleWOR(final int populationSize, final int... sampleSizes) {
+        int total = Arrays.stream(sampleSizes).sum();
+        int[] sample = sampleWOR(populationSize, total);
+        int[][] result = new int[sampleSizes.length][];
+        int start = 0;
+        for (int i = 0; i < sampleSizes.length; i++) {
+            result[i] = new int[sampleSizes[i]];
+            System.arraycopy(sample, start, result[i], 0, result[i].length);
+            start += result[i].length;
+        }
+        return result;
     }
 
     /**

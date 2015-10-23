@@ -72,7 +72,7 @@ public class VarSelector implements Serializable {
             return varNames;
         }
         int m = (mVars == M_AUTO) ? Math.max((int) Math.sqrt(varNames.length), 1) : mVars;
-        int[] indexes = SamplingTools.sampleWR(m, varNames.length);
+        int[] indexes = SamplingTools.sampleWR(varNames.length, m);
         String[] result = new String[m];
         for (int i = 0; i < indexes.length; i++) {
             result[i] = varNames[indexes[i]];

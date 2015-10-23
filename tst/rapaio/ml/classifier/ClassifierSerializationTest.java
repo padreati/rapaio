@@ -23,7 +23,6 @@
 
 package rapaio.ml.classifier;
 
-import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.*;
 import rapaio.datasets.Datasets;
@@ -32,7 +31,6 @@ import rapaio.ml.classifier.bayes.NaiveBayes;
 import rapaio.ml.classifier.bayes.estimator.KernelPdf;
 import rapaio.ml.classifier.rule.OneRule;
 import rapaio.ml.classifier.tree.CTree;
-import rapaio.ml.classifier.tree.CTreeNominalMethod;
 import rapaio.ml.eval.ConfusionMatrix;
 
 import java.io.File;
@@ -40,7 +38,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/15/15.

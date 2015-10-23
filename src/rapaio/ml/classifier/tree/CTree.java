@@ -374,6 +374,18 @@ public class CTree extends AbstractClassifier {
         });
     }
 
+    public int countNodes(boolean onlyLeaves) {
+        int count = 0;
+        LinkedList<CTree.Node> nodes = new LinkedList<>();
+        nodes.addLast(root);
+        while (!nodes.isEmpty()) {
+            CTree.Node node = nodes.pollFirst();
+            count += onlyLeaves ? (node.isLeaf() ? 1 : 0) : 1;
+            node.getChildren().forEach(nodes::addLast);
+        }
+        return count;
+    }
+
     @Override
     public String summary() {
         StringBuilder sb = new StringBuilder();

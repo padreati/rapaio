@@ -201,7 +201,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
             Frame bootX = x;
             Var bootR = r;
             if (useBootstrap) {
-                int[] map = SamplingTools.sampleWR((int) (bootstrapSize * df.rowCount()), df.rowCount());
+                int[] map = SamplingTools.sampleWR(df.rowCount(), (int) (bootstrapSize * df.rowCount()));
                 bootTrain = train.mapRows(map);
                 bootWeights = weights.mapRows(map);
                 bootX = x.mapRows(map);

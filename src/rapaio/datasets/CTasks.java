@@ -74,7 +74,7 @@ class IrisUCITask extends CTask {
     @Override
     public boolean reSample(double p, boolean replacement) {
         int[] rows = replacement
-                ? SamplingTools.sampleWR((int) (full.rowCount() * p), full.rowCount())
+                ? SamplingTools.sampleWR(full.rowCount(), (int) (full.rowCount() * p))
                 : SamplingTools.sampleWOR(full.rowCount(), (int) (full.rowCount() * p));
         train = MappedFrame.newByRow(full, rows);
         Set<Integer> used = Arrays.stream(rows).mapToObj(row -> row).collect(Collectors.toSet());
