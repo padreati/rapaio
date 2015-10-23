@@ -164,7 +164,7 @@ public class DiscreteSamplingPage implements TutorialPage {
         vars[1] = Numeric.newEmpty(SAMPLE_SIZE * TRIALS).withName("winning number");
 
         for (int i = 0; i < TRIALS; i++) {
-            int[] numbers = SamplingTools.sampleWOR(SAMPLE_SIZE, POPULATION_SIZE);
+            int[] numbers = SamplingTools.sampleWOR(POPULATION_SIZE, SAMPLE_SIZE);
             for (int j = 0; j < numbers.length; j++) {
                 vars[0].setValue(i * SAMPLE_SIZE + j, i + 1);
                 vars[1].setValue(i * SAMPLE_SIZE + j, numbers[j] + 1);

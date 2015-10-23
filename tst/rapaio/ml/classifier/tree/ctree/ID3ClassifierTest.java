@@ -28,7 +28,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.VarType;
-import rapaio.data.filter.FFAbstractRetainTypes;
+import rapaio.data.filter.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.core.tools.DTable;
 import rapaio.ml.classifier.tree.*;
@@ -46,17 +46,17 @@ public class ID3ClassifierTest {
     public void testBasicID3Entropy() throws IOException {
         Frame df = Datasets.loadPlay();
         Summary.printSummary(df);
-        df = new FFAbstractRetainTypes(VarType.NOMINAL).filter(df);
+        df = new FFRetainTypes(VarType.NOMINAL).filter(df);
         final String className = "class";
 
         CTree id3 = CTree.newID3();
         id3.learn(df, className);
         id3.fit(df);
+        id3.printSummary();
 
         DTable dtWindy = DTable.newFromCounts(df.var("windy"), df.var("class"));
         DTable dtOutlook = DTable.newFromCounts(df.var("outlook"), df.var("class"));
         String splitCol = (dtWindy.getSplitEntropy(true) < dtOutlook.getSplitEntropy(true)) ? "windy" : "outlook";
-        id3.printSummary();
         Assert.assertTrue(id3.getRoot().getChildren().get(0).getGroupName().startsWith(splitCol));
 
         Summary.printSummary(id3);
@@ -64,14 +64,13 @@ public class ID3ClassifierTest {
 
     @Test
     public void testBasicID3InfoGain() throws IOException {
-        Frame df = Datasets.loadPlay();
-        df = new FFAbstractRetainTypes(VarType.NOMINAL).filter(df);
+        Frame df = new FFRetainTypes(VarType.NOMINAL).filter(Datasets.loadPlay());
         final String className = "class";
+
+        df.printSummary();
 
         CTree id3 = new CTree()
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Full)
-                .withTest(VarType.NUMERIC, CTreeTest.Ignore)
-                .withMissingHandler(CTreeMissingHandler.Ignored)
                 .withFunction(CTreeFunction.InfoGain);
         id3.learn(df, className);
         id3.fit(df);

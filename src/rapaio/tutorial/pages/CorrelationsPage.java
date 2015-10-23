@@ -27,7 +27,7 @@ import rapaio.core.correlation.CorrPearson;
 import rapaio.core.correlation.CorrSpearman;
 import rapaio.data.Frame;
 import rapaio.data.VarType;
-import rapaio.data.filter.FFAbstractRetainTypes;
+import rapaio.data.filter.FFRetainTypes;
 import rapaio.data.filter.VFJitter;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plotter;
@@ -64,10 +64,10 @@ public class CorrelationsPage implements TutorialPage {
         p("This tutorial presents you the tools built in rapaio library which enables you to compute correlation coefficients.");
         p("We will use the classical iris data set. The numerical columns of this data set are:");
 
-        final Frame df = new FFAbstractRetainTypes(VarType.NUMERIC).filter(Datasets.loadIrisDataset());
+        final Frame df = new FFRetainTypes(VarType.NUMERIC).filter(Datasets.loadIrisDataset());
         printNames(df);
 
-        code("        final Frame df = new FFAbstractRetainTypes(VarType.NUMERIC).fitApply(Datasets.loadIrisDataset());\n" +
+        code("        final Frame df = new FFRetainTypes(VarType.NUMERIC).fitApply(Datasets.loadIrisDataset());\n" +
                 "        names(df);\n");
 
         heading(2, "Pearson product-moment correlation");

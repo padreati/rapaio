@@ -90,7 +90,7 @@ public class PCATest {
 
 //        WS.draw(gl);
 
-        CEvaluation.cv(iris, "class", new AdaBoostSAMME().withRuns(1000), 5);
-        CEvaluation.cv(trans, "class", new AdaBoostSAMME().withRuns(1000), 5);
+        CEvaluation.cv(iris, "class", new AdaBoostSAMME().withRuns(100), 5);
+        CEvaluation.cv(trans, "class", new AdaBoostSAMME().withRuns(100), 5);
     }
 }

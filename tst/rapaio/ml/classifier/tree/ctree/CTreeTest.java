@@ -26,7 +26,7 @@ package rapaio.ml.classifier.tree.ctree;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.VarType;
-import rapaio.data.filter.FFAbstractRetainTypes;
+import rapaio.data.filter.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.tree.*;
@@ -72,7 +72,7 @@ public class CTreeTest {
     public void testBuilderID3() throws IOException, URISyntaxException {
         Frame df = Datasets.loadMushrooms();
         Summary.printNames(df);
-        df = new FFAbstractRetainTypes(VarType.NOMINAL).filter(df);
+        df = new FFRetainTypes(VarType.NOMINAL).filter(df);
 
         Summary.printSummary(df);
     }

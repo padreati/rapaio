@@ -163,7 +163,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
             Mapping bootstrapMapping = null;
             if (useBootstrap) {
                 bootstrapMapping = Mapping.newEmpty();
-                int[] sample = SamplingTools.sampleWOR((int) (bootstrapSize * xmLearn.rowCount()), xmLearn.rowCount());
+                int[] sample = SamplingTools.sampleWOR(xmLearn.rowCount(), (int) (bootstrapSize * xmLearn.rowCount()));
                 for (int aSample : sample) {
                     bootstrapMapping.add(aSample);
                 }
@@ -249,7 +249,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
             Mapping bootstrapMapping = null;
             if (useBootstrap) {
                 bootstrapMapping = Mapping.newEmpty();
-                int[] sample = SamplingTools.sampleWOR((int) (bootstrapSize * xmLearn.rowCount()), xmLearn.rowCount());
+                int[] sample = SamplingTools.sampleWOR(xmLearn.rowCount(), (int) (bootstrapSize * xmLearn.rowCount()));
                 for (int aSample : sample) {
                     bootstrapMapping.add(aSample);
                 }

@@ -63,7 +63,7 @@ public class CTree extends AbstractClassifier {
     // parameter default values
 
     private int minCount = 1;
-    private int maxDepth = 0;
+    private int maxDepth = -1;
 
     private VarSelector varSelector = VarSelector.ALL;
     private Map<String, Tag<CTreeTest>> customTestMap = new HashMap<>();
@@ -71,6 +71,7 @@ public class CTree extends AbstractClassifier {
     private Tag<CTreeFunction> function = CTreeFunction.InfoGain;
     private Tag<CTreeMissingHandler> splitter = CTreeMissingHandler.Ignored;
     private Tag<CTreePruning> pruning = CTreePruning.NONE;
+    private Frame pruningDf = null;
     private BiConsumer<CTree, Integer> runningHook = null;
 
     // tree root node
@@ -86,7 +87,8 @@ public class CTree extends AbstractClassifier {
                 .withMissingHandler(CTreeMissingHandler.Ignored)
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Full)
                 .withTest(VarType.NUMERIC, CTreeTest.Ignore)
-                .withFunction(CTreeFunction.Entropy);
+                .withFunction(CTreeFunction.Entropy)
+                .withPruning(CTreePruning.NONE);
     }
 
     public static CTree newC45() {
@@ -212,7 +214,12 @@ public class CTree extends AbstractClassifier {
     }
 
     public CTree withPruning(Tag<CTreePruning> pruning) {
+        return withPruning(pruning, null);
+    }
+
+    public CTree withPruning(Tag<CTreePruning> pruning, Frame pruningDf) {
         this.pruning = pruning;
+        this.pruningDf = pruningDf;
         return this;
     }
 
@@ -296,6 +303,7 @@ public class CTree extends AbstractClassifier {
             FJPool.run(poolSize(), () -> root.learn(this, df, weights, maxDepth < 0 ? Integer.MAX_VALUE : maxDepth, new NominalTerms().init(df)));
         }
         this.root.fillId(1);
+        pruning.get().prune(this, (pruningDf == null) ? df : pruningDf, false);
         return this;
     }
 
@@ -571,11 +579,7 @@ public class CTree extends AbstractClassifier {
                 bestIndex = parent.bestIndex;
                 return;
             }
-            if (counter.countValues(x -> x > 0, false) == 1 || depth < 1) {
-                return;
-            }
-            if (df.rowCount() <= tree.minCount()) {
-                //            bestIndex = parent.bestIndex;
+            if (counter.countValues(x -> x > 0, false) == 1 || depth < 1 || df.rowCount() <= tree.minCount()) {
                 return;
             }
 

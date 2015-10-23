@@ -87,7 +87,7 @@ public class SamplingToolsTest {
 		final int SAMPLES = 3;
         Numeric v = Numeric.newEmpty();
         for (int i = 0; i < TRIALS; i++) {
-			for (int next : SamplingTools.sampleWOR(SAMPLES, 10)) {
+			for (int next : SamplingTools.sampleWOR(10, SAMPLES)) {
 				freq[next]++;
                 v.addValue(next);
             }

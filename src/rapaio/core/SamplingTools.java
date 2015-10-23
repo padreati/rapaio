@@ -58,11 +58,11 @@ public final class SamplingTools {
      * <p>
      * Implements reservoir sampling.
      *
-     * @param sampleSize     sample size
      * @param populationSize population size
+     * @param sampleSize     sample size
      * @return sampling indexes
      */
-    public static int[] sampleWOR(final int sampleSize, final int populationSize) {
+    public static int[] sampleWOR(final int populationSize, final int sampleSize) {
         if (sampleSize > populationSize) {
             throw new IllegalArgumentException("Can't draw a sample without replacement bigger than population size.");
         }

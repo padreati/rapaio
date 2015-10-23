@@ -50,7 +50,7 @@ public class AdaBoostSAMMETest {
         AdaBoostSAMME ab = new AdaBoostSAMME().withRuns(1).withClassifier(CTree.newCART().withMaxDepth(2).withMCols(1));
         Frame df = Datasets.loadSpamBase();
         df.printSummary();
-        int[] rows = SamplingTools.sampleWOR(df.rowCount() / 2, df.rowCount());
+        int[] rows = SamplingTools.sampleWOR(df.rowCount(), df.rowCount() / 2);
         Frame tr = df.mapRows(rows);
         Frame te = df.removeRows(rows);
 

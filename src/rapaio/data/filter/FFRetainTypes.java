@@ -35,12 +35,13 @@ import java.util.List;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-@Deprecated
-public class FFAbstractRetainTypes extends FFAbstract {
+public class FFRetainTypes extends FFAbstract {
+
+    private static final long serialVersionUID = -5152761273156719785L;
 
     private final VarType[] types;
 
-    public FFAbstractRetainTypes(VarType... types) {
+    public FFRetainTypes(VarType... types) {
         super();
         if (types == null || types.length == 0)
             throw new IllegalArgumentException("Must provide at least a type to retain");

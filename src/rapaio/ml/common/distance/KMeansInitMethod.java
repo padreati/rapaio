@@ -39,5 +39,5 @@ public interface KMeansInitMethod extends Serializable {
     Frame init(Frame df, String[] inputs, int k);
 
     Tag<KMeansInitMethod> FORGY = Tag.valueOf("forgy",
-            (Frame df, String[] inputs, int k) -> df.mapVars(inputs).mapRows(SamplingTools.sampleWOR(k, df.rowCount())).solidCopy());
+            (Frame df, String[] inputs, int k) -> df.mapVars(inputs).mapRows(SamplingTools.sampleWOR(df.rowCount(), k)).solidCopy());
 }
