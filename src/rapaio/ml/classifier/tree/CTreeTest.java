@@ -43,13 +43,13 @@ import java.util.*;
  */
 public interface CTreeTest extends Serializable {
 
-    List<CTreeCandidate> computeCandidates(CTree c, Frame df, Var w, String testName, String targetName, CTreeFunction function, CTreeNominalTerms terms);
+    List<CTree.Candidate> computeCandidates(CTree c, Frame df, Var w, String testName, String targetName, CTreeFunction function, CTree.NominalTerms terms);
 
     Tag<CTreeTest> Ignore = Tag.valueOf("Ignore",
-            (CTree c, Frame df, Var w, String testName, String targetName, CTreeFunction function, CTreeNominalTerms terms) -> new ArrayList<>());
+            (CTree c, Frame df, Var w, String testName, String targetName, CTreeFunction function, CTree.NominalTerms terms) -> new ArrayList<>());
 
     Tag<CTreeTest> Numeric_Binary = Tag.valueOf("Numeric_Binary",
-            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeFunction function, CTreeNominalTerms terms) -> {
+            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeFunction function, CTree.NominalTerms terms) -> {
                 Var test = df.var(testName);
                 Var target = df.var(targetName);
 
@@ -63,7 +63,7 @@ public interface CTreeTest extends Serializable {
 
                 Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.newSeq(df.rowCount()));
 
-                CTreeCandidate best = null;
+                CTree.Candidate best = null;
                 double bestScore = 0.0;
 
                 for (int i = 0; i < df.rowCount(); i++) {
@@ -84,7 +84,7 @@ public interface CTreeTest extends Serializable {
                             if (comp < 0) continue;
                             if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
                         }
-                        best = new CTreeCandidate(bestScore, testName);
+                        best = new CTree.Candidate(bestScore, testName);
                         double testValue = (test.value(sort.index(i)) + test.value(sort.index(i + 1))) / 2.0;
                         best.addGroup(
                                 String.format("%s <= %s", testName, WS.formatFlex(testValue)),
@@ -100,7 +100,7 @@ public interface CTreeTest extends Serializable {
             });
 
     Tag<CTreeTest> Numeric_SkipHalf = Tag.valueOf("Numeric_SkipHalf",
-            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeFunction function, CTreeNominalTerms terms) -> {
+            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeFunction function, CTree.NominalTerms terms) -> {
 
                 final int skip = 2;
 
@@ -147,7 +147,7 @@ public interface CTreeTest extends Serializable {
                         bestTestValue = (test.value(sort.index(i)) + test.value(sort.index(i + 1))) / 2.0;
                     }
                 }
-                CTreeCandidate best = new CTreeCandidate(bestScore, testName);
+                CTree.Candidate best = new CTree.Candidate(bestScore, testName);
                 final double testValue = bestTestValue;
                 best.addGroup(
                         String.format("%s <= %s", testName, WS.formatFlexShort(testValue)),
@@ -159,7 +159,7 @@ public interface CTreeTest extends Serializable {
             });
 
     Tag<CTreeTest> Binary_Binary = Tag.valueOf("Binary_Binary",
-            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeFunction function, CTreeNominalTerms terms) -> {
+            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeFunction function, CTree.NominalTerms terms) -> {
 
                 Var test = df.var(testName);
                 Var target = df.var(targetName);
@@ -168,14 +168,14 @@ public interface CTreeTest extends Serializable {
                     return Collections.emptyList();
                 }
 
-                CTreeCandidate best = new CTreeCandidate(function.compute(dt), testName);
+                CTree.Candidate best = new CTree.Candidate(function.compute(dt), testName);
                 best.addGroup(testName + " == 1", spot -> spot.binary(testName));
                 best.addGroup(testName + " != 1", spot -> !spot.binary(testName));
                 return Collections.singletonList(best);
             });
 
     Tag<CTreeTest> Nominal_Full = Tag.valueOf("Nominal_Full",
-            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeFunction function, CTreeNominalTerms terms) -> {
+            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeFunction function, CTree.NominalTerms terms) -> {
                 Var test = df.var(testColName);
                 Var target = df.var(targetColName);
 
@@ -183,11 +183,11 @@ public interface CTreeTest extends Serializable {
                     return Collections.emptyList();
                 }
 
-                List<CTreeCandidate> result = new ArrayList<>();
+                List<CTree.Candidate> result = new ArrayList<>();
                 DTable dt = DTable.newFromWeights(test, target, weights);
                 double value = function.compute(dt);
 
-                CTreeCandidate candidate = new CTreeCandidate(value, testColName);
+                CTree.Candidate candidate = new CTree.Candidate(value, testColName);
                 for (int i = 1; i < test.levels().length; i++) {
                     final String label = test.levels()[i];
                     candidate.addGroup(
@@ -200,7 +200,7 @@ public interface CTreeTest extends Serializable {
             });
 
     Tag<CTreeTest> Nominal_Binary = Tag.valueOf("Nominal_Binary",
-            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeFunction function, CTreeNominalTerms terms) -> {
+            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeFunction function, CTree.NominalTerms terms) -> {
 
                 Var test = df.var(testColName);
                 Var target = df.var(targetColName);
@@ -208,8 +208,8 @@ public interface CTreeTest extends Serializable {
                     return Collections.emptyList();
                 }
 
-                List<CTreeCandidate> result = new ArrayList<>();
-                CTreeCandidate best = null;
+                List<CTree.Candidate> result = new ArrayList<>();
+                CTree.Candidate best = null;
 
                 int[] termCount = new int[test.levels().length];
                 test.stream().forEach(s -> termCount[s.index()]++);
@@ -225,7 +225,7 @@ public interface CTreeTest extends Serializable {
 
                     DTable dt = DTable.newBinaryFromWeights(test, target, weights, testLabel);
                     double value = function.compute(dt);
-                    CTreeCandidate candidate = new CTreeCandidate(value, testColName);
+                    CTree.Candidate candidate = new CTree.Candidate(value, testColName);
                     if (best == null) {
                         best = candidate;
                         best.addGroup(testColName + " == " + testLabel, spot -> spot.label(testColName).equals(testLabel));

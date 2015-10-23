@@ -41,9 +41,9 @@ import static java.util.stream.Collectors.toList;
  */
 public interface CTreeMissingHandler extends Serializable {
 
-    Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, CTreeCandidate candidate);
+    Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, CTree.Candidate candidate);
 
-    Tag<CTreeMissingHandler> Ignored = Tag.valueOf("Ignored", (Frame df, Var weights, CTreeCandidate candidate) -> {
+    Tag<CTreeMissingHandler> Ignored = Tag.valueOf("Ignored", (Frame df, Var weights, CTree.Candidate candidate) -> {
 
         List<SPredicate<FSpot>> p = candidate.getGroupPredicates();
         List<Mapping> mappings = IntStream.range(0, p.size()).boxed().map(i -> Mapping.newEmpty()).collect(toList());
@@ -63,7 +63,7 @@ public interface CTreeMissingHandler extends Serializable {
     });
 
 
-    Tag<CTreeMissingHandler> ToMajority = Tag.valueOf("ToMajority", (Frame df, Var weights, CTreeCandidate candidate) -> {
+    Tag<CTreeMissingHandler> ToMajority = Tag.valueOf("ToMajority", (Frame df, Var weights, CTree.Candidate candidate) -> {
 
         List<SPredicate<FSpot>> p = candidate.getGroupPredicates();
         List<Mapping> mappings = IntStream.range(0, p.size()).boxed().map(i -> Mapping.newEmpty()).collect(toList());
@@ -98,7 +98,7 @@ public interface CTreeMissingHandler extends Serializable {
         );
     });
 
-    Tag<CTreeMissingHandler> ToAllWeighted = Tag.valueOf("ToAllWeighted", (Frame df, Var weights, CTreeCandidate candidate) -> {
+    Tag<CTreeMissingHandler> ToAllWeighted = Tag.valueOf("ToAllWeighted", (Frame df, Var weights, CTree.Candidate candidate) -> {
 
         List<SPredicate<FSpot>> pred = candidate.getGroupPredicates();
         List<Mapping> mappings = IntStream.range(0, pred.size()).boxed().map(i -> Mapping.newEmpty()).collect(toList());
@@ -135,7 +135,7 @@ public interface CTreeMissingHandler extends Serializable {
         return new Pair<>(frames, weightsList);
     });
 
-    Tag<CTreeMissingHandler> ToRandom = Tag.valueOf("ToRandom", (Frame df, Var weights, CTreeCandidate candidate) -> {
+    Tag<CTreeMissingHandler> ToRandom = Tag.valueOf("ToRandom", (Frame df, Var weights, CTree.Candidate candidate) -> {
 
         List<SPredicate<FSpot>> pred = candidate.getGroupPredicates();
         List<Mapping> mappings = IntStream.range(0, pred.size()).boxed().map(i -> Mapping.newEmpty()).collect(toList());

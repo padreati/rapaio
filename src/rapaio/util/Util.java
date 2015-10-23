@@ -31,7 +31,6 @@ import java.util.stream.Stream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/13/15.
  */
-@Deprecated
 public class Util {
 
     public static void measure(Runnable task) {

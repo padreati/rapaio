@@ -30,7 +30,6 @@ import rapaio.data.filter.FFAbstractRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.tree.*;
-import rapaio.util.Tag;
 import rapaio.ws.Summary;
 
 import java.io.IOException;
@@ -54,7 +53,7 @@ public class CTreeTest {
         tree.learn(df, "class");
 
         tree.printSummary();
-        CTreeNode root = tree.getRoot();
+        CTree.Node root = tree.getRoot();
         assertEquals("root", root.getGroupName());
 
         String testName = root.getBestCandidate().getTestName();
@@ -80,13 +79,13 @@ public class CTreeTest {
 
     @Test
     public void testCandidate() {
-        CTreeCandidate candidate = new CTreeCandidate(1, "test");
+        CTree.Candidate candidate = new CTree.Candidate(1, "test");
         candidate.addGroup("test <= 0", s -> s.value("test") <= 0);
         candidate.addGroup("test > 0", s -> s.value("test") > 0);
 
-        assertEquals(-1, candidate.compareTo(new CTreeCandidate(2, "test")));
-        assertEquals(-1, candidate.compareTo(new CTreeCandidate(-2, "test")));
-        assertEquals(1, candidate.compareTo(new CTreeCandidate(0.5, "test")));
+        assertEquals(-1, candidate.compareTo(new CTree.Candidate(2, "test")));
+        assertEquals(-1, candidate.compareTo(new CTree.Candidate(-2, "test")));
+        assertEquals(1, candidate.compareTo(new CTree.Candidate(0.5, "test")));
 
         try {
             candidate.addGroup("test <= 0", s -> true);

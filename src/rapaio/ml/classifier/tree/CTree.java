@@ -25,6 +25,7 @@ package rapaio.ml.classifier.tree;
 
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
+import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.stream.FSpot;
@@ -36,13 +37,19 @@ import rapaio.sys.WS;
 import rapaio.util.FJPool;
 import rapaio.util.Pair;
 import rapaio.util.Tag;
+import rapaio.util.Util;
+import rapaio.util.func.SPredicate;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.io.Serializable;
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Tree classifier.
@@ -67,7 +74,7 @@ public class CTree extends AbstractClassifier {
     private BiConsumer<CTree, Integer> runningHook = null;
 
     // tree root node
-    private CTreeNode root;
+    private Node root;
 
     // static builders
 
@@ -142,7 +149,7 @@ public class CTree extends AbstractClassifier {
         testMap.put(VarType.NOMINAL, CTreeTest.Nominal_Binary);
     }
 
-    public CTreeNode getRoot() {
+    public Node getRoot() {
         return root;
     }
 
@@ -282,14 +289,18 @@ public class CTree extends AbstractClassifier {
         this.varSelector.withVarNames(inputNames());
 
         int rows = df.rowCount();
-        root = new CTreeNode(null, "root", spot -> true);
+        root = new Node(null, "root", spot -> true);
         if (poolSize() == 0) {
-            root.learn(this, df, weights, maxDepth() < 0 ? Integer.MAX_VALUE : maxDepth(), new CTreeNominalTerms().init(df));
+            root.learn(this, df, weights, maxDepth() < 0 ? Integer.MAX_VALUE : maxDepth(), new NominalTerms().init(df));
         } else {
-            FJPool.run(poolSize(), () -> root.learn(this, df, weights, maxDepth < 0 ? Integer.MAX_VALUE : maxDepth, new CTreeNominalTerms().init(df)));
+            FJPool.run(poolSize(), () -> root.learn(this, df, weights, maxDepth < 0 ? Integer.MAX_VALUE : maxDepth, new NominalTerms().init(df)));
         }
         this.root.fillId(1);
         return this;
+    }
+
+    public void prune(Frame df) {
+        prune(df, false);
     }
 
     public void prune(Frame df, boolean all) {
@@ -306,16 +317,16 @@ public class CTree extends AbstractClassifier {
         df.stream().forEach(spot -> {
             Pair<Integer, DVector> result = fitPoint(this, spot, root);
             if (withClasses)
-                prediction.firstClasses().setIndex(spot.row(), result.first);
+                prediction.firstClasses().setIndex(spot.row(), result.a);
             if (withDensities)
                 for (int j = 0; j < firstTargetLevels().length; j++) {
-                    prediction.firstDensity().setValue(spot.row(), j, result.second.get(j));
+                    prediction.firstDensity().setValue(spot.row(), j, result.b.get(j));
                 }
         });
         return prediction;
     }
 
-    public Pair<Integer, DVector> fitPoint(CTree tree, FSpot spot, CTreeNode node) {
+    public Pair<Integer, DVector> fitPoint(CTree tree, FSpot spot, Node node) {
         if (node.getCounter().sum(false) == 0)
             if (node.getParent() == null) {
                 throw new RuntimeException("Something bad happened at learning time");
@@ -325,7 +336,7 @@ public class CTree extends AbstractClassifier {
         if (node.isLeaf())
             return new Pair<>(node.getBestIndex(), node.getDensity());
 
-        for (CTreeNode child : node.getChildren()) {
+        for (Node child : node.getChildren()) {
             if (child.getPredicate().test(spot)) {
                 return this.fitPoint(tree, spot, child);
             }
@@ -333,8 +344,8 @@ public class CTree extends AbstractClassifier {
 
         String[] dict = tree.firstTargetLevels();
         DVector dv = DVector.newEmpty(dict);
-        for (CTreeNode child : node.getChildren()) {
-            DVector d = this.fitPoint(tree, spot, child).second;
+        for (Node child : node.getChildren()) {
+            DVector d = this.fitPoint(tree, spot, child).b;
             for (int i = 0; i < dict.length; i++) {
                 dv.increment(i, d.get(i) * child.getDensity().sum(false));
             }
@@ -380,10 +391,10 @@ public class CTree extends AbstractClassifier {
 
         int nodeCount = 0;
         int leaveCount = 0;
-        LinkedList<CTreeNode> queue = new LinkedList<>();
+        LinkedList<Node> queue = new LinkedList<>();
         queue.add(root);
         while (!queue.isEmpty()) {
-            CTreeNode node = queue.pollFirst();
+            Node node = queue.pollFirst();
             nodeCount++;
             if (node.isLeaf())
                 leaveCount++;
@@ -401,7 +412,7 @@ public class CTree extends AbstractClassifier {
 
     }
 
-    private void buildSummary(StringBuilder sb, CTreeNode node, int level) {
+    private void buildSummary(StringBuilder sb, Node node, int level) {
 
         sb.append(level == 0 ? "|- " : "|");
         for (int i = 0; i < level; i++) {
@@ -420,5 +431,228 @@ public class CTree extends AbstractClassifier {
         sb.append("\n");
 
         node.getChildren().stream().forEach(child -> buildSummary(sb, child, level + 1));
+    }
+
+    /**
+     * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
+     */
+    public static class Candidate implements Comparable<Candidate>, Serializable {
+
+        private static final long serialVersionUID = -1547847207988912332L;
+
+        private final double score;
+        private final String testName;
+        private final List<String> groupNames = new ArrayList<>();
+        private final List<SPredicate<FSpot>> groupPredicates = new ArrayList<>();
+
+        public Candidate(double score, String testName) {
+            this.score = score;
+            this.testName = testName;
+        }
+
+        public void addGroup(String name, SPredicate<FSpot> predicate) {
+            if (groupNames.contains(name)) {
+                throw new IllegalArgumentException("group name already defined");
+            }
+            groupNames.add(name);
+            groupPredicates.add(predicate);
+        }
+
+        public List<String> getGroupNames() {
+            return groupNames;
+        }
+
+        public List<SPredicate<FSpot>> getGroupPredicates() {
+            return groupPredicates;
+        }
+
+        public double getScore() {
+            return score;
+        }
+
+        public String getTestName() {
+            return testName;
+        }
+
+        @Override
+        public int compareTo(Candidate o) {
+            if (o == null) return -1;
+            return new Double(score).compareTo(o.score);
+        }
+    }
+
+    /**
+     * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
+     */
+    public static class Node implements Serializable {
+
+        private static final long serialVersionUID = -5045581827808911763L;
+
+        private int id;
+        private final Node parent;
+        private final String groupName;
+        private final SPredicate<FSpot> predicate;
+
+        private boolean leaf = true;
+        private final List<Node> children = new ArrayList<>();
+        private DVector density;
+        private DVector counter;
+        private int bestIndex;
+        private Candidate bestCandidate;
+
+        public Node(final Node parent, final String groupName, final SPredicate<FSpot> predicate) {
+            this.parent = parent;
+            this.groupName = groupName;
+            this.predicate = predicate;
+        }
+
+        public Node getParent() {
+            return parent;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getGroupName() {
+            return groupName;
+        }
+
+        public Predicate<FSpot> getPredicate() {
+            return predicate;
+        }
+
+        public DVector getCounter() {
+            return counter;
+        }
+
+        public int getBestIndex() {
+            return bestIndex;
+        }
+
+        public DVector getDensity() {
+            return density;
+        }
+
+        public boolean isLeaf() {
+            return leaf;
+        }
+
+        public List<Node> getChildren() {
+            return children;
+        }
+
+        public Candidate getBestCandidate() {
+            return bestCandidate;
+        }
+
+        public int fillId(int index) {
+            id = index;
+            int next = index;
+            for (Node child : getChildren()) {
+                next = child.fillId(next + 1);
+            }
+            return next;
+        }
+
+        public void cut() {
+            leaf = true;
+            children.clear();
+        }
+
+        public void learn(CTree tree, Frame df, Var weights, int depth, NominalTerms terms) {
+            density = DVector.newFromWeights(df.var(tree.firstTargetName()), weights);
+            density.normalize(false);
+
+            counter = DVector.newFromWeights(df.var(tree.firstTargetName()), Numeric.newFill(df.rowCount(), 1));
+            bestIndex = density.findBestIndex(false);
+
+            if (df.rowCount() == 0) {
+                bestIndex = parent.bestIndex;
+                return;
+            }
+            if (counter.countValues(x -> x > 0, false) == 1 || depth < 1) {
+                return;
+            }
+            if (df.rowCount() <= tree.minCount()) {
+                //            bestIndex = parent.bestIndex;
+                return;
+            }
+
+
+            List<Candidate> candidateList = Arrays.stream(tree.varSelector().nextVarNames())
+                    .parallel()
+                    .filter(testCol -> !testCol.equals(tree.firstTargetName()))
+                    .map(testCol -> {
+                        CTreeTest test = null;
+                        if (tree.customTestMap().containsKey(testCol)) {
+                            test = tree.customTestMap().get(testCol).get();
+                        }
+                        if (tree.testMap().containsKey(df.var(testCol).type())) {
+                            test = tree.testMap().get(df.var(testCol).type()).get();
+                        }
+                        if (test == null) {
+                            throw new IllegalArgumentException("can't learn ctree with no " +
+                                    "tests for given variable: " + df.var(testCol).name() +
+                                    " [" + df.var(testCol).type().name() + "]");
+                        }
+                        List<Candidate> c = test.computeCandidates(
+                                tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction().get(), terms);
+                        return (c == null || c.isEmpty()) ? null : c.get(0);
+                    }).filter(c -> c != null).collect(Collectors.toList());
+
+
+            Collections.sort(candidateList);
+
+            if (candidateList.isEmpty()) {
+                //            bestIndex = parent.bestIndex;
+                return;
+            }
+            leaf = false;
+
+            bestCandidate = candidateList.get(0);
+            String testName = bestCandidate.getTestName();
+
+            // now that we have a best candidate, do the effective split
+
+            if (bestCandidate.getGroupNames().isEmpty()) {
+                //            bestIndex = parent.bestIndex;
+                leaf = true;
+                return;
+            }
+
+            Pair<List<Frame>, List<Var>> frames = tree.getSplitter().get().performSplit(df, weights, bestCandidate);
+
+            for (int i = 0; i < frames.a.size(); i++) {
+                Node child = new Node(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
+                children.add(child);
+            }
+            Util.rangeStream(children.size(), tree.poolSize() > 0)
+                    .forEach(i -> children.get(i).learn(tree, frames.a.get(i), frames.b.get(i), depth - 1, terms.copy()));
+        }
+    }
+
+    public static class NominalTerms {
+
+        private final Map<String, Set<Integer>> indexes = new HashMap<>();
+
+        public NominalTerms init(Frame df) {
+            Arrays.stream(df.varNames())
+                    .map(df::var)
+                    .filter(var -> var.type().isNominal() || var.type().isBinary())
+                    .forEach(var -> indexes.put(var.name(), IntStream.range(1, var.levels().length).boxed().collect(toSet())));
+            return this;
+        }
+
+        public Set<Integer> indexes(String key) {
+            return indexes.get(key);
+        }
+
+        public NominalTerms copy() {
+            NominalTerms terms = new NominalTerms();
+            this.indexes.entrySet().forEach(e -> terms.indexes.put(e.getKey(), new ConcurrentSkipListSet<>(e.getValue())));
+            return terms;
+        }
+
     }
 }

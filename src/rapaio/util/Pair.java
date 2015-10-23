@@ -34,17 +34,17 @@ public class Pair<T1, T2> implements Serializable {
 
     private static final long serialVersionUID = -1594916059995575867L;
 
-    public final T1 first;
-    public final T2 second;
+    public final T1 a;
+    public final T2 b;
 
-    public Pair(T1 first, T2 second) {
-        this.first = first;
-        this.second = second;
+    public Pair(T1 a, T2 b) {
+        this.a = a;
+        this.b = b;
     }
 
     @Override
     public String toString() {
-        return "Pair{" + first + ", " + second + "}";
+        return "Pair{" + a + ", " + b + "}";
     }
 
     public static <U, V> Pair<U, V> valueOf(U u, V v) {

@@ -64,8 +64,8 @@ public interface RTreePredictor extends Serializable {
             Numeric weights = Numeric.newEmpty();
             for (RTreeNode child : node.getChildren()) {
                 Pair<Double, Double> prediction = predict(tree, spot, child);
-                values.addValue(prediction.first);
-                weights.addValue(prediction.second);
+                values.addValue(prediction.a);
+                weights.addValue(prediction.b);
             }
             return new Pair<>(new WeightedMean(values, weights).value(), new Sum(weights).value());
         }

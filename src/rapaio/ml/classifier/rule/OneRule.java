@@ -118,11 +118,11 @@ public class OneRule extends AbstractClassifier {
         for (int i = 0; i < test.rowCount(); i++) {
             Pair<String, DVector> p = predict(test, i);
             if (withClasses) {
-                pred.firstClasses().setLabel(i, p.first);
+                pred.firstClasses().setLabel(i, p.a);
             }
             if (withDensities) {
                 String[] dict = firstTargetLevels();
-                DVector dv = p.second.solidCopy();
+                DVector dv = p.b.solidCopy();
                 dv.normalize(true);
                 for (int j = 0; j < dict.length; j++) {
                     pred.firstDensity().setValue(i, j, dv.get(j));
