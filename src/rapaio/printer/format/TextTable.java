@@ -43,87 +43,45 @@ public class TextTable implements Printable {
 
     private final int rows;
     private final int cols;
-    private Function<String, String> stringFormatter = x -> x;
-    private Function<Double, String> doubleFormatter = WS::formatFlex;
-    private Function<Integer, String> intFormatter = String::valueOf;
     private final String[][] values;
+    private final int[][] mergeRows;
+    private final int[][] align;
 
     private TextTable(int rows, int cols) {
         this.rows = rows;
         this.cols = cols;
         values = new String[rows][cols];
+        mergeRows = new int[rows][cols];
+        align = new int[rows][cols];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 values[i][j] = "";
+                mergeRows[i][j] = 1;
+                align[i][j] = -1;
             }
         }
     }
 
-    public int getRows() {
+    public int rows() {
         return rows;
     }
 
-    public int getCols() {
+    public int cols() {
         return cols;
     }
 
-    public Function<String, String> getStringFormatter() {
-        return stringFormatter;
-    }
-
-    public void setStringFormatter(Function<String, String> stringFormatter) {
-        this.stringFormatter = stringFormatter;
-    }
-
-    public Function<Double, String> getDoubleFormatter() {
-        return doubleFormatter;
-    }
-
-    public void setDoubleFormatter(Function<Double, String> doubleFormatter) {
-        this.doubleFormatter = doubleFormatter;
-    }
-
-    public Function<Integer, String> getIntFormatter() {
-        return intFormatter;
-    }
-
-    public void setIntFormatter(Function<Integer, String> intFormatter) {
-        this.intFormatter = intFormatter;
-    }
-
-    public String getText(int row, int col) {
+    public String get(int row, int col) {
         return values[row][col];
     }
 
-    public void setText(int row, int col, double x) {
-        setText(row, col, x, doubleFormatter);
+    public void set(int row, int col, String x) {
+        values[row][col] = x;
     }
-
-    public void setText(int row, int col, double x, Function<Double, String> fmt) {
-        values[row][col] = fmt.apply(x);
-    }
-
-    public void setText(int row, int col, int x) {
-        setText(row, col, x, intFormatter);
-    }
-
-    public void setText(int row, int col, int x, Function<Integer, String> fmt) {
-        values[row][col] = fmt.apply(x);
-    }
-
-    public void setText(int row, int col, String x) {
-        setText(row, col, x, stringFormatter);
-    }
-
-    public void setText(int row, int col, String x, Function<String, String> fmt) {
-        values[row][col] = fmt.apply(x);
-    }
-
 
     @Override
     public String summary() {
+        StringBuilder sb = new StringBuilder();
 
-
-        return null;
+        return sb.toString();
     }
 }
