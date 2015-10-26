@@ -6,5 +6,5 @@ to use, play and develop further old or new ideas with rapaio library
 
 ## IDE setup
 
-* (Intellij Idea project setup)[ide-idea-setup.Md]
+* [Intellij Idea project setup](ide-idea-setup.Md)
 

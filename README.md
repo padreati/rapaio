@@ -4,7 +4,7 @@ Statistics, data mining and machine learning toolbox in Java
 
 See tutorials [Rapaio Tutorials](http://padreati.github.io/rapaio/)
 
-For installations and HowTo's guides I prepared a folder with documents: (HowTo's index page)[howto/howto-index.Md].
+For installations and HowTo's guides I prepared a folder with documents: [HowTo's index page](howto/howto-index.Md).
 
 
 Implemented Features
