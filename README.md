@@ -4,6 +4,9 @@ Statistics, data mining and machine learning toolbox in Java
 
 See tutorials [Rapaio Tutorials](http://padreati.github.io/rapaio/)
 
+For installations and HowTo's guides I prepared a folder with documents:
+
+
 Implemented Features
 ====================
 For each feature there are some
@@ -13,8 +16,7 @@ is considered to be fully implemented and well tested.
 **Core Statistics**
 
 * Special Math functions
-* Maximum, Minimum, Mode (only for nominal values), Sum, Mean, Variance
-* Quantiles
+* Maximum, Minimum, Mode (only for nominal values), Sum, Mean, Variance, Quantiles
 * Online Statistics: minimum, maximum, count, mean, variance, standard deviation, skewness, kurtosis
 
 **Correlations**
