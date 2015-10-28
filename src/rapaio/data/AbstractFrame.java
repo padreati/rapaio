@@ -36,10 +36,4 @@ import java.io.ObjectOutputStream;
 public abstract class AbstractFrame implements Frame {
 
     private static final long serialVersionUID = -4375603852723666661L;
-
-//    private void writeObject(ObjectOutputStream out) throws IOException {
-//    }
-//
-//    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-//    }
 }

@@ -25,6 +25,7 @@ package rapaio.experiment;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
+import rapaio.sys.WS;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -34,8 +35,6 @@ import java.net.URISyntaxException;
  */
 public class Sandbox {
     public static void main(String[] args) throws IOException, URISyntaxException {
-
-        Frame df = Datasets.loadCarMpgDataset();
-        df.printSummary();
+        WS.println(WS.formatFlex((27 + 12) * 600 * 0.60));
     }
 }
