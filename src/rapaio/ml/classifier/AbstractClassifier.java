@@ -31,6 +31,7 @@ import rapaio.sys.WS;
 import rapaio.ws.Summary;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -53,6 +54,8 @@ public abstract class AbstractClassifier implements Classifier {
     private FrameSampler sampler = new FrameSampler.Identity();
     private boolean learned = false;
     private int poolSize = 1;
+    private int runs = 1;
+    private BiConsumer<Classifier, Integer> runningHook;
 
     @Override
     public FrameSampler sampler() {
@@ -165,9 +168,9 @@ public abstract class AbstractClassifier implements Classifier {
             tt.set(i, 1, inputNames[i], 1);
             tt.set(i, 2, ":", -1);
             tt.set(i, 3, inputTypes[i].name(), -1);
-            tt.set(i, 4, " || ", 1);
+            tt.set(i, 4, " |", 1);
         }
-        tt.withMerge(WS.getPrinter().getTextWidth());
+        tt.withMerge();
         sb.append("\n").append(tt.summary()).append("\n");
 
         sb.append("target vars:\n");
@@ -188,5 +191,27 @@ public abstract class AbstractClassifier implements Classifier {
     @Override
     public int poolSize() {
         return poolSize;
+    }
+
+    @Override
+    public int runs() {
+        return runs;
+    }
+
+    @Override
+    public Classifier withRuns(int runs) {
+        this.runs = runs;
+        return this;
+    }
+
+    @Override
+    public BiConsumer<Classifier, Integer> runningHook() {
+        return runningHook;
+    }
+
+    @Override
+    public Classifier withRunningHook(BiConsumer<Classifier, Integer> runningHook) {
+        this.runningHook = runningHook;
+        return this;
     }
 }

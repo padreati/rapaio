@@ -29,9 +29,8 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.CFit;
-import rapaio.ml.classifier.RunningClassifier;
+import rapaio.ml.classifier.Classifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,12 +41,10 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 @Deprecated
-public class SplitClassifier extends AbstractClassifier implements RunningClassifier {
+public class SplitClassifier extends AbstractClassifier implements Classifier {
 
     boolean ignoreUncovered = true;
     List<Split> splits = new ArrayList<>();
-    //
-    int runs = 1;
 
     @Override
     public String name() {
@@ -61,10 +58,10 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
 
     @Override
     public SplitClassifier newInstance() {
-        return new SplitClassifier()
-                .withRuns(runs)
+        return (SplitClassifier) new SplitClassifier()
                 .withIgnoreUncovered(ignoreUncovered)
-                .withSplits(splits);
+                .withSplits(splits)
+                .withRuns(runs());
     }
 
     public SplitClassifier withSplit(Predicate<FSpot> predicate, Classifier c) {
@@ -79,12 +76,6 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
 
     public SplitClassifier withIgnoreUncovered(boolean ignoreUncovered) {
         this.ignoreUncovered = ignoreUncovered;
-        return this;
-    }
-
-    @Override
-    public SplitClassifier withRuns(int runs) {
-        this.runs = runs;
         return this;
     }
 
@@ -121,19 +112,10 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
 
         for (int i = 0; i < splits.size(); i++) {
             Split split = splits.get(i);
-
-            if (split.classifier instanceof RunningClassifier) {
-                ((RunningClassifier) split.classifier).withRuns(runs);
-            }
+            split.classifier.withRuns(runs());
             split.classifier.learn(frames.get(i), weightList.get(i), targetNames());
         }
         return this;
-    }
-
-    @Override
-    public void learnFurther(int runs, Frame df, Var weights, String... targetVars) {
-        withRuns(runs);
-        learn(df, weights, targetVars);
     }
 
     @Override
@@ -168,11 +150,6 @@ public class SplitClassifier extends AbstractClassifier implements RunningClassi
             }
         });
         return pred;
-    }
-
-    @Override
-    public CFit fitFurther(CFit fit, Frame df) {
-        throw new IllegalArgumentException("not implemented yet");
     }
 
     public static class Split {

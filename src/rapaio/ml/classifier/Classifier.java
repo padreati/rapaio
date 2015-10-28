@@ -35,6 +35,7 @@ import rapaio.data.Var;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * Interface for all classification model algorithms.
@@ -264,4 +265,12 @@ public interface Classifier extends Printable, Serializable {
      * @return pool size to be used
      */
     int poolSize();
+
+    int runs();
+
+    Classifier withRuns(int runs);
+
+    BiConsumer<Classifier, Integer> runningHook();
+
+    Classifier withRunningHook(BiConsumer<Classifier, Integer> runningHook);
 }

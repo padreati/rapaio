@@ -106,6 +106,7 @@ public class OneRuleTest {
         OneRule oneRule1 = new OneRule();
         oneRule1.learn(df1, "class");
 
+        oneRule1.printSummary();
         assertEquals("OneRule model\n" +
                 "================\n" +
                 "\n" +
@@ -113,26 +114,22 @@ public class OneRuleTest {
                 "OneRule (minCount=6)\n" +
                 "\n" +
                 "Capabilities:\n" +
-                "learning type: MULTICLASS_CLASSIFIER\n" +
-                "inputTypes: BINARY,INDEX,NOMINAL,NUMERIC,ORDINAL,STAMP\n" +
-                "minInputCount: 1, maxInputCount: 1000000\n" +
-                "allowMissingInputValues: true\n" +
-                "targetTypes: NOMINAL\n" +
-                "minTargetCount: 1, maxTargetCount: 1\n" +
-                "allowMissingTargetValues: false\n" +
+                "learning: MULTICLASS_CLASSIFIER\n" +
+                "types inputs/targets: BINARY,INDEX,NOMINAL,NUMERIC,ORDINAL,STAMP/NOMINAL\n" +
+                "counts inputs/targets: [1,1000000] / [1,1]\n" +
+                "missing inputs/targets: true/false\n" +
                 "\n" +
                 "Learned model:\n" +
                 "input vars: \n" +
-                "> sepal-length : NUMERIC\n" +
-                "> sepal-width : NUMERIC\n" +
-                "> petal-length : NUMERIC\n" +
-                "> petal-width : NUMERIC\n" +
+                "\n" +
+                " 0. sepal-length : NUMERIC  | 1. sepal-width : NUMERIC  | 2. petal-length : NUMERIC  | 3. petal-width : NUMERIC  |\n" +
+                "\n" +
                 "target vars:\n" +
-                "> class : NOMINAL [?,Iris-setosa,Iris-versicolor,Iris-virginica]\n" +
+                "> class : NOMINAL [?,setosa,versicolor,virginica]\n" +
                 "BestRuleSet {var=petal-length, acc=0.9533333}\n" +
-                "> NumericRule {min=-Infinity, max=2.45, class=Iris-setosa, errors=0, total=50, acc=1 }\n" +
-                "> NumericRule {min=2.45, max=4.75, class=Iris-versicolor, errors=1, total=45, acc=0.9777778 }\n" +
-                "> NumericRule {min=4.75, max=Infinity, class=Iris-virginica, errors=6, total=55, acc=0.8909091 }\n" +
+                "> NumericRule {min=-Infinity, max=2.45, class=setosa, errors=0, total=50, acc=1 }\n" +
+                "> NumericRule {min=2.45, max=4.75, class=versicolor, errors=1, total=45, acc=0.9777778 }\n" +
+                "> NumericRule {min=4.75, max=Infinity, class=virginica, errors=6, total=55, acc=0.8909091 }\n" +
                 "\n", oneRule1.summary());
 
         oneRule1.printSummary();
@@ -152,38 +149,20 @@ public class OneRuleTest {
                 "OneRule (minCount=6)\n" +
                 "\n" +
                 "Capabilities:\n" +
-                "learning type: MULTICLASS_CLASSIFIER\n" +
-                "inputTypes: BINARY,INDEX,NOMINAL,NUMERIC,ORDINAL,STAMP\n" +
-                "minInputCount: 1, maxInputCount: 1000000\n" +
-                "allowMissingInputValues: true\n" +
-                "targetTypes: NOMINAL\n" +
-                "minTargetCount: 1, maxTargetCount: 1\n" +
-                "allowMissingTargetValues: false\n" +
+                "learning: MULTICLASS_CLASSIFIER\n" +
+                "types inputs/targets: BINARY,INDEX,NOMINAL,NUMERIC,ORDINAL,STAMP/NOMINAL\n" +
+                "counts inputs/targets: [1,1000000] / [1,1]\n" +
+                "missing inputs/targets: true/false\n" +
                 "\n" +
                 "Learned model:\n" +
                 "input vars: \n" +
-                "> cap-shape : NOMINAL\n" +
-                "> cap-surface : NOMINAL\n" +
-                "> cap-color : NOMINAL\n" +
-                "> bruises : NOMINAL\n" +
-                "> odor : NOMINAL\n" +
-                "> gill-attachment : NOMINAL\n" +
-                "> gill-spacing : NOMINAL\n" +
-                "> gill-size : NOMINAL\n" +
-                "> gill-color : NOMINAL\n" +
-                "> stalk-shape : NOMINAL\n" +
-                "> stalk-root : NOMINAL\n" +
-                "> stalk-surface-above-ring : NOMINAL\n" +
-                "> stalk-surface-below-ring : NOMINAL\n" +
-                "> stalk-color-above-ring : NOMINAL\n" +
-                "> stalk-color-below-ring : NOMINAL\n" +
-                "> veil-type : NOMINAL\n" +
-                "> veil-color : NOMINAL\n" +
-                "> ring-number : NOMINAL\n" +
-                "> ring-type : NOMINAL\n" +
-                "> spore-print-color : NOMINAL\n" +
-                "> population : NOMINAL\n" +
-                "> habitat : NOMINAL\n" +
+                "\n" +
+                " 0.   cap-shape : NOMINAL  | 5. gill-attachment : NOMINAL  | 10.               stalk-root : NOMINAL  | 15.         veil-type : NOMINAL  | 20. population : NOMINAL  |\n" +
+                " 1. cap-surface : NOMINAL  | 6.    gill-spacing : NOMINAL  | 11. stalk-surface-above-ring : NOMINAL  | 16.        veil-color : NOMINAL  | 21.    habitat : NOMINAL  |\n" +
+                " 2.   cap-color : NOMINAL  | 7.       gill-size : NOMINAL  | 12. stalk-surface-below-ring : NOMINAL  | 17.       ring-number : NOMINAL  |                            \n" +
+                " 3.     bruises : NOMINAL  | 8.      gill-color : NOMINAL  | 13.   stalk-color-above-ring : NOMINAL  | 18.         ring-type : NOMINAL  |                            \n" +
+                " 4.        odor : NOMINAL  | 9.     stalk-shape : NOMINAL  | 14.   stalk-color-below-ring : NOMINAL  | 19. spore-print-color : NOMINAL  |                            \n" +
+                "\n" +
                 "target vars:\n" +
                 "> classes : NOMINAL [?,p,e]\n" +
                 "BestRuleSet {var=odor, acc=0.985229}\n" +

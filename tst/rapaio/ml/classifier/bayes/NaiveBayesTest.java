@@ -129,13 +129,10 @@ public class NaiveBayesTest {
                 "NaiveBayes(numEstimator=GaussianPdf, nomEstimator=MultinomialPmf)\n" +
                 "\n" +
                 "Capabilities:\n" +
-                "learning type: MULTICLASS_CLASSIFIER\n" +
-                "inputTypes: BINARY,INDEX,NOMINAL,NUMERIC\n" +
-                "minInputCount: 0, maxInputCount: 1000000\n" +
-                "allowMissingInputValues: true\n" +
-                "targetTypes: NOMINAL\n" +
-                "minTargetCount: 1, maxTargetCount: 1\n" +
-                "allowMissingTargetValues: false\n" +
+                "learning: MULTICLASS_CLASSIFIER\n" +
+                "types inputs/targets: BINARY,INDEX,NOMINAL,NUMERIC/NOMINAL\n" +
+                "counts inputs/targets: [0,1000000] / [1,1]\n" +
+                "missing inputs/targets: true/false\n" +
                 "\n" +
                 "Learned model:\n" +
                 "Learning phase not called\n" +

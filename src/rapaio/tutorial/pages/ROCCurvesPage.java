@@ -30,6 +30,7 @@ import rapaio.datasets.Datasets;
 import rapaio.graphics.Plotter;
 import rapaio.graphics.plot.Legend;
 import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.boost.AdaBoostSAMME;
 import rapaio.experiment.classifier.boost.GBTClassifier;
 import rapaio.ml.classifier.ensemble.CForest;
@@ -156,7 +157,7 @@ public class ROCCurvesPage implements TutorialPage {
                 "and builds 50 boosting iterations. " +
                 "The following code shows how one can achieve that using rapaio.");
 
-        AdaBoostSAMME ab = new AdaBoostSAMME().withRuns(20);
+        Classifier ab = new AdaBoostSAMME().withRuns(20);
         ab.learn(train, "spam");
         CFit crAB = ab.fit(test);
 
@@ -172,7 +173,7 @@ public class ROCCurvesPage implements TutorialPage {
                 "This model uses decision trees as weak learners, and builds 20 boosting iterations. " +
                 "The following code shows how one can achieve that using rapaio.");
 
-        GBTClassifier gbt = new GBTClassifier().withRuns(20);
+        Classifier gbt = new GBTClassifier().withRuns(20);
         gbt.learn(train, "spam");
         CFit crGBT = gbt.fit(test);
 

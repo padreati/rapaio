@@ -27,7 +27,7 @@ import rapaio.core.SamplingTools;
 import rapaio.data.*;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
-import rapaio.ml.classifier.RunningClassifier;
+import rapaio.ml.classifier.Classifier;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regressor.RegressorFit;
 import rapaio.ml.regressor.boost.gbt.BTRegressor;
@@ -41,10 +41,9 @@ import java.util.List;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/12/14.
  */
 @Deprecated
-public class GBTClassifier extends AbstractClassifier implements RunningClassifier {
+public class GBTClassifier extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = -2979235364091072967L;
-    private int runs = 10;
     private double shrinkage = 1.0;
     private boolean useBootstrap = true;
     private double bootstrapSize = 1.0;
@@ -57,10 +56,13 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
     double[][] p;
     private List<List<BTRegressor>> trees;
 
+    public GBTClassifier() {
+        withRuns(10);
+    }
+
     @Override
     public GBTClassifier newInstance() {
-        return new GBTClassifier()
-                .withRuns(runs);
+        return (GBTClassifier) new GBTClassifier().withRuns(runs());
     }
 
     @Override
@@ -72,7 +74,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
     public String fullName() {
         StringBuilder sb = new StringBuilder();
         sb.append(name()).append("{");
-        sb.append("runs=").append(runs);
+        sb.append("runs=").append(runs());
         sb.append("}");
         return sb.toString();
     }
@@ -110,18 +112,12 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
     }
 
     @Override
-    public GBTClassifier withRuns(int runs) {
-        this.runs = runs;
-        return this;
-    }
-
-    @Override
     public GBTClassifier learn(Frame dfOld, Var weights, String... targetVarNames) {
         Frame df = prepareLearning(dfOld, weights, targetVarNames);
         if (targetNames().length != 1) {
             throw new IllegalArgumentException("This classifier accepts one and only one target variable.");
         }
-        if (runs <= 0) {
+        if (runs() <= 0) {
             throw new IllegalArgumentException("runs parameter must be greater than 0");
         }
 
@@ -134,12 +130,13 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
         for (int i = 0; i < K; i++) {
             trees.add(new ArrayList<>());
         }
-        for (int m = 0; m < runs; m++) {
+        for (int m = 0; m < runs(); m++) {
             buildAdditionalTree(df, weights);
         }
         return this;
     }
 
+/*
     @Override
     public void learnFurther(int runs, Frame df, Var weights, String... targetVarNames) {
         if (targetNames() == null) {
@@ -166,6 +163,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
         this.runs = runs;
 
     }
+    */
 
     private void buildAdditionalTree(Frame df, Var weights) {
 
@@ -277,10 +275,12 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
         return cr;
     }
 
+    /*
     @Override
     public CFit fitFurther(CFit fit, Frame df) {
         throw new IllegalArgumentException("not implemented yet");
     }
+    */
 }
 
 @Deprecated

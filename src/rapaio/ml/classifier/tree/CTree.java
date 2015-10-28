@@ -72,7 +72,6 @@ public class CTree extends AbstractClassifier {
     private Tag<CTreeMissingHandler> splitter = CTreeMissingHandler.Ignored;
     private Tag<CTreePruning> pruning = CTreePruning.NONE;
     private Frame pruningDf = null;
-    private BiConsumer<CTree, Integer> runningHook = null;
 
     // tree root node
     private Node root;
@@ -132,7 +131,7 @@ public class CTree extends AbstractClassifier {
                 .withFunction(function)
                 .withMissingHandler(splitter)
                 .withVarSelector(varSelector().newInstance())
-                .withRunningHook(runningHook)
+                .withRunningHook(runningHook())
                 .withSampler(sampler());
 
         tree.testMap.clear();
@@ -223,11 +222,6 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
-    public CTree withRunningHook(BiConsumer<CTree, Integer> runningHook) {
-        this.runningHook = runningHook;
-        return this;
-    }
-
     public Tag<CTreeFunction> getFunction() {
         return function;
     }
@@ -239,10 +233,6 @@ public class CTree extends AbstractClassifier {
 
     public Tag<CTreeMissingHandler> getSplitter() {
         return splitter;
-    }
-
-    public BiConsumer<CTree, Integer> getRunningHook() {
-        return runningHook;
     }
 
     public CTree withMissingHandler(Tag<CTreeMissingHandler> splitter) {

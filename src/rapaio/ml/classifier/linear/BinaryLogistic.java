@@ -39,7 +39,6 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
  */
-@Deprecated
 public class BinaryLogistic extends AbstractClassifier {
 
     private static final long serialVersionUID = 1609956190070125059L;

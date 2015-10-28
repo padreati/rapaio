@@ -116,8 +116,8 @@ class ReducedError {
                 nodes.get(maxId).cut();
             }
 
-            if (tree.getRunningHook() != null) {
-                tree.getRunningHook().accept(tree, nodes.size());
+            if (tree.runningHook() != null) {
+                tree.runningHook().accept(tree, nodes.size());
             }
         }
 

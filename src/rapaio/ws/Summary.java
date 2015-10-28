@@ -67,7 +67,7 @@ public class Summary {
             tt.set(i, 1, df.var(i).name(), 1);
             tt.set(i, 2, ":", -1);
             tt.set(i, 3, df.var(i).type().name(), -1);
-            tt.set(i, 4, " || ", 1);
+            tt.set(i, 4, "| ", 1);
         }
         tt.withMerge();
         buffer.append("\n").append(tt.summary()).append("\n");

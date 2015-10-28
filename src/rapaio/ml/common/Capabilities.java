@@ -302,13 +302,11 @@ public class Capabilities implements Printable {
     @Override
     public String summary() {
         StringBuilder sb = new StringBuilder();
-        sb.append("learning type: ").append(learnType.name()).append("\n");
-        sb.append("inputTypes: ").append(inputTypes.stream().map(Enum::name).collect(joining(","))).append("\n");
-        sb.append("minInputCount: ").append(minInputCount).append(", maxInputCount: ").append(maxInputCount).append("\n");
-        sb.append("allowMissingInputValues: ").append(allowMissingInputValues).append("\n");
-        sb.append("targetTypes: ").append(targetTypes.stream().map(Enum::name).collect(joining(","))).append("\n");
-        sb.append("minTargetCount: ").append(minTargetCount).append(", maxTargetCount: ").append(maxTargetCount).append("\n");
-        sb.append("allowMissingTargetValues: ").append(allowMissingTargetValues).append("\n");
+        sb.append("learning: ").append(learnType.name()).append("\n");
+        sb.append("types inputs/targets: ").append(inputTypes.stream().map(Enum::name).collect(joining(","))).append("/").append(targetTypes.stream().map(Enum::name).collect(joining(","))).append("\n");
+        sb.append("counts inputs/targets: [").append(minInputCount).append(",").append(maxInputCount).append("] / [")
+                .append(minTargetCount).append(",").append(maxTargetCount).append("]\n");
+        sb.append("missing inputs/targets: ").append(allowMissingInputValues).append("/").append(allowMissingTargetValues).append("\n");
         return sb.toString();
     }
 

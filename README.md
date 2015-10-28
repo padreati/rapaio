@@ -50,12 +50,17 @@ is considered to be fully implemented and well tested.
 **Classification**
 
 * Bayesian: NaiveBayes (GaussianPdf, EmpiricalPdf, MultinomialPmf)
+* Linear: BinaryLogistic
 * Rule: OneRule
-* Decision Trees: DecisionStump
-* Decision Trees: ID3
-* Decision Trees: C45 (no pruning)
-* Decision Trees: CART (no pruning)
+* Decision Trees - CTree: DecisionStump, ID3, C45, CART
+  * purity: entropy, infogain, gain ration, gini index
+  * weight on instances
+  * split: numeric binary, nominal binary, nominal full
+  * missing value handling: ignore, random, majority, weighted
+  * reduced-error pruning
+* Ensemble: CForest - Bagging, Random Forests
 * Boosting: AdaBoost.SAMME
+* SVM: BinarySMO (Platt)
 
 **Clusterization**
 
@@ -81,10 +86,6 @@ Experminental Stage Features
 
 * Boosting: GBT (Gradient Boosting Trees) Classifier
 * Ensemble: SplitClassifier
-* Ensemble: Bagging
-* Ensemble: Random Forests
-* SVM: BinarySMO
-* Linear: BinaryLogistic
 
 **Regression**
 
