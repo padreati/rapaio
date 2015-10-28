@@ -31,7 +31,7 @@ import java.io.Serializable;
 @Deprecated
 public class CommandBytes implements Serializable {
 
-    public static enum Type {
+    public enum Type {
         DRAW,
         IMAGE,
         CONFIG

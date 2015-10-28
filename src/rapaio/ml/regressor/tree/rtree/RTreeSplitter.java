@@ -41,7 +41,7 @@ public interface RTreeSplitter extends Serializable {
 
     String name();
 
-    public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTreeCandidate candidate);
+    Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTreeCandidate candidate);
 
     RTreeSplitter REMAINS_IGNORED = new RTreeSplitter() {
         @Override

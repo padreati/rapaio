@@ -48,7 +48,7 @@ public interface GBTLossFunction extends Serializable {
 
     // standard implementations
 
-    public static class L1 implements GBTLossFunction {
+    class L1 implements GBTLossFunction {
 
         @Override
         public String name() {
@@ -74,7 +74,7 @@ public interface GBTLossFunction extends Serializable {
         }
     }
 
-    public static class L2 implements GBTLossFunction {
+    class L2 implements GBTLossFunction {
 
         @Override
         public String name() {

@@ -39,7 +39,7 @@ public enum PchPalette implements Serializable {
 
     private final Mapping mapping;
 
-    private PchPalette(Mapping mapping) {
+    PchPalette(Mapping mapping) {
         this.mapping = mapping;
     }
 

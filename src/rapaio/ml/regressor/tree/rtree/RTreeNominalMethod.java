@@ -122,7 +122,7 @@ public interface RTreeNominalMethod extends Serializable {
         }
     };
 
-    public RTreeNominalMethod BINARY = new RTreeNominalMethod() {
+    RTreeNominalMethod BINARY = new RTreeNominalMethod() {
 
         @Override
         public String name() {

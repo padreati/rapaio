@@ -101,7 +101,7 @@ public class RForest extends AbstractRegressor implements RunningRegressor, Prin
 
     }
 
-    public static enum Sampling {
+    public enum Sampling {
         NONE, BOOTSTRAP, RANDOM
     }
 }
