@@ -27,6 +27,7 @@ import rapaio.data.*;
 import rapaio.printer.Printable;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
+import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
 import java.util.ArrayList;
@@ -60,31 +61,17 @@ public class Summary {
         buffer.append("varCount: ").append(df.varCount()).append("\n");
         buffer.append("varNames: \n");
 
-        int varCount = df.varCount();
-        int maxSize = df.varStream().mapToInt(var -> var.name().length()).max().orElse(0);
-        int offset = 18;
-
-        int cols = WS.getPrinter().getTextWidth() / (maxSize + offset);
-        int len = (int) Math.ceil(varCount * 1.0 / cols);
-
-        List<Var> vars = new ArrayList<>();
-        for (int i = 0; i < Math.min(cols, varCount); i++) {
-            Var pos = Nominal.newEmpty().withName(String.format("%" + (i * 2 + 1) + "s", " "));
-            Var name = Nominal.newEmpty().withName(String.format("%" + (i * 2 + 2) + "s", " "));
-            for (int j = 0; j < len; j++) {
-                if (i * len + j < df.varCount()) {
-                    pos.addLabel(String.valueOf(i * len + j) + ".");
-                    name.addLabel(df.var(i * len + j).name() +
-                            String.format(" : %7s", df.var(i * len + j).type().name()));
-                } else {
-                    pos.addLabel("");
-                    name.addLabel("");
-                }
-            }
-            vars.add(pos);
-            vars.add(name);
+        TextTable tt = TextTable.newEmpty(df.varCount(), 5);
+        for (int i = 0; i < df.varCount(); i++) {
+            tt.set(i, 0, i + ".", 1);
+            tt.set(i, 1, df.var(i).name(), 1);
+            tt.set(i, 2, ":", -1);
+            tt.set(i, 3, df.var(i).type().name(), -1);
+            tt.set(i, 4, " || ", 1);
         }
-        buffer.append(Summary.headString(SolidFrame.newWrapOf(vars)));
+        tt.withMerge();
+        buffer.append("\n").append(tt.summary()).append("\n");
+
 
         String[][] first = new String[names.length][7];
         String[][] second = new String[names.length][7];

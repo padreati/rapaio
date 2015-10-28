@@ -26,6 +26,7 @@ package rapaio.ml.classifier;
 import rapaio.data.*;
 import rapaio.data.filter.FFilter;
 import rapaio.data.sample.FrameSampler;
+import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 import rapaio.ws.Summary;
 
@@ -110,7 +111,7 @@ public abstract class AbstractClassifier implements Classifier {
      * for all learners. It's taks includes initialization of target names,
      * input names, check the capabilities at learning phase, etc.
      *
-     * @param dfOld         data frame
+     * @param dfOld      data frame
      * @param weights    weights of instances
      * @param targetVars target variable names
      */
@@ -158,30 +159,16 @@ public abstract class AbstractClassifier implements Classifier {
         sb.append("input vars: \n");
 
         int varCount = inputNames.length;
-        int maxSize = Arrays.stream(inputNames).mapToInt(String::length).max().orElse(0);
-        int offset = 18;
-
-        int cols = WS.getPrinter().getTextWidth() / (maxSize + offset);
-        int len = (int) Math.ceil(varCount * 1.0 / cols);
-
-        List<Var> vars = new ArrayList<>();
-        for (int i = 0; i < Math.min(cols, varCount); i++) {
-            Var pos = Nominal.newEmpty().withName(String.format("%" + (i * 2 + 1) + "s", " "));
-            Var name = Nominal.newEmpty().withName(String.format("%" + (i * 2 + 2) + "s", " "));
-            for (int j = 0; j < len; j++) {
-                if (i * len + j < inputNames.length) {
-                    pos.addLabel(String.valueOf(i * len + j) + ".");
-                    name.addLabel(inputNames[i * len + j] +
-                            String.format(" : %7s", inputTypes[i * len + j].name()));
-                } else {
-                    pos.addLabel("");
-                    name.addLabel("");
-                }
-            }
-            vars.add(pos);
-            vars.add(name);
+        TextTable tt = TextTable.newEmpty(varCount, 5);
+        for (int i = 0; i < varCount; i++) {
+            tt.set(i, 0, i + ".", 1);
+            tt.set(i, 1, inputNames[i], 1);
+            tt.set(i, 2, ":", -1);
+            tt.set(i, 3, inputTypes[i].name(), -1);
+            tt.set(i, 4, " || ", 1);
         }
-        sb.append(Summary.headString(SolidFrame.newWrapOf(vars)));
+        tt.withMerge(WS.getPrinter().getTextWidth());
+        sb.append("\n").append(tt.summary()).append("\n");
 
         sb.append("target vars:\n");
         IntStream.range(0, targetNames().length).forEach(i -> sb.append("> ")

@@ -24,6 +24,7 @@
 package rapaio.printer.format;
 
 import rapaio.printer.Printable;
+import rapaio.sys.WS;
 import rapaio.util.Pair;
 
 import java.util.ArrayList;
@@ -79,7 +80,7 @@ public class TextTable implements Printable {
     }
 
     public TextTable withSplit(int width) {
-        this.hSplitSize = width;
+        this.hSplitSize = width == 0 ? WS.getPrinter().getTextWidth() : width;
         return this;
     }
 
@@ -88,7 +89,7 @@ public class TextTable implements Printable {
     }
 
     public TextTable withMerge(int width) {
-        this.hMergeSize = width;
+        this.hMergeSize = width == 0 ? WS.getPrinter().getTextWidth() : width;
         return this;
     }
 
@@ -232,7 +233,7 @@ public class TextTable implements Printable {
 
         int contentRows = rows - headerRows;
         times = Math.min(contentRows, times);
-        int maxContent = (int) Math.ceil(contentRows / times);
+        int maxContent = (int) Math.ceil(1.0 * contentRows / times);
 
         TextTable tt = TextTable.newEmpty(headerRows + maxContent, cols * times);
         tt.withHeaderRows(headerRows);
@@ -253,8 +254,12 @@ public class TextTable implements Printable {
 
             for (int j = 0; j < maxContent; j++) {
                 for (int k = 0; k < cols; k++) {
-                    tt.set(j + headerRows, i * cols + k, get(start, k), alignCells[start][k]);
-                    tt.mergeCols(j + headerRows, i * cols + k, mergeCols[start][k]);
+                    if (start < rows) {
+                        tt.set(j + headerRows, i * cols + k, get(start, k), alignCells[start][k]);
+                        tt.mergeCols(j + headerRows, i * cols + k, mergeCols[start][k]);
+                    } else {
+                        break;
+                    }
                 }
                 start++;
             }
