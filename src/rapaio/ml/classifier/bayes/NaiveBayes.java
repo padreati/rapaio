@@ -35,7 +35,9 @@ import rapaio.ml.classifier.bayes.estimator.NominalEstimator;
 import rapaio.ml.classifier.bayes.estimator.NumericEstimator;
 import rapaio.ml.common.Capabilities;
 import rapaio.sys.WS;
+import rapaio.util.Tag;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,9 +58,10 @@ public class NaiveBayes extends AbstractClassifier {
 
     // algorithm parameters
 
-    private boolean useLaplaceSmoother = true;
+    private double laplaceSmoother = 1;
     private NumericEstimator numEstimator = new GaussianPdf();
     private NominalEstimator nomEstimator = new MultinomialPmf();
+    private Tag<PriorSupplier> priorSupplier = PRIORS_MLE;
 
     // prediction artifacts
 
@@ -71,7 +74,7 @@ public class NaiveBayes extends AbstractClassifier {
         return new NaiveBayes()
                 .withNumEstimator(numEstimator)
                 .withNomEstimator(nomEstimator)
-                .withLaplaceSmoother(useLaplaceSmoother);
+                .withLaplaceSmoother(laplaceSmoother);
     }
 
     @Override
@@ -106,13 +109,18 @@ public class NaiveBayes extends AbstractClassifier {
         return this;
     }
 
-    public NaiveBayes withLaplaceSmoother(boolean useLaplaceSmoother) {
-        this.useLaplaceSmoother = useLaplaceSmoother;
+    public NaiveBayes withLaplaceSmoother(double laplaceSmoother) {
+        this.laplaceSmoother = laplaceSmoother;
         return this;
     }
 
-    public boolean usingLaplaceSmoother() {
-        return useLaplaceSmoother;
+    public double laplaceSmoother() {
+        return laplaceSmoother;
+    }
+
+    public NaiveBayes withPriorSupplier(Tag<PriorSupplier> priorSupplier) {
+        this.priorSupplier = priorSupplier;
+        return this;
     }
 
     @Override
@@ -122,17 +130,7 @@ public class NaiveBayes extends AbstractClassifier {
 
         // build priors
 
-        priors = new HashMap<>();
-        DVector dv = DVector.newFromWeights(df.var(firstTargetName()), weights, firstTargetLevels());
-
-        if (useLaplaceSmoother) {
-            // laplace add-one smoothing
-            IntStream.range(0, firstTargetLevels().length).forEach(i -> dv.increment(i, 1.0));
-        }
-        dv.normalize(false);
-        for (int i = 1; i < firstTargetLevels().length; i++) {
-            priors.put(firstTargetLevels()[i], dv.get(i));
-        }
+        priors = PRIORS_MLE.get().learnPriors(df, weights, this);
 
         // build conditional probabilities
 
@@ -237,4 +235,31 @@ public class NaiveBayes extends AbstractClassifier {
         }
         return sb.toString();
     }
+
+    interface PriorSupplier extends Serializable {
+        Map<String, Double> learnPriors(Frame df, Var weights, NaiveBayes nb);
+    }
+
+    public static Tag<PriorSupplier> PRIORS_MLE = Tag.valueOf("PRIORS_MLE", (df, weights, nb) -> {
+        Map<String, Double> priors = new HashMap<>();
+        DVector dv = DVector.newFromWeights(df.var(nb.firstTargetName()), weights, nb.firstTargetLevels());
+
+        // laplace add something for smoothing is problematic for priors, so we do not do it
+//        IntStream.range(0, nb.firstTargetLevels().length).forEach(i -> dv.increment(i, nb.laplaceSmoother));
+        dv.normalize(false);
+
+        for (int i = 1; i < nb.firstTargetLevels().length; i++) {
+            priors.put(nb.firstTargetLevels()[i], dv.get(i));
+        }
+        return priors;
+    });
+
+    public static Tag<PriorSupplier> PRIORS_UNIFORM = Tag.valueOf("PRIORS_UNIFORM", (df, weights, nb) -> {
+        Map<String, Double> priors = new HashMap<>();
+        double p = 1.0 / nb.firstTargetLevels().length;
+        for (int i = 1; i < nb.firstTargetLevels().length; i++) {
+            priors.put(nb.firstTargetLevels()[i], p);
+        }
+        return priors;
+    });
 }

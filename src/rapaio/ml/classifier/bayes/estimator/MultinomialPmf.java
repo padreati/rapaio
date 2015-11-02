@@ -26,6 +26,7 @@ package rapaio.ml.classifier.bayes.estimator;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.bayes.NaiveBayes;
+import rapaio.sys.WS;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,13 +73,11 @@ public class MultinomialPmf implements NominalEstimator {
         }
 
         density = new double[targetDict.length][testDict.length];
-        if (nb.usingLaplaceSmoother()) {
             for (int i = 0; i < targetDict.length; i++) {
                 for (int j = 0; j < testDict.length; j++) {
-                    density[i][j] = 1.0;
+                    density[i][j] = nb.laplaceSmoother();
                 }
             }
-        }
         df.stream().forEach(s -> density[s.index(targetVar)][s.index(testVar)] += weights.value(s.row()));
         for (int i = 0; i < targetDict.length; i++) {
             double t = 0;

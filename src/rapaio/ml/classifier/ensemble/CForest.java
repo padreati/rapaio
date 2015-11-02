@@ -23,7 +23,9 @@
 
 package rapaio.ml.classifier.ensemble;
 
+import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
+import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.sample.FrameSample;
@@ -34,12 +36,16 @@ import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
-import rapaio.ml.eval.ConfusionMatrix;
+import rapaio.util.Pair;
 import rapaio.util.Util;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Breiman random forest implementation.
@@ -50,18 +56,20 @@ public class CForest extends AbstractClassifier {
 
     private static final long serialVersionUID = -145958939373105497L;
 
-    protected int runs = 0;
-    protected boolean oobComp = false;
-    protected Classifier c = CTree.newC45();
-    protected BaggingMode baggingMode = BaggingMode.VOTING;
+    private boolean oobComp = false;
+    private Classifier c = CTree.newCART();
+    private BaggingMode baggingMode = BaggingMode.VOTING;
     //
-    protected double totalOobInstances = 0;
-    protected double totalOobError = 0;
-    protected double oobError = Double.NaN;
-    protected List<Classifier> predictors = new ArrayList<>();
+    private double totalOobInstances = 0;
+    private double totalOobError = 0;
+    private double oobError = Double.NaN;
+    private List<Classifier> predictors = new ArrayList<>();
+    private Map<Integer, DVector> oobDensities;
+    private Map<Integer, String> oobFit;
+    private Map<Integer, String> oobTrueClass;
 
     public CForest() {
-        this.runs = 10;
+        withRuns(10);
         this.baggingMode = BaggingMode.VOTING;
         this.c = CTree.newCART().withVarSelector(VarSelector.AUTO);
         this.oobComp = false;
@@ -78,7 +86,7 @@ public class CForest extends AbstractClassifier {
         StringBuilder sb = new StringBuilder();
         sb.append(name());
         sb.append("CForest {");
-        sb.append("runs:").append(runs).append(";");
+        sb.append("runs:").append(runs()).append(";");
         sb.append("baggingMode:").append(baggingMode.name()).append(";");
         sb.append("oob:").append(oobComp).append(";");
         sb.append("sampler:").append(sampler().name()).append(";");
@@ -90,15 +98,14 @@ public class CForest extends AbstractClassifier {
     @Override
     public Classifier newInstance() {
         return new CForest()
-                .withRuns(runs)
+                .withRuns(runs())
                 .withBaggingMode(baggingMode)
                 .withClassifier(c.newInstance())
                 .withSampler(sampler());
     }
 
     public CForest withRuns(int runs) {
-        this.runs = runs;
-        return this;
+        return (CForest) super.withRuns(runs);
     }
 
     public CForest withOobComp(boolean oobCompute) {
@@ -169,38 +176,109 @@ public class CForest extends AbstractClassifier {
 
         Frame df = prepareLearning(dfOld, weights, targetVarNames);
 
-        totalOobInstances = 0;
-        totalOobError = 0;
-
-        predictors = Util.rangeStream(runs, poolSize() > 0).boxed()
-                .map(s -> buildWeakPredictor(df, weights))
-                .collect(Collectors.toList());
         if (oobComp) {
-            oobError = totalOobError / totalOobInstances;
+            totalOobInstances = 0;
+            totalOobError = 0;
+            oobDensities = new HashMap<>();
+            oobTrueClass = new HashMap<>();
+            oobFit = new HashMap<>();
+            for (int i = 0; i < df.rowCount(); i++) {
+                oobDensities.put(i, DVector.newEmpty(firstTargetLevels()));
+                oobTrueClass.put(i, df.label(i, firstTargetName()));
+            }
+        }
+
+        if (poolSize() == 0) {
+            predictors = new ArrayList<>();
+            for (int i = 0; i < runs(); i++) {
+                Pair<Classifier, List<Integer>> weak = buildWeakPredictor(df, weights);
+                predictors.add(weak.a);
+                if (oobComp) {
+                    List<Integer> oobIndexes = weak.b;
+                    Frame oobTest = df.mapRows(Mapping.newWrapOf(oobIndexes));
+                    CFit fit = weak.a.fit(oobTest);
+                    for (int j = 0; j < oobTest.rowCount(); j++) {
+                        int fitIndex = fit.firstClasses().index(j);
+                        oobDensities.get(oobIndexes.get(j)).increment(fitIndex, 1.0);
+                    }
+                    oobFit.clear();
+                    totalOobError = 0.0;
+                    totalOobInstances = 0.0;
+                    for (Map.Entry<Integer, DVector> e : oobDensities.entrySet()) {
+                        if (e.getValue().sum(false) > 0) {
+                            int bestIndex = e.getValue().findBestIndex(false);
+                            String bestLevel = firstTargetLevels()[bestIndex];
+                            oobFit.put(e.getKey(), bestLevel);
+                            if (!bestLevel.equals(oobTrueClass.get(e.getKey()))) {
+                                totalOobError++;
+                            }
+                            totalOobInstances++;
+                        }
+                    }
+                    oobError = (totalOobInstances > 0) ? totalOobError / totalOobInstances : 0.0;
+                }
+                if (runningHook() != null) {
+                    runningHook().accept(this, i + 1);
+                }
+            }
+        } else {
+            // build in parallel the trees, than oob and running hook cannot run at the
+            // same moment when weak tree was built
+            // for a real running hook behavior run without threading
+            predictors = new ArrayList<>();
+            List<Pair<Classifier, List<Integer>>> list = Util.rangeStream(runs(), poolSize() > 0).boxed()
+                    .map(s -> buildWeakPredictor(df, weights))
+                    .collect(Collectors.toList());
+            for (int i = 0; i < list.size(); i++) {
+                Pair<Classifier, List<Integer>> weak = list.get(i);
+                predictors.add(weak.a);
+                if (oobComp) {
+                    List<Integer> oobIndexes = weak.b;
+                    Frame oobTest = df.mapRows(Mapping.newWrapOf(oobIndexes));
+                    CFit fit = weak.a.fit(oobTest);
+                    for (int j = 0; j < oobTest.rowCount(); j++) {
+                        int fitIndex = fit.firstClasses().index(j);
+                        oobDensities.get(oobIndexes.get(j)).increment(fitIndex, 1.0);
+                    }
+                    oobFit.clear();
+                    totalOobError = 0.0;
+                    totalOobInstances = 0.0;
+                    for (Map.Entry<Integer, DVector> e : oobDensities.entrySet()) {
+                        if (e.getValue().sum(false) > 0) {
+                            int bestIndex = e.getValue().findBestIndex(false);
+                            String bestLevel = firstTargetLevels()[bestIndex];
+                            oobFit.put(e.getKey(), bestLevel);
+                            if (!bestLevel.equals(oobTrueClass.get(e.getKey()))) {
+                                totalOobError++;
+                            }
+                            totalOobInstances++;
+                        }
+                    }
+                    oobError = (totalOobInstances > 0) ? totalOobError / totalOobInstances : 0.0;
+                }
+                if (runningHook() != null) {
+                    runningHook().accept(this, i + 1);
+                }
+            }
         }
         return this;
     }
 
-    private Classifier buildWeakPredictor(Frame df, Var weights) {
+    private Pair<Classifier, List<Integer>> buildWeakPredictor(Frame df, Var weights) {
         Classifier weak = c.newInstance();
 
         FrameSample sample = sampler().newSample(df, weights);
 
         Frame trainFrame = sample.df;
         Var trainWeights = sample.weights;
-        Frame oobFrame = df.removeRows(sample.mapping);
 
         weak.learn(trainFrame, trainWeights, firstTargetName());
+        List<Integer> oobIndexes = new ArrayList<>();
         if (oobComp) {
-            // TODO This must be corrected, right now is wrong!@@@@@@
-            CFit cp = weak.fit(oobFrame);
-            double oobError = new ConfusionMatrix(oobFrame.var(firstTargetName()), cp.firstClasses()).errorCases();
-            synchronized (this) {
-                totalOobInstances += oobFrame.rowCount();
-                totalOobError += oobError;
-            }
+            Set<Integer> out = sample.mapping.rowStream().boxed().collect(toSet());
+            oobIndexes = IntStream.range(0, df.rowCount()).filter(row -> !out.contains(row)).boxed().collect(toList());
         }
-        return weak;
+        return Pair.valueOf(weak, oobIndexes);
     }
 
     @Override

@@ -117,7 +117,7 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(-1)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
-                .withMissingHandler(CTreeMissingHandler.ToRandom)
+                .withMissingHandler(CTreeMissingHandler.ToAllWeighted)
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Binary)
                 .withTest(VarType.NUMERIC, CTreeTest.Numeric_Binary)
                 .withFunction(CTreeFunction.GiniGain);

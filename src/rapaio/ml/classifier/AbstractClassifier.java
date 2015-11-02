@@ -23,12 +23,13 @@
 
 package rapaio.ml.classifier;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarRange;
+import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
 import rapaio.data.sample.FrameSampler;
 import rapaio.printer.format.TextTable;
-import rapaio.sys.WS;
-import rapaio.ws.Summary;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -53,7 +54,7 @@ public abstract class AbstractClassifier implements Classifier {
     private Map<String, String[]> dict;
     private FrameSampler sampler = new FrameSampler.Identity();
     private boolean learned = false;
-    private int poolSize = 1;
+    private int poolSize = Runtime.getRuntime().availableProcessors();
     private int runs = 1;
     private BiConsumer<Classifier, Integer> runningHook;
 

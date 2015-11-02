@@ -40,8 +40,6 @@ import java.util.function.BiConsumer;
 /**
  * Interface for all classification model algorithms.
  * A classifier is able to classify multiple target columns, if implementation allows that.
- * If a classifier implements further learning it has to implement
- * {@link RunningClassifier}
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
