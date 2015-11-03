@@ -72,8 +72,8 @@ public class LDATest {
 //
         WS.draw(gl);
 
-        CEvaluation.cv(df, "class", new CForest().withRuns(100), 10);
-        CEvaluation.cv(fit.mapVars("0~1,4"), "class", new CForest().withRuns(100), 10);
+        CEvaluation.cv(df, "class", new CForest().withRuns(10), 10);
+        CEvaluation.cv(fit.mapVars("0~1,4"), "class", new CForest().withRuns(10), 10);
     }
 
 }

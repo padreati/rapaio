@@ -137,11 +137,11 @@ public class RTreeNode implements Serializable {
         }
 
         Pair<List<Frame>, List<Var>> frames = tree.splitter.performSplit(df, weights, bestCandidate);
-        children = new ArrayList<>(frames.a.size());
-        for (int i = 0; i < frames.a.size(); i++) {
+        children = new ArrayList<>(frames._1.size());
+        for (int i = 0; i < frames._1.size(); i++) {
             RTreeNode child = new RTreeNode(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
             children.add(child);
-            child.learn(tree, frames.a.get(i), frames.b.get(i), depth - 1);
+            child.learn(tree, frames._1.get(i), frames._2.get(i), depth - 1);
         }
     }
 

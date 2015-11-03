@@ -43,7 +43,6 @@ import rapaio.util.func.SPredicate;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -315,10 +314,10 @@ public class CTree extends AbstractClassifier {
         df.stream().forEach(spot -> {
             Pair<Integer, DVector> result = fitPoint(this, spot, root);
             if (withClasses)
-                prediction.firstClasses().setIndex(spot.row(), result.a);
+                prediction.firstClasses().setIndex(spot.row(), result._1);
             if (withDensities)
                 for (int j = 0; j < firstTargetLevels().length; j++) {
-                    prediction.firstDensity().setValue(spot.row(), j, result.b.get(j));
+                    prediction.firstDensity().setValue(spot.row(), j, result._2.get(j));
                 }
         });
         return prediction;
@@ -343,7 +342,7 @@ public class CTree extends AbstractClassifier {
         String[] dict = tree.firstTargetLevels();
         DVector dv = DVector.newEmpty(dict);
         for (Node child : node.getChildren()) {
-            DVector d = this.fitPoint(tree, spot, child).b;
+            DVector d = this.fitPoint(tree, spot, child)._2;
             for (int i = 0; i < dict.length; i++) {
                 dv.increment(i, d.get(i) * child.getDensity().sum(false));
             }
@@ -629,12 +628,12 @@ public class CTree extends AbstractClassifier {
 
             Pair<List<Frame>, List<Var>> frames = tree.getSplitter().get().performSplit(df, weights, bestCandidate);
 
-            for (int i = 0; i < frames.a.size(); i++) {
+            for (int i = 0; i < frames._1.size(); i++) {
                 Node child = new Node(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
                 children.add(child);
             }
             Util.rangeStream(children.size(), tree.poolSize() > 0)
-                    .forEach(i -> children.get(i).learn(tree, frames.a.get(i), frames.b.get(i), depth - 1, terms.copy()));
+                    .forEach(i -> children.get(i).learn(tree, frames._1.get(i), frames._2.get(i), depth - 1, terms.copy()));
         }
     }
 

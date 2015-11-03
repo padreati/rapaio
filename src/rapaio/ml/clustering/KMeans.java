@@ -166,8 +166,8 @@ public class KMeans implements Printable {
             return new Pair<>(cluster, error);
         }).collect(toList());
         for (Pair<Integer, Double> p : pairs) {
-            totalError += p.b;
-            err[p.a] += p.b;
+            totalError += p._2;
+            err[p._1] += p._2;
         }
         for (int i = 0; i < err.length; i++) {
             clusterErrors.get(i).addValue(err[i]);

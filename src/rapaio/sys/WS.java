@@ -120,11 +120,11 @@ public class WS {
     }
 
     public static String formatShort(double value) {
-        return formatDecFlex.format(value);
+        return formatDecShort.format(value);
     }
 
     public static String formatLong(double value) {
-        return formatDecFlex.format(value);
+        return formatDecLong.format(value);
     }
 
     public static void print(String message) {

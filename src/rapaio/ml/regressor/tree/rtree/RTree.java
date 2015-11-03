@@ -190,7 +190,7 @@ public class RTree extends AbstractRegressor implements BTRegressor {
 
         df.stream().forEach(spot -> {
             Pair<Double, Double> result = predictor.predict(this, spot, root);
-            pred.fit(firstTargetName()).setValue(spot.row(), result.a);
+            pred.fit(firstTargetName()).setValue(spot.row(), result._1);
         });
         pred.buildComplete();
         return pred;

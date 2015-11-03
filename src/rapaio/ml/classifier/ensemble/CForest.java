@@ -24,10 +24,7 @@
 package rapaio.ml.classifier.ensemble;
 
 import rapaio.core.tools.DVector;
-import rapaio.data.Frame;
-import rapaio.data.Mapping;
-import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.*;
 import rapaio.data.sample.FrameSample;
 import rapaio.data.sample.FrameSampler;
 import rapaio.ml.classifier.AbstractClassifier;
@@ -40,7 +37,6 @@ import rapaio.util.Pair;
 import rapaio.util.Util;
 
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -59,14 +55,11 @@ public class CForest extends AbstractClassifier {
     private boolean oobComp = false;
     private Classifier c = CTree.newCART();
     private BaggingMode baggingMode = BaggingMode.VOTING;
-    //
-    private double totalOobInstances = 0;
-    private double totalOobError = 0;
     private double oobError = Double.NaN;
     private List<Classifier> predictors = new ArrayList<>();
     private Map<Integer, DVector> oobDensities;
-    private Map<Integer, String> oobFit;
-    private Map<Integer, String> oobTrueClass;
+    private Var oobFit;
+    private Var oobTrueClass;
 
     public CForest() {
         withRuns(10);
@@ -85,7 +78,7 @@ public class CForest extends AbstractClassifier {
     public String fullName() {
         StringBuilder sb = new StringBuilder();
         sb.append(name());
-        sb.append("CForest {");
+        sb.append("{");
         sb.append("runs:").append(runs()).append(";");
         sb.append("baggingMode:").append(baggingMode.name()).append(";");
         sb.append("oob:").append(oobComp).append(";");
@@ -176,15 +169,14 @@ public class CForest extends AbstractClassifier {
 
         Frame df = prepareLearning(dfOld, weights, targetVarNames);
 
+        double totalOobInstances = 0;
+        double totalOobError = 0;
         if (oobComp) {
-            totalOobInstances = 0;
-            totalOobError = 0;
             oobDensities = new HashMap<>();
-            oobTrueClass = new HashMap<>();
-            oobFit = new HashMap<>();
+            oobTrueClass = df.var(firstTargetName()).solidCopy();
+            oobFit = Nominal.newEmpty(df.rowCount(), firstTargetLevels());
             for (int i = 0; i < df.rowCount(); i++) {
                 oobDensities.put(i, DVector.newEmpty(firstTargetLevels()));
-                oobTrueClass.put(i, df.label(i, firstTargetName()));
             }
         }
 
@@ -192,30 +184,9 @@ public class CForest extends AbstractClassifier {
             predictors = new ArrayList<>();
             for (int i = 0; i < runs(); i++) {
                 Pair<Classifier, List<Integer>> weak = buildWeakPredictor(df, weights);
-                predictors.add(weak.a);
+                predictors.add(weak._1);
                 if (oobComp) {
-                    List<Integer> oobIndexes = weak.b;
-                    Frame oobTest = df.mapRows(Mapping.newWrapOf(oobIndexes));
-                    CFit fit = weak.a.fit(oobTest);
-                    for (int j = 0; j < oobTest.rowCount(); j++) {
-                        int fitIndex = fit.firstClasses().index(j);
-                        oobDensities.get(oobIndexes.get(j)).increment(fitIndex, 1.0);
-                    }
-                    oobFit.clear();
-                    totalOobError = 0.0;
-                    totalOobInstances = 0.0;
-                    for (Map.Entry<Integer, DVector> e : oobDensities.entrySet()) {
-                        if (e.getValue().sum(false) > 0) {
-                            int bestIndex = e.getValue().findBestIndex(false);
-                            String bestLevel = firstTargetLevels()[bestIndex];
-                            oobFit.put(e.getKey(), bestLevel);
-                            if (!bestLevel.equals(oobTrueClass.get(e.getKey()))) {
-                                totalOobError++;
-                            }
-                            totalOobInstances++;
-                        }
-                    }
-                    oobError = (totalOobInstances > 0) ? totalOobError / totalOobInstances : 0.0;
+                    oobCompute(df, weak);
                 }
                 if (runningHook() != null) {
                     runningHook().accept(this, i + 1);
@@ -231,30 +202,9 @@ public class CForest extends AbstractClassifier {
                     .collect(Collectors.toList());
             for (int i = 0; i < list.size(); i++) {
                 Pair<Classifier, List<Integer>> weak = list.get(i);
-                predictors.add(weak.a);
+                predictors.add(weak._1);
                 if (oobComp) {
-                    List<Integer> oobIndexes = weak.b;
-                    Frame oobTest = df.mapRows(Mapping.newWrapOf(oobIndexes));
-                    CFit fit = weak.a.fit(oobTest);
-                    for (int j = 0; j < oobTest.rowCount(); j++) {
-                        int fitIndex = fit.firstClasses().index(j);
-                        oobDensities.get(oobIndexes.get(j)).increment(fitIndex, 1.0);
-                    }
-                    oobFit.clear();
-                    totalOobError = 0.0;
-                    totalOobInstances = 0.0;
-                    for (Map.Entry<Integer, DVector> e : oobDensities.entrySet()) {
-                        if (e.getValue().sum(false) > 0) {
-                            int bestIndex = e.getValue().findBestIndex(false);
-                            String bestLevel = firstTargetLevels()[bestIndex];
-                            oobFit.put(e.getKey(), bestLevel);
-                            if (!bestLevel.equals(oobTrueClass.get(e.getKey()))) {
-                                totalOobError++;
-                            }
-                            totalOobInstances++;
-                        }
-                    }
-                    oobError = (totalOobInstances > 0) ? totalOobError / totalOobInstances : 0.0;
+                    oobCompute(df, weak);
                 }
                 if (runningHook() != null) {
                     runningHook().accept(this, i + 1);
@@ -262,6 +212,33 @@ public class CForest extends AbstractClassifier {
             }
         }
         return this;
+    }
+
+    private void oobCompute(Frame df, Pair<Classifier, List<Integer>> weak) {
+        double totalOobError;
+        double totalOobInstances;
+        List<Integer> oobIndexes = weak._2;
+        Frame oobTest = df.mapRows(Mapping.newWrapOf(oobIndexes));
+        CFit fit = weak._1.fit(oobTest);
+        for (int j = 0; j < oobTest.rowCount(); j++) {
+            int fitIndex = fit.firstClasses().index(j);
+            oobDensities.get(oobIndexes.get(j)).increment(fitIndex, 1.0);
+        }
+        oobFit.clear();
+        totalOobError = 0.0;
+        totalOobInstances = 0.0;
+        for (Map.Entry<Integer, DVector> e : oobDensities.entrySet()) {
+            if (e.getValue().sum(false) > 0) {
+                int bestIndex = e.getValue().findBestIndex(false);
+                String bestLevel = firstTargetLevels()[bestIndex];
+                oobFit.setLabel(e.getKey(), bestLevel);
+                if (!bestLevel.equals(oobTrueClass.label(e.getKey()))) {
+                    totalOobError++;
+                }
+                totalOobInstances++;
+            }
+        }
+        oobError = (totalOobInstances > 0) ? totalOobError / totalOobInstances : 0.0;
     }
 
     private Pair<Classifier, List<Integer>> buildWeakPredictor(Frame df, Var weights) {
