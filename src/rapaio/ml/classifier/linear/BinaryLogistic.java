@@ -129,7 +129,7 @@ public class BinaryLogistic extends AbstractClassifier {
     }
 
     @Override
-    public BinaryLogistic learn(Frame dfOld, Var weights, String... targetVarNames) {
+    public BinaryLogistic train(Frame dfOld, Var weights, String... targetVarNames) {
         Frame df = prepareLearning(dfOld, weights, targetVarNames);
 
         if (df.stream().complete().count() != df.rowCount()) {

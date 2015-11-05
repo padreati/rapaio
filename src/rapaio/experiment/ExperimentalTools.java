@@ -51,7 +51,7 @@ public final class ExperimentalTools implements Serializable {
      */
     public static List<Frame> consolidate(List<Frame> source) {
 
-        // learn reunion of labels for all columns
+        // train reunion of labels for all columns
         HashMap<String, ArrayList<String>> dicts = new HashMap<>();
         for (int i = 0; i < source.size(); i++) {
             for (Frame frame : source) {

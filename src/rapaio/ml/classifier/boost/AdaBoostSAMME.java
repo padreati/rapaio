@@ -119,7 +119,7 @@ public class AdaBoostSAMME extends AbstractClassifier implements Classifier {
     }
 
     @Override
-    public AdaBoostSAMME learn(Frame df, Var weights, String... targetVars) {
+    public AdaBoostSAMME train(Frame df, Var weights, String... targetVars) {
 
         prepareLearning(df, weights, targetVars);
 
@@ -150,7 +150,7 @@ public class AdaBoostSAMME extends AbstractClassifier implements Classifier {
         Var dfWeights = sample.weights.solidCopy();
 
         Classifier hh = weak.newInstance();
-        hh.learn(dfTrain, dfWeights, targetNames());
+        hh.train(dfTrain, dfWeights, targetNames());
         CFit p = hh.fit(df, true, false);
         double err = 0;
         for (int j = 0; j < df.rowCount(); j++) {

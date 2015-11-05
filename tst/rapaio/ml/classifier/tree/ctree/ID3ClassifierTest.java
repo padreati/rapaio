@@ -50,7 +50,7 @@ public class ID3ClassifierTest {
         final String className = "class";
 
         CTree id3 = CTree.newID3();
-        id3.learn(df, className);
+        id3.train(df, className);
         id3.fit(df);
         id3.printSummary();
 
@@ -72,7 +72,7 @@ public class ID3ClassifierTest {
         CTree id3 = new CTree()
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Full)
                 .withFunction(CTreeFunction.InfoGain);
-        id3.learn(df, className);
+        id3.train(df, className);
         id3.fit(df);
         id3.printSummary();
 

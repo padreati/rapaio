@@ -29,6 +29,8 @@ import rapaio.data.Var;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.DoublePredicate;
 import java.util.stream.DoubleStream;
 
@@ -43,12 +45,13 @@ public class DVector implements Serializable {
 
     private static final long serialVersionUID = -546802690694348698L;
 
-    private final String[] labels;
+    private final String[] levels;
+    private final Map<String, Integer> reverse = new HashMap<>();
     private final double[] values;
     private double total;
 
     /**
-     * Builds a distribution vector with given labels
+     * Builds a distribution vector with given levels
      *
      * @param labels used to name values
      * @return new empty distribution vector
@@ -106,7 +109,7 @@ public class DVector implements Serializable {
      * Builds a new distribution vector, with given names, grouped by
      * the nominal variable and with values as sums on numeric weights
      *
-     * @param labels  labels used for names
+     * @param labels  levels used for names
      * @param var     defines nominal grouping
      * @param weights weights used to compute sums for each cell
      * @return new distribution vector
@@ -118,25 +121,32 @@ public class DVector implements Serializable {
     private DVector(String[] labels) {
         for (int i = 1; i < labels.length; i++) {
             if ("?".equals(labels[i])) {
-                throw new IllegalArgumentException("labels are not allowed to have name '?' on a position other than 0");
+                throw new IllegalArgumentException("levels are not allowed to have name '?' on a position other than 0");
             }
         }
         if (!labels[0].equals("?")) {
-            this.labels = new String[labels.length + 1];
-            this.labels[0] = "?";
+            this.levels = new String[labels.length + 1];
+            this.levels[0] = "?";
             if (labels.length > 0) {
-                System.arraycopy(labels, 0, this.labels, 1, labels.length);
+                System.arraycopy(labels, 0, this.levels, 1, labels.length);
             }
         } else {
-            this.labels = labels;
+            this.levels = labels;
         }
-        this.values = new double[this.labels.length];
+        for (int i = 0; i < labels.length; i++) {
+            reverse.put(labels[i], i);
+        }
+        this.values = new double[this.levels.length];
     }
 
     private DVector(String[] labels, Var var, Var weights) {
         this(labels);
         var.stream().forEach(spot -> values[spot.index()] += weights.value(spot.row()));
         total = Arrays.stream(values).sum();
+    }
+
+    public String[] levels() {
+        return levels;
     }
 
     /**
@@ -149,8 +159,12 @@ public class DVector implements Serializable {
         return values[pos];
     }
 
+    public double get(String name) {
+        return get(reverse.get(name));
+    }
+
     public String label(int pos) {
-        return labels[pos];
+        return levels[pos];
     }
 
     /**
@@ -162,6 +176,10 @@ public class DVector implements Serializable {
     public void increment(int pos, double value) {
         values[pos] += value;
         total += value;
+    }
+
+    public void increment(String name, double value) {
+        increment(reverse.get(name), value);
     }
 
     public void increment(DVector dv) {
@@ -181,6 +199,10 @@ public class DVector implements Serializable {
      */
     public void set(int pos, double value) {
         values[pos] = value;
+    }
+
+    public void set(String name, double value) {
+        set(reverse.get(name), value);
     }
 
     /**
@@ -218,16 +240,18 @@ public class DVector implements Serializable {
      *
      * @param useMissing true if missing cell is used, if exists, false otherwise
      */
-    public void normalize(boolean useMissing) {
+    public DVector normalize(boolean useMissing) {
         total = 0.0;
         for (int i = getStart(useMissing); i < values.length; i++) {
             total += values[i];
         }
-        if (total == 0) return;
+        if (total == 0)
+            return this;
         for (int i = getStart(useMissing); i < values.length; i++) {
             values[i] /= total;
         }
         total = 1.0;
+        return this;
     }
 
     /**
@@ -272,7 +296,7 @@ public class DVector implements Serializable {
     }
 
     public int rowCount() {
-        return labels.length;
+        return levels.length;
     }
 
     /**
@@ -281,8 +305,8 @@ public class DVector implements Serializable {
      * @return a solid copy of distribution vector
      */
     public DVector solidCopy() {
-        DVector d = new DVector(labels);
-        System.arraycopy(values, 0, d.values, 0, labels.length);
+        DVector d = new DVector(levels);
+        System.arraycopy(values, 0, d.values, 0, levels.length);
         d.total = total;
         return d;
     }
@@ -294,7 +318,7 @@ public class DVector implements Serializable {
     private int getStart(boolean useMissing) {
         if (useMissing)
             return 0;
-        return ("?".equals(labels[0])) ? 1 : 0;
+        return ("?".equals(levels[0])) ? 1 : 0;
     }
 
     public DoubleStream streamValues() {
@@ -304,21 +328,21 @@ public class DVector implements Serializable {
     @Override
     public String toString() {
         return "DVector{" +
-                "labels=" + Arrays.toString(labels) +
+                "levels=" + Arrays.toString(levels) +
                 ", values=" + Arrays.toString(values) +
                 ", total=" + total +
                 '}';
     }
 
     public boolean equalsFull(DVector o) {
-        if (labels.length != o.labels.length) {
+        if (levels.length != o.levels.length) {
             return false;
         }
         if (values.length != o.values.length) {
             return false;
         }
-        for (int i = 0; i < labels.length; i++) {
-            if (!labels[i].equals(o.labels[i]))
+        for (int i = 0; i < levels.length; i++) {
+            if (!levels[i].equals(o.levels[i]))
                 return false;
         }
         for (int i = 0; i < values.length; i++) {

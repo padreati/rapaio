@@ -90,6 +90,10 @@ public class Filters {
         return new VFRefSort(ref.refComparator(asc)).fitApply(x);
     }
 
+    public static Frame refSort(Frame df, Comparator<Integer>... comp) {
+        return new FFRefSort(comp).filter(df);
+    }
+
     public static Var shuffle(Var x) {
         return new VFShuffle().fitApply(x);
     }

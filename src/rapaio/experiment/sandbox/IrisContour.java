@@ -83,7 +83,7 @@ public class IrisContour {
 
         Classifier c = new CForest().withMCols(1).withRuns(1_000);
 
-        c.learn(iris, "class");
+        c.train(iris, "class");
 
         Numeric x = Numeric.newSeq(new Minimum(iris.var(X)).value(), new Maximum(iris.var(X)).value(), 0.1).withName(X);
         Numeric y = Numeric.newSeq(new Minimum(iris.var(Y)).value(), new Maximum(iris.var(Y)).value(), 0.2).withName(Y);

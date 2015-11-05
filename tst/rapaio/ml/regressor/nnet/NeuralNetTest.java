@@ -68,7 +68,7 @@
 //        Regressor nn = new MultiLayerPerceptronRegressor(2, 1).withLearningRate(0.1).withRuns(100);
 //
 //        for (int i = 0; i < 1000; i++) {
-//            nn.learn(df, "and");
+//            nn.train(df, "and");
 //        }
 //        RegressorFit pred = nn.predict(df);
 //
@@ -92,7 +92,7 @@
 ////        Regressor nn = new MultiLayerPerceptronRegressor(2, 2, 1).withLearningRate(0.1).withRuns(100);
 ////
 ////        for (int i = 0; i < 2000; i++) {
-////            nn.learn(df, "xor");
+////            nn.train(df, "xor");
 ////        }
 ////        RegressorFit rp = nn.fit(df);
 ////
@@ -137,7 +137,7 @@
 //        Regressor nn = new MultiLayerPerceptronRegressor(2, 4, 2).withLearningRate(0.1).withRuns(100);
 //
 //        for (int i = 0; i < 10_000; i++) {
-//            nn.learn(df, "xorA,xorB");
+//            nn.train(df, "xorA,xorB");
 //        }
 //        RegressorFit rp = nn.predict(df);
 //
@@ -169,7 +169,7 @@
 //        for (int i = 0; i < 1; i++) {
 //            long start = System.currentTimeMillis();
 //            for (int j = 0; j < 4 * 2_000; j++) {
-//                nn.learn(df, "xor");
+//                nn.train(df, "xor");
 //            }
 //            RegressorFit rp = nn.predict(df);
 //            long stop = System.currentTimeMillis();

@@ -149,7 +149,7 @@ public class HistogramDensityTutorial implements TutorialPage {
                 "with independently creating it in its current form.");
 
         p("In it's default implementation, used without parameters, " +
-                "the Rapaio toolbox learn a kernel density estimation with GaussianPdf " +
+                "the Rapaio toolbox train a kernel density estimation with GaussianPdf " +
                 "kernels and with bandwidth approximated by Silverman's rule of thumb.");
 
         p("However one can use a different value for bandwidth in order to obtain a " +

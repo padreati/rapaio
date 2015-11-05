@@ -35,7 +35,7 @@ import rapaio.ml.classifier.boost.AdaBoostSAMME;
 import rapaio.experiment.classifier.boost.GBTClassifier;
 import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.classifier.rule.OneRule;
-import rapaio.ml.eval.ConfusionMatrix;
+import rapaio.ml.eval.Confusion;
 import rapaio.ml.eval.ROC;
 import rapaio.ws.Summary;
 
@@ -120,11 +120,11 @@ public class ROCCurvesPage implements TutorialPage {
                 + "Machine Learning 11, 63-91 (1993).</a>");
 
         OneRule oneRule = new OneRule();
-        oneRule.learn(train, "spam");
+        oneRule.train(train, "spam");
         CFit crOneRule = oneRule.fit(test);
 
         code("        OneRule oneRule = new OneRule();\n" +
-                "        oneRule.learn(train, \"spam\");\n" +
+                "        oneRule.train(train, \"spam\");\n" +
                 "        CFit crOneRule = oneRule.predict(test);\n");
 
         p("One of the most used ways to check the performance of a classifier is the accuracy. "
@@ -132,23 +132,23 @@ public class ROCCurvesPage implements TutorialPage {
                 + "With rapaio library one way to compute the accuracy is " +
                 "to summarize the confusion matrix.");
 
-        new ConfusionMatrix(test.var("spam"), crOneRule.firstClasses()).printSummary();
+        new Confusion(test.var("spam"), crOneRule.firstClasses()).printSummary();
 
-        code("        new ConfusionMatrix(test.var(\"spam\"), crOneRule.firstClasses()).printSummary();\n");
+        code("        new Confusion(test.var(\"spam\"), crOneRule.firstClasses()).printSummary();\n");
 
         heading(4, "Random Forest");
 
         p("The second prediction model is a random forest with 20 random trees. ");
 
         CForest rf = new CForest().withRuns(20).withNoSampling();
-        rf.learn(train, "spam");
+        rf.train(train, "spam");
         CFit crRF = rf.fit(test);
 
         code("        CEnsemble rf = CEnsemble.newRF(20, 10, 0);\n" +
-                "        rf.learn(train, \"spam\");\n" +
+                "        rf.train(train, \"spam\");\n" +
                 "        CFit crRF = rf.predict(test);\n");
 
-        new ConfusionMatrix(test.var("spam"), crRF.firstClasses()).printSummary();
+        new Confusion(test.var("spam"), crRF.firstClasses()).printSummary();
 
         heading(4, "AdaBoost.SAMME");
 
@@ -158,14 +158,14 @@ public class ROCCurvesPage implements TutorialPage {
                 "The following code shows how one can achieve that using rapaio.");
 
         Classifier ab = new AdaBoostSAMME().withRuns(20);
-        ab.learn(train, "spam");
+        ab.train(train, "spam");
         CFit crAB = ab.fit(test);
 
         code("        AdaBoostSAMME ab = new AdaBoostSAMME().withRuns(20);\n" +
-                "        ab.learn(train, \"spam\");\n" +
+                "        ab.train(train, \"spam\");\n" +
                 "        CFit crAB = ab.predict(test);\n");
 
-        new ConfusionMatrix(test.var("spam"), crAB.firstClasses()).printSummary();
+        new Confusion(test.var("spam"), crAB.firstClasses()).printSummary();
 
         heading(4, "GBTClassifier");
 
@@ -174,14 +174,14 @@ public class ROCCurvesPage implements TutorialPage {
                 "The following code shows how one can achieve that using rapaio.");
 
         Classifier gbt = new GBTClassifier().withRuns(20);
-        gbt.learn(train, "spam");
+        gbt.train(train, "spam");
         CFit crGBT = gbt.fit(test);
 
         code("        GBTClassifier gbt = new GBTClassifier().withRuns(20);\n" +
-                "        gbt.learn(train, \"spam\");\n" +
+                "        gbt.train(train, \"spam\");\n" +
                 "        CFit crGBT = gbt.predict(test);\n");
 
-        new ConfusionMatrix(test.var("spam"), crGBT.firstClasses()).printSummary();
+        new Confusion(test.var("spam"), crGBT.firstClasses()).printSummary();
 
         heading(2, "ROC Curves");
 

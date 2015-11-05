@@ -24,6 +24,7 @@
 package rapaio.tutorial.pages;
 
 import rapaio.graphics.Plotter;
+import rapaio.ml.eval.Confusion;
 import rapaio.sys.WS;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
@@ -40,7 +41,6 @@ import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.svm.BinarySMO;
 import rapaio.ml.classifier.svm.kernel.PolyKernel;
 import rapaio.ml.classifier.svm.kernel.WaveletKernel;
-import rapaio.ml.eval.ConfusionMatrix;
 import rapaio.ws.Summary;
 
 import java.awt.*;
@@ -223,18 +223,18 @@ public class MeshGridTutorialPage implements TutorialPage {
                 "\n" +
                 "        Summary.printSummary(iris);\n");
 
-        p("Now we will build a SMO classifier, with a poly kernel of degree 2, we learn the train set " +
+        p("Now we will build a SMO classifier, with a poly kernel of degree 2, we train the train set " +
                 "and fit the trained SMO to the same train set to see how it works. ");
 
         BinarySMO smo = new BinarySMO().withKernel(new PolyKernel(2));
-        smo.learn(iris, "class");
+        smo.train(iris, "class");
         CFit cr = smo.fit(iris);
-        new ConfusionMatrix(iris.var("class"), cr.firstClasses()).printSummary();
+        new Confusion(iris.var("class"), cr.firstClasses()).printSummary();
 
         code("        BinarySMO smo = new BinarySMO().withKernel(new PolyKernel(2));\n" +
-                "        smo.learn(iris, \"class\");\n" +
+                "        smo.train(iris, \"class\");\n" +
                 "        CFit cr = smo.predict(iris);\n" +
-                "        new ConfusionMatrix(iris.var(\"class\"), cr.firstClasses()).printSummary();\n");
+                "        new Confusion(iris.var(\"class\"), cr.firstClasses()).printSummary();\n");
 
         p("It looks like there is no error there. However it is legitimate to ask yourself " +
                 "how it looks the decision function. One possibility is with iso lines. ");
@@ -307,9 +307,9 @@ public class MeshGridTutorialPage implements TutorialPage {
         // build classifier
 
         Classifier c = new BinarySMO().withKernel(new WaveletKernel(0.55)).withC(0.1);
-        c.learn(df, "class");
+        c.train(df, "class");
 
-        new ConfusionMatrix(df.var("class"), c.fit(df).firstClasses()).printSummary();
+        new Confusion(df.var("class"), c.fit(df).firstClasses()).printSummary();
 
         // new build the mesh grid
 
@@ -380,9 +380,9 @@ public class MeshGridTutorialPage implements TutorialPage {
                 "        // build classifier \n" +
                 "        \n" +
                 "        Classifier c = new BinarySMO().withKernel(new WaveletKernel(0.55)).withC(0.1);\n" +
-                "        c.learn(df, \"class\");\n" +
+                "        c.train(df, \"class\");\n" +
                 "\n" +
-                "        new ConfusionMatrix(df.var(\"class\"), c.predict(df).firstClasses()).printSummary();\n" +
+                "        new Confusion(df.var(\"class\"), c.predict(df).firstClasses()).printSummary();\n" +
                 "\n" +
                 "        // new build the mesh grid\n" +
                 "        \n" +

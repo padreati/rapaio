@@ -36,7 +36,7 @@ import static rapaio.sys.WS.formatFlex;
  * <p>
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class ConfusionMatrix implements Printable {
+public class Confusion implements Printable {
 
     private final Var actual;
     private final Var predict;
@@ -54,11 +54,11 @@ public class ConfusionMatrix implements Printable {
     private double acceptedCases = 0;
     private double errorCases = 0;
 
-    public ConfusionMatrix(Var actual, Var predict) {
+    public Confusion(Var actual, Var predict) {
         this(actual, predict, false);
     }
 
-    public ConfusionMatrix(Var actual, Var predict, boolean percents) {
+    public Confusion(Var actual, Var predict, boolean percents) {
         validate(actual, predict);
         this.actual = actual;
         this.predict = predict;
@@ -142,7 +142,7 @@ public class ConfusionMatrix implements Printable {
     }
 
     private void addConfusionMatrix(StringBuilder sb) {
-        sb.append("> ConfusionMatrix\n");
+        sb.append("> Confusion\n");
 
         sb.append("\n");
         int maxwidth = "Actual".length();

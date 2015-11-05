@@ -80,7 +80,7 @@ public class SplitClassifier extends AbstractClassifier implements Classifier {
     }
 
     @Override
-    public SplitClassifier learn(Frame df, Var weights, String... targetVarNames) {
+    public SplitClassifier train(Frame df, Var weights, String... targetVarNames) {
         prepareLearning(df, weights, targetVarNames);
         if (splits.isEmpty()) {
             throw new IllegalArgumentException("No splits defined");
@@ -113,7 +113,7 @@ public class SplitClassifier extends AbstractClassifier implements Classifier {
         for (int i = 0; i < splits.size(); i++) {
             Split split = splits.get(i);
             split.classifier.withRuns(runs());
-            split.classifier.learn(frames.get(i), weightList.get(i), targetNames());
+            split.classifier.train(frames.get(i), weightList.get(i), targetNames());
         }
         return this;
     }

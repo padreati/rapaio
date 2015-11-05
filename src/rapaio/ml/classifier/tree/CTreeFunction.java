@@ -35,9 +35,8 @@ public interface CTreeFunction extends Serializable {
 
     double compute(DTable dt);
 
-    Tag<CTreeFunction> Entropy = Tag.valueOf("Entropy", (DTable dt) -> dt.splitByRowAverageEntropy());
-    Tag<CTreeFunction> InfoGain = Tag.valueOf("InfoGain", (DTable dt) -> -dt.splitByRowInfoGain());
-    Tag<CTreeFunction> GainRatio = Tag.valueOf("GainRatio", (DTable dt) -> -dt.splitByRowGainRatio());
-    Tag<CTreeFunction> GiniGain = Tag.valueOf("GiniGain", (DTable dt) -> -dt.splitByRowGiniGain());
+    Tag<CTreeFunction> InfoGain = Tag.valueOf("InfoGain", DTable::splitByRowInfoGain);
+    Tag<CTreeFunction> GainRatio = Tag.valueOf("GainRatio", DTable::splitByRowGainRatio);
+    Tag<CTreeFunction> GiniGain = Tag.valueOf("GiniGain", DTable::splitByRowGiniGain);
 }
 

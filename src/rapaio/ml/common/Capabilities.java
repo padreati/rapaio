@@ -35,7 +35,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Capabilities describes what a machine learning algorithm can learn and fit.
+ * Capabilities describes what a machine learning algorithm can train and fit.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/1/14.
  */

@@ -30,7 +30,7 @@ import rapaio.ml.classifier.bayes.NaiveBayes;
 import rapaio.ml.classifier.bayes.estimator.GaussianPdf;
 import rapaio.ml.classifier.bayes.estimator.KernelPdf;
 import rapaio.ml.classifier.bayes.estimator.MultinomialPmf;
-import rapaio.ml.eval.ConfusionMatrix;
+import rapaio.ml.eval.Confusion;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -127,18 +127,18 @@ public class ClassificationWithNaiveBayesPage implements TutorialPage {
                 "classifier on the same training data.");
 
         NaiveBayes nb = new NaiveBayes();
-        nb.learn(df, "class");
+        nb.train(df, "class");
         CFit cr = nb.fit(df, true, false);
 
         code("        NaiveBayes nb = new NaiveBayes();\n" +
-                "        nb.learn(df, \"class\");\n" +
+                "        nb.train(df, \"class\");\n" +
                 "        CFit cr = nb.predict(df, true, false);\n");
 
         p("Too see how the classifier worked, we can print the confusion matrix. ");
 
-        code("        new ConfusionMatrix(df.var(\"class\"), cr.firstClasses()).printSummary();\n");
+        code("        new Confusion(df.var(\"class\"), cr.firstClasses()).printSummary();\n");
 
-        new ConfusionMatrix(df.var("class"), cr.firstClasses()).printSummary();
+        new Confusion(df.var("class"), cr.firstClasses()).printSummary();
 
         heading(3, "Some notes on the parameters");
 

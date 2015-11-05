@@ -33,7 +33,7 @@ import rapaio.graphics.Plotter;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.classifier.tree.CTree;
-import rapaio.ml.eval.ConfusionMatrix;
+import rapaio.ml.eval.Confusion;
 import rapaio.ws.Summary;
 
 import java.io.IOException;
@@ -155,7 +155,7 @@ public class ClassificationWithRFPage implements TutorialPage {
 
         heading(3, "Playing with number of trees grown");
 
-        p("Now that we have a train and a test data set we can learn and predict. "
+        p("Now that we have a train and a test data set we can train and predict. "
                 + "RF grows a number of trees over bootstrap samples and use "
                 + "voting for classification. How large this number of trees must be? "
                 + "You can check how well you predict as the number of trees grows. ");
@@ -170,12 +170,12 @@ public class ClassificationWithRFPage implements TutorialPage {
 
         for (int mTrees = 1; mTrees < 20; mTrees += 1) {
             rf.withRuns(mTrees);
-            rf.learn(train, "spam");
+            rf.train(train, "spam");
 
             CFit cr = rf.fit(test);
 
             index.addIndex(mTrees);
-            errors.addValue(new ConfusionMatrix(
+            errors.addValue(new Confusion(
                     test.var("spam"),
                     cr.firstClasses()
             ).error());
@@ -203,12 +203,12 @@ public class ClassificationWithRFPage implements TutorialPage {
                 "\n" +
                 "        for (int mTrees = 1; mTrees < 20; mTrees += 1) {\n" +
                 "            rf.withRuns(mTrees);\n" +
-                "            rf.learn(train, \"spam\");\n" +
+                "            rf.train(train, \"spam\");\n" +
                 "\n" +
                 "            CFit cr = rf.predict(test);\n" +
                 "\n" +
                 "            index.addIndex(mTrees);\n" +
-                "            errors.addValue(new ConfusionMatrix(\n" +
+                "            errors.addValue(new Confusion(\n" +
                 "                    test.var(\"spam\"),\n" +
                 "                    cr.firstClasses()\n" +
                 "            ).error());\n" +
@@ -245,11 +245,11 @@ public class ClassificationWithRFPage implements TutorialPage {
                     .withClassifier(CTree.newC45().withMCols(mCol))
                     .withOobComp(true);
 
-            rf.learn(train, "spam");
+            rf.train(train, "spam");
             CFit cr = rf.fit(test);
 
             index1.addIndex(mCol);
-            errors1.addValue(new ConfusionMatrix(test.var("spam"), cr.firstClasses()).error());
+            errors1.addValue(new Confusion(test.var("spam"), cr.firstClasses()).error());
             oob1.addValue(rf.getOobError());
         }
         draw(plot()
@@ -275,11 +275,11 @@ public class ClassificationWithRFPage implements TutorialPage {
                 "                    .withRuns(30)\n" +
                 "                    .withOobComp(true);\n" +
                 "\n" +
-                "            rf.learn(train, \"spam\");\n" +
+                "            rf.train(train, \"spam\");\n" +
                 "            CFit cr = rf.predict(test);\n" +
                 "\n" +
                 "            index1.addIndex(mCol);\n" +
-                "            errors1.addValue(new ConfusionMatrix(test.var(\"spam\"), cr.firstClasses()).error());\n" +
+                "            errors1.addValue(new Confusion(test.var(\"spam\"), cr.firstClasses()).error());\n" +
                 "            oob1.addValue(rf.getOobError());\n" +
                 "        }\n" +
                 "        draw(plot()\n" +

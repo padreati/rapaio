@@ -93,8 +93,8 @@ public class CStacking extends AbstractClassifier {
     }
 
     @Override
-    public Classifier learn(Frame dfOld, Var weights, String... targetVars) {
-        logger.config("learn method called.");
+    public Classifier train(Frame dfOld, Var weights, String... targetVars) {
+        logger.config("train method called.");
         int pos = 0;
         logger.config("check learners for learning.... ");
         List<Var> vars =
@@ -103,7 +103,7 @@ public class CStacking extends AbstractClassifier {
                         .map(i -> {
                             if (!weaks.get(i).hasLearned()) {
                                 logger.config("started learning for weak learner ...");
-                                weaks.get(i).learn(dfOld, weights, targetVars);
+                                weaks.get(i).train(dfOld, weights, targetVars);
                             }
                             logger.config("started fitting weak learner...");
                             return weaks.get(i)
@@ -121,9 +121,9 @@ public class CStacking extends AbstractClassifier {
         Frame df = prepareLearning(SolidFrame.newWrapOf(vars), weights, targetVars);
 
         logger.config("started learning for stacker classifier...");
-        stacker.learn(df, weights, targetVars);
+        stacker.train(df, weights, targetVars);
 
-        logger.config("end learn method call");
+        logger.config("end train method call");
         return this;
     }
 

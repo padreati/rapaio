@@ -55,7 +55,7 @@ public class LDATest {
         LDA lda = new LDA().withMaxRuns(10_000).withTol(1e-30);
         lda.learn(df, "class");
 //        PCA lda = new PCA().withMaxRuns(10_000).withTol(1e-30);
-//        lda.learn(df.removeVars("class"));
+//        lda.train(df.removeVars("class"));
         lda.printSummary();
 
 

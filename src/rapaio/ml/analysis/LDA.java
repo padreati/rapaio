@@ -84,7 +84,7 @@ public class LDA implements Printable {
     public void learn(Frame df, String... targetVars) {
         validate(df, targetVars);
 
-        logger.fine("start lda learn");
+        logger.fine("start lda train");
         RM xx = Linear.newRMCopyOf(df.removeVars(targetName));
 
         // compute mean and sd

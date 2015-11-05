@@ -27,14 +27,10 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.datasets.Datasets;
-import rapaio.io.JavaIO;
 import rapaio.ml.classifier.CFit;
-import rapaio.sys.WS;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -69,7 +65,7 @@ public class OneRuleTest {
         OneRule oneRule = new OneRule();
 
         oneRule = oneRule.withMinCount(1);
-        oneRule.learn(df, "class");
+        oneRule.train(df, "class");
         CFit pred = oneRule.fit(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
@@ -77,7 +73,7 @@ public class OneRuleTest {
         }
 
         oneRule.withMinCount(2);
-        oneRule.learn(df, "class");
+        oneRule.train(df, "class");
         pred = oneRule.fit(df);
         labels = new String[]{"True", "True", "TrueFalse", "TrueFalse", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
@@ -85,7 +81,7 @@ public class OneRuleTest {
         }
 
         oneRule.withMinCount(3);
-        oneRule.learn(df, "class");
+        oneRule.train(df, "class");
         pred = oneRule.fit(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
@@ -93,7 +89,7 @@ public class OneRuleTest {
         }
 
         oneRule.withMinCount(4);
-        oneRule.learn(df, "class");
+        oneRule.train(df, "class");
         pred = oneRule.fit(df);
         for (int i = 1; i < SIZE; i++) {
             assertTrue(pred.firstClasses().label(i).equals(pred.firstClasses().label(0)));
@@ -104,7 +100,7 @@ public class OneRuleTest {
     public void testSummary() throws IOException, URISyntaxException {
         Frame df1 = Datasets.loadIrisDataset();
         OneRule oneRule1 = new OneRule();
-        oneRule1.learn(df1, "class");
+        oneRule1.train(df1, "class");
 
         oneRule1.printSummary();
         assertEquals("OneRule model\n" +
@@ -138,7 +134,7 @@ public class OneRuleTest {
 
         RandomSource.setSeed(1);
         OneRule oneRule2 = new OneRule();
-        oneRule2.learn(df2, "classes");
+        oneRule2.train(df2, "classes");
 
         oneRule2.printSummary();
 
@@ -184,7 +180,7 @@ public class OneRuleTest {
 
         Frame df1 = Datasets.loadMushrooms();
         OneRule oneRule1 = new OneRule();
-        oneRule1.learn(df1, "classes");
+        oneRule1.train(df1, "classes");
 
         oneRule1.printSummary();
         CFit fit1 = oneRule1.fit(df1, true, true);
@@ -193,7 +189,7 @@ public class OneRuleTest {
 
         Frame df2 = Datasets.loadIrisDataset();
         OneRule oneRule2 = new OneRule();
-        oneRule2.learn(df2, "class");
+        oneRule2.train(df2, "class");
 
         oneRule2.printSummary();
         CFit fit2 = oneRule2.fit(df2, true, true);

@@ -112,7 +112,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
     }
 
     @Override
-    public GBTClassifier learn(Frame dfOld, Var weights, String... targetVarNames) {
+    public GBTClassifier train(Frame dfOld, Var weights, String... targetVarNames) {
         Frame df = prepareLearning(dfOld, weights, targetVarNames);
         if (targetNames().length != 1) {
             throw new IllegalArgumentException("This classifier accepts one and only one target variable.");
@@ -141,7 +141,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
     public void learnFurther(int runs, Frame df, Var weights, String... targetVarNames) {
         if (targetNames() == null) {
             withRuns(runs);
-            learn(df, weights, targetVarNames);
+            train(df, weights, targetVarNames);
             return;
         }
 
@@ -152,7 +152,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
             throw new IllegalArgumentException("runs parameter must be greater than the current runs learned");
         }
         if (f.length != df.rowCount()) {
-            throw new IllegalArgumentException("learn further called for different frame");
+            throw new IllegalArgumentException("train further called for different frame");
         }
 
         // algorithm described by ESTL pag. 387

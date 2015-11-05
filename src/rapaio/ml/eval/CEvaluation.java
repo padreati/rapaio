@@ -65,7 +65,7 @@ public class CEvaluation {
             Frame train = MappedFrame.newByRow(df, trainMapping);
             Frame test = MappedFrame.newByRow(df, testMapping);
 
-            c.learn(train, classColName);
+            c.train(train, classColName);
             CFit cp = c.fit(test);
             double fcorrect = 0;
             for (int j = 0; j < test.rowCount(); j++) {
@@ -137,9 +137,9 @@ public class CEvaluation {
 
             for (int k = 0; k < classifiers.size(); k++) {
                 Classifier c = classifiers.get(k).newInstance();
-                c.learn(train, classColName);
+                c.train(train, classColName);
                 CFit cp = c.fit(test);
-                ConfusionMatrix cm = new ConfusionMatrix(test.var(classColName), cp.firstClasses());
+                Confusion cm = new Confusion(test.var(classColName), cp.firstClasses());
 //                cm.printSummary();
                 double acc = cm.accuracy();
                 tacc[k] += acc;
@@ -182,11 +182,11 @@ public class CEvaluation {
             Frame test = df.removeRows(rows);
 //            System.out.println("learn train set ...");
             Classifier cc = c.newInstance();
-            cc.learn(train, weights.mapRows(rows), classColName);
+            cc.train(train, weights.mapRows(rows), classColName);
 //            System.out.println("fit test cases ...");
             Var classes = cc.fit(test).firstClasses();
 //            System.out.println("build confusion matrix ...");
-            ConfusionMatrix cm = new ConfusionMatrix(test.var(classColName), classes);
+            Confusion cm = new Confusion(test.var(classColName), classes);
             cm.printSummary();
             double acc = cm.accuracy();
             System.out.println(String.format("bootstrap(%d) : %.6f", i + 1, acc));

@@ -26,13 +26,12 @@ package rapaio.ml.eval;
 import org.junit.Test;
 import rapaio.data.Nominal;
 import rapaio.data.Var;
-import rapaio.ml.eval.ConfusionMatrix;
 
 /**
  * @author tutuianu
  */
 @Deprecated
-public class ConfusionMatrixTest {
+public class ConfusionTest {
 
     @Test
     public void hello() {
@@ -73,7 +72,7 @@ public class ConfusionMatrixTest {
         predict.setLabel(10, "mouse");
 
 
-        ConfusionMatrix cm = new ConfusionMatrix(actual, predict);
+        Confusion cm = new Confusion(actual, predict);
         cm.printSummary();
     }
 }

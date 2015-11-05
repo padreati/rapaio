@@ -78,7 +78,7 @@ public class PCA implements Printable {
     public void learn(Frame df) {
         validate(df);
 
-        logger.fine("start pca learn");
+        logger.fine("start pca train");
         RM x = Linear.newRMCopyOf(df);
         if (scaling) {
             logger.fine("compute mean, sd and do scaling");

@@ -97,15 +97,15 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
     }
 
     @Override
-    public Classifier learn(Frame df, Var weights, String... targetVars) {
-        logger.config("learn method called.");
+    public Classifier train(Frame df, Var weights, String... targetVars) {
+        logger.config("train method called.");
         List<Var> vars = new ArrayList<>();
         int pos = 0;
         logger.config("check learners for learning.... ");
         weaks.parallelStream().map(weak -> {
             if (!weak.hasLearned()) {
                 logger.config("started learning for weak learner ...");
-                weak.learn(df, weights, targetVars);
+                weak.train(df, weights, targetVars);
             }
             logger.config("started fitting weak learner...");
             return weak.fit(df).firstDensity().var(1);
@@ -122,9 +122,9 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
         logger.config("started learning for binary logistic...");
         log.withTol(tol);
         log.withMaxRuns(maxRuns);
-        log.learn(SolidFrame.newWrapOf(vars), weights, targetVars);
+        log.train(SolidFrame.newWrapOf(vars), weights, targetVars);
 
-        logger.config("end learn method call");
+        logger.config("end train method call");
         return this;
     }
 

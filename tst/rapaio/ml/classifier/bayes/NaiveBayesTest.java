@@ -27,17 +27,13 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.io.JavaIO;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
-import rapaio.ml.classifier.bayes.estimator.GaussianPdf;
 import rapaio.ml.classifier.bayes.estimator.KernelPdf;
-import rapaio.ml.eval.ConfusionMatrix;
+import rapaio.ml.eval.Confusion;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -54,10 +50,10 @@ public class NaiveBayesTest {
         RandomSource.setSeed(1L);
         Frame df = Datasets.loadIrisDataset();
         NaiveBayes nb = new NaiveBayes();
-        nb.learn(df, "class");
+        nb.train(df, "class");
         CFit pred = nb.fit(df);
 
-        ConfusionMatrix cm = new ConfusionMatrix(df.var("class"), pred.firstClasses());
+        Confusion cm = new Confusion(df.var("class"), pred.firstClasses());
         cm.printSummary();
 
         assertTrue(cm.accuracy() >= 0.9);
@@ -78,10 +74,10 @@ public class NaiveBayesTest {
         RandomSource.setSeed(1L);
         Frame df = Datasets.loadIrisDataset();
         NaiveBayes nb = new NaiveBayes().withNumEstimator(new KernelPdf());
-        nb.learn(df, "class");
+        nb.train(df, "class");
         CFit pred = nb.fit(df);
 
-        ConfusionMatrix cm = new ConfusionMatrix(df.var("class"), pred.firstClasses());
+        Confusion cm = new Confusion(df.var("class"), pred.firstClasses());
         cm.printSummary();
 
         assertTrue(cm.accuracy() >= 0.9);
@@ -102,13 +98,13 @@ public class NaiveBayesTest {
         Frame df = Datasets.loadMushrooms();
 
         NaiveBayes nb = new NaiveBayes();
-        nb.learn(df, "classes");
+        nb.train(df, "classes");
 
         nb.printSummary();
 
         CFit cp = nb.fit(df);
 
-        ConfusionMatrix cm = new ConfusionMatrix(df.var("classes"), cp.firstClasses());
+        Confusion cm = new Confusion(df.var("classes"), cp.firstClasses());
         cm.printSummary();
 
         assertTrue(cm.accuracy() >= 0.89);
@@ -138,7 +134,7 @@ public class NaiveBayesTest {
                 "Learning phase not called\n" +
                 "\n", nb.summary());
 
-        nb.learn(Datasets.loadIrisDataset(), "class");
+        nb.train(Datasets.loadIrisDataset(), "class");
 
 
         nb.printSummary();
