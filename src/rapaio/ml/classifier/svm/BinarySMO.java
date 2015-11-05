@@ -202,7 +202,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     @Override
     public BinarySMO train(Frame df, Var weights, String... targetVarNames) {
 
-        prepareLearning(df, weights, targetVarNames);
+        prepareTraining(df, weights, targetVarNames);
 
         // process classes
 

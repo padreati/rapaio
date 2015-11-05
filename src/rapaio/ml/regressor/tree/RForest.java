@@ -23,14 +23,12 @@
 
 package rapaio.ml.regressor.tree;
 
-import rapaio.printer.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.Classifier;
-import rapaio.ml.regressor.AbstractRegressor;
-import rapaio.ml.regressor.Regressor;
-import rapaio.ml.regressor.RegressorFit;
-import rapaio.ml.regressor.RunningRegressor;
+import rapaio.ml.regressor.AbstractRegression;
+import rapaio.ml.regressor.Regression;
+import rapaio.ml.regressor.RegressionFit;
 import rapaio.ml.regressor.tree.rtree.RTree;
 
 import java.util.ArrayList;
@@ -42,11 +40,11 @@ import static rapaio.sys.WS.formatFlex;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/15/15.
  */
 @Deprecated
-public class RForest extends AbstractRegressor implements RunningRegressor, Printable {
+public class RForest extends AbstractRegression {
 
     int runs = 0;
     boolean oobCompute = false;
-    Regressor r = RTree.buildC45();
+    Regression r = RTree.buildC45();
     Sampling sampling = Sampling.NONE;
     double samplePercent = 1.0;
     //
@@ -57,7 +55,7 @@ public class RForest extends AbstractRegressor implements RunningRegressor, Prin
 
 
     @Override
-    public Regressor newInstance() {
+    public Regression newInstance() {
         return null;
     }
 
@@ -87,18 +85,8 @@ public class RForest extends AbstractRegressor implements RunningRegressor, Prin
     }
 
     @Override
-    public RegressorFit predict(Frame df, boolean withResiduals) {
+    public RegressionFit fit(Frame df, boolean withResiduals) {
         return null;
-    }
-
-    @Override
-    public RunningRegressor withRuns(int runs) {
-        return null;
-    }
-
-    @Override
-    public void learnFurther(Frame df, Var weights, int runs, String... targetVars) {
-
     }
 
     public enum Sampling {

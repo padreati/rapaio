@@ -126,7 +126,7 @@ public class NaiveBayes extends AbstractClassifier {
     @Override
     public NaiveBayes train(Frame df, Var weights, String... targetVarNames) {
 
-        prepareLearning(df, weights, targetVarNames);
+        prepareTraining(df, weights, targetVarNames);
 
         // build priors
 

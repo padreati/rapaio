@@ -74,15 +74,15 @@ public class Confusion implements Printable {
             throw new IllegalArgumentException("actual values var must be nominal");
         }
         if (!predict.type().isNominal()) {
-            throw new IllegalArgumentException("predict values var must be nominal");
+            throw new IllegalArgumentException("fit values var must be nominal");
         }
         if (actual.levels().length != predict.levels().length) {
-            throw new IllegalArgumentException("actual and predict does not have the same nominal levels");
+            throw new IllegalArgumentException("actual and fit does not have the same nominal levels");
         }
         for (int i = 0; i < actual.levels().length; i++) {
             if (!actual.levels()[i].equals(predict.levels()[i])) {
                 throw new IllegalArgumentException(
-                        String.format("not the same nominal levels (actual:%s, predict:%s)",
+                        String.format("not the same nominal levels (actual:%s, fit:%s)",
                                 Arrays.deepToString(actual.levels()),
                                 Arrays.deepToString(predict.levels())));
             }

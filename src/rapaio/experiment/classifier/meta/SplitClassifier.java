@@ -81,7 +81,7 @@ public class SplitClassifier extends AbstractClassifier implements Classifier {
 
     @Override
     public SplitClassifier train(Frame df, Var weights, String... targetVarNames) {
-        prepareLearning(df, weights, targetVarNames);
+        prepareTraining(df, weights, targetVarNames);
         if (splits.isEmpty()) {
             throw new IllegalArgumentException("No splits defined");
         }

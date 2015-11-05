@@ -23,56 +23,56 @@
 
 package rapaio.ml.regressor.simple;
 
+import rapaio.core.distributions.Distribution;
+import rapaio.core.distributions.Uniform;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.ml.regressor.AbstractRegressor;
-import rapaio.ml.regressor.Regressor;
-import rapaio.ml.regressor.RegressorFit;
-
-import static rapaio.sys.WS.formatFlex;
+import rapaio.ml.regressor.AbstractRegression;
+import rapaio.ml.regressor.Regression;
+import rapaio.ml.regressor.RegressionFit;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public class ConstantRegressor extends AbstractRegressor {
-
-    double constantValue;
+public class RandomValueRegression extends AbstractRegression {
+    private Distribution distribution = new Uniform(0, 1);
 
     @Override
-    public Regressor newInstance() {
-        return new ConstantRegressor();
+    public Regression newInstance() {
+        return new RandomValueRegression();
     }
 
     @Override
     public String name() {
-        return "ConstantRegressor";
+        return "RandomValueRegression";
     }
 
     @Override
     public String fullName() {
-        return String.format("ConstantRegressor(constant=%s)", formatFlex(constantValue));
+        return name() + String.format("(%s)", distribution.name());
     }
 
-    public double constantValue() {
-        return constantValue;
+    public Distribution distribution() {
+        return distribution;
     }
 
-    public ConstantRegressor withConstantValue(double customValue) {
-        this.constantValue = customValue;
+    public RandomValueRegression withDistribution(final Distribution distribution) {
+        this.distribution = distribution;
         return this;
     }
 
     @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
-        prepareLearning(df, weights, targetVarNames);
+        prepareTraining(df, weights, targetVarNames);
     }
 
     @Override
-    public RegressorFit predict(final Frame df, final boolean withResiduals) {
-        RegressorFit pred = RegressorFit.newEmpty(this, df, withResiduals);
+    public RegressionFit fit(final Frame df, final boolean withResiduals) {
+        RegressionFit pred = RegressionFit.newEmpty(this, df, withResiduals);
         for (String targetName : targetNames()) {
             pred.addTarget(targetName);
+            pred.fit(targetName).stream().forEach(s -> s.setValue(distribution.sampleNext()));
         }
         pred.buildComplete();
         return pred;

@@ -102,9 +102,9 @@ public class CTreeTest {
         tree.printSummary();
 
         CFit pred = tree.fit(df, true, true);
-        df = df.bindVars(pred.firstClasses().solidCopy().withName("predict"));
+        df = df.bindVars(pred.firstClasses().solidCopy().withName("fit"));
 
-        Frame match = df.stream().filter(spot -> spot.index("class") == spot.index("predict")).toMappedFrame();
+        Frame match = df.stream().filter(spot -> spot.index("class") == spot.index("fit")).toMappedFrame();
         assertEquals(150, match.rowCount());
 
         df.setMissing(0, 0);
@@ -113,7 +113,7 @@ public class CTreeTest {
         df.setMissing(0, 3);
 
         tree.fit(df, true, false);
-        match = df.stream().filter(spot -> spot.index("class") == spot.index("predict")).toMappedFrame();
+        match = df.stream().filter(spot -> spot.index("class") == spot.index("fit")).toMappedFrame();
         assertEquals(150, match.rowCount());
     }
 

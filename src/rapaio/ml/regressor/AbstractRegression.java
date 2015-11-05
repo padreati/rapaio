@@ -23,14 +23,17 @@
 
 package rapaio.ml.regressor;
 
+import rapaio.data.VarType;
 import rapaio.data.sample.FrameSampler;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarRange;
+import rapaio.ml.classifier.Classifier;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
@@ -38,12 +41,19 @@ import java.util.stream.Collectors;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
-@Deprecated
-public abstract class AbstractRegressor implements Regressor {
+public abstract class AbstractRegression implements Regression {
+
+    private static final long serialVersionUID = 5544999078321108408L;
 
     private String[] inputNames;
+    private VarType[] inputTypes;
     private String[] targetNames;
+    private VarType[] targetTypes;
     private FrameSampler sampler = new FrameSampler.Identity();
+    private boolean hasLearned;
+    private int poolSize = Runtime.getRuntime().availableProcessors();
+    private int runs = 1;
+    private BiConsumer<Regression, Integer> runningHook;
 
     @Override
     public String[] inputNames() {
@@ -61,18 +71,68 @@ public abstract class AbstractRegressor implements Regressor {
     }
 
     @Override
-    public AbstractRegressor withSampler(FrameSampler sampler) {
+    public AbstractRegression withSampler(FrameSampler sampler) {
         this.sampler = sampler;
         return this;
     }
 
+    @Override
+    public int runs() {
+        return runs;
+    }
 
-    public void prepareLearning(Frame df, Var weights, String... targetVarNames) {
+    public Regression withRuns(int runs) {
+        this.runs = runs;
+        return this;
+    }
+
+    public void prepareTraining(Frame df, Var weights, String... targetVarNames) {
         List<String> targetVarsList = new VarRange(targetVarNames).parseVarNames(df);
         this.targetNames = targetVarsList.toArray(new String[targetVarsList.size()]);
+        this.targetTypes = targetVarsList.stream().map(varName -> df.var(varName).type()).toArray(VarType[]::new);
 
         HashSet<String> targets = new HashSet<>(targetVarsList);
         List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targets.contains(varName)).collect(Collectors.toList());
-        this.inputNames = inputs.toArray(new String[inputs.size()]);
+        this.inputNames = inputs.stream().toArray(String[]::new);
+        this.inputTypes = inputs.stream().map(varName -> df.var(varName).type()).toArray(VarType[]::new);
+
+        hasLearned = true;
+    }
+
+    @Override
+    public boolean hasLearned() {
+        return hasLearned;
+    }
+
+    @Override
+    public VarType[] inputTypes() {
+        return inputTypes;
+    }
+
+    @Override
+    public VarType[] targetTypes() {
+        return targetTypes;
+    }
+
+    @Override
+    public Regression withPoolSize(int poolSize) {
+        this.poolSize = poolSize < 0 ? Runtime.getRuntime().availableProcessors() : poolSize;
+        return this;
+    }
+
+    @Override
+    public int poolSize() {
+        return poolSize;
+    }
+
+    @Override
+    public BiConsumer<Regression, Integer> runningHook() {
+        return runningHook;
+    }
+
+    @Override
+    public Regression withRunningHook(BiConsumer<Regression, Integer> runningHook) {
+        this.runningHook = runningHook;
+        return this;
     }
 }

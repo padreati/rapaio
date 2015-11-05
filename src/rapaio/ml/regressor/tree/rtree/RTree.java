@@ -26,9 +26,9 @@ package rapaio.ml.regressor.tree.rtree;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.common.VarSelector;
-import rapaio.ml.regressor.AbstractRegressor;
-import rapaio.ml.regressor.RegressorFit;
-import rapaio.ml.regressor.boost.gbt.BTRegressor;
+import rapaio.ml.regressor.AbstractRegression;
+import rapaio.ml.regressor.RegressionFit;
+import rapaio.ml.regressor.boost.gbt.BTRegression;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
 import rapaio.util.Pair;
 
@@ -40,7 +40,7 @@ import static rapaio.sys.WS.formatFlex;
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
 @Deprecated
-public class RTree extends AbstractRegressor implements BTRegressor {
+public class RTree extends AbstractRegression implements BTRegression {
 
     private static final long serialVersionUID = -2748764643670512376L;
 
@@ -92,7 +92,7 @@ public class RTree extends AbstractRegressor implements BTRegressor {
     }
 
     @Override
-    public BTRegressor newInstance() {
+    public BTRegression newInstance() {
         return new RTree()
                 .withMinCount(minCount)
                 .withNumericMethod(numericMethod)
@@ -168,7 +168,7 @@ public class RTree extends AbstractRegressor implements BTRegressor {
     @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
 
-        prepareLearning(df, weights, targetVarNames);
+        prepareTraining(df, weights, targetVarNames);
 
         if (targetNames().length == 0) {
             throw new IllegalArgumentException("tree classifier must specify a target variable");
@@ -185,8 +185,8 @@ public class RTree extends AbstractRegressor implements BTRegressor {
     }
 
     @Override
-    public RegressorFit predict(Frame df, boolean withResiduals) {
-        RegressorFit pred = RegressorFit.newEmpty(this, df, withResiduals).addTarget(firstTargetName());
+    public RegressionFit fit(Frame df, boolean withResiduals) {
+        RegressionFit pred = RegressionFit.newEmpty(this, df, withResiduals).addTarget(firstTargetName());
 
         df.stream().forEach(spot -> {
             Pair<Double, Double> result = predictor.predict(this, spot, root);

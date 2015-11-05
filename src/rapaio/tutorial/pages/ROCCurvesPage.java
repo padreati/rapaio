@@ -92,7 +92,7 @@ public class ROCCurvesPage implements TutorialPage {
                 "        final Frame test = samples.get(1);\n");
 
         p("If you are not aware how the data for spam data looks like that what you will have to know is " +
-                "that it consists of many numerical attributes used to predict a nominal " +
+                "that it consists of many numerical attributes used to fit a nominal " +
                 "attribute called \\(spam\\)");
 
         p("Thus we know there are 2788 instances classified as \\(ham\\), codified by value 0 (not spam), " +
@@ -125,7 +125,7 @@ public class ROCCurvesPage implements TutorialPage {
 
         code("        OneRule oneRule = new OneRule();\n" +
                 "        oneRule.train(train, \"spam\");\n" +
-                "        CFit crOneRule = oneRule.predict(test);\n");
+                "        CFit crOneRule = oneRule.fit(test);\n");
 
         p("One of the most used ways to check the performance of a classifier is the accuracy. "
                 + "Accuracy is the percentage of cases with correct prediction from total number of cases. "
@@ -146,7 +146,7 @@ public class ROCCurvesPage implements TutorialPage {
 
         code("        CEnsemble rf = CEnsemble.newRF(20, 10, 0);\n" +
                 "        rf.train(train, \"spam\");\n" +
-                "        CFit crRF = rf.predict(test);\n");
+                "        CFit crRF = rf.fit(test);\n");
 
         new Confusion(test.var("spam"), crRF.firstClasses()).printSummary();
 
@@ -163,7 +163,7 @@ public class ROCCurvesPage implements TutorialPage {
 
         code("        AdaBoostSAMME ab = new AdaBoostSAMME().withRuns(20);\n" +
                 "        ab.train(train, \"spam\");\n" +
-                "        CFit crAB = ab.predict(test);\n");
+                "        CFit crAB = ab.fit(test);\n");
 
         new Confusion(test.var("spam"), crAB.firstClasses()).printSummary();
 
@@ -179,7 +179,7 @@ public class ROCCurvesPage implements TutorialPage {
 
         code("        GBTClassifier gbt = new GBTClassifier().withRuns(20);\n" +
                 "        gbt.train(train, \"spam\");\n" +
-                "        CFit crGBT = gbt.predict(test);\n");
+                "        CFit crGBT = gbt.fit(test);\n");
 
         new Confusion(test.var("spam"), crGBT.firstClasses()).printSummary();
 

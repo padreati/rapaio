@@ -119,7 +119,7 @@ public abstract class AbstractClassifier implements Classifier {
      * @param weights    weights of instances
      * @param targetVars target variable names
      */
-    public Frame prepareLearning(Frame dfOld, final Var weights, final String... targetVars) {
+    public Frame prepareTraining(Frame dfOld, final Var weights, final String... targetVars) {
 
         if (targetVars.length == 0) {
             throw new IllegalArgumentException("At least a target var name should be specified at learning time.");

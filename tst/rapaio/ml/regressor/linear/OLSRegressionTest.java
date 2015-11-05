@@ -44,7 +44,7 @@ import java.text.DecimalFormat;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/24/15.
  */
 @Deprecated
-public class OLSRegressorTest {
+public class OLSRegressionTest {
 
     @Test
     public void testHappy() throws IOException {
@@ -52,9 +52,9 @@ public class OLSRegressorTest {
         Frame df = Datasets.loadISLAdvertising().mapVars("TV", "Radio", "Newspaper", "Sales");
         Summary.printSummary(df);
 
-        OLSRegressor ols = new OLSRegressor();
+        OLSRegression ols = new OLSRegression();
         ols.learn(df, "Sales");
-        OLSRegressorFit rr = ols.predict(df, true);
+        OLSRegressionFit rr = ols.fit(df, true);
 
         rr.printSummary();
     }

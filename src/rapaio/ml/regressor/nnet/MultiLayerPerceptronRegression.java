@@ -26,9 +26,9 @@ package rapaio.ml.regressor.nnet;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.ml.regressor.AbstractRegressor;
-import rapaio.ml.regressor.Regressor;
-import rapaio.ml.regressor.RegressorFit;
+import rapaio.ml.regressor.AbstractRegression;
+import rapaio.ml.regressor.Regression;
+import rapaio.ml.regressor.RegressionFit;
 
 import java.util.Arrays;
 
@@ -38,7 +38,7 @@ import static rapaio.sys.WS.formatFlex;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public class MultiLayerPerceptronRegressor extends AbstractRegressor {
+public class MultiLayerPerceptronRegression extends AbstractRegression {
 
     private final int[] layerSizes;
     private final NetNode[][] net;
@@ -48,11 +48,11 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor {
     int runs = 0;
 
     @Override
-    public Regressor newInstance() {
-        return new MultiLayerPerceptronRegressor(layerSizes);
+    public Regression newInstance() {
+        return new MultiLayerPerceptronRegression(layerSizes);
     }
 
-    public MultiLayerPerceptronRegressor(int... layerSizes) {
+    public MultiLayerPerceptronRegression(int... layerSizes) {
         this.layerSizes = layerSizes;
 
         if (layerSizes.length < 2) {
@@ -101,7 +101,7 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor {
 
     @Override
     public String name() {
-        return "MultiLayerPerceptronRegressor";
+        return "MultiLayerPerceptronRegression";
     }
 
     @Override
@@ -115,24 +115,24 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor {
         return sb.toString();
     }
 
-    public MultiLayerPerceptronRegressor withFunction(TFunction function) {
+    public MultiLayerPerceptronRegression withFunction(TFunction function) {
         this.function = function;
         return this;
     }
 
-    public MultiLayerPerceptronRegressor withLearningRate(double learningRate) {
+    public MultiLayerPerceptronRegression withLearningRate(double learningRate) {
         this.learningRate = learningRate;
         return this;
     }
 
-    public MultiLayerPerceptronRegressor withRuns(int runs) {
+    public MultiLayerPerceptronRegression withRuns(int runs) {
         this.runs = runs;
         return this;
     }
 
     @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
-        prepareLearning(df, weights, targetVarNames);
+        prepareTraining(df, weights, targetVarNames);
 
         for (String varName : df.varNames()) {
             if (df.var(varName).type().isNominal()) {
@@ -214,8 +214,8 @@ public class MultiLayerPerceptronRegressor extends AbstractRegressor {
     }
 
     @Override
-    public RegressorFit predict(final Frame df, final boolean withResiduals) {
-        RegressorFit pred = RegressorFit.newEmpty(this, df, withResiduals);
+    public RegressionFit fit(final Frame df, final boolean withResiduals) {
+        RegressionFit pred = RegressionFit.newEmpty(this, df, withResiduals);
         for (String targetName : targetNames()) {
             pred.addTarget(targetName);
         }

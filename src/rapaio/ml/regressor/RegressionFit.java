@@ -36,9 +36,8 @@ import java.util.stream.Collectors;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
-@Deprecated
-public class RegressorFit implements Printable {
-    private final Regressor model;
+public class RegressionFit implements Printable {
+    private final Regression model;
     private final Frame df;
     private final List<String> targetVars;
     private final boolean withResiduals;
@@ -47,13 +46,13 @@ public class RegressorFit implements Printable {
 
     // builder
 
-    public static RegressorFit newEmpty(Regressor model, Frame df, boolean withResiduals) {
-        return new RegressorFit(model, df, withResiduals);
+    public static RegressionFit newEmpty(Regression model, Frame df, boolean withResiduals) {
+        return new RegressionFit(model, df, withResiduals);
     }
 
     // private constructor
 
-    protected RegressorFit(final Regressor model, final Frame df, final boolean withResiduals) {
+    protected RegressionFit(final Regression model, final Frame df, final boolean withResiduals) {
         this.model = model;
         this.df = df;
         this.targetVars = new ArrayList<>();
@@ -63,7 +62,7 @@ public class RegressorFit implements Printable {
         this.residuals = new HashMap<>();
     }
 
-    public RegressorFit addTarget(String targetName) {
+    public RegressionFit addTarget(String targetName) {
         targetVars.add(targetName);
         fit.put(targetName, Numeric.newEmpty(df.rowCount()).withName(targetName));
         if (withResiduals) {

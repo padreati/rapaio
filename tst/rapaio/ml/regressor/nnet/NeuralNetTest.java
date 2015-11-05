@@ -29,8 +29,8 @@
 //import rapaio.data.Numeric;
 //import rapaio.data.SolidFrame;
 //import rapaio.data.Var;
-//import rapaio.ml.regressor.Regressor;
-//import rapaio.ml.regressor.RegressorFit;
+//import rapaio.ml.regressor.Regression;
+//import rapaio.ml.regressor.RegressionFit;
 //import rapaio.ws.Summary;
 //
 //
@@ -65,12 +65,12 @@
 //
 //        Frame df = SolidFrame.newWrapOf(a, b, and);
 //
-//        Regressor nn = new MultiLayerPerceptronRegressor(2, 1).withLearningRate(0.1).withRuns(100);
+//        Regression nn = new MultiLayerPerceptronRegression(2, 1).withLearningRate(0.1).withRuns(100);
 //
 //        for (int i = 0; i < 1000; i++) {
 //            nn.train(df, "and");
 //        }
-//        RegressorFit pred = nn.predict(df);
+//        RegressionFit pred = nn.fit(df);
 //
 //        Summary.lines(pred.fitFrame());
 //
@@ -89,12 +89,12 @@
 ////
 ////        Frame df = SolidFrame.newWrapOf(a, b, xor);
 ////
-////        Regressor nn = new MultiLayerPerceptronRegressor(2, 2, 1).withLearningRate(0.1).withRuns(100);
+////        Regression nn = new MultiLayerPerceptronRegression(2, 2, 1).withLearningRate(0.1).withRuns(100);
 ////
 ////        for (int i = 0; i < 2000; i++) {
 ////            nn.train(df, "xor");
 ////        }
-////        RegressorFit rp = nn.fit(df);
+////        RegressionFit rp = nn.fit(df);
 ////
 ////        Summary.printLines(rp.fitFrame());
 ////
@@ -134,12 +134,12 @@
 //
 //        Frame df = SolidFrame.newWrapOf(xorA.rowCount(), a, b, xorA, xorB);
 //
-//        Regressor nn = new MultiLayerPerceptronRegressor(2, 4, 2).withLearningRate(0.1).withRuns(100);
+//        Regression nn = new MultiLayerPerceptronRegression(2, 4, 2).withLearningRate(0.1).withRuns(100);
 //
 //        for (int i = 0; i < 10_000; i++) {
 //            nn.train(df, "xorA,xorB");
 //        }
-//        RegressorFit rp = nn.predict(df);
+//        RegressionFit rp = nn.fit(df);
 //
 //        Assert.assertTrue(rp.fitFrame().var("xorA").value(0) < .5);
 //        Assert.assertTrue(rp.fitFrame().var("xorA").value(1) > .5);
@@ -163,7 +163,7 @@
 //
 //        Frame df = SolidFrame.newWrapOf(a, b, xor);
 //
-//        Regressor nn = new MultiLayerPerceptronRegressor(2, 2, 1).withLearningRate(0.1).withRuns(100);
+//        Regression nn = new MultiLayerPerceptronRegression(2, 2, 1).withLearningRate(0.1).withRuns(100);
 //
 //        Frame stat = SolidFrame.newMatrix(100, "time", "xor1err", "xor2err", "xor3err", "xor4err");
 //        for (int i = 0; i < 1; i++) {
@@ -171,7 +171,7 @@
 //            for (int j = 0; j < 4 * 2_000; j++) {
 //                nn.train(df, "xor");
 //            }
-//            RegressorFit rp = nn.predict(df);
+//            RegressionFit rp = nn.fit(df);
 //            long stop = System.currentTimeMillis();
 //
 //            Assert.assertTrue(rp.firstFit().value(0) > .95);

@@ -87,7 +87,7 @@ public class OneRule extends AbstractClassifier {
 
     @Override
     public OneRule train(Frame df, Var weights, String... targetVarNames) {
-        prepareLearning(df, weights, targetVarNames);
+        prepareTraining(df, weights, targetVarNames);
 
         bestRuleSet = null;
         for (String testCol : inputNames()) {

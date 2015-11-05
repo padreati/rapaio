@@ -118,7 +118,7 @@ public class CStacking extends AbstractClassifier {
         List<String> targets = new VarRange(targetVars).parseVarNames(dfOld);
         vars.add(dfOld.var(targets.get(0)).solidCopy());
 
-        Frame df = prepareLearning(SolidFrame.newWrapOf(vars), weights, targetVars);
+        Frame df = prepareTraining(SolidFrame.newWrapOf(vars), weights, targetVars);
 
         logger.config("started learning for stacker classifier...");
         stacker.train(df, weights, targetVars);

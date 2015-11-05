@@ -121,7 +121,7 @@ public class AdaBoostSAMME extends AbstractClassifier implements Classifier {
     @Override
     public AdaBoostSAMME train(Frame df, Var weights, String... targetVars) {
 
-        prepareLearning(df, weights, targetVars);
+        prepareTraining(df, weights, targetVars);
 
         k = firstTargetLevels().length - 1;
 

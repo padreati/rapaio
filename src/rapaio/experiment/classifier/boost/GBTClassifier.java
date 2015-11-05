@@ -29,8 +29,8 @@ import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.regressor.RegressorFit;
-import rapaio.ml.regressor.boost.gbt.BTRegressor;
+import rapaio.ml.regressor.RegressionFit;
+import rapaio.ml.regressor.boost.gbt.BTRegression;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
 import rapaio.ml.regressor.tree.rtree.RTree;
 
@@ -47,14 +47,14 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
     private double shrinkage = 1.0;
     private boolean useBootstrap = true;
     private double bootstrapSize = 1.0;
-    private BTRegressor classifier = RTree.buildCART().withMaxDepth(4);
+    private BTRegression classifier = RTree.buildCART().withMaxDepth(4);
 
     // prediction artifact
 
     int K;
     double[][] f;
     double[][] p;
-    private List<List<BTRegressor>> trees;
+    private List<List<BTRegression>> trees;
 
     public GBTClassifier() {
         withRuns(10);
@@ -91,7 +91,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
                 .withAllowMissingTargetValues(false);
     }
 
-    public GBTClassifier withTree(BTRegressor rTree) {
+    public GBTClassifier withTree(BTRegression rTree) {
         this.classifier = rTree;
         return this;
     }
@@ -113,7 +113,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
     @Override
     public GBTClassifier train(Frame dfOld, Var weights, String... targetVarNames) {
-        Frame df = prepareLearning(dfOld, weights, targetVarNames);
+        Frame df = prepareTraining(dfOld, weights, targetVarNames);
         if (targetNames().length != 1) {
             throw new IllegalArgumentException("This classifier accepts one and only one target variable.");
         }
@@ -192,7 +192,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
             Frame x = df.removeVars(targetNames());
             Frame train = x.bindVars(r);
 
-            BTRegressor tree = classifier.newInstance();
+            BTRegression tree = classifier.newInstance();
 
             Frame bootTrain = train;
             Var bootWeights = weights;
@@ -208,7 +208,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
             tree.learn(bootTrain, bootWeights, "##tt##");
             tree.boostFit(bootX, bootR, bootR, new ClassifierLossFunction(K));
 
-            RegressorFit rr = tree.predict(train, true);
+            RegressionFit rr = tree.fit(train, true);
 
             for (int i = 0; i < df.rowCount(); i++) {
                 f[i][k] += shrinkage * rr.firstFit().value(i);
@@ -226,9 +226,9 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
         }
 
         for (int k = 0; k < K; k++) {
-            List<BTRegressor> predictors = trees.get(k);
-            for (BTRegressor tree : predictors) {
-                RegressorFit rr = tree.predict(df, false);
+            List<BTRegression> predictors = trees.get(k);
+            for (BTRegression tree : predictors) {
+                RegressionFit rr = tree.fit(df, false);
                 for (int i = 0; i < df.rowCount(); i++) {
                     double p = cr.firstDensity().value(i, k + 1);
                     p += shrinkage * rr.firstFit().value(i);

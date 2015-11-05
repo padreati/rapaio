@@ -28,25 +28,25 @@ import rapaio.data.Var;
 import rapaio.math.linear.Linear;
 import rapaio.math.linear.QR;
 import rapaio.math.linear.RM;
-import rapaio.ml.regressor.AbstractRegressor;
-import rapaio.ml.regressor.Regressor;
+import rapaio.ml.regressor.AbstractRegression;
+import rapaio.ml.regressor.Regression;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public class OLSRegressor extends AbstractRegressor {
+public class OLSRegression extends AbstractRegression {
 
     RM beta;
 
     @Override
-    public Regressor newInstance() {
-        return new OLSRegressor();
+    public Regression newInstance() {
+        return new OLSRegression();
     }
 
     @Override
     public String name() {
-        return "OLSRegressor";
+        return "OLSRegression";
     }
 
     @Override
@@ -60,7 +60,7 @@ public class OLSRegressor extends AbstractRegressor {
 
     @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
-        prepareLearning(df, weights, targetVarNames);
+        prepareTraining(df, weights, targetVarNames);
         if (targetNames().length == 0) {
             throw new IllegalArgumentException("OLS must specify at least one target variable name");
         }
@@ -70,13 +70,13 @@ public class OLSRegressor extends AbstractRegressor {
     }
 
     @Override
-    public OLSRegressorFit predict(Frame df) {
-        return predict(df, true);
+    public OLSRegressionFit fit(Frame df) {
+        return fit(df, true);
     }
 
     @Override
-    public OLSRegressorFit predict(Frame df, boolean withResiduals) {
-        OLSRegressorFit rp = new OLSRegressorFit(this, df);
+    public OLSRegressionFit fit(Frame df, boolean withResiduals) {
+        OLSRegressionFit rp = new OLSRegressionFit(this, df);
         rp.buildComplete();
         return rp;
     }

@@ -25,7 +25,7 @@ package rapaio.ml.regressor.boost.gbt;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.ml.regressor.Regressor;
+import rapaio.ml.regressor.Regression;
 
 /**
  * Boosting tree regressor interface.
@@ -33,10 +33,10 @@ import rapaio.ml.regressor.Regressor;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public interface BTRegressor extends Regressor {
+public interface BTRegression extends Regression {
 
     @Override
-    BTRegressor newInstance();
+    BTRegression newInstance();
 
     void boostFit(Frame x, Var y, Var fx, GBTLossFunction lossFunction);
 }

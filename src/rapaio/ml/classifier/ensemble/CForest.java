@@ -260,7 +260,7 @@ public class CForest extends AbstractClassifier {
     @Override
     public CForest train(Frame dfOld, Var weights, String... targetVarNames) {
 
-        Frame df = prepareLearning(dfOld, weights, targetVarNames);
+        Frame df = prepareTraining(dfOld, weights, targetVarNames);
 
         double totalOobInstances = 0;
         double totalOobError = 0;

@@ -23,9 +23,9 @@
 
 package rapaio.ml.regressor.linear;
 
+import rapaio.ml.regressor.RegressionFit;
 import rapaio.sys.WS;
 import rapaio.data.Frame;
-import rapaio.ml.regressor.RegressorFit;
 
 import java.util.Arrays;
 
@@ -33,18 +33,18 @@ import java.util.Arrays;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/1/14.
  */
 @Deprecated
-public class OLSRegressorFit extends RegressorFit {
+public class OLSRegressionFit extends RegressionFit {
 
-    private final OLSRegressor regressor;
+    private final OLSRegression regressor;
 
-    public OLSRegressorFit(OLSRegressor model, Frame df) {
+    public OLSRegressionFit(OLSRegression model, Frame df) {
         super(model, df, true);
         this.regressor = model;
     }
 
     @Override
-    public OLSRegressorFit addTarget(String targetName) {
-        return (OLSRegressorFit) super.addTarget(targetName);
+    public OLSRegressionFit addTarget(String targetName) {
+        return (OLSRegressionFit) super.addTarget(targetName);
     }
 
     @Override

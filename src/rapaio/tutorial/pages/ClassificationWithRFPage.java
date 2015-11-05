@@ -155,10 +155,10 @@ public class ClassificationWithRFPage implements TutorialPage {
 
         heading(3, "Playing with number of trees grown");
 
-        p("Now that we have a train and a test data set we can train and predict. "
+        p("Now that we have a train and a test data set we can train and fit. "
                 + "RF grows a number of trees over bootstrap samples and use "
                 + "voting for classification. How large this number of trees must be? "
-                + "You can check how well you predict as the number of trees grows. ");
+                + "You can check how well you fit as the number of trees grows. ");
 
         final Var index = Index.newEmpty();
         final Var errors = Numeric.newEmpty();
@@ -205,7 +205,7 @@ public class ClassificationWithRFPage implements TutorialPage {
                 "            rf.withRuns(mTrees);\n" +
                 "            rf.train(train, \"spam\");\n" +
                 "\n" +
-                "            CFit cr = rf.predict(test);\n" +
+                "            CFit cr = rf.fit(test);\n" +
                 "\n" +
                 "            index.addIndex(mTrees);\n" +
                 "            errors.addValue(new Confusion(\n" +
@@ -276,7 +276,7 @@ public class ClassificationWithRFPage implements TutorialPage {
                 "                    .withOobComp(true);\n" +
                 "\n" +
                 "            rf.train(train, \"spam\");\n" +
-                "            CFit cr = rf.predict(test);\n" +
+                "            CFit cr = rf.fit(test);\n" +
                 "\n" +
                 "            index1.addIndex(mCol);\n" +
                 "            errors1.addValue(new Confusion(test.var(\"spam\"), cr.firstClasses()).error());\n" +

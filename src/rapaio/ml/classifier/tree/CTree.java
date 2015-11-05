@@ -25,7 +25,6 @@ package rapaio.ml.classifier.tree;
 
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.stream.FSpot;
@@ -279,7 +278,7 @@ public class CTree extends AbstractClassifier {
     @Override
     public CTree train(Frame dfOld, Var weights, String... targetVars) {
 
-        Frame df = prepareLearning(dfOld, weights, targetVars);
+        Frame df = prepareTraining(dfOld, weights, targetVars);
         additionalValidation(df);
 
         this.varSelector.withVarNames(inputNames());

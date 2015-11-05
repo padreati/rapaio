@@ -233,7 +233,7 @@ public class MeshGridTutorialPage implements TutorialPage {
 
         code("        BinarySMO smo = new BinarySMO().withKernel(new PolyKernel(2));\n" +
                 "        smo.train(iris, \"class\");\n" +
-                "        CFit cr = smo.predict(iris);\n" +
+                "        CFit cr = smo.fit(iris);\n" +
                 "        new Confusion(iris.var(\"class\"), cr.firstClasses()).printSummary();\n");
 
         p("It looks like there is no error there. However it is legitimate to ask yourself " +
@@ -382,7 +382,7 @@ public class MeshGridTutorialPage implements TutorialPage {
                 "        Classifier c = new BinarySMO().withKernel(new WaveletKernel(0.55)).withC(0.1);\n" +
                 "        c.train(df, \"class\");\n" +
                 "\n" +
-                "        new Confusion(df.var(\"class\"), c.predict(df).firstClasses()).printSummary();\n" +
+                "        new Confusion(df.var(\"class\"), c.fit(df).firstClasses()).printSummary();\n" +
                 "\n" +
                 "        // new build the mesh grid\n" +
                 "        \n" +
@@ -404,7 +404,7 @@ public class MeshGridTutorialPage implements TutorialPage {
                 "        // fit the mesh grid values\n" +
                 "\n" +
                 "        Frame grid = SolidFrame.newWrapOf(x1, y1);\n" +
-                "        cr = c.predict(grid, true, true);\n" +
+                "        cr = c.fit(grid, true, true);\n" +
                 "\n" +
                 "        pos = 0;\n" +
                 "        for (int i = 0; i < x.rowCount(); i++) {\n" +

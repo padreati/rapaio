@@ -25,13 +25,12 @@ package rapaio.ml.regressor.boost;
 
 import rapaio.core.SamplingTools;
 import rapaio.data.*;
-import rapaio.ml.regressor.AbstractRegressor;
-import rapaio.ml.regressor.Regressor;
-import rapaio.ml.regressor.RegressorFit;
-import rapaio.ml.regressor.RunningRegressor;
-import rapaio.ml.regressor.boost.gbt.BTRegressor;
+import rapaio.ml.regressor.AbstractRegression;
+import rapaio.ml.regressor.Regression;
+import rapaio.ml.regressor.RegressionFit;
+import rapaio.ml.regressor.boost.gbt.BTRegression;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
-import rapaio.ml.regressor.simple.L2Regressor;
+import rapaio.ml.regressor.simple.L2Regression;
 import rapaio.ml.regressor.tree.rtree.RTree;
 
 import java.util.ArrayList;
@@ -45,14 +44,14 @@ import static rapaio.sys.WS.formatFlex;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public class GBTRegressor extends AbstractRegressor implements RunningRegressor {
+public class GBTRegression extends AbstractRegression implements Regression {
 
     // parameters
     int runs = 1; // number of rounds
     GBTLossFunction lossFunction = new GBTLossFunction.Huber();
 
-    Regressor initRegressor = new L2Regressor();
-    BTRegressor regressor = RTree.buildCART().withMaxDepth(4).withMinCount(10);
+    Regression initRegression = new L2Regression();
+    BTRegression regressor = RTree.buildCART().withMaxDepth(4).withMinCount(10);
     double shrinkage = 1.0;
     boolean useBootstrap = false;
     double bootstrapSize = 1.0;
@@ -60,13 +59,13 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
     // prediction
     Numeric fitLearn;
     Numeric fitValues;
-    List<BTRegressor> trees;
+    List<BTRegression> trees;
 
     @Override
-    public Regressor newInstance() {
-        return new GBTRegressor()
+    public Regression newInstance() {
+        return new GBTRegression()
                 .withLossFunction(lossFunction)
-                .withInitRegressor(initRegressor)
+                .withInitRegressor(initRegression)
                 .withRegressor(regressor)
                 .withShrinkage(shrinkage)
                 .withBootstrap(useBootstrap)
@@ -84,7 +83,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
         StringBuilder sb = new StringBuilder();
         sb.append(name()).append("{");
         sb.append("loss=").append(lossFunction.name()).append(", ");
-        sb.append("initRegressor=").append(initRegressor.fullName()).append(", ");
+        sb.append("initRegression=").append(initRegression.fullName()).append(", ");
         sb.append("regressor=").append(regressor.fullName()).append(", ");
         sb.append("shrinkage=").append(formatFlex(shrinkage)).append(", ");
         sb.append("useBootstrap=").append(useBootstrap).append(", ");
@@ -94,37 +93,37 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
         return sb.toString();
     }
 
-    public GBTRegressor withLossFunction(GBTLossFunction lossFunction) {
+    public GBTRegression withLossFunction(GBTLossFunction lossFunction) {
         this.lossFunction = lossFunction;
         return this;
     }
 
-    public GBTRegressor withRegressor(BTRegressor regressor) {
+    public GBTRegression withRegressor(BTRegression regressor) {
         this.regressor = regressor;
         return this;
     }
 
-    public GBTRegressor withInitRegressor(Regressor initRegressor) {
-        this.initRegressor = initRegressor;
+    public GBTRegression withInitRegressor(Regression initRegression) {
+        this.initRegression = initRegression;
         return this;
     }
 
-    public GBTRegressor withShrinkage(double shrinkage) {
+    public GBTRegression withShrinkage(double shrinkage) {
         this.shrinkage = shrinkage;
         return this;
     }
 
-    public GBTRegressor withBootstrap(boolean use) {
+    public GBTRegression withBootstrap(boolean use) {
         this.useBootstrap = use;
         return this;
     }
 
-    public GBTRegressor withBootstrapSize(double bootstrapSize) {
+    public GBTRegression withBootstrapSize(double bootstrapSize) {
         this.bootstrapSize = bootstrapSize;
         return this;
     }
 
-    public GBTRegressor withRuns(int runs) {
+    public GBTRegression withRuns(int runs) {
         this.runs = runs;
         return this;
     }
@@ -132,7 +131,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
     @Override
     public void learn(Frame df, Var weights, String... targetVarNames) {
 
-        prepareLearning(df, weights, targetVarNames);
+        prepareTraining(df, weights, targetVarNames);
 
         if (targetVarNames.length != 1) {
             throw new IllegalArgumentException("GBT accepts a single target variable");
@@ -141,8 +140,8 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
         Var y = df.var(firstTargetName());
         Frame x = df.removeVars(new VarRange(firstTargetName()));
 
-        initRegressor.learn(df, firstTargetName());
-        RegressorFit initPred = initRegressor.predict(df, false);
+        initRegression.learn(df, firstTargetName());
+        RegressionFit initPred = initRegression.fit(df, false);
         trees = new ArrayList<>();
 
         fitLearn = Numeric.newFill(df.rowCount());
@@ -154,7 +153,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
             Numeric gradient = lossFunction.gradient(y, fitLearn).withName("target");
 
             Frame xm = x.bindVars(gradient);
-            BTRegressor tree = regressor.newInstance();
+            BTRegression tree = regressor.newInstance();
 
             // bootstrap samples
 
@@ -189,7 +188,7 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
 
             // add next prediction to the fit values
 
-            RegressorFit treePred = tree.predict(df, false);
+            RegressionFit treePred = tree.fit(df, false);
             for (int j = 0; j < df.rowCount(); j++) {
                 fitLearn.setValue(j, fitLearn.value(j) + shrinkage * treePred.firstFit().value(j));
             }
@@ -206,104 +205,18 @@ public class GBTRegressor extends AbstractRegressor implements RunningRegressor 
     }
 
     @Override
-    public void learnFurther(Frame df, Var ignored, int runs, String... targetVarNames) {
-
-        withRuns(runs);
-
-        List<String> list = new VarRange(targetVarNames).parseVarNames(df);
-        if (list.size() != 1) {
-            throw new IllegalArgumentException("GBT accepts a single target variable");
-        }
-
-        // we have learned nothing before
-
-        if (targetNames() == null) {
-            learn(df, ignored, targetVarNames);
-            return;
-        }
-
-        // we learned something that does not fit
-
-        if (!targetName(0).equals(list.get(0))) {
-            throw new IllegalArgumentException("Incompatible previously fit");
-        }
-
-        Var y = df.var(firstTargetName());
-        Frame x = df.removeVars(new VarRange(firstTargetName()));
-
-        for (int i = trees.size(); i < runs; i++) {
-
-            // build gradient
-
-            Numeric gradient = lossFunction.gradient(y, fitLearn).withName("target");
-
-            // build next tree and gradient learning data set
-
-            Frame xm = x.bindVars(gradient);
-            BTRegressor tree = regressor.newInstance();
-
-            // bootstrap samples if is the case
-
-            Frame xmLearn = xm;
-            Frame xLearn = x;
-            Mapping bootstrapMapping = null;
-            if (useBootstrap) {
-                bootstrapMapping = Mapping.newEmpty();
-                int[] sample = SamplingTools.sampleWOR(xmLearn.rowCount(), (int) (bootstrapSize * xmLearn.rowCount()));
-                for (int aSample : sample) {
-                    bootstrapMapping.add(aSample);
-                }
-                xmLearn = MappedFrame.newByRow(xm, bootstrapMapping);
-                xLearn = MappedFrame.newByRow(x, bootstrapMapping);
-            }
-
-            // learn regions from gradients
-
-            tree.learn(xmLearn, "target");
-
-            // fit residuals
-
-            if (bootstrapMapping == null) {
-                tree.boostFit(xLearn, y, fitLearn, lossFunction);
-            } else {
-                tree.boostFit(
-                        xLearn,
-                        MappedVar.newByRows(y, bootstrapMapping),
-                        MappedVar.newByRows(fitLearn, bootstrapMapping),
-                        lossFunction);
-            }
-
-            // add next prediction to the fit values
-
-            RegressorFit treePred = tree.predict(df, false);
-            for (int j = 0; j < df.rowCount(); j++) {
-                fitLearn.setValue(j, fitLearn.value(j) + shrinkage * treePred.firstFit().value(j));
-            }
-
-            // add tree to the list of trees
-
-            trees.add(tree);
-        }
-
-        fitValues = Numeric.newEmpty();
-        for (int i = 0; i < fitLearn.rowCount(); i++) {
-            fitValues.addValue(fitLearn.value(i));
-        }
-    }
-
-    @Override
-    public RegressorFit predict(final Frame df, final boolean withResiduals) {
-        RegressorFit pred = RegressorFit.newEmpty(this, df, withResiduals);
+    public RegressionFit fit(final Frame df, final boolean withResiduals) {
+        RegressionFit pred = RegressionFit.newEmpty(this, df, withResiduals);
         for (String targetName : targetNames()) {
             pred.addTarget(targetName);
         }
 
-        RegressorFit initPred = initRegressor.predict(df);
+        RegressionFit initPred = initRegression.fit(df);
         for (int i = 0; i < df.rowCount(); i++) {
             pred.firstFit().setValue(i, initPred.firstFit().value(i));
         }
-        for (BTRegressor tree : trees) {
-            RegressorFit treePred = tree.predict(df);
+        for (BTRegression tree : trees) {
+            RegressionFit treePred = tree.fit(df);
             for (int i = 0; i < df.rowCount(); i++) {
                 pred.firstFit().setValue(i, pred.firstFit().value(i) + shrinkage * treePred.firstFit().value(i));
             }

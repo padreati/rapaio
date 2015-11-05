@@ -123,7 +123,7 @@ public class ClassificationWithNaiveBayesPage implements TutorialPage {
 
         code("        Frame df = Datasets.loadIrisDataset();\n");
 
-        p("Then we build a Naive Bayes classifier from the data set and predict the " +
+        p("Then we build a Naive Bayes classifier from the data set and fit the " +
                 "classifier on the same training data.");
 
         NaiveBayes nb = new NaiveBayes();
@@ -132,7 +132,7 @@ public class ClassificationWithNaiveBayesPage implements TutorialPage {
 
         code("        NaiveBayes nb = new NaiveBayes();\n" +
                 "        nb.train(df, \"class\");\n" +
-                "        CFit cr = nb.predict(df, true, false);\n");
+                "        CFit cr = nb.fit(df, true, false);\n");
 
         p("Too see how the classifier worked, we can print the confusion matrix. ");
 
