@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.regressor.tree.rtree;
+package rapaio.ml.regressor.tree;
 
 import java.io.Serializable;
 import java.util.Arrays;

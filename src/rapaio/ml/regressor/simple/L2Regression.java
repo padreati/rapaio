@@ -54,7 +54,7 @@ public class L2Regression extends AbstractRegression {
     }
 
     @Override
-    public void learn(Frame df, Var weights, String... targetVarNames) {
+    public void train(Frame df, Var weights, String... targetVarNames) {
         prepareTraining(df, weights, targetVarNames);
         means = new double[targetNames().length];
         for (int i = 0; i < targetNames().length; i++) {

@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.regressor.tree.rtree;
+package rapaio.ml.regressor.tree;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -45,7 +45,7 @@ public class RTree extends AbstractRegression implements BTRegression {
     private static final long serialVersionUID = -2748764643670512376L;
 
     int minCount = 1;
-    int maxDepth = Integer.MAX_VALUE;
+    int maxDepth = -1;
 
     RTreeNominalMethod nominalMethod = RTreeNominalMethod.BINARY;
     RTreeNumericMethod numericMethod = RTreeNumericMethod.BINARY;
@@ -69,7 +69,7 @@ public class RTree extends AbstractRegression implements BTRegression {
 
     public static RTree buildC45() {
         return new RTree()
-                .withMaxDepth(Integer.MAX_VALUE)
+                .withMaxDepth(-1)
                 .withNominalMethod(RTreeNominalMethod.FULL)
                 .withNumericMethod(RTreeNumericMethod.BINARY)
                 .withSplitter(RTreeSplitter.REMAINS_TO_RANDOM)
@@ -79,11 +79,11 @@ public class RTree extends AbstractRegression implements BTRegression {
 
     public static RTree buildCART() {
         return new RTree()
-                .withMaxDepth(Integer.MAX_VALUE)
+                .withMaxDepth(-1)
                 .withNominalMethod(RTreeNominalMethod.BINARY)
                 .withNumericMethod(RTreeNumericMethod.BINARY)
                 .withSplitter(RTreeSplitter.REMAINS_TO_RANDOM)
-                .withMinCount(2);
+                .withMinCount(1);
     }
 
     @Override
@@ -114,16 +114,16 @@ public class RTree extends AbstractRegression implements BTRegression {
     @Override
     public String fullName() {
         StringBuilder sb = new StringBuilder();
-        sb.append("TreeClassifier (");
-        sb.append("colSelector=").append(varSelector.toString()).append(",");
-        sb.append("minCount=").append(minCount).append(",");
-        sb.append("maxDepth=").append(maxDepth).append(",");
-        sb.append("numericMethod=").append(numericMethod.name()).append(",");
-        sb.append("nominalMethod=").append(nominalMethod.name()).append(",");
-        sb.append("function=").append(function.name()).append(",");
-        sb.append("splitter=").append(splitter.name()).append(",");
-        sb.append("predictor=").append(predictor.name());
-        sb.append(")");
+        sb.append("TreeClassifier {");
+        sb.append("  varSelector=").append(varSelector.name()).append(",\n");
+        sb.append("  minCount=").append(minCount).append(",\n");
+        sb.append("  maxDepth=").append(maxDepth).append(",\n");
+        sb.append("  numericMethod=").append(numericMethod.name()).append(",\n");
+        sb.append("  nominalMethod=").append(nominalMethod.name()).append(",\n");
+        sb.append("  function=").append(function.name()).append(",\n");
+        sb.append("  splitter=").append(splitter.name()).append(",\n");
+        sb.append("  predictor=").append(predictor.name()).append("\n");
+        sb.append("}");
         return sb.toString();
     }
 
@@ -138,9 +138,6 @@ public class RTree extends AbstractRegression implements BTRegression {
     }
 
     public RTree withMaxDepth(int maxDepth) {
-        if (maxDepth == -1) {
-            maxDepth = Integer.MAX_VALUE;
-        }
         this.maxDepth = maxDepth;
         return this;
     }
@@ -166,7 +163,7 @@ public class RTree extends AbstractRegression implements BTRegression {
     }
 
     @Override
-    public void learn(Frame df, Var weights, String... targetVarNames) {
+    public void train(Frame df, Var weights, String... targetVarNames) {
 
         prepareTraining(df, weights, targetVarNames);
 
@@ -181,7 +178,7 @@ public class RTree extends AbstractRegression implements BTRegression {
 
         root = new RTreeNode(null, "root", spot -> true);
         this.varSelector.withVarNames(inputNames());
-        root.learn(this, df, weights, maxDepth);
+        root.learn(this, df, weights, maxDepth < 0 ? Integer.MAX_VALUE : maxDepth);
     }
 
     @Override

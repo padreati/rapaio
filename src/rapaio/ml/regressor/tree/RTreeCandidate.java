@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.regressor.tree.rtree;
+package rapaio.ml.regressor.tree;
 
 import rapaio.data.stream.FSpot;
 import rapaio.util.func.SPredicate;

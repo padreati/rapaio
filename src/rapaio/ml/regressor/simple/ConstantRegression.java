@@ -69,7 +69,7 @@ public class ConstantRegression extends AbstractRegression {
     }
 
     @Override
-    public void learn(Frame df, Var weights, String... targetVarNames) {
+    public void train(Frame df, Var weights, String... targetVarNames) {
         prepareTraining(df, weights, targetVarNames);
     }
 

@@ -32,7 +32,7 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.regressor.RFit;
 import rapaio.ml.regressor.boost.gbt.BTRegression;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
-import rapaio.ml.regressor.tree.rtree.RTree;
+import rapaio.ml.regressor.tree.RTree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -205,7 +205,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
                 bootX = x.mapRows(map);
                 bootR = r.mapRows(map);
             }
-            tree.learn(bootTrain, bootWeights, "##tt##");
+            tree.train(bootTrain, bootWeights, "##tt##");
             tree.boostFit(bootX, bootR, bootR, new ClassifierLossFunction(K));
 
             RFit rr = tree.fit(train, true);

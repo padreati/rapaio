@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.regressor.tree;
+package rapaio.ml.regressor.ensemble;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -29,7 +29,7 @@ import rapaio.ml.classifier.Classifier;
 import rapaio.ml.regressor.AbstractRegression;
 import rapaio.ml.regressor.Regression;
 import rapaio.ml.regressor.RFit;
-import rapaio.ml.regressor.tree.rtree.RTree;
+import rapaio.ml.regressor.tree.RTree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +80,7 @@ public class RForest extends AbstractRegression {
     }
 
     @Override
-    public void learn(Frame df, Var weights, String... targetVarNames) {
+    public void train(Frame df, Var weights, String... targetVarNames) {
 
     }
 

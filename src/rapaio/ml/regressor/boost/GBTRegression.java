@@ -31,7 +31,7 @@ import rapaio.ml.regressor.Regression;
 import rapaio.ml.regressor.boost.gbt.BTRegression;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
 import rapaio.ml.regressor.simple.L2Regression;
-import rapaio.ml.regressor.tree.rtree.RTree;
+import rapaio.ml.regressor.tree.RTree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -129,7 +129,7 @@ public class GBTRegression extends AbstractRegression implements Regression {
     }
 
     @Override
-    public void learn(Frame df, Var weights, String... targetVarNames) {
+    public void train(Frame df, Var weights, String... targetVarNames) {
 
         prepareTraining(df, weights, targetVarNames);
 
@@ -140,7 +140,7 @@ public class GBTRegression extends AbstractRegression implements Regression {
         Var y = df.var(firstTargetName());
         Frame x = df.removeVars(new VarRange(firstTargetName()));
 
-        initRegression.learn(df, firstTargetName());
+        initRegression.train(df, firstTargetName());
         RFit initPred = initRegression.fit(df, false);
         trees = new ArrayList<>();
 
@@ -172,7 +172,7 @@ public class GBTRegression extends AbstractRegression implements Regression {
 
             // build regions
 
-            tree.learn(xmLearn, "target");
+            tree.train(xmLearn, "target");
 
             // fit residuals
 

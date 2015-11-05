@@ -53,7 +53,7 @@ public class OLSRegressionTest {
         Summary.printSummary(df);
 
         OLSRegression ols = new OLSRegression();
-        ols.learn(df, "Sales");
+        ols.train(df, "Sales");
         OLSRFit rr = ols.fit(df, true);
 
         rr.printSummary();

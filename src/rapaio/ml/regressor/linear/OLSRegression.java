@@ -59,7 +59,7 @@ public class OLSRegression extends AbstractRegression {
     }
 
     @Override
-    public void learn(Frame df, Var weights, String... targetVarNames) {
+    public void train(Frame df, Var weights, String... targetVarNames) {
         prepareTraining(df, weights, targetVarNames);
         if (targetNames().length == 0) {
             throw new IllegalArgumentException("OLS must specify at least one target variable name");

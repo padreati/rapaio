@@ -170,9 +170,9 @@ public interface Regression extends Printable, Serializable {
      * @param df         data set instances
      * @param targetVars target variables
      */
-    default void learn(Frame df, String... targetVars) {
+    default void train(Frame df, String... targetVars) {
         Numeric weights = Numeric.newFill(df.rowCount(), 1);
-        learn(df, weights, targetVars);
+        train(df, weights, targetVars);
     }
 
     /**
@@ -182,7 +182,7 @@ public interface Regression extends Printable, Serializable {
      * @param weights        instance weights
      * @param targetVarNames target variables
      */
-    void learn(Frame df, Var weights, String... targetVarNames);
+    void train(Frame df, Var weights, String... targetVarNames);
 
     default RFit fit(final Frame df) {
         return fit(df, true);

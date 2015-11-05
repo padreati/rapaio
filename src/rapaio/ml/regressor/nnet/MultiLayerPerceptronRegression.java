@@ -131,12 +131,12 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
     }
 
     @Override
-    public void learn(Frame df, Var weights, String... targetVarNames) {
+    public void train(Frame df, Var weights, String... targetVarNames) {
         prepareTraining(df, weights, targetVarNames);
 
         for (String varName : df.varNames()) {
             if (df.var(varName).type().isNominal()) {
-                throw new IllegalArgumentException("perceptrons can't learn nominal features");
+                throw new IllegalArgumentException("perceptrons can't train nominal features");
             }
         }
 
