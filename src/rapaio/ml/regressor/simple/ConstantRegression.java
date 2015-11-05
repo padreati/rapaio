@@ -34,6 +34,7 @@ import static rapaio.sys.WS.formatFlex;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
+@Deprecated
 public class ConstantRegression extends AbstractRegression {
 
     private static final long serialVersionUID = -2537862585258148528L;
