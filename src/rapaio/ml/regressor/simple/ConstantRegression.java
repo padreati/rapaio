@@ -26,22 +26,24 @@ package rapaio.ml.regressor.simple;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.regressor.AbstractRegression;
+import rapaio.ml.regressor.RFit;
 import rapaio.ml.regressor.Regression;
-import rapaio.ml.regressor.RegressionFit;
 
 import static rapaio.sys.WS.formatFlex;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public class ConstantRegression extends AbstractRegression {
 
-    double constantValue;
+    private static final long serialVersionUID = -2537862585258148528L;
+
+    double constant = Double.NaN;
 
     @Override
     public Regression newInstance() {
-        return new ConstantRegression();
+        return new ConstantRegression()
+                .withConstant(constant);
     }
 
     @Override
@@ -51,15 +53,17 @@ public class ConstantRegression extends AbstractRegression {
 
     @Override
     public String fullName() {
-        return String.format("ConstantRegression(constant=%s)", formatFlex(constantValue));
+        return String.format("ConstantRegression {\n" +
+                "   constant=%s\n" +
+                "}\n", formatFlex(constant));
     }
 
     public double constantValue() {
-        return constantValue;
+        return constant;
     }
 
-    public ConstantRegression withConstantValue(double customValue) {
-        this.constantValue = customValue;
+    public ConstantRegression withConstant(double customValue) {
+        this.constant = customValue;
         return this;
     }
 
@@ -69,12 +73,17 @@ public class ConstantRegression extends AbstractRegression {
     }
 
     @Override
-    public RegressionFit fit(final Frame df, final boolean withResiduals) {
-        RegressionFit pred = RegressionFit.newEmpty(this, df, withResiduals);
+    public RFit fit(final Frame df, final boolean withResiduals) {
+        RFit fit = RFit.newEmpty(this, df, withResiduals);
         for (String targetName : targetNames()) {
-            pred.addTarget(targetName);
+            fit.addTarget(targetName);
         }
-        pred.buildComplete();
-        return pred;
+        fit.buildComplete();
+        return fit;
+    }
+
+    @Override
+    public String summary() {
+        return fullName();
     }
 }

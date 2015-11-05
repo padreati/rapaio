@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
-public class RegressionFit implements Printable {
+public class RFit implements Printable {
     private final Regression model;
     private final Frame df;
     private final List<String> targetVars;
@@ -46,13 +46,13 @@ public class RegressionFit implements Printable {
 
     // builder
 
-    public static RegressionFit newEmpty(Regression model, Frame df, boolean withResiduals) {
-        return new RegressionFit(model, df, withResiduals);
+    public static RFit newEmpty(Regression model, Frame df, boolean withResiduals) {
+        return new RFit(model, df, withResiduals);
     }
 
     // private constructor
 
-    protected RegressionFit(final Regression model, final Frame df, final boolean withResiduals) {
+    protected RFit(final Regression model, final Frame df, final boolean withResiduals) {
         this.model = model;
         this.df = df;
         this.targetVars = new ArrayList<>();
@@ -62,7 +62,7 @@ public class RegressionFit implements Printable {
         this.residuals = new HashMap<>();
     }
 
-    public RegressionFit addTarget(String targetName) {
+    public RFit addTarget(String targetName) {
         targetVars.add(targetName);
         fit.put(targetName, Numeric.newEmpty(df.rowCount()).withName(targetName));
         if (withResiduals) {

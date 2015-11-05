@@ -28,7 +28,7 @@ import rapaio.data.Var;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.regressor.AbstractRegression;
 import rapaio.ml.regressor.Regression;
-import rapaio.ml.regressor.RegressionFit;
+import rapaio.ml.regressor.RFit;
 import rapaio.ml.regressor.tree.rtree.RTree;
 
 import java.util.ArrayList;
@@ -85,11 +85,16 @@ public class RForest extends AbstractRegression {
     }
 
     @Override
-    public RegressionFit fit(Frame df, boolean withResiduals) {
+    public RFit fit(Frame df, boolean withResiduals) {
         return null;
     }
 
     public enum Sampling {
         NONE, BOOTSTRAP, RANDOM
+    }
+
+    @Override
+    public String summary() {
+        throw new IllegalArgumentException("not implemented");
     }
 }

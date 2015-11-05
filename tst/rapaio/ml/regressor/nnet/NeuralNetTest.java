@@ -30,7 +30,7 @@
 //import rapaio.data.SolidFrame;
 //import rapaio.data.Var;
 //import rapaio.ml.regressor.Regression;
-//import rapaio.ml.regressor.RegressionFit;
+//import rapaio.ml.regressor.RFit;
 //import rapaio.ws.Summary;
 //
 //
@@ -70,7 +70,7 @@
 //        for (int i = 0; i < 1000; i++) {
 //            nn.train(df, "and");
 //        }
-//        RegressionFit pred = nn.fit(df);
+//        RFit pred = nn.fit(df);
 //
 //        Summary.lines(pred.fitFrame());
 //
@@ -94,7 +94,7 @@
 ////        for (int i = 0; i < 2000; i++) {
 ////            nn.train(df, "xor");
 ////        }
-////        RegressionFit rp = nn.fit(df);
+////        RFit rp = nn.fit(df);
 ////
 ////        Summary.printLines(rp.fitFrame());
 ////
@@ -139,7 +139,7 @@
 //        for (int i = 0; i < 10_000; i++) {
 //            nn.train(df, "xorA,xorB");
 //        }
-//        RegressionFit rp = nn.fit(df);
+//        RFit rp = nn.fit(df);
 //
 //        Assert.assertTrue(rp.fitFrame().var("xorA").value(0) < .5);
 //        Assert.assertTrue(rp.fitFrame().var("xorA").value(1) > .5);
@@ -171,7 +171,7 @@
 //            for (int j = 0; j < 4 * 2_000; j++) {
 //                nn.train(df, "xor");
 //            }
-//            RegressionFit rp = nn.fit(df);
+//            RFit rp = nn.fit(df);
 //            long stop = System.currentTimeMillis();
 //
 //            Assert.assertTrue(rp.firstFit().value(0) > .95);

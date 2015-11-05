@@ -26,8 +26,8 @@ package rapaio.ml.regressor.boost;
 import rapaio.core.SamplingTools;
 import rapaio.data.*;
 import rapaio.ml.regressor.AbstractRegression;
+import rapaio.ml.regressor.RFit;
 import rapaio.ml.regressor.Regression;
-import rapaio.ml.regressor.RegressionFit;
 import rapaio.ml.regressor.boost.gbt.BTRegression;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
 import rapaio.ml.regressor.simple.L2Regression;
@@ -141,7 +141,7 @@ public class GBTRegression extends AbstractRegression implements Regression {
         Frame x = df.removeVars(new VarRange(firstTargetName()));
 
         initRegression.learn(df, firstTargetName());
-        RegressionFit initPred = initRegression.fit(df, false);
+        RFit initPred = initRegression.fit(df, false);
         trees = new ArrayList<>();
 
         fitLearn = Numeric.newFill(df.rowCount());
@@ -188,7 +188,7 @@ public class GBTRegression extends AbstractRegression implements Regression {
 
             // add next prediction to the fit values
 
-            RegressionFit treePred = tree.fit(df, false);
+            RFit treePred = tree.fit(df, false);
             for (int j = 0; j < df.rowCount(); j++) {
                 fitLearn.setValue(j, fitLearn.value(j) + shrinkage * treePred.firstFit().value(j));
             }
@@ -205,23 +205,28 @@ public class GBTRegression extends AbstractRegression implements Regression {
     }
 
     @Override
-    public RegressionFit fit(final Frame df, final boolean withResiduals) {
-        RegressionFit pred = RegressionFit.newEmpty(this, df, withResiduals);
+    public RFit fit(final Frame df, final boolean withResiduals) {
+        RFit pred = RFit.newEmpty(this, df, withResiduals);
         for (String targetName : targetNames()) {
             pred.addTarget(targetName);
         }
 
-        RegressionFit initPred = initRegression.fit(df);
+        RFit initPred = initRegression.fit(df);
         for (int i = 0; i < df.rowCount(); i++) {
             pred.firstFit().setValue(i, initPred.firstFit().value(i));
         }
         for (BTRegression tree : trees) {
-            RegressionFit treePred = tree.fit(df);
+            RFit treePred = tree.fit(df);
             for (int i = 0; i < df.rowCount(); i++) {
                 pred.firstFit().setValue(i, pred.firstFit().value(i) + shrinkage * treePred.firstFit().value(i));
             }
         }
         pred.buildComplete();
         return pred;
+    }
+
+    @Override
+    public String summary() {
+        throw new IllegalArgumentException("not implemented");
     }
 }

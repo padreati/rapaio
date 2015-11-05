@@ -29,7 +29,7 @@ import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.regressor.RegressionFit;
+import rapaio.ml.regressor.RFit;
 import rapaio.ml.regressor.boost.gbt.BTRegression;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
 import rapaio.ml.regressor.tree.rtree.RTree;
@@ -208,7 +208,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
             tree.learn(bootTrain, bootWeights, "##tt##");
             tree.boostFit(bootX, bootR, bootR, new ClassifierLossFunction(K));
 
-            RegressionFit rr = tree.fit(train, true);
+            RFit rr = tree.fit(train, true);
 
             for (int i = 0; i < df.rowCount(); i++) {
                 f[i][k] += shrinkage * rr.firstFit().value(i);
@@ -228,7 +228,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
         for (int k = 0; k < K; k++) {
             List<BTRegression> predictors = trees.get(k);
             for (BTRegression tree : predictors) {
-                RegressionFit rr = tree.fit(df, false);
+                RFit rr = tree.fit(df, false);
                 for (int i = 0; i < df.rowCount(); i++) {
                     double p = cr.firstDensity().value(i, k + 1);
                     p += shrinkage * rr.firstFit().value(i);

@@ -27,7 +27,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.regressor.AbstractRegression;
-import rapaio.ml.regressor.RegressionFit;
+import rapaio.ml.regressor.RFit;
 import rapaio.ml.regressor.boost.gbt.BTRegression;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
 import rapaio.util.Pair;
@@ -185,8 +185,8 @@ public class RTree extends AbstractRegression implements BTRegression {
     }
 
     @Override
-    public RegressionFit fit(Frame df, boolean withResiduals) {
-        RegressionFit pred = RegressionFit.newEmpty(this, df, withResiduals).addTarget(firstTargetName());
+    public RFit fit(Frame df, boolean withResiduals) {
+        RFit pred = RFit.newEmpty(this, df, withResiduals).addTarget(firstTargetName());
 
         df.stream().forEach(spot -> {
             Pair<Double, Double> result = predictor.predict(this, spot, root);

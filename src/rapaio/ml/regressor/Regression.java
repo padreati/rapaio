@@ -184,7 +184,7 @@ public interface Regression extends Printable, Serializable {
      */
     void learn(Frame df, Var weights, String... targetVarNames);
 
-    default RegressionFit fit(final Frame df) {
+    default RFit fit(final Frame df) {
         return fit(df, true);
     }
 
@@ -194,7 +194,7 @@ public interface Regression extends Printable, Serializable {
      * @param df            data set instances
      * @param withResiduals if residuals will be computed or not
      */
-    RegressionFit fit(Frame df, boolean withResiduals);
+    RFit fit(Frame df, boolean withResiduals);
 
     /**
      * set the pool size for fork join tasks
@@ -254,8 +254,4 @@ public interface Regression extends Printable, Serializable {
      * @return self-instance of the model
      */
     Regression withRunningHook(BiConsumer<Regression, Integer> runningHook);
-
-    default String summary() {
-        throw new IllegalArgumentException("not implemented");
-    }
 }

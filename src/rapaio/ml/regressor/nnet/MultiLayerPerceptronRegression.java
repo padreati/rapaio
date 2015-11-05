@@ -27,8 +27,8 @@ import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.ml.regressor.AbstractRegression;
+import rapaio.ml.regressor.RFit;
 import rapaio.ml.regressor.Regression;
-import rapaio.ml.regressor.RegressionFit;
 
 import java.util.Arrays;
 
@@ -214,8 +214,8 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
     }
 
     @Override
-    public RegressionFit fit(final Frame df, final boolean withResiduals) {
-        RegressionFit pred = RegressionFit.newEmpty(this, df, withResiduals);
+    public RFit fit(final Frame df, final boolean withResiduals) {
+        RFit pred = RFit.newEmpty(this, df, withResiduals);
         for (String targetName : targetNames()) {
             pred.addTarget(targetName);
         }
@@ -245,6 +245,11 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
         }
         pred.buildComplete();
         return pred;
+    }
+
+    @Override
+    public String summary() {
+        throw new IllegalArgumentException("not implemented");
     }
 }
 

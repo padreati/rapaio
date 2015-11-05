@@ -70,14 +70,19 @@ public class OLSRegression extends AbstractRegression {
     }
 
     @Override
-    public OLSRegressionFit fit(Frame df) {
+    public OLSRFit fit(Frame df) {
         return fit(df, true);
     }
 
     @Override
-    public OLSRegressionFit fit(Frame df, boolean withResiduals) {
-        OLSRegressionFit rp = new OLSRegressionFit(this, df);
+    public OLSRFit fit(Frame df, boolean withResiduals) {
+        OLSRFit rp = new OLSRFit(this, df);
         rp.buildComplete();
         return rp;
+    }
+
+    @Override
+    public String summary() {
+        throw new IllegalArgumentException("not implemented");
     }
 }
