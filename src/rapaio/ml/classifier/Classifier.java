@@ -86,8 +86,42 @@ public interface Classifier extends Printable, Serializable {
      */
     FrameSampler sampler();
 
+    /**
+     * Filters which will be applied on input variables
+     * for various transformations, before the data is learned.
+     * <p>
+     * Thus, input variables learned by a model are not derived
+     * directly from the data frame used by removing target
+     * variables, but by pre-processing them with filters.
+     * <p>
+     * Filters will be applied always in sequence.
+     * The filtering process has the following steps:
+     * <p>
+     * <ol>
+     * <li>consider data frame as draft data frame</li>
+     * <li>take in order the filters from input filter list</li>
+     * <li>apply each filter to draft data frame and dessignate the result as draft data frame</li>
+     * <li>after all filters are executed designate draft data frame as the workable data frame</li>
+     * <li>parse all the target variable names from pattern strings and workable data frame</li>
+     * <li>collect all the variable names from workable data frame</li>
+     * <li>collect target variable names from the list of available variable names</li>
+     * <li>collect input variable as all the variables which are not considered target variables</li>
+     * </ol>
+     * <p>
+     * This algorithm is executed each time for {@link #train(Frame, Var, String...)},
+     * {@link #train(Frame, String...)}, {@link #fit(Frame)} and {@link #fit(Frame, boolean, boolean)} methods.
+     *
+     * @return list of filter to transform data into input variables.
+     */
     List<FFilter> inputFilters();
 
+    /**
+     * Specifies which filters will be used to transform data
+     * before learning and fitting.
+     *
+     * @param filters list of filters applied in chain
+     * @return self instance
+     */
     Classifier withInputFilters(FFilter... filters);
 
     /**

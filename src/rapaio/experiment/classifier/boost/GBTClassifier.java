@@ -112,14 +112,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
     }
 
     @Override
-    public GBTClassifier train(Frame dfOld, Var weights, String... targetVarNames) {
-        Frame df = prepareTraining(dfOld, weights, targetVarNames);
-        if (targetNames().length != 1) {
-            throw new IllegalArgumentException("This classifier accepts one and only one target variable.");
-        }
-        if (runs() <= 0) {
-            throw new IllegalArgumentException("runs parameter must be greater than 0");
-        }
+    public boolean coreTrain(Frame df, Var weights) {
 
         // algorithm described by ESTL pag. 387
 
@@ -133,37 +126,8 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
         for (int m = 0; m < runs(); m++) {
             buildAdditionalTree(df, weights);
         }
-        return this;
+        return true;
     }
-
-/*
-    @Override
-    public void learnFurther(int runs, Frame df, Var weights, String... targetVarNames) {
-        if (targetNames() == null) {
-            withRuns(runs);
-            train(df, weights, targetVarNames);
-            return;
-        }
-
-        if (runs <= 0) {
-            throw new IllegalArgumentException("runs parameter must be greater than 0");
-        }
-        if (this.runs >= runs) {
-            throw new IllegalArgumentException("runs parameter must be greater than the current runs learned");
-        }
-        if (f.length != df.rowCount()) {
-            throw new IllegalArgumentException("train further called for different frame");
-        }
-
-        // algorithm described by ESTL pag. 387
-
-        for (int m = this.runs; m < runs; m++) {
-            buildAdditionalTree(df, weights);
-        }
-        this.runs = runs;
-
-    }
-    */
 
     private void buildAdditionalTree(Frame df, Var weights) {
 
@@ -219,7 +183,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
     }
 
     @Override
-    public CFit fit(Frame df, boolean withClasses, boolean withDistributions) {
+    public CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
         CFit cr = CFit.newEmpty(this, df, withClasses, withDistributions);
         for (String targetName : targetNames()) {
             cr.addTarget(targetName, targetLevels().get(targetName));
@@ -286,6 +250,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 @Deprecated
 class ClassifierLossFunction implements GBTLossFunction {
 
+    private static final long serialVersionUID = -2622054975826334290L;
     private final double K;
 
     public ClassifierLossFunction(int K) {

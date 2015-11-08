@@ -74,7 +74,8 @@ public class NaiveBayes extends AbstractClassifier {
         return new NaiveBayes()
                 .withNumEstimator(numEstimator)
                 .withNomEstimator(nomEstimator)
-                .withLaplaceSmoother(laplaceSmoother);
+                .withLaplaceSmoother(laplaceSmoother)
+                .withPriorSupplier(priorSupplier);
     }
 
     @Override
@@ -124,9 +125,7 @@ public class NaiveBayes extends AbstractClassifier {
     }
 
     @Override
-    public NaiveBayes train(Frame df, Var weights, String... targetVarNames) {
-
-        prepareTraining(df, weights, targetVarNames);
+    public boolean coreTrain(Frame df, Var weights) {
 
         // build priors
 
@@ -156,11 +155,11 @@ public class NaiveBayes extends AbstractClassifier {
                     }
                 });
         logger.config("learning phase finished");
-        return this;
+        return true;
     }
 
     @Override
-    public CFit fit(Frame df, final boolean withClasses, final boolean withDensities) {
+    public CFit coreFit(Frame df, final boolean withClasses, final boolean withDensities) {
 
         logger.config("start fitting values...");
 

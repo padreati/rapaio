@@ -129,13 +129,7 @@ public class BinaryLogistic extends AbstractClassifier {
     }
 
     @Override
-    public BinaryLogistic train(Frame dfOld, Var weights, String... targetVarNames) {
-        Frame df = prepareTraining(dfOld, weights, targetVarNames);
-
-        if (df.stream().complete().count() != df.rowCount()) {
-            throw new IllegalArgumentException("Incomplete data set is not allowed in binary logistic");
-        }
-
+    public boolean coreTrain(Frame df, Var weights) {
         List<Var> inputs = new ArrayList<>(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
             Numeric line = Numeric.newEmpty();
@@ -150,16 +144,11 @@ public class BinaryLogistic extends AbstractClassifier {
         IRLSOptimizer optimizer = new IRLSOptimizer();
 
         coef = optimizer.optimize(tol, maxRuns, logitF, logitFD, coef, inputs, targetValues);
-        return this;
+        return true;
     }
 
     @Override
-    public CFit fit(Frame dfOld, boolean withClasses, boolean withDistributions) {
-        if (!hasLearned())
-            throw new IllegalArgumentException("Model has not yet been trained");
-
-        Frame df = prepareFit(dfOld);
-
+    public CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
         CFit cr = CFit.newEmpty(this, df, withClasses, withDistributions);
         cr.addTarget(firstTargetName(), firstTargetLevels());
 

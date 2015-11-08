@@ -112,7 +112,7 @@ public abstract class AbstractClassifier implements Classifier {
 
     /**
      * This method is prepares learning phase. It is a generic method which works
-     * for all learners. It's taks includes initialization of target names,
+     * for all learners. It's tass includes initialization of target names,
      * input names, check the capabilities at learning phase, etc.
      *
      * @param dfOld      data frame
@@ -141,9 +141,23 @@ public abstract class AbstractClassifier implements Classifier {
         this.inputTypes = inputs.stream().map(name -> result.var(name).type()).toArray(VarType[]::new);
 
         capabilities().checkAtLearnPhase(result, weights, targetVars);
-        learned = true;
         return result;
     }
+
+    @Override
+    public final Classifier train(Frame df, Var weights, String... targetVars) {
+        BaseTrainSetup setup = baseTrain(df, weights, targetVars);
+        Frame workDf = prepareTraining(setup.df, setup.w, setup.targetVars);
+        learned = coreTrain(workDf, setup.w);
+        return this;
+    }
+
+    // by default do nothing, it is only for two stage training
+    protected BaseTrainSetup baseTrain(Frame df, Var weights, String... targetVars) {
+        return BaseTrainSetup.valueOf(df, weights, targetVars);
+    }
+
+    protected abstract boolean coreTrain(Frame df, Var weights);
 
     public Frame prepareFit(Frame df) {
         Frame result = df;
@@ -152,6 +166,20 @@ public abstract class AbstractClassifier implements Classifier {
         }
         return result;
     }
+
+    @Override
+    public final CFit fit(Frame df, boolean withClasses, boolean withDistributions) {
+        BaseFitSetup setup = baseFit(df, withClasses, withDistributions);
+        Frame workDf = prepareFit(setup.df);
+        return coreFit(workDf, setup.withClasses, setup.withDistributions);
+    }
+
+    // by default do nothing, it is only for two stage training
+    protected BaseFitSetup baseFit(Frame df, boolean withClasses, boolean withDistributions) {
+        return BaseFitSetup.valueOf(df, withClasses, withDistributions);
+    }
+
+    protected abstract CFit coreFit(Frame df, boolean withClasses, boolean withDistributions);
 
     @Override
     public String summary() {
@@ -214,5 +242,38 @@ public abstract class AbstractClassifier implements Classifier {
     public Classifier withRunningHook(BiConsumer<Classifier, Integer> runningHook) {
         this.runningHook = runningHook;
         return this;
+    }
+
+    protected static class BaseTrainSetup {
+        public final Frame df;
+        public final Var w;
+        public final String[] targetVars;
+
+        private BaseTrainSetup(Frame df, Var w, String[] targetVars) {
+            this.df = df;
+            this.w = w;
+            this.targetVars = targetVars;
+        }
+
+        public static BaseTrainSetup valueOf(Frame df, Var w, String[] targetVars) {
+            return new BaseTrainSetup(df, w, targetVars);
+        }
+    }
+
+    protected static final class BaseFitSetup {
+
+        public final Frame df;
+        public final boolean withClasses;
+        public final boolean withDistributions;
+
+        private BaseFitSetup(Frame df, boolean withClasses, boolean withDistributions) {
+            this.df = df;
+            this.withClasses = withClasses;
+            this.withDistributions = withDistributions;
+        }
+
+        public static BaseFitSetup valueOf(Frame df, boolean withClasses, boolean withDistributions) {
+            return new BaseFitSetup(df, withClasses, withDistributions);
+        }
     }
 }

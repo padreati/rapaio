@@ -31,6 +31,7 @@ import rapaio.data.stream.FSpot;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
+import rapaio.printer.Printable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,9 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
 @Deprecated
-public class SplitClassifier extends AbstractClassifier implements Classifier {
+public class SplitClassifier extends AbstractClassifier implements Printable {
+
+    private static final long serialVersionUID = 3332377951136731541L;
 
     boolean ignoreUncovered = true;
     List<Split> splits = new ArrayList<>();
@@ -80,8 +83,7 @@ public class SplitClassifier extends AbstractClassifier implements Classifier {
     }
 
     @Override
-    public SplitClassifier train(Frame df, Var weights, String... targetVarNames) {
-        prepareTraining(df, weights, targetVarNames);
+    public boolean coreTrain(Frame df, Var weights) {
         if (splits.isEmpty()) {
             throw new IllegalArgumentException("No splits defined");
         }
@@ -115,11 +117,11 @@ public class SplitClassifier extends AbstractClassifier implements Classifier {
             split.classifier.withRuns(runs());
             split.classifier.train(frames.get(i), weightList.get(i), targetNames());
         }
-        return this;
+        return true;
     }
 
     @Override
-    public CFit fit(Frame df, boolean withClasses, boolean withDensities) {
+    public CFit coreFit(Frame df, boolean withClasses, boolean withDensities) {
 
         CFit pred = CFit.newEmpty(this, df, withClasses, withDensities);
         for (String targetVar : targetNames()) {

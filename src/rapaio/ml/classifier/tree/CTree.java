@@ -276,9 +276,8 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    public CTree train(Frame dfOld, Var weights, String... targetVars) {
+    public boolean coreTrain(Frame df, Var weights) {
 
-        Frame df = prepareTraining(dfOld, weights, targetVars);
         additionalValidation(df);
 
         this.varSelector.withVarNames(inputNames());
@@ -292,7 +291,7 @@ public class CTree extends AbstractClassifier {
         }
         this.root.fillId(1);
         pruning.get().prune(this, (pruningDf == null) ? df : pruningDf, false);
-        return this;
+        return true;
     }
 
     public void prune(Frame df) {
@@ -304,7 +303,7 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    public CFit fit(Frame dfOld, boolean withClasses, boolean withDensities) {
+    public CFit coreFit(Frame dfOld, boolean withClasses, boolean withDensities) {
 
         Frame df = prepareFit(dfOld);
         CFit prediction = CFit.newEmpty(this, df, withClasses, withDensities);
@@ -439,7 +438,7 @@ public class CTree extends AbstractClassifier {
         if (node.isLeaf()) {
             sb.append("*");
         } else {
-            sb.append("[" + WS.formatFlex(node.getBestCandidate().getScore()) + "]");
+            sb.append("[").append(WS.formatFlex(node.getBestCandidate().getScore())).append("]");
         }
         sb.append("\n");
 

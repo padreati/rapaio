@@ -59,8 +59,8 @@ public class CTreeTest {
         String testName = root.getBestCandidate().getTestName();
         if ("petal-width".equals(testName)) {
             assertEquals("petal-width", root.getBestCandidate().getTestName());
-            assertEquals("petal-width <= 0.8", root.getBestCandidate().getGroupNames().get(0));
-            assertEquals("petal-width > 0.8", root.getBestCandidate().getGroupNames().get(1));
+            assertEquals("petal-width <= 2.45", root.getBestCandidate().getGroupNames().get(0));
+            assertEquals("petal-width > 2.45", root.getBestCandidate().getGroupNames().get(1));
         } else {
             assertEquals("petal-length", root.getBestCandidate().getTestName());
             assertEquals("petal-length <= 2.45", root.getBestCandidate().getGroupNames().get(0));
@@ -83,9 +83,9 @@ public class CTreeTest {
         candidate.addGroup("test <= 0", s -> s.value("test") <= 0);
         candidate.addGroup("test > 0", s -> s.value("test") > 0);
 
-        assertEquals(-1, candidate.compareTo(new CTree.Candidate(2, "test")));
-        assertEquals(1, candidate.compareTo(new CTree.Candidate(-2, "test")));
-        assertEquals(1, candidate.compareTo(new CTree.Candidate(0.5, "test")));
+        assertEquals(1, candidate.compareTo(new CTree.Candidate(2, "test")));
+        assertEquals(-1, candidate.compareTo(new CTree.Candidate(-2, "test")));
+        assertEquals(-1, candidate.compareTo(new CTree.Candidate(0.5, "test")));
 
         try {
             candidate.addGroup("test <= 0", s -> true);

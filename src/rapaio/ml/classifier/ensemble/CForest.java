@@ -258,9 +258,7 @@ public class CForest extends AbstractClassifier {
     }
 
     @Override
-    public CForest train(Frame dfOld, Var weights, String... targetVarNames) {
-
-        Frame df = prepareTraining(dfOld, weights, targetVarNames);
+    public boolean coreTrain(Frame df, Var weights) {
 
         double totalOobInstances = 0;
         double totalOobError = 0;
@@ -331,7 +329,7 @@ public class CForest extends AbstractClassifier {
                 }
             }
         }
-        return this;
+        return true;
     }
 
     private void permVICompute(Frame df, Pair<Classifier, List<Integer>> weak) {
@@ -368,15 +366,6 @@ public class CForest extends AbstractClassifier {
             if (!permVIMap.containsKey(varName)) {
                 permVIMap.put(varName, new ArrayList<>());
             }
-
-//            double gain = 0;
-//            for (int i = 0; i < oobFrame.rowCount(); i++) {
-//                if (oobFrame.var(firstTargetName()).index(i) == fit.firstClasses().index(i) &&
-//                        fit.firstClasses().index(i) == pfit.firstClasses().index(i)) {
-//                    gain++;
-//                }
-//            }
-
             permVIMap.get(varName).add(refScore - acc);
         }
     }
@@ -472,9 +461,7 @@ public class CForest extends AbstractClassifier {
     }
 
     @Override
-    public CFit fit(Frame dfOld, boolean withClasses, boolean withDensities) {
-
-        Frame df = prepareFit(dfOld);
+    public CFit coreFit(Frame df, boolean withClasses, boolean withDensities) {
         CFit cp = CFit.newEmpty(this, df, true, true);
         cp.addTarget(firstTargetName(), firstTargetLevels());
 

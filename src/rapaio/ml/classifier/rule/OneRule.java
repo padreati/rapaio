@@ -86,9 +86,7 @@ public class OneRule extends AbstractClassifier {
     }
 
     @Override
-    public OneRule train(Frame df, Var weights, String... targetVarNames) {
-        prepareTraining(df, weights, targetVarNames);
-
+    public boolean coreTrain(Frame df, Var weights) {
         bestRuleSet = null;
         for (String testCol : inputNames()) {
             RuleSet ruleSet;
@@ -107,11 +105,11 @@ public class OneRule extends AbstractClassifier {
                 bestRuleSet = ruleSet;
             }
         }
-        return this;
+        return true;
     }
 
     @Override
-    public CFit fit(final Frame test, final boolean withClasses, final boolean withDensities) {
+    public CFit coreFit(final Frame test, final boolean withClasses, final boolean withDensities) {
         CFit pred = CFit.newEmpty(this, test, withClasses, withDensities);
         pred.addTarget(firstTargetName(), firstTargetLevels());
 

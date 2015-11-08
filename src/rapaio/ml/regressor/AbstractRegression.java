@@ -24,6 +24,7 @@
 package rapaio.ml.regressor;
 
 import rapaio.data.VarType;
+import rapaio.data.filter.FFilter;
 import rapaio.data.sample.FrameSampler;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -54,6 +55,17 @@ public abstract class AbstractRegression implements Regression {
     private int poolSize = Runtime.getRuntime().availableProcessors();
     private int runs = 1;
     private BiConsumer<Regression, Integer> runningHook;
+
+
+    @Override
+    public List<FFilter> inputFilters() {
+        return null;
+    }
+
+    @Override
+    public Regression withInputFilters(FFilter... filters) {
+        return null;
+    }
 
     @Override
     public String[] inputNames() {

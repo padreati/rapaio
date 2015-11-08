@@ -44,7 +44,7 @@ import java.util.List;
  * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class AdaBoostSAMME extends AbstractClassifier implements Classifier {
+public class AdaBoostSAMME extends AbstractClassifier {
 
     private static final long serialVersionUID = -9154973036108114765L;
     final double delta_error = 10e-10;
@@ -119,9 +119,7 @@ public class AdaBoostSAMME extends AbstractClassifier implements Classifier {
     }
 
     @Override
-    public AdaBoostSAMME train(Frame df, Var weights, String... targetVars) {
-
-        prepareTraining(df, weights, targetVars);
+    public boolean coreTrain(Frame df, Var weights) {
 
         k = firstTargetLevels().length - 1;
 
@@ -141,7 +139,7 @@ public class AdaBoostSAMME extends AbstractClassifier implements Classifier {
                 runningHook().accept(this, i);
             }
         }
-        return this;
+        return true;
     }
 
     private boolean learnRound(Frame df) {
@@ -185,7 +183,7 @@ public class AdaBoostSAMME extends AbstractClassifier implements Classifier {
     }
 
     @Override
-    public CFit fit(Frame df, boolean withClasses, boolean withDistributions) {
+    public CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
         CFit p = CFit.newEmpty(this, df, withClasses, true);
         p.addTarget(firstTargetName(), firstTargetLevels());
 
