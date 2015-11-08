@@ -58,6 +58,7 @@ is considered to be fully implemented and well tested.
   * split: numeric binary, nominal binary, nominal full
   * missing value handling: ignore, random, majority, weighted
   * reduced-error pruning
+  * variable importance: frequency, gain and permutation based
 * Ensemble: CForest - Bagging, Random Forests
 * Boosting: AdaBoost.SAMME
 * SVM: BinarySMO (Platt)
