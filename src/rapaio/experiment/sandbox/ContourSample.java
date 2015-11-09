@@ -41,7 +41,6 @@ import java.util.stream.IntStream;
 
 import static rapaio.sys.WS.draw;
 import static rapaio.sys.WS.setPrinter;
-import static rapaio.graphics.Plotter.color;
 import static rapaio.graphics.Plotter.lwd;
 
 /**

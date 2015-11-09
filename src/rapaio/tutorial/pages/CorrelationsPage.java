@@ -37,7 +37,6 @@ import java.net.URISyntaxException;
 
 import static rapaio.sys.WS.*;
 import static rapaio.graphics.Plotter.plot;
-import static rapaio.graphics.Plotter.pch;
 import static rapaio.ws.Summary.printNames;
 import static rapaio.ws.Summary.printSummary;
 

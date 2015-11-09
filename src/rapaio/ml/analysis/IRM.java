@@ -23,7 +23,6 @@
 
 package rapaio.ml.analysis;
 
-import rapaio.core.RandomSource;
 import rapaio.core.distributions.Uniform;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
@@ -34,7 +33,6 @@ import rapaio.ml.common.distance.Distance;
 import rapaio.util.Tag;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 /**
  * Iterative re-weighting map

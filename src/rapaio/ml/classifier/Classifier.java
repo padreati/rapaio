@@ -29,7 +29,6 @@ import rapaio.data.sample.FrameSampler;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
 import rapaio.data.Var;
 
 import java.io.Serializable;
@@ -244,10 +243,7 @@ public interface Classifier extends Printable, Serializable {
      * @param df         data set instances
      * @param targetVars target variables
      */
-    default Classifier train(Frame df, String... targetVars) {
-        Numeric weights = Numeric.newFill(df.rowCount(), 1);
-        return train(df, weights, targetVars);
-    }
+    Classifier train(Frame df, String... targetVars);
 
     /**
      * Fit a classifier on instances specified by frame, with row weights and targetVars
@@ -264,9 +260,7 @@ public interface Classifier extends Printable, Serializable {
      *
      * @param df data set instances
      */
-    default CFit fit(Frame df) {
-        return fit(df, true, true);
-    }
+    CFit fit(Frame df);
 
     /**
      * Predict classes for given instances, generating classes if specified and

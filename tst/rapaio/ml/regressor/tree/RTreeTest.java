@@ -26,7 +26,6 @@ package rapaio.ml.regressor.tree;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.Plotter;
 import rapaio.ml.eval.RMSE;
 import rapaio.ml.regressor.RFit;
 import rapaio.printer.IdeaPrinter;
@@ -36,7 +35,6 @@ import java.awt.*;
 import java.io.IOException;
 
 import static rapaio.graphics.Plotter.*;
-import static rapaio.sys.WS.draw;
 
 /**
  * Test for regression decision trees

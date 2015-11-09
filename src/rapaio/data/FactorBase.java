@@ -235,8 +235,8 @@ public abstract class FactorBase extends AbstractVar {
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.writeInt(rowCount());
         out.writeInt(dict.size());
-        for (int i = 0; i < dict.size(); i++) {
-            out.writeUTF(dict.get(i));
+        for (String factor : dict) {
+            out.writeUTF(factor);
         }
         for (int i = 0; i < rowCount(); i++) {
             out.writeInt(data[i]);

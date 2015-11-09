@@ -23,9 +23,6 @@
 
 package rapaio.math.linear;
 
-import rapaio.math.linear.impl.MappedRM;
-import rapaio.math.linear.impl.MappedRowRV;
-import rapaio.math.linear.impl.SolidRM;
 import rapaio.math.linear.impl.SolidRV;
 
 /**

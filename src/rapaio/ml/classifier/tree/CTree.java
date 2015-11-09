@@ -276,7 +276,7 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    public boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreTrain(Frame df, Var weights) {
 
         additionalValidation(df);
 
@@ -303,7 +303,7 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    public CFit coreFit(Frame dfOld, boolean withClasses, boolean withDensities) {
+    protected CFit coreFit(Frame dfOld, boolean withClasses, boolean withDensities) {
 
         Frame df = prepareFit(dfOld);
         CFit prediction = CFit.newEmpty(this, df, withClasses, withDensities);
@@ -321,7 +321,7 @@ public class CTree extends AbstractClassifier {
         return prediction;
     }
 
-    public Pair<Integer, DVector> fitPoint(CTree tree, FSpot spot, Node node) {
+    protected Pair<Integer, DVector> fitPoint(CTree tree, FSpot spot, Node node) {
         if (node.getCounter().sum(false) == 0)
             if (node.getParent() == null) {
                 throw new RuntimeException("Something bad happened at learning time");

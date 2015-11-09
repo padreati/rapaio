@@ -23,20 +23,15 @@
 
 package rapaio.experiment;
 
-import rapaio.data.Frame;
 import rapaio.data.Numeric;
-import rapaio.datasets.Datasets;
-import rapaio.graphics.Plotter;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
 
 import static rapaio.graphics.Plotter.lines;
-import static rapaio.graphics.Plotter.plot;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/26/15.

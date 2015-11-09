@@ -30,8 +30,6 @@ import rapaio.data.filter.VFSort;
 import rapaio.graphics.Plotter;
 import rapaio.graphics.opt.GOpt;
 
-import static rapaio.graphics.Plotter.color;
-
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */

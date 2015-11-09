@@ -101,8 +101,7 @@ public interface RTreeNominalMethod extends Serializable {
                 RTreeCandidate candidate = new RTreeCandidate(value, testColName);
                 if (best == null) {
                     best = candidate;
-                    for (int j = 0; j < labels.size(); j++) {
-                        String label = labels.get(j);
+                    for (String label : labels) {
                         best.addGroup(testColName + " == " + label, spot -> spot.label(testColName).equals(label));
                     }
                 } else {
@@ -110,8 +109,7 @@ public interface RTreeNominalMethod extends Serializable {
                     if (comp < 0) continue;
                     if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
                     best = candidate;
-                    for (int j = 0; j < labels.size(); j++) {
-                        String label = labels.get(j);
+                    for (String label : labels) {
                         best.addGroup(testColName + " == " + label, spot -> spot.label(testColName).equals(label));
                     }
                 }

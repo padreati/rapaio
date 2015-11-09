@@ -28,7 +28,6 @@ import rapaio.data.Var;
 import rapaio.ml.classifier.bayes.NaiveBayes;
 
 import java.io.Serializable;
-import java.util.Set;
 
 /**
  * Nominal variable probability estimator

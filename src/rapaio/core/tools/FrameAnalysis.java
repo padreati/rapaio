@@ -93,9 +93,7 @@ public class FrameAnalysis {
                 double[][] h = new double[][]{h1v, h2v};
                 switch (var.type()) {
                     case BINARY:
-                        var.stream().complete().forEach(s -> {
-                            h[target.index(s.row()) - 1][s.index()]++;
-                        });
+                        var.stream().complete().forEach(s -> h[target.index(s.row()) - 1][s.index()]++);
                         break;
                     case INDEX:
                     case NUMERIC:

@@ -200,7 +200,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     }
 
     @Override
-    public boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreTrain(Frame df, Var weights) {
 
         // process classes
 
@@ -445,7 +445,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
 
     @Override
-    public CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
+    protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
         CFit cr = CFit.newEmpty(this, df, withClasses, withDistributions);
         cr.addTarget(firstTargetName(), firstTargetLevels());
 
@@ -477,7 +477,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     /**
      * Computes SVM output for given instance.
      */
-    public double predict(Frame df, int row) {
+    protected double predict(Frame df, int row) {
 
         double result = 0;
 

@@ -32,13 +32,10 @@ import rapaio.data.Nominal;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 
-import java.util.stream.IntStream;
-
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static rapaio.core.CoreTools.*;
 import static rapaio.data.filter.Filters.*;
-import static rapaio.sys.WS.draw;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/21/15.

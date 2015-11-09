@@ -23,10 +23,6 @@
 
 package rapaio.data;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 /**
  * Base abstract class for a frame, which provides behavior for the utility
  * access methods based on row and column indexes.

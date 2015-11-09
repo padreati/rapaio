@@ -23,10 +23,7 @@
 
 package rapaio.ml.classifier;
 
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarRange;
-import rapaio.data.VarType;
+import rapaio.data.*;
 import rapaio.data.filter.FFilter;
 import rapaio.data.sample.FrameSampler;
 import rapaio.printer.format.TextTable;
@@ -110,6 +107,20 @@ public abstract class AbstractClassifier implements Classifier {
         return learned;
     }
 
+    @Override
+    public final Classifier train(Frame df, String... targetVars) {
+        Numeric weights = Numeric.newFill(df.rowCount(), 1);
+        return train(df, weights, targetVars);
+    }
+
+    @Override
+    public final Classifier train(Frame df, Var weights, String... targetVars) {
+        BaseTrainSetup setup = baseTrain(df, weights, targetVars);
+        Frame workDf = prepareTraining(setup.df, setup.w, setup.targetVars);
+        learned = coreTrain(workDf, setup.w);
+        return this;
+    }
+
     /**
      * This method is prepares learning phase. It is a generic method which works
      * for all learners. It's tass includes initialization of target names,
@@ -119,11 +130,7 @@ public abstract class AbstractClassifier implements Classifier {
      * @param weights    weights of instances
      * @param targetVars target variable names
      */
-    public Frame prepareTraining(Frame dfOld, final Var weights, final String... targetVars) {
-
-        if (targetVars.length == 0) {
-            throw new IllegalArgumentException("At least a target var name should be specified at learning time.");
-        }
+    protected Frame prepareTraining(Frame dfOld, final Var weights, final String... targetVars) {
         Frame df = dfOld;
         for (FFilter filter : inputFilters) {
             df = filter.filter(df);
@@ -144,27 +151,15 @@ public abstract class AbstractClassifier implements Classifier {
         return result;
     }
 
-    @Override
-    public final Classifier train(Frame df, Var weights, String... targetVars) {
-        BaseTrainSetup setup = baseTrain(df, weights, targetVars);
-        Frame workDf = prepareTraining(setup.df, setup.w, setup.targetVars);
-        learned = coreTrain(workDf, setup.w);
-        return this;
-    }
-
-    // by default do nothing, it is only for two stage training
     protected BaseTrainSetup baseTrain(Frame df, Var weights, String... targetVars) {
         return BaseTrainSetup.valueOf(df, weights, targetVars);
     }
 
     protected abstract boolean coreTrain(Frame df, Var weights);
 
-    public Frame prepareFit(Frame df) {
-        Frame result = df;
-        for (FFilter filter : inputFilters) {
-            result = filter.apply(result);
-        }
-        return result;
+    @Override
+    public final CFit fit(Frame df) {
+        return fit(df, true, true);
     }
 
     @Override
@@ -177,6 +172,14 @@ public abstract class AbstractClassifier implements Classifier {
     // by default do nothing, it is only for two stage training
     protected BaseFitSetup baseFit(Frame df, boolean withClasses, boolean withDistributions) {
         return BaseFitSetup.valueOf(df, withClasses, withDistributions);
+    }
+
+    protected Frame prepareFit(Frame df) {
+        Frame result = df;
+        for (FFilter filter : inputFilters) {
+            result = filter.apply(result);
+        }
+        return result;
     }
 
     protected abstract CFit coreFit(Frame df, boolean withClasses, boolean withDistributions);

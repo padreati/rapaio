@@ -34,7 +34,6 @@ import java.awt.*;
 import java.util.Arrays;
 
 import static rapaio.graphics.Plotter.bins;
-import static rapaio.graphics.Plotter.color;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

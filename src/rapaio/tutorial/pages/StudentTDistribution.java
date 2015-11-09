@@ -32,7 +32,6 @@ import java.io.IOException;
 import static rapaio.sys.WS.*;
 import static rapaio.graphics.Plotter.funLine;
 import static rapaio.graphics.Plotter.plot;
-import static rapaio.graphics.Plotter.color;
 
 /**
  * @author Aurelian Tutuianu

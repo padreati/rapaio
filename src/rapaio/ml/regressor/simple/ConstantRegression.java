@@ -25,6 +25,8 @@ package rapaio.ml.regressor.simple;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.VarType;
+import rapaio.ml.common.Capabilities;
 import rapaio.ml.regressor.AbstractRegression;
 import rapaio.ml.regressor.RFit;
 import rapaio.ml.regressor.Regression;
@@ -59,6 +61,18 @@ public class ConstantRegression extends AbstractRegression {
                 "}\n", formatFlex(constant));
     }
 
+    @Override
+    public Capabilities capabilities() {
+        return new Capabilities()
+                .withLearnType(Capabilities.LearnType.REGRESSION)
+                .withInputCount(0, 1_000_000)
+                .withTargetCount(1, 1)
+                .withInputTypes(VarType.NUMERIC, VarType.ORDINAL, VarType.BINARY, VarType.INDEX, VarType.NOMINAL, VarType.STAMP, VarType.TEXT)
+                .withTargetTypes(VarType.NUMERIC)
+                .withAllowMissingInputValues(true)
+                .withAllowMissingTargetValues(true);
+    }
+
     public double constantValue() {
         return constant;
     }
@@ -69,12 +83,12 @@ public class ConstantRegression extends AbstractRegression {
     }
 
     @Override
-    public void train(Frame df, Var weights, String... targetVarNames) {
-        prepareTraining(df, weights, targetVarNames);
+    protected boolean coreTrain(Frame df, Var weights) {
+        return true;
     }
 
     @Override
-    public RFit fit(final Frame df, final boolean withResiduals) {
+    protected RFit coreFit(final Frame df, final boolean withResiduals) {
         RFit fit = RFit.newEmpty(this, df, withResiduals);
         for (String targetName : targetNames()) {
             fit.addTarget(targetName);

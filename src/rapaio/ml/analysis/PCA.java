@@ -31,8 +31,6 @@ import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.printer.Printable;
-import rapaio.sys.WS;
-import rapaio.util.Pair;
 
 import java.util.Arrays;
 import java.util.HashSet;

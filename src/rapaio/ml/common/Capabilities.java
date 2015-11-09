@@ -260,7 +260,8 @@ public class Capabilities implements Printable {
     public enum LearnType {
         UNARY_CLASSIFIER,
         BINARY_CLASSIFIER,
-        MULTICLASS_CLASSIFIER
+        MULTICLASS_CLASSIFIER,
+        REGRESSION
     }
 
     public LearnType getLearnType() {

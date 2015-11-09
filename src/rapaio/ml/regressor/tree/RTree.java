@@ -25,6 +25,8 @@ package rapaio.ml.regressor.tree;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.VarType;
+import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.regressor.AbstractRegression;
 import rapaio.ml.regressor.RFit;
@@ -87,11 +89,6 @@ public class RTree extends AbstractRegression implements BTRegression {
     }
 
     @Override
-    public void boostFit(Frame x, Var y, Var fx, GBTLossFunction lossFunction) {
-        root.boostFit(x, y, fx, lossFunction);
-    }
-
-    @Override
     public BTRegression newInstance() {
         return new RTree()
                 .withMinCount(minCount)
@@ -125,6 +122,23 @@ public class RTree extends AbstractRegression implements BTRegression {
         sb.append("  predictor=").append(predictor.name()).append("\n");
         sb.append("}");
         return sb.toString();
+    }
+
+    @Override
+    public Capabilities capabilities() {
+        return new Capabilities()
+                .withLearnType(Capabilities.LearnType.REGRESSION)
+                .withInputCount(1, 1_000_000)
+                .withTargetCount(1, 1)
+                .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NUMERIC, VarType.ORDINAL, VarType.NOMINAL)
+                .withTargetTypes(VarType.NUMERIC)
+                .withAllowMissingInputValues(true)
+                .withAllowMissingTargetValues(false);
+    }
+
+    @Override
+    public void boostFit(Frame x, Var y, Var fx, GBTLossFunction lossFunction) {
+        root.boostFit(x, y, fx, lossFunction);
     }
 
     public RTree withVarSelector(VarSelector varSelector) {
@@ -163,9 +177,7 @@ public class RTree extends AbstractRegression implements BTRegression {
     }
 
     @Override
-    public void train(Frame df, Var weights, String... targetVarNames) {
-
-        prepareTraining(df, weights, targetVarNames);
+    protected boolean coreTrain(Frame df, Var weights) {
 
         if (targetNames().length == 0) {
             throw new IllegalArgumentException("tree classifier must specify a target variable");
@@ -179,10 +191,11 @@ public class RTree extends AbstractRegression implements BTRegression {
         root = new RTreeNode(null, "root", spot -> true);
         this.varSelector.withVarNames(inputNames());
         root.learn(this, df, weights, maxDepth < 0 ? Integer.MAX_VALUE : maxDepth);
+        return true;
     }
 
     @Override
-    public RFit fit(Frame df, boolean withResiduals) {
+    protected RFit coreFit(Frame df, boolean withResiduals) {
         RFit pred = RFit.newEmpty(this, df, withResiduals).addTarget(firstTargetName());
 
         df.stream().forEach(spot -> {

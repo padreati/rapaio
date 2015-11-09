@@ -52,7 +52,6 @@ import java.util.stream.IntStream;
 import static rapaio.sys.WS.*;
 import static rapaio.graphics.Plotter.plot;
 import static rapaio.graphics.Plotter.points;
-import static rapaio.graphics.Plotter.color;
 import static rapaio.graphics.Plotter.lwd;
 
 /**

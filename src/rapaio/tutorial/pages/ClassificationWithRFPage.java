@@ -42,7 +42,6 @@ import java.util.List;
 
 import static rapaio.sys.WS.*;
 import static rapaio.graphics.Plotter.plot;
-import static rapaio.graphics.Plotter.color;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

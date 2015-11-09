@@ -143,7 +143,7 @@ public class VarRange {
     }
 
     public List<String> parseInverseVarNames(Frame df) {
-        Set<Integer> indexes = new HashSet(parseVarIndexes(df));
+        Set<Integer> indexes = new HashSet<>(parseVarIndexes(df));
         return IntStream.range(0, df.varCount()).filter(i -> !indexes.contains(i)).boxed().map(i -> df.var(i).name()).collect(Collectors.toList());
     }
 }

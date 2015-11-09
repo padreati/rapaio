@@ -160,8 +160,11 @@ public class TutorialWebsiteGenerator {
 
     private static void deleteRoot(File root) {
         if (root.isDirectory()) {
-            for (File child : root.listFiles()) {
-                deleteRoot(child);
+            File[] children = root.listFiles();
+            if (children != null) {
+                for (File child : children) {
+                    deleteRoot(child);
+                }
             }
         }
         root.delete();

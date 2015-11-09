@@ -258,7 +258,7 @@ public class CForest extends AbstractClassifier {
     }
 
     @Override
-    public boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreTrain(Frame df, Var weights) {
 
         double totalOobInstances = 0;
         double totalOobError = 0;
@@ -461,7 +461,7 @@ public class CForest extends AbstractClassifier {
     }
 
     @Override
-    public CFit coreFit(Frame df, boolean withClasses, boolean withDensities) {
+    protected CFit coreFit(Frame df, boolean withClasses, boolean withDensities) {
         CFit cp = CFit.newEmpty(this, df, true, true);
         cp.addTarget(firstTargetName(), firstTargetLevels());
 

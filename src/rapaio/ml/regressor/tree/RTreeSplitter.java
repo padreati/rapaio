@@ -69,9 +69,7 @@ public interface RTreeSplitter extends Serializable {
                 }
             });
             List<Frame> frames = new ArrayList<>();
-            mappings.stream().forEach(mapping -> {
-                frames.add(MappedFrame.newByRow(df, mapping));
-            });
+            mappings.stream().forEach(mapping -> frames.add(MappedFrame.newByRow(df, mapping)));
             return new Pair<>(frames, weightsList);
         }
     };
@@ -119,9 +117,7 @@ public interface RTreeSplitter extends Serializable {
                 weightsList.get(index).addValue(weights.value(spot.row()));
             });
             List<Frame> frames = new ArrayList<>();
-            mappings.stream().forEach(mapping -> {
-                frames.add(MappedFrame.newByRow(df, mapping));
-            });
+            mappings.stream().forEach(mapping -> frames.add(MappedFrame.newByRow(df, mapping)));
             return new Pair<>(frames, weightsList);
         }
     };
@@ -171,8 +167,8 @@ public interface RTreeSplitter extends Serializable {
                 });
             }
             List<Frame> frames = new ArrayList<>();
-            for (int i = 0; i < mappings.size(); i++) {
-                frames.add(MappedFrame.newByRow(df, mappings.get(i)));
+            for (Mapping mapping : mappings) {
+                frames.add(MappedFrame.newByRow(df, mapping));
             }
             return new Pair<>(frames, weightsList);
         }

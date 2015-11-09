@@ -23,12 +23,11 @@
 
 package rapaio.ml.regressor;
 
+import rapaio.data.Frame;
+import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
 import rapaio.data.sample.FrameSampler;
-import rapaio.data.Frame;
-import rapaio.data.Numeric;
-import rapaio.data.Var;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
 
@@ -41,7 +40,7 @@ import java.util.function.BiConsumer;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
-public interface Regression extends Printable, Serializable {
+public interface Regression<T extends RFit> extends Printable, Serializable {
     /**
      * Creates a new regression instance with the same parameters as the original.
      * The fitted model and other artifacts are not replicated.
@@ -65,9 +64,7 @@ public interface Regression extends Printable, Serializable {
      *
      * @return capabilities of the learning algorithm
      */
-    default Capabilities capabilities() {
-        return new Capabilities();
-    }
+    Capabilities capabilities();
 
     /**
      * Filters which will be applied on input variables
@@ -90,9 +87,6 @@ public interface Regression extends Printable, Serializable {
      *     <li>collect target variable names from the list of available variable names</li>
      *     <li>collect input variable as all the variables which are not considered target variables</li>
      * </ol>
-     *
-     * This algorithm is executed each time for {@link #train(Frame, Var, String...)},
-     * {@link #train(Frame, String...)} and {@link #fit(Frame, boolean)} methods.
      *
      * @return list of filter to transform data into input variables.
      */
@@ -210,10 +204,7 @@ public interface Regression extends Printable, Serializable {
      * @param df         data set instances
      * @param targetVars target variables
      */
-    default void train(Frame df, String... targetVars) {
-        Numeric weights = Numeric.newFill(df.rowCount(), 1);
-        train(df, weights, targetVars);
-    }
+    Regression train(Frame df, String... targetVars);
 
     /**
      * Fit a classifier on instances specified by frame, with row weights and targetName
@@ -222,7 +213,7 @@ public interface Regression extends Printable, Serializable {
      * @param weights        instance weights
      * @param targetVarNames target variables
      */
-    void train(Frame df, Var weights, String... targetVarNames);
+    Regression train(Frame df, Var weights, String... targetVarNames);
 
     /**
      * Predict results for given data set of instances
@@ -231,9 +222,7 @@ public interface Regression extends Printable, Serializable {
      * @param df input data frame
      * @return regression fit result
      */
-    default RFit fit(final Frame df) {
-        return fit(df, true);
-    }
+    RFit fit(final Frame df);
 
     /**
      * Predict results for new data set instances
@@ -241,7 +230,7 @@ public interface Regression extends Printable, Serializable {
      * @param df            data set instances
      * @param withResiduals if residuals will be computed or not
      */
-    RFit fit(Frame df, boolean withResiduals);
+    T fit(Frame df, boolean withResiduals);
 
     /**
      * set the pool size for fork join tasks

@@ -119,7 +119,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
     }
 
     @Override
-    public boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreTrain(Frame df, Var weights) {
 
         k = firstTargetLevels().length - 1;
 
@@ -183,7 +183,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
     }
 
     @Override
-    public CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
+    protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
         CFit p = CFit.newEmpty(this, df, withClasses, true);
         p.addTarget(firstTargetName(), firstTargetLevels());
 

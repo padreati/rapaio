@@ -25,7 +25,9 @@ package rapaio.ml.regressor.ensemble;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.ml.classifier.Classifier;
+import rapaio.ml.common.Capabilities;
 import rapaio.ml.regressor.AbstractRegression;
 import rapaio.ml.regressor.Regression;
 import rapaio.ml.regressor.RFit;
@@ -41,6 +43,8 @@ import static rapaio.sys.WS.formatFlex;
  */
 @Deprecated
 public class RForest extends AbstractRegression {
+
+    private static final long serialVersionUID = -3926256335736143438L;
 
     int runs = 0;
     boolean oobCompute = false;
@@ -80,12 +84,24 @@ public class RForest extends AbstractRegression {
     }
 
     @Override
-    public void train(Frame df, Var weights, String... targetVarNames) {
-
+    public Capabilities capabilities() {
+        return new Capabilities()
+                .withLearnType(Capabilities.LearnType.REGRESSION)
+                .withInputCount(1, 1_000_000)
+                .withTargetCount(1, 1)
+                .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NUMERIC, VarType.ORDINAL, VarType.NOMINAL)
+                .withTargetTypes(VarType.NUMERIC)
+                .withAllowMissingInputValues(true)
+                .withAllowMissingTargetValues(false);
     }
 
     @Override
-    public RFit fit(Frame df, boolean withResiduals) {
+    protected boolean coreTrain(Frame df, Var weights) {
+        return false;
+    }
+
+    @Override
+    protected RFit coreFit(Frame df, boolean withResiduals) {
         return null;
     }
 

@@ -30,9 +30,7 @@ import rapaio.core.stat.Quantiles;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static rapaio.sys.WS.code;
 import static rapaio.sys.WS.getPrinter;

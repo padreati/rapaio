@@ -24,7 +24,6 @@
 package rapaio.io;
 
 import rapaio.data.Frame;
-import rapaio.util.Pair;
 
 import java.io.File;
 import java.io.IOException;

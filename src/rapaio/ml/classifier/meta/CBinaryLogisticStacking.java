@@ -123,7 +123,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
     }
 
     @Override
-    public boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreTrain(Frame df, Var weights) {
         logger.config("started learning for binary logistic...");
         log.withTol(tol);
         log.withMaxRuns(maxRuns);
@@ -151,7 +151,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
     }
 
     @Override
-    public CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
+    protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
         logger.config("started fitting binary logistic regressor.. ");
         CFit fit = log.fit(df);
 

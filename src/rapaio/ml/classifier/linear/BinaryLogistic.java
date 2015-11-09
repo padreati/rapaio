@@ -118,7 +118,7 @@ public class BinaryLogistic extends AbstractClassifier {
     };
 
 
-    public double regress(Frame df, int row) {
+    private double regress(Frame df, int row) {
         if (coef == null)
             throw new IllegalArgumentException("Model has not been trained");
         Numeric inst = Numeric.newEmpty();
@@ -129,7 +129,7 @@ public class BinaryLogistic extends AbstractClassifier {
     }
 
     @Override
-    public boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreTrain(Frame df, Var weights) {
         List<Var> inputs = new ArrayList<>(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
             Numeric line = Numeric.newEmpty();
@@ -148,7 +148,7 @@ public class BinaryLogistic extends AbstractClassifier {
     }
 
     @Override
-    public CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
+    protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
         CFit cr = CFit.newEmpty(this, df, withClasses, withDistributions);
         cr.addTarget(firstTargetName(), firstTargetLevels());
 

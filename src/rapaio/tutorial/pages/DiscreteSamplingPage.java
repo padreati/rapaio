@@ -34,7 +34,6 @@ import java.util.Arrays;
 
 import static rapaio.sys.WS.*;
 import static rapaio.graphics.Plotter.*;
-import static rapaio.graphics.Plotter.points;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>

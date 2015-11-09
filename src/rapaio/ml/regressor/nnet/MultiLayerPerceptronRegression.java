@@ -26,6 +26,8 @@ package rapaio.ml.regressor.nnet;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.VarType;
+import rapaio.ml.common.Capabilities;
 import rapaio.ml.regressor.AbstractRegression;
 import rapaio.ml.regressor.RFit;
 import rapaio.ml.regressor.Regression;
@@ -115,6 +117,18 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
         return sb.toString();
     }
 
+    @Override
+    public Capabilities capabilities() {
+        return new Capabilities()
+                .withLearnType(Capabilities.LearnType.REGRESSION)
+                .withInputTypes(VarType.NUMERIC, VarType.INDEX, VarType.BINARY, VarType.ORDINAL)
+                .withTargetTypes(VarType.NUMERIC)
+                .withInputCount(1, 1_000_000)
+                .withTargetCount(1, 1_000_000)
+                .withAllowMissingInputValues(false)
+                .withAllowMissingTargetValues(false);
+    }
+
     public MultiLayerPerceptronRegression withFunction(TFunction function) {
         this.function = function;
         return this;
@@ -131,9 +145,7 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
     }
 
     @Override
-    public void train(Frame df, Var weights, String... targetVarNames) {
-        prepareTraining(df, weights, targetVarNames);
-
+    protected boolean coreTrain(Frame df, Var weights) {
         for (String varName : df.varNames()) {
             if (df.var(varName).type().isNominal()) {
                 throw new IllegalArgumentException("perceptrons can't train nominal features");
@@ -211,10 +223,11 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
                 }
             }
         }
+        return true;
     }
 
     @Override
-    public RFit fit(final Frame df, final boolean withResiduals) {
+    protected RFit coreFit(final Frame df, final boolean withResiduals) {
         RFit pred = RFit.newEmpty(this, df, withResiduals);
         for (String targetName : targetNames()) {
             pred.addTarget(targetName);

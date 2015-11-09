@@ -25,7 +25,6 @@ package rapaio.printer.format;
 
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
-import rapaio.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;

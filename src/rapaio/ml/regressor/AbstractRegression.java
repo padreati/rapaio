@@ -23,17 +23,11 @@
 
 package rapaio.ml.regressor;
 
-import rapaio.data.VarType;
+import rapaio.data.*;
 import rapaio.data.filter.FFilter;
 import rapaio.data.sample.FrameSampler;
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.data.VarRange;
-import rapaio.ml.classifier.Classifier;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -42,7 +36,7 @@ import java.util.stream.Collectors;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
-public abstract class AbstractRegression implements Regression {
+public abstract class AbstractRegression<T extends RFit> implements Regression<T> {
 
     private static final long serialVersionUID = 5544999078321108408L;
 
@@ -54,17 +48,21 @@ public abstract class AbstractRegression implements Regression {
     private boolean hasLearned;
     private int poolSize = Runtime.getRuntime().availableProcessors();
     private int runs = 1;
+    private List<FFilter> inputFilters = new ArrayList<>();
+
     private BiConsumer<Regression, Integer> runningHook;
 
 
     @Override
     public List<FFilter> inputFilters() {
-        return null;
+        return inputFilters;
     }
 
     @Override
-    public Regression withInputFilters(FFilter... filters) {
-        return null;
+    public Regression<T> withInputFilters(FFilter... filters) {
+        inputFilters.clear();
+        Collections.addAll(inputFilters, filters);
+        return this;
     }
 
     @Override
@@ -98,18 +96,72 @@ public abstract class AbstractRegression implements Regression {
         return this;
     }
 
-    public void prepareTraining(Frame df, Var weights, String... targetVarNames) {
-        List<String> targetVarsList = new VarRange(targetVarNames).parseVarNames(df);
-        this.targetNames = targetVarsList.toArray(new String[targetVarsList.size()]);
-        this.targetTypes = targetVarsList.stream().map(varName -> df.var(varName).type()).toArray(VarType[]::new);
-
-        HashSet<String> targets = new HashSet<>(targetVarsList);
-        List<String> inputs = Arrays.stream(df.varNames()).filter(varName -> !targets.contains(varName)).collect(Collectors.toList());
-        this.inputNames = inputs.stream().toArray(String[]::new);
-        this.inputTypes = inputs.stream().map(varName -> df.var(varName).type()).toArray(VarType[]::new);
-
-        hasLearned = true;
+    @Override
+    public final Regression train(Frame df, String... targetVarNames) {
+        return train(df, Numeric.newFill(df.rowCount(), 1), targetVarNames);
     }
+
+    @Override
+    public final Regression train(Frame df, Var weights, String... targetVarNames) {
+        TrainSetup setup = baseTrain(df, weights, targetVarNames);
+        setup = prepareTraining(setup.df, setup.w, setup.targetVars);
+        hasLearned = coreTrain(setup.df, setup.w);
+        return this;
+    }
+
+    protected TrainSetup prepareTraining(Frame dfOld, Var weights, String... targetVarNames) {
+        Frame df = dfOld;
+        for (FFilter filter : inputFilters) {
+            df = filter.filter(df);
+        }
+
+        Frame result = df;
+        List<String> targets = new VarRange(targetVarNames).parseVarNames(result);
+        this.targetNames = targets.stream().toArray(String[]::new);
+        this.targetTypes = targets.stream().map(name -> result.var(name).type()).toArray(VarType[]::new);
+
+        HashSet<String> targetSet = new HashSet<>(targets);
+        List<String> inputs = Arrays.stream(result.varNames()).filter(varName -> !targetSet.contains(varName)).collect(Collectors.toList());
+        this.inputNames = inputs.stream().toArray(String[]::new);
+        this.inputTypes = inputs.stream().map(name -> result.var(name).type()).toArray(VarType[]::new);
+
+        capabilities().checkAtLearnPhase(result, weights, targetVarNames);
+        return TrainSetup.valueOf(df, weights);
+    }
+
+    protected TrainSetup baseTrain(Frame df, Var weights, String... targetVarNames) {
+        return TrainSetup.valueOf(df, weights, targetVarNames);
+    }
+
+    protected abstract boolean coreTrain(Frame df, Var weights);
+
+
+    @Override
+    public final T fit(Frame df) {
+        return fit(df, true);
+    }
+
+    @Override
+    public final T fit(Frame df, boolean withResiduals) {
+        FitSetup setup = baseFit(df, withResiduals);
+        setup = prepareFit(setup.df, withResiduals);
+        return coreFit(setup.df, setup.withResiduals);
+    }
+
+    // by default do nothing, it is only for two stage training
+    protected FitSetup baseFit(Frame df, boolean withResiduals) {
+        return FitSetup.valueOf(df, withResiduals);
+    }
+
+    protected FitSetup prepareFit(Frame df, boolean withResiduals) {
+        Frame result = df;
+        for (FFilter filter : inputFilters) {
+            result = filter.apply(result);
+        }
+        return FitSetup.valueOf(result, withResiduals);
+    }
+
+    protected abstract T coreFit(Frame df, boolean withResiduals);
 
     @Override
     public boolean hasLearned() {
@@ -146,5 +198,40 @@ public abstract class AbstractRegression implements Regression {
     public Regression withRunningHook(BiConsumer<Regression, Integer> runningHook) {
         this.runningHook = runningHook;
         return this;
+    }
+
+    protected static class TrainSetup {
+        public final Frame df;
+        public final Var w;
+        public final String[] targetVars;
+
+        private TrainSetup(Frame df, Var w, String[] targetVars) {
+            this.df = df;
+            this.w = w;
+            this.targetVars = targetVars;
+        }
+
+        public static TrainSetup valueOf(Frame df, Var w, String[] targetVars) {
+            return new TrainSetup(df, w, targetVars);
+        }
+
+        public static TrainSetup valueOf(Frame df, Var w) {
+            return new TrainSetup(df, w, null);
+        }
+    }
+
+    protected static final class FitSetup {
+
+        public final Frame df;
+        public final boolean withResiduals;
+
+        private FitSetup(Frame df, boolean withResiduals) {
+            this.df = df;
+            this.withResiduals = withResiduals;
+        }
+
+        public static FitSetup valueOf(Frame df, boolean withResiduals) {
+            return new FitSetup(df, withResiduals);
+        }
     }
 }

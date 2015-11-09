@@ -25,9 +25,11 @@ package rapaio.ml.regressor.linear;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.math.linear.Linear;
 import rapaio.math.linear.QR;
 import rapaio.math.linear.RM;
+import rapaio.ml.common.Capabilities;
 import rapaio.ml.regressor.AbstractRegression;
 import rapaio.ml.regressor.Regression;
 
@@ -35,7 +37,9 @@ import rapaio.ml.regressor.Regression;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public class OLSRegression extends AbstractRegression {
+public class OLSRegression extends AbstractRegression<OLSRFit> {
+
+    private static final long serialVersionUID = 8610329390138787530L;
 
     RM beta;
 
@@ -59,23 +63,30 @@ public class OLSRegression extends AbstractRegression {
     }
 
     @Override
-    public void train(Frame df, Var weights, String... targetVarNames) {
-        prepareTraining(df, weights, targetVarNames);
+    public Capabilities capabilities() {
+        return new Capabilities()
+                .withLearnType(Capabilities.LearnType.REGRESSION)
+                .withInputTypes(VarType.NUMERIC, VarType.INDEX, VarType.BINARY, VarType.ORDINAL)
+                .withTargetTypes(VarType.NUMERIC)
+                .withInputCount(1, 1_000_000)
+                .withTargetCount(1, 1_000_000)
+                .withAllowMissingInputValues(false)
+                .withAllowMissingTargetValues(false);
+    }
+
+    @Override
+    protected boolean coreTrain(Frame df, Var weights) {
         if (targetNames().length == 0) {
             throw new IllegalArgumentException("OLS must specify at least one target variable name");
         }
         RM X = Linear.newRMCopyOf(df.mapVars(inputNames()));
         RM Y = Linear.newRMCopyOf(df.mapVars(targetNames()));
         beta = new QR(X).solve(Y);
+        return true;
     }
 
     @Override
-    public OLSRFit fit(Frame df) {
-        return fit(df, true);
-    }
-
-    @Override
-    public OLSRFit fit(Frame df, boolean withResiduals) {
+    protected OLSRFit coreFit(Frame df, boolean withResiduals) {
         OLSRFit rp = new OLSRFit(this, df);
         rp.buildComplete();
         return rp;

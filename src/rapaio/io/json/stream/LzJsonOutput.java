@@ -378,9 +378,7 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
     public void close() throws IOException {
         if (!objectBuffer.isEmpty())
             writeBuffer();
-        if (os != null) {
-            os.flush();
-            os.close();
-        }
+        os.flush();
+        os.close();
     }
 }

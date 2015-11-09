@@ -27,9 +27,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.BitSet;
-import java.util.Comparator;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * Numerical variable which store only 1,0 and missing values.

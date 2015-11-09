@@ -25,6 +25,7 @@ package rapaio.ml.regressor.boost;
 
 import rapaio.core.SamplingTools;
 import rapaio.data.*;
+import rapaio.ml.common.Capabilities;
 import rapaio.ml.regressor.AbstractRegression;
 import rapaio.ml.regressor.RFit;
 import rapaio.ml.regressor.Regression;
@@ -32,6 +33,7 @@ import rapaio.ml.regressor.boost.gbt.BTRegression;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
 import rapaio.ml.regressor.simple.L2Regression;
 import rapaio.ml.regressor.tree.RTree;
+import rapaio.printer.Printable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +46,9 @@ import static rapaio.sys.WS.formatFlex;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public class GBTRegression extends AbstractRegression implements Regression {
+public class GBTRegression extends AbstractRegression implements Printable {
+
+    private static final long serialVersionUID = 4559540258922653130L;
 
     // parameters
     int runs = 1; // number of rounds
@@ -93,6 +97,18 @@ public class GBTRegression extends AbstractRegression implements Regression {
         return sb.toString();
     }
 
+    @Override
+    public Capabilities capabilities() {
+        return new Capabilities()
+                .withLearnType(Capabilities.LearnType.REGRESSION)
+                .withInputCount(1, 1_000_000)
+                .withTargetCount(1, 1)
+                .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NUMERIC, VarType.ORDINAL, VarType.NOMINAL)
+                .withTargetTypes(VarType.NUMERIC)
+                .withAllowMissingInputValues(true)
+                .withAllowMissingTargetValues(false);
+    }
+
     public GBTRegression withLossFunction(GBTLossFunction lossFunction) {
         this.lossFunction = lossFunction;
         return this;
@@ -129,13 +145,7 @@ public class GBTRegression extends AbstractRegression implements Regression {
     }
 
     @Override
-    public void train(Frame df, Var weights, String... targetVarNames) {
-
-        prepareTraining(df, weights, targetVarNames);
-
-        if (targetVarNames.length != 1) {
-            throw new IllegalArgumentException("GBT accepts a single target variable");
-        }
+    protected boolean coreTrain(Frame df, Var weights) {
 
         Var y = df.var(firstTargetName());
         Frame x = df.removeVars(new VarRange(firstTargetName()));
@@ -202,10 +212,11 @@ public class GBTRegression extends AbstractRegression implements Regression {
         for (int i = 0; i < fitLearn.rowCount(); i++) {
             fitValues.addValue(fitLearn.value(i));
         }
+        return true;
     }
 
     @Override
-    public RFit fit(final Frame df, final boolean withResiduals) {
+    protected RFit coreFit(final Frame df, final boolean withResiduals) {
         RFit pred = RFit.newEmpty(this, df, withResiduals);
         for (String targetName : targetNames()) {
             pred.addTarget(targetName);

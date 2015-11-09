@@ -26,6 +26,8 @@ package rapaio.ml.regressor.simple;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.VarType;
+import rapaio.ml.common.Capabilities;
 import rapaio.ml.regressor.AbstractRegression;
 import rapaio.ml.regressor.RFit;
 import rapaio.ml.regressor.Regression;
@@ -62,17 +64,29 @@ public class L1Regression extends AbstractRegression {
     }
 
     @Override
-    public void train(Frame df, Var weights, String... targetVarNames) {
-        prepareTraining(df, weights, targetVarNames);
+    public Capabilities capabilities() {
+        return new Capabilities()
+                .withLearnType(Capabilities.LearnType.REGRESSION)
+                .withInputCount(0, 1_000_000)
+                .withTargetCount(1, 1)
+                .withInputTypes(VarType.NUMERIC, VarType.ORDINAL, VarType.BINARY, VarType.INDEX, VarType.NOMINAL, VarType.STAMP, VarType.TEXT)
+                .withTargetTypes(VarType.NUMERIC)
+                .withAllowMissingInputValues(true)
+                .withAllowMissingTargetValues(true);
+    }
+
+    @Override
+    protected boolean coreTrain(Frame df, Var weights) {
         medians = new double[targetNames().length];
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
             medians[i] = new Quantiles(df.var(target), new double[]{0.5}).values()[0];
         }
+        return true;
     }
 
     @Override
-    public RFit fit(final Frame df, final boolean withResiduals) {
+    public RFit coreFit(final Frame df, final boolean withResiduals) {
         RFit pred = RFit.newEmpty(this, df, withResiduals);
         for (String targetName : targetNames()) {
             pred.addTarget(targetName);

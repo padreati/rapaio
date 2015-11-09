@@ -35,8 +35,6 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-import static rapaio.graphics.Plotter.color;
-
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */

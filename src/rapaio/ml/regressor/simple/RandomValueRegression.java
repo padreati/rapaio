@@ -27,6 +27,8 @@ import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Uniform;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.VarType;
+import rapaio.ml.common.Capabilities;
 import rapaio.ml.regressor.AbstractRegression;
 import rapaio.ml.regressor.RFit;
 import rapaio.ml.regressor.Regression;
@@ -36,6 +38,8 @@ import rapaio.ml.regressor.Regression;
  */
 @Deprecated
 public class RandomValueRegression extends AbstractRegression {
+
+    private static final long serialVersionUID = 819192240406617594L;
     private Distribution distribution = new Uniform(0, 1);
 
     @Override
@@ -53,6 +57,18 @@ public class RandomValueRegression extends AbstractRegression {
         return name() + String.format("(%s)", distribution.name());
     }
 
+    @Override
+    public Capabilities capabilities() {
+        return new Capabilities()
+                .withLearnType(Capabilities.LearnType.REGRESSION)
+                .withInputCount(0, 1_000_000)
+                .withTargetCount(1, 1)
+                .withInputTypes(VarType.NUMERIC, VarType.ORDINAL, VarType.BINARY, VarType.INDEX, VarType.NOMINAL, VarType.STAMP, VarType.TEXT)
+                .withTargetTypes(VarType.NUMERIC)
+                .withAllowMissingInputValues(true)
+                .withAllowMissingTargetValues(true);
+    }
+
     public Distribution distribution() {
         return distribution;
     }
@@ -63,12 +79,12 @@ public class RandomValueRegression extends AbstractRegression {
     }
 
     @Override
-    public void train(Frame df, Var weights, String... targetVarNames) {
-        prepareTraining(df, weights, targetVarNames);
+    protected boolean coreTrain(Frame df, Var weights) {
+        return true;
     }
 
     @Override
-    public RFit fit(final Frame df, final boolean withResiduals) {
+    protected RFit coreFit(final Frame df, final boolean withResiduals) {
         RFit pred = RFit.newEmpty(this, df, withResiduals);
         for (String targetName : targetNames()) {
             pred.addTarget(targetName);

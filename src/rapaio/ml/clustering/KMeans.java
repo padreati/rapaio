@@ -178,18 +178,18 @@ public class KMeans implements Printable {
     private void recomputeCentroids(Frame df) {
         if (debug) WS.println("recomputeCentroids called ..");
         Var[] means = IntStream.range(0, k).boxed().map(i -> Numeric.newFill(df.rowCount(), 0)).toArray(Numeric[]::new);
-        for (int i = 0; i < inputs.length; i++) {
+        for (String input : inputs) {
             for (int j = 0; j < k; j++) {
                 means[j].clear();
             }
             for (int j = 0; j < df.rowCount(); j++) {
-                means[arrows[j]].addValue(df.value(j, inputs[i]));
+                means[arrows[j]].addValue(df.value(j, input));
             }
             for (int j = 0; j < k; j++) {
                 if (means[j].rowCount() == 0)
                     continue;
                 double mean = new Mean(means[j]).value();
-                centroids.setValue(j, inputs[i], mean);
+                centroids.setValue(j, input, mean);
             }
         }
     }

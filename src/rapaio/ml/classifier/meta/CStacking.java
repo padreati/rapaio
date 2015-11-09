@@ -117,7 +117,7 @@ public class CStacking extends AbstractClassifier {
     }
 
     @Override
-    public boolean coreTrain(Frame df, Var weights) {
+    protected boolean coreTrain(Frame df, Var weights) {
 
         logger.config("started learning for stacker classifier...");
         stacker.train(df, weights, targetNames());
@@ -126,7 +126,7 @@ public class CStacking extends AbstractClassifier {
         return true;
     }
 
-    public BaseFitSetup baseFit(Frame df, boolean withClasses, boolean withDistributions) {
+    protected BaseFitSetup baseFit(Frame df, boolean withClasses, boolean withDistributions) {
         logger.config("fit method called.");
         List<Var> vars = Util.rangeStream(weaks.size(), true)
                 .boxed()
@@ -143,7 +143,7 @@ public class CStacking extends AbstractClassifier {
     }
 
     @Override
-    public CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
+    protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
         logger.config("started fitting stacker classifier .. ");
         CFit fit = stacker.fit(df);
 
