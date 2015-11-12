@@ -79,7 +79,7 @@ public class TextTable implements Printable {
     }
 
     public TextTable withSplit(int width) {
-        this.hSplitSize = width == 0 ? WS.getPrinter().getTextWidth() : width;
+        this.hSplitSize = (width == 0) ? WS.getPrinter().getTextWidth() : width;
         return this;
     }
 

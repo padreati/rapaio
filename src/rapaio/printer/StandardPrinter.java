@@ -36,7 +36,7 @@ import java.awt.*;
 public class StandardPrinter extends AbstractPrinter {
 
     public StandardPrinter() {
-        setTextWidth(220);
+        setTextWidth(256);
         setGraphicWidth(1280);
         setGraphicHeight(800);
     }

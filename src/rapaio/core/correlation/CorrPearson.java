@@ -101,6 +101,10 @@ public class CorrPearson implements Printable {
         return pearson;
     }
 
+    public double singleValue() {
+        return pearson[0][1];
+    }
+
     @Override
     public String summary() {
         StringBuilder sb = new StringBuilder();

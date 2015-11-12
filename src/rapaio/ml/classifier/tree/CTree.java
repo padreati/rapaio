@@ -132,6 +132,7 @@ public class CTree extends AbstractClassifier {
                 .withRunningHook(runningHook())
                 .withSampler(sampler());
 
+        tree.withPoolSize(poolSize());
         tree.testMap.clear();
         tree.testMap.putAll(testMap);
 

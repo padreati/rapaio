@@ -35,7 +35,7 @@ import java.util.Map;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/18/15.
  */
-public class MultinomialPmf implements NominalEstimator {
+public class MultinomialPmf implements NominalEstimator, BinaryEstimator {
 
     private static final long serialVersionUID = 3019563706421891472L;
     private double[][] density;
@@ -77,7 +77,7 @@ public class MultinomialPmf implements NominalEstimator {
                     density[i][j] = nb.laplaceSmoother();
                 }
             }
-        df.stream().forEach(s -> density[s.index(targetVar)][s.index(testVar)] += weights.value(s.row()));
+        df.stream().forEach(s -> density[invTreeTarget.get(df.label(s.row(), targetVar))][invTreeTest.get(df.label(s.row(), testVar))] += weights.value(s.row()));
         for (int i = 0; i < targetDict.length; i++) {
             double t = 0;
             for (int j = 0; j < testDict.length; j++) {
@@ -101,7 +101,7 @@ public class MultinomialPmf implements NominalEstimator {
     }
 
     @Override
-    public NominalEstimator newInstance() {
+    public MultinomialPmf newInstance() {
         return new MultinomialPmf();
     }
 }

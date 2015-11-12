@@ -121,7 +121,7 @@ public final class DTable implements Printable, Serializable {
 
         if (!(rowVar.type().isNominal() || rowVar.type().equals(VarType.BINARY)))
             throw new IllegalArgumentException("row var must be nominal");
-        if (!(colVar.type().isNominal() || rowVar.type().equals(VarType.BINARY)))
+        if (!(colVar.type().isNominal() || colVar.type().equals(VarType.BINARY)))
             throw new IllegalArgumentException("col var is not nominal");
         if (rowVar.rowCount() != colVar.rowCount())
             throw new IllegalArgumentException("row and col vars must have same row count");
@@ -150,9 +150,37 @@ public final class DTable implements Printable, Serializable {
         }
     }
 
+    public boolean useFirst() {
+        return start == 0;
+    }
+
+    public int start() {
+        return start;
+    }
+
+    public int rowCount() {
+        return rowLevels.length;
+    }
+
+    public int colCount() {
+        return colLevels.length;
+    }
+
+    public String[] rowLevels() {
+        return rowLevels;
+    }
+
+    public String[] colLevels() {
+        return colLevels;
+    }
+
     public DTable withTotalSummary(boolean totalSummary) {
         this.totalSummary = totalSummary;
         return this;
+    }
+
+    public double get(int row, int col) {
+        return values[row][col];
     }
 
     public void reset() {
@@ -396,20 +424,20 @@ public final class DTable implements Printable, Serializable {
     }
 
     public double[] rowTotals() {
-        double[] totals = new double[rowLevels.length - start];
-        for (int i = start; i < rowLevels.length; i++) {
-            for (int j = start; j < colLevels.length; j++) {
-                totals[i - start] += values[i][j];
+        double[] totals = new double[rowLevels.length];
+        for (int i = 0; i < rowLevels.length; i++) {
+            for (int j = 0; j < colLevels.length; j++) {
+                totals[i] += values[i][j];
             }
         }
         return totals;
     }
 
     public double[] colTotals() {
-        double[] totals = new double[colLevels.length - start];
-        for (int i = start; i < rowLevels.length; i++) {
-            for (int j = start; j < colLevels.length; j++) {
-                totals[j - start] += values[i][j];
+        double[] totals = new double[colLevels.length];
+        for (int i = 0; i < rowLevels.length; i++) {
+            for (int j = 0; j < colLevels.length; j++) {
+                totals[j] += values[i][j];
             }
         }
         return totals;
@@ -491,13 +519,13 @@ public final class DTable implements Printable, Serializable {
             }
             double[] rowTotals = rowTotals();
             for (int i = start; i < rowLevels.length; i++) {
-                tt.set(i - start + 1, colLevels.length - start + 1, WS.formatShort(rowTotals[i - start]), 1);
+                tt.set(i - start + 1, colLevels.length - start + 1, WS.formatShort(rowTotals[i]), 1);
             }
             double[] colTotals = colTotals();
             for (int i = start; i < colLevels.length; i++) {
-                tt.set(rowLevels.length - start + 1, i - start + 1, WS.formatShort(colTotals[i - start]), 1);
+                tt.set(rowLevels.length - start + 1, i - start + 1, WS.formatShort(colTotals[i]), 1);
             }
-            double total = Arrays.stream(rowTotals).sum();
+            double total = Arrays.stream(rowTotals).skip(start).sum();
             tt.set(rowLevels.length - start + 1, colLevels.length - start + 1, WS.formatShort(total), 1);
             return tt.summary();
         } else {

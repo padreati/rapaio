@@ -21,28 +21,26 @@
  *
  */
 
-package rapaio.experiment;
-
-import rapaio.data.Numeric;
-import rapaio.printer.IdeaPrinter;
-import rapaio.sys.WS;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.stream.DoubleStream;
+package rapaio.ml.classifier.bayes.estimator;
 
 import rapaio.data.Frame;
-import rapaio.datasets.Datasets;
+import rapaio.data.Var;
+import rapaio.ml.classifier.bayes.NaiveBayes;
 
-import static rapaio.graphics.Plotter.lines;
+import java.io.Serializable;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/26/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/10/15.
  */
-public class Sandbox {
-    public static void main(String[] args) throws IOException, URISyntaxException {
+public interface BinaryEstimator extends Serializable {
 
-        Frame df = Datasets.loadCarMpgDataset();
-        df.printSummary();
-    }
+    BinaryEstimator newInstance();
+
+    String name();
+
+    String learningInfo();
+
+    void learn(NaiveBayes nb, Frame df, Var weights, String targetVar, String testVar);
+
+    double cpValue(String testLabel, String targetLabel);
 }
