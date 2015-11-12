@@ -26,8 +26,7 @@ package rapaio.core.tests;
 import junit.framework.Assert;
 import org.junit.Test;
 import rapaio.data.Nominal;
-
-import java.util.stream.IntStream;
+import rapaio.data.Numeric;
 
 public class ChiSquareTestTest {
 
@@ -48,8 +47,14 @@ public class ChiSquareTestTest {
             x1.addLabel("Regul");
         }
 
-        ChiSquareTest.GoodnessOfFit test1 = ChiSquareTest.GoodnessOfFit
-                .fromCountAndProb(x1, 0.045, 0.795, 0.085, 0.075);
+        ChiSquareTest test1 = ChiSquareTest.goodnessOfFit(x1, 0.045, 0.795, 0.085, 0.075);
+        test1.printSummary();
+
+        Assert.assertEquals(3.0, test1.df(), 1e-20);
+        Assert.assertEquals(0.10744287054977643, test1.chiValue(), 1e-20);
+        Assert.assertEquals(0.9909295319532134, test1.pValue(), 1e-20);
+
+        test1 = ChiSquareTest.goodnessOfFit(Numeric.newCopyOf(11, 189, 19, 17), 0.045, 0.795, 0.085, 0.075);
         test1.printSummary();
 
         Assert.assertEquals(3.0, test1.df(), 1e-20);
@@ -63,7 +68,7 @@ public class ChiSquareTestTest {
         for (int i = 0; i < 46; i++) {
             x2.addLabel("Female");
         }
-        ChiSquareTest.GoodnessOfFit test2 = ChiSquareTest.GoodnessOfFit.fromCountAndProb(x2, 0.5, 0.5);
+        ChiSquareTest test2 = ChiSquareTest.goodnessOfFit(x2, 0.5, 0.5);
         test2.printSummary();
 
         Assert.assertEquals(1, test2.df());

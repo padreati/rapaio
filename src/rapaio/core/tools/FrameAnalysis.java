@@ -120,12 +120,12 @@ public class FrameAnalysis {
                         });
                         break;
                     case NOMINAL:
-                        DVector dv1 = DVector.newFromCount(var.stream().complete().filter(s -> target.index(s.row()) == 1).toMappedVar());
+                        DVector dv1 = DVector.newFromCount(false, var.stream().complete().filter(s -> target.index(s.row()) == 1).toMappedVar());
                         double[] v1 = dv1.streamValues().skip(1).sorted().toArray();
                         for (int i = 0; i < v1.length; i++) {
                             h[0][i < bins ? i : bins - 1] += v1[i];
                         }
-                        DVector dv2 = DVector.newFromCount(var.stream().complete().filter(s -> target.index(s.row()) == 2).toMappedVar());
+                        DVector dv2 = DVector.newFromCount(false, var.stream().complete().filter(s -> target.index(s.row()) == 2).toMappedVar());
                         double[] v2 = dv2.streamValues().skip(1).sorted().toArray();
                         for (int i = 0; i < v1.length; i++) {
                             h[1][i < bins ? i : bins - 1] += v2[i];

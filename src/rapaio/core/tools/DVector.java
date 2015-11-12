@@ -26,6 +26,10 @@ package rapaio.core.tools;
 import rapaio.core.RandomSource;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
+import rapaio.data.VarType;
+import rapaio.printer.Printable;
+import rapaio.printer.format.TextTable;
+import rapaio.sys.WS;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -41,10 +45,12 @@ import java.util.stream.DoubleStream;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class DVector implements Serializable {
+public class DVector implements Printable, Serializable {
 
     private static final long serialVersionUID = -546802690694348698L;
 
+    private boolean useFirst;
+    private int start;
     private final String[] levels;
     private final Map<String, Integer> reverse = new HashMap<>();
     private final double[] values;
@@ -56,26 +62,26 @@ public class DVector implements Serializable {
      * @param labels used to name values
      * @return new empty distribution vector
      */
-    public static DVector newEmpty(String... labels) {
-        return new DVector(labels);
+    public static DVector newEmpty(boolean useFirst, String... labels) {
+        return new DVector(useFirst, labels);
     }
 
     /**
-     * Builds a distribution vector with given dimention. Names are generated automatically.
+     * Builds a distribution vector with given dimestion. Names are generated automatically.
      *
      * @param rows size of the distribution vector
      * @return new empty distribution vector
      */
-    public static DVector newEmpty(int rows) {
+    public static DVector newEmpty(boolean useFirst, int rows) {
         String[] labels = new String[rows];
         for (int i = 0; i < labels.length; i++) {
             if (i == 0) {
-                labels[i] = "?";
+                labels[i] = useFirst ? "v0" : "?";
             } else {
                 labels[i] = "v" + i;
             }
         }
-        return new DVector(labels);
+        return new DVector(useFirst, labels);
     }
 
     /**
@@ -87,9 +93,9 @@ public class DVector implements Serializable {
      * @param var given nominal value
      * @return new distribution vector filled with counts
      */
-    public static DVector newFromCount(Var var) {
+    public static DVector newFromCount(boolean useFirst, Var var) {
         Var weights = Numeric.newFill(var.rowCount(), 1);
-        return new DVector(var.levels(), var, weights);
+        return new DVector(useFirst, var.levels(), var, weights);
     }
 
     /**
@@ -101,8 +107,8 @@ public class DVector implements Serializable {
      * @param weights given numeric weights
      * @return new distribution variable
      */
-    public static DVector newFromWeights(Var var, Var weights) {
-        return new DVector(var.levels(), var, weights);
+    public static DVector newFromWeights(boolean useFirst, Var var, Var weights) {
+        return new DVector(useFirst, var.levels(), var, weights);
     }
 
     /**
@@ -114,35 +120,36 @@ public class DVector implements Serializable {
      * @param weights weights used to compute sums for each cell
      * @return new distribution vector
      */
-    public static DVector newFromWeights(Var var, Var weights, String... labels) {
-        return new DVector(labels, var, weights);
+    public static DVector newFromWeights(boolean useFirst, Var var, Var weights, String... labels) {
+        return new DVector(useFirst, labels, var, weights);
     }
 
-    private DVector(String[] labels) {
-        for (int i = 1; i < labels.length; i++) {
-            if ("?".equals(labels[i])) {
-                throw new IllegalArgumentException("levels are not allowed to have name '?' on a position other than 0");
-            }
-        }
-        if (!labels[0].equals("?")) {
-            this.levels = new String[labels.length + 1];
-            this.levels[0] = "?";
-            if (labels.length > 0) {
-                System.arraycopy(labels, 0, this.levels, 1, labels.length);
-            }
-        } else {
-            this.levels = labels;
-        }
+    private DVector(boolean useFirst, String[] labels) {
+        this.useFirst = useFirst;
+        this.start = useFirst ? 0 : 1;
+
+        this.levels = labels;
         for (int i = 0; i < labels.length; i++) {
             reverse.put(labels[i], i);
         }
         this.values = new double[this.levels.length];
     }
 
-    private DVector(String[] labels, Var var, Var weights) {
-        this(labels);
-        var.stream().forEach(spot -> values[spot.index()] += weights.value(spot.row()));
+    private DVector(boolean useFirst, String[] labels, Var var, Var weights) {
+        this(useFirst, labels);
+        int off = var.type().equals(VarType.BINARY) ? 1 : 0;
+        var.stream().forEach(s -> values[s.index() + off] += weights.value(s.row()));
         total = Arrays.stream(values).sum();
+    }
+
+    public boolean first() {
+        return useFirst;
+    }
+
+    public DVector withFirst(boolean useFirst) {
+        this.useFirst = useFirst;
+        this.start = useFirst ? 0 : 1;
+        return this;
     }
 
     public String[] levels() {
@@ -198,7 +205,9 @@ public class DVector implements Serializable {
      * @param value value to be set at the given position
      */
     public void set(int pos, double value) {
+        total -= values[pos];
         values[pos] = value;
+        total += values[pos];
     }
 
     public void set(String name, double value) {
@@ -209,11 +218,9 @@ public class DVector implements Serializable {
      * Find the index of the greatest value from all cells, including eventual missing label.
      * If there are multiple maximal values, one at random is chosen
      *
-     * @param useMissing true if the missing column is used, if exists, false otherwise
      * @return index of the greatest value
      */
-    public int findBestIndex(boolean useMissing) {
-        int start = getStart(useMissing);
+    public int findBestIndex() {
         double n = 1;
         int bestIndex = start;
         double best = values[start];
@@ -237,17 +244,15 @@ public class DVector implements Serializable {
 
     /**
      * Normalize values from density vector
-     *
-     * @param useMissing true if missing cell is used, if exists, false otherwise
      */
-    public DVector normalize(boolean useMissing) {
+    public DVector normalize() {
         total = 0.0;
-        for (int i = getStart(useMissing); i < values.length; i++) {
+        for (int i = start; i < values.length; i++) {
             total += values[i];
         }
         if (total == 0)
             return this;
-        for (int i = getStart(useMissing); i < values.length; i++) {
+        for (int i = start; i < values.length; i++) {
             values[i] /= total;
         }
         total = 1.0;
@@ -258,36 +263,31 @@ public class DVector implements Serializable {
      * Computes the sum of all cells.
      * Missing cell might be used or not,
      *
-     * @param useMissing true if missing cell is used, if exists, false otherwise
      * @return sum of elements
      */
-    public double sum(boolean useMissing) {
-        if (!useMissing)
-            return total - values[0];
-        return total;
+    public double sum() {
+        return useFirst ? total : total - values[0];
     }
 
     /**
      * Computes the sum of all cells except a given one and eventually the missing value cell.
      *
-     * @param except     the cell excepted from computation
-     * @param useMissing true is missing value cell is used, false otherwise
+     * @param except the cell excepted from computation
      * @return partial sum of cells
      */
-    public double sumExcept(int except, boolean useMissing) {
-        return sum(useMissing) - values[except];
+    public double sumExcept(int except) {
+        return sum() - values[except];
     }
 
     /**
      * Count values which respects the condition given by the predicate.
      *
-     * @param pred       condition used to filter the values
-     * @param useMissing true if missing is included in filtering, false if not
+     * @param pred condition used to filter the values
      * @return count of filtered values
      */
-    public int countValues(DoublePredicate pred, boolean useMissing) {
+    public int countValues(DoublePredicate pred) {
         int count = 0;
-        for (int i = getStart(useMissing); i < values.length; i++) {
+        for (int i = start; i < values.length; i++) {
             if (pred.test(values[i])) {
                 count++;
             }
@@ -305,20 +305,17 @@ public class DVector implements Serializable {
      * @return a solid copy of distribution vector
      */
     public DVector solidCopy() {
-        DVector d = new DVector(levels);
+        DVector d = new DVector(useFirst, levels);
         System.arraycopy(values, 0, d.values, 0, levels.length);
         d.total = total;
         return d;
     }
 
     /**
-     * @param useMissing true if the missing cell is used, if exists, false otherwise
      * @return index of the first cell, is 1 if missing cell exists and {@param useMissing} exists, 0 otherwise
      */
-    private int getStart(boolean useMissing) {
-        if (useMissing)
-            return 0;
-        return ("?".equals(levels[0])) ? 1 : 0;
+    public int start() {
+        return start;
     }
 
     public DoubleStream streamValues() {
@@ -335,22 +332,41 @@ public class DVector implements Serializable {
     }
 
     public boolean equalsFull(DVector o) {
-        if (levels.length != o.levels.length) {
+        if (levels.length - start != o.levels.length - o.start) {
             return false;
         }
-        if (values.length != o.values.length) {
+        if (values.length - start != o.values.length - o.start) {
             return false;
         }
-        for (int i = 0; i < levels.length; i++) {
-            if (!levels[i].equals(o.levels[i]))
+        for (int i = 0; i < levels.length - start; i++) {
+            if (!levels[i + start].equals(o.levels[i + o.start]))
                 return false;
         }
-        for (int i = 0; i < values.length; i++) {
-            if (Math.abs(values[i] - o.values[i]) > 1e-30) {
+        for (int i = 0; i < values.length - start; i++) {
+            if (Math.abs(values[i + start] - o.values[i + o.start]) > 1e-30) {
                 return false;
             }
         }
         return true;
+    }
+
+    @Override
+    public String summary() {
+        TextTable tt = TextTable.newEmpty(3, levels.length);
+        for (int i = start; i < levels.length; i++) {
+            tt.set(0, i, levels[i], 1);
+            tt.set(1, i, repeat(levels[i].length(), '-'), 1);
+            tt.set(2, i, WS.formatShort(values[i]), 1);
+        }
+        return tt.summary();
+    }
+
+    private String repeat(int len, char ch) {
+        char[] lineChars = new char[len];
+        for (int i = 0; i < len; i++) {
+            lineChars[i] = ch;
+        }
+        return String.valueOf(lineChars);
     }
 
 }

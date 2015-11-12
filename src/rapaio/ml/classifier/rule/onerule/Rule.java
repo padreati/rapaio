@@ -43,7 +43,7 @@ public abstract class Rule implements Serializable {
     public Rule(int targetIndex, DVector dv) {
         this.targetIndex = targetIndex;
         this.dv = dv;
-        this.zeroWeight = Math.abs(dv.sum(true)) < 1e-32;
+        this.zeroWeight = Math.abs(dv.sum()) < 1e-32;
     }
 
     public int getTargetIndex() {
@@ -55,15 +55,15 @@ public abstract class Rule implements Serializable {
     }
 
     public double getErrorCount() {
-        return zeroWeight ? 0.0 : dv.sum(true) - dv.get(targetIndex);
+        return zeroWeight ? 0.0 : dv.sum() - dv.get(targetIndex);
     }
 
     public double getTotalCount() {
-        return zeroWeight ? 0.0 : dv.sum(true);
+        return zeroWeight ? 0.0 : dv.sum();
     }
 
     public double getAcc() {
-        return zeroWeight ? 0.0 : dv.get(targetIndex) / dv.sum(true);
+        return zeroWeight ? 0.0 : dv.get(targetIndex) / dv.sum();
     }
 
     public DVector getDV() {

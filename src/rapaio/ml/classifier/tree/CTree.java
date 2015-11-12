@@ -323,7 +323,7 @@ public class CTree extends AbstractClassifier {
     }
 
     protected Pair<Integer, DVector> fitPoint(CTree tree, FSpot spot, Node node) {
-        if (node.getCounter().sum(false) == 0)
+        if (node.getCounter().sum() == 0)
             if (node.getParent() == null) {
                 throw new RuntimeException("Something bad happened at learning time");
             } else {
@@ -339,7 +339,7 @@ public class CTree extends AbstractClassifier {
         }
 
         String[] dict = tree.firstTargetLevels();
-        DVector dv = DVector.newEmpty(dict);
+        DVector dv = DVector.newEmpty(false, dict);
         for (Node child : node.getChildren()) {
             DVector d = this.fitPoint(tree, spot, child)._2;
             for (int i = 0; i < dict.length; i++) {
@@ -347,8 +347,8 @@ public class CTree extends AbstractClassifier {
                 dv.increment(i, d.get(i));
             }
         }
-        dv.normalize(false);
-        return new Pair<>(dv.findBestIndex(false), dv);
+        dv.normalize();
+        return new Pair<>(dv.findBestIndex(), dv);
     }
 
     private void additionalValidation(Frame df) {
@@ -428,10 +428,10 @@ public class CTree extends AbstractClassifier {
             sb.append((i == level - 1) ? "   |- " : "   |");
         }
         sb.append(node.getId()).append(". ").append(node.getGroupName()).append("    ");
-        sb.append(WS.formatFlexShort(node.getCounter().sum(true))).append("/");
-        sb.append(WS.formatFlexShort(node.getCounter().sumExcept(node.getBestIndex(), true))).append(" ");
+        sb.append(WS.formatFlexShort(node.getCounter().sum())).append("/");
+        sb.append(WS.formatFlexShort(node.getCounter().sumExcept(node.getBestIndex()))).append(" ");
         sb.append(firstTargetLevels()[node.getBestIndex()]).append(" (");
-        DVector d = node.getDensity().solidCopy().normalize(false);
+        DVector d = node.getDensity().solidCopy().normalize();
         for (int i = 1; i < firstTargetLevels().length; i++) {
             sb.append(WS.formatFlexShort(d.get(i))).append(" ");
         }
@@ -574,15 +574,15 @@ public class CTree extends AbstractClassifier {
         }
 
         public void learn(CTree tree, Frame df, Var weights, int depth, NominalTerms terms) {
-            density = DVector.newFromWeights(df.var(tree.firstTargetName()), weights);
-            counter = DVector.newFromCount(df.var(tree.firstTargetName()));
-            bestIndex = density.findBestIndex(false);
+            density = DVector.newFromWeights(false, df.var(tree.firstTargetName()), weights);
+            counter = DVector.newFromCount(false, df.var(tree.firstTargetName()));
+            bestIndex = density.findBestIndex();
 
             if (df.rowCount() == 0) {
                 bestIndex = parent.bestIndex;
                 return;
             }
-            if (counter.countValues(x -> x > 0, false) == 1 || depth < 1 || df.rowCount() <= tree.minCount()) {
+            if (counter.countValues(x -> x > 0) == 1 || depth < 1 || df.rowCount() <= tree.minCount()) {
                 return;
             }
 

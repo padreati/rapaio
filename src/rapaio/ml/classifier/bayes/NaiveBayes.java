@@ -181,7 +181,7 @@ public class NaiveBayes extends AbstractClassifier {
 
         IntStream.range(0, df.rowCount()).parallel().forEach(
                 i -> {
-                    DVector dv = DVector.newEmpty(firstTargetLevels());
+                    DVector dv = DVector.newEmpty(false, firstTargetLevels());
                     for (int j = 1; j < firstTargetLevels().length; j++) {
                         double sumLog = Math.log(priors.get(firstTargetLevel(j)));
                         for (String testCol : numMap.keySet()) {
@@ -203,10 +203,10 @@ public class NaiveBayes extends AbstractClassifier {
                         }
                         dv.increment(j, Math.exp(sumLog));
                     }
-                    dv.normalize(false);
+                    dv.normalize();
 
                     if (withClasses) {
-                        pred.firstClasses().setIndex(i, dv.findBestIndex(false));
+                        pred.firstClasses().setIndex(i, dv.findBestIndex());
                     }
                     if (withDensities) {
                         for (int j = 1; j < firstTargetLevels().length; j++) {
@@ -260,12 +260,8 @@ public class NaiveBayes extends AbstractClassifier {
 
     public static Tag<PriorSupplier> PRIORS_MLE = Tag.valueOf("PRIORS_MLE", (df, weights, nb) -> {
         Map<String, Double> priors = new HashMap<>();
-        DVector dv = DVector.newFromWeights(df.var(nb.firstTargetName()), weights, nb.firstTargetLevels());
-
-        // laplace add something for smoothing is problematic for priors, so we do not do it
-//        IntStream.range(0, nb.firstTargetLevels().length).forEach(i -> dv.increment(i, nb.laplaceSmoother));
-        dv.normalize(false);
-
+        DVector dv = DVector.newFromWeights(false, df.var(nb.firstTargetName()), weights, nb.firstTargetLevels());
+        dv.normalize();
         for (int i = 1; i < nb.firstTargetLevels().length; i++) {
             priors.put(nb.firstTargetLevels()[i], dv.get(i));
         }

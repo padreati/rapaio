@@ -121,7 +121,7 @@ public class OneRule extends AbstractClassifier {
             if (withDensities) {
                 String[] dict = firstTargetLevels();
                 DVector dv = p._2.solidCopy();
-                dv.normalize(true);
+                dv.normalize();
                 for (int j = 0; j < dict.length; j++) {
                     pred.firstDensity().setValue(i, j, dv.get(j));
                 }
@@ -133,7 +133,7 @@ public class OneRule extends AbstractClassifier {
     private Pair<String, DVector> predict(Frame df, int row) {
         if (bestRuleSet == null) {
             log.severe("Best rule not found. Either the classifier was not trained, either something went wrong.");
-            return new Pair<>("?", DVector.newEmpty(firstTargetLevels().length));
+            return new Pair<>("?", DVector.newEmpty(true, firstTargetLevels().length));
         }
         String testVar = bestRuleSet.getVarName();
         switch (df.var(testVar).type()) {
@@ -163,7 +163,7 @@ public class OneRule extends AbstractClassifier {
                     }
                 }
         }
-        return new Pair<>("?", DVector.newEmpty(firstTargetLevels().length));
+        return new Pair<>("?", DVector.newEmpty(true, firstTargetLevels().length));
     }
 
     private RuleSet buildNominal(String testVar, Frame df, Var weights) {
@@ -172,11 +172,11 @@ public class OneRule extends AbstractClassifier {
         String[] testDict = df.var(testVar).levels();
         String[] targetDict = firstTargetLevels();
 
-        DVector[] dvs = IntStream.range(0, testDict.length).boxed().map(i -> DVector.newEmpty(targetDict)).toArray(DVector[]::new);
+        DVector[] dvs = IntStream.range(0, testDict.length).boxed().map(i -> DVector.newEmpty(false, targetDict)).toArray(DVector[]::new);
         df.stream().forEach(s -> dvs[df.index(s.row(), testVar)].increment(df.index(s.row(), firstTargetName()), weights.value(s.row())));
         for (int i = 0; i < testDict.length; i++) {
             DVector dv = dvs[i];
-            int bestIndex = dv.findBestIndex(false);
+            int bestIndex = dv.findBestIndex();
             set.getRules().add(new NominalRule(testDict[i], bestIndex, dv));
         }
         return set;
@@ -197,13 +197,13 @@ public class OneRule extends AbstractClassifier {
 
         // first process missing values
         if (pos > 0) {
-            DVector hist = DVector.newEmpty(firstTargetLevels());
+            DVector hist = DVector.newEmpty(true, firstTargetLevels());
             for (int i = 0; i < pos; i++) {
                 hist.increment(df.index(sort.index(i), firstTargetName()), weights.value(sort.index(i)));
             }
             List<Integer> best = new ArrayList<>();
             double max = Double.MIN_VALUE;
-            int next = hist.findBestIndex(true);
+            int next = hist.findBestIndex();
             set.getRules().add(new NumericRule(Double.NaN, Double.NaN, true, next, hist));
         }
 
@@ -216,7 +216,7 @@ public class OneRule extends AbstractClassifier {
         while (i < sort.rowCount()) {
             // start a new bucket
             int startIndex = i;
-            DVector hist = DVector.newEmpty(firstTargetLevels());
+            DVector hist = DVector.newEmpty(true, firstTargetLevels());
 
             do { // fill it until it has enough of the majority class
                 index = df.index(sort.index(i), firstTargetName());
@@ -242,7 +242,7 @@ public class OneRule extends AbstractClassifier {
                 hist.increment(index, weights.value(sort.index(i)));
                 i++;
             }
-            int next = hist.findBestIndex(true);
+            int next = hist.findBestIndex();
             double minValue = Double.NEGATIVE_INFINITY;
             if (startIndex != pos) {
                 minValue = (df.value(sort.index(startIndex), testCol)

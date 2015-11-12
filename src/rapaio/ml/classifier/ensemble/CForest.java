@@ -267,7 +267,7 @@ public class CForest extends AbstractClassifier {
             oobTrueClass = df.var(firstTargetName()).solidCopy();
             oobFit = Nominal.newEmpty(df.rowCount(), firstTargetLevels());
             for (int i = 0; i < df.rowCount(); i++) {
-                oobDensities.put(i, DVector.newEmpty(firstTargetLevels()));
+                oobDensities.put(i, DVector.newEmpty(false, firstTargetLevels()));
             }
         }
         if (freqVIComp && c instanceof CTree) {
@@ -372,7 +372,7 @@ public class CForest extends AbstractClassifier {
 
     private void gainVICompute(Pair<Classifier, List<Integer>> weak) {
         CTree weakTree = (CTree) weak._1;
-        DVector scores = DVector.newEmpty(inputNames());
+        DVector scores = DVector.newEmpty(false, inputNames());
         collectGainVI(weakTree.getRoot(), scores);
         for (int j = 0; j < inputNames().length; j++) {
             String varName = inputName(j);
@@ -389,13 +389,13 @@ public class CForest extends AbstractClassifier {
             return;
         String varName = node.getBestCandidate().getTestName();
         double score = Math.abs(node.getBestCandidate().getScore());
-        dv.increment(varName, score * node.getDensity().sum(false));
+        dv.increment(varName, score * node.getDensity().sum());
         node.getChildren().forEach(child -> collectGainVI(child, dv));
     }
 
     private void freqVICompute(Pair<Classifier, List<Integer>> weak) {
         CTree weakTree = (CTree) weak._1;
-        DVector scores = DVector.newEmpty(inputNames());
+        DVector scores = DVector.newEmpty(false, inputNames());
         collectFreqVI(weakTree.getRoot(), scores);
         for (int j = 0; j < inputNames().length; j++) {
             String varName = inputName(j);
@@ -412,7 +412,7 @@ public class CForest extends AbstractClassifier {
             return;
         String varName = node.getBestCandidate().getTestName();
         double score = Math.abs(node.getBestCandidate().getScore());
-        dv.increment(varName, node.getDensity().sum(false));
+        dv.increment(varName, node.getDensity().sum());
         node.getChildren().forEach(child -> collectFreqVI(child, dv));
     }
 
@@ -430,8 +430,8 @@ public class CForest extends AbstractClassifier {
         totalOobError = 0.0;
         totalOobInstances = 0.0;
         for (Map.Entry<Integer, DVector> e : oobDensities.entrySet()) {
-            if (e.getValue().sum(false) > 0) {
-                int bestIndex = e.getValue().findBestIndex(false);
+            if (e.getValue().sum() > 0) {
+                int bestIndex = e.getValue().findBestIndex();
                 String bestLevel = firstTargetLevels()[bestIndex];
                 oobFit.setLabel(e.getKey(), bestLevel);
                 if (!bestLevel.equals(oobTrueClass.label(e.getKey()))) {
