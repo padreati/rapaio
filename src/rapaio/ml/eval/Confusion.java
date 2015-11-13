@@ -26,6 +26,7 @@ package rapaio.ml.eval;
 import rapaio.printer.Printable;
 import rapaio.data.Var;
 import rapaio.printer.format.TextTable;
+import rapaio.sys.WS;
 
 import java.util.Arrays;
 import java.util.stream.IntStream;
@@ -147,177 +148,6 @@ public class Confusion implements Printable {
 
         sb.append("\n");
 
-        int maxwidth = "Actual".length();
-        for (int i = 1; i < factors.length; i++) {
-            maxwidth = Math.max(maxwidth, factors[i].length());
-            int total = 0;
-            for (int j = 1; j < factors.length; j++) {
-                maxwidth = Math.max(maxwidth, String.format("%d", cmf[i - 1][j - 1]).length());
-                total += cmf[i - 1][j - 1];
-            }
-            maxwidth = Math.max(maxwidth, String.format("%d", total).length());
-        }
-
-        sb.append(String.format("%" + maxwidth + "s", "")).append("|").append(" Predicted\n");
-        sb.append(String.format("%" + maxwidth + "s", "Actual")).append("|");
-        for (int i = 1; i < factors.length; i++) {
-            sb.append(String.format("%" + maxwidth + "s", factors[i]));
-            if (i != factors.length - 1) {
-                sb.append(" ");
-            } else {
-                sb.append("|");
-            }
-        }
-        sb.append(String.format("%" + maxwidth + "s ", "Total"));
-        sb.append("\n");
-        for (int i = 1; i < factors.length + 1; i++) {
-            for (int j = 0; j < maxwidth; j++) {
-                sb.append("-");
-            }
-            sb.append(" ");
-        }
-        for (int j = 0; j < maxwidth; j++) {
-            sb.append("-");
-        }
-        sb.append(" ");
-        sb.append("\n");
-
-        for (int i = 1; i < factors.length; i++) {
-            sb.append(String.format("%" + maxwidth + "s", factors[i])).append("|");
-            int total = 0;
-            for (int j = 1; j < factors.length; j++) {
-                sb.append(String.format("%" + maxwidth + "d", cmf[i - 1][j - 1]));
-                if (j != factors.length - 1) {
-                    sb.append(" ");
-                } else {
-                    sb.append("|");
-                }
-                total += cmf[i - 1][j - 1];
-            }
-            sb.append(String.format("%" + maxwidth + "d", total));
-            sb.append("\n");
-        }
-
-        for (int i = 1; i < factors.length + 1; i++) {
-            for (int j = 0; j < maxwidth; j++) {
-                sb.append("-");
-            }
-            sb.append(" ");
-        }
-        for (int j = 0; j < maxwidth; j++) {
-            sb.append("-");
-        }
-        sb.append(" ");
-        sb.append("\n");
-
-
-        sb.append(String.format("%" + maxwidth + "s", "Total")).append("|");
-        for (int j = 1; j < factors.length; j++) {
-            int total = 0;
-            for (int i = 1; i < factors.length; i++) {
-                total += cmf[i - 1][j - 1];
-            }
-            sb.append(String.format("%" + maxwidth + "d", total));
-            if (j != factors.length - 1) {
-                sb.append(" ");
-            } else {
-                sb.append("|");
-            }
-        }
-        sb.append(String.format("%" + maxwidth + "d", (int) Math.rint(completeCases)));
-        sb.append("\n");
-
-
-        // percents
-
-        if (percents && completeCases > 0.) {
-
-            sb.append("\n");
-            maxwidth = "Actual".length();
-            for (int i = 1; i < factors.length; i++) {
-                maxwidth = Math.max(maxwidth, factors[i].length());
-                int total = 0;
-                for (int j = 1; j < factors.length; j++) {
-                    maxwidth = Math.max(maxwidth, String.format("%.3f", cmf[i - 1][j - 1] / completeCases).length());
-                    total += cmf[i - 1][j - 1];
-                }
-                maxwidth = Math.max(maxwidth, String.format("%.3f", total / completeCases).length());
-            }
-
-            sb.append(String.format("%" + maxwidth + "s", "")).append("|").append(" Predicted\n");
-            sb.append(String.format("%" + maxwidth + "s", "Actual")).append("|");
-            for (int i = 1; i < factors.length; i++) {
-                sb.append(String.format("%" + maxwidth + "s", factors[i]));
-                if (i != factors.length - 1) {
-                    sb.append(" ");
-                } else {
-                    sb.append("|");
-                }
-            }
-            sb.append(String.format("%" + maxwidth + "s ", "Total"));
-            sb.append("\n");
-
-            for (int i = 1; i < factors.length + 1; i++) {
-                for (int j = 0; j < maxwidth; j++) {
-                    sb.append("-");
-                }
-                sb.append(" ");
-            }
-            for (int j = 0; j < maxwidth; j++) {
-                sb.append("-");
-            }
-            sb.append(" ");
-            sb.append("\n");
-
-            for (int i = 1; i < factors.length; i++) {
-                sb.append(String.format("%" + maxwidth + "s", factors[i])).append("|");
-                int total = 0;
-                for (int j = 1; j < factors.length; j++) {
-                    sb.append(String.format(" %.3f", cmf[i - 1][j - 1] / completeCases));
-                    if (j != factors.length - 1) {
-                        sb.append(" ");
-                    } else {
-                        sb.append("|");
-                    }
-                    total += cmf[i - 1][j - 1];
-                }
-                sb.append(String.format(" %.3f", total / completeCases));
-                sb.append("\n");
-            }
-
-            for (int i = 1; i < factors.length + 1; i++) {
-                for (int j = 0; j < maxwidth; j++) {
-                    sb.append("-");
-                }
-                sb.append(" ");
-            }
-            for (int j = 0; j < maxwidth; j++) {
-                sb.append("-");
-            }
-            sb.append(" ");
-            sb.append("\n");
-
-
-            sb.append(String.format("%" + maxwidth + "s", "Total")).append("|");
-            for (int j = 1; j < factors.length; j++) {
-                int total = 0;
-                for (int i = 1; i < factors.length; i++) {
-                    total += cmf[i - 1][j - 1];
-                }
-                sb.append(String.format(" %.3f", total / completeCases));
-                if (j != factors.length - 1) {
-                    sb.append(" ");
-                } else {
-                    sb.append("|");
-                }
-            }
-            sb.append(String.format(" %.3f", 1.));
-            sb.append("\n");
-
-        }
-
-        sb.append("new revision of confusion matrix: \n\n");
-
         TextTable tt = TextTable.newEmpty(factors.length + 3, factors.length + 3);
         tt.withSplit();
 
@@ -331,12 +161,27 @@ public class Confusion implements Printable {
             tt.set(1, i + 2, line(factors[i + 1].length()), 1);
             tt.set(factors.length + 1, i + 2, line(factors[i + 1].length()), 0);
         }
-        tt.set(factors.length + 2, 0, "Totals:", 1);
-        tt.set(0, factors.length + 2, "Totals:", 1);
+        tt.set(factors.length + 2, 0, "total", 1);
+        tt.set(0, factors.length + 2, "total", 1);
 
-        double[] rowTotals = new double[factors.length - 1];
-        double[] colTotals = new double[factors.length - 1];
-        double grandTotal = 0.0;
+        tt.set(1, 0, line("Ac\\Pr".length()), 0);
+        tt.set(factors.length + 1, 0, line("Ac\\Pr".length()), 0);
+        tt.set(1, factors.length + 2, line("Ac\\Pr".length()), 0);
+        tt.set(factors.length + 1, factors.length + 2, line("Ac\\Pr".length()), 0);
+
+        tt.set(0, 1, "|", 0);
+        tt.set(1, 1, "|", 0);
+        tt.set(factors.length + 1, 1, "|", 0);
+        tt.set(factors.length + 2, 1, "|", 0);
+
+        tt.set(0, factors.length + 1, "|", 0);
+        tt.set(1, factors.length + 1, "|", 0);
+        tt.set(factors.length + 1, factors.length + 1, "|", 0);
+        tt.set(factors.length + 2, factors.length + 1, "|", 0);
+
+        int[] rowTotals = new int[factors.length - 1];
+        int[] colTotals = new int[factors.length - 1];
+        int grandTotal = 0;
 
         for (int i = 0; i < factors.length - 1; i++) {
             for (int j = 0; j < factors.length - 1; j++) {
@@ -347,9 +192,59 @@ public class Confusion implements Printable {
             }
         }
         for (int i = 0; i < factors.length - 1; i++) {
+            tt.set(factors.length + 2, i + 2, String.valueOf(colTotals[i]) + " ", 1);
+            tt.set(i + 2, factors.length + 2, String.valueOf(rowTotals[i]), 1);
+        }
+        tt.set(factors.length + 2, factors.length + 2, String.valueOf(grandTotal), 1);
+        sb.append(tt.summary());
+
+        if (percents && completeCases > 0.) {
+
+            tt = TextTable.newEmpty(factors.length + 3, factors.length + 3);
+            tt.withSplit();
+
+            tt.set(0, 0, "Ac\\Pr", 0);
+
+            for (int i = 0; i < factors.length - 1; i++) {
+                tt.set(i + 2, 0, factors[i + 1], 1);
+                tt.set(i + 2, 1, "|", 0);
+                tt.set(i + 2, factors.length + 1, "|", 0);
+                tt.set(0, i + 2, factors[i + 1], 1);
+                tt.set(1, i + 2, line(factors[i + 1].length()), 1);
+                tt.set(factors.length + 1, i + 2, line(factors[i + 1].length()), 0);
+            }
+            tt.set(factors.length + 2, 0, "total", 1);
+            tt.set(0, factors.length + 2, "total", 1);
+
+            tt.set(1, 0, line("Ac\\Pr".length()), 0);
+            tt.set(factors.length + 1, 0, line("Ac\\Pr".length()), 0);
+            tt.set(1, factors.length + 2, line("Ac\\Pr".length()), 0);
+            tt.set(factors.length + 1, factors.length + 2, line("Ac\\Pr".length()), 0);
+
+            tt.set(0, 1, "|", 0);
+            tt.set(1, 1, "|", 0);
+            tt.set(factors.length + 1, 1, "|", 0);
+            tt.set(factors.length + 2, 1, "|", 0);
+
+            tt.set(0, factors.length + 1, "|", 0);
+            tt.set(1, factors.length + 1, "|", 0);
+            tt.set(factors.length + 1, factors.length + 1, "|", 0);
+            tt.set(factors.length + 2, factors.length + 1, "|", 0);
+
+            for (int i = 0; i < factors.length - 1; i++) {
+                for (int j = 0; j < factors.length - 1; j++) {
+                    tt.set(i + 2, j + 2, ((i == j) ? "<" : "") + WS.formatShort(cmf[i][j] / completeCases) + ((i == j) ? ">" : " "), 1);
+                }
+            }
+            for (int i = 0; i < factors.length - 1; i++) {
+                tt.set(factors.length + 2, i + 2, WS.formatShort(colTotals[i] / completeCases) + " ", 1);
+                tt.set(i + 2, factors.length + 2, WS.formatShort(rowTotals[i] / completeCases), 1);
+            }
+            tt.set(factors.length + 2, factors.length + 2, WS.formatShort(grandTotal / completeCases), 1);
+            sb.append(tt.summary());
 
         }
-        sb.append(tt.summary());
+
     }
 
     private String line(int len) {

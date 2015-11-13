@@ -74,5 +74,8 @@ public class ConfusionTest {
 
         Confusion cm = new Confusion(actual, predict);
         cm.printSummary();
+
+        cm = new Confusion(actual, predict, true);
+        cm.printSummary();
     }
 }
