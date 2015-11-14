@@ -1,10 +1,8 @@
 rapaio
 ===========
-Statistics, data mining and machine learning toolbox in Java
+Statistics, data mining and machine learning toolbox in Java.
 
-See tutorials [Rapaio Tutorials](http://padreati.github.io/rapaio/)
-
-For installations and HowTo's guides I prepared a folder with documents: [HowTo's index page](howto/howto-index.Md).
+[Rapaio Manual index page](howto/howto-index.Md)
 
 
 Implemented Features
