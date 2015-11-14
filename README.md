@@ -2,7 +2,7 @@ rapaio
 ===========
 Statistics, data mining and machine learning toolbox in Java.
 
-[Rapaio Manual index page](howto/howto-index.Md)
+[Rapaio Manual index page](manual/index.Md)
 
 
 Implemented Features
