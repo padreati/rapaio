@@ -8,3 +8,7 @@ to use, play and develop further old or new ideas with rapaio library.
 
 * [Intellij Idea project setup](setup/ide-idea-setup.Md)
 
+## Input / Output
+
+* [CSV - reading and writing](io/csv-io.Md)
+

@@ -254,7 +254,7 @@ public class Csv {
         return SolidFrame.newWrapOf(rows - startRow, variables);
     }
 
-    public List<String> parseLine(String line) {
+    List<String> parseLine(String line) {
         List<String> data = new ArrayList<>();
         int start = 0;
         int colNum = 0;
