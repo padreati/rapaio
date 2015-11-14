@@ -37,7 +37,11 @@ public class CsvIO {
     public static void main(String[] args) throws IOException {
 
         Frame iris = new Csv().read(Datasets.class, "iris-r.csv");
-        iris.mapRows(0, 1, 50, 51, 100, 101).printLines();
 
+        // use only few rows
+        iris = iris.mapRows(0, 1, 50, 51, 100, 101);
+        iris.printLines();
+
+        new Csv().write(iris, "/tmp/iris.csv");
     }
 }
