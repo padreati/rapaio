@@ -934,4 +934,21 @@ public class MathTools {
         }
         return result;
     }
+
+
+    public static long combinations(int n, int k) {
+        long result = 1;
+        if ( k > n / 2) {
+            k = n - k;
+        }
+        for ( int d = 0; d < k; d++) {
+            long oldResult = result;
+            result = result * (n - d) / (d + 1);
+            // check for overflow
+            if ( oldResult > result ) {
+                throw new StackOverflowError( "long range exceeded" );
+            }
+        }
+        return result;
+    }
 }
