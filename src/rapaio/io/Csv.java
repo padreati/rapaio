@@ -204,8 +204,8 @@ public class Csv {
                         if (template != null) {
                             String[] vn = template.varNames();
                             boolean found = false;
-                            for (int i = 0; i < vn.length; i++) {
-                                if (vn[i].equals(colName)) {
+                            for (String name : vn) {
+                                if (name.equals(colName)) {
                                     found = true;
                                     break;
                                 }
@@ -254,7 +254,7 @@ public class Csv {
         return SolidFrame.newWrapOf(rows - startRow, variables);
     }
 
-    public List<String> parseLine(String line) {
+    List<String> parseLine(String line) {
         List<String> data = new ArrayList<>();
         int start = 0;
         int colNum = 0;

@@ -22,7 +22,7 @@
 //
 //import org.junit.Test;
 //import rapaio.sys.WS;
-//import rapaio.ml.eval.ConfusionMatrix;
+//import rapaio.ml.eval.Confusion;
 //import rapaio.data.*;
 //import rapaio.ml.classifier.Classifier;
 //import rapaio.ml.classifier.bayes.NaiveBayes;
@@ -84,11 +84,11 @@
 //
 //                for (String cName : cNames) {
 //                    Classifier c = classifiers.get(cName);
-//                    c.learn(task.trainFrame(), task.targetName());
+//                    c.train(task.trainFrame(), task.targetName());
 //                    c.fit(task.testFrame());
 //
 //                    results.setValue(i, cName,
-//                            new ConfusionMatrix(
+//                            new Confusion(
 //                                    task.testFrame().var(task.targetName()),
 //                                    c.classes()).accuracy());
 //                }

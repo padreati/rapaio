@@ -24,7 +24,6 @@
 package rapaio.util;
 
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * General utilities class.

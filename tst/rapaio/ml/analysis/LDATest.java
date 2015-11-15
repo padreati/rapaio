@@ -55,7 +55,7 @@ public class LDATest {
         LDA lda = new LDA().withMaxRuns(10_000).withTol(1e-30);
         lda.learn(df, "class");
 //        PCA lda = new PCA().withMaxRuns(10_000).withTol(1e-30);
-//        lda.learn(df.removeVars("class"));
+//        lda.train(df.removeVars("class"));
         lda.printSummary();
 
 
@@ -72,8 +72,8 @@ public class LDATest {
 //
         WS.draw(gl);
 
-        CEvaluation.cv(df, "class", new CForest().withRuns(1000), 10);
-        CEvaluation.cv(fit.mapVars("0~1,4"), "class", new CForest().withRuns(1000), 10);
+        CEvaluation.cv(df, "class", new CForest().withRuns(10), 10);
+        CEvaluation.cv(fit.mapVars("0~1,4"), "class", new CForest().withRuns(10), 10);
     }
 
 }

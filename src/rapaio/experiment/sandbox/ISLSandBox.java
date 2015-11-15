@@ -25,18 +25,13 @@ package rapaio.experiment.sandbox;
 
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.Plotter;
 import rapaio.graphics.plot.GridLayer;
-import rapaio.graphics.plot.Plot;
-import rapaio.graphics.plot.Points;
-import rapaio.printer.IdeaPrinter;
 
 import java.awt.*;
 import java.io.IOException;
 
 import static rapaio.graphics.Plotter.points;
 import static rapaio.sys.WS.draw;
-import static rapaio.sys.WS.setPrinter;
 import static rapaio.graphics.Plotter.color;
 import static rapaio.graphics.Plotter.pch;
 

@@ -48,15 +48,15 @@ public enum BaggingMode implements Serializable {
                 }
             });
             for (int i = 0; i < classes.rowCount(); i++) {
-                DVector dv = DVector.newEmpty(dictionary);
+                DVector dv = DVector.newEmpty(false, dictionary);
                 for (int j = 1; j < dictionary.length; j++) {
                     dv.increment(j, densities.value(i, j));
                 }
-                dv.normalize(false);
+                dv.normalize();
                 for (int j = 1; j < dictionary.length; j++) {
                     densities.setValue(i, j, dv.get(j));
                 }
-                classes.setValue(i, dv.findBestIndex(false));
+                classes.setValue(i, dv.findBestIndex());
             }
         }
 
@@ -90,15 +90,15 @@ public enum BaggingMode implements Serializable {
                 }
             });
             for (int i = 0; i < classes.rowCount(); i++) {
-                DVector dv = DVector.newEmpty(dictionary);
+                DVector dv = DVector.newEmpty(false, dictionary);
                 for (int j = 0; j < dictionary.length; j++) {
                     dv.increment(j, densities.value(i, j));
                 }
-                dv.normalize(false);
+                dv.normalize();
                 for (int j = 0; j < dictionary.length; j++) {
                     densities.setValue(i, j, dv.get(j));
                 }
-                classes.setValue(i, dv.findBestIndex(false));
+                classes.setValue(i, dv.findBestIndex());
             }
         }
 

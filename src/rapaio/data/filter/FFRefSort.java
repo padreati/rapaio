@@ -42,7 +42,8 @@ public class FFRefSort extends FFAbstract {
 
     private final Comparator<Integer> aggregateComparator;
 
-    public FFRefSort(Comparator<Integer> comparators) {
+    @SafeVarargs
+    public FFRefSort(Comparator<Integer>... comparators) {
         super();
         this.aggregateComparator = RowComparators.aggregate(comparators);
     }

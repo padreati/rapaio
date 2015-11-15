@@ -47,7 +47,7 @@ public enum ColorPalette implements Serializable {
         return palette.getColor(index);
     }
 
-    public static interface Mapping extends Serializable {
+    public interface Mapping extends Serializable {
 
         Color getColor(int index);
     }

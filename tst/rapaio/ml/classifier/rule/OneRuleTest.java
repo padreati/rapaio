@@ -27,14 +27,10 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.*;
 import rapaio.datasets.Datasets;
-import rapaio.io.JavaIO;
 import rapaio.ml.classifier.CFit;
-import rapaio.sys.WS;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -69,7 +65,7 @@ public class OneRuleTest {
         OneRule oneRule = new OneRule();
 
         oneRule = oneRule.withMinCount(1);
-        oneRule.learn(df, "class");
+        oneRule.train(df, "class");
         CFit pred = oneRule.fit(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
@@ -77,7 +73,7 @@ public class OneRuleTest {
         }
 
         oneRule.withMinCount(2);
-        oneRule.learn(df, "class");
+        oneRule.train(df, "class");
         pred = oneRule.fit(df);
         labels = new String[]{"True", "True", "TrueFalse", "TrueFalse", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
@@ -85,7 +81,7 @@ public class OneRuleTest {
         }
 
         oneRule.withMinCount(3);
-        oneRule.learn(df, "class");
+        oneRule.train(df, "class");
         pred = oneRule.fit(df);
         labels = new String[]{"True", "True", "True", "False", "False", "False"};
         for (int i = 0; i < SIZE; i++) {
@@ -93,7 +89,7 @@ public class OneRuleTest {
         }
 
         oneRule.withMinCount(4);
-        oneRule.learn(df, "class");
+        oneRule.train(df, "class");
         pred = oneRule.fit(df);
         for (int i = 1; i < SIZE; i++) {
             assertTrue(pred.firstClasses().label(i).equals(pred.firstClasses().label(0)));
@@ -104,8 +100,9 @@ public class OneRuleTest {
     public void testSummary() throws IOException, URISyntaxException {
         Frame df1 = Datasets.loadIrisDataset();
         OneRule oneRule1 = new OneRule();
-        oneRule1.learn(df1, "class");
+        oneRule1.train(df1, "class");
 
+        oneRule1.printSummary();
         assertEquals("OneRule model\n" +
                 "================\n" +
                 "\n" +
@@ -113,26 +110,22 @@ public class OneRuleTest {
                 "OneRule (minCount=6)\n" +
                 "\n" +
                 "Capabilities:\n" +
-                "learning type: MULTICLASS_CLASSIFIER\n" +
-                "inputTypes: BINARY,INDEX,NOMINAL,NUMERIC,ORDINAL,STAMP\n" +
-                "minInputCount: 1, maxInputCount: 1000000\n" +
-                "allowMissingInputValues: true\n" +
-                "targetTypes: NOMINAL\n" +
-                "minTargetCount: 1, maxTargetCount: 1\n" +
-                "allowMissingTargetValues: false\n" +
+                "learning: MULTICLASS_CLASSIFIER\n" +
+                "types inputs/targets: BINARY,INDEX,NOMINAL,NUMERIC,ORDINAL,STAMP/NOMINAL\n" +
+                "counts inputs/targets: [1,1000000] / [1,1]\n" +
+                "missing inputs/targets: true/false\n" +
                 "\n" +
                 "Learned model:\n" +
                 "input vars: \n" +
-                "> sepal-length : NUMERIC\n" +
-                "> sepal-width : NUMERIC\n" +
-                "> petal-length : NUMERIC\n" +
-                "> petal-width : NUMERIC\n" +
+                "\n" +
+                " 0. sepal-length : NUMERIC  | 1. sepal-width : NUMERIC  | 2. petal-length : NUMERIC  | 3. petal-width : NUMERIC  |\n" +
+                "\n" +
                 "target vars:\n" +
-                "> class : NOMINAL [?,Iris-setosa,Iris-versicolor,Iris-virginica]\n" +
+                "> class : NOMINAL [?,setosa,versicolor,virginica]\n" +
                 "BestRuleSet {var=petal-length, acc=0.9533333}\n" +
-                "> NumericRule {min=-Infinity, max=2.45, class=Iris-setosa, errors=0, total=50, acc=1 }\n" +
-                "> NumericRule {min=2.45, max=4.75, class=Iris-versicolor, errors=1, total=45, acc=0.9777778 }\n" +
-                "> NumericRule {min=4.75, max=Infinity, class=Iris-virginica, errors=6, total=55, acc=0.8909091 }\n" +
+                "> NumericRule {min=-Infinity, max=2.45, class=setosa, errors=0, total=50, acc=1 }\n" +
+                "> NumericRule {min=2.45, max=4.75, class=versicolor, errors=1, total=45, acc=0.9777778 }\n" +
+                "> NumericRule {min=4.75, max=Infinity, class=virginica, errors=6, total=55, acc=0.8909091 }\n" +
                 "\n", oneRule1.summary());
 
         oneRule1.printSummary();
@@ -141,7 +134,7 @@ public class OneRuleTest {
 
         RandomSource.setSeed(1);
         OneRule oneRule2 = new OneRule();
-        oneRule2.learn(df2, "classes");
+        oneRule2.train(df2, "classes");
 
         oneRule2.printSummary();
 
@@ -152,38 +145,19 @@ public class OneRuleTest {
                 "OneRule (minCount=6)\n" +
                 "\n" +
                 "Capabilities:\n" +
-                "learning type: MULTICLASS_CLASSIFIER\n" +
-                "inputTypes: BINARY,INDEX,NOMINAL,NUMERIC,ORDINAL,STAMP\n" +
-                "minInputCount: 1, maxInputCount: 1000000\n" +
-                "allowMissingInputValues: true\n" +
-                "targetTypes: NOMINAL\n" +
-                "minTargetCount: 1, maxTargetCount: 1\n" +
-                "allowMissingTargetValues: false\n" +
+                "learning: MULTICLASS_CLASSIFIER\n" +
+                "types inputs/targets: BINARY,INDEX,NOMINAL,NUMERIC,ORDINAL,STAMP/NOMINAL\n" +
+                "counts inputs/targets: [1,1000000] / [1,1]\n" +
+                "missing inputs/targets: true/false\n" +
                 "\n" +
                 "Learned model:\n" +
                 "input vars: \n" +
-                "> cap-shape : NOMINAL\n" +
-                "> cap-surface : NOMINAL\n" +
-                "> cap-color : NOMINAL\n" +
-                "> bruises : NOMINAL\n" +
-                "> odor : NOMINAL\n" +
-                "> gill-attachment : NOMINAL\n" +
-                "> gill-spacing : NOMINAL\n" +
-                "> gill-size : NOMINAL\n" +
-                "> gill-color : NOMINAL\n" +
-                "> stalk-shape : NOMINAL\n" +
-                "> stalk-root : NOMINAL\n" +
-                "> stalk-surface-above-ring : NOMINAL\n" +
-                "> stalk-surface-below-ring : NOMINAL\n" +
-                "> stalk-color-above-ring : NOMINAL\n" +
-                "> stalk-color-below-ring : NOMINAL\n" +
-                "> veil-type : NOMINAL\n" +
-                "> veil-color : NOMINAL\n" +
-                "> ring-number : NOMINAL\n" +
-                "> ring-type : NOMINAL\n" +
-                "> spore-print-color : NOMINAL\n" +
-                "> population : NOMINAL\n" +
-                "> habitat : NOMINAL\n" +
+                "\n" +
+                " 0.   cap-shape : NOMINAL  | 4.            odor : NOMINAL  |  8.               gill-color : NOMINAL  | 12. stalk-surface-below-ring : NOMINAL  | 16.        veil-color : NOMINAL  | 20. population : NOMINAL  |\n" +
+                " 1. cap-surface : NOMINAL  | 5. gill-attachment : NOMINAL  |  9.              stalk-shape : NOMINAL  | 13.   stalk-color-above-ring : NOMINAL  | 17.       ring-number : NOMINAL  | 21.    habitat : NOMINAL  |\n" +
+                " 2.   cap-color : NOMINAL  | 6.    gill-spacing : NOMINAL  | 10.               stalk-root : NOMINAL  | 14.   stalk-color-below-ring : NOMINAL  | 18.         ring-type : NOMINAL  |                            \n" +
+                " 3.     bruises : NOMINAL  | 7.       gill-size : NOMINAL  | 11. stalk-surface-above-ring : NOMINAL  | 15.                veil-type : NOMINAL  | 19. spore-print-color : NOMINAL  |                            \n" +
+                "\n" +
                 "target vars:\n" +
                 "> classes : NOMINAL [?,p,e]\n" +
                 "BestRuleSet {var=odor, acc=0.985229}\n" +
@@ -205,7 +179,7 @@ public class OneRuleTest {
 
         Frame df1 = Datasets.loadMushrooms();
         OneRule oneRule1 = new OneRule();
-        oneRule1.learn(df1, "classes");
+        oneRule1.train(df1, "classes");
 
         oneRule1.printSummary();
         CFit fit1 = oneRule1.fit(df1, true, true);
@@ -214,7 +188,7 @@ public class OneRuleTest {
 
         Frame df2 = Datasets.loadIrisDataset();
         OneRule oneRule2 = new OneRule();
-        oneRule2.learn(df2, "class");
+        oneRule2.train(df2, "class");
 
         oneRule2.printSummary();
         CFit fit2 = oneRule2.fit(df2, true, true);

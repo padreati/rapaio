@@ -53,7 +53,7 @@ public interface CTreeTest extends Serializable {
                 Var test = df.var(testName);
                 Var target = df.var(targetName);
 
-                DTable dt = DTable.newEmpty(DTable.NUMERIC_DEFAULT_LABELS, target.levels());
+                DTable dt = DTable.newEmpty(DTable.NUMERIC_DEFAULT_LABELS, target.levels(), false);
                 int misCount = 0;
                 for (int i = 0; i < df.rowCount(); i++) {
                     int row = (test.missing(i)) ? 0 : 2;
@@ -107,7 +107,7 @@ public interface CTreeTest extends Serializable {
                 Var test = df.var(testName);
                 Var target = df.var(targetName);
 
-                DTable dt = DTable.newEmpty(DTable.NUMERIC_DEFAULT_LABELS, target.levels());
+                DTable dt = DTable.newEmpty(DTable.NUMERIC_DEFAULT_LABELS, target.levels(), false);
                 int misCount = 0;
                 for (int i = 0; i < df.rowCount(); i++) {
                     int row = (test.missing(i)) ? 0 : 2;
@@ -163,8 +163,8 @@ public interface CTreeTest extends Serializable {
 
                 Var test = df.var(testName);
                 Var target = df.var(targetName);
-                DTable dt = DTable.newFromCounts(test, target);
-                if (!(dt.hasCountWithMinimum(false, c.minCount(), 2))) {
+                DTable dt = DTable.newFromCounts(test, target, false);
+                if (!(dt.hasColsWithMinimumCount(c.minCount(), 2))) {
                     return Collections.emptyList();
                 }
 
@@ -179,12 +179,12 @@ public interface CTreeTest extends Serializable {
                 Var test = df.var(testColName);
                 Var target = df.var(targetColName);
 
-                if (!DTable.newFromCounts(test, target).hasCountWithMinimum(false, c.minCount(), 2)) {
+                if (!DTable.newFromCounts(test, target, false).hasColsWithMinimumCount(c.minCount(), 2)) {
                     return Collections.emptyList();
                 }
 
                 List<CTree.Candidate> result = new ArrayList<>();
-                DTable dt = DTable.newFromWeights(test, target, weights);
+                DTable dt = DTable.newFromWeights(test, target, weights, false);
                 double value = function.compute(dt);
 
                 CTree.Candidate candidate = new CTree.Candidate(value, testColName);
@@ -204,7 +204,7 @@ public interface CTreeTest extends Serializable {
 
                 Var test = df.var(testColName);
                 Var target = df.var(targetColName);
-                if (!(DTable.newFromCounts(test, target).hasCountWithMinimum(false, c.minCount(), 2))) {
+                if (!(DTable.newFromCounts(test, target, false).hasColsWithMinimumCount(c.minCount(), 2))) {
                     return Collections.emptyList();
                 }
 
@@ -223,7 +223,7 @@ public interface CTreeTest extends Serializable {
                     }
                     String testLabel = df.var(testColName).levels()[i];
 
-                    DTable dt = DTable.newBinaryFromWeights(test, target, weights, testLabel);
+                    DTable dt = DTable.newBinaryFromWeights(test, target, weights, testLabel, false);
                     double value = function.compute(dt);
                     CTree.Candidate candidate = new CTree.Candidate(value, testColName);
                     if (best == null) {

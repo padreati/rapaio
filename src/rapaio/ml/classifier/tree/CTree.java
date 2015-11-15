@@ -25,7 +25,6 @@ package rapaio.ml.classifier.tree;
 
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.stream.FSpot;
@@ -43,7 +42,6 @@ import rapaio.util.func.SPredicate;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -72,7 +70,6 @@ public class CTree extends AbstractClassifier {
     private Tag<CTreeMissingHandler> splitter = CTreeMissingHandler.Ignored;
     private Tag<CTreePruning> pruning = CTreePruning.NONE;
     private Frame pruningDf = null;
-    private BiConsumer<CTree, Integer> runningHook = null;
 
     // tree root node
     private Node root;
@@ -87,7 +84,7 @@ public class CTree extends AbstractClassifier {
                 .withMissingHandler(CTreeMissingHandler.Ignored)
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Full)
                 .withTest(VarType.NUMERIC, CTreeTest.Ignore)
-                .withFunction(CTreeFunction.Entropy)
+                .withFunction(CTreeFunction.InfoGain)
                 .withPruning(CTreePruning.NONE);
     }
 
@@ -108,7 +105,7 @@ public class CTree extends AbstractClassifier {
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
                 .withMissingHandler(CTreeMissingHandler.ToAllWeighted)
-                .withFunction(CTreeFunction.InfoGain)
+                .withFunction(CTreeFunction.GainRatio)
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Binary)
                 .withTest(VarType.NUMERIC, CTreeTest.Numeric_Binary);
     }
@@ -118,7 +115,7 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(-1)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
-                .withMissingHandler(CTreeMissingHandler.ToRandom)
+                .withMissingHandler(CTreeMissingHandler.ToAllWeighted)
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Binary)
                 .withTest(VarType.NUMERIC, CTreeTest.Numeric_Binary)
                 .withFunction(CTreeFunction.GiniGain);
@@ -132,9 +129,10 @@ public class CTree extends AbstractClassifier {
                 .withFunction(function)
                 .withMissingHandler(splitter)
                 .withVarSelector(varSelector().newInstance())
-                .withRunningHook(runningHook)
+                .withRunningHook(runningHook())
                 .withSampler(sampler());
 
+        tree.withPoolSize(poolSize());
         tree.testMap.clear();
         tree.testMap.putAll(testMap);
 
@@ -223,11 +221,6 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
-    public CTree withRunningHook(BiConsumer<CTree, Integer> runningHook) {
-        this.runningHook = runningHook;
-        return this;
-    }
-
     public Tag<CTreeFunction> getFunction() {
         return function;
     }
@@ -239,10 +232,6 @@ public class CTree extends AbstractClassifier {
 
     public Tag<CTreeMissingHandler> getSplitter() {
         return splitter;
-    }
-
-    public BiConsumer<CTree, Integer> getRunningHook() {
-        return runningHook;
     }
 
     public CTree withMissingHandler(Tag<CTreeMissingHandler> splitter) {
@@ -288,9 +277,8 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    public CTree learn(Frame dfOld, Var weights, String... targetVars) {
+    protected boolean coreTrain(Frame df, Var weights) {
 
-        Frame df = prepareLearning(dfOld, weights, targetVars);
         additionalValidation(df);
 
         this.varSelector.withVarNames(inputNames());
@@ -304,7 +292,7 @@ public class CTree extends AbstractClassifier {
         }
         this.root.fillId(1);
         pruning.get().prune(this, (pruningDf == null) ? df : pruningDf, false);
-        return this;
+        return true;
     }
 
     public void prune(Frame df) {
@@ -316,7 +304,7 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    public CFit fit(Frame dfOld, boolean withClasses, boolean withDensities) {
+    protected CFit coreFit(Frame dfOld, boolean withClasses, boolean withDensities) {
 
         Frame df = prepareFit(dfOld);
         CFit prediction = CFit.newEmpty(this, df, withClasses, withDensities);
@@ -325,17 +313,17 @@ public class CTree extends AbstractClassifier {
         df.stream().forEach(spot -> {
             Pair<Integer, DVector> result = fitPoint(this, spot, root);
             if (withClasses)
-                prediction.firstClasses().setIndex(spot.row(), result.a);
+                prediction.firstClasses().setIndex(spot.row(), result._1);
             if (withDensities)
                 for (int j = 0; j < firstTargetLevels().length; j++) {
-                    prediction.firstDensity().setValue(spot.row(), j, result.b.get(j));
+                    prediction.firstDensity().setValue(spot.row(), j, result._2.get(j));
                 }
         });
         return prediction;
     }
 
-    public Pair<Integer, DVector> fitPoint(CTree tree, FSpot spot, Node node) {
-        if (node.getCounter().sum(false) == 0)
+    protected Pair<Integer, DVector> fitPoint(CTree tree, FSpot spot, Node node) {
+        if (node.getCounter().sum() == 0)
             if (node.getParent() == null) {
                 throw new RuntimeException("Something bad happened at learning time");
             } else {
@@ -351,15 +339,16 @@ public class CTree extends AbstractClassifier {
         }
 
         String[] dict = tree.firstTargetLevels();
-        DVector dv = DVector.newEmpty(dict);
+        DVector dv = DVector.newEmpty(false, dict);
         for (Node child : node.getChildren()) {
-            DVector d = this.fitPoint(tree, spot, child).b;
+            DVector d = this.fitPoint(tree, spot, child)._2;
             for (int i = 0; i < dict.length; i++) {
-                dv.increment(i, d.get(i) * child.getDensity().sum(false));
+//                dv.increment(i, d.get(i) * child.getDensity().sum(false));
+                dv.increment(i, d.get(i));
             }
         }
-        dv.normalize(false);
-        return new Pair<>(dv.findBestIndex(false), dv);
+        dv.normalize();
+        return new Pair<>(dv.findBestIndex(), dv);
     }
 
     private void additionalValidation(Frame df) {
@@ -368,7 +357,7 @@ public class CTree extends AbstractClassifier {
                 return;
             if (testMap.containsKey(var.type()))
                 return;
-            throw new IllegalArgumentException("can't learn ctree with no " +
+            throw new IllegalArgumentException("can't train ctree with no " +
                     "tests for given variable: " + var.name() +
                     " [" + var.type().name() + "]");
         });
@@ -424,7 +413,7 @@ public class CTree extends AbstractClassifier {
         sb.append("total number of nodes: ").append(nodeCount).append("\n");
         sb.append("total number of leaves: ").append(leaveCount).append("\n");
         sb.append("description:\n");
-        sb.append("split, n/err, classes (densities) [* if is leaf]\n\n");
+        sb.append("split, n/err, classes (densities) [* if is leaf / purity if not]\n\n");
 
         buildSummary(sb, root, 0);
 
@@ -439,15 +428,19 @@ public class CTree extends AbstractClassifier {
             sb.append((i == level - 1) ? "   |- " : "   |");
         }
         sb.append(node.getId()).append(". ").append(node.getGroupName()).append("    ");
-        sb.append(WS.formatFlexShort(node.getCounter().sum(true))).append("/");
-        sb.append(WS.formatFlexShort(node.getCounter().sumExcept(node.getBestIndex(), true))).append(" ");
+        sb.append(WS.formatFlexShort(node.getCounter().sum())).append("/");
+        sb.append(WS.formatFlexShort(node.getCounter().sumExcept(node.getBestIndex()))).append(" ");
         sb.append(firstTargetLevels()[node.getBestIndex()]).append(" (");
-        DVector d = node.getDensity();
+        DVector d = node.getDensity().solidCopy().normalize();
         for (int i = 1; i < firstTargetLevels().length; i++) {
             sb.append(WS.formatFlexShort(d.get(i))).append(" ");
         }
         sb.append(") ");
-        if (node.isLeaf()) sb.append("*");
+        if (node.isLeaf()) {
+            sb.append("*");
+        } else {
+            sb.append("[").append(WS.formatFlex(node.getBestCandidate().getScore())).append("]");
+        }
         sb.append("\n");
 
         node.getChildren().stream().forEach(child -> buildSummary(sb, child, level + 1));
@@ -496,8 +489,8 @@ public class CTree extends AbstractClassifier {
 
         @Override
         public int compareTo(Candidate o) {
-            if (o == null) return -1;
-            return new Double(score).compareTo(o.score);
+            if (o == null) return 1;
+            return -(new Double(score).compareTo(o.score));
         }
     }
 
@@ -581,20 +574,17 @@ public class CTree extends AbstractClassifier {
         }
 
         public void learn(CTree tree, Frame df, Var weights, int depth, NominalTerms terms) {
-            density = DVector.newFromWeights(df.var(tree.firstTargetName()), weights);
-            density.normalize(false);
-
-            counter = DVector.newFromWeights(df.var(tree.firstTargetName()), Numeric.newFill(df.rowCount(), 1));
-            bestIndex = density.findBestIndex(false);
+            density = DVector.newFromWeights(false, df.var(tree.firstTargetName()), weights);
+            counter = DVector.newFromCount(false, df.var(tree.firstTargetName()));
+            bestIndex = density.findBestIndex();
 
             if (df.rowCount() == 0) {
                 bestIndex = parent.bestIndex;
                 return;
             }
-            if (counter.countValues(x -> x > 0, false) == 1 || depth < 1 || df.rowCount() <= tree.minCount()) {
+            if (counter.countValues(x -> x > 0) == 1 || depth < 1 || df.rowCount() <= tree.minCount()) {
                 return;
             }
-
 
             List<Candidate> candidateList = Arrays.stream(tree.varSelector().nextVarNames())
                     .parallel()
@@ -608,7 +598,7 @@ public class CTree extends AbstractClassifier {
                             test = tree.testMap().get(df.var(testCol).type()).get();
                         }
                         if (test == null) {
-                            throw new IllegalArgumentException("can't learn ctree with no " +
+                            throw new IllegalArgumentException("can't train ctree with no " +
                                     "tests for given variable: " + df.var(testCol).name() +
                                     " [" + df.var(testCol).type().name() + "]");
                         }
@@ -617,34 +607,25 @@ public class CTree extends AbstractClassifier {
                         return (c == null || c.isEmpty()) ? null : c.get(0);
                     }).filter(c -> c != null).collect(Collectors.toList());
 
-
             Collections.sort(candidateList);
-
-            if (candidateList.isEmpty()) {
-                //            bestIndex = parent.bestIndex;
+            if (candidateList.isEmpty() || candidateList.get(0).getGroupNames().isEmpty()) {
+                bestIndex = parent.bestIndex;
                 return;
             }
-            leaf = false;
 
+            leaf = false;
             bestCandidate = candidateList.get(0);
             String testName = bestCandidate.getTestName();
 
             // now that we have a best candidate, do the effective split
-
-            if (bestCandidate.getGroupNames().isEmpty()) {
-                //            bestIndex = parent.bestIndex;
-                leaf = true;
-                return;
-            }
-
             Pair<List<Frame>, List<Var>> frames = tree.getSplitter().get().performSplit(df, weights, bestCandidate);
 
-            for (int i = 0; i < frames.a.size(); i++) {
+            for (int i = 0; i < bestCandidate.getGroupNames().size(); i++) {
                 Node child = new Node(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
                 children.add(child);
             }
             Util.rangeStream(children.size(), tree.poolSize() > 0)
-                    .forEach(i -> children.get(i).learn(tree, frames.a.get(i), frames.b.get(i), depth - 1, terms.copy()));
+                    .forEach(i -> children.get(i).learn(tree, frames._1.get(i), frames._2.get(i), depth - 1, terms.copy()));
         }
     }
 

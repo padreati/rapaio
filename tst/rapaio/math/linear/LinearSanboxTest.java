@@ -24,8 +24,6 @@
 package rapaio.math.linear;
 
 import org.junit.Test;
-import rapaio.sys.WS;
-import rapaio.util.Pair;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/7/15.

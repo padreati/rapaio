@@ -33,7 +33,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 /**
  * WS tool.
@@ -120,11 +119,11 @@ public class WS {
     }
 
     public static String formatShort(double value) {
-        return formatDecFlex.format(value);
+        return formatDecShort.format(value);
     }
 
     public static String formatLong(double value) {
-        return formatDecFlex.format(value);
+        return formatDecLong.format(value);
     }
 
     public static void print(String message) {

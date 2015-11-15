@@ -27,12 +27,12 @@ import rapaio.core.SamplingTools;
 import rapaio.data.*;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
-import rapaio.ml.classifier.RunningClassifier;
+import rapaio.ml.classifier.Classifier;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.regressor.RegressorFit;
-import rapaio.ml.regressor.boost.gbt.BTRegressor;
+import rapaio.ml.regressor.RFit;
+import rapaio.ml.regressor.boost.gbt.BTRegression;
 import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
-import rapaio.ml.regressor.tree.rtree.RTree;
+import rapaio.ml.regressor.tree.RTree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,26 +41,28 @@ import java.util.List;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/12/14.
  */
 @Deprecated
-public class GBTClassifier extends AbstractClassifier implements RunningClassifier {
+public class GBTClassifier extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = -2979235364091072967L;
-    private int runs = 10;
     private double shrinkage = 1.0;
     private boolean useBootstrap = true;
     private double bootstrapSize = 1.0;
-    private BTRegressor classifier = RTree.buildCART().withMaxDepth(4);
+    private BTRegression classifier = RTree.buildCART().withMaxDepth(4);
 
     // prediction artifact
 
     int K;
     double[][] f;
     double[][] p;
-    private List<List<BTRegressor>> trees;
+    private List<List<BTRegression>> trees;
+
+    public GBTClassifier() {
+        withRuns(10);
+    }
 
     @Override
     public GBTClassifier newInstance() {
-        return new GBTClassifier()
-                .withRuns(runs);
+        return (GBTClassifier) new GBTClassifier().withRuns(runs());
     }
 
     @Override
@@ -72,7 +74,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
     public String fullName() {
         StringBuilder sb = new StringBuilder();
         sb.append(name()).append("{");
-        sb.append("runs=").append(runs);
+        sb.append("runs=").append(runs());
         sb.append("}");
         return sb.toString();
     }
@@ -89,7 +91,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
                 .withAllowMissingTargetValues(false);
     }
 
-    public GBTClassifier withTree(BTRegressor rTree) {
+    public GBTClassifier withTree(BTRegression rTree) {
         this.classifier = rTree;
         return this;
     }
@@ -110,20 +112,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
     }
 
     @Override
-    public GBTClassifier withRuns(int runs) {
-        this.runs = runs;
-        return this;
-    }
-
-    @Override
-    public GBTClassifier learn(Frame dfOld, Var weights, String... targetVarNames) {
-        Frame df = prepareLearning(dfOld, weights, targetVarNames);
-        if (targetNames().length != 1) {
-            throw new IllegalArgumentException("This classifier accepts one and only one target variable.");
-        }
-        if (runs <= 0) {
-            throw new IllegalArgumentException("runs parameter must be greater than 0");
-        }
+    public boolean coreTrain(Frame df, Var weights) {
 
         // algorithm described by ESTL pag. 387
 
@@ -134,37 +123,10 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
         for (int i = 0; i < K; i++) {
             trees.add(new ArrayList<>());
         }
-        for (int m = 0; m < runs; m++) {
+        for (int m = 0; m < runs(); m++) {
             buildAdditionalTree(df, weights);
         }
-        return this;
-    }
-
-    @Override
-    public void learnFurther(int runs, Frame df, Var weights, String... targetVarNames) {
-        if (targetNames() == null) {
-            withRuns(runs);
-            learn(df, weights, targetVarNames);
-            return;
-        }
-
-        if (runs <= 0) {
-            throw new IllegalArgumentException("runs parameter must be greater than 0");
-        }
-        if (this.runs >= runs) {
-            throw new IllegalArgumentException("runs parameter must be greater than the current runs learned");
-        }
-        if (f.length != df.rowCount()) {
-            throw new IllegalArgumentException("learn further called for different frame");
-        }
-
-        // algorithm described by ESTL pag. 387
-
-        for (int m = this.runs; m < runs; m++) {
-            buildAdditionalTree(df, weights);
-        }
-        this.runs = runs;
-
+        return true;
     }
 
     private void buildAdditionalTree(Frame df, Var weights) {
@@ -194,7 +156,7 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
             Frame x = df.removeVars(targetNames());
             Frame train = x.bindVars(r);
 
-            BTRegressor tree = classifier.newInstance();
+            BTRegression tree = classifier.newInstance();
 
             Frame bootTrain = train;
             Var bootWeights = weights;
@@ -207,10 +169,10 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
                 bootX = x.mapRows(map);
                 bootR = r.mapRows(map);
             }
-            tree.learn(bootTrain, bootWeights, "##tt##");
+            tree.train(bootTrain, bootWeights, "##tt##");
             tree.boostFit(bootX, bootR, bootR, new ClassifierLossFunction(K));
 
-            RegressorFit rr = tree.predict(train, true);
+            RFit rr = tree.fit(train, true);
 
             for (int i = 0; i < df.rowCount(); i++) {
                 f[i][k] += shrinkage * rr.firstFit().value(i);
@@ -221,16 +183,16 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
     }
 
     @Override
-    public CFit fit(Frame df, boolean withClasses, boolean withDistributions) {
+    public CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
         CFit cr = CFit.newEmpty(this, df, withClasses, withDistributions);
         for (String targetName : targetNames()) {
             cr.addTarget(targetName, targetLevels().get(targetName));
         }
 
         for (int k = 0; k < K; k++) {
-            List<BTRegressor> predictors = trees.get(k);
-            for (BTRegressor tree : predictors) {
-                RegressorFit rr = tree.predict(df, false);
+            List<BTRegression> predictors = trees.get(k);
+            for (BTRegression tree : predictors) {
+                RFit rr = tree.fit(df, false);
                 for (int i = 0; i < df.rowCount(); i++) {
                     double p = cr.firstDensity().value(i, k + 1);
                     p += shrinkage * rr.firstFit().value(i);
@@ -277,15 +239,18 @@ public class GBTClassifier extends AbstractClassifier implements RunningClassifi
         return cr;
     }
 
+    /*
     @Override
     public CFit fitFurther(CFit fit, Frame df) {
         throw new IllegalArgumentException("not implemented yet");
     }
+    */
 }
 
 @Deprecated
 class ClassifierLossFunction implements GBTLossFunction {
 
+    private static final long serialVersionUID = -2622054975826334290L;
     private final double K;
 
     public ClassifierLossFunction(int K) {

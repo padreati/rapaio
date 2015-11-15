@@ -26,10 +26,10 @@ package rapaio.ml.classifier;
 import rapaio.data.*;
 import rapaio.data.filter.FFilter;
 import rapaio.data.sample.FrameSampler;
-import rapaio.sys.WS;
-import rapaio.ws.Summary;
+import rapaio.printer.format.TextTable;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -51,7 +51,9 @@ public abstract class AbstractClassifier implements Classifier {
     private Map<String, String[]> dict;
     private FrameSampler sampler = new FrameSampler.Identity();
     private boolean learned = false;
-    private int poolSize = 1;
+    private int poolSize = Runtime.getRuntime().availableProcessors();
+    private int runs = 1;
+    private BiConsumer<Classifier, Integer> runningHook;
 
     @Override
     public FrameSampler sampler() {
@@ -105,20 +107,30 @@ public abstract class AbstractClassifier implements Classifier {
         return learned;
     }
 
+    @Override
+    public final Classifier train(Frame df, String... targetVars) {
+        Numeric weights = Numeric.newFill(df.rowCount(), 1);
+        return train(df, weights, targetVars);
+    }
+
+    @Override
+    public final Classifier train(Frame df, Var weights, String... targetVars) {
+        BaseTrainSetup setup = baseTrain(df, weights, targetVars);
+        Frame workDf = prepareTraining(setup.df, setup.w, setup.targetVars);
+        learned = coreTrain(workDf, setup.w);
+        return this;
+    }
+
     /**
      * This method is prepares learning phase. It is a generic method which works
-     * for all learners. It's taks includes initialization of target names,
+     * for all learners. It's tass includes initialization of target names,
      * input names, check the capabilities at learning phase, etc.
      *
-     * @param dfOld         data frame
+     * @param dfOld      data frame
      * @param weights    weights of instances
      * @param targetVars target variable names
      */
-    public Frame prepareLearning(Frame dfOld, final Var weights, final String... targetVars) {
-
-        if (targetVars.length == 0) {
-            throw new IllegalArgumentException("At least a target var name should be specified at learning time.");
-        }
+    protected Frame prepareTraining(Frame dfOld, final Var weights, final String... targetVars) {
         Frame df = dfOld;
         for (FFilter filter : inputFilters) {
             df = filter.filter(df);
@@ -136,17 +148,41 @@ public abstract class AbstractClassifier implements Classifier {
         this.inputTypes = inputs.stream().map(name -> result.var(name).type()).toArray(VarType[]::new);
 
         capabilities().checkAtLearnPhase(result, weights, targetVars);
-        learned = true;
         return result;
     }
 
-    public Frame prepareFit(Frame df) {
+    protected BaseTrainSetup baseTrain(Frame df, Var weights, String... targetVars) {
+        return BaseTrainSetup.valueOf(df, weights, targetVars);
+    }
+
+    protected abstract boolean coreTrain(Frame df, Var weights);
+
+    @Override
+    public final CFit fit(Frame df) {
+        return fit(df, true, true);
+    }
+
+    @Override
+    public final CFit fit(Frame df, boolean withClasses, boolean withDistributions) {
+        BaseFitSetup setup = baseFit(df, withClasses, withDistributions);
+        Frame workDf = prepareFit(setup.df);
+        return coreFit(workDf, setup.withClasses, setup.withDistributions);
+    }
+
+    // by default do nothing, it is only for two stage training
+    protected BaseFitSetup baseFit(Frame df, boolean withClasses, boolean withDistributions) {
+        return BaseFitSetup.valueOf(df, withClasses, withDistributions);
+    }
+
+    protected Frame prepareFit(Frame df) {
         Frame result = df;
         for (FFilter filter : inputFilters) {
             result = filter.apply(result);
         }
         return result;
     }
+
+    protected abstract CFit coreFit(Frame df, boolean withClasses, boolean withDistributions);
 
     @Override
     public String summary() {
@@ -158,30 +194,16 @@ public abstract class AbstractClassifier implements Classifier {
         sb.append("input vars: \n");
 
         int varCount = inputNames.length;
-        int maxSize = Arrays.stream(inputNames).mapToInt(String::length).max().orElse(0);
-        int offset = 18;
-
-        int cols = WS.getPrinter().getTextWidth() / (maxSize + offset);
-        int len = (int) Math.ceil(varCount * 1.0 / cols);
-
-        List<Var> vars = new ArrayList<>();
-        for (int i = 0; i < Math.min(cols, varCount); i++) {
-            Var pos = Nominal.newEmpty().withName(String.format("%" + (i * 2 + 1) + "s", " "));
-            Var name = Nominal.newEmpty().withName(String.format("%" + (i * 2 + 2) + "s", " "));
-            for (int j = 0; j < len; j++) {
-                if (i * len + j < inputNames.length) {
-                    pos.addLabel(String.valueOf(i * len + j) + ".");
-                    name.addLabel(inputNames[i * len + j] +
-                            String.format(" : %7s", inputTypes[i * len + j].name()));
-                } else {
-                    pos.addLabel("");
-                    name.addLabel("");
-                }
-            }
-            vars.add(pos);
-            vars.add(name);
+        TextTable tt = TextTable.newEmpty(varCount, 5);
+        for (int i = 0; i < varCount; i++) {
+            tt.set(i, 0, i + ".", 1);
+            tt.set(i, 1, inputNames[i], 1);
+            tt.set(i, 2, ":", -1);
+            tt.set(i, 3, inputTypes[i].name(), -1);
+            tt.set(i, 4, " |", 1);
         }
-        sb.append(Summary.headString(SolidFrame.newWrapOf(vars)));
+        tt.withMerge();
+        sb.append("\n").append(tt.summary()).append("\n");
 
         sb.append("target vars:\n");
         IntStream.range(0, targetNames().length).forEach(i -> sb.append("> ")
@@ -201,5 +223,60 @@ public abstract class AbstractClassifier implements Classifier {
     @Override
     public int poolSize() {
         return poolSize;
+    }
+
+    @Override
+    public int runs() {
+        return runs;
+    }
+
+    @Override
+    public Classifier withRuns(int runs) {
+        this.runs = runs;
+        return this;
+    }
+
+    @Override
+    public BiConsumer<Classifier, Integer> runningHook() {
+        return runningHook;
+    }
+
+    @Override
+    public Classifier withRunningHook(BiConsumer<Classifier, Integer> runningHook) {
+        this.runningHook = runningHook;
+        return this;
+    }
+
+    protected static class BaseTrainSetup {
+        public final Frame df;
+        public final Var w;
+        public final String[] targetVars;
+
+        private BaseTrainSetup(Frame df, Var w, String[] targetVars) {
+            this.df = df;
+            this.w = w;
+            this.targetVars = targetVars;
+        }
+
+        public static BaseTrainSetup valueOf(Frame df, Var w, String[] targetVars) {
+            return new BaseTrainSetup(df, w, targetVars);
+        }
+    }
+
+    protected static final class BaseFitSetup {
+
+        public final Frame df;
+        public final boolean withClasses;
+        public final boolean withDistributions;
+
+        private BaseFitSetup(Frame df, boolean withClasses, boolean withDistributions) {
+            this.df = df;
+            this.withClasses = withClasses;
+            this.withDistributions = withDistributions;
+        }
+
+        public static BaseFitSetup valueOf(Frame df, boolean withClasses, boolean withDistributions) {
+            return new BaseFitSetup(df, withClasses, withDistributions);
+        }
     }
 }

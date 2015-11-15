@@ -27,8 +27,6 @@ import rapaio.data.*;
 import rapaio.data.stream.FSpot;
 import rapaio.math.linear.*;
 import rapaio.printer.Printable;
-import rapaio.sys.WS;
-import rapaio.util.Pair;
 import rapaio.ws.Summary;
 
 import java.util.Arrays;
@@ -84,7 +82,7 @@ public class LDA implements Printable {
     public void learn(Frame df, String... targetVars) {
         validate(df, targetVars);
 
-        logger.fine("start lda learn");
+        logger.fine("start lda train");
         RM xx = Linear.newRMCopyOf(df.removeVars(targetName));
 
         // compute mean and sd
@@ -109,12 +107,10 @@ public class LDA implements Printable {
         // compute sliced data for each class
 
         RM[] x = new RM[targetLevels.length];
-        IntStream.range(0, targetLevels.length).forEach(i -> {
-                    x[i] = xx.mapRows(df.stream()
-                            .filter(s -> s.label(targetName).equals(targetLevels[i]))
-                            .mapToInt(FSpot::row)
-                            .toArray());
-                }
+        IntStream.range(0, targetLevels.length).forEach(i -> x[i] = xx.mapRows(df.stream()
+                .filter(s -> s.label(targetName).equals(targetLevels[i]))
+                .mapToInt(FSpot::row)
+                .toArray())
         );
 
 

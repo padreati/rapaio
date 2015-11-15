@@ -35,7 +35,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Capabilities describes what a machine learning algorithm can learn and fit.
+ * Capabilities describes what a machine learning algorithm can train and fit.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/1/14.
  */
@@ -260,7 +260,8 @@ public class Capabilities implements Printable {
     public enum LearnType {
         UNARY_CLASSIFIER,
         BINARY_CLASSIFIER,
-        MULTICLASS_CLASSIFIER
+        MULTICLASS_CLASSIFIER,
+        REGRESSION
     }
 
     public LearnType getLearnType() {
@@ -302,13 +303,11 @@ public class Capabilities implements Printable {
     @Override
     public String summary() {
         StringBuilder sb = new StringBuilder();
-        sb.append("learning type: ").append(learnType.name()).append("\n");
-        sb.append("inputTypes: ").append(inputTypes.stream().map(Enum::name).collect(joining(","))).append("\n");
-        sb.append("minInputCount: ").append(minInputCount).append(", maxInputCount: ").append(maxInputCount).append("\n");
-        sb.append("allowMissingInputValues: ").append(allowMissingInputValues).append("\n");
-        sb.append("targetTypes: ").append(targetTypes.stream().map(Enum::name).collect(joining(","))).append("\n");
-        sb.append("minTargetCount: ").append(minTargetCount).append(", maxTargetCount: ").append(maxTargetCount).append("\n");
-        sb.append("allowMissingTargetValues: ").append(allowMissingTargetValues).append("\n");
+        sb.append("learning: ").append(learnType.name()).append("\n");
+        sb.append("types inputs/targets: ").append(inputTypes.stream().map(Enum::name).collect(joining(","))).append("/").append(targetTypes.stream().map(Enum::name).collect(joining(","))).append("\n");
+        sb.append("counts inputs/targets: [").append(minInputCount).append(",").append(maxInputCount).append("] / [")
+                .append(minTargetCount).append(",").append(maxTargetCount).append("]\n");
+        sb.append("missing inputs/targets: ").append(allowMissingInputValues).append("/").append(allowMissingTargetValues).append("\n");
         return sb.toString();
     }
 

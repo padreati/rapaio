@@ -227,8 +227,6 @@ public class LzJsonInput extends LzJsonAlgorithm implements JsonInput {
 
     @Override
     public void close() throws IOException {
-        if (is != null) {
-            is.close();
-        }
+        is.close();
     }
 }

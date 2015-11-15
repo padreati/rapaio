@@ -95,7 +95,7 @@ class ReducedError {
                     it.remove();
                     continue;
                 }
-                double delta = topDown.get(id).b / topDown.get(id).sum() - bottomUp.get(id).b / bottomUp.get(id).sum();
+                double delta = topDown.get(id)._2 / topDown.get(id).sum() - bottomUp.get(id)._2 / bottomUp.get(id).sum();
                 if (delta >= maxAcc) {
                     maxAcc = delta;
                     maxId = id;
@@ -110,14 +110,14 @@ class ReducedError {
 
             if (found) {
                 updateError(maxId, bottomUp, nodes, ValuePair.of(
-                        topDown.get(maxId).a - bottomUp.get(maxId).a,
-                        topDown.get(maxId).b - bottomUp.get(maxId).b));
+                        topDown.get(maxId)._1 - bottomUp.get(maxId)._1,
+                        topDown.get(maxId)._2 - bottomUp.get(maxId)._2));
                 addToPruned(maxId, nodes.get(maxId), pruned, topDown, bottomUp, nodes);
                 nodes.get(maxId).cut();
             }
 
-            if (tree.getRunningHook() != null) {
-                tree.getRunningHook().accept(tree, nodes.size());
+            if (tree.runningHook() != null) {
+                tree.runningHook().accept(tree, nodes.size());
             }
         }
 

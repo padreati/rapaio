@@ -55,12 +55,12 @@ public class RMSE implements Printable {
 
         for (String varName : actualNames) {
             if (!predictNames.contains(varName)) {
-                throw new IllegalArgumentException("actual and predict variables are not the same");
+                throw new IllegalArgumentException("actual and fit variables are not the same");
             }
         }
         for (String varName : predictNames) {
             if (!actualNames.contains(varName)) {
-                throw new IllegalArgumentException("actual and predict variables are not the same");
+                throw new IllegalArgumentException("actual and fit variables are not the same");
             }
         }
 

@@ -23,11 +23,11 @@
 
 package rapaio.ml.classifier;
 
+import rapaio.ml.eval.Confusion;
 import rapaio.printer.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
 import rapaio.data.SolidFrame;
-import rapaio.ml.eval.ConfusionMatrix;
 
 import java.util.*;
 
@@ -217,7 +217,7 @@ public class CFit implements Printable {
 
         sb.append("Classification results:").append("\n");
         if (Arrays.asList(df.varNames()).contains(firstTargetVar())) {
-            sb.append(new ConfusionMatrix(df.var(model.firstTargetName()), firstClasses()).summary());
+            sb.append(new Confusion(df.var(model.firstTargetName()), firstClasses()).summary());
         } else {
             sb.append("data frame does not contain target variable.");
         }

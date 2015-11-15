@@ -29,18 +29,16 @@ import rapaio.data.sample.FrameSampler;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
 import rapaio.data.Var;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * Interface for all classification model algorithms.
  * A classifier is able to classify multiple target columns, if implementation allows that.
- * If a classifier implements further learning it has to implement
- * {@link RunningClassifier}
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
@@ -87,8 +85,42 @@ public interface Classifier extends Printable, Serializable {
      */
     FrameSampler sampler();
 
+    /**
+     * Filters which will be applied on input variables
+     * for various transformations, before the data is learned.
+     * <p>
+     * Thus, input variables learned by a model are not derived
+     * directly from the data frame used by removing target
+     * variables, but by pre-processing them with filters.
+     * <p>
+     * Filters will be applied always in sequence.
+     * The filtering process has the following steps:
+     * <p>
+     * <ol>
+     * <li>consider data frame as draft data frame</li>
+     * <li>take in order the filters from input filter list</li>
+     * <li>apply each filter to draft data frame and dessignate the result as draft data frame</li>
+     * <li>after all filters are executed designate draft data frame as the workable data frame</li>
+     * <li>parse all the target variable names from pattern strings and workable data frame</li>
+     * <li>collect all the variable names from workable data frame</li>
+     * <li>collect target variable names from the list of available variable names</li>
+     * <li>collect input variable as all the variables which are not considered target variables</li>
+     * </ol>
+     * <p>
+     * This algorithm is executed each time for {@link #train(Frame, Var, String...)},
+     * {@link #train(Frame, String...)}, {@link #fit(Frame)} and {@link #fit(Frame, boolean, boolean)} methods.
+     *
+     * @return list of filter to transform data into input variables.
+     */
     List<FFilter> inputFilters();
 
+    /**
+     * Specifies which filters will be used to transform data
+     * before learning and fitting.
+     *
+     * @param filters list of filters applied in chain
+     * @return self instance
+     */
     Classifier withInputFilters(FFilter... filters);
 
     /**
@@ -211,10 +243,7 @@ public interface Classifier extends Printable, Serializable {
      * @param df         data set instances
      * @param targetVars target variables
      */
-    default Classifier learn(Frame df, String... targetVars) {
-        Numeric weights = Numeric.newFill(df.rowCount(), 1);
-        return learn(df, weights, targetVars);
-    }
+    Classifier train(Frame df, String... targetVars);
 
     /**
      * Fit a classifier on instances specified by frame, with row weights and targetVars
@@ -223,7 +252,7 @@ public interface Classifier extends Printable, Serializable {
      * @param weights    instance weights
      * @param targetVars target variables
      */
-    Classifier learn(Frame df, Var weights, String... targetVars);
+    Classifier train(Frame df, Var weights, String... targetVars);
 
     /**
      * Predict classes for new data set instances, with
@@ -231,9 +260,7 @@ public interface Classifier extends Printable, Serializable {
      *
      * @param df data set instances
      */
-    default CFit fit(Frame df) {
-        return fit(df, true, true);
-    }
+    CFit fit(Frame df);
 
     /**
      * Predict classes for given instances, generating classes if specified and
@@ -264,4 +291,44 @@ public interface Classifier extends Printable, Serializable {
      * @return pool size to be used
      */
     int poolSize();
+
+    /**
+     * @return the number of runs
+     */
+    int runs();
+
+    /**
+     * Specifies the runs / rounds of learning.
+     * For various models composed of multiple sub-models
+     * the runs represents often the number of sub-models.
+     * <p>
+     * For example for CForest the number of runs is used to specify
+     * the number of decision trees to be built.
+     *
+     * @param runs number of runs
+     * @return self-instance, used for builder pattern
+     **/
+    Classifier withRuns(int runs);
+
+    /**
+     * Get the lambda call hook which will be called after
+     * each sub-component or iteration specified by {@link #withRuns(int)}
+     * is trained.
+     *
+     * @return lambda running hook
+     */
+    BiConsumer<Classifier, Integer> runningHook();
+
+    /**
+     * Set up a lambda call hook which will be called after
+     * each sub-component or iteration specified by {@link #withRuns(int)}
+     * is trained.
+     *
+     * @param runningHook bi consumer method to be called at each iteration, first
+     *                    parameter is the model built at the time and the second
+     *                    parameter value is the run value
+     *
+     * @return self-instance of the model
+     */
+    Classifier withRunningHook(BiConsumer<Classifier, Integer> runningHook);
 }

@@ -32,9 +32,6 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 
 import static org.junit.Assert.assertEquals;
-import static rapaio.sys.WS.draw;
-import static rapaio.graphics.Plotter.color;
-import static rapaio.graphics.Plotter.sz;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>

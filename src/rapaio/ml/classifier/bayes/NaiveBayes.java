@@ -24,18 +24,18 @@
 package rapaio.ml.classifier.bayes;
 
 import rapaio.core.tools.DVector;
+import rapaio.data.Binary;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
-import rapaio.ml.classifier.bayes.estimator.GaussianPdf;
-import rapaio.ml.classifier.bayes.estimator.MultinomialPmf;
-import rapaio.ml.classifier.bayes.estimator.NominalEstimator;
-import rapaio.ml.classifier.bayes.estimator.NumericEstimator;
+import rapaio.ml.classifier.bayes.estimator.*;
 import rapaio.ml.common.Capabilities;
 import rapaio.sys.WS;
+import rapaio.util.Tag;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,22 +56,27 @@ public class NaiveBayes extends AbstractClassifier {
 
     // algorithm parameters
 
-    private boolean useLaplaceSmoother = true;
+    private double laplaceSmoother = 1;
+    private BinaryEstimator binEstimator = new MultinomialPmf();
     private NumericEstimator numEstimator = new GaussianPdf();
     private NominalEstimator nomEstimator = new MultinomialPmf();
+    private Tag<PriorSupplier> priorSupplier = PRIORS_MLE;
 
     // prediction artifacts
 
     private Map<String, Double> priors;
     private Map<String, NumericEstimator> numMap;
     private Map<String, NominalEstimator> nomMap;
+    private Map<String, BinaryEstimator> binMap;
 
     @Override
     public NaiveBayes newInstance() {
         return new NaiveBayes()
+                .withBinEstimator(binEstimator)
                 .withNumEstimator(numEstimator)
                 .withNomEstimator(nomEstimator)
-                .withLaplaceSmoother(useLaplaceSmoother);
+                .withLaplaceSmoother(laplaceSmoother)
+                .withPriorSupplier(priorSupplier);
     }
 
     @Override
@@ -96,6 +101,11 @@ public class NaiveBayes extends AbstractClassifier {
                 .withAllowMissingInputValues(true);
     }
 
+    public NaiveBayes withBinEstimator(BinaryEstimator binEstimator) {
+        this.binEstimator = binEstimator;
+        return this;
+    }
+
     public NaiveBayes withNumEstimator(NumericEstimator numEstimator) {
         this.numEstimator = numEstimator;
         return this;
@@ -106,43 +116,43 @@ public class NaiveBayes extends AbstractClassifier {
         return this;
     }
 
-    public NaiveBayes withLaplaceSmoother(boolean useLaplaceSmoother) {
-        this.useLaplaceSmoother = useLaplaceSmoother;
+    public NaiveBayes withLaplaceSmoother(double laplaceSmoother) {
+        this.laplaceSmoother = laplaceSmoother;
         return this;
     }
 
-    public boolean usingLaplaceSmoother() {
-        return useLaplaceSmoother;
+    public double laplaceSmoother() {
+        return laplaceSmoother;
+    }
+
+    public NaiveBayes withPriorSupplier(Tag<PriorSupplier> priorSupplier) {
+        this.priorSupplier = priorSupplier;
+        return this;
     }
 
     @Override
-    public NaiveBayes learn(Frame df, Var weights, String... targetVarNames) {
-
-        prepareLearning(df, weights, targetVarNames);
+    protected boolean coreTrain(Frame df, Var weights) {
 
         // build priors
 
-        priors = new HashMap<>();
-        DVector dv = DVector.newFromWeights(df.var(firstTargetName()), weights, firstTargetLevels());
-
-        if (useLaplaceSmoother) {
-            // laplace add-one smoothing
-            IntStream.range(0, firstTargetLevels().length).forEach(i -> dv.increment(i, 1.0));
-        }
-        dv.normalize(false);
-        for (int i = 1; i < firstTargetLevels().length; i++) {
-            priors.put(firstTargetLevels()[i], dv.get(i));
-        }
+        priors = PRIORS_MLE.get().learnPriors(df, weights, this);
 
         // build conditional probabilities
 
         nomMap = new ConcurrentHashMap<>();
         numMap = new ConcurrentHashMap<>();
+        binMap = new ConcurrentHashMap<>();
 
-        logger.config("start learning...");
+        logger.fine("start learning...");
         Arrays.stream(df.varNames()).parallel().forEach(
                 testCol -> {
                     if (firstTargetName().equals(testCol)) {
+                        return;
+                    }
+                    if (df.var(testCol).type().isBinary()) {
+                        BinaryEstimator estimator = binEstimator.newInstance();
+                        estimator.learn(this, df, weights, firstTargetName(), testCol);
+                        binMap.put(testCol, estimator);
                         return;
                     }
                     if (df.var(testCol).type().isNumeric()) {
@@ -157,21 +167,21 @@ public class NaiveBayes extends AbstractClassifier {
                         nomMap.put(testCol, estimator);
                     }
                 });
-        logger.config("learning phase finished");
-        return this;
+        logger.fine("learning phase finished");
+        return true;
     }
 
     @Override
-    public CFit fit(Frame df, final boolean withClasses, final boolean withDensities) {
+    protected CFit coreFit(Frame df, final boolean withClasses, final boolean withDensities) {
 
-        logger.config("start fitting values...");
+        logger.fine("start fitting values...");
 
         CFit pred = CFit.newEmpty(this, df, withClasses, withDensities);
         pred.addTarget(firstTargetName(), firstTargetLevels());
 
         IntStream.range(0, df.rowCount()).parallel().forEach(
                 i -> {
-                    DVector dv = DVector.newEmpty(firstTargetLevels());
+                    DVector dv = DVector.newEmpty(false, firstTargetLevels());
                     for (int j = 1; j < firstTargetLevels().length; j++) {
                         double sumLog = Math.log(priors.get(firstTargetLevel(j)));
                         for (String testCol : numMap.keySet()) {
@@ -185,12 +195,18 @@ public class NaiveBayes extends AbstractClassifier {
                             }
                             sumLog += Math.log(nomMap.get(testCol).cpValue(df.label(i, testCol), firstTargetLevel(j)));
                         }
+                        for (String testCol : binMap.keySet()) {
+                            if (df.missing(i, testCol)) {
+                                continue;
+                            }
+                            sumLog += Math.log(binMap.get(testCol).cpValue(df.label(i, testCol), firstTargetLevel(j)));
+                        }
                         dv.increment(j, Math.exp(sumLog));
                     }
-                    dv.normalize(false);
+                    dv.normalize();
 
                     if (withClasses) {
-                        pred.firstClasses().setIndex(i, dv.findBestIndex(false));
+                        pred.firstClasses().setIndex(i, dv.findBestIndex());
                     }
                     if (withDensities) {
                         for (int j = 1; j < firstTargetLevels().length; j++) {
@@ -198,7 +214,7 @@ public class NaiveBayes extends AbstractClassifier {
                         }
                     }
                 });
-        logger.config("fitting phase finished.");
+        logger.fine("fitting phase finished.");
         return pred;
     }
 
@@ -237,4 +253,27 @@ public class NaiveBayes extends AbstractClassifier {
         }
         return sb.toString();
     }
+
+    interface PriorSupplier extends Serializable {
+        Map<String, Double> learnPriors(Frame df, Var weights, NaiveBayes nb);
+    }
+
+    public static Tag<PriorSupplier> PRIORS_MLE = Tag.valueOf("PRIORS_MLE", (df, weights, nb) -> {
+        Map<String, Double> priors = new HashMap<>();
+        DVector dv = DVector.newFromWeights(false, df.var(nb.firstTargetName()), weights, nb.firstTargetLevels());
+        dv.normalize();
+        for (int i = 1; i < nb.firstTargetLevels().length; i++) {
+            priors.put(nb.firstTargetLevels()[i], dv.get(i));
+        }
+        return priors;
+    });
+
+    public static Tag<PriorSupplier> PRIORS_UNIFORM = Tag.valueOf("PRIORS_UNIFORM", (df, weights, nb) -> {
+        Map<String, Double> priors = new HashMap<>();
+        double p = 1.0 / nb.firstTargetLevels().length;
+        for (int i = 1; i < nb.firstTargetLevels().length; i++) {
+            priors.put(nb.firstTargetLevels()[i], p);
+        }
+        return priors;
+    });
 }

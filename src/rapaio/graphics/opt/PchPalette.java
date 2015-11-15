@@ -25,6 +25,7 @@ package rapaio.graphics.opt;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -39,7 +40,7 @@ public enum PchPalette implements Serializable {
 
     private final Mapping mapping;
 
-    private PchPalette(Mapping mapping) {
+    PchPalette(Mapping mapping) {
         this.mapping = mapping;
     }
 
@@ -73,6 +74,13 @@ final class StandardPchPalette implements Mapping {
             g2d.setColor(fill);
             if (g2d.getStroke() instanceof BasicStroke)
                 g2d.setStroke(stroke);
+        });
+        add((g2d, x, y, sz) -> {
+            Color fill = g2d.getColor();
+            g2d.draw(new Line2D.Double(x - sz, y - sz, x + sz, y + sz));
+            g2d.fill(new Line2D.Double(x - sz, y - sz, x + sz, y + sz));
+            g2d.draw(new Line2D.Double(x + sz, y - sz, x - sz, y + sz));
+            g2d.fill(new Line2D.Double(x + sz, y - sz, x - sz, y + sz));
         });
     }};
 

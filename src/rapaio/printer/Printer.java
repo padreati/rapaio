@@ -25,8 +25,6 @@ package rapaio.printer;
 
 import rapaio.graphics.base.Figure;
 
-import java.text.DecimalFormat;
-
 /**
  * Interface for the printing system.
  *

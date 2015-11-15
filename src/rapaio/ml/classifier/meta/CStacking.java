@@ -92,9 +92,8 @@ public class CStacking extends AbstractClassifier {
                 .withTargetCount(1, 1);
     }
 
-    @Override
-    public Classifier learn(Frame dfOld, Var weights, String... targetVars) {
-        logger.config("learn method called.");
+    protected BaseTrainSetup baseTrain(Frame df, Var w, String... targetVars) {
+        logger.config("train method called.");
         int pos = 0;
         logger.config("check learners for learning.... ");
         List<Var> vars =
@@ -103,47 +102,48 @@ public class CStacking extends AbstractClassifier {
                         .map(i -> {
                             if (!weaks.get(i).hasLearned()) {
                                 logger.config("started learning for weak learner ...");
-                                weaks.get(i).learn(dfOld, weights, targetVars);
+                                weaks.get(i).train(df, w, targetVars);
                             }
                             logger.config("started fitting weak learner...");
-                            return weaks.get(i)
-                                    .fit(dfOld)
-                                    .firstDensity()
-                                    .var(1)
-                                    .solidCopy()
+                            return weaks.get(i).fit(df).firstDensity().var(1).solidCopy()
                                     .withName("V" + i);
                         })
                         .collect(toList());
 
-        List<String> targets = new VarRange(targetVars).parseVarNames(dfOld);
-        vars.add(dfOld.var(targets.get(0)).solidCopy());
+        List<String> targets = new VarRange(targetVars).parseVarNames(df);
+        vars.add(df.var(targets.get(0)).solidCopy());
 
-        Frame df = prepareLearning(SolidFrame.newWrapOf(vars), weights, targetVars);
-
-        logger.config("started learning for stacker classifier...");
-        stacker.learn(df, weights, targetVars);
-
-        logger.config("end learn method call");
-        return this;
+        return BaseTrainSetup.valueOf(SolidFrame.newWrapOf(vars), w, targetVars);
     }
 
     @Override
-    public CFit fit(Frame dfOld, boolean withClasses, boolean withDistributions) {
+    protected boolean coreTrain(Frame df, Var weights) {
+
+        logger.config("started learning for stacker classifier...");
+        stacker.train(df, weights, targetNames());
+
+        logger.config("end train method call");
+        return true;
+    }
+
+    protected BaseFitSetup baseFit(Frame df, boolean withClasses, boolean withDistributions) {
         logger.config("fit method called.");
         List<Var> vars = Util.rangeStream(weaks.size(), true)
                 .boxed()
                 .map(i -> {
                     logger.config("started fitting weak learner ...");
                     return weaks.get(i)
-                            .fit(dfOld)
+                            .fit(df)
                             .firstDensity()
                             .var(1)
                             .solidCopy()
                             .withName("V" + i);
                 }).collect(toList());
+        return BaseFitSetup.valueOf(SolidFrame.newWrapOf(vars), withClasses, withDistributions);
+    }
 
-        Frame df = prepareFit(SolidFrame.newWrapOf(vars));
-
+    @Override
+    protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
         logger.config("started fitting stacker classifier .. ");
         CFit fit = stacker.fit(df);
 

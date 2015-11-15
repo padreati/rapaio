@@ -24,20 +24,15 @@
 package rapaio.data.filter;
 
 import rapaio.data.Frame;
-import rapaio.data.Var;
 import rapaio.data.VarRange;
 import rapaio.ml.analysis.LDA;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
-
 public class FFLDA implements FFilter {
+
+    private static final long serialVersionUID = 2797285371357486124L;
 
     private final String[] draftTargetVars;
     private final int k;
-    private String[] targetVars;
     private LDA lda;
 
     public FFLDA(int k, String... targetVars) {
@@ -47,7 +42,7 @@ public class FFLDA implements FFilter {
 
     @Override
     public void fit(Frame df) {
-        targetVars = new VarRange(draftTargetVars).parseVarNames(df).stream().toArray(String[]::new);
+        String[] targetVars = new VarRange(draftTargetVars).parseVarNames(df).stream().toArray(String[]::new);
 
         lda = new LDA();
         lda.learn(df, targetVars);

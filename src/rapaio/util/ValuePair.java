@@ -34,54 +34,54 @@ public class ValuePair implements Serializable {
 
     private static final long serialVersionUID = -6294811698229236502L;
 
-    public double a = 0.0;
-    public double b = 0.0;
+    public double _1 = 0.0;
+    public double _2 = 0.0;
 
-    public static ValuePair of(double a, double b) {
-        return new ValuePair(a, b);
+    public static ValuePair of(double _1, double _2) {
+        return new ValuePair(_1, _2);
     }
 
     public static ValuePair empty() {
         return new ValuePair(0.0, 0.0);
     }
 
-    private ValuePair(double a, double b) {
-        this.a = a;
-        this.b = b;
+    private ValuePair(double _1, double _2) {
+        this._1 = _1;
+        this._2 = _2;
     }
 
     public void fill(double value) {
-        this.a = value;
-        this.b = value;
+        this._1 = value;
+        this._2 = value;
     }
 
     public double sum() {
-        return a + b;
+        return _1 + _2;
     }
 
     public void normalize() {
-        double sum = a + b;
+        double sum = _1 + _2;
         if (sum == 0) {
-            a = 0.0;
-            b = 0.0;
+            _1 = 0.0;
+            _2 = 0.0;
         } else {
-            a /= sum;
-            b /= sum;
+            _1 /= sum;
+            _2 /= sum;
         }
     }
 
-    public void update(double a, double b) {
-        this.a = a;
-        this.b = b;
+    public void update(double _1, double _2) {
+        this._1 = _1;
+        this._2 = _2;
     }
 
     public void update(ValuePair p) {
-        this.a = p.a;
-        this.b = p.b;
+        this._1 = p._1;
+        this._2 = p._2;
     }
 
     public void increment(ValuePair p) {
-        this.a += p.a;
-        this.b += p.b;
+        this._1 += p._1;
+        this._2 += p._2;
     }
 }

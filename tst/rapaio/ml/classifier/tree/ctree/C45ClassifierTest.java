@@ -32,7 +32,7 @@ import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.CFit;
 import rapaio.core.tools.DTable;
 import rapaio.ml.classifier.tree.CTree;
-import rapaio.ml.eval.ConfusionMatrix;
+import rapaio.ml.eval.Confusion;
 import rapaio.ws.Summary;
 
 import java.io.IOException;
@@ -49,17 +49,17 @@ public class C45ClassifierTest {
         final String className = "class";
 
         CTree classifier = CTree.newC45();
-        classifier.learn(df, className);
+        classifier.train(df, className);
         CFit pred = classifier.fit(df);
 
-        DTable dtWindy = DTable.newFromCounts(df.var("windy"), df.var("class"));
-        DTable dtOutlook = DTable.newFromCounts(df.var("outlook"), df.var("class"));
-        String splitCol = (dtWindy.getInfoGain(false) > dtOutlook.getInfoGain(false)) ? "windy" : "outlook";
+        DTable dtWindy = DTable.newFromCounts(df.var("windy"), df.var("class"), false);
+        DTable dtOutlook = DTable.newFromCounts(df.var("outlook"), df.var("class"), false);
+        String splitCol = (dtWindy.splitByRowInfoGain() > dtOutlook.splitByRowInfoGain()) ? "windy" : "outlook";
         Assert.assertTrue(classifier.getRoot().getBestCandidate().getGroupNames().get(0).contains(splitCol));
 
         Summary.printSummary(classifier);
 
-        ConfusionMatrix cm = new ConfusionMatrix(df.var("class"), pred.firstClasses());
+        Confusion cm = new Confusion(df.var("class"), pred.firstClasses());
         Summary.printSummary(cm);
     }
 
@@ -70,12 +70,12 @@ public class C45ClassifierTest {
         final String className = "class";
 
         CTree classifier = CTree.newC45();
-        classifier.learn(df, className);
+        classifier.train(df, className);
         Summary.printSummary(classifier);
 
         CFit pred = classifier.fit(df);
 
-        ConfusionMatrix cm = new ConfusionMatrix(df.var("class"), pred.firstClasses());
+        Confusion cm = new Confusion(df.var("class"), pred.firstClasses());
         Summary.printSummary(cm);
     }
 
@@ -85,13 +85,12 @@ public class C45ClassifierTest {
         final String className = "class";
 
         CTree classifier = CTree.newC45().withMinCount(1);
-        classifier.learn(df, className);
+        classifier.train(df, className);
         Summary.printSummary(classifier);
 
         CFit pred = classifier.fit(df);
 
-        ConfusionMatrix cm = new ConfusionMatrix(df.var("class"), pred.firstClasses());
+        Confusion cm = new Confusion(df.var("class"), pred.firstClasses());
         Summary.printSummary(cm);
     }
-
 }

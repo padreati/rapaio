@@ -31,7 +31,7 @@ import rapaio.ml.classifier.bayes.NaiveBayes;
 import rapaio.ml.classifier.bayes.estimator.KernelPdf;
 import rapaio.ml.classifier.rule.OneRule;
 import rapaio.ml.classifier.tree.CTree;
-import rapaio.ml.eval.ConfusionMatrix;
+import rapaio.ml.eval.Confusion;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,7 +68,7 @@ public class ClassifierSerializationTest {
     }
 
     private <T extends Classifier> void testModel(T model, Frame df, String target, String dataName, Var varModel, Var varData, Var varAcc) throws IOException, ClassNotFoundException {
-        model.learn(df, target);
+        model.train(df, target);
         model.printSummary();
 
         File tmp = File.createTempFile("model-", "ser");
@@ -84,6 +84,6 @@ public class ClassifierSerializationTest {
 
         varData.addLabel(dataName);
         varModel.addLabel(model.name());
-        varAcc.addValue(new ConfusionMatrix(df.var(target), modelFit.firstClasses()).accuracy());
+        varAcc.addValue(new Confusion(df.var(target), modelFit.firstClasses()).accuracy());
     }
 }

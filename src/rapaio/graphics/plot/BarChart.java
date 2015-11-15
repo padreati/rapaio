@@ -35,8 +35,6 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-import static rapaio.graphics.Plotter.color;
-
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
@@ -138,6 +136,7 @@ public class BarChart extends HostFigure {
                 totals[category.index(i)] += numeric.value(i);
             }
 
+            // this needs reworking since it does not work for negative values
             if (density) {
                 double t = 0;
                 for (double total : totals) {
@@ -188,13 +187,8 @@ public class BarChart extends HostFigure {
                 range.union(Double.NaN, totals[aSel1]);
                 range.union(Double.NaN, 0);
             }
-            int cnt = 0;
-            for (int aSel : sel) {
-                if (totals[aSel] > 0)
-                    cnt++;
-            }
             range.union(-0.5, 0);
-            range.union(cnt - 0.5, 0);
+            range.union(sel.length + 0.5, 0);
         }
         return range;
     }
@@ -209,15 +203,10 @@ public class BarChart extends HostFigure {
         bottomMarkersPos.clear();
         bottomMarkersMsg.clear();
 
-        int cnt = 0;
-        for (int aSel1 : sel) {
-            if (totals[aSel1] > 0)
-                cnt++;
-        }
-        int xspots = cnt;
+        int xspots = sel.length;
         double xspotwidth = getViewport().width / (1. * xspots);
 
-        cnt = 0;
+        int cnt = 0;
         for (int aSel : sel) {
             if (totals[aSel] == 0)
                 continue;
@@ -233,12 +222,14 @@ public class BarChart extends HostFigure {
 
         int col = 0;
         for (int aSel : sel) {
-            if (totals[aSel] == 0)
+            if (totals[aSel] == 0) {
                 continue;
+            }
 
             double ystart = 0;
             for (int j = 0; j < condition.levels().length; j++) {
                 double yend = ystart + hits[aSel][j];
+                int sign = ((yend > 0) ? 1 : -1);
 
                 int[] x = {
                         (int) xScale(col - 0.4),
@@ -264,8 +255,8 @@ public class BarChart extends HostFigure {
                         (int) xScale(col - 0.4) + 1};
                 y = new int[]{
                         (int) yScale(ystart),
-                        (int) yScale(yend) + 1,
-                        (int) yScale(yend) + 1,
+                        (int) yScale(yend) + sign,
+                        (int) yScale(yend) + sign,
                         (int) yScale(ystart),
                         (int) yScale(ystart)};
 

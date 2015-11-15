@@ -23,7 +23,7 @@
 //import org.junit.Test;
 //import rapaio.ml.classifier.boost.AdaBoostSAMME;
 //import rapaio.ml.classifier.tree.TreeClassifier;
-//import rapaio.ml.eval.ConfusionMatrix;
+//import rapaio.ml.eval.Confusion;
 //import rapaio.data.Frame;
 //import rapaio.datasets.Datasets;
 //
@@ -43,7 +43,7 @@
 //                .withSampling(0);
 //
 //        Frame df = Datasets.loadSpamBase();
-//        c.learn(df, "spam");
+//        c.train(df, "spam");
 //
 //        File file = File.createTempFile("test", "data");
 //
@@ -52,6 +52,6 @@
 //        AdaBoostSAMME restored = (AdaBoostSAMME) JavaIO.restoreFromFile(file.getAbsolutePath());
 //        restored.fit(df);
 //
-//        new ConfusionMatrix(df.var("spam"), restored.classes()).printSummary();
+//        new Confusion(df.var("spam"), restored.classes()).printSummary();
 //    }
 //}

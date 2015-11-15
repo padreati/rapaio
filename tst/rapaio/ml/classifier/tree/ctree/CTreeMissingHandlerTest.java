@@ -36,7 +36,6 @@ import rapaio.util.Pair;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -63,66 +62,68 @@ public class CTreeMissingHandlerTest {
     @Test
     public void testIgnored() {
         Pair<List<Frame>, List<Var>> pairs = CTreeMissingHandler.Ignored.get().performSplit(df, w, c);
-        assertEquals(2, pairs.a.size());
-        assertEquals(2, pairs.b.size());
+        assertEquals(2, pairs._1.size());
+        assertEquals(2, pairs._2.size());
 
-        assertEquals(4, pairs.a.get(0).stream().filter(s -> s.value("x") > 0).count());
-        assertEquals(4, pairs.b.get(0).stream().filter(s -> s.value() > 0).count());
+        assertEquals(4, pairs._1.get(0).stream().filter(s -> s.value("x") > 0).count());
+        assertEquals(4, pairs._2.get(0).stream().filter(s -> s.value() > 0).count());
 
-        assertEquals(3, pairs.a.get(1).stream().filter(s -> s.value("x") < 0).count());
-        assertEquals(3, pairs.b.get(1).stream().filter(s -> s.value() > 0).count());
+        assertEquals(3, pairs._1.get(1).stream().filter(s -> s.value("x") < 0).count());
+        assertEquals(3, pairs._2.get(1).stream().filter(s -> s.value() > 0).count());
     }
 
     @Test
     public void testMajority() {
         Pair<List<Frame>, List<Var>> pairs = CTreeMissingHandler.ToMajority.get().performSplit(df, w, c);
 
-        assertEquals(2, pairs.a.size());
-        assertEquals(2, pairs.b.size());
+        assertEquals(2, pairs._1.size());
+        assertEquals(2, pairs._2.size());
 
-        assertEquals(7, pairs.a.get(0).stream().filter(s -> s.missing() || s.value("x") > 0).count());
-        assertEquals(7, pairs.b.get(0).stream().filter(s -> s.missing() || s.value() > 0).count());
+        assertEquals(7, pairs._1.get(0).stream().filter(s -> s.missing() || s.value("x") > 0).count());
+        assertEquals(7, pairs._2.get(0).stream().filter(s -> s.missing() || s.value() > 0).count());
 
-        assertEquals(3, pairs.a.get(1).stream().filter(s -> s.value("x") < 0).count());
-        assertEquals(3, pairs.b.get(1).stream().filter(s -> s.value() > 0).count());
+        assertEquals(3, pairs._1.get(1).stream().filter(s -> s.value("x") < 0).count());
+        assertEquals(3, pairs._2.get(1).stream().filter(s -> s.value() > 0).count());
     }
 
     @Test
     public void testToAllWeighted() {
         Pair<List<Frame>, List<Var>> pairs = CTreeMissingHandler.ToAllWeighted.get().performSplit(df, w, c);
 
-        assertEquals(2, pairs.a.size());
-        assertEquals(2, pairs.b.size());
+        assertEquals(2, pairs._1.size());
+        assertEquals(2, pairs._2.size());
 
-        assertEquals(7, pairs.a.get(0).stream().filter(s -> s.missing() || s.value("x") > 0).count());
-        assertEquals(7, pairs.b.get(0).stream().filter(s -> s.missing() || s.value() > 0).count());
+        assertEquals(7, pairs._1.get(0).stream().filter(s -> s.missing() || s.value("x") > 0).count());
+        assertEquals(7, pairs._2.get(0).stream().filter(s -> s.missing() || s.value() > 0).count());
 
-        assertEquals(6, pairs.a.get(1).stream().filter(s -> s.missing() || s.value("x") < 0).count());
-        assertEquals(6, pairs.b.get(1).stream().filter(s -> s.missing() || s.value() > 0).count());
+        assertEquals(6, pairs._1.get(1).stream().filter(s -> s.missing() || s.value("x") < 0).count());
+        assertEquals(6, pairs._2.get(1).stream().filter(s -> s.missing() || s.value() > 0).count());
 
-        assertEquals(1 + 2 + 3 + 4 + 3 * 4 / 7.0, pairs.b.get(0).stream().mapToDouble().sum(), 1e-20);
-        assertEquals(1 + 2 + 3 + 3 * 3 / 7.0, pairs.b.get(1).stream().mapToDouble().sum(), 1e-20);
+        assertEquals(1 + 2 + 3 + 4 + 3 * 4 / 7.0, pairs._2.get(0).stream().mapToDouble().sum(), 1e-20);
+        assertEquals(1 + 2 + 3 + 3 * 3 / 7.0, pairs._2.get(1).stream().mapToDouble().sum(), 1e-20);
     }
 
     @Test
     public void testToRandom() {
         Pair<List<Frame>, List<Var>> pairs = CTreeMissingHandler.ToRandom.get().performSplit(df, w, c);
 
-        assertEquals(2, pairs.a.size());
-        assertEquals(2, pairs.b.size());
+        df.printLines();
 
-        long firstCount1 = pairs.a.get(0).stream().filter(s -> s.missing() || s.value("x") > 0).count();
+        assertEquals(2, pairs._1.size());
+        assertEquals(2, pairs._2.size());
+
+        long firstCount1 = pairs._1.get(0).stream().filter(s -> s.missing() || s.value("x") > 0).count();
         assertTrue(4 <= firstCount1);
         assertTrue(7 >= firstCount1);
-        long firstCount2 = pairs.a.get(0).stream().filter(s -> s.missing() || s.value("x") > 0).count();
+        long firstCount2 = pairs._1.get(1).stream().filter(s -> s.missing() || s.value("x") < 0).count();
         assertTrue(3 <= firstCount2);
         assertTrue(6 >= firstCount2);
 
-        long secondCount1 = pairs.b.get(1).stream().filter(s -> s.missing() || s.value() > 0).count();
-        assertTrue(4 <= firstCount1);
-        assertTrue(7 >= firstCount1);
-        long secondCount2 = pairs.b.get(1).stream().filter(s -> s.missing() || s.value() > 0).count();
-        assertTrue(3 <= firstCount2);
-        assertTrue(6 >= firstCount2);
+        long secondCount1 = pairs._2.get(0).stream().count();
+        assertTrue(4 <= secondCount1);
+        assertTrue(7 >= secondCount1);
+        long secondCount2 = pairs._2.get(1).stream().count();
+        assertTrue(3 <= secondCount2);
+        assertTrue(6 >= secondCount2);
     }
 }

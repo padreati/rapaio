@@ -27,7 +27,6 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.math.linear.impl.SolidRM;
 import rapaio.math.linear.impl.SolidRV;
-import rapaio.util.Pair;
 
 import java.util.Arrays;
 import java.util.function.BiFunction;

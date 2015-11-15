@@ -26,7 +26,6 @@ package rapaio.data.filter;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.data.stream.VSpot;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.

@@ -23,13 +23,14 @@
 
 package rapaio.ml.classifier.boost;
 
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.data.sample.FrameSample;
 import rapaio.data.sample.FrameSampler;
 import rapaio.ml.classifier.AbstractClassifier;
-import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.CFit;
-import rapaio.ml.classifier.RunningClassifier;
+import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.common.Capabilities;
 
@@ -43,7 +44,7 @@ import java.util.List;
  * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-public class AdaBoostSAMME extends AbstractClassifier implements RunningClassifier {
+public class AdaBoostSAMME extends AbstractClassifier {
 
     private static final long serialVersionUID = -9154973036108114765L;
     final double delta_error = 10e-10;
@@ -51,7 +52,6 @@ public class AdaBoostSAMME extends AbstractClassifier implements RunningClassifi
     // parameters
 
     private Classifier weak = CTree.newDecisionStump();
-    private int runs = 10;
     private boolean stopOnError = false;
 
     // model artifacts
@@ -64,14 +64,15 @@ public class AdaBoostSAMME extends AbstractClassifier implements RunningClassifi
     public AdaBoostSAMME() {
         this.a = new ArrayList<>();
         this.h = new ArrayList<>();
+        withRuns(10);
     }
 
     @Override
     public AdaBoostSAMME newInstance() {
-        return new AdaBoostSAMME()
+        return (AdaBoostSAMME) new AdaBoostSAMME()
                 .withClassifier(this.weak.newInstance())
-                .withRuns(this.runs)
-                .withSampler(sampler());
+                .withSampler(sampler())
+                .withRuns(runs());
     }
 
     @Override
@@ -84,7 +85,7 @@ public class AdaBoostSAMME extends AbstractClassifier implements RunningClassifi
         StringBuilder sb = new StringBuilder();
         sb.append("AdaBoost.SAMME {");
         sb.append("weak: ").append(weak.fullName()).append(", ");
-        sb.append("runs: ").append(runs).append(", ");
+        sb.append("runs: ").append(runs()).append(", ");
         sb.append("sampler: ").append(sampler().name()).append(", ");
         sb.append("stopOnError: ").append(stopOnError).append(", ");
         sb.append("}");
@@ -108,11 +109,6 @@ public class AdaBoostSAMME extends AbstractClassifier implements RunningClassifi
         return this;
     }
 
-    public AdaBoostSAMME withRuns(int runs) {
-        this.runs = runs;
-        return this;
-    }
-
     public AdaBoostSAMME withSampler(FrameSampler sampler) {
         return (AdaBoostSAMME) super.withSampler(sampler);
     }
@@ -123,9 +119,7 @@ public class AdaBoostSAMME extends AbstractClassifier implements RunningClassifi
     }
 
     @Override
-    public AdaBoostSAMME learn(Frame df, Var weights, String... targetVars) {
-
-        prepareLearning(df, weights, targetVars);
+    protected boolean coreTrain(Frame df, Var weights) {
 
         k = firstTargetLevels().length - 1;
 
@@ -136,43 +130,16 @@ public class AdaBoostSAMME extends AbstractClassifier implements RunningClassifi
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
         w = w.stream().transValue(x -> x / total).toMappedVar();
 
-        for (int i = 0; i < runs; i++) {
+        for (int i = 0; i < runs(); i++) {
             boolean success = learnRound(df);
             if (!success && stopOnError) {
                 break;
             }
-        }
-        return this;
-    }
-
-    @Override
-    public void learnFurther(int runs, Frame df, Var weights, String... targetVarsRange) {
-
-        List<String> targetVarList = new VarRange(targetVarsRange).parseVarNames(df);
-        String[] targetVars = targetVarList.toArray(new String[targetVarList.size()]);
-
-        if (w != null && this.targetNames() != null && firstTargetLevels() != null) {
-            // if prev trained on something else than we have a problem
-            if ((!targetVars[0].equals(firstTargetName()) ||
-                    k != firstTargetLevels().length - 1)) {
-                throw new IllegalArgumentException("previous classifier trained on different target");
-            }
-            this.runs += runs;
-        } else {
-            this.runs = runs;
-            learn(df, weights, targetVarsRange);
-            return;
-        }
-
-        double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
-        w = w.stream().transValue(x -> x / total).toMappedVar();
-
-        for (int i = h.size(); i < runs; i++) {
-            boolean success = learnRound(df);
-            if (!success && stopOnError) {
-                break;
+            if (runningHook() != null) {
+                runningHook().accept(this, i);
             }
         }
+        return true;
     }
 
     private boolean learnRound(Frame df) {
@@ -181,7 +148,7 @@ public class AdaBoostSAMME extends AbstractClassifier implements RunningClassifi
         Var dfWeights = sample.weights.solidCopy();
 
         Classifier hh = weak.newInstance();
-        hh.learn(dfTrain, dfWeights, targetNames());
+        hh.train(dfTrain, dfWeights, targetNames());
         CFit p = hh.fit(df, true, false);
         double err = 0;
         for (int j = 0; j < df.rowCount(); j++) {
@@ -216,7 +183,7 @@ public class AdaBoostSAMME extends AbstractClassifier implements RunningClassifi
     }
 
     @Override
-    public CFit fit(Frame df, boolean withClasses, boolean withDistributions) {
+    protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
         CFit p = CFit.newEmpty(this, df, withClasses, true);
         p.addTarget(firstTargetName(), firstTargetLevels());
 
@@ -247,11 +214,6 @@ public class AdaBoostSAMME extends AbstractClassifier implements RunningClassifi
             p.firstClasses().setIndex(i, prediction);
         }
         return p;
-    }
-
-    @Override
-    public CFit fitFurther(CFit fit, Frame df) {
-        throw new IllegalArgumentException("not implemented yet");
     }
 
     @Override

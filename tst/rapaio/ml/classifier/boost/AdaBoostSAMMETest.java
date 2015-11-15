@@ -28,10 +28,9 @@ import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.Plotter;
-import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.tree.CTree;
-import rapaio.ml.eval.ConfusionMatrix;
+import rapaio.ml.eval.Confusion;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 
@@ -47,7 +46,8 @@ public class AdaBoostSAMMETest {
     public void testBuild() throws IOException, URISyntaxException {
 
         WS.setPrinter(new IdeaPrinter());
-        AdaBoostSAMME ab = new AdaBoostSAMME().withRuns(1).withClassifier(CTree.newCART().withMaxDepth(2).withMCols(1));
+        Classifier ab = new AdaBoostSAMME().withClassifier(CTree.newCART().withMaxDepth(2).withMCols(1))
+                .withRuns(50);
         Frame df = Datasets.loadSpamBase();
         df.printSummary();
         int[] rows = SamplingTools.sampleWOR(df.rowCount(), df.rowCount() / 2);
@@ -58,12 +58,12 @@ public class AdaBoostSAMMETest {
 
         Numeric errTr = Numeric.newEmpty().withName("tr");
         Numeric errTe = Numeric.newEmpty().withName("te");
-        for (int i = 0; i < 50; i++) {
-            ab.learnFurther(i + 1, tr, target);
-            errTr.addValue(new ConfusionMatrix(tr.var(target), ab.fit(tr).classes(target)).error());
-            errTe.addValue(new ConfusionMatrix(te.var(target), ab.fit(te).classes(target)).error());
 
+        ab.withRunningHook((c, run) -> {
+            errTr.addValue(new Confusion(tr.var(target), ab.fit(tr).classes(target)).error());
+            errTe.addValue(new Confusion(te.var(target), ab.fit(te).classes(target)).error());
             WS.draw(lines(errTr, color(1)).lines(errTe, color(2)).yLim(0, Double.NaN));
-        }
+        });
+        ab.train(tr, target);
     }
 }

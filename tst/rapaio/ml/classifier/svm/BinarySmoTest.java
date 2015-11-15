@@ -54,7 +54,7 @@
 //        assertEquals("BinarySMO{sampler=Identity, kernel=PolyKernel(exp=1,bias=1,slope=1), C=1, tol=0.001, classIndex1=1, classIndex2=2, oneVsAll=false, maxRuns=2147483647}",
 //                fullName);
 //
-//        smo.learn(iris, "class");
+//        smo.train(iris, "class");
 //        StringBuilder sb = new StringBuilder();
 //        smo.buildPrintSummary(sb);
 //
@@ -87,7 +87,7 @@
 //        assertEquals("BinarySMO{sampler=Identity, kernel=RBF(sigma=2), C=0.01, tol=0.001, classIndex1=2, classIndex2=3, oneVsAll=false, maxRuns=2147483647}",
 //                fullName);
 //
-//        smo.learn(iris, "class");
+//        smo.train(iris, "class");
 //        StringBuilder sb = new StringBuilder();
 //        smo.buildPrintSummary(sb);
 //
@@ -144,7 +144,7 @@
 //    public void testEqualIndexes() throws IOException, URISyntaxException {
 //        try {
 //            Frame iris = Datasets.loadIrisDataset();
-//            new BinarySMO().withFirstClassIndex(1).withSecondClassIndex(1).learn(iris, "class");
+//            new BinarySMO().withFirstClassIndex(1).withSecondClassIndex(1).train(iris, "class");
 //            assertTrue(false);
 //        } catch (IllegalArgumentException ex) {
 //            Assert.assertTrue(true);

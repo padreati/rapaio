@@ -145,7 +145,7 @@ public class HTMLPrinter extends AbstractPrinter {
         } catch (IOException e) {
             throw new RuntimeException("Could not produce image", e);
         }
-        writer.append("<p><center><img src=\"data:image/png;base64," + imageString + "\" alt=\"graphics\"/></center></p>\n");
+        writer.append("<p><center><img src=\"data:image/png;base64,").append(imageString).append("\" alt=\"graphics\"/></center></p>\n");
     }
 
     @Override
@@ -155,22 +155,22 @@ public class HTMLPrinter extends AbstractPrinter {
 
     @Override
     public void heading(int h, String lines) {
-        writer.append("<h" + h + ">" + lines + "</h" + h + ">\n");
+        writer.append("<h").append(String.valueOf(h)).append(">").append(lines).append("</h").append(String.valueOf(h)).append(">\n");
     }
 
     @Override
     public void code(String lines) {
-        writer.append("<pre><code class=\"Java\">" + lines + "</code></pre>\n");
+        writer.append("<pre><code class=\"Java\">").append(lines).append("</code></pre>\n");
     }
 
     @Override
     public void p(String lines) {
-        writer.append("<p>" + lines + "</p>");
+        writer.append("<p>").append(lines).append("</p>");
     }
 
     @Override
     public void eqn(String equation) {
-        writer.append("$$ " + equation + " $$");
+        writer.append("$$ ").append(equation).append(" $$");
     }
 }
 

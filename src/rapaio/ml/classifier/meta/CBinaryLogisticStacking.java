@@ -39,7 +39,7 @@ import static java.util.stream.Collectors.toList;
 
 /**
  * Stacking with Binary Logistic as stacking classifier
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/30/15.
  */
 public class CBinaryLogisticStacking extends AbstractClassifier {
@@ -97,15 +97,15 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
     }
 
     @Override
-    public Classifier learn(Frame df, Var weights, String... targetVars) {
-        logger.config("learn method called.");
+    protected BaseTrainSetup baseTrain(Frame df, Var weights, String... targetVars) {
+        logger.config("train method called.");
         List<Var> vars = new ArrayList<>();
         int pos = 0;
         logger.config("check learners for learning.... ");
         weaks.parallelStream().map(weak -> {
             if (!weak.hasLearned()) {
                 logger.config("started learning for weak learner ...");
-                weak.learn(df, weights, targetVars);
+                weak.train(df, weights, targetVars);
             }
             logger.config("started fitting weak learner...");
             return weak.fit(df).firstDensity().var(1);
@@ -119,17 +119,22 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
         List<String> targets = new VarRange(targetVars).parseVarNames(df);
         vars.add(df.var(targets.get(0)).solidCopy());
 
-        logger.config("started learning for binary logistic...");
-        log.withTol(tol);
-        log.withMaxRuns(maxRuns);
-        log.learn(SolidFrame.newWrapOf(vars), weights, targetVars);
-
-        logger.config("end learn method call");
-        return this;
+        return BaseTrainSetup.valueOf(SolidFrame.newWrapOf(vars), weights, targetVars);
     }
 
     @Override
-    public CFit fit(Frame df, boolean withClasses, boolean withDistributions) {
+    protected boolean coreTrain(Frame df, Var weights) {
+        logger.config("started learning for binary logistic...");
+        log.withTol(tol);
+        log.withMaxRuns(maxRuns);
+        log.train(df, weights, targetNames());
+
+        logger.config("end train method call");
+        return true;
+    }
+
+    @Override
+    protected BaseFitSetup baseFit(Frame df, boolean withClasses, boolean withDistributions) {
         logger.config("fit method called.");
         List<Var> vars = new ArrayList<>();
 
@@ -142,9 +147,13 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
                 .map(v -> v.solidCopy().stream().transValue(x -> x * x).toMappedVar().withName(v.name() + "^2").solidCopy())
                 .collect(toList());
         vars.addAll(quadratic);
+        return BaseFitSetup.valueOf(SolidFrame.newWrapOf(vars), withClasses, withDistributions);
+    }
 
+    @Override
+    protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
         logger.config("started fitting binary logistic regressor.. ");
-        CFit fit = log.fit(SolidFrame.newWrapOf(vars));
+        CFit fit = log.fit(df);
 
         logger.config("end fit method call");
         return fit;

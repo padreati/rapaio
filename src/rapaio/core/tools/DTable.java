@@ -25,12 +25,11 @@ package rapaio.core.tools;
 
 import rapaio.data.*;
 import rapaio.printer.Printable;
-import rapaio.ws.Summary;
+import rapaio.printer.format.TextTable;
+import rapaio.sys.WS;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static rapaio.core.MathTools.log2;
 
@@ -47,42 +46,49 @@ public final class DTable implements Printable, Serializable {
 
     public static final String[] NUMERIC_DEFAULT_LABELS = new String[]{"?", "less-equals", "greater"};
 
-    private final String[] testLabels;
-    private final String[] targetLabels;
+    private final String[] rowLevels;
+    private final String[] colLevels;
 
     // table with frequencies
+    private final int start;
     private final double[][] values;
+
+    // printing info
+    private boolean totalSummary = true;
 
     /**
      * Builds a table with given test columns and target columns
      *
-     * @param testLabels   test labels for rows
-     * @param targetLabels target labels for columns
+     * @param rowLevels labels for rows
+     * @param colLevels labels for columns
+     * @param useFirst  true if using the first row and col, false otherwise
      */
-    public static DTable newEmpty(String[] testLabels, String[] targetLabels) {
-        return new DTable(testLabels, targetLabels);
+    public static DTable newEmpty(String[] rowLevels, String[] colLevels, boolean useFirst) {
+        return new DTable(rowLevels, colLevels, useFirst);
     }
 
     /**
      * Builds a density table from two nominal vectors built from counts
      *
-     * @param test   test var
-     * @param target target var
+     * @param rowVar   var on vertical axis
+     * @param colVar   var on horizontal axis
+     * @param useFirst true if using the first row and col, false otherwise
      */
-    public static DTable newFromCounts(Var test, Var target) {
-        return new DTable(test, target, Numeric.newFill(test.rowCount(), 1));
+    public static DTable newFromCounts(Var rowVar, Var colVar, boolean useFirst) {
+        return new DTable(rowVar, colVar, Numeric.newFill(rowVar.rowCount(), 1), useFirst);
     }
 
     /**
      * Builds a density table from two nominal vectors.
      * If not null, weights are used instead of counts.
      *
-     * @param test    test var
-     * @param target  target var
-     * @param weights weights used instead of counts, if not null
+     * @param rowVar   row var
+     * @param colVar   col var
+     * @param weights  weights used instead of counts, if not null
+     * @param useFirst true if using the first row and col, false otherwise
      */
-    public static DTable newFromWeights(Var test, Var target, Var weights) {
-        return new DTable(test, target, weights);
+    public static DTable newFromWeights(Var rowVar, Var colVar, Var weights, boolean useFirst) {
+        return new DTable(rowVar, colVar, weights, useFirst);
     }
 
     /**
@@ -90,53 +96,91 @@ public final class DTable implements Printable, Serializable {
      * The first row contains instances which have test label equal with given testLabel,
      * second row contains frequencies for the rest of the instances.
      *
-     * @param test      test var
-     * @param target    target var
-     * @param weights   if not null, weights used instead of counts
-     * @param testLabel test label used for binary split
+     * @param rowVar   row var
+     * @param colVar   col var
+     * @param weights  if not null, weights used instead of counts
+     * @param rowLevel row label used for binary split
+     * @param useFirst true if using the first row and col, false otherwise
      */
-    public static DTable newBinaryFromWeights(Var test, Var target, Var weights, String testLabel) {
-        return new DTable(test, target, weights, testLabel);
+    public static DTable newBinaryFromWeights(Var rowVar, Var colVar, Var weights, String rowLevel, boolean useFirst) {
+        return new DTable(rowVar, colVar, weights, rowLevel, useFirst);
     }
 
-    private DTable(String[] testLabels, String[] targetLabels) {
-        this.testLabels = testLabels;
-        this.targetLabels = targetLabels;
-        values = new double[testLabels.length][targetLabels.length];
+
+    // private constructors
+
+    private DTable(String[] rowLevels, String[] colLevels, boolean useFirst) {
+        this.rowLevels = rowLevels;
+        this.colLevels = colLevels;
+        this.start = useFirst ? 0 : 1;
+        this.values = new double[rowLevels.length][colLevels.length];
     }
 
-    private DTable(Var test, Var target, Var weights) {
-        this(test.levels(), target.levels());
+    private DTable(Var rowVar, Var colVar, Var weights, boolean useFirst) {
+        this(rowVar.levels(), colVar.levels(), useFirst);
 
-        if (!(test.type().isNominal() || test.type().equals(VarType.BINARY)))
-            throw new IllegalArgumentException("test var must be nominal");
-        if (!(target.type().isNominal() || test.type().equals(VarType.BINARY)))
-            throw new IllegalArgumentException("target var is not nominal");
-        if (test.rowCount() != target.rowCount())
-            throw new IllegalArgumentException("test and target must have same row count");
+        if (!(rowVar.type().isNominal() || rowVar.type().equals(VarType.BINARY)))
+            throw new IllegalArgumentException("row var must be nominal");
+        if (!(colVar.type().isNominal() || colVar.type().equals(VarType.BINARY)))
+            throw new IllegalArgumentException("col var is not nominal");
+        if (rowVar.rowCount() != colVar.rowCount())
+            throw new IllegalArgumentException("row and col vars must have same row count");
 
-        int testOff = test.type().equals(VarType.BINARY) ? 1 : 0;
-        int targetOff = target.type().equals(VarType.BINARY) ? 1 : 0;
-        for (int i = 0; i < test.rowCount(); i++) {
-            update(test.index(i) + testOff, target.index(i) + targetOff, weights != null ? weights.value(i) : 1);
+        int rowOffset = rowVar.type().equals(VarType.BINARY) ? 1 : 0;
+        int colOffset = colVar.type().equals(VarType.BINARY) ? 1 : 0;
+        for (int i = 0; i < rowVar.rowCount(); i++) {
+            update(rowVar.index(i) + rowOffset, colVar.index(i) + colOffset, weights != null ? weights.value(i) : 1);
         }
     }
 
-    private DTable(Var test, Var target, Var weights, String testLabel) {
-        this(new String[]{"?", testLabel, "other"}, target.levels());
+    private DTable(Var rowVar, Var colVar, Var weights, String rowLevel, boolean useFirst) {
+        this(new String[]{"?", rowLevel, "other"}, colVar.levels(), useFirst);
 
-        if (!test.type().isNominal()) throw new IllegalArgumentException("test var must be nominal");
-        if (!target.type().isNominal()) throw new IllegalArgumentException("target var is not nominal");
-        if (test.rowCount() != target.rowCount())
-            throw new IllegalArgumentException("test and target must have same row count");
+        if (!rowVar.type().isNominal()) throw new IllegalArgumentException("row var must be nominal");
+        if (!colVar.type().isNominal()) throw new IllegalArgumentException("col var is not nominal");
+        if (rowVar.rowCount() != colVar.rowCount())
+            throw new IllegalArgumentException("row and col variables must have same size");
 
-        for (int i = 0; i < test.rowCount(); i++) {
+        for (int i = 0; i < rowVar.rowCount(); i++) {
             int index = 0;
-            if (!test.missing(i)) {
-                index = (test.label(i).equals(testLabel)) ? 1 : 2;
+            if (!rowVar.missing(i)) {
+                index = (rowVar.label(i).equals(rowLevel)) ? 1 : 2;
             }
-            update(index, target.index(i), weights != null ? weights.value(i) : 1);
+            update(index, colVar.index(i), weights != null ? weights.value(i) : 1);
         }
+    }
+
+    public boolean useFirst() {
+        return start == 0;
+    }
+
+    public int start() {
+        return start;
+    }
+
+    public int rowCount() {
+        return rowLevels.length;
+    }
+
+    public int colCount() {
+        return colLevels.length;
+    }
+
+    public String[] rowLevels() {
+        return rowLevels;
+    }
+
+    public String[] colLevels() {
+        return colLevels;
+    }
+
+    public DTable withTotalSummary(boolean totalSummary) {
+        this.totalSummary = totalSummary;
+        return this;
+    }
+
+    public double get(int row, int col) {
+        return values[row][col];
     }
 
     public void reset() {
@@ -147,76 +191,110 @@ public final class DTable implements Printable, Serializable {
         values[row][col] += weight;
     }
 
-    public void move(int row1, int row2, int col, double weight) {
+    public void moveOnCol(int row1, int row2, int col, double weight) {
         update(row1, col, -weight);
         update(row2, col, weight);
     }
 
-    public double getTargetEntropy(boolean useMissing) {
-        double entropy = 0;
-        double[] totals = new double[targetLabels.length];
-        for (int i = 1; i < testLabels.length; i++) {
-            for (int j = 1; j < targetLabels.length; j++) {
+    public void moveOnRow(int row, int col1, int col2, double weight) {
+        update(row, col1, -weight);
+        update(row, col2, weight);
+    }
+
+    public double totalColEntropy() {
+        double[] totals = new double[colLevels.length];
+        for (int i = start; i < rowLevels.length; i++) {
+            for (int j = start; j < colLevels.length; j++) {
                 totals[j] += values[i][j];
             }
         }
         double total = 0;
-        for (int i = 1; i < totals.length; i++) {
+        for (int i = start; i < totals.length; i++) {
             total += totals[i];
         }
-        for (int i = 1; i < totals.length; i++) {
+        double entropy = 0;
+        for (int i = start; i < totals.length; i++) {
             if (totals[i] > 0) {
                 entropy += -log2(totals[i] / total) * totals[i] / total;
             }
         }
-        double factor = 1.;
-        if (useMissing) {
-            double missing = 0;
-            for (int i = 1; i < targetLabels.length; i++) {
-                missing += values[0][i];
-            }
-            factor = total / (missing + total);
-        }
-        return factor * entropy;
+        return entropy;
     }
 
-    public double getSplitEntropy(boolean useMissing) {
-        double[] totals = new double[testLabels.length];
-        for (int i = 0; i < testLabels.length; i++) {
-            for (int j = 0; j < targetLabels.length; j++) {
+    public double totalRowEntropy() {
+        double[] totals = new double[rowLevels.length];
+        for (int i = start; i < rowLevels.length; i++) {
+            for (int j = start; j < colLevels.length; j++) {
                 totals[i] += values[i][j];
             }
         }
         double total = 0;
-        for (int i = 1; i < totals.length; i++) {
+        for (int i = start; i < totals.length; i++) {
+            total += totals[i];
+        }
+        double entropy = 0;
+        for (int i = start; i < totals.length; i++) {
+            if (totals[i] > 0) {
+                entropy += -log2(totals[i] / total) * totals[i] / total;
+            }
+        }
+        return entropy;
+    }
+
+    public double splitByRowAverageEntropy() {
+        double[] totals = new double[rowLevels.length];
+        for (int i = start; i < rowLevels.length; i++) {
+            for (int j = start; j < colLevels.length; j++) {
+                totals[i] += values[i][j];
+            }
+        }
+        double total = 0;
+        for (int i = start; i < totals.length; i++) {
             total += totals[i];
         }
         double gain = 0;
-        for (int i = 1; i < testLabels.length; i++) {
-            for (int j = 1; j < targetLabels.length; j++) {
+        for (int i = start; i < rowLevels.length; i++) {
+            for (int j = start; j < colLevels.length; j++) {
                 if (values[i][j] > 0)
                     gain += -log2(values[i][j] / totals[i]) * values[i][j] / total;
             }
         }
-        if (useMissing) {
-            double missing = 0;
-            for (int i = 0; i < targetLabels.length; i++) {
-                missing += values[0][i];
+        return gain;
+    }
+
+    public double splitByColAverageEntropy() {
+        double[] totals = new double[colLevels.length];
+        for (int i = start; i < rowLevels.length; i++) {
+            for (int j = start; j < colLevels.length; j++) {
+                totals[j] += values[i][j];
             }
-            return gain * total / (missing + total);
+        }
+        double total = 0;
+        for (int i = start; i < totals.length; i++) {
+            total += totals[i];
+        }
+        double gain = 0;
+        for (int i = start; i < rowLevels.length; i++) {
+            for (int j = start; j < colLevels.length; j++) {
+                if (values[i][j] > 0)
+                    gain += -log2(values[i][j] / totals[j]) * values[i][j] / total;
+            }
         }
         return gain;
     }
 
-    public double getInfoGain(boolean useMissing) {
-        return getTargetEntropy(useMissing) - getSplitEntropy(useMissing);
+    public double splitByRowInfoGain() {
+        return totalColEntropy() - splitByRowAverageEntropy();
     }
 
-    public double getSplitInfo(boolean useMissing) {
-        int start = useMissing ? 0 : 1;
-        double[] totals = new double[testLabels.length];
-        for (int i = start; i < testLabels.length; i++) {
-            for (int j = 1; j < targetLabels.length; j++) {
+    public double splitByColInfoGain() {
+        return totalRowEntropy() - splitByColAverageEntropy();
+    }
+
+    public double splitByRowIntrinsicInfo() {
+        double[] totals = new double[rowLevels.length];
+        for (int i = start; i < rowLevels.length; i++) {
+            for (int j = start; j < colLevels.length; j++) {
                 totals[i] += values[i][j];
             }
         }
@@ -233,22 +311,44 @@ public final class DTable implements Printable, Serializable {
         return splitInfo;
     }
 
-    public double getGainRatio(boolean useMissing) {
-        return getInfoGain(useMissing) / getSplitInfo(useMissing);
+    public double splitByColIntrinsicInfo() {
+        double[] totals = new double[colLevels.length];
+        for (int i = start; i < rowLevels.length; i++) {
+            for (int j = start; j < colLevels.length; j++) {
+                totals[j] += values[i][j];
+            }
+        }
+        double total = 0;
+        for (int i = start; i < totals.length; i++) {
+            total += totals[i];
+        }
+        double splitInfo = 0;
+        for (int i = start; i < totals.length; i++) {
+            if (totals[i] > 0) {
+                splitInfo += -log2(totals[i] / total) * totals[i] / total;
+            }
+        }
+        return splitInfo;
+    }
+
+    public double splitByRowGainRatio() {
+        return splitByRowInfoGain() / splitByRowIntrinsicInfo();
+    }
+
+    public double splitByColGainRatio() {
+        return splitByColInfoGain() / splitByColIntrinsicInfo();
     }
 
     /**
      * Computes the number of columns which have totals equal or greater than minWeight
      *
-     * @param useMissing if on counting the missing row is used
      * @return number of columns which meet criteria
      */
-    public boolean hasCountWithMinimum(boolean useMissing, double minWeight, int minCounts) {
-        int start = useMissing ? 0 : 1;
+    public boolean hasColsWithMinimumCount(double minWeight, int minCounts) {
         int count = 0;
-        for (int i = start; i < testLabels.length; i++) {
+        for (int i = start; i < rowLevels.length; i++) {
             double total = 0;
-            for (int j = 1; j < targetLabels.length; j++) {
+            for (int j = 1; j < colLevels.length; j++) {
                 total += values[i][j];
             }
             if (total >= minWeight) {
@@ -261,59 +361,188 @@ public final class DTable implements Printable, Serializable {
         return false;
     }
 
-    public double getGiniIndex() {
-        return getGiniIndex(false);
-    }
-
-    private double getGiniIndex(boolean useMissing) {
-        int start = useMissing ? 0 : 1;
-        double[] testTotals = new double[testLabels.length];
-        double[] targetTotals = new double[targetLabels.length];
-        for (int i = start; i < testLabels.length; i++) {
-            for (int j = 0; j < targetLabels.length; j++) {
-                testTotals[i] += values[i][j];
-                targetTotals[j] += values[i][j];
+    public double splitByRowGiniGain() {
+        double[] rowTotals = new double[rowLevels.length];
+        double[] colTotals = new double[colLevels.length];
+        double total = 0.0;
+        for (int i = start; i < rowLevels.length; i++) {
+            for (int j = start; j < colLevels.length; j++) {
+                rowTotals[i] += values[i][j];
+                colTotals[j] += values[i][j];
+                total += values[i][j];
             }
         }
-        double testTotal = 0;
-        double targetTotal = 0;
-        for (int i = start; i < testLabels.length; i++) {
-            testTotal += testTotals[i];
-        }
-        for (int i = start; i < targetLabels.length; i++) {
-            targetTotal += targetTotals[i];
+        if (total <= 0) {
+            return 1;
         }
 
-        double gini = 1;
-        for (int i = start; i < targetLabels.length; i++) {
-            if (targetTotal != 0)
-                gini -= Math.pow(targetTotals[i] / targetTotal, 2);
+        double gini = 1.0;
+        for (int i = start; i < colLevels.length; i++) {
+            gini -= Math.pow(colTotals[i] / total, 2);
         }
 
-        for (int i = start; i < testLabels.length; i++) {
+        for (int i = start; i < rowLevels.length; i++) {
             double gini_k = 1;
-            for (int j = start; j < targetLabels.length; j++) {
-                if (testTotals[i] != 0)
-                    gini_k -= Math.pow(values[i][j] / testTotals[i], 2);
+            for (int j = start; j < colLevels.length; j++) {
+                if (rowTotals[i] > 0)
+                    gini_k -= Math.pow(values[i][j] / rowTotals[i], 2);
             }
-            if (testTotal != 0)
-                gini -= gini_k * testTotals[i] / testTotal;
+            gini -= gini_k * rowTotals[i] / total;
         }
         return gini;
     }
 
+    public double splitByColGiniGain() {
+        double[] rowTotals = new double[rowLevels.length];
+        double[] colTotals = new double[colLevels.length];
+        double total = 0.0;
+        for (int i = start; i < rowLevels.length; i++) {
+            for (int j = start; j < colLevels.length; j++) {
+                rowTotals[i] += values[i][j];
+                colTotals[j] += values[i][j];
+                total += values[i][j];
+            }
+        }
+        if (total <= 0) {
+            return 1;
+        }
+
+        double gini = 1.0;
+        for (int i = start; i < rowLevels.length; i++) {
+            gini -= Math.pow(rowTotals[i] / total, 2);
+        }
+
+        for (int i = start; i < colLevels.length; i++) {
+            double gini_k = 1;
+            for (int j = start; j < rowLevels.length; j++) {
+                if (colTotals[i] > 0)
+                    gini_k -= Math.pow(values[j][i] / colTotals[i], 2);
+            }
+            gini -= gini_k * colTotals[i] / total;
+        }
+        return gini;
+    }
+
+    public double[] rowTotals() {
+        double[] totals = new double[rowLevels.length];
+        for (int i = 0; i < rowLevels.length; i++) {
+            for (int j = 0; j < colLevels.length; j++) {
+                totals[i] += values[i][j];
+            }
+        }
+        return totals;
+    }
+
+    public double[] colTotals() {
+        double[] totals = new double[colLevels.length];
+        for (int i = 0; i < rowLevels.length; i++) {
+            for (int j = 0; j < colLevels.length; j++) {
+                totals[j] += values[i][j];
+            }
+        }
+        return totals;
+    }
+
+    public DTable normalizeOverall() {
+        DTable norm = DTable.newEmpty(rowLevels, colLevels, start == 0).withTotalSummary(totalSummary);
+        double total = 0;
+        for (int i = start; i < rowLevels.length; i++) {
+            for (int j = start; j < colLevels.length; j++) {
+                norm.values[i][j] = values[i][j];
+                total += values[i][j];
+            }
+        }
+        if (total > 0) {
+            for (int i = start; i < rowLevels.length; i++) {
+                for (int j = start; j < colLevels.length; j++) {
+                    norm.values[i][j] /= total;
+                }
+            }
+        }
+        return norm;
+    }
+
+    public DTable normalizeOnRows() {
+        DTable norm = DTable.newEmpty(rowLevels, colLevels, start == 0).withTotalSummary(totalSummary);
+        double[] rowTotals = new double[rowLevels.length];
+        for (int i = start; i < rowLevels.length; i++) {
+            for (int j = start; j < colLevels.length; j++) {
+                norm.values[i][j] = values[i][j];
+                rowTotals[i] += values[i][j];
+            }
+        }
+        for (int i = start; i < rowLevels.length; i++) {
+            if (rowTotals[i] > 0)
+                for (int j = start; j < colLevels.length; j++) {
+                    norm.values[i][j] /= rowTotals[i];
+                }
+        }
+        return norm;
+    }
+
+    public DTable normalizeOnCols() {
+        DTable norm = DTable.newEmpty(rowLevels, colLevels, start == 0).withTotalSummary(totalSummary);
+        double[] colTotals = new double[colLevels.length];
+        for (int i = start; i < rowLevels.length; i++) {
+            for (int j = start; j < colLevels.length; j++) {
+                norm.values[i][j] = values[i][j];
+                colTotals[j] += values[i][j];
+            }
+        }
+        for (int i = start; i < colLevels.length; i++) {
+            if (colTotals[i] > 0)
+                for (int j = start; j < rowLevels.length; j++) {
+                    norm.values[j][i] /= colTotals[i];
+                }
+        }
+        return norm;
+    }
 
     @Override
     public String summary() {
-        List<Var> vars = new ArrayList<>();
-        vars.add(Nominal.newCopyOf(testLabels).withName(""));
-        for (int i = 0; i < targetLabels.length; i++) {
-            Var num = Numeric.newEmpty().withName(targetLabels[i]);
-            for (int j = 0; j < testLabels.length; j++) {
-                num.addValue(values[j][i]);
+
+        if (totalSummary) {
+            TextTable tt = TextTable.newEmpty(rowLevels.length - start + 2, colLevels.length - start + 2);
+
+            for (int i = start; i < rowLevels.length; i++) {
+                tt.set(i - start + 1, 0, rowLevels[i], 1);
             }
-            vars.add(num);
+            for (int i = start; i < colLevels.length; i++) {
+                tt.set(0, i - start + 1, colLevels[i], 1);
+            }
+            tt.set(0, colLevels.length - start + 1, "total", 1);
+            tt.set(rowLevels.length - start + 1, 0, "total", 1);
+            for (int i = start; i < rowLevels.length; i++) {
+                for (int j = start; j < colLevels.length; j++) {
+                    tt.set(i - start + 1, j - start + 1, WS.formatShort(values[i][j]), 1);
+                }
+            }
+            double[] rowTotals = rowTotals();
+            for (int i = start; i < rowLevels.length; i++) {
+                tt.set(i - start + 1, colLevels.length - start + 1, WS.formatShort(rowTotals[i]), 1);
+            }
+            double[] colTotals = colTotals();
+            for (int i = start; i < colLevels.length; i++) {
+                tt.set(rowLevels.length - start + 1, i - start + 1, WS.formatShort(colTotals[i]), 1);
+            }
+            double total = Arrays.stream(rowTotals).skip(start).sum();
+            tt.set(rowLevels.length - start + 1, colLevels.length - start + 1, WS.formatShort(total), 1);
+            return tt.summary();
+        } else {
+            TextTable tt = TextTable.newEmpty(rowLevels.length - start + 1, colLevels.length - start + 1);
+
+            for (int i = start; i < rowLevels.length; i++) {
+                tt.set(i - start + 1, 0, rowLevels[i], 1);
+            }
+            for (int i = start; i < colLevels.length; i++) {
+                tt.set(0, i - start + 1, colLevels[i], 1);
+            }
+            for (int i = start; i < rowLevels.length; i++) {
+                for (int j = start; j < colLevels.length; j++) {
+                    tt.set(i - start + 1, j - start + 1, WS.formatShort(values[i][j]), 1);
+                }
+            }
+            return tt.summary();
         }
-        return Summary.headString(SolidFrame.newWrapOf(vars));
     }
 }

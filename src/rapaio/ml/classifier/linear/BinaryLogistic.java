@@ -39,7 +39,6 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
  */
-@Deprecated
 public class BinaryLogistic extends AbstractClassifier {
 
     private static final long serialVersionUID = 1609956190070125059L;
@@ -119,7 +118,7 @@ public class BinaryLogistic extends AbstractClassifier {
     };
 
 
-    public double regress(Frame df, int row) {
+    private double regress(Frame df, int row) {
         if (coef == null)
             throw new IllegalArgumentException("Model has not been trained");
         Numeric inst = Numeric.newEmpty();
@@ -130,13 +129,7 @@ public class BinaryLogistic extends AbstractClassifier {
     }
 
     @Override
-    public BinaryLogistic learn(Frame dfOld, Var weights, String... targetVarNames) {
-        Frame df = prepareLearning(dfOld, weights, targetVarNames);
-
-        if (df.stream().complete().count() != df.rowCount()) {
-            throw new IllegalArgumentException("Incomplete data set is not allowed in binary logistic");
-        }
-
+    protected boolean coreTrain(Frame df, Var weights) {
         List<Var> inputs = new ArrayList<>(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
             Numeric line = Numeric.newEmpty();
@@ -151,16 +144,11 @@ public class BinaryLogistic extends AbstractClassifier {
         IRLSOptimizer optimizer = new IRLSOptimizer();
 
         coef = optimizer.optimize(tol, maxRuns, logitF, logitFD, coef, inputs, targetValues);
-        return this;
+        return true;
     }
 
     @Override
-    public CFit fit(Frame dfOld, boolean withClasses, boolean withDistributions) {
-        if (!hasLearned())
-            throw new IllegalArgumentException("Model has not yet been trained");
-
-        Frame df = prepareFit(dfOld);
-
+    protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
         CFit cr = CFit.newEmpty(this, df, withClasses, withDistributions);
         cr.addTarget(firstTargetName(), firstTargetLevels());
 

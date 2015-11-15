@@ -42,6 +42,13 @@ import static rapaio.sys.WS.formatFlex;
 @Deprecated
 public class ROC implements Printable, Serializable {
 
+    private static final long serialVersionUID = -4598096059703515426L;
+
+    public static final String threshold = "threshold";
+    public static final String fpr = "fpr";
+    public static final String tpr = "tpr";
+    public static final String acc = "acc";
+
     private final Var score;
     private final Var classes;
     private Frame data;
@@ -133,7 +140,7 @@ public class ROC implements Printable, Serializable {
                 len++;
             }
         }
-        data = SolidFrame.newMatrix(len, "threshold", "fpr", "tpr", "acc");
+        data = SolidFrame.newMatrix(len, threshold, fpr, tpr, acc);
         prev = Double.POSITIVE_INFINITY;
         int pos = 0;
 
@@ -142,10 +149,10 @@ public class ROC implements Printable, Serializable {
             if (score.value(rows.index(i)) != prev) {
                 auc += Math.abs(prevfp - fp) * Math.abs(prevtp + tp) / 2.;
                 double accValue = (tp + n - fp) / (0. + n + p);
-                data.setValue(pos, "threshold", prev);
-                data.setValue(pos, "fpr", fp / (1. * n));
-                data.setValue(pos, "tpr", tp / (1. * p));
-                data.setValue(pos, "acc", accValue);
+                data.setValue(pos, threshold, prev);
+                data.setValue(pos, fpr, fp / (1. * n));
+                data.setValue(pos, tpr, tp / (1. * p));
+                data.setValue(pos, acc, accValue);
                 prevfp = fp;
                 prevtp = tp;
                 prev = score.value(rows.index(i));
@@ -154,21 +161,31 @@ public class ROC implements Printable, Serializable {
             if (classes.index(rows.index(i)) > 0) tp++;
             else fp++;
         }
-        data.setValue(pos, "threshold", prev);
-        data.setValue(pos, "fpr", 1.);
-        data.setValue(pos, "tpr", 1.);
-        data.setValue(pos, "acc", p / (0. + n + p));
+        data.setValue(pos, threshold, prev);
+        data.setValue(pos, fpr, 1.);
+        data.setValue(pos, tpr, 1.);
+        data.setValue(pos, acc, p / (0. + n + p));
 
         auc += Math.abs(n - prevfp) * (p + prevtp) / 2.;
         auc /= (1. * p * n);
     }
 
-    public Frame getData() {
+    public Frame data() {
         return data;
     }
 
     public double auc() {
         return auc;
+    }
+
+    public int findRowForThreshold(double value) {
+        Var th = data.var(threshold);
+        for (int i = 0; i < th.rowCount(); i++) {
+            if (th.value(i) <= value) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override

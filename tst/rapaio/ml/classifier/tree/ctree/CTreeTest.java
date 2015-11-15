@@ -50,7 +50,7 @@ public class CTreeTest {
         CTree tree = CTree.newDecisionStump();
         assertEquals(1, tree.maxDepth());
 
-        tree.learn(df, "class");
+        tree.train(df, "class");
 
         tree.printSummary();
         CTree.Node root = tree.getRoot();
@@ -59,12 +59,12 @@ public class CTreeTest {
         String testName = root.getBestCandidate().getTestName();
         if ("petal-width".equals(testName)) {
             assertEquals("petal-width", root.getBestCandidate().getTestName());
-            assertEquals("petal-width <= 0.800000", root.getBestCandidate().getGroupNames().get(0));
-            assertEquals("petal-width > 0.800000", root.getBestCandidate().getGroupNames().get(1));
+            assertEquals("petal-width <= 2.45", root.getBestCandidate().getGroupNames().get(0));
+            assertEquals("petal-width > 2.45", root.getBestCandidate().getGroupNames().get(1));
         } else {
             assertEquals("petal-length", root.getBestCandidate().getTestName());
-            assertEquals("petal-length <= 2.450000", root.getBestCandidate().getGroupNames().get(0));
-            assertEquals("petal-length > 2.450000", root.getBestCandidate().getGroupNames().get(1));
+            assertEquals("petal-length <= 2.45", root.getBestCandidate().getGroupNames().get(0));
+            assertEquals("petal-length > 2.45", root.getBestCandidate().getGroupNames().get(1));
         }
     }
 
@@ -83,9 +83,9 @@ public class CTreeTest {
         candidate.addGroup("test <= 0", s -> s.value("test") <= 0);
         candidate.addGroup("test > 0", s -> s.value("test") > 0);
 
-        assertEquals(-1, candidate.compareTo(new CTree.Candidate(2, "test")));
+        assertEquals(1, candidate.compareTo(new CTree.Candidate(2, "test")));
         assertEquals(-1, candidate.compareTo(new CTree.Candidate(-2, "test")));
-        assertEquals(1, candidate.compareTo(new CTree.Candidate(0.5, "test")));
+        assertEquals(-1, candidate.compareTo(new CTree.Candidate(0.5, "test")));
 
         try {
             candidate.addGroup("test <= 0", s -> true);
@@ -98,13 +98,13 @@ public class CTreeTest {
     public void testPredictorStandard() throws IOException, URISyntaxException {
         Frame df = Datasets.loadIrisDataset();
         CTree tree = CTree.newCART().withMaxDepth(10000).withMinCount(1);
-        tree.learn(df, "class");
+        tree.train(df, "class");
         tree.printSummary();
 
         CFit pred = tree.fit(df, true, true);
-        df = df.bindVars(pred.firstClasses().solidCopy().withName("predict"));
+        df = df.bindVars(pred.firstClasses().solidCopy().withName("fit"));
 
-        Frame match = df.stream().filter(spot -> spot.index("class") == spot.index("predict")).toMappedFrame();
+        Frame match = df.stream().filter(spot -> spot.index("class") == spot.index("fit")).toMappedFrame();
         assertEquals(150, match.rowCount());
 
         df.setMissing(0, 0);
@@ -113,7 +113,7 @@ public class CTreeTest {
         df.setMissing(0, 3);
 
         tree.fit(df, true, false);
-        match = df.stream().filter(spot -> spot.index("class") == spot.index("predict")).toMappedFrame();
+        match = df.stream().filter(spot -> spot.index("class") == spot.index("fit")).toMappedFrame();
         assertEquals(150, match.rowCount());
     }
 

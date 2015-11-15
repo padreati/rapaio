@@ -176,19 +176,19 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
         numTermIndex = new HashMap<>();
 
         List<Pair<String, Integer>> strlist = strCounter.entrySet().stream().map(e -> new Pair<>(e.getKey(), e.getValue())).collect(toList());
-        strlist.sort((o1, o2) -> -Integer.compare(o1.a.length() * o1.b, o2.a.length() * o2.b));
+        strlist.sort((o1, o2) -> -Integer.compare(o1._1.length() * o1._2, o2._1.length() * o2._2));
         for (int i = 0; i < strlist.size(); i++) {
-            strTerms[i] = strlist.get(i).a;
-            strTermDict.put(strlist.get(i).a, strlist.get(i).a.getBytes());
-            strTermIndex.put(strlist.get(i).a, i);
+            strTerms[i] = strlist.get(i)._1;
+            strTermDict.put(strlist.get(i)._1, strlist.get(i)._1.getBytes());
+            strTermIndex.put(strlist.get(i)._1, i);
         }
 
         List<Pair<String, Integer>> numlist = numCounter.entrySet().stream().map(e -> new Pair<>(e.getKey(), e.getValue())).collect(toList());
-        numlist.sort((o1, o2) -> -Integer.compare(o1.a.length() * o1.b, o2.a.length() * o2.b));
+        numlist.sort((o1, o2) -> -Integer.compare(o1._1.length() * o1._2, o2._1.length() * o2._2));
         for (int i = 0; i < numlist.size(); i++) {
-            numTerms[i] = numlist.get(i).a;
-            numTermDict.put(numlist.get(i).a, numlist.get(i).a.getBytes());
-            numTermIndex.put(numlist.get(i).a, i);
+            numTerms[i] = numlist.get(i)._1;
+            numTermDict.put(numlist.get(i)._1, numlist.get(i)._1.getBytes());
+            numTermIndex.put(numlist.get(i)._1, i);
         }
     }
 
@@ -378,9 +378,7 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
     public void close() throws IOException {
         if (!objectBuffer.isEmpty())
             writeBuffer();
-        if (os != null) {
-            os.flush();
-            os.close();
-        }
+        os.flush();
+        os.close();
     }
 }

@@ -94,4 +94,30 @@ public interface FrameSampler extends Serializable {
             return "Bootstrap(p=" + formatFlex(percent) + ")";
         }
     }
+
+    final class SubSampler implements FrameSampler {
+
+        private static final long serialVersionUID = -7987373317949449262L;
+        private double percent = 1.0;
+
+        public SubSampler(double percent) {
+            this.percent = percent;
+        }
+
+        public SubSampler withPercent(double p) {
+            this.percent = p;
+            return this;
+        }
+
+        @Override
+        public FrameSample newSample(Frame df, Var weights) {
+            Mapping map = Mapping.newCopyOf(SamplingTools.sampleWOR(df.rowCount(), (int) (percent * df.rowCount())));
+            return new FrameSample(df.mapRows(map), weights.mapRows(map), map);
+        }
+
+        @Override
+        public String name() {
+            return "SubSampler(p=" + formatFlex(percent) + ")";
+        }
+    }
 }
