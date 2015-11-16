@@ -93,7 +93,7 @@ public class Points extends PlotComponent {
             PchPalette.STANDARD.draw(g2d,
                     parent.xScale(x.value(i)),
                     parent.yScale(y.value(i)),
-                    options.getSize(i), options.getPch(i));
+                    options.getSz(i), options.getPch(i));
         }
     }
 }

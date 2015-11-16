@@ -28,7 +28,6 @@ import java.awt.*;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/10/15.
  */
-@Deprecated
 public interface ColorGradient {
 
     Color[] getColors();

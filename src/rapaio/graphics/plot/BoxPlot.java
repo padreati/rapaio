@@ -192,7 +192,7 @@ public class BoxPlot extends HostFigure {
                 double point = v.value(j);
                 if ((point > q[2] + outerFence) || (point < q[0] - outerFence)) {
                     // big outlier
-                    int width = (int) (3 * options.getSize(i));
+                    int width = (int) (3 * options.getSz(i));
                     g2d.fillOval(
                             (int) xScale(x2) - width / 2 - 1,
                             (int) yScale(point) - width / 2 - 1,
@@ -201,7 +201,7 @@ public class BoxPlot extends HostFigure {
                 }
                 if ((point > q[2] + innerFence) || (point < q[0] - innerFence)) {
                     // outlier
-                    int width = (int) (3.5 * options.getSize(i));
+                    int width = (int) (3.5 * options.getSz(i));
                     g2d.drawOval(
                             (int) xScale(x2) - width / 2 - 1,
                             (int) yScale(point) - width / 2 - 1,

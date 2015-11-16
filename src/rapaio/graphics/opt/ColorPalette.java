@@ -29,7 +29,6 @@ import java.io.Serializable;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public enum ColorPalette implements Serializable {
 
     STANDARD(new StandardColorPalette()),
@@ -53,9 +52,9 @@ public enum ColorPalette implements Serializable {
     }
 }
 
-@Deprecated
 class StandardColorPalette implements ColorPalette.Mapping {
 
+    private static final long serialVersionUID = -7776446499900459739L;
     private static final Color[] colors;
 
     static {
@@ -80,7 +79,6 @@ class StandardColorPalette implements ColorPalette.Mapping {
             r = 2 * r + (index & 1);
             index >>= 1;
             g = 2 * g + (index & 1);
-            index >>= 1;
             colors[i] = new Color((r + 1) * 32 - 1, (g + 1) * 32 - 1, (b + 1) * 64 - 1);
         }
         colors[0] = Color.BLACK;
@@ -102,8 +100,9 @@ class StandardColorPalette implements ColorPalette.Mapping {
     }
 }
 
-@Deprecated
 class GrayColorPalette implements ColorPalette.Mapping {
+
+    private static final long serialVersionUID = 1322632809893188876L;
 
     @Override
     public Color getColor(int index) {
@@ -112,8 +111,9 @@ class GrayColorPalette implements ColorPalette.Mapping {
     }
 }
 
-@Deprecated
 class HueColorPalette implements ColorPalette.Mapping {
+
+    private static final long serialVersionUID = -677234648694278016L;
 
     @Override
     public Color getColor(int index) {
@@ -121,8 +121,9 @@ class HueColorPalette implements ColorPalette.Mapping {
     }
 }
 
-@Deprecated
 class RedBlueGradient implements ColorPalette.Mapping {
+
+    private static final long serialVersionUID = -8475382197708592744L;
 
     @Override
     public Color getColor(int index) {

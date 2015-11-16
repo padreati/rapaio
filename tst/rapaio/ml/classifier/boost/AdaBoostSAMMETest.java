@@ -40,6 +40,7 @@ import java.net.URISyntaxException;
 
 import static rapaio.graphics.Plotter.color;
 import static rapaio.graphics.Plotter.lines;
+import static rapaio.graphics.Plotter.plot;
 
 public class AdaBoostSAMMETest {
 
@@ -47,8 +48,9 @@ public class AdaBoostSAMMETest {
     public void testBuild() throws IOException, URISyntaxException {
 
         WS.setPrinter(new IdeaPrinter());
-        Classifier ab = new AdaBoostSAMME().withClassifier(CTree.newCART().withMaxDepth(2).withMCols(1))
-                .withRuns(50);
+        Classifier ab = new AdaBoostSAMME()
+                .withClassifier(CTree.newCART().withMinCount(20).withMaxDepth(2).withMCols(40))
+                .withRuns(1000);
         Frame df = Datasets.loadSpamBase();
         df.printSummary();
         int[] rows = SamplingTools.sampleWOR(df.rowCount(), df.rowCount() / 2);
@@ -57,13 +59,22 @@ public class AdaBoostSAMMETest {
 
         String target = "spam";
 
+        Numeric runs = Numeric.newEmpty().withName("runs");
         Numeric errTr = Numeric.newEmpty().withName("tr");
         Numeric errTe = Numeric.newEmpty().withName("te");
 
         ab.withRunningHook((c, run) -> {
+            if (run % 10 != 0)
+                return;
+            runs.addValue(run);
             errTr.addValue(new Confusion(tr.var(target), ab.fit(tr).classes(target)).error());
             errTe.addValue(new Confusion(te.var(target), ab.fit(te).classes(target)).error());
-            WS.draw(lines(errTr, color(1)).lines(errTe, color(2)).yLim(0, Double.NaN));
+
+            WS.draw(
+                    plot(color(3)).
+                            lines(runs, errTr, color(1))
+                            .lines(runs, errTe, color(2))
+                            .yLim(0, Double.NaN));
         });
         ab.train(tr, target);
         ab.printSummary();

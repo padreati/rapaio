@@ -32,7 +32,6 @@ import java.util.ArrayList;
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public enum PchPalette implements Serializable {
 
     STANDARD(new StandardPchPalette());
@@ -50,18 +49,19 @@ public enum PchPalette implements Serializable {
 
 }
 
-@Deprecated
 interface Mapping {
     void draw(Graphics2D g2d, double x, double y, double size, int pch);
 }
 
-@Deprecated
 final class StandardPchPalette implements Mapping {
 
-    private final java.util.List<Drawer> pchs = new ArrayList<Drawer>() {{
-        add((g2d, x, y, sz) -> g2d.draw(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2)));
-        add((g2d, x, y, sz) -> g2d.fill(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2)));
-        add((g2d, x, y, sz) -> {
+    private final java.util.List<Drawer> pchs;
+
+    public StandardPchPalette() {
+        pchs = new ArrayList<>();
+        pchs.add((g2d, x, y, sz) -> g2d.draw(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2)));
+        pchs.add((g2d, x, y, sz) -> g2d.fill(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2)));
+        pchs.add((g2d, x, y, sz) -> {
             Color fill = g2d.getColor();
             BasicStroke stroke = null;
             if (g2d.getStroke() instanceof BasicStroke)
@@ -75,14 +75,14 @@ final class StandardPchPalette implements Mapping {
             if (g2d.getStroke() instanceof BasicStroke)
                 g2d.setStroke(stroke);
         });
-        add((g2d, x, y, sz) -> {
+        pchs.add((g2d, x, y, sz) -> {
             Color fill = g2d.getColor();
             g2d.draw(new Line2D.Double(x - sz, y - sz, x + sz, y + sz));
             g2d.fill(new Line2D.Double(x - sz, y - sz, x + sz, y + sz));
             g2d.draw(new Line2D.Double(x + sz, y - sz, x - sz, y + sz));
             g2d.fill(new Line2D.Double(x + sz, y - sz, x - sz, y + sz));
         });
-    }};
+    }
 
     @Override
     public void draw(Graphics2D g2d, double x, double y, double size, int pch) {
@@ -96,7 +96,6 @@ final class StandardPchPalette implements Mapping {
     }
 }
 
-@Deprecated
 interface Drawer extends Serializable {
 
     void draw(Graphics2D g2d, double x, double y, double size);
