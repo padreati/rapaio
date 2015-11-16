@@ -48,7 +48,7 @@ public class QQPlot extends Plot {
             y.setValue(i, distribution.quantile(p));
         }
         add(new Points(y, x));
-        yLab("StatSampling Quantiles");
+        yLab("Sampling Quantiles");
         xLab("Theoretical Quantiles");
         title("QQPlot - sample vs. " + distribution.name());
     }

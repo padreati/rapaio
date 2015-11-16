@@ -28,8 +28,9 @@ import java.io.Serializable;
 /**
  * @author tutuianu
  */
-@Deprecated
 public class Range implements Serializable {
+
+    private static final long serialVersionUID = -7868093307393360861L;
 
     private double x1 = Double.NaN;
     private double y1 = Double.NaN;

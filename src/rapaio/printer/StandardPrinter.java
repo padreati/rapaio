@@ -32,7 +32,6 @@ import java.awt.*;
 /**
  * @author tutuianu
  */
-@Deprecated
 public class StandardPrinter extends AbstractPrinter {
 
     public StandardPrinter() {

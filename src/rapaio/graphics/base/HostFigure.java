@@ -31,10 +31,10 @@ import java.util.ArrayList;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-@Deprecated
 public abstract class HostFigure extends BaseFigure {
 
-    //
+    private static final long serialVersionUID = 8198529442678989416L;
+
     protected static final Font TITLE_FONT = new Font("Verdana", Font.BOLD, 18);
     protected static final Font MARKERS_FONT = new Font("Verdana", Font.PLAIN, 13);
     protected static final Font LABELS_FONT = new Font("Verdana", Font.BOLD, 16);

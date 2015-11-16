@@ -21,10 +21,11 @@
  *
  */
 
-package rapaio.graphics.plot;
+package rapaio.graphics.plot.plotcomp;
 
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
+import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;

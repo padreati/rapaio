@@ -34,8 +34,9 @@ import java.util.ArrayList;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-@Deprecated
 public class GridLayer extends HostFigure {
+
+    private static final long serialVersionUID = 4476430187955007744L;
 
     final int rows;
     final int cols;
@@ -66,11 +67,6 @@ public class GridLayer extends HostFigure {
         return this;
     }
 
-//    public Grid add(int x, int y, int width, int height, HostFigure figure) {
-//        list.add(new G(x, y, width, height, figure));
-//        return this;
-//    }
-
     @Override
     public void paint(Graphics2D g2d, Rectangle r) {
         super.paint(g2d, r);
@@ -90,8 +86,10 @@ public class GridLayer extends HostFigure {
     }
 }
 
-@Deprecated
 final class G implements Serializable {
+
+    private static final long serialVersionUID = -2763424578024274986L;
+
     int x;
     int y;
     int width;
@@ -104,16 +102,5 @@ final class G implements Serializable {
         this.width = width;
         this.height = height;
         this.fig = fig;
-    }
-
-    @Override
-    public String toString() {
-        return "G{" +
-                "x=" + x +
-                ", y=" + y +
-                ", width=" + width +
-                ", height=" + height +
-                ", fig=" + fig +
-                '}';
     }
 }
