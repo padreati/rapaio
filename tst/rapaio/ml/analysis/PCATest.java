@@ -63,8 +63,8 @@ public class PCATest {
 
 
         WS.draw(points(fit.var(0), fit.var(1), color(df.var("y")), pch(1))
-                .abLine(0, true)
-                .abLine(0, false));
+                .abLine(true, 0)
+                .abLine(false, 0));
 
         pca.printSummary();
     }

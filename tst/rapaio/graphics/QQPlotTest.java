@@ -53,16 +53,14 @@ public class QQPlotTest {
         Distribution normal = CoreTools.distNormal();
         Numeric x = Numeric.newFrom(N, row -> normal.sampleNext());
         Plot plot = qqplot(x, normal, pch(2), color(3))
-                .abLine(0, false, color(Color.GRAY))
-                .abLine(0, true, color(Color.GRAY));
+                .abLine(false, 0, color(Color.GRAY))
+                .abLine(true, 0, color(Color.GRAY));
 
         WS.draw(plot);
 //        ImageUtility.saveImage(plot, 500, 400,
 //                "/home/ati/work/rapaio/tst/rapaio/graphics/qqplot-test.png");
-
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("qqplot-test.png"));
-
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 

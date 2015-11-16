@@ -23,6 +23,7 @@
 
 package rapaio.graphics.plot.plotcomp;
 
+import rapaio.graphics.Plotter;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.plot.PlotComponent;
@@ -31,9 +32,17 @@ import java.awt.*;
 import java.awt.geom.Line2D;
 
 /**
+ * Plot component which draws a line of the form y = f(x) = a*x + b
+ * There is a generic form of the line by calling {@link #ABLine(double, double, GOpt...)}.
+ *
+ * Also there is a simpler form for drawing horizontal or vertical lines.
+ * The simpler form is called by using {@link #ABLine(boolean, double, GOpt...)},
+ * with the boolean parameter specifying if the line is horizontal or vertical.
+ *
+ * The default color is {@link Color#LIGHT_GRAY}, making this useful for drawing guides.
+ *
  * @author Aurelian Tutuianu
  */
-@Deprecated
 public class ABLine extends PlotComponent {
 
     private static final long serialVersionUID = 8980967297314815554L;
@@ -42,11 +51,12 @@ public class ABLine extends PlotComponent {
     private final boolean h;
     private final boolean v;
 
-    public ABLine(double a, boolean horiz, GOpt... opts) {
+    public ABLine(boolean horiz, double a, GOpt... opts) {
         this.a = a;
         this.b = a;
         this.h = horiz;
         this.v = !horiz;
+        this.options.setColorDefault(gOpts -> new Color[]{Color.LIGHT_GRAY});
         this.options.apply(opts);
     }
 
@@ -56,6 +66,7 @@ public class ABLine extends PlotComponent {
         this.h = false;
         this.v = false;
         this.options.apply(opts);
+        this.options.setColorDefault(gOpts -> new Color[]{Color.LIGHT_GRAY});
     }
 
     @Override

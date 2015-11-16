@@ -133,8 +133,8 @@ public class Plot extends HostFigure {
         return this;
     }
 
-    public Plot abLine(double a, boolean horiz, GOpt... opts) {
-        add(new ABLine(a, horiz, opts));
+    public Plot abLine(boolean horiz, double a, GOpt... opts) {
+        add(new ABLine(horiz, a, opts));
         return this;
     }
 
