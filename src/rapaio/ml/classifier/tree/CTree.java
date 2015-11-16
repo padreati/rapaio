@@ -41,6 +41,7 @@ import rapaio.util.func.SPredicate;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -102,7 +103,7 @@ public class CTree extends AbstractClassifier {
     public static CTree newDecisionStump() {
         return new CTree()
                 .withMaxDepth(1)
-                .withMinCount(1)
+                .withMinCount(6)
                 .withVarSelector(VarSelector.ALL)
                 .withMissingHandler(CTreeMissingHandler.ToAllWeighted)
                 .withFunction(CTreeFunction.GainRatio)
@@ -113,7 +114,7 @@ public class CTree extends AbstractClassifier {
     public static CTree newCART() {
         return new CTree()
                 .withMaxDepth(-1)
-                .withMinCount(1)
+                .withMinCount(2)
                 .withVarSelector(VarSelector.ALL)
                 .withMissingHandler(CTreeMissingHandler.ToAllWeighted)
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Binary)
@@ -133,6 +134,7 @@ public class CTree extends AbstractClassifier {
                 .withSampler(sampler());
 
         tree.withPoolSize(poolSize());
+        tree.withRuns(runs());
         tree.testMap.clear();
         tree.testMap.putAll(testMap);
 
@@ -147,6 +149,7 @@ public class CTree extends AbstractClassifier {
         testMap.put(VarType.INDEX, CTreeTest.Numeric_Binary);
         testMap.put(VarType.NUMERIC, CTreeTest.Numeric_Binary);
         testMap.put(VarType.NOMINAL, CTreeTest.Nominal_Binary);
+        withRuns(0);
     }
 
     public Node getRoot() {
@@ -631,7 +634,7 @@ public class CTree extends AbstractClassifier {
 
     public static class NominalTerms {
 
-        private final Map<String, Set<Integer>> indexes = new HashMap<>();
+        private final Map<String, Set<Integer>> indexes = new ConcurrentHashMap<>();
 
         public NominalTerms init(Frame df) {
             Arrays.stream(df.varNames())

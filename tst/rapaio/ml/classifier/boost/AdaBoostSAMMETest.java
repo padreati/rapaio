@@ -29,6 +29,7 @@ import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.Classifier;
+import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.eval.Confusion;
 import rapaio.printer.IdeaPrinter;
@@ -65,5 +66,8 @@ public class AdaBoostSAMMETest {
             WS.draw(lines(errTr, color(1)).lines(errTe, color(2)).yLim(0, Double.NaN));
         });
         ab.train(tr, target);
+        ab.printSummary();
+
+        new Confusion(tr.var(target), ab.fit(tr).firstClasses()).printSummary();
     }
 }

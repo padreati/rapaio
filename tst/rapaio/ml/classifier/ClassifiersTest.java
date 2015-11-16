@@ -1,60 +1,67 @@
-///*
-// * Apache License
-// * Version 2.0, January 2004
-// * http://www.apache.org/licenses/
-// *
-// *    Copyright 2013 Aurelian Tutuianu
-// *    Copyright 2014 Aurelian Tutuianu
-// *    Copyright 2015 Aurelian Tutuianu
-// *
-// *    Licensed under the Apache License, Version 2.0 (the "License");
-// *    you may not use this file except in compliance with the License.
-// *    You may obtain a copy of the License at
-// *
-// *      http://www.apache.org/licenses/LICENSE-2.0
-// *
-// *    Unless required by applicable law or agreed to in writing, software
-// *    distributed under the License is distributed on an "AS IS" BASIS,
-// *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// *    See the License for the specific language governing permissions and
-// *    limitations under the License.
-// *
-// */
-//
-//package rapaio.ml.classifier;
-//
-//import org.junit.Test;
-//import rapaio.data.Frame;
-//import rapaio.datasets.Datasets;
-//import rapaio.ml.classifier.bayes.NaiveBayes;
-//import rapaio.ml.classifier.ensemble.CBagging;
-//import rapaio.ml.eval.CEvaluation;
-//
-//import java.util.ArrayList;
-//import java.util.List;
-//
-///**
-// * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
-// */
-//@Deprecated
-//public class ClassifiersTest {
-//
-//    @Test
-//    public void mushroomsTest() throws Exception {
-////        Frame df = Datasets.loadMushrooms().stream().complete().toMappedFrame();
-////        Frame df = Datasets.loadMushrooms();
+/*
+ * Apache License
+ * Version 2.0, January 2004
+ * http://www.apache.org/licenses/
+ *
+ *    Copyright 2013 Aurelian Tutuianu
+ *    Copyright 2014 Aurelian Tutuianu
+ *    Copyright 2015 Aurelian Tutuianu
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
+package rapaio.ml.classifier;
+
+import org.junit.Test;
+import rapaio.data.Frame;
+import rapaio.datasets.Datasets;
+import rapaio.ml.classifier.bayes.NaiveBayes;
+import rapaio.ml.classifier.boost.AdaBoostSAMME;
+import rapaio.ml.classifier.ensemble.CForest;
+import rapaio.ml.classifier.linear.BinaryLogistic;
+import rapaio.ml.classifier.svm.BinarySMO;
+import rapaio.ml.classifier.svm.kernel.MinKernel;
+import rapaio.ml.classifier.tree.CTree;
+import rapaio.ml.eval.CEvaluation;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ */
+@Deprecated
+public class ClassifiersTest {
+
+    @Test
+    public void mushroomsTest() throws Exception {
+//        Frame df = Datasets.loadMushrooms().stream().complete().toMappedFrame();
+        Frame df = Datasets.loadMushrooms();
 //        Frame df = Datasets.loadIrisDataset();
-//
-//        List<Classifier> classifiers = new ArrayList<>();
-////        classifiers.add(new CForest().withRuns(100).withBootstrap(0.5));
-//        classifiers.add(new CBagging().withRuns(100).withBootstrap(1));
-//        classifiers.add(new CBagging().withRuns(100).withBootstrap(1).withClassifier(new NaiveBayes()));
-////        classifiers.add(new NaiveBayes());
-////        classifiers.add(new BinaryLogistic());
-////        classifiers.add(new BinarySMO().withKernel(new MinKernel()));
-////        classifiers.add(new AdaBoostSAMME());
-////        classifiers.add(new GBTClassifier());
-//
-//        new CEvaluation().multiCv(df, "class", classifiers, 10);
-//    }
-//}
+        df.printSummary();
+
+        List<Classifier> classifiers = new ArrayList<>();
+        classifiers.add(new CForest().withRuns(20).withBootstrap(0.5));
+        classifiers.add(new CForest().withRuns(20).withBootstrap(1));
+        classifiers.add(new CForest().withRuns(20).withBootstrap(1).withClassifier(new NaiveBayes()));
+        classifiers.add(new NaiveBayes());
+//        classifiers.add(new BinaryLogistic());
+//        classifiers.add(new BinarySMO().withKernel(new MinKernel()));
+        classifiers.add(new AdaBoostSAMME().withRuns(20));
+        classifiers.add(new AdaBoostSAMME().withClassifier(CTree.newCART().withMaxDepth(40).withRuns(20)));
+//        classifiers.add(new GBTClassifier());
+
+        CEvaluation.multiCv(df, "classes", classifiers, 10);
+    }
+}

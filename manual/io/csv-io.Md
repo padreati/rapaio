@@ -54,3 +54,14 @@ that it will have the following content:
 
 #### Various read and write methods for Csv
 
+Java has a nice abstraction over data named input and output streams.
+This is enough to make any tool to read or write data from anywhere.
+We followed that line of thinking by having
+
+    public Frame read(InputStream inputStream) throws IOException
+    public void write(Frame df, OutputStream os) throws IOException
+
+implemented on Csv class. With these two methods we basically can
+read from anywhere and can write to anywhere.
+
+In order to simplify some common tasks we have also 

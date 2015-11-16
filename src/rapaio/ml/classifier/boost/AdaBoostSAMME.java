@@ -47,11 +47,11 @@ import java.util.List;
 public class AdaBoostSAMME extends AbstractClassifier {
 
     private static final long serialVersionUID = -9154973036108114765L;
-    final double delta_error = 10e-10;
+    private static final double delta_error = 10e-10;
 
     // parameters
 
-    private Classifier weak = CTree.newDecisionStump();
+    private Classifier weak = CTree.newCART().withMaxDepth(6).withMinCount(6);
     private boolean stopOnError = false;
 
     // model artifacts
@@ -71,6 +71,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
     public AdaBoostSAMME newInstance() {
         return (AdaBoostSAMME) new AdaBoostSAMME()
                 .withClassifier(this.weak.newInstance())
+                .withStopOnError(stopOnError)
                 .withSampler(sampler())
                 .withRuns(runs());
     }
@@ -128,7 +129,9 @@ public class AdaBoostSAMME extends AbstractClassifier {
         w = weights.solidCopy();
 
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
-        w = w.stream().transValue(x -> x / total).toMappedVar();
+        for (int i = 0; i < w.rowCount(); i++) {
+            w.setValue(i, w.value(i) / total);
+        }
 
         for (int i = 0; i < runs(); i++) {
             boolean success = learnRound(df);
@@ -177,7 +180,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
             }
         }
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
-        w.stream().transValue(x -> x / total);
+        w = w.stream().transValue(x -> x / total).toMappedVar();
 
         return true;
     }

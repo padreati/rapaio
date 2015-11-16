@@ -43,5 +43,8 @@ public class CsvIO {
         iris.printLines();
 
         new Csv().write(iris, "/tmp/iris.csv");
+
+
+        Csv csv = new Csv();
     }
 }

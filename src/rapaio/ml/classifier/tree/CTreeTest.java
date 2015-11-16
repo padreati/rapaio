@@ -217,10 +217,10 @@ public interface CTreeTest extends Serializable {
                 Iterator<Integer> indexes = terms.indexes(testColName).iterator();
                 while (indexes.hasNext()) {
                     int i = indexes.next();
-                    if (termCount[i] < c.minCount()) {
-                        indexes.remove();
-                        continue;
-                    }
+//                    if (termCount[i] < c.minCount()) {
+//                        indexes.remove();
+//                        continue;
+//                    }
                     String testLabel = df.var(testColName).levels()[i];
 
                     DTable dt = DTable.newBinaryFromWeights(test, target, weights, testLabel, false);
