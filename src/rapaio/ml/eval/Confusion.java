@@ -159,7 +159,7 @@ public class Confusion implements Printable {
             tt.set(i + 2, factors.length + 1, "|", 0);
             tt.set(0, i + 2, factors[i + 1], 1);
             tt.set(1, i + 2, line(factors[i + 1].length()), 1);
-            tt.set(factors.length + 1, i + 2, line(factors[i + 1].length()), 0);
+            tt.set(factors.length + 1, i + 2, line(factors[i + 1].length()), 1);
         }
         tt.set(factors.length + 2, 0, "total", 1);
         tt.set(0, factors.length + 2, "total", 1);
@@ -185,14 +185,14 @@ public class Confusion implements Printable {
 
         for (int i = 0; i < factors.length - 1; i++) {
             for (int j = 0; j < factors.length - 1; j++) {
-                tt.set(i + 2, j + 2, ((i == j) ? "<" : "") + cmf[i][j] + ((i == j) ? ">" : " "), 1);
+                tt.set(i + 2, j + 2, ((i == j) ? ">" : " ") + cmf[i][j], 1);
                 grandTotal += cmf[i][j];
                 rowTotals[i] += cmf[i][j];
                 colTotals[j] += cmf[i][j];
             }
         }
         for (int i = 0; i < factors.length - 1; i++) {
-            tt.set(factors.length + 2, i + 2, String.valueOf(colTotals[i]) + " ", 1);
+            tt.set(factors.length + 2, i + 2, String.valueOf(colTotals[i]), 1);
             tt.set(i + 2, factors.length + 2, String.valueOf(rowTotals[i]), 1);
         }
         tt.set(factors.length + 2, factors.length + 2, String.valueOf(grandTotal), 1);
@@ -211,7 +211,7 @@ public class Confusion implements Printable {
                 tt.set(i + 2, factors.length + 1, "|", 0);
                 tt.set(0, i + 2, factors[i + 1], 1);
                 tt.set(1, i + 2, line(factors[i + 1].length()), 1);
-                tt.set(factors.length + 1, i + 2, line(factors[i + 1].length()), 0);
+                tt.set(factors.length + 1, i + 2, line(factors[i + 1].length()), 1);
             }
             tt.set(factors.length + 2, 0, "total", 1);
             tt.set(0, factors.length + 2, "total", 1);
@@ -233,11 +233,11 @@ public class Confusion implements Printable {
 
             for (int i = 0; i < factors.length - 1; i++) {
                 for (int j = 0; j < factors.length - 1; j++) {
-                    tt.set(i + 2, j + 2, ((i == j) ? "<" : "") + WS.formatShort(cmf[i][j] / completeCases) + ((i == j) ? ">" : " "), 1);
+                    tt.set(i + 2, j + 2, ((i == j) ? ">" : " ") + WS.formatShort(cmf[i][j] / completeCases), 1);
                 }
             }
             for (int i = 0; i < factors.length - 1; i++) {
-                tt.set(factors.length + 2, i + 2, WS.formatShort(colTotals[i] / completeCases) + " ", 1);
+                tt.set(factors.length + 2, i + 2, WS.formatShort(colTotals[i] / completeCases), 1);
                 tt.set(i + 2, factors.length + 2, WS.formatShort(rowTotals[i] / completeCases), 1);
             }
             tt.set(factors.length + 2, factors.length + 2, WS.formatShort(grandTotal / completeCases), 1);

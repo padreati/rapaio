@@ -21,11 +21,13 @@
  *
  */
 
-package rapaio.graphics.plot;
+package rapaio.graphics.plot.plotcomp;
 
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.plot.Plot;
+import rapaio.graphics.plot.PlotComponent;
 import rapaio.ml.eval.ROC;
 
 import java.awt.*;

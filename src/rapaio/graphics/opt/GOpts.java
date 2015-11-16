@@ -46,7 +46,7 @@ public class GOpts implements Serializable {
     static {
         DEFAULTS = new GOpts();
         DEFAULTS.palette = gOpts -> ColorPalette.STANDARD;
-        DEFAULTS.colors = gOpts -> new Color[]{Color.black};
+        DEFAULTS.color = gOpts -> new Color[]{Color.black};
         DEFAULTS.lwd = gOpts -> 1.2f;
         DEFAULTS.sz = gOpts -> Numeric.newScalar(3);
         DEFAULTS.pch = gOpts -> Index.newScalar(0);
@@ -56,9 +56,20 @@ public class GOpts implements Serializable {
         DEFAULTS.points = gOpts -> 256;
     }
 
+
     //
+    SFunction<GOpts, ColorPalette> paletteDefault;
+    SFunction<GOpts, Color[]> colorDefault;
+    SFunction<GOpts, Float> lwdDefault;
+    SFunction<GOpts, Var> szDefault;
+    SFunction<GOpts, Var> pchDefault;
+    SFunction<GOpts, Float> alphaDefault;
+    SFunction<GOpts, Integer> binsDefault;
+    SFunction<GOpts, Boolean> probDefault;
+    SFunction<GOpts, Integer> pointsDefault;
+
     SFunction<GOpts, ColorPalette> palette;
-    SFunction<GOpts, Color[]> colors;
+    SFunction<GOpts, Color[]> color;
     SFunction<GOpts, Float> lwd;
     SFunction<GOpts, Var> sz;
     SFunction<GOpts, Var> pch;
@@ -75,7 +86,7 @@ public class GOpts implements Serializable {
     public GOpt[] toArray() {
         return new GOpt[]{
                 opt -> opt.setPalette(palette),
-                opt -> opt.setColors(colors),
+                opt -> opt.setColor(color),
                 opt -> opt.setLwd(lwd),
                 opt -> opt.setSz(sz),
                 opt -> opt.setPch(pch),
@@ -86,18 +97,11 @@ public class GOpts implements Serializable {
         };
     }
 
-    public GOpts parent(GOpts parent) {
-        this.parent = parent;
-        return this;
-    }
-
-    public GOpts defaults() {
-        if (parent != null)
-            return parent.defaults();
-        return DEFAULTS;
-    }
-
     // getters
+
+    public GOpts getParent() {
+        return parent;
+    }
 
     public ColorPalette getPalette() {
         if (palette == null) {
@@ -107,10 +111,28 @@ public class GOpts implements Serializable {
     }
 
     public Color getColor(int row) {
-        if (colors == null) {
-            return parent != null ? parent.getColor(row) : DEFAULTS.colors.apply(this)[row % DEFAULTS.colors.apply(this).length];
-        }
-        return colors.apply(this)[row % colors.apply(this).length];
+        SFunction<GOpts, Color[]> c = getUpColor();
+        if (c == null)
+            c = getUpColorDefault();
+        if (c == null)
+            c = DEFAULTS.color;
+        return c.apply(this)[row % c.apply(this).length];
+    }
+
+    protected SFunction<GOpts, Color[]> getUpColor() {
+        if (color != null)
+            return color;
+        if (parent != null)
+            return parent.getUpColor();
+        return null;
+    }
+
+    protected SFunction<GOpts, Color[]> getUpColorDefault() {
+        if (colorDefault != null)
+            return colorDefault;
+        if (parent != null)
+            return parent.getUpColorDefault();
+        return null;
     }
 
     public float getLwd() {
@@ -171,8 +193,8 @@ public class GOpts implements Serializable {
         this.palette = palette;
     }
 
-    public void setColors(SFunction<GOpts, Color[]> colors) {
-        this.colors = colors;
+    public void setColor(SFunction<GOpts, Color[]> color) {
+        this.color = color;
     }
 
     public void setLwd(SFunction<GOpts, Float> lwd) {
@@ -201,5 +223,41 @@ public class GOpts implements Serializable {
 
     public void setPoints(SFunction<GOpts, Integer> points) {
         this.points = points;
+    }
+
+    public void setPaletteDefault(SFunction<GOpts, ColorPalette> paletteDefault) {
+        this.paletteDefault = paletteDefault;
+    }
+
+    public void setColorDefault(SFunction<GOpts, Color[]> colorDefault) {
+        this.colorDefault = colorDefault;
+    }
+
+    public void setLwdDefault(SFunction<GOpts, Float> lwdDefault) {
+        this.lwdDefault = lwdDefault;
+    }
+
+    public void setSzDefault(SFunction<GOpts, Var> szDefault) {
+        this.szDefault = szDefault;
+    }
+
+    public void setPchDefault(SFunction<GOpts, Var> pchDefault) {
+        this.pchDefault = pchDefault;
+    }
+
+    public void setAlphaDefault(SFunction<GOpts, Float> alphaDefault) {
+        this.alphaDefault = alphaDefault;
+    }
+
+    public void setBinsDefault(SFunction<GOpts, Integer> binsDefault) {
+        this.binsDefault = binsDefault;
+    }
+
+    public void setProbDefault(SFunction<GOpts, Boolean> probDefault) {
+        this.probDefault = probDefault;
+    }
+
+    public void setPointsDefault(SFunction<GOpts, Integer> pointsDefault) {
+        this.pointsDefault = pointsDefault;
     }
 }

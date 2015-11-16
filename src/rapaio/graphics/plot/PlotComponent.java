@@ -30,7 +30,6 @@ import java.awt.*;
 /**
  * @author Aurelian Tutuianu
  */
-@Deprecated
 public abstract class PlotComponent extends BaseFigure {
 
     private static final long serialVersionUID = -797168275849511614L;
@@ -41,7 +40,7 @@ public abstract class PlotComponent extends BaseFigure {
             throw new IllegalArgumentException("parent plot reference is null");
         }
         this.parent = parent;
-        this.options.parent(parent.getOptions());
+        this.options.setParent(parent.getOptions());
     }
 
     public abstract void paint(Graphics2D g2d);

@@ -21,13 +21,15 @@
  *
  */
 
-package rapaio.graphics.plot;
+package rapaio.graphics.plot.plotcomp;
 
 import rapaio.core.RandomSource;
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.opt.PchPalette;
+import rapaio.graphics.plot.Plot;
+import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;
 import java.util.ArrayList;

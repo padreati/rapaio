@@ -21,24 +21,25 @@
  *
  */
 
-package rapaio.graphics.plot;
+package rapaio.graphics.plot.plotcomp;
 
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Var;
-import rapaio.graphics.Plotter;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.plot.Plot;
+import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;
 import java.util.Arrays;
 
 import static rapaio.graphics.Plotter.bins;
+import static rapaio.graphics.Plotter.color;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Histogram extends PlotComponent {
 
     private static final long serialVersionUID = -7990247895216501553L;
@@ -57,7 +58,7 @@ public class Histogram extends PlotComponent {
         this.minValue = minValue;
         this.maxValue = maxValue;
         // default values for histogram
-        options.apply(Plotter.color(7));
+        options.setColorDefault(gOpts -> new Color[]{gOpts.getPalette().getColor(7)});
         options.apply(opts);
     }
 

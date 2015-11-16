@@ -32,7 +32,7 @@ import rapaio.experiment.grid.MeshGrid1D;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.plot.Plot;
-import rapaio.graphics.plot.Points;
+import rapaio.graphics.plot.plotcomp.Points;
 import rapaio.graphics.plot.plotcomp.MeshContour;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;

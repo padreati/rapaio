@@ -28,6 +28,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -35,9 +36,7 @@ import java.io.IOException;
 public class ImageUtility {
 
     public static BufferedImage buildImage(Figure figure, int width, int height) {
-//        return buildImage(figure, width, height, BufferedImage.TYPE_BYTE_INDEXED);
         return buildImage(figure, width, height, BufferedImage.TYPE_4BYTE_ABGR_PRE);
-//        return buildImage(figure, width, height, BufferedImage.TYPE_4BYTE_ABGR_PRE);
     }
 
     public static BufferedImage buildImage(Figure figure, int width, int height, int type) {
@@ -47,7 +46,6 @@ public class ImageUtility {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-//        g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         Rectangle rect = new Rectangle(newImage.getWidth(), newImage.getHeight());
         figure.paint(g2d, rect);
@@ -57,5 +55,10 @@ public class ImageUtility {
     public static void saveImage(Figure figure, int width, int height, String fileName) throws IOException {
         BufferedImage bi = buildImage(figure, width, height);
         ImageIO.write(bi, "png", new File(fileName));
+    }
+
+    public static void saveImage(Figure figure, int width, int height, OutputStream os) throws IOException {
+        BufferedImage bi = buildImage(figure, width, height);
+        ImageIO.write(bi, "png", os);
     }
 }

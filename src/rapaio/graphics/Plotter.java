@@ -23,16 +23,15 @@
 
 package rapaio.graphics;
 
+import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.empirical.KFunc;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOpt;
-import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.plot.*;
-import rapaio.graphics.plot.plotcomp.DensityLine;
-import rapaio.graphics.plot.plotcomp.FunctionLine;
+import rapaio.graphics.plot.plotcomp.*;
 import rapaio.ml.eval.ROC;
 
 import java.awt.*;
@@ -40,20 +39,12 @@ import java.util.function.Function;
 
 public final class Plotter {
 
-    private static GOpt[] mergedOpts(GOpt... opts) {
-        GOpt[] defaults = GOpts.DEFAULTS.toArray();
-        GOpt[] op = new GOpt[defaults.length + opts.length];
-        System.arraycopy(defaults, 0, op, 0, defaults.length);
-        System.arraycopy(opts, 0, op, defaults.length, opts.length);
-        return op;
-    }
-
     public static Plot plot(GOpt... opts) {
-        return new Plot(mergedOpts(opts));
+        return new Plot(opts);
     }
 
-    public static QQPlot qqplot(GOpt... opts) {
-        return new QQPlot(mergedOpts(opts));
+    public static QQPlot qqplot(Var points, Distribution dist, GOpt... opts) {
+        return new QQPlot(points, dist, opts);
     }
 
     public static Plot hist(Var v, GOpt... opts) {
@@ -85,11 +76,11 @@ public final class Plotter {
     }
 
     public static Plot lines(Var x, Var y, GOpt... opts) {
-        return plot().lines(x, y, opts);
+        return plot().add(new Lines(x, y, opts));
     }
 
     public static Plot lines(Var y, GOpt... opts) {
-        return plot().lines(y, opts);
+        return plot().add(new Lines(y, opts));
     }
 
     public static Plot points(Var x, Var y, GOpt... opts) {
@@ -101,7 +92,7 @@ public final class Plotter {
     }
 
     public static Plot rocCurve(ROC roc, GOpt... opts) {
-        return plot().rocCurve(roc, opts);
+        return plot().add(new ROCCurve(roc, opts));
     }
 
     public static BarChart barChart(Var categ, GOpt... opts) {
@@ -121,19 +112,19 @@ public final class Plotter {
     }
 
     public static GOpt color(int index) {
-        return opt -> opt.setColors(gOpts -> new Color[]{gOpts.getPalette().getColor(index)});
+        return opt -> opt.setColor(gOpts -> new Color[]{gOpts.getPalette().getColor(index)});
     }
 
     public static GOpt color(Color color) {
-        return opt -> opt.setColors(gOpts -> new Color[]{color});
+        return opt -> opt.setColor(gOpts -> new Color[]{color});
     }
 
     public static GOpt color(Color[] colors) {
-        return opt -> opt.setColors(gOpts -> colors);
+        return opt -> opt.setColor(gOpts -> colors);
     }
 
     public static GOpt color(Var color) {
-        return opt -> opt.setColors(gOpts -> {
+        return opt -> opt.setColor(gOpts -> {
             Color[] colors = new Color[color.rowCount()];
             for (int i = 0; i < colors.length; i++) {
                 colors[i] = opt.getPalette().getColor(color.index(i));

@@ -40,7 +40,6 @@ import java.util.function.Function;
 /**
  * @author tutuianu
  */
-@Deprecated
 public class Plot extends HostFigure {
 
     private static final long serialVersionUID = 1898871481989584539L;

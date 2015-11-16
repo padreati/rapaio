@@ -62,6 +62,6 @@ public class ClassifiersTest {
         classifiers.add(new AdaBoostSAMME().withClassifier(CTree.newCART().withMaxDepth(40).withRuns(20)));
 //        classifiers.add(new GBTClassifier());
 
-        CEvaluation.multiCv(df, "classes", classifiers, 10);
+        CEvaluation.multiCv(df, "classes", classifiers, 3);
     }
 }

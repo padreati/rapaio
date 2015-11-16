@@ -29,29 +29,27 @@ import rapaio.data.Var;
 import rapaio.data.filter.VFSort;
 import rapaio.graphics.Plotter;
 import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.plot.plotcomp.Points;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class QQPlot extends Plot {
 
     private static final long serialVersionUID = -3244871850592508515L;
 
-    public QQPlot(GOpt... opts) {
-        yLab("StatSampling Quantiles");
-        xLab("Theoretical Quantiles");
-        this.options.apply(opts);
-    }
+    public QQPlot(Var points, Distribution distribution, GOpt... opts) {
 
-    public QQPlot add(Var points, Distribution distribution) {
+        this.options.apply(opts);
         Var x = new VFSort().fitApply(points);
         Var y = Numeric.newEmpty(x.rowCount());
         for (int i = 0; i < y.rowCount(); i++) {
             double p = (i + 1) / (y.rowCount() + 1.);
             y.setValue(i, distribution.quantile(p));
         }
-        add(new Points(y, x, Plotter.color(0)));
-        return this;
+        add(new Points(y, x));
+        yLab("StatSampling Quantiles");
+        xLab("Theoretical Quantiles");
+        title("QQPlot - sample vs. " + distribution.name());
     }
 }
