@@ -24,92 +24,63 @@
 package rapaio.graphics.plot;
 
 import rapaio.core.stat.Quantiles;
+import rapaio.data.*;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
-import rapaio.data.Var;
-import rapaio.data.VarRange;
+import rapaio.data.stream.VSpot;
 import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
+import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.opt.GOpts;
+import rapaio.graphics.opt.PchPalette;
+import rapaio.util.Pair;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class BoxPlot extends HostFigure {
 
     private static final long serialVersionUID = 8868603141563818477L;
 
     private final Var[] vars;
-    private final String[] labels;
+    private final String[] names;
     private final GOpts options = new GOpts();
 
-    public BoxPlot(Var v, String label, GOpt... opts) {
-        this(new Var[]{v}, new String[]{label}, opts);
-    }
+    public BoxPlot(Var x, Var factor, GOpt... opts) {
 
-    public BoxPlot(Var numeric, Var nominal, GOpt... opts) {
-        this.labels = nominal.levels();
-        this.vars = new Var[labels.length];
-        int[] count = new int[labels.length];
-        for (int i = 0; i < numeric.rowCount(); i++) {
-            count[nominal.index(i)]++;
-        }
-        for (int i = 0; i < count.length; i++) {
-            vars[i] = Numeric.newFill(count[i], 0);
-        }
-        int[] pos = new int[vars.length];
-        for (int i = 0; i < nominal.rowCount(); i++) {
-            vars[nominal.index(i)].setValue(pos[nominal.index(i)], numeric.value(i));
-            pos[nominal.index(i)]++;
-        }
+        Map<String, List<Double>> map = x.stream().collect(groupingBy(s -> factor.label(s.row()), mapping(VSpot::value, toList())));
+        names = factor.streamLevels().filter(map::containsKey).toArray(String[]::new);
+        vars = Arrays.stream(names).map(map::get).map(Numeric::newCopyOf).toArray(Var[]::new);
+
         this.options.apply(opts);
         initialize();
     }
 
-    public BoxPlot(Var[] vars, String[] labels, GOpt... opts) {
+    public BoxPlot(Var x, GOpt... opts) {
+        this(new Var[]{x}, opts);
+    }
+
+    public BoxPlot(Var[] vars, GOpt... opts) {
         this.vars = vars;
-        this.labels = labels;
+        this.names = Arrays.stream(vars).map(Var::name).toArray(String[]::new);
         this.options.apply(opts);
         initialize();
     }
 
     public BoxPlot(Frame df, GOpt... opts) {
-        this(df, new VarRange("all"), opts);
-    }
-
-    public BoxPlot(Frame df, VarRange varRange, GOpt... opts) {
-        if (varRange == null) {
-            int len = 0;
-            for (int i = 0; i < df.varCount(); i++) {
-                if (df.var(i).type().isNumeric()) {
-                    len++;
-                }
-            }
-            int[] indexes = new int[len];
-            len = 0;
-            for (int i = 0; i < df.varCount(); i++) {
-                if (df.var(i).type().isNumeric()) {
-                    indexes[len++] = i;
-                }
-            }
-            varRange = new VarRange(indexes);
-        }
-        List<Integer> indexes = varRange.parseVarIndexes(df);
-        this.vars = new Var[indexes.size()];
-        this.labels = new String[indexes.size()];
-
-        int pos = 0;
-        for (int index : indexes) {
-            vars[pos] = df.var(index);
-            labels[pos] = df.varNames()[index];
-            pos++;
-        }
+        this.vars = df.varStream().filter(var -> var.stream().complete().count() > 0).toArray(Var[]::new);
+        this.names = Arrays.stream(vars).map(Var::name).toArray(String[]::new);
         this.options.apply(opts);
         initialize();
     }
@@ -119,6 +90,9 @@ public class BoxPlot extends HostFigure {
         leftThick(true);
         bottomMarkers(true);
         bottomThick(true);
+
+        options.setPchDefault(gOpts -> Index.newWrapOf(0, 3));
+        options.setColorDefault(gOpts -> new Color[]{new Color(240, 240, 240)});
     }
 
     @Override
@@ -149,7 +123,7 @@ public class BoxPlot extends HostFigure {
 
         for (int i = 0; i < vars.length; i++) {
             bottomMarkersPos.add(i * xSpotWidth + xSpotWidth / 2);
-            bottomMarkersMsg.add(labels[i]);
+            bottomMarkersMsg.add(names[i]);
         }
     }
 
@@ -172,7 +146,14 @@ public class BoxPlot extends HostFigure {
             double x2 = i + 0.5;
             double x3 = i + 0.5 + 0.3;
 
+            // first we fill the space
+
             g2d.setColor(options.getColor(i));
+            g2d.fill(new Rectangle2D.Double(xScale(x1), yScale(q[2]),
+                    xScale(x3) - xScale(x1), yScale(q[0]) - yScale(q[2])));
+
+            g2d.setColor(ColorPalette.STANDARD.getColor(0));
+
             // median
             g2d.setStroke(new BasicStroke(options.getLwd() * 2));
             g2d.draw(new Line2D.Double(
@@ -180,6 +161,7 @@ public class BoxPlot extends HostFigure {
 
             // box
             g2d.setStroke(new BasicStroke(options.getLwd()));
+
             g2d.draw(new Line2D.Double(xScale(x1), yScale(q[0]), xScale(x3), yScale(q[0])));
             g2d.draw(new Line2D.Double(xScale(x1), yScale(q[2]), xScale(x3), yScale(q[2])));
             g2d.draw(new Line2D.Double(xScale(x1), yScale(q[0]), xScale(x1), yScale(q[2])));
@@ -192,20 +174,22 @@ public class BoxPlot extends HostFigure {
                 double point = v.value(j);
                 if ((point > q[2] + outerFence) || (point < q[0] - outerFence)) {
                     // big outlier
-                    int width = (int) (3 * options.getSz(i));
-                    g2d.fillOval(
-                            (int) xScale(x2) - width / 2 - 1,
-                            (int) yScale(point) - width / 2 - 1,
-                            width, width);
+                    g2d.setStroke(new BasicStroke(options.getLwd()));
+                    g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
+                    PchPalette.STANDARD.draw(g2d,
+                            xScale(x2),
+                            yScale(point),
+                            options.getSz(i), options.getPch(1));
                     continue;
                 }
                 if ((point > q[2] + innerFence) || (point < q[0] - innerFence)) {
                     // outlier
-                    int width = (int) (3.5 * options.getSz(i));
-                    g2d.drawOval(
-                            (int) xScale(x2) - width / 2 - 1,
-                            (int) yScale(point) - width / 2 - 1,
-                            width, width);
+                    g2d.setStroke(new BasicStroke(options.getLwd()));
+                    g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
+                    PchPalette.STANDARD.draw(g2d,
+                            xScale(x2),
+                            yScale(point),
+                            options.getSz(i), options.getPch(0));
                     continue;
                 }
                 if ((point > upperwhisker) && (point < q[2] + innerFence)) {

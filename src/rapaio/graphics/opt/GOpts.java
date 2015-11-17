@@ -186,9 +186,9 @@ public class GOpts implements Serializable {
     }
 
     public int getPch(int row) {
-        SFunction<GOpts, Var> c = getUpSz();
+        SFunction<GOpts, Var> c = getUpPch();
         if (c == null)
-            c = getUpSzDefault();
+            c = getUpPchDefault();
         if (c == null)
             c = DEFAULTS.pch;
         return c.apply(this).index(row % c.apply(this).rowCount());
@@ -327,12 +327,12 @@ public class GOpts implements Serializable {
         this.lwd = lwd;
     }
 
-    public void setSz(SFunction<GOpts, Var> sizeIndex) {
-        this.sz = sizeIndex;
+    public void setSz(SFunction<GOpts, Var> sz) {
+        this.sz = sz;
     }
 
-    public void setPch(SFunction<GOpts, Var> pchIndex) {
-        this.pch = pchIndex;
+    public void setPch(SFunction<GOpts, Var> pch) {
+        this.pch = pch;
     }
 
     public void setAlpha(SFunction<GOpts, Float> alpha) {

@@ -59,8 +59,14 @@ final class StandardPchPalette implements Mapping {
 
     public StandardPchPalette() {
         pchs = new ArrayList<>();
+
+        // 0 is a circle
         pchs.add((g2d, x, y, sz) -> g2d.draw(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2)));
+
+        // 1 is a filled circle
         pchs.add((g2d, x, y, sz) -> g2d.fill(new Ellipse2D.Double(x - sz, y - sz, sz * 2, sz * 2)));
+
+        // 2 is a filled circle with a black surrounding
         pchs.add((g2d, x, y, sz) -> {
             Color fill = g2d.getColor();
             BasicStroke stroke = null;
@@ -75,6 +81,8 @@ final class StandardPchPalette implements Mapping {
             if (g2d.getStroke() instanceof BasicStroke)
                 g2d.setStroke(stroke);
         });
+
+        // 3 is a cross
         pchs.add((g2d, x, y, sz) -> {
             Color fill = g2d.getColor();
             g2d.draw(new Line2D.Double(x - sz, y - sz, x + sz, y + sz));

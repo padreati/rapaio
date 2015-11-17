@@ -25,9 +25,9 @@ package rapaio.graphics;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.empirical.KFunc;
-import rapaio.data.Index;
-import rapaio.data.Numeric;
-import rapaio.data.Var;
+import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.stream.VSpot;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.plot.*;
@@ -35,7 +35,12 @@ import rapaio.graphics.plot.plotcomp.*;
 import rapaio.ml.eval.ROC;
 
 import java.awt.*;
+import java.util.*;
 import java.util.function.Function;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 
 public final class Plotter {
 
@@ -45,6 +50,22 @@ public final class Plotter {
 
     public static QQPlot qqplot(Var points, Distribution dist, GOpt... opts) {
         return new QQPlot(points, dist, opts);
+    }
+
+    public static BoxPlot boxPlot(Var x, Var factor, GOpt... opts) {
+        return new BoxPlot(x, factor, opts);
+    }
+
+    public static BoxPlot boxPlot(Var x, GOpt... opts) {
+        return new BoxPlot(x, opts);
+    }
+
+    public static BoxPlot boxPlot(Var[] vars, GOpt... opts) {
+        return new BoxPlot(vars, opts);
+    }
+
+    public static BoxPlot boxPlot(Frame df, GOpt... opts) {
+        return new BoxPlot(df, opts);
     }
 
     public static Plot hist(Var v, GOpt... opts) {
@@ -115,8 +136,8 @@ public final class Plotter {
         return opt -> opt.setPalette(gOpts -> colorPalette);
     }
 
-    public static GOpt color(int index) {
-        return opt -> opt.setColor(gOpts -> new Color[]{gOpts.getPalette().getColor(index)});
+    public static GOpt color(int... index) {
+        return opt -> opt.setColor(gOpts -> Arrays.stream(index).boxed().map(i -> gOpts.getPalette().getColor(i)).toArray(Color[]::new));
     }
 
     public static GOpt color(Color color) {
