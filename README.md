@@ -40,6 +40,10 @@ is considered to be fully implemented and well tested.
     * offers utility methods for bootstraps, simple random, stratified sampling
 * Samplers used in machine learning algorithms
 
+**Hypothesis Testing**
+
+* Pearson Chi-Square goodness of fit / independence test
+
 **Analysis**
 
 * Principal Components Analysis
@@ -65,6 +69,13 @@ is considered to be fully implemented and well tested.
 
 * KMeans clustering
 
+**Graphics**
+
+* QQ Plot
+* Box Plot
+* 2d Histogram
+
+
 Experminental Stage Features
 ============================
 
@@ -77,7 +88,6 @@ Experminental Stage Features
 
 **Hypothesis Testing**
 
-* ChiSquare goodness of fit / independence test
 * Kolmogorov Smirnoff one/two sample test
 
 
@@ -117,6 +127,4 @@ further improvements in order to make the utilization easier.
 * Plot vertical/horizontal/ab line
 * Plot legend
 * Plot ROC Curve
-* QQPlot
 * BarChart
-* BoxPlot
