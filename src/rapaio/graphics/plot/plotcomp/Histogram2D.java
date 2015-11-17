@@ -35,14 +35,12 @@ import java.awt.geom.Rectangle2D;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-@Deprecated
 public class Histogram2D extends PlotComponent {
 
     private static final long serialVersionUID = 136436073834179971L;
+
     private final Var x;
     private final Var y;
-    private int xBins = 10;
-    private int yBins = 10;
     private int[][] freq;
     private int maxFreq;
 
@@ -63,16 +61,6 @@ public class Histogram2D extends PlotComponent {
         parent.yLab(y.name());
     }
 
-    public Histogram2D withXBins(int xBins) {
-        this.xBins = xBins;
-        return this;
-    }
-
-    public Histogram2D withYBins(int yBins) {
-        this.yBins = yBins;
-        return this;
-    }
-
     @Override
     protected Range buildRange() {
         if (x.rowCount() == 0) {
@@ -90,17 +78,18 @@ public class Histogram2D extends PlotComponent {
 
     private void computeData() {
         Range range = buildRange();
-        double w = range.width() / xBins;
-        double h = range.height() / yBins;
+        int bins = options.getBins();
+        double w = range.width() / bins;
+        double h = range.height() / bins;
 
-        freq = new int[xBins][yBins];
+        freq = new int[bins][bins];
 
         for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
             if (x.missing(i) || y.missing(i))
                 continue;
 
-            int xx = Math.min(xBins - 1, (int) Math.floor((x.value(i) - range.x1()) / w));
-            int yy = Math.min(yBins - 1, (int) Math.floor((y.value(i) - range.y1()) / h));
+            int xx = Math.min(bins - 1, (int) Math.floor((x.value(i) - range.x1()) / w));
+            int yy = Math.min(bins - 1, (int) Math.floor((y.value(i) - range.y1()) / h));
             freq[xx][yy]++;
             if (maxFreq < freq[xx][yy]) {
                 maxFreq = freq[xx][yy];
@@ -115,12 +104,14 @@ public class Histogram2D extends PlotComponent {
 
         // paint each rectangle as a blue gradient
 
-        Range range = buildRange();
-        double w = range.width() / xBins;
-        double h = range.height() / yBins;
+        int bins = options.getBins();
 
-        for (int i = 0; i < xBins; i++) {
-            for (int j = 0; j < yBins; j++) {
+        Range range = buildRange();
+        double w = range.width() / bins;
+        double h = range.height() / bins;
+
+        for (int i = 0; i < bins; i++) {
+            for (int j = 0; j < bins; j++) {
                 int blue = (int) (255 * freq[i][j] / (1.0 * maxFreq));
                 Color c = options.getColor(0);
                 Color color = new Color(c.getRed(), c.getGreen(), c.getBlue(), blue);

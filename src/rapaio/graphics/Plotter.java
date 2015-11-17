@@ -55,6 +55,10 @@ public final class Plotter {
         return plot().add(new Histogram(v, minValue, maxValue, opts));
     }
 
+    public static Plot hist2d(Var x, Var y, GOpt... opts) {
+        return plot().add(new Histogram2D(x, y, opts));
+    }
+
     public static Plot densityLine(Var var, GOpt... opts) {
         return plot().add(new DensityLine(var, opts));
     }

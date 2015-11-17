@@ -190,7 +190,7 @@ public class GOpts implements Serializable {
         if (c == null)
             c = getUpSzDefault();
         if (c == null)
-            c = DEFAULTS.sz;
+            c = DEFAULTS.pch;
         return c.apply(this).index(row % c.apply(this).rowCount());
     }
 

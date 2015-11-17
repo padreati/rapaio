@@ -118,6 +118,11 @@ public class Plot extends HostFigure {
         return this;
     }
 
+    public Plot hist2d(Var x, Var y, GOpt... opts) {
+        add(new Histogram2D(x, y, opts));
+        return this;
+    }
+
     public Plot points(Var x, Var y, GOpt... opts) {
         add(new Points(x, y, opts));
         return this;
