@@ -89,7 +89,7 @@ public class Hypergeometric implements Distribution {
 
     @Override
     public double mean() {
-        return (n * k) / (m + n);
+        return (m * k) / (m + n);
     }
 
     @Override
@@ -129,6 +129,6 @@ public class Hypergeometric implements Distribution {
 
     @Override
     public double entropy() {
-        return 0;
+        return Double.NaN;
     }
 }
