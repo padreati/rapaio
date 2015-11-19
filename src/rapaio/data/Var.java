@@ -85,7 +85,7 @@ public interface Var extends Serializable, Printable {
      * @return new frame with selected rows
      */
     default Var mapRows(Mapping mapping) {
-        return MappedVar.newByRows(this, mapping);
+        return MappedVar.byRows(this, mapping);
     }
 
     /**
@@ -95,7 +95,7 @@ public interface Var extends Serializable, Printable {
      * @return new frame with selected rows
      */
     default Var mapRows(int... rows) {
-        return mapRows(Mapping.newCopyOf(rows));
+        return mapRows(Mapping.copy(rows));
     }
 
     void addRows(int rowCount);

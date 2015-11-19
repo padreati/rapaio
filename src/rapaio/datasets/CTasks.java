@@ -78,7 +78,7 @@ class IrisUCITask extends CTask {
                 : SamplingTools.sampleWOR(full.rowCount(), (int) (full.rowCount() * p));
         train = MappedFrame.newByRow(full, rows);
         Set<Integer> used = Arrays.stream(rows).mapToObj(row -> row).collect(Collectors.toSet());
-        Mapping diff = Mapping.newCopyOf(IntStream.range(0, full.rowCount()).filter(row -> !used.contains(row)).toArray());
+        Mapping diff = Mapping.copy(IntStream.range(0, full.rowCount()).filter(row -> !used.contains(row)).toArray());
         test = MappedFrame.newByRow(full, diff);
         return true;
     }

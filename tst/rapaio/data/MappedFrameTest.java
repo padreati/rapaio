@@ -50,8 +50,8 @@ public class MappedFrameTest {
     @Test
     public void testBuilders() {
         Frame df = SolidFrame.newWrapOf(
-                Numeric.newWrapOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x"),
-                Index.newWrapOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("y")
+                Numeric.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x"),
+                Index.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("y")
         );
 
         Frame mapped = MappedFrame.newByRow(df, 0, 2, 4, 6, 8);
@@ -60,29 +60,29 @@ public class MappedFrameTest {
         assertEquals(1, mapped.value(0, "x"), 1e-12);
         assertEquals(9, mapped.value(4, "x"), 1e-12);
 
-        mapped = MappedFrame.newByRow(df, Mapping.newRangeOf(0, 10), "x,y");
+        mapped = MappedFrame.newByRow(df, Mapping.range(0, 10), "x,y");
         assertEquals(2, mapped.varCount());
         assertEquals(10, mapped.rowCount());
 
-        mapped = MappedFrame.newByRow(df, Mapping.newRangeOf(0, 10), "x");
+        mapped = MappedFrame.newByRow(df, Mapping.range(0, 10), "x");
         assertEquals(1, mapped.varCount());
         assertEquals(10, mapped.rowCount());
     }
 
     @Test
     public void testMapAndBound() {
-        Var x = Numeric.newWrapOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x");
-        Var y = Index.newWrapOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("y");
-        Var z = Numeric.newWrapOf(1 / 1., 1 / 2., 1 / 3., 1 / 4., 1 / 5., 1 / 6., 1 / 7., 1 / 8., 1 / 9., 1 / 10.).withName("z");
+        Var x = Numeric.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x");
+        Var y = Index.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("y");
+        Var z = Numeric.wrap(1 / 1., 1 / 2., 1 / 3., 1 / 4., 1 / 5., 1 / 6., 1 / 7., 1 / 8., 1 / 9., 1 / 10.).withName("z");
         Frame df1 = SolidFrame.newWrapOf(x, y, z);
 
         Frame a = df1
-                .mapRows(Mapping.newRangeOf(0, 10))
-                .mapRows(Mapping.newRangeOf(0, 4))
+                .mapRows(Mapping.range(0, 10))
+                .mapRows(Mapping.range(0, 4))
                 .mapVars("x,y");
-        Frame b = df1.mapRows(Mapping.newRangeOf(0, 4)).mapVars("z");
-        Frame c = df1.mapRows(Mapping.newRangeOf(4, 10)).mapVars("x,y");
-        Frame d = df1.mapRows(Mapping.newRangeOf(4, 10)).mapVars("z");
+        Frame b = df1.mapRows(Mapping.range(0, 4)).mapVars("z");
+        Frame c = df1.mapRows(Mapping.range(4, 10)).mapVars("x,y");
+        Frame d = df1.mapRows(Mapping.range(4, 10)).mapVars("z");
 
         Frame df2 = a.bindVars(b).bindRows(c.bindVars(d));
 
@@ -117,7 +117,7 @@ public class MappedFrameTest {
             }
         }
 
-        df2 = MappedFrame.newByRow(df1, Mapping.newRangeOf(0, 10)).mapVars("x");
+        df2 = MappedFrame.newByRow(df1, Mapping.range(0, 10)).mapVars("x");
         df2 = df2.bindVars(y, z);
 
         assertEquals(df1.rowCount(), df2.rowCount());

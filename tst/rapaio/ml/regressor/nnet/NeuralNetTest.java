@@ -43,9 +43,9 @@
 //    @Test
 //    public void testAnd() {
 //
-//        Var a = Numeric.newEmpty().withName("a");
-//        Var b = Numeric.newEmpty().withName("b");
-//        Var and = Numeric.newEmpty().withName("and");
+//        Var a = Numeric.empty().withName("a");
+//        Var b = Numeric.empty().withName("b");
+//        Var and = Numeric.empty().withName("and");
 //
 //        a.addValue(0);
 //        b.addValue(0);
@@ -63,7 +63,7 @@
 //        b.addValue(1.);
 //        and.addValue(1.);
 //
-//        Frame df = SolidFrame.newWrapOf(a, b, and);
+//        Frame df = SolidFrame.wrap(a, b, and);
 //
 //        Regression nn = new MultiLayerPerceptronRegression(2, 1).withLearningRate(0.1).withRuns(100);
 //
@@ -83,11 +83,11 @@
 ////    @Test
 ////    public void testXor() {
 ////
-////        Var a = Numeric.newWrapOf(0, 1, 0, 1).withName("a");
-////        Var b = Numeric.newWrapOf(0, 0, 1, 1).withName("b");
-////        Var xor = Numeric.newWrapOf(1, 0, 0, 1).withName("xor");
+////        Var a = Numeric.wrap(0, 1, 0, 1).withName("a");
+////        Var b = Numeric.wrap(0, 0, 1, 1).withName("b");
+////        Var xor = Numeric.wrap(1, 0, 0, 1).withName("xor");
 ////
-////        Frame df = SolidFrame.newWrapOf(a, b, xor);
+////        Frame df = SolidFrame.wrap(a, b, xor);
 ////
 ////        Regression nn = new MultiLayerPerceptronRegression(2, 2, 1).withLearningRate(0.1).withRuns(100);
 ////
@@ -107,10 +107,10 @@
 //    @Test
 //    public void testXorTwoOutputs() {
 //
-//        Var a = Numeric.newEmpty().withName("a");
-//        Var b = Numeric.newEmpty().withName("b");
-//        Var xorA = Numeric.newEmpty().withName("xorA");
-//        Var xorB = Numeric.newEmpty().withName("xorB");
+//        Var a = Numeric.empty().withName("a");
+//        Var b = Numeric.empty().withName("b");
+//        Var xorA = Numeric.empty().withName("xorA");
+//        Var xorB = Numeric.empty().withName("xorB");
 //
 //        a.addValue(0);
 //        b.addValue(0);
@@ -132,7 +132,7 @@
 //        xorA.addValue(0);
 //        xorB.addValue(1);
 //
-//        Frame df = SolidFrame.newWrapOf(xorA.rowCount(), a, b, xorA, xorB);
+//        Frame df = SolidFrame.wrap(xorA.rowCount(), a, b, xorA, xorB);
 //
 //        Regression nn = new MultiLayerPerceptronRegression(2, 4, 2).withLearningRate(0.1).withRuns(100);
 //
@@ -157,11 +157,11 @@
 //    @Test
 //    public void testGarciaChallenge() {
 //
-//        Var a = Numeric.newWrapOf(0, 1, 0, 1).withName("a");
-//        Var b = Numeric.newWrapOf(0, 0, 1, 1).withName("b");
-//        Var xor = Numeric.newWrapOf(1, 0, 0, 1).withName("xor");
+//        Var a = Numeric.wrap(0, 1, 0, 1).withName("a");
+//        Var b = Numeric.wrap(0, 0, 1, 1).withName("b");
+//        Var xor = Numeric.wrap(1, 0, 0, 1).withName("xor");
 //
-//        Frame df = SolidFrame.newWrapOf(a, b, xor);
+//        Frame df = SolidFrame.wrap(a, b, xor);
 //
 //        Regression nn = new MultiLayerPerceptronRegression(2, 2, 1).withLearningRate(0.1).withRuns(100);
 //

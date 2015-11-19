@@ -24,7 +24,9 @@
 package rapaio.ml.classifier.tree;
 
 import rapaio.core.RandomSource;
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.Var;
 import rapaio.data.stream.FSpot;
 import rapaio.util.Pair;
 import rapaio.util.Tag;
@@ -41,12 +43,10 @@ import static java.util.stream.Collectors.toList;
  */
 public interface CTreeMissingHandler extends Serializable {
 
-    Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, CTree.Candidate candidate);
-
     Tag<CTreeMissingHandler> Ignored = Tag.valueOf("Ignored", (Frame df, Var weights, CTree.Candidate candidate) -> {
 
         List<SPredicate<FSpot>> p = candidate.getGroupPredicates();
-        List<Mapping> mappings = IntStream.range(0, p.size()).boxed().map(i -> Mapping.newEmpty()).collect(toList());
+        List<Mapping> mappings = IntStream.range(0, p.size()).boxed().map(i -> Mapping.empty()).collect(toList());
 
         df.stream().forEach(s -> {
             for (int i = 0; i < p.size(); i++) {
@@ -61,12 +61,10 @@ public interface CTreeMissingHandler extends Serializable {
                 mappings.stream().map(weights::mapRows).collect(toList())
         );
     });
-
-
     Tag<CTreeMissingHandler> ToMajority = Tag.valueOf("ToMajority", (Frame df, Var weights, CTree.Candidate candidate) -> {
 
         List<SPredicate<FSpot>> p = candidate.getGroupPredicates();
-        List<Mapping> mappings = IntStream.range(0, p.size()).boxed().map(i -> Mapping.newEmpty()).collect(toList());
+        List<Mapping> mappings = IntStream.range(0, p.size()).boxed().map(i -> Mapping.empty()).collect(toList());
 
         List<Integer> missingSpots = new LinkedList<>();
         df.stream().forEach(s -> {
@@ -97,11 +95,10 @@ public interface CTreeMissingHandler extends Serializable {
                 mappings.stream().map(weights::mapRows).collect(toList())
         );
     });
-
     Tag<CTreeMissingHandler> ToAllWeighted = Tag.valueOf("ToAllWeighted", (Frame df, Var weights, CTree.Candidate candidate) -> {
 
         List<SPredicate<FSpot>> pred = candidate.getGroupPredicates();
-        List<Mapping> mappings = IntStream.range(0, pred.size()).boxed().map(i -> Mapping.newEmpty()).collect(toList());
+        List<Mapping> mappings = IntStream.range(0, pred.size()).boxed().map(i -> Mapping.empty()).collect(toList());
 
         List<Integer> missingSpots = new ArrayList<>();
         df.stream().forEach(s -> {
@@ -134,11 +131,10 @@ public interface CTreeMissingHandler extends Serializable {
         List<Frame> frames = mappings.stream().map(df::mapRows).collect(toList());
         return new Pair<>(frames, weightsList);
     });
-
     Tag<CTreeMissingHandler> ToRandom = Tag.valueOf("ToRandom", (Frame df, Var weights, CTree.Candidate candidate) -> {
 
         List<SPredicate<FSpot>> pred = candidate.getGroupPredicates();
-        List<Mapping> mappings = IntStream.range(0, pred.size()).boxed().map(i -> Mapping.newEmpty()).collect(toList());
+        List<Mapping> mappings = IntStream.range(0, pred.size()).boxed().map(i -> Mapping.empty()).collect(toList());
 
         final Set<Integer> missingSpots = new HashSet<>();
         df.stream().forEach(s -> {
@@ -155,5 +151,7 @@ public interface CTreeMissingHandler extends Serializable {
         List<Var> weightList = mappings.stream().map(weights::mapRows).collect(toList());
         return new Pair<>(frameList, weightList);
     });
+
+    Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, CTree.Candidate candidate);
 }
 

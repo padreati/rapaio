@@ -46,7 +46,7 @@ public class VFToNumeric extends VFAbstract {
         if (v.type().equals(VarType.NUMERIC)) {
             return v;
         }
-        final Numeric result = Numeric.newEmpty();
+        final Numeric result = Numeric.empty();
         v.stream().forEach(s -> {
             if (s.missing()) {
                 result.addMissing();

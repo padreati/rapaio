@@ -49,7 +49,7 @@ public interface Mapping extends Serializable {
     /**
      * @return an empty mapping
      */
-    static Mapping newEmpty() {
+    static Mapping empty() {
         return new ListMapping();
     }
 
@@ -60,7 +60,7 @@ public interface Mapping extends Serializable {
      * @param mapping list of mapped values
      * @return new mapping which wraps the given list of indexed values
      */
-    static Mapping newWrapOf(List<Integer> mapping) {
+    static Mapping wrap(List<Integer> mapping) {
         return new ListMapping(mapping, false);
     }
 
@@ -71,7 +71,7 @@ public interface Mapping extends Serializable {
      * @param mapping list of mapped values
      * @return new mapping which is build on a copy of the list of values
      */
-    static Mapping newCopyOf(List<Integer> mapping) {
+    static Mapping copy(List<Integer> mapping) {
         return new ListMapping(mapping, false);
     }
 
@@ -82,11 +82,15 @@ public interface Mapping extends Serializable {
      * @param mapping array of mapped values
      * @return new mapping which is build on a copy of the array of values
      */
-    static Mapping newCopyOf(int... mapping) {
+    static Mapping copy(int... mapping) {
         return new ListMapping(mapping);
     }
 
-    static Mapping newRangeOf(int start, int end) {
+    static Mapping range(int end) {
+        return range(0, end);
+    }
+
+    static Mapping range(int start, int end) {
         return new IntervalMapping(start, end);
     }
 

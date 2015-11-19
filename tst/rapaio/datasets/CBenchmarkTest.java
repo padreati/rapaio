@@ -60,13 +60,13 @@
 //
 //        List<Var> resultCols = new ArrayList<>();
 //
-//        resultCols.add(Nominal.newEmpty(tasks.size(), Collections.<String>emptyList()).withName("data set"));
+//        resultCols.add(Nominal.empty(tasks.size(), Collections.<String>emptyList()).withName("data set"));
 //
 //        for (String cName : cNames) {
-//            resultCols.add(Numeric.newEmpty(tasks.size()).withName(cName));
+//            resultCols.add(Numeric.empty(tasks.size()).withName(cName));
 //        }
 //
-//        Frame totalResults = SolidFrame.newWrapOf(resultCols);
+//        Frame totalResults = SolidFrame.wrap(resultCols);
 //        for (int i = 0; i < tasks.size(); i++) {
 //            CTask task = tasks.get(i);
 //            totalResults.setLabel(i, "data set", task.name());
@@ -74,7 +74,7 @@
 //
 //        final double ROUNDS = 5;
 //        for (int r = 0; r < ROUNDS; r++) {
-//            Frame results = SolidFrame.newWrapOf(resultCols);
+//            Frame results = SolidFrame.wrap(resultCols);
 //
 //            for (int i = 0; i < tasks.size(); i++) {
 //                CTask task = tasks.get(i);

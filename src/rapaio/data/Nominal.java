@@ -52,12 +52,22 @@ public final class Nominal extends FactorBase {
 
     private static final long serialVersionUID = 1645571732133272467L;
 
+    private Nominal() {
+        // set the missing value
+        this.reverse = new HashMap<>();
+        this.reverse.put("?", 0);
+        this.dict = new ArrayList<>();
+        this.dict.add("?");
+        data = new int[0];
+        rows = 0;
+    }
+
     /**
      * Builds a new empty nominal variable
      *
      * @return new variable instance of nominal type
      */
-    public static Nominal newEmpty() {
+    public static Nominal empty() {
         return new Nominal();
     }
 
@@ -68,8 +78,8 @@ public final class Nominal extends FactorBase {
      * @param dict term levels
      * @return new variable instance of nominal type
      */
-    public static Nominal newEmpty(int rows, String... dict) {
-        return Nominal.newEmpty(rows, Arrays.asList(dict));
+    public static Nominal empty(int rows, String... dict) {
+        return Nominal.empty(rows, Arrays.asList(dict));
     }
 
     /**
@@ -79,7 +89,7 @@ public final class Nominal extends FactorBase {
      * @param dict term levels
      * @return new variable instance of nominal type
      */
-    public static Nominal newEmpty(int rows, List<String> dict) {
+    public static Nominal empty(int rows, List<String> dict) {
         Nominal nominal = new Nominal();
         HashSet<String> used = new HashSet<>();
         used.add("?");
@@ -94,29 +104,49 @@ public final class Nominal extends FactorBase {
         return nominal;
     }
 
-    public static Nominal newCopyOf(String... values) {
-        Nominal nominal = Nominal.newEmpty();
+    public static Nominal copy(String... values) {
+        Nominal nominal = Nominal.empty();
         for (String value : values)
             nominal.addLabel(value);
         return nominal;
     }
 
-    public static Nominal newFrom(int rows, Function<Integer, String> func, String... dict) {
-        Nominal nominal = Nominal.newEmpty(rows, dict);
+    public static Nominal from(int rows, Function<Integer, String> func, String... dict) {
+        Nominal nominal = Nominal.empty(rows, dict);
         for (int i = 0; i < rows; i++) {
             nominal.setLabel(i, func.apply(i));
         }
         return nominal;
     }
 
-    private Nominal() {
-        // set the missing value
-        this.reverse = new HashMap<>();
-        this.reverse.put("?", 0);
-        this.dict = new ArrayList<>();
-        this.dict.add("?");
-        data = new int[0];
-        rows = 0;
+    public static Collector<String, Nominal, Nominal> collector() {
+
+        return new Collector<String, Nominal, Nominal>() {
+            @Override
+            public Supplier<Nominal> supplier() {
+                return Nominal::empty;
+            }
+
+            @Override
+            public BiConsumer<Nominal, String> accumulator() {
+                return FactorBase::addLabel;
+            }
+
+            @Override
+            public BinaryOperator<Nominal> combiner() {
+                return (left, right) -> (Nominal) left.bindRows(right);
+            }
+
+            @Override
+            public Function<Nominal, Nominal> finisher() {
+                return Nominal::solidCopy;
+            }
+
+            @Override
+            public Set<Collector.Characteristics> characteristics() {
+                return EnumSet.of(Collector.Characteristics.CONCURRENT, Collector.Characteristics.IDENTITY_FINISH);
+            }
+        };
     }
 
     @Override
@@ -140,7 +170,7 @@ public final class Nominal extends FactorBase {
 
     @Override
     public Nominal solidCopy() {
-        Nominal copy = Nominal.newEmpty(rowCount(), levels()).withName(name());
+        Nominal copy = Nominal.empty(rowCount(), levels()).withName(name());
         for (int i = 0; i < rowCount(); i++) {
             copy.setLabel(i, label(i));
         }
@@ -149,42 +179,12 @@ public final class Nominal extends FactorBase {
 
     @Override
     public Var newInstance() {
-        return Nominal.newEmpty(0, levels());
+        return Nominal.empty(0, levels());
     }
 
     @Override
     public Var newInstance(int rows) {
-        return Nominal.newEmpty(rows, levels());
-    }
-
-    public static Collector<String, Nominal, Nominal> collector() {
-
-        return new Collector<String, Nominal, Nominal>() {
-            @Override
-            public Supplier<Nominal> supplier() {
-                return Nominal::newEmpty;
-            }
-
-            @Override
-            public BiConsumer<Nominal, String> accumulator() {
-                return FactorBase::addLabel;
-            }
-
-            @Override
-            public BinaryOperator<Nominal> combiner() {
-                return (left, right) -> (Nominal) left.bindRows(right);
-            }
-
-            @Override
-            public Function<Nominal, Nominal> finisher() {
-                return Nominal::solidCopy;
-            }
-
-            @Override
-            public Set<Collector.Characteristics> characteristics() {
-                return EnumSet.of(Collector.Characteristics.CONCURRENT, Collector.Characteristics.IDENTITY_FINISH);
-            }
-        };
+        return Nominal.empty(rows, levels());
     }
 
     @Override

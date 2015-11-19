@@ -130,7 +130,7 @@ public class JavaDBUtil {
             switch (sqlTypeName) {
                 case "DOUBLE":
                 case "INTEGER":
-                    Numeric v1 = Numeric.newEmpty(lists.get(i).size());
+                    Numeric v1 = Numeric.empty(lists.get(i).size());
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         v1.setValue(j, (Double) lists.get(i).get(j));
                     }
@@ -141,7 +141,7 @@ public class JavaDBUtil {
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         dict.add((String) lists.get(i).get(j));
                     }
-                    Nominal v2 = Nominal.newEmpty(lists.get(i).size(), dict);
+                    Nominal v2 = Nominal.empty(lists.get(i).size(), dict);
                     for (int j = 0; j < lists.get(i).size(); j++) {
                         v2.setLabel(j, (String) lists.get(i).get(j));
                     }

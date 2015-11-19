@@ -32,17 +32,17 @@ import rapaio.graphics.base.Figure;
  */
 public interface Printer {
 
-    int getTextWidth();
+    int textWidth();
 
-    void setTextWidth(int chars);
+    void withTextWidth(int chars);
 
-    int getGraphicWidth();
+    int graphicWidth();
 
-    void setGraphicWidth(int width);
+    void withGraphicWidth(int width);
 
-    int getGraphicHeight();
+    int graphicHeight();
 
-    void setGraphicHeight(int height);
+    void withGraphicHeight(int height);
 
     void print(String message);
 
@@ -50,19 +50,18 @@ public interface Printer {
 
     void error(String message, Throwable throwable);
 
-    void preparePrinter();
-
-    void closePrinter();
-
-    void heading(int h, String lines);
+    void head(int h, String lines);
 
     void code(String lines);
 
     void p(String lines);
 
-    void eqn(String equation);
-
     void draw(Figure figure, int width, int height);
 
     void draw(Figure figure);
+
+    void openPrinter();
+
+    void closePrinter();
+
 }

@@ -24,7 +24,10 @@
 package rapaio.experiment.classifier.boost;
 
 import rapaio.core.SamplingTools;
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.Numeric;
+import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
@@ -44,16 +47,15 @@ import java.util.List;
 public class GBTClassifier extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = -2979235364091072967L;
-    private double shrinkage = 1.0;
-    private boolean useBootstrap = true;
-    private double bootstrapSize = 1.0;
-    private BTRegression classifier = RTree.buildCART().withMaxDepth(4);
-
-    // prediction artifact
-
     int K;
     double[][] f;
     double[][] p;
+    private double shrinkage = 1.0;
+
+    // prediction artifact
+    private boolean useBootstrap = true;
+    private double bootstrapSize = 1.0;
+    private BTRegression classifier = RTree.buildCART().withMaxDepth(4);
     private List<List<BTRegression>> trees;
 
     public GBTClassifier() {
@@ -147,7 +149,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
         for (int k = 0; k < K; k++) {
 
-            Numeric r = Numeric.newEmpty().withName("##tt##");
+            Numeric r = Numeric.empty().withName("##tt##");
             for (int i = 0; i < df.rowCount(); i++) {
                 double y_i = (df.var(firstTargetName()).index(i) == k + 1) ? 1 : 0;
                 r.addValue(y_i - p[i][k]);

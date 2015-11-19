@@ -23,7 +23,10 @@
 
 package rapaio.data;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -40,46 +43,46 @@ public class Text extends AbstractVar {
     // Public static builders
     //
 
-    public static Text newEmpty() {
+    private Text(int rows) {
+        values = new ArrayList<>(rows);
+        IntStream.range(0, rows).forEach(i -> values.add(null));
+    }
+
+    public static Text empty() {
         return new Text(0);
     }
 
-    public static Text newEmpty(int rows) {
+    public static Text empty(int rows) {
         return new Text(rows);
     }
 
-    public static Text newCopyOf(String... values) {
+    public static Text copy(String... values) {
         Text text = new Text(0);
         text.values = Arrays.stream(values).collect(Collectors.toList());
         return text;
     }
 
-    public static Text newCopyOf(List<String> values) {
+    public static Text copy(List<String> values) {
         Text text = new Text(0);
         Collections.copy(text.values, values);
         return text;
     }
 
-    public static Text newWrapOf(List<String> values) {
+    public static Text wrap(List<String> values) {
         Text text = new Text(0);
         text.values = values;
-        return text;
-    }
-
-    public static Text newFrom(int rows, Supplier<String> supplier) {
-        Text text = new Text(rows);
-        for (int i = 0; i < rows; i++) {
-            text.values.set(i, supplier.get());
-        }
         return text;
     }
     //
     // private constructor
     //
 
-    private Text(int rows) {
-        values = new ArrayList<>(rows);
-        IntStream.range(0, rows).forEach(i -> values.add(null));
+    public static Text from(int rows, Supplier<String> supplier) {
+        Text text = new Text(rows);
+        for (int i = 0; i < rows; i++) {
+            text.values.set(i, supplier.get());
+        }
+        return text;
     }
 
     @Override
@@ -225,11 +228,11 @@ public class Text extends AbstractVar {
 
     @Override
     public Var newInstance() {
-        return Text.newEmpty();
+        return Text.empty();
     }
 
     @Override
     public Var newInstance(int rows) {
-        return Text.newEmpty(rows);
+        return Text.empty(rows);
     }
 }

@@ -50,6 +50,6 @@ public class FFShuffle extends FFAbstract {
         for (int i = mapping.size(); i > 1; i--) {
             mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
         }
-        return df.mapRows(Mapping.newWrapOf(mapping));
+        return df.mapRows(Mapping.wrap(mapping));
     }
 }

@@ -41,15 +41,15 @@ public class UniformRandomSelectorTest {
     public void testNaive() {
         Frame df = SolidFrame.newWrapOf(
                 0,
-                Index.newScalar(1).withName("a"),
-                Index.newScalar(1).withName("b"),
-                Index.newScalar(1).withName("c"),
-                Index.newScalar(1).withName("d"),
-                Index.newScalar(1).withName("e"),
-                Index.newScalar(1).withName("f"),
-                Index.newScalar(1).withName("g"),
-                Index.newScalar(1).withName("h"),
-                Index.newScalar(1).withName("class"));
+                Index.scalar(1).withName("a"),
+                Index.scalar(1).withName("b"),
+                Index.scalar(1).withName("c"),
+                Index.scalar(1).withName("d"),
+                Index.scalar(1).withName("e"),
+                Index.scalar(1).withName("f"),
+                Index.scalar(1).withName("g"),
+                Index.scalar(1).withName("h"),
+                Index.scalar(1).withName("class"));
         String classColName = "class";
         int mcols = 4;
 

@@ -37,11 +37,16 @@ public class MappedRM implements RM {
 
     public MappedRM(RM ref, boolean byRow, int... indexes) {
         if (byRow) {
+//            if (ref instanceof MappedRM) {
+//                MappedRM r = ((MappedRM) ref);
+//                this.ref = r.ref;
+//            } else {
             this.ref = ref;
             this.rowIndexes = indexes;
             this.colIndexes = new int[ref.colCount()];
             for (int i = 0; i < ref.colCount(); i++) {
                 this.colIndexes[i] = i;
+//                }
             }
         } else {
             this.ref = ref;

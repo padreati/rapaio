@@ -58,19 +58,19 @@ public abstract class AbstractVar implements Var {
             case NOMINAL:
                 return stream().map(VSpot::label).collect(Nominal.collector()).withName(name());
             case ORDINAL:
-                Ordinal ord = Ordinal.newEmpty(rowCount(), levels()).withName(name());
+                Ordinal ord = Ordinal.empty(rowCount(), levels()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
                     ord.setLabel(i, label(i));
                 }
                 return ord;
             case INDEX:
-                Index idx = Index.newEmpty(rowCount()).withName(name());
+                Index idx = Index.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
                     idx.setIndex(i, index(i));
                 }
                 return idx;
             case STAMP:
-                Stamp stamp = Stamp.newEmpty(rowCount()).withName(name());
+                Stamp stamp = Stamp.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
                     stamp.setStamp(i, stamp(i));
                 }
@@ -78,7 +78,7 @@ public abstract class AbstractVar implements Var {
             case NUMERIC:
                 return stream().map(VSpot::value).collect(Numeric.collector()).withName(name());
             case BINARY:
-                Binary bin = Binary.newEmpty(rowCount()).withName(name());
+                Binary bin = Binary.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
                     bin.setIndex(i, index(i));
                 }

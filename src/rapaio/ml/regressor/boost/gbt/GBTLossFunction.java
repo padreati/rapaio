@@ -57,7 +57,7 @@ public interface GBTLossFunction extends Serializable {
 
         @Override
         public double findMinimum(Var y, Var fx) {
-            Numeric values = Numeric.newEmpty();
+            Numeric values = Numeric.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 values.addValue(y.value(i) - fx.value(i));
             }
@@ -66,7 +66,7 @@ public interface GBTLossFunction extends Serializable {
 
         @Override
         public Numeric gradient(Var y, Var fx) {
-            Numeric gradient = Numeric.newEmpty();
+            Numeric gradient = Numeric.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 gradient.addValue(y.value(i) - fx.value(i) < 0 ? -1. : 1.);
             }
@@ -88,7 +88,7 @@ public interface GBTLossFunction extends Serializable {
 
         @Override
         public Numeric gradient(Var y, Var fx) {
-            Numeric delta = Numeric.newEmpty();
+            Numeric delta = Numeric.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 delta.addValue(y.value(i) - fx.value(i));
             }
@@ -99,13 +99,12 @@ public interface GBTLossFunction extends Serializable {
     class Huber implements GBTLossFunction {
 
         private static final long serialVersionUID = -8624877244857556563L;
+        double alpha = 0.25;
 
         @Override
         public String name() {
             return "Huber(alpha=" + formatFlex(alpha) + ")";
         }
-
-        double alpha = 0.25;
 
         public double getAlpha() {
             return alpha;
@@ -123,7 +122,7 @@ public interface GBTLossFunction extends Serializable {
 
             // compute residuals
 
-            Numeric residual = Numeric.newEmpty();
+            Numeric residual = Numeric.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 residual.addValue(y.value(i) - fx.value(i));
             }
@@ -134,7 +133,7 @@ public interface GBTLossFunction extends Serializable {
 
             // compute absolute residuals
 
-            Numeric absResidual = Numeric.newEmpty();
+            Numeric absResidual = Numeric.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 absResidual.addValue(Math.abs(y.value(i) - fx.value(i)));
             }
@@ -160,7 +159,7 @@ public interface GBTLossFunction extends Serializable {
 
             // compute absolute residuals
 
-            Numeric absResidual = Numeric.newEmpty();
+            Numeric absResidual = Numeric.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 absResidual.addValue(Math.abs(y.value(i) - fx.value(i)));
             }
@@ -171,7 +170,7 @@ public interface GBTLossFunction extends Serializable {
 
             // now compute gradient
 
-            Numeric gradient = Numeric.newEmpty();
+            Numeric gradient = Numeric.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 if (absResidual.value(i) <= rho) {
                     gradient.addValue(y.value(i) - fx.value(i));

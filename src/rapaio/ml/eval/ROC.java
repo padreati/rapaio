@@ -23,9 +23,9 @@
 
 package rapaio.ml.eval;
 
+import rapaio.data.*;
 import rapaio.data.filter.VFRefSort;
 import rapaio.printer.Printable;
-import rapaio.data.*;
 
 import java.io.Serializable;
 
@@ -42,13 +42,11 @@ import static rapaio.sys.WS.formatFlex;
 @Deprecated
 public class ROC implements Printable, Serializable {
 
-    private static final long serialVersionUID = -4598096059703515426L;
-
     public static final String threshold = "threshold";
     public static final String fpr = "fpr";
     public static final String tpr = "tpr";
     public static final String acc = "acc";
-
+    private static final long serialVersionUID = -4598096059703515426L;
     private final Var score;
     private final Var classes;
     private Frame data;
@@ -65,7 +63,7 @@ public class ROC implements Printable, Serializable {
      */
     public ROC(Var score, Var actual, Var predict) {
         this.score = score;
-        this.classes = Index.newEmpty(actual.rowCount());
+        this.classes = Index.empty(actual.rowCount());
         for (int i = 0; i < actual.rowCount(); i++) {
             if (actual.label(i).equals(predict.label(i))) {
                 classes.setIndex(i, 1);
@@ -100,7 +98,7 @@ public class ROC implements Printable, Serializable {
      */
     public ROC(Var score, Var actual, String label) {
         this.score = score;
-        this.classes = Index.newEmpty(actual.rowCount());
+        this.classes = Index.empty(actual.rowCount());
         for (int i = 0; i < actual.rowCount(); i++) {
             if (actual.label(i).equals(label)) {
                 classes.setIndex(i, 1);
@@ -130,7 +128,7 @@ public class ROC implements Printable, Serializable {
         double tp = 0;
         auc = 0;
 
-        Var rows = new VFRefSort(RowComparators.numeric(score, false)).fitApply(Index.newSeq(score.rowCount()));
+        Var rows = new VFRefSort(RowComparators.numeric(score, false)).fitApply(Index.seq(score.rowCount()));
         int len = 1;
         double prev = Double.MIN_VALUE;
         for (int i = 0; i < rows.rowCount(); i++) {

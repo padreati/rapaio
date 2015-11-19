@@ -51,7 +51,7 @@ public class QQPlotTest {
         RandomSource.setSeed(1);
         final int N = 100;
         Distribution normal = CoreTools.distNormal();
-        Numeric x = Numeric.newFrom(N, row -> normal.sampleNext());
+        Numeric x = Numeric.from(N, row -> normal.sampleNext());
         Plot plot = qqplot(x, normal, pch(2), color(3))
                 .abLine(false, 0, color(Color.GRAY))
                 .abLine(true, 0, color(Color.GRAY));

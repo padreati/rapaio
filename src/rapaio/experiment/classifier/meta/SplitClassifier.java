@@ -90,9 +90,9 @@ public class SplitClassifier extends AbstractClassifier implements Printable {
 
         List<Mapping> maps = new ArrayList<>();
         for (int i = 0; i < splits.size(); i++) {
-            maps.add(Mapping.newEmpty());
+            maps.add(Mapping.empty());
         }
-        Mapping ignored = Mapping.newEmpty();
+        Mapping ignored = Mapping.empty();
         df.stream().forEach(s -> {
             for (int i = 0; i < splits.size(); i++) {
                 if (splits.get(i).predicate.test(s)) {

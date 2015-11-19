@@ -23,11 +23,11 @@
 
 package rapaio.ml.classifier;
 
-import rapaio.ml.eval.Confusion;
-import rapaio.printer.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
 import rapaio.data.SolidFrame;
+import rapaio.ml.eval.Confusion;
+import rapaio.printer.Printable;
 
 import java.util.*;
 
@@ -51,6 +51,15 @@ public class CFit implements Printable {
 
     // builder
 
+    private CFit(final Classifier model, final Frame df, final boolean withClasses, final boolean withDensities) {
+        this.model = model;
+        this.df = df;
+        this.withClasses = withClasses;
+        this.withDensities = withDensities;
+    }
+
+    // private constructor
+
     public static CFit newEmpty(
             final Classifier model,
             final Frame df,
@@ -59,20 +68,11 @@ public class CFit implements Printable {
         return new CFit(model, df, withClasses, withDensities);
     }
 
-    // private constructor
-
-    private CFit(final Classifier model, final Frame df, final boolean withClasses, final boolean withDensities) {
-        this.model = model;
-        this.df = df;
-        this.withClasses = withClasses;
-        this.withDensities = withDensities;
-    }
-
     public void addTarget(String target, String[] dictionary) {
         targetVars.add(target);
         dictionaries.put(target, dictionary);
         if (withClasses) {
-            classes.put(target, Nominal.newEmpty(df.rowCount(), dictionary).withName(target));
+            classes.put(target, Nominal.empty(df.rowCount(), dictionary).withName(target));
         }
         if (withDensities) {
             densities.put(target, SolidFrame.newMatrix(df.rowCount(), dictionary));

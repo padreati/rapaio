@@ -119,7 +119,7 @@ public interface Distribution extends Serializable {
      * @return sample values
      */
     default Numeric sample(final int n) {
-        Numeric sample = Numeric.newEmpty(n);
+        Numeric sample = Numeric.empty(n);
         for (int i = 0; i < n; i++) {
             sample.setValue(i, quantile(RandomSource.nextDouble()));
         }

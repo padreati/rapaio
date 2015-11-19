@@ -46,8 +46,8 @@ public class QRTest {
         });
 
         RM y = Linear.newRMCopyOf(
-                Numeric.newCopyOf(2.8, 3.2, 7.1, 6.8, 8.8),
-                Numeric.newCopyOf(2.8, 3.2, 7.1, 6.8, 8.9)
+                Numeric.copy(2.8, 3.2, 7.1, 6.8, 8.8),
+                Numeric.copy(2.8, 3.2, 7.1, 6.8, 8.9)
         );
 
         QR qr = new QR(x);

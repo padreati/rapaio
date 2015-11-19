@@ -154,7 +154,7 @@ public class CorrPearson implements Printable {
             }
         }
 
-        int width = getPrinter().getTextWidth();
+        int width = getPrinter().textWidth();
         int start = 0;
         int end = start;
         int[] ws = new int[table[0].length];

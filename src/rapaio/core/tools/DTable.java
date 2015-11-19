@@ -23,7 +23,9 @@
 
 package rapaio.core.tools;
 
-import rapaio.data.*;
+import rapaio.data.Numeric;
+import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
@@ -42,10 +44,8 @@ import static rapaio.core.MathTools.log2;
  */
 public final class DTable implements Printable, Serializable {
 
-    private static final long serialVersionUID = 4359080329548577980L;
-
     public static final String[] NUMERIC_DEFAULT_LABELS = new String[]{"?", "less-equals", "greater"};
-
+    private static final long serialVersionUID = 4359080329548577980L;
     private final String[] rowLevels;
     private final String[] colLevels;
 
@@ -55,59 +55,6 @@ public final class DTable implements Printable, Serializable {
 
     // printing info
     private boolean totalSummary = true;
-
-    /**
-     * Builds a table with given test columns and target columns
-     *
-     * @param rowLevels labels for rows
-     * @param colLevels labels for columns
-     * @param useFirst  true if using the first row and col, false otherwise
-     */
-    public static DTable newEmpty(String[] rowLevels, String[] colLevels, boolean useFirst) {
-        return new DTable(rowLevels, colLevels, useFirst);
-    }
-
-    /**
-     * Builds a density table from two nominal vectors built from counts
-     *
-     * @param rowVar   var on vertical axis
-     * @param colVar   var on horizontal axis
-     * @param useFirst true if using the first row and col, false otherwise
-     */
-    public static DTable newFromCounts(Var rowVar, Var colVar, boolean useFirst) {
-        return new DTable(rowVar, colVar, Numeric.newFill(rowVar.rowCount(), 1), useFirst);
-    }
-
-    /**
-     * Builds a density table from two nominal vectors.
-     * If not null, weights are used instead of counts.
-     *
-     * @param rowVar   row var
-     * @param colVar   col var
-     * @param weights  weights used instead of counts, if not null
-     * @param useFirst true if using the first row and col, false otherwise
-     */
-    public static DTable newFromWeights(Var rowVar, Var colVar, Var weights, boolean useFirst) {
-        return new DTable(rowVar, colVar, weights, useFirst);
-    }
-
-    /**
-     * Builds a density table with a binary split, from two nominal vectors.
-     * The first row contains instances which have test label equal with given testLabel,
-     * second row contains frequencies for the rest of the instances.
-     *
-     * @param rowVar   row var
-     * @param colVar   col var
-     * @param weights  if not null, weights used instead of counts
-     * @param rowLevel row label used for binary split
-     * @param useFirst true if using the first row and col, false otherwise
-     */
-    public static DTable newBinaryFromWeights(Var rowVar, Var colVar, Var weights, String rowLevel, boolean useFirst) {
-        return new DTable(rowVar, colVar, weights, rowLevel, useFirst);
-    }
-
-
-    // private constructors
 
     private DTable(String[] rowLevels, String[] colLevels, boolean useFirst) {
         this.rowLevels = rowLevels;
@@ -148,6 +95,59 @@ public final class DTable implements Printable, Serializable {
             }
             update(index, colVar.index(i), weights != null ? weights.value(i) : 1);
         }
+    }
+
+    /**
+     * Builds a table with given test columns and target columns
+     *
+     * @param rowLevels labels for rows
+     * @param colLevels labels for columns
+     * @param useFirst  true if using the first row and col, false otherwise
+     */
+    public static DTable newEmpty(String[] rowLevels, String[] colLevels, boolean useFirst) {
+        return new DTable(rowLevels, colLevels, useFirst);
+    }
+
+
+    // private constructors
+
+    /**
+     * Builds a density table from two nominal vectors built from counts
+     *
+     * @param rowVar   var on vertical axis
+     * @param colVar   var on horizontal axis
+     * @param useFirst true if using the first row and col, false otherwise
+     */
+    public static DTable newFromCounts(Var rowVar, Var colVar, boolean useFirst) {
+        return new DTable(rowVar, colVar, Numeric.fill(rowVar.rowCount(), 1), useFirst);
+    }
+
+    /**
+     * Builds a density table from two nominal vectors.
+     * If not null, weights are used instead of counts.
+     *
+     * @param rowVar   row var
+     * @param colVar   col var
+     * @param weights  weights used instead of counts, if not null
+     * @param useFirst true if using the first row and col, false otherwise
+     */
+    public static DTable newFromWeights(Var rowVar, Var colVar, Var weights, boolean useFirst) {
+        return new DTable(rowVar, colVar, weights, useFirst);
+    }
+
+    /**
+     * Builds a density table with a binary split, from two nominal vectors.
+     * The first row contains instances which have test label equal with given testLabel,
+     * second row contains frequencies for the rest of the instances.
+     *
+     * @param rowVar   row var
+     * @param colVar   col var
+     * @param weights  if not null, weights used instead of counts
+     * @param rowLevel row label used for binary split
+     * @param useFirst true if using the first row and col, false otherwise
+     */
+    public static DTable newBinaryFromWeights(Var rowVar, Var colVar, Var weights, String rowLevel, boolean useFirst) {
+        return new DTable(rowVar, colVar, weights, rowLevel, useFirst);
     }
 
     public boolean useFirst() {

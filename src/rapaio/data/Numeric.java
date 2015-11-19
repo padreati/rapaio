@@ -27,7 +27,10 @@ package rapaio.data;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -53,10 +56,20 @@ public final class Numeric extends AbstractVar {
 
     // public static builders
 
+    private Numeric(int rows, int capacity, double fill) {
+        if (rows < 0) {
+            throw new IllegalArgumentException("Illegal row count: " + rows);
+        }
+        this.data = new double[capacity];
+        this.rows = rows;
+        if (fill != 0)
+            Arrays.fill(data, 0, rows, fill);
+    }
+
     /**
      * @return new empty numeric variable of size 0
      */
-    public static Numeric newEmpty() {
+    public static Numeric empty() {
         return new Numeric(0, 0, Double.NaN);
     }
 
@@ -66,7 +79,7 @@ public final class Numeric extends AbstractVar {
      * @param rows size of the variable
      * @return new instance of numeric var
      */
-    public static Numeric newEmpty(int rows) {
+    public static Numeric empty(int rows) {
         return new Numeric(rows, rows, Double.NaN);
     }
 
@@ -76,7 +89,7 @@ public final class Numeric extends AbstractVar {
      * @param values given values
      * @return new instance of numeric variable
      */
-    public static Numeric newCopyOf(Collection<? extends Number> values) {
+    public static Numeric copy(Collection<? extends Number> values) {
         final Numeric numeric = new Numeric(0, 0, Double.NaN);
         values.forEach(n -> numeric.addValue(n.doubleValue()));
         return numeric;
@@ -88,7 +101,7 @@ public final class Numeric extends AbstractVar {
      * @param values given numeric values
      * @return new instance of numeric variable
      */
-    public static Numeric newCopyOf(int... values) {
+    public static Numeric copy(int... values) {
         Numeric numeric = new Numeric(0, 0, 0);
         numeric.data = new double[values.length];
         for (int i = 0; i < values.length; i++) {
@@ -104,7 +117,7 @@ public final class Numeric extends AbstractVar {
      * @param values given numeric values
      * @return new instance of numeric variable
      */
-    public static Numeric newCopyOf(double... values) {
+    public static Numeric copy(double... values) {
         Numeric numeric = new Numeric(values.length, values.length, 0);
         numeric.data = Arrays.copyOf(values, values.length);
         return numeric;
@@ -116,7 +129,7 @@ public final class Numeric extends AbstractVar {
      * @param source source numeric var
      * @return new instance of numeric variable
      */
-    public static Numeric newCopyOf(Var source) {
+    public static Numeric copy(Var source) {
         Numeric numeric = new Numeric(source.rowCount(), source.rowCount(), 0).withName(source.name());
         if (!(source instanceof Numeric)) {
             for (int i = 0; i < source.rowCount(); i++) {
@@ -134,7 +147,7 @@ public final class Numeric extends AbstractVar {
      * @param values wrapped array of doubles
      * @return new instance of numeric variable
      */
-    public static Numeric newWrapOf(double... values) {
+    public static Numeric wrap(double... values) {
         Numeric numeric = new Numeric(0, 0, 0);
         numeric.data = values;
         numeric.rows = values.length;
@@ -147,7 +160,7 @@ public final class Numeric extends AbstractVar {
      * @param rows size of the variable
      * @return new instance of numeric variable of given size and filled with 0
      */
-    public static Numeric newFill(int rows) {
+    public static Numeric fill(int rows) {
         return new Numeric(rows, rows, 0);
     }
 
@@ -158,7 +171,7 @@ public final class Numeric extends AbstractVar {
      * @param fill fill value used to set all the values
      * @return new instance of numeric variable of given size and filled with given value
      */
-    public static Numeric newFill(int rows, double fill) {
+    public static Numeric fill(int rows, double fill) {
         return new Numeric(rows, rows, fill);
     }
 
@@ -168,20 +181,20 @@ public final class Numeric extends AbstractVar {
      * @param value fill value
      * @return new instance of numeric variable of size 1 and filled with given fill value
      */
-    public static Numeric newScalar(double value) {
+    public static Numeric scalar(double value) {
         return new Numeric(1, 1, value);
     }
 
-    public static Numeric newSeq(double end) {
-        return newSeq(0, end);
+    public static Numeric seq(double end) {
+        return seq(0, end);
     }
 
-    public static Numeric newSeq(double start, double end) {
-        return newSeq(start, end, 1.0);
+    public static Numeric seq(double start, double end) {
+        return seq(start, end, 1.0);
     }
 
-    public static Numeric newSeq(double start, double end, double step) {
-        Numeric num = Numeric.newEmpty();
+    public static Numeric seq(double start, double end, double step) {
+        Numeric num = Numeric.empty();
         while (start <= end || Math.abs(end - start) < 1e-10) {
             num.addValue(start);
             start += step;
@@ -189,7 +202,7 @@ public final class Numeric extends AbstractVar {
         return num;
     }
 
-    public static Numeric newFrom(int rows, Supplier<Double> supplier) {
+    public static Numeric from(int rows, Supplier<Double> supplier) {
         Numeric numeric = new Numeric(0, 0, 0);
         numeric.data = new double[rows];
         numeric.rows = rows;
@@ -199,7 +212,9 @@ public final class Numeric extends AbstractVar {
         return numeric;
     }
 
-    public static Numeric newFrom(int rows, Function<Integer, Double> supplierFromRow) {
+    // stream collectors
+
+    public static Numeric from(int rows, Function<Integer, Double> supplierFromRow) {
         Numeric numeric = new Numeric(0, 0, 0);
         numeric.data = new double[rows];
         numeric.rows = rows;
@@ -209,14 +224,14 @@ public final class Numeric extends AbstractVar {
         return numeric;
     }
 
-    // stream collectors
+    // private constructor
 
     public static Collector<Double, Numeric, Numeric> collector() {
 
         return new Collector<Double, Numeric, Numeric>() {
             @Override
             public Supplier<Numeric> supplier() {
-                return Numeric::newEmpty;
+                return Numeric::empty;
             }
 
             @Override
@@ -244,21 +259,9 @@ public final class Numeric extends AbstractVar {
         };
     }
 
-    // private constructor
-
     @Override
     public Numeric withName(String name) {
         return (Numeric) super.withName(name);
-    }
-
-    private Numeric(int rows, int capacity, double fill) {
-        if (rows < 0) {
-            throw new IllegalArgumentException("Illegal row count: " + rows);
-        }
-        this.data = new double[capacity];
-        this.rows = rows;
-        if (fill != 0)
-            Arrays.fill(data, 0, rows, fill);
     }
 
     @Override
@@ -421,17 +424,17 @@ public final class Numeric extends AbstractVar {
 
     @Override
     public Numeric solidCopy() {
-        return Numeric.newCopyOf(this);
+        return Numeric.copy(this);
     }
 
     @Override
     public Var newInstance() {
-        return Numeric.newEmpty();
+        return Numeric.empty();
     }
 
     @Override
     public Var newInstance(int rows) {
-        return Numeric.newEmpty(rows);
+        return Numeric.empty(rows);
     }
 
     @Override

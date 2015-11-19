@@ -47,7 +47,7 @@ public class MeshGrid1D implements Serializable {
         this.y = y;
         this.len = y.rowCount();
 
-        this.grid = Numeric.newEmpty(x.rowCount() * y.rowCount());
+        this.grid = Numeric.empty(x.rowCount() * y.rowCount());
     }
 
     public Var getX() {

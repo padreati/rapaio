@@ -35,12 +35,12 @@ public class MappedVarTest {
 
     @Test
     public void testBuilders() {
-        Var a = Numeric.newWrapOf(1, 2, 3, 4, 5, 6).mapRows(0, 1, 2, 3).mapRows(2, 3);
+        Var a = Numeric.wrap(1, 2, 3, 4, 5, 6).mapRows(0, 1, 2, 3).mapRows(2, 3);
         assertEquals(2, a.rowCount());
         assertEquals(3, a.value(0), 1e-12);
         assertEquals(4, a.value(1), 1e-12);
 
-        Var b = a.bindRows(Numeric.newWrapOf(10, 11));
+        Var b = a.bindRows(Numeric.wrap(10, 11));
         assertEquals(4, b.rowCount());
         assertEquals(3, b.value(0), 1e-12);
         assertEquals(10, b.value(2), 1e-12);
@@ -48,7 +48,7 @@ public class MappedVarTest {
 
     @Test
     public void testDynamicMappedVar() {
-        Var x = Numeric.newWrapOf(1, 2, 3, 4).mapRows(Mapping.newRangeOf(0, 4));
+        Var x = Numeric.wrap(1, 2, 3, 4).mapRows(Mapping.range(0, 4));
 
         try {
             x.addValue(10);
@@ -63,7 +63,7 @@ public class MappedVarTest {
         }
 
         try {
-            Nominal.newCopyOf("x", "y").mapRows(0, 1).addLabel("z");
+            Nominal.copy("x", "y").mapRows(0, 1).addLabel("z");
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }
@@ -89,14 +89,14 @@ public class MappedVarTest {
 
     @Test
     public void testMappedNominal() {
-        Var x = Nominal.newCopyOf("a").mapRows(0);
+        Var x = Nominal.copy("a").mapRows(0);
         x.setLevels("x");
         assertEquals("x", x.label(0));
     }
 
     @Test
     public void testMappedBinary() {
-        Var x = Binary.newCopyOf(true, false, true).mapRows(0, 2);
+        Var x = Binary.copy(true, false, true).mapRows(0, 2);
         assertEquals(2, x.rowCount());
         assertEquals(true, x.binary(0));
         assertEquals(true, x.binary(1));
@@ -114,7 +114,7 @@ public class MappedVarTest {
 
     @Test
     public void testMappedStamp() {
-        Var x = Stamp.newCopyOf(100, 200).mapRows(0, 1);
+        Var x = Stamp.copy(100, 200).mapRows(0, 1);
         assertEquals(2, x.rowCount());
         assertEquals(100, x.stamp(0));
         assertEquals(200, x.stamp(1));

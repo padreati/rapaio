@@ -30,11 +30,13 @@ import rapaio.ml.common.distance.Distance;
 import rapaio.ml.common.distance.KMeansInitMethod;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
-import rapaio.util.Tag;
 import rapaio.util.Pair;
+import rapaio.util.Tag;
 import rapaio.ws.Summary;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
@@ -103,9 +105,9 @@ public class KMeans implements Printable {
         inputs = new VarRange(varNames).parseVarNames(df).stream().toArray(String[]::new);
         centroids = init.get().init(df, inputs, k);
         arrows = new int[df.rowCount()];
-        errors = Numeric.newEmpty().withName("errors");
+        errors = Numeric.empty().withName("errors");
         clusterErrors = new HashMap<>();
-        Index.newSeq(k).stream().forEach(c -> clusterErrors.put(c.index(), Numeric.newEmpty().withName("c" + (c.index() + 1) + "_errors")));
+        Index.seq(k).stream().forEach(c -> clusterErrors.put(c.index(), Numeric.empty().withName("c" + (c.index() + 1) + "_errors")));
 
         assignToCentroids(df);
 
@@ -177,7 +179,7 @@ public class KMeans implements Printable {
 
     private void recomputeCentroids(Frame df) {
         if (debug) WS.println("recomputeCentroids called ..");
-        Var[] means = IntStream.range(0, k).boxed().map(i -> Numeric.newFill(df.rowCount(), 0)).toArray(Numeric[]::new);
+        Var[] means = IntStream.range(0, k).boxed().map(i -> Numeric.fill(df.rowCount(), 0)).toArray(Numeric[]::new);
         for (String input : inputs) {
             for (int j = 0; j < k; j++) {
                 means[j].clear();
@@ -195,7 +197,7 @@ public class KMeans implements Printable {
     }
 
     public Var getClusterAssignment() {
-        Var var = Index.newEmpty(arrows.length);
+        Var var = Index.empty(arrows.length);
         for (int i = 0; i < arrows.length; i++) {
             var.setIndex(i, arrows[i] + 1);
         }
@@ -223,21 +225,21 @@ public class KMeans implements Printable {
     }
 
     private void buildSummary(Frame df) {
-        Index summaryId = Index.newSeq(1, centroids.rowCount() + 1).withName("ID");
-        Index summaryCount = Index.newFill(centroids.rowCount(), 0).withName("count");
-        Numeric summaryMean = Numeric.newFill(centroids.rowCount(), 0).withName("mean");
-        Numeric summaryVar = Numeric.newFill(centroids.rowCount(), 0).withName("var");
-        Numeric summaryVarP = Numeric.newFill(centroids.rowCount(), 0).withName("var/total");
-        Numeric summarySd = Numeric.newFill(centroids.rowCount(), 0).withName("sd");
+        Index summaryId = Index.seq(1, centroids.rowCount() + 1).withName("ID");
+        Index summaryCount = Index.fill(centroids.rowCount(), 0).withName("count");
+        Numeric summaryMean = Numeric.fill(centroids.rowCount(), 0).withName("mean");
+        Numeric summaryVar = Numeric.fill(centroids.rowCount(), 0).withName("var");
+        Numeric summaryVarP = Numeric.fill(centroids.rowCount(), 0).withName("var/total");
+        Numeric summarySd = Numeric.fill(centroids.rowCount(), 0).withName("sd");
 
-        summaryAllDist = Numeric.newEmpty().withName("all dist");
+        summaryAllDist = Numeric.empty().withName("all dist");
 
         Map<Integer, Numeric> distances = new HashMap<>();
 
         for (int i = 0; i < df.rowCount(); i++) {
             double d = distance.get().distance(centroids, arrows[i], df, i, inputs);
             if (!distances.containsKey(arrows[i]))
-                distances.put(arrows[i], Numeric.newEmpty());
+                distances.put(arrows[i], Numeric.empty());
             distances.get(arrows[i]).addValue(d);
             summaryAllDist.addValue(d);
         }

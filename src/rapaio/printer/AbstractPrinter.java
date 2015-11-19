@@ -35,37 +35,37 @@ public abstract class AbstractPrinter implements Printer {
     private int graphicHeight;
 
     @Override
-    public int getTextWidth() {
+    public int textWidth() {
         return textWidth;
     }
 
     @Override
-    public void setTextWidth(int chars) {
+    public void withTextWidth(int chars) {
         textWidth = chars;
     }
 
     @Override
-    public int getGraphicWidth() {
+    public int graphicWidth() {
         return graphicWidth;
     }
 
     @Override
-    public void setGraphicWidth(int width) {
+    public void withGraphicWidth(int width) {
         graphicWidth = width;
     }
 
     @Override
-    public int getGraphicHeight() {
+    public int graphicHeight() {
         return graphicHeight;
     }
 
     @Override
-    public void setGraphicHeight(int height) {
+    public void withGraphicHeight(int height) {
         graphicHeight = height;
     }
 
     @Override
-    public void preparePrinter() {
+    public void openPrinter() {
         // do nothing in standard setup
     }
 
@@ -75,7 +75,7 @@ public abstract class AbstractPrinter implements Printer {
     }
 
     @Override
-    public void heading(int h, String lines) {
+    public void head(int h, String lines) {
         print("*" + lines + "*\n");
     }
 
@@ -90,13 +90,7 @@ public abstract class AbstractPrinter implements Printer {
     }
 
     @Override
-    public void eqn(String equation) {
-        print("<latex>");
-        print("</latex>");
-    }
-
-    @Override
     public void draw(Figure figure) {
-        draw(figure, getGraphicWidth(), getGraphicHeight());
+        draw(figure, graphicWidth(), graphicHeight());
     }
 }

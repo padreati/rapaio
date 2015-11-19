@@ -34,8 +34,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class CorrSpearmanTest {
 
-    private final Var iq = Numeric.newCopyOf(106, 86, 100, 101, 99, 103, 97, 113, 112, 110);
-    private final Var tvHours = Numeric.newCopyOf(7, 0, 27, 50, 28, 29, 20, 12, 6, 17);
+    private final Var iq = Numeric.copy(106, 86, 100, 101, 99, 103, 97, 113, 112, 110);
+    private final Var tvHours = Numeric.copy(7, 0, 27, 50, 28, 29, 20, 12, 6, 17);
 
     @Test
     public void testFromWikipedia() {

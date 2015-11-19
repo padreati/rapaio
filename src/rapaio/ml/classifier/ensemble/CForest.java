@@ -206,45 +206,45 @@ public class CForest extends AbstractClassifier {
     }
 
     public Frame getFreqVIInfo() {
-        Var name = Nominal.newEmpty().withName("name");
-        Var score = Numeric.newEmpty().withName("score mean");
-        Var sd = Numeric.newEmpty().withName("score sd");
+        Var name = Nominal.empty().withName("name");
+        Var score = Numeric.empty().withName("score mean");
+        Var sd = Numeric.empty().withName("score sd");
         for (Map.Entry<String, List<Double>> e : freqVIMap.entrySet()) {
             name.addLabel(e.getKey());
-            Numeric scores = Numeric.newCopyOf(e.getValue());
+            Numeric scores = Numeric.copy(e.getValue());
             sd.addValue(CoreTools.var(scores).sdValue());
             score.addValue(CoreTools.mean(scores).value());
         }
         double maxScore = CoreTools.max(score).value();
-        Var scaled = Numeric.newFrom(score.rowCount(), row -> 100.0 * score.value(row) / maxScore).withName("scaled score");
+        Var scaled = Numeric.from(score.rowCount(), row -> 100.0 * score.value(row) / maxScore).withName("scaled score");
         return Filters.refSort(SolidFrame.newWrapOf(name, score, sd, scaled), score.refComparator(false)).solidCopy();
     }
 
     public Frame getGainVIInfo() {
-        Var name = Nominal.newEmpty().withName("name");
-        Var score = Numeric.newEmpty().withName("score mean");
-        Var sd = Numeric.newEmpty().withName("score sd");
+        Var name = Nominal.empty().withName("name");
+        Var score = Numeric.empty().withName("score mean");
+        Var sd = Numeric.empty().withName("score sd");
         for (Map.Entry<String, List<Double>> e : gainVIMap.entrySet()) {
             name.addLabel(e.getKey());
-            Numeric scores = Numeric.newCopyOf(e.getValue());
+            Numeric scores = Numeric.copy(e.getValue());
             sd.addValue(CoreTools.var(scores).sdValue());
             score.addValue(CoreTools.mean(scores).value());
         }
         double maxScore = CoreTools.max(score).value();
-        Var scaled = Numeric.newFrom(score.rowCount(), row -> 100.0 * score.value(row) / maxScore).withName("scaled score");
+        Var scaled = Numeric.from(score.rowCount(), row -> 100.0 * score.value(row) / maxScore).withName("scaled score");
         return Filters.refSort(SolidFrame.newWrapOf(name, score, sd, scaled), score.refComparator(false)).solidCopy();
     }
 
     public Frame getPermVIInfo() {
-        Var name = Nominal.newEmpty().withName("name");
-        Var score = Numeric.newEmpty().withName("score mean");
-        Var sds = Numeric.newEmpty().withName("score sd");
-        Var zscores = Numeric.newEmpty().withName("z-score");
-        Var pvalues = Numeric.newEmpty().withName("p-value");
+        Var name = Nominal.empty().withName("name");
+        Var score = Numeric.empty().withName("score mean");
+        Var sds = Numeric.empty().withName("score sd");
+        Var zscores = Numeric.empty().withName("z-score");
+        Var pvalues = Numeric.empty().withName("p-value");
         Distribution normal = CoreTools.distNormal();
         for (Map.Entry<String, List<Double>> e : permVIMap.entrySet()) {
             name.addLabel(e.getKey());
-            Numeric scores = Numeric.newCopyOf(e.getValue());
+            Numeric scores = Numeric.copy(e.getValue());
             double mean = CoreTools.mean(scores).value();
             double sd = CoreTools.var(scores).sdValue();
             double zscore = mean / (sd);
@@ -265,7 +265,7 @@ public class CForest extends AbstractClassifier {
         if (oobComp) {
             oobDensities = new HashMap<>();
             oobTrueClass = df.var(firstTargetName()).solidCopy();
-            oobFit = Nominal.newEmpty(df.rowCount(), firstTargetLevels());
+            oobFit = Nominal.empty(df.rowCount(), firstTargetLevels());
             for (int i = 0; i < df.rowCount(); i++) {
                 oobDensities.put(i, DVector.newEmpty(false, firstTargetLevels()));
             }
@@ -337,7 +337,7 @@ public class CForest extends AbstractClassifier {
         List<Integer> oobIndexes = weak._2;
 
         // build oob data frame
-        Frame oobFrame = df.mapRows(Mapping.newWrapOf(oobIndexes));
+        Frame oobFrame = df.mapRows(Mapping.wrap(oobIndexes));
 
         // build accuracy on oob data frame
         CFit fit = c.fit(oobFrame);
@@ -420,7 +420,7 @@ public class CForest extends AbstractClassifier {
         double totalOobError;
         double totalOobInstances;
         List<Integer> oobIndexes = weak._2;
-        Frame oobTest = df.mapRows(Mapping.newWrapOf(oobIndexes));
+        Frame oobTest = df.mapRows(Mapping.wrap(oobIndexes));
         CFit fit = weak._1.fit(oobTest);
         for (int j = 0; j < oobTest.rowCount(); j++) {
             int fitIndex = fit.firstClasses().index(j);

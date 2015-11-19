@@ -23,10 +23,10 @@
 
 package rapaio.ml.regressor;
 
-import rapaio.printer.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
+import rapaio.printer.Printable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,12 +46,6 @@ public class RFit implements Printable {
 
     // builder
 
-    public static RFit newEmpty(Regression model, Frame df, boolean withResiduals) {
-        return new RFit(model, df, withResiduals);
-    }
-
-    // private constructor
-
     protected RFit(final Regression model, final Frame df, final boolean withResiduals) {
         this.model = model;
         this.df = df;
@@ -62,11 +56,17 @@ public class RFit implements Printable {
         this.residuals = new HashMap<>();
     }
 
+    // private constructor
+
+    public static RFit newEmpty(Regression model, Frame df, boolean withResiduals) {
+        return new RFit(model, df, withResiduals);
+    }
+
     public RFit addTarget(String targetName) {
         targetVars.add(targetName);
-        fit.put(targetName, Numeric.newEmpty(df.rowCount()).withName(targetName));
+        fit.put(targetName, Numeric.empty(df.rowCount()).withName(targetName));
         if (withResiduals) {
-            residuals.put(targetName, Numeric.newEmpty(df.rowCount()).withName(targetName + "-residual"));
+            residuals.put(targetName, Numeric.empty(df.rowCount()).withName(targetName + "-residual"));
         }
         return this;
     }

@@ -47,7 +47,7 @@ public class FFilterNominalToDoubleTest {
         for (int i = 0; i < n; i++) {
             dict.add(String.valueOf(Math.pow(i, 1.5)));
         }
-        Var v = Nominal.newEmpty(10, dict);
+        Var v = Nominal.empty(10, dict);
         for (int i = 0; i < v.rowCount(); i++) {
             String value = String.valueOf(Math.pow(i, 1.5));
             v.setLabel(i, value);
@@ -70,7 +70,7 @@ public class FFilterNominalToDoubleTest {
 
     @Test
     public void testNFE() {
-        Var filtered = Nominal.newEmpty(1, "abc");
+        Var filtered = Nominal.empty(1, "abc");
         filtered.setLabel(0, "abc");
         Var numeric = new VFToNumeric().fitApply(filtered);
         assertEquals(numeric.value(0), numeric.value(0), 1e-10);

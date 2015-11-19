@@ -48,30 +48,30 @@ public class IdeaPrinter extends StandardPrinter {
     }
 
     @Override
-    public int getTextWidth() {
+    public int textWidth() {
         return 180;
     }
 
     @Override
-    public void setTextWidth(int chars) {
+    public void withTextWidth(int chars) {
     }
 
     @Override
-    public int getGraphicWidth() {
+    public int graphicWidth() {
         return 600;
     }
 
     @Override
-    public void setGraphicWidth(int width) {
+    public void withGraphicWidth(int width) {
     }
 
     @Override
-    public int getGraphicHeight() {
+    public int graphicHeight() {
         return 400;
     }
 
     @Override
-    public void setGraphicHeight(int height) {
+    public void withGraphicHeight(int height) {
     }
 
     @Override

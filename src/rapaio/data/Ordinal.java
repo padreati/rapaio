@@ -23,7 +23,10 @@
 
 package rapaio.data;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * Ordinal variables contains values for categorical observations where order of labels is important.
@@ -49,12 +52,23 @@ public final class Ordinal extends FactorBase {
 
     private static final long serialVersionUID = 5438713835700406847L;
 
+    private Ordinal() {
+        super();
+        // set the missing value
+        this.reverse = new HashMap<>();
+        this.reverse.put("?", 0);
+        this.dict = new ArrayList<>();
+        this.dict.add("?");
+        data = new int[0];
+        rows = 0;
+    }
+
     /**
      * Builds a new empty ordinal variable.
      *
      * @return new variable instance of ordinal type
      */
-    public static Ordinal newEmpty() {
+    public static Ordinal empty() {
         return new Ordinal();
     }
 
@@ -65,8 +79,8 @@ public final class Ordinal extends FactorBase {
      * @param dict term levels
      * @return new variable instance of ordinal type
      */
-    public static Ordinal newEmpty(int rows, String... dict) {
-        return Ordinal.newEmpty(rows, Arrays.asList(dict));
+    public static Ordinal empty(int rows, String... dict) {
+        return Ordinal.empty(rows, Arrays.asList(dict));
     }
 
     /**
@@ -76,7 +90,7 @@ public final class Ordinal extends FactorBase {
      * @param dict term levels
      * @return new variable instance of ordinal type
      */
-    public static Ordinal newEmpty(int rows, Collection<String> dict) {
+    public static Ordinal empty(int rows, Collection<String> dict) {
         Ordinal nominal = new Ordinal();
         for (String next : dict) {
             if (nominal.dict.contains(next)) continue;
@@ -86,17 +100,6 @@ public final class Ordinal extends FactorBase {
         nominal.data = new int[rows];
         nominal.rows = rows;
         return nominal;
-    }
-
-    private Ordinal() {
-        super();
-        // set the missing value
-        this.reverse = new HashMap<>();
-        this.reverse.put("?", 0);
-        this.dict = new ArrayList<>();
-        this.dict.add("?");
-        data = new int[0];
-        rows = 0;
     }
 
     @Override
@@ -120,7 +123,7 @@ public final class Ordinal extends FactorBase {
 
     @Override
     public Ordinal solidCopy() {
-        Ordinal copy = Ordinal.newEmpty(rowCount(), levels()).withName(name());
+        Ordinal copy = Ordinal.empty(rowCount(), levels()).withName(name());
         for (int i = 0; i < rowCount(); i++) {
             copy.setLabel(i, label(i));
         }
@@ -129,12 +132,12 @@ public final class Ordinal extends FactorBase {
 
     @Override
     public Var newInstance() {
-        return Ordinal.newEmpty(0, levels());
+        return Ordinal.empty(0, levels());
     }
 
     @Override
     public Var newInstance(int rows) {
-        return Ordinal.newEmpty(rows, levels());
+        return Ordinal.empty(rows, levels());
     }
 
     @Override

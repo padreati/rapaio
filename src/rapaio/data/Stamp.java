@@ -50,7 +50,7 @@ public class Stamp extends AbstractVar {
      *
      * @return new instance of stamp var
      */
-    public static Stamp newEmpty() {
+    public static Stamp empty() {
         return new Stamp(0, 0, MISSING_VALUE);
     }
 
@@ -60,7 +60,7 @@ public class Stamp extends AbstractVar {
      * @param rows var size
      * @return new instance of stamp var
      */
-    public static Stamp newEmpty(int rows) {
+    public static Stamp empty(int rows) {
         return new Stamp(rows, rows, MISSING_VALUE);
     }
 
@@ -70,7 +70,7 @@ public class Stamp extends AbstractVar {
      * @param value fill value
      * @return new instance of stamp var
      */
-    public static Stamp newScalar(long value) {
+    public static Stamp scalar(long value) {
         return new Stamp(1, 1, value);
     }
 
@@ -81,7 +81,7 @@ public class Stamp extends AbstractVar {
      * @param value fill value
      * @return new instance of stamp var
      */
-    public static Stamp newFill(int rows, long value) {
+    public static Stamp fill(int rows, long value) {
         return new Stamp(rows, rows, value);
     }
 
@@ -91,7 +91,7 @@ public class Stamp extends AbstractVar {
      * @param values array of value
      * @return new instance of stamp var
      */
-    public static Stamp newCopyOf(long... values) {
+    public static Stamp copy(long... values) {
         Stamp stamp = new Stamp(0, 0, 0);
         stamp.data = Arrays.copyOf(values, values.length);
         stamp.rows = values.length;
@@ -104,7 +104,7 @@ public class Stamp extends AbstractVar {
      * @param values wrapped array of values
      * @return new instance of stamp var
      */
-    public static Stamp newWrapOf(long... values) {
+    public static Stamp wrap(long... values) {
         Stamp stamp = new Stamp(0, 0, 0);
         stamp.data = values;
         stamp.rows = values.length;
@@ -117,8 +117,8 @@ public class Stamp extends AbstractVar {
      * @param len size of the var
      * @return new instance of stamp var
      */
-    public static Stamp newSeq(int len) {
-        return newSeq(0, len, 1);
+    public static Stamp seq(int len) {
+        return seq(0, len, 1);
     }
 
     /**
@@ -128,8 +128,8 @@ public class Stamp extends AbstractVar {
      * @param len   size of the var
      * @return new instance of stamp var
      */
-    public static Stamp newSeq(long start, int len) {
-        return newSeq(start, len, 1);
+    public static Stamp seq(long start, int len) {
+        return seq(start, len, 1);
     }
 
     /**
@@ -141,7 +141,7 @@ public class Stamp extends AbstractVar {
      * @param step  step/increment value
      * @return new instance of stamp var
      */
-    public static Stamp newSeq(final long start, final int len, final long step) {
+    public static Stamp seq(final long start, final int len, final long step) {
         Stamp stamp = new Stamp(len, len, 0);
         long s = start;
         for (int i = 0; i < len; i++) {
@@ -151,8 +151,8 @@ public class Stamp extends AbstractVar {
         return stamp;
     }
 
-    public static Stamp newFrom(int rows, Supplier<Long> supplier) {
-        Stamp var = Stamp.newEmpty();
+    public static Stamp from(int rows, Supplier<Long> supplier) {
+        Stamp var = Stamp.empty();
         for (int i = 0; i < rows; i++) {
             var.addStamp(supplier.get());
         }
@@ -161,7 +161,13 @@ public class Stamp extends AbstractVar {
 
     // private constructor, only public static builders available
 
-    private Stamp(int rows, int capacity, long fill) {
+    public static Stamp from(int rows, Supplier<Long> supplier) {
+        Stamp var = Stamp.empty();
+        for (int i = 0; i < rows; i++) {
+            var.addStamp(supplier.get());
+        }
+        return var;
+    }    private Stamp(int rows, int capacity, long fill) {
         super();
         if (rows < 0) {
             throw new IllegalArgumentException("Illegal row count: " + rows);
@@ -215,7 +221,7 @@ public class Stamp extends AbstractVar {
 
     @Override
     public Var mapRows(Mapping mapping) {
-        return MappedVar.newByRows(this, mapping);
+        return MappedVar.byRows(this, mapping);
     }
 
     @Override
@@ -357,12 +363,12 @@ public class Stamp extends AbstractVar {
 
     @Override
     public Var newInstance() {
-        return Stamp.newEmpty();
+        return Stamp.empty();
     }
 
     @Override
     public Var newInstance(int rows) {
-        return Stamp.newEmpty(rows);
+        return Stamp.empty(rows);
     }
 
     @Override

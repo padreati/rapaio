@@ -23,6 +23,7 @@
 
 package rapaio.util;
 
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 /**
@@ -37,6 +38,14 @@ public class Util {
         task.run();
         long stop = System.currentTimeMillis();
         System.out.println((stop - start) / 60000 + " mins, " + (((stop - start) % 60000) / 1000) + " secs");
+    }
+
+    public static <T> T measure(Supplier<T> task) {
+        long start = System.currentTimeMillis();
+        T t = task.get();
+        long stop = System.currentTimeMillis();
+        System.out.println((stop - start) / 60000 + " mins, " + (((stop - start) % 60000) / 1000) + " secs, " + ((stop - start) % 1000) + " millis");
+        return t;
     }
 
     public static IntStream rangeStream(int n, boolean parallel) {

@@ -29,7 +29,6 @@ import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.Classifier;
-import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.eval.Confusion;
 import rapaio.printer.IdeaPrinter;
@@ -39,7 +38,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static rapaio.graphics.Plotter.color;
-import static rapaio.graphics.Plotter.lines;
 import static rapaio.graphics.Plotter.plot;
 
 public class AdaBoostSAMMETest {
@@ -59,9 +57,9 @@ public class AdaBoostSAMMETest {
 
         String target = "spam";
 
-        Numeric runs = Numeric.newEmpty().withName("runs");
-        Numeric errTr = Numeric.newEmpty().withName("tr");
-        Numeric errTe = Numeric.newEmpty().withName("te");
+        Numeric runs = Numeric.empty().withName("runs");
+        Numeric errTr = Numeric.empty().withName("tr");
+        Numeric errTe = Numeric.empty().withName("te");
 
         ab.withRunningHook((c, run) -> {
             runs.addValue(run);

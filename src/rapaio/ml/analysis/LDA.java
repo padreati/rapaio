@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
@@ -168,7 +169,7 @@ public class LDA implements Printable {
     }
 
 
-    public Frame fit(Frame df, int k) {
+    public Frame fit(Frame df, BiFunction<RV, RM, Integer> kFunction) {
         // TODO check if we have all the initial columns
 
         RM x = Linear.newRMCopyOf(df);
@@ -180,6 +181,8 @@ public class LDA implements Printable {
                 }
             }
         }
+
+        int k = kFunction.apply(eigenValues, eigenVectors);
 
         int[] dim = new int[k];
         String[] names = new String[k];
@@ -219,8 +222,8 @@ public class LDA implements Printable {
         StringBuilder sb = new StringBuilder();
 
         Frame eval = SolidFrame.newWrapOf(
-                Numeric.newEmpty(eigenValues.rowCount()).withName("values"),
-                Numeric.newEmpty(eigenValues.rowCount()).withName("percent")
+                Numeric.empty(eigenValues.rowCount()).withName("values"),
+                Numeric.empty(eigenValues.rowCount()).withName("percent")
         );
         double total = 0.0;
         for (int i = 0; i < eigenValues.rowCount(); i++) {

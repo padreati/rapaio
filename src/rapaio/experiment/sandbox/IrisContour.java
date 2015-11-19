@@ -28,12 +28,12 @@ import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Maximum;
 import rapaio.core.stat.Minimum;
 import rapaio.data.*;
-import rapaio.experiment.grid.MeshGrid1D;
 import rapaio.datasets.Datasets;
+import rapaio.experiment.grid.MeshGrid1D;
 import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.plot.Plot;
-import rapaio.graphics.plot.plotcomp.Points;
 import rapaio.graphics.plot.plotcomp.MeshContour;
+import rapaio.graphics.plot.plotcomp.Points;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.ensemble.CForest;
@@ -42,9 +42,7 @@ import rapaio.ws.Summary;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.graphics.Plotter.color;
-import static rapaio.graphics.Plotter.lwd;
-import static rapaio.graphics.Plotter.pch;
+import static rapaio.graphics.Plotter.*;
 import static rapaio.sys.WS.draw;
 
 /**
@@ -62,7 +60,7 @@ public class IrisContour {
 
         Frame iris = Datasets.loadIrisDataset().mapVars(X, Y, "class").stream().filter(s -> s.index(2) != 3).toMappedFrame();
 
-        Var trimmedClass = Nominal.newFrom(iris.rowCount(), row -> iris.label(row, "class")).withName("class");
+        Var trimmedClass = Nominal.from(iris.rowCount(), row -> iris.label(row, "class")).withName("class");
 
         Frame tr = BoundFrame.newByVars(iris.var(X), iris.var(Y), trimmedClass);
 
@@ -85,14 +83,14 @@ public class IrisContour {
 
         c.train(iris, "class");
 
-        Numeric x = Numeric.newSeq(new Minimum(iris.var(X)).value(), new Maximum(iris.var(X)).value(), 0.1).withName(X);
-        Numeric y = Numeric.newSeq(new Minimum(iris.var(Y)).value(), new Maximum(iris.var(Y)).value(), 0.2).withName(Y);
+        Numeric x = Numeric.seq(new Minimum(iris.var(X)).value(), new Maximum(iris.var(X)).value(), 0.1).withName(X);
+        Numeric y = Numeric.seq(new Minimum(iris.var(Y)).value(), new Maximum(iris.var(Y)).value(), 0.2).withName(Y);
         MeshGrid1D mg1 = new MeshGrid1D(x, y);
 
         // build a classification data sets with all required points
 
-        Numeric sl = Numeric.newEmpty().withName(X);
-        Numeric sw = Numeric.newEmpty().withName(Y);
+        Numeric sl = Numeric.empty().withName(X);
+        Numeric sw = Numeric.empty().withName(Y);
         for (int i = 0; i < x.rowCount(); i++) {
             for (int j = 0; j < y.rowCount(); j++) {
                 sl.addValue(mg1.getX().value(i));
@@ -110,7 +108,7 @@ public class IrisContour {
         }
 
         Plot p = new Plot();
-        double[] qq = Numeric.newSeq(0, 1, 0.02).stream().mapToDouble().toArray();
+        double[] qq = Numeric.seq(0, 1, 0.02).stream().mapToDouble().toArray();
         qq[qq.length - 1] = Double.POSITIVE_INFINITY;
         ColorGradient bcg = ColorGradient.newHueGradient(qq);
         for (int i = 0; i < qq.length - 1; i++) {

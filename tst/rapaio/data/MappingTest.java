@@ -39,15 +39,15 @@ public class MappingTest {
 
     @Test
     public void testMappingBuilders() {
-        Mapping m = Mapping.newEmpty();
+        Mapping m = Mapping.empty();
         assertEquals(0, m.size());
 
-        m = Mapping.newCopyOf(1, 3, 5, 7);
+        m = Mapping.copy(1, 3, 5, 7);
         assertEquals(4, m.size());
         assertEquals(1, m.get(0));
         assertEquals(7, m.get(3));
 
-        m = Mapping.newCopyOf(Arrays.asList(1, 3, 5, 7));
+        m = Mapping.copy(Arrays.asList(1, 3, 5, 7));
         assertEquals(4, m.size());
         assertEquals(1, m.get(0));
         assertEquals(7, m.get(3));
@@ -55,7 +55,7 @@ public class MappingTest {
 
     @Test
     public void testIntervalMappingNotReadOnly() {
-        Mapping m = Mapping.newRangeOf(0, 100);
+        Mapping m = Mapping.range(0, 100);
         try {
             m.add(100);
         } catch (IllegalArgumentException ignored) {
@@ -71,12 +71,12 @@ public class MappingTest {
 
     @Test
     public void testListMappingManage() {
-        Mapping m = Mapping.newCopyOf(IntStream.range(0, 100).mapToObj(i -> i).collect(Collectors.toList()));
+        Mapping m = Mapping.copy(IntStream.range(0, 100).mapToObj(i -> i).collect(Collectors.toList()));
 
         m.add(1000);
         assertEquals(1000, m.get(m.size() - 1));
 
-        m = Mapping.newCopyOf(0, 1, 3, 4);
+        m = Mapping.copy(0, 1, 3, 4);
 
         try {
             m.get(10000);

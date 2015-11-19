@@ -46,6 +46,7 @@ public class WS {
     private static DecimalFormat formatDecLong = new DecimalFormat();
     private static DecimalFormat formatDecFlex = new DecimalFormat();
     private static DecimalFormat formatDecFlexShort = new DecimalFormat();
+    private static Printer printer = new StandardPrinter();
 
     static {
         formatDecShort.setMinimumIntegerDigits(1);
@@ -84,18 +85,16 @@ public class WS {
         }
     }
 
-    private static Printer printer = new StandardPrinter();
+    public static Printer getPrinter() {
+        return printer;
+    }
 
     public static void setPrinter(Printer printer) {
         WS.printer = printer;
     }
 
-    public static Printer getPrinter() {
-        return printer;
-    }
-
     public static void preparePrinter() {
-        printer.preparePrinter();
+        printer.openPrinter();
     }
 
     public static void closePrinter() {
@@ -158,7 +157,7 @@ public class WS {
     }
 
     public static void heading(int h, String lines) {
-        printer.heading(h, lines);
+        printer.head(h, lines);
     }
 
     public static void error(String message, Throwable ex) {
@@ -171,10 +170,6 @@ public class WS {
 
     public static void p(String lines) {
         printer.p(lines);
-    }
-
-    public static void eqn(String equation) {
-        printer.eqn(equation);
     }
 
     public static void draw(Figure figure, int width, int height) {
@@ -190,6 +185,6 @@ public class WS {
     }
 
     public static BufferedImage image(Figure figure) {
-        return ImageUtility.buildImage(figure, getPrinter().getGraphicWidth(), getPrinter().getGraphicHeight());
+        return ImageUtility.buildImage(figure, getPrinter().graphicWidth(), getPrinter().graphicHeight());
     }
 }

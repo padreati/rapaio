@@ -106,7 +106,7 @@ public class TextTableTest {
 
     @Test
     public void testWithHorizontalMerge() throws IOException, URISyntaxException {
-        Frame iris = Datasets.loadIrisDataset().mapRows(Mapping.newRangeOf(0, 23));
+        Frame iris = Datasets.loadIrisDataset().mapRows(Mapping.range(0, 23));
         TextTable tt = TextTable.newEmpty(iris.rowCount() + 3, iris.varCount() + 2);
         for (int i = 0; i < iris.varCount(); i++) {
             tt.set(0, i + 1, iris.var(i).name(), 0);

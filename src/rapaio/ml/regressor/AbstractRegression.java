@@ -98,7 +98,7 @@ public abstract class AbstractRegression<T extends RFit> implements Regression<T
 
     @Override
     public final Regression train(Frame df, String... targetVarNames) {
-        return train(df, Numeric.newFill(df.rowCount(), 1), targetVarNames);
+        return train(df, Numeric.fill(df.rowCount(), 1), targetVarNames);
     }
 
     @Override

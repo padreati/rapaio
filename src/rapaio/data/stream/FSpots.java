@@ -281,7 +281,7 @@ public class FSpots implements Stream<FSpot>, Serializable {
      * @return mapping of collected row numbers
      */
     public Mapping collectMapping() {
-        final Mapping m = Mapping.newEmpty();
+        final Mapping m = Mapping.empty();
         forEach(s -> m.add(s.row()));
         return m;
     }

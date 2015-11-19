@@ -59,6 +59,6 @@ public class FFRefSort extends FFAbstract {
             rows.add(i);
         }
         Collections.sort(rows, aggregateComparator);
-        return MappedFrame.newByRow(df, Mapping.newWrapOf(rows));
+        return MappedFrame.newByRow(df, Mapping.wrap(rows));
     }
 }

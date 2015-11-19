@@ -205,7 +205,9 @@ public final class Linear {
         RM U = p.vectors();
         RM lambda = p.expandedValues();
         for (int i = 0; i < lambda.rowCount(); i++) {
-            lambda.set(i, i, Math.pow(lambda.get(i, i), power));
+            //TODO quick fix
+            // this is because negative numbers can be produced for small quantities
+            lambda.set(i, i, Math.pow(Math.abs(lambda.get(i, i)), power));
         }
         return U.dot(lambda).dot(U.t());
     }

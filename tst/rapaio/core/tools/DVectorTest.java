@@ -35,18 +35,18 @@ public class DVectorTest {
     @Test
     public void testBuilders() {
         assertTrue(DVector.newEmpty(true, "a", "b").equalsFull(DVector.newEmpty(false, "?", "a", "b")));
-        assertTrue(DVector.newFromCount(true, Nominal.newCopyOf("a", "b", "a")).equalsFull(DVector.newFromCount(true, Nominal.newCopyOf("a", "a", "b"))));
+        assertTrue(DVector.newFromCount(true, Nominal.copy("a", "b", "a")).equalsFull(DVector.newFromCount(true, Nominal.copy("a", "a", "b"))));
         assertTrue(DVector.newEmpty(false, 2).equalsFull(DVector.newEmpty(true, "v1")));
-        assertTrue(DVector.newFromCount(true, Nominal.newCopyOf("a", "a", "b", "c"))
+        assertTrue(DVector.newFromCount(true, Nominal.copy("a", "a", "b", "c"))
                 .equalsFull(DVector.newFromWeights(
                         true,
-                        Nominal.newCopyOf("a", "a", "b", "c"),
-                        Numeric.newCopyOf(0.5, 1.5, 1, 1))));
-        assertTrue(DVector.newFromCount(true, Nominal.newCopyOf("a", "a", "b", "c"))
+                        Nominal.copy("a", "a", "b", "c"),
+                        Numeric.copy(0.5, 1.5, 1, 1))));
+        assertTrue(DVector.newFromCount(true, Nominal.copy("a", "a", "b", "c"))
                 .equalsFull(DVector.newFromWeights(
                         true,
-                        Nominal.newCopyOf("a", "a", "b", "c"),
-                        Numeric.newCopyOf(0.5, 1.5, 1, 1),
+                        Nominal.copy("a", "a", "b", "c"),
+                        Numeric.copy(0.5, 1.5, 1, 1),
                         "?", "a", "b", "c")));
     }
 
@@ -54,8 +54,8 @@ public class DVectorTest {
     public void testIncrement() {
         DVector ndv1 = DVector.newFromWeights(
                 true,
-                Nominal.newCopyOf("a", "b", "c"),
-                Numeric.newCopyOf(1.0, 7.0, 5.0)
+                Nominal.copy("a", "b", "c"),
+                Numeric.copy(1.0, 7.0, 5.0)
         );
 
         DVector ndv2 = DVector.newEmpty(true, "?", "a", "b", "c");
@@ -70,8 +70,8 @@ public class DVectorTest {
     @Test
     public void testSet() {
         DVector ndv1 = DVector.newFromWeights(false,
-                Nominal.newCopyOf("?", "a", "b", "c"),
-                Numeric.newCopyOf(0.0, 1.0, 7.0, 5.0)
+                Nominal.copy("?", "a", "b", "c"),
+                Numeric.copy(0.0, 1.0, 7.0, 5.0)
         );
 
         DVector ndv2 = DVector.newEmpty(false, "?", "a", "b", "c");
@@ -86,15 +86,15 @@ public class DVectorTest {
     @Test
     public void testFindBestIndex() {
         DVector dv1 = DVector.newFromWeights(true,
-                Nominal.newCopyOf("a", "b", "c"),
-                Numeric.newCopyOf(1.0, 7.0, 5.0)
+                Nominal.copy("a", "b", "c"),
+                Numeric.copy(1.0, 7.0, 5.0)
         );
         dv1.set(0, 100);
         assertEquals(0, dv1.findBestIndex());
 
         DVector dv2 = DVector.newFromWeights(true,
-                Nominal.newCopyOf("a", "b", "c"),
-                Numeric.newCopyOf(1.0, 2.0, 2.0)
+                Nominal.copy("a", "b", "c"),
+                Numeric.copy(1.0, 2.0, 2.0)
         );
         for (int i = 0; i < 100; i++) {
             int index = dv2.findBestIndex();
@@ -106,8 +106,8 @@ public class DVectorTest {
     @Test
     public void testNormalize() {
         DVector dv = DVector.newFromWeights(true,
-                Nominal.newCopyOf("a", "b", "c"),
-                Numeric.newCopyOf(1.0, 1.0, 1.0)
+                Nominal.copy("a", "b", "c"),
+                Numeric.copy(1.0, 1.0, 1.0)
         );
         dv.normalize();
 
@@ -126,8 +126,8 @@ public class DVectorTest {
     @Test
     public void testSums() {
         DVector dv = DVector.newFromWeights(false,
-                Nominal.newCopyOf("?", "a", "b", "c"),
-                Numeric.newCopyOf(1.0, 2.0, 3.0, 4.0)
+                Nominal.copy("?", "a", "b", "c"),
+                Numeric.copy(1.0, 2.0, 3.0, 4.0)
         );
 
         assertEquals(9.0, dv.withFirst(false).sum(), 1e-20);
@@ -140,8 +140,8 @@ public class DVectorTest {
     @Test
     public void testCountValues() {
         DVector dv = DVector.newFromWeights(true,
-                Nominal.newCopyOf("?", "a", "b", "c"),
-                Numeric.newCopyOf(1.0, 2.0, 3.0, 4.0)
+                Nominal.copy("?", "a", "b", "c"),
+                Numeric.copy(1.0, 2.0, 3.0, 4.0)
         );
 
         assertEquals(2, dv.withFirst(true).countValues(x -> x <= 2));
@@ -152,8 +152,8 @@ public class DVectorTest {
     public void testSolidCopy() {
         DVector dv1 = DVector.newFromWeights(
                 false,
-                Nominal.newCopyOf("?", "a", "b", "c"),
-                Numeric.newCopyOf(1.0, 2.0, 3.0, 4.0)
+                Nominal.copy("?", "a", "b", "c"),
+                Numeric.copy(1.0, 2.0, 3.0, 4.0)
         );
 
         DVector dv2 = dv1.solidCopy();

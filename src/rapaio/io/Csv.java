@@ -416,7 +416,7 @@ public class Csv {
             this.parent = parent;
             this.type = null;
             this.var = parent.defaultTypes[0].newInstance();
-            this.text = Text.newEmpty();
+            this.text = Text.empty();
         }
 
         public VarSlot(Csv parent, VarType varType) {

@@ -28,70 +28,89 @@ import rapaio.printer.local.FigurePanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.Console;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.Reader;
 
 /**
  * @author tutuianu
  */
 public class StandardPrinter extends AbstractPrinter {
 
-    public StandardPrinter() {
-        setTextWidth(180);
-        setGraphicWidth(1280);
-        setGraphicHeight(800);
-    }
-
+    private final Reader reader;
+    private final PrintWriter writer;
     private int textWidth;
     private int graphicWidth;
     private int graphicHeight;
 
+    public StandardPrinter() {
+
+        Console console = System.console();
+        if (console != null) {
+            reader = console.reader();
+            writer = console.writer();
+        } else {
+            reader = new InputStreamReader(System.in);
+            writer = new PrintWriter(System.out);
+        }
+
+        withTextWidth(180);
+        withGraphicWidth(1280);
+        withGraphicHeight(800);
+    }
+
     @Override
-    public int getTextWidth() {
+    public int textWidth() {
         return textWidth;
     }
 
     @Override
-    public void setTextWidth(int chars) {
+    public void withTextWidth(int chars) {
         textWidth = chars;
     }
 
     @Override
-    public int getGraphicWidth() {
+    public int graphicWidth() {
         return graphicWidth;
     }
 
     @Override
-    public void setGraphicWidth(int width) {
+    public void withGraphicWidth(int width) {
         graphicWidth = width;
     }
 
     @Override
-    public int getGraphicHeight() {
+    public int graphicHeight() {
         return graphicHeight;
     }
 
     @Override
-    public void setGraphicHeight(int height) {
+    public void withGraphicHeight(int height) {
         graphicHeight = height;
     }
 
     @Override
     public void print(String message) {
-        System.out.print(message);
+        writer.print(message);
+        writer.flush();
     }
 
     @Override
     public void println() {
-        System.out.println();
+        writer.println();
+        writer.flush();
     }
 
     @Override
     public void error(String message, Throwable throwable) {
         if (message != null) {
-            System.out.println(message);
+            writer.println(message);
         }
         if (throwable != null) {
-            System.out.println(throwable.getMessage());
+            writer.println(throwable.getMessage());
         }
+        writer.flush();
     }
 
     @Override

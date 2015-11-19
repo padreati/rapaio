@@ -46,7 +46,7 @@ public class VFToIndex extends VFAbstract {
         if (v.type().equals(VarType.INDEX)) {
             return v;
         }
-        final Index result = Index.newEmpty();
+        final Index result = Index.empty();
         v.stream().forEach(s -> {
             if (s.missing()) {
                 result.addMissing();

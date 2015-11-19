@@ -332,11 +332,11 @@ public final class SamplingTools {
         int start = 0;
         for (double f : freq) {
             int len = (int) (f * frame.rowCount());
-            result.add(frame.mapRows(Mapping.newCopyOf(rows.subList(start, start + len))));
+            result.add(frame.mapRows(Mapping.copy(rows.subList(start, start + len))));
             start += len;
         }
         if (start < frame.rowCount()) {
-            result.add(frame.mapRows(Mapping.newCopyOf(rows.subList(start, frame.rowCount()))));
+            result.add(frame.mapRows(Mapping.copy(rows.subList(start, frame.rowCount()))));
         }
         return result;
     }
@@ -361,8 +361,8 @@ public final class SamplingTools {
         Collections.shuffle(right, RandomSource.getRandom());
 
         List<Frame> list = new ArrayList<>();
-        list.add(df.mapRows(Mapping.newWrapOf(left)));
-        list.add(df.mapRows(Mapping.newWrapOf(right)));
+        list.add(df.mapRows(Mapping.wrap(left)));
+        list.add(df.mapRows(Mapping.wrap(right)));
         return list;
     }
 
@@ -371,6 +371,6 @@ public final class SamplingTools {
     }
 
     public static Frame randomBootstrap(Frame frame, double percent) {
-        return MappedFrame.newByRow(frame, Mapping.newCopyOf(SamplingTools.sampleWR(frame.rowCount(), (int) (percent * frame.rowCount()))));
+        return MappedFrame.newByRow(frame, Mapping.copy(SamplingTools.sampleWR(frame.rowCount(), (int) (percent * frame.rowCount()))));
     }
 }

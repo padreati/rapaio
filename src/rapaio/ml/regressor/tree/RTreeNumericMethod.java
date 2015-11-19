@@ -42,10 +42,6 @@ import java.util.List;
 @Deprecated
 public interface RTreeNumericMethod extends Serializable {
 
-    String name();
-
-    List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function);
-
     RTreeNumericMethod IGNORE = new RTreeNumericMethod() {
         @Override
         public String name() {
@@ -57,7 +53,6 @@ public interface RTreeNumericMethod extends Serializable {
             return new ArrayList<>();
         }
     };
-
     RTreeNumericMethod BINARY = new RTreeNumericMethod() {
         @Override
         public String name() {
@@ -69,7 +64,7 @@ public interface RTreeNumericMethod extends Serializable {
             Var test = df.var(testVarName);
             Var target = df.var(targetVarName);
 
-            Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.newSeq(df.rowCount()));
+            Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.seq(df.rowCount()));
 
             double[] leftVar = new double[df.rowCount()];
             double[] rightVar = new double[df.rowCount()];
@@ -138,4 +133,8 @@ public interface RTreeNumericMethod extends Serializable {
             return (best != null) ? Collections.singletonList(best) : Collections.EMPTY_LIST;
         }
     };
+
+    String name();
+
+    List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function);
 }

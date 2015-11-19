@@ -39,24 +39,23 @@ import java.util.Arrays;
  */
 public class GOpts implements Serializable {
 
-    private static final long serialVersionUID = -8407683729055712796L;
-    GOpts parent;
     public static final GOpts DEFAULTS;
+    private static final long serialVersionUID = -8407683729055712796L;
 
     static {
         DEFAULTS = new GOpts();
         DEFAULTS.palette = gOpts -> ColorPalette.STANDARD;
         DEFAULTS.color = gOpts -> new Color[]{Color.black};
         DEFAULTS.lwd = gOpts -> 1.2f;
-        DEFAULTS.sz = gOpts -> Numeric.newScalar(3);
-        DEFAULTS.pch = gOpts -> Index.newScalar(0);
+        DEFAULTS.sz = gOpts -> Numeric.scalar(3);
+        DEFAULTS.pch = gOpts -> Index.scalar(0);
         DEFAULTS.alpha = gOpts -> 1.0f;
         DEFAULTS.bins = gOpts -> -1;
         DEFAULTS.prob = gOpts -> false;
         DEFAULTS.points = gOpts -> 256;
     }
 
-
+    GOpts parent;
     //
     SFunction<GOpts, ColorPalette> paletteDefault;
     SFunction<GOpts, Color[]> colorDefault;
@@ -103,11 +102,19 @@ public class GOpts implements Serializable {
         return parent;
     }
 
+    public void setParent(GOpts parent) {
+        this.parent = parent;
+    }
+
     public ColorPalette getPalette() {
         if (palette == null) {
             return parent != null ? parent.getPalette() : DEFAULTS.palette.apply(this);
         }
         return palette.apply(this);
+    }
+
+    public void setPalette(SFunction<GOpts, ColorPalette> palette) {
+        this.palette = palette;
     }
 
     public Color getColor(int row) {
@@ -142,6 +149,10 @@ public class GOpts implements Serializable {
         if (c == null)
             c = DEFAULTS.lwd;
         return c.apply(this);
+    }
+
+    public void setLwd(SFunction<GOpts, Float> lwd) {
+        this.lwd = lwd;
     }
 
     private SFunction<GOpts, Float> getUpLwd() {
@@ -210,7 +221,6 @@ public class GOpts implements Serializable {
         return null;
     }
 
-
     public float getAlpha() {
         SFunction<GOpts, Float> c = getUpAlpha();
         if (c == null)
@@ -218,6 +228,10 @@ public class GOpts implements Serializable {
         if (c == null)
             c = DEFAULTS.alpha;
         return c.apply(this);
+    }
+
+    public void setAlpha(SFunction<GOpts, Float> alpha) {
+        this.alpha = alpha;
     }
 
     protected SFunction<GOpts, Float> getUpAlpha() {
@@ -245,6 +259,10 @@ public class GOpts implements Serializable {
         return c.apply(this);
     }
 
+    public void setBins(SFunction<GOpts, Integer> bins) {
+        this.bins = bins;
+    }
+
     protected SFunction<GOpts, Integer> getUpBins() {
         if (bins != null)
             return bins;
@@ -268,6 +286,10 @@ public class GOpts implements Serializable {
         if (c == null)
             c = DEFAULTS.prob;
         return c.apply(this);
+    }
+
+    public void setProb(SFunction<GOpts, Boolean> prob) {
+        this.prob = prob;
     }
 
     protected SFunction<GOpts, Boolean> getUpProb() {
@@ -295,6 +317,10 @@ public class GOpts implements Serializable {
         return c.apply(this);
     }
 
+    public void setPoints(SFunction<GOpts, Integer> points) {
+        this.points = points;
+    }
+
     protected SFunction<GOpts, Integer> getUpPoints() {
         if (points != null)
             return points;
@@ -311,20 +337,8 @@ public class GOpts implements Serializable {
         return null;
     }
 
-    public void setParent(GOpts parent) {
-        this.parent = parent;
-    }
-
-    public void setPalette(SFunction<GOpts, ColorPalette> palette) {
-        this.palette = palette;
-    }
-
     public void setColor(SFunction<GOpts, Color[]> color) {
         this.color = color;
-    }
-
-    public void setLwd(SFunction<GOpts, Float> lwd) {
-        this.lwd = lwd;
     }
 
     public void setSz(SFunction<GOpts, Var> sz) {
@@ -333,22 +347,6 @@ public class GOpts implements Serializable {
 
     public void setPch(SFunction<GOpts, Var> pch) {
         this.pch = pch;
-    }
-
-    public void setAlpha(SFunction<GOpts, Float> alpha) {
-        this.alpha = alpha;
-    }
-
-    public void setBins(SFunction<GOpts, Integer> bins) {
-        this.bins = bins;
-    }
-
-    public void setProb(SFunction<GOpts, Boolean> prob) {
-        this.prob = prob;
-    }
-
-    public void setPoints(SFunction<GOpts, Integer> points) {
-        this.points = points;
     }
 
     public void setPaletteDefault(SFunction<GOpts, ColorPalette> paletteDefault) {

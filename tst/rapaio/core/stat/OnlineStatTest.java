@@ -24,12 +24,12 @@
 package rapaio.core.stat;
 
 import org.junit.Test;
-import rapaio.sys.WS;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
+import rapaio.sys.WS;
 
 import static org.junit.Assert.assertEquals;
 
@@ -48,10 +48,10 @@ public class OnlineStatTest {
 
         OnlineStat onlineStat = new OnlineStat();
 
-        Var index = Index.newSeq(LEN);
-        Var varLeft = Numeric.newFill(LEN);
-        Var varRight = Numeric.newFill(LEN);
-        Var varSum = Numeric.newFill(LEN);
+        Var index = Index.seq(LEN);
+        Var varLeft = Numeric.fill(LEN);
+        Var varRight = Numeric.fill(LEN);
+        Var varSum = Numeric.fill(LEN);
 
         for (int i = 0; i < LEN; i++) {
             onlineStat.update(v.value(i));
@@ -73,8 +73,8 @@ public class OnlineStatTest {
 
     @Test
     public void testParallelStat() {
-        Var a = Numeric.newWrapOf(1, 2, 3, 13, 17, 30);
-        Var b = Numeric.newWrapOf(44, 5, 234, 12, 33, 1);
+        Var a = Numeric.wrap(1, 2, 3, 13, 17, 30);
+        Var b = Numeric.wrap(44, 5, 234, 12, 33, 1);
         Var ab = a.bindRows(b);
         OnlineStat soA = new OnlineStat();
         OnlineStat soB = new OnlineStat();
@@ -90,7 +90,7 @@ public class OnlineStatTest {
     @Test
     public void testWeightedStat() {
 
-        Var a = Numeric.newWrapOf(1, 1, 2, 2, 2, 3, 3, 3, 3, 4);
+        Var a = Numeric.wrap(1, 1, 2, 2, 2, 3, 3, 3, 3, 4);
         OnlineStat so1 = new OnlineStat();
 
         a.stream().forEach(s -> so1.update(s.value()));

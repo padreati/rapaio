@@ -24,8 +24,10 @@
 package rapaio.graphics.plot;
 
 import rapaio.core.stat.Quantiles;
-import rapaio.data.*;
 import rapaio.data.Frame;
+import rapaio.data.Index;
+import rapaio.data.Numeric;
+import rapaio.data.Var;
 import rapaio.data.stream.VSpot;
 import rapaio.graphics.base.HostFigure;
 import rapaio.graphics.base.Range;
@@ -33,7 +35,6 @@ import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.opt.GOpts;
 import rapaio.graphics.opt.PchPalette;
-import rapaio.util.Pair;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
@@ -42,9 +43,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -61,7 +60,7 @@ public class BoxPlot extends HostFigure {
 
         Map<String, List<Double>> map = x.stream().collect(groupingBy(s -> factor.label(s.row()), mapping(VSpot::value, toList())));
         names = factor.streamLevels().filter(map::containsKey).toArray(String[]::new);
-        vars = Arrays.stream(names).map(map::get).map(Numeric::newCopyOf).toArray(Var[]::new);
+        vars = Arrays.stream(names).map(map::get).map(Numeric::copy).toArray(Var[]::new);
 
         this.options.apply(opts);
         initialize();
@@ -91,7 +90,7 @@ public class BoxPlot extends HostFigure {
         bottomMarkers(true);
         bottomThick(true);
 
-        options.setPchDefault(gOpts -> Index.newWrapOf(0, 3));
+        options.setPchDefault(gOpts -> Index.wrap(0, 3));
         options.setColorDefault(gOpts -> new Color[]{new Color(240, 240, 240)});
     }
 

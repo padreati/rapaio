@@ -54,12 +54,22 @@ public final class Index extends AbstractVar {
 
     // static builders
 
+    private Index(int rows, int capacity, int fill) {
+        if (rows < 0) {
+            throw new IllegalArgumentException("Illegal row count: " + rows);
+        }
+        this.data = new int[capacity];
+        this.rows = rows;
+        if (fill != 0)
+            Arrays.fill(data, 0, rows, fill);
+    }
+
     /**
      * Builds an empty index var of size 0
      *
      * @return new instance of index var
      */
-    public static Index newEmpty() {
+    public static Index empty() {
         return new Index(0, 0, 0);
     }
 
@@ -69,7 +79,7 @@ public final class Index extends AbstractVar {
      * @param rows index size
      * @return new instance of index var
      */
-    public static Index newEmpty(int rows) {
+    public static Index empty(int rows) {
         return new Index(rows, rows, 0);
     }
 
@@ -79,7 +89,7 @@ public final class Index extends AbstractVar {
      * @param value fill value
      * @return new instance of index var
      */
-    public static Index newScalar(int value) {
+    public static Index scalar(int value) {
         return new Index(1, 1, value);
     }
 
@@ -90,7 +100,7 @@ public final class Index extends AbstractVar {
      * @param value fill value
      * @return new instance of index var
      */
-    public static Index newFill(int rows, int value) {
+    public static Index fill(int rows, int value) {
         return new Index(rows, rows, value);
     }
 
@@ -100,7 +110,7 @@ public final class Index extends AbstractVar {
      * @param values given array of values
      * @return new instance of index var
      */
-    public static Index newCopyOf(int... values) {
+    public static Index copy(int... values) {
         Index index = new Index(0, 0, 0);
         index.data = Arrays.copyOf(values, values.length);
         index.rows = values.length;
@@ -113,7 +123,7 @@ public final class Index extends AbstractVar {
      * @param values given array of values
      * @return new instance of index var
      */
-    public static Index newWrapOf(int... values) {
+    public static Index wrap(int... values) {
         Index index = new Index(0, 0, 0);
         index.data = values;
         index.rows = values.length;
@@ -126,8 +136,8 @@ public final class Index extends AbstractVar {
      * @param len size of the index
      * @return new instance of index var
      */
-    public static Index newSeq(int len) {
-        return newSeq(0, len, 1);
+    public static Index seq(int len) {
+        return seq(0, len, 1);
     }
 
     /**
@@ -137,8 +147,8 @@ public final class Index extends AbstractVar {
      * @param len   size of the index
      * @return new instance of index var
      */
-    public static Index newSeq(int start, int len) {
-        return newSeq(start, len, 1);
+    public static Index seq(int start, int len) {
+        return seq(start, len, 1);
     }
 
     /**
@@ -149,7 +159,7 @@ public final class Index extends AbstractVar {
      * @param step  increment value
      * @return new instance of index var
      */
-    public static Index newSeq(final int start, final int len, final int step) {
+    public static Index seq(final int start, final int len, final int step) {
         Index index = new Index(len, len, 0);
         int s = start;
         for (int i = 0; i < len; i++) {
@@ -159,7 +169,9 @@ public final class Index extends AbstractVar {
         return index;
     }
 
-    public static Index newFrom(int len, Function<Integer, Integer> supplier) {
+    // private constructor, only public static builders available
+
+    public static Index from(int len, Function<Integer, Integer> supplier) {
         Index index = new Index(len, len, 0);
         for (int i = 0; i < index.data.length; i++) {
             index.data[i] = supplier.apply(i);
@@ -167,23 +179,42 @@ public final class Index extends AbstractVar {
         return index;
     }
 
-    // private constructor, only public static builders available
+    public static Collector<? super Integer, Index, Index> collector() {
+        return new Collector<Integer, Index, Index>() {
+            @Override
+            public Supplier<Index> supplier() {
+                return Index::empty;
+            }
 
-    private Index(int rows, int capacity, int fill) {
-        if (rows < 0) {
-            throw new IllegalArgumentException("Illegal row count: " + rows);
-        }
-        this.data = new int[capacity];
-        this.rows = rows;
-        if (fill != 0)
-            Arrays.fill(data, 0, rows, fill);
+            @Override
+            public BiConsumer<Index, Integer> accumulator() {
+                return Index::addIndex;
+            }
+
+            @Override
+            public BinaryOperator<Index> combiner() {
+                return (x, y) -> {
+                    y.stream().forEach(s -> x.addValue(s.value()));
+                    return x;
+                };
+            }
+
+            @Override
+            public Function<Index, Index> finisher() {
+                return x -> x;
+            }
+
+            @Override
+            public Set<Characteristics> characteristics() {
+                return new HashSet<>();
+            }
+        };
     }
 
     @Override
     public Index withName(String name) {
         return (Index) super.withName(name);
     }
-
 
     private void ensureCapacityInternal(int minCapacity) {
         // overflow-conscious code
@@ -355,49 +386,17 @@ public final class Index extends AbstractVar {
 
     @Override
     public Var newInstance() {
-        return Index.newEmpty();
+        return Index.empty();
     }
 
     @Override
     public Var newInstance(int rows) {
-        return Index.newEmpty(rows);
+        return Index.empty(rows);
     }
 
     @Override
     public String toString() {
         return "Index[name:" + name() + ", rowCount:" + rowCount() + "]";
-    }
-
-    public static Collector<? super Integer, Index, Index> collector() {
-        return new Collector<Integer, Index, Index>() {
-            @Override
-            public Supplier<Index> supplier() {
-                return Index::newEmpty;
-            }
-
-            @Override
-            public BiConsumer<Index, Integer> accumulator() {
-                return Index::addIndex;
-            }
-
-            @Override
-            public BinaryOperator<Index> combiner() {
-                return (x, y) -> {
-                    y.stream().forEach(s -> x.addValue(s.value()));
-                    return x;
-                };
-            }
-
-            @Override
-            public Function<Index, Index> finisher() {
-                return x -> x;
-            }
-
-            @Override
-            public Set<Characteristics> characteristics() {
-                return new HashSet<>();
-            }
-        };
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

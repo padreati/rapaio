@@ -23,10 +23,12 @@
 
 package rapaio.ws;
 
-import rapaio.data.*;
-import rapaio.printer.Printable;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
+import rapaio.data.Frame;
+import rapaio.data.Var;
+import rapaio.data.VarType;
+import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
@@ -218,7 +220,7 @@ public class Summary {
             wfirst[i] = width[i] - 3 - wsecond[i];
         }
 
-        int witdh = getPrinter().getTextWidth();
+        int witdh = getPrinter().textWidth();
 
         int pos = 0;
 
@@ -508,7 +510,7 @@ public class Summary {
 
         int pos = 0;
         while (pos < vars.length) {
-            int maxWidth = getPrinter().getTextWidth();
+            int maxWidth = getPrinter().textWidth();
             int width = 0;
             int start = pos;
             while ((pos < vars.length - 1) && (width + max[pos + 1] + 1 < maxWidth)) {

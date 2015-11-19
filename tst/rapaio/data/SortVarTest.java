@@ -42,17 +42,17 @@ public class SortVarTest {
 
     @Test
     public void smokeTest() {
-        Var v = Index.newEmpty();
+        Var v = Index.empty();
         Var sorted = new VFRefSort(index(v, true)).fitApply(v);
         assertTrue(sorted.type().isNumeric());
         assertFalse(sorted.type().isNominal());
 
-        v = Numeric.newEmpty();
+        v = Numeric.empty();
         sorted = new VFRefSort(numeric(v, true)).fitApply(v);
         assertTrue(sorted.type().isNumeric());
         assertFalse(sorted.type().isNominal());
 
-        v = Nominal.newEmpty(0);
+        v = Nominal.empty(0);
         sorted = new VFRefSort(nominal(v, true)).fitApply(v);
         assertFalse(sorted.type().isNumeric());
         assertTrue(sorted.type().isNominal());
@@ -60,7 +60,7 @@ public class SortVarTest {
 
     @Test
     public void testSortIndex() {
-        Var index = Index.newSeq(10, 10, -1);
+        Var index = Index.seq(10, 10, -1);
         index.setMissing(2);
         index.setMissing(5);
         index.setIndex(0, 1);
@@ -84,7 +84,7 @@ public class SortVarTest {
 
     @Test
     public void testSortNumeric() {
-        Var numeric = Numeric.newCopyOf(2., 4., 1.2, 1.3, 1.2, 0., 100.);
+        Var numeric = Numeric.copy(2., 4., 1.2, 1.3, 1.2, 0., 100.);
 
         assertEquals(7, numeric.rowCount());
         Var sort = new VFSort(true).fitApply(numeric);
@@ -106,7 +106,7 @@ public class SortVarTest {
     @Test
     public void testSortNominal() {
         String[] dict = new String[]{"a", "Aa", "b", "c", "Cc"};
-        Var nominal = Nominal.newEmpty(10, dict);
+        Var nominal = Nominal.empty(10, dict);
 
         for (int i = 0; i < 10; i++) {
             nominal.setLabel(i, dict[i % dict.length]);
@@ -199,7 +199,7 @@ public class SortVarTest {
 
     @Test
     public void testMissing() {
-        Var v = Index.newSeq(1, 10);
+        Var v = Index.seq(1, 10);
         v = new VFRefSort(index(v, true)).fitApply(v);
         for (int i = 0; i < 10; i += 3) {
             v.setMissing(i);

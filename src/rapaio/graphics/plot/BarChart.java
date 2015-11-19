@@ -46,12 +46,14 @@ public class BarChart extends HostFigure {
     private final Var category;
     private final Var condition;
     private final Var numeric;
+    private final GOpts options = new GOpts().apply(Plotter.color(0));
     private boolean density = false;
     private Range range;
     private int[] sel;
     private double[][] hits;
     private double[] totals;
-    private final GOpts options = new GOpts().apply(Plotter.color(0));
+    private SortType sort = SortType.NONE;
+    private int top = Integer.MAX_VALUE;
 
     public BarChart(Var category, GOpt... opts) {
         this(category, null, opts);
@@ -67,13 +69,13 @@ public class BarChart extends HostFigure {
             throw new IllegalArgumentException("categories are nominal only");
         }
         if (condition == null) {
-            condition = Nominal.newEmpty(category.rowCount(), new ArrayList<>());
+            condition = Nominal.empty(category.rowCount(), new ArrayList<>());
         }
         if (!condition.type().isNominal()) {
             throw new IllegalArgumentException("conditions are nominal only");
         }
         if (numeric == null) {
-            numeric = Numeric.newFill(category.rowCount(), 1);
+            numeric = Numeric.fill(category.rowCount(), 1);
         }
         if (!numeric.type().isNumeric()) {
             throw new IllegalArgumentException("Numeric var must be .. isNumeric");
@@ -89,22 +91,14 @@ public class BarChart extends HostFigure {
         bottomMarkers(true);
 
         int shift = 9;
-        options.apply(Plotter.color(Index.newSeq(shift, condition.levels().length)));
+        options.apply(Plotter.color(Index.seq(shift, condition.levels().length)));
         options.apply(opts);
-    }
-
-    private SortType sort = SortType.NONE;
-
-    public enum SortType {
-        NONE, ASC, DESC
     }
 
     public BarChart useSortType(SortType sort) {
         this.sort = sort;
         return this;
     }
-
-    private int top = Integer.MAX_VALUE;
 
     public BarChart useTop(int top) {
         this.top = top;
@@ -267,5 +261,9 @@ public class BarChart extends HostFigure {
             }
             col++;
         }
+    }
+
+    public enum SortType {
+        NONE, ASC, DESC
     }
 }

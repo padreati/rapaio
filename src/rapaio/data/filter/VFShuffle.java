@@ -51,6 +51,6 @@ public class VFShuffle extends VFAbstract {
         for (int i = mapping.size(); i > 1; i--) {
             mapping.set(i - 1, mapping.set(RandomSource.nextInt(i), mapping.get(i - 1)));
         }
-        return vars[0].mapRows(Mapping.newWrapOf(mapping));
+        return vars[0].mapRows(Mapping.wrap(mapping));
     }
 }

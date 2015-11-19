@@ -46,9 +46,9 @@ public class SolidFrameTest {
     @Test
     public void testColIndexes() {
         Frame df = SolidFrame.newWrapOf(
-                Numeric.newEmpty().withName("x"),
-                Numeric.newEmpty().withName("y"),
-                Numeric.newEmpty().withName("z"));
+                Numeric.empty().withName("x"),
+                Numeric.empty().withName("y"),
+                Numeric.empty().withName("z"));
 
         assertEquals(3, df.varCount());
         assertEquals("x", df.varNames()[0]);
@@ -82,10 +82,10 @@ public class SolidFrameTest {
     @Test
     public void testConvenientMethods() {
         List<Var> vars = new ArrayList<>();
-        vars.add(Numeric.newCopyOf(1., 2., 3., 4.).withName("x"));
-        vars.add(Numeric.newCopyOf(3., 5., 9., 12.).withName("y"));
-        vars.add(Nominal.newEmpty(4, "ana", "are", "mere").withName("name"));
-        vars.add(Index.newSeq(1, 4).withName("index"));
+        vars.add(Numeric.copy(1., 2., 3., 4.).withName("x"));
+        vars.add(Numeric.copy(3., 5., 9., 12.).withName("y"));
+        vars.add(Nominal.empty(4, "ana", "are", "mere").withName("name"));
+        vars.add(Index.seq(1, 4).withName("index"));
         Frame df = SolidFrame.newWrapOf(vars);
 
         assertEquals(1., df.value(0, 0), 1e-10);
@@ -123,8 +123,8 @@ public class SolidFrameTest {
 
     @Test
     public void testBuilders() {
-        Var x = Numeric.newWrapOf(1, 2, 3, 4).withName("x");
-        Var y = Nominal.newCopyOf("a", "c", "b", "a").withName("y");
+        Var x = Numeric.wrap(1, 2, 3, 4).withName("x");
+        Var y = Nominal.copy("a", "c", "b", "a").withName("y");
 
         Frame df1 = SolidFrame.newWrapOf(x, y);
 
@@ -132,7 +132,7 @@ public class SolidFrameTest {
         assertEquals(4, df1.rowCount());
 
         try {
-            SolidFrame.newWrapOf(x, y.mapRows(Mapping.newRangeOf(0, 4)));
+            SolidFrame.newWrapOf(x, y.mapRows(Mapping.range(0, 4)));
             assertTrue("should raise an exception", false);
         } catch (IllegalArgumentException ignored) {
         }
@@ -162,8 +162,8 @@ public class SolidFrameTest {
         }
 
         df2 = SolidFrame.newWrapOf(y).bindVars(
-                SolidFrame.newWrapOf(Numeric.newWrapOf(1, 2).withName("x"))
-                        .bindRows(SolidFrame.newWrapOf(Numeric.newWrapOf(3, 4).withName("x")))
+                SolidFrame.newWrapOf(Numeric.wrap(1, 2).withName("x"))
+                        .bindRows(SolidFrame.newWrapOf(Numeric.wrap(3, 4).withName("x")))
         );
         assertEquals(2, df2.varCount());
         assertEquals(4, df2.rowCount());
@@ -174,8 +174,8 @@ public class SolidFrameTest {
 
         try {
             SolidFrame.newWrapOf(
-                    Numeric.newWrapOf(1, 2).withName("x"),
-                    BoundVar.newFrom(Numeric.newWrapOf(3, 4).withName("y"))
+                    Numeric.wrap(1, 2).withName("x"),
+                    BoundVar.newFrom(Numeric.wrap(3, 4).withName("y"))
             );
             assertTrue("should raise an exception", false);
         } catch (IllegalArgumentException ignored) {

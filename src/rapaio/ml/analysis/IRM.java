@@ -71,8 +71,8 @@ public class IRM {
         len = df.rowCount();
 
         Uniform uniform = new Uniform(0, 1);
-        x = Numeric.newFrom(len, uniform::sampleNext).withName("x");
-        y = Numeric.newFrom(len, uniform::sampleNext).withName("y");
+        x = Numeric.from(len, uniform::sampleNext).withName("x");
+        y = Numeric.from(len, uniform::sampleNext).withName("y");
 
         d = Linear.newRMFill(len, len, 0);
         for (int i = 0; i < len; i++) {

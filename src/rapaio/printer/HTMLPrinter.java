@@ -59,37 +59,37 @@ public class HTMLPrinter extends AbstractPrinter {
     }
 
     @Override
-    public int getTextWidth() {
+    public int textWidth() {
         return textWidth;
     }
 
     @Override
-    public void setTextWidth(int textWidth) {
+    public void withTextWidth(int textWidth) {
         this.textWidth = textWidth;
     }
 
     @Override
-    public int getGraphicWidth() {
+    public int graphicWidth() {
         return graphicWidth;
     }
 
     @Override
-    public void setGraphicWidth(int graphicWidth) {
+    public void withGraphicWidth(int graphicWidth) {
         this.graphicWidth = graphicWidth;
     }
 
     @Override
-    public int getGraphicHeight() {
+    public int graphicHeight() {
         return graphicHeight;
     }
 
     @Override
-    public void setGraphicHeight(int graphicHeight) {
+    public void withGraphicHeight(int graphicHeight) {
         this.graphicHeight = graphicHeight;
     }
 
     @Override
-    public void preparePrinter() {
+    public void openPrinter() {
         String header = Template.header;
         header = header.replace(Template.KEY_TITLE, title);
         header = header.replace(Template.BACKLINK, backLink);
@@ -154,7 +154,7 @@ public class HTMLPrinter extends AbstractPrinter {
     }
 
     @Override
-    public void heading(int h, String lines) {
+    public void head(int h, String lines) {
         writer.append("<h").append(String.valueOf(h)).append(">").append(lines).append("</h").append(String.valueOf(h)).append(">\n");
     }
 
@@ -166,11 +166,6 @@ public class HTMLPrinter extends AbstractPrinter {
     @Override
     public void p(String lines) {
         writer.append("<p>").append(lines).append("</p>");
-    }
-
-    @Override
-    public void eqn(String equation) {
-        writer.append("$$ ").append(equation).append(" $$");
     }
 }
 

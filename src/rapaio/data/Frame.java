@@ -23,13 +23,16 @@
 
 package rapaio.data;
 
-import rapaio.printer.Printable;
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
+import rapaio.printer.Printable;
 import rapaio.ws.Summary;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -198,7 +201,7 @@ public interface Frame extends Serializable, Printable {
      * @return new mapped frame with given rows
      */
     default Frame mapRows(int... rows) {
-        return mapRows(Mapping.newCopyOf(rows));
+        return mapRows(Mapping.copy(rows));
     }
 
     /**
@@ -213,7 +216,7 @@ public interface Frame extends Serializable, Printable {
      * Builds a new frame only with rows not specified in mapping.
      */
     default Frame removeRows(int... rows) {
-        return removeRows(Mapping.newCopyOf(rows));
+        return removeRows(Mapping.copy(rows));
     }
 
     /**
@@ -222,7 +225,7 @@ public interface Frame extends Serializable, Printable {
     default Frame removeRows(Mapping mapping) {
         Set<Integer> remove = mapping.rowStream().mapToObj(i -> i).collect(Collectors.toSet());
         List<Integer> map = IntStream.range(0, rowCount()).filter(row -> !remove.contains(row)).mapToObj(i -> i).collect(toList());
-        return mapRows(Mapping.newWrapOf(map));
+        return mapRows(Mapping.wrap(map));
     }
 
     /**

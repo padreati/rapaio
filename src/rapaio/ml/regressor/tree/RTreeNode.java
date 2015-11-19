@@ -153,7 +153,7 @@ public class RTreeNode implements Serializable {
 
         Mapping[] mapping = new Mapping[children.size()];
         for (int i = 0; i < children.size(); i++) {
-            mapping[i] = Mapping.newEmpty();
+            mapping[i] = Mapping.empty();
         }
         x.stream().forEach(spot -> {
             for (int i = 0; i < children.size(); i++) {

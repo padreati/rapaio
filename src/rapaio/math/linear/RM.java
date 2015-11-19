@@ -27,17 +27,18 @@ import rapaio.core.MathTools;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Numeric;
-import rapaio.sys.WS;
-import rapaio.printer.Printable;
 import rapaio.math.linear.impl.*;
+import rapaio.printer.Printable;
+import rapaio.sys.WS;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import static rapaio.sys.WS.formatFlex;
+import static rapaio.sys.WS.formatShort;
 
 /**
  * Real value matrix interface
@@ -193,16 +194,16 @@ public interface RM extends Serializable, Printable {
             throw new IllegalArgumentException(String.format("Matrices are not conform for multiplication ([n,m]x[m,p] = [%d,%d]=[%d,%d])",
                     rowCount(), colCount(), B.rowCount(), B.colCount()));
         }
+
         RM C = Linear.newRMEmpty(rowCount(), B.colCount());
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < B.colCount(); j++) {
-                double s = 0;
-                for (int k = 0; k < colCount(); k++) {
-                    s += get(i, k) * B.get(k, j);
+        IntStream.range(0, rowCount()).parallel().forEach(i -> {
+            for (int k = 0; k < colCount(); k++) {
+                for (int j = 0; j < B.colCount(); j++) {
+                    C.increment(i, j, get(i, k) * B.get(k, j));
                 }
-                C.set(i, j, s);
             }
-        }
+        });
+
         return C;
     }
 
@@ -329,7 +330,7 @@ public interface RM extends Serializable, Printable {
     }
 
     default Mean mean() {
-        Numeric values = Numeric.newEmpty();
+        Numeric values = Numeric.empty();
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 values.addValue(get(i, j));
@@ -339,7 +340,7 @@ public interface RM extends Serializable, Printable {
     }
 
     default Variance var() {
-        Numeric values = Numeric.newEmpty();
+        Numeric values = Numeric.empty();
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 values.addValue(get(i, j));
@@ -408,14 +409,14 @@ public interface RM extends Serializable, Printable {
         int max = 1;
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                m[i][j] = formatFlex(get(i, j));
+                m[i][j] = formatShort(get(i, j));
                 max = Math.max(max, m[i][j].length() + 1);
             }
         }
         max = Math.max(max, String.format("[,%d]", rowCount()).length());
         max = Math.max(max, String.format("[%d,]", colCount()).length());
 
-        int hCount = (int) Math.floor(WS.getPrinter().getTextWidth() / (double) max);
+        int hCount = (int) Math.floor(WS.getPrinter().textWidth() / (double) max);
         int vCount = Math.min(rowCount() + 1, 101);
         int hLast = 0;
         while (true) {

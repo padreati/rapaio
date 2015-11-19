@@ -35,22 +35,15 @@ import java.util.List;
  */
 public class TextTable implements Printable {
 
-    public static TextTable newEmpty(int rows, int cols) {
-        return new TextTable(rows, cols);
-    }
-
     private final int rows;
     private final int cols;
     private final String[][] values;
     private final int[][] mergeCols;
     private final int[][] alignCells;
-
     private int headerRows = 0;
     private int headerCols = 0;
-
     private int hSplitSize = -1;
     private int hMergeSize = -1;
-
     private TextTable(int rows, int cols) {
         this.rows = rows;
         this.cols = cols;
@@ -66,6 +59,10 @@ public class TextTable implements Printable {
         }
     }
 
+    public static TextTable newEmpty(int rows, int cols) {
+        return new TextTable(rows, cols);
+    }
+
     public int rows() {
         return rows;
     }
@@ -79,7 +76,7 @@ public class TextTable implements Printable {
     }
 
     public TextTable withSplit(int width) {
-        this.hSplitSize = (width == 0) ? WS.getPrinter().getTextWidth() : width;
+        this.hSplitSize = (width == 0) ? WS.getPrinter().textWidth() : width;
         return this;
     }
 
@@ -88,7 +85,7 @@ public class TextTable implements Printable {
     }
 
     public TextTable withMerge(int width) {
-        this.hMergeSize = width == 0 ? WS.getPrinter().getTextWidth() : width;
+        this.hMergeSize = width == 0 ? WS.getPrinter().textWidth() : width;
         return this;
     }
 

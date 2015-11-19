@@ -48,13 +48,30 @@ import java.util.stream.DoubleStream;
 public class DVector implements Printable, Serializable {
 
     private static final long serialVersionUID = -546802690694348698L;
-
-    private boolean useFirst;
-    private int start;
     private final String[] levels;
     private final Map<String, Integer> reverse = new HashMap<>();
     private final double[] values;
+    private boolean useFirst;
+    private int start;
     private double total;
+
+    private DVector(boolean useFirst, String[] labels) {
+        this.useFirst = useFirst;
+        this.start = useFirst ? 0 : 1;
+
+        this.levels = labels;
+        for (int i = 0; i < labels.length; i++) {
+            reverse.put(labels[i], i);
+        }
+        this.values = new double[this.levels.length];
+    }
+
+    private DVector(boolean useFirst, String[] labels, Var var, Var weights) {
+        this(useFirst, labels);
+        int off = var.type().equals(VarType.BINARY) ? 1 : 0;
+        var.stream().forEach(s -> values[s.index() + off] += weights.value(s.row()));
+        total = Arrays.stream(values).sum();
+    }
 
     /**
      * Builds a distribution vector with given levels
@@ -94,7 +111,7 @@ public class DVector implements Printable, Serializable {
      * @return new distribution vector filled with counts
      */
     public static DVector newFromCount(boolean useFirst, Var var) {
-        Var weights = Numeric.newFill(var.rowCount(), 1);
+        Var weights = Numeric.fill(var.rowCount(), 1);
         return new DVector(useFirst, var.levels(), var, weights);
     }
 
@@ -122,24 +139,6 @@ public class DVector implements Printable, Serializable {
      */
     public static DVector newFromWeights(boolean useFirst, Var var, Var weights, String... labels) {
         return new DVector(useFirst, labels, var, weights);
-    }
-
-    private DVector(boolean useFirst, String[] labels) {
-        this.useFirst = useFirst;
-        this.start = useFirst ? 0 : 1;
-
-        this.levels = labels;
-        for (int i = 0; i < labels.length; i++) {
-            reverse.put(labels[i], i);
-        }
-        this.values = new double[this.levels.length];
-    }
-
-    private DVector(boolean useFirst, String[] labels, Var var, Var weights) {
-        this(useFirst, labels);
-        int off = var.type().equals(VarType.BINARY) ? 1 : 0;
-        var.stream().forEach(s -> values[s.index() + off] += weights.value(s.row()));
-        total = Arrays.stream(values).sum();
     }
 
     public boolean first() {

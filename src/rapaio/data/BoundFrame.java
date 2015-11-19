@@ -36,6 +36,13 @@ public class BoundFrame extends AbstractFrame {
     private final String[] names;
     private final Map<String, Integer> indexes;
 
+    private BoundFrame(int rowCount, List<Var> vars, String[] names, Map<String, Integer> indexes) {
+        this.rowCount = rowCount;
+        this.vars = vars;
+        this.names = names;
+        this.indexes = indexes;
+    }
+
     /**
      * Builds a new bound frame by binding variables of multiple given frames.
      * All variable names must be unique among all the given frames.
@@ -72,6 +79,10 @@ public class BoundFrame extends AbstractFrame {
             }
         }
         return new BoundFrame(_rowCount, _vars, _names.toArray(new String[_names.size()]), _indexes);
+    }
+
+    public static BoundFrame newByVars(Collection<Var> varList) {
+        return newByVars(varList.stream().toArray(Var[]::new));
     }
 
     /**
@@ -162,13 +173,6 @@ public class BoundFrame extends AbstractFrame {
         int _rowCount = Arrays.stream(dfs).mapToInt(Frame::rowCount).sum();
 
         return new BoundFrame(_rowCount, _vars, _names, _indexes);
-    }
-
-    private BoundFrame(int rowCount, List<Var> vars, String[] names, Map<String, Integer> indexes) {
-        this.rowCount = rowCount;
-        this.vars = vars;
-        this.names = names;
-        this.indexes = indexes;
     }
 
     @Override

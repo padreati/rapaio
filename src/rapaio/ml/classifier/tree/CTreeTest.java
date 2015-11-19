@@ -34,7 +34,10 @@ import rapaio.sys.WS;
 import rapaio.util.Tag;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Impurity test implementation
@@ -43,11 +46,8 @@ import java.util.*;
  */
 public interface CTreeTest extends Serializable {
 
-    List<CTree.Candidate> computeCandidates(CTree c, Frame df, Var w, String testName, String targetName, CTreeFunction function, CTree.NominalTerms terms);
-
     Tag<CTreeTest> Ignore = Tag.valueOf("Ignore",
             (CTree c, Frame df, Var w, String testName, String targetName, CTreeFunction function, CTree.NominalTerms terms) -> new ArrayList<>());
-
     Tag<CTreeTest> Numeric_Binary = Tag.valueOf("Numeric_Binary",
             (CTree c, Frame df, Var weights, String testName, String targetName, CTreeFunction function, CTree.NominalTerms terms) -> {
                 Var test = df.var(testName);
@@ -61,7 +61,7 @@ public interface CTreeTest extends Serializable {
                     dt.update(row, target.index(i), weights.value(i));
                 }
 
-                Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.newSeq(df.rowCount()));
+                Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.seq(df.rowCount()));
 
                 CTree.Candidate best = null;
                 double bestScore = 0.0;
@@ -98,7 +98,6 @@ public interface CTreeTest extends Serializable {
                 }
                 return Collections.singletonList(best);
             });
-
     Tag<CTreeTest> Numeric_SkipHalf = Tag.valueOf("Numeric_SkipHalf",
             (CTree c, Frame df, Var weights, String testName, String targetName, CTreeFunction function, CTree.NominalTerms terms) -> {
 
@@ -115,7 +114,7 @@ public interface CTreeTest extends Serializable {
                     dt.update(row, target.index(i), weights.value(i));
                 }
 
-                Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.newSeq(df.rowCount()));
+                Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.seq(df.rowCount()));
 
                 double bestScore = 0.0;
                 int bestIndex = 0;
@@ -157,7 +156,6 @@ public interface CTreeTest extends Serializable {
                         spot -> !spot.missing(testName) && spot.value(testName) > testValue);
                 return Collections.singletonList(best);
             });
-
     Tag<CTreeTest> Binary_Binary = Tag.valueOf("Binary_Binary",
             (CTree c, Frame df, Var weights, String testName, String targetName, CTreeFunction function, CTree.NominalTerms terms) -> {
 
@@ -173,7 +171,6 @@ public interface CTreeTest extends Serializable {
                 best.addGroup(testName + " != 1", spot -> !spot.binary(testName));
                 return Collections.singletonList(best);
             });
-
     Tag<CTreeTest> Nominal_Full = Tag.valueOf("Nominal_Full",
             (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeFunction function, CTree.NominalTerms terms) -> {
                 Var test = df.var(testColName);
@@ -198,7 +195,6 @@ public interface CTreeTest extends Serializable {
                 result.add(candidate);
                 return result;
             });
-
     Tag<CTreeTest> Nominal_Binary = Tag.valueOf("Nominal_Binary",
             (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeFunction function, CTree.NominalTerms terms) -> {
 
@@ -243,4 +239,6 @@ public interface CTreeTest extends Serializable {
                     result.add(best);
                 return result;
             });
+
+    List<CTree.Candidate> computeCandidates(CTree c, Frame df, Var w, String testName, String targetName, CTreeFunction function, CTree.NominalTerms terms);
 }

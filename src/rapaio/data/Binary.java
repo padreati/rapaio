@@ -42,9 +42,17 @@ public final class Binary extends AbstractVar {
     private BitSet missing;
     private BitSet values;
 
-    @Override
-    public VarType type() {
-        return VarType.BINARY;
+    /**
+     * Private constructor to avoid instantiation from outside, other than statical builders.
+     */
+    private Binary(final int rows, final boolean fillMissing, final boolean fillValue) {
+        this.rows = rows;
+        this.missing = new BitSet(rows);
+        this.values = new BitSet(rows);
+        if (fillMissing)
+            this.missing.flip(0, rows);
+        else if (fillValue)
+            this.values.flip(0, rows);
     }
 
     /**
@@ -56,7 +64,7 @@ public final class Binary extends AbstractVar {
      *
      * @return new instance of binary var
      */
-    public static Binary newEmpty() {
+    public static Binary empty() {
         return new Binary(0, false, false);
     }
 
@@ -66,7 +74,7 @@ public final class Binary extends AbstractVar {
      * @param rows size of variable
      * @return new instance of binary var
      */
-    public static Binary newEmpty(int rows) {
+    public static Binary empty(int rows) {
         return new Binary(rows, true, false);
     }
 
@@ -87,7 +95,7 @@ public final class Binary extends AbstractVar {
      * @param values given array of values
      * @return new instance of binary var
      */
-    public static Binary newCopyOf(int... values) {
+    public static Binary copy(int... values) {
         final Binary b = new Binary(values.length, false, false);
         for (int i = 0; i < values.length; i++) {
             if (values[i] == 0) continue;
@@ -106,7 +114,7 @@ public final class Binary extends AbstractVar {
      * @param values source values
      * @return new instance of binary var
      */
-    public static Binary newCopyOf(boolean... values) {
+    public static Binary copy(boolean... values) {
         final Binary b = new Binary(values.length, false, false);
         for (int i = 0; i < values.length; i++) {
             if (values[i]) {
@@ -116,33 +124,25 @@ public final class Binary extends AbstractVar {
         return b;
     }
 
-    public static Binary newFromIndex(int rows, Function<Integer, Integer> supplier) {
+    public static Binary fromIndex(int rows, Function<Integer, Integer> supplier) {
         int[] data = new int[rows];
         for (int i = 0; i < data.length; i++) {
             data[i] = supplier.apply(i);
         }
-        return Binary.newCopyOf(data);
+        return Binary.copy(data);
     }
 
-    public static Binary newFromBool(int rows, Function<Integer, Boolean> supplier) {
+    public static Binary from(int rows, Function<Integer, Boolean> supplier) {
         boolean[] data = new boolean[rows];
         for (int i = 0; i < data.length; i++) {
             data[i] = supplier.apply(i);
         }
-        return Binary.newCopyOf(data);
+        return Binary.copy(data);
     }
 
-    /**
-     * Private constructor to avoid instantiation from outside, other than statical builders.
-     */
-    private Binary(final int rows, final boolean fillMissing, final boolean fillValue) {
-        this.rows = rows;
-        this.missing = new BitSet(rows);
-        this.values = new BitSet(rows);
-        if (fillMissing)
-            this.missing.flip(0, rows);
-        else if (fillValue)
-            this.values.flip(0, rows);
+    @Override
+    public VarType type() {
+        return VarType.BINARY;
     }
 
     @Override
@@ -405,7 +405,7 @@ public final class Binary extends AbstractVar {
 
     @Override
     public Binary solidCopy() {
-        Binary copy = Binary.newEmpty(rowCount()).withName(name());
+        Binary copy = Binary.empty(rowCount()).withName(name());
         for (int i = 0; i < rowCount(); i++) {
             if (!missing(i))
                 copy.setBinary(i, binary(i));
@@ -415,12 +415,12 @@ public final class Binary extends AbstractVar {
 
     @Override
     public Var newInstance() {
-        return Binary.newEmpty();
+        return Binary.empty();
     }
 
     @Override
     public Var newInstance(int rows) {
-        return Binary.newEmpty(rows);
+        return Binary.empty(rows);
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

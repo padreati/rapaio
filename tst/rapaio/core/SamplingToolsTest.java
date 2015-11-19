@@ -27,7 +27,7 @@ import org.junit.Test;
 import rapaio.core.tests.KSTest;
 import rapaio.data.Numeric;
 
-import static rapaio.core.CoreTools.*;
+import static rapaio.core.CoreTools.distDUnif;
 
 /**
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -85,8 +85,8 @@ public class SamplingToolsTest {
 		double[] freq = new double[10];
 		final int TRIALS = 100_000;
 		final int SAMPLES = 3;
-        Numeric v = Numeric.newEmpty();
-        for (int i = 0; i < TRIALS; i++) {
+		Numeric v = Numeric.empty();
+		for (int i = 0; i < TRIALS; i++) {
 			for (int next : SamplingTools.sampleWOR(10, SAMPLES)) {
 				freq[next]++;
                 v.addValue(next);

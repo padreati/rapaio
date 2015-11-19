@@ -37,24 +37,24 @@ import java.util.Arrays;
 public final class MathNumeric {
 
     public static Numeric sum(final Numeric num) {
-        return Numeric.newFill(1, num.stream().mapToDouble().sum());
+        return Numeric.fill(1, num.stream().mapToDouble().sum());
     }
 
     public static Numeric mean(final Numeric num) {
-        return Numeric.newFill(1, new Mean(num).value());
+        return Numeric.fill(1, new Mean(num).value());
     }
 
     public static Numeric sd(final Numeric num) {
-        return Numeric.newFill(1, StrictMath.sqrt(new Variance(num).value()));
+        return Numeric.fill(1, StrictMath.sqrt(new Variance(num).value()));
     }
 
     public static Numeric var(final Numeric num) {
-        return Numeric.newFill(1, new Variance(num).value());
+        return Numeric.fill(1, new Variance(num).value());
     }
 
     public static Numeric plus(final Numeric... nums) {
         int len = Arrays.stream(nums).mapToInt(Numeric::rowCount).min().getAsInt();
-        Numeric c = Numeric.newFill(len, 0);
+        Numeric c = Numeric.fill(len, 0);
         for (Numeric num : nums) {
             for (int j = 0; j < len; j++) {
                 c.setValue(j, c.value(j) + num.value(j));
@@ -64,7 +64,7 @@ public final class MathNumeric {
     }
 
     public static Numeric minus(final Numeric a, final Numeric b) {
-        Numeric c = Numeric.newEmpty();
+        Numeric c = Numeric.empty();
         for (int i = 0; i < StrictMath.max(a.rowCount(), b.rowCount()); i++) {
             c.addValue(a.value(i) - b.value(i));
         }
@@ -73,7 +73,7 @@ public final class MathNumeric {
 
     public static Numeric dot(final Numeric a, final Numeric b) {
         final int len = StrictMath.max(a.rowCount(), b.rowCount());
-        Numeric c = Numeric.newEmpty(len);
+        Numeric c = Numeric.empty(len);
         for (int i = 0; i < len; i++) {
             c.setValue(i, a.value(i % a.rowCount()) * b.value(i % b.rowCount()));
         }
@@ -86,14 +86,14 @@ public final class MathNumeric {
         for (int i = 0; i < len; i++) {
             sum += a.value(i % a.rowCount()) * b.value(i % b.rowCount());
         }
-        Numeric c = Numeric.newEmpty();
+        Numeric c = Numeric.empty();
         c.addValue(sum);
         return c;
     }
 
     public static Numeric div(final Numeric a, final Numeric b) {
         final int len = StrictMath.max(a.rowCount(), b.rowCount());
-        Numeric c = Numeric.newEmpty(len);
+        Numeric c = Numeric.empty(len);
         for (int i = 0; i < len; i++) {
             c.setValue(i, a.value(i % a.rowCount()) / b.value(i % b.rowCount()));
         }
@@ -101,7 +101,7 @@ public final class MathNumeric {
     }
 
     public static Numeric scale(final Numeric a) {
-        final Numeric v = Numeric.newEmpty(a.rowCount());
+        final Numeric v = Numeric.empty(a.rowCount());
         double mean = mean(a).value(0);
         double sd = sd(a).value(0);
         for (int i = 0; i < v.rowCount(); i++) {
@@ -111,7 +111,7 @@ public final class MathNumeric {
     }
 
     public static Numeric pow(final Var a, double pow) {
-        Numeric v = Numeric.newEmpty();
+        Numeric v = Numeric.empty();
         for (int i = 0; i < a.rowCount(); i++) {
             v.addValue(StrictMath.pow(a.value(i), pow));
         }
@@ -119,7 +119,7 @@ public final class MathNumeric {
     }
 
     public static Numeric ln(final Var a, double shift) {
-        Numeric v = Numeric.newEmpty();
+        Numeric v = Numeric.empty();
         for (int i = 0; i < a.rowCount(); i++) {
             v.addValue(StrictMath.log(a.value(i) + shift));
         }

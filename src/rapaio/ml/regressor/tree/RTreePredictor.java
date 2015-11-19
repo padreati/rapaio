@@ -37,10 +37,6 @@ import java.io.Serializable;
 @Deprecated
 public interface RTreePredictor extends Serializable {
 
-    String name();
-
-    Pair<Double, Double> predict(RTree tree, FSpot spot, RTreeNode root);
-
     RTreePredictor STANDARD = new RTreePredictor() {
 
         @Override
@@ -60,8 +56,8 @@ public interface RTreePredictor extends Serializable {
                 }
             }
 
-            Numeric values = Numeric.newEmpty();
-            Numeric weights = Numeric.newEmpty();
+            Numeric values = Numeric.empty();
+            Numeric weights = Numeric.empty();
             for (RTreeNode child : node.getChildren()) {
                 Pair<Double, Double> prediction = predict(tree, spot, child);
                 values.addValue(prediction._1);
@@ -70,4 +66,8 @@ public interface RTreePredictor extends Serializable {
             return new Pair<>(new WeightedMean(values, weights).value(), new Sum(weights).value());
         }
     };
+
+    String name();
+
+    Pair<Double, Double> predict(RTree tree, FSpot spot, RTreeNode root);
 }

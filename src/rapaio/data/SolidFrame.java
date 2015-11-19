@@ -39,12 +39,31 @@ import java.util.stream.Collectors;
 public class SolidFrame extends AbstractFrame {
 
     private static final long serialVersionUID = 4963238370571140813L;
-    private int rows;
     private final Var[] vars;
     private final HashMap<String, Integer> colIndex;
     private final String[] names;
+    private int rows;
 
     // public builders
+
+    private SolidFrame(int rows, List<Var> vars) {
+        for (Var var : vars) {
+            if (var instanceof MappedVar)
+                throw new IllegalArgumentException("Not allowed mapped vectors in solid frame");
+            if (var instanceof BoundVar)
+                throw new IllegalArgumentException("Not allowed bounded vectors in solid frame");
+        }
+        this.rows = rows;
+        this.vars = new Var[vars.size()];
+        this.colIndex = new HashMap<>();
+        this.names = new String[vars.size()];
+
+        for (int i = 0; i < vars.size(); i++) {
+            this.vars[i] = vars.get(i); //.copy();
+            this.colIndex.put(this.vars[i].name(), i);
+            this.names[i] = this.vars[i].name();
+        }
+    }
 
     public static SolidFrame newWrapOf(List<Var> vars) {
         int rows = vars.stream().mapToInt(Var::rowCount).min().orElse(0);
@@ -109,7 +128,7 @@ public class SolidFrame extends AbstractFrame {
      */
     public static Frame newMatrix(int rows, List<String> colNames) {
         List<Var> vars = new ArrayList<>();
-        colNames.stream().forEach(n -> vars.add(Numeric.newFill(rows, 0).withName(n)));
+        colNames.stream().forEach(n -> vars.add(Numeric.fill(rows, 0).withName(n)));
         return SolidFrame.newWrapOf(rows, vars);
     }
 
@@ -123,6 +142,8 @@ public class SolidFrame extends AbstractFrame {
         return df;
     }
 
+    // private constructor
+
     public static Frame newMatrix(RM rm, List<String> varNames) {
         Frame df = newMatrix(rm.rowCount(), varNames);
         for (int i = 0; i < rm.rowCount(); i++) {
@@ -131,27 +152,6 @@ public class SolidFrame extends AbstractFrame {
             }
         }
         return df;
-    }
-
-    // private constructor
-
-    private SolidFrame(int rows, List<Var> vars) {
-        for (Var var : vars) {
-            if (var instanceof MappedVar)
-                throw new IllegalArgumentException("Not allowed mapped vectors in solid frame");
-            if (var instanceof BoundVar)
-                throw new IllegalArgumentException("Not allowed bounded vectors in solid frame");
-        }
-        this.rows = rows;
-        this.vars = new Var[vars.size()];
-        this.colIndex = new HashMap<>();
-        this.names = new String[vars.size()];
-
-        for (int i = 0; i < vars.size(); i++) {
-            this.vars[i] = vars.get(i); //.copy();
-            this.colIndex.put(this.vars[i].name(), i);
-            this.names[i] = this.vars[i].name();
-        }
     }
 
     @Override

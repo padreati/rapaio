@@ -39,7 +39,7 @@ public class StampTest {
 
     @Test
     public void smokeTest() {
-        Var stamp = Stamp.newEmpty(1);
+        Var stamp = Stamp.empty(1);
         assertFalse(stamp.type().isNumeric());
         assertFalse(stamp.type().isNominal());
 
@@ -51,7 +51,7 @@ public class StampTest {
         }
 
         try {
-            Stamp.newEmpty(-1);
+            Stamp.empty(-1);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignored) {
         }
@@ -62,20 +62,20 @@ public class StampTest {
         assertEquals(1, stamp.stamp(1));
 
         try {
-            Stamp.newCopyOf(10).binary(0);
+            Stamp.copy(10).binary(0);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignored) {
         }
 
-        assertEquals("Stamp[1]", Stamp.newEmpty(1).toString());
+        assertEquals("Stamp[1]", Stamp.empty(1).toString());
     }
 
     @Test
     public void testEmptyStamp() {
-        Var stamp = Stamp.newEmpty();
+        Var stamp = Stamp.empty();
         assertEquals(0, stamp.rowCount());
 
-        stamp = Stamp.newEmpty(10);
+        stamp = Stamp.empty(10);
         for (int i = 0; i < 10; i++) {
             assertEquals(Stamp.MISSING_VALUE, stamp.stamp(i));
         }
@@ -83,7 +83,7 @@ public class StampTest {
 
     @Test
     public void testFillVector() {
-        Var stamp = Numeric.newFill(10, -1);
+        Var stamp = Numeric.fill(10, -1);
         assertEquals(10, stamp.rowCount());
         for (int i = 0; i < stamp.rowCount(); i++) {
             assertEquals(-1, stamp.stamp(i));
@@ -92,7 +92,7 @@ public class StampTest {
 
     @Test
     public void testSequenceVector() {
-        Var stamp = Stamp.newSeq(10000000000L, 10);
+        Var stamp = Stamp.seq(10000000000L, 10);
         assertEquals(10, stamp.rowCount());
         for (int i = 0; i < stamp.rowCount(); i++) {
             assertEquals(i + 10000000000L, stamp.stamp(i));
@@ -102,7 +102,7 @@ public class StampTest {
     @Test
     public void testSetterGetter() {
 
-        Var stamp = Stamp.newFill(3, 0);
+        Var stamp = Stamp.fill(3, 0);
 
         assertEquals(0, stamp.stamp(0));
         stamp.setIndex(0, 1);
@@ -136,7 +136,7 @@ public class StampTest {
 
     @Test
     public void testMissing() {
-        Var stamp = Stamp.newSeq(1, 10, 1);
+        Var stamp = Stamp.seq(1, 10, 1);
         for (int i = 0; i < stamp.rowCount(); i++) {
             assertTrue(!stamp.missing(i));
         }
@@ -151,24 +151,24 @@ public class StampTest {
 
     @Test
     public void testOneStamp() {
-        Var one = Stamp.newScalar(2);
+        Var one = Stamp.scalar(2);
         assertEquals(1, one.rowCount());
         assertEquals(2, one.stamp(0));
 
-        one = Stamp.newScalar(3);
+        one = Stamp.scalar(3);
         assertEquals(1, one.rowCount());
         assertEquals(3, one.stamp(0));
     }
 
     @Test
     public void testBuilders() {
-        Stamp x1 = Stamp.newCopyOf(1L, 2L, 3L, 4L);
+        Stamp x1 = Stamp.copy(1L, 2L, 3L, 4L);
         long[] wrap = new long[]{1, 2, 3, 4};
-        Stamp x2 = Stamp.newWrapOf(wrap);
-        Stamp x3 = Stamp.newSeq(4);
-        Stamp x4 = Stamp.newSeq(1, 4);
-        Stamp x5 = Stamp.newSeq(1, 4, 2);
-        Stamp x6 = Stamp.newEmpty();
+        Stamp x2 = Stamp.wrap(wrap);
+        Stamp x3 = Stamp.seq(4);
+        Stamp x4 = Stamp.seq(1, 4);
+        Stamp x5 = Stamp.seq(1, 4, 2);
+        Stamp x6 = Stamp.empty();
         x6.addStamp(1);
         x6.addStamp(2);
         x6.addStamp(3);
@@ -190,13 +190,13 @@ public class StampTest {
 
     @Test
     public void testLabel() {
-        Stamp x = Stamp.newCopyOf(1, 2, 3);
+        Stamp x = Stamp.copy(1, 2, 3);
         assertEquals("1", x.label(0));
     }
 
     @Test
     public void testAddLabel() {
-        Stamp x = Stamp.newCopyOf(1, 2, 3);
+        Stamp x = Stamp.copy(1, 2, 3);
         x.addLabel("10");
         assertEquals(4, x.rowCount());
         assertEquals("1", x.label(0));
@@ -205,7 +205,7 @@ public class StampTest {
 
     @Test
     public void testSetLabel() {
-        Stamp x = Stamp.newCopyOf(1, 2, 3);
+        Stamp x = Stamp.copy(1, 2, 3);
         x.setLabel(0, "10");
         assertEquals(3, x.rowCount());
         assertEquals("10", x.label(0));
@@ -213,14 +213,14 @@ public class StampTest {
 
     @Test
     public void testSetDictionary() {
-        Stamp x = Stamp.newCopyOf(1, 2, 3);
+        Stamp x = Stamp.copy(1, 2, 3);
         expected.expect(IllegalArgumentException.class);
         x.setLevels(new String[]{"x"});
     }
 
     @Test
     public void testBinary() {
-        Stamp x = Stamp.newEmpty();
+        Stamp x = Stamp.empty();
         x.addBinary(true);
         x.addBinary(false);
         x.addMissing();
@@ -237,7 +237,7 @@ public class StampTest {
 
     @Test
     public void testStamp() {
-        Stamp x = Stamp.newEmpty();
+        Stamp x = Stamp.empty();
         x.addStamp(0);
         x.addMissing();
         x.setStamp(1, 100);
@@ -249,7 +249,7 @@ public class StampTest {
     @Test
     public void testRemoveClear() {
 
-        Stamp x = Stamp.newCopyOf(1, 3, 6, 7, 9);
+        Stamp x = Stamp.copy(1, 3, 6, 7, 9);
         x.remove(0);
 
         assertEquals(4, x.rowCount());
@@ -267,8 +267,8 @@ public class StampTest {
     @Test
     public void testSolidCopy() {
 
-        Stamp x1 = Stamp.newCopyOf(1, 2, 3, 4, 5);
-        Var x2 = MappedVar.newByRows(x1, 0, 1, 2);
+        Stamp x1 = Stamp.copy(1, 2, 3, 4, 5);
+        Var x2 = MappedVar.byRows(x1, 0, 1, 2);
         Var x3 = x2.solidCopy();
         Var x4 = x3.solidCopy();
         x4.addValue(8);

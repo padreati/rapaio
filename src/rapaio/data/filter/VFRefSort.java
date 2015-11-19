@@ -60,6 +60,6 @@ public class VFRefSort extends VFAbstract {
             rows.add(i);
         }
         Collections.sort(rows, aggregateComparator);
-        return vars[0].mapRows(Mapping.newWrapOf(rows));
+        return vars[0].mapRows(Mapping.wrap(rows));
     }
 }

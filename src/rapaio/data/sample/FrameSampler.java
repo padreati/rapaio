@@ -60,7 +60,7 @@ public interface FrameSampler extends Serializable {
 
         @Override
         public FrameSample newSample(Frame df, Var weights) {
-            return new FrameSample(df, weights, Mapping.newRangeOf(0, df.rowCount()));
+            return new FrameSample(df, weights, Mapping.range(0, df.rowCount()));
         }
 
         @Override
@@ -85,7 +85,7 @@ public interface FrameSampler extends Serializable {
 
         @Override
         public FrameSample newSample(Frame df, Var weights) {
-            Mapping map = Mapping.newCopyOf(SamplingTools.sampleWR(df.rowCount(), (int) (percent * df.rowCount())));
+            Mapping map = Mapping.copy(SamplingTools.sampleWR(df.rowCount(), (int) (percent * df.rowCount())));
             return new FrameSample(df.mapRows(map), weights.mapRows(map), map);
         }
 
@@ -111,7 +111,7 @@ public interface FrameSampler extends Serializable {
 
         @Override
         public FrameSample newSample(Frame df, Var weights) {
-            Mapping map = Mapping.newCopyOf(SamplingTools.sampleWOR(df.rowCount(), (int) (percent * df.rowCount())));
+            Mapping map = Mapping.copy(SamplingTools.sampleWOR(df.rowCount(), (int) (percent * df.rowCount())));
             return new FrameSample(df.mapRows(map), weights.mapRows(map), map);
         }
 

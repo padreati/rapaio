@@ -53,8 +53,8 @@ public class CEvaluation {
         double correct = 0;
 
         for (int i = 0; i < folds; i++) {
-            Mapping trainMapping = Mapping.newEmpty();
-            Mapping testMapping = Mapping.newEmpty();
+            Mapping trainMapping = Mapping.empty();
+            Mapping testMapping = Mapping.empty();
             for (int j = 0; j < folds; j++) {
                 if (j == i) {
                     testMapping.addAll(strata.get(j));
@@ -113,8 +113,8 @@ public class CEvaluation {
         double[] tacc = new double[classifiers.size()];
 
         for (int i = 0; i < folds; i++) {
-            Mapping trainMapping = Mapping.newEmpty();
-            Mapping testMapping = Mapping.newEmpty();
+            Mapping trainMapping = Mapping.empty();
+            Mapping testMapping = Mapping.empty();
             if (folds >= df.rowCount() - 1) {
                 testMapping.add(i);
                 for (int j = 0; j < df.rowCount(); j++) {
@@ -156,7 +156,7 @@ public class CEvaluation {
     }
 
     public static void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps) {
-        Var weights = Numeric.newFill(df.rowCount(), 1.0);
+        Var weights = Numeric.fill(df.rowCount(), 1.0);
         bootstrapValidation(df, weights, classColName, c, bootstraps, 1.0);
     }
 
@@ -165,7 +165,7 @@ public class CEvaluation {
     }
 
     public static void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps, double p) {
-        Var weights = Numeric.newFill(df.rowCount(), 1.0d);
+        Var weights = Numeric.fill(df.rowCount(), 1.0d);
         bootstrapValidation(df, weights, classColName, c, bootstraps, p);
     }
 

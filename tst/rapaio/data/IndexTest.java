@@ -39,7 +39,7 @@ public class IndexTest {
 
     @Test
     public void smokeTest() {
-        Var index = Index.newEmpty(1);
+        Var index = Index.empty(1);
         assertTrue(index.type().isNumeric());
         assertFalse(index.type().isNominal());
 
@@ -53,20 +53,20 @@ public class IndexTest {
         }
 
         try {
-            Index.newEmpty(-1);
+            Index.empty(-1);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignored) {
         }
 
-        assertEquals("Index[name:?, rowCount:1]", Index.newEmpty(1).toString());
+        assertEquals("Index[name:?, rowCount:1]", Index.empty(1).toString());
     }
 
     @Test
     public void testEmptyIndex() {
-        Var index = Index.newEmpty();
+        Var index = Index.empty();
         assertEquals(0, index.rowCount());
 
-        index = Index.newEmpty(10);
+        index = Index.empty(10);
         for (int i = 0; i < 10; i++) {
             assertEquals(0, index.index(i));
         }
@@ -74,7 +74,7 @@ public class IndexTest {
 
     @Test
     public void testFillVector() {
-        Var index = Index.newFill(10, -1);
+        Var index = Index.fill(10, -1);
         assertEquals(10, index.rowCount());
         for (int i = 0; i < index.rowCount(); i++) {
             assertEquals(-1, index.index(i));
@@ -83,7 +83,7 @@ public class IndexTest {
 
     @Test
     public void testSequenceVector() {
-        Var index = Index.newSeq(1, 10);
+        Var index = Index.seq(1, 10);
         assertEquals(10, index.rowCount());
         for (int i = 0; i < index.rowCount(); i++) {
             assertEquals(i + 1, index.index(i));
@@ -93,7 +93,7 @@ public class IndexTest {
     @Test
     public void testSetterGetter() {
 
-        Var index = Index.newFill(3, 0);
+        Var index = Index.fill(3, 0);
 
         assertEquals(0, index.index(0));
         index.setIndex(0, 1);
@@ -127,7 +127,7 @@ public class IndexTest {
 
     @Test
     public void testMissing() {
-        Var index = Index.newSeq(1, 10, 1);
+        Var index = Index.seq(1, 10, 1);
         for (int i = 0; i < index.rowCount(); i++) {
             assertTrue(!index.missing(i));
         }
@@ -142,24 +142,24 @@ public class IndexTest {
 
     @Test
     public void testOneIndex() {
-        Var one = Index.newScalar(2);
+        Var one = Index.scalar(2);
         assertEquals(1, one.rowCount());
         assertEquals(2, one.index(0));
 
-        one = Index.newScalar(3);
+        one = Index.scalar(3);
         assertEquals(1, one.rowCount());
         assertEquals(3, one.index(0));
     }
 
     @Test
     public void testBuilders() {
-        Index x1 = Index.newCopyOf(1, 2, 3, 4);
+        Index x1 = Index.copy(1, 2, 3, 4);
         int[] wrap = new int[]{1, 2, 3, 4};
-        Index x2 = Index.newWrapOf(wrap);
-        Index x3 = Index.newSeq(4);
-        Index x4 = Index.newSeq(1, 4);
-        Index x5 = Index.newSeq(1, 4, 2);
-        Index x6 = Index.newEmpty();
+        Index x2 = Index.wrap(wrap);
+        Index x3 = Index.seq(4);
+        Index x4 = Index.seq(1, 4);
+        Index x5 = Index.seq(1, 4, 2);
+        Index x6 = Index.empty();
         x6.addIndex(1);
         x6.addIndex(2);
         x6.addIndex(3);
@@ -181,13 +181,13 @@ public class IndexTest {
 
     @Test
     public void testLabel() {
-        Index x = Index.newCopyOf(1, 2, 3);
+        Index x = Index.copy(1, 2, 3);
         assertEquals("1", x.label(0));
     }
 
     @Test
     public void testAddLabel() {
-        Index x = Index.newCopyOf(1, 2, 3);
+        Index x = Index.copy(1, 2, 3);
         x.addLabel("10");
         assertEquals(4, x.rowCount());
         assertEquals("10", x.label(3));
@@ -195,7 +195,7 @@ public class IndexTest {
 
     @Test
     public void testSetLabel() {
-        Index x = Index.newCopyOf(1, 2, 3);
+        Index x = Index.copy(1, 2, 3);
         x.setLabel(0, "10");
         assertEquals(3, x.rowCount());
         assertEquals("10", x.label(0));
@@ -203,14 +203,14 @@ public class IndexTest {
 
     @Test
     public void testSetDictionary() {
-        Index x = Index.newCopyOf(1, 2, 3);
+        Index x = Index.copy(1, 2, 3);
         expected.expect(IllegalArgumentException.class);
         x.setLevels(new String[]{"x"});
     }
 
     @Test
     public void testBinary() {
-        Index x = Index.newEmpty();
+        Index x = Index.empty();
         x.addBinary(true);
         x.addBinary(false);
         x.addMissing();
@@ -227,7 +227,7 @@ public class IndexTest {
 
     @Test
     public void testStamp() {
-        Index x = Index.newEmpty();
+        Index x = Index.empty();
         x.addStamp(0);
         x.addMissing();
         x.setStamp(1, 100);
@@ -239,7 +239,7 @@ public class IndexTest {
     @Test
     public void testRemoveClear() {
 
-        Index x = Index.newCopyOf(1, 3, 6, 7, 9);
+        Index x = Index.copy(1, 3, 6, 7, 9);
         x.remove(0);
 
         assertEquals(4, x.rowCount());
@@ -257,8 +257,8 @@ public class IndexTest {
     @Test
     public void testSolidCopy() {
 
-        Index x1 = Index.newCopyOf(1, 2, 3, 4, 5);
-        Var x2 = MappedVar.newByRows(x1, 0, 1, 2);
+        Index x1 = Index.copy(1, 2, 3, 4, 5);
+        Var x2 = MappedVar.byRows(x1, 0, 1, 2);
         Var x3 = x2.solidCopy();
         Var x4 = x3.solidCopy();
         x4.addValue(8);

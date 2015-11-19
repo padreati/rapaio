@@ -30,8 +30,8 @@ import rapaio.printer.Printable;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
-import static rapaio.sys.WS.formatFlex;
 import static rapaio.core.CoreTools.mean;
+import static rapaio.sys.WS.formatFlex;
 
 /**
  * Compute covariance of two variables
@@ -54,7 +54,7 @@ public class Covariance implements Printable {
 
     private double compute(final Var x, final Var y) {
 
-        Mapping map = Mapping.newWrapOf(IntStream.range(0, Math.min(x.rowCount(), y.rowCount())).filter(row -> !x.missing(row) && !y.missing(row)).boxed().collect(toList()));
+        Mapping map = Mapping.wrap(IntStream.range(0, Math.min(x.rowCount(), y.rowCount())).filter(row -> !x.missing(row) && !y.missing(row)).boxed().collect(toList()));
         completeCount = map.size();
         missingCount = Math.max(x.rowCount(), y.rowCount()) - completeCount;
 

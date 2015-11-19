@@ -48,32 +48,16 @@ public class MappedFrame extends AbstractFrame {
     private final HashMap<String, Integer> colIndex;
     private final Var[] vars;
 
-    public static MappedFrame newByRow(Frame df, int... mapping) {
-        return new MappedFrame(df, Mapping.newCopyOf(mapping));
-    }
-
-    public static MappedFrame newByRow(Frame df, Mapping mapping) {
-        return new MappedFrame(df, mapping);
-    }
-
-    public static MappedFrame newByRow(Frame df, Mapping mapping, String varRange) {
-        return MappedFrame.newByRow(df, mapping, new VarRange(varRange));
-    }
-
-    public static MappedFrame newByRow(Frame df, Mapping mapping, VarRange varRange) {
-        return new MappedFrame(df, mapping, varRange.parseVarNames(df));
-    }
-
     private MappedFrame(Frame df, Mapping mapping) {
         this(df, mapping, Arrays.asList(df.varNames()));
     }
 
     private MappedFrame(Frame df, Mapping mapping, List<String> columns) {
-        if (mapping == null) mapping = Mapping.newCopyOf();
+        if (mapping == null) mapping = Mapping.copy();
         if (df instanceof MappedFrame) {
             MappedFrame mappedFrame = (MappedFrame) df;
             this.source = mappedFrame.sourceFrame();
-            this.mapping = Mapping.newWrapOf(mapping.rowStream()
+            this.mapping = Mapping.wrap(mapping.rowStream()
                     .map(row -> mappedFrame.mapping().get(row))
                     .mapToObj(row -> row).collect(Collectors.toList()));
         } else {
@@ -88,8 +72,24 @@ public class MappedFrame extends AbstractFrame {
         this.vars = new Var[names.length];
         IntStream.range(0, names.length).forEach(i -> {
             colIndex.put(names[i], i);
-            vars[i] = MappedVar.newByRows(this.source.var(names[i]), this.mapping).withName(names[i]);
+            vars[i] = MappedVar.byRows(this.source.var(names[i]), this.mapping).withName(names[i]);
         });
+    }
+
+    public static MappedFrame newByRow(Frame df, int... mapping) {
+        return new MappedFrame(df, Mapping.copy(mapping));
+    }
+
+    public static MappedFrame newByRow(Frame df, Mapping mapping) {
+        return new MappedFrame(df, mapping);
+    }
+
+    public static MappedFrame newByRow(Frame df, Mapping mapping, String varRange) {
+        return MappedFrame.newByRow(df, mapping, new VarRange(varRange));
+    }
+
+    public static MappedFrame newByRow(Frame df, Mapping mapping, VarRange varRange) {
+        return new MappedFrame(df, mapping, varRange.parseVarNames(df));
     }
 
     @Override
@@ -145,7 +145,7 @@ public class MappedFrame extends AbstractFrame {
 
     @Override
     public Frame mapVars(VarRange range) {
-        return MappedFrame.newByRow(this, Mapping.newRangeOf(0, this.rowCount()), range);
+        return MappedFrame.newByRow(this, Mapping.range(0, this.rowCount()), range);
     }
 
     @Override

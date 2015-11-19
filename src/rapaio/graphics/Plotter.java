@@ -25,22 +25,22 @@ package rapaio.graphics;
 
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.empirical.KFunc;
-import rapaio.data.*;
 import rapaio.data.Frame;
-import rapaio.data.stream.VSpot;
+import rapaio.data.Index;
+import rapaio.data.Numeric;
+import rapaio.data.Var;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOpt;
-import rapaio.graphics.plot.*;
+import rapaio.graphics.plot.BarChart;
+import rapaio.graphics.plot.BoxPlot;
+import rapaio.graphics.plot.Plot;
+import rapaio.graphics.plot.QQPlot;
 import rapaio.graphics.plot.plotcomp.*;
 import rapaio.ml.eval.ROC;
 
 import java.awt.*;
-import java.util.*;
+import java.util.Arrays;
 import java.util.function.Function;
-
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toList;
 
 public final class Plotter {
 
@@ -113,7 +113,7 @@ public final class Plotter {
     }
 
     public static Plot points(Var x, GOpt... opts) {
-        return plot().add(new Points(Index.newSeq(x.rowCount()), x, opts));
+        return plot().add(new Points(Index.seq(x.rowCount()), x, opts));
     }
 
     public static Plot rocCurve(ROC roc, GOpt... opts) {
@@ -167,7 +167,7 @@ public final class Plotter {
     }
 
     public static GOpt sz(double size) {
-        return opt -> opt.setSz(gOpts -> Numeric.newScalar(size));
+        return opt -> opt.setSz(gOpts -> Numeric.scalar(size));
     }
 
     public static GOpt pch(Var pchIndex) {
@@ -175,7 +175,7 @@ public final class Plotter {
     }
 
     public static GOpt pch(int pch) {
-        return opt -> opt.setPch(gOpts -> Index.newScalar(pch));
+        return opt -> opt.setPch(gOpts -> Index.scalar(pch));
     }
 
     public static GOpt alpha(float alpha) {

@@ -29,7 +29,10 @@ import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Provides filter for frames.
@@ -77,7 +80,7 @@ public final class ExperimentalTools implements Serializable {
                 if (!v.type().isNominal()) {
                     vars[i] = v;
                 } else {
-                    vars[i] = Nominal.newEmpty(v.rowCount(), dicts.get(colName)).withName(colName);
+                    vars[i] = Nominal.empty(v.rowCount(), dicts.get(colName)).withName(colName);
                     for (int k = 0; k < vars[i].rowCount(); k++) {
                         vars[i].setLabel(k, v.label(k));
                     }

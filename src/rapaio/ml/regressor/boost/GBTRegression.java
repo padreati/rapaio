@@ -154,7 +154,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
         RFit initPred = initRegression.fit(df, false);
         trees = new ArrayList<>();
 
-        fitLearn = Numeric.newFill(df.rowCount());
+        fitLearn = Numeric.fill(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
             fitLearn.setValue(i, initPred.firstFit().value(i));
         }
@@ -171,7 +171,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
             Frame xLearn = x;
             Mapping bootstrapMapping = null;
             if (useBootstrap) {
-                bootstrapMapping = Mapping.newEmpty();
+                bootstrapMapping = Mapping.empty();
                 int[] sample = SamplingTools.sampleWOR(xmLearn.rowCount(), (int) (bootstrapSize * xmLearn.rowCount()));
                 for (int aSample : sample) {
                     bootstrapMapping.add(aSample);
@@ -191,8 +191,8 @@ public class GBTRegression extends AbstractRegression implements Printable {
             } else {
                 tree.boostFit(
                         xLearn,
-                        MappedVar.newByRows(y, bootstrapMapping),
-                        MappedVar.newByRows(fitLearn, bootstrapMapping),
+                        MappedVar.byRows(y, bootstrapMapping),
+                        MappedVar.byRows(fitLearn, bootstrapMapping),
                         lossFunction);
             }
 
@@ -208,7 +208,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
             trees.add(tree);
         }
 
-        fitValues = Numeric.newEmpty();
+        fitValues = Numeric.empty();
         for (int i = 0; i < fitLearn.rowCount(); i++) {
             fitValues.addValue(fitLearn.value(i));
         }

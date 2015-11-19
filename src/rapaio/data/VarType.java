@@ -72,12 +72,12 @@ public enum VarType {
 
         @Override
         public Var newInstance() {
-            return Binary.newEmpty();
+            return Binary.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Binary.newEmpty(rows);
+            return Binary.empty(rows);
         }
     },
     /**
@@ -96,12 +96,12 @@ public enum VarType {
 
         @Override
         public Var newInstance() {
-            return Index.newEmpty();
+            return Index.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Index.newEmpty(rows);
+            return Index.empty(rows);
         }
     },
     /**
@@ -121,12 +121,12 @@ public enum VarType {
 
         @Override
         public Var newInstance() {
-            return Nominal.newEmpty();
+            return Nominal.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Nominal.newEmpty(rows);
+            return Nominal.empty(rows);
         }
     },
     /**
@@ -145,12 +145,12 @@ public enum VarType {
 
         @Override
         public Var newInstance() {
-            return Numeric.newEmpty();
+            return Numeric.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Numeric.newEmpty(rows);
+            return Numeric.empty(rows);
         }
     },
     /**
@@ -171,12 +171,12 @@ public enum VarType {
 
         @Override
         public Var newInstance() {
-            return Ordinal.newEmpty();
+            return Ordinal.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Ordinal.newEmpty(rows);
+            return Ordinal.empty(rows);
         }
     },
     /**
@@ -195,12 +195,12 @@ public enum VarType {
 
         @Override
         public Var newInstance() {
-            return Stamp.newEmpty();
+            return Stamp.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Stamp.newEmpty(rows);
+            return Stamp.empty(rows);
         }
     },
     /**
@@ -214,12 +214,12 @@ public enum VarType {
 
         @Override
         public Var newInstance() {
-            return Text.newEmpty();
+            return Text.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Text.newEmpty(rows);
+            return Text.empty(rows);
         }
 
         @Override

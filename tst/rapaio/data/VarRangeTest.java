@@ -38,10 +38,10 @@ public class VarRangeTest {
     @Test
     public void testSmoke() {
         Frame df = SolidFrame.newWrapOf(
-                Numeric.newEmpty().withName("a"),
-                Numeric.newEmpty().withName("b"),
-                Numeric.newEmpty().withName("c"),
-                Numeric.newEmpty().withName("d")
+                Numeric.empty().withName("a"),
+                Numeric.empty().withName("b"),
+                Numeric.empty().withName("c"),
+                Numeric.empty().withName("d")
         );
 
         List<Integer> indexes = new VarRange(0, 2).parseVarIndexes(df);

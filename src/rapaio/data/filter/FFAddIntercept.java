@@ -23,7 +23,10 @@
 
 package rapaio.data.filter;
 
-import rapaio.data.*;
+import rapaio.data.BoundFrame;
+import rapaio.data.Frame;
+import rapaio.data.Numeric;
+import rapaio.data.Var;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,7 +61,7 @@ public class FFAddIntercept extends FFAbstract {
             return df;
         }
         List<Var> vars = new ArrayList<>();
-        vars.add(Numeric.newFill(df.rowCount(), 1.0).withName(INTERCEPT));
+        vars.add(Numeric.fill(df.rowCount(), 1.0).withName(INTERCEPT));
         Arrays.stream(df.varNames()).forEach(varName -> vars.add(df.var(varName)));
         return BoundFrame.newByVars(vars.toArray(new Var[vars.size()]));
     }

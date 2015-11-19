@@ -26,8 +26,8 @@ package rapaio.ml.analysis;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.graphics.plot.GridLayer;
+import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.eval.CEvaluation;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
@@ -36,9 +36,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.logging.Logger;
 
-import static rapaio.graphics.Plotter.color;
-import static rapaio.graphics.Plotter.pch;
-import static rapaio.graphics.Plotter.points;
+import static rapaio.graphics.Plotter.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/6/15.
@@ -59,7 +57,7 @@ public class LDATest {
         lda.printSummary();
 
 
-        Frame fit = lda.fit(df.removeVars("class"), 4).bindVars(df.var("class"));
+        Frame fit = lda.fit(df.removeVars("class"), (rv, rm) -> 4).bindVars(df.var("class"));
 
         WS.setPrinter(new IdeaPrinter());
 

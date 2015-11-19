@@ -39,10 +39,6 @@ import java.util.stream.Collectors;
 @Deprecated
 public interface RTreeSplitter extends Serializable {
 
-    String name();
-
-    Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTreeCandidate candidate);
-
     RTreeSplitter REMAINS_IGNORED = new RTreeSplitter() {
         @Override
         public String name() {
@@ -54,8 +50,8 @@ public interface RTreeSplitter extends Serializable {
             List<Mapping> mappings = new ArrayList<>();
             List<Var> weightsList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                mappings.add(Mapping.newEmpty());
-                weightsList.add(Numeric.newEmpty());
+                mappings.add(Mapping.empty());
+                weightsList.add(Numeric.empty());
             }
 
             df.stream().forEach(s -> {
@@ -73,7 +69,6 @@ public interface RTreeSplitter extends Serializable {
             return new Pair<>(frames, weightsList);
         }
     };
-
     RTreeSplitter REMAINS_TO_MAJORITY = new RTreeSplitter() {
 
         @Override
@@ -86,8 +81,8 @@ public interface RTreeSplitter extends Serializable {
             List<Mapping> mappings = new ArrayList<>();
             List<Var> weightsList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                mappings.add(Mapping.newEmpty());
-                weightsList.add(Numeric.newEmpty());
+                mappings.add(Mapping.empty());
+                weightsList.add(Numeric.empty());
             }
 
             List<FSpot> missingSpots = new LinkedList<>();
@@ -121,7 +116,6 @@ public interface RTreeSplitter extends Serializable {
             return new Pair<>(frames, weightsList);
         }
     };
-
     RTreeSplitter REMAINS_TO_ALL_WEIGHTED = new RTreeSplitter() {
 
         @Override
@@ -134,8 +128,8 @@ public interface RTreeSplitter extends Serializable {
             List<Mapping> mappings = new ArrayList<>();
             List<Var> weightsList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                mappings.add(Mapping.newEmpty());
-                weightsList.add(Numeric.newEmpty());
+                mappings.add(Mapping.empty());
+                weightsList.add(Numeric.empty());
             }
 
             final Set<Integer> missingSpots = new HashSet<>();
@@ -173,7 +167,6 @@ public interface RTreeSplitter extends Serializable {
             return new Pair<>(frames, weightsList);
         }
     };
-
     RTreeSplitter REMAINS_TO_RANDOM = new RTreeSplitter() {
         @Override
         public String name() {
@@ -184,7 +177,7 @@ public interface RTreeSplitter extends Serializable {
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTreeCandidate candidate) {
             List<Mapping> mappings = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                mappings.add(Mapping.newEmpty());
+                mappings.add(Mapping.empty());
             }
 
             final Set<Integer> missingSpots = new HashSet<>();
@@ -206,4 +199,8 @@ public interface RTreeSplitter extends Serializable {
             return new Pair<>(frameList, weightList);
         }
     };
+
+    String name();
+
+    Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTreeCandidate candidate);
 }

@@ -66,7 +66,7 @@ public class FFAbstractOneHotEncoding extends FFAbstract {
                 String[] dict = df.var(varName).levels();
                 List<Var> oneHotVars = new ArrayList<>();
                 for (int i = 1; i < dict.length; i++) {
-                    oneHotVars.add(Numeric.newFill(df.rowCount()).withName(varName + "." + dict[i]));
+                    oneHotVars.add(Numeric.fill(df.rowCount()).withName(varName + "." + dict[i]));
                 }
                 for (int i = 0; i < df.rowCount(); i++) {
                     int index = df.index(i, varName);

@@ -32,16 +32,16 @@ import rapaio.experiment.grid.MeshGrid1D;
 import rapaio.graphics.Plotter;
 import rapaio.graphics.opt.ColorGradient;
 import rapaio.graphics.plot.Plot;
-import rapaio.graphics.plot.plotcomp.Points;
 import rapaio.graphics.plot.plotcomp.MeshContour;
+import rapaio.graphics.plot.plotcomp.Points;
 import rapaio.printer.IdeaPrinter;
 
 import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 
+import static rapaio.graphics.Plotter.lwd;
 import static rapaio.sys.WS.draw;
 import static rapaio.sys.WS.setPrinter;
-import static rapaio.graphics.Plotter.lwd;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
@@ -54,8 +54,8 @@ public class ContourSample {
         setPrinter(new IdeaPrinter(true));
 
         Frame xy = SolidFrame.newWrapOf(
-                Numeric.newWrapOf(3, -1, -2).withName("x"),
-                Numeric.newWrapOf(3, -1, 6).withName("y")
+                Numeric.wrap(3, -1, -2).withName("x"),
+                Numeric.wrap(3, -1, 6).withName("y")
         );
         xy.printSummary();
         Normal d = new Normal(0, 2);
@@ -65,14 +65,14 @@ public class ContourSample {
                         row -> d.pdf(Math.sqrt(Math.pow(x - xy.value(row, "x"), 2) + Math.pow(y - xy.value(row, "y"), 2)))
                 ).sum();
 
-        Numeric x = Numeric.newSeq(-3, 10, 0.05);
-        Numeric y = Numeric.newSeq(-3, 10, 0.05);
+        Numeric x = Numeric.seq(-3, 10, 0.05);
+        Numeric y = Numeric.seq(-3, 10, 0.05);
 
         MeshGrid1D mg = new MeshGrid1D(x, y);
         mg.fillWithFunction(bi);
 
         Plot p = new Plot();
-        Var q = Numeric.newSeq(0, 1, 0.05);
+        Var q = Numeric.seq(0, 1, 0.05);
         double[] qq = mg.quantiles(q.stream().mapToDouble().toArray());
         qq[qq.length - 1] = 1;
 //        ColorGradient gradient = ColorGradient.newBiColorGradient(

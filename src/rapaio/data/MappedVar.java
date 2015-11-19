@@ -39,8 +39,20 @@ import java.util.stream.Collectors;
  */
 public class MappedVar extends AbstractVar {
 
+    private static final long serialVersionUID = -2293127457462742840L;
     private final Var source;
     private final Mapping mapping;
+
+    private MappedVar(Var var, Mapping mapping) {
+        withName(var.name());
+        if (var instanceof MappedVar) {
+            this.mapping = Mapping.wrap(mapping.rowStream().map(row -> ((MappedVar) var).mapping().get(row)).mapToObj(row -> row).collect(Collectors.toList()));
+            this.source = ((MappedVar) var).source();
+        } else {
+            this.mapping = mapping;
+            this.source = var;
+        }
+    }
 
     /**
      * Builds a mapped variable specifying selected positions through a mapping
@@ -49,7 +61,7 @@ public class MappedVar extends AbstractVar {
      * @param mapping mapping of indexed values
      * @return mapped variable
      */
-    public static MappedVar newByRows(Var source, Mapping mapping) {
+    public static MappedVar byRows(Var source, Mapping mapping) {
         return new MappedVar(source, mapping);
     }
 
@@ -60,19 +72,8 @@ public class MappedVar extends AbstractVar {
      * @param rows   variable array of indexed values
      * @return mapped variable
      */
-    public static MappedVar newByRows(Var source, int... rows) {
-        return new MappedVar(source, Mapping.newCopyOf(rows));
-    }
-
-    private MappedVar(Var var, Mapping mapping) {
-        withName(var.name());
-        if (var instanceof MappedVar) {
-            this.mapping = Mapping.newWrapOf(mapping.rowStream().map(row -> ((MappedVar) var).mapping().get(row)).mapToObj(row -> row).collect(Collectors.toList()));
-            this.source = ((MappedVar) var).source();
-        } else {
-            this.mapping = mapping;
-            this.source = var;
-        }
+    public static MappedVar byRows(Var source, int... rows) {
+        return new MappedVar(source, Mapping.copy(rows));
     }
 
     @Override
