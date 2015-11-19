@@ -218,21 +218,12 @@ public class Text extends AbstractVar {
     }
 
     @Override
-    public Var solidCopy() {
-        Text text = new Text(rowCount());
-        for (int i = 0; i < rowCount(); i++) {
-            text.setLabel(i, label(i));
-        }
-        return text;
-    }
-
-    @Override
-    public Var newInstance() {
-        return Text.empty();
-    }
-
-    @Override
     public Var newInstance(int rows) {
         return Text.empty(rows);
+    }
+
+    @Override
+    public Text solidCopy() {
+        return (Text) super.solidCopy();
     }
 }

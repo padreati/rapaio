@@ -404,23 +404,13 @@ public final class Binary extends AbstractVar {
     }
 
     @Override
-    public Binary solidCopy() {
-        Binary copy = Binary.empty(rowCount()).withName(name());
-        for (int i = 0; i < rowCount(); i++) {
-            if (!missing(i))
-                copy.setBinary(i, binary(i));
-        }
-        return copy;
-    }
-
-    @Override
-    public Var newInstance() {
-        return Binary.empty();
-    }
-
-    @Override
     public Var newInstance(int rows) {
         return Binary.empty(rows);
+    }
+
+    @Override
+    public Binary solidCopy() {
+        return (Binary) super.solidCopy();
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

@@ -23,8 +23,6 @@
 
 package rapaio.data;
 
-import rapaio.data.stream.VSpot;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -56,7 +54,11 @@ public abstract class AbstractVar implements Var {
 
         switch (type()) {
             case NOMINAL:
-                return stream().map(VSpot::label).collect(Nominal.collector()).withName(name());
+                Nominal nom = Nominal.empty(rowCount(), levels()).withName(name());
+                for (int i = 0; i < rowCount(); i++) {
+                    nom.setLabel(i, label(i));
+                }
+                return nom;
             case ORDINAL:
                 Ordinal ord = Ordinal.empty(rowCount(), levels()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
@@ -76,7 +78,11 @@ public abstract class AbstractVar implements Var {
                 }
                 return stamp;
             case NUMERIC:
-                return stream().map(VSpot::value).collect(Numeric.collector()).withName(name());
+                Numeric num = Numeric.empty(rowCount());
+                for (int i = 0; i < rowCount(); i++) {
+                    num.setValue(i, value(i));
+                }
+                return num;
             case BINARY:
                 Binary bin = Binary.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {

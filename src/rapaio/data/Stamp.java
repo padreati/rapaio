@@ -38,12 +38,23 @@ import java.util.function.Supplier;
  */
 public class Stamp extends AbstractVar {
 
-    private static final long serialVersionUID = -6387573611986137666L;
     public static final long MISSING_VALUE = Long.MIN_VALUE;
+    private static final long serialVersionUID = -6387573611986137666L;
     private long[] data;
     private int rows;
 
     // static builders
+
+    private Stamp(int rows, int capacity, long fill) {
+        super();
+        if (rows < 0) {
+            throw new IllegalArgumentException("Illegal row count: " + rows);
+        }
+        this.data = new long[capacity];
+        this.rows = rows;
+        if (fill != 0)
+            Arrays.fill(data, 0, rows, fill);
+    }
 
     /**
      * Builds an empty stamp var of size 0
@@ -151,14 +162,6 @@ public class Stamp extends AbstractVar {
         return stamp;
     }
 
-    public static Stamp from(int rows, Supplier<Long> supplier) {
-        Stamp var = Stamp.empty();
-        for (int i = 0; i < rows; i++) {
-            var.addStamp(supplier.get());
-        }
-        return var;
-    }
-
     // private constructor, only public static builders available
 
     public static Stamp from(int rows, Supplier<Long> supplier) {
@@ -167,15 +170,6 @@ public class Stamp extends AbstractVar {
             var.addStamp(supplier.get());
         }
         return var;
-    }    private Stamp(int rows, int capacity, long fill) {
-        super();
-        if (rows < 0) {
-            throw new IllegalArgumentException("Illegal row count: " + rows);
-        }
-        this.data = new long[capacity];
-        this.rows = rows;
-        if (fill != 0)
-            Arrays.fill(data, 0, rows, fill);
     }
 
     @Override
@@ -353,22 +347,13 @@ public class Stamp extends AbstractVar {
     }
 
     @Override
-    public Stamp solidCopy() {
-        Stamp copy = new Stamp(rowCount(), rowCount(), 0).withName(name());
-        for (int i = 0; i < rowCount(); i++) {
-            copy.setStamp(i, index(i));
-        }
-        return copy;
-    }
-
-    @Override
-    public Var newInstance() {
-        return Stamp.empty();
-    }
-
-    @Override
     public Var newInstance(int rows) {
         return Stamp.empty(rows);
+    }
+
+    @Override
+    public Stamp solidCopy() {
+        return (Stamp) super.solidCopy();
     }
 
     @Override

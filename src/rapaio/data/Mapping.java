@@ -206,6 +206,8 @@ final class ListMapping implements Mapping {
 
 final class IntervalMapping implements Mapping {
 
+    private static final long serialVersionUID = -7421133121383028265L;
+
     final int start;
     final int end;
     boolean onList = false;

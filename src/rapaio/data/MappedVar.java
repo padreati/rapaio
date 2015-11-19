@@ -210,11 +210,6 @@ public class MappedVar extends AbstractVar {
     }
 
     @Override
-    public Var newInstance() {
-        return source.newInstance();
-    }
-
-    @Override
     public Var newInstance(int rows) {
         return source.newInstance(rows);
     }

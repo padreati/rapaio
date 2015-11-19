@@ -48,6 +48,8 @@ import java.util.stream.Collector;
  */
 public final class Index extends AbstractVar {
 
+    private static final long serialVersionUID = -2809318697565282310L;
+
     private static final int MISSING_VALUE = Integer.MIN_VALUE;
     private int[] data;
     private int rows;
@@ -201,7 +203,7 @@ public final class Index extends AbstractVar {
 
             @Override
             public Function<Index, Index> finisher() {
-                return x -> x;
+                return Index::solidCopy;
             }
 
             @Override
@@ -376,20 +378,6 @@ public final class Index extends AbstractVar {
     }
 
     @Override
-    public Index solidCopy() {
-        Index copy = new Index(rowCount(), rowCount(), 0).withName(name());
-        for (int i = 0; i < rowCount(); i++) {
-            copy.setIndex(i, index(i));
-        }
-        return copy;
-    }
-
-    @Override
-    public Var newInstance() {
-        return Index.empty();
-    }
-
-    @Override
     public Var newInstance(int rows) {
         return Index.empty(rows);
     }
@@ -397,6 +385,11 @@ public final class Index extends AbstractVar {
     @Override
     public String toString() {
         return "Index[name:" + name() + ", rowCount:" + rowCount() + "]";
+    }
+
+    @Override
+    public Index solidCopy() {
+        return (Index) super.solidCopy();
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

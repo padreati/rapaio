@@ -45,23 +45,6 @@ public class BoundVar extends AbstractVar {
 
     // static builders
 
-    public static BoundVar newFrom(List<Integer> counts, List<Var> vars) {
-        return new BoundVar(counts, vars);
-    }
-
-    public static BoundVar newFrom(List<Var> vars) {
-        return new BoundVar(vars.stream().map(Var::rowCount).collect(Collectors.toList()), vars);
-    }
-
-    public static BoundVar newFrom(Var... vars) {
-        return new BoundVar(
-                Arrays.stream(vars).map(Var::rowCount).collect(Collectors.toList()),
-                Arrays.stream(vars).collect(Collectors.toList())
-        );
-    }
-
-    // private constructor
-
     private BoundVar(List<Integer> counts, List<Var> vars) {
         if (vars.isEmpty())
             throw new IllegalArgumentException("List of vars is empty");
@@ -95,6 +78,23 @@ public class BoundVar extends AbstractVar {
         }
 
         this.withName(vars.get(0).name());
+    }
+
+    public static BoundVar newFrom(List<Integer> counts, List<Var> vars) {
+        return new BoundVar(counts, vars);
+    }
+
+    public static BoundVar newFrom(List<Var> vars) {
+        return new BoundVar(vars.stream().map(Var::rowCount).collect(Collectors.toList()), vars);
+    }
+
+    // private constructor
+
+    public static BoundVar newFrom(Var... vars) {
+        return new BoundVar(
+                Arrays.stream(vars).map(Var::rowCount).collect(Collectors.toList()),
+                Arrays.stream(vars).collect(Collectors.toList())
+        );
     }
 
     private int findIndex(int row) {
@@ -268,13 +268,6 @@ public class BoundVar extends AbstractVar {
     @Override
     public void clear() {
         throw new IllegalArgumentException("This operation is not available for bound variable");
-    }
-
-    @Override
-    public Var newInstance() {
-        if (vars.isEmpty())
-            throw new IllegalArgumentException("this operation is not available for a bounded var with no rows");
-        return vars.get(0).newInstance();
     }
 
     @Override

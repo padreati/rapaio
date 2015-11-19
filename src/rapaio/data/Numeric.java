@@ -249,7 +249,7 @@ public final class Numeric extends AbstractVar {
 
             @Override
             public Function<Numeric, Numeric> finisher() {
-                return x -> x;
+                return Numeric::solidCopy;
             }
 
             @Override
@@ -423,16 +423,6 @@ public final class Numeric extends AbstractVar {
     }
 
     @Override
-    public Numeric solidCopy() {
-        return Numeric.copy(this);
-    }
-
-    @Override
-    public Var newInstance() {
-        return Numeric.empty();
-    }
-
-    @Override
     public Var newInstance(int rows) {
         return Numeric.empty(rows);
     }
@@ -440,6 +430,11 @@ public final class Numeric extends AbstractVar {
     @Override
     public String toString() {
         return "Numeric[name:" + name() + ", rowCount:" + rowCount() + "]";
+    }
+
+    @Override
+    public Numeric solidCopy() {
+        return (Numeric) super.solidCopy();
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

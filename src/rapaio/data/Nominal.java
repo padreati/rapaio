@@ -169,22 +169,13 @@ public final class Nominal extends FactorBase {
     }
 
     @Override
-    public Nominal solidCopy() {
-        Nominal copy = Nominal.empty(rowCount(), levels()).withName(name());
-        for (int i = 0; i < rowCount(); i++) {
-            copy.setLabel(i, label(i));
-        }
-        return copy;
-    }
-
-    @Override
-    public Var newInstance() {
-        return Nominal.empty(0, levels());
-    }
-
-    @Override
     public Var newInstance(int rows) {
         return Nominal.empty(rows, levels());
+    }
+
+    @Override
+    public Nominal solidCopy() {
+        return (Nominal) super.solidCopy();
     }
 
     @Override

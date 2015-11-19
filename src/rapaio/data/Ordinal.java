@@ -122,22 +122,13 @@ public final class Ordinal extends FactorBase {
     }
 
     @Override
-    public Ordinal solidCopy() {
-        Ordinal copy = Ordinal.empty(rowCount(), levels()).withName(name());
-        for (int i = 0; i < rowCount(); i++) {
-            copy.setLabel(i, label(i));
-        }
-        return copy;
-    }
-
-    @Override
-    public Var newInstance() {
-        return Ordinal.empty(0, levels());
-    }
-
-    @Override
     public Var newInstance(int rows) {
         return Ordinal.empty(rows, levels());
+    }
+
+    @Override
+    public Ordinal solidCopy() {
+        return (Ordinal) super.solidCopy();
     }
 
     @Override

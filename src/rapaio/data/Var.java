@@ -324,7 +324,9 @@ public interface Var extends Serializable, Printable {
      *
      * @return new empty instance
      */
-    Var newInstance();
+    default Var newInstance() {
+        return newInstance(0);
+    }
 
     /**
      * Builds a new empty instance of given size
