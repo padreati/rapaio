@@ -47,8 +47,8 @@ public class AdaBoostSAMMETest {
 
         WS.setPrinter(new IdeaPrinter());
         Classifier ab = new AdaBoostSAMME()
-                .withClassifier(CTree.newC45().withMinCount(30).withMaxDepth(16).withMCols(10))
-                .withRuns(10);
+                .withClassifier(CTree.newC45().withMinCount(5).withMaxDepth(3).withMCols(10))
+                .withRuns(100);
         Frame df = Datasets.loadSpamBase();
         df.printSummary();
         int[] rows = SamplingTools.sampleWOR(df.rowCount(), df.rowCount() / 2);

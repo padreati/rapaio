@@ -77,6 +77,15 @@ public class CTree extends AbstractClassifier {
 
     // static builders
 
+    public CTree() {
+        testMap.put(VarType.BINARY, CTreeTest.Binary_Binary);
+        testMap.put(VarType.ORDINAL, CTreeTest.Numeric_Binary);
+        testMap.put(VarType.INDEX, CTreeTest.Numeric_Binary);
+        testMap.put(VarType.NUMERIC, CTreeTest.Numeric_Binary);
+        testMap.put(VarType.NOMINAL, CTreeTest.Nominal_Binary);
+        withRuns(0);
+    }
+
     public static CTree newID3() {
         return new CTree()
                 .withMaxDepth(-1)
@@ -141,15 +150,6 @@ public class CTree extends AbstractClassifier {
         tree.customTestMap.clear();
         tree.customTestMap.putAll(customTestMap);
         return tree;
-    }
-
-    public CTree() {
-        testMap.put(VarType.BINARY, CTreeTest.Binary_Binary);
-        testMap.put(VarType.ORDINAL, CTreeTest.Numeric_Binary);
-        testMap.put(VarType.INDEX, CTreeTest.Numeric_Binary);
-        testMap.put(VarType.NUMERIC, CTreeTest.Numeric_Binary);
-        testMap.put(VarType.NOMINAL, CTreeTest.Nominal_Binary);
-        withRuns(0);
     }
 
     public Node getRoot() {
@@ -503,14 +503,12 @@ public class CTree extends AbstractClassifier {
     public static class Node implements Serializable {
 
         private static final long serialVersionUID = -5045581827808911763L;
-
-        private int id;
         private final Node parent;
         private final String groupName;
         private final SPredicate<FSpot> predicate;
-
-        private boolean leaf = true;
         private final List<Node> children = new ArrayList<>();
+        private int id;
+        private boolean leaf = true;
         private DVector density;
         private DVector counter;
         private int bestIndex;
@@ -612,7 +610,6 @@ public class CTree extends AbstractClassifier {
 
             Collections.sort(candidateList);
             if (candidateList.isEmpty() || candidateList.get(0).getGroupNames().isEmpty()) {
-                bestIndex = parent.bestIndex;
                 return;
             }
 

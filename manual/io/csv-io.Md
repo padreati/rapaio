@@ -64,4 +64,13 @@ We followed that line of thinking by having
 implemented on Csv class. With these two methods we basically can
 read from anywhere and can write to anywhere.
 
-In order to simplify some common tasks we have also 
+In order to simplify some common tasks there are some specialized
+forms of read and write:
+
+* read from a file giving a `File` instance
+* read from a file giving a `String` for path name
+* read from a gz archive `File` instance
+* read from a resource giving `Class` and `String` for class and name of the resource
+(this is useful when loading data from a loaded jar or for test)
+
+* write

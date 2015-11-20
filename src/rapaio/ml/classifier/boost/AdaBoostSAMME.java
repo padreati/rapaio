@@ -220,6 +220,11 @@ public class AdaBoostSAMME extends AbstractClassifier {
     }
 
     @Override
+    public AdaBoostSAMME withRuns(int runs) {
+        return (AdaBoostSAMME) super.withRuns(runs);
+    }
+
+    @Override
     public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > ").append(fullName()).append("\n");
