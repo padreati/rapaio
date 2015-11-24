@@ -108,4 +108,20 @@ public interface RV extends RM {
         }
     }
 
+    default double norm(double p) {
+        double s = 0.0;
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                s += Math.pow(get(i, j), p);
+            }
+        }
+        return Math.pow(s, 1 / p);
+    }
+
+    default RV normalize(double p) {
+        double norm = norm(p);
+        if (norm != 0.0)
+            dot(1.0 / norm);
+        return this;
+    }
 }

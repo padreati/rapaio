@@ -28,19 +28,19 @@ package rapaio.ml.classifier.svm;
  */
 
 import rapaio.core.MathTools;
-import rapaio.data.VarType;
-import rapaio.ml.common.Capabilities;
 import rapaio.core.RandomSource;
-import rapaio.data.sample.FrameSample;
-import rapaio.data.sample.FrameSampler;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
 import rapaio.data.Var;
+import rapaio.data.VarType;
+import rapaio.data.sample.FrameSample;
+import rapaio.data.sample.FrameSampler;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.svm.kernel.Kernel;
 import rapaio.ml.classifier.svm.kernel.PolyKernel;
+import rapaio.ml.common.Capabilities;
 
 import java.io.Serializable;
 import java.util.BitSet;
@@ -57,25 +57,6 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     protected double[] alpha; // Lagrange multipliers from dual
     protected double b, bLow, bUp; // thresholds
     protected int iLow, iUp; // indices for bLow and bUp
-
-    // class indices
-    private int classIndex1 = 1;
-    private int classIndex2 = 2;
-    private boolean oneVsAll = false;
-    private int maxRuns = Integer.MAX_VALUE;
-
-    private double C = 1.0; // complexity parameter
-    private double tol = 1e-3; // tolerance of accuracy
-
-    private Frame train;
-    private Var weights;
-
-    private int targetIndex;
-    /**
-     * Weight vector for linear machine.
-     */
-    private double[] linear_weights;
-
     /**
      * Variables to hold weight vector in sparse form.
      * (To reduce storage requirements.)
@@ -85,20 +66,31 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     protected Kernel kernel = new PolyKernel(1);
     protected double[] target;
     protected double[] fCache; // The current set of errors for all non-bound examples.
-
     /* The five different sets used by the algorithm. */
     protected BitSet I0; // i: 0 < alpha[i] < C
     protected BitSet I1; // i: classes[i] = 1, alpha[i] = 0
     protected BitSet I2; // i: classes[i] = -1, alpha[i] =C
     protected BitSet I3; // i: classes[i] = 1, alpha[i] = C
     protected BitSet I4; // i: classes[i] = -1, alpha[i] = 0
-
     /**
      * The set of support vectors
      */
     protected BitSet supportVectors; // {i: 0 < alpha[i]}
     protected double sumOfWeights = 0;
-
+    // class indices
+    private int classIndex1 = 1;
+    private int classIndex2 = 2;
+    private boolean oneVsAll = false;
+    private int maxRuns = Integer.MAX_VALUE;
+    private double C = 1.0; // complexity parameter
+    private double tol = 1e-3; // tolerance of accuracy
+    private Frame train;
+    private Var weights;
+    private int targetIndex;
+    /**
+     * Weight vector for linear machine.
+     */
+    private double[] linear_weights;
 
     @Override
     public String name() {
@@ -446,9 +438,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
     @Override
     protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
-        CFit cr = CFit.newEmpty(this, df, withClasses, withDistributions);
-        cr.addTarget(firstTargetName(), firstTargetLevels());
-
+        CFit cr = CFit.build(this, df, withClasses, withDistributions);
         for (int i = 0; i < df.rowCount(); i++) {
             double pred = predict(df, i);
 

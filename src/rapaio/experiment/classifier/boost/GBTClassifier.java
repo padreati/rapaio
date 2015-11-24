@@ -32,10 +32,10 @@ import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.common.Capabilities;
-import rapaio.ml.regressor.RFit;
-import rapaio.ml.regressor.boost.gbt.BTRegression;
-import rapaio.ml.regressor.boost.gbt.GBTLossFunction;
-import rapaio.ml.regressor.tree.RTree;
+import rapaio.ml.regression.RFit;
+import rapaio.ml.regression.boost.gbt.BTRegression;
+import rapaio.ml.regression.boost.gbt.GBTLossFunction;
+import rapaio.ml.regression.tree.RTree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -186,11 +186,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
     @Override
     public CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
-        CFit cr = CFit.newEmpty(this, df, withClasses, withDistributions);
-        for (String targetName : targetNames()) {
-            cr.addTarget(targetName, targetLevels().get(targetName));
-        }
-
+        CFit cr = CFit.build(this, df, withClasses, withDistributions);
         for (int k = 0; k < K; k++) {
             List<BTRegression> predictors = trees.get(k);
             for (BTRegression tree : predictors) {

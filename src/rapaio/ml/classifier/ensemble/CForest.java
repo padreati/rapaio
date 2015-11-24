@@ -462,9 +462,7 @@ public class CForest extends AbstractClassifier {
 
     @Override
     protected CFit coreFit(Frame df, boolean withClasses, boolean withDensities) {
-        CFit cp = CFit.newEmpty(this, df, true, true);
-        cp.addTarget(firstTargetName(), firstTargetLevels());
-
+        CFit cp = CFit.build(this, df, true, true);
         List<CFit> treeFits = predictors.stream().parallel()
                 .map(pred -> pred.fit(df, baggingMode.needsClass(), baggingMode.needsDensity()))
                 .collect(Collectors.toList());

@@ -310,9 +310,7 @@ public class CTree extends AbstractClassifier {
     protected CFit coreFit(Frame dfOld, boolean withClasses, boolean withDensities) {
 
         Frame df = prepareFit(dfOld);
-        CFit prediction = CFit.newEmpty(this, df, withClasses, withDensities);
-        prediction.addTarget(firstTargetName(), firstTargetLevels());
-
+        CFit prediction = CFit.build(this, df, withClasses, withDensities);
         df.stream().forEach(spot -> {
             Pair<Integer, DVector> result = fitPoint(this, spot, root);
             if (withClasses)

@@ -60,4 +60,13 @@ public class MathTools {
         }
         return factors.stream().mapToInt(i -> i).toArray();
     }
+
+    public static double log1pExp(double x) {
+        if (x > 0) {
+            return x + Math.log1p(Math.exp(-x));
+        } else {
+            return Math.log1p(Math.exp(x));
+        }
+    }
+
 }

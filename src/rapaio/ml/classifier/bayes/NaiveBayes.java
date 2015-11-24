@@ -24,7 +24,6 @@
 package rapaio.ml.classifier.bayes;
 
 import rapaio.core.tools.DVector;
-import rapaio.data.Binary;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
@@ -55,15 +54,30 @@ public class NaiveBayes extends AbstractClassifier {
     private static final Logger logger = Logger.getLogger(NaiveBayes.class.getName());
 
     // algorithm parameters
-
+    public static Tag<PriorSupplier> PRIORS_MLE = Tag.valueOf("PRIORS_MLE", (df, weights, nb) -> {
+        Map<String, Double> priors = new HashMap<>();
+        DVector dv = DVector.newFromWeights(false, df.var(nb.firstTargetName()), weights, nb.firstTargetLevels());
+        dv.normalize();
+        for (int i = 1; i < nb.firstTargetLevels().length; i++) {
+            priors.put(nb.firstTargetLevels()[i], dv.get(i));
+        }
+        return priors;
+    });
+    public static Tag<PriorSupplier> PRIORS_UNIFORM = Tag.valueOf("PRIORS_UNIFORM", (df, weights, nb) -> {
+        Map<String, Double> priors = new HashMap<>();
+        double p = 1.0 / nb.firstTargetLevels().length;
+        for (int i = 1; i < nb.firstTargetLevels().length; i++) {
+            priors.put(nb.firstTargetLevels()[i], p);
+        }
+        return priors;
+    });
     private double laplaceSmoother = 1;
     private BinaryEstimator binEstimator = new MultinomialPmf();
     private NumericEstimator numEstimator = new GaussianPdf();
-    private NominalEstimator nomEstimator = new MultinomialPmf();
-    private Tag<PriorSupplier> priorSupplier = PRIORS_MLE;
 
     // prediction artifacts
-
+    private NominalEstimator nomEstimator = new MultinomialPmf();
+    private Tag<PriorSupplier> priorSupplier = PRIORS_MLE;
     private Map<String, Double> priors;
     private Map<String, NumericEstimator> numMap;
     private Map<String, NominalEstimator> nomMap;
@@ -176,9 +190,7 @@ public class NaiveBayes extends AbstractClassifier {
 
         logger.fine("start fitting values...");
 
-        CFit pred = CFit.newEmpty(this, df, withClasses, withDensities);
-        pred.addTarget(firstTargetName(), firstTargetLevels());
-
+        CFit pred = CFit.build(this, df, withClasses, withDensities);
         IntStream.range(0, df.rowCount()).parallel().forEach(
                 i -> {
                     DVector dv = DVector.newEmpty(false, firstTargetLevels());
@@ -257,23 +269,4 @@ public class NaiveBayes extends AbstractClassifier {
     interface PriorSupplier extends Serializable {
         Map<String, Double> learnPriors(Frame df, Var weights, NaiveBayes nb);
     }
-
-    public static Tag<PriorSupplier> PRIORS_MLE = Tag.valueOf("PRIORS_MLE", (df, weights, nb) -> {
-        Map<String, Double> priors = new HashMap<>();
-        DVector dv = DVector.newFromWeights(false, df.var(nb.firstTargetName()), weights, nb.firstTargetLevels());
-        dv.normalize();
-        for (int i = 1; i < nb.firstTargetLevels().length; i++) {
-            priors.put(nb.firstTargetLevels()[i], dv.get(i));
-        }
-        return priors;
-    });
-
-    public static Tag<PriorSupplier> PRIORS_UNIFORM = Tag.valueOf("PRIORS_UNIFORM", (df, weights, nb) -> {
-        Map<String, Double> priors = new HashMap<>();
-        double p = 1.0 / nb.firstTargetLevels().length;
-        for (int i = 1; i < nb.firstTargetLevels().length; i++) {
-            priors.put(nb.firstTargetLevels()[i], p);
-        }
-        return priors;
-    });
 }

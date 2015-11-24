@@ -152,7 +152,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
 
     @Override
     protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
-        logger.config("started fitting binary logistic regressor.. ");
+        logger.config("started fitting binary logistic regression.. ");
         CFit fit = log.fit(df);
 
         logger.config("end fit method call");

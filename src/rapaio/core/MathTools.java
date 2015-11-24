@@ -140,46 +140,7 @@ public class MathTools {
     public static final double kInvGoldRatio = 0.38196601125010515179541316563436188227969082019423713786455137729473953718109755029279279581060886251524591192461310824;
 
     public static final double TWO_PI = 6.283185307179586476925286;
-
-    public static double sqrt(double x) {
-        return Math.sqrt(x);
-    }
-
-    public static double rint(double x) {
-        return Math.rint(x);
-    }
-
-    public static double floor(double x) {
-        return Math.floor(x);
-    }
-
-    public static double log(double x) {
-        return Math.log(x);
-    }
-
-    /**
-     * Returns the base 2 logarithm of a {@code double} value.
-     *
-     * @param x the number from which we take base 2 logarithm
-     * @return the base 2 logarithm of input value
-     */
-    public static double log2(double x) {
-        return Math.log(x) / Math.log(2);
-    }
-
-    /**
-     * Returns {@code boolean} value indicating if the number if finite and different than {@code Double.NaN}.
-     * <p>
-     * This function is used to check if a computation can produce finite results or not.
-     * Another situation where is useful is when we test for a default numeric value which is usually set to {@code Double.NaN}.
-     *
-     * @param x the number which needs to be verified
-     * @return true if the number is finite and different than {@code Double.NaN}
-     */
-    public static boolean validNumber(double x) {
-        return x == x && !Double.isInfinite(x);
-    }
-
+    public static final double SMALL_ERR = 1e-10;
     private static final double
             a0 = 7.72156649015328655494e-02,
             a1 = 3.22467033424113591611e-01,
@@ -242,6 +203,84 @@ public class MathTools {
             w4 = -5.95187557450339963135e-04,
             w5 = 8.36339918996282139126e-04,
             w6 = -1.63092934096575273989e-03;
+    /**
+     * 1/2 * log(2 &#960;).
+     */
+    private static final double HALF_LOG_2_PI = 0.5 * Math.log(TWO_PI);
+    /**
+     * exact Stirling expansion error for certain values.
+     */
+    private static final double[] EXACT_STIRLING_ERRORS = {0.0, /* 0.0 */
+            0.1534264097200273452913848, /* 0.5 */
+            0.0810614667953272582196702, /* 1.0 */
+            0.0548141210519176538961390, /* 1.5 */
+            0.0413406959554092940938221, /* 2.0 */
+            0.03316287351993628748511048, /* 2.5 */
+            0.02767792568499833914878929, /* 3.0 */
+            0.02374616365629749597132920, /* 3.5 */
+            0.02079067210376509311152277, /* 4.0 */
+            0.01848845053267318523077934, /* 4.5 */
+            0.01664469118982119216319487, /* 5.0 */
+            0.01513497322191737887351255, /* 5.5 */
+            0.01387612882307074799874573, /* 6.0 */
+            0.01281046524292022692424986, /* 6.5 */
+            0.01189670994589177009505572, /* 7.0 */
+            0.01110455975820691732662991, /* 7.5 */
+            0.010411265261972096497478567, /* 8.0 */
+            0.009799416126158803298389475, /* 8.5 */
+            0.009255462182712732917728637, /* 9.0 */
+            0.008768700134139385462952823, /* 9.5 */
+            0.008330563433362871256469318, /* 10.0 */
+            0.007934114564314020547248100, /* 10.5 */
+            0.007573675487951840794972024, /* 11.0 */
+            0.007244554301320383179543912, /* 11.5 */
+            0.006942840107209529865664152, /* 12.0 */
+            0.006665247032707682442354394, /* 12.5 */
+            0.006408994188004207068439631, /* 13.0 */
+            0.006171712263039457647532867, /* 13.5 */
+            0.005951370112758847735624416, /* 14.0 */
+            0.005746216513010115682023589, /* 14.5 */
+            0.005554733551962801371038690 /* 15.0 */
+    };
+
+    public static double sqrt(double x) {
+        return Math.sqrt(x);
+    }
+
+    public static double rint(double x) {
+        return Math.rint(x);
+    }
+
+    public static double floor(double x) {
+        return Math.floor(x);
+    }
+
+    public static double log(double x) {
+        return Math.log(x);
+    }
+
+    /**
+     * Returns the base 2 logarithm of a {@code double} value.
+     *
+     * @param x the number from which we take base 2 logarithm
+     * @return the base 2 logarithm of input value
+     */
+    public static double log2(double x) {
+        return Math.log(x) / Math.log(2);
+    }
+
+    /**
+     * Returns {@code boolean} value indicating if the number if finite and different than {@code Double.NaN}.
+     * <p>
+     * This function is used to check if a computation can produce finite results or not.
+     * Another situation where is useful is when we test for a default numeric value which is usually set to {@code Double.NaN}.
+     *
+     * @param x the number which needs to be verified
+     * @return true if the number is finite and different than {@code Double.NaN}
+     */
+    public static boolean validNumber(double x) {
+        return x == x && !Double.isInfinite(x);
+    }
 
     /*
      * Computes ln(gamma) function.
@@ -732,49 +771,6 @@ public class MathTools {
         return ans * ax;
     }
 
-
-    /**
-     * 1/2 * log(2 &#960;).
-     */
-    private static final double HALF_LOG_2_PI = 0.5 * Math.log(TWO_PI);
-
-    /**
-     * exact Stirling expansion error for certain values.
-     */
-    private static final double[] EXACT_STIRLING_ERRORS = {0.0, /* 0.0 */
-            0.1534264097200273452913848, /* 0.5 */
-            0.0810614667953272582196702, /* 1.0 */
-            0.0548141210519176538961390, /* 1.5 */
-            0.0413406959554092940938221, /* 2.0 */
-            0.03316287351993628748511048, /* 2.5 */
-            0.02767792568499833914878929, /* 3.0 */
-            0.02374616365629749597132920, /* 3.5 */
-            0.02079067210376509311152277, /* 4.0 */
-            0.01848845053267318523077934, /* 4.5 */
-            0.01664469118982119216319487, /* 5.0 */
-            0.01513497322191737887351255, /* 5.5 */
-            0.01387612882307074799874573, /* 6.0 */
-            0.01281046524292022692424986, /* 6.5 */
-            0.01189670994589177009505572, /* 7.0 */
-            0.01110455975820691732662991, /* 7.5 */
-            0.010411265261972096497478567, /* 8.0 */
-            0.009799416126158803298389475, /* 8.5 */
-            0.009255462182712732917728637, /* 9.0 */
-            0.008768700134139385462952823, /* 9.5 */
-            0.008330563433362871256469318, /* 10.0 */
-            0.007934114564314020547248100, /* 10.5 */
-            0.007573675487951840794972024, /* 11.0 */
-            0.007244554301320383179543912, /* 11.5 */
-            0.006942840107209529865664152, /* 12.0 */
-            0.006665247032707682442354394, /* 12.5 */
-            0.006408994188004207068439631, /* 13.0 */
-            0.006171712263039457647532867, /* 13.5 */
-            0.005951370112758847735624416, /* 14.0 */
-            0.005746216513010115682023589, /* 14.5 */
-            0.005554733551962801371038690 /* 15.0 */
-    };
-
-
     /**
      * Compute the error of Stirling's series at the given value.
      * <p>
@@ -891,9 +887,6 @@ public class MathTools {
         return Math.exp(-getStirlingError(x) - getDeviancePart(x, lb)) / Math.sqrt(TWO_PI * x);
     }
 
-
-    public static final double SMALL_ERR = 1e-10;
-
     /**
      * Tests if the double values are approximately equal
      *
@@ -938,15 +931,15 @@ public class MathTools {
 
     public static long combinations(int n, int k) {
         long result = 1;
-        if ( k > n / 2) {
+        if (k > n / 2) {
             k = n - k;
         }
-        for ( int d = 0; d < k; d++) {
+        for (int d = 0; d < k; d++) {
             long oldResult = result;
             result = result * (n - d) / (d + 1);
             // check for overflow
-            if ( oldResult > result ) {
-                throw new StackOverflowError( "long range exceeded" );
+            if (oldResult > result) {
+                throw new StackOverflowError("long range exceeded");
             }
         }
         return result;

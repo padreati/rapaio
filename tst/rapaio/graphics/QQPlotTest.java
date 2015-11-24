@@ -56,7 +56,7 @@ public class QQPlotTest {
                 .abLine(false, 0, color(Color.GRAY))
                 .abLine(true, 0, color(Color.GRAY));
 
-        WS.draw(plot);
+//        WS.draw(plot);
 //        ImageUtility.saveImage(plot, 500, 400,
 //                "/home/ati/work/rapaio/tst/rapaio/graphics/qqplot-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);

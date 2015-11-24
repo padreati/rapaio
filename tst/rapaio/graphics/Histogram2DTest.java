@@ -28,11 +28,8 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.filter.Filters;
-import rapaio.data.filter.VFilter;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.base.ImageUtility;
-import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.plot.Plot;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
@@ -54,11 +51,11 @@ public class Histogram2DTest {
         RandomSource.setSeed(0);
         Frame df = Datasets.loadIrisDataset();
 
-        Var x = jitter(df.var(0).solidCopy(), 0.01);
-        Var y = jitter(df.var(1).solidCopy(), 0.01);
+        Var x = jitter(df.var(0).solidCopy(), 0.01).withName("x");
+        Var y = jitter(df.var(1).solidCopy(), 0.01).withName("y");
 
         Plot plot = hist2d(x, y, color(2), bins(10)).points(x, y);
-        WS.draw(plot);
+//        WS.draw(plot);
 //        ImageUtility.saveImage(plot, 500, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/hist2d-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("hist2d-test.png"));

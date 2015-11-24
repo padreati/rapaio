@@ -110,9 +110,7 @@ public class OneRule extends AbstractClassifier {
 
     @Override
     protected CFit coreFit(final Frame test, final boolean withClasses, final boolean withDensities) {
-        CFit pred = CFit.newEmpty(this, test, withClasses, withDensities);
-        pred.addTarget(firstTargetName(), firstTargetLevels());
-
+        CFit pred = CFit.build(this, test, withClasses, withDensities);
         for (int i = 0; i < test.rowCount(); i++) {
             Pair<String, DVector> p = predict(test, i);
             if (withClasses) {

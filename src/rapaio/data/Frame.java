@@ -26,6 +26,7 @@ package rapaio.data;
 import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
 import rapaio.printer.Printable;
+import rapaio.sys.WS;
 import rapaio.ws.Summary;
 
 import java.io.Serializable;
@@ -510,13 +511,17 @@ public interface Frame extends Serializable, Printable {
         printLines(rowCount());
     }
 
-    default void printLines(int to) {
+    default String lines(int to) {
         Var[] vars = new Var[varCount()];
         String[] names = varNames();
         for (int i = 0; i < vars.length; i++) {
             vars[i] = var(i);
         }
-        Summary.head(to, vars, names);
+        return Summary.headString(to, vars, names);
+    }
+
+    default void printLines(int to) {
+        WS.code(lines(to));
     }
 
     default boolean deepEquals(Frame df) {

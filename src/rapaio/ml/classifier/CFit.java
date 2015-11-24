@@ -49,34 +49,33 @@ public class CFit implements Printable {
     private final Map<String, Nominal> classes = new HashMap<>();
     private final Map<String, Frame> densities = new HashMap<>();
 
-    // builder
-
     private CFit(final Classifier model, final Frame df, final boolean withClasses, final boolean withDensities) {
         this.model = model;
         this.df = df;
         this.withClasses = withClasses;
         this.withDensities = withDensities;
+
+        for (String target : model.targetNames()) {
+            targetVars.add(target);
+            dictionaries.put(target, model.targetLevels(target));
+            if (withClasses) {
+                classes.put(target, Nominal.empty(df.rowCount(), model.targetLevels(target)).withName(target));
+            }
+            if (withDensities) {
+                densities.put(target, SolidFrame.newMatrix(df.rowCount(), model.targetLevels(target)));
+            }
+        }
     }
 
     // private constructor
 
-    public static CFit newEmpty(
+    // builder
+    public static CFit build(
             final Classifier model,
             final Frame df,
             final boolean withClasses,
             final boolean withDensities) {
         return new CFit(model, df, withClasses, withDensities);
-    }
-
-    public void addTarget(String target, String[] dictionary) {
-        targetVars.add(target);
-        dictionaries.put(target, dictionary);
-        if (withClasses) {
-            classes.put(target, Nominal.empty(df.rowCount(), dictionary).withName(target));
-        }
-        if (withDensities) {
-            densities.put(target, SolidFrame.newMatrix(df.rowCount(), dictionary));
-        }
     }
 
     public int getRows() {
@@ -222,29 +221,5 @@ public class CFit implements Printable {
             sb.append("data frame does not contain target variable.");
         }
         return sb.toString();
-    }
-
-    public boolean deepEquals(CFit fit) {
-        if (targetVars.size() != fit.targetVars.size()) return false;
-        for (int i = 0; i < targetVars.size(); i++) if (!targetVars.get(i).equals(fit.targetVars.get(i))) return false;
-
-        if (withClasses != fit.withClasses) return false;
-        if (withDensities != fit.withDensities) return false;
-
-        Set<String> keys = new HashSet<>(classes.keySet());
-        keys.addAll(fit.classes.keySet());
-        for (String key : keys) {
-            if (!classes.containsKey(key)) return false;
-            if (!fit.classes.containsKey(key)) return false;
-            if (!classes(key).deepEquals(fit.classes(key))) return false;
-        }
-        keys = new HashSet<>(densities.keySet());
-        keys.addAll(fit.densities.keySet());
-        for (String key : keys) {
-            if (!densities.containsKey(key)) return false;
-            if (!fit.densities.containsKey(key)) return false;
-            if (!density(key).deepEquals(fit.density(key))) return false;
-        }
-        return true;
     }
 }

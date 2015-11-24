@@ -187,9 +187,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
 
     @Override
     protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
-        CFit p = CFit.newEmpty(this, df, withClasses, true);
-        p.addTarget(firstTargetName(), firstTargetLevels());
-
+        CFit p = CFit.build(this, df, withClasses, true);
         for (int i = 0; i < h.size(); i++) {
             CFit hp = h.get(i).fit(df, true, false);
             for (int j = 0; j < df.rowCount(); j++) {

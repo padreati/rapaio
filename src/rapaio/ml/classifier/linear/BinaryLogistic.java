@@ -146,9 +146,7 @@ public class BinaryLogistic extends AbstractClassifier {
 
     @Override
     protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
-        CFit cr = CFit.newEmpty(this, df, withClasses, withDistributions);
-        cr.addTarget(firstTargetName(), firstTargetLevels());
-
+        CFit cr = CFit.build(this, df, withClasses, withDistributions);
         for (int i = 0; i < df.rowCount(); i++) {
             double p = regress(df, i);
             if (withClasses) {

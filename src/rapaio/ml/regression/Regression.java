@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.classifier;
+package rapaio.ml.regression;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -33,82 +33,60 @@ import rapaio.printer.Printable;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 import java.util.function.BiConsumer;
 
 /**
- * Interface for all classification model algorithms.
- * A classifier is able to classify multiple target columns, if implementation allows that.
- *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * Interface implemented by all regression algorithms
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
-public interface Classifier extends Printable, Serializable {
-
+public interface Regression<T extends RFit> extends Printable, Serializable {
     /**
-     * Creates a new classifier instance with the same parameters as the original.
+     * Creates a new regression instance with the same parameters as the original.
      * The fitted model and other artifacts are not replicated.
      *
      * @return new parametrized instance
      */
-    Classifier newInstance();
+    Regression newInstance();
 
     /**
-     * Returns the classifier name.
-     *
-     * @return classifier name
+     * @return regression model name
      */
     String name();
 
     /**
-     * Builds a string which contains the classifier instance name and parameters.
-     *
-     * @return classifier algorithm name and parameters
+     * @return regression algorithm name and parameters description
      */
     String fullName();
 
     /**
-     * Describes the classification algorithm
+     * Describes the learning algorithm
      *
-     * @return capabilities of the classification algorithm
+     * @return capabilities of the learning algorithm
      */
-    default Capabilities capabilities() {
-        return new Capabilities();
-    }
-
-    /**
-     * @return true if the classifier has learned from a sample
-     */
-    boolean hasLearned();
-
-    /**
-     * @return the sampler instance used
-     */
-    FrameSampler sampler();
+    Capabilities capabilities();
 
     /**
      * Filters which will be applied on input variables
      * for various transformations, before the data is learned.
-     * <p>
+     *
      * Thus, input variables learned by a model are not derived
      * directly from the data frame used by removing target
      * variables, but by pre-processing them with filters.
-     * <p>
+     *
      * Filters will be applied always in sequence.
      * The filtering process has the following steps:
-     * <p>
+     *
      * <ol>
-     * <li>consider data frame as draft data frame</li>
-     * <li>take in order the filters from input filter list</li>
-     * <li>apply each filter to draft data frame and dessignate the result as draft data frame</li>
-     * <li>after all filters are executed designate draft data frame as the workable data frame</li>
-     * <li>parse all the target variable names from pattern strings and workable data frame</li>
-     * <li>collect all the variable names from workable data frame</li>
-     * <li>collect target variable names from the list of available variable names</li>
-     * <li>collect input variable as all the variables which are not considered target variables</li>
+     *     <li>consider data frame as draft data frame</li>
+     *     <li>take in order the filters from input filter list</li>
+     *     <li>apply each filter to draft data frame and dessignate the result as draft data frame</li>
+     *     <li>after all filters are executed designate draft data frame as the workable data frame</li>
+     *     <li>parse all the target variable names from pattern strings and workable data frame</li>
+     *     <li>collect all the variable names from workable data frame</li>
+     *     <li>collect target variable names from the list of available variable names</li>
+     *     <li>collect input variable as all the variables which are not considered target variables</li>
      * </ol>
-     * <p>
-     * This algorithm is executed each time for {@link #train(Frame, Var, String...)},
-     * {@link #train(Frame, String...)}, {@link #fit(Frame)} and {@link #fit(Frame, boolean, boolean)} methods.
      *
      * @return list of filter to transform data into input variables.
      */
@@ -121,7 +99,17 @@ public interface Classifier extends Printable, Serializable {
      * @param filters list of filters applied in chain
      * @return self instance
      */
-    Classifier withInputFilters(FFilter... filters);
+    Regression withInputFilters(FFilter... filters);
+
+    /**
+     * @return true if the learning method was called and algorithm was built the model
+     */
+    boolean hasLearned();
+
+    /**
+     * @return instance of a sampling device used at training time
+     */
+    FrameSampler sampler();
 
     /**
      * Specifies the sampler to be used at learning time.
@@ -129,9 +117,9 @@ public interface Classifier extends Printable, Serializable {
      * The default implementation is {@link rapaio.data.sample.FrameSampler.Identity}
      * which gives all the original training instances.
      *
-     * @param sampler instance of a new sampler
+     * @param sampler instance to be used as sampling device
      */
-    Classifier withSampler(FrameSampler sampler);
+    Regression withSampler(FrameSampler sampler);
 
     /**
      * Returns input variable names built at learning time
@@ -141,10 +129,9 @@ public interface Classifier extends Printable, Serializable {
     String[] inputNames();
 
     /**
-     * Shortcut method which returns input variable name at the
-     * given position
+     * Returns the variable name at a given position
      *
-     * @param pos given position
+     * @param pos position of the variable
      * @return variable name
      */
     default String inputName(int pos) {
@@ -152,9 +139,7 @@ public interface Classifier extends Printable, Serializable {
     }
 
     /**
-     * Returns the types of input variables built at learning time
-     *
-     * @return array of input variable types
+     * @return array with types of the variables used for training
      */
     VarType[] inputTypes();
 
@@ -213,64 +198,39 @@ public interface Classifier extends Printable, Serializable {
     }
 
     /**
-     * Returns levels used at learning times for target variables
-     *
-     * @return map with target variable names as key and levels as variables
-     */
-    Map<String, String[]> targetLevels();
-
-    default String[] targetLevels(String key) {
-        return targetLevels().get(key);
-    }
-
-    /**
-     * Returns levels used at learning times for first target variables
-     *
-     * @return map with target variable names as key and levels as variables
-     */
-    default String[] firstTargetLevels() {
-        return targetLevels().get(firstTargetName());
-    }
-
-    default String firstTargetLevel(int pos) {
-        return targetLevels().get(firstTargetName())[pos];
-    }
-
-    /**
      * Fit a classifier on instances specified by frame, with row weights
-     * equal to 1 and target specified by targetNames
+     * equal to 1 and target as targetName.
      *
      * @param df         data set instances
      * @param targetVars target variables
      */
-    Classifier train(Frame df, String... targetVars);
+    Regression train(Frame df, String... targetVars);
 
     /**
-     * Fit a classifier on instances specified by frame, with row weights and targetNames
+     * Fit a classifier on instances specified by frame, with row weights and targetName
      *
-     * @param df         train frame
-     * @param weights    instance weights
-     * @param targetVars target variables
+     * @param df             train frame
+     * @param weights        instance weights
+     * @param targetVarNames target variables
      */
-    Classifier train(Frame df, Var weights, String... targetVars);
+    Regression train(Frame df, Var weights, String... targetVarNames);
 
     /**
-     * Predict classes for new data set instances, with
-     * default options to compute classes and densities for classes.
+     * Predict results for given data set of instances
+     * and also produce residuals and other derivatives.
      *
-     * @param df data set instances
+     * @param df input data frame
+     * @return regression fit result
      */
-    CFit fit(Frame df);
+    RFit fit(final Frame df);
 
     /**
-     * Predict classes for given instances, generating classes if specified and
-     * distributions if specified.
+     * Predict results for new data set instances
      *
-     * @param df                frame instances
-     * @param withClasses       generate classes
-     * @param withDistributions generate densities for classes
+     * @param df            data set instances
+     * @param withResiduals if residuals will be computed or not
      */
-    CFit fit(Frame df, boolean withClasses, boolean withDistributions);
+    T fit(Frame df, boolean withResiduals);
 
     /**
      * set the pool size for fork join tasks
@@ -280,7 +240,7 @@ public interface Classifier extends Printable, Serializable {
      *
      * @param poolSize specified pool size
      */
-    Classifier withPoolSize(int poolSize);
+    Regression withPoolSize(int poolSize);
 
     /**
      * Gets the configured pool size. Negative values are considered
@@ -293,7 +253,7 @@ public interface Classifier extends Printable, Serializable {
     int poolSize();
 
     /**
-     * @return the number of runs
+     * @return number of runs
      */
     int runs();
 
@@ -307,8 +267,8 @@ public interface Classifier extends Printable, Serializable {
      *
      * @param runs number of runs
      * @return self-instance, used for builder pattern
-     **/
-    Classifier withRuns(int runs);
+     */
+    Regression withRuns(int runs);
 
     /**
      * Get the lambda call hook which will be called after
@@ -317,7 +277,7 @@ public interface Classifier extends Printable, Serializable {
      *
      * @return lambda running hook
      */
-    BiConsumer<Classifier, Integer> runningHook();
+    BiConsumer<Regression, Integer> runningHook();
 
     /**
      * Set up a lambda call hook which will be called after
@@ -327,8 +287,7 @@ public interface Classifier extends Printable, Serializable {
      * @param runningHook bi consumer method to be called at each iteration, first
      *                    parameter is the model built at the time and the second
      *                    parameter value is the run value
-     *
      * @return self-instance of the model
      */
-    Classifier withRunningHook(BiConsumer<Classifier, Integer> runningHook);
+    Regression withRunningHook(BiConsumer<Regression, Integer> runningHook);
 }

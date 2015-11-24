@@ -123,11 +123,7 @@ public class SplitClassifier extends AbstractClassifier implements Printable {
     @Override
     public CFit coreFit(Frame df, boolean withClasses, boolean withDensities) {
 
-        CFit pred = CFit.newEmpty(this, df, withClasses, withDensities);
-        for (String targetVar : targetNames()) {
-            pred.addTarget(targetVar, targetLevels().get(targetVar));
-        }
-
+        CFit pred = CFit.build(this, df, withClasses, withDensities);
         df.stream().forEach(spot -> {
             for (Split split : splits) {
                 if (split.predicate.test(spot)) {
