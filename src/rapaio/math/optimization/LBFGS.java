@@ -23,6 +23,7 @@
 
 package rapaio.math.optimization;
 
+import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 
@@ -30,7 +31,7 @@ import rapaio.math.linear.RV;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
  */
 @Deprecated
-public class LBFGS implements Optimizer {
+public class LBFGS {
 
     private final Gradient gradient;
     private final Updater updater;
@@ -39,16 +40,32 @@ public class LBFGS implements Optimizer {
     private double convergenceTol = 1E-4;
     private int maxNumIterations = 100;
     private double regParam = 0.0;
-
+    private double lambda;
+    private int C; // number of classes
     public LBFGS(Gradient gradient, Updater updater) {
         this.gradient = gradient;
         this.updater = updater;
     }
 
-    @Override
-    public RV optimize(RM x, RV y, RV w) {
+    public RV optimize(RM x, RV y, double lambda, int C) {
+
+        this.lambda = lambda;
+        this.C = C;
+
+        RV w = Linear.newRVEmpty(x.colCount());
+        RM wtx = Linear.newRMEmpty(x.rowCount(), C);
+
+
+
         return null;
     }
 
 
+    public void computeGradient(RM x, RV y, RV w, RM wtx) {
+        RV g = w.copy();
+        g.dot(-lambda);
+        for (int i = 0; i < x.rowCount(); i++) {
+
+        }
+    }
 }

@@ -21,16 +21,10 @@
  *
  */
 
-package rapaio.math.optimization;
-
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
+package rapaio.math.optimization.lbfgs_cimpl;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
  */
-@Deprecated
-public interface Optimizer {
-
-    RV optimize(RM x, RV y, RV w);
+public class LBFGS {
 }
