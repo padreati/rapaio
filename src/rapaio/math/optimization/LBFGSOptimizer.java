@@ -23,6 +23,8 @@
 
 package rapaio.math.optimization;
 
+import rapaio.math.linear.RV;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
  */
@@ -32,8 +34,8 @@ public class LBFGSOptimizer {
 
         int ndim = 20000, msave = 7;
         int nwork = ndim * (2 * msave + 1) + 2 * msave;
-        double x[], g[], diag[], w[];
-        x = new double[ndim];
+        double g[], diag[], w[];
+        RV x = RV.empty(ndim);
         g = new double[ndim];
         diag = new double[ndim];
         w = new double[nwork];
@@ -45,8 +47,8 @@ public class LBFGSOptimizer {
 
         n = 100;
         m = 5;
-        iprint[1 - 1] = 1;
-        iprint[2 - 1] = 0;
+        iprint[0] = 1;
+        iprint[1] = 0;
         diagco = false;
         eps = 1.0e-5;
         xtol = 1.0e-16;
@@ -54,17 +56,17 @@ public class LBFGSOptimizer {
         iflag[0] = 0;
 
         for (j = 1; j <= n; j += 2) {
-            x[j - 1] = -1.2e0;
-            x[j + 1 - 1] = 1.e0;
+            x.set(j - 1, -1.2e0);
+            x.set(j, 1.e0);
         }
 
         do {
             f = 0;
             for (j = 1; j <= n; j += 2) {
-                t1 = 1.e0 - x[j - 1];
-                t2 = 1.e1 * (x[j + 1 - 1] - x[j - 1] * x[j - 1]);
-                g[j + 1 - 1] = 2.e1 * t2;
-                g[j - 1] = -2.e0 * (x[j - 1] * g[j + 1 - 1] + t1);
+                t1 = 1.e0 - x.get(j - 1);
+                t2 = 1.e1 * (x.get(j) - x.get(j - 1) * x.get(j - 1));
+                g[j] = 2.e1 * t2;
+                g[j - 1] = -2.e0 * (x.get(j - 1) * g[j] + t1);
                 f = f + t1 * t1 + t2 * t2;
             }
 
@@ -174,7 +176,7 @@ class LBFGS {
      * of using <tt>x</tt>. When <tt>LBFGS.lbfgs_cimpl</tt> automatically stops,
      * then <tt>x</tt> and <tt>solution_cache</tt> are the same.
      */
-    public static double[] solution_cache = null;
+    public static RV solution_cache;
     private static double gnorm = 0, stp1 = 0, ftol = 0, stp[] = new double[1], ys = 0, yy = 0, sq = 0, yr = 0, beta = 0, xnorm = 0;
     private static int iter = 0, nfun = 0, point = 0, ispt = 0, iypt = 0, maxfev = 0, info[] = new int[1], bound = 0, npt = 0, cp = 0, i = 0, nfev[] = new int[1], inmc = 0, iycn = 0, iscn = 0;
     private static boolean finish = false;
@@ -274,8 +276,8 @@ class LBFGS {
      * @param eps    Determines the accuracy with which the solution
      *               is to be found. The subroutine terminates when
      *               <pre>
-     *                                                                    ||G|| &lt; EPS max(1,||X||),
-     *                                                         		</pre>
+     *                                                                                  ||G|| &lt; EPS max(1,||X||),
+     *                                                                       		</pre>
      *               where <code>||.||</code> denotes the Euclidean norm.
      * @param xtol   An estimate of the machine precision (e.g. 10e-16 on a
      *               SUN station 3/60). The line search routine will terminate if the
@@ -316,7 +318,7 @@ class LBFGS {
      * @throws ExceptionWithIflag
      */
 
-    public static void lbfgs(int n, int m, double[] x, double f, double[] g, boolean diagco, double[] diag, int[] iprint, double eps, double xtol, int[] iflag) throws ExceptionWithIflag {
+    public static void lbfgs(int n, int m, RV x, double f, double[] g, boolean diagco, double[] diag, int[] iprint, double eps, double xtol, int[] iflag) throws ExceptionWithIflag {
         boolean execute_entire_while_loop = false;
 
         if (w == null || w.length != n * (2 * m + 1) + 2 * m) {
@@ -326,8 +328,7 @@ class LBFGS {
         if (iflag[0] == 0) {
             // Initialize.
 
-            solution_cache = new double[n];
-            System.arraycopy(x, 0, solution_cache, 0, n);
+            solution_cache = RV.copyOf(x);
 
             iter = 0;
 
@@ -369,7 +370,7 @@ class LBFGS {
             ftol = 0.0001;
             maxfev = 20;
 
-            if (iprint[1 - 1] >= 0) lb1(iprint, iter, nfun, gnorm, n, m, x, f, g, stp, finish);
+            if (iprint[0] >= 0) lb1(iprint, iter, nfun, gnorm, n, m, x, f, g, stp, finish);
 
             execute_entire_while_loop = true;
         }
@@ -478,7 +479,9 @@ class LBFGS {
             if (point == m) point = 0;
 
             gnorm = Math.sqrt(ddot(n, g, 0, 1, g, 0, 1));
-            xnorm = Math.sqrt(ddot(n, x, 0, 1, x, 0, 1));
+            // this is old, it should be done until n? or not
+//            xnorm = x.rangeRows(0, n).mapCol(0).norm(2);
+            xnorm = x.norm(2);
             xnorm = Math.max(1.0, xnorm);
 
             if (gnorm / xnorm <= eps) finish = true;
@@ -492,7 +495,9 @@ class LBFGS {
             // So we need to keep a copy of the solution vector as it was at
             // the completion (info[0]==1) of the most recent line search.
 
-            System.arraycopy(x, 0, solution_cache, 0, n);
+            for (int j = 0; j < n; j++) {
+                solution_cache.set(j, x.get(j));
+            }
 
             if (finish) {
                 iflag[0] = 0;
@@ -538,7 +543,7 @@ class LBFGS {
      * @param stp    Current stepsize.
      * @param finish Whether this method should print the ``we're done'' message.
      */
-    public static void lb1(int[] iprint, int iter, int nfun, double gnorm, int n, int m, double[] x, double f, double[] g, double[] stp, boolean finish) {
+    public static void lb1(int[] iprint, int iter, int nfun, double gnorm, int n, int m, RV x, double f, double[] g, double[] stp, boolean finish) {
         int i;
 
         if (iter == 0) {
@@ -548,7 +553,7 @@ class LBFGS {
             if (iprint[2 - 1] >= 1) {
                 System.err.print(" vector x =");
                 for (i = 1; i <= n; i++)
-                    System.err.print("  " + x[i - 1]);
+                    System.err.print("  " + x.get(i - 1));
                 System.err.println("");
 
                 System.err.print(" gradient vector g =");
@@ -580,7 +585,7 @@ class LBFGS {
                     System.err.print(" vector x =  ");
                 }
                 for (i = 1; i <= n; i++)
-                    System.err.print("  " + x[i - 1]);
+                    System.err.print("  " + x.get(i - 1));
                 System.err.println("");
                 if (iprint[2 - 1] == 3) {
                     System.err.print(" gradient vector g =");
@@ -812,7 +817,7 @@ class Mcsrch {
      * Laboratory. Java translation by Robert Dodier, August 1997.
      */
 
-    public static void mcsrch(int n, double[] x, double f, double[] g, double[] s, int is0, double[] stp, double ftol, double xtol, int maxfev, int[] info, int[] nfev, double[] wa) {
+    public static void mcsrch(int n, RV x, double f, double[] g, double[] s, int is0, double[] stp, double ftol, double xtol, int maxfev, int[] info, int[] nfev, double[] wa) {
         p5 = 0.5;
         p66 = 0.66;
         xtrapf = 4;
@@ -846,7 +851,7 @@ class Mcsrch {
             width1 = width / p5;
 
             for (j = 1; j <= n; j += 1) {
-                wa[j - 1] = x[j - 1];
+                wa[j - 1] = x.get(j - 1);
             }
 
             // The variables stx, fx, dgx contain the values of the step,
@@ -894,7 +899,7 @@ class Mcsrch {
                 // We return to main program to obtain F and G.
 
                 for (j = 1; j <= n; j += 1) {
-                    x[j - 1] = wa[j - 1] + stp[0] * s[is0 + j - 1];
+                    x.set(j - 1, wa[j - 1] + stp[0] * s[is0 + j - 1]);
                 }
 
                 info[0] = -1;

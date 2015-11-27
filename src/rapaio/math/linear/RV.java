@@ -45,6 +45,14 @@ public interface RV extends RM {
         return copy;
     }
 
+    static RV copyOf(RV x) {
+        RV copy = empty(Math.max(x.rowCount(), x.colCount()));
+        for (int i = 0; i < x.rowCount(); i++) {
+            copy.set(i, x.get(i));
+        }
+        return copy;
+    }
+
     /**
      * Additional single index accessor for vector elements
      *
@@ -79,15 +87,6 @@ public interface RV extends RM {
 
     default void increment(int i, double increment) {
         set(i, get(i) + increment);
-    }
-
-    default double norm2() {
-        int n = Math.max(rowCount(), colCount());
-        double norm = 0.0;
-        for (int i = 0; i < n; i++) {
-            norm += get(i) * get(i);
-        }
-        return Math.sqrt(norm);
     }
 
     /**
