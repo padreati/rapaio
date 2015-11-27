@@ -112,7 +112,7 @@ public class CTree extends AbstractClassifier {
     public static CTree newDecisionStump() {
         return new CTree()
                 .withMaxDepth(1)
-                .withMinCount(6)
+                .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
                 .withMissingHandler(CTreeMissingHandler.ToAllWeighted)
                 .withFunction(CTreeFunction.GainRatio)
@@ -123,7 +123,7 @@ public class CTree extends AbstractClassifier {
     public static CTree newCART() {
         return new CTree()
                 .withMaxDepth(-1)
-                .withMinCount(2)
+                .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
                 .withMissingHandler(CTreeMissingHandler.ToAllWeighted)
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Binary)

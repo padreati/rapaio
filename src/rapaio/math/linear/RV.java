@@ -23,6 +23,7 @@
 
 package rapaio.math.linear;
 
+import rapaio.data.Var;
 import rapaio.math.linear.impl.SolidRV;
 
 /**
@@ -30,8 +31,19 @@ import rapaio.math.linear.impl.SolidRV;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
  */
-@Deprecated
 public interface RV extends RM {
+
+    static RV empty(int len) {
+        return new SolidRV(len);
+    }
+
+    static RV copyOf(Var x) {
+        RV copy = empty(x.rowCount());
+        for (int i = 0; i < x.rowCount(); i++) {
+            copy.set(i, x.value(i));
+        }
+        return copy;
+    }
 
     /**
      * Additional single index accessor for vector elements
@@ -69,6 +81,15 @@ public interface RV extends RM {
         set(i, get(i) + increment);
     }
 
+    default double norm2() {
+        int n = Math.max(rowCount(), colCount());
+        double norm = 0.0;
+        for (int i = 0; i < n; i++) {
+            norm += get(i) * get(i);
+        }
+        return Math.sqrt(norm);
+    }
+
     /**
      * Dot product between two vectors is equal to the sum of the
      * product of elements from each given position.
@@ -79,7 +100,7 @@ public interface RV extends RM {
      * @return
      */
     default double dotProd(RV b) {
-        int max = Math.min(Math.max(rowCount(), colCount()), Math.max(b.rowCount(), b.colCount()));
+        int max = Math.max(Math.max(rowCount(), colCount()), Math.max(b.rowCount(), b.colCount()));
         double s = 0;
         for (int i = 0; i < max; i++) {
             s += get(i) * b.get(i);

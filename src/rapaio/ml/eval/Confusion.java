@@ -23,8 +23,8 @@
 
 package rapaio.ml.eval;
 
-import rapaio.printer.Printable;
 import rapaio.data.Var;
+import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
 import rapaio.sys.WS;
 
@@ -140,7 +140,6 @@ public class Confusion implements Printable {
             sb.append(String.format("Rec: %s         (Recall)\n", formatFlex(recall)));
             sb.append(String.format("G:   %s         (G-measure)\n", formatFlex(g)));
         }
-        sb.append("\n");
     }
 
     private void addConfusionMatrix(StringBuilder sb) {

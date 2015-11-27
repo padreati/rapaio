@@ -45,8 +45,23 @@ import static rapaio.sys.WS.formatShort;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
  */
-@Deprecated
 public interface RM extends Serializable, Printable {
+
+    static RM empty(int len) {
+        return new SolidRM(len, len);
+    }
+
+    static RM empty(int rows, int cols) {
+        return new SolidRM(rows, cols);
+    }
+
+    static RM identity(int len) {
+        RM I = new SolidRM(len, len);
+        for (int i = 0; i < I.rowCount(); i++) {
+            I.set(i, i, 1.0);
+        }
+        return I;
+    }
 
     /**
      * @return number of rows the matrix has

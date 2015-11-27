@@ -23,6 +23,7 @@
 
 package rapaio.ml.eval;
 
+import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.data.*;
@@ -46,11 +47,14 @@ public class CEvaluation {
 
     public static double cv(Frame df, String classColName, Classifier c, int folds) {
         print("\nCrossValidation with " + folds + " folds\n");
-        print("Model: " + c.fullName() + "\n");
+        print("Model: \n");
+        c.newInstance().printSummary();
+        ;
 
         List<List<Integer>> strata = buildStrata(df, folds, classColName);
 
-        double correct = 0;
+
+        Numeric acc = Numeric.empty();
 
         for (int i = 0; i < folds; i++) {
             Mapping trainMapping = Mapping.empty();
@@ -65,18 +69,19 @@ public class CEvaluation {
             Frame train = MappedFrame.newByRow(df, trainMapping);
             Frame test = MappedFrame.newByRow(df, testMapping);
 
-            c.train(train, classColName);
-            CFit cp = c.fit(test);
-            double fcorrect = 0;
-            for (int j = 0; j < test.rowCount(); j++) {
-                if (test.var(classColName).index(j) == cp.firstClasses().index(j)) {
-                    fcorrect++;
-                }
-            }
-            print(String.format("CV %d, accuracy:%.6f\n", i + 1, fcorrect / (1. * test.rowCount())));
-            correct += fcorrect;
+            Classifier cc = c.newInstance();
+            cc.train(train, classColName);
+            CFit cp = cc.fit(test);
+
+            Confusion conf = new Confusion(test.var(classColName), cp.firstClasses());
+            acc.addValue(conf.accuracy());
+            print(String.format("CV %d\n", i + 1) + conf.summary());
+            print(String.format("Mean: %.6f     (Mean accuracy)\n", CoreTools.mean(acc).value()));
+            print(String.format("SE: %.6f     (Standard error)\n", CoreTools.var(acc).sdValue()));
+            print("==============\n");
         }
-        correct /= (1. * df.rowCount());
+
+        double correct = CoreTools.mean(acc).value();
         print(String.format("Mean accuracy:%.6f\n", correct));
         return correct;
     }
