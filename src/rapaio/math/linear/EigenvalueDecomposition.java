@@ -76,6 +76,8 @@ public class EigenvalueDecomposition implements Serializable {
      * @serial working storage for nonsymmetric algorithm.
      */
     private double[] ort;
+    // Complex scalar division.
+    private transient double cdivr, cdivi;
 
     // Symmetric Householder reduction to tridiagonal form.
     private void tred2() {
@@ -380,9 +382,6 @@ public class EigenvalueDecomposition implements Serializable {
             }
         }
     }
-
-    // Complex scalar division.
-    private transient double cdivr, cdivi;
 
     private void cdiv(double xr, double xi, double yr, double yi) {
         double r, d;
@@ -899,7 +898,7 @@ public class EigenvalueDecomposition implements Serializable {
      * @return D
      */
     public RM getD() {
-        RM D = Linear.newRMEmpty(n, n);
+        RM D = RM.empty(n, n);
         for (int i = 0; i < n; i++) {
             D.set(i, i, d[i]);
             if (e[i] > 0) {

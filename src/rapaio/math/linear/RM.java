@@ -47,10 +47,6 @@ import static rapaio.sys.WS.formatShort;
  */
 public interface RM extends Serializable, Printable {
 
-    static RM empty(int len) {
-        return new SolidRM(len, len);
-    }
-
     static RM empty(int rows, int cols) {
         return new SolidRM(rows, cols);
     }
@@ -210,7 +206,7 @@ public interface RM extends Serializable, Printable {
                     rowCount(), colCount(), B.rowCount(), B.colCount()));
         }
 
-        RM C = Linear.newRMEmpty(rowCount(), B.colCount());
+        RM C = RM.empty(rowCount(), B.colCount());
         IntStream.range(0, rowCount()).parallel().forEach(i -> {
             for (int k = 0; k < colCount(); k++) {
                 for (int j = 0; j < B.colCount(); j++) {
@@ -276,8 +272,8 @@ public interface RM extends Serializable, Printable {
     }
 
     default RM cov() {
-        RM scatter = Linear.newRMEmpty(colCount(), colCount());
-        RV mean = Linear.newRVEmpty(colCount());
+        RM scatter = RM.empty(colCount(), colCount());
+        RV mean = RV.empty(colCount());
         for (int i = 0; i < colCount(); i++) {
             mean.set(i, mapCol(i).mean().value());
         }
@@ -294,8 +290,8 @@ public interface RM extends Serializable, Printable {
     default RM scaleUnit(boolean cols) {
         RM src = cols ? this : this.t();
 
-        RV mean = Linear.newRVEmpty(src.colCount());
-        RV sd = Linear.newRVEmpty(src.colCount());
+        RV mean = RV.empty(src.colCount());
+        RV sd = RV.empty(src.colCount());
         for (int i = 0; i < src.colCount(); i++) {
             mean.set(i, src.mapCol(i).mean().value());
             sd.set(i, src.mapCol(i).var().sdValue());
@@ -309,8 +305,8 @@ public interface RM extends Serializable, Printable {
     }
 
     default RM scatter() {
-        RM scatter = Linear.newRMEmpty(colCount(), colCount());
-        RV mean = Linear.newRVEmpty(colCount());
+        RM scatter = RM.empty(colCount(), colCount());
+        RV mean = RV.empty(colCount());
         for (int i = 0; i < colCount(); i++) {
             mean.set(i, mapCol(i).mean().value());
         }
@@ -328,7 +324,7 @@ public interface RM extends Serializable, Printable {
      * Diagonal vector of values
      */
     default RV diag() {
-        RV rv = Linear.newRVEmpty(rowCount());
+        RV rv = RV.empty(rowCount());
         for (int i = 0; i < rowCount(); i++) {
             rv.set(i, get(i, i));
         }

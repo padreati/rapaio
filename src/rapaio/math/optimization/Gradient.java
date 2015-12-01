@@ -24,7 +24,6 @@
 package rapaio.math.optimization;
 
 import rapaio.math.common.MathTools;
-import rapaio.math.linear.Linear;
 import rapaio.math.linear.RV;
 import rapaio.util.Pair;
 
@@ -43,7 +42,7 @@ public interface Gradient {
      * @return Pair(Vector gradient, Double loss)
      */
     default Pair<RV, Double> compute(RV data, double label, RV weights) {
-        RV gradient = Linear.newRVEmpty(weights.rowCount());
+        RV gradient = RV.empty(weights.rowCount());
         Double loss = compute(data, label, weights, gradient);
         return Pair.valueOf(gradient, loss);
     }
@@ -189,7 +188,7 @@ class LogisticGradient implements Gradient {
 
     @Override
     public Pair<RV, Double> compute(RV data, double label, RV weights) {
-        RV gradient = Linear.newRVEmpty(weights.rowCount());
+        RV gradient = RV.empty(weights.rowCount());
         double loss = compute(data, label, weights, gradient);
         return Pair.valueOf(gradient, loss);
     }
@@ -229,7 +228,7 @@ class LogisticGradient implements Gradient {
                 double maxMargin = Double.NEGATIVE_INFINITY;
                 double maxMarginIndex = 0;
 
-                RV margins = Linear.newRVEmpty(numClasses - 1);
+                RV margins = RV.empty(numClasses - 1);
                 for (int i = 0; i < margins.rowCount(); i++) {
                     double margin = 0.0;
                     for (int j = 0; j < data.rowCount(); j++) {
@@ -307,7 +306,7 @@ class HingeGradient implements Gradient {
             gradient.dot(-labelScaled);
             return Pair.valueOf(gradient, 1.0 - labelScaled * dotProduct);
         } else {
-            return Pair.valueOf(Linear.newRVEmpty(weights.rowCount()), 0.0);
+            return Pair.valueOf(RV.empty(weights.rowCount()), 0.0);
         }
     }
 

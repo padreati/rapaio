@@ -53,7 +53,7 @@ public class QR implements Serializable {
     public QR(RM A) {
         // Initialize.
         QR = A.copy();
-        Rdiag = Linear.newRVEmpty(QR.colCount());
+        Rdiag = RV.empty(QR.colCount());
 
         // Main loop.
         for (int k = 0; k < QR.colCount(); k++) {
@@ -108,7 +108,7 @@ public class QR implements Serializable {
      * @return Lower trapezoidal matrix whose columns define the reflections
      */
     public RM getH() {
-        RM H = Linear.newRMEmpty(QR.rowCount(), QR.colCount());
+        RM H = RM.empty(QR.rowCount(), QR.colCount());
         for (int i = 0; i < QR.rowCount(); i++) {
             for (int j = 0; j < QR.colCount(); j++) {
                 if (i >= j) {
@@ -127,7 +127,7 @@ public class QR implements Serializable {
      * @return R
      */
     public RM getR() {
-        RM R = Linear.newRMEmpty(QR.colCount(), QR.colCount());
+        RM R = RM.empty(QR.colCount(), QR.colCount());
         for (int i = 0; i < QR.colCount(); i++) {
             for (int j = 0; j < QR.colCount(); j++) {
                 if (i < j) {
@@ -149,7 +149,7 @@ public class QR implements Serializable {
      */
 
     public RM getQ() {
-        RM Q = Linear.newRMEmpty(QR.rowCount(), QR.colCount());
+        RM Q = RM.empty(QR.rowCount(), QR.colCount());
         for (int k = QR.colCount() - 1; k >= 0; k--) {
             for (int i = 0; i < QR.rowCount(); i++) {
                 Q.set(i, k, 0.0);

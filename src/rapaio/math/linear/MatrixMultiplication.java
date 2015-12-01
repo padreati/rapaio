@@ -35,7 +35,7 @@ public class MatrixMultiplication {
 
     public static RM ijkParralel(RM A, RM B) {
         // initialise C
-        RM C = Linear.newRMEmpty(A.rowCount(), B.colCount());
+        RM C = RM.empty(A.rowCount(), B.colCount());
         IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
             for (int k = 0; k < A.colCount(); k++) {
                 for (int j = 0; j < B.colCount(); j++) {
@@ -50,7 +50,7 @@ public class MatrixMultiplication {
         int n = A.rowCount();
 
         // initialise C
-        RM C = Linear.newRMEmpty(n, n);
+        RM C = RM.empty(n, n);
         for (int i = 0; i < n; i++) {
             for (int k = 0; k < n; k++) {
                 for (int j = 0; j < n; j++) {
@@ -65,7 +65,7 @@ public class MatrixMultiplication {
         int n = A.rowCount();
 
         // initialise C
-        RM C = Linear.newRMEmpty(n, n);
+        RM C = RM.empty(n, n);
         for (int i = 0; i < n; i++) {
             for (int k = 0; k < n; k++) {
                 for (int j = 0; j < n; j++) {
@@ -78,7 +78,7 @@ public class MatrixMultiplication {
 
     private static RM add(RM A, RM B) {
         int n = A.rowCount();
-        RM C = Linear.newRMEmpty(n, n);
+        RM C = RM.empty(n, n);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 C.set(i, j, A.get(i, j) + B.get(i, j));
@@ -89,7 +89,7 @@ public class MatrixMultiplication {
 
     private static RM subtract(RM A, RM B) {
         int n = A.rowCount();
-        RM C = Linear.newRMEmpty(n, n);
+        RM C = RM.empty(n, n);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 C.set(i, j, A.get(i, j) - B.get(i, j));
@@ -110,8 +110,8 @@ public class MatrixMultiplication {
 
         int n = Math.max(A.rowCount(), Math.max(A.colCount(), B.colCount()));
         int m = nextPowerOfTwo(n);
-        RM APrep = Linear.newRMEmpty(m, m);
-        RM BPrep = Linear.newRMEmpty(m, m);
+        RM APrep = RM.empty(m, m);
+        RM BPrep = RM.empty(m, m);
         for (int i = 0; i < A.rowCount(); i++) {
             for (int j = 0; j < A.colCount(); j++) {
                 APrep.set(i, j, A.get(i, j));
@@ -124,7 +124,7 @@ public class MatrixMultiplication {
         }
 
         RM CPrep = strassenR(APrep, BPrep);
-        RM C = Linear.newRMEmpty(A.rowCount(), B.colCount());
+        RM C = RM.empty(A.rowCount(), B.colCount());
         for (int i = 0; i < A.rowCount(); i++) {
             for (int j = 0; j < B.colCount(); j++) {
                 C.set(i, j, CPrep.get(i, j));
@@ -229,7 +229,7 @@ public class MatrixMultiplication {
             // c22 = p1 + p3 - p2 + p6
 
             // Grouping the results obtained in a single matrix:
-            RM C = Linear.newRMEmpty(n, n);
+            RM C = RM.empty(n, n);
             for (int i = 0; i < newSize; i++) {
                 for (int j = 0; j < newSize; j++) {
                     C.set(i, j, c11.get(i, j));

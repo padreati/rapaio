@@ -482,7 +482,7 @@ public class SVDecomposition implements java.io.Serializable {
      * @return S
      */
     public RM getS() {
-        RM S = Linear.newRMEmpty(n, n);
+        RM S = RM.empty(n, n);
         for (int i = 0; i < n; i++) {
             S.set(i, i, this.s[i]);
         }

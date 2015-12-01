@@ -88,8 +88,8 @@ public class LDA implements Printable {
 
         // compute mean and sd
 
-        mean = Linear.newRVEmpty(xx.colCount());
-        sd = Linear.newRVEmpty(xx.colCount());
+        mean = RV.empty(xx.colCount());
+        sd = RV.empty(xx.colCount());
         for (int i = 0; i < xx.colCount(); i++) {
             mean.set(i, xx.mapCol(i).mean().value());
             sd.set(i, xx.mapCol(i).var().sdValue());
@@ -119,7 +119,7 @@ public class LDA implements Printable {
 
         classMean = new RV[targetLevels.length];
         IntStream.range(0, targetLevels.length).forEach(i -> {
-            classMean[i] = Linear.newRVEmpty(x[i].colCount());
+            classMean[i] = RV.empty(x[i].colCount());
             for (int j = 0; j < x[i].colCount(); j++) {
                 classMean[i].set(j, x[i].mapCol(j).mean().value());
             }
@@ -127,21 +127,21 @@ public class LDA implements Printable {
 
         // build within scatter matrix
 
-        RM sw = Linear.newRMEmpty(inputNames.length, inputNames.length);
+        RM sw = RM.empty(inputNames.length, inputNames.length);
         for (int i = 0; i < targetLevels.length; i++) {
             sw.plus(x[i].scatter());
         }
 
         // build between-class scatter matrix
 
-        RM sb = Linear.newRMEmpty(inputNames.length, inputNames.length);
+        RM sb = RM.empty(inputNames.length, inputNames.length);
         for (int i = 0; i < targetLevels.length; i++) {
             RM cm = scaling ? classMean[i].copy() : classMean[i].copy().minus(mean);
             sb.plus(cm.dot(cm.t()).dot(x[i].rowCount()));
         }
 
         // inverse sw
-        RM swi = new CholeskyDecomposition(sw).solve(Linear.newRMId(inputNames.length));
+        RM swi = new CholeskyDecomposition(sw).solve(RM.identity(inputNames.length));
 
         // use decomp of sbe
         RM sbplus = Linear.pdPower(sb, 0.5, maxRuns, tol);

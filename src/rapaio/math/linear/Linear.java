@@ -39,17 +39,6 @@ import java.util.function.BiFunction;
  */
 public final class Linear {
 
-    /**
-     * Builds a new 0 filled matrix with given rows and cols
-     *
-     * @param rowCount number of rows
-     * @param colCount number of columns
-     * @return new matrix object
-     */
-    public static RM newRMEmpty(int rowCount, int colCount) {
-        return new SolidRM(rowCount, colCount);
-    }
-
     public static RM newRMWrapOf(int rowCount, int colCount, double... values) {
         return new SolidRM(rowCount, colCount, values);
     }
@@ -99,7 +88,7 @@ public final class Linear {
      */
     public static RM newRMFill(int rowCount, int colCount, double fill) {
         if (fill == 0) {
-            return newRMEmpty(rowCount, colCount);
+            return RM.empty(rowCount, colCount);
         }
         RM RM = new SolidRM(rowCount, colCount);
         for (int i = 0; i < RM.rowCount(); i++) {
@@ -132,22 +121,10 @@ public final class Linear {
         return ret;
     }
 
-    public static RV newRVEmpty(int rows) {
-        return new SolidRV(rows);
-    }
-
-    public static RM newRMId(int n) {
-        RM id = Linear.newRMEmpty(n, n);
-        for (int i = 0; i < n; i++) {
-            id.set(i, i, 1.0);
-        }
-        return id;
-    }
-
     // tools
 
     public static RM chol2inv(RM R) {
-        return chol2inv(R, Linear.newRMId(R.rowCount()));
+        return chol2inv(R, RM.identity(R.rowCount()));
     }
 
     public static RM chol2inv(RM R, RM B) {

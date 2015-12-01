@@ -80,8 +80,8 @@ public class PCA implements Printable {
         RM x = Linear.newRMCopyOf(df);
         if (scaling) {
             logger.fine("compute mean, sd and do scaling");
-            mean = Linear.newRVEmpty(x.colCount());
-            sd = Linear.newRVEmpty(x.colCount());
+            mean = RV.empty(x.colCount());
+            sd = RV.empty(x.colCount());
             for (int i = 0; i < x.colCount(); i++) {
                 mean.set(i, x.mapCol(i).mean().value());
                 sd.set(i, x.mapCol(i).var().sdValue());
