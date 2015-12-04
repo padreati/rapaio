@@ -51,6 +51,16 @@ public interface RM extends Serializable, Printable {
         return new SolidRM(rows, cols);
     }
 
+    static RM fill(int rows, int cols, double value) {
+        RM rm = new SolidRM(rows, cols);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                rm.set(i, j, value);
+            }
+        }
+        return rm;
+    }
+
     static RM identity(int len) {
         RM I = new SolidRM(len, len);
         for (int i = 0; i < I.rowCount(); i++) {

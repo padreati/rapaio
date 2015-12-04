@@ -53,6 +53,14 @@ public interface RV extends RM {
         return copy;
     }
 
+    static RV fill(int len, double value) {
+        RV result = new SolidRV(len);
+        for (int i = 0; i < len; i++) {
+            result.set(i, value);
+        }
+        return result;
+    }
+
     /**
      * Additional single index accessor for vector elements
      *

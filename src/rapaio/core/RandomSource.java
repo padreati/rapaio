@@ -46,6 +46,11 @@ public final class RandomSource implements Serializable {
         rand.setSeed(seed);
     }
 
+    /**
+     * Returns the next pseudorandom, uniformly distributed
+     * {@code double} value between {@code 0.0} and
+     * {@code 1.0} from this random number generator's sequence.
+     */
     public static double nextDouble() {
         return rand.nextDouble();
     }

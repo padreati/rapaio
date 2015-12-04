@@ -36,12 +36,17 @@ public class SolidRM implements RM {
     private final double[] values;
 
     public SolidRM(int rowCount, int colCount) {
+        if (((long) rowCount) * ((long) colCount) >= (long) Integer.MAX_VALUE)
+            throw new IllegalArgumentException("Array is too large to allocate with integer indexes");
+
         this.rowCount = rowCount;
         this.colCount = colCount;
         this.values = new double[rowCount * colCount];
     }
 
     public SolidRM(int rowCount, int colCount, double[] values) {
+        if (((long) rowCount) * ((long) colCount) >= (long) Integer.MAX_VALUE)
+            throw new IllegalArgumentException("Array is too large to allocate with integer indexes");
         if (rowCount * colCount != values.length) {
             throw new IllegalArgumentException("rows*cols does not match the number of given values");
         }
