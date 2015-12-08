@@ -37,10 +37,10 @@ import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.QQPlot;
 import rapaio.graphics.plot.plotcomp.*;
 import rapaio.ml.eval.ROC;
+import rapaio.util.func.SFunction;
 
 import java.awt.*;
 import java.util.Arrays;
-import java.util.function.Function;
 
 public final class Plotter {
 
@@ -96,7 +96,7 @@ public final class Plotter {
         return plot().add(new DensityLine(var, kfunc, bandwidth, opts));
     }
 
-    public static Plot funLine(Function<Double, Double> f, GOpt... opts) {
+    public static Plot funLine(SFunction<Double, Double> f, GOpt... opts) {
         return plot().add(new FunctionLine(f, opts));
     }
 
@@ -143,6 +143,8 @@ public final class Plotter {
     public static GOpt color(Color color) {
         return opt -> opt.setColor(gOpts -> new Color[]{color});
     }
+
+    // GRAPHICAL OPTIONS
 
     public static GOpt color(Color[] colors) {
         return opt -> opt.setColor(gOpts -> colors);
@@ -192,5 +194,17 @@ public final class Plotter {
 
     public static GOpt points(int points) {
         return opt -> opt.setPoints(gOpts -> points);
+    }
+
+    public Plot hLine(double a, GOpt... opts) {
+        return plot().add(new ABLine(true, a, opts));
+    }
+
+    public Plot vLine(double a, GOpt... opts) {
+        return plot().add(new ABLine(false, a, opts));
+    }
+
+    public Plot abLine(double a, double b, GOpt... opts) {
+        return plot().add(new ABLine(a, b, opts));
     }
 }

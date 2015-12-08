@@ -32,10 +32,10 @@ import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 
 import static rapaio.graphics.Plotter.bins;
-import static rapaio.graphics.Plotter.color;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -57,6 +57,7 @@ public class Histogram extends PlotComponent {
         this.v = v;
         this.minValue = minValue;
         this.maxValue = maxValue;
+
         // default values for histogram
         options.setColorDefault(gOpts -> new Color[]{gOpts.getPalette().getColor(7)});
         options.apply(opts);
@@ -150,7 +151,6 @@ public class Histogram extends PlotComponent {
     @Override
     public void paint(Graphics2D g2d) {
         rebuild();
-
         g2d.setColor(ColorPalette.STANDARD.getColor(0));
         for (int i = 0; i < freqTable.length; i++) {
             double d = freqTable[i];
@@ -160,48 +160,23 @@ public class Histogram extends PlotComponent {
             }
             Composite old = g2d.getComposite();
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
-            int[] x;
-            int[] y;
-            g2d.setColor(ColorPalette.STANDARD.getColor(0));
-            x = new int[]{
-                    (int) parent.xScale(binStart(i)),
-                    (int) parent.xScale(binStart(i)),
-                    (int) parent.xScale(binStart(i + 1)),
-                    (int) parent.xScale(binStart(i + 1)),
-                    (int) parent.xScale(binStart(i)),};
-            y = new int[]{
-                    (int) parent.yScale(0),
-                    (int) parent.yScale(mind),
-                    (int) parent.yScale(mind),
-                    (int) parent.yScale(0),
-                    (int) parent.yScale(0)};
-            g2d.drawPolyline(x, y, 5);
+            double x = parent.xScale(binStart(i));
+            double y = parent.yScale(mind);
+            double w = parent.xScale(binStart(i + 1)) - parent.xScale(binStart(i));
+            double h = parent.yScale(0) - parent.yScale(mind);
 
             if (d != 0) {
-                x = new int[]{
-                        (int) parent.xScale(binStart(i)) + 1,
-                        (int) parent.xScale(binStart(i)) + 1,
-                        (int) parent.xScale(binStart(i + 1)),
-                        (int) parent.xScale(binStart(i + 1)),
-                        (int) parent.xScale(binStart(i)) + 1
-                };
-                y = new int[]{
-                        (int) parent.yScale(0),
-                        (int) parent.yScale(mind) + ((d == mind) ? 1 : -2),
-                        (int) parent.yScale(mind) + ((d == mind) ? 1 : -2),
-                        (int) parent.yScale(0),
-                        (int) parent.yScale(0)};
                 g2d.setColor(options.getColor(i));
-                g2d.fillPolygon(x, y, 5);
+                g2d.fill(new Rectangle2D.Double(x, y, w, h));
             }
-
+            g2d.setColor(ColorPalette.STANDARD.getColor(0));
+            g2d.draw(new Rectangle2D.Double(x, y, w, h));
             g2d.setComposite(old);
         }
     }
 
     private double binStart(int i) {
-        double value = minValue;
-        double fraction = 1. * (maxValue - minValue) / (1. * options.getBins());
-        return value + fraction * (i);
+        double fraction = (maxValue - minValue) / (1. * options.getBins());
+        return minValue + fraction * i;
     }
 }

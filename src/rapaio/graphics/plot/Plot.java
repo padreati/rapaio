@@ -31,11 +31,11 @@ import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.plot.plotcomp.*;
 import rapaio.ml.eval.ROC;
+import rapaio.util.func.SFunction;
 
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * @author tutuianu
@@ -108,6 +108,19 @@ public class Plot extends HostFigure {
         return this;
     }
 
+    // OPTIONS
+
+    public Plot xLim(double start, double end) {
+        return (Plot) super.xLim(start, end);
+    }
+
+    public Plot yLim(double start, double end) {
+        return (Plot) super.yLim(start, end);
+    }
+
+
+    // COMPONENTS
+
     public Plot hist(Var v, GOpt... opts) {
         add(new Histogram(v, opts));
         return this;
@@ -138,8 +151,13 @@ public class Plot extends HostFigure {
         return this;
     }
 
-    public Plot abLine(boolean horiz, double a, GOpt... opts) {
-        add(new ABLine(horiz, a, opts));
+    public Plot hLine(double a, GOpt... opts) {
+        add(new ABLine(true, a, opts));
+        return this;
+    }
+
+    public Plot vLine(double a, GOpt... opts) {
+        add(new ABLine(false, a, opts));
         return this;
     }
 
@@ -148,7 +166,7 @@ public class Plot extends HostFigure {
         return this;
     }
 
-    public Plot funLine(Function<Double, Double> f, GOpt... opts) {
+    public Plot funLine(SFunction<Double, Double> f, GOpt... opts) {
         add(new FunctionLine(f, opts));
         return this;
     }

@@ -60,7 +60,7 @@ public class RTreeTest {
 //        WS.draw(points(fit.firstResidual()).abLine(0, true, color(Color.LIGHT_GRAY)));
 
         WS.draw(densityLine(fit.firstResidual())
-                .abLine(false, 0).xLim(-10, 10));
+                .hLine(0).xLim(-10, 10));
 //        draw(points(df.var(0), df.var(Sales)));
 
         new RMSE(df.var(Sales), fit.firstFit()).printSummary();

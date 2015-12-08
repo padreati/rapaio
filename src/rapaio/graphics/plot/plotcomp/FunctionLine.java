@@ -28,26 +28,25 @@ import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.plot.PlotComponent;
+import rapaio.util.func.SFunction;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
-import java.util.function.Function;
 
 import static rapaio.graphics.Plotter.points;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class FunctionLine extends PlotComponent {
 
     private static final long serialVersionUID = 8388944194915495215L;
-    private final Function<Double, Double> f;
+    private final SFunction<Double, Double> f;
 
-    public FunctionLine(Function<Double, Double> f, GOpt... opts) {
+    public FunctionLine(SFunction<Double, Double> f, GOpt... opts) {
         this.f = f;
         // apply default values for function line
-        this.options.apply(points(1024));
+        this.options.apply(points(1024 * 10));
         this.options.apply(opts);
     }
 

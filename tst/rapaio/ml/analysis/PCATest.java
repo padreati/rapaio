@@ -28,7 +28,8 @@ import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
-import rapaio.math.linear.*;
+import rapaio.math.linear.Linear;
+import rapaio.math.linear.RM;
 import rapaio.ml.classifier.boost.AdaBoostSAMME;
 import rapaio.ml.eval.CEvaluation;
 import rapaio.sys.WS;
@@ -63,8 +64,8 @@ public class PCATest {
 
 
         WS.draw(points(fit.var(0), fit.var(1), color(df.var("y")), pch(1))
-                .abLine(true, 0)
-                .abLine(false, 0));
+                .hLine(0)
+                .vLine(0));
 
         pca.printSummary();
     }
