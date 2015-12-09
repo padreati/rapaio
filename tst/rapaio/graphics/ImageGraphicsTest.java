@@ -32,11 +32,10 @@ import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
+import rapaio.graphics.base.Figure;
 import rapaio.graphics.base.ImageUtility;
 import rapaio.graphics.plot.BoxPlot;
 import rapaio.graphics.plot.Plot;
-import rapaio.printer.IdeaPrinter;
-import rapaio.sys.WS;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -52,18 +51,20 @@ import static rapaio.graphics.Plotter.*;
  */
 public class ImageGraphicsTest {
 
+    private static final boolean regenerate = false;
+
     @Test
     public void testBoxPlot() throws IOException, URISyntaxException {
 
         Frame df = Datasets.loadIrisDataset();
-        WS.setPrinter(new IdeaPrinter());
         Var x = df.var(0);
         Var factor = df.var("class");
 
         BoxPlot plot = boxPlot(x, factor, color(10, 50, 100));
-        WS.draw(plot);
-//        ImageUtility.saveImage(plot, 500, 400,
-//                "/home/ati/work/rapaio/tst/rapaio/graphics/boxplot-test.png");
+        if (regenerate) {
+            ImageUtility.saveImage(plot, 500, 400,
+                    "/home/ati/work/rapaio/tst/rapaio/graphics/boxplot-test.png");
+        }
 
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("boxplot-test.png"));
@@ -73,17 +74,14 @@ public class ImageGraphicsTest {
     @Test
     public void testFunLine() throws IOException, URISyntaxException {
 
-//        WS.setPrinter(new IdeaPrinter());
-
         Plot plot = funLine(x -> x * x, color(1))
                 .funLine(x -> Math.log1p(x), color(2))
                 .funLine(x -> Math.sin(Math.pow(x, 3)) + 5, color(3), points(10_000))
                 .hLine(5, color(Color.LIGHT_GRAY))
                 .xLim(0, 10)
                 .yLim(0, 10);
-//        WS.draw(plot);
-//        ImageUtility.saveImage(plot, 500, 400,
-//                "/home/ati/work/rapaio/tst/rapaio/graphics/funLine-test.png");
+        if (regenerate)
+            ImageUtility.saveImage(plot, 500, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/funLine-test.png");
 
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("funLine-test.png"));
@@ -93,8 +91,6 @@ public class ImageGraphicsTest {
     @Test
     public void testQQPlot() throws IOException {
 
-//        WS.setPrinter(new IdeaPrinter());
-
         RandomSource.setSeed(1);
         final int N = 100;
         Distribution normal = CoreTools.distNormal();
@@ -103,9 +99,9 @@ public class ImageGraphicsTest {
                 .vLine(0, color(Color.GRAY))
                 .hLine(0, color(Color.GRAY));
 
-//        WS.draw(plot);
-//        ImageUtility.saveImage(plot, 500, 400,
-//                "/home/ati/work/rapaio/tst/rapaio/graphics/qqplot-test.png");
+        if (regenerate)
+            ImageUtility.saveImage(plot, 500, 400,
+                    "/home/ati/work/rapaio/tst/rapaio/graphics/qqplot-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("qqplot-test.png"));
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
@@ -114,7 +110,6 @@ public class ImageGraphicsTest {
     @Test
     public void testHistogram2D() throws IOException, URISyntaxException {
 
-        WS.setPrinter(new IdeaPrinter());
         RandomSource.setSeed(0);
         Frame df = Datasets.loadIrisDataset();
 
@@ -122,8 +117,8 @@ public class ImageGraphicsTest {
         Var y = jitter(df.var(1).solidCopy(), 0.01).withName("y");
 
         Plot plot = hist2d(x, y, color(2), bins(10)).points(x, y);
-//        WS.draw(plot);
-//        ImageUtility.saveImage(plot, 500, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/hist2d-test.png");
+        if (regenerate)
+            ImageUtility.saveImage(plot, 500, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/hist2d-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("hist2d-test.png"));
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
@@ -132,7 +127,6 @@ public class ImageGraphicsTest {
     @Test
     public void testHistogram() throws IOException, URISyntaxException {
 
-//        WS.setPrinter(new IdeaPrinter());
         RandomSource.setSeed(0);
         Frame df = Datasets.loadIrisDataset();
 
@@ -140,10 +134,34 @@ public class ImageGraphicsTest {
         Var y = jitter(df.var(1).solidCopy(), 0.01).withName("y");
 
         Plot plot = hist(x, bins(20));
-//        WS.draw(plot);
-//        ImageUtility.saveImage(plot, 500, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/hist-test.png");
+        if (regenerate)
+            ImageUtility.saveImage(plot, 500, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/hist-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("hist-test.png"));
+        Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
+    }
+
+    @Test
+    public void testGridLayer() throws IOException, URISyntaxException {
+
+        RandomSource.setSeed(0);
+        Frame df = Datasets.loadIrisDataset();
+
+        Var x = jitter(df.var(0).solidCopy(), 0.01).withName("x");
+        Var y = jitter(df.var(1).solidCopy(), 0.01).withName("y");
+
+        Figure fig = gridLayer(3, 3)
+                .add(1, 1, 2, 2, points(x, y, sz(2)))
+                .add(3, 2, 2, 1, hist2d(x, y, color(2)))
+                .add(lines(x))
+                .add(hist(x, bins(20)))
+                .add(hist(y, bins(20)));
+
+//        WS.draw(fig, 600, 600);
+        if (regenerate)
+            ImageUtility.saveImage(fig, 400, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/grid-test.png");
+        BufferedImage bi1 = ImageUtility.buildImage(fig, 400, 400);
+        BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("grid-test.png"));
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 

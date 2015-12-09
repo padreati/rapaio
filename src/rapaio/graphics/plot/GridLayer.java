@@ -40,17 +40,29 @@ public class GridLayer extends HostFigure {
 
     final int rows;
     final int cols;
+    G[][] assign;
+    private java.util.List<G> list = new ArrayList<>();
 
     public GridLayer(int rows, int cols) {
         this.rows = rows;
         this.cols = cols;
+        this.assign = new G[rows][cols];
     }
-
-    private java.util.List<G> list = new ArrayList<>();
 
     @Override
     protected Range buildRange() {
         return null;
+    }
+
+    public GridLayer add(Figure fig) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (assign[i][j] == null) {
+                    return add(i + 1, j + 1, fig);
+                }
+            }
+        }
+        return this;
     }
 
     /**
@@ -62,8 +74,18 @@ public class GridLayer extends HostFigure {
      * @param figure figure to be drawn
      * @return self reference
      */
-    public GridLayer add(int x, int y, HostFigure figure) {
-        list.add(new G(y, x, 1, 1, figure));
+    public GridLayer add(int x, int y, Figure figure) {
+        return add(x, y, 1, 1, figure);
+    }
+
+    public GridLayer add(int row, int col, int w, int h, Figure figure) {
+        G g = new G(row - 1, col - 1, w, h, figure);
+        list.add(g);
+        for (int i = row - 1; i < row - 1 + h; i++) {
+            for (int j = col - 1; j < col - 1 + w; j++) {
+                assign[i][j] = g;
+            }
+        }
         return this;
     }
 
@@ -76,8 +98,8 @@ public class GridLayer extends HostFigure {
 
         for (G g : list) {
             Rectangle rect = new Rectangle(
-                    (int) (r.x + (g.x - 1) * w),
-                    (int) (r.y + (g.y - 1) * h),
+                    (int) (r.x + g.col * w),
+                    (int) (r.y + g.row * h),
                     (int) (w * g.width),
                     (int) (h * g.height)
             );
@@ -90,15 +112,15 @@ final class G implements Serializable {
 
     private static final long serialVersionUID = -2763424578024274986L;
 
-    int x;
-    int y;
+    int row;
+    int col;
     int width;
     int height;
     Figure fig;
 
-    public G(int x, int y, int width, int height, Figure fig) {
-        this.x = x;
-        this.y = y;
+    public G(int row, int col, int width, int height, Figure fig) {
+        this.row = row;
+        this.col = col;
         this.width = width;
         this.height = height;
         this.fig = fig;

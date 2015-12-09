@@ -59,6 +59,8 @@ public class Histogram2D extends PlotComponent {
         parent.bottomMarkers(true);
         parent.bottomThick(true);
         parent.yLab(y.name());
+
+        this.options.setBinsDefault(gOpts -> 10);
     }
 
     @Override

@@ -31,10 +31,7 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.graphics.opt.ColorPalette;
 import rapaio.graphics.opt.GOpt;
-import rapaio.graphics.plot.BarChart;
-import rapaio.graphics.plot.BoxPlot;
-import rapaio.graphics.plot.Plot;
-import rapaio.graphics.plot.QQPlot;
+import rapaio.graphics.plot.*;
 import rapaio.graphics.plot.plotcomp.*;
 import rapaio.ml.eval.ROC;
 import rapaio.util.func.SFunction;
@@ -46,6 +43,10 @@ public final class Plotter {
 
     public static Plot plot(GOpt... opts) {
         return new Plot(opts);
+    }
+
+    public static GridLayer gridLayer(int rows, int cols) {
+        return new GridLayer(rows, cols);
     }
 
     public static QQPlot qqplot(Var points, Distribution dist, GOpt... opts) {
