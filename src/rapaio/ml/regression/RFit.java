@@ -107,7 +107,7 @@ public class RFit implements Printable {
      * @return frame with fitted variables as columns
      */
     public Frame fitFrame() {
-        return SolidFrame.newWrapOf(Arrays.stream(targetNames()).map(fit::get).collect(Collectors.toList()));
+        return SolidFrame.wrapOf(Arrays.stream(targetNames()).map(fit::get).collect(Collectors.toList()));
     }
 
     /**
@@ -134,7 +134,7 @@ public class RFit implements Printable {
     }
 
     public Frame residualsFrame() {
-        return SolidFrame.newWrapOf(Arrays.stream(targetNames()).map(residuals::get).collect(Collectors.toList()));
+        return SolidFrame.wrapOf(Arrays.stream(targetNames()).map(residuals::get).collect(Collectors.toList()));
     }
 
     public Numeric firstResidual() {

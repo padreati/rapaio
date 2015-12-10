@@ -469,7 +469,7 @@ public interface Frame extends Serializable, Printable {
         for (int i = 0; i < names.length; i++) {
             vars[i] = var(names[i]).solidCopy().withName(names[i]);
         }
-        return SolidFrame.newWrapOf(vars);
+        return SolidFrame.wrapOf(vars);
     }
 
     /**

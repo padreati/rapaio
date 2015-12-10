@@ -74,12 +74,16 @@ public class CForest extends AbstractClassifier {
     private Map<String, List<Double>> gainVIMap = new HashMap<>();
     private Map<String, List<Double>> permVIMap = new HashMap<>();
 
-    public CForest() {
+    private CForest() {
         withRuns(10);
         this.baggingMode = BaggingMode.VOTING;
         this.c = CTree.newCART().withVarSelector(VarSelector.AUTO);
         this.oobComp = false;
         this.withSampler(new FrameSampler.Bootstrap(1));
+    }
+
+    public static CForest newRF() {
+        return new CForest();
     }
 
     @Override
@@ -217,7 +221,7 @@ public class CForest extends AbstractClassifier {
         }
         double maxScore = CoreTools.max(score).value();
         Var scaled = Numeric.from(score.rowCount(), row -> 100.0 * score.value(row) / maxScore).withName("scaled score");
-        return Filters.refSort(SolidFrame.newWrapOf(name, score, sd, scaled), score.refComparator(false)).solidCopy();
+        return Filters.refSort(SolidFrame.wrapOf(name, score, sd, scaled), score.refComparator(false)).solidCopy();
     }
 
     public Frame getGainVIInfo() {
@@ -232,7 +236,7 @@ public class CForest extends AbstractClassifier {
         }
         double maxScore = CoreTools.max(score).value();
         Var scaled = Numeric.from(score.rowCount(), row -> 100.0 * score.value(row) / maxScore).withName("scaled score");
-        return Filters.refSort(SolidFrame.newWrapOf(name, score, sd, scaled), score.refComparator(false)).solidCopy();
+        return Filters.refSort(SolidFrame.wrapOf(name, score, sd, scaled), score.refComparator(false)).solidCopy();
     }
 
     public Frame getPermVIInfo() {
@@ -254,7 +258,7 @@ public class CForest extends AbstractClassifier {
             zscores.addValue(Math.abs(zscore));
             pvalues.addValue(pvalue);
         }
-        return Filters.refSort(SolidFrame.newWrapOf(name, score, sds, zscores, pvalues), zscores.refComparator(false)).solidCopy();
+        return Filters.refSort(SolidFrame.wrapOf(name, score, sds, zscores, pvalues), zscores.refComparator(false)).solidCopy();
     }
 
     @Override

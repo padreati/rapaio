@@ -64,8 +64,9 @@ public class HTMLPrinter extends AbstractPrinter {
     }
 
     @Override
-    public void withTextWidth(int textWidth) {
+    public Printer withTextWidth(int textWidth) {
         this.textWidth = textWidth;
+        return this;
     }
 
     @Override

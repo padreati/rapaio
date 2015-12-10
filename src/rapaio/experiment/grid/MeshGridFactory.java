@@ -56,7 +56,7 @@ public class MeshGridFactory {
                 f2.addValue(x2.value(j));
             }
         }
-        CFit fit = c.fit(SolidFrame.newWrapOf(f1, f2));
+        CFit fit = c.fit(SolidFrame.wrapOf(f1, f2));
         int pos = 0;
         for (int i = 0; i < x1.rowCount(); i++) {
             for (int j = 0; j < x2.rowCount(); j++) {

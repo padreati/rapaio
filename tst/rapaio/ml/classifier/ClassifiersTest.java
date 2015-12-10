@@ -29,9 +29,6 @@ import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.bayes.NaiveBayes;
 import rapaio.ml.classifier.boost.AdaBoostSAMME;
 import rapaio.ml.classifier.ensemble.CForest;
-import rapaio.ml.classifier.linear.BinaryLogistic;
-import rapaio.ml.classifier.svm.BinarySMO;
-import rapaio.ml.classifier.svm.kernel.MinKernel;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.eval.CEvaluation;
 
@@ -52,9 +49,9 @@ public class ClassifiersTest {
         df.printSummary();
 
         List<Classifier> classifiers = new ArrayList<>();
-        classifiers.add(new CForest().withRuns(20).withBootstrap(0.5));
-        classifiers.add(new CForest().withRuns(20).withBootstrap(1));
-        classifiers.add(new CForest().withRuns(20).withBootstrap(1).withClassifier(new NaiveBayes()));
+        classifiers.add(CForest.newRF().withRuns(20).withBootstrap(0.5));
+        classifiers.add(CForest.newRF().withRuns(20).withBootstrap(1));
+        classifiers.add(CForest.newRF().withRuns(20).withBootstrap(1).withClassifier(new NaiveBayes()));
         classifiers.add(new NaiveBayes());
 //        classifiers.add(new BinaryLogistic());
 //        classifiers.add(new BinarySMO().withKernel(new MinKernel()));

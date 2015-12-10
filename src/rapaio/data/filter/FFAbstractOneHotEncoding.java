@@ -79,6 +79,6 @@ public class FFAbstractOneHotEncoding extends FFAbstract {
                 vars.add(df.var(varName));
             }
         }
-        return SolidFrame.newWrapOf(df.rowCount(), vars);
+        return SolidFrame.wrapOf(df.rowCount(), vars);
     }
 }

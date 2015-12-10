@@ -79,7 +79,7 @@ public class IrisContour {
 
         Summary.printSummary(iris);
 
-        Classifier c = new CForest().withMCols(1).withRuns(1_000);
+        Classifier c = CForest.newRF().withMCols(1).withRuns(1_000);
 
         c.train(iris, "class");
 
@@ -97,7 +97,7 @@ public class IrisContour {
                 sw.addValue(mg1.getY().value(j));
             }
         }
-        CFit cr2 = c.fit(SolidFrame.newWrapOf(sl, sw));
+        CFit cr2 = c.fit(SolidFrame.wrapOf(sl, sw));
         c.fit(iris).printSummary();
         int pos = 0;
         for (int i = 0; i < x.rowCount(); i++) {

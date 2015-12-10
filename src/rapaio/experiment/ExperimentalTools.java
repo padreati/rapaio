@@ -86,7 +86,7 @@ public final class ExperimentalTools implements Serializable {
                     }
                 }
             }
-            dest.add(SolidFrame.newWrapOf(frame.rowCount(), vars));
+            dest.add(SolidFrame.wrapOf(frame.rowCount(), vars));
         }
 
         return dest;

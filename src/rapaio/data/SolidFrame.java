@@ -65,12 +65,12 @@ public class SolidFrame extends AbstractFrame {
         }
     }
 
-    public static SolidFrame newWrapOf(List<Var> vars) {
+    public static SolidFrame wrapOf(List<Var> vars) {
         int rows = vars.stream().mapToInt(Var::rowCount).min().orElse(0);
-        return newWrapOf(rows, vars);
+        return wrapOf(rows, vars);
     }
 
-    public static SolidFrame newWrapOf(Var... vars) {
+    public static SolidFrame wrapOf(Var... vars) {
         int rows = Integer.MAX_VALUE;
         for (Var var : vars) {
             rows = Math.min(rows, var.rowCount());
@@ -79,11 +79,11 @@ public class SolidFrame extends AbstractFrame {
         return new SolidFrame(rows, Arrays.asList(vars));
     }
 
-    public static SolidFrame newWrapOf(int rows, Var... vars) {
-        return newWrapOf(rows, Arrays.asList(vars));
+    public static SolidFrame wrapOf(int rows, Var... vars) {
+        return wrapOf(rows, Arrays.asList(vars));
     }
 
-    public static SolidFrame newWrapOf(int rows, List<Var> vars) {
+    public static SolidFrame wrapOf(int rows, List<Var> vars) {
         for (Var var : vars) {
             rows = Math.min(rows, var.rowCount());
         }
@@ -98,12 +98,12 @@ public class SolidFrame extends AbstractFrame {
      * @param src      source frame
      * @return new instance of solid frame built according with the source frame variables
      */
-    public static SolidFrame newEmptyFrom(Frame src, int rowCount) {
+    public static SolidFrame emptyFrom(Frame src, int rowCount) {
         Var[] vars = new Var[src.varCount()];
         for (int i = 0; i < vars.length; i++) {
             vars[i] = src.var(i).type().newInstance(rowCount);
         }
-        return SolidFrame.newWrapOf(vars);
+        return SolidFrame.wrapOf(vars);
     }
 
     /**
@@ -114,8 +114,8 @@ public class SolidFrame extends AbstractFrame {
      * @param colNames column names
      * @return the new built frame
      */
-    public static Frame newMatrix(int rows, String... colNames) {
-        return newMatrix(rows, Arrays.asList(colNames));
+    public static Frame matrix(int rows, String... colNames) {
+        return matrix(rows, Arrays.asList(colNames));
     }
 
     /**
@@ -126,14 +126,14 @@ public class SolidFrame extends AbstractFrame {
      * @param colNames column names
      * @return the new built frame
      */
-    public static Frame newMatrix(int rows, List<String> colNames) {
+    public static Frame matrix(int rows, List<String> colNames) {
         List<Var> vars = new ArrayList<>();
         colNames.stream().forEach(n -> vars.add(Numeric.fill(rows, 0).withName(n)));
-        return SolidFrame.newWrapOf(rows, vars);
+        return SolidFrame.wrapOf(rows, vars);
     }
 
-    public static Frame newMatrix(RM rm, String... varNames) {
-        Frame df = newMatrix(rm.rowCount(), varNames);
+    public static Frame matrix(RM rm, String... varNames) {
+        Frame df = matrix(rm.rowCount(), varNames);
         for (int i = 0; i < rm.rowCount(); i++) {
             for (int j = 0; j < rm.colCount(); j++) {
                 df.setValue(i, j, rm.get(i, j));
@@ -144,8 +144,8 @@ public class SolidFrame extends AbstractFrame {
 
     // private constructor
 
-    public static Frame newMatrix(RM rm, List<String> varNames) {
-        Frame df = newMatrix(rm.rowCount(), varNames);
+    public static Frame matrix(RM rm, List<String> varNames) {
+        Frame df = matrix(rm.rowCount(), varNames);
         for (int i = 0; i < rm.rowCount(); i++) {
             for (int j = 0; j < rm.colCount(); j++) {
                 df.setValue(i, j, rm.get(i, j));
@@ -204,7 +204,7 @@ public class SolidFrame extends AbstractFrame {
     public Frame mapVars(VarRange range) {
         List<String> varNames = range.parseVarNames(this);
         List<Var> vars = varNames.stream().map(this::var).collect(Collectors.toList());
-        return SolidFrame.newWrapOf(rowCount(), vars);
+        return SolidFrame.wrapOf(rowCount(), vars);
     }
 
     @Override

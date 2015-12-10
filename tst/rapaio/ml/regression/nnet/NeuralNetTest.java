@@ -165,7 +165,7 @@
 //
 //        Regression nn = new MultiLayerPerceptronRegression(2, 2, 1).withLearningRate(0.1).withRuns(100);
 //
-//        Frame stat = SolidFrame.newMatrix(100, "time", "xor1err", "xor2err", "xor3err", "xor4err");
+//        Frame stat = SolidFrame.matrix(100, "time", "xor1err", "xor2err", "xor3err", "xor4err");
 //        for (int i = 0; i < 1; i++) {
 //            long start = System.currentTimeMillis();
 //            for (int j = 0; j < 4 * 2_000; j++) {

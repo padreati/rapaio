@@ -38,14 +38,14 @@ public class SolidFrameTest {
 
     @Test
     public void testEmptySolidFrame() {
-        Frame df = SolidFrame.newWrapOf();
+        Frame df = SolidFrame.wrapOf();
         assertEquals(0, df.rowCount());
         assertEquals(0, df.varCount());
     }
 
     @Test
     public void testColIndexes() {
-        Frame df = SolidFrame.newWrapOf(
+        Frame df = SolidFrame.wrapOf(
                 Numeric.empty().withName("x"),
                 Numeric.empty().withName("y"),
                 Numeric.empty().withName("z"));
@@ -86,7 +86,7 @@ public class SolidFrameTest {
         vars.add(Numeric.copy(3., 5., 9., 12.).withName("y"));
         vars.add(Nominal.empty(4, "ana", "are", "mere").withName("name"));
         vars.add(Index.seq(1, 4).withName("index"));
-        Frame df = SolidFrame.newWrapOf(vars);
+        Frame df = SolidFrame.wrapOf(vars);
 
         assertEquals(1., df.value(0, 0), 1e-10);
         df.setValue(0, 0, 3.);
@@ -126,18 +126,18 @@ public class SolidFrameTest {
         Var x = Numeric.wrap(1, 2, 3, 4).withName("x");
         Var y = Nominal.copy("a", "c", "b", "a").withName("y");
 
-        Frame df1 = SolidFrame.newWrapOf(x, y);
+        Frame df1 = SolidFrame.wrapOf(x, y);
 
         assertEquals(2, df1.varCount());
         assertEquals(4, df1.rowCount());
 
         try {
-            SolidFrame.newWrapOf(x, y.mapRows(Mapping.range(0, 4)));
+            SolidFrame.wrapOf(x, y.mapRows(Mapping.range(0, 4)));
             assertTrue("should raise an exception", false);
         } catch (IllegalArgumentException ignored) {
         }
 
-        Frame df2 = SolidFrame.newWrapOf(x).bindVars(y);
+        Frame df2 = SolidFrame.wrapOf(x).bindVars(y);
         assertEquals(2, df2.varCount());
         assertEquals(4, df2.rowCount());
         for (int i = 0; i < df1.rowCount(); i++) {
@@ -145,7 +145,7 @@ public class SolidFrameTest {
             assertEquals(df1.label(i, "y"), df2.label(i, "y"));
         }
 
-        df2 = SolidFrame.newWrapOf(x).bindVars(SolidFrame.newWrapOf(y));
+        df2 = SolidFrame.wrapOf(x).bindVars(SolidFrame.wrapOf(y));
         assertEquals(2, df2.varCount());
         assertEquals(4, df2.rowCount());
         for (int i = 0; i < df1.rowCount(); i++) {
@@ -161,9 +161,9 @@ public class SolidFrameTest {
             assertEquals(df1.label(i, "y"), df2.label(i, "y"));
         }
 
-        df2 = SolidFrame.newWrapOf(y).bindVars(
-                SolidFrame.newWrapOf(Numeric.wrap(1, 2).withName("x"))
-                        .bindRows(SolidFrame.newWrapOf(Numeric.wrap(3, 4).withName("x")))
+        df2 = SolidFrame.wrapOf(y).bindVars(
+                SolidFrame.wrapOf(Numeric.wrap(1, 2).withName("x"))
+                        .bindRows(SolidFrame.wrapOf(Numeric.wrap(3, 4).withName("x")))
         );
         assertEquals(2, df2.varCount());
         assertEquals(4, df2.rowCount());
@@ -173,7 +173,7 @@ public class SolidFrameTest {
         }
 
         try {
-            SolidFrame.newWrapOf(
+            SolidFrame.wrapOf(
                     Numeric.wrap(1, 2).withName("x"),
                     BoundVar.newFrom(Numeric.wrap(3, 4).withName("y"))
             );
@@ -184,7 +184,7 @@ public class SolidFrameTest {
 
     @Test
     public void testMatrixBuilders() {
-        Frame df = SolidFrame.newMatrix(10, "a", "b", "c");
+        Frame df = SolidFrame.matrix(10, "a", "b", "c");
         assertEquals(10, df.rowCount());
         assertEquals(3, df.varCount());
 

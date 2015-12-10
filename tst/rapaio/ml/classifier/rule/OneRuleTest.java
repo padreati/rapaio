@@ -59,7 +59,7 @@ public class OneRuleTest {
 
     @Test
     public void testSimpleNumeric() {
-        Frame df = SolidFrame.newWrapOf(SIZE, heightVar, classVar);
+        Frame df = SolidFrame.wrapOf(SIZE, heightVar, classVar);
 
         String[] labels;
         OneRule oneRule = new OneRule();

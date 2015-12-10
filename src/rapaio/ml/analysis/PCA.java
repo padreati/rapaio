@@ -134,7 +134,7 @@ public class PCA implements Printable {
             names[i] = "pca_" + (i + 1);
         }
         RM result = x.dot(eigenVectors.mapCols(dim));
-        return SolidFrame.newMatrix(result, names);
+        return SolidFrame.matrix(result, names);
     }
 
     private void validate(Frame df) {

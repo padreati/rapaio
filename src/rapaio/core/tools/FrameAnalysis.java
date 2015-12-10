@@ -187,7 +187,7 @@ public class FrameAnalysis {
         vars.add(missing);
         vars.addAll(h1);
         vars.addAll(h2);
-        return SolidFrame.newWrapOf(vars);
+        return SolidFrame.wrapOf(vars);
     }
 
 }

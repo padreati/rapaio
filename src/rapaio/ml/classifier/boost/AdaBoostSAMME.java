@@ -53,6 +53,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
 
     private Classifier weak = CTree.newCART().withMaxDepth(6).withMinCount(6);
     private boolean stopOnError = false;
+    private double shrinkage = 1.0;
 
     // model artifacts
 
@@ -69,9 +70,10 @@ public class AdaBoostSAMME extends AbstractClassifier {
 
     @Override
     public AdaBoostSAMME newInstance() {
-        return (AdaBoostSAMME) new AdaBoostSAMME()
+        return new AdaBoostSAMME()
                 .withClassifier(this.weak.newInstance())
                 .withStopOnError(stopOnError)
+                .withShrinkage(shrinkage)
                 .withSampler(sampler())
                 .withRuns(runs());
     }
@@ -119,6 +121,11 @@ public class AdaBoostSAMME extends AbstractClassifier {
         return this;
     }
 
+    public AdaBoostSAMME withShrinkage(double shrinkage) {
+        this.shrinkage = shrinkage;
+        return this;
+    }
+
     @Override
     protected boolean coreTrain(Frame df, Var weights) {
 
@@ -146,21 +153,22 @@ public class AdaBoostSAMME extends AbstractClassifier {
     }
 
     private boolean learnRound(Frame df) {
-        FrameSample sample = sampler().newSample(df, w);
-        Frame dfTrain = sample.df;
-        Var dfWeights = sample.weights.solidCopy();
 
         Classifier hh = weak.newInstance();
-        hh.train(dfTrain, dfWeights, targetNames());
-        CFit p = hh.fit(df, true, false);
+
+        FrameSample sample = sampler().newSample(df, w);
+        hh.train(sample.df, sample.weights.solidCopy(), targetNames());
+
+        CFit fit = hh.fit(df, true, false);
+
         double err = 0;
         for (int j = 0; j < df.rowCount(); j++) {
-            if (p.firstClasses().index(j) != df.var(firstTargetName()).index(j)) {
+            if (fit.firstClasses().index(j) != df.var(firstTargetName()).index(j)) {
                 err += w.value(j);
             }
         }
         err /= w.stream().mapToDouble().sum();
-        double alpha = Math.log((1. - err) / err) + Math.log(k - 1);
+        double alpha = Math.log((1.0 - err) / err) + Math.log(k - 1.0);
         if (err == 0) {
             if (h.isEmpty()) {
                 h.add(hh);
@@ -175,46 +183,48 @@ public class AdaBoostSAMME extends AbstractClassifier {
         a.add(alpha);
 
         for (int j = 0; j < w.rowCount(); j++) {
-            if (p.firstClasses().index(j) != df.var(firstTargetName()).index(j)) {
-                w.setValue(j, w.value(j) * Math.exp(alpha));
+            if (fit.firstClasses().index(j) != df.var(firstTargetName()).index(j)) {
+                w.setValue(j, w.value(j) * Math.exp(alpha * shrinkage));
             }
         }
         double total = w.stream().mapToDouble().reduce(0.0, (x, y) -> x + y);
-        w = w.stream().transValue(x -> x / total).toMappedVar();
+        for (int i = 0; i < w.rowCount(); i++) {
+            w.setValue(i, w.value(i) / total);
+        }
 
         return true;
     }
 
     @Override
     protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
-        CFit p = CFit.build(this, df, withClasses, true);
+        CFit fit = CFit.build(this, df, withClasses, true);
         for (int i = 0; i < h.size(); i++) {
             CFit hp = h.get(i).fit(df, true, false);
             for (int j = 0; j < df.rowCount(); j++) {
                 int index = hp.firstClasses().index(j);
-                p.firstDensity().setValue(j, index, p.firstDensity().value(j, index) + a.get(i));
+                fit.firstDensity().setValue(j, index, fit.firstDensity().value(j, index) + a.get(i));
             }
         }
 
         // simply fit
-        for (int i = 0; i < p.firstDensity().rowCount(); i++) {
+        for (int i = 0; i < fit.firstDensity().rowCount(); i++) {
 
             double max = 0;
-            int prediction = 0;
+            int best = 0;
             double total = 0;
-            for (int j = 1; j < p.firstDensity().varCount(); j++) {
-                total += p.firstDensity().value(i, j);
-                if (p.firstDensity().value(i, j) > max) {
-                    prediction = j;
-                    max = p.firstDensity().value(i, j);
+            for (int j = 1; j < fit.firstDensity().varCount(); j++) {
+                total += fit.firstDensity().value(i, j);
+                if (fit.firstDensity().value(i, j) > max) {
+                    best = j;
+                    max = fit.firstDensity().value(i, j);
                 }
             }
-            for (int j = 1; j < p.firstDensity().varCount(); j++) {
-                p.firstDensity().setValue(i, j, p.firstDensity().value(i, j) / total);
+            for (int j = 1; j < fit.firstDensity().varCount(); j++) {
+                fit.firstDensity().setValue(i, j, fit.firstDensity().value(i, j) / total);
             }
-            p.firstClasses().setIndex(i, prediction);
+            fit.firstClasses().setIndex(i, best);
         }
-        return p;
+        return fit;
     }
 
     @Override

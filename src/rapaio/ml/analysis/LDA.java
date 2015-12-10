@@ -191,7 +191,7 @@ public class LDA implements Printable {
             names[i] = "lda_" + (i + 1);
         }
         RM result = x.dot(eigenVectors.mapCols(dim));
-        return SolidFrame.newMatrix(result, names);
+        return SolidFrame.matrix(result, names);
     }
 
     private void validate(Frame df, String... targetVars) {
@@ -221,7 +221,7 @@ public class LDA implements Printable {
     public String summary() {
         StringBuilder sb = new StringBuilder();
 
-        Frame eval = SolidFrame.newWrapOf(
+        Frame eval = SolidFrame.wrapOf(
                 Numeric.empty(eigenValues.rowCount()).withName("values"),
                 Numeric.empty(eigenValues.rowCount()).withName("percent")
         );

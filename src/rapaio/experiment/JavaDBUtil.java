@@ -151,6 +151,6 @@ public class JavaDBUtil {
         for (int i = 0; i < vars.size(); i++) {
             vars.get(i).withName(colNames.get(i));
         }
-        return SolidFrame.newWrapOf(lists.get(0).size(), vars);
+        return SolidFrame.wrapOf(lists.get(0).size(), vars);
     }
 }

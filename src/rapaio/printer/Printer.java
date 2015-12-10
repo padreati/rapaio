@@ -34,7 +34,7 @@ public interface Printer {
 
     int textWidth();
 
-    void withTextWidth(int chars);
+    Printer withTextWidth(int chars);
 
     int graphicWidth();
 

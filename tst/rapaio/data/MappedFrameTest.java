@@ -49,7 +49,7 @@ public class MappedFrameTest {
 
     @Test
     public void testBuilders() {
-        Frame df = SolidFrame.newWrapOf(
+        Frame df = SolidFrame.wrapOf(
                 Numeric.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x"),
                 Index.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("y")
         );
@@ -74,7 +74,7 @@ public class MappedFrameTest {
         Var x = Numeric.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x");
         Var y = Index.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("y");
         Var z = Numeric.wrap(1 / 1., 1 / 2., 1 / 3., 1 / 4., 1 / 5., 1 / 6., 1 / 7., 1 / 8., 1 / 9., 1 / 10.).withName("z");
-        Frame df1 = SolidFrame.newWrapOf(x, y, z);
+        Frame df1 = SolidFrame.wrapOf(x, y, z);
 
         Frame a = df1
                 .mapRows(Mapping.range(0, 10))

@@ -109,6 +109,6 @@ public class IRM {
     }
 
     public Frame getMap() {
-        return SolidFrame.newWrapOf(x, y);
+        return SolidFrame.wrapOf(x, y);
     }
 }

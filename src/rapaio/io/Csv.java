@@ -251,7 +251,7 @@ public class Csv {
         for (int i = 0; i < varSlots.size(); i++) {
             variables.add(varSlots.get(i).var().withName(names.get(i)));
         }
-        return SolidFrame.newWrapOf(rows - startRow, variables);
+        return SolidFrame.wrapOf(rows - startRow, variables);
     }
 
     List<String> parseLine(String line) {

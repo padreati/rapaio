@@ -34,7 +34,7 @@ public class FrameTest {
 
     @Test
     public void testRemove() {
-        SolidFrame df = SolidFrame.newWrapOf(
+        SolidFrame df = SolidFrame.wrapOf(
                 Nominal.copy("a", "b").withName("x"),
                 Nominal.copy("x", "y").withName("y"),
                 Numeric.wrap(1, 2).withName("z")
@@ -57,7 +57,7 @@ public class FrameTest {
 
     @Test
     public void testSetters() {
-        SolidFrame df = SolidFrame.newWrapOf(
+        SolidFrame df = SolidFrame.wrapOf(
                 Nominal.copy("a", "b").withName("x"),
                 Nominal.copy("x", "y").withName("y"),
                 Numeric.wrap(1, 2).withName("z")
@@ -75,7 +75,7 @@ public class FrameTest {
 
     @Test
     public void testMissing() {
-        SolidFrame df = SolidFrame.newWrapOf(
+        SolidFrame df = SolidFrame.wrapOf(
                 Nominal.copy("a", "b").withName("x"),
                 Nominal.copy("x", "y").withName("y"),
                 Numeric.wrap(1, 2).withName("z")

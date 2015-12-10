@@ -231,7 +231,7 @@ public class BoundFrame extends AbstractFrame {
 
     @Override
     public Frame addRows(int rowCount) {
-        return BoundFrame.newByRows(this, SolidFrame.newEmptyFrom(this, rowCount));
+        return BoundFrame.newByRows(this, SolidFrame.emptyFrom(this, rowCount));
     }
 
     @Override

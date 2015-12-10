@@ -37,7 +37,7 @@ public class VarRangeTest {
 
     @Test
     public void testSmoke() {
-        Frame df = SolidFrame.newWrapOf(
+        Frame df = SolidFrame.wrapOf(
                 Numeric.empty().withName("a"),
                 Numeric.empty().withName("b"),
                 Numeric.empty().withName("c"),

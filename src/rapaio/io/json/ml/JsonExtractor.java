@@ -56,7 +56,7 @@ public class JsonExtractor {
         for (JsonFeature feat : features) {
             vars.add(feat.getResult());
         }
-        return SolidFrame.newWrapOf(vars);
+        return SolidFrame.wrapOf(vars);
     }
 }
 

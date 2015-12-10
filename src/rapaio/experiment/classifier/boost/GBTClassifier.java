@@ -127,6 +127,9 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
         }
         for (int m = 0; m < runs(); m++) {
             buildAdditionalTree(df, weights);
+            if (runningHook() != null) {
+                runningHook().accept(this, m);
+            }
         }
         return true;
     }

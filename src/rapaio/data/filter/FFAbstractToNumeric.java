@@ -60,6 +60,6 @@ public class FFAbstractToNumeric extends FFAbstract {
                 vars[i] = new VFToNumeric().fitApply(df.var(i));
             }
         }
-        return SolidFrame.newWrapOf(df.rowCount(), vars);
+        return SolidFrame.wrapOf(df.rowCount(), vars);
     }
 }

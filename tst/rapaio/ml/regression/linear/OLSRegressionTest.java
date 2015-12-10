@@ -112,7 +112,7 @@ public class OLSRegressionTest {
                 signif = "***";
             betaSignificance.addLabel(signif);
         }
-        Frame coefficients = SolidFrame.newWrapOf(inputNames.length,
+        Frame coefficients = SolidFrame.wrapOf(inputNames.length,
                 betaTerm, betaEstimate, betaStdError, betaTValue, betaPValue, betaSignificance);
 
         Summary.lines(coefficients);

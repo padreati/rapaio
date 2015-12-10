@@ -62,7 +62,7 @@ public class CFit implements Printable {
                 classes.put(target, Nominal.empty(df.rowCount(), model.targetLevels(target)).withName(target));
             }
             if (withDensities) {
-                densities.put(target, SolidFrame.newMatrix(df.rowCount(), model.targetLevels(target)));
+                densities.put(target, SolidFrame.matrix(df.rowCount(), model.targetLevels(target)));
             }
         }
     }

@@ -40,8 +40,9 @@ public abstract class AbstractPrinter implements Printer {
     }
 
     @Override
-    public void withTextWidth(int chars) {
+    public Printer withTextWidth(int chars) {
         textWidth = chars;
+        return this;
     }
 
     @Override

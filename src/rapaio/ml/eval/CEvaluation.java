@@ -30,13 +30,18 @@ import rapaio.data.*;
 import rapaio.data.filter.FFShuffle;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
+import rapaio.printer.IdeaPrinter;
+import rapaio.sys.WS;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
+import static rapaio.graphics.Plotter.color;
+import static rapaio.graphics.Plotter.plot;
 import static rapaio.sys.WS.print;
 
 /**
@@ -200,5 +205,56 @@ public class CEvaluation {
             System.out.flush();
         }
         System.out.println(String.format("Average accuracy: %.6f", total / count));
+    }
+
+    public static PlotRunResult plotRuns(Frame train, Frame test, String targetVar, Classifier c, int runs, int step) {
+
+        BiConsumer<Classifier, Integer> oldHook = c.runningHook();
+        Index r = Index.empty().withName("runs");
+        Numeric testAcc = Numeric.empty().withName("test");
+        Numeric trainAcc = Numeric.empty().withName("train");
+        c.withRunningHook((cs, run) -> {
+
+            if (run % step != 0) {
+                return;
+            }
+            r.addIndex(run);
+            testAcc.addValue(new Confusion(test.var(targetVar), c.fit(test).firstClasses()).accuracy());
+            trainAcc.addValue(new Confusion(train.var(targetVar), c.fit(train).firstClasses()).accuracy());
+
+            WS.setPrinter(new IdeaPrinter());
+            WS.draw(plot()
+                    .lines(r, testAcc, color(1))
+                    .lines(r, trainAcc, color(2))
+            );
+        });
+        c.withRuns(runs);
+        c.train(train, targetVar);
+
+        WS.println("Confusion matrix on training data set: ");
+        Confusion trainConfusion = new Confusion(train.var(targetVar), c.fit(train).firstClasses());
+        trainConfusion.printSummary();
+        WS.println();
+        WS.println("Confusion matrix on test data set: ");
+        Confusion testConfusion = new Confusion(test.var(targetVar), c.fit(test).firstClasses());
+        testConfusion.printSummary();
+
+        return new PlotRunResult(r, trainAcc, testAcc, testConfusion, trainConfusion);
+    }
+
+    public static class PlotRunResult {
+        public final Var runs;
+        public final Var trainAcc;
+        public final Var testAcc;
+        public final Confusion testConfusion;
+        public final Confusion trainConfusion;
+
+        public PlotRunResult(Var runs, Var trainAcc, Var testAcc, Confusion testConfusion, Confusion trainConfusion) {
+            this.runs = runs;
+            this.trainAcc = trainAcc;
+            this.testAcc = testAcc;
+            this.testConfusion = testConfusion;
+            this.trainConfusion = trainConfusion;
+        }
     }
 }

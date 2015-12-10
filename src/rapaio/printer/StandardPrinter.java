@@ -66,8 +66,9 @@ public class StandardPrinter extends AbstractPrinter {
     }
 
     @Override
-    public void withTextWidth(int chars) {
+    public Printer withTextWidth(int chars) {
         textWidth = chars;
+        return this;
     }
 
     @Override

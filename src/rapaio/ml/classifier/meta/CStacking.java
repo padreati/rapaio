@@ -27,8 +27,8 @@ import rapaio.data.*;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
-import rapaio.ml.common.Capabilities;
 import rapaio.ml.classifier.ensemble.CForest;
+import rapaio.ml.common.Capabilities;
 import rapaio.util.Util;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class CStacking extends AbstractClassifier {
     private static final Logger logger = Logger.getLogger(CStacking.class.getName());
 
     private List<Classifier> weaks = new ArrayList<>();
-    private Classifier stacker = new CForest();
+    private Classifier stacker = CForest.newRF();
 
     public CStacking withLearners(Classifier... learners) {
         weaks.clear();
@@ -113,7 +113,7 @@ public class CStacking extends AbstractClassifier {
         List<String> targets = new VarRange(targetVars).parseVarNames(df);
         vars.add(df.var(targets.get(0)).solidCopy());
 
-        return BaseTrainSetup.valueOf(SolidFrame.newWrapOf(vars), w, targetVars);
+        return BaseTrainSetup.valueOf(SolidFrame.wrapOf(vars), w, targetVars);
     }
 
     @Override
@@ -139,7 +139,7 @@ public class CStacking extends AbstractClassifier {
                             .solidCopy()
                             .withName("V" + i);
                 }).collect(toList());
-        return BaseFitSetup.valueOf(SolidFrame.newWrapOf(vars), withClasses, withDistributions);
+        return BaseFitSetup.valueOf(SolidFrame.wrapOf(vars), withClasses, withDistributions);
     }
 
     @Override

@@ -233,7 +233,7 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
-    public Tag<CTreeMissingHandler> getSplitter() {
+    public Tag<CTreeMissingHandler> getMissingHandler() {
         return splitter;
     }
 
@@ -616,7 +616,7 @@ public class CTree extends AbstractClassifier {
             String testName = bestCandidate.getTestName();
 
             // now that we have a best candidate, do the effective split
-            Pair<List<Frame>, List<Var>> frames = tree.getSplitter().get().performSplit(df, weights, bestCandidate);
+            Pair<List<Frame>, List<Var>> frames = tree.getMissingHandler().get().performSplit(df, weights, bestCandidate);
 
             for (int i = 0; i < bestCandidate.getGroupNames().size(); i++) {
                 Node child = new Node(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));

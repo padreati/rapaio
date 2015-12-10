@@ -253,7 +253,7 @@ public class KMeans implements Printable {
             summarySd.setValue(e.getKey(), Math.sqrt(v));
         }
 
-        summary = SolidFrame.newWrapOf(summaryId, summaryCount, summaryMean, summaryVar, summaryVarP, summarySd);
+        summary = SolidFrame.wrapOf(summaryId, summaryCount, summaryMean, summaryVar, summaryVarP, summarySd);
     }
 
     @Override

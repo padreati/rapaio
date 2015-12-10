@@ -77,7 +77,27 @@ public class ChiSquare implements Distribution {
 
     @Override
     public double quantile(double p) {
-        throw new IllegalArgumentException("not implemented");
+
+        // implement binary search
+        double low = 0;
+        double high = 1;
+
+        while (cdf(high) < p) {
+            high *= 2;
+        }
+
+        while (true) {
+            double mid = (low + high) / 2.0;
+            if (cdf(mid) < p) {
+                low = mid;
+            } else {
+                high = mid;
+            }
+            if (Math.abs(p - cdf(low)) < 1e-10) {
+                break;
+            }
+        }
+        return low;
     }
 
     @Override
