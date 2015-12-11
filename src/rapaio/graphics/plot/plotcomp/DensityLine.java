@@ -83,6 +83,7 @@ public class DensityLine extends PlotComponent {
             xmax.set(Double.isNaN(xmax.get()) ? xMax : Math.max(xmax.get(), xMax));
             ymax.set(Double.isNaN(ymax.get()) ? yMax : Math.max(ymax.get(), yMax));
         });
+
         // give some space
         ymax.set(ymax.get() * 1.05);
         Range range = new Range();

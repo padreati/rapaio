@@ -51,13 +51,13 @@ import static rapaio.graphics.Plotter.*;
 
 /**
  * Test some graphics by maintaining some previously generated images.
- *
+ * <p>
  * The main idea is that is hard to check if an image is what some might expect.
  * We first generate an image, we check it and agree that it is ok, and we comment
  * out generation of that image again. At test time we need to be sure that the
  * new generated image is the same. When something is changed in graphic system,
  * other images might be generated, with additionally human check.
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/4/15.
  */
 public class ImageGraphicsTest {
@@ -217,6 +217,30 @@ public class ImageGraphicsTest {
             ImageUtility.saveImage(fig, 500, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/points-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(fig, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("points-test.png"));
+        Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
+    }
+
+    @Test
+    public void tesDensity() throws IOException, URISyntaxException {
+
+        RandomSource.setSeed(0);
+        Frame df = Datasets.loadIrisDataset();
+
+
+        Var x = jitter(df.var(0).solidCopy(), 0.01);
+
+        Plot fig = plot();
+        for (int i = 10; i < 150; i += 5) {
+            fig.densityLine(x, i / 300.0);
+        }
+        fig.densityLine(x, lwd(2), color(1));
+
+//        WS.setPrinter(new IdeaPrinter());
+//        WS.draw(fig, 300, 300);
+        if (regenerate)
+            ImageUtility.saveImage(fig, 500, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/density-test.png");
+        BufferedImage bi1 = ImageUtility.buildImage(fig, 500, 400);
+        BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("density-test.png"));
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
