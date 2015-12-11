@@ -14,4 +14,4 @@ to use, play and develop further old or new ideas with rapaio library.
 
 ## Data visualization
 
-* [Overview of graphical visualization](graphics/graphics.Md)
+* [Overview of graphical visualization](graphics/graphics.Md) - <span style="color:green">(NEW)</span>
