@@ -50,6 +50,14 @@ import static rapaio.data.filter.Filters.updateValue;
 import static rapaio.graphics.Plotter.*;
 
 /**
+ * Test some graphics by maintaining some previously generated images.
+ *
+ * The main idea is that is hard to check if an image is what some might expect.
+ * We first generate an image, we check it and agree that it is ok, and we comment
+ * out generation of that image again. At test time we need to be sure that the
+ * new generated image is the same. When something is changed in graphic system,
+ * other images might be generated, with additionally human check.
+ *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/4/15.
  */
 public class ImageGraphicsTest {
@@ -184,9 +192,31 @@ public class ImageGraphicsTest {
 //        WS.setPrinter(new IdeaPrinter());
 //        WS.draw(fig, 400, 200);
         if (regenerate)
-            ImageUtility.saveImage(fig, 500, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/lines-test.png");
-        BufferedImage bi1 = ImageUtility.buildImage(fig, 500, 400);
+            ImageUtility.saveImage(fig, 300, 200, "/home/ati/work/rapaio/tst/rapaio/graphics/lines-test.png");
+        BufferedImage bi1 = ImageUtility.buildImage(fig, 300, 200);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("lines-test.png"));
+        Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
+    }
+
+    @Test
+    public void tesPoints() throws IOException, URISyntaxException {
+
+        RandomSource.setSeed(0);
+        Frame df = Datasets.loadIrisDataset();
+
+        Var x = updateValue(s -> Math.log1p(s.value()), jitter(df.var(0).solidCopy(), 0.01)).withName("x");
+        Var y = updateValue(s -> Math.log1p(s.value()), jitter(df.var(1).solidCopy(), 0.01)).withName("y");
+
+        Figure fig = gridLayer(1, 2)
+                .add(points(x))
+                .add(points(x, y).yLim(1.5, 1.95));
+
+//        WS.setPrinter(new IdeaPrinter());
+//        WS.draw(fig, 400, 300);
+        if (regenerate)
+            ImageUtility.saveImage(fig, 500, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/points-test.png");
+        BufferedImage bi1 = ImageUtility.buildImage(fig, 500, 400);
+        BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("points-test.png"));
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 

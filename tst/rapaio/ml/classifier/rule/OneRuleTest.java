@@ -153,11 +153,12 @@ public class OneRuleTest {
                 "Learned model:\n" +
                 "input vars: \n" +
                 "\n" +
-                " 0.   cap-shape : NOMINAL  | 5. gill-attachment : NOMINAL  | 10.               stalk-root : NOMINAL  | 15.         veil-type : NOMINAL  | 20. population : NOMINAL  |\n" +
-                " 1. cap-surface : NOMINAL  | 6.    gill-spacing : NOMINAL  | 11. stalk-surface-above-ring : NOMINAL  | 16.        veil-color : NOMINAL  | 21.    habitat : NOMINAL  |\n" +
-                " 2.   cap-color : NOMINAL  | 7.       gill-size : NOMINAL  | 12. stalk-surface-below-ring : NOMINAL  | 17.       ring-number : NOMINAL  |                            \n" +
-                " 3.     bruises : NOMINAL  | 8.      gill-color : NOMINAL  | 13.   stalk-color-above-ring : NOMINAL  | 18.         ring-type : NOMINAL  |                            \n" +
-                " 4.        odor : NOMINAL  | 9.     stalk-shape : NOMINAL  | 14.   stalk-color-below-ring : NOMINAL  | 19. spore-print-color : NOMINAL  |                            \n" +
+                " 0.       cap-shape : NOMINAL  |  6.             gill-spacing : NOMINAL  | 12. stalk-surface-below-ring : NOMINAL  | 18.         ring-type : NOMINAL  |\n" +
+                " 1.     cap-surface : NOMINAL  |  7.                gill-size : NOMINAL  | 13.   stalk-color-above-ring : NOMINAL  | 19. spore-print-color : NOMINAL  |\n" +
+                " 2.       cap-color : NOMINAL  |  8.               gill-color : NOMINAL  | 14.   stalk-color-below-ring : NOMINAL  | 20.        population : NOMINAL  |\n" +
+                " 3.         bruises : NOMINAL  |  9.              stalk-shape : NOMINAL  | 15.                veil-type : NOMINAL  | 21.           habitat : NOMINAL  |\n" +
+                " 4.            odor : NOMINAL  | 10.               stalk-root : NOMINAL  | 16.               veil-color : NOMINAL  |                                   \n" +
+                " 5. gill-attachment : NOMINAL  | 11. stalk-surface-above-ring : NOMINAL  | 17.              ring-number : NOMINAL  |                                   \n" +
                 "\n" +
                 "target vars:\n" +
                 "> classes : NOMINAL [?,p,e]\n" +

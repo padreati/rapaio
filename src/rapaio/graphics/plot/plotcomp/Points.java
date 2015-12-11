@@ -23,7 +23,7 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import rapaio.core.RandomSource;
+import rapaio.core.SamplingTools;
 import rapaio.data.Var;
 import rapaio.graphics.base.Range;
 import rapaio.graphics.opt.GOpt;
@@ -32,9 +32,6 @@ import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author tutuianu
@@ -79,22 +76,25 @@ public class Points extends PlotComponent {
     public void paint(Graphics2D g2d) {
 
         int len = Math.min(x.rowCount(), y.rowCount());
-        List<Integer> pos = new ArrayList<>(len);
-        for (int i = 0; i < len; i++) {
-            pos.add(i);
-        }
-        Collections.shuffle(pos, RandomSource.getRandom());
+        int[] pos = SamplingTools.sampleWOR(len, len);
         for (int j = 0; j < len; j++) {
-            int i = pos.get(j);
+            int i = pos[j];
             if (x.missing(i) || y.missing(i)) {
                 continue;
             }
+
+            double xx = x.value(i);
+            double yy = y.value(i);
+
+            if (!parent.getRange().contains(xx, yy)) continue;
+
             g2d.setColor(options.getColor(i));
             g2d.setStroke(new BasicStroke(options.getLwd()));
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
+
             PchPalette.STANDARD.draw(g2d,
-                    parent.xScale(x.value(i)),
-                    parent.yScale(y.value(i)),
+                    parent.xScale(xx),
+                    parent.yScale(yy),
                     options.getSz(i), options.getPch(i));
         }
     }

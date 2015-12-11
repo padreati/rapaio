@@ -113,8 +113,8 @@ public final class Plotter {
         return plot().add(new Points(x, y, opts));
     }
 
-    public static Plot points(Var x, GOpt... opts) {
-        return plot().add(new Points(Index.seq(x.rowCount()), x, opts));
+    public static Plot points(Var y, GOpt... opts) {
+        return plot().add(new Points(Index.seq(y.rowCount()).withName("pos"), y, opts));
     }
 
     public static Plot rocCurve(ROC roc, GOpt... opts) {
