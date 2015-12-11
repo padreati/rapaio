@@ -49,6 +49,8 @@ public class CFit implements Printable {
     private final Map<String, Nominal> classes = new HashMap<>();
     private final Map<String, Frame> densities = new HashMap<>();
 
+    // builder
+
     private CFit(final Classifier model, final Frame df, final boolean withClasses, final boolean withDensities) {
         this.model = model;
         this.df = df;
@@ -69,17 +71,12 @@ public class CFit implements Printable {
 
     // private constructor
 
-    // builder
     public static CFit build(
             final Classifier model,
             final Frame df,
             final boolean withClasses,
             final boolean withDensities) {
         return new CFit(model, df, withClasses, withDensities);
-    }
-
-    public int getRows() {
-        return df.rowCount();
     }
 
     public boolean isWithClasses() {
@@ -95,7 +92,7 @@ public class CFit implements Printable {
      *
      * @return target variable names
      */
-    public String[] targetVars() {
+    public String[] targetNames() {
         return targetVars.toArray(new String[targetVars.size()]);
     }
 
@@ -104,7 +101,7 @@ public class CFit implements Printable {
      *
      * @return target variable names
      */
-    public String firstTargetVar() {
+    public String firstTargetName() {
         return targetVars.get(0);
     }
 
@@ -123,7 +120,7 @@ public class CFit implements Printable {
      * @return map with target variable names as key and levels as variables
      */
     public String[] firstDictionary() {
-        return dictionaries.get(firstTargetVar());
+        return dictionaries.get(firstTargetName());
     }
 
     /**
@@ -148,7 +145,7 @@ public class CFit implements Printable {
      * @return nominal variable with predicted classes
      */
     public Nominal firstClasses() {
-        return classes.get(firstTargetVar());
+        return classes.get(firstTargetName());
     }
 
     /**
@@ -180,7 +177,7 @@ public class CFit implements Printable {
      * column for each target class, including missing value)
      */
     public Frame firstDensity() {
-        return densities().get(firstTargetVar());
+        return densities().get(firstTargetName());
     }
 
     /**
@@ -215,7 +212,7 @@ public class CFit implements Printable {
         sb.append("\n");
 
         sb.append("Classification results:").append("\n");
-        if (Arrays.asList(df.varNames()).contains(firstTargetVar())) {
+        if (Arrays.asList(df.varNames()).contains(firstTargetName())) {
             sb.append(new Confusion(df.var(model.firstTargetName()), firstClasses()).summary());
         } else {
             sb.append("data frame does not contain target variable.");

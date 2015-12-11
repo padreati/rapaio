@@ -76,14 +76,19 @@ public interface Classifier extends Printable, Serializable {
     }
 
     /**
-     * @return true if the classifier has learned from a sample
-     */
-    boolean hasLearned();
-
-    /**
      * @return the sampler instance used
      */
     FrameSampler sampler();
+
+    /**
+     * Specifies the sampler to be used at learning time.
+     * The sampler is responsible for selecting the instances to be learned.
+     * The default implementation is {@link rapaio.data.sample.FrameSampler.Identity}
+     * which gives all the original training instances.
+     *
+     * @param sampler instance of a new sampler
+     */
+    Classifier withSampler(FrameSampler sampler);
 
     /**
      * Filters which will be applied on input variables
@@ -122,16 +127,6 @@ public interface Classifier extends Printable, Serializable {
      * @return self instance
      */
     Classifier withInputFilters(FFilter... filters);
-
-    /**
-     * Specifies the sampler to be used at learning time.
-     * The sampler is responsible for selecting the instances to be learned.
-     * The default implementation is {@link rapaio.data.sample.FrameSampler.Identity}
-     * which gives all the original training instances.
-     *
-     * @param sampler instance of a new sampler
-     */
-    Classifier withSampler(FrameSampler sampler);
 
     /**
      * Returns input variable names built at learning time
@@ -235,6 +230,11 @@ public interface Classifier extends Printable, Serializable {
     default String firstTargetLevel(int pos) {
         return targetLevels().get(firstTargetName())[pos];
     }
+
+    /**
+     * @return true if the classifier has learned from a sample
+     */
+    boolean hasLearned();
 
     /**
      * Fit a classifier on instances specified by frame, with row weights

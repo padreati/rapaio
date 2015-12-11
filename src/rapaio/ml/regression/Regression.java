@@ -67,6 +67,21 @@ public interface Regression<T extends RFit> extends Printable, Serializable {
     Capabilities capabilities();
 
     /**
+     * @return instance of a sampling device used at training time
+     */
+    FrameSampler sampler();
+
+    /**
+     * Specifies the sampler to be used at learning time.
+     * The sampler is responsible for selecting the instances to be learned.
+     * The default implementation is {@link rapaio.data.sample.FrameSampler.Identity}
+     * which gives all the original training instances.
+     *
+     * @param sampler instance to be used as sampling device
+     */
+    Regression withSampler(FrameSampler sampler);
+
+    /**
      * Filters which will be applied on input variables
      * for various transformations, before the data is learned.
      *
@@ -100,26 +115,6 @@ public interface Regression<T extends RFit> extends Printable, Serializable {
      * @return self instance
      */
     Regression withInputFilters(FFilter... filters);
-
-    /**
-     * @return true if the learning method was called and algorithm was built the model
-     */
-    boolean hasLearned();
-
-    /**
-     * @return instance of a sampling device used at training time
-     */
-    FrameSampler sampler();
-
-    /**
-     * Specifies the sampler to be used at learning time.
-     * The sampler is responsible for selecting the instances to be learned.
-     * The default implementation is {@link rapaio.data.sample.FrameSampler.Identity}
-     * which gives all the original training instances.
-     *
-     * @param sampler instance to be used as sampling device
-     */
-    Regression withSampler(FrameSampler sampler);
 
     /**
      * Returns input variable names built at learning time
@@ -196,6 +191,11 @@ public interface Regression<T extends RFit> extends Printable, Serializable {
     default VarType targetType(int pos) {
         return targetTypes()[pos];
     }
+
+    /**
+     * @return true if the learning method was called and algorithm was built the model
+     */
+    boolean hasLearned();
 
     /**
      * Fit a classifier on instances specified by frame, with row weights

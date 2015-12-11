@@ -70,8 +70,8 @@ public class RFit implements Printable {
         return df;
     }
 
-    public int getRows() {
-        return df.rowCount();
+    public boolean isWithResiduals() {
+        return withResiduals;
     }
 
     /**
