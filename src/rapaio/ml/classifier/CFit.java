@@ -42,7 +42,7 @@ public class CFit implements Printable {
 
     private final Classifier model;
     private final Frame df;
-    private final List<String> targetVars = new ArrayList<>();
+    private final List<String> targetNames = new ArrayList<>();
     private final boolean withClasses;
     private final boolean withDensities;
     private final Map<String, String[]> dictionaries = new HashMap<>();
@@ -58,7 +58,7 @@ public class CFit implements Printable {
         this.withDensities = withDensities;
 
         for (String target : model.targetNames()) {
-            targetVars.add(target);
+            targetNames.add(target);
             dictionaries.put(target, model.targetLevels(target));
             if (withClasses) {
                 classes.put(target, Nominal.empty(df.rowCount(), model.targetLevels(target)).withName(target));
@@ -93,7 +93,7 @@ public class CFit implements Printable {
      * @return target variable names
      */
     public String[] targetNames() {
-        return targetVars.toArray(new String[targetVars.size()]);
+        return targetNames.toArray(new String[targetNames.size()]);
     }
 
     /**
@@ -102,7 +102,7 @@ public class CFit implements Printable {
      * @return target variable names
      */
     public String firstTargetName() {
-        return targetVars.get(0);
+        return targetNames.get(0);
     }
 
     /**
