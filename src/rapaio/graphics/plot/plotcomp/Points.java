@@ -34,9 +34,10 @@ import rapaio.graphics.plot.PlotComponent;
 import java.awt.*;
 
 /**
- * @author tutuianu
+ * Plot component which allows one to add points to a plot.
+ *
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Points extends PlotComponent {
 
     private static final long serialVersionUID = -4766079423843859315L;
