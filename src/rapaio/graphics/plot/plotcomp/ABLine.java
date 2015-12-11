@@ -34,14 +34,17 @@ import java.awt.geom.Line2D;
 /**
  * Plot component which draws a line of the form y = f(x) = a*x + b
  * There is a generic form of the line by calling {@link #ABLine(double, double, GOpt...)}.
- *
+ * <p>
  * Also there is a simpler form for drawing horizontal or vertical lines.
  * The simpler form is called by using {@link #ABLine(boolean, double, GOpt...)},
  * with the boolean parameter specifying if the line is horizontal or vertical.
- *
+ * <p>
+ * Also there are two dedicated shortcuts in plotter {@link Plotter#hLine(double, GOpt...)}
+ * and {@link Plotter#vLine(double, GOpt...)} which can be used to have the shortest code.
+ * <p>
  * The default color is {@link Color#LIGHT_GRAY}, making this useful for drawing guides.
  *
- * @author Aurelian Tutuianu
+ * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class ABLine extends PlotComponent {
 

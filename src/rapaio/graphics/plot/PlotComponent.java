@@ -24,7 +24,6 @@
 package rapaio.graphics.plot;
 
 import rapaio.graphics.base.BaseFigure;
-import rapaio.graphics.plot.Plot;
 
 import java.awt.*;
 
@@ -42,6 +41,14 @@ public abstract class PlotComponent extends BaseFigure {
         }
         this.parent = parent;
         this.options.setParent(parent.getOptions());
+    }
+
+    public double xScale(double x) {
+        return parent.xScale(x);
+    }
+
+    public double yScale(double y) {
+        return parent.yScale(y);
     }
 
     public abstract void paint(Graphics2D g2d);

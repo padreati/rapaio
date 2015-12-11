@@ -38,9 +38,10 @@ import java.awt.geom.Line2D;
 import java.util.function.Function;
 
 /**
+ * Plot sub-component which draws a KDE density estimator.
+ *
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class DensityLine extends PlotComponent {
 
     private static final long serialVersionUID = -9207144655129877629L;
@@ -109,10 +110,10 @@ public class DensityLine extends PlotComponent {
                 g2d.setColor(options.getColor(i));
                 g2d.setStroke(new BasicStroke(options.getLwd()));
                 g2d.draw(new Line2D.Double(
-                        parent.xScale(x.value(i - 1)),
-                        parent.yScale(y.value(i - 1)),
-                        parent.xScale(x.value(i)),
-                        parent.yScale(y.value(i))));
+                        xScale(x.value(i - 1)),
+                        yScale(y.value(i - 1)),
+                        xScale(x.value(i)),
+                        yScale(y.value(i))));
 
             }
         }

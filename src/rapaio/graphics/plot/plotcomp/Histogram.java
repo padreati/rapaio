@@ -38,6 +38,8 @@ import java.util.Arrays;
 import static rapaio.graphics.Plotter.bins;
 
 /**
+ * Plot component which allows one to add a histogram to a plot.
+ *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class Histogram extends PlotComponent {

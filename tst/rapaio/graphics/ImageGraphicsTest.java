@@ -36,6 +36,8 @@ import rapaio.graphics.base.Figure;
 import rapaio.graphics.base.ImageUtility;
 import rapaio.graphics.plot.BoxPlot;
 import rapaio.graphics.plot.Plot;
+import rapaio.printer.IdeaPrinter;
+import rapaio.sys.WS;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -44,6 +46,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static rapaio.data.filter.Filters.jitter;
+import static rapaio.data.filter.Filters.updateValue;
 import static rapaio.graphics.Plotter.*;
 
 /**
@@ -157,11 +160,33 @@ public class ImageGraphicsTest {
                 .add(hist(x, bins(20)))
                 .add(hist(y, bins(20)));
 
-//        WS.draw(fig, 600, 600);
+        WS.setPrinter(new IdeaPrinter());
+        WS.draw(fig, 600, 600);
         if (regenerate)
             ImageUtility.saveImage(fig, 400, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/grid-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(fig, 400, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("grid-test.png"));
+        Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
+    }
+
+    @Test
+    public void testLines() throws IOException, URISyntaxException {
+
+        RandomSource.setSeed(0);
+        Frame df = Datasets.loadIrisDataset();
+
+        Var x = updateValue(s -> Math.log1p(s.value()), jitter(df.var(0).solidCopy(), 0.01)).withName("x");
+
+        Figure fig = gridLayer(1, 2)
+                .add(lines(x))
+                .add(lines(x).yLim(1.5, 1.95));
+
+//        WS.setPrinter(new IdeaPrinter());
+//        WS.draw(fig, 400, 200);
+        if (regenerate)
+            ImageUtility.saveImage(fig, 500, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/lines-test.png");
+        BufferedImage bi1 = ImageUtility.buildImage(fig, 500, 400);
+        BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("lines-test.png"));
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
