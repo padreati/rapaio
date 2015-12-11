@@ -12,3 +12,6 @@ to use, play and develop further old or new ideas with rapaio library.
 
 * [CSV - reading and writing](io/csv-io.Md)
 
+## Data visualization
+
+* [Overview of graphical visualization](graphics/graphics.Md)
