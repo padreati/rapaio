@@ -187,3 +187,4 @@ default from current palette starting with 1
 
 ![Scatter XY points for `petal-length` and `petal-width` variables with colors and legend](../images/graphics-points-iris-1.png)
 
+
