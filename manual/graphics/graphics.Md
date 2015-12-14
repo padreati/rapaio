@@ -170,7 +170,7 @@ value from variable `class` and add a legend for colors.*
             color(iris.var("class")), pch(2))
                 .legend(1.5, 2.2, labels("setosa", "versicolor", "virginica"));
 
-![Scatter XY points for `petal-length` and `petal-width` variables with colors and legend](../images/graphics-points-iris-1.png)
+![Scatter XY points for `petal-length` and `petal-width` variables with colors and legend](../images/graphics-points-iris-2.png)
 
 
 `iris.var("petal-length")` - variable used to define horizontal axis
