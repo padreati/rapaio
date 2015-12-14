@@ -145,7 +145,7 @@ each instance.
 ### Example 1
 
 **Scope**: *Study which is the relation between `petal-length` and `sepal-length`
-from `iris` data set.
+from `iris` data set.*
 
 **Solution**:
 
@@ -157,7 +157,7 @@ from `iris` data set.
 
 **Scope**: *Study which is the relation between `petal-length` and `sepal-length`
 from `iris` data set. Color each point with a different color corresponding with
-value from variable `class` and add a legend for colors.
+value from variable `class` and add a legend for colors.*
 
 **Solution**:
 
