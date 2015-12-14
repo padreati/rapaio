@@ -41,6 +41,7 @@ import rapaio.util.Pair;
 import rapaio.util.Util;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -474,6 +475,15 @@ public class CForest extends AbstractClassifier {
         return cp;
     }
 
+    @Override
+    public CForest withRunningHook(BiConsumer<Classifier, Integer> runningHook) {
+        return (CForest) super.withRunningHook(runningHook);
+    }
+
+    @Override
+    public CForest withPoolSize(int poolSize) {
+        return (CForest) super.withPoolSize(poolSize);
+    }
 
     @Override
     public String summary() {

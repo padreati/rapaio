@@ -37,6 +37,8 @@ import static rapaio.graphics.Plotter.boxPlot;
 
 public class Graphics {
 
+    public static final String root = "/home/ati/work/rapaio/manual/images/";
+
     public static void main(String[] args) throws IOException, URISyntaxException {
 
         WS.setPrinter(new IdeaPrinter().withTextWidth(90));
@@ -47,6 +49,11 @@ public class Graphics {
 
         Figure fig = boxPlot(iris.mapVars("0~3"));
         WS.draw(fig);
-        ImageUtility.saveImage(fig, 600, 400, "/home/ati/work/rapaio/manual-img/graphics-boxplot-iris.png");
+        ImageUtility.saveImage(fig, 600, 400, root + "graphics-boxplot-iris-frame.png");
+
+        fig = boxPlot(iris.var(0), iris.var("class"));
+        WS.draw(fig);
+        ImageUtility.saveImage(fig, 600, 400, root + "graphics-boxplot-iris-sepal-length.png");
+
     }
 }

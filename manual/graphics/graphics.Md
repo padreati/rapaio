@@ -71,4 +71,26 @@ This is the summary of this data set:
 
 ## Box plots
 
+A box plot is a standard way of displaying information about the distribution of
+a continuous data variable based on five data summary. The five data summary consists
+of: *minimum*, *first quartile*, *median* (*second quartile*), *third quartile* and
+*maximum* number summaries.
+
+Box plots might be constructed in different manners by different authors. The common
+characteristics for all types of box-plots is *the box*.
+
+Which means that in all
+cases the bottom margin of the box lies on first quartile, the top margin of the box
+lies on third quartile and the line inside the box lies on median values.
+
+The extensions which comes from the box might differ and rapaio system implements the
+version which it's usually named: **Tuckey's box plot**. What is specific to this
+box plot is that the whiskers lies at the datum still within 1.5 IQR
+(*Interquartile range*).
+
+Any other points above or below whiskers are outliers. Outliers are of two different
+types
+
 ![test text](../images/graphics-boxplot-iris.png)
+
+![Box plots for the same variable, but discriminated by class](../images/graphics-boxplot-iris-sepal-length.png)
