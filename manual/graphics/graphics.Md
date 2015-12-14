@@ -166,5 +166,5 @@ value from variable `class` and add a legend for colors.
                 .add(new Legend(1.5, 2.2,
                 labels("setosa", "versicolor", "virginica"))));
 
-![Scatter XY points for `petal-length` and `petal-width` variables with colors and legend]("../images/graphics-points-iris-2.png")
+![Scatter XY points for `petal-length` and `petal-width` variables with colors and legend]("../images/graphics-points-iris-1.png")
 
