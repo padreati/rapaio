@@ -1,3 +1,7 @@
+* auto-gen TOC:
+{:toc}
+
+
 ## Introduction into data visualization using rapaio library
 
 The purpose of this document is not to exhaust the graphics features of the library
