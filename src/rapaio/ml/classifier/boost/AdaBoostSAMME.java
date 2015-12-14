@@ -36,6 +36,7 @@ import rapaio.ml.common.Capabilities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 /**
  * AdaBoost SAMME classifier is the classical version of AdaBoost which has
@@ -146,7 +147,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
                 break;
             }
             if (runningHook() != null) {
-                runningHook().accept(this, i);
+                runningHook().accept(this, i + 1);
             }
         }
         return true;
@@ -230,6 +231,11 @@ public class AdaBoostSAMME extends AbstractClassifier {
     @Override
     public AdaBoostSAMME withRuns(int runs) {
         return (AdaBoostSAMME) super.withRuns(runs);
+    }
+
+    @Override
+    public AdaBoostSAMME withRunningHook(BiConsumer<Classifier, Integer> runningHook) {
+        return (AdaBoostSAMME) super.withRunningHook(runningHook);
     }
 
     @Override

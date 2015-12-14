@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.logging.Logger;
-import java.util.stream.IntStream;
 
 /**
  * Linear discriminant analysis
@@ -108,22 +107,23 @@ public class LDA implements Printable {
         // compute sliced data for each class
 
         RM[] x = new RM[targetLevels.length];
-        IntStream.range(0, targetLevels.length).forEach(i -> x[i] = xx.mapRows(df.stream()
-                .filter(s -> s.label(targetName).equals(targetLevels[i]))
-                .mapToInt(FSpot::row)
-                .toArray())
-        );
-
+        for (int i = 0; i < targetLevels.length; i++) {
+            int index = i;
+            x[i] = xx.mapRows(df.stream()
+                    .filter(s -> s.label(targetName).equals(targetLevels[index]))
+                    .mapToInt(FSpot::row)
+                    .toArray());
+        }
 
         // compute class means
 
         classMean = new RV[targetLevels.length];
-        IntStream.range(0, targetLevels.length).forEach(i -> {
+        for (int i = 0; i < targetLevels.length; i++) {
             classMean[i] = RV.empty(x[i].colCount());
             for (int j = 0; j < x[i].colCount(); j++) {
                 classMean[i].set(j, x[i].mapCol(j).mean().value());
             }
-        });
+        }
 
         // build within scatter matrix
 
