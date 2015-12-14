@@ -151,7 +151,12 @@ from `iris` data set.*
 
         WS.draw(points(iris.var("petal-length"), iris.var("petal-width")));
 
-![Scatter XY points for `petal-length` and `petal-width` variables]("../images/graphics-points-iris-1.png")
+`iris.var("petal-length")` - variable used to define horizontal axis
+
+`iris.var("petal-width")` - variable used to define vertical axis
+
+
+![Scatter XY points for `petal-length` and `petal-width` variables](../images/graphics-points-iris-1.png)
 
 ### Example 2
 
@@ -162,9 +167,23 @@ value from variable `class` and add a legend for colors.*
 **Solution**:
 
         WS.draw(points(iris.var("petal-length"), iris.var("petal-width"),
-            color(iris.var("class")))
-                .add(new Legend(1.5, 2.2,
-                labels("setosa", "versicolor", "virginica"))));
+            color(iris.var("class")), pch(2))
+                .legend(1.5, 2.2, labels("setosa", "versicolor", "virginica"));
 
-![Scatter XY points for `petal-length` and `petal-width` variables with colors and legend]("../images/graphics-points-iris-1.png")
+`iris.var("petal-length")` - variable used to define horizontal axis
+
+`iris.var("petal-width")` - variable used to define vertical axis
+
+`color(iris.var("class"))` - norminal variable which provides indexes to select colors from
+current palette
+
+`pch(2)` - select the type of figure used to draw points (in this case is a circle
+filled with solid color and a black border)
+
+`legend(1.5, 2.2, labels("setosa", "versicolor", "virginica"))` - adds a legend at the specific
+position specified in the data range; labels are specified by parameter, colors are taken as
+default from current palette starting with 1
+
+
+![Scatter XY points for `petal-length` and `petal-width` variables with colors and legend](../images/graphics-points-iris-1.png)
 

@@ -201,7 +201,7 @@ public class Plot extends HostFigure {
         return this;
     }
 
-    public Plot legend(int x, int y, GOpt... opts) {
+    public Plot legend(double x, double y, GOpt... opts) {
         add(new Legend(x, y, opts));
         return this;
     }
