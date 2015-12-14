@@ -33,7 +33,7 @@ import rapaio.sys.WS;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.graphics.Plotter.boxPlot;
+import static rapaio.graphics.Plotter.*;
 
 public class Graphics {
 
@@ -47,11 +47,11 @@ public class Graphics {
         iris.printSummary();
 
 
-        Figure fig = boxPlot(iris.mapVars("0~3"));
+        Figure fig = boxPlot(iris.mapVars("0~3"), color(1, 2, 3, 4), alpha(0.5f));
         WS.draw(fig);
         ImageUtility.saveImage(fig, 600, 400, root + "graphics-boxplot-iris-frame.png");
 
-        fig = boxPlot(iris.var(0), iris.var("class"));
+        fig = boxPlot(iris.var("sepal-length"), iris.var("class")).title("sepal-length separation");
         WS.draw(fig);
         ImageUtility.saveImage(fig, 600, 400, root + "graphics-boxplot-iris-sepal-length.png");
 

@@ -69,7 +69,7 @@ This is the summary of this data set:
        Max. : 7.900     Max. : 4.400     Max. : 6.900     Max. : 2.500
 
 
-## Box plots
+## Box plot
 
 A box plot is a standard way of displaying information about the distribution of
 a continuous data variable based on five data summary. The five data summary consists
@@ -89,8 +89,50 @@ box plot is that the whiskers lies at the datum still within 1.5 IQR
 (*Interquartile range*).
 
 Any other points above or below whiskers are outliers. Outliers are of two different
-types
+types:
 
-![test text](../images/graphics-boxplot-iris-frame.png)
+* *extreme outliers* - outliers which are at a distance greater or equal than 3*IQR
+* *outliers* - outliers which are at a distance greater or equal than 1.5*IQR
 
-![Box plots for the same variable, but discriminated by class](../images/graphics-boxplot-iris-sepal-length.png)
+### Example 1
+
+**Scope**: *Draw one box plot for each numerical variable from iris data set. We
+want each box plot to have a different color and we want some de-saturated colors.*
+
+**Solution**:
+
+    WS.draw(boxPlot(iris.mapVars("0~3"), color(1, 2, 3, 4), alpha(0.5f)))
+
+![One box plot for each numerical variable](../images/graphics-boxplot-iris-frame.png)
+
+`iris.mapVars("0~3")` obtain a data set from `iris` data set, by keeping only the
+first 4 variables. We do that using the range notation (index of the start variable,
+concatenation symbol `~`, index of the last variable inclusive). Pay attention that
+variable indexes are 0 based.
+
+`color(1, 2, 3, 4)` we use colors from the current color palette, indexed with the
+specified integer values.
+
+`alpha(0.3f)` we de-saturate the drawing keeping only 0.3 of the actual color.
+
+### Example 2
+
+**Scope**: *In order to identify the overlap between values of `sepal-length` variable
+from iris data set, we draw one box plot for each segment of the nominal `class`
+variable, and add a title*
+
+**Solution**:
+
+    WS.draw(boxPlot(iris.var("sepal-length"), iris.var("class"))
+        .title("sepal-length separation"));
+
+`iris.var("sepal-length")` is the variable named `sepal-length` from `iris` data set,
+ which is the numerical variable to be segmented and later box-plotted
+
+ `iris.var("class")` specifies the segment discriminator, depending on the levels of
+ this variable, the same number of levels will be created
+
+ `.title("..")` adds a title to the box plot
+
+![Box plots for the "sepal-length" variable, but discriminated by class](../images/graphics-boxplot-iris-sepal-length.png)
+

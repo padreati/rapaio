@@ -130,6 +130,8 @@ public class BoxPlot extends HostFigure {
     public void paint(Graphics2D g2d, Rectangle rect) {
         super.paint(g2d, rect);
 
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
+
         for (int i = 0; i < vars.length; i++) {
             Var v = vars[i];
             if (v.rowCount() == 0) {
@@ -174,7 +176,6 @@ public class BoxPlot extends HostFigure {
                 if ((point > q[2] + outerFence) || (point < q[0] - outerFence)) {
                     // big outlier
                     g2d.setStroke(new BasicStroke(options.getLwd()));
-                    g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
                     PchPalette.STANDARD.draw(g2d,
                             xScale(x2),
                             yScale(point),
@@ -184,7 +185,6 @@ public class BoxPlot extends HostFigure {
                 if ((point > q[2] + innerFence) || (point < q[0] - innerFence)) {
                     // outlier
                     g2d.setStroke(new BasicStroke(options.getLwd()));
-                    g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
                     PchPalette.STANDARD.draw(g2d,
                             xScale(x2),
                             yScale(point),
