@@ -24,28 +24,35 @@
 package rapaio.graphics.plot.plotcomp;
 
 import rapaio.graphics.base.Range;
-import rapaio.graphics.opt.ColorPalette;
+import rapaio.graphics.opt.GOpt;
+import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.PlotComponent;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.util.stream.IntStream;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
 public class Legend extends PlotComponent {
+
+    private static final long serialVersionUID = 7360504551525942239L;
 
     private final double x;
     private final double y;
-    private final String[] labels;
-    private final int[] colors;
 
-    public Legend(double x, double y, String[] labels, int[] colors) {
+    public Legend(double x, double y, GOpt... opts) {
         this.x = x;
         this.y = y;
-        this.labels = labels;
-        this.colors = colors;
+        this.options.apply(opts);
+    }
+
+    @Override
+    public void initialize(Plot parent) {
+        super.initialize(parent);
+
+        options.setColorDefault(gOpts -> IntStream.range(1, 256).mapToObj(i -> options.getPalette().getColor(i)).toArray(Color[]::new));
     }
 
     @Override
@@ -53,6 +60,9 @@ public class Legend extends PlotComponent {
 
         // TODO I've commented that because it seems like it needs a better treatment
 //        g2d.setFont(MARKERS_FONT);
+
+        String[] labels = options.getLabels();
+
         double minHeight = Double.MAX_VALUE;
         for (String string : labels) {
             double height = g2d.getFontMetrics().getStringBounds(string, g2d).getHeight();
@@ -63,7 +73,7 @@ public class Legend extends PlotComponent {
         double ystart = parent.yScale(y);
 
         for (int i = 0; i < labels.length; i++) {
-            g2d.setColor(ColorPalette.STANDARD.getColor(colors[i]));
+            g2d.setColor(options.getColor(i));
             g2d.draw(new Rectangle2D.Double(xstart, ystart - minHeight / 3, size, 1));
             g2d.drawString(labels[i], (int) (xstart + size + size / 2), (int) (ystart));
             ystart += minHeight + 1;

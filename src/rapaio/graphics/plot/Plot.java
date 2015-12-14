@@ -200,4 +200,9 @@ public class Plot extends HostFigure {
         add(new MeshContour(mg, contour, fill, opts));
         return this;
     }
+
+    public Plot legend(int x, int y, GOpt... opts) {
+        add(new Legend(x, y, opts));
+        return this;
+    }
 }

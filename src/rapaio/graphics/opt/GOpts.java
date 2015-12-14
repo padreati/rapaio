@@ -53,6 +53,7 @@ public class GOpts implements Serializable {
         DEFAULTS.bins = gOpts -> -1;
         DEFAULTS.prob = gOpts -> false;
         DEFAULTS.points = gOpts -> 256;
+        DEFAULTS.labels = gOpts -> new String[]{""};
     }
 
     GOpts parent;
@@ -66,6 +67,7 @@ public class GOpts implements Serializable {
     SFunction<GOpts, Integer> binsDefault;
     SFunction<GOpts, Boolean> probDefault;
     SFunction<GOpts, Integer> pointsDefault;
+    SFunction<GOpts, String[]> labelsDefault;
 
     SFunction<GOpts, ColorPalette> palette;
     SFunction<GOpts, Color[]> color;
@@ -76,6 +78,7 @@ public class GOpts implements Serializable {
     SFunction<GOpts, Integer> bins;
     SFunction<GOpts, Boolean> prob;
     SFunction<GOpts, Integer> points;
+    SFunction<GOpts, String[]> labels;
 
     public GOpts apply(GOpt... options) {
         Arrays.stream(options).forEach(o -> o.apply(this));
@@ -92,7 +95,8 @@ public class GOpts implements Serializable {
                 opt -> opt.setAlpha(alpha),
                 opt -> opt.setBins(bins),
                 opt -> opt.setProb(prob),
-                opt -> opt.setPoints(points)
+                opt -> opt.setPoints(points),
+                opt -> opt.setLabels(labels)
         };
     }
 
@@ -337,6 +341,35 @@ public class GOpts implements Serializable {
         return null;
     }
 
+    public String[] getLabels() {
+        SFunction<GOpts, String[]> c = getUpLabels();
+        if (c == null)
+            c = getUpLabelsDefault();
+        if (c == null)
+            c = DEFAULTS.labels;
+        return c.apply(this);
+    }
+
+    public void setLabels(SFunction<GOpts, String[]> labels) {
+        this.labels = labels;
+    }
+
+    protected SFunction<GOpts, String[]> getUpLabels() {
+        if (labels != null)
+            return labels;
+        if (parent != null)
+            return parent.getUpLabels();
+        return null;
+    }
+
+    protected SFunction<GOpts, String[]> getUpLabelsDefault() {
+        if (labelsDefault != null)
+            return labelsDefault;
+        if (parent != null)
+            return parent.getUpLabelsDefault();
+        return null;
+    }
+
     public void setColor(SFunction<GOpts, Color[]> color) {
         this.color = color;
     }
@@ -383,5 +416,9 @@ public class GOpts implements Serializable {
 
     public void setPointsDefault(SFunction<GOpts, Integer> pointsDefault) {
         this.pointsDefault = pointsDefault;
+    }
+
+    public void setLabelsDefault(SFunction<GOpts, String[]> labels) {
+        this.labels = labelsDefault;
     }
 }

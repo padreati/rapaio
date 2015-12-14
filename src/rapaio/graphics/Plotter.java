@@ -197,6 +197,10 @@ public final class Plotter {
         return opt -> opt.setPoints(gOpts -> points);
     }
 
+    public static GOpt labels(String... labels) {
+        return opt -> opt.setLabels(gOpts -> labels);
+    }
+
     public Plot hLine(double a, GOpt... opts) {
         return plot().add(new ABLine(true, a, opts));
     }

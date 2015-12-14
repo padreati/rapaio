@@ -1,6 +1,3 @@
-* auto-gen TOC:
-{:toc}
-
 
 ## Introduction into data visualization using rapaio library
 
@@ -139,4 +136,35 @@ variable, and add a title*
  `.title("..")` adds a title to the box plot
 
 ![Box plots for the "sepal-length" variable, but discriminated by class](../images/graphics-boxplot-iris-sepal-length.png)
+
+## Points (XY Scatter plot)
+
+We can study the relation between two numerical variables by drawing one point for
+each instance.
+
+### Example 1
+
+**Scope**: *Study which is the relation between `petal-length` and `sepal-length`
+from `iris` data set.
+
+**Solution**:
+
+        WS.draw(points(iris.var("petal-length"), iris.var("petal-width")));
+
+![Scatter XY points for `petal-length` and `petal-width` variables]("../images/graphics-points-iris-1.png")
+
+### Example 2
+
+**Scope**: *Study which is the relation between `petal-length` and `sepal-length`
+from `iris` data set. Color each point with a different color corresponding with
+value from variable `class` and add a legend for colors.
+
+**Solution**:
+
+        WS.draw(points(iris.var("petal-length"), iris.var("petal-width"),
+            color(iris.var("class")))
+                .add(new Legend(1.5, 2.2,
+                labels("setosa", "versicolor", "virginica"))));
+
+![Scatter XY points for `petal-length` and `petal-width` variables with colors and legend]("../images/graphics-points-iris-2.png")
 

@@ -27,6 +27,7 @@ import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.base.Figure;
 import rapaio.graphics.base.ImageUtility;
+import rapaio.graphics.plot.plotcomp.Legend;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 
@@ -54,6 +55,18 @@ public class Graphics {
         fig = boxPlot(iris.var("sepal-length"), iris.var("class")).title("sepal-length separation");
         WS.draw(fig);
         ImageUtility.saveImage(fig, 600, 400, root + "graphics-boxplot-iris-sepal-length.png");
+
+
+        fig = points(iris.var("petal-length"), iris.var("petal-width"));
+        WS.draw(fig);
+        ImageUtility.saveImage(fig, 600, 400, root + "graphics-points-iris-1.png");
+
+
+        fig = points(iris.var("petal-length"), iris.var("petal-width"), color(iris.var("class")))
+                .add(new Legend(1.5, 2.2, labels("setosa", "versicolor", "virginica")));
+        WS.draw(fig);
+        ImageUtility.saveImage(fig, 600, 400, root + "graphics-points-iris-2.png");
+
 
     }
 }
