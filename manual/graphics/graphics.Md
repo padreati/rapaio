@@ -91,6 +91,6 @@ box plot is that the whiskers lies at the datum still within 1.5 IQR
 Any other points above or below whiskers are outliers. Outliers are of two different
 types
 
-![test text](../images/graphics-boxplot-iris.png)
+![test text](../images/graphics-boxplot-iris-frame.png)
 
 ![Box plots for the same variable, but discriminated by class](../images/graphics-boxplot-iris-sepal-length.png)
