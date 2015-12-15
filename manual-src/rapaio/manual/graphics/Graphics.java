@@ -76,11 +76,13 @@ public class Graphics {
                 plot(alpha(0.3f))
                         .hist(iris.var("sepal-length"), 0, 10, bins(40), color(1))
                         .hist(iris.var("petal-length"), 0, 10, bins(40), color(2))
-                        .legend(7, 20, labels("sepal-length", "petal-length"), color(1, 2));
+                        .legend(7, 20, labels("sepal-length", "petal-length"), color(1, 2))
+                        .xLab("variable");
         WS.draw(plot(alpha(0.3f))
                 .hist(iris.var("sepal-length"), 0, 10, bins(40), color(1))
                 .hist(iris.var("petal-length"), 0, 10, bins(40), color(2))
-                .legend(7, 20, labels("sepal-length", "petal-length"), color(1, 2)));
+                .legend(7, 20, labels("sepal-length", "petal-length"), color(1, 2))
+                .xLab("variable"));
 
         ImageUtility.saveImage(fig, 600, 400, root + "graphics-hist-iris-2.png");
 

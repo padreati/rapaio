@@ -275,6 +275,21 @@ transparency for visibility*
     WS.draw(plot(alpha(0.3f))
             .hist(iris.var("sepal-length"), 0, 10, bins(40), color(1))
             .hist(iris.var("petal-length"), 0, 10, bins(40), color(2))
-            .legend(7, 20, labels("sepal-length", "petal-length"), color(1, 2)));
+            .legend(7, 20, labels("sepal-length", "petal-length"), color(1, 2))
+            .xLab("variable"));
+
+* `plot(alpha(0.3f))` - builds an empty plot; this is used only to pass default values for alpha
+for all plot components, otherwise the plot construct would not be needed
+* `hist` - adds a histogram to the current plot
+* `iris.var("sepal-length")` - variable used to build histogram
+* `0, 10` - specifies the range used to compute bins
+* `bins(40)` - specifies the number of bins for histogram
+* `color(1)` - specifies the color to draw the histogram, which is the color indexed with 1 in
+color palette (in this case is red)
+* `legend(7, 20, ...)` - draws a legend at the specified coordinates, values are in the units
+specified by data
+* `labels(..)` - specifies labels for legend
+* `color(1, 2)` - specifies color for legend
+* `xLab` = specifies label text for horizontal axis
 
 ![Histogram of `sepal-length`, `petal-length` variable from iris data set](../images/graphics-hist-iris-2.png)
