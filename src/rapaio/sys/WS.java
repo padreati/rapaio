@@ -31,6 +31,7 @@ import rapaio.printer.StandardPrinter;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.logging.LogManager;
 
@@ -172,19 +173,27 @@ public class WS {
         printer.p(lines);
     }
 
-    public static void draw(Figure figure, int width, int height) {
-        printer.draw(figure, width, height);
-    }
-
     public static void draw(Figure figure) {
         printer.draw(figure);
     }
 
-    public static BufferedImage image(Figure figure, int width, int height) {
+    public static void draw(Figure figure, int width, int height) {
+        printer.draw(figure, width, height);
+    }
+
+    public static BufferedImage buildImage(Figure figure) {
+        return ImageUtility.buildImage(figure, getPrinter().graphicWidth(), getPrinter().graphicHeight());
+    }
+
+    public static BufferedImage buildImage(Figure figure, int width, int height) {
         return ImageUtility.buildImage(figure, width, height);
     }
 
-    public static BufferedImage image(Figure figure) {
-        return ImageUtility.buildImage(figure, getPrinter().graphicWidth(), getPrinter().graphicHeight());
+    public static void saveImage(Figure figure, int width, int height, String fileName) throws IOException {
+        ImageUtility.saveImage(figure, width, height, fileName);
+    }
+
+    public static void saveImage(Figure figure, int width, int height, OutputStream os) throws IOException {
+        ImageUtility.saveImage(figure, width, height, os);
     }
 }

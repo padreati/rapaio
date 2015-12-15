@@ -46,26 +46,43 @@ public class Graphics {
         Frame iris = Datasets.loadIrisDataset();
         iris.printSummary();
 
+        Figure fig = null;
 
-        Figure fig = boxPlot(iris.mapVars("0~3"), color(1, 2, 3, 4), alpha(0.5f));
+//        Figure fig = boxPlot(iris.mapVars("0~3"), color(1, 2, 3, 4), alpha(0.5f));
+//        WS.draw(fig);
+//        ImageUtility.saveImage(fig, 600, 400, root + "graphics-boxplot-iris-frame.png");
+
+//        fig = boxPlot(iris.var("sepal-length"), iris.var("class")).title("sepal-length separation");
+//        WS.draw(fig);
+//        ImageUtility.saveImage(fig, 600, 400, root + "graphics-boxplot-iris-sepal-length.png");
+
+
+//        fig = points(iris.var("petal-length"), iris.var("petal-width"));
+//        WS.draw(fig);
+//        ImageUtility.saveImage(fig, 600, 400, root + "graphics-points-iris-1.png");
+
+
+//        fig = points(iris.var("petal-length"), iris.var("petal-width"), color(iris.var("class")), pch(2))
+//                .legend(1.5, 2.2, labels("setosa", "versicolor", "virginica"));
+//        WS.draw(fig);
+//        ImageUtility.saveImage(fig, 600, 400, root + "graphics-points-iris-2.png");
+
+
+        fig = hist(iris.var("sepal-length"));
         WS.draw(fig);
-        ImageUtility.saveImage(fig, 600, 400, root + "graphics-boxplot-iris-frame.png");
+        ImageUtility.saveImage(fig, 600, 400, root + "graphics-hist-iris-1.png");
 
-        fig = boxPlot(iris.var("sepal-length"), iris.var("class")).title("sepal-length separation");
-        WS.draw(fig);
-        ImageUtility.saveImage(fig, 600, 400, root + "graphics-boxplot-iris-sepal-length.png");
+        fig =
+                plot(alpha(0.3f))
+                        .hist(iris.var("sepal-length"), 0, 10, bins(40), color(1))
+                        .hist(iris.var("petal-length"), 0, 10, bins(40), color(2))
+                        .legend(7, 20, labels("sepal-length", "petal-length"), color(1, 2));
+        WS.draw(plot(alpha(0.3f))
+                .hist(iris.var("sepal-length"), 0, 10, bins(40), color(1))
+                .hist(iris.var("petal-length"), 0, 10, bins(40), color(2))
+                .legend(7, 20, labels("sepal-length", "petal-length"), color(1, 2)));
 
-
-        fig = points(iris.var("petal-length"), iris.var("petal-width"));
-        WS.draw(fig);
-        ImageUtility.saveImage(fig, 600, 400, root + "graphics-points-iris-1.png");
-
-
-        fig = points(iris.var("petal-length"), iris.var("petal-width"), color(iris.var("class")), pch(2))
-                .legend(1.5, 2.2, labels("setosa", "versicolor", "virginica"));
-        WS.draw(fig);
-        ImageUtility.saveImage(fig, 600, 400, root + "graphics-points-iris-2.png");
-
+        ImageUtility.saveImage(fig, 600, 400, root + "graphics-hist-iris-2.png");
 
     }
 }

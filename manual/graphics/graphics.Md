@@ -69,6 +69,53 @@ This is the summary of this data set:
     2nd Qu. : 6.400  2nd Qu. : 3.300  2nd Qu. : 5.100  2nd Qu. : 1.800
        Max. : 7.900     Max. : 4.400     Max. : 6.900     Max. : 2.500
 
+## Brief overview
+
+Drawing of graphical figures or text output is handled by classes which implements
+interface `rapaio.printer.Printer`. There are some built-in implementations of this interface.
+The default one is `StandardPrinter`, which allows printing text at console and
+drawing graphics in a Swing modal window. Another used implementation is `IdeaPrinter`,
+which is similar with standard printer for text output, but for graphics drawing implements
+a TCP/IP protocol with serialization which allows plug-ins like `rapaio-studio` to handle
+graphics drawing.
+
+A printer can be instantiated by itself by a handy way of using it is by the means of
+the utility class called `rapaio.sys.WS` (which comes from **W**ork **W**pace). This is
+an utility class which offers static shortcut methods yo allow one to simulate a working
+session. This class has an instance of a printer implementation (which can be changes by
+`WS.setPrinter` method) and shortcuts for text output and drawing.
+
+We are interested here in methods for drawing, so the workspace contains methods for this
+purpose. All of those methods works with a construct which contains all the indications
+regarding what kind of graphic should be built. This construct implements interface
+`rapaio.graphics.base.Figure`. Thus a figure is a construct which allows the printer system
+to obtain images which can be later drawn over graphical surfaces. Also, there are methods
+which allows one to obtain an image directly from a figure, or store an image directly on
+a disk file.
+
+Here are the shortcut methods implemented in `WS` utility:
+
+* *void draw(Figure figure)* - draws a figure in a printing system; the size of drawing is
+either adaptive of has the default size of a graphical image contained in the printer
+implementation.
+
+* *void draw(Figure figure, int width, int height)* - draws a figure with dimensions specified
+by width and height
+
+* *BufferedImage buildImage(Figure figure)* - builds an image from a figure with dimensions
+specified as default width and default height from printer system
+
+* *BufferedImage buildImage(Figure figure, int width, int height)* - builds an image from
+a figure with specified dimensions
+
+* *void saveImage(Figure figure, int width, int height, String fileName)* - builds an image
+with specified dimensions by width and height from a given figure, and save the image into
+a *png* file with the specified file name
+
+* *void saveImage(Figure figure, int width, int height, OutputStream os)* - builds an image
+with specified dimensions by width and height, and send the image in *png* format to the
+specified output stream (could be a file or could be sent over network)
+
 
 ## Box plot
 
@@ -187,3 +234,47 @@ filled with solid color and a black border)
 position specified in the data range; labels are specified by parameter, colors are taken as
 default from current palette starting with 1
 
+## Histogram
+
+A histogram is a graphical representation of the distribution of a continuous variable.
+The histogram is only an estimation of the distribution. To construct a histogram you have
+to *bin* the range of values from the variable in a sequence of equal length intervals,
+and later on counting the values from each bin. Histograms can display counts, or can display
+proportions which are counts divided by the total number of values.
+
+Because the histogram uses bins that the main parameter of a histogram is the bin width. The bin
+width is specified indirectly by specifying the number of bins to be computed. To compute
+the width of the bins we need the number of bins and the minimum and maximum value of the
+range of values. The range of values can be computed automatically from data or they can be
+specified specifically when the histogram is built.
+
+Also, the number of bins can be omited, in which case this number is estimated also from data,
+using Freedman-Diaconis rule (see [Freedman-Diaconis wikipedia page](https://en.wikipedia.org/wiki/Freedman%E2%80%93Diaconis_rule))
+for more details.
+
+### Example 1
+
+**Scope**: *Build a histogram with default values to estimate the pdf of `sepal-length`
+variable from `iris` data set.*
+
+**Solution**:
+
+    WS.draw(hist(iris.var("sepal-length")));
+
+![Histogram of `sepal-length` variable from iris data set](../images/graphics-hist-iris-1.png)
+
+### Example 2
+
+**Scope**: *Build two overlapped histograms with default values to estimate the
+pdf of `sepal-length` and `petal-length` variables from `iris` data set.
+We want to get bins in range (0-10) of width 0.25, colored with red, and blue, with a big
+transparency for visibility*
+
+**Solution**:
+
+    WS.draw(plot(alpha(0.3f))
+            .hist(iris.var("sepal-length"), 0, 10, bins(40), color(1))
+            .hist(iris.var("petal-length"), 0, 10, bins(40), color(2))
+            .legend(7, 20, labels("sepal-length", "petal-length"), color(1, 2)));
+
+![Histogram of `sepal-length`, `petal-length` variable from iris data set](../images/graphics-hist-iris-2.png)
