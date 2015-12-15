@@ -117,6 +117,23 @@ with specified dimensions by width and height, and send the image in *png* forma
 specified output stream (could be a file or could be sent over network)
 
 
+Now in order to build figures one can instantiate and compose figures directly in a
+pure Java way. Here is an example:
+
+    Plot plot = new Plot();
+    plot.add(new Histogram(iris.var("sepal-length"), 0, 10, bins(40), color(10), prob(true)));
+    plot.add(new DensityLine(iris.var("sepal-length"), lwd(2), color(2)));
+    WS.draw(plot);
+
+
+It is simple enough and structured. However graphical tools offers also a class named
+`rapaio.graphics.Plotter` which has a lot of shortcut methods to help one to
+simplify the above code. Here is an example:
+
+    WS.draw(hist(iris.var("sepal-length"), 0, 10, bins(40), color(10), prob(true))
+            .densityLine(iris.var("sepal-length"), lwd(2), color(2)));
+
+
 ## Box plot
 
 A box plot is a standard way of displaying information about the distribution of

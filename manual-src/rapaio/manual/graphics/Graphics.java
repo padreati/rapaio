@@ -27,6 +27,9 @@ import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.base.Figure;
 import rapaio.graphics.base.ImageUtility;
+import rapaio.graphics.plot.Plot;
+import rapaio.graphics.plot.plotcomp.DensityLine;
+import rapaio.graphics.plot.plotcomp.Histogram;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 
@@ -45,6 +48,15 @@ public class Graphics {
 
         Frame iris = Datasets.loadIrisDataset();
         iris.printSummary();
+
+
+        Plot plot = new Plot();
+        plot.add(new Histogram(iris.var("sepal-length"), 0, 10, bins(40), color(10), prob(true)));
+        plot.add(new DensityLine(iris.var("sepal-length"), lwd(2), color(2)));
+        WS.draw(plot);
+
+        WS.draw(hist(iris.var("sepal-length"), 0, 10, bins(40), color(10), prob(true))
+                .densityLine(iris.var("sepal-length"), lwd(2), color(2)));
 
         Figure fig = null;
 
@@ -81,7 +93,7 @@ public class Graphics {
         WS.draw(plot(alpha(0.3f))
                 .hist(iris.var("sepal-length"), 0, 10, bins(40), color(1))
                 .hist(iris.var("petal-length"), 0, 10, bins(40), color(2))
-                .legend(7, 20, labels("sepal-length", "petal-length"), color(1, 2))
+                .legend(7, 20, labels("sepal-length", "petal-length"))
                 .xLab("variable"));
 
         ImageUtility.saveImage(fig, 600, 400, root + "graphics-hist-iris-2.png");
