@@ -346,7 +346,7 @@ available in rapaio library and also some custom can be built.
         x.stream().forEach(s -> p.funLine(xi -> new Normal(s.value(), bw).pdf(xi) / x.rowCount(), color(1)));
         WS.draw(p);
 
-![KDE construction from a sample of points]("../images/graphics-kde-1.png")
+![KDE construction from a sample of points](../images/graphics-kde-1.png)
 
 With red are depicted the kernel functions used to spread probability around sample points.
 With black is depicted the kernel density estimation which is the sum of all individual
