@@ -278,6 +278,8 @@ transparency for visibility*
             .legend(7, 20, labels("sepal-length", "petal-length"), color(1, 2))
             .xLab("variable"));
 
+![Histogram of `sepal-length`, `petal-length` variable from iris data set](../images/graphics-hist-iris-2.png)
+
 * `plot(alpha(0.3f))` - builds an empty plot; this is used only to pass default values for alpha
 for all plot components, otherwise the plot construct would not be needed
 * `hist` - adds a histogram to the current plot
@@ -292,4 +294,3 @@ specified by data
 * `color(1, 2)` - specifies color for legend
 * `xLab` = specifies label text for horizontal axis
 
-![Histogram of `sepal-length`, `petal-length` variable from iris data set](../images/graphics-hist-iris-2.png)
