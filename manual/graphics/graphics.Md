@@ -372,4 +372,4 @@ bandwidth values*
             .forEach(v -> p2.densityLine(iris.var("sepal-length"), v));
     WS.draw(p2);
 
-![Multiple kernel density estimates with various bandwith parameter values](../graphics/graphics-kde-3.png)
+![Multiple kernel density estimates with various bandwidth parameter values](../images/graphics-kde-3.png)
