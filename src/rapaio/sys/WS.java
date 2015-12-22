@@ -181,11 +181,11 @@ public class WS {
         printer.draw(figure, width, height);
     }
 
-    public static BufferedImage buildImage(Figure figure) {
+    public static BufferedImage image(Figure figure) {
         return ImageUtility.buildImage(figure, getPrinter().graphicWidth(), getPrinter().graphicHeight());
     }
 
-    public static BufferedImage buildImage(Figure figure, int width, int height) {
+    public static BufferedImage image(Figure figure, int width, int height) {
         return ImageUtility.buildImage(figure, width, height);
     }
 

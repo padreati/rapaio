@@ -173,4 +173,8 @@ public class CorrSpearman implements Printable {
             start = end + 1;
         }
     }
+
+    public double singleValue() {
+        return rho[0][1];
+    }
 }

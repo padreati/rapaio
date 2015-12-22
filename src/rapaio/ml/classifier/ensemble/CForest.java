@@ -27,6 +27,7 @@ import rapaio.core.CoreTools;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.tools.DVector;
 import rapaio.data.*;
+import rapaio.data.filter.FFilter;
 import rapaio.data.filter.Filters;
 import rapaio.data.sample.FrameSample;
 import rapaio.data.sample.FrameSampler;
@@ -483,6 +484,11 @@ public class CForest extends AbstractClassifier {
     @Override
     public CForest withPoolSize(int poolSize) {
         return (CForest) super.withPoolSize(poolSize);
+    }
+
+    @Override
+    public CForest withInputFilters(FFilter... filters) {
+        return (CForest) super.withInputFilters(filters);
     }
 
     @Override

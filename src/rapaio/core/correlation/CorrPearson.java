@@ -32,8 +32,7 @@ import rapaio.printer.Printable;
 import java.util.Arrays;
 import java.util.List;
 
-import static rapaio.sys.WS.formatFlex;
-import static rapaio.sys.WS.getPrinter;
+import static rapaio.sys.WS.*;
 
 /**
  * /**
@@ -147,7 +146,7 @@ public class CorrPearson implements Printable {
             table[0][i] = i + ".";
             table[i][0] = i + "." + names[i - 1];
             for (int j = 1; j < names.length + 1; j++) {
-                table[i][j] = formatFlex(pearson[i - 1][j - 1]);
+                table[i][j] = formatShort(pearson[i - 1][j - 1]);
                 if (i == j) {
                     table[i][j] = "x";
                 }

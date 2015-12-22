@@ -207,7 +207,7 @@ public class CEvaluation {
         System.out.println(String.format("Average accuracy: %.6f", total / count));
     }
 
-    public static PlotRunResult plotRuns(Frame train, Frame test, String targetVar, Classifier c, int runs, int step) {
+    public static PlotRunResult plotRunsAcc(Frame train, Frame test, String targetVar, Classifier c, int runs, int step) {
 
         BiConsumer<Classifier, Integer> oldHook = c.runningHook();
         Index r = Index.empty().withName("runs");
@@ -240,6 +240,44 @@ public class CEvaluation {
         testConfusion.printSummary();
 
         return new PlotRunResult(r, trainAcc, testAcc, testConfusion, trainConfusion);
+    }
+
+    public static PlotRunResult plotRunsRoc(Frame train, Frame test, String targetVar, String label, Classifier cc, int runs, int step) {
+
+        Classifier c = cc.newInstance();
+        BiConsumer<Classifier, Integer> oldHook = c.runningHook();
+        Index r = Index.empty().withName("runs");
+        Numeric testAuc = Numeric.empty().withName("test");
+        Numeric trainAuc = Numeric.empty().withName("train");
+        c.withRunningHook((cs, run) -> {
+
+            if ((run % step != 0) && run != 1) {
+                return;
+            }
+            r.addIndex(run);
+            testAuc.addValue(new ROC(c.fit(test).firstDensity().var(label), test.var(targetVar), label).auc());
+            trainAuc.addValue(new ROC(c.fit(train).firstDensity().var(label), train.var(targetVar), label).auc());
+
+            WS.setPrinter(new IdeaPrinter());
+            WS.draw(plot()
+                    .lines(r, testAuc, color(1))
+                    .lines(r, trainAuc, color(2))
+                    .title("testAuc: " + WS.formatFlex(testAuc.value(testAuc.rowCount() - 1)))
+            );
+        });
+        c.withRuns(runs);
+        c.train(train, targetVar);
+
+        WS.println("Confusion matrix on training data set: ");
+        Confusion trainConfusion = new Confusion(train.var(targetVar), c.fit(train).firstClasses());
+        trainConfusion.printSummary();
+        WS.println();
+        WS.println("Confusion matrix on test data set: ");
+        Confusion testConfusion = new Confusion(test.var(targetVar), c.fit(test).firstClasses());
+        testConfusion.printSummary();
+
+
+        return new PlotRunResult(r, trainAuc, testAuc, testConfusion, trainConfusion);
     }
 
     public static class PlotRunResult {

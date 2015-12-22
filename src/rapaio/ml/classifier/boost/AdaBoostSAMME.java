@@ -26,6 +26,7 @@ package rapaio.ml.classifier.boost;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
+import rapaio.data.filter.FFilter;
 import rapaio.data.sample.FrameSample;
 import rapaio.data.sample.FrameSampler;
 import rapaio.ml.classifier.AbstractClassifier;
@@ -236,6 +237,11 @@ public class AdaBoostSAMME extends AbstractClassifier {
     @Override
     public AdaBoostSAMME withRunningHook(BiConsumer<Classifier, Integer> runningHook) {
         return (AdaBoostSAMME) super.withRunningHook(runningHook);
+    }
+
+    @Override
+    public AdaBoostSAMME withInputFilters(FFilter... filters) {
+        return (AdaBoostSAMME) super.withInputFilters(filters);
     }
 
     @Override

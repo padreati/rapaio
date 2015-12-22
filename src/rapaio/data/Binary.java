@@ -405,7 +405,7 @@ public final class Binary extends AbstractVar {
 
     @Override
     public Var newInstance(int rows) {
-        return Binary.empty(rows);
+        return Binary.empty(rows).withName(name());
     }
 
     @Override

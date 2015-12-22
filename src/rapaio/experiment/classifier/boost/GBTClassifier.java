@@ -64,7 +64,12 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
     @Override
     public GBTClassifier newInstance() {
-        return (GBTClassifier) new GBTClassifier().withRuns(runs());
+        return (GBTClassifier) new GBTClassifier()
+                .withBootstrap(useBootstrap)
+                .withBootstrapSize(bootstrapSize)
+                .withShrinkage(shrinkage)
+                .withTree(classifier.newInstance())
+                .withRuns(runs());
     }
 
     @Override

@@ -373,3 +373,4 @@ bandwidth values*
     WS.draw(p2);
 
 ![Multiple kernel density estimates with various bandwidth parameter values](../images/graphics-kde-3.png)
+

@@ -147,6 +147,13 @@ public interface Mapping extends Serializable {
      * @return a stream of indexed values
      */
     IntStream rowStream();
+
+    /**
+     * Builds an array of values with rows indexes
+     */
+    default int[] toArray() {
+        return rowStream().toArray();
+    }
 }
 
 final class ListMapping implements Mapping {

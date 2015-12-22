@@ -494,8 +494,8 @@ public class Csv {
                     var.addLabel(value);
                 } catch (Throwable th) {
                     throw new IllegalArgumentException(
-                            String.format("Could not parse value %s in type %s. Error: %s",
-                                    value, var.type(), th.getMessage()));
+                            String.format("Could not parse value %s in type %s for variable with name: %s. Error: %s",
+                                    value, var.type(), var.name(), th.getMessage()));
                 }
             }
         }
