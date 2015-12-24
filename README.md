@@ -4,7 +4,7 @@ Statistics, data mining and machine learning toolbox in Java.
 
 **Rapaio Manual** is not published on gitbooks.com. You can find the link [here](https://www.gitbook.com/book/aureliantutuianu/rapaio-manual/details).
 Using the previous link you can select the format of manual. To read it directly online you can use this direct link:
-(Rapaion Manual - read on-line)[https://aureliantutuianu.gitbooks.io/rapaio-manual/content/].
+[Rapaion Manual - read on-line](https://aureliantutuianu.gitbooks.io/rapaio-manual/content/).
 
 
 Implemented Features
