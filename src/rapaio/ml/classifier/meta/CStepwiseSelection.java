@@ -37,7 +37,6 @@ import rapaio.sys.WS;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -46,7 +45,7 @@ import static java.util.stream.Collectors.toList;
 public class CStepwiseSelection extends AbstractClassifier {
 
     private static final long serialVersionUID = 2642562123626893974L;
-
+    Classifier best;
     private Classifier c;
     private int minVars = 1;
     private int maxVars = 1;
@@ -54,10 +53,8 @@ public class CStepwiseSelection extends AbstractClassifier {
     private int restartAfter = 2;
     private int maxSearch = Integer.MAX_VALUE;
     private Frame test;
-
     // training artifacts
     private List<String> selection;
-    Classifier best;
 
     @Override
     public String name() {
@@ -78,7 +75,7 @@ public class CStepwiseSelection extends AbstractClassifier {
                 .withMinVars(minVars)
                 .withStartSelection(startSelection)
                 .withTestFrame(test)
-                .withPoolSize(poolSize());
+                .withRunPoolSize(runPoolSize());
     }
 
     @Override

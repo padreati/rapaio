@@ -46,8 +46,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.*;
 
 /**
  * Breiman random forest implementation.
@@ -286,7 +285,7 @@ public class CForest extends AbstractClassifier {
             permVIMap.clear();
         }
 
-        if (poolSize() == 0) {
+        if (runPoolSize() == 0) {
             predictors = new ArrayList<>();
             for (int i = 0; i < runs(); i++) {
                 Pair<Classifier, List<Integer>> weak = buildWeakPredictor(df, weights);
@@ -312,7 +311,7 @@ public class CForest extends AbstractClassifier {
             // same moment when weak tree was built
             // for a real running hook behavior run without threading
             predictors = new ArrayList<>();
-            List<Pair<Classifier, List<Integer>>> list = Util.rangeStream(runs(), poolSize() > 0).boxed()
+            List<Pair<Classifier, List<Integer>>> list = Util.rangeStream(runs(), runPoolSize() > 0).boxed()
                     .map(s -> buildWeakPredictor(df, weights))
                     .collect(Collectors.toList());
             for (int i = 0; i < list.size(); i++) {
@@ -482,8 +481,8 @@ public class CForest extends AbstractClassifier {
     }
 
     @Override
-    public CForest withPoolSize(int poolSize) {
-        return (CForest) super.withPoolSize(poolSize);
+    public CForest withRunPoolSize(int poolSize) {
+        return (CForest) super.withRunPoolSize(poolSize);
     }
 
     @Override

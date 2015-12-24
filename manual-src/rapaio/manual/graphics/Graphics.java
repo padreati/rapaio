@@ -43,7 +43,7 @@ import static rapaio.graphics.Plotter.*;
 
 public class Graphics {
 
-    public static final String root = "/home/ati/work/rapaio/manual/images/";
+    public static final String root = "/home/ati/work/rapaio/manual-src/images/";
 
     public static Frame iris;
 

@@ -40,8 +40,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
-import static rapaio.graphics.Plotter.color;
-import static rapaio.graphics.Plotter.plot;
+import static rapaio.graphics.Plotter.*;
 import static rapaio.sys.WS.print;
 
 /**
@@ -242,9 +241,17 @@ public class CEvaluation {
         return new PlotRunResult(r, trainAcc, testAcc, testConfusion, trainConfusion);
     }
 
-    public static PlotRunResult plotRunsRoc(Frame train, Frame test, String targetVar, String label, Classifier cc, int runs, int step) {
+    public static PlotRunResult plotRunsRoc(
+            Frame train,
+            Frame test,
+            String targetVar,
+            String label,
+            Classifier cc,
+            int runs,
+            int step,
+            boolean alterClassifier) {
 
-        Classifier c = cc.newInstance();
+        Classifier c = alterClassifier ? cc : cc.newInstance();
         BiConsumer<Classifier, Integer> oldHook = c.runningHook();
         Index r = Index.empty().withName("runs");
         Numeric testAuc = Numeric.empty().withName("test");
@@ -255,23 +262,23 @@ public class CEvaluation {
                 return;
             }
             r.addIndex(run);
-            testAuc.addValue(new ROC(c.fit(test).firstDensity().var(label), test.var(targetVar), label).auc());
-            trainAuc.addValue(new ROC(c.fit(train).firstDensity().var(label), train.var(targetVar), label).auc());
+            ROC roc = new ROC(c.fit(test).firstDensity().var(label), test.var(targetVar), label);
+            WS.draw(rocCurve(roc).title("testAuc: " + WS.formatFlex(roc.auc()) + ", run: " + run));
+            testAuc.addValue(roc.auc());
+//            trainAuc.addValue(new ROC(c.fit(train).firstDensity().var(label), train.var(targetVar), label).auc());
 
-            WS.setPrinter(new IdeaPrinter());
-            WS.draw(plot()
-                    .lines(r, testAuc, color(1))
-                    .lines(r, trainAuc, color(2))
-                    .title("testAuc: " + WS.formatFlex(testAuc.value(testAuc.rowCount() - 1)))
-            );
+//            WS.draw(plot()
+//                            .lines(r, testAuc, color(1))
+//                            .title("testAuc: " + WS.formatFlex(testAuc.value(testAuc.rowCount() - 1)))
+//            );
         });
         c.withRuns(runs);
         c.train(train, targetVar);
 
-        WS.println("Confusion matrix on training data set: ");
+//        WS.println("Confusion matrix on training data set: ");
         Confusion trainConfusion = new Confusion(train.var(targetVar), c.fit(train).firstClasses());
-        trainConfusion.printSummary();
-        WS.println();
+//        trainConfusion.printSummary();
+//        WS.println();
         WS.println("Confusion matrix on test data set: ");
         Confusion testConfusion = new Confusion(test.var(targetVar), c.fit(test).firstClasses());
         testConfusion.printSummary();

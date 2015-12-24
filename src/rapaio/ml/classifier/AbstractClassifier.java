@@ -215,13 +215,13 @@ public abstract class AbstractClassifier implements Classifier {
     }
 
     @Override
-    public AbstractClassifier withPoolSize(int poolSize) {
+    public AbstractClassifier withRunPoolSize(int poolSize) {
         this.poolSize = poolSize < 0 ? Runtime.getRuntime().availableProcessors() : poolSize;
         return this;
     }
 
     @Override
-    public int poolSize() {
+    public int runPoolSize() {
         return poolSize;
     }
 

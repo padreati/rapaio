@@ -119,7 +119,7 @@ public interface CTreeTest extends Serializable {
                 double bestTestValue = 0;
 
                 int tests = df.rowCount();
-                final int MIN = 50;
+                final int MIN = 20;
                 if (tests > MIN) {
                     tests = MIN + (int) Math.floor(Math.log1p(tests - MIN));
                 }

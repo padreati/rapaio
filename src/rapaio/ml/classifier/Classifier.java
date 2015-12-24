@@ -280,7 +280,7 @@ public interface Classifier extends Printable, Serializable {
      *
      * @param poolSize specified pool size
      */
-    Classifier withPoolSize(int poolSize);
+    Classifier withRunPoolSize(int poolSize);
 
     /**
      * Gets the configured pool size. Negative values are considered
@@ -290,7 +290,7 @@ public interface Classifier extends Printable, Serializable {
      *
      * @return pool size to be used
      */
-    int poolSize();
+    int runPoolSize();
 
     /**
      * @return the number of runs

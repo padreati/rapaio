@@ -47,8 +47,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.*;
 
 /**
  * Tree classifier.
@@ -81,7 +80,7 @@ public class CTree extends AbstractClassifier {
         testMap.put(VarType.BINARY, CTreeTest.Binary_Binary);
         testMap.put(VarType.ORDINAL, CTreeTest.Numeric_Binary);
         testMap.put(VarType.INDEX, CTreeTest.Numeric_Binary);
-        testMap.put(VarType.NUMERIC, CTreeTest.Numeric_Binary);
+        testMap.put(VarType.NUMERIC, CTreeTest.Numeric_Skip);
         testMap.put(VarType.NOMINAL, CTreeTest.Nominal_Binary);
         withRuns(0);
     }
@@ -127,7 +126,8 @@ public class CTree extends AbstractClassifier {
                 .withVarSelector(VarSelector.ALL)
                 .withMissingHandler(CTreeMissingHandler.ToAllWeighted)
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Binary)
-                .withTest(VarType.NUMERIC, CTreeTest.Numeric_Binary)
+                .withTest(VarType.NUMERIC, CTreeTest.Numeric_Skip)
+                .withTest(VarType.INDEX, CTreeTest.Numeric_Binary)
                 .withFunction(CTreeFunction.GiniGain);
     }
 
@@ -142,7 +142,7 @@ public class CTree extends AbstractClassifier {
                 .withRunningHook(runningHook())
                 .withSampler(sampler());
 
-        tree.withPoolSize(poolSize());
+        tree.withRunPoolSize(runPoolSize());
         tree.withRuns(runs());
         tree.testMap.clear();
         tree.testMap.putAll(testMap);
@@ -288,10 +288,10 @@ public class CTree extends AbstractClassifier {
 
         int rows = df.rowCount();
         root = new Node(null, "root", spot -> true);
-        if (poolSize() == 0) {
+        if (runPoolSize() == 0) {
             root.learn(this, df, weights, maxDepth() < 0 ? Integer.MAX_VALUE : maxDepth(), new NominalTerms().init(df));
         } else {
-            FJPool.run(poolSize(), () -> root.learn(this, df, weights, maxDepth < 0 ? Integer.MAX_VALUE : maxDepth, new NominalTerms().init(df)));
+            FJPool.run(runPoolSize(), () -> root.learn(this, df, weights, maxDepth < 0 ? Integer.MAX_VALUE : maxDepth, new NominalTerms().init(df)));
         }
         this.root.fillId(1);
         pruning.get().prune(this, (pruningDf == null) ? df : pruningDf, false);
@@ -622,7 +622,7 @@ public class CTree extends AbstractClassifier {
                 Node child = new Node(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
                 children.add(child);
             }
-            Util.rangeStream(children.size(), tree.poolSize() > 0)
+            Util.rangeStream(children.size(), tree.runPoolSize() > 0)
                     .forEach(i -> children.get(i).learn(tree, frames._1.get(i), frames._2.get(i), depth - 1, terms.copy()));
         }
     }
