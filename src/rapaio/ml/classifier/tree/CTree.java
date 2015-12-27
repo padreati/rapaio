@@ -27,6 +27,7 @@ import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
+import rapaio.data.filter.FFilter;
 import rapaio.data.stream.FSpot;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
@@ -36,18 +37,13 @@ import rapaio.sys.WS;
 import rapaio.util.FJPool;
 import rapaio.util.Pair;
 import rapaio.util.Tag;
-import rapaio.util.Util;
 import rapaio.util.func.SPredicate;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.joining;
 
 /**
  * Tree classifier.
@@ -80,7 +76,7 @@ public class CTree extends AbstractClassifier {
         testMap.put(VarType.BINARY, CTreeTest.Binary_Binary);
         testMap.put(VarType.ORDINAL, CTreeTest.Numeric_Binary);
         testMap.put(VarType.INDEX, CTreeTest.Numeric_Binary);
-        testMap.put(VarType.NUMERIC, CTreeTest.Numeric_Skip);
+        testMap.put(VarType.NUMERIC, CTreeTest.Numeric_Binary);
         testMap.put(VarType.NOMINAL, CTreeTest.Nominal_Binary);
         withRuns(0);
     }
@@ -126,7 +122,7 @@ public class CTree extends AbstractClassifier {
                 .withVarSelector(VarSelector.ALL)
                 .withMissingHandler(CTreeMissingHandler.ToAllWeighted)
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Binary)
-                .withTest(VarType.NUMERIC, CTreeTest.Numeric_Skip)
+                .withTest(VarType.NUMERIC, CTreeTest.Numeric_Binary)
                 .withTest(VarType.INDEX, CTreeTest.Numeric_Binary)
                 .withFunction(CTreeFunction.GiniGain);
     }
@@ -289,9 +285,9 @@ public class CTree extends AbstractClassifier {
         int rows = df.rowCount();
         root = new Node(null, "root", spot -> true);
         if (runPoolSize() == 0) {
-            root.learn(this, df, weights, maxDepth() < 0 ? Integer.MAX_VALUE : maxDepth(), new NominalTerms().init(df));
+            root.learn(this, df, weights, maxDepth() < 0 ? Integer.MAX_VALUE : maxDepth());
         } else {
-            FJPool.run(runPoolSize(), () -> root.learn(this, df, weights, maxDepth < 0 ? Integer.MAX_VALUE : maxDepth, new NominalTerms().init(df)));
+            FJPool.run(runPoolSize(), () -> root.learn(this, df, weights, maxDepth < 0 ? Integer.MAX_VALUE : maxDepth));
         }
         this.root.fillId(1);
         pruning.get().prune(this, (pruningDf == null) ? df : pruningDf, false);
@@ -307,9 +303,7 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    protected CFit coreFit(Frame dfOld, boolean withClasses, boolean withDensities) {
-
-        Frame df = prepareFit(dfOld);
+    protected CFit coreFit(Frame df, boolean withClasses, boolean withDensities) {
         CFit prediction = CFit.build(this, df, withClasses, withDensities);
         df.stream().forEach(spot -> {
             Pair<Integer, DVector> result = fitPoint(this, spot, root);
@@ -344,7 +338,6 @@ public class CTree extends AbstractClassifier {
         for (Node child : node.getChildren()) {
             DVector d = this.fitPoint(tree, spot, child)._2;
             for (int i = 0; i < dict.length; i++) {
-//                dv.increment(i, d.get(i) * child.getDensity().sum(false));
                 dv.increment(i, d.get(i));
             }
         }
@@ -374,6 +367,11 @@ public class CTree extends AbstractClassifier {
             node.getChildren().forEach(nodes::addLast);
         }
         return count;
+    }
+
+    @Override
+    public CTree withInputFilters(FFilter... filters) {
+        return (CTree) super.withInputFilters(filters);
     }
 
     @Override
@@ -491,7 +489,7 @@ public class CTree extends AbstractClassifier {
         @Override
         public int compareTo(Candidate o) {
             if (o == null) return 1;
-            return -(new Double(score).compareTo(o.score));
+            return -(Double.compare(score, o.score));
         }
     }
 
@@ -572,7 +570,7 @@ public class CTree extends AbstractClassifier {
             children.clear();
         }
 
-        public void learn(CTree tree, Frame df, Var weights, int depth, NominalTerms terms) {
+        public void learn(CTree tree, Frame df, Var weights, int depth) {
             density = DVector.newFromWeights(false, df.var(tree.firstTargetName()), weights);
             counter = DVector.newFromCount(false, df.var(tree.firstTargetName()));
             bestIndex = density.findBestIndex();
@@ -585,27 +583,41 @@ public class CTree extends AbstractClassifier {
                 return;
             }
 
-            List<Candidate> candidateList = Arrays.stream(tree.varSelector().nextVarNames())
-                    .parallel()
-                    .filter(testCol -> !testCol.equals(tree.firstTargetName()))
-                    .map(testCol -> {
-                        CTreeTest test = null;
-                        if (tree.customTestMap().containsKey(testCol)) {
-                            test = tree.customTestMap().get(testCol).get();
-                        }
-                        if (tree.testMap().containsKey(df.var(testCol).type())) {
-                            test = tree.testMap().get(df.var(testCol).type()).get();
-                        }
-                        if (test == null) {
-                            throw new IllegalArgumentException("can't train ctree with no " +
-                                    "tests for given variable: " + df.var(testCol).name() +
-                                    " [" + df.var(testCol).type().name() + "]");
-                        }
-                        List<Candidate> c = test.computeCandidates(
-                                tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction().get(), terms);
-                        return (c == null || c.isEmpty()) ? null : c.get(0);
-                    }).filter(c -> c != null).collect(Collectors.toList());
+            VarSelector varSel = tree.varSelector();
+            String[] nextVarNames = varSel.nextAllVarNames();
+            List<Candidate> candidateList = new ArrayList<>();
+            List<String> exhaustList = new ArrayList<>();
 
+            int m = varSel.mCount();
+            for (String testCol : nextVarNames) {
+                if (m <= 0) {
+                    continue;
+                }
+                if (testCol.equals(tree.firstTargetName())) {
+                    continue;
+                }
+
+                CTreeTest test = null;
+                if (tree.customTestMap().containsKey(testCol)) {
+                    test = tree.customTestMap().get(testCol).get();
+                }
+                if (tree.testMap().containsKey(df.var(testCol).type())) {
+                    test = tree.testMap().get(df.var(testCol).type()).get();
+                }
+                if (test == null) {
+                    throw new IllegalArgumentException("can't train ctree with no " +
+                            "tests for given variable: " + df.var(testCol).name() +
+                            " [" + df.var(testCol).type().name() + "]");
+                }
+                Candidate candidate = test.computeCandidate(
+                        tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction().get());
+                if (candidate != null) {
+                    candidateList.add(candidate);
+                    m--;
+                } else {
+                    exhaustList.add(testCol);
+                }
+            }
             Collections.sort(candidateList);
             if (candidateList.isEmpty() || candidateList.get(0).getGroupNames().isEmpty()) {
                 return;
@@ -622,32 +634,12 @@ public class CTree extends AbstractClassifier {
                 Node child = new Node(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
                 children.add(child);
             }
-            Util.rangeStream(children.size(), tree.runPoolSize() > 0)
-                    .forEach(i -> children.get(i).learn(tree, frames._1.get(i), frames._2.get(i), depth - 1, terms.copy()));
+            tree.varSelector.removeVarNames(exhaustList);
+            for (int i = 0; i < children.size(); i++) {
+                children.get(i).learn(tree, frames._1.get(i), frames._2.get(i), depth - 1);
+            }
+            tree.varSelector.addVarNames(exhaustList);
         }
-    }
-
-    public static class NominalTerms {
-
-        private final Map<String, Set<Integer>> indexes = new ConcurrentHashMap<>();
-
-        public NominalTerms init(Frame df) {
-            Arrays.stream(df.varNames())
-                    .map(df::var)
-                    .filter(var -> var.type().isNominal() || var.type().isBinary())
-                    .forEach(var -> indexes.put(var.name(), IntStream.range(1, var.levels().length).boxed().collect(toSet())));
-            return this;
-        }
-
-        public Set<Integer> indexes(String key) {
-            return indexes.get(key);
-        }
-
-        public NominalTerms copy() {
-            NominalTerms terms = new NominalTerms();
-            this.indexes.entrySet().forEach(e -> terms.indexes.put(e.getKey(), new ConcurrentSkipListSet<>(e.getValue())));
-            return terms;
-        }
-
     }
 }
+
