@@ -24,40 +24,50 @@
 package rapaio.ml.regression.tree;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
-@Deprecated
 public interface RTreeTestFunction extends Serializable {
 
-    RTreeTestFunction VARIANCE_SUM = new RTreeTestFunction() {
+    RTreeTestFunction WeightedVarGain = new RTreeTestFunction() {
 
         private static final long serialVersionUID = 5119966657929147020L;
 
         @Override
         public String name() {
-            return "VARIANCE_SUM";
+            return "WeightedVarGain";
         }
 
         @Override
-        public double computeTestValue(double... variances) {
-            return Arrays.stream(variances).sum();
+        public double computeTestValue(RTreeTestPayload p) {
+            double down = 0.0;
+            double up = 0.0;
+            for (int i = 0; i < p.splits; i++) {
+                down += p.splitWeight[i];
+                up += p.splitWeight[i] * p.splitVar[i];
+            }
+            return (down == 0) ? 0.0 : p.totalVar - up / down;
         }
     };
-    RTreeTestFunction STD_SUM = new RTreeTestFunction() {
+    RTreeTestFunction WeightedSdGain = new RTreeTestFunction() {
 
-        private static final long serialVersionUID = 4399865122423562865L;
+        private static final long serialVersionUID = 5119966657929147020L;
 
         @Override
         public String name() {
-            return "STD_SUM";
+            return "WeightedSdGain";
         }
 
         @Override
-        public double computeTestValue(double... variances) {
-            return Arrays.stream(variances).map(Math::sqrt).sum();
+        public double computeTestValue(RTreeTestPayload p) {
+            double down = 0.0;
+            double up = 0.0;
+            for (int i = 0; i < p.splits; i++) {
+                down += p.splitWeight[i];
+                up += p.splitWeight[i] * Math.sqrt(p.splitVar[i]);
+            }
+            return (down == 0) ? 0.0 : Math.sqrt(p.totalVar) - up / down;
         }
     };
 
@@ -66,5 +76,6 @@ public interface RTreeTestFunction extends Serializable {
 
     String name();
 
-    double computeTestValue(double... variances);
+    double computeTestValue(RTreeTestPayload payload);
+
 }

@@ -23,6 +23,7 @@
 
 package rapaio.ml.classifier.tree;
 
+import rapaio.core.tools.DTable;
 import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -37,6 +38,7 @@ import rapaio.sys.WS;
 import rapaio.util.FJPool;
 import rapaio.util.Pair;
 import rapaio.util.Tag;
+import rapaio.util.Tagged;
 import rapaio.util.func.SPredicate;
 
 import java.io.Serializable;
@@ -62,7 +64,7 @@ public class CTree extends AbstractClassifier {
     private VarSelector varSelector = VarSelector.ALL;
     private Map<String, Tag<CTreeTest>> customTestMap = new HashMap<>();
     private Map<VarType, Tag<CTreeTest>> testMap = new HashMap<>();
-    private Tag<CTreeFunction> function = CTreeFunction.InfoGain;
+    private PurityFunction function = PurityFunction.InfoGain;
     private Tag<CTreeMissingHandler> splitter = CTreeMissingHandler.Ignored;
     private Tag<CTreePruning> pruning = CTreePruning.NONE;
     private Frame pruningDf = null;
@@ -89,7 +91,7 @@ public class CTree extends AbstractClassifier {
                 .withMissingHandler(CTreeMissingHandler.Ignored)
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Full)
                 .withTest(VarType.NUMERIC, CTreeTest.Ignore)
-                .withFunction(CTreeFunction.InfoGain)
+                .withFunction(CTree.PurityFunction.InfoGain)
                 .withPruning(CTreePruning.NONE);
     }
 
@@ -101,7 +103,7 @@ public class CTree extends AbstractClassifier {
                 .withMissingHandler(CTreeMissingHandler.ToAllWeighted)
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Full)
                 .withTest(VarType.NUMERIC, CTreeTest.Numeric_Binary)
-                .withFunction(CTreeFunction.GainRatio);
+                .withFunction(PurityFunction.GainRatio);
     }
 
     public static CTree newDecisionStump() {
@@ -110,7 +112,7 @@ public class CTree extends AbstractClassifier {
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
                 .withMissingHandler(CTreeMissingHandler.ToAllWeighted)
-                .withFunction(CTreeFunction.GainRatio)
+                .withFunction(PurityFunction.GainRatio)
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Binary)
                 .withTest(VarType.NUMERIC, CTreeTest.Numeric_Binary);
     }
@@ -124,7 +126,7 @@ public class CTree extends AbstractClassifier {
                 .withTest(VarType.NOMINAL, CTreeTest.Nominal_Binary)
                 .withTest(VarType.NUMERIC, CTreeTest.Numeric_Binary)
                 .withTest(VarType.INDEX, CTreeTest.Numeric_Binary)
-                .withFunction(CTreeFunction.GiniGain);
+                .withFunction(PurityFunction.GiniGain);
     }
 
     @Override
@@ -220,11 +222,11 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
-    public Tag<CTreeFunction> getFunction() {
+    public PurityFunction getFunction() {
         return function;
     }
 
-    public CTree withFunction(Tag<CTreeFunction> function) {
+    public CTree withFunction(PurityFunction function) {
         this.function = function;
         return this;
     }
@@ -448,6 +450,54 @@ public class CTree extends AbstractClassifier {
     /**
      * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
      */
+    public interface PurityFunction extends Tagged, Serializable {
+
+        PurityFunction InfoGain = new PurityFunction() {
+            private static final long serialVersionUID = 152790997381399918L;
+
+            @Override
+            public double compute(DTable dt) {
+                return dt.splitByRowInfoGain();
+            }
+
+            @Override
+            public String name() {
+                return "InfoGain";
+            }
+        };
+        PurityFunction GainRatio = new PurityFunction() {
+            private static final long serialVersionUID = -2478996054579932911L;
+
+            @Override
+            public double compute(DTable dt) {
+                return dt.splitByRowGainRatio();
+            }
+
+            @Override
+            public String name() {
+                return "GainRatio";
+            }
+        };
+        PurityFunction GiniGain = new PurityFunction() {
+            private static final long serialVersionUID = 3547209320599654633L;
+
+            @Override
+            public double compute(DTable dt) {
+                return dt.splitByRowGiniGain();
+            }
+
+            @Override
+            public String name() {
+                return "GiniGain";
+            }
+        };
+
+        double compute(DTable dt);
+    }
+
+    /**
+     * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
+     */
     public static class Candidate implements Comparable<Candidate>, Serializable {
 
         private static final long serialVersionUID = -1547847207988912332L;
@@ -610,7 +660,7 @@ public class CTree extends AbstractClassifier {
                             " [" + df.var(testCol).type().name() + "]");
                 }
                 Candidate candidate = test.computeCandidate(
-                        tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction().get());
+                        tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction());
                 if (candidate != null) {
                     candidateList.add(candidate);
                     m--;

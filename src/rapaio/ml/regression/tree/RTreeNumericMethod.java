@@ -23,18 +23,18 @@
 
 package rapaio.ml.regression.tree;
 
+import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
 import rapaio.core.stat.OnlineStat;
-import rapaio.data.Frame;
-import rapaio.data.Index;
-import rapaio.data.RowComparators;
-import rapaio.data.Var;
+import rapaio.data.*;
 import rapaio.data.filter.VFRefSort;
+import rapaio.data.stream.VSpot;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
@@ -49,7 +49,7 @@ public interface RTreeNumericMethod extends Serializable {
         }
 
         @Override
-        public List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
+        public List<RTree.RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
             return new ArrayList<>();
         }
     };
@@ -60,59 +60,66 @@ public interface RTreeNumericMethod extends Serializable {
         }
 
         @Override
-        public List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
-            Var test = df.var(testVarName);
-            Var target = df.var(targetVarName);
+        public List<RTree.RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
 
-            Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.seq(df.rowCount()));
+            Mapping cleanMapping = Mapping.wrap(df.var(testVarName).stream().complete().map(VSpot::row).collect(Collectors.toList()));
 
-            double[] leftVar = new double[df.rowCount()];
-            double[] rightVar = new double[df.rowCount()];
+            Var test = df.var(testVarName).mapRows(cleanMapping);
+            Var target = df.var(targetVarName).mapRows(cleanMapping);
+
+            Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.seq(cleanMapping.size()));
+
+            double[] leftWeight = new double[test.rowCount()];
+            double[] leftVar = new double[test.rowCount()];
+            double[] rightWeight = new double[test.rowCount()];
+            double[] rightVar = new double[test.rowCount()];
 
             OnlineStat so = new OnlineStat();
 
-            for (int i = 0; i < df.rowCount(); i++) {
+            double w = 0.0;
+            for (int i = 0; i < test.rowCount(); i++) {
                 int row = sort.index(i);
-                if (target.missing(row)) {
-                    continue;
-                }
-                double tValue = target.value(row);
-                double wValue = weights.value(row);
-                so.update(tValue);
+                so.update(target.value(row));
+                w += weights.value(row);
+                leftWeight[row] = w;
                 leftVar[row] = so.variance();
             }
-            for (int i = df.rowCount() - 1; i >= 0; i--) {
+            w = 0.0;
+            for (int i = test.rowCount() - 1; i >= 0; i--) {
                 int row = sort.index(i);
-                if (target.missing(row)) {
-                    continue;
-                }
+                w += weights.value(row);
                 so.update(target.value(row));
+                rightWeight[row] = w;
                 rightVar[row] += so.variance();
             }
 
-            RTreeCandidate best = null;
+            RTree.RTreeCandidate best = null;
 
-            for (int i = 0; i < df.rowCount(); i++) {
+            RTreeTestPayload p = new RTreeTestPayload(2);
+            p.totalVar = CoreTools.var(target).value();
+
+            for (int i = 0; i < test.rowCount(); i++) {
                 int row = sort.index(i);
 
                 if (test.missing(row)) continue;
-                if (i < c.minCount || i > df.rowCount() - 1 - c.minCount) continue;
+                if (i < c.minCount || i > test.rowCount() - 1 - c.minCount) continue;
                 if (test.value(sort.index(i)) == test.value(sort.index(i + 1))) continue;
 
-                double left = leftVar[i];
-                double right = rightVar[i];
+                p.splitVar[0] = leftVar[row];
+                p.splitVar[1] = rightVar[row];
+                p.splitWeight[0] = leftWeight[row];
+                p.splitWeight[1] = rightWeight[row];
+                double value = c.function.computeTestValue(p);
 
-                double value = c.function.computeTestValue(left, right);
-
-                RTreeCandidate current = new RTreeCandidate(value, testVarName);
+                RTree.RTreeCandidate current = new RTree.RTreeCandidate(value, testVarName);
                 if (best == null) {
                     best = current;
 
                     final double testValue = test.value(sort.index(i));
-                    current.addGroup(
+                    best.addGroup(
                             String.format("%s <= %.6f", testVarName, testValue),
                             spot -> !spot.missing(testVarName) && spot.value(testVarName) <= testValue);
-                    current.addGroup(
+                    best.addGroup(
                             String.format("%s > %.6f", testVarName, testValue),
                             spot -> !spot.missing(testVarName) && spot.value(testVarName) > testValue);
                 } else {
@@ -136,5 +143,5 @@ public interface RTreeNumericMethod extends Serializable {
 
     String name();
 
-    List<RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function);
+    List<RTree.RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function);
 }

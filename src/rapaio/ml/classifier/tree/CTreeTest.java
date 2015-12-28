@@ -43,10 +43,10 @@ import java.io.Serializable;
 public interface CTreeTest extends Serializable {
 
     Tag<CTreeTest> Ignore = Tag.valueOf("Ignore",
-            (CTree c, Frame df, Var w, String testName, String targetName, CTreeFunction function) -> null);
+            (CTree c, Frame df, Var w, String testName, String targetName, CTree.PurityFunction function) -> null);
 
     Tag<CTreeTest> Numeric_Binary = Tag.valueOf("Numeric_Binary",
-            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeFunction function) -> {
+            (CTree c, Frame df, Var weights, String testName, String targetName, CTree.PurityFunction function) -> {
                 Var test = df.var(testName);
                 Var target = df.var(targetName);
 
@@ -96,7 +96,7 @@ public interface CTreeTest extends Serializable {
                 return best;
             });
     Tag<CTreeTest> Binary_Binary = Tag.valueOf("Binary_Binary",
-            (CTree c, Frame df, Var weights, String testName, String targetName, CTreeFunction function) -> {
+            (CTree c, Frame df, Var weights, String testName, String targetName, CTree.PurityFunction function) -> {
 
                 Var test = df.var(testName);
                 Var target = df.var(targetName);
@@ -111,7 +111,7 @@ public interface CTreeTest extends Serializable {
                 return best;
             });
     Tag<CTreeTest> Nominal_Full = Tag.valueOf("Nominal_Full",
-            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeFunction function) -> {
+            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTree.PurityFunction function) -> {
                 Var test = df.var(testColName);
                 Var target = df.var(targetColName);
 
@@ -133,7 +133,7 @@ public interface CTreeTest extends Serializable {
                 return candidate;
             });
     Tag<CTreeTest> Nominal_Binary = Tag.valueOf("Nominal_Binary",
-            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTreeFunction function) -> {
+            (CTree c, Frame df, Var weights, String testColName, String targetColName, CTree.PurityFunction function) -> {
 
                 Var test = df.var(testColName);
                 Var target = df.var(targetColName);
@@ -169,5 +169,5 @@ public interface CTreeTest extends Serializable {
                 return best;
             });
 
-    CTree.Candidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, CTreeFunction function);
+    CTree.Candidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, CTree.PurityFunction function);
 }

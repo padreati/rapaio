@@ -46,7 +46,7 @@ public interface RTreeSplitter extends Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTreeCandidate candidate) {
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.RTreeCandidate candidate) {
             List<Mapping> mappings = new ArrayList<>();
             List<Var> weightsList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
@@ -77,7 +77,7 @@ public interface RTreeSplitter extends Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTreeCandidate candidate) {
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.RTreeCandidate candidate) {
             List<Mapping> mappings = new ArrayList<>();
             List<Var> weightsList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
@@ -124,7 +124,7 @@ public interface RTreeSplitter extends Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTreeCandidate candidate) {
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.RTreeCandidate candidate) {
             List<Mapping> mappings = new ArrayList<>();
             List<Var> weightsList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
@@ -174,7 +174,7 @@ public interface RTreeSplitter extends Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTreeCandidate candidate) {
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.RTreeCandidate candidate) {
             List<Mapping> mappings = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                 mappings.add(Mapping.empty());
@@ -202,5 +202,5 @@ public interface RTreeSplitter extends Serializable {
 
     String name();
 
-    Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTreeCandidate candidate);
+    Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.RTreeCandidate candidate);
 }

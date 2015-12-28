@@ -21,22 +21,24 @@
  *
  */
 
-package rapaio.ml.classifier.tree;
-
-import rapaio.core.tools.DTable;
-import rapaio.util.Tag;
-
-import java.io.Serializable;
+package rapaio.ml.regression.tree;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
+ * Class used to pass information computed by
+ * test function to the method used to evaluate split
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/28/15.
  */
-public interface CTreeFunction extends Serializable {
+public class RTreeTestPayload {
 
-    double compute(DTable dt);
+    public int splits;
+    public double totalVar;
+    public double[] splitWeight;
+    public double[] splitVar;
 
-    Tag<CTreeFunction> InfoGain = Tag.valueOf("InfoGain", DTable::splitByRowInfoGain);
-    Tag<CTreeFunction> GainRatio = Tag.valueOf("GainRatio", DTable::splitByRowGainRatio);
-    Tag<CTreeFunction> GiniGain = Tag.valueOf("GiniGain", DTable::splitByRowGiniGain);
+    public RTreeTestPayload(int splits) {
+        this.splits = splits;
+        this.splitVar = new double[splits];
+        this.splitWeight = new double[splits];
+    }
 }
-

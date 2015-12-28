@@ -26,11 +26,13 @@ package rapaio.ml.classifier;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
-import rapaio.ml.classifier.bayes.NaiveBayes;
 import rapaio.ml.classifier.boost.AdaBoostSAMME;
+import rapaio.ml.classifier.boost.GBTClassifier;
 import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.eval.CEvaluation;
+import rapaio.ml.regression.tree.RTree;
+import rapaio.ml.regression.tree.RTreeTestFunction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,14 +52,14 @@ public class ClassifiersTest {
 
         List<Classifier> classifiers = new ArrayList<>();
         classifiers.add(CForest.newRF().withRuns(20).withBootstrap(0.5));
-        classifiers.add(CForest.newRF().withRuns(20).withBootstrap(1));
-        classifiers.add(CForest.newRF().withRuns(20).withBootstrap(1).withClassifier(new NaiveBayes()));
-        classifiers.add(new NaiveBayes());
+//        classifiers.add(CForest.newRF().withRuns(20).withBootstrap(1));
+//        classifiers.add(CForest.newRF().withRuns(20).withBootstrap(1).withClassifier(new NaiveBayes()));
+//        classifiers.add(new NaiveBayes());
 //        classifiers.add(new BinaryLogistic());
 //        classifiers.add(new BinarySMO().withKernel(new MinKernel()));
-        classifiers.add(new AdaBoostSAMME().withRuns(20));
+//        classifiers.add(new AdaBoostSAMME().withRuns(20));
         classifiers.add(new AdaBoostSAMME().withClassifier(CTree.newCART().withMaxDepth(40).withRuns(20)));
-//        classifiers.add(new GBTClassifier());
+        classifiers.add(new GBTClassifier().withTree(RTree.buildCART().withMaxDepth(40).withFunction(RTreeTestFunction.WeightedSdGain)).withRuns(20));
 
         CEvaluation.multiCv(df, "classes", classifiers, 3);
     }

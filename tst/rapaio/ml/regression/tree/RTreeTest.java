@@ -25,15 +25,15 @@ package rapaio.ml.regression.tree;
 
 import org.junit.Test;
 import rapaio.data.Frame;
+import rapaio.data.filter.FFRefSort;
 import rapaio.datasets.Datasets;
-import rapaio.ml.eval.RMSE;
 import rapaio.ml.regression.RFit;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 
 import java.io.IOException;
 
-import static rapaio.graphics.Plotter.densityLine;
+import static rapaio.graphics.Plotter.*;
 
 /**
  * Test for regression decision trees
@@ -46,23 +46,22 @@ public class RTreeTest {
 
     @Test
     public void testSimple() throws IOException {
-        Frame df = Datasets.loadISLAdvertising().removeVars("ID");
+        Frame df = Datasets.loadISLAdvertising().removeVars("ID", "Radio", "Newspaper");
         df.printSummary();
 
-        RTree model = RTree.buildCART().withMaxDepth(20);
-        model.train(df, "Sales");
-//        model.printSummary();
+        Frame t = new FFRefSort(df.var(0).refComparator()).filter(df);
 
-        RFit fit = model.fit(df);
+        RTree model = RTree.buildCART().withMaxDepth(20).withMinCount(10).withFunction(RTreeTestFunction.WeightedSdGain);
+        model.train(t, "Sales");
+
+        RFit fit = model.fit(t);
         fit.printSummary();
 
         WS.setPrinter(new IdeaPrinter());
-//        WS.draw(points(fit.firstResidual()).abLine(0, true, color(Color.LIGHT_GRAY)));
+        WS.draw(plot()
+                .lines(t.var(0), fit.firstFit(), color(1))
+                .points(t.var(0), t.var(1), pch(2))
 
-        WS.draw(densityLine(fit.firstResidual())
-                .hLine(0).xLim(-10, 10));
-//        draw(points(df.var(0), df.var(Sales)));
-
-        new RMSE(df.var(Sales), fit.firstFit()).printSummary();
+        );
     }
 }

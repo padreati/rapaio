@@ -45,12 +45,12 @@ public interface RTreePredictor extends Serializable {
         }
 
         @Override
-        public Pair<Double, Double> predict(RTree tree, FSpot spot, RTreeNode node) {
+        public Pair<Double, Double> predict(RTree tree, FSpot spot, RTree.RTreeNode node) {
 
             if (node.isLeaf())
                 return Pair.from(node.getValue(), node.getWeight());
 
-            for (RTreeNode child : node.getChildren()) {
+            for (RTree.RTreeNode child : node.getChildren()) {
                 if (child.getPredicate().test(spot)) {
                     return predict(tree, spot, child);
                 }
@@ -58,7 +58,7 @@ public interface RTreePredictor extends Serializable {
 
             Numeric values = Numeric.empty();
             Numeric weights = Numeric.empty();
-            for (RTreeNode child : node.getChildren()) {
+            for (RTree.RTreeNode child : node.getChildren()) {
                 Pair<Double, Double> prediction = predict(tree, spot, child);
                 values.addValue(prediction._1);
                 weights.addValue(prediction._2);
@@ -69,5 +69,5 @@ public interface RTreePredictor extends Serializable {
 
     String name();
 
-    Pair<Double, Double> predict(RTree tree, FSpot spot, RTreeNode root);
+    Pair<Double, Double> predict(RTree tree, FSpot spot, RTree.RTreeNode root);
 }

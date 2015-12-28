@@ -21,13 +21,10 @@
  *
  */
 
-package rapaio.experiment.classifier.boost;
+package rapaio.ml.classifier.boost;
 
-import rapaio.core.SamplingTools;
-import rapaio.data.Frame;
-import rapaio.data.Numeric;
-import rapaio.data.Var;
-import rapaio.data.VarType;
+import rapaio.data.*;
+import rapaio.data.sample.FrameSampler;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
@@ -43,7 +40,6 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/12/14.
  */
-@Deprecated
 public class GBTClassifier extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = -2979235364091072967L;
@@ -53,8 +49,6 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
     private double shrinkage = 1.0;
 
     // prediction artifact
-    private boolean useBootstrap = true;
-    private double bootstrapSize = 1.0;
     private BTRegression classifier = RTree.buildCART().withMaxDepth(4);
     private List<List<BTRegression>> trees;
 
@@ -65,8 +59,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
     @Override
     public GBTClassifier newInstance() {
         return (GBTClassifier) new GBTClassifier()
-                .withBootstrap(useBootstrap)
-                .withBootstrapSize(bootstrapSize)
+                .withSampler(sampler())
                 .withShrinkage(shrinkage)
                 .withTree(classifier.newInstance())
                 .withRuns(runs());
@@ -108,14 +101,9 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
         return this;
     }
 
-    public GBTClassifier withBootstrap(boolean use) {
-        this.useBootstrap = use;
-        return this;
-    }
-
-    public GBTClassifier withBootstrapSize(double bootstrapSize) {
-        this.bootstrapSize = bootstrapSize;
-        return this;
+    @Override
+    public GBTClassifier withSampler(FrameSampler sampler) {
+        return (GBTClassifier) super.withSampler(sampler);
     }
 
     @Override
@@ -168,19 +156,10 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
             BTRegression tree = classifier.newInstance();
 
-            Frame bootTrain = train;
-            Var bootWeights = weights;
-            Frame bootX = x;
-            Var bootR = r;
-            if (useBootstrap) {
-                int[] map = SamplingTools.sampleWR(df.rowCount(), (int) (bootstrapSize * df.rowCount()));
-                bootTrain = train.mapRows(map);
-                bootWeights = weights.mapRows(map);
-                bootX = x.mapRows(map);
-                bootR = r.mapRows(map);
-            }
-            tree.train(bootTrain, bootWeights, "##tt##");
-            tree.boostFit(bootX, bootR, bootR, new ClassifierLossFunction(K));
+            Mapping map = sampler().newSample(x, weights).mapping;
+            tree.train(train.mapRows(map), weights.mapRows(map), "##tt##");
+
+            tree.boostFit(x, r, r, new ClassifierLossFunction(K));
 
             RFit rr = tree.fit(train, true);
 
