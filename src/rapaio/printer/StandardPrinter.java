@@ -55,7 +55,7 @@ public class StandardPrinter extends AbstractPrinter {
             writer = new PrintWriter(System.out);
         }
 
-        withTextWidth(200);
+        withTextWidth(190);
         withGraphicWidth(1280);
         withGraphicHeight(800);
     }

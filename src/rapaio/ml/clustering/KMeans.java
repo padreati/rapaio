@@ -41,8 +41,7 @@ import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
-import static rapaio.core.CoreTools.mean;
-import static rapaio.core.CoreTools.var;
+import static rapaio.core.CoreTools.*;
 
 /**
  * KMeans clusterization algorithm
@@ -165,7 +164,7 @@ public class KMeans implements Printable {
             }
             double error = Math.pow(d, 2);
             arrows[i] = cluster;
-            return new Pair<>(cluster, error);
+            return Pair.from(cluster, error);
         }).collect(toList());
         for (Pair<Integer, Double> p : pairs) {
             totalError += p._2;

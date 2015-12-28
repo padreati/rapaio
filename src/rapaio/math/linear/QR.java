@@ -176,7 +176,7 @@ public class QR implements Serializable {
     }
 
     public Pair<RM, RM> getPairQR() {
-        return Pair.valueOf(getQ(), getR());
+        return Pair.from(getQ(), getR());
     }
 
     /**

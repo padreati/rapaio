@@ -75,7 +75,7 @@ public class Apriori implements Printable {
             }
         }
 
-        List<Pair<AprioriRule, DVector>> counts = C.stream().map(rule -> Pair.valueOf(rule,
+        List<Pair<AprioriRule, DVector>> counts = C.stream().map(rule -> Pair.from(rule,
                 DVector.newEmpty(false, targetVar.levels())))
                 .collect(Collectors.toList());
 
@@ -114,7 +114,7 @@ public class Apriori implements Printable {
                             continue;
                         AprioriRule next = tPrev._1.extend(b);
                         if (!cnts.containsKey(next.toString())) {
-                            cnts.put(next.toString(), Pair.valueOf(next, DVector.newEmpty(false, targetVar.levels())));
+                            cnts.put(next.toString(), Pair.from(next, DVector.newEmpty(false, targetVar.levels())));
                         }
                         cnts.get(next.toString())._2.increment(targetVar.index(i), 1);
                     }

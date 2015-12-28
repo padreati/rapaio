@@ -48,7 +48,7 @@ public interface RTreePredictor extends Serializable {
         public Pair<Double, Double> predict(RTree tree, FSpot spot, RTreeNode node) {
 
             if (node.isLeaf())
-                return new Pair<>(node.getValue(), node.getWeight());
+                return Pair.from(node.getValue(), node.getWeight());
 
             for (RTreeNode child : node.getChildren()) {
                 if (child.getPredicate().test(spot)) {
@@ -63,7 +63,7 @@ public interface RTreePredictor extends Serializable {
                 values.addValue(prediction._1);
                 weights.addValue(prediction._2);
             }
-            return new Pair<>(new WeightedMean(values, weights).value(), new Sum(weights).value());
+            return Pair.from(new WeightedMean(values, weights).value(), new Sum(weights).value());
         }
     };
 

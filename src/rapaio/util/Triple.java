@@ -26,28 +26,28 @@ package rapaio.util;
 import java.io.Serializable;
 
 /**
- * Tuple of length 2.
- *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/28/15.
  */
-public class Pair<T1, T2> implements Serializable {
+public class Triple<T1, T2, T3> implements Serializable {
 
-    private static final long serialVersionUID = -1594916059995575867L;
+    private static final long serialVersionUID = -8902156268652553858L;
 
     public T1 _1;
     public T2 _2;
+    public T3 _3;
 
-    private Pair(T1 _1, T2 _2) {
+    private Triple(T1 _1, T2 _2, T3 _3) {
         this._1 = _1;
         this._2 = _2;
+        this._3 = _3;
     }
 
-    public static <U, V> Pair<U, V> from(U u, V v) {
-        return new Pair<>(u, v);
+    public static <U1, U2, U3> Triple<U1, U2, U3> from(U1 u1, U2 u2, U3 u3) {
+        return new Triple<>(u1, u2, u3);
     }
 
     @Override
     public String toString() {
-        return "Pair{" + _1 + ", " + _2 + "}";
+        return "Triple{_1=" + _1 + ", _2=" + _2 + ", _3=" + _3 + "}";
     }
 }

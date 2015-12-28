@@ -37,8 +37,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.*;
 
 /**
  * Utility class able to write json values to an output stream formatted as lzjson.
@@ -175,7 +174,7 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
         numTermDict = new HashMap<>();
         numTermIndex = new HashMap<>();
 
-        List<Pair<String, Integer>> strlist = strCounter.entrySet().stream().map(e -> new Pair<>(e.getKey(), e.getValue())).collect(toList());
+        List<Pair<String, Integer>> strlist = strCounter.entrySet().stream().map(e -> Pair.from(e.getKey(), e.getValue())).collect(toList());
         strlist.sort((o1, o2) -> -Integer.compare(o1._1.length() * o1._2, o2._1.length() * o2._2));
         for (int i = 0; i < strlist.size(); i++) {
             strTerms[i] = strlist.get(i)._1;
@@ -183,7 +182,7 @@ public class LzJsonOutput extends LzJsonAlgorithm implements Closeable {
             strTermIndex.put(strlist.get(i)._1, i);
         }
 
-        List<Pair<String, Integer>> numlist = numCounter.entrySet().stream().map(e -> new Pair<>(e.getKey(), e.getValue())).collect(toList());
+        List<Pair<String, Integer>> numlist = numCounter.entrySet().stream().map(e -> Pair.from(e.getKey(), e.getValue())).collect(toList());
         numlist.sort((o1, o2) -> -Integer.compare(o1._1.length() * o1._2, o2._1.length() * o2._2));
         for (int i = 0; i < numlist.size(); i++) {
             numTerms[i] = numlist.get(i)._1;

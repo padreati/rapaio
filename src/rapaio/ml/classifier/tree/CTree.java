@@ -322,10 +322,10 @@ public class CTree extends AbstractClassifier {
             if (node.getParent() == null) {
                 throw new RuntimeException("Something bad happened at learning time");
             } else {
-                return new Pair<>(node.getParent().getBestIndex(), node.getParent().getDensity());
+                return Pair.from(node.getParent().getBestIndex(), node.getParent().getDensity());
             }
         if (node.isLeaf())
-            return new Pair<>(node.getBestIndex(), node.getDensity());
+            return Pair.from(node.getBestIndex(), node.getDensity());
 
         for (Node child : node.getChildren()) {
             if (child.getPredicate().test(spot)) {
@@ -342,7 +342,7 @@ public class CTree extends AbstractClassifier {
             }
         }
         dv.normalize();
-        return new Pair<>(dv.findBestIndex(), dv);
+        return Pair.from(dv.findBestIndex(), dv);
     }
 
     private void additionalValidation(Frame df) {

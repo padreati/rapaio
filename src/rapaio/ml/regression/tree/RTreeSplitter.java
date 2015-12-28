@@ -66,7 +66,7 @@ public interface RTreeSplitter extends Serializable {
             });
             List<Frame> frames = new ArrayList<>();
             mappings.stream().forEach(mapping -> frames.add(MappedFrame.newByRow(df, mapping)));
-            return new Pair<>(frames, weightsList);
+            return Pair.from(frames, weightsList);
         }
     };
     RTreeSplitter REMAINS_TO_MAJORITY = new RTreeSplitter() {
@@ -113,7 +113,7 @@ public interface RTreeSplitter extends Serializable {
             });
             List<Frame> frames = new ArrayList<>();
             mappings.stream().forEach(mapping -> frames.add(MappedFrame.newByRow(df, mapping)));
-            return new Pair<>(frames, weightsList);
+            return Pair.from(frames, weightsList);
         }
     };
     RTreeSplitter REMAINS_TO_ALL_WEIGHTED = new RTreeSplitter() {
@@ -164,7 +164,7 @@ public interface RTreeSplitter extends Serializable {
             for (Mapping mapping : mappings) {
                 frames.add(MappedFrame.newByRow(df, mapping));
             }
-            return new Pair<>(frames, weightsList);
+            return Pair.from(frames, weightsList);
         }
     };
     RTreeSplitter REMAINS_TO_RANDOM = new RTreeSplitter() {
@@ -196,7 +196,7 @@ public interface RTreeSplitter extends Serializable {
                     .map(mapping -> MappedFrame.newByRow(df, mapping)).collect(Collectors.toList());
             List<Var> weightList = mappings.stream()
                     .map(mapping -> weights.mapRows(mapping)).collect(Collectors.toList());
-            return new Pair<>(frameList, weightList);
+            return Pair.from(frameList, weightList);
         }
     };
 

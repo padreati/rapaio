@@ -131,7 +131,7 @@ public class OneRule extends AbstractClassifier {
     private Pair<String, DVector> predict(Frame df, int row) {
         if (bestRuleSet == null) {
             log.severe("Best rule not found. Either the classifier was not trained, either something went wrong.");
-            return new Pair<>("?", DVector.newEmpty(true, firstTargetLevels().length));
+            return Pair.from("?", DVector.newEmpty(true, firstTargetLevels().length));
         }
         String testVar = bestRuleSet.getVarName();
         switch (df.var(testVar).type()) {
@@ -145,10 +145,10 @@ public class OneRule extends AbstractClassifier {
                 for (Rule oneRule : bestRuleSet.getRules()) {
                     NumericRule numRule = (NumericRule) oneRule;
                     if (missing && numRule.isMissingValue()) {
-                        return new Pair<>(numRule.getTargetClass(), numRule.getDV());
+                        return Pair.from(numRule.getTargetClass(), numRule.getDV());
                     }
                     if (!missing && !numRule.isMissingValue() && value >= numRule.getMinValue() && value <= numRule.getMaxValue()) {
-                        return new Pair<>(numRule.getTargetClass(), numRule.getDV());
+                        return Pair.from(numRule.getTargetClass(), numRule.getDV());
                     }
                 }
                 break;
@@ -157,11 +157,11 @@ public class OneRule extends AbstractClassifier {
                 for (Rule oneRule : bestRuleSet.getRules()) {
                     NominalRule nomRule = (NominalRule) oneRule;
                     if (nomRule.getTestLabel().equals(label)) {
-                        return new Pair<>(nomRule.getTargetClass(), nomRule.getDV());
+                        return Pair.from(nomRule.getTargetClass(), nomRule.getDV());
                     }
                 }
         }
-        return new Pair<>("?", DVector.newEmpty(true, firstTargetLevels().length));
+        return Pair.from("?", DVector.newEmpty(true, firstTargetLevels().length));
     }
 
     private RuleSet buildNominal(String testVar, Frame df, Var weights) {

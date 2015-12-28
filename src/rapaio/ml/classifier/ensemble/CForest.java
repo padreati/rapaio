@@ -462,7 +462,7 @@ public class CForest extends AbstractClassifier {
             Set<Integer> out = sample.mapping.rowStream().boxed().collect(toSet());
             oobIndexes = IntStream.range(0, df.rowCount()).filter(row -> !out.contains(row)).boxed().collect(toList());
         }
-        return Pair.valueOf(weak, oobIndexes);
+        return Pair.from(weak, oobIndexes);
     }
 
     @Override

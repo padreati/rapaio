@@ -56,7 +56,7 @@ public interface CTreeMissingHandler extends Serializable {
                 }
             }
         });
-        return new Pair<>(
+        return Pair.from(
                 mappings.stream().map(df::mapRows).collect(toList()),
                 mappings.stream().map(weights::mapRows).collect(toList())
         );
@@ -90,7 +90,7 @@ public interface CTreeMissingHandler extends Serializable {
 
         mappings.get(index).addAll(missingSpots);
 
-        return new Pair<>(
+        return Pair.from(
                 mappings.stream().map(df::mapRows).collect(toList()),
                 mappings.stream().map(weights::mapRows).collect(toList())
         );
@@ -129,7 +129,7 @@ public interface CTreeMissingHandler extends Serializable {
             });
         }
         List<Frame> frames = mappings.stream().map(df::mapRows).collect(toList());
-        return new Pair<>(frames, weightsList);
+        return Pair.from(frames, weightsList);
     });
     Tag<CTreeMissingHandler> ToRandom = Tag.valueOf("ToRandom", (Frame df, Var weights, CTree.Candidate candidate) -> {
 
@@ -149,7 +149,7 @@ public interface CTreeMissingHandler extends Serializable {
         missingSpots.forEach(rowId -> mappings.get(RandomSource.nextInt(mappings.size())).add(rowId));
         List<Frame> frameList = mappings.stream().map(df::mapRows).collect(toList());
         List<Var> weightList = mappings.stream().map(weights::mapRows).collect(toList());
-        return new Pair<>(frameList, weightList);
+        return Pair.from(frameList, weightList);
     });
 
     Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, CTree.Candidate candidate);

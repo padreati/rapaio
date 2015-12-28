@@ -44,7 +44,7 @@ public interface Gradient {
     default Pair<RV, Double> compute(RV data, double label, RV weights) {
         RV gradient = RV.empty(weights.rowCount());
         Double loss = compute(data, label, weights, gradient);
-        return Pair.valueOf(gradient, loss);
+        return Pair.from(gradient, loss);
     }
 
     /**
@@ -77,7 +77,7 @@ class LeastSquareGradient implements Gradient {
         double loss = diff * diff / 2.0;
         RV gradient = data.copy();
         gradient.dot(diff);
-        return Pair.valueOf(gradient, loss);
+        return Pair.from(gradient, loss);
     }
 
     @Override
@@ -190,7 +190,7 @@ class LogisticGradient implements Gradient {
     public Pair<RV, Double> compute(RV data, double label, RV weights) {
         RV gradient = RV.empty(weights.rowCount());
         double loss = compute(data, label, weights, gradient);
-        return Pair.valueOf(gradient, loss);
+        return Pair.from(gradient, loss);
     }
 
     @Override
@@ -304,9 +304,9 @@ class HingeGradient implements Gradient {
         if (1.0 > labelScaled * dotProduct) {
             RV gradient = data.copy();
             gradient.dot(-labelScaled);
-            return Pair.valueOf(gradient, 1.0 - labelScaled * dotProduct);
+            return Pair.from(gradient, 1.0 - labelScaled * dotProduct);
         } else {
-            return Pair.valueOf(RV.empty(weights.rowCount()), 0.0);
+            return Pair.from(RV.empty(weights.rowCount()), 0.0);
         }
     }
 
