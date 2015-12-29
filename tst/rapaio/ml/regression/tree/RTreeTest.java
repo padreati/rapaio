@@ -26,8 +26,11 @@ package rapaio.ml.regression.tree;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.filter.FFRefSort;
+import rapaio.data.sample.FrameSampler;
 import rapaio.datasets.Datasets;
 import rapaio.ml.regression.RFit;
+import rapaio.ml.regression.Regression;
+import rapaio.ml.regression.ensemble.RForest;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 
@@ -47,24 +50,27 @@ public class RTreeTest {
     @Test
     public void testSimple() throws IOException {
         Frame df = Datasets.loadISLAdvertising().removeVars("ID", "Radio", "Newspaper");
-        df = Datasets.loadISLAdvertising().removeVars("ID");
+//        df = Datasets.loadISLAdvertising().removeVars("ID");
         df.printSummary();
 
         String v = "TV";
         Frame t = new FFRefSort(df.var(v).refComparator()).filter(df);
 
-        RTree model = RTree.buildCART().withMaxDepth(10).withMinCount(1).withFunction(RTreeTestFunction.WeightedSdGain);
-        model.train(t, "Sales");
-        model.printSummary();
-
-        RFit fit = model.fit(t);
-        fit.printSummary();
-
         WS.setPrinter(new IdeaPrinter());
-        WS.draw(plot()
-                .lines(t.var(v), fit.firstFit(), color(1))
-                .points(t.var(v), t.var("Sales"), pch(3))
 
-        );
+        RTree tree = RTree.buildCART().withMaxDepth(10).withMinCount(1).withFunction(RTreeTestFunction.WeightedSdGain);
+        Regression model = RForest.newRF()
+                .withRegression(tree)
+                .withRunningHook((r, run) -> {
+                    RFit fit = r.fit(t);
+                    WS.draw(plot()
+                            .lines(t.var(v), fit.firstFit(), color(1))
+                            .points(t.var(v), t.var("Sales"), pch(3))
+
+                    );
+                }).withSampler(new FrameSampler.Bootstrap(1))
+                .withRuns(1000);
+        model.train(t, "Sales");
+//        model.printSummary();
     }
 }

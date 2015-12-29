@@ -24,9 +24,10 @@
 package rapaio.ml.regression.ensemble;
 
 import rapaio.data.Frame;
+import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.ml.classifier.Classifier;
+import rapaio.data.sample.FrameSample;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RFit;
@@ -35,8 +36,7 @@ import rapaio.ml.regression.tree.RTree;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static rapaio.sys.WS.formatFlex;
+import java.util.stream.Collectors;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/15/15.
@@ -47,20 +47,20 @@ public class RForest extends AbstractRegression {
     private static final long serialVersionUID = -3926256335736143438L;
 
     int runs = 0;
-    boolean oobCompute = false;
     Regression r = RTree.buildC45();
-    Sampling sampling = Sampling.NONE;
-    double samplePercent = 1.0;
     //
-    double totalOobInstances = 0;
-    double totalOobError = 0;
-    double oobError = Double.NaN;
-    List<Classifier> predictors = new ArrayList<>();
+    List<Regression> regressors = new ArrayList<>();
 
+    private RForest() {
+    }
+
+    public static RForest newRF() {
+        return new RForest();
+    }
 
     @Override
     public Regression newInstance() {
-        return null;
+        return new RForest();
     }
 
     @Override
@@ -71,15 +71,11 @@ public class RForest extends AbstractRegression {
     @Override
     public String fullName() {
         StringBuilder sb = new StringBuilder();
-        sb.append(name()).append("{");
-        sb.append("r=").append(r.fullName()).append(", ");
-        sb.append("sampling=").append(sampling).append(", ");
-        if (!sampling.equals(Sampling.NONE)) {
-            sb.append("samplePercent=").append(formatFlex(samplePercent)).append(", ");
-        }
-        sb.append("oobComp=").append(oobCompute).append(", ");
-        sb.append("runs=").append(runs).append(", ");
-        sb.append("}");
+        sb.append(name()).append("\n");
+        sb.append("{\n");
+        sb.append("r=").append(r.fullName()).append(",\n");
+        sb.append("runs=").append(runs).append(",\n");
+        sb.append("}\n");
         return sb.toString();
     }
 
@@ -95,22 +91,47 @@ public class RForest extends AbstractRegression {
                 .withAllowMissingTargetValues(false);
     }
 
+    public RForest withRegression(Regression r) {
+        this.r = r;
+        return this;
+    }
+
     @Override
     protected boolean coreTrain(Frame df, Var weights) {
-        return false;
+        regressors.clear();
+        for (int i = 0; i < runs(); i++) {
+            Regression rnew = r.newInstance();
+            FrameSample sample = sampler().newSample(df, weights);
+            rnew.train(sample.df, sample.weights, firstTargetName());
+            regressors.add(rnew);
+            if (runningHook() != null) {
+                runningHook().accept(this, i + 1);
+            }
+        }
+        return true;
     }
 
     @Override
     protected RFit coreFit(Frame df, boolean withResiduals) {
-        return null;
+        RFit fit = RFit.build(this, df, withResiduals);
+        List<Numeric> results = regressors
+                .parallelStream()
+                .map(r -> r.fit(df, false).firstFit())
+                .collect(Collectors.toList());
+        for (int i = 0; i < df.rowCount(); i++) {
+            double sum = 0;
+            for (Numeric result : results) {
+                sum += result.value(i);
+            }
+            fit.firstFit().setValue(i, sum / regressors.size());
+        }
+        if (withResiduals)
+            fit.buildComplete();
+        return fit;
     }
 
     @Override
     public String summary() {
         throw new IllegalArgumentException("not implemented");
-    }
-
-    public enum Sampling {
-        NONE, BOOTSTRAP, RANDOM
     }
 }

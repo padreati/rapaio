@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/20/14.
  */
-public abstract class AbstractRegression<T extends RFit> implements Regression<T> {
+public abstract class AbstractRegression implements Regression {
 
     private static final long serialVersionUID = 5544999078321108408L;
 
@@ -59,7 +59,7 @@ public abstract class AbstractRegression<T extends RFit> implements Regression<T
     }
 
     @Override
-    public Regression<T> withInputFilters(FFilter... filters) {
+    public Regression withInputFilters(FFilter... filters) {
         inputFilters.clear();
         Collections.addAll(inputFilters, filters);
         return this;
@@ -137,12 +137,12 @@ public abstract class AbstractRegression<T extends RFit> implements Regression<T
 
 
     @Override
-    public final T fit(Frame df) {
+    public RFit fit(Frame df) {
         return fit(df, true);
     }
 
     @Override
-    public final T fit(Frame df, boolean withResiduals) {
+    public RFit fit(Frame df, boolean withResiduals) {
         FitSetup setup = baseFit(df, withResiduals);
         setup = prepareFit(setup.df, withResiduals);
         return coreFit(setup.df, setup.withResiduals);
@@ -161,7 +161,7 @@ public abstract class AbstractRegression<T extends RFit> implements Regression<T
         return FitSetup.valueOf(result, withResiduals);
     }
 
-    protected abstract T coreFit(Frame df, boolean withResiduals);
+    protected abstract RFit coreFit(Frame df, boolean withResiduals);
 
     @Override
     public boolean hasLearned() {

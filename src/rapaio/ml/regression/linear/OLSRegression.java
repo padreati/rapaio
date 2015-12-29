@@ -37,7 +37,7 @@ import rapaio.ml.regression.Regression;
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
 @Deprecated
-public class OLSRegression extends AbstractRegression<OLSRFit> {
+public class OLSRegression extends AbstractRegression {
 
     private static final long serialVersionUID = 8610329390138787530L;
 
@@ -83,6 +83,11 @@ public class OLSRegression extends AbstractRegression<OLSRFit> {
         RM Y = Linear.newRMCopyOf(df.mapVars(targetNames()));
         beta = new QR(X).solve(Y);
         return true;
+    }
+
+    @Override
+    public OLSRFit fit(Frame df, boolean withResiduals) {
+        return (OLSRFit) super.fit(df, withResiduals);
     }
 
     @Override
