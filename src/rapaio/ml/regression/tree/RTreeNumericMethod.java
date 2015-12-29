@@ -24,7 +24,6 @@
 package rapaio.ml.regression.tree;
 
 import rapaio.core.CoreTools;
-import rapaio.core.RandomSource;
 import rapaio.core.stat.OnlineStat;
 import rapaio.data.*;
 import rapaio.data.filter.VFRefSort;
@@ -39,7 +38,6 @@ import java.util.stream.Collectors;
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
-@Deprecated
 public interface RTreeNumericMethod extends Serializable {
 
     RTreeNumericMethod IGNORE = new RTreeNumericMethod() {
@@ -94,6 +92,7 @@ public interface RTreeNumericMethod extends Serializable {
             }
 
             RTree.RTreeCandidate best = null;
+            double bestScore = 0.0;
 
             RTreeTestPayload p = new RTreeTestPayload(2);
             p.totalVar = CoreTools.var(target).value();
@@ -110,29 +109,15 @@ public interface RTreeNumericMethod extends Serializable {
                 p.splitWeight[0] = leftWeight[row];
                 p.splitWeight[1] = rightWeight[row];
                 double value = c.function.computeTestValue(p);
+                if (value > bestScore) {
+                    bestScore = value;
+                    best = new RTree.RTreeCandidate(value, testVarName);
 
-                RTree.RTreeCandidate current = new RTree.RTreeCandidate(value, testVarName);
-                if (best == null) {
-                    best = current;
-
-                    final double testValue = test.value(sort.index(i));
+                    double testValue = test.value(sort.index(i));
                     best.addGroup(
                             String.format("%s <= %.6f", testVarName, testValue),
                             spot -> !spot.missing(testVarName) && spot.value(testVarName) <= testValue);
                     best.addGroup(
-                            String.format("%s > %.6f", testVarName, testValue),
-                            spot -> !spot.missing(testVarName) && spot.value(testVarName) > testValue);
-                } else {
-                    int comp = best.compareTo(current);
-                    if (comp < 0) continue;
-                    if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
-                    best = current;
-
-                    final double testValue = test.value(sort.index(i));
-                    current.addGroup(
-                            String.format("%s <= %.6f", testVarName, testValue),
-                            spot -> !spot.missing(testVarName) && spot.value(testVarName) <= testValue);
-                    current.addGroup(
                             String.format("%s > %.6f", testVarName, testValue),
                             spot -> !spot.missing(testVarName) && spot.value(testVarName) > testValue);
                 }

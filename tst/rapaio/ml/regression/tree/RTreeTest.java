@@ -47,20 +47,23 @@ public class RTreeTest {
     @Test
     public void testSimple() throws IOException {
         Frame df = Datasets.loadISLAdvertising().removeVars("ID", "Radio", "Newspaper");
+        df = Datasets.loadISLAdvertising().removeVars("ID");
         df.printSummary();
 
-        Frame t = new FFRefSort(df.var(0).refComparator()).filter(df);
+        String v = "TV";
+        Frame t = new FFRefSort(df.var(v).refComparator()).filter(df);
 
-        RTree model = RTree.buildCART().withMaxDepth(20).withMinCount(10).withFunction(RTreeTestFunction.WeightedSdGain);
+        RTree model = RTree.buildCART().withMaxDepth(10).withMinCount(1).withFunction(RTreeTestFunction.WeightedSdGain);
         model.train(t, "Sales");
+        model.printSummary();
 
         RFit fit = model.fit(t);
         fit.printSummary();
 
         WS.setPrinter(new IdeaPrinter());
         WS.draw(plot()
-                .lines(t.var(0), fit.firstFit(), color(1))
-                .points(t.var(0), t.var(1), pch(2))
+                .lines(t.var(v), fit.firstFit(), color(1))
+                .points(t.var(v), t.var("Sales"), pch(3))
 
         );
     }

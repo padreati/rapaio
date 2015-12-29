@@ -167,6 +167,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
                 f[i][k] += shrinkage * rr.firstFit().value(i);
             }
 
+            tree.printSummary();
             trees.get(k).add(tree);
         }
     }
@@ -223,16 +224,8 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
         }
         return cr;
     }
-
-    /*
-    @Override
-    public CFit fitFurther(CFit fit, Frame df) {
-        throw new IllegalArgumentException("not implemented yet");
-    }
-    */
 }
 
-@Deprecated
 class ClassifierLossFunction implements GBTLossFunction {
 
     private static final long serialVersionUID = -2622054975826334290L;

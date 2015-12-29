@@ -125,7 +125,10 @@ public class OnlineStat {
         return n * m4 / (m2 * m2) - 3.0;
     }
 
-    public void apply(OnlineStat a) {
+    public void update(OnlineStat a) {
+        if (a.n == 0)
+            return;
+
         OnlineStat combined = new OnlineStat();
         combined.n += a.n + this.n;
 

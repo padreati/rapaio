@@ -23,13 +23,14 @@
 
 package rapaio.core.stat;
 
+import junit.framework.Assert;
 import org.junit.Test;
+import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Index;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.sys.WS;
 
 import static org.junit.Assert.assertEquals;
 
@@ -81,10 +82,17 @@ public class OnlineStatTest {
         a.stream().forEach(s -> soA.update(s.value()));
         b.stream().forEach(s -> soB.update(s.value()));
 
-        soA.apply(soB);
+        OnlineStat soAll = new OnlineStat();
+        soAll.update(soA);
+        soAll.update(soB);
 
-        WS.p(String.format("%12f", soA.variance()));
-        WS.p(String.format("%12f", new Variance(ab).value()));
+        soA.update(soB);
+
+        Assert.assertEquals(soA.variance(), CoreTools.var(ab).value(), 1e-12);
+        Assert.assertEquals(soA.mean(), CoreTools.mean(ab).value(), 1e-30);
+
+        Assert.assertEquals(soA.variance(), soAll.variance(), 1e-12);
+        Assert.assertEquals(soA.mean(), soAll.mean(), 1e-30);
     }
 
     @Test

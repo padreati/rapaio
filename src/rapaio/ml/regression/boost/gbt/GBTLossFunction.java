@@ -37,7 +37,6 @@ import static rapaio.sys.WS.formatFlex;
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public interface GBTLossFunction extends Serializable {
 
     String name();
