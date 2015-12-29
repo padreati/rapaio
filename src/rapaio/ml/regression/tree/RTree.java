@@ -35,6 +35,7 @@ import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RFit;
 import rapaio.ml.regression.boost.gbt.BTRegression;
 import rapaio.ml.regression.boost.gbt.GBTLossFunction;
+import rapaio.sys.WS;
 import rapaio.util.Pair;
 import rapaio.util.func.SPredicate;
 
@@ -44,6 +45,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.IntStream;
 
 import static rapaio.sys.WS.formatFlex;
 
@@ -312,6 +314,9 @@ public class RTree extends AbstractRegression implements BTRegression {
         public void learn(RTree tree, Frame df, Var weights, int depth) {
             value = new WeightedMean(df.var(tree.firstTargetName()), weights).value();
             weight = weights.stream().complete().mapToDouble().sum();
+            if (weight == 0) {
+                WS.println("ERROR");
+            }
 
             if (df.rowCount() == 0 || df.rowCount() <= tree.minCount || depth <= 1) {
                 return;
@@ -364,10 +369,9 @@ public class RTree extends AbstractRegression implements BTRegression {
                 return;
             }
 
-            Mapping[] mapping = new Mapping[children.size()];
-            for (int i = 0; i < children.size(); i++) {
-                mapping[i] = Mapping.empty();
-            }
+            Mapping[] mapping = IntStream
+                    .range(0, children.size()).boxed()
+                    .map(i -> Mapping.empty()).toArray(Mapping[]::new);
             x.stream().forEach(spot -> {
                 for (int i = 0; i < children.size(); i++) {
                     RTreeNode child = children.get(i);

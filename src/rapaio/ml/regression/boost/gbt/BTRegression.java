@@ -32,7 +32,6 @@ import rapaio.ml.regression.Regression;
  *
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public interface BTRegression extends Regression {
 
     @Override

@@ -33,6 +33,7 @@ import rapaio.ml.regression.RFit;
 import rapaio.ml.regression.boost.gbt.BTRegression;
 import rapaio.ml.regression.boost.gbt.GBTLossFunction;
 import rapaio.ml.regression.tree.RTree;
+import rapaio.sys.WS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,6 +139,9 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
             }
             for (int k = 0; k < K; k++) {
                 p[i][k] = Math.pow(Math.E, f[i][k]) / sum;
+                if (Double.isNaN(p[i][k])) {
+                    WS.println("ERROR");
+                }
             }
         }
 
@@ -156,8 +160,8 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
             BTRegression tree = classifier.newInstance();
 
-            Mapping map = sampler().newSample(x, weights).mapping;
-            tree.train(train.mapRows(map), weights.mapRows(map), "##tt##");
+            Mapping samplerMapping = sampler().newSample(x, weights).mapping;
+            tree.train(train.mapRows(samplerMapping), weights.mapRows(samplerMapping), "##tt##");
 
             tree.boostFit(x, r, r, new ClassifierLossFunction(K));
 
@@ -166,8 +170,6 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
             for (int i = 0; i < df.rowCount(); i++) {
                 f[i][k] += shrinkage * rr.firstFit().value(i);
             }
-
-            tree.printSummary();
             trees.get(k).add(tree);
         }
     }
@@ -176,8 +178,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
     public CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
         CFit cr = CFit.build(this, df, withClasses, withDistributions);
         for (int k = 0; k < K; k++) {
-            List<BTRegression> predictors = trees.get(k);
-            for (BTRegression tree : predictors) {
+            for (BTRegression tree : trees.get(k)) {
                 RFit rr = tree.fit(df, false);
                 for (int i = 0; i < df.rowCount(); i++) {
                     double p = cr.firstDensity().value(i, k + 1);

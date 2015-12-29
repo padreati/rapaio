@@ -32,14 +32,16 @@ import rapaio.util.func.SPredicate;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
-@Deprecated
 public interface RTreeSplitter extends Serializable {
 
     RTreeSplitter REMAINS_IGNORED = new RTreeSplitter() {
+        private static final long serialVersionUID = -3841482294679686355L;
+
         @Override
         public String name() {
             return "REMAINS_IGNORED";
@@ -65,11 +67,13 @@ public interface RTreeSplitter extends Serializable {
                 }
             });
             List<Frame> frames = new ArrayList<>();
-            mappings.stream().forEach(mapping -> frames.add(MappedFrame.newByRow(df, mapping)));
+            mappings.stream().forEach(mapping -> frames.add(df.mapRows(mapping)));
             return Pair.from(frames, weightsList);
         }
     };
     RTreeSplitter REMAINS_TO_MAJORITY = new RTreeSplitter() {
+
+        private static final long serialVersionUID = 5206066415613740170L;
 
         @Override
         public String name() {
@@ -117,6 +121,8 @@ public interface RTreeSplitter extends Serializable {
         }
     };
     RTreeSplitter REMAINS_TO_ALL_WEIGHTED = new RTreeSplitter() {
+
+        private static final long serialVersionUID = -7751464101852319794L;
 
         @Override
         public String name() {
@@ -168,6 +174,8 @@ public interface RTreeSplitter extends Serializable {
         }
     };
     RTreeSplitter REMAINS_TO_RANDOM = new RTreeSplitter() {
+        private static final long serialVersionUID = -592529235216896819L;
+
         @Override
         public String name() {
             return "REMAINS_TO_RANDOM";
@@ -175,12 +183,9 @@ public interface RTreeSplitter extends Serializable {
 
         @Override
         public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.RTreeCandidate candidate) {
-            List<Mapping> mappings = new ArrayList<>();
-            for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
-                mappings.add(Mapping.empty());
-            }
+            List<Mapping> mappings = IntStream.range(0, candidate.getGroupPredicates().size())
+                    .boxed().map(i -> Mapping.empty()).collect(Collectors.toList());
 
-            final Set<Integer> missingSpots = new HashSet<>();
             df.stream().forEach(s -> {
                 for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                     SPredicate<FSpot> predicate = candidate.getGroupPredicates().get(i);
@@ -189,13 +194,10 @@ public interface RTreeSplitter extends Serializable {
                         return;
                     }
                 }
-                missingSpots.add(s.row());
+                mappings.get(RandomSource.nextInt(mappings.size())).add(s.row());
             });
-            missingSpots.forEach(rowId -> mappings.get(RandomSource.nextInt(mappings.size())).add(rowId));
-            List<Frame> frameList = mappings.stream()
-                    .map(mapping -> MappedFrame.newByRow(df, mapping)).collect(Collectors.toList());
-            List<Var> weightList = mappings.stream()
-                    .map(mapping -> weights.mapRows(mapping)).collect(Collectors.toList());
+            List<Frame> frameList = mappings.stream().map(df::mapRows).collect(Collectors.toList());
+            List<Var> weightList = mappings.stream().map(weights::mapRows).collect(Collectors.toList());
             return Pair.from(frameList, weightList);
         }
     };

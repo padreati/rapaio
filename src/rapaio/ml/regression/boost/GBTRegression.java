@@ -23,8 +23,8 @@
 
 package rapaio.ml.regression.boost;
 
-import rapaio.core.SamplingTools;
 import rapaio.data.*;
+import rapaio.data.sample.FrameSampler;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RFit;
@@ -51,14 +51,11 @@ public class GBTRegression extends AbstractRegression implements Printable {
     private static final long serialVersionUID = 4559540258922653130L;
 
     // parameters
-    int runs = 1; // number of rounds
     GBTLossFunction lossFunction = new GBTLossFunction.Huber();
 
     Regression initRegression = new L2Regression();
     BTRegression regressor = RTree.buildCART().withMaxDepth(4).withMinCount(10);
     double shrinkage = 1.0;
-    boolean useBootstrap = false;
-    double bootstrapSize = 1.0;
 
     // prediction
     Numeric fitLearn;
@@ -72,9 +69,8 @@ public class GBTRegression extends AbstractRegression implements Printable {
                 .withInitRegressor(initRegression)
                 .withRegressor(regressor)
                 .withShrinkage(shrinkage)
-                .withBootstrap(useBootstrap)
-                .withBootstrapSize(bootstrapSize)
-                .withRuns(runs);
+                .withSampler(sampler())
+                .withRuns(runs());
     }
 
     @Override
@@ -90,9 +86,8 @@ public class GBTRegression extends AbstractRegression implements Printable {
         sb.append("initRegression=").append(initRegression.fullName()).append(", ");
         sb.append("regression=").append(regressor.fullName()).append(", ");
         sb.append("shrinkage=").append(formatFlex(shrinkage)).append(", ");
-        sb.append("useBootstrap=").append(useBootstrap).append(", ");
-        sb.append("bootstrapSize=").append(formatFlex(bootstrapSize)).append(", ");
-        sb.append("runs=").append(runs);
+        sb.append("sampler=").append(sampler()).append(", ");
+        sb.append("runs=").append(runs());
         sb.append("}");
         return sb.toString();
     }
@@ -129,19 +124,12 @@ public class GBTRegression extends AbstractRegression implements Printable {
         return this;
     }
 
-    public GBTRegression withBootstrap(boolean use) {
-        this.useBootstrap = use;
-        return this;
-    }
-
-    public GBTRegression withBootstrapSize(double bootstrapSize) {
-        this.bootstrapSize = bootstrapSize;
-        return this;
+    public GBTRegression withSampler(FrameSampler sampler) {
+        return (GBTRegression) super.withSampler(sampler);
     }
 
     public GBTRegression withRuns(int runs) {
-        this.runs = runs;
-        return this;
+        return (GBTRegression) super.withRuns(runs);
     }
 
     @Override
@@ -159,26 +147,17 @@ public class GBTRegression extends AbstractRegression implements Printable {
             fitLearn.setValue(i, initPred.firstFit().value(i));
         }
 
-        for (int i = 1; i <= runs; i++) {
+        for (int i = 1; i <= runs(); i++) {
             Numeric gradient = lossFunction.gradient(y, fitLearn).withName("target");
 
             Frame xm = x.bindVars(gradient);
             BTRegression tree = regressor.newInstance();
 
-            // bootstrap samples
+            // frame sampling
 
-            Frame xmLearn = xm;
-            Frame xLearn = x;
-            Mapping bootstrapMapping = null;
-            if (useBootstrap) {
-                bootstrapMapping = Mapping.empty();
-                int[] sample = SamplingTools.sampleWOR(xmLearn.rowCount(), (int) (bootstrapSize * xmLearn.rowCount()));
-                for (int aSample : sample) {
-                    bootstrapMapping.add(aSample);
-                }
-                xmLearn = MappedFrame.newByRow(xm, bootstrapMapping);
-                xLearn = MappedFrame.newByRow(x, bootstrapMapping);
-            }
+            Mapping samplerMapping = sampler().newSample(xm, weights).mapping;
+            Frame xmLearn = xm.mapRows(samplerMapping);
+            Frame xLearn = x.mapRows(samplerMapping);
 
             // build regions
 
@@ -186,15 +165,11 @@ public class GBTRegression extends AbstractRegression implements Printable {
 
             // fit residuals
 
-            if (bootstrapMapping == null) {
-                tree.boostFit(xLearn, y, fitLearn, lossFunction);
-            } else {
-                tree.boostFit(
-                        xLearn,
-                        MappedVar.byRows(y, bootstrapMapping),
-                        MappedVar.byRows(fitLearn, bootstrapMapping),
-                        lossFunction);
-            }
+            tree.boostFit(
+                    xLearn,
+                    MappedVar.byRows(y, samplerMapping),
+                    MappedVar.byRows(fitLearn, samplerMapping),
+                    lossFunction);
 
             // add next prediction to the fit values
 

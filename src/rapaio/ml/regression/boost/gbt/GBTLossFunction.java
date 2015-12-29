@@ -27,6 +27,7 @@ import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
+import rapaio.sys.WS;
 
 import java.io.Serializable;
 
@@ -60,7 +61,11 @@ public interface GBTLossFunction extends Serializable {
             for (int i = 0; i < y.rowCount(); i++) {
                 values.addValue(y.value(i) - fx.value(i));
             }
-            return new Quantiles(values, new double[]{0.5}).values()[0];
+            double result = new Quantiles(values, new double[]{0.5}).values()[0];
+            if (Double.isNaN(result)) {
+                WS.println();
+            }
+            return result;
         }
 
         @Override

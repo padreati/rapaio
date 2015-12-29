@@ -47,19 +47,25 @@ public interface RTreePredictor extends Serializable {
         @Override
         public Pair<Double, Double> predict(RTree tree, FSpot spot, RTree.RTreeNode node) {
 
+            // if we are at a leaf node we simply return what we found there
             if (node.isLeaf())
                 return Pair.from(node.getValue(), node.getWeight());
 
+            // if is an interior node, we check to see if there is a child
+            // which can handle the instance
             for (RTree.RTreeNode child : node.getChildren()) {
                 if (child.getPredicate().test(spot)) {
                     return predict(tree, spot, child);
                 }
             }
 
+            // so is a missing value for the current test feature
+
             Numeric values = Numeric.empty();
             Numeric weights = Numeric.empty();
             for (RTree.RTreeNode child : node.getChildren()) {
                 Pair<Double, Double> prediction = predict(tree, spot, child);
+                prediction = predict(tree, spot, child);
                 values.addValue(prediction._1);
                 weights.addValue(prediction._2);
             }

@@ -25,8 +25,10 @@ package rapaio.ml.regression.tree;
 
 import rapaio.core.CoreTools;
 import rapaio.core.stat.OnlineStat;
-import rapaio.data.*;
-import rapaio.data.filter.VFRefSort;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.Var;
+import rapaio.data.filter.Filters;
 import rapaio.data.stream.VSpot;
 
 import java.io.Serializable;
@@ -58,14 +60,13 @@ public interface RTreeNumericMethod extends Serializable {
         }
 
         @Override
-        public List<RTree.RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
+        public List<RTree.RTreeCandidate> computeCandidates(RTree c, Frame dfOld, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
 
+            Frame df = Filters.refSort(dfOld, dfOld.var(testVarName).refComparator());
             Mapping cleanMapping = Mapping.wrap(df.var(testVarName).stream().complete().map(VSpot::row).collect(Collectors.toList()));
 
             Var test = df.var(testVarName).mapRows(cleanMapping);
             Var target = df.var(targetVarName).mapRows(cleanMapping);
-
-            Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.seq(cleanMapping.size()));
 
             double[] leftWeight = new double[test.rowCount()];
             double[] leftVar = new double[test.rowCount()];
@@ -76,19 +77,17 @@ public interface RTreeNumericMethod extends Serializable {
 
             double w = 0.0;
             for (int i = 0; i < test.rowCount(); i++) {
-                int row = sort.index(i);
-                so.update(target.value(row));
-                w += weights.value(row);
-                leftWeight[row] = w;
-                leftVar[row] = so.variance();
+                so.update(target.value(i));
+                w += weights.value(i);
+                leftWeight[i] = w;
+                leftVar[i] = so.variance();
             }
             w = 0.0;
             for (int i = test.rowCount() - 1; i >= 0; i--) {
-                int row = sort.index(i);
-                w += weights.value(row);
-                so.update(target.value(row));
-                rightWeight[row] = w;
-                rightVar[row] += so.variance();
+                w += weights.value(i);
+                so.update(target.value(i));
+                rightWeight[i] = w;
+                rightVar[i] += so.variance();
             }
 
             RTree.RTreeCandidate best = null;
@@ -97,23 +96,19 @@ public interface RTreeNumericMethod extends Serializable {
             RTreeTestPayload p = new RTreeTestPayload(2);
             p.totalVar = CoreTools.var(target).value();
 
-            for (int i = 0; i < test.rowCount(); i++) {
-                int row = sort.index(i);
+            for (int i = c.minCount; i < test.rowCount() - c.minCount - 1; i++) {
+                if (test.value(i) == test.value(i + 1)) continue;
 
-                if (test.missing(row)) continue;
-                if (i < c.minCount || i > test.rowCount() - 1 - c.minCount) continue;
-                if (test.value(sort.index(i)) == test.value(sort.index(i + 1))) continue;
-
-                p.splitVar[0] = leftVar[row];
-                p.splitVar[1] = rightVar[row];
-                p.splitWeight[0] = leftWeight[row];
-                p.splitWeight[1] = rightWeight[row];
+                p.splitVar[0] = leftVar[i];
+                p.splitVar[1] = rightVar[i];
+                p.splitWeight[0] = leftWeight[i];
+                p.splitWeight[1] = rightWeight[i];
                 double value = c.function.computeTestValue(p);
                 if (value > bestScore) {
                     bestScore = value;
                     best = new RTree.RTreeCandidate(value, testVarName);
 
-                    double testValue = test.value(sort.index(i));
+                    double testValue = test.value(i);
                     best.addGroup(
                             String.format("%s <= %.6f", testVarName, testValue),
                             spot -> !spot.missing(testVarName) && spot.value(testVarName) <= testValue);

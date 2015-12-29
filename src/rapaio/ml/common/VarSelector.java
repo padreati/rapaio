@@ -47,6 +47,7 @@ public class VarSelector implements Serializable {
     private int mCount = 0;
     private Set<String> varNames = new HashSet<>();
 
+
     public VarSelector() {
         this(M_ALL);
     }

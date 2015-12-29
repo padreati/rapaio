@@ -138,14 +138,14 @@ public interface RTreeNominalMethod extends Serializable {
             double totalVar = CoreTools.var(targetVar).value();
 
             RTree.RTreeCandidate best = null;
-            double bestScore = 0.0;
+            double bestScore = Double.MIN_VALUE;
 
             for (int i = 1; i < testVar.levels().length; i++) {
                 String testLabel = testVar.levels()[i];
 
                 // check to see if we have enough values
 
-                if (dvCount.get(i - 1) < c.minCount || df.rowCount() - dvCount.get(i - 1) < c.minCount)
+                if (dvCount.get(i) < c.minCount || df.rowCount() - dvCount.get(i) < c.minCount)
                     continue;
 
                 OnlineStat osSelect = os[i - 1];
@@ -162,20 +162,22 @@ public interface RTreeNominalMethod extends Serializable {
 
                 // payload for current node
 
-                p.splitWeight[0] = dvWeights.get(i - 1);
+                p.splitWeight[0] = dvWeights.get(i);
                 p.splitVar[0] = osSelect.variance();
 
                 // payload for the others
 
-                p.splitWeight[1] = dvWeights.sum() - dvWeights.get(i - 1);
+                p.splitWeight[1] = dvWeights.sum() - dvWeights.get(i);
                 p.splitVar[1] = osOther.variance();
 
                 double value = c.function.computeTestValue(p);
-                if (value >= bestScore) {
+                if (value > bestScore) {
                     bestScore = value;
                     best = new RTree.RTreeCandidate(value, testColName);
-                    best.addGroup(testColName + " == " + testLabel, spot -> spot.label(testColName).equals(testLabel));
-                    best.addGroup(testColName + " != " + testLabel, spot -> !spot.label(testColName).equals(testLabel));
+                    best.addGroup(testColName + " == " + testLabel,
+                            spot -> !spot.missing(testColName) && spot.label(testColName).equals(testLabel));
+                    best.addGroup(testColName + " != " + testLabel,
+                            spot -> !spot.missing(testColName) && !spot.label(testColName).equals(testLabel));
                 }
             }
             return (best == null) ? Collections.EMPTY_LIST : Collections.singletonList(best);
