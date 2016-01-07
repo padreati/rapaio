@@ -76,7 +76,6 @@ public class OneRule extends AbstractClassifier {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withLearnType(Capabilities.LearnType.MULTICLASS_CLASSIFIER)
                 .withInputCount(1, 1_000_000)
                 .withTargetCount(1, 1)
                 .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NOMINAL, VarType.NUMERIC, VarType.ORDINAL, VarType.STAMP)

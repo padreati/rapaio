@@ -95,7 +95,6 @@ public class GBTRegression extends AbstractRegression implements Printable {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withLearnType(Capabilities.LearnType.REGRESSION)
                 .withInputCount(1, 1_000_000)
                 .withTargetCount(1, 1)
                 .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NUMERIC, VarType.ORDINAL, VarType.NOMINAL)

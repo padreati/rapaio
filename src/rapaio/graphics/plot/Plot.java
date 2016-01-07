@@ -205,4 +205,9 @@ public class Plot extends HostFigure {
         add(new Legend(x, y, opts));
         return this;
     }
+
+    public Plot segment2d(double x1, double y1, double x2, double y2, GOpt... opts) {
+        add(new Segment2D(x1, y1, x2, y2, opts));
+        return this;
+    }
 }

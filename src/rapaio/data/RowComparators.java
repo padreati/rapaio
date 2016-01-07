@@ -66,19 +66,23 @@ public final class RowComparators implements Serializable {
     public static Comparator<Integer> numeric(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
         return (row1, row2) -> {
-            if (var.missing(row1) && var.missing(row2)) {
+            boolean miss1 = var.missing(row1);
+            boolean miss2 = var.missing(row2);
+            if (miss1 && miss2) {
                 return 0;
             }
-            if (var.missing(row1)) {
+            if (miss1) {
                 return -sign;
             }
-            if (var.missing(row2)) {
+            if (miss2) {
                 return sign;
             }
-            if (var.value(row1) == var.value(row2)) {
+            double v1 = var.value(row1);
+            double v2 = var.value(row2);
+            if (v1 == v2) {
                 return 0;
             }
-            return sign * (var.value(row1) < var.value(row2) ? -1 : 1);
+            return sign * (v1 < v2 ? -1 : 1);
         };
     }
 

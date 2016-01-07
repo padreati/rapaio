@@ -100,7 +100,6 @@ public class AdaBoostSAMME extends AbstractClassifier {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withLearnType(Capabilities.LearnType.MULTICLASS_CLASSIFIER)
                 .withInputTypes(VarType.NUMERIC, VarType.NOMINAL, VarType.INDEX, VarType.BINARY)
                 .withInputCount(1, 10_000)
                 .withAllowMissingInputValues(true)

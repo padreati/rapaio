@@ -182,12 +182,11 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withLearnType(Capabilities.LearnType.BINARY_CLASSIFIER)
                 .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NOMINAL, VarType.NUMERIC)
                 .withInputCount(1, 10000)
                 .withAllowMissingInputValues(false)
                 .withTargetTypes(VarType.NOMINAL)
-                .withTargetCount(1, 1)
+                .withTargetCount(1, oneVsAll ? 10_000 : 1)
                 .withAllowMissingTargetValues(false);
     }
 
@@ -443,23 +442,23 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             double pred = predict(df, i);
 
             // TODO generalize
-            pred = 1.0 / (1.0 + Math.exp(-pred));
-
-            cr.firstClasses().setIndex(i, (pred < 0.5) ? classIndex1 : classIndex2);
-            cr.firstDensity().setValue(i, firstTargetLevel(classIndex1), 1 - pred);
-            cr.firstDensity().setValue(i, firstTargetLevel(classIndex2), pred);
+//            pred = 1.0 / (1.0 + Math.exp(-pred));
+//
+//            cr.firstClasses().setIndex(i, (pred < 0.5) ? classIndex1 : classIndex2);
+//            cr.firstDensity().setValue(i, firstTargetLevel(classIndex1), 1 - pred);
+//            cr.firstDensity().setValue(i, firstTargetLevel(classIndex2), pred);
 
             // this is the old distance variant
 
-//            if (pred < 0) {
-//                cr.firstClasses().setIndex(i, classIndex1);
-//                cr.firstDensity().setValue(i, firstTargetLevel(classIndex1), -pred);
-//                cr.firstDensity().setValue(i, firstTargetLevel(classIndex2), pred);
-//            } else {
-//                cr.firstClasses().setIndex(i, classIndex2);
-//                cr.firstDensity().setValue(i, firstTargetLevel(classIndex1), -pred);
-//                cr.firstDensity().setValue(i, firstTargetLevel(classIndex2), pred);
-//            }
+            if (pred < 0) {
+                cr.firstClasses().setIndex(i, classIndex1);
+                cr.firstDensity().setValue(i, firstTargetLevel(classIndex1), -pred);
+                cr.firstDensity().setValue(i, firstTargetLevel(classIndex2), pred);
+            } else {
+                cr.firstClasses().setIndex(i, classIndex2);
+                cr.firstDensity().setValue(i, firstTargetLevel(classIndex1), -pred);
+                cr.firstDensity().setValue(i, firstTargetLevel(classIndex2), pred);
+            }
         }
         return cr;
     }

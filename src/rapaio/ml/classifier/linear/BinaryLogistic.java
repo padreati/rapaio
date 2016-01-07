@@ -81,7 +81,6 @@ public class BinaryLogistic extends AbstractClassifier {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withLearnType(Capabilities.LearnType.BINARY_CLASSIFIER)
                 .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NUMERIC, VarType.NOMINAL)
                 .withInputCount(1, 10000)
                 .withTargetTypes(VarType.NOMINAL)

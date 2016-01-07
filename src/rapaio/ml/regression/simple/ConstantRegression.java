@@ -64,7 +64,6 @@ public class ConstantRegression extends AbstractRegression {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withLearnType(Capabilities.LearnType.REGRESSION)
                 .withInputCount(0, 1_000_000)
                 .withTargetCount(1, 1)
                 .withInputTypes(VarType.NUMERIC, VarType.ORDINAL, VarType.BINARY, VarType.INDEX, VarType.NOMINAL, VarType.STAMP, VarType.TEXT)

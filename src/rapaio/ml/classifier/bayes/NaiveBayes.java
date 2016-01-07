@@ -106,7 +106,6 @@ public class NaiveBayes extends AbstractClassifier {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withLearnType(Capabilities.LearnType.MULTICLASS_CLASSIFIER)
                 .withInputCount(0, 1_000_000)
                 .withInputTypes(VarType.NOMINAL, VarType.NUMERIC, VarType.INDEX, VarType.BINARY)
                 .withTargetCount(1, 1)

@@ -65,6 +65,7 @@ public class MeshContour extends PlotComponent {
 
     @Override
     public void paint(Graphics2D g2d) {
+        Composite old = g2d.getComposite();
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, options.getAlpha()));
 
         Var x = mg.x();
@@ -271,6 +272,7 @@ public class MeshContour extends PlotComponent {
             g2d.setStroke(new BasicStroke(options.getLwd()));
             g2d.draw(new Line2D.Double(from, to));
         }
+        g2d.setComposite(old);
 
     }
 }

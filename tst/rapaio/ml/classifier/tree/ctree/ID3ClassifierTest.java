@@ -32,7 +32,6 @@ import rapaio.data.VarType;
 import rapaio.data.filter.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.tree.CTree;
-import rapaio.ml.classifier.tree.CTreeTest;
 
 import java.io.IOException;
 
@@ -69,7 +68,7 @@ public class ID3ClassifierTest {
         df.printSummary();
 
         CTree id3 = new CTree()
-                .withTest(VarType.NOMINAL, CTreeTest.Nominal_Full)
+                .withTest(VarType.NOMINAL, CTree.PurityTest.NominalFull)
                 .withFunction(CTree.PurityFunction.InfoGain);
         id3.train(df, className);
         id3.fit(df);

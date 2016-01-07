@@ -189,7 +189,6 @@ public class CForest extends AbstractClassifier {
     public Capabilities capabilities() {
         Capabilities cc = c.capabilities();
         return new Capabilities()
-                .withLearnType(Capabilities.LearnType.MULTICLASS_CLASSIFIER)
                 .withInputCount(cc.getMinInputCount(), cc.getMaxInputCount())
                 .withInputTypes(cc.getInputTypes().stream().toArray(VarType[]::new))
                 .withAllowMissingInputValues(cc.getAllowMissingInputValues())

@@ -119,7 +119,6 @@ public class MultiLayerPerceptronRegression extends AbstractRegression {
     @Override
     public Capabilities capabilities() {
         return new Capabilities()
-                .withLearnType(Capabilities.LearnType.REGRESSION)
                 .withInputTypes(VarType.NUMERIC, VarType.INDEX, VarType.BINARY, VarType.ORDINAL)
                 .withTargetTypes(VarType.NUMERIC)
                 .withInputCount(1, 1_000_000)

@@ -85,7 +85,6 @@ public class CStacking extends AbstractClassifier {
         return new Capabilities()
                 .withAllowMissingTargetValues(false)
                 .withAllowMissingInputValues(false)
-                .withLearnType(Capabilities.LearnType.BINARY_CLASSIFIER)
                 .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NUMERIC)
                 .withTargetTypes(VarType.NOMINAL)
                 .withInputCount(1, 100_000)

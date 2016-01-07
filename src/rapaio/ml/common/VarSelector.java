@@ -27,8 +27,8 @@ import rapaio.core.SamplingTools;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -111,11 +111,11 @@ public class VarSelector implements Serializable {
         return mCount;
     }
 
-    public void removeVarNames(List<String> varName) {
+    public void removeVarNames(Collection<String> varName) {
         this.varNames.removeAll(varName);
     }
 
-    public void addVarNames(List<String> varName) {
+    public void addVarNames(Collection<String> varName) {
         this.varNames.addAll(varName);
     }
 }

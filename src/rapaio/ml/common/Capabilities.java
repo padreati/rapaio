@@ -29,10 +29,11 @@ import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.printer.Printable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 /**
  * Capabilities describes what a machine learning algorithm can train and fit.
@@ -41,7 +42,6 @@ import static java.util.stream.Collectors.toList;
  */
 public class Capabilities implements Printable {
 
-    private LearnType learnType;
     private Integer minInputCount;
     private Integer maxInputCount;
     private List<VarType> inputTypes;
@@ -50,17 +50,6 @@ public class Capabilities implements Printable {
     private Integer maxTargetCount;
     private List<VarType> targetTypes;
     private Boolean allowMissingTargetValues;
-
-    /**
-     * Specifies the type of learning algorithm
-     *
-     * @param learnType implemented learning type
-     * @return builder instance
-     */
-    public Capabilities withLearnType(LearnType learnType) {
-        this.learnType = learnType;
-        return this;
-    }
 
     public Capabilities withInputCount(int minInputCount, int maxInputCount) {
         this.minInputCount = minInputCount;
@@ -106,9 +95,6 @@ public class Capabilities implements Printable {
     public void checkAtLearnPhase(Frame df, Var weights, String... targetVars) {
 
         // check if capabilities are well-specified
-        if (learnType == null) {
-            throw new IllegalArgumentException("Capabilities not initialized completely: missing learnType");
-        }
         if (inputTypes == null) {
             throw new IllegalArgumentException("Capabilities not initialized completely: missing inputTypes");
         }
@@ -135,44 +121,12 @@ public class Capabilities implements Printable {
         }
 
         // check target type
-        checkLearnType(df, weights, targetVars);
         checkInputCount(df, weights, targetVars);
         checkInputTypes(df, weights, targetVars);
         checkMissingInputValues(df, weights, targetVars);
         checkTargetCount(df, weights, targetVars);
         checkTargetTypes(df, weights, targetVars);
         checkMissingTargetValues(df, weights, targetVars);
-    }
-
-    private void checkLearnType(Frame df, Var weights, String... targetVars) {
-        List<String> varList = new VarRange(targetVars).parseVarNames(df);
-        for (String varName : varList) {
-            Var var = df.var(varName);
-            VarType type = var.type();
-            switch (learnType) {
-
-                // classifier allow a single term in levels (other than missing labels)
-                case UNARY_CLASSIFIER:
-                    if (var.levels().length != 2) {
-                        throw new IllegalArgumentException("The learning algorithm allows only unary nominal/ordinal targets");
-                    }
-                    break;
-
-                // classifier which allows only 2 levels in levels (other than missing label)
-                case BINARY_CLASSIFIER:
-                    if (var.levels().length != 3) {
-                        throw new IllegalArgumentException("The learning algorithm allows only binary nominal/ordinal targets");
-                    }
-                    break;
-
-                // classifier which allows more than 2 levels in levels (other than missing label)
-                case MULTICLASS_CLASSIFIER:
-                    if (var.levels().length < 3) {
-                        throw new IllegalArgumentException("The learning algorithm allows binary or multi-class targets");
-                    }
-                    break;
-            }
-        }
     }
 
     private void checkTargetCount(Frame df, Var weights, String... targetVarNames) {
@@ -257,17 +211,6 @@ public class Capabilities implements Printable {
             throw new IllegalArgumentException("Algorithm does not allow input variables with missing values; see : " + sb.toString());
     }
 
-    public enum LearnType {
-        UNARY_CLASSIFIER,
-        BINARY_CLASSIFIER,
-        MULTICLASS_CLASSIFIER,
-        REGRESSION
-    }
-
-    public LearnType getLearnType() {
-        return learnType;
-    }
-
     public Integer getMinInputCount() {
         return minInputCount;
     }
@@ -303,7 +246,6 @@ public class Capabilities implements Printable {
     @Override
     public String summary() {
         StringBuilder sb = new StringBuilder();
-        sb.append("learning: ").append(learnType.name()).append("\n");
         sb.append("types inputs/targets: ").append(inputTypes.stream().map(Enum::name).collect(joining(","))).append("/").append(targetTypes.stream().map(Enum::name).collect(joining(","))).append("\n");
         sb.append("counts inputs/targets: [").append(minInputCount).append(",").append(maxInputCount).append("] / [")
                 .append(minTargetCount).append(",").append(maxTargetCount).append("]\n");

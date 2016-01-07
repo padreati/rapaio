@@ -30,13 +30,11 @@ import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.ml.classifier.tree.CTree;
-import rapaio.ml.classifier.tree.CTreeMissingHandler;
 import rapaio.util.Pair;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests splitters implementations for CTree
@@ -61,7 +59,7 @@ public class CTreeMissingHandlerTest {
 
     @Test
     public void testIgnored() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeMissingHandler.Ignored.get().performSplit(df, w, c);
+        Pair<List<Frame>, List<Var>> pairs = CTree.MissingHandler.Ignored.performSplit(df, w, c);
         assertEquals(2, pairs._1.size());
         assertEquals(2, pairs._2.size());
 
@@ -74,7 +72,7 @@ public class CTreeMissingHandlerTest {
 
     @Test
     public void testMajority() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeMissingHandler.ToMajority.get().performSplit(df, w, c);
+        Pair<List<Frame>, List<Var>> pairs = CTree.MissingHandler.ToMajority.performSplit(df, w, c);
 
         assertEquals(2, pairs._1.size());
         assertEquals(2, pairs._2.size());
@@ -88,7 +86,7 @@ public class CTreeMissingHandlerTest {
 
     @Test
     public void testToAllWeighted() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeMissingHandler.ToAllWeighted.get().performSplit(df, w, c);
+        Pair<List<Frame>, List<Var>> pairs = CTree.MissingHandler.ToAllWeighted.performSplit(df, w, c);
 
         assertEquals(2, pairs._1.size());
         assertEquals(2, pairs._2.size());
@@ -105,7 +103,7 @@ public class CTreeMissingHandlerTest {
 
     @Test
     public void testToRandom() {
-        Pair<List<Frame>, List<Var>> pairs = CTreeMissingHandler.ToRandom.get().performSplit(df, w, c);
+        Pair<List<Frame>, List<Var>> pairs = CTree.MissingHandler.ToRandom.performSplit(df, w, c);
 
         df.printLines();
 
