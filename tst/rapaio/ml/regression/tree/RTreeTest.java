@@ -69,7 +69,7 @@ public class RTreeTest {
 
                     );
                 }).withSampler(new FrameSampler.Bootstrap(1))
-                .withRuns(1000);
+                .withRuns(10);
         model.train(t, "Sales");
 //        model.printSummary();
     }

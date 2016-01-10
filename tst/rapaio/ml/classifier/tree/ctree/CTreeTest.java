@@ -30,13 +30,14 @@ import rapaio.data.filter.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.tree.CTree;
+import rapaio.ml.classifier.tree.CTreeCandidate;
+import rapaio.ml.classifier.tree.CTreeNode;
 import rapaio.ws.Summary;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
@@ -53,7 +54,7 @@ public class CTreeTest {
         tree.train(df, "class");
 
         tree.printSummary();
-        CTree.Node root = tree.getRoot();
+        CTreeNode root = tree.getRoot();
         assertEquals("root", root.getGroupName());
 
         String testName = root.getBestCandidate().getTestName();
@@ -79,13 +80,13 @@ public class CTreeTest {
 
     @Test
     public void testCandidate() {
-        CTree.Candidate candidate = new CTree.Candidate(1, "test");
+        CTreeCandidate candidate = new CTreeCandidate(1, "test");
         candidate.addGroup("test <= 0", s -> s.value("test") <= 0);
         candidate.addGroup("test > 0", s -> s.value("test") > 0);
 
-        assertEquals(1, candidate.compareTo(new CTree.Candidate(2, "test")));
-        assertEquals(-1, candidate.compareTo(new CTree.Candidate(-2, "test")));
-        assertEquals(-1, candidate.compareTo(new CTree.Candidate(0.5, "test")));
+        assertEquals(1, candidate.compareTo(new CTreeCandidate(2, "test")));
+        assertEquals(-1, candidate.compareTo(new CTreeCandidate(-2, "test")));
+        assertEquals(-1, candidate.compareTo(new CTreeCandidate(0.5, "test")));
 
         try {
             candidate.addGroup("test <= 0", s -> true);

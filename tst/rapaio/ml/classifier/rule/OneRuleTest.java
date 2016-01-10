@@ -32,8 +32,7 @@ import rapaio.ml.classifier.CFit;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
@@ -110,7 +109,6 @@ public class OneRuleTest {
                 "OneRule (minCount=6)\n" +
                 "\n" +
                 "Capabilities:\n" +
-                "learning: MULTICLASS_CLASSIFIER\n" +
                 "types inputs/targets: BINARY,INDEX,NOMINAL,NUMERIC,ORDINAL,STAMP/NOMINAL\n" +
                 "counts inputs/targets: [1,1000000] / [1,1]\n" +
                 "missing inputs/targets: true/false\n" +
@@ -145,7 +143,6 @@ public class OneRuleTest {
                 "OneRule (minCount=6)\n" +
                 "\n" +
                 "Capabilities:\n" +
-                "learning: MULTICLASS_CLASSIFIER\n" +
                 "types inputs/targets: BINARY,INDEX,NOMINAL,NUMERIC,ORDINAL,STAMP/NOMINAL\n" +
                 "counts inputs/targets: [1,1000000] / [1,1]\n" +
                 "missing inputs/targets: true/false\n" +

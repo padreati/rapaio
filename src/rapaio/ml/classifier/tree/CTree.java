@@ -23,12 +23,12 @@
 
 package rapaio.ml.classifier.tree;
 
-import rapaio.core.RandomSource;
-import rapaio.core.tools.DTable;
 import rapaio.core.tools.DVector;
-import rapaio.data.*;
+import rapaio.data.Frame;
+import rapaio.data.Mapping;
+import rapaio.data.Var;
+import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
-import rapaio.data.filter.VFRefSort;
 import rapaio.data.stream.FSpot;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
@@ -38,17 +38,12 @@ import rapaio.sys.WS;
 import rapaio.util.FJPool;
 import rapaio.util.Pair;
 import rapaio.util.Tag;
-import rapaio.util.Tagged;
-import rapaio.util.func.SPredicate;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.joining;
 
 /**
  * Tree classifier.
@@ -65,26 +60,26 @@ public class CTree extends AbstractClassifier {
     private int maxDepth = -1;
 
     private VarSelector varSelector = VarSelector.ALL;
-    private Map<String, PurityTest> customTestMap = new HashMap<>();
-    private Map<VarType, PurityTest> testMap = new HashMap<>();
-    private PurityFunction function = PurityFunction.InfoGain;
-    private MissingHandler splitter = MissingHandler.Ignored;
+    private Map<String, CTreePurityTest> customTestMap = new HashMap<>();
+    private Map<VarType, CTreePurityTest> testMap = new HashMap<>();
+    private CTreePurityFunction function = CTreePurityFunction.InfoGain;
+    private CTreeMissingHandler splitter = CTreeMissingHandler.Ignored;
     private Tag<CTreePruning> pruning = CTreePruning.NONE;
     private Frame pruningDf = null;
 
     // tree root node
-    private Node root;
+    private CTreeNode root;
 
-    private transient Map<Node, Map<String, Mapping>> sortingCache = new HashMap<>();
+    private transient Map<CTreeNode, Map<String, Mapping>> sortingCache = new HashMap<>();
 
     // static builders
 
     public CTree() {
-        testMap.put(VarType.BINARY, PurityTest.BinaryBinary);
-        testMap.put(VarType.ORDINAL, PurityTest.NumericBinary);
-        testMap.put(VarType.INDEX, PurityTest.NumericBinary);
-        testMap.put(VarType.NUMERIC, PurityTest.NumericBinary);
-        testMap.put(VarType.NOMINAL, PurityTest.NominalBinary);
+        testMap.put(VarType.BINARY, CTreePurityTest.BinaryBinary);
+        testMap.put(VarType.ORDINAL, CTreePurityTest.NumericBinary);
+        testMap.put(VarType.INDEX, CTreePurityTest.NumericBinary);
+        testMap.put(VarType.NUMERIC, CTreePurityTest.NumericBinary);
+        testMap.put(VarType.NOMINAL, CTreePurityTest.NominalBinary);
         withRuns(0);
     }
 
@@ -93,10 +88,10 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(-1)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
-                .withMissingHandler(MissingHandler.Ignored)
-                .withTest(VarType.NOMINAL, PurityTest.NominalFull)
-                .withTest(VarType.NUMERIC, PurityTest.Ignore)
-                .withFunction(CTree.PurityFunction.InfoGain)
+                .withMissingHandler(CTreeMissingHandler.Ignored)
+                .withTest(VarType.NOMINAL, CTreePurityTest.NominalFull)
+                .withTest(VarType.NUMERIC, CTreePurityTest.Ignore)
+                .withFunction(CTreePurityFunction.InfoGain)
                 .withPruning(CTreePruning.NONE);
     }
 
@@ -105,10 +100,10 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(-1)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
-                .withMissingHandler(MissingHandler.ToAllWeighted)
-                .withTest(VarType.NOMINAL, PurityTest.NominalFull)
-                .withTest(VarType.NUMERIC, PurityTest.NumericBinary)
-                .withFunction(PurityFunction.GainRatio);
+                .withMissingHandler(CTreeMissingHandler.ToAllWeighted)
+                .withTest(VarType.NOMINAL, CTreePurityTest.NominalFull)
+                .withTest(VarType.NUMERIC, CTreePurityTest.NumericBinary)
+                .withFunction(CTreePurityFunction.GainRatio);
     }
 
     public static CTree newDecisionStump() {
@@ -116,10 +111,10 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(1)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
-                .withMissingHandler(MissingHandler.ToAllWeighted)
-                .withFunction(PurityFunction.GainRatio)
-                .withTest(VarType.NOMINAL, PurityTest.NominalBinary)
-                .withTest(VarType.NUMERIC, PurityTest.NumericBinary);
+                .withMissingHandler(CTreeMissingHandler.ToAllWeighted)
+                .withFunction(CTreePurityFunction.GainRatio)
+                .withTest(VarType.NOMINAL, CTreePurityTest.NominalBinary)
+                .withTest(VarType.NUMERIC, CTreePurityTest.NumericBinary);
     }
 
     public static CTree newCART() {
@@ -127,11 +122,11 @@ public class CTree extends AbstractClassifier {
                 .withMaxDepth(-1)
                 .withMinCount(1)
                 .withVarSelector(VarSelector.ALL)
-                .withMissingHandler(MissingHandler.ToAllWeighted)
-                .withTest(VarType.NOMINAL, PurityTest.NominalBinary)
-                .withTest(VarType.NUMERIC, PurityTest.NumericBinary)
-                .withTest(VarType.INDEX, PurityTest.NumericBinary)
-                .withFunction(PurityFunction.GiniGain);
+                .withMissingHandler(CTreeMissingHandler.ToAllWeighted)
+                .withTest(VarType.NOMINAL, CTreePurityTest.NominalBinary)
+                .withTest(VarType.NUMERIC, CTreePurityTest.NumericBinary)
+                .withTest(VarType.INDEX, CTreePurityTest.NumericBinary)
+                .withFunction(CTreePurityFunction.GiniGain);
     }
 
     @Override
@@ -155,7 +150,7 @@ public class CTree extends AbstractClassifier {
         return tree;
     }
 
-    public Node getRoot() {
+    public CTreeNode getRoot() {
         return root;
     }
 
@@ -194,21 +189,21 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
-    public CTree withTest(VarType varType, PurityTest test) {
+    public CTree withTest(VarType varType, CTreePurityTest test) {
         this.testMap.put(varType, test);
         return this;
     }
 
-    public CTree withTest(String varName, PurityTest test) {
+    public CTree withTest(String varName, CTreePurityTest test) {
         this.customTestMap.put(varName, test);
         return this;
     }
 
-    public Map<VarType, PurityTest> testMap() {
+    public Map<VarType, CTreePurityTest> testMap() {
         return testMap;
     }
 
-    public Map<String, PurityTest> customTestMap() {
+    public Map<String, CTreePurityTest> customTestMap() {
         return customTestMap;
     }
 
@@ -227,20 +222,20 @@ public class CTree extends AbstractClassifier {
         return this;
     }
 
-    public PurityFunction getFunction() {
+    public CTreePurityFunction getFunction() {
         return function;
     }
 
-    public CTree withFunction(PurityFunction function) {
+    public CTree withFunction(CTreePurityFunction function) {
         this.function = function;
         return this;
     }
 
-    public MissingHandler getMissingHandler() {
+    public CTreeMissingHandler getMissingHandler() {
         return splitter;
     }
 
-    public CTree withMissingHandler(MissingHandler splitter) {
+    public CTree withMissingHandler(CTreeMissingHandler splitter) {
         this.splitter = splitter;
         return this;
     }
@@ -289,7 +284,7 @@ public class CTree extends AbstractClassifier {
         this.varSelector.withVarNames(inputNames());
 
         int rows = df.rowCount();
-        root = new Node(null, "root", spot -> true);
+        root = new CTreeNode(null, "root", spot -> true);
         if (runPoolSize() == 0) {
             root.learn(this, df, weights, maxDepth() < 0 ? Integer.MAX_VALUE : maxDepth());
         } else {
@@ -323,7 +318,7 @@ public class CTree extends AbstractClassifier {
         return prediction;
     }
 
-    protected Pair<Integer, DVector> fitPoint(CTree tree, FSpot spot, Node node) {
+    protected Pair<Integer, DVector> fitPoint(CTree tree, FSpot spot, CTreeNode node) {
         if (node.getCounter().sum() == 0)
             if (node.getParent() == null) {
                 throw new RuntimeException("Something bad happened at learning time");
@@ -333,7 +328,7 @@ public class CTree extends AbstractClassifier {
         if (node.isLeaf())
             return Pair.from(node.getBestIndex(), node.getDensity());
 
-        for (Node child : node.getChildren()) {
+        for (CTreeNode child : node.getChildren()) {
             if (child.getPredicate().test(spot)) {
                 return this.fitPoint(tree, spot, child);
             }
@@ -341,7 +336,7 @@ public class CTree extends AbstractClassifier {
 
         String[] dict = tree.firstTargetLevels();
         DVector dv = DVector.newEmpty(false, dict);
-        for (Node child : node.getChildren()) {
+        for (CTreeNode child : node.getChildren()) {
             DVector d = this.fitPoint(tree, spot, child)._2;
             for (int i = 0; i < dict.length; i++) {
                 dv.increment(i, d.get(i));
@@ -365,10 +360,10 @@ public class CTree extends AbstractClassifier {
 
     public int countNodes(boolean onlyLeaves) {
         int count = 0;
-        LinkedList<CTree.Node> nodes = new LinkedList<>();
+        LinkedList<CTreeNode> nodes = new LinkedList<>();
         nodes.addLast(root);
         while (!nodes.isEmpty()) {
-            CTree.Node node = nodes.pollFirst();
+            CTreeNode node = nodes.pollFirst();
             count += onlyLeaves ? (node.isLeaf() ? 1 : 0) : 1;
             node.getChildren().forEach(nodes::addLast);
         }
@@ -405,10 +400,10 @@ public class CTree extends AbstractClassifier {
 
         int nodeCount = 0;
         int leaveCount = 0;
-        LinkedList<Node> queue = new LinkedList<>();
+        LinkedList<CTreeNode> queue = new LinkedList<>();
         queue.add(root);
         while (!queue.isEmpty()) {
-            Node node = queue.pollFirst();
+            CTreeNode node = queue.pollFirst();
             nodeCount++;
             if (node.isLeaf())
                 leaveCount++;
@@ -426,7 +421,7 @@ public class CTree extends AbstractClassifier {
 
     }
 
-    private void buildSummary(StringBuilder sb, Node node, int level) {
+    private void buildSummary(StringBuilder sb, CTreeNode node, int level) {
 
         sb.append(level == 0 ? "|- " : "|");
         for (int i = 0; i < level; i++) {
@@ -451,627 +446,5 @@ public class CTree extends AbstractClassifier {
         node.getChildren().stream().forEach(child -> buildSummary(sb, child, level + 1));
     }
 
-    /**
-     * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
-     */
-    public interface PurityFunction extends Tagged, Serializable {
-
-        PurityFunction InfoGain = new PurityFunction() {
-            private static final long serialVersionUID = 152790997381399918L;
-
-            @Override
-            public double compute(DTable dt) {
-                return dt.splitByRowInfoGain();
-            }
-
-            @Override
-            public String name() {
-                return "InfoGain";
-            }
-        };
-        PurityFunction GainRatio = new PurityFunction() {
-            private static final long serialVersionUID = -2478996054579932911L;
-
-            @Override
-            public double compute(DTable dt) {
-                return dt.splitByRowGainRatio();
-            }
-
-            @Override
-            public String name() {
-                return "GainRatio";
-            }
-        };
-        PurityFunction GiniGain = new PurityFunction() {
-            private static final long serialVersionUID = 3547209320599654633L;
-
-            @Override
-            public double compute(DTable dt) {
-                return dt.splitByRowGiniGain();
-            }
-
-            @Override
-            public String name() {
-                return "GiniGain";
-            }
-        };
-
-        double compute(DTable dt);
-    }
-
-    /**
-     * Impurity test implementation
-     * <p>
-     * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/9/15.
-     */
-    public interface PurityTest extends Tagged, Serializable {
-
-        PurityTest Ignore = new PurityTest() {
-
-            private static final long serialVersionUID = 2862814158096438654L;
-
-            @Override
-            public String name() {
-                return "Ignore";
-            }
-
-            @Override
-            public Candidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, CTree.PurityFunction function) {
-                return null;
-            }
-
-        };
-        PurityTest NumericBinary = new PurityTest() {
-            private static final long serialVersionUID = -2093990830002355963L;
-
-            @Override
-            public String name() {
-                return "NumericBinary";
-            }
-
-            @Override
-            public Candidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTree.PurityFunction function) {
-                Var test = df.var(testName);
-                Var target = df.var(targetName);
-
-                DTable dt = DTable.newEmpty(DTable.NUMERIC_DEFAULT_LABELS, target.levels(), false);
-                int misCount = 0;
-                for (int i = 0; i < df.rowCount(); i++) {
-                    int row = (test.missing(i)) ? 0 : 2;
-                    if (test.missing(i)) misCount++;
-                    dt.update(row, target.index(i), weights.value(i));
-                }
-
-                Var sort = new VFRefSort(RowComparators.numeric(test, true)).fitApply(Index.seq(df.rowCount()));
-
-                Candidate best = null;
-                double bestScore = 0.0;
-
-                for (int i = 0; i < df.rowCount(); i++) {
-                    int row = sort.index(i);
-
-                    if (test.missing(row)) continue;
-
-                    dt.update(2, target.index(row), -weights.value(row));
-                    dt.update(1, target.index(row), +weights.value(row));
-
-                    if (i >= misCount + c.minCount() - 1 &&
-                            i < df.rowCount() - c.minCount() &&
-                            test.value(sort.index(i)) < test.value(sort.index(i + 1))) {
-
-                        double currentScore = function.compute(dt);
-                        if (best != null) {
-                            int comp = Double.compare(bestScore, currentScore);
-                            if (comp > 0) continue;
-                            if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
-                        }
-                        best = new Candidate(bestScore, testName);
-                        double testValue = (test.value(sort.index(i)) + test.value(sort.index(i + 1))) / 2.0;
-                        best.addGroup(
-                                String.format("%s <= %s", testName, WS.formatFlex(testValue)),
-                                spot -> !spot.missing(testName) && spot.value(testName) <= testValue);
-                        best.addGroup(
-                                String.format("%s > %s", testName, WS.formatFlex(testValue)),
-                                spot -> !spot.missing(testName) && spot.value(testName) > testValue);
-
-                        bestScore = currentScore;
-                    }
-                }
-                return best;
-            }
-        };
-        PurityTest BinaryBinary = new PurityTest() {
-
-            private static final long serialVersionUID = 1771541941375729870L;
-
-            @Override
-            public String name() {
-                return "BinaryBinary";
-            }
-
-            @Override
-            public Candidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, CTree.PurityFunction function) {
-
-                Var test = df.var(testName);
-                Var target = df.var(targetName);
-                DTable dt = DTable.newFromCounts(test, target, false);
-                if (!(dt.hasColsWithMinimumCount(c.minCount(), 2))) {
-                    return null;
-                }
-
-                Candidate best = new Candidate(function.compute(dt), testName);
-                best.addGroup(testName + " == 1", spot -> spot.binary(testName));
-                best.addGroup(testName + " != 1", spot -> !spot.binary(testName));
-                return best;
-
-            }
-        };
-        PurityTest NominalFull = new PurityTest() {
-            private static final long serialVersionUID = 2261155834044153945L;
-
-            @Override
-            public String name() {
-                return "NominalFull";
-            }
-
-            @Override
-            public Candidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, CTree.PurityFunction function) {
-                Var test = df.var(testName);
-                Var target = df.var(targetName);
-
-                if (!DTable.newFromCounts(test, target, false).hasColsWithMinimumCount(c.minCount(), 2)) {
-                    return null;
-                }
-
-                DTable dt = DTable.newFromWeights(test, target, weights, false);
-                double value = function.compute(dt);
-
-                Candidate candidate = new Candidate(value, testName);
-                for (int i = 1; i < test.levels().length; i++) {
-                    final String label = test.levels()[i];
-                    candidate.addGroup(
-                            String.format("%s == %s", testName, label),
-                            spot -> !spot.missing(testName) && spot.label(testName).equals(label));
-                }
-                return candidate;
-            }
-
-        };
-        PurityTest NominalBinary = new PurityTest() {
-
-            private static final long serialVersionUID = -1257733788317891040L;
-
-            @Override
-            public String name() {
-                return "Nominal_Binary";
-            }
-
-            @Override
-            public Candidate computeCandidate(CTree c, Frame df, Var weights, String testName, String targetName, PurityFunction function) {
-                Var test = df.var(testName);
-                Var target = df.var(targetName);
-                DTable counts = DTable.newFromCounts(test, target, false);
-                if (!(counts.hasColsWithMinimumCount(c.minCount(), 2))) {
-                    return null;
-                }
-
-                Candidate best = null;
-                double bestScore = 0.0;
-
-                int[] termCount = new int[test.levels().length];
-                test.stream().forEach(s -> termCount[s.index()]++);
-
-                double[] rowCounts = counts.rowTotals();
-                for (int i = 1; i < test.levels().length; i++) {
-                    if (rowCounts[i] < c.minCount())
-                        continue;
-
-                    String testLabel = df.var(testName).levels()[i];
-
-                    DTable dt = DTable.newBinaryFromWeights(test, target, weights, testLabel, false);
-                    double currentScore = function.compute(dt);
-                    if (best != null) {
-                        int comp = Double.compare(bestScore, currentScore);
-                        if (comp > 0) continue;
-                        if (comp == 0 && RandomSource.nextDouble() > 0.5) continue;
-                    }
-                    best = new Candidate(currentScore, testName);
-                    best.addGroup(testName + " == " + testLabel, spot -> spot.label(testName).equals(testLabel));
-                    best.addGroup(testName + " != " + testLabel, spot -> !spot.label(testName).equals(testLabel));
-                }
-                return best;
-            }
-        };
-
-        Candidate computeCandidate(CTree c, Frame df, Var w, String testName, String targetName, PurityFunction function);
-    }
-
-    /**
-     * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
-     */
-    public interface MissingHandler extends Tagged, Serializable {
-
-        MissingHandler Ignored = new MissingHandler() {
-            private static final long serialVersionUID = -9017265383541294518L;
-
-            @Override
-            public String name() {
-                return "Ignored";
-            }
-
-            @Override
-            public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, Candidate candidate) {
-                List<SPredicate<FSpot>> p = candidate.getGroupPredicates();
-                List<Mapping> mappings = IntStream.range(0, p.size()).boxed().map(i -> Mapping.empty()).collect(toList());
-
-                df.stream().forEach(s -> {
-                    for (int i = 0; i < p.size(); i++) {
-                        if (p.get(i).test(s)) {
-                            mappings.get(i).add(s.row());
-                            break;
-                        }
-                    }
-                });
-                return Pair.from(
-                        mappings.stream().map(df::mapRows).collect(toList()),
-                        mappings.stream().map(weights::mapRows).collect(toList())
-                );
-            }
-
-        };
-        MissingHandler ToMajority = new MissingHandler() {
-            private static final long serialVersionUID = -5858151664805703831L;
-
-            @Override
-            public String name() {
-                return "ToMajority";
-            }
-
-            @Override
-            public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, Candidate candidate) {
-                List<SPredicate<FSpot>> p = candidate.getGroupPredicates();
-                List<Mapping> mappings = IntStream.range(0, p.size()).boxed().map(i -> Mapping.empty()).collect(toList());
-
-                List<Integer> missingSpots = new LinkedList<>();
-                df.stream().forEach(s -> {
-                    for (int i = 0; i < p.size(); i++) {
-                        if (p.get(i).test(s)) {
-                            mappings.get(i).add(s.row());
-                            return;
-                        }
-                    }
-                    missingSpots.add(s.row());
-                });
-                List<Integer> lens = mappings.stream().map(Mapping::size).collect(toList());
-                Collections.shuffle(lens);
-                int majorityGroup = 0;
-                int majoritySize = 0;
-                for (int i = 0; i < mappings.size(); i++) {
-                    if (mappings.get(i).size() > majoritySize) {
-                        majorityGroup = i;
-                        majoritySize = mappings.get(i).size();
-                    }
-                }
-                final int index = majorityGroup;
-
-                mappings.get(index).addAll(missingSpots);
-
-                return Pair.from(
-                        mappings.stream().map(df::mapRows).collect(toList()),
-                        mappings.stream().map(weights::mapRows).collect(toList())
-                );
-            }
-        };
-        MissingHandler ToAllWeighted = new MissingHandler() {
-            private static final long serialVersionUID = 5936044048099571710L;
-
-            @Override
-            public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, Candidate candidate) {
-                List<SPredicate<FSpot>> pred = candidate.getGroupPredicates();
-                List<Mapping> mappings = IntStream.range(0, pred.size()).boxed().map(i -> Mapping.empty()).collect(toList());
-
-                List<Integer> missingSpots = new ArrayList<>();
-                df.stream().forEach(s -> {
-                    for (int i = 0; i < pred.size(); i++) {
-                        if (pred.get(i).test(s)) {
-                            mappings.get(i).add(s.row());
-                            return;
-                        }
-                    }
-                    missingSpots.add(s.row());
-                });
-
-                final double[] p = new double[mappings.size()];
-                double n = 0;
-                for (int i = 0; i < mappings.size(); i++) {
-                    p[i] = mappings.get(i).size();
-                    n += p[i];
-                }
-                for (int i = 0; i < p.length; i++) {
-                    p[i] /= n;
-                }
-                List<Var> weightsList = mappings.stream().map(weights::mapRows).map(Var::solidCopy).collect(toList());
-                for (int i = 0; i < mappings.size(); i++) {
-                    final int ii = i;
-                    missingSpots.forEach(row -> {
-                        mappings.get(ii).add(row);
-                        weightsList.get(ii).addValue(weights.missing(row) ? p[ii] : weights.value(row) * p[ii]);
-                    });
-                }
-                List<Frame> frames = mappings.stream().map(df::mapRows).collect(toList());
-                return Pair.from(frames, weightsList);
-            }
-
-            @Override
-            public String name() {
-                return "ToAllWeighted";
-            }
-        };
-        MissingHandler ToRandom = new MissingHandler() {
-            private static final long serialVersionUID = -4762758695801141929L;
-
-            @Override
-            public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, Candidate candidate) {
-                List<SPredicate<FSpot>> pred = candidate.getGroupPredicates();
-                List<Mapping> mappings = IntStream.range(0, pred.size()).boxed().map(i -> Mapping.empty()).collect(toList());
-
-                final Set<Integer> missingSpots = new HashSet<>();
-                df.stream().forEach(s -> {
-                    for (int i = 0; i < pred.size(); i++) {
-                        if (pred.get(i).test(s)) {
-                            mappings.get(i).add(s.row());
-                            return;
-                        }
-                    }
-                    missingSpots.add(s.row());
-                });
-                missingSpots.forEach(rowId -> mappings.get(RandomSource.nextInt(mappings.size())).add(rowId));
-                List<Frame> frameList = mappings.stream().map(df::mapRows).collect(toList());
-                List<Var> weightList = mappings.stream().map(weights::mapRows).collect(toList());
-                return Pair.from(frameList, weightList);
-            }
-
-            @Override
-            public String name() {
-                return "ToRandom";
-            }
-        };
-
-        Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, Candidate candidate);
-    }
-
-    /**
-     * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
-     */
-    public static class Candidate implements Comparable<Candidate>, Serializable {
-
-        private static final long serialVersionUID = -1547847207988912332L;
-
-        private final double score;
-        private final String testName;
-        private final List<String> groupNames = new ArrayList<>();
-        private final List<SPredicate<FSpot>> groupPredicates = new ArrayList<>();
-
-        public Candidate(double score, String testName) {
-            this.score = score;
-            this.testName = testName;
-        }
-
-        public void addGroup(String name, SPredicate<FSpot> predicate) {
-            if (groupNames.contains(name)) {
-                throw new IllegalArgumentException("group name already defined");
-            }
-            groupNames.add(name);
-            groupPredicates.add(predicate);
-        }
-
-        public List<String> getGroupNames() {
-            return groupNames;
-        }
-
-        public List<SPredicate<FSpot>> getGroupPredicates() {
-            return groupPredicates;
-        }
-
-        public double getScore() {
-            return score;
-        }
-
-        public String getTestName() {
-            return testName;
-        }
-
-        @Override
-        public int compareTo(Candidate o) {
-            if (o == null) return 1;
-            return -(Double.compare(score, o.score));
-        }
-    }
-
-    /**
-     * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
-     */
-    public static class Node implements Serializable {
-
-        private static final long serialVersionUID = -5045581827808911763L;
-        private final Node parent;
-        private final String groupName;
-        private final SPredicate<FSpot> predicate;
-        private final List<Node> children = new ArrayList<>();
-        private int id;
-        private boolean leaf = true;
-        private DVector density;
-        private DVector counter;
-        private int bestIndex;
-        private Candidate bestCandidate;
-
-        public Node(final Node parent, final String groupName, final SPredicate<FSpot> predicate) {
-            this.parent = parent;
-            this.groupName = groupName;
-            this.predicate = predicate;
-        }
-
-        public Node getParent() {
-            return parent;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public String getGroupName() {
-            return groupName;
-        }
-
-        public Predicate<FSpot> getPredicate() {
-            return predicate;
-        }
-
-        public DVector getCounter() {
-            return counter;
-        }
-
-        public int getBestIndex() {
-            return bestIndex;
-        }
-
-        public DVector getDensity() {
-            return density;
-        }
-
-        public boolean isLeaf() {
-            return leaf;
-        }
-
-        public List<Node> getChildren() {
-            return children;
-        }
-
-        public Candidate getBestCandidate() {
-            return bestCandidate;
-        }
-
-        public int fillId(int index) {
-            id = index;
-            int next = index;
-            for (Node child : getChildren()) {
-                next = child.fillId(next + 1);
-            }
-            return next;
-        }
-
-        public void cut() {
-            leaf = true;
-            children.clear();
-        }
-
-        public void learn(CTree tree, Frame df, Var weights, int depth) {
-            density = DVector.newFromWeights(false, df.var(tree.firstTargetName()), weights);
-            counter = DVector.newFromCount(false, df.var(tree.firstTargetName()));
-            bestIndex = density.findBestIndex();
-
-            if (df.rowCount() == 0) {
-                bestIndex = parent.bestIndex;
-                return;
-            }
-            if (counter.countValues(x -> x > 0) == 1 || depth < 1 || df.rowCount() <= tree.minCount()) {
-                return;
-            }
-
-            VarSelector varSel = tree.varSelector();
-            String[] nextVarNames = varSel.nextAllVarNames();
-            List<Candidate> candidateList = new ArrayList<>();
-            Queue<String> exhaustList = new ConcurrentLinkedQueue<>();
-
-            if (tree.runPoolSize() == 0) {
-                int m = varSel.mCount();
-                for (String testCol : nextVarNames) {
-                    if (m <= 0) {
-                        continue;
-                    }
-                    if (testCol.equals(tree.firstTargetName())) {
-                        continue;
-                    }
-
-                    PurityTest test = null;
-                    if (tree.customTestMap().containsKey(testCol)) {
-                        test = tree.customTestMap().get(testCol);
-                    }
-                    if (tree.testMap().containsKey(df.var(testCol).type())) {
-                        test = tree.testMap().get(df.var(testCol).type());
-                    }
-                    if (test == null) {
-                        throw new IllegalArgumentException("can't train ctree with no " +
-                                "tests for given variable: " + df.var(testCol).name() +
-                                " [" + df.var(testCol).type().name() + "]");
-                    }
-                    Candidate candidate = test.computeCandidate(
-                            tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction());
-                    if (candidate != null) {
-                        candidateList.add(candidate);
-                        m--;
-                    } else {
-                        exhaustList.add(testCol);
-                    }
-                }
-            } else {
-                int m = varSel.mCount();
-                int start = 0;
-
-                while (m > 0 && start < nextVarNames.length) {
-                    List<Candidate> next = IntStream.range(start, Math.min(nextVarNames.length, start + m))
-                            .parallel()
-                            .mapToObj(i -> nextVarNames[i])
-                            .filter(testCol -> !testCol.equals(tree.firstTargetName()))
-                            .map(testCol -> {
-                                PurityTest test = null;
-                                if (tree.customTestMap().containsKey(testCol)) {
-                                    test = tree.customTestMap().get(testCol);
-                                }
-                                if (tree.testMap().containsKey(df.var(testCol).type())) {
-                                    test = tree.testMap().get(df.var(testCol).type());
-                                }
-                                if (test == null) {
-                                    throw new IllegalArgumentException("can't train ctree with no " +
-                                            "tests for given variable: " + df.var(testCol).name() +
-                                            " [" + df.var(testCol).type().name() + "]");
-                                }
-                                Candidate candidate = test.computeCandidate(
-                                        tree, df, weights, testCol, tree.firstTargetName(), tree.getFunction());
-                                if (candidate == null) {
-                                    exhaustList.add(testCol);
-                                }
-                                return candidate;
-                            })
-                            .filter(c -> c != null)
-                            .collect(Collectors.toList());
-                    candidateList.addAll(next);
-                    start += m;
-                    m -= next.size();
-                }
-            }
-            Collections.sort(candidateList);
-            if (candidateList.isEmpty() || candidateList.get(0).getGroupNames().isEmpty()) {
-                return;
-            }
-
-            leaf = false;
-            bestCandidate = candidateList.get(0);
-            String testName = bestCandidate.getTestName();
-
-            // now that we have a best candidate, do the effective split
-            Pair<List<Frame>, List<Var>> frames = tree.getMissingHandler().performSplit(df, weights, bestCandidate);
-
-            for (int i = 0; i < bestCandidate.getGroupNames().size(); i++) {
-                Node child = new Node(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
-                children.add(child);
-            }
-            tree.varSelector.removeVarNames(exhaustList);
-            for (int i = 0; i < children.size(); i++) {
-                children.get(i).learn(tree, frames._1.get(i), frames._2.get(i), depth - 1);
-            }
-            tree.varSelector.addVarNames(exhaustList);
-        }
-    }
 }
 

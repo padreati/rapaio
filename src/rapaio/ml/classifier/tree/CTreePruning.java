@@ -38,30 +38,29 @@ import java.util.*;
  */
 public interface CTreePruning extends Serializable {
 
+    /**
+     * No pruning, default schema
+     */
+    Tag<CTreePruning> NONE = Tag.valueOf("None", (tree, df, all) -> tree);
+    /**
+     * Reduced error pruning, according with Quinlan for ID3, Described in Tom Mitchell
+     */
+    Tag<CTreePruning> REDUCED_ERROR = Tag.valueOf("ReducedError", ReducedErrorPruning::prune);
+
     default CTree prune(CTree tree, Frame df) {
         return prune(tree, df, false);
     }
 
     CTree prune(CTree tree, Frame df, boolean all);
-
-    /**
-     * No pruning, default schema
-     */
-    Tag<CTreePruning> NONE = Tag.valueOf("None", (tree, df, all) -> tree);
-
-    /**
-     * Reduced error pruning, according with Quinlan for ID3, Described in Tom Mitchell
-     */
-    Tag<CTreePruning> REDUCED_ERROR = Tag.valueOf("ReducedError", ReducedError::prune);
 }
 
-class ReducedError {
+class ReducedErrorPruning {
 
     public static CTree prune(CTree tree, Frame df, boolean all) {
 
         // collect how current fitting works
 
-        HashMap<Integer, CTree.Node> nodes = collectNodes(tree, tree.getRoot(), new HashMap<>());
+        HashMap<Integer, CTreeNode> nodes = collectNodes(tree, tree.getRoot(), new HashMap<>());
 
         // collect fit produced in each node, in a cumulative way
 
@@ -124,35 +123,35 @@ class ReducedError {
         return tree;
     }
 
-    private static void updateError(int id, HashMap<Integer, ValuePair> bottomUp, HashMap<Integer, CTree.Node> nodes, ValuePair accDiff) {
+    private static void updateError(int id, HashMap<Integer, ValuePair> bottomUp, HashMap<Integer, CTreeNode> nodes, ValuePair accDiff) {
         bottomUp.get(id).increment(accDiff);
         if (nodes.get(id).getParent() != null)
             updateError(nodes.get(id).getParent().getId(), bottomUp, nodes, accDiff);
     }
 
-    private static void addToPruned(int id, CTree.Node node, Set<Integer> pruned,
+    private static void addToPruned(int id, CTreeNode node, Set<Integer> pruned,
                                     HashMap<Integer, ValuePair> topDown,
                                     HashMap<Integer, ValuePair> bottomUp,
-                                    HashMap<Integer, CTree.Node> nodes) {
+                                    HashMap<Integer, CTreeNode> nodes) {
         pruned.add(node.getId());
         if (node.getId() != id) {
             topDown.remove(node.getId());
             bottomUp.remove(node.getId());
             nodes.remove(node.getId());
         }
-        for (CTree.Node child : node.getChildren())
+        for (CTreeNode child : node.getChildren())
             addToPruned(id, child, pruned, topDown, bottomUp, nodes);
     }
 
-    private static HashMap<Integer, CTree.Node> collectNodes(CTree tree, CTree.Node node, HashMap<Integer, CTree.Node> nodes) {
+    private static HashMap<Integer, CTreeNode> collectNodes(CTree tree, CTreeNode node, HashMap<Integer, CTreeNode> nodes) {
         nodes.put(node.getId(), node);
-        for (CTree.Node child : node.getChildren()) {
+        for (CTreeNode child : node.getChildren()) {
             collectNodes(tree, child, nodes);
         }
         return nodes;
     }
 
-    private static ValuePair bottomUpCollect(FSpot spot, CTree tree, CTree.Node node, HashMap<Integer, ValuePair> bottomUp) {
+    private static ValuePair bottomUpCollect(FSpot spot, CTree tree, CTreeNode node, HashMap<Integer, ValuePair> bottomUp) {
 
         if (node.isLeaf()) {
             ValuePair err = spot.index(tree.firstTargetName()) != node.getBestIndex() ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
@@ -160,7 +159,7 @@ class ReducedError {
             return err;
         }
 
-        for (CTree.Node child : node.getChildren()) {
+        for (CTreeNode child : node.getChildren()) {
             if (child.getPredicate().test(spot)) {
                 ValuePair err = bottomUpCollect(spot, tree, child, bottomUp);
                 bottomUp.get(node.getId()).increment(err);
@@ -170,12 +169,12 @@ class ReducedError {
         return ValuePair.empty();
     }
 
-    private static void topDownCollect(FSpot spot, CTree tree, CTree.Node node, HashMap<Integer, ValuePair> topDown) {
+    private static void topDownCollect(FSpot spot, CTree tree, CTreeNode node, HashMap<Integer, ValuePair> topDown) {
 
         ValuePair err = spot.index(tree.firstTargetName()) != node.getBestIndex() ? ValuePair.of(1.0, 0.0) : ValuePair.of(0.0, 1.0);
         topDown.get(node.getId()).increment(err);
 
-        for (CTree.Node child : node.getChildren()) {
+        for (CTreeNode child : node.getChildren()) {
             if (child.getPredicate().test(spot)) {
                 topDownCollect(spot, tree, child, topDown);
                 return;

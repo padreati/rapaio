@@ -35,6 +35,7 @@ import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.tree.CTree;
+import rapaio.ml.classifier.tree.CTreeNode;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.eval.Confusion;
@@ -388,7 +389,7 @@ public class CForest extends AbstractClassifier {
         }
     }
 
-    private void collectGainVI(CTree.Node node, DVector dv) {
+    private void collectGainVI(CTreeNode node, DVector dv) {
         if (node.isLeaf())
             return;
         String varName = node.getBestCandidate().getTestName();
@@ -411,7 +412,7 @@ public class CForest extends AbstractClassifier {
         }
     }
 
-    private void collectFreqVI(CTree.Node node, DVector dv) {
+    private void collectFreqVI(CTreeNode node, DVector dv) {
         if (node.isLeaf())
             return;
         String varName = node.getBestCandidate().getTestName();

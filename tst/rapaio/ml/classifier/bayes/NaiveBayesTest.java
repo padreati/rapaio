@@ -35,8 +35,7 @@ import rapaio.ml.eval.Confusion;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 
 /**
@@ -125,7 +124,6 @@ public class NaiveBayesTest {
                 "NaiveBayes(numEstimator=GaussianPdf, nomEstimator=MultinomialPmf)\n" +
                 "\n" +
                 "Capabilities:\n" +
-                "learning: MULTICLASS_CLASSIFIER\n" +
                 "types inputs/targets: BINARY,INDEX,NOMINAL,NUMERIC/NOMINAL\n" +
                 "counts inputs/targets: [0,1000000] / [1,1]\n" +
                 "missing inputs/targets: true/false\n" +
