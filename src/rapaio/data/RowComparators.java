@@ -66,44 +66,42 @@ public final class RowComparators implements Serializable {
     public static Comparator<Integer> numeric(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
         return (row1, row2) -> {
-            boolean miss1 = var.missing(row1);
-            boolean miss2 = var.missing(row2);
-            if (miss1 && miss2) {
-                return 0;
-            }
-            if (miss1) {
-                return -sign;
-            }
-            if (miss2) {
-                return sign;
-            }
-            double v1 = var.value(row1);
-            double v2 = var.value(row2);
-            if (v1 == v2) {
-                return 0;
-            }
-            return sign * (v1 < v2 ? -1 : 1);
+//            boolean miss1 = var.missing(row1);
+//            boolean miss2 = var.missing(row2);
+//            if (miss1 && miss2) {
+//                return 0;
+//            }
+//            if (miss1) {
+//                return -sign;
+//            }
+//            if (miss2) {
+//                return sign;
+//            }
+//            double v1 = var.value(row1);
+//            double v2 = var.value(row2);
+//            if (v1 == v2) {
+//                return 0;
+//            }
+            double d1 = var.value(row1);
+            double d2 = var.value(row2);
+            if (d1 < d2)
+                return -sign;           // Neither val is NaN, thisVal is smaller
+            if (d1 > d2)
+                return sign;            // Neither val is NaN, thisVal is larger
+
+            // Cannot use doubleToRawLongBits because of possibility of NaNs.
+            long thisBits = Double.doubleToLongBits(d1);
+            long anotherBits = Double.doubleToLongBits(d2);
+
+            return (thisBits == anotherBits ? 0 : // Values are equal
+                    (thisBits < anotherBits ? sign : // (-0.0, 0.0) or (!NaN, NaN)
+                            -sign));                          // (0.0, -0.0) or (NaN, !NaN)
         };
     }
 
     public static Comparator<Integer> index(final Var var, final boolean asc) {
         final int sign = asc ? 1 : -1;
-
-        return (row1, row2) -> {
-            if (var.missing(row1) && var.missing(row2)) {
-                return 0;
-            }
-            if (var.missing(row1)) {
-                return -1 * sign;
-            }
-            if (var.missing(row2)) {
-                return sign;
-            }
-            if (var.index(row1) == var.index(row2)) {
-                return 0;
-            }
-            return sign * (var.index(row1) < var.index(row2) ? -1 : 1);
-        };
+        return (row1, row2) -> sign * Integer.compare(var.index(row1), var.index(row2));
     }
 
     public static Comparator<Integer> stamp(final Var var, final boolean asc) {

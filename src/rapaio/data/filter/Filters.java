@@ -79,7 +79,7 @@ public class Filters {
 
     @SafeVarargs
     public static Var refSort(Var x, Comparator<Integer>... comp) {
-        return new VFRefSort(comp).fitApply();
+        return new VFRefSort(comp).fitApply(x);
     }
 
     public static Var refSort(Var x, Var ref) {
