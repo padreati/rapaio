@@ -53,7 +53,6 @@ public class CEvaluation {
         print("\nCrossValidation with " + folds + " folds\n");
         print("Model: \n");
         c.newInstance().printSummary();
-        ;
 
         List<List<Integer>> strata = buildStrata(df, folds, classColName);
 
@@ -79,14 +78,15 @@ public class CEvaluation {
 
             Confusion conf = new Confusion(test.var(classColName), cp.firstClasses());
             acc.addValue(conf.accuracy());
-            print(String.format("CV %d\n", i + 1) + conf.summary());
-            print(String.format("Mean: %.6f     (Mean accuracy)\n", CoreTools.mean(acc).value()));
-            print(String.format("SE: %.6f     (Standard error)\n", CoreTools.var(acc).sdValue()));
-            print("==============\n");
+//            print(String.format("CV %d\n", i + 1) + conf.summary());
+//            print(String.format("Mean: %.6f     (Mean accuracy)\n", CoreTools.mean(acc).value()));
+//            print(String.format("SE: %.6f     (Standard error)\n", CoreTools.var(acc).sdValue()));
+//            print("==============\n");
         }
 
         double correct = CoreTools.mean(acc).value();
         print(String.format("Mean accuracy:%.6f\n", correct));
+        print(String.format("SE: %.6f     (Standard error)\n", CoreTools.var(acc).sdValue()));
         return correct;
     }
 
