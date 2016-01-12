@@ -166,15 +166,36 @@ public final class Plotter {
     }
 
     public static GOpt sz(Var sizeIndex) {
-        return opt -> opt.setSz(gOpts -> sizeIndex);
+        return sz(sizeIndex, 1);
+    }
+
+    public static GOpt sz(Var sizeIndex, double factor) {
+        return sz(sizeIndex, factor, 0);
+    }
+
+    public static GOpt sz(Var sizeIndex, double factor, double offset) {
+        Numeric size = sizeIndex
+                .stream()
+                .mapToDouble()
+                .map(x -> x * factor + offset)
+                .boxed()
+                .collect(Numeric.collector());
+        return opt -> opt.setSz(gOpts -> size);
     }
 
     public static GOpt sz(double size) {
         return opt -> opt.setSz(gOpts -> Numeric.scalar(size));
     }
 
-    public static GOpt pch(Var pchIndex) {
-        return opt -> opt.setPch(gOpts -> pchIndex);
+    public static GOpt pch(Var pchIndex, int... mapping) {
+        Index pch = Index.from(pchIndex.rowCount(), row -> {
+            int i = pchIndex.index(row);
+            if (i >= 0 || i < mapping.length) {
+                return mapping[i];
+            }
+            return mapping[0];
+        });
+        return opt -> opt.setPch(gOpts -> pch);
     }
 
     public static GOpt pch(int pch) {

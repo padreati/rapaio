@@ -24,19 +24,20 @@
 package rapaio.data.filter;
 
 import rapaio.data.Var;
+import rapaio.data.stream.VSpot;
 
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFUpdateValue extends VFAbstract {
+public class VFUpdate extends VFAbstract {
 
     private static final long serialVersionUID = 3929781693784001199L;
 
-    private final Function<Double, Double> f;
+    private final Consumer<VSpot> f;
 
-    public VFUpdateValue(Function<Double, Double> f) {
+    public VFUpdate(Consumer<VSpot> f) {
         this.f = f;
     }
 
@@ -48,7 +49,7 @@ public class VFUpdateValue extends VFAbstract {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        vars[0].stream().forEach(s -> s.setValue(f.apply(s.value())));
+        vars[0].stream().forEach(f::accept);
         return vars[0];
     }
 }

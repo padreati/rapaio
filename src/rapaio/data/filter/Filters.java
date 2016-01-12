@@ -29,6 +29,7 @@ import rapaio.data.Var;
 import rapaio.data.stream.VSpot;
 
 import java.util.Comparator;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class Filters {
@@ -114,7 +115,11 @@ public class Filters {
         return new VFTransformBoxCox(lambda, shift).fitApply(x);
     }
 
-    public static Var updateValue(Function<VSpot, Double> f, Var x) {
+    public static Var updateValue(Function<Double, Double> f, Var x) {
         return new VFUpdateValue(f).fitApply(x);
+    }
+
+    public static Var update(Consumer<VSpot> c, Var v) {
+        return new VFUpdate(c).fitApply(v);
     }
 }

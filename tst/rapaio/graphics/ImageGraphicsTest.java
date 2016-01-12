@@ -45,8 +45,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static rapaio.data.filter.Filters.jitter;
-import static rapaio.data.filter.Filters.updateValue;
+import static rapaio.data.filter.Filters.*;
 import static rapaio.graphics.Plotter.*;
 
 /**
@@ -183,7 +182,7 @@ public class ImageGraphicsTest {
         RandomSource.setSeed(0);
         Frame df = Datasets.loadIrisDataset();
 
-        Var x = updateValue(s -> Math.log1p(s.value()), jitter(df.var(0).solidCopy(), 0.01)).withName("x");
+        Var x = updateValue(Math::log1p, jitter(df.var(0).solidCopy(), 0.01)).withName("x");
 
         Figure fig = gridLayer(1, 2)
                 .add(lines(x))
@@ -204,8 +203,8 @@ public class ImageGraphicsTest {
         RandomSource.setSeed(0);
         Frame df = Datasets.loadIrisDataset();
 
-        Var x = updateValue(s -> Math.log1p(s.value()), jitter(df.var(0).solidCopy(), 0.01)).withName("x");
-        Var y = updateValue(s -> Math.log1p(s.value()), jitter(df.var(1).solidCopy(), 0.01)).withName("y");
+        Var x = updateValue(Math::log1p, jitter(df.var(0).solidCopy(), 0.01)).withName("x");
+        Var y = updateValue(Math::log1p, jitter(df.var(1).solidCopy(), 0.01)).withName("y");
 
         Figure fig = gridLayer(1, 2)
                 .add(points(x))

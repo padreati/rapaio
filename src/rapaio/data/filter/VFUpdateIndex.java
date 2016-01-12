@@ -24,7 +24,6 @@
 package rapaio.data.filter;
 
 import rapaio.data.Var;
-import rapaio.data.stream.VSpot;
 
 import java.util.function.Function;
 
@@ -35,9 +34,9 @@ public class VFUpdateIndex extends VFAbstract {
 
     private static final long serialVersionUID = -9017598696178273627L;
 
-    private final Function<VSpot, Integer> f;
+    private final Function<Integer, Integer> f;
 
-    public VFUpdateIndex(Function<VSpot, Integer> f) {
+    public VFUpdateIndex(Function<Integer, Integer> f) {
         this.f = f;
     }
 
@@ -49,7 +48,7 @@ public class VFUpdateIndex extends VFAbstract {
     @Override
     public Var apply(Var... vars) {
         checkSingleVar(vars);
-        vars[0].stream().forEach(s -> s.setIndex(f.apply(s)));
+        vars[0].stream().forEach(s -> s.setIndex(f.apply(s.index())));
         return vars[0];
     }
 }
