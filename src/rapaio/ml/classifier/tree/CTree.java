@@ -41,6 +41,7 @@ import rapaio.util.Tag;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.joining;
@@ -307,26 +308,22 @@ public class CTree extends AbstractClassifier {
     protected CFit coreFit(Frame df, boolean withClasses, boolean withDensities) {
         CFit prediction = CFit.build(this, df, withClasses, withDensities);
         df.stream().forEach(spot -> {
-            Pair<Integer, DVector> result = fitPoint(this, spot, root);
+            Pair<Integer, DVector> res = fitPoint(this, spot, root);
+            int index = res._1;
+            DVector dv = res._2;
             if (withClasses)
-                prediction.firstClasses().setIndex(spot.row(), result._1);
+                prediction.firstClasses().setIndex(spot.row(), index);
             if (withDensities)
                 for (int j = 0; j < firstTargetLevels().length; j++) {
-                    prediction.firstDensity().setValue(spot.row(), j, result._2.get(j));
+                    prediction.firstDensity().setValue(spot.row(), j, dv.get(j));
                 }
         });
         return prediction;
     }
 
     protected Pair<Integer, DVector> fitPoint(CTree tree, FSpot spot, CTreeNode node) {
-        if (node.getCounter().sum() == 0)
-            if (node.getParent() == null) {
-                throw new RuntimeException("Something bad happened at learning time");
-            } else {
-                return Pair.from(node.getParent().getBestIndex(), node.getParent().getDensity());
-            }
         if (node.isLeaf())
-            return Pair.from(node.getBestIndex(), node.getDensity());
+            return Pair.from(node.getBestIndex(), node.getDensity().solidCopy().normalize());
 
         for (CTreeNode child : node.getChildren()) {
             if (child.getPredicate().test(spot)) {
@@ -336,13 +333,16 @@ public class CTree extends AbstractClassifier {
 
         String[] dict = tree.firstTargetLevels();
         DVector dv = DVector.newEmpty(false, dict);
+        double w = 0.0;
         for (CTreeNode child : node.getChildren()) {
             DVector d = this.fitPoint(tree, spot, child)._2;
-            for (int i = 0; i < dict.length; i++) {
-                dv.increment(i, d.get(i));
-            }
+            double wc = child.getDensity().sum();
+            dv.increment(d, wc);
+            w += wc;
         }
-        dv.normalize();
+        for (int i = 0; i < dict.length; i++) {
+            dv.set(i, dv.get(i) / w);
+        }
         return Pair.from(dv.findBestIndex(), dv);
     }
 
@@ -371,7 +371,7 @@ public class CTree extends AbstractClassifier {
     }
 
     @Override
-    public CTree withInputFilters(FFilter... filters) {
+    public CTree withInputFilters(List<FFilter> filters) {
         return (CTree) super.withInputFilters(filters);
     }
 

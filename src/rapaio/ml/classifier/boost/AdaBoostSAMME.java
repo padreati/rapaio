@@ -244,6 +244,11 @@ public class AdaBoostSAMME extends AbstractClassifier {
     }
 
     @Override
+    public AdaBoostSAMME withInputFilters(List<FFilter> filters) {
+        return (AdaBoostSAMME) super.withInputFilters(filters);
+    }
+
+    @Override
     public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n > ").append(fullName()).append("\n");

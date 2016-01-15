@@ -184,6 +184,19 @@ public class DVector implements Printable, Serializable {
         total += value;
     }
 
+    /**
+     * Updates the value from the given position {@param pos} by adding the {@param value}
+     *
+     * @param dv     density vector which will be added
+     * @param factor the factor used to multiply added density vector with
+     */
+    public void increment(DVector dv, double factor) {
+        for (int i = 0; i < values.length; i++) {
+            values[i] += dv.get(i) * factor;
+            total += dv.get(i) * factor;
+        }
+    }
+
     public void increment(String name, double value) {
         increment(reverse.get(name), value);
     }
@@ -204,9 +217,8 @@ public class DVector implements Printable, Serializable {
      * @param value value to be set at the given position
      */
     public void set(int pos, double value) {
-        total -= values[pos];
+        total += value - values[pos];
         values[pos] = value;
-        total += values[pos];
     }
 
     public void set(String name, double value) {

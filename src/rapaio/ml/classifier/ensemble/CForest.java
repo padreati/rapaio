@@ -64,7 +64,7 @@ public class CForest extends AbstractClassifier {
     private boolean permVIComp = false;
 
     private Classifier c = CTree.newCART();
-    private BaggingMode baggingMode = BaggingMode.VOTING;
+    private BaggingMode baggingMode = BaggingMode.DISTRIBUTION;
 
     // learning artifacts
     private double oobError = Double.NaN;
@@ -78,7 +78,7 @@ public class CForest extends AbstractClassifier {
 
     private CForest() {
         withRuns(10);
-        this.baggingMode = BaggingMode.VOTING;
+        this.baggingMode = BaggingMode.DISTRIBUTION;
         this.c = CTree.newCART().withVarSelector(VarSelector.AUTO);
         this.oobComp = false;
         this.withSampler(new FrameSampler.Bootstrap(1));
@@ -111,6 +111,7 @@ public class CForest extends AbstractClassifier {
     public Classifier newInstance() {
         return new CForest()
                 .withRuns(runs())
+                .withInputFilters(inputFilters())
                 .withBaggingMode(baggingMode)
                 .withOobComp(oobComp)
                 .withFreqVIComp(freqVIComp)
@@ -483,6 +484,11 @@ public class CForest extends AbstractClassifier {
     @Override
     public CForest withRunPoolSize(int poolSize) {
         return (CForest) super.withRunPoolSize(poolSize);
+    }
+
+    @Override
+    public CForest withInputFilters(List<FFilter> filters) {
+        return (CForest) super.withInputFilters(filters);
     }
 
     @Override

@@ -32,9 +32,11 @@ import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 /**
  * Interface for all classification model algorithms.
@@ -126,7 +128,18 @@ public interface Classifier extends Printable, Serializable {
      * @param filters list of filters applied in chain
      * @return self instance
      */
-    Classifier withInputFilters(FFilter... filters);
+    default Classifier withInputFilters(FFilter... filters) {
+        return withInputFilters(Arrays.stream(filters).collect(Collectors.toList()));
+    }
+
+    /**
+     * Specifies which filters will be used to transform data
+     * before learning and fitting.
+     *
+     * @param filters list of filters applied in chain
+     * @return self instance
+     */
+    Classifier withInputFilters(List<FFilter> filters);
 
     /**
      * Returns input variable names built at learning time
@@ -327,7 +340,6 @@ public interface Classifier extends Printable, Serializable {
      * @param runningHook bi consumer method to be called at each iteration, first
      *                    parameter is the model built at the time and the second
      *                    parameter value is the run value
-     *
      * @return self-instance of the model
      */
     Classifier withRunningHook(BiConsumer<Classifier, Integer> runningHook);

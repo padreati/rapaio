@@ -58,6 +58,10 @@ public abstract class ChiSquareTest implements Printable {
         return new Independence(DTable.newFromCounts(x, y, false));
     }
 
+    public static ChiSquareTest independence(DTable dt) {
+        return new Independence(dt);
+    }
+
     public abstract int df();
 
     public abstract double pValue();

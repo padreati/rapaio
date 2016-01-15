@@ -159,7 +159,7 @@ public interface CTreePurityTest extends Tagged, Serializable {
                 return null;
             }
 
-            DTable dt = DTable.newFromWeights(test, target, weights, false);
+            DTable dt = DTable.fromWeights(test, target, weights, false);
             double value = function.compute(dt);
 
             CTreeCandidate candidate = new CTreeCandidate(value, testName);

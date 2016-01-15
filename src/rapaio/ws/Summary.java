@@ -543,6 +543,25 @@ public class Summary {
             pos++;
             sb.append("\n");
         }
-        return sb.toString();
+//        return sb.toString();
+
+        TextTable tt = TextTable.newEmpty(lines + 1, vars.length + 1);
+        tt.withMerge(getPrinter().textWidth());
+        tt.withHeaderRows(1);
+        tt.withHeaderCols(1);
+
+        for (int i = 0; i < vars.length; i++) {
+            tt.set(0, i + 1, names[i], 0);
+        }
+        for (int i = 0; i < lines; i++) {
+            tt.set(i + 1, 0, "[" + i + "]", 1);
+        }
+        for (int i = 0; i < lines; i++) {
+            for (int j = 0; j < vars.length; j++) {
+                tt.set(i + 1, j + 1, vars[j].label(i), 1);
+            }
+        }
+        return tt.summary();
+
     }
 }

@@ -23,6 +23,7 @@
 
 package rapaio.ml.classifier.tree;
 
+import rapaio.core.tests.ChiSquareTest;
 import rapaio.core.tools.DTable;
 import rapaio.util.Tagged;
 
@@ -45,9 +46,19 @@ public interface CTreePurityFunction extends Tagged, Serializable {
         public String name() {
             return "InfoGain";
         }
+
+        @Override
+        public String toString() {
+            return name();
+        }
     };
     CTreePurityFunction GainRatio = new CTreePurityFunction() {
         private static final long serialVersionUID = -2478996054579932911L;
+
+        @Override
+        public String name() {
+            return "GainRatio";
+        }
 
         @Override
         public double compute(DTable dt) {
@@ -55,23 +66,81 @@ public interface CTreePurityFunction extends Tagged, Serializable {
         }
 
         @Override
-        public String name() {
-            return "GainRatio";
+        public String toString() {
+            return name();
         }
     };
+
     CTreePurityFunction GiniGain = new CTreePurityFunction() {
         private static final long serialVersionUID = 3547209320599654633L;
-
-        @Override
-        public double compute(DTable dt) {
-            return dt.splitByRowGiniGain();
-        }
 
         @Override
         public String name() {
             return "GiniGain";
         }
+
+        @Override
+        public double compute(DTable dt) {
+            double[] rowTotals = new double[dt.rowLevels().length];
+            double[] colTotals = new double[dt.colLevels().length];
+            double total = 0.0;
+            for (int i = 0; i < dt.rowLevels().length; i++) {
+                // j = 1 just for optimization, we know that we should not have missing targets
+                for (int j = 1; j < dt.colLevels().length; j++) {
+                    rowTotals[i] += dt.get(i, j);
+                    if (i != 0) {
+                        colTotals[j] += dt.get(i, j);
+                        total += dt.get(i, j);
+                    }
+                }
+            }
+            if (total <= 0) {
+                // no instances | all missing on test
+                return 0;
+            }
+
+            // compute before split gini impurity
+            double gini = 1.0;
+            for (int i = 1; i < dt.colLevels().length; i++) {
+                gini -= Math.pow(colTotals[i] / total, 2);
+            }
+
+            // compute after split gini impurity for each test level
+            for (int i = 1; i < dt.rowLevels().length; i++) {
+                double gini_k = 1;
+                for (int j = 1; j < dt.colLevels().length; j++) {
+                    if (rowTotals[i] > 0)
+                        gini_k -= Math.pow(dt.get(i, j) / rowTotals[i], 2);
+                }
+                gini -= gini_k * rowTotals[i] / total;
+            }
+            return gini * total / (total + rowTotals[0]);
+        }
+
+        @Override
+        public String toString() {
+            return name();
+        }
+    };
+    CTreePurityFunction ChiSquare = new CTreePurityFunction() {
+        private static final long serialVersionUID = 3547209320599654633L;
+
+        @Override
+        public String name() {
+            return "ChiSquare";
+        }
+
+        @Override
+        public double compute(DTable dt) {
+            return 1 - ChiSquareTest.independence(dt).pValue();
+        }
+
+        @Override
+        public String toString() {
+            return name();
+        }
     };
 
     double compute(DTable dt);
+
 }
