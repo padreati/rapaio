@@ -77,7 +77,7 @@ public interface RTreeNominalMethod extends Serializable {
             Var weights = weightsOld.mapRows(cleanMapping);
 
             DVector dvWeights = DVector.newFromWeights(false, testVar, weights);
-            DVector dvCount = DVector.newFromCount(false, testVar);
+            DVector dvCount = DVector.fromCount(false, testVar);
 
             // check to see if we have enough instances in at least 2 child nodes
             if (dvCount.countValues(x -> x >= c.minCount) <= 1)
@@ -121,7 +121,7 @@ public interface RTreeNominalMethod extends Serializable {
             Var weights = weightsOld.mapRows(cleanMapping);
 
             DVector dvWeights = DVector.newFromWeights(false, testVar, weights);
-            DVector dvCount = DVector.newFromCount(false, testVar);
+            DVector dvCount = DVector.fromCount(false, testVar);
 
             // compute online statistics for all level slices
             OnlineStat[] os = new OnlineStat[testVar.levels().length - 1];

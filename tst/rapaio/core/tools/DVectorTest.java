@@ -35,14 +35,14 @@ public class DVectorTest {
     @Test
     public void testBuilders() {
         assertTrue(DVector.newEmpty(true, "a", "b").equalsFull(DVector.newEmpty(false, "?", "a", "b")));
-        assertTrue(DVector.newFromCount(true, Nominal.copy("a", "b", "a")).equalsFull(DVector.newFromCount(true, Nominal.copy("a", "a", "b"))));
+        assertTrue(DVector.fromCount(true, Nominal.copy("a", "b", "a")).equalsFull(DVector.fromCount(true, Nominal.copy("a", "a", "b"))));
         assertTrue(DVector.newEmpty(false, 2).equalsFull(DVector.newEmpty(true, "v1")));
-        assertTrue(DVector.newFromCount(true, Nominal.copy("a", "a", "b", "c"))
+        assertTrue(DVector.fromCount(true, Nominal.copy("a", "a", "b", "c"))
                 .equalsFull(DVector.newFromWeights(
                         true,
                         Nominal.copy("a", "a", "b", "c"),
                         Numeric.copy(0.5, 1.5, 1, 1))));
-        assertTrue(DVector.newFromCount(true, Nominal.copy("a", "a", "b", "c"))
+        assertTrue(DVector.fromCount(true, Nominal.copy("a", "a", "b", "c"))
                 .equalsFull(DVector.newFromWeights(
                         true,
                         Nominal.copy("a", "a", "b", "c"),

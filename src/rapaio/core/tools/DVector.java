@@ -110,7 +110,7 @@ public class DVector implements Printable, Serializable {
      * @param var given nominal value
      * @return new distribution vector filled with counts
      */
-    public static DVector newFromCount(boolean useFirst, Var var) {
+    public static DVector fromCount(boolean useFirst, Var var) {
         Var weights = Numeric.fill(var.rowCount(), 1);
         return new DVector(useFirst, var.levels(), var, weights);
     }

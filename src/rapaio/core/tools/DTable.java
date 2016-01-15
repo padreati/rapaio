@@ -503,6 +503,8 @@ public final class DTable implements Printable, Serializable {
 
         if (totalSummary) {
             TextTable tt = TextTable.newEmpty(rowLevels.length - start + 2, colLevels.length - start + 2);
+            tt.withHeaderRows(1);
+            tt.withSplit(WS.getPrinter().textWidth());
 
             for (int i = start; i < rowLevels.length; i++) {
                 tt.set(i - start + 1, 0, rowLevels[i], 1);
@@ -530,6 +532,8 @@ public final class DTable implements Printable, Serializable {
             return tt.summary();
         } else {
             TextTable tt = TextTable.newEmpty(rowLevels.length - start + 1, colLevels.length - start + 1);
+            tt.withHeaderRows(1);
+            tt.withSplit(WS.getPrinter().textWidth());
 
             for (int i = start; i < rowLevels.length; i++) {
                 tt.set(i - start + 1, 0, rowLevels[i], 1);

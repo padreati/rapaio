@@ -26,7 +26,6 @@ package rapaio.core.tests;
 import rapaio.core.distributions.ChiSquare;
 import rapaio.core.tools.DTable;
 import rapaio.core.tools.DVector;
-import rapaio.data.Nominal;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
@@ -73,7 +72,7 @@ public abstract class ChiSquareTest implements Printable {
             case BINARY:
             case NOMINAL:
             case ORDINAL:
-                return DVector.newFromCount(false, x);
+                return DVector.fromCount(false, x);
             case NUMERIC:
             case INDEX:
                 DVector dv = DVector.newEmpty(true, x.rowCount());
@@ -94,7 +93,7 @@ class GoodnessOfFit extends ChiSquareTest {
     public static GoodnessOfFit fromCountAndExpected(Var o, Numeric e) {
 
         // degrees of freedom
-        DVector dv = DVector.newFromCount(false, o);
+        DVector dv = DVector.fromCount(false, o);
         if (e.rowCount() != dv.rowCount()) {
             throw new IllegalArgumentException("number of expected value elements is not the same as number of levels");
         }
