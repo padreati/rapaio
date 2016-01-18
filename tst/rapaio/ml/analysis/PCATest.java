@@ -61,12 +61,6 @@ public class PCATest {
         pca.learn(df.removeVars("y"));
 
         Frame fit = pca.fit(df.removeVars("y"), 2);
-
-
-        WS.draw(points(fit.var(0), fit.var(1), color(df.var("y")), pch(1))
-                .hLine(0)
-                .vLine(0));
-
         pca.printSummary();
     }
 
@@ -81,15 +75,6 @@ public class PCATest {
         pca.printSummary();
 
         Frame trans = pca.fit(x, 3).bindVars(iris.var("class"));
-
-//        GridLayer gl = new GridLayer(2, 2);
-//        gl.add(1, 1, points(iris.var(0), iris.var(1), color(iris.var("class")), pch(1)));
-//        gl.add(1, 2, points(trans.var(0), trans.var(1), color(iris.var("class")), pch(1)));
-//
-//        gl.add(2, 1, points(trans.var(1), trans.var(2), color(iris.var("class")), pch(1)));
-//        gl.add(2, 2, points(trans.var(2), trans.var(3), color(iris.var("class")), pch(1)));
-
-//        WS.draw(gl);
 
         CEvaluation.cv(iris, "class", new AdaBoostSAMME().withRuns(10), 5);
         CEvaluation.cv(trans, "class", new AdaBoostSAMME().withRuns(10), 5);

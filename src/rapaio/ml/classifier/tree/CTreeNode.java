@@ -207,6 +207,10 @@ public class CTreeNode implements Serializable {
         if (candidateList.isEmpty() || candidateList.get(0).getGroupNames().isEmpty()) {
             return;
         }
+        // leave as leaf if the gain is not bigger than minimum gain
+        if(candidateList.get(0).getScore()<= tree.minGain()) {
+            return;
+        }
 
         leaf = false;
         bestCandidate = candidateList.get(0);

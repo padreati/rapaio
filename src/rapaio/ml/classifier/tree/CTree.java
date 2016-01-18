@@ -59,6 +59,7 @@ public class CTree extends AbstractClassifier {
 
     private int minCount = 1;
     private int maxDepth = -1;
+    private double minGain = -1000;
 
     private VarSelector varSelector = VarSelector.ALL;
     private Map<String, CTreePurityTest> customTestMap = new HashMap<>();
@@ -134,6 +135,7 @@ public class CTree extends AbstractClassifier {
     public CTree newInstance() {
         CTree tree = (CTree) new CTree()
                 .withMinCount(minCount)
+                .withMinGain(minGain)
                 .withMaxDepth(maxDepth)
                 .withFunction(function)
                 .withMissingHandler(splitter)
@@ -178,6 +180,15 @@ public class CTree extends AbstractClassifier {
             throw new IllegalArgumentException("min cont must be an integer positive number");
         }
         this.minCount = minCount;
+        return this;
+    }
+
+    public double minGain() {
+        return minGain;
+    }
+
+    public CTree withMinGain(double minGain) {
+        this.minGain = minGain;
         return this;
     }
 

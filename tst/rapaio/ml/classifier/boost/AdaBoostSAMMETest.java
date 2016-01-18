@@ -47,8 +47,8 @@ public class AdaBoostSAMMETest {
 
         WS.setPrinter(new IdeaPrinter());
         Classifier ab = new AdaBoostSAMME()
-                .withClassifier(CTree.newC45().withMinCount(5).withMaxDepth(3).withMCols(10))
-                .withRuns(100);
+                .withClassifier(CTree.newC45().withMinCount(5).withMaxDepth(3).withMCols(5))
+                .withRuns(20);
         Frame df = Datasets.loadSpamBase();
         df.printSummary();
         int[] rows = SamplingTools.sampleWOR(df.rowCount(), df.rowCount() / 2);
@@ -66,11 +66,11 @@ public class AdaBoostSAMMETest {
             errTr.addValue(new Confusion(tr.var(target), ab.fit(tr).classes(target)).error());
             errTe.addValue(new Confusion(te.var(target), ab.fit(te).classes(target)).error());
 
-            WS.draw(
-                    plot(color(3))
-                            .lines(runs, errTr, color(1))
-                            .lines(runs, errTe, color(2))
-                            .yLim(0, Double.NaN));
+//            WS.draw(
+//                    plot(color(3))
+//                            .lines(runs, errTr, color(1))
+//                            .lines(runs, errTe, color(2))
+//                            .yLim(0, Double.NaN));
         });
         ab.train(tr, target);
         ab.printSummary();
