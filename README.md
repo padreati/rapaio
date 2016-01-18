@@ -2,6 +2,9 @@ rapaio
 ===========
 Statistics, data mining and machine learning toolbox in Java.
 
+![build status](https://travis-ci.org/padreati/rapaio.svg?branch=master)
+
+
 **Rapaio Manual** is now published on [gitbooks.com](https://www.gitbook.com/book/aureliantutuianu/rapaio-manual/details).
 Using the previous link you can select the format of manual. To read it directly online you can use this direct link:
 [Rapaion Manual - read on-line](https://aureliantutuianu.gitbooks.io/rapaio-manual/content/).
