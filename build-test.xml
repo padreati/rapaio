@@ -1,0 +1,103 @@
+<!--
+  ~ Apache License
+  ~ Version 2.0, January 2004
+  ~ http://www.apache.org/licenses/
+  ~
+  ~    Copyright 2013 Aurelian Tutuianu
+  ~    Copyright 2014 Aurelian Tutuianu
+  ~    Copyright 2015 Aurelian Tutuianu
+  ~
+  ~    Licensed under the Apache License, Version 2.0 (the "License");
+  ~    you may not use this file except in compliance with the License.
+  ~    You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~    Unless required by applicable law or agreed to in writing, software
+  ~    distributed under the License is distributed on an "AS IS" BASIS,
+  ~    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~    See the License for the specific language governing permissions and
+  ~    limitations under the License.
+  ~
+  -->
+
+<project name="rapaio" default="dist" basedir=".">
+    <description>
+        simple build file for running tests and coverage with travis ci
+    </description>
+    <!-- set global properties for this build -->
+    <property name="src.dir" location="src"/>
+    <property name="test.dir" location="tst"/>
+    <property name="test.report.dir" location="build_report"/>
+    <property name="build.dir" location="build"/>
+    <property name="build.test.dir" location="build_tst"/>
+    <property name="dist.dir" location="dist"/>
+
+    <!-- Define the classpath which includes the junit.jar and the classes after compiling-->
+    <path id="junit.class.path">
+        <pathelement location="lib/junit-4.10.jar"/>
+        <pathelement location="${build.dir}"/>
+    </path>
+
+    <target name="init">
+        <!-- Create the time stamp -->
+        <tstamp/>
+        <!-- Create the build directory structure used by compile -->
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.test.dir}"/>
+        <mkdir dir="${test.report.dir}"/>
+    </target>
+
+    <target name="compile" depends="init"
+            description="compile the source">
+        <!-- Compile the java code from ${src} into ${build} -->
+        <javac srcdir="${src.dir}" destdir="${build.dir}"/>
+        <copy todir="${build.dir}">
+            <fileset dir="${src.dir}" includes="**/*.csv"/>
+        </copy>
+    </target>
+
+    <target name="compiletest" depends="compile"
+            description="compile the tests ">
+        <javac debug="true"
+               srcdir="${test.dir}"
+               destdir="${build.test.dir}"
+               classpathref="junit.class.path"/>
+        <copy todir="${build.test.dir}">
+            <fileset dir="${test.dir}" includes="**/*.csv,**/*.png"/>
+        </copy>
+    </target>
+
+    <target name="dist" depends="compile,test"
+            description="generate the distribution">
+        <!-- Create the distribution directory -->
+        <mkdir dir="${dist.dir}/lib"/>
+
+        <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+        <jar jarfile="${dist.dir}/lib/rapaio-${DSTAMP}.jar" basedir="${build.dir}"/>
+    </target>
+
+    <target name="clean"
+            description="clean up">
+        <!-- Delete the ${build} and ${dist} directory trees -->
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+        <delete dir="${build.test.dir}"/>
+        <delete dir="${test.report.dir}"/>
+    </target>
+
+    <target name="test" depends="compiletest">
+        <junit printsummary="on" fork="true" haltonfailure="yes">
+            <classpath refid="junit.class.path"/>
+            <classpath>
+                <pathelement location="${build.test.dir}"/>
+            </classpath>
+            <formatter type="xml"/>
+            <batchtest todir="${test.report.dir}">
+                <fileset dir="${test.dir}">
+                    <include name="**/*Test*.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+</project>
