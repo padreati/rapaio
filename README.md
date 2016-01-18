@@ -2,7 +2,7 @@ rapaio
 ===========
 Statistics, data mining and machine learning toolbox in Java.
 
-![build status](https://travis-ci.org/padreati/rapaio.svg?branch=master)
+[![build status](https://travis-ci.org/padreati/rapaio.svg?branch=master)](https://travis-ci.org/padreati/rapaio)
 
 
 **Rapaio Manual** is now published on [gitbooks.com](https://www.gitbook.com/book/aureliantutuianu/rapaio-manual/details).

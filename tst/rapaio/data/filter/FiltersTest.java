@@ -44,6 +44,7 @@ public class FiltersTest {
 
     @Test
     public void testJitterStandard() {
+        RandomSource.setSeed(1);
         Var a = jitter(Numeric.fill(100_000, 1));
         Mean mean = mean(a);
         Variance var = var(a);
@@ -58,6 +59,7 @@ public class FiltersTest {
 
     @Test
     public void testJitterStandardSd() {
+        RandomSource.setSeed(1);
         Var a = jitter(Numeric.fill(100_000, 1), 2);
         Mean mean = mean(a);
         Variance var = var(a);
@@ -72,14 +74,13 @@ public class FiltersTest {
 
     @Test
     public void testJitterDistributed() {
+        RandomSource.setSeed(1);
         Var a = jitter(Numeric.fill(100_000, 1), new ChiSquare(5));
         Mean mean = mean(a);
         Variance var = var(a);
         mean.printSummary();
         var.printSummary();
 
-//        setPrinter(new IdeaPrinter());
-//        draw(hist(a, bins(100)));
         assertTrue(mean.value() > 5.0);
         assertTrue(mean.value() < 7.0);
         assertTrue(var.sdValue() > 3.1);
@@ -88,6 +89,7 @@ public class FiltersTest {
 
     @Test
     public void testSortNominal() {
+        RandomSource.setSeed(1);
         Var x1 = Nominal.copy("z", "q", "a", "b", "d", "c");
         Var x2 = sort(x1);
         for (int i = 0; i < x2.rowCount() - 1; i++) {
@@ -101,6 +103,7 @@ public class FiltersTest {
 
     @Test
     public void testSortNumeric() {
+        RandomSource.setSeed(1);
         Var x1 = Numeric.copy(7, 5, 1, 2, 5, 4);
         Var x2 = sort(x1);
         for (int i = 0; i < x2.rowCount() - 1; i++) {
@@ -114,6 +117,7 @@ public class FiltersTest {
 
     @Test
     public void testSortRef() {
+        RandomSource.setSeed(1);
         Var x1 = Nominal.copy("z", "q", "a", "b", "d", "c");
         Var x2 = Numeric.copy(7, 6, 1, 2, 5, 4);
         Var x3 = refSort(x2, x1);
@@ -128,6 +132,7 @@ public class FiltersTest {
 
     @Test
     public void testShuffle() {
+        RandomSource.setSeed(1);
         double N = 1000.0;
         Var x = Numeric.seq(0, N, 1);
         Var first = Numeric.empty();
@@ -137,34 +142,14 @@ public class FiltersTest {
             assertEquals(N * (N + 1) / 2, t, 1e-30);
             first.addValue(y.value(0));
         }
-//        setPrinter(new IdeaPrinter());
-//        draw(hist(first, bins(100)));
     }
 
     @Test
     public void powerTransform() {
-//        Numeric x = Numeric.seq(1, 100);
-//        Var x1 = transformPower(x.copy(), 0);
-//        WS.draw(plot()
-//                        .lines(x, transformPower(x.copy(), -0.5), color(1))
-//                        .lines(x, transformPower(x.copy(), -0.1), color(2))
-//                        .lines(x, transformPower(x.copy(), 0), color(3))
-//                        .lines(x, transformPower(x.copy(), 0.1), color(4))
-//                        .lines(x, transformPower(x.copy(), 0.5), color(5))
-//                        .lines(x, transformPower(x.copy(), 1), color(6))
-//                        .lines(x, transformPower(x.copy(), 1.5), color(7))
-//                        .lines(x, transformPower(x.copy(), 2), color(8))
-//        );
-
         RandomSource.setSeed(1);
 
         Var x = distNormal().sample(1000).stream().mapToDouble(s -> Math.pow(s.value(), 2)).boxed().collect(Numeric.collector());
         Var y = transformPower(x.solidCopy(), 0.2);
-
-//        GridLayer gl = new GridLayer(2, 1);
-//        gl.add(1, 1, hist(x, bins(40)));
-//        gl.add(2, 1, hist(y, bins(40)));
-//        WS.draw(gl);
 
         var(x).printSummary();
         assertEquals(1.459663, var(x).sdValue(), 1e-6);
@@ -176,6 +161,4 @@ public class FiltersTest {
         corrSpearman(x, y).printSummary();
         assertEquals(1, corrSpearman(x, y).values()[0][1], 1e-6);
     }
-
-
 }
