@@ -23,14 +23,11 @@
 
 package rapaio.math.linear;
 
-import junit.framework.Assert;
 import org.junit.Test;
-import rapaio.core.distributions.Normal;
-import rapaio.util.Util;
 
 public class MatrixMultiplicationTest {
 
-    //    @Test
+    @Test
     public void basicTestMM() {
 
         RM A = Linear.newRMWrapOf(3, 4,
@@ -52,28 +49,5 @@ public class MatrixMultiplicationTest {
         A.dot(B).printSummary();
 
         MatrixMultiplication.strassen(A, B).printSummary();
-    }
-
-    @Test
-    public void bigMatricesMM() {
-
-        Normal n = new Normal(0, 2);
-
-        int N = 1000;
-        int M = 1000;
-        int K = 1000;
-
-        RM A = Linear.newRMFill(N, M, (i, j) -> n.sampleNext());
-        RM B = Linear.newRMFill(M, K, (i, j) -> n.sampleNext());
-
-//        A.printSummary();
-//        B.printSummary();
-
-        System.out.println("naive: ");
-        RM m1 = Util.measure(() -> A.dot(B));
-        System.out.println("naive parallel: ");
-        RM m2 = Util.measure(() -> MatrixMultiplication.ijkParralel(A, B));
-
-        Assert.assertTrue(m1.isEqual(m2, 1e-20));
     }
 }
