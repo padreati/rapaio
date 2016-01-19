@@ -11,6 +11,7 @@ Statistics, data mining and machine learning toolbox in Java.
 Using the previous link you can select the format of manual. To read it directly online you can use this direct link:
 [Rapaion Manual - read on-line](https://aureliantutuianu.gitbooks.io/rapaio-manual/content/).
 
+**NEW**: The manual contains a [Tutorial on Kaggle's Titanic Competition](https://aureliantutuianu.gitbooks.io/rapaio-manual/content/kaggle-titanic.html)!
 
 Implemented Features
 ====================
