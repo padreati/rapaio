@@ -399,4 +399,12 @@ public interface Var extends Serializable, Printable {
     default String summary() {
         return Summary.summary(this);
     }
+
+    default void printLines() {
+        Summary.lines(this);
+    }
+
+    default void printLines(int n) {
+        Summary.lines(this.mapRows(Mapping.range(0, n)));
+    }
 }

@@ -65,7 +65,13 @@ public class CStacking extends AbstractClassifier {
 
     @Override
     public Classifier newInstance() {
-        return new CStacking();
+        return new CStacking()
+                .withLearners(weaks.stream().map(Classifier::newInstance).toArray(Classifier[]::new))
+                .withStacker(stacker.newInstance())
+                .withRunPoolSize(runPoolSize())
+                .withRunningHook(runningHook())
+                .withRuns(runs())
+                .withInputFilters(inputFilters());
     }
 
     @Override
@@ -92,18 +98,18 @@ public class CStacking extends AbstractClassifier {
     }
 
     protected BaseTrainSetup baseTrain(Frame df, Var w, String... targetVars) {
-        logger.config("train method called.");
+        logger.fine("train method called.");
         int pos = 0;
-        logger.config("check learners for learning.... ");
+        logger.fine("check learners for learning.... ");
         List<Var> vars =
                 Util.rangeStream(weaks.size(), true)
                         .boxed()
                         .map(i -> {
                             if (!weaks.get(i).hasLearned()) {
-                                logger.config("started learning for weak learner ...");
+                                logger.fine("started learning for weak learner ...");
                                 weaks.get(i).train(df, w, targetVars);
                             }
-                            logger.config("started fitting weak learner...");
+                            logger.fine("started fitting weak learner...");
                             return weaks.get(i).fit(df).firstDensity().var(1).solidCopy()
                                     .withName("V" + i);
                         })
@@ -118,19 +124,19 @@ public class CStacking extends AbstractClassifier {
     @Override
     protected boolean coreTrain(Frame df, Var weights) {
 
-        logger.config("started learning for stacker classifier...");
+        logger.fine("started learning for stacker classifier...");
         stacker.train(df, weights, targetNames());
 
-        logger.config("end train method call");
+        logger.fine("end train method call");
         return true;
     }
 
     protected BaseFitSetup baseFit(Frame df, boolean withClasses, boolean withDistributions) {
-        logger.config("fit method called.");
+        logger.fine("fit method called.");
         List<Var> vars = Util.rangeStream(weaks.size(), true)
                 .boxed()
                 .map(i -> {
-                    logger.config("started fitting weak learner ...");
+                    logger.fine("started fitting weak learner ...");
                     return weaks.get(i)
                             .fit(df)
                             .firstDensity()
@@ -143,10 +149,10 @@ public class CStacking extends AbstractClassifier {
 
     @Override
     protected CFit coreFit(Frame df, boolean withClasses, boolean withDistributions) {
-        logger.config("started fitting stacker classifier .. ");
+        logger.fine("started fitting stacker classifier .. ");
         CFit fit = stacker.fit(df);
 
-        logger.config("end fit method call");
+        logger.fine("end fit method call");
         return fit;
     }
 }
