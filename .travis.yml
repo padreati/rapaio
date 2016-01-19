@@ -1,5 +1,5 @@
 language: java
-script: ant test
+script: mvn test
 jdk:
   - oraclejdk8
 notifications:
