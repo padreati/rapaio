@@ -49,4 +49,9 @@ public class MinKernel extends AbstractKernel {
     public Kernel newInstance() {
         return new MinKernel();
     }
+
+    @Override
+    public String name() {
+        return "Min";
+    }
 }

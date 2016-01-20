@@ -101,17 +101,17 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
     @Override
     public String fullName() {
-        return name() +
-                "{" +
-                "sampler=" + sampler().name() + ";" +
-                "kernel=" + kernel.name() + ";" +
-                "C=" + formatFlex(C) + ";" +
-                "tol=" + formatFlex(tol) + ";" +
-                "classIndex1=" + classIndex1 + ";" +
-                "classIndex2=" + classIndex2 + ";" +
-                "oneVsAll=" + oneVsAll + ";" +
-                "maxRuns=" + maxRuns +
-                "}";
+        return name() + "\n" +
+                "{\n" +
+                "   sampler=" + sampler().name() + ",\n" +
+                "   kernel=" + kernel.name() + ",\n" +
+                "   C=" + formatFlex(C) + ",\n" +
+                "   tol=" + formatFlex(tol) + ",\n" +
+                "   classIndex1=" + classIndex1 + ",\n" +
+                "   classIndex2=" + classIndex2 + ",\n" +
+                "   oneVsAll=" + oneVsAll + ",\n" +
+                "   maxRuns=" + maxRuns + "\n" +
+                "}\n";
     }
 
     @Override
@@ -186,7 +186,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     public Capabilities capabilities() {
         return new Capabilities()
                 .withInputTypes(VarType.BINARY, VarType.INDEX, VarType.NOMINAL, VarType.NUMERIC)
-                .withInputCount(1, 10000)
+                .withInputCount(1, 100_000)
                 .withAllowMissingInputValues(false)
                 .withTargetTypes(VarType.NOMINAL)
                 .withTargetCount(1, oneVsAll ? 10_000 : 1)

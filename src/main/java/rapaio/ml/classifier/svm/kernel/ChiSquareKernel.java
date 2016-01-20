@@ -50,4 +50,9 @@ public class ChiSquareKernel extends AbstractKernel {
     public Kernel newInstance() {
         return new ChiSquareKernel();
     }
+
+    @Override
+    public String name() {
+        return "ChiSquare";
+    }
 }

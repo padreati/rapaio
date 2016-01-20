@@ -50,4 +50,9 @@ public class SplineKernel extends AbstractKernel {
     public Kernel newInstance() {
         return new SplineKernel();
     }
+
+    @Override
+    public String name() {
+        return "Spline";
+    }
 }

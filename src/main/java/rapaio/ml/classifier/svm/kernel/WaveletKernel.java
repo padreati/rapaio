@@ -24,6 +24,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.sys.WS;
 
 import java.util.function.Function;
 
@@ -51,6 +52,8 @@ import java.util.function.Function;
  */
 @Deprecated
 public class WaveletKernel extends AbstractKernel {
+
+    private static final long serialVersionUID = -3640571660076086354L;
 
     private final boolean invariant;
     private final double dilation;
@@ -90,5 +93,13 @@ public class WaveletKernel extends AbstractKernel {
     @Override
     public Kernel newInstance() {
         return new WaveletKernel(invariant, dilation, translation, wavelet);
+    }
+
+    @Override
+    public String name() {
+        return "Wavelet(invariant=" + invariant +
+                ",dilation=" + WS.formatFlex(dilation) +
+                ",translation=" + WS.formatFlex(translation) +
+                ")";
     }
 }

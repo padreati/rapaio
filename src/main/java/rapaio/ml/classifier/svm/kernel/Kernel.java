@@ -28,16 +28,15 @@ import rapaio.data.Frame;
 import java.io.Serializable;
 
 /**
+ * Kernel function interface
+ *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
-@Deprecated
 public interface Kernel extends Serializable {
 
     Kernel newInstance();
 
-    default String name() {
-        return "not implemented";
-    }
+    String name();
 
     boolean isLinear();
 

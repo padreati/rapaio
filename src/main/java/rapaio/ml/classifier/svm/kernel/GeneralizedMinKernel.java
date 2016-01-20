@@ -24,6 +24,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.sys.WS;
 
 /**
  * The Generalized Histogram Intersection kernel is built based on
@@ -37,6 +38,8 @@ import rapaio.data.Frame;
  */
 @Deprecated
 public class GeneralizedMinKernel extends AbstractKernel {
+
+    private static final long serialVersionUID = -5905853828762141455L;
 
     private final double alpha;
     private final double beta;
@@ -61,5 +64,10 @@ public class GeneralizedMinKernel extends AbstractKernel {
     @Override
     public Kernel newInstance() {
         return new GeneralizedMinKernel(alpha, beta);
+    }
+
+    @Override
+    public String name() {
+        return "GeneralizedMean(alpha=" + WS.formatFlex(alpha) + ",beta=" + WS.formatFlex(beta) + ")";
     }
 }

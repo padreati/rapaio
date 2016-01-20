@@ -24,6 +24,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.sys.WS;
 
 /**
  * Circular Kernel
@@ -59,5 +60,10 @@ public class CircularKernel extends AbstractKernel {
     @Override
     public Kernel newInstance() {
         return new CircularKernel(sigma);
+    }
+
+    @Override
+    public String name() {
+        return "Circular(sigma=" + WS.formatFlex(sigma) + ")";
     }
 }

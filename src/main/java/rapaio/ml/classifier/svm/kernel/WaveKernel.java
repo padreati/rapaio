@@ -24,9 +24,10 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.sys.WS;
 
 /**
- * The Wavelet kernel (Zhang et al, 2004) comes from Wavelet theory and is given as:
+ * The Wave kernel (Zhang et al, 2004) comes from Wavelet theory and is given as:
  * <p>
  * k(x,y) = \prod_{i=1}^N h(\frac{x_i-c_i}{a}) \: h(\frac{y_i-c_i}{a})
  * <p>
@@ -67,5 +68,10 @@ public class WaveKernel extends AbstractKernel {
     @Override
     public Kernel newInstance() {
         return new WaveKernel(theta);
+    }
+
+    @Override
+    public String name() {
+        return "Wave(theta=" + WS.formatFlex(theta) + ")";
     }
 }

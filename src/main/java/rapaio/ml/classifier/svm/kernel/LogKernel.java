@@ -24,6 +24,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.sys.WS;
 
 /**
  * Log Kernel
@@ -37,6 +38,8 @@ import rapaio.data.Frame;
  */
 @Deprecated
 public class LogKernel extends AbstractKernel {
+
+    private static final long serialVersionUID = 6198322741512752359L;
 
     private final double degree;
 
@@ -52,5 +55,10 @@ public class LogKernel extends AbstractKernel {
     @Override
     public Kernel newInstance() {
         return new LogKernel(degree);
+    }
+
+    @Override
+    public String name() {
+        return "Log(degree=" + WS.formatFlex(degree) + ")";
     }
 }

@@ -48,9 +48,7 @@ public interface FrameSampler extends Serializable {
      */
     FrameSample newSample(Frame df, Var weight);
 
-    default String name() {
-        return "CustomSampler";
-    }
+    String name();
 
     // static implementations
 

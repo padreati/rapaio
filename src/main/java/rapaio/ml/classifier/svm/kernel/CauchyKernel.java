@@ -24,6 +24,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.sys.WS;
 
 /**
  * The Cauchy kernel comes from the Cauchy distribution (Basak, 2008).
@@ -36,6 +37,8 @@ import rapaio.data.Frame;
  */
 @Deprecated
 public class CauchyKernel extends AbstractKernel {
+
+    private static final long serialVersionUID = -5631098319904454645L;
 
     private final double sigma;
 
@@ -61,5 +64,10 @@ public class CauchyKernel extends AbstractKernel {
     @Override
     public Kernel newInstance() {
         return new CauchyKernel(sigma);
+    }
+
+    @Override
+    public String name() {
+        return "Cauchy(" + WS.formatFlex(sigma) + ")";
     }
 }

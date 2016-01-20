@@ -24,6 +24,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.sys.WS;
 
 /**
  * Spherical Kernel
@@ -57,5 +58,10 @@ public class SphericalKernel extends AbstractKernel {
     @Override
     public Kernel newInstance() {
         return new SphericalKernel(sigma);
+    }
+
+    @Override
+    public String name() {
+        return "Spherical(sigma=" + WS.formatFlex(sigma) + ")";
     }
 }

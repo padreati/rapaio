@@ -24,6 +24,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.sys.WS;
 
 /**
  * The Rational Quadratic kernel is less computationally intensive than the GaussianPdf kernel
@@ -52,5 +53,10 @@ public class RationalQuadraticKernel extends AbstractKernel {
     @Override
     public Kernel newInstance() {
         return new RationalQuadraticKernel(c);
+    }
+
+    @Override
+    public String name() {
+        return "RationalQuadratic(c=" + WS.formatFlex(c) + ")";
     }
 }

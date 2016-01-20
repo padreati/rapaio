@@ -132,11 +132,11 @@ class MapKernelCache implements KernelCache {
 class SolidKernelCache implements KernelCache {
 
     private final Frame df;
-    private Double[][] cache;
+    private double[][] cache;
 
     public SolidKernelCache(Frame df) {
         this.df = df;
-        cache = new Double[df.rowCount()][df.rowCount()];
+        cache = new double[df.rowCount()][df.rowCount()];
         for (int i = 0; i < df.rowCount(); i++) {
             for (int j = 0; j < df.rowCount(); j++) {
                 cache[i][j] = Double.NaN;

@@ -57,11 +57,6 @@ public class RBFKernel extends AbstractKernel {
     }
 
     @Override
-    public String name() {
-        return "RBF(sigma=" + formatFlex(sigma) + ")";
-    }
-
-    @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {
         double value = deltaDotProd(df1, row1, df2, row2);
         return 1.0 / Math.pow(Math.E, factor * value * value);
@@ -70,5 +65,10 @@ public class RBFKernel extends AbstractKernel {
     @Override
     public Kernel newInstance() {
         return new RBFKernel(sigma);
+    }
+
+    @Override
+    public String name() {
+        return "RBF(sigma=" + formatFlex(sigma) + ")";
     }
 }

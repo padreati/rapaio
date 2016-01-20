@@ -24,6 +24,7 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
+import rapaio.sys.WS;
 
 /**
  * The Hyperbolic Tangent Kernel is also known as the Sigmoid Kernel and as
@@ -67,5 +68,10 @@ public class SigmoidKernel extends AbstractKernel {
     @Override
     public Kernel newInstance() {
         return new SigmoidKernel(alpha, c);
+    }
+
+    @Override
+    public String name() {
+        return "Sigmoid(alpha=" + WS.formatFlex(alpha) + ",c=" + WS.formatFlex(c) + ")";
     }
 }
