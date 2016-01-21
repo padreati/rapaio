@@ -24,7 +24,9 @@
 package rapaio.datasets;
 
 import rapaio.data.Frame;
+import rapaio.data.Var;
 import rapaio.data.VarType;
+import rapaio.io.ArffPersistence;
 import rapaio.io.Csv;
 
 import java.io.IOException;
@@ -100,7 +102,7 @@ public class Datasets {
     public static Frame loadProstateCancer() throws IOException {
         return new Csv()
                 .withSeparatorChar('\t')
-                .withDefaultTypes(VarType.NUMERIC)
+                .withDefaultTypes(VarType.NUMERIC, VarType.NOMINAL)
                 .read(Datasets.class, "prostate.csv");
     }
 
@@ -136,5 +138,9 @@ public class Datasets {
                 .withTypes(VarType.STAMP, "stamp")
                 .withTypes(VarType.NOMINAL, "nom")
                 .read(Datasets.class.getResourceAsStream("random.csv"));
+    }
+
+    public static Frame loadSonar() throws IOException {
+        return new ArffPersistence().read(Datasets.class.getResourceAsStream("UCI/sonar.arff"));
     }
 }

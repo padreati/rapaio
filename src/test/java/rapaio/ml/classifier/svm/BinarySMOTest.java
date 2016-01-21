@@ -28,18 +28,26 @@ import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.filter.FFStandardize;
 import rapaio.datasets.Datasets;
+import rapaio.graphics.Plotter;
+import rapaio.graphics.base.Figure;
+import rapaio.graphics.plot.GridLayer;
+import rapaio.graphics.plot.Plot;
+import rapaio.ml.analysis.LDA;
 import rapaio.ml.classifier.CFit;
-import rapaio.ml.classifier.svm.kernel.LogKernel;
-import rapaio.ml.classifier.svm.kernel.PolyKernel;
+import rapaio.ml.classifier.svm.kernel.*;
+import rapaio.ml.eval.CEvaluation;
+import rapaio.printer.IdeaPrinter;
+import rapaio.sys.WS;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
+import static rapaio.graphics.Plotter.*;
 
 /**
  * Test for binary smo
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/20/16.
  */
 public class BinarySMOTest {
@@ -48,16 +56,16 @@ public class BinarySMOTest {
     public void testDescription() {
         BinarySMO smo = new BinarySMO();
         assertEquals("BinarySMO\n" +
-                "{\n" +
-                "   sampler=Identity,\n" +
-                "   kernel=PolyKernel(exp=1,bias=1,slope=1),\n" +
-                "   C=1,\n" +
-                "   tol=0.001,\n" +
-                "   classIndex1=1,\n" +
-                "   classIndex2=2,\n" +
-                "   oneVsAll=false,\n" +
-                "   maxRuns=2147483647\n" +
-                "}\n",
+                        "{\n" +
+                        "   sampler=Identity,\n" +
+                        "   kernel=PolyKernel(exp=1,bias=1,slope=1),\n" +
+                        "   C=1,\n" +
+                        "   tol=0.001,\n" +
+                        "   classIndex1=1,\n" +
+                        "   classIndex2=2,\n" +
+                        "   oneVsAll=false,\n" +
+                        "   maxRuns=2147483647\n" +
+                        "}\n",
                 smo.fullName());
 
         assertEquals("BinarySMO\n" +
@@ -105,30 +113,44 @@ public class BinarySMOTest {
     @Test
     public void testLinear() throws IOException, URISyntaxException {
 
-        Frame iris = Datasets.loadIrisDataset();
-        iris.printSummary();
+        Frame df = Datasets.loadSonar();
+        df = df.applyFilters(new FFStandardize("all"));
+        df.printSummary();
+
+        String target = "Class";
+
+//        LDA lda = new LDA();
+//        lda.learn(df, target);
+//        lda.printSummary();
+//        Frame x = lda.fit(df.removeVars(target), (rv,rm) -> 1);
 
         BinarySMO smo1 = new BinarySMO()
-                .withInputFilters(new FFStandardize())
-                .withKernel(new PolyKernel(1))
-                .withFirstClassIndex(2)
-                .withSecondClassIndex(3);
+//                .withInputFilters(new FFStandardize())
+                .withKernel(new PolyKernel(3))
+                .withC(10)
+                .withTol(1e-20)
+                .withFirstClassIndex(1)
+                .withSecondClassIndex(2);
 
-        smo1.train(iris, "class");
-        smo1.printSummary();
 
-        smo1.fit(iris).printSummary();
+//        WS.setPrinter(new IdeaPrinter());
 
-        BinarySMO smo2 = new BinarySMO()
-                .withInputFilters(new FFStandardize())
-                .withKernel(new PolyKernel(2))
-                .withFirstClassIndex(2)
-                .withSecondClassIndex(3);
+//        int from = 0;
+//        int to = 4;
+//        GridLayer p = new GridLayer(to - from, to - from);
+//        for (int i = from; i < to; i++) {
+//            for (int j = from; j < to; j++) {
+//                p.add(i + 1, j + 1, points(df.var(i), df.var(j), color(df.var(target)), sz(3)));
+//            }
+//        }
+//        WS.draw(p);
 
-        smo2.train(iris, "class");
-        smo2.printSummary();
+//        smo1.train(df, target);
+//        smo1.printSummary();
 
-        smo2.fit(iris).printSummary();
+//        smo1.fit(df).printSummary();
+
+            CEvaluation.cv(df, target, smo1, 20);
 
     }
 }
