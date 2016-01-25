@@ -52,11 +52,11 @@ public class ClassifiersTest {
         df.printSummary();
 
         List<Classifier> classifiers = new ArrayList<>();
-        classifiers.add(CForest.newRF().withRuns(10).withBootstrap(0.5));
-        classifiers.add(new AdaBoostSAMME().withClassifier(CTree.newCART().withMaxDepth(4)).withRuns(10).withSampler(new FrameSampler.Bootstrap(0.5)));
+        classifiers.add(CForest.newRF().withRuns(2).withBootstrap(0.5));
+        classifiers.add(new AdaBoostSAMME().withClassifier(CTree.newCART().withMaxDepth(4)).withRuns(2).withSampler(new FrameSampler.Bootstrap(0.5)));
         classifiers.add(new GBTClassifier()
                 .withTree(RTree.buildCART().withMaxDepth(4).withFunction(RTreeTestFunction.WeightedSdGain))
-                .withRuns(10));
+                .withRuns(2));
 
         CEvaluation.multiCv(df, "classes", classifiers, 3);
     }

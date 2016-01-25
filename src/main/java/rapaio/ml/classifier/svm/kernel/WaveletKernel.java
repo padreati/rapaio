@@ -50,7 +50,6 @@ import java.util.function.Function;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
-@Deprecated
 public class WaveletKernel extends AbstractKernel {
 
     private static final long serialVersionUID = -3640571660076086354L;

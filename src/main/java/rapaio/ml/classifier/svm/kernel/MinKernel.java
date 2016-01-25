@@ -33,8 +33,9 @@ import rapaio.data.Frame;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
-@Deprecated
 public class MinKernel extends AbstractKernel {
+
+    private static final long serialVersionUID = -2388704255494979581L;
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {

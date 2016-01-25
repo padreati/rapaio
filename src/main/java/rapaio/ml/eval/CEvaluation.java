@@ -279,7 +279,7 @@ public class CEvaluation {
 
 //        WS.println("Confusion matrix on training data set: ");
         Confusion trainConfusion = new Confusion(train.var(targetVar), c.fit(train).firstClasses());
-//        trainConfusion.printSummary();
+        trainConfusion.printSummary();
 //        WS.println();
         WS.println("Confusion matrix on test data set: ");
         Confusion testConfusion = new Confusion(test.var(targetVar), c.fit(test).firstClasses());

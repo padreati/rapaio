@@ -24,16 +24,16 @@
 package rapaio.ml.classifier.svm.kernel;
 
 import rapaio.data.Frame;
-
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import rapaio.ml.classifier.svm.kernel.cache.KernelCache;
+import rapaio.ml.classifier.svm.kernel.cache.MapKernelCache;
+import rapaio.ml.classifier.svm.kernel.cache.SolidKernelCache;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
-@Deprecated
 public abstract class AbstractKernel implements Kernel {
+
+    private static final long serialVersionUID = -2216556261751685749L;
 
     protected String[] varNames;
     private KernelCache cache;
@@ -72,7 +72,7 @@ public abstract class AbstractKernel implements Kernel {
     @Override
     public double compute(Frame df1, int row1, Frame df2, int row2) {
         Double value = cache.retrieve(df1, row1, df2, row2);
-        if (value == null || Double.isNaN(value)) {
+        if (value == null) {
             value = eval(df1, row1, df2, row2);
             cache.store(df1, row1, df2, row2, value);
         }
@@ -88,92 +88,3 @@ public abstract class AbstractKernel implements Kernel {
     }
 }
 
-@Deprecated
-interface KernelCache extends Serializable {
-
-    Double retrieve(Frame df1, int row1, Frame df2, int row2);
-
-    void store(Frame df1, int row1, Frame df2, int row2, double value);
-
-    void clear();
-}
-
-@Deprecated
-class MapKernelCache implements KernelCache {
-
-    transient private Map<Frame, Map<Frame, Map<Long, Double>>> cache = new HashMap<>();
-
-    @Override
-    public void store(Frame df1, int row1, Frame df2, int row2, double value) {
-        if (!cache.containsKey(df1)) {
-            cache.put(df1, new HashMap<>());
-        }
-        if (!cache.get(df1).containsKey(df2)) {
-            cache.get(df1).put(df2, new HashMap<>());
-        }
-        cache.get(df1).get(df2).put((((long) row1) << 32) | (row2 & 0xffffffffL), value);
-    }
-
-    @Override
-    public Double retrieve(Frame df1, int row1, Frame df2, int row2) {
-        if (cache.containsKey(df1) && cache.get(df1).containsKey(df2)) {
-            cache.get(df1).get(df2).get((((long) row1) << 32) | (row2 & 0xffffffffL));
-        }
-        return null;
-    }
-
-    @Override
-    public void clear() {
-        cache.clear();
-    }
-}
-
-@Deprecated
-class SolidKernelCache implements KernelCache {
-
-    private final Frame df;
-    private double[][] cache;
-
-    public SolidKernelCache(Frame df) {
-        this.df = df;
-        cache = new double[df.rowCount()][df.rowCount()];
-        for (int i = 0; i < df.rowCount(); i++) {
-            for (int j = 0; j < df.rowCount(); j++) {
-                cache[i][j] = Double.NaN;
-            }
-        }
-    }
-
-    @Override
-    public Double retrieve(Frame df1, int row1, Frame df2, int row2) {
-        if (df1 != df2)
-            return null;
-        if (row1 > row2)
-            return retrieve(df1, row2, df2, row1);
-        if (df1 == this.df)
-            return cache[row1][row2];
-        return null;
-    }
-
-    @Override
-    public void store(Frame df1, int row1, Frame df2, int row2, double value) {
-        if (df1 != df2) {
-            return;
-        }
-        if (row1 > row2) {
-            store(df1, row2, df2, row1, value);
-            return;
-        }
-        if (df1 == this.df) {
-            if (cache == null) {
-                throw new IllegalArgumentException();
-            }
-            cache[row1][row2] = value;
-        }
-    }
-
-    @Override
-    public void clear() {
-        cache = null;
-    }
-}

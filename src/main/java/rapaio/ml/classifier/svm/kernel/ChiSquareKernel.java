@@ -32,8 +32,9 @@ import rapaio.data.Frame;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
-@Deprecated
 public class ChiSquareKernel extends AbstractKernel {
+
+    private static final long serialVersionUID = -3301596992870913061L;
 
     @Override
     public double eval(Frame df1, int row1, Frame df2, int row2) {

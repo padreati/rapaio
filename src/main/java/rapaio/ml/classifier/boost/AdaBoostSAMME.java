@@ -72,12 +72,15 @@ public class AdaBoostSAMME extends AbstractClassifier {
 
     @Override
     public AdaBoostSAMME newInstance() {
-        return new AdaBoostSAMME()
+        return (AdaBoostSAMME) new AdaBoostSAMME()
+                .withInputFilters(inputFilters())
                 .withClassifier(this.weak.newInstance())
                 .withStopOnError(stopOnError)
                 .withShrinkage(shrinkage)
                 .withSampler(sampler())
-                .withRuns(runs());
+                .withRuns(runs())
+                .withRunningHook(runningHook())
+                .withRunPoolSize(runPoolSize());
     }
 
     @Override

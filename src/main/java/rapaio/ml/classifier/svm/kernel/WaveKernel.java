@@ -46,8 +46,9 @@ import rapaio.sys.WS;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
-@Deprecated
 public class WaveKernel extends AbstractKernel {
+
+    private static final long serialVersionUID = 3332090004050972059L;
 
     private final double theta;
 

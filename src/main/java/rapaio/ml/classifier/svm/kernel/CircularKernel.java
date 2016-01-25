@@ -39,8 +39,9 @@ import rapaio.sys.WS;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
-@Deprecated
 public class CircularKernel extends AbstractKernel {
+
+    private static final long serialVersionUID = -3141672110292845302L;
 
     private final double sigma;
 

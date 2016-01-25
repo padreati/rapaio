@@ -46,8 +46,9 @@ import static rapaio.sys.WS.formatFlex;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
-@Deprecated
 public class PolyKernel extends AbstractKernel {
+
+    private static final long serialVersionUID = 7520286921201342580L;
 
     private final double exponent;
     private final double bias;

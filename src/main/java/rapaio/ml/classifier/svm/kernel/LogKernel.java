@@ -36,7 +36,6 @@ import rapaio.sys.WS;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
-@Deprecated
 public class LogKernel extends AbstractKernel {
 
     private static final long serialVersionUID = 6198322741512752359L;

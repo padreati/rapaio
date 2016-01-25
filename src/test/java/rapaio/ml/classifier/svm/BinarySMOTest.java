@@ -25,7 +25,11 @@ package rapaio.ml.classifier.svm;
 
 import org.junit.Assert;
 import org.junit.Test;
+import rapaio.core.RandomSource;
 import rapaio.data.Frame;
+import rapaio.data.Nominal;
+import rapaio.data.Numeric;
+import rapaio.data.SolidFrame;
 import rapaio.data.filter.FFStandardize;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.Plotter;
@@ -41,8 +45,12 @@ import rapaio.sys.WS;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static rapaio.graphics.Plotter.*;
 
 /**
@@ -114,43 +122,77 @@ public class BinarySMOTest {
     public void testLinear() throws IOException, URISyntaxException {
 
         Frame df = Datasets.loadSonar();
-        df = df.applyFilters(new FFStandardize("all"));
-        df.printSummary();
+        df.applyFilters(new FFStandardize("all")).printSummary();
 
         String target = "Class";
 
-//        LDA lda = new LDA();
-//        lda.learn(df, target);
-//        lda.printSummary();
-//        Frame x = lda.fit(df.removeVars(target), (rv,rm) -> 1);
-
         BinarySMO smo1 = new BinarySMO()
-//                .withInputFilters(new FFStandardize())
-                .withKernel(new PolyKernel(3))
-                .withC(10)
-                .withTol(1e-20)
-                .withFirstClassIndex(1)
-                .withSecondClassIndex(2);
+                .withInputFilters(new FFStandardize())
+                .withKernel(new PolyKernel(1))
+                .withC(0.1);
 
+        RandomSource.setSeed(1);
+        double score = CEvaluation.cv(df, target, smo1, 10);
+        assertEquals(0.759762, score, 1e-7);
+    }
 
-//        WS.setPrinter(new IdeaPrinter());
+    @Test
+    public void testMultipleKernels() throws IOException {
 
-//        int from = 0;
-//        int to = 4;
-//        GridLayer p = new GridLayer(to - from, to - from);
-//        for (int i = from; i < to; i++) {
-//            for (int j = from; j < to; j++) {
-//                p.add(i + 1, j + 1, points(df.var(i), df.var(j), color(df.var(target)), sz(3)));
-//            }
-//        }
-//        WS.draw(p);
+        Frame df = Datasets.loadSonar();
 
-//        smo1.train(df, target);
-//        smo1.printSummary();
+        List<Kernel> kernels = new ArrayList<>();
+        kernels.add(new PolyKernel(1));
+        kernels.add(new PolyKernel(2));
+        kernels.add(new PolyKernel(3));
+        kernels.add(new RBFKernel(1));
+        kernels.add(new LogKernel(1));
+        kernels.add(new SplineKernel());
+        kernels.add(new MinKernel());
+        kernels.add(new ChiSquareKernel());
+        kernels.add(new CauchyKernel(1));
+        kernels.add(new WaveKernel(1));
+        kernels.add(new WaveletKernel(1));
+        kernels.add(new ExponentialKernel());
+        kernels.add(new GeneralizedMinKernel(1, 1));
+        kernels.add(new GeneralizedStudentTKernel(1));
+        kernels.add(new InverseMultiQuadraticKernel(1));
+        kernels.add(new SphericalKernel(1));
+        kernels.add(new SigmoidKernel(1, 1));
+        kernels.add(new MultiQuadricKernel(1));
+        kernels.add(new PowerKernel(2));
+        kernels.add(new RationalQuadraticKernel(1));
 
-//        smo1.fit(df).printSummary();
+        Nominal name = Nominal.empty().withName("kernel");
+        Numeric score = Numeric.empty().withName("score");
 
-            CEvaluation.cv(df, target, smo1, 20);
+        for (Kernel k : kernels) {
 
+            RandomSource.setSeed(1);
+
+            BinarySMO smo = new BinarySMO();
+            smo.withInputFilters(new FFStandardize("all"));
+            double s = CEvaluation.cv(df, "Class", smo, 10);
+
+            name.addLabel(k.name());
+            score.addValue(s);
+        }
+
+        WS.println("\nSummary of the scores for various kernels:\n=====================\n");
+        String out = SolidFrame.wrapOf(name, score).lines(name.rowCount());
+
+        assertEquals("" +
+                "                  kernel                     score                                 kernel                             score      \n" +
+                        " [0] PolyKernel(exp=1,bias=1,slope=1) 0.7066666666666667 [10] Wavelet(invariant=true,dilation=1,translation=0) 0.7307142857142856\n" +
+                        " [1] PolyKernel(exp=2,bias=1,slope=1) 0.7261904761904762 [11]            Exponential(sigma=7,factor=0.0102041) 0.7254761904761905\n" +
+                        " [2] PolyKernel(exp=3,bias=1,slope=1) 0.6923809523809524 [12]                  GeneralizedMean(alpha=1,beta=1) 0.7114285714285714\n" +
+                        " [3]                     RBF(sigma=1) 0.7207142857142858 [13]                     GeneralizedStudent(degree=1) 0.7214285714285714\n" +
+                        " [4]                    Log(degree=1) 0.7259523809523809 [14]                       InverseMultiQuadratic(c=1) 0.7209523809523809\n" +
+                        " [5]                           Spline 0.6969047619047619 [15]                               Spherical(sigma=1) 0.7259523809523809\n" +
+                        " [6]                              Min 0.7161904761904762 [16]                             Sigmoid(alpha=1,c=1) 0.7261904761904762\n" +
+                        " [7]                        ChiSquare 0.7264285714285714 [17]                              MultiQuadratic(c=1) 0.7454761904761905\n" +
+                        " [8]                        Cauchy(1) 0.7166666666666667 [18]                                  Power(degree=2) 0.7166666666666667\n" +
+                        " [9]                    Wave(theta=1) 0.7161904761904762 [19]                           RationalQuadratic(c=1) 0.7259523809523809\n",
+                out);
     }
 }

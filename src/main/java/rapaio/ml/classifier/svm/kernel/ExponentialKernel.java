@@ -33,7 +33,6 @@ import rapaio.sys.WS;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
-@Deprecated
 public class ExponentialKernel extends AbstractKernel {
 
     private static final long serialVersionUID = 7590795016650597990L;

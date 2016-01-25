@@ -36,7 +36,6 @@ import rapaio.sys.WS;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/21/15.
  */
-@Deprecated
 public class GeneralizedMinKernel extends AbstractKernel {
 
     private static final long serialVersionUID = -5905853828762141455L;

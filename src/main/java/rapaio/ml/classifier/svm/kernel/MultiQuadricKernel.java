@@ -35,8 +35,9 @@ import rapaio.sys.WS;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/19/15.
  */
-@Deprecated
 public class MultiQuadricKernel extends AbstractKernel {
+
+    private static final long serialVersionUID = -4215277675823113044L;
 
     private final double c;
 
