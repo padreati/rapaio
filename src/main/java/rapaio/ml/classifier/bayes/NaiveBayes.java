@@ -27,8 +27,10 @@ import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
+import rapaio.data.filter.FFilter;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
+import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.bayes.estimator.*;
 import rapaio.ml.common.Capabilities;
 import rapaio.sys.WS;
@@ -37,6 +39,7 @@ import rapaio.util.Tag;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -263,6 +266,16 @@ public class NaiveBayes extends AbstractClassifier {
             nomMap.entrySet().forEach(e -> sb.append("> ").append(e.getKey()).append(" : ").append(e.getValue().learningInfo()).append("\n"));
         }
         return sb.toString();
+    }
+
+    @Override
+    public NaiveBayes withInputFilters(List<FFilter> filters) {
+        return (NaiveBayes) super.withInputFilters(filters);
+    }
+
+    @Override
+    public NaiveBayes withInputFilters(FFilter... filters) {
+        return (NaiveBayes) super.withInputFilters(filters);
     }
 
     interface PriorSupplier extends Serializable {
