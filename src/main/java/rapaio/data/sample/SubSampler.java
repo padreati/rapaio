@@ -32,21 +32,16 @@ import static rapaio.sys.WS.formatFlex;
 
 /**
  * Sample obtaind by subsampling, which is a sample without replacement
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/25/16.
  */
 final class SubSampler implements RowSampler {
 
     private static final long serialVersionUID = -7987373317949449262L;
-    private double percent = 1.0;
+    private final double percent;
 
     public SubSampler(double percent) {
         this.percent = percent;
-    }
-
-    public SubSampler withPercent(double p) {
-        this.percent = p;
-        return this;
     }
 
     @Override

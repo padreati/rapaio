@@ -39,15 +39,10 @@ import static rapaio.sys.WS.formatFlex;
 final class Bootstrap implements RowSampler {
 
     private static final long serialVersionUID = -7987373317949449262L;
-    private double percent = 1.0;
+    private final double percent;
 
     public Bootstrap(double percent) {
         this.percent = percent;
-    }
-
-    public Bootstrap withPercent(double p) {
-        this.percent = p;
-        return this;
     }
 
     @Override

@@ -61,7 +61,7 @@ public interface RowSampler extends Serializable {
         return new Bootstrap(p);
     }
 
-    static RowSampler subsample(double p) {
+    static RowSampler subsampler(double p) {
         return new SubSampler(p);
     }
 }

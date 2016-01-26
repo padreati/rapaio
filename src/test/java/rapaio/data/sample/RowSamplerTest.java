@@ -33,13 +33,12 @@ import rapaio.core.tools.DVector;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.datasets.Datasets;
-import rapaio.sys.WS;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.stream.DoubleStream;
 
 /**
+ * Test for row sampling tools
+ *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/26/16.
  */
 public class RowSamplerTest {
@@ -83,7 +82,7 @@ public class RowSamplerTest {
         int N = 1_000;
         Numeric count = Numeric.fill(df.rowCount(), 0.0).withName("sscount");
         for (int i = 0; i < N; i++) {
-            Sample s = RowSampler.subsample(0.5).nextSample(df, w);
+            Sample s = RowSampler.subsampler(0.5).nextSample(df, w);
             s.mapping.rowStream().forEach(r -> count.setValue(r, count.value(r) + 1));
         }
 
@@ -101,5 +100,14 @@ public class RowSamplerTest {
         // chi square goodness of fit
 
         Assert.assertTrue(chiTest.pValue() > 0.99);
+    }
+
+    @Test
+    public void nameSamplerTest() {
+        Assert.assertEquals("Identity", RowSampler.identity().name());
+        Assert.assertEquals("Bootstrap(p=1)", RowSampler.bootstrap().name());
+        Assert.assertEquals("Bootstrap(p=0.2)", RowSampler.bootstrap(0.2).name());
+        Assert.assertEquals("SubSampler(p=1)", RowSampler.subsampler(1.0).name());
+        Assert.assertEquals("SubSampler(p=0.2)", RowSampler.subsampler(0.2).name());
     }
 }
