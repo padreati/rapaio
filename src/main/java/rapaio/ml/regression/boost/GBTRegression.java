@@ -24,7 +24,7 @@
 package rapaio.ml.regression.boost;
 
 import rapaio.data.*;
-import rapaio.data.sample.FrameSampler;
+import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RFit;
@@ -123,7 +123,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
         return this;
     }
 
-    public GBTRegression withSampler(FrameSampler sampler) {
+    public GBTRegression withSampler(RowSampler sampler) {
         return (GBTRegression) super.withSampler(sampler);
     }
 
@@ -154,7 +154,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
 
             // frame sampling
 
-            Mapping samplerMapping = sampler().newSample(xm, weights).mapping;
+            Mapping samplerMapping = sampler().nextSample(xm, weights).mapping;
             Frame xmLearn = xm.mapRows(samplerMapping);
             Frame xLearn = x.mapRows(samplerMapping);
 

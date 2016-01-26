@@ -25,7 +25,7 @@ package rapaio.io;
 
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.sample.FrameSampler;
+import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.boost.AdaBoostSAMME;
@@ -46,7 +46,7 @@ public class SerializationTest {
         AdaBoostSAMME c = new AdaBoostSAMME()
                 .withRuns(10)
                 .withClassifier(CTree.newC45().withMaxDepth(3))
-                .withSampler(new FrameSampler.Identity());
+                .withSampler(RowSampler.identity());
 
         Frame df = Datasets.loadSpamBase();
         c.train(df, "spam");

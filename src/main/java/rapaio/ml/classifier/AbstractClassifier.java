@@ -25,7 +25,7 @@ package rapaio.ml.classifier;
 
 import rapaio.data.*;
 import rapaio.data.filter.FFilter;
-import rapaio.data.sample.FrameSampler;
+import rapaio.data.sample.RowSampler;
 import rapaio.printer.format.TextTable;
 
 import java.util.*;
@@ -49,19 +49,19 @@ public abstract class AbstractClassifier implements Classifier {
     private String[] targetNames;
     private VarType[] targetTypes;
     private Map<String, String[]> dict;
-    private FrameSampler sampler = new FrameSampler.Identity();
+    private RowSampler sampler = RowSampler.identity();
     private boolean learned = false;
     private int poolSize = Runtime.getRuntime().availableProcessors();
     private int runs = 1;
     private BiConsumer<Classifier, Integer> runningHook;
 
     @Override
-    public FrameSampler sampler() {
+    public RowSampler sampler() {
         return sampler;
     }
 
     @Override
-    public AbstractClassifier withSampler(FrameSampler sampler) {
+    public AbstractClassifier withSampler(RowSampler sampler) {
         this.sampler = sampler;
         return this;
     }

@@ -25,7 +25,7 @@ package rapaio.ml.regression;
 
 import rapaio.data.*;
 import rapaio.data.filter.FFilter;
-import rapaio.data.sample.FrameSampler;
+import rapaio.data.sample.RowSampler;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -44,7 +44,7 @@ public abstract class AbstractRegression implements Regression {
     private VarType[] inputTypes;
     private String[] targetNames;
     private VarType[] targetTypes;
-    private FrameSampler sampler = new FrameSampler.Identity();
+    private RowSampler sampler = RowSampler.identity();
     private boolean hasLearned;
     private int poolSize = Runtime.getRuntime().availableProcessors();
     private int runs = 1;
@@ -76,12 +76,12 @@ public abstract class AbstractRegression implements Regression {
     }
 
     @Override
-    public FrameSampler sampler() {
+    public RowSampler sampler() {
         return sampler;
     }
 
     @Override
-    public AbstractRegression withSampler(FrameSampler sampler) {
+    public AbstractRegression withSampler(RowSampler sampler) {
         this.sampler = sampler;
         return this;
     }

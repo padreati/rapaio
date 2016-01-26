@@ -26,7 +26,7 @@ package rapaio.ml.regression.tree;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.filter.FFRefSort;
-import rapaio.data.sample.FrameSampler;
+import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
 import rapaio.ml.regression.RFit;
 import rapaio.ml.regression.Regression;
@@ -68,7 +68,7 @@ public class RTreeTest {
                             .points(t.var(v), t.var("Sales"), pch(3))
 
                     );
-                }).withSampler(new FrameSampler.Bootstrap(1))
+                }).withSampler(RowSampler.bootstrap(1))
                 .withRuns(10);
         model.train(t, "Sales");
 //        model.printSummary();

@@ -24,7 +24,7 @@
 package rapaio.ml.classifier.boost;
 
 import rapaio.data.*;
-import rapaio.data.sample.FrameSampler;
+import rapaio.data.sample.RowSampler;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
@@ -102,7 +102,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
     }
 
     @Override
-    public GBTClassifier withSampler(FrameSampler sampler) {
+    public GBTClassifier withSampler(RowSampler sampler) {
         return (GBTClassifier) super.withSampler(sampler);
     }
 
@@ -159,7 +159,7 @@ public class GBTClassifier extends AbstractClassifier implements Classifier {
 
             BTRegression tree = classifier.newInstance();
 
-            Mapping samplerMapping = sampler().newSample(x, weights).mapping;
+            Mapping samplerMapping = sampler().nextSample(x, weights).mapping;
             tree.train(train.mapRows(samplerMapping), weights.mapRows(samplerMapping), "##tt##");
 
             tree.boostFit(x, r, r, new ClassifierLossFunction(K));

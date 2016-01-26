@@ -27,8 +27,8 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
-import rapaio.data.sample.FrameSample;
-import rapaio.data.sample.FrameSampler;
+import rapaio.data.sample.Sample;
+import rapaio.data.sample.RowSampler;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
@@ -116,7 +116,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
         return this;
     }
 
-    public AdaBoostSAMME withSampler(FrameSampler sampler) {
+    public AdaBoostSAMME withSampler(RowSampler sampler) {
         return (AdaBoostSAMME) super.withSampler(sampler);
     }
 
@@ -160,7 +160,7 @@ public class AdaBoostSAMME extends AbstractClassifier {
 
         Classifier hh = weak.newInstance();
 
-        FrameSample sample = sampler().newSample(df, w);
+        Sample sample = sampler().nextSample(df, w);
         hh.train(sample.df, sample.weights.solidCopy(), targetNames());
 
         CFit fit = hh.fit(df, true, false);

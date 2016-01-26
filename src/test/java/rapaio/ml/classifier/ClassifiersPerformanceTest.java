@@ -25,7 +25,7 @@ package rapaio.ml.classifier;
 
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.sample.FrameSampler;
+import rapaio.data.sample.RowSampler;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.boost.AdaBoostSAMME;
 import rapaio.ml.classifier.boost.GBTClassifier;
@@ -39,21 +39,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This test is not intended as a benchmark. It's sole purpose
+ * is to get a smoke test for various classifiers.
+ *
  * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-@Deprecated
-public class ClassifiersTest {
+public class ClassifiersPerformanceTest {
 
     @Test
     public void mushroomsTest() throws Exception {
-//        Frame df = Datasets.loadMushrooms().stream().complete().toMappedFrame();
         Frame df = Datasets.loadMushrooms();
-//        Frame df = Datasets.loadIrisDataset();
-        df.printSummary();
 
         List<Classifier> classifiers = new ArrayList<>();
-        classifiers.add(CForest.newRF().withRuns(2).withBootstrap(0.5));
-        classifiers.add(new AdaBoostSAMME().withClassifier(CTree.newCART().withMaxDepth(4)).withRuns(2).withSampler(new FrameSampler.Bootstrap(0.5)));
+        classifiers.add(
+                CForest.newRF()
+                        .withRuns(10)
+                        .withSampler(RowSampler.bootstrap(0.5))
+        );
+        classifiers.add(
+                new AdaBoostSAMME()
+                        .withClassifier(CTree.newCART().withMaxDepth(4))
+                        .withRuns(10)
+                        .withSampler(RowSampler.bootstrap(0.5))
+        );
         classifiers.add(new GBTClassifier()
                 .withTree(RTree.buildCART().withMaxDepth(4).withFunction(RTreeTestFunction.WeightedSdGain))
                 .withRuns(2));

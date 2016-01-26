@@ -34,8 +34,8 @@ import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
-import rapaio.data.sample.FrameSample;
-import rapaio.data.sample.FrameSampler;
+import rapaio.data.sample.Sample;
+import rapaio.data.sample.RowSampler;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
@@ -178,7 +178,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
     }
 
     @Override
-    public BinarySMO withSampler(FrameSampler sampler) {
+    public BinarySMO withSampler(RowSampler sampler) {
         return (BinarySMO) super.withSampler(sampler);
     }
 
@@ -214,7 +214,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
 
         // perform sampling
 
-        FrameSample sample = sampler().newSample(df, weights);
+        Sample sample = sampler().nextSample(df, weights);
         df = sample.df;
         weights = sample.weights;
 

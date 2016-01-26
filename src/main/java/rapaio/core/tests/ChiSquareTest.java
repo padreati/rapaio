@@ -46,6 +46,11 @@ public abstract class ChiSquareTest implements Printable {
         return new GoodnessOfFit(dv, expected);
     }
 
+    public static ChiSquareTest goodnessOfFit(DVector dv, double... p) {
+        Numeric expected = Arrays.stream(p).map(pi -> pi * dv.sum()).boxed().collect(Numeric.collector());
+        return new GoodnessOfFit(dv, expected);
+    }
+
     /**
      * Tests the independence of given discrete random variables
      *

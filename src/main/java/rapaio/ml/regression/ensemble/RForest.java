@@ -27,7 +27,7 @@ import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.data.sample.FrameSample;
+import rapaio.data.sample.Sample;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RFit;
@@ -100,7 +100,7 @@ public class RForest extends AbstractRegression {
         regressors.clear();
         for (int i = 0; i < runs(); i++) {
             Regression rnew = r.newInstance();
-            FrameSample sample = sampler().newSample(df, weights);
+            Sample sample = sampler().nextSample(df, weights);
             rnew.train(sample.df, sample.weights, firstTargetName());
             regressors.add(rnew);
             if (runningHook() != null) {

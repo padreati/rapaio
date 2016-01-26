@@ -27,7 +27,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
-import rapaio.data.sample.FrameSampler;
+import rapaio.data.sample.RowSampler;
 import rapaio.ml.common.Capabilities;
 import rapaio.printer.Printable;
 
@@ -69,17 +69,17 @@ public interface Regression extends Printable, Serializable {
     /**
      * @return instance of a sampling device used at training time
      */
-    FrameSampler sampler();
+    RowSampler sampler();
 
     /**
      * Specifies the sampler to be used at learning time.
      * The sampler is responsible for selecting the instances to be learned.
-     * The default implementation is {@link rapaio.data.sample.FrameSampler.Identity}
+     * The default implementation is {@link RowSampler.Identity}
      * which gives all the original training instances.
      *
      * @param sampler instance to be used as sampling device
      */
-    Regression withSampler(FrameSampler sampler);
+    Regression withSampler(RowSampler sampler);
 
     /**
      * Filters which will be applied on input variables

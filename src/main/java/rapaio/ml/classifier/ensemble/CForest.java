@@ -29,8 +29,8 @@ import rapaio.core.tools.DVector;
 import rapaio.data.*;
 import rapaio.data.filter.FFilter;
 import rapaio.data.filter.Filters;
-import rapaio.data.sample.FrameSample;
-import rapaio.data.sample.FrameSampler;
+import rapaio.data.sample.Sample;
+import rapaio.data.sample.RowSampler;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
@@ -81,7 +81,7 @@ public class CForest extends AbstractClassifier {
         this.baggingMode = BaggingMode.DISTRIBUTION;
         this.c = CTree.newCART().withVarSelector(VarSelector.AUTO);
         this.oobComp = false;
-        this.withSampler(new FrameSampler.Bootstrap(1));
+        this.withSampler(RowSampler.bootstrap());
     }
 
     public static CForest newRF() {
@@ -150,20 +150,8 @@ public class CForest extends AbstractClassifier {
         return this;
     }
 
-    public CForest withBootstrap() {
-        return withSampler(new FrameSampler.Bootstrap(1));
-    }
-
-    public CForest withBootstrap(double p) {
-        return withSampler(new FrameSampler.Bootstrap(p));
-    }
-
-    public CForest withNoSampling() {
-        return withSampler(new FrameSampler.Identity());
-    }
-
     @Override
-    public CForest withSampler(FrameSampler sampler) {
+    public CForest withSampler(RowSampler sampler) {
         return (CForest) super.withSampler(sampler);
     }
 
@@ -452,7 +440,7 @@ public class CForest extends AbstractClassifier {
     private Pair<Classifier, List<Integer>> buildWeakPredictor(Frame df, Var weights) {
         Classifier weak = c.newInstance();
 
-        FrameSample sample = sampler().newSample(df, weights);
+        Sample sample = sampler().nextSample(df, weights);
 
         Frame trainFrame = sample.df;
         Var trainWeights = sample.weights;
