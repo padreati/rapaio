@@ -36,6 +36,7 @@ import rapaio.graphics.base.Figure;
 import rapaio.graphics.base.ImageUtility;
 import rapaio.graphics.plot.BoxPlot;
 import rapaio.graphics.plot.Plot;
+import rapaio.ml.eval.ROC;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 
@@ -62,6 +63,7 @@ import static rapaio.graphics.Plotter.*;
 public class ImageGraphicsTest {
 
     private static final boolean regenerate = false;
+    private static String root = "/home/ati/work/rapaio/src/test/resources";
 
     @Test
     public void testBoxPlot() throws IOException, URISyntaxException {
@@ -72,8 +74,7 @@ public class ImageGraphicsTest {
 
         BoxPlot plot = boxPlot(x, factor, color(10, 50, 100));
         if (regenerate) {
-            ImageUtility.saveImage(plot, 500, 400,
-                    "/home/ati/work/rapaio/tst/rapaio/graphics/boxplot-test.png");
+            ImageUtility.saveImage(plot, 500, 400, root + "/rapaio/graphics/boxplot-test.png");
         }
 
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
@@ -91,7 +92,7 @@ public class ImageGraphicsTest {
                 .xLim(0, 10)
                 .yLim(0, 10);
         if (regenerate)
-            ImageUtility.saveImage(plot, 500, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/funLine-test.png");
+            ImageUtility.saveImage(plot, 500, 400, root + "/rapaio/graphics/funLine-test.png");
 
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("funLine-test.png"));
@@ -111,7 +112,7 @@ public class ImageGraphicsTest {
 
         if (regenerate)
             ImageUtility.saveImage(plot, 500, 400,
-                    "/home/ati/work/rapaio/tst/rapaio/graphics/qqplot-test.png");
+                    root + "/rapaio/graphics/qqplot-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("qqplot-test.png"));
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
@@ -128,7 +129,7 @@ public class ImageGraphicsTest {
 
         Plot plot = hist2d(x, y, color(2), bins(10)).points(x, y);
         if (regenerate)
-            ImageUtility.saveImage(plot, 500, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/hist2d-test.png");
+            ImageUtility.saveImage(plot, 500, 400, root + "/rapaio/graphics/hist2d-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("hist2d-test.png"));
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
@@ -145,7 +146,7 @@ public class ImageGraphicsTest {
 
         Plot plot = hist(x, bins(20));
         if (regenerate)
-            ImageUtility.saveImage(plot, 500, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/hist-test.png");
+            ImageUtility.saveImage(plot, 500, 400, root + "/rapaio/graphics/hist-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("hist-test.png"));
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
@@ -167,10 +168,10 @@ public class ImageGraphicsTest {
                 .add(hist(x, bins(20)))
                 .add(hist(y, bins(20)));
 
-        WS.setPrinter(new IdeaPrinter());
-        WS.draw(fig, 600, 600);
+//        WS.setPrinter(new IdeaPrinter());
+//        WS.draw(fig, 600, 600);
         if (regenerate)
-            ImageUtility.saveImage(fig, 400, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/grid-test.png");
+            ImageUtility.saveImage(fig, 400, 400, root + "/rapaio/graphics/grid-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(fig, 400, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("grid-test.png"));
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
@@ -191,7 +192,7 @@ public class ImageGraphicsTest {
 //        WS.setPrinter(new IdeaPrinter());
 //        WS.draw(fig, 400, 200);
         if (regenerate)
-            ImageUtility.saveImage(fig, 300, 200, "/home/ati/work/rapaio/tst/rapaio/graphics/lines-test.png");
+            ImageUtility.saveImage(fig, 300, 200, root + "/rapaio/graphics/lines-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(fig, 300, 200);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("lines-test.png"));
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
@@ -213,7 +214,7 @@ public class ImageGraphicsTest {
 //        WS.setPrinter(new IdeaPrinter());
 //        WS.draw(fig, 400, 300);
         if (regenerate)
-            ImageUtility.saveImage(fig, 500, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/points-test.png");
+            ImageUtility.saveImage(fig, 500, 400, root + "/rapaio/graphics/points-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(fig, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("points-test.png"));
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
@@ -237,9 +238,29 @@ public class ImageGraphicsTest {
 //        WS.setPrinter(new IdeaPrinter());
 //        WS.draw(fig, 300, 300);
         if (regenerate)
-            ImageUtility.saveImage(fig, 500, 400, "/home/ati/work/rapaio/tst/rapaio/graphics/density-test.png");
+            ImageUtility.saveImage(fig, 500, 400, root + "/rapaio/graphics/density-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(fig, 500, 400);
         BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("density-test.png"));
+        Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
+    }
+
+    @Test
+    public void testRocCurve() throws IOException, URISyntaxException {
+
+        RandomSource.setSeed(0);
+        Frame df = Datasets.loadIrisDataset();
+
+        ROC roc = ROC.from(df.var(0), df.var("class"), 3);
+        roc.printSummary();
+
+        Figure fig = rocCurve(roc);
+
+//        WS.setPrinter(new IdeaPrinter());
+//        WS.draw(fig, 300, 300);
+        if (regenerate)
+            ImageUtility.saveImage(fig, 500, 400, root + "/rapaio/graphics/roc-test.png");
+        BufferedImage bi1 = ImageUtility.buildImage(fig, 500, 400);
+        BufferedImage bi2 = ImageIO.read(this.getClass().getResourceAsStream("roc-test.png"));
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 

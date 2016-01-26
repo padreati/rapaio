@@ -36,7 +36,6 @@ import java.awt.geom.Line2D;
 /**
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-@Deprecated
 public class ROCCurve extends PlotComponent {
 
     private static final long serialVersionUID = 4110642211338491615L;

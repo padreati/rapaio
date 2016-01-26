@@ -39,7 +39,6 @@ import static rapaio.sys.WS.formatFlex;
  * <p>
  * User: Aurelian Tutuianu <paderati@yahoo.com>
  */
-@Deprecated
 public class ROC implements Printable, Serializable {
 
     public static final String threshold = "threshold";
@@ -61,9 +60,8 @@ public class ROC implements Printable, Serializable {
      * @param actual  variable which contains the actual classes
      * @param predict variable which contains the predicted classes
      */
-    public ROC(Var score, Var actual, Var predict) {
-        this.score = score;
-        this.classes = Index.empty(actual.rowCount());
+    public static ROC from(Var score, Var actual, Var predict) {
+        Index classes = Index.empty(actual.rowCount());
         for (int i = 0; i < actual.rowCount(); i++) {
             if (actual.label(i).equals(predict.label(i))) {
                 classes.setIndex(i, 1);
@@ -71,7 +69,7 @@ public class ROC implements Printable, Serializable {
                 classes.setIndex(i, 0);
             }
         }
-        compute();
+        return new ROC(score, classes);
     }
 
     /**
@@ -83,8 +81,8 @@ public class ROC implements Printable, Serializable {
      * @param actual actual class
      * @param index  index of the class considered 1, all other index values are 0
      */
-    public ROC(Var score, Var actual, int index) {
-        this(score, actual, actual.levels()[index]);
+    public static ROC from(Var score, Var actual, int index) {
+        return from(score, actual, actual.levels()[index]);
     }
 
     /**
@@ -96,9 +94,8 @@ public class ROC implements Printable, Serializable {
      * @param actual actual class
      * @param label  label of the class considered 1, all other labels values are 0
      */
-    public ROC(Var score, Var actual, String label) {
-        this.score = score;
-        this.classes = Index.empty(actual.rowCount());
+    public static ROC from(Var score, Var actual, String label) {
+        Index classes = Index.empty(actual.rowCount());
         for (int i = 0; i < actual.rowCount(); i++) {
             if (actual.label(i).equals(label)) {
                 classes.setIndex(i, 1);
@@ -106,6 +103,12 @@ public class ROC implements Printable, Serializable {
                 classes.setIndex(i, 0);
             }
         }
+        return new ROC(score, classes);
+    }
+
+    private ROC(Var score, Var classes) {
+        this.score = score;
+        this.classes = classes;
         compute();
     }
 
@@ -191,7 +194,7 @@ public class ROC implements Printable, Serializable {
         StringBuilder sb = new StringBuilder();
         final String fmt = "%-10s";
 
-        sb.append("\n > ROC printSummary").append("\n");
+        sb.append("> ROC printSummary").append("\n");
         sb.append("\n");
         for (int j = 0; j < data.varCount(); j++) {
             if (j > 0) {

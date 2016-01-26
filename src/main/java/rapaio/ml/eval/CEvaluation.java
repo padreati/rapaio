@@ -263,7 +263,7 @@ public class CEvaluation {
                 return;
             }
             r.addIndex(run);
-            ROC roc = new ROC(c.fit(test).firstDensity().var(label), test.var(targetVar), label);
+            ROC roc = ROC.from(c.fit(test).firstDensity().var(label), test.var(targetVar), label);
             WS.draw(rocCurve(roc).title("testAuc: " + WS.formatFlex(roc.auc()) + ", run: " + run));
             testAuc.addValue(roc.auc());
             WS.println("testAuc: " + WS.formatFlex(roc.auc()) + ", run: " + run);
