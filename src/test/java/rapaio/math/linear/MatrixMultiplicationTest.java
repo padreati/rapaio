@@ -59,7 +59,7 @@ public class MatrixMultiplicationTest {
 
     @Test
     public void largeMatrices() {
-        int N = 10_000;
+        int N = 1_000;
         double p = 0.7;
         RM A = RM.empty(N, N);
         RM B = RM.empty(N, N);

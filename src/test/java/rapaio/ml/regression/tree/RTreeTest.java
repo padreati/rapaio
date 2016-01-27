@@ -56,18 +56,18 @@ public class RTreeTest {
         String v = "TV";
         Frame t = new FFRefSort(df.var(v).refComparator()).filter(df);
 
-        WS.setPrinter(new IdeaPrinter());
+//        WS.setPrinter(new IdeaPrinter());
 
         RTree tree = RTree.buildCART().withMaxDepth(10).withMinCount(1).withFunction(RTreeTestFunction.WeightedSdGain);
         Regression model = RForest.newRF()
                 .withRegression(tree)
                 .withRunningHook((r, run) -> {
                     RFit fit = r.fit(t);
-                    WS.draw(plot()
-                            .lines(t.var(v), fit.firstFit(), color(1))
-                            .points(t.var(v), t.var("Sales"), pch(3))
-
-                    );
+//                    WS.draw(plot()
+//                            .lines(t.var(v), fit.firstFit(), color(1))
+//                            .points(t.var(v), t.var("Sales"), pch(3))
+//
+//                    );
                 }).withSampler(RowSampler.bootstrap(1))
                 .withRuns(10);
         model.train(t, "Sales");
