@@ -23,8 +23,11 @@
 
 package rapaio.core;
 
+import junit.framework.Assert;
 import org.junit.Test;
+import rapaio.core.tests.ChiSquareTest;
 import rapaio.core.tests.KSTest;
+import rapaio.core.tools.DVector;
 import rapaio.data.Numeric;
 
 import static rapaio.core.CoreTools.distDUnif;
@@ -34,68 +37,72 @@ import static rapaio.core.CoreTools.distDUnif;
  */
 public class SamplingToolsTest {
 
-	//    @Test
-	public void worTest() {
+    @Test
+    public void worTest() {
 
-		double[] w = null;
-//        w = new double[]{0.5, 0.1, 0.1, 0.1, 0.1, 0.1};
-//        w = new double[]{0.2, 0.2, 0.2, 0.2, 0.2, 0.2};
-//        w = new double[]{0.6, 0.05, 0.1, 0.05, 0.2, 0.8, 0.3, 0.7};
-		w = new double[]{0.4, 0.3, 0.2, 0.1};
-		double[] freq = new double[w.length];
-		final int TRIALS = 1_000_000;
-		final int SAMPLES = 2;
-		for (int i = 0; i < TRIALS; i++) {
-			for (int next : SamplingTools.sampleWeightedWOR(SAMPLES, w)) {
-				freq[next]++;
-//                System.out.print(next + " ");
-			}
-//            System.out.println();
-		}
+        RandomSource.setSeed(123);
 
-		for (int i = 0; i < freq.length; i++) {
-			System.out.print(String.format("%.4f, ", freq[i] / (1. * TRIALS)));
-		}
-		System.out.println();
-	}
+        double[] w = new double[]{0.4, 0.3, 0.2, 0.06, 0.03, 0.01};
+        DVector freq = DVector.newEmpty(true, w.length);
 
-	//    @Test
-	public void wrTest() {
-		double[] w = null;
-//        w = new double[]{0.5, 0.5};
-//        w = new double[]{0.2, 0.1, 0.4, 0.3};
-		w = new double[]{0.001, 0.009, 0.09, 0.9};
-		double[] freq = new double[w.length];
-		final int TRIALS = 100_000;
-		final int SAMPLES = 100;
-		for (int i = 0; i < TRIALS; i++) {
-			for (int next : SamplingTools.sampleWeightedWR(SAMPLES, w)) {
-				freq[next]++;
-			}
-		}
-		for (int i = 0; i < freq.length; i++) {
-			System.out.print(String.format("%.6f, ", freq[i] / (1. * TRIALS * SAMPLES)));
-		}
-		System.out.println();
-	}
+        final int TRIALS = 10_000;
+        for (int i = 0; i < TRIALS; i++) {
+            for (int next : SamplingTools.sampleWeightedWOR(6, w)) {
+                freq.increment(next, 1);
+            }
+        }
+        freq.normalize();
+        for (int i = 0; i < 6; i++) {
+            Assert.assertEquals(1.0 / 6, freq.get(i), 1e-20);
+        }
 
-	@Test
-	public void worUnifTest() {
+        freq = DVector.newEmpty(true, w.length);
+        for (int i = 0; i < TRIALS; i++) {
+            for (int next : SamplingTools.sampleWeightedWOR(1, w)) {
+                freq.increment(next, 1);
+            }
+        }
+        ChiSquareTest test = ChiSquareTest.goodnessOfFit(freq, w);
+        Assert.assertTrue(test.pValue() > 0.05);
+        test.printSummary();
+    }
 
-		double[] freq = new double[10];
-		final int TRIALS = 100_000;
-		final int SAMPLES = 3;
-		Numeric v = Numeric.empty();
-		for (int i = 0; i < TRIALS; i++) {
-			for (int next : SamplingTools.sampleWOR(10, SAMPLES)) {
-				freq[next]++;
+    @Test
+    public void wrTest() {
+
+        RandomSource.setSeed(123);
+
+        double[] w = new double[]{0.001, 0.009, 0.09, 0.9};
+        DVector freq = DVector.newEmpty(true, w.length);
+        final int TRIALS = 10_000;
+        final int SAMPLES = 100;
+        for (int i = 0; i < TRIALS; i++) {
+            for (int next : SamplingTools.sampleWeightedWR(SAMPLES, w)) {
+                freq.increment(next, 1);
+            }
+        }
+        ChiSquareTest test = ChiSquareTest.goodnessOfFit(freq, w);
+        Assert.assertTrue(test.pValue() > 0.05);
+        test.printSummary();
+    }
+
+    @Test
+    public void worUnifTest() {
+
+        double[] freq = new double[10];
+        final int TRIALS = 100_000;
+        final int SAMPLES = 3;
+        Numeric v = Numeric.empty();
+        for (int i = 0; i < TRIALS; i++) {
+            for (int next : SamplingTools.sampleWOR(10, SAMPLES)) {
+                freq[next]++;
                 v.addValue(next);
             }
-		}
-		for (double f : freq) {
-			System.out.print(String.format("%.6f, ", f / (1. * TRIALS * SAMPLES)));
-		}
-		KSTest.newOneSampleTest(v, distDUnif(0, 9)).printSummary();
-		System.out.println();
-	}
+        }
+        for (double f : freq) {
+            System.out.print(String.format("%.6f, ", f / (1. * TRIALS * SAMPLES)));
+        }
+        KSTest.newOneSampleTest(v, distDUnif(0, 9)).printSummary();
+        System.out.println();
+    }
 }
