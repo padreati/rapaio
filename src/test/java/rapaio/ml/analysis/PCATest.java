@@ -31,6 +31,7 @@ import rapaio.io.Csv;
 import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
 import rapaio.ml.classifier.boost.AdaBoostSAMME;
+import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.eval.CEvaluation;
 import rapaio.sys.WS;
 
@@ -74,9 +75,9 @@ public class PCATest {
 
         pca.printSummary();
 
-        Frame trans = pca.fit(x, 3).bindVars(iris.var("class"));
+        Frame trans = pca.fit(x, 4).bindVars(iris.var("class"));
 
-        CEvaluation.cv(iris, "class", new AdaBoostSAMME().withRuns(10), 5);
-        CEvaluation.cv(trans, "class", new AdaBoostSAMME().withRuns(10), 5);
+        CEvaluation.cv(iris, "class", CForest.newRF().withRuns(100), 5);
+        CEvaluation.cv(trans, "class", CForest.newRF().withRuns(100), 5);
     }
 }

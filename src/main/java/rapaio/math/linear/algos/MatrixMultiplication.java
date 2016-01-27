@@ -21,7 +21,9 @@
  *
  */
 
-package rapaio.math.linear;
+package rapaio.math.linear.algos;
+
+import rapaio.math.linear.RM;
 
 import java.util.stream.IntStream;
 
@@ -33,11 +35,54 @@ import java.util.stream.IntStream;
 public class MatrixMultiplication {
     static int LEAF_SIZE = 256;
 
-    public static RM ijkParralel(RM A, RM B) {
+    public static RM ijkAlgorithm(RM A, RM B) {
+        // initialise C
+        RM C = RM.empty(A.rowCount(), B.colCount());
+        for (int i = 0; i < A.rowCount(); i++) {
+            for (int j = 0; j < B.colCount(); j++) {
+                for (int k = 0; k < A.colCount(); k++) {
+                    C.increment(i, j, A.get(i, k) * B.get(k, j));
+                }
+            }
+        }
+        return C;
+    }
+
+    public static RM ijkParallel(RM A, RM B) {
+        // initialise C
+        RM C = RM.empty(A.rowCount(), B.colCount());
+        IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
+            for (int j = 0; j < B.colCount(); j++) {
+                for (int k = 0; k < A.colCount(); k++) {
+                    C.increment(i, j, A.get(i, k) * B.get(k, j));
+                }
+            }
+        });
+        return C;
+    }
+
+    public static RM ikjAlgorithm(RM A, RM B) {
+        // initialise C
+        RM C = RM.empty(A.rowCount(), B.colCount());
+        for (int i = 0; i < A.rowCount(); i++) {
+            for (int k = 0; k < A.colCount(); k++) {
+                if (A.get(i, k) == 0)
+                    continue;
+                for (int j = 0; j < B.colCount(); j++) {
+                    C.increment(i, j, A.get(i, k) * B.get(k, j));
+                }
+            }
+        }
+        return C;
+    }
+
+    public static RM ikjParallel(RM A, RM B) {
         // initialise C
         RM C = RM.empty(A.rowCount(), B.colCount());
         IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
             for (int k = 0; k < A.colCount(); k++) {
+                if (A.get(i, k) == 0)
+                    continue;
                 for (int j = 0; j < B.colCount(); j++) {
                     C.increment(i, j, A.get(i, k) * B.get(k, j));
                 }
@@ -46,41 +91,48 @@ public class MatrixMultiplication {
         return C;
     }
 
-    public static RM ijkAlgorithm(RM A, RM B) {
-        int n = A.rowCount();
+    public static RM tiledAlgorithm(RM A, RM B) {
+        RM C = RM.empty(A.rowCount(), B.colCount());
 
-        // initialise C
-        RM C = RM.empty(n, n);
-        for (int i = 0; i < n; i++) {
-            for (int k = 0; k < n; k++) {
-                for (int j = 0; j < n; j++) {
-                    C.increment(i, j, A.get(i, k) * B.get(k, j));
+//        Pick a tile size T = Θ(√M)
+        int T = 256;
+
+//        For I from 1 to n in steps of T:
+        for (int I = 0; I < A.rowCount(); I += T) {
+            // For J from 1 to p in steps of T:
+            for (int J = 0; J < B.colCount(); J += T) {
+                // For K from 1 to m in steps of T:
+                for (int K = 0; K < A.colCount(); K += T) {
+                    // Multiply AI:I+T, K:K+T and BK:K+T, J:J+T into CI:I+T, J:J+T, that is:
+                    // For i from I to min(I + T, n):
+                    for (int i = I; i < Math.min(I + T, A.rowCount()); i++) {
+                        // For j from J to min(J + T, p):
+                        for (int j = J; j < Math.min(J + T, B.colCount()); j++) {
+                            // Let sum = 0
+                            double sum = 0;
+                            // For k from K to min(K + T, m):
+                            for (int k = K; k < Math.min(K + T, A.colCount()); k++) {
+                                // Set sum ← sum + Aik × Bkj
+                                sum += A.get(i, k) * B.get(k, j);
+                            }
+                            // Set Cij ← sum
+                            C.increment(i, j, sum);
+
+                        }
+                    }
+
                 }
             }
         }
         return C;
-    }
 
-    public static RM ikjAlgorithm(RM A, RM B) {
-        int n = A.rowCount();
 
-        // initialise C
-        RM C = RM.empty(n, n);
-        for (int i = 0; i < n; i++) {
-            for (int k = 0; k < n; k++) {
-                for (int j = 0; j < n; j++) {
-                    C.increment(i, j, A.get(i, k) * B.get(k, j));
-                }
-            }
-        }
-        return C;
     }
 
     private static RM add(RM A, RM B) {
-        int n = A.rowCount();
-        RM C = RM.empty(n, n);
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
+        RM C = RM.empty(A.rowCount(), A.colCount());
+        for (int i = 0; i < A.rowCount(); i++) {
+            for (int j = 0; j < A.colCount(); j++) {
                 C.set(i, j, A.get(i, j) + B.get(i, j));
             }
         }

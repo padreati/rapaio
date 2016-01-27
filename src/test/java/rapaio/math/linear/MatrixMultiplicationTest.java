@@ -24,6 +24,12 @@
 package rapaio.math.linear;
 
 import org.junit.Test;
+import rapaio.core.distributions.Normal;
+import rapaio.core.distributions.Uniform;
+import rapaio.math.linear.algos.MatrixMultiplication;
+import rapaio.util.Util;
+
+import java.util.stream.IntStream;
 
 public class MatrixMultiplicationTest {
 
@@ -43,11 +49,45 @@ public class MatrixMultiplicationTest {
                 1.3, 2.3, 3, 14, 25
         );
 
-        A.printSummary();
-        B.printSummary();
+//        A.printSummary();
+//        B.printSummary();
 
         A.dot(B).printSummary();
 
         MatrixMultiplication.strassen(A, B).printSummary();
+    }
+
+    @Test
+    public void largeMatrices() {
+        int N = 10_000;
+        double p = 0.7;
+        RM A = RM.empty(N, N);
+        RM B = RM.empty(N, N);
+
+        Normal norm = new Normal(1, 12);
+        Uniform unif = new Uniform(0, 1);
+        for (int i = 0; i < A.rowCount(); i++) {
+            for (int j = 0; j < A.colCount(); j++) {
+                if (unif.sampleNext() > p)
+                    A.set(i, j, norm.sampleNext());
+            }
+        }
+
+        for (int i = 0; i < B.rowCount(); i++) {
+            for (int j = 0; j < B.colCount(); j++) {
+                if (unif.sampleNext() > p)
+                    B.set(i, j, norm.sampleNext());
+            }
+        }
+
+        int[] range = IntStream.range(N - 100, N).toArray();
+
+//        Util.measure(() -> MatrixMultiplication.ijkAlgorithm(A,B).mapRows(range).mapCols(range).printSummary());
+//        Util.measure(() -> MatrixMultiplication.ikjAlgorithm(A, B).mapRows(range).mapCols(range).printSummary());
+//        Util.measure(() -> MatrixMultiplication.tiledAlgorithm(A, B).mapRows(range).mapCols(range).printSummary());
+//        RM C1 = Util.measure(() -> MatrixMultiplication.ijkParallel(A, B).mapRows(range).mapCols(range));
+        RM C2 = Util.measure(() -> MatrixMultiplication.ikjParallel(A, B).mapRows(range).mapCols(range));
+
+//        Assert.assertTrue(C1.isEqual(C2));
     }
 }

@@ -27,6 +27,7 @@ import rapaio.core.MathTools;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Numeric;
+import rapaio.math.linear.algos.MatrixMultiplication;
 import rapaio.math.linear.impl.*;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
@@ -36,7 +37,6 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static rapaio.sys.WS.formatShort;
 
@@ -215,17 +215,7 @@ public interface RM extends Serializable, Printable {
             throw new IllegalArgumentException(String.format("Matrices are not conform for multiplication ([n,m]x[m,p] = [%d,%d]=[%d,%d])",
                     rowCount(), colCount(), B.rowCount(), B.colCount()));
         }
-
-        RM C = RM.empty(rowCount(), B.colCount());
-        IntStream.range(0, rowCount()).parallel().forEach(i -> {
-            for (int k = 0; k < colCount(); k++) {
-                for (int j = 0; j < B.colCount(); j++) {
-                    C.increment(i, j, get(i, k) * B.get(k, j));
-                }
-            }
-        });
-
-        return C;
+        return MatrixMultiplication.ikjParallel(this, B);
     }
 
     default RM plus(double x) {

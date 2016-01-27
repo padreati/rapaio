@@ -37,14 +37,16 @@ public class Util {
         long start = System.currentTimeMillis();
         task.run();
         long stop = System.currentTimeMillis();
-        System.out.println((stop - start) / 60000 + " mins, " + (((stop - start) % 60000) / 1000) + " secs");
+        System.out.println((stop - start) / 60000 + " mins, " + (((stop - start) % 60000) / 1000) + " secs, " +
+                ((stop - start) % 1000) + " millis");
     }
 
     public static <T> T measure(Supplier<T> task) {
         long start = System.currentTimeMillis();
         T t = task.get();
         long stop = System.currentTimeMillis();
-        System.out.println((stop - start) / 60000 + " mins, " + (((stop - start) % 60000) / 1000) + " secs, " + ((stop - start) % 1000) + " millis");
+        System.out.println((stop - start) / 60000 + " mins, " + (((stop - start) % 60000) / 1000) + " secs, " +
+                ((stop - start) % 1000) + " millis");
         return t;
     }
 
