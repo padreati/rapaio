@@ -27,7 +27,7 @@ import rapaio.data.*;
 import rapaio.data.stream.FSpot;
 import rapaio.math.linear.*;
 import rapaio.printer.Printable;
-import rapaio.ws.Summary;
+import rapaio.printer.Summary;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -236,7 +236,7 @@ public class LDA implements Printable {
 
         sb.append("Eigen values\n");
         sb.append("============\n");
-        sb.append(Summary.headString(eval)).append("\n");
+        sb.append(Summary.headString(true, eval)).append("\n");
         sb.append("Eigen vectors\n");
         sb.append("=============\n");
         sb.append(eigenVectors.summary()).append("\n");

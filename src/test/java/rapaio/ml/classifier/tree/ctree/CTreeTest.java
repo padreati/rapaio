@@ -26,13 +26,13 @@ package rapaio.ml.classifier.tree.ctree;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.VarType;
-import rapaio.data.filter.FFRetainTypes;
+import rapaio.data.filter.frame.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.classifier.tree.CTreeCandidate;
 import rapaio.ml.classifier.tree.CTreeNode;
-import rapaio.ws.Summary;
+import rapaio.printer.Summary;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

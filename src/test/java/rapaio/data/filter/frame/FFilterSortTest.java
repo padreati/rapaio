@@ -27,7 +27,7 @@ import org.junit.Test;
 import rapaio.data.Nominal;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.data.filter.VFSort;
+import rapaio.data.filter.var.VFSort;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

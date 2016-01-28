@@ -29,7 +29,7 @@ import org.junit.Test;
 import rapaio.core.tools.DTable;
 import rapaio.data.Frame;
 import rapaio.data.VarType;
-import rapaio.data.filter.FFRetainTypes;
+import rapaio.data.filter.frame.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.classifier.tree.CTreePurityFunction;

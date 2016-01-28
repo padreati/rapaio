@@ -27,13 +27,13 @@ import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.Frame;
 import rapaio.data.VarType;
-import rapaio.data.filter.FFRetainTypes;
+import rapaio.data.filter.frame.FFRetainTypes;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.CFit;
 import rapaio.core.tools.DTable;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.eval.Confusion;
-import rapaio.ws.Summary;
+import rapaio.printer.Summary;
 
 import java.io.IOException;
 

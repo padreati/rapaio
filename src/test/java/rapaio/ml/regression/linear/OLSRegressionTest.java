@@ -26,14 +26,11 @@ package rapaio.ml.regression.linear;
 import org.junit.Test;
 import rapaio.core.distributions.StudentT;
 import rapaio.data.*;
-import rapaio.data.filter.FFAddIntercept;
+import rapaio.data.filter.frame.FFAddIntercept;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.Linear;
-import rapaio.math.linear.QR;
-import rapaio.math.linear.RM;
-import rapaio.math.linear.RV;
+import rapaio.math.linear.*;
 import rapaio.sys.WS;
-import rapaio.ws.Summary;
+import rapaio.printer.Summary;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -115,7 +112,7 @@ public class OLSRegressionTest {
         Frame coefficients = SolidFrame.wrapOf(inputNames.length,
                 betaTerm, betaEstimate, betaStdError, betaTValue, betaPValue, betaSignificance);
 
-        Summary.lines(coefficients);
+        Summary.lines(false, coefficients);
         WS.println("---");
         WS.println("Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1");
     }

@@ -26,8 +26,8 @@ package rapaio.ml.eval;
 import rapaio.data.Numeric;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
-import rapaio.data.filter.VFCumulativeSum;
-import rapaio.data.filter.VFRefSort;
+import rapaio.data.filter.var.VFCumulativeSum;
+import rapaio.data.filter.var.VFRefSort;
 
 import java.util.Comparator;
 import java.util.stream.IntStream;

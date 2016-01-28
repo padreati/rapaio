@@ -24,7 +24,7 @@
 package rapaio.core.stat;
 
 import rapaio.data.Var;
-import rapaio.data.filter.VFSort;
+import rapaio.data.filter.var.VFSort;
 import rapaio.printer.Printable;
 
 import java.util.stream.IntStream;

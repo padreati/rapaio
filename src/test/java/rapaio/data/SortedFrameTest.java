@@ -26,7 +26,7 @@ package rapaio.data;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.RandomSource;
-import rapaio.data.filter.FFRefSort;
+import rapaio.data.filter.frame.FFRefSort;
 import rapaio.io.Csv;
 
 import java.io.IOException;

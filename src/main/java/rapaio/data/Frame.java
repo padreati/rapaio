@@ -28,7 +28,7 @@ import rapaio.data.stream.FSpot;
 import rapaio.data.stream.FSpots;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
-import rapaio.ws.Summary;
+import rapaio.printer.Summary;
 
 import java.io.Serializable;
 import java.util.Arrays;

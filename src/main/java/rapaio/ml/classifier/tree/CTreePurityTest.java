@@ -29,7 +29,7 @@ import rapaio.data.Frame;
 import rapaio.data.Index;
 import rapaio.data.RowComparators;
 import rapaio.data.Var;
-import rapaio.data.filter.VFRefSort;
+import rapaio.data.filter.var.VFRefSort;
 import rapaio.sys.WS;
 import rapaio.util.Tagged;
 

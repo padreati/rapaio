@@ -32,7 +32,7 @@ import rapaio.printer.Printable;
 import rapaio.sys.WS;
 import rapaio.util.Pair;
 import rapaio.util.Tag;
-import rapaio.ws.Summary;
+import rapaio.printer.Summary;
 
 import java.util.HashMap;
 import java.util.List;

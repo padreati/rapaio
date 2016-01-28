@@ -26,7 +26,7 @@ package rapaio.graphics.plot;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.data.filter.VFSort;
+import rapaio.data.filter.var.VFSort;
 import rapaio.graphics.opt.GOpt;
 import rapaio.graphics.plot.plotcomp.Points;
 

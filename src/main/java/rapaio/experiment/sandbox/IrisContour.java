@@ -37,7 +37,7 @@ import rapaio.graphics.plot.plotcomp.Points;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.ensemble.CForest;
-import rapaio.ws.Summary;
+import rapaio.printer.Summary;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

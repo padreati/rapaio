@@ -26,7 +26,7 @@ package rapaio.data;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 import rapaio.printer.Printable;
-import rapaio.ws.Summary;
+import rapaio.printer.Summary;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -401,10 +401,18 @@ public interface Var extends Serializable, Printable {
     }
 
     default void printLines() {
-        Summary.lines(this);
+        printLines(true);
+    }
+
+    default void printLines(boolean merge) {
+        Summary.lines(merge, this);
     }
 
     default void printLines(int n) {
-        Summary.lines(this.mapRows(Mapping.range(0, n)));
+        printLines(true, n);
+    }
+
+    default void printLines(boolean merge, int n) {
+        Summary.lines(merge, this.mapRows(Mapping.range(0, n)));
     }
 }

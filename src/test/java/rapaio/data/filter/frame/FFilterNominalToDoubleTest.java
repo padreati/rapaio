@@ -26,8 +26,7 @@ package rapaio.data.filter.frame;
 import org.junit.Test;
 import rapaio.data.Nominal;
 import rapaio.data.Var;
-import rapaio.data.filter.FFRefSort;
-import rapaio.data.filter.VFToNumeric;
+import rapaio.data.filter.var.VFToNumeric;
 
 import java.util.ArrayList;
 

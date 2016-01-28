@@ -24,7 +24,7 @@
 package rapaio.data;
 
 import org.junit.Test;
-import rapaio.data.filter.VFSort;
+import rapaio.data.filter.var.VFSort;
 
 import java.util.ArrayList;
 import java.util.Arrays;

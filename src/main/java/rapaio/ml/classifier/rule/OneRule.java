@@ -25,7 +25,7 @@ package rapaio.ml.classifier.rule;
 
 import rapaio.core.tools.DVector;
 import rapaio.data.*;
-import rapaio.data.filter.VFRefSort;
+import rapaio.data.filter.var.VFRefSort;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.rule.onerule.NominalRule;

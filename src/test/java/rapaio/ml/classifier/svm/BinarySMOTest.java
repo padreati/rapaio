@@ -23,35 +23,25 @@
 
 package rapaio.ml.classifier.svm;
 
-import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Nominal;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
-import rapaio.data.filter.FFStandardize;
+import rapaio.data.filter.frame.FFStandardize;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.Plotter;
-import rapaio.graphics.base.Figure;
-import rapaio.graphics.plot.GridLayer;
-import rapaio.graphics.plot.Plot;
-import rapaio.ml.analysis.LDA;
-import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.svm.kernel.*;
 import rapaio.ml.eval.CEvaluation;
-import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static rapaio.graphics.Plotter.*;
 
 /**
  * Test for binary smo

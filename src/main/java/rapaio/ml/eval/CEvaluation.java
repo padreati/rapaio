@@ -27,7 +27,7 @@ import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
 import rapaio.core.SamplingTools;
 import rapaio.data.*;
-import rapaio.data.filter.FFShuffle;
+import rapaio.data.filter.frame.FFShuffle;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
 import rapaio.printer.IdeaPrinter;

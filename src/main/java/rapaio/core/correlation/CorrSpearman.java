@@ -24,7 +24,7 @@
 package rapaio.core.correlation;
 
 import rapaio.data.*;
-import rapaio.data.filter.VFRefSort;
+import rapaio.data.filter.var.VFRefSort;
 import rapaio.printer.Printable;
 
 import java.util.Arrays;

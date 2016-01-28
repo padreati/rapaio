@@ -26,6 +26,9 @@ package rapaio.data.filter;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Frame;
 import rapaio.data.Var;
+import rapaio.data.filter.frame.FFRefSort;
+import rapaio.data.filter.frame.FFShuffle;
+import rapaio.data.filter.var.*;
 import rapaio.data.stream.VSpot;
 
 import java.util.Comparator;
