@@ -26,7 +26,7 @@ package rapaio.ml.eval;
 import rapaio.printer.Printable;
 import rapaio.data.Frame;
 import rapaio.data.Var;
-import rapaio.data.VarRange;
+import rapaio.data.VRange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,8 +49,8 @@ public class MAE implements Printable {
     private double value;
 
     public MAE(Frame actual, Frame predict, String... targetVarNames) {
-        List<String> actualNames = new VarRange(targetVarNames).parseVarNames(actual);
-        List<String> predictNames = new VarRange(targetVarNames).parseVarNames(predict);
+        List<String> actualNames = VRange.of(targetVarNames).parseVarNames(actual);
+        List<String> predictNames = VRange.of(targetVarNames).parseVarNames(predict);
 
         for (String varName : actualNames) {
             if (!predictNames.contains(varName)) {

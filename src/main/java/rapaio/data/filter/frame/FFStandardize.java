@@ -25,6 +25,7 @@ package rapaio.data.filter.frame;
 
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
+import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFStandardize;
 
@@ -40,15 +41,20 @@ public class FFStandardize extends FFAbstract {
 
     Map<String, VFStandardize> filters = new HashMap<>();
 
-    public FFStandardize(String... varNames) {
-        super(varNames);
+    public FFStandardize(String...varNames) {
+        super(VRange.of(varNames));
+    }
+
+    public FFStandardize(VRange vRange) {
+        super(vRange);
     }
 
     @Override
     public void fit(Frame df) {
 
+        parse(df);
         filters.clear();
-        for (String varName : parse(df, varNames)) {
+        for (String varName : varNames) {
             VFStandardize filter = new VFStandardize();
             filter.fit(df.var(varName));
             filters.put(varName, filter);

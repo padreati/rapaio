@@ -26,6 +26,7 @@ package rapaio.data.filter.frame;
 import rapaio.core.distributions.Distribution;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
+import rapaio.data.VRange;
 
 import java.util.List;
 
@@ -38,16 +39,16 @@ public class FFJitter extends FFAbstract {
 
     private final Distribution d;
 
-    public FFJitter(String... varNames) {
-        this(0.1, varNames);
+    public FFJitter(VRange vRange) {
+        this(0.1, vRange);
     }
 
-    public FFJitter(double sd, String... varNames) {
-        this(new Normal(0, sd), varNames);
+    public FFJitter(double sd, VRange vRange) {
+        this(new Normal(0, sd), vRange);
     }
 
-    public FFJitter(Distribution d, String... varNames) {
-        super(varNames);
+    public FFJitter(Distribution d, VRange vRange) {
+        super(vRange);
         if (d == null) {
             throw new IllegalArgumentException("distribution parameter cannot be empty");
         }
@@ -56,14 +57,14 @@ public class FFJitter extends FFAbstract {
 
     @Override
     public void fit(Frame df) {
-        checkRangeVars(1, df.varCount(), df, varNames);
+        parse(df);
+        checkRangeVars(1, df.varCount(), df);
     }
 
     @Override
     public Frame apply(Frame df) {
-        List<String> names = parse(df, varNames);
         for (int i = 0; i < df.rowCount(); i++) {
-            for (String varName : names) {
+            for (String varName : varNames) {
                 df.setValue(i, varName, df.value(i, varName) + d.sampleNext());
             }
         }

@@ -135,7 +135,7 @@ public abstract class AbstractClassifier implements Classifier {
             df = filter.filter(df);
         }
         Frame result = df;
-        List<String> targets = new VarRange(targetVars).parseVarNames(result);
+        List<String> targets = VRange.of(targetVars).parseVarNames(result);
         this.targetNames = targets.stream().toArray(String[]::new);
         this.targetTypes = targets.stream().map(name -> result.var(name).type()).toArray(VarType[]::new);
         this.dict = new HashMap<>();

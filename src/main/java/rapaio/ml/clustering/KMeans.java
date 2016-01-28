@@ -101,7 +101,7 @@ public class KMeans implements Printable {
     public void cluster(Frame df, String... varNames) {
         validate(df, varNames);
 
-        inputs = new VarRange(varNames).parseVarNames(df).stream().toArray(String[]::new);
+        inputs = VRange.of(varNames).parseVarNames(df).stream().toArray(String[]::new);
         centroids = init.get().init(df, inputs, k);
         arrows = new int[df.rowCount()];
         errors = Numeric.empty().withName("errors");
@@ -127,7 +127,7 @@ public class KMeans implements Printable {
     }
 
     private void validate(Frame df, String... varNames) {
-        List<String> nameList = new VarRange(varNames).parseVarNames(df);
+        List<String> nameList = VRange.of(varNames).parseVarNames(df);
         for (String varName : nameList) {
             if (!df.var(varName).type().isNumeric())
                 throw new IllegalArgumentException("all matched vars must be numeric: check var " + varName);

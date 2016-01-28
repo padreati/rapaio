@@ -24,8 +24,10 @@
 package rapaio.data.filter.frame;
 
 import rapaio.core.RandomSource;
+import rapaio.core.SamplingTools;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
+import rapaio.data.VRange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +38,10 @@ import java.util.List;
 public class FFShuffle extends FFAbstract {
 
     private static final long serialVersionUID = 3868876807602578584L;
+
+    public FFShuffle() {
+        super(VRange.all());
+    }
 
     @Override
     public void fit(Frame df) {

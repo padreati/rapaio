@@ -201,7 +201,7 @@ public class SolidFrame extends AbstractFrame {
     }
 
     @Override
-    public Frame mapVars(VarRange range) {
+    public Frame mapVars(VRange range) {
         List<String> varNames = range.parseVarNames(this);
         List<Var> vars = varNames.stream().map(this::var).collect(Collectors.toList());
         return SolidFrame.wrapOf(rowCount(), vars);

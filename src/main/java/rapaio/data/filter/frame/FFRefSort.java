@@ -23,10 +23,7 @@
 
 package rapaio.data.filter.frame;
 
-import rapaio.data.Frame;
-import rapaio.data.MappedFrame;
-import rapaio.data.Mapping;
-import rapaio.data.RowComparators;
+import rapaio.data.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +41,7 @@ public class FFRefSort extends FFAbstract {
 
     @SafeVarargs
     public FFRefSort(Comparator<Integer>... comparators) {
-        super();
+        super(VRange.of("all"));
         this.aggregateComparator = RowComparators.aggregate(comparators);
     }
 

@@ -23,6 +23,8 @@
 
 package rapaio.data;
 
+import rapaio.util.func.SPredicate;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -40,11 +42,36 @@ import java.util.stream.IntStream;
  *
  * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
-public class VarRange {
+public interface VRange {
 
-    private static final String DELIMITER = ",";
-    private static final String RANGE = "~";
-    private static final String ALL = "all";
+    static VRange all() {
+        return new VRangeByName(VRangeByName.ALL);
+    }
+
+    static VRange of(String... varNames) {
+        return new VRangeByName(varNames);
+    }
+
+    static VRange of(int... varIndexes) {
+        return new VRangeByName(varIndexes);
+    }
+
+    static VRange byName(SPredicate<String> filter) {
+        return new VRangeByPredName(filter);
+    }
+
+    List<Integer> parseVarIndexes(Frame df);
+
+    List<String> parseVarNames(Frame df);
+
+    List<String> parseInverseVarNames(Frame df);
+}
+
+class VRangeByName implements VRange {
+
+    static final String DELIMITER = ",";
+    static final String RANGE = "~";
+    static final String ALL = "all";
     private final String rawColumnRange;
 
     /**
@@ -52,7 +79,7 @@ public class VarRange {
      *
      * @param indexes list of var indexes
      */
-    public VarRange(int... indexes) {
+    public VRangeByName(int... indexes) {
         if (indexes.length == 0) {
             throw new IllegalArgumentException("No column indexes specified.");
         }
@@ -71,7 +98,7 @@ public class VarRange {
      *
      * @param ranges var ranges specified in string format
      */
-    public VarRange(String... ranges) {
+    public VRangeByName(String... ranges) {
         StringBuilder sb = new StringBuilder();
         Arrays.stream(ranges).forEach(s -> {
             if (sb.length() > 0)
@@ -87,6 +114,7 @@ public class VarRange {
      * @param df target frame
      * @return a list of column indexes which corresponds to column range
      */
+    @Override
     public List<Integer> parseVarIndexes(Frame df) {
         List<Integer> colIndexes = new ArrayList<>();
         if (ALL.equals(rawColumnRange)) {
@@ -138,12 +166,45 @@ public class VarRange {
         return colIndexes;
     }
 
+    @Override
     public List<String> parseVarNames(Frame df) {
         return parseVarIndexes(df).stream().map(i -> df.varNames()[i]).collect(Collectors.toList());
     }
 
+    @Override
     public List<String> parseInverseVarNames(Frame df) {
         Set<Integer> indexes = new HashSet<>(parseVarIndexes(df));
         return IntStream.range(0, df.varCount()).filter(i -> !indexes.contains(i)).boxed().map(i -> df.var(i).name()).collect(Collectors.toList());
+    }
+}
+
+class VRangeByPredName implements VRange {
+
+    private final SPredicate<String> predicate;
+
+    VRangeByPredName(SPredicate<String> predicate) {
+        this.predicate = predicate;
+    }
+
+    @Override
+    public List<Integer> parseVarIndexes(Frame df) {
+        return IntStream.range(0, df.varCount())
+                .filter(i -> predicate.test(df.var(i).name()))
+                .boxed()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> parseVarNames(Frame df) {
+        return df.varStream().map(Var::name)
+                .filter(predicate::test)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> parseInverseVarNames(Frame df) {
+        return df.varStream().map(Var::name)
+                .filter(name -> !predicate.test(name))
+                .collect(Collectors.toList());
     }
 }

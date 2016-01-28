@@ -24,10 +24,8 @@
 package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
-import rapaio.data.VarRange;
+import rapaio.data.VRange;
 import rapaio.data.filter.FFilter;
-
-import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
@@ -35,50 +33,52 @@ import java.util.List;
 public abstract class FFAbstract implements FFilter {
 
     private static final long serialVersionUID = 5619103016781092137L;
-    protected final String[] varNames;
+    protected final VRange vRange;
+    protected String[] varNames;
 
     public FFAbstract(String... varNames) {
-        this.varNames = varNames;
+        this(VRange.of(varNames));
     }
 
-    protected List<String> parse(Frame df, String... varNames) {
-        return new VarRange(varNames).parseVarNames(df);
+    public FFAbstract(VRange vRange) {
+        this.vRange = vRange;
     }
 
-    protected void checkEmptyVars(Frame df, String[] varNames) {
-        List<String> names = parse(df, varNames);
-        if (names != null && names.size() > 0) {
+    protected String[] parse(Frame df) {
+        varNames = vRange.parseVarNames(df).stream().toArray(String[]::new);
+        return varNames;
+    }
+
+    protected void checkEmptyVars(Frame df) {
+        if (varNames != null && varNames.length > 0) {
             throw new IllegalArgumentException("Filter operation accepts no input variables");
         }
     }
 
-    protected void checkSingleVar(Frame df, String[] varNames) {
-        List<String> names = parse(df, varNames);
-        if (names == null) {
+    protected void checkSingleVar(Frame df) {
+        if (varNames == null) {
             throw new IllegalArgumentException("List of variables must not be empty");
         }
-        if (names.size() != 1) {
+        if (varNames.length != 1) {
             throw new IllegalArgumentException("Filter operation accepts a single input variable");
         }
     }
 
-    protected void checkFixedVars(int count, Frame df, String[] varNames) {
-        List<String> names = parse(df, varNames);
+    protected void checkFixedVars(int count, Frame df) {
         if (count <= 0) {
-            checkEmptyVars(df, varNames);
+            checkEmptyVars(df);
             return;
         }
-        if (names == null || names.size() != count) {
+        if (varNames == null || varNames.length != count) {
             throw new IllegalArgumentException("Filter operation requires " + count + " input variables");
         }
     }
 
-    protected void checkRangeVars(int min, int max, Frame df, String... varNames) {
-        List<String> names = parse(df, varNames);
+    protected void checkRangeVars(int min, int max, Frame df) {
         if (max <= 0) {
-            checkEmptyVars(df, varNames);
+            checkEmptyVars(df);
         }
-        if (names == null || names.size() < min || names.size() > max) {
+        if (varNames == null || varNames.length < min || varNames.length > max) {
             throw new IllegalArgumentException("Filter operation requires between " + min + " and " + max + " input variables");
         }
     }

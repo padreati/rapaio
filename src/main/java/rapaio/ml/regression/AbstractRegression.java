@@ -116,7 +116,7 @@ public abstract class AbstractRegression implements Regression {
         }
 
         Frame result = df;
-        List<String> targets = new VarRange(targetVarNames).parseVarNames(result);
+        List<String> targets = VRange.of(targetVarNames).parseVarNames(result);
         this.targetNames = targets.stream().toArray(String[]::new);
         this.targetTypes = targets.stream().map(name -> result.var(name).type()).toArray(VarType[]::new);
 

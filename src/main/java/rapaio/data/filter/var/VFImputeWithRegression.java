@@ -25,8 +25,8 @@ package rapaio.data.filter.var;
 
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
+import rapaio.data.VRange;
 import rapaio.data.Var;
-import rapaio.data.VarRange;
 import rapaio.ml.regression.Regression;
 
 /**
@@ -37,10 +37,10 @@ public class VFImputeWithRegression extends VFAbstract {
     private static final long serialVersionUID = -2841651242636043825L;
 
     public Regression model;
-    public VarRange inputRange;
+    public VRange inputRange;
     public String target;
 
-    public VFImputeWithRegression(Regression model, VarRange inputRange, String target) {
+    public VFImputeWithRegression(Regression model, VRange inputRange, String target) {
         this.model = model;
         this.inputRange = inputRange;
         this.target = target;

@@ -24,11 +24,12 @@
 package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
+import rapaio.data.VRange;
 import rapaio.data.Var;
-import rapaio.data.VarRange;
 
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/22/16.
@@ -38,27 +39,31 @@ public class FFImputeFill extends FFAbstract {
     private static final long serialVersionUID = 281130325474491898L;
     private final double fill;
 
-    public FFImputeFill(double fill, String...varNames) {
-        super(varNames);
+    public FFImputeFill(double fill, String... varNames) {
+        this(fill, VRange.of(varNames));
+    }
+
+    public FFImputeFill(double fill, VRange vRange) {
+        super(vRange);
         this.fill = fill;
     }
 
     @Override
     public void fit(Frame df) {
-
+        parse(df);
     }
 
     @Override
     public Frame apply(Frame df) {
-        Set<String> names = new HashSet<>(new VarRange(varNames).parseVarNames(df));
+        Set<String> names = Arrays.stream(varNames).collect(Collectors.toSet());
 
-        for(Var var : df.varList()) {
-            if(!var.type().isNumeric())
+        for (Var var : df.varList()) {
+            if (!var.type().isNumeric())
                 continue;
-            if(!names.contains(var.name()))
+            if (!names.contains(var.name()))
                 continue;
             for (int i = 0; i < var.rowCount(); i++) {
-                if(var.missing(i))
+                if (var.missing(i))
                     var.setValue(i, fill);
             }
         }

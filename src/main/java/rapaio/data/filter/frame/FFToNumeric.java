@@ -25,11 +25,14 @@ package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
+import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFToNumeric;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Convert to numeric values all the selected variables which are nominal.
@@ -40,19 +43,22 @@ import java.util.Set;
 @Deprecated
 public class FFToNumeric extends FFAbstract {
 
-    public FFToNumeric(String... varNames) {
-        super(varNames);
+    private static final long serialVersionUID = -6745637493367588453L;
+
+    public FFToNumeric(VRange vRange) {
+        super(vRange);
     }
 
     @Override
     public void fit(Frame df) {
+        parse(df);
     }
 
     @Override
     public Frame apply(Frame df) {
-        checkRangeVars(1, df.rowCount(), df, varNames);
+        checkRangeVars(1, df.rowCount(), df);
 
-        Set<String> nameSet = new HashSet<>(parse(df, varNames));
+        Set<String> nameSet = Arrays.stream(varNames).collect(Collectors.toSet());
         Var[] vars = new Var[df.varCount()];
         for (int i = 0; i < vars.length; i++) {
             if (nameSet.contains(df.var(i).name())) {

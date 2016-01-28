@@ -24,7 +24,7 @@
 package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
-import rapaio.data.VarRange;
+import rapaio.data.VRange;
 
 import java.util.List;
 
@@ -36,18 +36,21 @@ public class FFRemoveVars extends FFAbstract {
     private static final long serialVersionUID = -932131127278719356L;
 
     public FFRemoveVars(String... varNames) {
-        super(varNames);
+        super(VRange.of(varNames));
+    }
+
+    public FFRemoveVars(VRange vRange) {
+        super(vRange);
     }
 
     @Override
     public void fit(Frame df) {
+        parse(df);
     }
 
     @Override
     public Frame apply(Frame df) {
-        checkRangeVars(0, df.varCount() - 1, df, varNames);
-
-        List<String> names = parse(df, varNames);
-        return df.removeVars(new VarRange(names.toArray(new String[names.size()])));
+        checkRangeVars(0, df.varCount() - 1, df);
+        return df.removeVars(vRange);
     }
 }

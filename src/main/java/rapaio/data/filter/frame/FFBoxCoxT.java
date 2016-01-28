@@ -24,9 +24,8 @@
 package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
+import rapaio.data.VRange;
 import rapaio.data.filter.var.VFTransformBoxCox;
-
-import java.util.List;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
@@ -34,25 +33,36 @@ import java.util.List;
 @Deprecated
 public class FFBoxCoxT extends FFAbstract {
 
+    private static final long serialVersionUID = 1804199711139024129L;
+
     private final VFTransformBoxCox bct;
 
     public FFBoxCoxT(double lambda, String... varNames) {
-        this(lambda, 0, varNames);
+        this(lambda, 0, VRange.of(varNames));
+    }
+
+    public FFBoxCoxT(double lambda, VRange vRange) {
+        this(lambda, 0, vRange);
     }
 
     public FFBoxCoxT(double lambda, double shift, String... varNames) {
-        super(varNames);
+        super(VRange.of(varNames));
+        this.bct = new VFTransformBoxCox(lambda, shift);
+    }
+
+    public FFBoxCoxT(double lambda, double shift, VRange vRange) {
+        super(vRange);
         this.bct = new VFTransformBoxCox(lambda, shift);
     }
 
     @Override
     public void fit(Frame df) {
-        checkRangeVars(1, df.varCount(), df, varNames);
+        checkRangeVars(1, df.varCount(), df);
     }
 
     @Override
     public Frame apply(Frame df) {
-        List<String> names = parse(df, varNames);
+        String[] names = parse(df);
         for (String name : names) {
             bct.fitApply(df.var(name));
         }

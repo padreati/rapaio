@@ -126,7 +126,7 @@ public interface Frame extends Serializable, Printable {
      * @param range given variable range
      * @return new frame with only given variables
      */
-    Frame mapVars(VarRange range);
+    Frame mapVars(VRange range);
 
     /**
      * Builds a new frame which has only the variables specified in the variable range string
@@ -135,11 +135,11 @@ public interface Frame extends Serializable, Printable {
      * @return new frame with only the given variables
      */
     default Frame mapVars(String... varRange) {
-        return mapVars(new VarRange(varRange));
+        return mapVars(VRange.of(varRange));
     }
 
     default Frame mapVars(List<String> varRange) {
-        return mapVars(new VarRange(varRange.toArray(new String[varRange.size()])));
+        return mapVars(VRange.of(varRange.toArray(new String[varRange.size()])));
     }
 
     /**
@@ -148,15 +148,19 @@ public interface Frame extends Serializable, Printable {
      * @param range given variable range which will be deleted
      * @return new frame with the non-deleted variables
      */
-    default Frame removeVars(VarRange range) {
+    default Frame removeVars(VRange range) {
         Set<String> remove = new HashSet<>(range.parseVarNames(this));
+        if(remove.isEmpty())
+            return this;
+        if(remove.size() == this.varCount())
+            return SolidFrame.wrapOf();
         int[] retain = new int[varNames().length - remove.size()];
         int pos = 0;
         for (String varName : varNames()) {
             if (remove.contains(varName)) continue;
             retain[pos++] = varIndex(varName);
         }
-        return mapVars(new VarRange(retain));
+        return mapVars(VRange.of(retain));
     }
 
     /**
@@ -166,14 +170,14 @@ public interface Frame extends Serializable, Printable {
      * @return new frame with the non-deleted variables
      */
     default Frame removeVars(String... varRange) {
-        return removeVars(new VarRange(varRange));
+        return removeVars(VRange.of(varRange));
     }
 
     /**
      * Builds a new frame with all the variables except ones in the given var indexes
      */
     default Frame removeVars(int... varIndexes) {
-        return removeVars(new VarRange(varIndexes));
+        return removeVars(VRange.of(varIndexes));
     }
 
     /**

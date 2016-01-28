@@ -25,10 +25,8 @@ package rapaio.data.filter.frame;
 
 import rapaio.data.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Replaces specified columns in ColRange with numeric one hot
@@ -47,18 +45,23 @@ public class FFOneHotEncoding extends FFAbstract {
 
     private static final long serialVersionUID = 4893532203594639069L;
 
-    public FFOneHotEncoding(String... varNames) {
-        super(varNames);
+    public FFOneHotEncoding(String...varNames) {
+        super(VRange.of(varNames));
+    }
+
+    public FFOneHotEncoding(VRange vRange) {
+        super(vRange);
     }
 
     @Override
     public void fit(Frame df) {
+        parse(df);
     }
 
     public Frame apply(Frame df) {
-        checkRangeVars(1, df.varCount(), df, varNames);
+        checkRangeVars(1, df.varCount(), df);
 
-        Set<String> nameSet = new HashSet<>(new VarRange(varNames).parseVarNames(df));
+        Set<String> nameSet = Arrays.stream(varNames).collect(Collectors.toSet());
         List<Var> vars = new ArrayList<>();
 
         for (String varName : df.varNames()) {

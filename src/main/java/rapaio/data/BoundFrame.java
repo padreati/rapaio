@@ -216,7 +216,7 @@ public class BoundFrame extends AbstractFrame {
     }
 
     @Override
-    public Frame mapVars(VarRange range) {
+    public Frame mapVars(VRange range) {
         List<String> parseVarNames = range.parseVarNames(this);
         String[] _names = new String[parseVarNames.size()];
         List<Var> _vars = new ArrayList<>();

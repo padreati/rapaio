@@ -196,7 +196,7 @@ public class LDA implements Printable {
 
     private void validate(Frame df, String... targetVars) {
 
-        List<String> targetNames = new VarRange(targetVars).parseVarNames(df);
+        List<String> targetNames = VRange.of(targetVars).parseVarNames(df);
         if (targetNames.isEmpty() || targetNames.size() > 1)
             throw new IllegalArgumentException("LDA needs one target var");
         targetName = targetNames.get(0);

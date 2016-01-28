@@ -85,11 +85,11 @@ public class MappedFrame extends AbstractFrame {
     }
 
     public static MappedFrame newByRow(Frame df, Mapping mapping, String varRange) {
-        return MappedFrame.newByRow(df, mapping, new VarRange(varRange));
+        return MappedFrame.newByRow(df, mapping, VRange.of(varRange));
     }
 
-    public static MappedFrame newByRow(Frame df, Mapping mapping, VarRange varRange) {
-        return new MappedFrame(df, mapping, varRange.parseVarNames(df));
+    public static MappedFrame newByRow(Frame df, Mapping mapping, VRange vRange) {
+        return new MappedFrame(df, mapping, vRange.parseVarNames(df));
     }
 
     @Override
@@ -144,7 +144,7 @@ public class MappedFrame extends AbstractFrame {
     }
 
     @Override
-    public Frame mapVars(VarRange range) {
+    public Frame mapVars(VRange range) {
         return MappedFrame.newByRow(this, Mapping.range(0, this.rowCount()), range);
     }
 

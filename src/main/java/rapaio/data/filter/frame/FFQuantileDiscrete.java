@@ -25,6 +25,7 @@ package rapaio.data.filter.frame;
 
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
+import rapaio.data.VRange;
 import rapaio.data.Var;
 import rapaio.data.filter.var.VFQuantileDiscrete;
 
@@ -41,16 +42,17 @@ public class FFQuantileDiscrete extends FFAbstract {
     Map<String, VFQuantileDiscrete> filters = new HashMap<>();
     int k;
 
-    public FFQuantileDiscrete(int k, String... varNames) {
-        super(varNames);
+    public FFQuantileDiscrete(int k, VRange vRange) {
+        super(vRange);
         this.k = k;
     }
 
     @Override
     public void fit(Frame df) {
+        parse(df);
 
         filters.clear();
-        for (String varName : parse(df, varNames)) {
+        for (String varName : varNames) {
             VFQuantileDiscrete filter = new VFQuantileDiscrete(k);
             filter.fit(df.var(varName));
             filters.put(varName, filter);

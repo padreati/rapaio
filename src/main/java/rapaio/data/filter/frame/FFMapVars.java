@@ -24,18 +24,19 @@
 package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
+import rapaio.data.VRange;
 
 /**
  * Filter to map vars from a data frame.
- *
+ * <p>
  * Created by padreati on 1/15/16.
  */
 public class FFMapVars extends FFAbstract {
 
     private static final long serialVersionUID = 5540246008233767364L;
 
-    public FFMapVars(String... varNames) {
-        super(varNames);
+    public FFMapVars(VRange vRange) {
+        super(vRange);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class FFMapVars extends FFAbstract {
 
     @Override
     public Frame apply(Frame df) {
-        checkRangeVars(0, df.varCount() - 1, df, varNames);
-        return df.mapVars(parse(df, varNames));
+        checkRangeVars(0, df.varCount() - 1, df);
+        return df.mapVars(parse(df));
     }
 }

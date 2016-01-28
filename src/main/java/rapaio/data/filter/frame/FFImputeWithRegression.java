@@ -25,8 +25,8 @@ package rapaio.data.filter.frame;
 
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
+import rapaio.data.VRange;
 import rapaio.data.Var;
-import rapaio.data.VarRange;
 import rapaio.data.filter.var.VFImputeWithRegression;
 import rapaio.ml.regression.Regression;
 
@@ -41,12 +41,16 @@ public class FFImputeWithRegression extends FFAbstract {
     private static final long serialVersionUID = -2447577449010618416L;
 
     Regression model;
-    VarRange inputRange;
+    VRange inputRange;
 
     Map<String, VFImputeWithRegression> filters = new HashMap<>();
 
-    public FFImputeWithRegression(Regression model, VarRange inputRange, String... varNames) {
-        super(varNames);
+    public FFImputeWithRegression(Regression model, VRange inputRange, String...varNames) {
+        this(model, inputRange, VRange.of(varNames));
+    }
+
+    public FFImputeWithRegression(Regression model, VRange inputRange, VRange vRange) {
+        super(vRange);
         this.inputRange = inputRange;
         this.model = model;
     }
@@ -55,7 +59,7 @@ public class FFImputeWithRegression extends FFAbstract {
     public void fit(Frame df) {
 
         filters.clear();
-        for (String varName : parse(df, varNames)) {
+        for (String varName : parse(df)) {
             VFImputeWithRegression filter = new VFImputeWithRegression(model, inputRange, varName);
             filter.fit(df.varStream().toArray(Var[]::new));
             filters.put(varName, filter);

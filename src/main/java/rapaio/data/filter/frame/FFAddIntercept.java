@@ -23,10 +23,7 @@
 
 package rapaio.data.filter.frame;
 
-import rapaio.data.BoundFrame;
-import rapaio.data.Frame;
-import rapaio.data.Numeric;
-import rapaio.data.Var;
+import rapaio.data.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,16 +44,15 @@ public class FFAddIntercept extends FFAbstract {
     public static String INTERCEPT = "(Intercept)";
 
     public FFAddIntercept() {
-        super();
+        super(VRange.all());
     }
 
     @Override
     public void fit(Frame df) {
-
     }
 
     public Frame apply(Frame df) {
-        List<String> names = parse(df, "all");
+        List<String> names = Arrays.asList(parse(df));
         if (names.contains(INTERCEPT)) {
             return df;
         }

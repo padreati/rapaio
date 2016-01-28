@@ -24,6 +24,7 @@
 package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
+import rapaio.data.VRange;
 import rapaio.data.VarType;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class FFRetainTypes extends FFAbstract {
     private final VarType[] types;
 
     public FFRetainTypes(VarType... types) {
-        super();
+        super(VRange.all());
         if (types == null || types.length == 0)
             throw new IllegalArgumentException("Must provide at least a type to retain");
         this.types = types;
@@ -50,6 +51,7 @@ public class FFRetainTypes extends FFAbstract {
 
     @Override
     public void fit(Frame df) {
+        parse(df);
     }
 
     @Override

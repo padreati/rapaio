@@ -33,7 +33,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
-public class VarRangeTest {
+public class VRangeTest {
 
     @Test
     public void testSmoke() {
@@ -44,8 +44,8 @@ public class VarRangeTest {
                 Numeric.empty().withName("d")
         );
 
-        List<Integer> indexes = new VarRange(0, 2).parseVarIndexes(df);
-        List<String> names = new VarRange(0, 2).parseVarNames(df);
+        List<Integer> indexes = VRange.of(0, 2).parseVarIndexes(df);
+        List<String> names = VRange.of(0, 2).parseVarNames(df);
 
         assertEquals(2, indexes.size());
         assertEquals(0, (int)indexes.get(0));

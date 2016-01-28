@@ -44,7 +44,7 @@ public class FrameTest {
         assertEquals(1, df1.varCount());
         assertEquals("y", df1.varNames()[0]);
 
-        df1 = df.removeVars(new VarRange("y"));
+        df1 = df.removeVars(VRange.of("y"));
         assertEquals(2, df1.varCount());
         assertEquals("x", df1.varNames()[0]);
         assertEquals("z", df1.varNames()[1]);

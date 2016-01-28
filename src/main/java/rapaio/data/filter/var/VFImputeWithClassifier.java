@@ -25,8 +25,8 @@ package rapaio.data.filter.var;
 
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
+import rapaio.data.VRange;
 import rapaio.data.Var;
-import rapaio.data.VarRange;
 import rapaio.ml.classifier.Classifier;
 
 /**
@@ -37,10 +37,10 @@ public class VFImputeWithClassifier extends VFAbstract {
     private static final long serialVersionUID = -2841651242636043825L;
 
     public Classifier model;
-    public VarRange inputRange;
+    public VRange inputRange;
     public String target;
 
-    public VFImputeWithClassifier(Classifier model, VarRange inputRange, String target) {
+    public VFImputeWithClassifier(Classifier model, VRange inputRange, String target) {
         this.model = model;
         this.inputRange = inputRange;
         this.target = target;

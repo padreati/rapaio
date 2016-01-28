@@ -24,6 +24,7 @@
 package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
+import rapaio.data.VRange;
 
 import java.util.List;
 import java.util.function.Function;
@@ -34,23 +35,25 @@ import java.util.function.Function;
 @Deprecated
 public class FFUpdateValue extends FFAbstract {
 
+    private static final long serialVersionUID = 3982915877968295381L;
+
     private final Function<Double, Double> f;
 
-    public FFUpdateValue(Function<Double, Double> f, String... varNames) {
-        super(varNames);
+    public FFUpdateValue(Function<Double, Double> f, VRange vRange) {
+        super(vRange);
         this.f = f;
     }
 
     @Override
     public void fit(Frame df) {
-        checkRangeVars(1, df.varCount(), df, varNames);
+        parse(df);
+        checkRangeVars(1, df.varCount(), df);
     }
 
     @Override
     public Frame apply(Frame df) {
-        List<String> names = parse(df, varNames);
         for (int i = 0; i < df.rowCount(); i++) {
-            for (String name : names) {
+            for (String name : varNames) {
                 df.setValue(i, name, f.apply(df.value(i, name)));
             }
         }

@@ -24,8 +24,8 @@
 package rapaio.ml.classifier.meta;
 
 import rapaio.data.Frame;
+import rapaio.data.VRange;
 import rapaio.data.Var;
-import rapaio.data.VarRange;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
@@ -121,7 +121,7 @@ public class CStepwiseSelection extends AbstractClassifier {
     @Override
     protected boolean coreTrain(Frame df, Var weights) {
 
-        selection = new VarRange(startSelection).parseVarNames(df);
+        selection = VRange.of(startSelection).parseVarNames(df);
         Frame testFrame = test != null ? test : df;
 
         List<String> bestSelection = new ArrayList<>(selection);

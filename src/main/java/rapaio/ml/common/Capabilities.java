@@ -24,8 +24,8 @@
 package rapaio.ml.common;
 
 import rapaio.data.Frame;
+import rapaio.data.VRange;
 import rapaio.data.Var;
-import rapaio.data.VarRange;
 import rapaio.data.VarType;
 import rapaio.printer.Printable;
 
@@ -130,7 +130,7 @@ public class Capabilities implements Printable {
     }
 
     private void checkTargetCount(Frame df, Var weights, String... targetVarNames) {
-        List<String> varList = new VarRange(targetVarNames).parseVarNames(df);
+        List<String> varList = VRange.of(targetVarNames).parseVarNames(df);
         int size = varList.size();
         if (size < minTargetCount) {
             throw new IllegalArgumentException("Algorithm requires more than " + minInputCount + " target variables.");
@@ -141,7 +141,7 @@ public class Capabilities implements Printable {
     }
 
     private void checkTargetTypes(Frame df, Var weights, String... targetVarNames) {
-        List<String> varList = new VarRange(targetVarNames).parseVarNames(df);
+        List<String> varList = VRange.of(targetVarNames).parseVarNames(df);
         for (String varName : varList) {
             if (!targetTypes.contains(df.var(varName).type())) {
                 throw new IllegalArgumentException("Algorithm does not allow " + df.var(varName).type().name() + " as target type vor var: " + varName);
@@ -152,7 +152,7 @@ public class Capabilities implements Printable {
     private void checkMissingTargetValues(Frame df, Var weights, String... targetVarNames) {
         if (allowMissingTargetValues)
             return;
-        List<String> varList = new VarRange(targetVarNames).parseVarNames(df);
+        List<String> varList = VRange.of(targetVarNames).parseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String targetName : varList) {
             if (df.var(targetName).stream().complete().count() != df.var(targetName).rowCount()) {
@@ -167,7 +167,7 @@ public class Capabilities implements Printable {
     }
 
     private void checkInputCount(Frame df, Var weights, String... targetVars) {
-        List<String> inputNames = new VarRange(targetVars).parseInverseVarNames(df);
+        List<String> inputNames = VRange.of(targetVars).parseInverseVarNames(df);
         int size = inputNames.size();
         if (size < minInputCount) {
             throw new IllegalArgumentException("Algorithm requires more than " + minInputCount + " input variables.");
@@ -178,7 +178,7 @@ public class Capabilities implements Printable {
     }
 
     void checkInputTypes(Frame df, Var weights, String... targetVars) {
-        List<String> inputNames = new VarRange(targetVars).parseInverseVarNames(df);
+        List<String> inputNames = VRange.of(targetVars).parseInverseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String inputName : inputNames) {
             Var inputVar = df.var(inputName);
@@ -197,7 +197,7 @@ public class Capabilities implements Printable {
     private void checkMissingInputValues(Frame df, Var weights, String... targetVarNames) {
         if (allowMissingInputValues)
             return;
-        List<String> varList = new VarRange(targetVarNames).parseInverseVarNames(df);
+        List<String> varList = VRange.of(targetVarNames).parseInverseVarNames(df);
         StringBuilder sb = new StringBuilder();
         for (String inputName : varList) {
             if (df.var(inputName).stream().complete().count() != df.var(inputName).rowCount()) {

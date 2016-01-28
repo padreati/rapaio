@@ -135,7 +135,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
     protected boolean coreTrain(Frame df, Var weights) {
 
         Var y = df.var(firstTargetName());
-        Frame x = df.removeVars(new VarRange(firstTargetName()));
+        Frame x = df.removeVars(VRange.of(firstTargetName()));
 
         initRegression.train(df, firstTargetName());
         RFit initPred = initRegression.fit(df, false);
