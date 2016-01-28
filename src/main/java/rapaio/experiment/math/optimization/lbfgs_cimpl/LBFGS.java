@@ -21,17 +21,10 @@
  *
  */
 
-package rapaio.ws;
+package rapaio.experiment.math.optimization.lbfgs_cimpl;
 
 /**
- * @author <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
  */
-@Deprecated
-public interface WorkspaceListener {
-
-    void onNewWorkspaceData();
-
-    void onLoadWorkspaceData(String file);
-
-    void onWriteWorkspaceData(String file);
+public class LBFGS {
 }

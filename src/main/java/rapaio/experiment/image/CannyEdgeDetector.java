@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.image;
+package rapaio.experiment.image;
 
 import java.awt.image.BufferedImage;
 import java.util.Arrays;

@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.math.optimization;
+package rapaio.experiment.math.optimization;
 
 import rapaio.math.linear.RV;
 import rapaio.util.Pair;

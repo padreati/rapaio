@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.selection;
+package rapaio.experiment.ml.selection;
 
 import rapaio.core.CoreTools;
 import rapaio.data.Frame;

@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.math.optimization.lbfgs;
+package rapaio.experiment.math.optimization.lbfgs;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.

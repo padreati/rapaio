@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.math.optimization.lbfgs;
+package rapaio.experiment.math.optimization.lbfgs;
 
 /**
  * This class implements an algorithm for multi-dimensional line search.

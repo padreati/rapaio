@@ -27,7 +27,7 @@ import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.math.optimization.IRLSOptimizer;
+import rapaio.experiment.math.optimization.IRLSOptimizer;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.common.Capabilities;

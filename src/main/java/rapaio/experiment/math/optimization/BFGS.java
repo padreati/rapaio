@@ -21,14 +21,23 @@
  *
  */
 
-package rapaio.ws;
+package rapaio.experiment.math.optimization;
+
+import rapaio.math.linear.Linear;
+import rapaio.math.linear.RM;
 
 /**
- * @author Aurelian Tutuianu
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/26/15.
  */
+public class BFGS {
+
+    public static void main(String[] args) {
 
 
-@Deprecated
-public interface Storable {
+        RM I = RM.identity(10);
 
+        I.printSummary();
+
+        Linear.chol2inv(I).printSummary();
+    }
 }
