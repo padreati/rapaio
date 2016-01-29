@@ -60,8 +60,9 @@ public abstract class AbstractRegression implements Regression {
 
     @Override
     public Regression withInputFilters(FFilter... filters) {
-        inputFilters.clear();
-        Collections.addAll(inputFilters, filters);
+        inputFilters = new ArrayList<>();
+        for (FFilter filter : inputFilters)
+            inputFilters.add(filter.newInstance());
         return this;
     }
 

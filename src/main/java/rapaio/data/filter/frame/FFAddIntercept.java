@@ -25,9 +25,8 @@ package rapaio.data.filter.frame;
 
 import rapaio.data.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Adds an intercept column: a numeric column with all values equal with 1.0,
@@ -37,7 +36,7 @@ import java.util.List;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class FFAddIntercept extends FFAbstract {
+public class FFAddIntercept extends FFDefault {
 
     private static final long serialVersionUID = -7268280264499694765L;
 
@@ -48,17 +47,20 @@ public class FFAddIntercept extends FFAbstract {
     }
 
     @Override
-    public void fit(Frame df) {
+    public FFAddIntercept newInstance() {
+        return new FFAddIntercept();
+    }
+
+    @Override
+    public void train(Frame df) {
     }
 
     public Frame apply(Frame df) {
-        List<String> names = Arrays.asList(parse(df));
+        List<String> names = df.varStream().map(Var::name).collect(Collectors.toList());
         if (names.contains(INTERCEPT)) {
             return df;
         }
-        List<Var> vars = new ArrayList<>();
-        vars.add(Numeric.fill(df.rowCount(), 1.0).withName(INTERCEPT));
-        Arrays.stream(df.varNames()).forEach(varName -> vars.add(df.var(varName)));
-        return BoundFrame.newByVars(vars.toArray(new Var[vars.size()]));
+        Numeric intercept = Numeric.fill(df.rowCount(), 1.0).withName(INTERCEPT);
+        return SolidFrame.wrapOf(intercept).bindVars(df);
     }
 }

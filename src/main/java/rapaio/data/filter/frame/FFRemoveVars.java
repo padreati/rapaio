@@ -26,12 +26,10 @@ package rapaio.data.filter.frame;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 
-import java.util.List;
-
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-public class FFRemoveVars extends FFAbstract {
+public class FFRemoveVars extends FFDefault {
 
     private static final long serialVersionUID = -932131127278719356L;
 
@@ -44,7 +42,12 @@ public class FFRemoveVars extends FFAbstract {
     }
 
     @Override
-    public void fit(Frame df) {
+    public FFRemoveVars newInstance() {
+        return new FFRemoveVars(vRange);
+    }
+
+    @Override
+    public void train(Frame df) {
         parse(df);
     }
 

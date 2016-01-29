@@ -124,11 +124,7 @@ class VRangeByName implements VRange {
             return colIndexes;
         }
         String[] ranges = rawColumnRange.split(DELIMITER);
-
-        HashSet<String> colNames = new HashSet<>();
-        for (int i = 0; i < df.varNames().length; i++) {
-            colNames.add(df.varNames()[i]);
-        }
+        Set<String> colNames = df.varStream().map(Var::name).collect(Collectors.toSet());
 
         for (String range : ranges) {
             int start, end;
@@ -162,7 +158,6 @@ class VRangeByName implements VRange {
                 colIndexes.add(j);
             }
         }
-//        Collections.sort(colIndexes);
         return colIndexes;
     }
 

@@ -23,19 +23,30 @@
 
 package rapaio.data.filter.frame;
 
-import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
-import rapaio.data.Var;
 import rapaio.data.filter.var.VFStandardize;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Transform numeric variables into standardized values.
+ *
+ * The transformation is f(x) = (x-mu)/sd
+ *
+ * where
+ *
+ * mu is the mean of the values
+ * sd is the standard deviation
+ *
+ * Take care that the filter works, as usual, on the same variables, thus if you want
+ * to not alter the original vector you have to pass to the filter a solid copy
+ * of the original vector.
+ *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
-public class FFStandardize extends FFAbstract {
+public class FFStandardize extends FFDefault {
 
     private static final long serialVersionUID = -2447577449010618416L;
 
@@ -50,8 +61,12 @@ public class FFStandardize extends FFAbstract {
     }
 
     @Override
-    public void fit(Frame df) {
+    public FFStandardize newInstance() {
+        return new FFStandardize(vRange);
+    }
 
+    @Override
+    public void train(Frame df) {
         parse(df);
         filters.clear();
         for (String varName : varNames) {
@@ -63,16 +78,11 @@ public class FFStandardize extends FFAbstract {
 
     @Override
     public Frame apply(Frame df) {
-
-        Var[] vars = new Var[df.varCount()];
-        int pos = 0;
-        for (String varName : df.varNames()) {
+       for (String varName : df.varNames()) {
             if (filters.containsKey(varName)) {
-                vars[pos++] = filters.get(varName).apply(df.var(varName));
-            } else {
-                vars[pos++] = df.var(varName);
+                filters.get(varName).apply(df.var(varName));
             }
         }
-        return BoundFrame.newByVars(vars);
+        return df;
     }
 }

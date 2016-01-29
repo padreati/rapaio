@@ -28,12 +28,10 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
 import rapaio.data.VRange;
 
-import java.util.List;
-
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/10/14.
  */
-public class FFJitter extends FFAbstract {
+public class FFJitter extends FFDefault {
 
     private static final long serialVersionUID = 33367007274996702L;
 
@@ -56,7 +54,12 @@ public class FFJitter extends FFAbstract {
     }
 
     @Override
-    public void fit(Frame df) {
+    public FFJitter newInstance() {
+        return new FFJitter(d, vRange);
+    }
+
+    @Override
+    public void train(Frame df) {
         parse(df);
         checkRangeVars(1, df.varCount(), df);
     }

@@ -109,7 +109,7 @@ public class BinarySMOTest {
     public void testLinear() throws IOException, URISyntaxException {
 
         Frame df = Datasets.loadSonar();
-        df.applyFilters(new FFStandardize(VRange.all())).printSummary();
+        df.solidCopy().applyFilters(new FFStandardize(VRange.all())).printSummary();
 
         String target = "Class";
 
@@ -120,7 +120,7 @@ public class BinarySMOTest {
 
         RandomSource.setSeed(1);
         double score = CEvaluation.cv(df, target, smo1, 10);
-        assertEquals(0.759762, score, 1e-7);
+        assertEquals(0.75, score, 1e-7);
     }
 
     @Test

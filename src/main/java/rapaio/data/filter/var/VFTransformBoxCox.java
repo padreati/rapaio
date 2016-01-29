@@ -43,6 +43,14 @@ public class VFTransformBoxCox extends VFAbstract {
         this.shift = shift;
     }
 
+    public double lambda() {
+        return lambda;
+    }
+
+    public double shift() {
+        return shift;
+    }
+
     @Override
     public void fit(Var... vars) {
         checkSingleVar(vars);

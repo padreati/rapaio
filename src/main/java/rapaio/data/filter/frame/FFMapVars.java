@@ -31,7 +31,7 @@ import rapaio.data.VRange;
  * <p>
  * Created by padreati on 1/15/16.
  */
-public class FFMapVars extends FFAbstract {
+public class FFMapVars extends FFDefault {
 
     private static final long serialVersionUID = 5540246008233767364L;
 
@@ -40,12 +40,18 @@ public class FFMapVars extends FFAbstract {
     }
 
     @Override
-    public void fit(Frame df) {
+    public FFMapVars newInstance() {
+        return new FFMapVars(vRange);
+    }
+
+    @Override
+    public void train(Frame df) {
+        parse(df);
     }
 
     @Override
     public Frame apply(Frame df) {
         checkRangeVars(0, df.varCount() - 1, df);
-        return df.mapVars(parse(df));
+        return df.mapVars(varNames);
     }
 }

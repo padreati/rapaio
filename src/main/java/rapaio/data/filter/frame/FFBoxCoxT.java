@@ -30,8 +30,7 @@ import rapaio.data.filter.var.VFTransformBoxCox;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
  */
-@Deprecated
-public class FFBoxCoxT extends FFAbstract {
+public class FFBoxCoxT extends FFDefault {
 
     private static final long serialVersionUID = 1804199711139024129L;
 
@@ -56,7 +55,12 @@ public class FFBoxCoxT extends FFAbstract {
     }
 
     @Override
-    public void fit(Frame df) {
+    public FFBoxCoxT newInstance() {
+        return new FFBoxCoxT(bct.lambda(), bct.shift(), vRange);
+    }
+
+    @Override
+    public void train(Frame df) {
         checkRangeVars(1, df.varCount(), df);
     }
 

@@ -35,7 +35,7 @@ import java.util.Map;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
-public class FFQuantileDiscrete extends FFAbstract {
+public class FFQuantileDiscrete extends FFDefault {
 
     private static final long serialVersionUID = -2447577449010618416L;
 
@@ -48,7 +48,12 @@ public class FFQuantileDiscrete extends FFAbstract {
     }
 
     @Override
-    public void fit(Frame df) {
+    public FFQuantileDiscrete newInstance() {
+        return new FFQuantileDiscrete(k, vRange);
+    }
+
+    @Override
+    public void train(Frame df) {
         parse(df);
 
         filters.clear();

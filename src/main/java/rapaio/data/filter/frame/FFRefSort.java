@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-public class FFRefSort extends FFAbstract {
+public class FFRefSort extends FFDefault {
 
     private static final long serialVersionUID = 3579078253849199109L;
 
@@ -46,7 +46,12 @@ public class FFRefSort extends FFAbstract {
     }
 
     @Override
-    public void fit(Frame df) {
+    public FFRefSort newInstance() {
+        return new FFRefSort(aggregateComparator);
+    }
+
+    @Override
+    public void train(Frame df) {
     }
 
     @Override

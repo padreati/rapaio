@@ -24,7 +24,6 @@
 package rapaio.data.filter.frame;
 
 import rapaio.core.distributions.Normal;
-import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
@@ -39,7 +38,7 @@ import java.util.stream.IntStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/28/16.
  */
-public class FFRandomProjection extends FFAbstract {
+public class FFRandomProjection extends FFDefault {
 
     private static final long serialVersionUID = -2790372378136065870L;
 
@@ -58,7 +57,12 @@ public class FFRandomProjection extends FFAbstract {
     }
 
     @Override
-    public void fit(Frame df) {
+    public FFRandomProjection newInstance() {
+        return new FFRandomProjection(k, method, vRange);
+    }
+
+    @Override
+    public void train(Frame df) {
         parse(df);
 
         // build k random projections
@@ -79,7 +83,7 @@ public class FFRandomProjection extends FFAbstract {
         RM p = X.dot(rp);
 
         Frame non = df.removeVars(varNames);
-        Frame trans = SolidFrame.matrix(p, IntStream.range(1, k+1).boxed().map(i -> "RP_" + i).toArray(String[]::new));
+        Frame trans = SolidFrame.matrix(p, IntStream.range(1, k + 1).boxed().map(i -> "RP_" + i).toArray(String[]::new));
         return non.bindVars(trans);
     }
 

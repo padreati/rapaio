@@ -30,7 +30,6 @@ import rapaio.data.Var;
 import rapaio.data.filter.var.VFToNumeric;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,8 +39,7 @@ import java.util.stream.Collectors;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-@Deprecated
-public class FFToNumeric extends FFAbstract {
+public class FFToNumeric extends FFDefault {
 
     private static final long serialVersionUID = -6745637493367588453L;
 
@@ -50,7 +48,12 @@ public class FFToNumeric extends FFAbstract {
     }
 
     @Override
-    public void fit(Frame df) {
+    public FFToNumeric newInstance() {
+        return new FFToNumeric(vRange);
+    }
+
+    @Override
+    public void train(Frame df) {
         parse(df);
     }
 

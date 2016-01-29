@@ -25,15 +25,14 @@ package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
+import rapaio.data.filter.FFilter;
 
-import java.util.List;
 import java.util.function.Function;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
  */
-@Deprecated
-public class FFUpdateValue extends FFAbstract {
+public class FFUpdateValue extends FFDefault {
 
     private static final long serialVersionUID = 3982915877968295381L;
 
@@ -45,7 +44,12 @@ public class FFUpdateValue extends FFAbstract {
     }
 
     @Override
-    public void fit(Frame df) {
+    public FFilter newInstance() {
+        return new FFUpdateValue(f, vRange);
+    }
+
+    @Override
+    public void train(Frame df) {
         parse(df);
         checkRangeVars(1, df.varCount(), df);
     }

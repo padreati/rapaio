@@ -73,7 +73,9 @@ public abstract class AbstractClassifier implements Classifier {
 
     @Override
     public Classifier withInputFilters(List<FFilter> filters) {
-        inputFilters = filters;
+        inputFilters = new ArrayList<>();
+        for (FFilter filter : filters)
+            inputFilters.add(filter.newInstance());
         return this;
     }
 

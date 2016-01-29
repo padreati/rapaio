@@ -30,18 +30,28 @@ import rapaio.data.filter.FFilter;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public abstract class FFAbstract implements FFilter {
+public abstract class FFDefault implements FFilter {
 
     private static final long serialVersionUID = 5619103016781092137L;
     protected final VRange vRange;
     protected String[] varNames;
 
-    public FFAbstract(String... varNames) {
+    public FFDefault(String... varNames) {
         this(VRange.of(varNames));
     }
 
-    public FFAbstract(VRange vRange) {
+    public FFDefault(VRange vRange) {
         this.vRange = vRange;
+    }
+
+    @Override
+    public VRange vRange() {
+        return vRange;
+    }
+
+    @Override
+    public String[] varNames() {
+        return varNames;
     }
 
     protected String[] parse(Frame df) {
@@ -83,5 +93,8 @@ public abstract class FFAbstract implements FFilter {
         }
     }
 
+    public void train(Frame df) {
+        parse(df);
+    }
 
 }

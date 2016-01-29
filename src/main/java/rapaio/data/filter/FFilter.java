@@ -24,6 +24,7 @@
 package rapaio.data.filter;
 
 import rapaio.data.Frame;
+import rapaio.data.VRange;
 
 import java.io.Serializable;
 
@@ -32,12 +33,57 @@ import java.io.Serializable;
  */
 public interface FFilter extends Serializable {
 
-    void fit(Frame df);
+    /**
+     * @return the var range which describes the domain of this filter
+     */
+    VRange vRange();
 
+    /**
+     * @return an array with variable names which describes the domain of this filter
+     */
+    String[] varNames();
+
+    /**
+     * Builds a new filter from a data frame. Note that
+     * in this function a filter learns it's domain using var range
+     * fitted to df. This function handles also various artifacts
+     * required by a filter. Thus a filter after is trained can be applied
+     * multiple times on different data frames, using the same
+     * trained transformation.
+     *
+     * @param df given data frame
+     */
+    void train(Frame df);
+
+    /**
+     * Apply trained transformation to the given data frame.
+     * Whenever is possible the returned frame is the same as the original
+     * or a frame referenced by the original. This is done for performance
+     * and flexibility reasons. If you want to not alter the original frame
+     * you have to pass a solid copy of the original frame.
+     *
+     * @param df given data frame
+     * @return the transformed frame
+     */
     Frame apply(Frame df);
 
+    /**
+     * A chained call to train and apply methods.
+     *
+     * @param df given data frame
+     * @return transformed data frame
+     */
     default Frame filter(Frame df) {
-        fit(df);
+        train(df);
         return apply(df);
     }
+
+    /**
+     * Builds a new instance of the filter without
+     * trained artifacts but with the same parameters
+     * as the original filter.
+     *
+     * @return new filter with same parameters
+     */
+    FFilter newInstance();
 }

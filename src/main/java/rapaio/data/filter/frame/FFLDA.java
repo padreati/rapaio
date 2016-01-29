@@ -25,32 +25,34 @@ package rapaio.data.filter.frame;
 
 import rapaio.data.Frame;
 import rapaio.data.VRange;
-import rapaio.data.filter.FFilter;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.ml.analysis.LDA;
 
 import java.util.function.BiFunction;
 
-public class FFLDA implements FFilter {
+public class FFLDA extends FFDefault {
 
     private static final long serialVersionUID = 2797285371357486124L;
 
-    private final VRange targetVRange;
     BiFunction<RV, RM, Integer> kFun;
     private LDA lda;
 
-    public FFLDA(BiFunction<RV, RM, Integer> kFun, VRange targetVRange) {
+    public FFLDA(BiFunction<RV, RM, Integer> kFun, VRange vRange) {
+        super(vRange);
         this.kFun = kFun;
-        this.targetVRange = targetVRange;
     }
 
     @Override
-    public void fit(Frame df) {
-        String[] targetVars = targetVRange.parseVarNames(df).stream().toArray(String[]::new);
+    public FFLDA newInstance() {
+        return new FFLDA(kFun, vRange);
+    }
 
+    @Override
+    public void train(Frame df) {
+        parse(df);
         lda = new LDA();
-        lda.learn(df, targetVars);
+        lda.learn(df, varNames);
     }
 
     @Override

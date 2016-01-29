@@ -41,9 +41,11 @@ import java.util.stream.Collectors;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class FFOneHotEncoding extends FFAbstract {
+public class FFOneHotEncoding extends FFDefault {
 
     private static final long serialVersionUID = 4893532203594639069L;
+
+    private Map<String, String[]> levels;
 
     public FFOneHotEncoding(String...varNames) {
         super(VRange.of(varNames));
@@ -54,8 +56,22 @@ public class FFOneHotEncoding extends FFAbstract {
     }
 
     @Override
-    public void fit(Frame df) {
+    public FFOneHotEncoding newInstance() {
+        return new FFOneHotEncoding(vRange);
+    }
+
+    @Override
+    public void train(Frame df) {
         parse(df);
+
+        levels = new HashMap<>();
+        for (String varName : varNames) {
+            if (df.var(varName).type().isNominal()) {
+                // process one hot encoding
+                String[] dict = df.var(varName).levels();
+                levels.put(varName, dict);
+            }
+        }
     }
 
     public Frame apply(Frame df) {
@@ -65,9 +81,9 @@ public class FFOneHotEncoding extends FFAbstract {
         List<Var> vars = new ArrayList<>();
 
         for (String varName : df.varNames()) {
-            if (nameSet.contains(varName) && df.var(varName).type().isNominal()) {
+            if (levels.keySet().contains(varName)) {
                 // process one hot encoding
-                String[] dict = df.var(varName).levels();
+                String[] dict = levels.get(varName);
                 List<Var> oneHotVars = new ArrayList<>();
                 for (int i = 1; i < dict.length; i++) {
                     oneHotVars.add(Numeric.fill(df.rowCount()).withName(varName + "." + dict[i]));

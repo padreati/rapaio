@@ -37,7 +37,7 @@ import java.util.Map;
  *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
-public class FFImputeByClassifier extends FFAbstract {
+public class FFImputeWithClassifier extends FFDefault {
 
     private static final long serialVersionUID = -2447577449010618416L;
 
@@ -46,18 +46,23 @@ public class FFImputeByClassifier extends FFAbstract {
 
     Map<String, VFImputeWithClassifier> filters = new HashMap<>();
 
-    public FFImputeByClassifier(Classifier model, VRange inputRange, String...varNames) {
+    public FFImputeWithClassifier(Classifier model, VRange inputRange, String...varNames) {
         this(model, inputRange, VRange.of(varNames));
     }
 
-    public FFImputeByClassifier(Classifier model, VRange inputRange, VRange vRange) {
+    public FFImputeWithClassifier(Classifier model, VRange inputRange, VRange vRange) {
         super(vRange);
         this.inputRange = inputRange;
-        this.model = model;
+        this.model = model.newInstance();
     }
 
     @Override
-    public void fit(Frame df) {
+    public FFImputeWithClassifier newInstance() {
+        return new FFImputeWithClassifier(model, inputRange, vRange);
+    }
+
+    @Override
+    public void train(Frame df) {
 
         filters.clear();
         for (String varName : parse(df)) {

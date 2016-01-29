@@ -36,7 +36,7 @@ import java.util.Map;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
-public class FFImputeWithRegression extends FFAbstract {
+public class FFImputeWithRegression extends FFDefault {
 
     private static final long serialVersionUID = -2447577449010618416L;
 
@@ -52,14 +52,19 @@ public class FFImputeWithRegression extends FFAbstract {
     public FFImputeWithRegression(Regression model, VRange inputRange, VRange vRange) {
         super(vRange);
         this.inputRange = inputRange;
-        this.model = model;
+        this.model = model.newInstance();
     }
 
     @Override
-    public void fit(Frame df) {
+    public FFImputeWithRegression newInstance() {
+        return new FFImputeWithRegression(model, inputRange, vRange);
+    }
 
+    @Override
+    public void train(Frame df) {
+        parse(df);
         filters.clear();
-        for (String varName : parse(df)) {
+        for (String varName : varNames) {
             VFImputeWithRegression filter = new VFImputeWithRegression(model, inputRange, varName);
             filter.fit(df.varStream().toArray(Var[]::new));
             filters.put(varName, filter);
@@ -68,7 +73,6 @@ public class FFImputeWithRegression extends FFAbstract {
 
     @Override
     public Frame apply(Frame df) {
-
         Var[] vars = new Var[df.varCount()];
         int pos = 0;
         for (String varName : df.varNames()) {

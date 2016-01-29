@@ -34,22 +34,27 @@ import java.util.stream.Collectors;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/22/16.
  */
-public class FFImputeFill extends FFAbstract {
+public class FFImputeWithFill extends FFDefault {
 
     private static final long serialVersionUID = 281130325474491898L;
     private final double fill;
 
-    public FFImputeFill(double fill, String... varNames) {
+    public FFImputeWithFill(double fill, String... varNames) {
         this(fill, VRange.of(varNames));
     }
 
-    public FFImputeFill(double fill, VRange vRange) {
+    public FFImputeWithFill(double fill, VRange vRange) {
         super(vRange);
         this.fill = fill;
     }
 
     @Override
-    public void fit(Frame df) {
+    public FFImputeWithFill newInstance() {
+        return new FFImputeWithFill(fill, vRange);
+    }
+
+    @Override
+    public void train(Frame df) {
         parse(df);
     }
 
