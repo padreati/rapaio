@@ -23,8 +23,10 @@
 
 package rapaio.data.filter.frame;
 
+import rapaio.core.SamplingTools;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
+import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
 import rapaio.math.linear.Linear;
@@ -91,12 +93,38 @@ public class FFRandomProjection extends FFDefault {
         RV projection(int rowCount);
     }
 
-    public static Method normal() {
+    public static Method normal(int k) {
         return rowCount -> {
             Normal norm = new Normal(0, 1);
             RV v = RV.empty(rowCount);
             for (int i = 0; i < v.rowCount(); i++) {
-                v.set(i, norm.sampleNext());
+                v.set(i, norm.sampleNext() / Math.sqrt(k));
+            }
+            return v;
+        };
+    }
+
+    public static Method achlioptas(double s) {
+        double[] p = new double[3];
+        p[0] = 1 / (2 * s);
+        p[1] = 1 - 1 / s;
+        p[2] = 1 / (2 * s);
+
+        double sqrt = Math.sqrt(s);
+
+        return rowCount -> {
+            int[] sample = SamplingTools.sampleWeightedWR(rowCount, p);
+            RV v = RV.empty(rowCount);
+            for (int i = 0; i < sample.length; i++) {
+                if (sample[i] == 0) {
+                    v.set(i, -sqrt);
+                    continue;
+                }
+                if (sample[i] == 1) {
+                    v.set(i, 0);
+                    continue;
+                }
+                v.set(i, sqrt);
             }
             return v;
         };
