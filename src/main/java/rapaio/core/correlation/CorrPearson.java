@@ -26,11 +26,13 @@ package rapaio.core.correlation;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Frame;
+import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static rapaio.sys.WS.*;
 
@@ -80,20 +82,23 @@ public class CorrPearson implements Printable {
     }
 
     private double compute(Var x, Var y) {
-        double xMean = new Mean(x).value();
-        double yMean = new Mean(y).value();
+
         double sum = 0;
         int len = Math.min(x.rowCount(), y.rowCount());
-        double sdp = Math.sqrt(new Variance(x).value()) * Math.sqrt(new Variance(y).value());
-        double count = 0;
-        for (int i = 0; i < len; i++) {
-            if (x.missing(i) || y.missing(i)) {
-                continue;
-            }
-            sum += ((x.value(i) - xMean) * (y.value(i) - yMean));
-            count++;
+
+        Mapping map = Mapping.copy(IntStream.range(0, len)
+                .filter(i -> !(x.missing(i) || y.missing(i)))
+                .toArray());
+        double xMean = new Mean(x.mapRows(map)).value();
+        double yMean = new Mean(y.mapRows(map)).value();
+
+        double sdp = Math.sqrt(new Variance(x.mapRows(map)).value())
+                * Math.sqrt(new Variance(y.mapRows(map)).value());
+        for (int i = 0; i < map.size(); i++) {
+            int pos = map.get(i);
+            sum += ((x.value(pos) - xMean) * (y.value(pos) - yMean));
         }
-        return sum / (sdp * (count - 1));
+        return sum / (sdp * (map.size() - 1));
     }
 
     public double[][] values() {
@@ -101,6 +106,8 @@ public class CorrPearson implements Printable {
     }
 
     public double singleValue() {
+        if (names.length == 1)
+            return 1;
         return pearson[0][1];
     }
 

@@ -61,6 +61,17 @@ public interface RM extends Serializable, Printable {
         return rm;
     }
 
+    static RM copyOf(int rows, int cols, double... values) {
+        RM rm = new SolidRM(rows, cols);
+        int pos = 0;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                rm.set(i, j, values[pos++]);
+            }
+        }
+        return rm;
+    }
+
     static RM identity(int len) {
         RM I = new SolidRM(len, len);
         for (int i = 0; i < I.rowCount(); i++) {

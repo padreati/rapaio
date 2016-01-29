@@ -28,6 +28,7 @@ import rapaio.data.filter.var.VFRefSort;
 import rapaio.printer.Printable;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 import static rapaio.sys.WS.formatFlex;
 import static rapaio.sys.WS.getPrinter;
@@ -48,19 +49,43 @@ public class CorrSpearman implements Printable {
     private final double[][] rho;
 
     public CorrSpearman(Var... vars) {
+
+        int rowCount = Integer.MAX_VALUE;
+        for (int i = 0; i < vars.length; i++) {
+            rowCount = Math.min(vars[i].rowCount(), rowCount);
+        }
+
+        Mapping map = Mapping.copy(IntStream.range(0, rowCount)
+                .filter(row -> {
+                    for (int i = 0; i < vars.length; i++) {
+                        if (vars[i].missing(row))
+                            return false;
+                    }
+                    return true;
+                })
+                .toArray());
+
         this.names = new String[vars.length];
         for (int i = 0; i < names.length; i++) {
             names[i] = "V" + i;
         }
-        this.vars = vars;
+        this.vars = new Var[vars.length];
+        for (int i = 0; i < vars.length; i++) {
+            this.vars[i] = vars[i].mapRows(map);
+        }
         this.rho = compute();
     }
 
     public CorrSpearman(Frame df) {
+
+        Mapping map = Mapping.copy(IntStream.range(0, df.rowCount())
+                .filter(row -> !df.missing(row))
+                .toArray());
+
         this.names = df.varNames();
         this.vars = new Var[df.varCount()];
         for (int i = 0; i < df.varCount(); i++) {
-            vars[i] = df.var(i);
+            vars[i] = df.var(i).mapRows(map);
         }
         this.rho = compute();
     }
@@ -175,6 +200,8 @@ public class CorrSpearman implements Printable {
     }
 
     public double singleValue() {
+        if(names.length==1)
+            return 1;
         return rho[0][1];
     }
 }

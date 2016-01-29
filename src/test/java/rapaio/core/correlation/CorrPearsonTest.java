@@ -30,50 +30,35 @@ import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
-import rapaio.data.Var;
 import rapaio.math.linear.RM;
 
-import static org.junit.Assert.assertEquals;
-
 /**
- * User: <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
+ * Tests for pearson correlation
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/29/16.
  */
-public class CorrSpearmanTest {
-
-    private final Var iq = Numeric.copy(106, 86, 100, 101, 99, 103, 97, 113, 112, 110);
-    private final Var tvHours = Numeric.copy(7, 0, 27, 50, 28, 29, 20, 12, 6, 17);
-
-    @Test
-    public void testFromWikipedia() {
-        CorrSpearman sc = new CorrSpearman(iq, tvHours);
-        // according with wikipedia article rho must be −0.175757575
-        assertEquals(-0.175757575, sc.values()[0][1], 1e-8);
-    }
-
-    @Test
-    public void testSameVector() {
-        CorrSpearman same = new CorrSpearman(iq, iq);
-        assertEquals(1., same.values()[0][1], 1e-10);
-
-        same = new CorrSpearman(tvHours, tvHours);
-        assertEquals(1., same.values()[0][1], 1e-10);
-    }
+public class CorrPearsonTest {
 
     @Test
     public void maxCorrTest() {
-        Numeric x = Numeric.from(1_000, Math::sqrt).withName("x");
-        CorrSpearman cp = CoreTools.corrSpearman(x, x);
+        Numeric x = Numeric.from(1_000, Math::sqrt);
+        CorrPearson cp = CoreTools.corrPearson(x, x);
         cp.printSummary();
-        Assert.assertEquals(1, cp.singleValue(), 1e-12);
+        Assert.assertEquals(1, cp.singleValue(), 1e-20);
 
-        cp = CoreTools.corrSpearman(x);
+        x = Numeric.from(1_000, Math::sqrt).withName("x");
+        cp = CoreTools.corrPearson(x, x);
+        cp.printSummary();
+        Assert.assertEquals(1, cp.singleValue(), 1e-20);
+
+        cp = CoreTools.corrPearson(x);
         cp.printSummary();
         Assert.assertEquals(1, cp.singleValue(), 1e-20);
 
         Numeric y = x.stream().mapToDouble().map(v -> -v).boxed().collect(Numeric.collector()).withName("y");
-        cp = CoreTools.corrSpearman(x, y);
+        cp = CoreTools.corrPearson(x, y);
         cp.printSummary();
-        Assert.assertEquals(-1, cp.singleValue(), 1e-12);
+        Assert.assertEquals(-1, cp.singleValue(), 1e-20);
     }
 
     @Test
@@ -83,9 +68,9 @@ public class CorrSpearmanTest {
         Numeric x = Numeric.from(10_000, row -> norm.sampleNext()).withName("x");
         Numeric y = Numeric.from(10_000, row -> norm.sampleNext()).withName("y");
 
-        CorrSpearman cp = CoreTools.corrSpearman(x, y);
+        CorrPearson cp = CoreTools.corrPearson(x, y);
         cp.printSummary();
-        Assert.assertEquals(0.023296211476962116, cp.singleValue(), 1e-20);
+        Assert.assertEquals(0.021769705986371495, cp.singleValue(), 1e-20);
     }
 
     @Test
@@ -95,9 +80,9 @@ public class CorrSpearmanTest {
         Numeric x = Numeric.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
         Numeric y = Numeric.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
 
-        CorrSpearman cp = CoreTools.corrSpearman(x, y);
+        CorrPearson cp = CoreTools.corrPearson(x, y);
         cp.printSummary();
-        Assert.assertEquals(0.8789432182134321, cp.singleValue(), 1e-20);
+        Assert.assertEquals(0.8356446312071465, cp.singleValue(), 1e-20);
     }
 
     @Test
@@ -111,11 +96,11 @@ public class CorrSpearmanTest {
 
 
         RM exp = RM.copyOf(3, 3,
-                1, 0.8789432182134321, 0.8789431613694316,
-                0.8789432182134321, 1, 0.999999997876,
-                0.8789431613694316, 0.999999997876, 1);
+                1, 0.8356446312071465, 0.7997143292750094,
+                0.8356446312071465, 1, 0.9938073109055177,
+                0.7997143292750094, 0.9938073109055177, 1);
 
-        CorrSpearman cp = CoreTools.corrSpearman(x, y, z);
+        CorrPearson cp = CoreTools.corrPearson(x, y, z);
         cp.printSummary();
 
         double[][] values = cp.values();
@@ -127,7 +112,7 @@ public class CorrSpearmanTest {
             }
         }
 
-        cp = CoreTools.corrSpearman(SolidFrame.wrapOf(x, y, x));
+        cp = CoreTools.corrPearson(SolidFrame.wrapOf(x, y, x));
         cp.printSummary();
 
         for (int i = 0; i < 3; i++) {
@@ -140,13 +125,12 @@ public class CorrSpearmanTest {
 
     @Test
     public void testMissingValues() {
-        Numeric x = Numeric.copy(1, 2, Double.NaN, Double.NaN, 5, 6, 7).withName("x");
-        Numeric y = Numeric.copy(1, 2, 3, Double.NaN, Double.NaN, 6, 7).withName("y");
+        Numeric x = Numeric.copy(1, 2, Double.NaN, Double.NaN, 5, 6, 7);
+        Numeric y = Numeric.copy(1, 2, 3, Double.NaN, Double.NaN, 6, 7);
 
-        CorrSpearman cp = CoreTools.corrSpearman(x, y);
+        CorrPearson cp = CoreTools.corrPearson(x, y);
         cp.printSummary();
 
         Assert.assertEquals(1, cp.singleValue(), 1e-20);
     }
-
 }
