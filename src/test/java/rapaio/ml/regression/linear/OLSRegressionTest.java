@@ -28,7 +28,11 @@ import rapaio.core.distributions.StudentT;
 import rapaio.data.*;
 import rapaio.data.filter.frame.FFAddIntercept;
 import rapaio.datasets.Datasets;
-import rapaio.math.linear.*;
+import rapaio.math.linear.Linear;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.QR;
+import rapaio.math.linear.dense.SolidRM;
 import rapaio.sys.WS;
 import rapaio.printer.Summary;
 
@@ -64,8 +68,8 @@ public class OLSRegressionTest {
         String[] inputNames = new String[]{"(Intercept)", "TV", "Radio", "Newspaper"};
 //        String[] inputNames = new String[]{"TV", "Radio", "Newspaper"};
 
-        RM X = Linear.newRMCopyOf(df.mapVars(inputNames));
-        RM Y = Linear.newRMCopyOf(df.mapVars(targetNames));
+        RM X = SolidRM.copyOf(df.mapVars(inputNames));
+        RM Y = SolidRM.copyOf(df.mapVars(targetNames));
 
         QR qr1 = new QR(X);
         RM beta = qr1.solve(Y);

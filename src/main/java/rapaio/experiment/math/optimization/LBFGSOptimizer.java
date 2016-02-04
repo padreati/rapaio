@@ -24,6 +24,7 @@
 package rapaio.experiment.math.optimization;
 
 import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.SolidRV;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/24/15.
@@ -35,7 +36,7 @@ public class LBFGSOptimizer {
         int ndim = 20000, msave = 7;
         int nwork = ndim * (2 * msave + 1) + 2 * msave;
         double g[], diag[], w[];
-        RV x = RV.empty(ndim);
+        RV x = SolidRV.empty(ndim);
         g = new double[ndim];
         diag = new double[ndim];
         w = new double[nwork];
@@ -328,7 +329,7 @@ class LBFGS {
         if (iflag[0] == 0) {
             // Initialize.
 
-            solution_cache = RV.copyOf(x);
+            solution_cache = SolidRV.copyOf(x);
 
             iter = 0;
 

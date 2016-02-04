@@ -27,124 +27,39 @@ import rapaio.core.MathTools;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Numeric;
-import rapaio.math.linear.algos.MatrixMultiplication;
-import rapaio.math.linear.impl.*;
+import rapaio.math.linear.dense.*;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static rapaio.sys.WS.formatShort;
+import java.util.stream.DoubleStream;
 
 /**
- * Real value matrix interface
+ * Real matrix
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/3/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
 public interface RM extends Serializable, Printable {
 
-    static RM empty(int rows, int cols) {
-        return new SolidRM(rows, cols);
-    }
-
-    static RM fill(int rows, int cols, double value) {
-        RM rm = new SolidRM(rows, cols);
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                rm.set(i, j, value);
-            }
-        }
-        return rm;
-    }
-
-    static RM copyOf(int rows, int cols, double... values) {
-        RM rm = new SolidRM(rows, cols);
-        int pos = 0;
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                rm.set(i, j, values[pos++]);
-            }
-        }
-        return rm;
-    }
-
-    static RM identity(int len) {
-        RM I = new SolidRM(len, len);
-        for (int i = 0; i < I.rowCount(); i++) {
-            I.set(i, i, 1.0);
-        }
-        return I;
-    }
-
-    /**
-     * @return number of rows the matrix has
-     */
     int rowCount();
 
-    /**
-     * @return number of columns the matrix has
-     */
     int colCount();
 
-    /**
-     * Gets the value from a specified position
-     *
-     * @param i row number
-     * @param j column number
-     * @return value at given row and col
-     */
     double get(int i, int j);
 
-    /**
-     * Sets the value from a given position in the matrix
-     *
-     * @param i     row number
-     * @param j     column number
-     * @param value new value
-     */
     void set(int i, int j, double value);
 
-    /**
-     * Sets value from a given position in the matrix using a function
-     *
-     * @param i      row number
-     * @param j      col number
-     * @param update update function, takes cell value and outputs transformed value
-     */
-    default void set(int i, int j, Function<Double, Double> update) {
-        set(i, j, update.apply(get(i, j)));
-    }
+    void increment(int i, int j, double value);
 
-    /**
-     * Increment value from a given position with the increment value
-     *
-     * @param i         row number
-     * @param j         col number
-     * @param increment value to be added to the cell value
-     */
-    default void increment(int i, int j, double increment) {
-        double old = get(i, j);
-        set(i, j, old + increment);
-    }
+    RV mapCol(int i);
 
-    // transforming methods
+    RV mapRow(int i);
 
-    /**
-     * Builds a new matrix having only the specified rows
-     *
-     * @param indexes row indexes
-     * @return new mapped matrix containing all columns and selected rows
-     */
     default RM mapRows(int... indexes) {
         return new MappedRM(this, true, indexes);
-    }
-
-    default RV mapRow(int index) {
-        return new MappedRowRV(this, index);
     }
 
     default RM rangeRows(int start, int end) {
@@ -177,10 +92,6 @@ public interface RM extends Serializable, Printable {
         return new MappedRM(this, false, indexes);
     }
 
-    default RV mapCol(int index) {
-        return new MappedColRV(this, index);
-    }
-
     default RM rangeCols(int start, int end) {
         int[] cols = new int[end - start];
         for (int i = start; i < end; i++) {
@@ -201,32 +112,22 @@ public interface RM extends Serializable, Printable {
         return new MappedRM(this, false, cols);
     }
 
-    ///////////////////////
-    // matrix operations
-    ///////////////////////
-
-    default RM t() {
-        return new TransposeRM(this);
-    }
-
-    default double det() {
-        return new LUDecomposition(this, LUDecomposition.Method.GAUSSIAN_ELIMINATION).det();
-    }
-
     /**
-     * Matrix multiplication of this matrix with the one given as parameter.
-     * The implementation uses a naive algorithm, it can be done much better
-     * al least by implementing Strassen algorithm.
-     *
-     * @param B matrix with which it will be multiplied.
-     * @return new matrix as a result of multiplication
+     * @return new transposed matrix
      */
+    RM t();
+
     default RM dot(RM B) {
-        if (colCount() != B.rowCount()) {
-            throw new IllegalArgumentException(String.format("Matrices are not conform for multiplication ([n,m]x[m,p] = [%d,%d]=[%d,%d])",
-                    rowCount(), colCount(), B.rowCount(), B.colCount()));
+        return MatrixMultiplication.ikjAlgorithm(this, B);
+    }
+
+    default RM dot(double x) {
+        for (int i = 0; i < rowCount(); i++) {
+            for (int j = 0; j < colCount(); j++) {
+                set(i, j, get(i, j) * x);
+            }
         }
-        return MatrixMultiplication.ikjParallel(this, B);
+        return this;
     }
 
     default RM plus(double x) {
@@ -267,82 +168,6 @@ public interface RM extends Serializable, Printable {
     }
 
     /**
-     * Scalar matrix multiplication.
-     * It updates the current matrix so make a solid copy to not alter actual data.
-     *
-     * @param b scalar value used for multiplication
-     * @return current instance multiplied with a scalar
-     */
-    default RM dot(double b) {
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < colCount(); j++) {
-                set(i, j, get(i, j) * b);
-            }
-        }
-        return this;
-    }
-
-    default RM cov() {
-        RM scatter = RM.empty(colCount(), colCount());
-        RV mean = RV.empty(colCount());
-        for (int i = 0; i < colCount(); i++) {
-            mean.set(i, mapCol(i).mean().value());
-        }
-        for (int i = 0; i < rowCount(); i++) {
-
-            RM row = mapRow(i).copy();
-            row.minus(mean.t());
-
-            scatter.plus(row.t().dot(row));
-        }
-        return scatter.dot(1.0 / (rowCount() - 1));
-    }
-
-    default RM scaleUnit(boolean cols) {
-        RM src = cols ? this : this.t();
-
-        RV mean = RV.empty(src.colCount());
-        RV sd = RV.empty(src.colCount());
-        for (int i = 0; i < src.colCount(); i++) {
-            mean.set(i, src.mapCol(i).mean().value());
-            sd.set(i, src.mapCol(i).var().sdValue());
-        }
-        for (int i = 0; i < src.rowCount(); i++) {
-            for (int j = 0; j < src.colCount(); j++) {
-                src.set(i, j, (src.get(i, j) - mean.get(j)) / sd.get(j));
-            }
-        }
-        return this;
-    }
-
-    default RM scatter() {
-        RM scatter = RM.empty(colCount(), colCount());
-        RV mean = RV.empty(colCount());
-        for (int i = 0; i < colCount(); i++) {
-            mean.set(i, mapCol(i).mean().value());
-        }
-        for (int i = 0; i < rowCount(); i++) {
-
-            RM row = mapRow(i).copy();
-            row.minus(mean);
-
-            scatter.plus(row.dot(row.t()));
-        }
-        return scatter;
-    }
-
-    /**
-     * Diagonal vector of values
-     */
-    default RV diag() {
-        RV rv = RV.empty(rowCount());
-        for (int i = 0; i < rowCount(); i++) {
-            rv.set(i, get(i, i));
-        }
-        return rv;
-    }
-
-    /**
      * Matrix rank
      *
      * @return effective numerical rank, obtained from SVD.
@@ -371,8 +196,31 @@ public interface RM extends Serializable, Printable {
         return new Variance(values);
     }
 
-    default QR qr() {
-        return new QR(this);
+    /**
+     * Diagonal vector of values
+     */
+    default RV diag() {
+        RV rv = SolidRV.empty(rowCount());
+        for (int i = 0; i < rowCount(); i++) {
+            rv.set(i, get(i, i));
+        }
+        return rv;
+    }
+
+    default RM scatter() {
+        RM scatter = SolidRM.empty(colCount(), colCount());
+        RV mean = SolidRV.empty(colCount());
+        for (int i = 0; i < colCount(); i++) {
+            mean.set(i, mapCol(i).mean().value());
+        }
+        for (int i = 0; i < rowCount(); i++) {
+
+            RM row = mapRow(i).asMatrix();
+            row.minus(mean.asMatrix());
+
+            scatter.plus(row.dot(row.t()));
+        }
+        return scatter;
     }
 
     ///////////////////////
@@ -404,24 +252,10 @@ public interface RM extends Serializable, Printable {
         return true;
     }
 
-    /**
-     * Makes a solid copy of the matrix
-     *
-     * @return new solid copy of the matrix
-     */
-    default RM copy() {
-        RM RM = new SolidRM(rowCount(), colCount());
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < colCount(); j++) {
-                RM.set(i, j, get(i, j));
-            }
-        }
-        return RM;
-    }
 
-    //////////////////
-    // printSummary
-    //////////////////
+    DoubleStream valueStream();
+
+    RM solidCopy();
 
     default String summary() {
 
@@ -431,7 +265,7 @@ public interface RM extends Serializable, Printable {
         int max = 1;
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                m[i][j] = formatShort(get(i, j));
+                m[i][j] = WS.formatShort(get(i, j));
                 max = Math.max(max, m[i][j].length() + 1);
             }
         }

@@ -23,79 +23,70 @@
 
 package rapaio.math.linear;
 
+import rapaio.core.stat.Mean;
+import rapaio.core.stat.Variance;
+import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.math.linear.impl.SolidRV;
+import rapaio.math.linear.dense.SVDecomposition;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.printer.Printable;
+import rapaio.sys.WS;
+
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.stream.DoubleStream;
 
 /**
- * Real valued vector interface
+ * Double vector
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/6/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
-public interface RV extends RM {
+public interface RV extends Serializable, Printable {
 
-    static RV empty(int len) {
-        return new SolidRV(len);
-    }
+    double get(int i);
 
-    static RV copyOf(Var x) {
-        RV copy = empty(x.rowCount());
-        for (int i = 0; i < x.rowCount(); i++) {
-            copy.set(i, x.value(i));
+    void set(int i, double value);
+
+    void increment(int i, double value);
+
+    int count();
+
+    RV dot(double scalar);
+
+    default RV plus(double x) {
+        for (int i = 0; i < count(); i++) {
+            increment(i, x);
         }
-        return copy;
+        return this;
     }
 
-    static RV copyOf(RV x) {
-        RV copy = empty(Math.max(x.rowCount(), x.colCount()));
-        for (int i = 0; i < x.rowCount(); i++) {
-            copy.set(i, x.get(i));
+    default RV plus(RV B) {
+        if (count() != B.count())
+            throw new IllegalArgumentException(String.format(
+                    "Vectors are not conform for addition: [%d] + [%d]", count(), B.count()));
+        for (int i = 0; i < count(); i++) {
+            increment(i, B.get(i));
         }
-        return copy;
+        return this;
     }
 
-    static RV fill(int len, double value) {
-        RV result = new SolidRV(len);
-        for (int i = 0; i < len; i++) {
-            result.set(i, value);
+    default RV minus(double x) {
+        return plus(-x);
+    }
+
+    default RV minus(RV B) {
+        if (count() != B.count())
+            throw new IllegalArgumentException(String.format(
+                    "Matrices are not conform for substraction: [%d] + [%d]", count(), B.count()));
+        for (int i = 0; i < count(); i++) {
+            increment(i, -B.get(i));
         }
-        return result;
+        return this;
     }
 
-    /**
-     * Additional single index accessor for vector elements
-     *
-     * @param i position of the element
-     * @return value at the given position
-     */
-    default double get(int i) {
-        if (rowCount() == 1)
-            return get(0, i);
-        if (colCount() == 1)
-            return get(i, 0);
-        throw new IllegalArgumentException("This shortcut method can be called only for vectors or special matrices");
-    }
+    double norm(double p);
 
-    /**
-     * Additional single index setter for vector elements
-     *
-     * @param i     position of the elements
-     * @param value new value for the given position
-     */
-    default void set(int i, double value) {
-        if (rowCount() == 1) {
-            set(0, i, value);
-            return;
-        }
-        if (colCount() == 1) {
-            set(i, 0, value);
-            return;
-        }
-        throw new IllegalArgumentException("This shortcut method can be called only for vectors");
-    }
-
-    default void increment(int i, double increment) {
-        set(i, get(i) + increment);
-    }
+    RV normalize(double p);
 
     /**
      * Dot product between two vectors is equal to the sum of the
@@ -107,7 +98,7 @@ public interface RV extends RM {
      * @return
      */
     default double dotProd(RV b) {
-        int max = Math.max(Math.max(rowCount(), colCount()), Math.max(b.rowCount(), b.colCount()));
+        int max = Math.max(count(), b.count());
         double s = 0;
         for (int i = 0; i < max; i++) {
             s += get(i) * b.get(i);
@@ -115,41 +106,104 @@ public interface RV extends RM {
         return s;
     }
 
-    /**
-     * Makes a solid copy of the matrix
-     *
-     * @return new solid copy of the matrix
-     */
-    default RV copy() {
-        if (rowCount() > colCount()) {
-            RV rv = new SolidRV(rowCount());
-            for (int i = 0; i < rowCount(); i++) {
-                rv.set(i, get(i));
-            }
-            return rv;
-        } else {
-            RV rv = new SolidRV(colCount());
-            for (int i = 0; i < colCount(); i++) {
-                rv.set(i, get(i));
-            }
-            return rv;
+    default Mean mean() {
+        Numeric values = Numeric.empty();
+        for (int i = 0; i < count(); i++) {
+            values.addValue(get(i));
         }
+        return new Mean(values);
     }
 
-    default double norm(double p) {
-        double s = 0.0;
-        for (int i = 0; i < rowCount(); i++) {
-            for (int j = 0; j < colCount(); j++) {
-                s += Math.pow(get(i, j), p);
-            }
+    default Variance var() {
+        Numeric values = Numeric.empty();
+        for (int i = 0; i < count(); i++) {
+            values.addValue(get(i));
         }
-        return Math.pow(s, 1 / p);
+        return new Variance(values);
     }
 
-    default RV normalize(double p) {
-        double norm = norm(p);
-        if (norm != 0.0)
-            dot(1.0 / norm);
-        return this;
+
+    RV solidCopy();
+
+    default RM asMatrix() {
+        SolidRM res = SolidRM.empty(count(), 1);
+        for (int i = 0; i < count(); i++) {
+            res.set(i, 0, get(i));
+        }
+        return res;
+    }
+
+    default RM asMatrixT() {
+        SolidRM res = SolidRM.empty(1, count());
+        for (int i = 0; i < count(); i++) {
+            res.set(0, i, get(i));
+        }
+        return res;
+    }
+
+    DoubleStream valueStream();
+
+    //////////////////
+    // printSummary
+    //////////////////
+
+    default String summary() {
+
+        StringBuilder sb = new StringBuilder();
+
+        String[][] m = new String[count()][1];
+        int max = 1;
+        for (int i = 0; i < count(); i++) {
+            m[i][0] = WS.formatShort(get(i));
+            max = Math.max(max, m[i][0].length() + 1);
+        }
+        max = Math.max(max, String.format("[,%d]", count()).length());
+        max = Math.max(max, String.format("[%d,]", 1).length());
+
+        int hCount = (int) Math.floor(WS.getPrinter().textWidth() / (double) max);
+        int vCount = Math.min(count() + 1, 101);
+        int hLast = 0;
+        while (true) {
+
+            // take vertical stripes
+            if (hLast >= 1)
+                break;
+
+            int hStart = hLast;
+            int hEnd = Math.min(hLast + hCount, 1);
+            int vLast = 0;
+
+            while (true) {
+
+                // print rows
+                if (vLast >= count())
+                    break;
+
+                int vStart = vLast;
+                int vEnd = Math.min(vLast + vCount, count());
+
+                for (int i = vStart; i <= vEnd; i++) {
+                    for (int j = hStart; j <= hEnd; j++) {
+                        if (i == vStart && j == hStart) {
+                            sb.append(String.format("%" + (max) + "s| ", ""));
+                            continue;
+                        }
+                        if (i == vStart) {
+                            sb.append(String.format("%" + Math.max(1, max - 1) + "d|", j - 1));
+                            continue;
+                        }
+                        if (j == hStart) {
+                            sb.append(String.format("%" + Math.max(1, max - 1) + "d |", i - 1));
+                            continue;
+                        }
+                        sb.append(String.format("%" + max + "s", m[i - 1][j - 1]));
+                    }
+                    sb.append("\n");
+                }
+                vLast = vEnd;
+            }
+            hLast = hEnd;
+        }
+        return sb.toString();
     }
 }

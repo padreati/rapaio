@@ -25,6 +25,7 @@ package rapaio.experiment.math.optimization;
 
 import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
+import rapaio.math.linear.dense.SolidRM;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/26/15.
@@ -34,7 +35,7 @@ public class BFGS {
     public static void main(String[] args) {
 
 
-        RM I = RM.identity(10);
+        RM I = SolidRM.identity(10);
 
         I.printSummary();
 

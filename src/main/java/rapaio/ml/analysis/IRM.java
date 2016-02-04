@@ -29,6 +29,7 @@ import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
+import rapaio.math.linear.dense.SolidRM;
 import rapaio.ml.common.distance.Distance;
 import rapaio.util.Tag;
 
@@ -74,7 +75,7 @@ public class IRM {
         x = Numeric.from(len, uniform::sampleNext).withName("x");
         y = Numeric.from(len, uniform::sampleNext).withName("y");
 
-        d = Linear.newRMFill(len, len, 0);
+        d = SolidRM.fill(len, len, 0);
         for (int i = 0; i < len; i++) {
             for (int j = i + 1; j < len; j++) {
                 double dist = distance.get().distance(df, i, df, j, df.varNames());

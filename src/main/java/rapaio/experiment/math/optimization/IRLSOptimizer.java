@@ -25,9 +25,11 @@ package rapaio.experiment.math.optimization;
 
 import rapaio.data.Numeric;
 import rapaio.data.Var;
-import rapaio.math.linear.LUDecomposition;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.LUDecomposition;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
 import rapaio.sys.WS;
 
 import java.util.List;
@@ -54,7 +56,7 @@ public class IRLSOptimizer {
     private RM coef;
     private RV derivatives;
     private RV err;
-    private RV grad;
+    private RM grad;
 
     /**
      * Performs optimization on the given inputs to find the minima of the function.
@@ -71,8 +73,8 @@ public class IRLSOptimizer {
     public Numeric optimize(double eps, int iterationLimit, Function<Var, Double> f,
                             Function<Var, Double> fd, Numeric vars, List<Var> inputs, Numeric outputs) {
 
-        hessian = RM.empty(vars.rowCount(), vars.rowCount());
-        coef = RM.empty(inputs.size(), vars.rowCount());
+        hessian = SolidRM.empty(vars.rowCount(), vars.rowCount());
+        coef = SolidRM.empty(inputs.size(), vars.rowCount());
         for (int i = 0; i < inputs.size(); i++) {
             Var x_i = inputs.get(i);
             coef.set(i, 0, 1.0);
@@ -80,9 +82,9 @@ public class IRLSOptimizer {
                 coef.set(i, j, x_i.value(j - 1));
         }
 
-        derivatives = RV.empty(inputs.size());
-        err = RV.empty(outputs.rowCount());
-        grad = RV.empty(vars.rowCount());
+        derivatives = SolidRV.empty(inputs.size());
+        err = SolidRV.empty(outputs.rowCount());
+        grad = SolidRM.empty(vars.rowCount(), 1);
 
         double maxChange = Double.MAX_VALUE;
         while (!Double.isNaN(maxChange) && maxChange > eps && iterationLimit-- > 0) {
@@ -112,7 +114,7 @@ public class IRLSOptimizer {
                 for (int i = 0; i < hessian.rowCount(); i++)
                     hessian.increment(j, i, coef.get(k, i) * factor);
             }
-            grad.set(j, gradTmp);
+            grad.set(j, 0, gradTmp);
         }
 
         LUDecomposition lu = new LUDecomposition(hessian);
@@ -125,10 +127,10 @@ public class IRLSOptimizer {
         RV delta = lu.solve(grad).mapCol(0);
 
         for (int i = 0; i < vars.rowCount(); i++)
-            vars.setValue(i, vars.value(i) - delta.get(i, 0));
+            vars.setValue(i, vars.value(i) - delta.get(i));
 
         double max = Math.abs(delta.get(0));
-        for (int i = 1; i < delta.rowCount(); i++) {
+        for (int i = 1; i < delta.count(); i++) {
             max = Math.max(max, Math.abs(delta.get(i)));
         }
         return max;

@@ -27,8 +27,9 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.math.linear.Linear;
-import rapaio.math.linear.QR;
+import rapaio.math.linear.dense.QR;
 import rapaio.math.linear.RM;
+import rapaio.math.linear.dense.SolidRM;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.Regression;
@@ -78,8 +79,8 @@ public class OLSRegression extends AbstractRegression {
         if (targetNames().length == 0) {
             throw new IllegalArgumentException("OLS must specify at least one target variable name");
         }
-        RM X = Linear.newRMCopyOf(df.mapVars(inputNames()));
-        RM Y = Linear.newRMCopyOf(df.mapVars(targetNames()));
+        RM X = SolidRM.copyOf(df.mapVars(inputNames()));
+        RM Y = SolidRM.copyOf(df.mapVars(targetNames()));
         beta = new QR(X).solve(Y);
         return true;
     }

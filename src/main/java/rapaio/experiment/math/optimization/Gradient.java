@@ -25,6 +25,7 @@ package rapaio.experiment.math.optimization;
 
 import rapaio.math.common.MathTools;
 import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.SolidRV;
 import rapaio.util.Pair;
 
 /**
@@ -42,7 +43,7 @@ public interface Gradient {
      * @return Pair(Vector gradient, Double loss)
      */
     default Pair<RV, Double> compute(RV data, double label, RV weights) {
-        RV gradient = RV.empty(weights.rowCount());
+        RV gradient = SolidRV.empty(weights.count());
         Double loss = compute(data, label, weights, gradient);
         return Pair.from(gradient, loss);
     }
@@ -75,7 +76,7 @@ class LeastSquareGradient implements Gradient {
     public Pair<RV, Double> compute(RV data, double label, RV weights) {
         double diff = data.dotProd(weights) - label;
         double loss = diff * diff / 2.0;
-        RV gradient = data.copy();
+        RV gradient = data.solidCopy();
         gradient.dot(diff);
         return Pair.from(gradient, loss);
     }
@@ -83,7 +84,7 @@ class LeastSquareGradient implements Gradient {
     @Override
     public Double compute(RV data, double label, RV weights, RV cumGradient) {
         double diff = data.dotProd(weights) - label;
-        cumGradient.plus(data.copy().dot(diff));
+        cumGradient.plus(data.solidCopy().dot(diff));
         return diff * diff / 2.0;
     }
 }
@@ -188,17 +189,17 @@ class LogisticGradient implements Gradient {
 
     @Override
     public Pair<RV, Double> compute(RV data, double label, RV weights) {
-        RV gradient = RV.empty(weights.rowCount());
+        RV gradient = SolidRV.empty(weights.count());
         double loss = compute(data, label, weights, gradient);
         return Pair.from(gradient, loss);
     }
 
     @Override
     public Double compute(RV data, double label, RV weights, RV cumGradient) {
-        int dataSize = data.rowCount();
+        int dataSize = data.count();
 
         // (weights.size / dataSize + 1) is number of classes
-        if (weights.rowCount() % dataSize == 0 && numClasses == weights.rowCount() / dataSize * 1.0 + 1)
+        if (weights.count() % dataSize == 0 && numClasses == weights.count() / dataSize * 1.0 + 1)
             throw new IllegalArgumentException("");
         switch (numClasses) {
             case 2:
@@ -211,7 +212,7 @@ class LogisticGradient implements Gradient {
                  */
                 double margin2 = -1.0 * data.dotProd(weights);
                 double multiplier2 = (1.0 / (1.0 + Math.exp(margin2))) - label;
-                cumGradient.plus(data.copy().dot(multiplier2));
+                cumGradient.plus(data.solidCopy().dot(multiplier2));
                 if (label > 0) {
                     // The following is equivalent to log(1 + exp(margin)) but more numerically stable.
                     return MathTools.log1pExp(margin2);
@@ -228,10 +229,10 @@ class LogisticGradient implements Gradient {
                 double maxMargin = Double.NEGATIVE_INFINITY;
                 double maxMarginIndex = 0;
 
-                RV margins = RV.empty(numClasses - 1);
-                for (int i = 0; i < margins.rowCount(); i++) {
+                RV margins = SolidRV.empty(numClasses - 1);
+                for (int i = 0; i < margins.count(); i++) {
                     double margin = 0.0;
-                    for (int j = 0; j < data.rowCount(); j++) {
+                    for (int j = 0; j < data.count(); j++) {
                         double value = data.get(j);
                         if (value != 0.0)
                             margin += value * weights.get((i * dataSize) + j);
@@ -270,7 +271,7 @@ class LogisticGradient implements Gradient {
                 for (int i = 0; i < numClasses - 1; i++) {
                     double multiplier = Math.exp(margins.get(i)) / (sum + 1.0) -
                             ((label != 0.0 && label == i + 1) ? 1.0 : 0.0);
-                    for (int j = 0; j < data.rowCount(); j++) {
+                    for (int j = 0; j < data.count(); j++) {
                         double value = data.get(j);
                         if (value != 0.0)
                             cumGradient.increment(i * dataSize + j, multiplier * value);
@@ -302,11 +303,11 @@ class HingeGradient implements Gradient {
         // Therefore the gradient is -(2y - 1)*x
         double labelScaled = 2 * label - 1.0;
         if (1.0 > labelScaled * dotProduct) {
-            RV gradient = data.copy();
+            RV gradient = data.solidCopy();
             gradient.dot(-labelScaled);
             return Pair.from(gradient, 1.0 - labelScaled * dotProduct);
         } else {
-            return Pair.from(RV.empty(weights.rowCount()), 0.0);
+            return Pair.from(SolidRV.empty(weights.count()), 0.0);
         }
     }
 
@@ -318,7 +319,7 @@ class HingeGradient implements Gradient {
 
         double labelScaled = 2 * label - 1.0;
         if (1.0 > labelScaled * dotProduct) {
-            cumGradient.plus(data.copy().dot(-labelScaled));
+            cumGradient.plus(data.solidCopy().dot(-labelScaled));
             return 1.0 - labelScaled * dotProduct;
         }
         return 0.0;

@@ -32,6 +32,7 @@ import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.math.linear.RM;
+import rapaio.math.linear.dense.SolidRM;
 
 import static org.junit.Assert.assertEquals;
 
@@ -110,7 +111,7 @@ public class CorrSpearmanTest {
         Numeric z = Numeric.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).withName("z");
 
 
-        RM exp = RM.copyOf(3, 3,
+        RM exp = SolidRM.copyOf(3, 3,
                 1, 0.8789432182134321, 0.8789431613694316,
                 0.8789432182134321, 1, 0.999999997876,
                 0.8789431613694316, 0.999999997876, 1);

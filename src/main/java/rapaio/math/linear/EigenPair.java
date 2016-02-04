@@ -23,6 +23,8 @@
 
 package rapaio.math.linear;
 
+import rapaio.math.linear.dense.SolidRM;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/7/15.
  */
@@ -31,13 +33,13 @@ public class EigenPair {
     private RV values;
     private RM vectors;
 
+    public static EigenPair from(RV values, RM vectors) {
+        return new EigenPair(values, vectors);
+    }
+
     private EigenPair(RV values, RM vectors) {
         this.values = values;
         this.vectors = vectors;
-    }
-
-    public static EigenPair newFrom(RV values, RM vectors) {
-        return new EigenPair(values, vectors);
     }
 
     public RV values() {
@@ -49,8 +51,8 @@ public class EigenPair {
     }
 
     public RM expandedValues() {
-        RM full = RM.empty(values.rowCount(), values.rowCount());
-        for (int i = 0; i < values.rowCount(); i++) {
+        RM full = SolidRM.empty(values.count(), values.count());
+        for (int i = 0; i < values.count(); i++) {
             full.set(i, i, values.get(i));
         }
         return full;

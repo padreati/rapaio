@@ -26,7 +26,8 @@ package rapaio.math.linear;
 import org.junit.Test;
 import rapaio.core.distributions.Normal;
 import rapaio.core.distributions.Uniform;
-import rapaio.math.linear.algos.MatrixMultiplication;
+import rapaio.math.linear.dense.MatrixMultiplication;
+import rapaio.math.linear.dense.SolidRM;
 import rapaio.util.Util;
 
 import java.util.stream.IntStream;
@@ -36,13 +37,13 @@ public class MatrixMultiplicationTest {
     @Test
     public void basicTestMM() {
 
-        RM A = Linear.newRMWrapOf(3, 4,
+        RM A = SolidRM.copyOf(3, 4,
                 2.3, 1.2, 1, 7,
                 19, 0, -1, 2,
                 2, 3, 4, 5
         );
 
-        RM B = Linear.newRMWrapOf(4, 5,
+        RM B = SolidRM.copyOf(4, 5,
                 1, 2, 3, 4, 5,
                 1.1, 12, 23, 4, 15,
                 1.2, 2.2, 23, 4, 5,
@@ -54,15 +55,15 @@ public class MatrixMultiplicationTest {
 
         A.dot(B).printSummary();
 
-        MatrixMultiplication.strassen(A, B).printSummary();
+//        MatrixMultiplication.strassen(A, B).printSummary();
     }
 
     @Test
     public void largeMatrices() {
         int N = 1_000;
         double p = 0.7;
-        RM A = RM.empty(N, N);
-        RM B = RM.empty(N, N);
+        RM A = SolidRM.empty(N, N);
+        RM B = SolidRM.empty(N, N);
 
         Normal norm = new Normal(1, 12);
         Uniform unif = new Uniform(0, 1);

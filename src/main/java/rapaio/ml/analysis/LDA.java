@@ -25,7 +25,13 @@ package rapaio.ml.analysis;
 
 import rapaio.data.*;
 import rapaio.data.stream.FSpot;
-import rapaio.math.linear.*;
+import rapaio.math.linear.RM;
+import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.CholeskyDecomposition;
+import rapaio.math.linear.EigenPair;
+import rapaio.math.linear.Linear;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
 import rapaio.printer.Printable;
 import rapaio.printer.Summary;
 
@@ -71,7 +77,7 @@ public class LDA implements Printable {
         return this;
     }
 
-    public RM getEigenValues() {
+    public RV getEigenValues() {
         return eigenValues;
     }
 
@@ -83,12 +89,12 @@ public class LDA implements Printable {
         validate(df, targetVars);
 
         logger.fine("start lda train");
-        RM xx = Linear.newRMCopyOf(df.removeVars(targetName));
+        RM xx = SolidRM.copyOf(df.removeVars(targetName));
 
         // compute mean and sd
 
-        mean = RV.empty(xx.colCount());
-        sd = RV.empty(xx.colCount());
+        mean = SolidRV.empty(xx.colCount());
+        sd = SolidRV.empty(xx.colCount());
         for (int i = 0; i < xx.colCount(); i++) {
             mean.set(i, xx.mapCol(i).mean().value());
             sd.set(i, xx.mapCol(i).var().sdValue());
@@ -119,7 +125,7 @@ public class LDA implements Printable {
 
         classMean = new RV[targetLevels.length];
         for (int i = 0; i < targetLevels.length; i++) {
-            classMean[i] = RV.empty(x[i].colCount());
+            classMean[i] = SolidRV.empty(x[i].colCount());
             for (int j = 0; j < x[i].colCount(); j++) {
                 classMean[i].set(j, x[i].mapCol(j).mean().value());
             }
@@ -127,52 +133,52 @@ public class LDA implements Printable {
 
         // build within scatter matrix
 
-        RM sw = RM.empty(inputNames.length, inputNames.length);
+        RM sw = SolidRM.empty(inputNames.length, inputNames.length);
         for (int i = 0; i < targetLevels.length; i++) {
             sw.plus(x[i].scatter());
         }
 
         // build between-class scatter matrix
 
-        RM sb = RM.empty(inputNames.length, inputNames.length);
+        RM sb = SolidRM.empty(inputNames.length, inputNames.length);
         for (int i = 0; i < targetLevels.length; i++) {
-            RM cm = scaling ? classMean[i].copy() : classMean[i].copy().minus(mean);
+            RM cm = scaling ? classMean[i].asMatrix() : classMean[i].asMatrix().minus(mean.asMatrix());
             sb.plus(cm.dot(cm.t()).dot(x[i].rowCount()));
         }
 
         // inverse sw
-        RM swi = new CholeskyDecomposition(sw).solve(RM.identity(inputNames.length));
+        RM swi = new CholeskyDecomposition(sw).solve(SolidRM.identity(inputNames.length));
 
         // use decomp of sbe
         RM sbplus = Linear.pdPower(sb, 0.5, maxRuns, tol);
         RM sbminus = Linear.pdPower(sb, -0.5, maxRuns, tol);
 
-        EigenPair p = Linear.pdEigenDecomp(sbplus.dot(swi).dot(sbplus), maxRuns, tol);
+        EigenPair p = Linear.eigenDecomp(sbplus.dot(swi).dot(sbplus), maxRuns, tol);
 
         logger.fine("compute eigenvalues");
-        eigenValues = p.values().mapCol(0);
+        eigenValues = p.values();
         eigenVectors = sbminus.dot(p.vectors());
 //        eigenVectors = p.vectors();
 
         logger.fine("sort eigen values and vectors");
 
-        Integer[] rows = new Integer[eigenValues.rowCount()];
+        Integer[] rows = new Integer[eigenValues.count()];
         for (int i = 0; i < rows.length; i++) {
             rows[i] = i;
         }
 
-        Arrays.sort(rows, (o1, o2) -> -Double.valueOf(eigenValues.get(o1, 0)).compareTo(eigenValues.get(o2, 0)));
+        Arrays.sort(rows, (o1, o2) -> -Double.valueOf(eigenValues.get(o1)).compareTo(eigenValues.get(o2)));
         int[] indexes = Arrays.stream(rows).mapToInt(v -> v).toArray();
 
-        eigenValues = eigenValues.mapRows(indexes).mapCol(0).copy();
-        eigenVectors = eigenVectors.mapCols(indexes).copy();
+        eigenValues = eigenValues.asMatrix().mapRows(indexes).mapCol(0).solidCopy();
+        eigenVectors = eigenVectors.mapCols(indexes).solidCopy();
     }
 
 
     public Frame fit(Frame df, BiFunction<RV, RM, Integer> kFunction) {
         // TODO check if we have all the initial columns
 
-        RM x = Linear.newRMCopyOf(df);
+        RM x = SolidRM.copyOf(df);
 
         if (scaling) {
             for (int i = 0; i < x.rowCount(); i++) {
@@ -222,14 +228,14 @@ public class LDA implements Printable {
         StringBuilder sb = new StringBuilder();
 
         Frame eval = SolidFrame.wrapOf(
-                Numeric.empty(eigenValues.rowCount()).withName("values"),
-                Numeric.empty(eigenValues.rowCount()).withName("percent")
+                Numeric.empty(eigenValues.count()).withName("values"),
+                Numeric.empty(eigenValues.count()).withName("percent")
         );
         double total = 0.0;
-        for (int i = 0; i < eigenValues.rowCount(); i++) {
+        for (int i = 0; i < eigenValues.count(); i++) {
             total += eigenValues.get(i);
         }
-        for (int i = 0; i < eigenValues.rowCount(); i++) {
+        for (int i = 0; i < eigenValues.count(); i++) {
             eval.setValue(i, "values", eigenValues.get(i));
             eval.setValue(i, "percent", eigenValues.get(i) / total);
         }

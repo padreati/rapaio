@@ -31,6 +31,7 @@ import rapaio.core.distributions.Normal;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.math.linear.RM;
+import rapaio.math.linear.dense.SolidRM;
 
 /**
  * Tests for pearson correlation
@@ -95,7 +96,7 @@ public class CorrPearsonTest {
         Numeric z = Numeric.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).withName("z");
 
 
-        RM exp = RM.copyOf(3, 3,
+        RM exp = SolidRM.copyOf(3, 3,
                 1, 0.8356446312071465, 0.7997143292750094,
                 0.8356446312071465, 1, 0.9938073109055177,
                 0.7997143292750094, 0.9938073109055177, 1);

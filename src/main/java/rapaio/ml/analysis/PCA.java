@@ -30,6 +30,8 @@ import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
 import rapaio.printer.Printable;
 
 import java.util.Arrays;
@@ -52,7 +54,7 @@ public class PCA implements Printable {
     private RV mean;
     private RV sd;
 
-    private RM eigenValues;
+    private RV eigenValues;
     private RM eigenVectors;
 
     public PCA withMaxRuns(int maxRuns) {
@@ -65,7 +67,12 @@ public class PCA implements Printable {
         return this;
     }
 
-    public RM getEigenValues() {
+    public PCA withScaling(boolean scaling) {
+        this.scaling = scaling;
+        return this;
+    }
+
+    public RV getEigenValues() {
         return eigenValues;
     }
 
@@ -73,21 +80,23 @@ public class PCA implements Printable {
         return eigenVectors;
     }
 
-    public void learn(Frame df) {
+    public void train(Frame df) {
         validate(df);
 
         logger.fine("start pca train");
-        RM x = Linear.newRMCopyOf(df);
+        RM x = SolidRM.copyOf(df);
         if (scaling) {
             logger.fine("compute mean, sd and do scaling");
-            mean = RV.empty(x.colCount());
-            sd = RV.empty(x.colCount());
+            mean = SolidRV.empty(x.colCount());
+            sd = SolidRV.empty(x.colCount());
             for (int i = 0; i < x.colCount(); i++) {
                 mean.set(i, x.mapCol(i).mean().value());
                 sd.set(i, x.mapCol(i).var().sdValue());
             }
             for (int i = 0; i < x.rowCount(); i++) {
                 for (int j = 0; j < x.colCount(); j++) {
+                    if(sd.get(j)==0)
+                        continue;
                     x.set(i, j, (x.get(i, j) - mean.get(j)) / sd.get(j));
                 }
             }
@@ -97,27 +106,27 @@ public class PCA implements Printable {
         RM s = x.scatter();
 
         logger.fine("compute eigenvalues");
-        EigenPair ep = Linear.pdEigenDecomp(s, maxRuns, tol);
+        EigenPair ep = Linear.eigenDecomp(s, maxRuns, tol);
         eigenValues = ep.values();
         eigenVectors = ep.vectors();
 
         logger.fine("sort eigen values and vectors");
 
-        Integer[] rows = new Integer[eigenValues.rowCount()];
+        Integer[] rows = new Integer[eigenValues.count()];
         for (int i = 0; i < rows.length; i++) {
             rows[i] = i;
         }
-        Arrays.sort(rows, (o1, o2) -> -Double.valueOf(eigenValues.get(o1, 0)).compareTo(eigenValues.get(o2, 0)));
+        Arrays.sort(rows, (o1, o2) -> -Double.valueOf(eigenValues.get(o1)).compareTo(eigenValues.get(o2)));
         int[] indexes = Arrays.stream(rows).mapToInt(v -> v).toArray();
 
-        eigenValues = eigenValues.mapRows(indexes).mapCol(0).copy();
-        eigenVectors = eigenVectors.mapCols(indexes).copy();
+        eigenValues = eigenValues.asMatrix().mapRows(indexes).mapCol(0).solidCopy();
+        eigenVectors = eigenVectors.mapCols(indexes).solidCopy();
     }
 
     public Frame fit(Frame df, int k) {
         // TODO check if we have all the initial columns
 
-        RM x = Linear.newRMCopyOf(df);
+        RM x = SolidRM.copyOf(df);
 
         if (scaling) {
             for (int i = 0; i < x.rowCount(); i++) {

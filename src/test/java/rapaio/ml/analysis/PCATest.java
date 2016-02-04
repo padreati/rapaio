@@ -26,19 +26,18 @@ package rapaio.ml.analysis;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.data.Frame;
+import rapaio.data.Numeric;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
-import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
-import rapaio.ml.classifier.boost.AdaBoostSAMME;
+import rapaio.math.linear.dense.SolidRM;
 import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.eval.CEvaluation;
-import rapaio.sys.WS;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-
-import static rapaio.graphics.Plotter.*;
 
 /**
  * Principal component analysis decomposition test
@@ -56,10 +55,10 @@ public class PCATest {
 
     @Test
     public void pcaTest() {
-        RM x = Linear.newRMCopyOf(df.removeVars("y"));
+        RM x = SolidRM.copyOf(df.removeVars("y"));
 
         PCA pca = new PCA();
-        pca.learn(df.removeVars("y"));
+        pca.train(df.removeVars("y"));
 
         Frame fit = pca.fit(df.removeVars("y"), 2);
         pca.printSummary();
@@ -71,7 +70,7 @@ public class PCATest {
         Frame x = iris.removeVars("class");
 
         PCA pca = new PCA();
-        pca.learn(x);
+        pca.train(x);
 
         pca.printSummary();
 
@@ -79,5 +78,16 @@ public class PCATest {
 
         CEvaluation.cv(iris, "class", CForest.newRF().withRuns(100), 5);
         CEvaluation.cv(trans, "class", CForest.newRF().withRuns(100), 5);
+    }
+
+    @Test
+    public void testColinear() {
+        Var x = Numeric.copy(1, 2, 3, 4).withName("x");
+        Var y = Numeric.copy(2, 3, 4, 5).withName("y");
+        Var z = Numeric.copy(4, 2, 6, 9).withName("z");
+
+        PCA pca = new PCA();
+        pca.train(SolidFrame.wrapOf(x, y, z));
+        pca.printSummary();
     }
 }

@@ -39,6 +39,16 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.ejml</groupId>
+            <artifactId>all</artifactId>
+            <version>0.29</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ojalgo</groupId>
+            <artifactId>ojalgo</artifactId>
+            <version>39.0</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

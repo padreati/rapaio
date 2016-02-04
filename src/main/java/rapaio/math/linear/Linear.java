@@ -23,13 +23,12 @@
 
 package rapaio.math.linear;
 
-import rapaio.data.Frame;
-import rapaio.data.Var;
-import rapaio.math.linear.impl.SolidRM;
-import rapaio.math.linear.impl.SolidRV;
-
-import java.util.Arrays;
-import java.util.function.BiFunction;
+import org.ejml.alg.dense.decomposition.eig.EigenvalueExtractor;
+import org.ejml.alg.dense.decomposition.eig.SwitchingEigenDecomposition;
+import org.ejml.data.DenseMatrix64F;
+import rapaio.math.linear.dense.EigenvalueDecomposition;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
 
 /**
  * Linear algebra tool bag class.
@@ -39,92 +38,8 @@ import java.util.function.BiFunction;
  */
 public final class Linear {
 
-    public static RM newRMWrapOf(int rowCount, int colCount, double... values) {
-        return new SolidRM(rowCount, colCount, values);
-    }
-
-    public static RM newRMCopyOf(double[][] source) {
-        return newRMCopyOf(source, 0, source.length, 0, source[0].length);
-    }
-
-    public static RM newRMCopyOf(double[][] source, int mFirst, int mLast, int nFirst, int nLast) {
-        RM mm = new SolidRM(mLast - mFirst, nLast - nFirst);
-        for (int i = mFirst; i < mLast; i++) {
-            for (int j = nFirst; j < nLast; j++) {
-                mm.set(i, j, source[i][j]);
-            }
-        }
-        return mm;
-    }
-
-    public static RM newRMCopyOf(Frame df) {
-        RM RM = new SolidRM(df.rowCount(), df.varCount());
-        for (int i = 0; i < df.rowCount(); i++) {
-            for (int j = 0; j < df.varCount(); j++) {
-                RM.set(i, j, df.value(i, j));
-            }
-        }
-        return RM;
-    }
-
-    public static RM newRMCopyOf(Var... vars) {
-        int rowCount = Arrays.stream(vars).mapToInt(Var::rowCount).min().getAsInt();
-        RM RM = new SolidRM(rowCount, vars.length);
-        for (int i = 0; i < rowCount; i++) {
-            for (int j = 0; j < vars.length; j++) {
-                RM.set(i, j, vars[j].value(i));
-            }
-        }
-        return RM;
-    }
-
-    /**
-     * Builds a new matrix with given rows and cols, fillen with given value
-     *
-     * @param rowCount number of rows
-     * @param colCount number of columns
-     * @param fill     initial value for all matrix cells
-     * @return new matrix object
-     */
-    public static RM newRMFill(int rowCount, int colCount, double fill) {
-        if (fill == 0) {
-            return RM.empty(rowCount, colCount);
-        }
-        RM RM = new SolidRM(rowCount, colCount);
-        for (int i = 0; i < RM.rowCount(); i++) {
-            for (int j = 0; j < RM.colCount(); j++) {
-                RM.set(i, j, fill);
-            }
-        }
-        return RM;
-    }
-
-    public static RM newRMFill(int rowCount, int colCount, BiFunction<Integer, Integer, Double> f) {
-        RM RM = new SolidRM(rowCount, colCount);
-        for (int i = 0; i < rowCount; i++) {
-            for (int j = 0; j < colCount; j++) {
-                RM.set(i, j, f.apply(i, j));
-            }
-        }
-        return RM;
-    }
-
-    public static RV newRVCopyOf(Var var) {
-        return new SolidRV(var);
-    }
-
-    public static RV newRVCopyOf(double... values) {
-        RV ret = new SolidRV(values.length);
-        for (int i = 0; i < values.length; i++) {
-            ret.set(i, values[i]);
-        }
-        return ret;
-    }
-
-    // tools
-
     public static RM chol2inv(RM R) {
-        return chol2inv(R, RM.identity(R.rowCount()));
+        return chol2inv(R, SolidRM.identity(R.rowCount()));
     }
 
     public static RM chol2inv(RM R, RM B) {
@@ -134,7 +49,7 @@ public final class Linear {
         }
 
         // Copy right hand side.
-        RM X = B.copy();
+        RM X = B.solidCopy();
 
         // Solve L*Y = B;
         for (int k = 0; k < ref.rowCount(); k++) {
@@ -158,12 +73,18 @@ public final class Linear {
         return X;
     }
 
+    /*
     public static EigenPair pdEigenDecomp(RM s, int maxRuns, double tol) {
 
-        // runs QR decomposition algoritm for maximum of iterations
+        // runs QR decomposition algorithm for maximum of iterations
         // to provide a solution which has other than diagonals under
         // tolerance
 
+        // this works only for positive definite
+        // here we check only symmetry
+
+        if (s.rowCount() != s.colCount())
+            throw new IllegalArgumentException("This eigen pair method works only for positive definite matrices");
         QR qr = s.qr();
         s = qr.getR().dot(qr.getQ());
         RM ev = qr.getQ();
@@ -174,11 +95,62 @@ public final class Linear {
             if (inTolerance(s, tol))
                 break;
         }
-        return EigenPair.newFrom(s.diag(), ev.copy());
+        return EigenPair.newFrom(s.diag(), ev.solidCopy());
+    }*/
+
+    public static EigenPair eigenDecomp(RM s, int maxRuns, double tol) {
+
+        int n = s.colCount();
+        EigenvalueDecomposition evd = new EigenvalueDecomposition(s);
+
+        double[] _values = evd.getRealEigenvalues();
+        RM _vectors = evd.getV();
+
+        RV values = SolidRV.empty(n);
+        RM vectors = SolidRM.empty(n, n);
+
+        for (int i = 0; i < values.count(); i++) {
+            values.set(values.count() - i - 1, _values[i]);
+        }
+        for (int i = 0; i < vectors.rowCount(); i++) {
+            for (int j = 0; j < vectors.colCount(); j++) {
+                vectors.set(i, vectors.colCount() - j - 1, _vectors.get(i, j));
+            }
+        }
+        return EigenPair.from(values, vectors);
     }
 
+    public static EigenPair eigenDecompEjml(RM s, int maxRuns, double tol) {
+        DenseMatrix64F _s = new DenseMatrix64F(s.rowCount(), s.colCount());
+        for (int i = 0; i < s.rowCount(); i++) {
+            for (int j = 0; j < s.colCount(); j++) {
+                _s.set(i, j, s.get(i, j));
+            }
+        }
+
+        SwitchingEigenDecomposition sed = new SwitchingEigenDecomposition(s.rowCount());
+        sed.decompose(_s);
+
+        sed.getNumberOfEigenvalues();
+
+        RV values = SolidRV.empty(sed.getNumberOfEigenvalues());
+        RM vectors = SolidRM.empty(sed.getNumberOfEigenvalues(), sed.getNumberOfEigenvalues());
+
+        for (int i = 0; i < sed.getNumberOfEigenvalues(); i++) {
+            values.set(values.count() - i - 1, sed.getEigenvalue(i).getReal());
+        }
+        for (int i = 0; i < vectors.rowCount(); i++) {
+            for (int j = 0; j < sed.getNumberOfEigenvalues(); j++) {
+                if(sed.getEigenVector(j)!=null)
+                vectors.set(i, vectors.colCount() - j - 1, sed.getEigenVector(j).get(i, 0));
+            }
+        }
+        return EigenPair.from(values, vectors);
+    }
+
+
     public static RM pdPower(RM s, double power, int maxRuns, double tol) {
-        EigenPair p = pdEigenDecomp(s, maxRuns, tol);
+        EigenPair p = eigenDecomp(s, maxRuns, tol);
         RM U = p.vectors();
         RM lambda = p.expandedValues();
         for (int i = 0; i < lambda.rowCount(); i++) {

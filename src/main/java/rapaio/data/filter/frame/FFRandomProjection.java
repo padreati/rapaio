@@ -26,12 +26,12 @@ package rapaio.data.filter.frame;
 import rapaio.core.SamplingTools;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.data.VRange;
-import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
 
 import java.util.stream.IntStream;
 
@@ -69,7 +69,7 @@ public class FFRandomProjection extends FFDefault {
 
         // build k random projections
 
-        rp = RM.empty(varNames.length, k);
+        rp = SolidRM.empty(varNames.length, k);
         for (int i = 0; i < k; i++) {
             RV v = method.projection(varNames.length);
             for (int j = 0; j < varNames.length; j++) {
@@ -81,7 +81,7 @@ public class FFRandomProjection extends FFDefault {
     @Override
     public Frame apply(Frame df) {
 
-        RM X = Linear.newRMCopyOf(df.mapVars(varNames));
+        RM X = SolidRM.copyOf(df.mapVars(varNames));
         RM p = X.dot(rp);
 
         Frame non = df.removeVars(varNames);
@@ -96,8 +96,8 @@ public class FFRandomProjection extends FFDefault {
     public static Method normal(int k) {
         return rowCount -> {
             Normal norm = new Normal(0, 1);
-            RV v = RV.empty(rowCount);
-            for (int i = 0; i < v.rowCount(); i++) {
+            RV v = SolidRV.empty(rowCount);
+            for (int i = 0; i < v.count(); i++) {
                 v.set(i, norm.sampleNext() / Math.sqrt(k));
             }
             return v;
@@ -114,7 +114,7 @@ public class FFRandomProjection extends FFDefault {
 
         return rowCount -> {
             int[] sample = SamplingTools.sampleWeightedWR(rowCount, p);
-            RV v = RV.empty(rowCount);
+            RV v = SolidRV.empty(rowCount);
             for (int i = 0; i < sample.length; i++) {
                 if (sample[i] == 0) {
                     v.set(i, -sqrt);

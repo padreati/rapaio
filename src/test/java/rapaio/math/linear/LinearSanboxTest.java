@@ -23,24 +23,54 @@
 
 package rapaio.math.linear;
 
+import junit.framework.Assert;
 import org.junit.Test;
+import rapaio.core.CoreTools;
+import rapaio.data.Numeric;
+import rapaio.data.Var;
+import rapaio.data.filter.var.VFRefSort;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.sys.WS;
+import rapaio.util.Util;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/7/15.
  */
 public class LinearSanboxTest {
 
-    @Test
+//    @Test
     public void eigenValueTest() {
+        int len = 10;
+        for (int p = 0; p < 100; p++) {
 
-        RM A = Linear.newRMWrapOf(4, 4,
-                52, 30, 49, 28,
-                30, 50, 8, 44,
-                49, 8, 46, 16,
-                28, 44, 16, 22);
+            len = (int)(len *1.1);
 
-        EigenPair ep = Linear.pdEigenDecomp(A, 100, 1e-20);
-        ep.values().printSummary();
-        ep.vectors().printSummary();
+            WS.println("case " + len + " size:");
+            WS.println("========================");
+            RM A = SolidRM.fill(len, len, (i, j) -> CoreTools.distNormal().sampleNext());
+
+//        A = A.t().dot(A);
+
+//        A.printSummary();
+
+            EigenPair ep = Util.measure(() -> Linear.eigenDecompEjml(A, 1_000, 1e-20));
+//        ep.values().printSummary();
+//        ep.vectors().printSummary();
+
+            EigenPair ep2 = Util.measure(() -> Linear.eigenDecomp(A, 1_000, 1e-20));
+//        ep2.values().printSummary();
+//        ep2.vectors().printSummary();
+
+            Var x1 = Numeric.wrap(ep.values().valueStream().toArray());
+            Var x2 = Numeric.wrap(ep2.values().valueStream().toArray());
+
+            x1 = new VFRefSort(x1.refComparator()).fitApply(x1);
+            x2 = new VFRefSort(x2.refComparator()).fitApply(x2);
+
+
+            Assert.assertTrue(x1.deepEquals(x2));
+
+        }
     }
+
 }

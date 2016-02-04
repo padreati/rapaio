@@ -24,6 +24,7 @@
 package rapaio.data.filter.frame;
 
 import rapaio.data.*;
+import rapaio.sys.WS;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -47,7 +48,7 @@ public class FFOneHotEncoding extends FFDefault {
 
     private Map<String, String[]> levels;
 
-    public FFOneHotEncoding(String...varNames) {
+    public FFOneHotEncoding(String... varNames) {
         super(VRange.of(varNames));
     }
 
@@ -90,6 +91,9 @@ public class FFOneHotEncoding extends FFDefault {
                 }
                 for (int i = 0; i < df.rowCount(); i++) {
                     int index = df.index(i, varName);
+                    if (index >= dict.length) {
+                        WS.println("err");
+                    }
                     if (index > 0) {
                         oneHotVars.get(index - 1).setValue(i, 1.0);
                     }

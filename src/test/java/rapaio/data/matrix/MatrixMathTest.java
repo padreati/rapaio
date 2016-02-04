@@ -25,10 +25,11 @@ package rapaio.data.matrix;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.math.linear.LUDecomposition;
 import rapaio.math.linear.Linear;
-import rapaio.math.linear.QR;
 import rapaio.math.linear.RM;
+import rapaio.math.linear.dense.LUDecomposition;
+import rapaio.math.linear.dense.QR;
+import rapaio.math.linear.dense.SolidRM;
 
 import static org.junit.Assert.assertTrue;
 
@@ -42,23 +43,22 @@ public class MatrixMathTest {
 
     @Before
     public void setUp() throws Exception {
-        A = Linear.newRMWrapOf(2, 3,
+        A = SolidRM.copyOf(2, 3,
                 1, 3, 1,
                 1, 0, 0);
-        B = Linear.newRMWrapOf(2, 3,
+        B = SolidRM.copyOf(2, 3,
                 0, 0, 5,
                 7, 5, 0);
 
-        At = Linear.newRMWrapOf(3, 2,
+        At = SolidRM.copyOf(3, 2,
                 1, 1,
                 3, 0,
                 1, 0);
-        Bt = Linear.newRMWrapOf(3, 2,
+        Bt = SolidRM.copyOf(3, 2,
                 0, 7,
                 0, 5,
                 5, 0);
-
-        C = Linear.newRMWrapOf(3, 3,
+        C = SolidRM.copyOf(3, 3,
                 1, 2, 3,
                 4, 3, 0,
                 5, 2, 9);
@@ -96,10 +96,7 @@ public class MatrixMathTest {
     @Test
     public void testInverse() {
 
-        RM I = Linear.newRMWrapOf(3, 3,
-                1, 0, 0,
-                0, 1, 0,
-                0, 0, 1);
+        RM I = SolidRM.identity(3);
 
         RM invC = new QR(C).solve(I);
         invC.printSummary();

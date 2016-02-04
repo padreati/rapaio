@@ -25,9 +25,9 @@ package rapaio.data.matrix;
 
 import org.junit.Test;
 import rapaio.data.Numeric;
-import rapaio.math.linear.Linear;
-import rapaio.math.linear.QR;
 import rapaio.math.linear.RM;
+import rapaio.math.linear.dense.QR;
+import rapaio.math.linear.dense.SolidRM;
 
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
@@ -37,7 +37,7 @@ public class QRTest {
 
     @Test
     public void testQR() {
-        RM x = Linear.newRMCopyOf(new double[][]{
+        RM x = SolidRM.copyOf(new double[][]{
                 {1, 1, 1},
                 {1, 2, 4},
                 {1, 3, 9},
@@ -45,9 +45,9 @@ public class QRTest {
                 {1, 5, 25}
         });
 
-        RM y = Linear.newRMCopyOf(
-                Numeric.copy(2.8, 3.2, 7.1, 6.8, 8.8),
-                Numeric.copy(2.8, 3.2, 7.1, 6.8, 8.9)
+        RM y = SolidRM.copyOf(
+                Numeric.copy(2.8, 3.2, 7.1, 6.8, 8.8).withName("1"),
+                Numeric.copy(2.8, 3.2, 7.1, 6.8, 8.9).withName("2")
         );
 
         QR qr = new QR(x);

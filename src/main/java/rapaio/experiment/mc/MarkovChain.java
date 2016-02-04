@@ -27,6 +27,8 @@ import rapaio.core.RandomSource;
 import rapaio.datasets.text.TextCorpus;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
+import rapaio.math.linear.dense.SolidRM;
+import rapaio.math.linear.dense.SolidRV;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
 
@@ -128,8 +130,8 @@ public class MarkovChain implements Printable {
 
         // clean
 
-        this.p = RV.fill(states.size(), smoothEps);
-        this.m = RM.fill(states.size(), states.size(), smoothEps);
+        this.p = SolidRV.fill(states.size(), smoothEps);
+        this.m = SolidRM.fill(states.size(), states.size(), smoothEps);
 
         List<List<String>> chains = rowChains.stream()
                 .map(chain -> adapter.tokenize(chain))
@@ -159,7 +161,7 @@ public class MarkovChain implements Printable {
         double c = RandomSource.nextDouble();
 
         int last = -1;
-        for (int i = 0; i < p.rowCount(); i++) {
+        for (int i = 0; i < p.count(); i++) {
             c -= p.get(i);
             if (c <= 0) {
                 result.add(states.get(i));
@@ -178,8 +180,8 @@ public class MarkovChain implements Printable {
 
             if (!cache.containsKey(last)) {
                 RV ref = m.mapRow(last);
-                double[] index = new double[ref.colCount()];
-                for (int i = 0; i < ref.colCount(); i++) {
+                double[] index = new double[ref.count()];
+                for (int i = 0; i < ref.count(); i++) {
                     index[i] = ref.get(i);
                     if (i > 0) {
                         index[i] += index[i - 1];
@@ -234,7 +236,7 @@ public class MarkovChain implements Printable {
             sb.append(buff).append("\n");
 
         sb.append("Priors: \n");
-        sb.append(p.t().summary());
+        sb.append(p.summary());
 
         sb.append("Matrix: \n");
         sb.append(m.summary());
