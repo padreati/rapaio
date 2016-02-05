@@ -92,7 +92,8 @@ public class FFOneHotEncoding extends FFDefault {
                 for (int i = 0; i < df.rowCount(); i++) {
                     int index = df.index(i, varName);
                     if (index >= dict.length) {
-                        WS.println("err");
+                        WS.println("error on one hot encoding");
+                        continue;
                     }
                     if (index > 0) {
                         oneHotVars.get(index - 1).setValue(i, 1.0);

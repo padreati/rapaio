@@ -32,6 +32,7 @@ import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
+import rapaio.util.Pin;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -257,6 +258,7 @@ public class CEvaluation {
         Index r = Index.empty().withName("runs");
         Numeric testAuc = Numeric.empty().withName("test");
         Numeric trainAuc = Numeric.empty().withName("train");
+        Pin<Double> prevAuc = new Pin<>(0.0);
         c.withRunningHook((cs, run) -> {
 
             if ((run % step != 0) && run != 1) {
@@ -266,7 +268,8 @@ public class CEvaluation {
             ROC roc = ROC.from(c.fit(test).firstDensity().var(label), test.var(targetVar), label);
             WS.draw(rocCurve(roc).title("testAuc: " + WS.formatFlex(roc.auc()) + ", run: " + run));
             testAuc.addValue(roc.auc());
-            WS.println("testAuc: " + WS.formatFlex(roc.auc()) + ", run: " + run);
+            WS.println("testAuc: " + WS.formatLong(roc.auc()) + ", run: " + run + ", auc gain: " + WS.formatLong(roc.auc()-prevAuc.get()));
+            prevAuc.set(roc.auc());
 //            trainAuc.addValue(new ROC(c.fit(train).firstDensity().var(label), train.var(targetVar), label).auc());
 
 //            WS.draw(plot()

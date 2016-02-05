@@ -95,7 +95,7 @@ public class PCA implements Printable {
             }
             for (int i = 0; i < x.rowCount(); i++) {
                 for (int j = 0; j < x.colCount(); j++) {
-                    if(sd.get(j)==0)
+                    if (sd.get(j) == 0)
                         continue;
                     x.set(i, j, (x.get(i, j) - mean.get(j)) / sd.get(j));
                 }
@@ -131,7 +131,8 @@ public class PCA implements Printable {
         if (scaling) {
             for (int i = 0; i < x.rowCount(); i++) {
                 for (int j = 0; j < x.colCount(); j++) {
-                    x.set(i, j, (x.get(i, j) - mean.get(j)) / sd.get(j));
+                    if (sd.get(j) != 0)
+                        x.set(i, j, (x.get(i, j) - mean.get(j)) / sd.get(j));
                 }
             }
         }

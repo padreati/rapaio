@@ -27,6 +27,7 @@ import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.math.linear.Linear;
+import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.QR;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.SolidRM;
@@ -74,6 +75,10 @@ public class OLSRegression extends AbstractRegression {
                 .withAllowMissingTargetValues(false);
     }
 
+    public RV firstCoeff() {
+        return beta.mapCol(0);
+    }
+
     @Override
     protected boolean coreTrain(Frame df, Var weights) {
         if (targetNames().length == 0) {
@@ -86,6 +91,11 @@ public class OLSRegression extends AbstractRegression {
     }
 
     @Override
+    public OLSRFit fit(Frame df) {
+        return (OLSRFit) super.fit(df);
+    }
+
+    @Override
     public OLSRFit fit(Frame df, boolean withResiduals) {
         return (OLSRFit) super.fit(df, withResiduals);
     }
@@ -93,6 +103,18 @@ public class OLSRegression extends AbstractRegression {
     @Override
     protected OLSRFit coreFit(Frame df, boolean withResiduals) {
         OLSRFit rp = new OLSRFit(this, df);
+
+        for (int i = 0; i < targetNames().length; i++) {
+            String target = targetName(i);
+            for (int j = 0; j < rp.fit(target).rowCount(); j++) {
+                double fit = 0.0;
+                for (int k = 0; k < inputNames().length; k++) {
+                    fit += beta.get(k, i) * df.value(j, inputName(k));
+                }
+                rp.fit(target).setValue(j, fit);
+            }
+        }
+
         rp.buildComplete();
         return rp;
     }

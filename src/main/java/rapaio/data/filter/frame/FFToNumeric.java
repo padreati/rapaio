@@ -59,7 +59,7 @@ public class FFToNumeric extends FFDefault {
 
     @Override
     public Frame apply(Frame df) {
-        checkRangeVars(1, df.rowCount(), df);
+        checkRangeVars(1, df.varCount(), df);
 
         Set<String> nameSet = Arrays.stream(varNames).collect(Collectors.toSet());
         Var[] vars = new Var[df.varCount()];

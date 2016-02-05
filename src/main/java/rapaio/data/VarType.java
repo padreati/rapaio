@@ -71,6 +71,11 @@ public enum VarType {
         }
 
         @Override
+        public String code() {
+            return "bin";
+        }
+
+        @Override
         public Var newInstance() {
             return Binary.empty();
         }
@@ -92,6 +97,11 @@ public enum VarType {
         @Override
         public boolean isNominal() {
             return false;
+        }
+
+        @Override
+        public String code() {
+            return "idx";
         }
 
         @Override
@@ -120,6 +130,11 @@ public enum VarType {
         }
 
         @Override
+        public String code() {
+            return "nom";
+        }
+
+        @Override
         public Var newInstance() {
             return Nominal.empty();
         }
@@ -141,6 +156,11 @@ public enum VarType {
         @Override
         public boolean isNominal() {
             return false;
+        }
+
+        @Override
+        public String code() {
+            return "num";
         }
 
         @Override
@@ -170,6 +190,11 @@ public enum VarType {
         }
 
         @Override
+        public String code() {
+            return "ord";
+        }
+
+        @Override
         public Var newInstance() {
             return Ordinal.empty();
         }
@@ -191,6 +216,11 @@ public enum VarType {
         @Override
         public boolean isNominal() {
             return false;
+        }
+
+        @Override
+        public String code() {
+            return "dat";
         }
 
         @Override
@@ -218,6 +248,11 @@ public enum VarType {
         }
 
         @Override
+        public String code() {
+            return "txt";
+        }
+
+        @Override
         public Var newInstance(int rows) {
             return Text.empty(rows);
         }
@@ -241,6 +276,8 @@ public enum VarType {
     public boolean isBinary() {
         return false;
     }
+
+    public abstract String code();
 
     /**
      * Builds a new empty instance of the given type

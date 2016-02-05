@@ -52,24 +52,27 @@ public class Summary {
     public static String summary(Frame df, String... names) {
 
         StringBuilder buffer = new StringBuilder();
-        buffer.append(String.format("\n > printSummary(frame, %s)\n", Arrays.deepToString(names)));
+
+        buffer.append("Frame Summary\n");
+        buffer.append("=============\n");
+
         if (df == null) {
             buffer.append("null instance of frame.\n");
             return buffer.toString();
         }
 
-        buffer.append("rowCount: ").append(df.rowCount()).append("\n");
-        buffer.append("complete: ").append(df.stream().complete().count()).append("/").append(df.rowCount()).append("\n");
-        buffer.append("varCount: ").append(df.varCount()).append("\n");
-        buffer.append("varNames: \n");
+        buffer.append("* rowCount: ").append(df.rowCount()).append("\n");
+        buffer.append("* complete: ").append(df.stream().complete().count()).append("/").append(df.rowCount()).append("\n");
+        buffer.append("* varCount: ").append(df.varCount()).append("\n");
+        buffer.append("* varNames: \n");
 
         TextTable tt = TextTable.newEmpty(df.varCount(), 5);
         for (int i = 0; i < df.varCount(); i++) {
             tt.set(i, 0, i + ".", 1);
             tt.set(i, 1, df.var(i).name(), 1);
             tt.set(i, 2, ":", -1);
-            tt.set(i, 3, df.var(i).type().name(), -1);
-            tt.set(i, 4, "| ", 1);
+            tt.set(i, 3, df.var(i).type().code(), -1);
+            tt.set(i, 4, "|", 1);
         }
         tt.withMerge();
         buffer.append("\n").append(tt.summary()).append("\n");
