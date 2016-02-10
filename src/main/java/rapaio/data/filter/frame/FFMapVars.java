@@ -51,7 +51,7 @@ public class FFMapVars extends FFDefault {
 
     @Override
     public Frame apply(Frame df) {
-        checkRangeVars(0, df.varCount() - 1, df);
+        checkRangeVars(0, df.varCount(), df);
         return df.mapVars(varNames);
     }
 }

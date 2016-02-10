@@ -60,6 +60,15 @@ public interface VRange {
         return new VRangeByPredName(filter);
     }
 
+    static VRange byFilter(SPredicate<Var> filter) {
+        return new VRangeByPred(filter);
+    }
+
+    static VRange onlyTypes(VarType...types) {
+        Set<VarType> keep = Arrays.stream(types).collect(Collectors.toSet());
+        return new VRangeByPred(var -> keep.contains(var.type()));
+    }
+
     List<Integer> parseVarIndexes(Frame df);
 
     List<String> parseVarNames(Frame df);
@@ -200,6 +209,39 @@ class VRangeByPredName implements VRange {
     public List<String> parseInverseVarNames(Frame df) {
         return df.varStream().map(Var::name)
                 .filter(name -> !predicate.test(name))
+                .collect(Collectors.toList());
+    }
+}
+
+class VRangeByPred implements VRange {
+
+    private final SPredicate<Var> predicate;
+
+    VRangeByPred(SPredicate<Var> predicate) {
+        this.predicate = predicate;
+    }
+
+    @Override
+    public List<Integer> parseVarIndexes(Frame df) {
+        return IntStream.range(0, df.varCount())
+                .filter(i -> predicate.test(df.var(i)))
+                .boxed()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> parseVarNames(Frame df) {
+        return df.varStream()
+                .filter(predicate::test)
+                .map(Var::name)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> parseInverseVarNames(Frame df) {
+        return df.varStream()
+                .filter(var -> !predicate.test(var))
+                .map(Var::name)
                 .collect(Collectors.toList());
     }
 }

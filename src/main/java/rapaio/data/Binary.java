@@ -85,7 +85,7 @@ public final class Binary extends AbstractVar {
      * @param fillValue fill value
      * @return new instance of binary var
      */
-    public static Binary newFill(int rows, boolean fillValue) {
+    public static Binary fill(int rows, boolean fillValue) {
         return new Binary(rows, false, fillValue);
     }
 

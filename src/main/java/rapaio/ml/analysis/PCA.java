@@ -25,6 +25,7 @@ package rapaio.ml.analysis;
 
 import rapaio.data.Frame;
 import rapaio.data.SolidFrame;
+import rapaio.data.Var;
 import rapaio.data.VarType;
 import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.Linear;
@@ -50,6 +51,7 @@ public class PCA implements Printable {
     private int maxRuns = 2_000;
 
     private boolean scaling = true;
+    private String[] inputNames;
 
     private RV mean;
     private RV sd;
@@ -126,7 +128,7 @@ public class PCA implements Printable {
     public Frame fit(Frame df, int k) {
         // TODO check if we have all the initial columns
 
-        RM x = SolidRM.copyOf(df);
+        RM x = SolidRM.copyOf(df.mapVars(inputNames));
 
         if (scaling) {
             for (int i = 0; i < x.rowCount(); i++) {
@@ -144,16 +146,21 @@ public class PCA implements Printable {
             names[i] = "pca_" + (i + 1);
         }
         RM result = x.dot(eigenVectors.mapCols(dim));
-        return SolidFrame.matrix(result, names);
+        Frame rest = df.removeVars(inputNames);
+        return rest.varCount() == 0 ?
+                SolidFrame.matrix(result, names) :
+                SolidFrame.matrix(result, names).bindVars(rest);
     }
 
     private void validate(Frame df) {
         Set<VarType> allowedTypes = new HashSet<>(Arrays.asList(VarType.BINARY, VarType.INDEX, VarType.ORDINAL, VarType.NUMERIC));
         df.varStream().forEach(var -> {
             if (!allowedTypes.contains(var.type())) {
-                throw new IllegalArgumentException("column type not allowed");
+                throw new IllegalArgumentException("Var type not allowed. Var name: " + var.name() + ", type: " + var.type().name());
             }
         });
+
+        inputNames = df.varStream().map(Var::name).toArray(String[]::new);
     }
 
     public String summary() {

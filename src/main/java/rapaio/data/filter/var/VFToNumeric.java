@@ -46,7 +46,7 @@ public class VFToNumeric extends VFAbstract {
         if (v.type().equals(VarType.NUMERIC)) {
             return v;
         }
-        final Numeric result = Numeric.empty();
+        final Numeric result = Numeric.empty().withName(v.name());
         v.stream().forEach(s -> {
             if (s.missing()) {
                 result.addMissing();
@@ -60,7 +60,9 @@ public class VFToNumeric extends VFAbstract {
                             result.addMissing();
                         }
                         break;
+                    case ORDINAL:
                     case INDEX:
+                    case BINARY:
                         result.addValue(s.index());
                         break;
                 }

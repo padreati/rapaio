@@ -67,6 +67,7 @@ public class FFOneHotEncoding extends FFDefault {
 
         levels = new HashMap<>();
         for (String varName : varNames) {
+            // for each nominal variable
             if (df.var(varName).type().isNominal()) {
                 // process one hot encoding
                 String[] dict = df.var(varName).levels();
@@ -78,25 +79,32 @@ public class FFOneHotEncoding extends FFDefault {
     public Frame apply(Frame df) {
         checkRangeVars(1, df.varCount(), df);
 
+        // build a set for fast search
         Set<String> nameSet = Arrays.stream(varNames).collect(Collectors.toSet());
+
+        // list of variables with encoding
         List<Var> vars = new ArrayList<>();
 
         for (String varName : df.varNames()) {
+
+            // if the variable has been learned
             if (levels.keySet().contains(varName)) {
-                // process one hot encoding
+
+                // get the learned dictionary
                 String[] dict = levels.get(varName);
                 List<Var> oneHotVars = new ArrayList<>();
+                Map<String, Var> index = new HashMap<>();
+                // create a new numeric var for each level, filled with 0
                 for (int i = 1; i < dict.length; i++) {
-                    oneHotVars.add(Numeric.fill(df.rowCount()).withName(varName + "." + dict[i]));
+                    Var v = Numeric.fill(df.rowCount()).withName(varName + "." + dict[i]);
+                    oneHotVars.add(v);
+                    index.put(dict[i], v);
                 }
+                // populate encoding variables
                 for (int i = 0; i < df.rowCount(); i++) {
-                    int index = df.index(i, varName);
-                    if (index >= dict.length) {
-                        WS.println("error on one hot encoding");
-                        continue;
-                    }
-                    if (index > 0) {
-                        oneHotVars.get(index - 1).setValue(i, 1.0);
+                    String level = df.label(i, varName);
+                    if (index.containsKey(level)) {
+                        index.get(level).setValue(i, 1.0);
                     }
                 }
                 vars.addAll(oneHotVars);

@@ -21,12 +21,28 @@
  *
  */
 
-package rapaio.io;
+package rapaio.data.filter.frame;
+
+import org.junit.Assert;
+import org.junit.Test;
+import rapaio.data.Frame;
+import rapaio.data.Numeric;
+import rapaio.data.SolidFrame;
 
 /**
- * Collection of utility methods which can be used into a
- * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/14/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/10/16.
  */
-public class JavaSerUtil {
+public class FFAddInterceptTest {
+
+    @Test
+    public void testInterceptValues() {
+        Frame before = SolidFrame.wrapOf(Numeric.fill(100, 1).withName("a"));
+        Frame after = new FFAddIntercept().newInstance().filter(before);
+
+        Assert.assertTrue(after.varCount()==2);
+        Assert.assertEquals(FFAddIntercept.INTERCEPT, after.varNames()[0]);
+
+        Frame again = new FFAddIntercept().filter(after);
+        Assert.assertTrue(after.equals(again));
+    }
 }

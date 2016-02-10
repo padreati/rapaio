@@ -98,10 +98,13 @@ public class CholeskyDecomposition implements Serializable {
                 }
                 Lrowj[k] = s = (A.get(j, k) - s) / L[k][k];
                 d = d + s * s;
-                isspd = isspd & (A.get(k, j) == A.get(j, k));
+                if (A.get(k, j) != A.get(j, k)) {
+                    isspd = false;
+                }
             }
             d = A.get(j, j) - d;
-            isspd = isspd & (d > 0.0);
+            if (d <= 0.0)
+                isspd = false;
             L[j][j] = Math.sqrt(Math.max(d, 0.0));
             for (int k = j + 1; k < n; k++) {
                 L[j][k] = 0.0;

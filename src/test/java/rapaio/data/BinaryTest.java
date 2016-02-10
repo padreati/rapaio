@@ -54,13 +54,13 @@ public class BinaryTest {
 
     @Test
     public void testFill() {
-        Binary b = Binary.newFill(10, false);
+        Binary b = Binary.fill(10, false);
 
         assertEquals(0, b.stream().incomplete().count());
         assertEquals(10, b.stream().complete().filter(s -> !s.binary()).count());
         assertEquals(0, b.stream().complete().filter(VSpot::binary).count());
 
-        b = Binary.newFill(10, true);
+        b = Binary.fill(10, true);
 
         assertEquals(0, b.stream().incomplete().count());
         assertEquals(0, b.stream().complete().filter(s -> !s.binary()).count());

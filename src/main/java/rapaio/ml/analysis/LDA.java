@@ -30,6 +30,7 @@ import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.CholeskyDecomposition;
 import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.Linear;
+import rapaio.math.linear.dense.QR;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
 import rapaio.printer.Printable;
@@ -105,7 +106,8 @@ public class LDA implements Printable {
         if (scaling) {
             for (int i = 0; i < xx.rowCount(); i++) {
                 for (int j = 0; j < xx.colCount(); j++) {
-                    xx.set(i, j, (xx.get(i, j) - mean.get(j)) / sd.get(j));
+                    if (sd.get(j) != 0)
+                        xx.set(i, j, (xx.get(i, j) - mean.get(j)) / sd.get(j));
                 }
             }
         }
@@ -147,7 +149,8 @@ public class LDA implements Printable {
         }
 
         // inverse sw
-        RM swi = new CholeskyDecomposition(sw).solve(SolidRM.identity(inputNames.length));
+        RM swi = new QR(sw).solve(SolidRM.identity(inputNames.length));
+//        RM swi = new CholeskyDecomposition(sw).solve(SolidRM.identity(inputNames.length));
 
         // use decomp of sbe
         RM sbplus = Linear.pdPower(sb, 0.5, maxRuns, tol);
@@ -176,9 +179,7 @@ public class LDA implements Printable {
 
 
     public Frame fit(Frame df, BiFunction<RV, RM, Integer> kFunction) {
-        // TODO check if we have all the initial columns
-
-        RM x = SolidRM.copyOf(df);
+        RM x = SolidRM.copyOf(df.mapVars(inputNames));
 
         if (scaling) {
             for (int i = 0; i < x.rowCount(); i++) {
@@ -197,7 +198,10 @@ public class LDA implements Printable {
             names[i] = "lda_" + (i + 1);
         }
         RM result = x.dot(eigenVectors.mapCols(dim));
-        return SolidFrame.matrix(result, names);
+        Frame rest = df.removeVars(inputNames);
+        return rest.varCount() == 0 ?
+                SolidFrame.matrix(result, names) :
+                SolidFrame.matrix(result, names).bindVars(df.removeVars(inputNames));
     }
 
     private void validate(Frame df, String... targetVars) {

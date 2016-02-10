@@ -64,7 +64,7 @@ public class FFToNumeric extends FFDefault {
         Set<String> nameSet = Arrays.stream(varNames).collect(Collectors.toSet());
         Var[] vars = new Var[df.varCount()];
         for (int i = 0; i < vars.length; i++) {
-            if (nameSet.contains(df.var(i).name())) {
+            if (!nameSet.contains(df.var(i).name())) {
                 vars[i] = df.var(i);
             } else {
                 vars[i] = new VFToNumeric().fitApply(df.var(i));

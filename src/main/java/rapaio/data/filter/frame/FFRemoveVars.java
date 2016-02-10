@@ -33,10 +33,6 @@ public class FFRemoveVars extends FFDefault {
 
     private static final long serialVersionUID = -932131127278719356L;
 
-    public FFRemoveVars(String... varNames) {
-        super(VRange.of(varNames));
-    }
-
     public FFRemoveVars(VRange vRange) {
         super(vRange);
     }
@@ -53,7 +49,7 @@ public class FFRemoveVars extends FFDefault {
 
     @Override
     public Frame apply(Frame df) {
-        checkRangeVars(0, df.varCount() - 1, df);
-        return df.removeVars(vRange);
+        checkRangeVars(0, df.varCount(), df);
+        return df.removeVars(varNames);
     }
 }
