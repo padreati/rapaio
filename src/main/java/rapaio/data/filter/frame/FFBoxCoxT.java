@@ -61,7 +61,8 @@ public class FFBoxCoxT extends FFDefault {
 
     @Override
     public void train(Frame df) {
-        checkRangeVars(1, df.varCount(), df);
+        parse(df);
+        checkRangeVars(0, df.varCount(), df);
     }
 
     @Override
