@@ -23,7 +23,6 @@
 
 package rapaio.graphics.plot.plotcomp;
 
-import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 import rapaio.core.CoreTools;
 import rapaio.core.MathTools;
 import rapaio.core.correlation.CorrPearson;
