@@ -98,7 +98,7 @@ public class CorrPearson implements Printable {
             int pos = map.get(i);
             sum += ((x.value(pos) - xMean) * (y.value(pos) - yMean));
         }
-        return sum / (sdp * (map.size() - 1));
+        return sdp == 0 ? 0.0 : sum / (sdp * (map.size() - 1));
     }
 
     public double[][] values() {

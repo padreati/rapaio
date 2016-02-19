@@ -111,6 +111,13 @@ public final class Nominal extends FactorBase {
         return nominal;
     }
 
+    public static Nominal copy(List<String> values) {
+        Nominal nominal = Nominal.empty();
+        for (String value : values)
+            nominal.addLabel(value);
+        return nominal;
+    }
+
     public static Nominal from(int rows, Function<Integer, String> func, String... dict) {
         Nominal nominal = Nominal.empty(rows, dict);
         for (int i = 0; i < rows; i++) {

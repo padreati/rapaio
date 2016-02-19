@@ -39,12 +39,23 @@ public class Legend extends PlotComponent {
 
     private static final long serialVersionUID = 7360504551525942239L;
 
+    public static final int UP_LEFT = 0;
+
     private final double x;
     private final double y;
+    private final int place;
 
     public Legend(double x, double y, GOpt... opts) {
         this.x = x;
         this.y = y;
+        this.place = -1;
+        this.options.apply(opts);
+    }
+
+    public Legend(int place, GOpt... opts) {
+        this.x = -1;
+        this.y = -1;
+        this.place = place;
         this.options.apply(opts);
     }
 
@@ -72,9 +83,18 @@ public class Legend extends PlotComponent {
         double xstart = parent.xScale(x);
         double ystart = parent.yScale(y);
 
+        if(place!=-1) {
+            switch (place) {
+                case UP_LEFT:
+                    xstart = parent.xScale(parent.getRange().x1());
+                    ystart = parent.yScale(parent.getRange().y2());
+            }
+        }
+
         for (int i = 0; i < labels.length; i++) {
             g2d.setColor(options.getColor(i));
             g2d.draw(new Rectangle2D.Double(xstart, ystart - minHeight / 3, size, 1));
+            g2d.setColor(Color.BLACK);
             g2d.drawString(labels[i], (int) (xstart + size + size / 2), (int) (ystart));
             ystart += minHeight + 1;
         }
