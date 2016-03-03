@@ -35,7 +35,9 @@ import rapaio.graphics.plot.Plot;
 import rapaio.graphics.plot.plotcomp.MeshContour;
 import rapaio.graphics.plot.plotcomp.Points;
 import rapaio.printer.IdeaPrinter;
+import rapaio.sys.WS;
 
+import java.io.IOException;
 import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 
@@ -49,9 +51,16 @@ import static rapaio.sys.WS.setPrinter;
 @Deprecated
 public class ContourSample {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         setPrinter(new IdeaPrinter());
+
+        double stepMesh = 0.05;
+        double stepGrad = 0.005;
+        drawFig(stepMesh, stepGrad);
+    }
+
+    private static void drawFig(double stepMesh, double stepGrad) throws IOException {
 
         Frame xy = SolidFrame.wrapOf(
                 Numeric.wrap(3, -1, -2).withName("x"),
@@ -65,26 +74,25 @@ public class ContourSample {
                         row -> d.pdf(Math.sqrt(Math.pow(x - xy.value(row, "x"), 2) + Math.pow(y - xy.value(row, "y"), 2)))
                 ).sum();
 
-        Numeric x = Numeric.seq(-3, 10, 0.05);
-        Numeric y = Numeric.seq(-3, 10, 0.05);
+        Numeric x = Numeric.seq(-3, 10, stepMesh);
+        Numeric y = Numeric.seq(-3, 10, stepMesh);
 
         MeshGrid1D mg = new MeshGrid1D(x, y);
         mg.fillWithFunction(bi);
 
         Plot p = new Plot();
-        Var q = Numeric.seq(0, 1, 0.05);
+        Var q = Numeric.seq(0, 1, stepGrad);
         double[] qq = mg.quantiles(q.stream().mapToDouble().toArray());
         qq[qq.length - 1] = 1;
-//        ColorGradient gradient = ColorGradient.newBiColorGradient(
-//                new Color(0, 0, 255), new Color(0, 128, 0), q.stream().mapToDouble().toArray());
-//
         ColorGradient gradient = ColorGradient.newHueGradient(q.stream().mapToDouble().toArray());
 
         for (int i = 0; i < q.rowCount() - 1; i++) {
-            p.add(new MeshContour(mg.compute(qq[i], qq[i + 1]), true, true,
+            p.add(new MeshContour(mg.compute(qq[i], qq[i + 1]), false, true,
                     Plotter.color(gradient.getColor(i)), lwd(0.2f)));
         }
         p.add(new Points(xy.var("x"), xy.var("y")));
         draw(p);
+
+        WS.saveImage(p, 800, 600, "/tmp/mesh_curve_1.png");
     }
 }

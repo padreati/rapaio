@@ -23,9 +23,8 @@
 
 package rapaio.data;
 
-import rapaio.util.func.SPredicate;
-
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -52,19 +51,28 @@ public interface VRange {
         return new VRangeByName(varNames);
     }
 
+    static VRange of(Collection<String> varNames) {
+        String[] names = new String[varNames.size()];
+        int i = 0;
+        for (String varName : varNames) {
+            names[i++] = varName;
+        }
+        return new VRangeByName(names);
+    }
+
     static VRange of(int... varIndexes) {
         return new VRangeByName(varIndexes);
     }
 
-    static VRange byName(SPredicate<String> filter) {
+    static VRange byName(Predicate<String> filter) {
         return new VRangeByPredName(filter);
     }
 
-    static VRange byFilter(SPredicate<Var> filter) {
+    static VRange byFilter(Predicate<Var> filter) {
         return new VRangeByPred(filter);
     }
 
-    static VRange onlyTypes(VarType...types) {
+    static VRange onlyTypes(VarType... types) {
         Set<VarType> keep = Arrays.stream(types).collect(Collectors.toSet());
         return new VRangeByPred(var -> keep.contains(var.type()));
     }
@@ -184,9 +192,9 @@ class VRangeByName implements VRange {
 
 class VRangeByPredName implements VRange {
 
-    private final SPredicate<String> predicate;
+    private final Predicate<String> predicate;
 
-    VRangeByPredName(SPredicate<String> predicate) {
+    VRangeByPredName(Predicate<String> predicate) {
         this.predicate = predicate;
     }
 
@@ -215,9 +223,9 @@ class VRangeByPredName implements VRange {
 
 class VRangeByPred implements VRange {
 
-    private final SPredicate<Var> predicate;
+    private final Predicate<Var> predicate;
 
-    VRangeByPred(SPredicate<Var> predicate) {
+    VRangeByPred(Predicate<Var> predicate) {
         this.predicate = predicate;
     }
 

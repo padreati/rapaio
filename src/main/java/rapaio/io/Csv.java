@@ -29,6 +29,7 @@ import rapaio.util.func.SPredicate;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.zip.GZIPInputStream;
 
 import static java.util.stream.Collectors.toSet;
@@ -50,8 +51,8 @@ public class Csv {
     private VarType[] defaultTypes = new VarType[]{VarType.BINARY, VarType.INDEX, VarType.NUMERIC, VarType.NOMINAL};
     private int startRow = 0;
     private int endRow = Integer.MAX_VALUE;
-    private SPredicate<Integer> skipRows = row -> false;
-    private SPredicate<Integer> skipCols = row -> false;
+    private Predicate<Integer> skipRows = row -> false;
+    private Predicate<Integer> skipCols = row -> false;
     private Frame template;
 
     public Csv() {
@@ -105,14 +106,14 @@ public class Csv {
         return this;
     }
 
-    public Csv withSkipRows(SPredicate<Integer> p) {
+    public Csv withSkipRows(Predicate<Integer> p) {
         skipRows = p;
         return this;
     }
 
     public Csv withSkipCols(int... cols) {
         final Set<Integer> skip = Arrays.stream(cols).boxed().collect(toSet());
-        SPredicate<Integer> old = skipCols;
+        Predicate<Integer> old = skipCols;
         skipCols = row -> old.test(row) || skip.contains(row);
         return this;
     }
@@ -192,10 +193,10 @@ public class Csv {
                     continue;
                 }
 
-                List<String> row = parseLine(line);
 
                 // build vectors with initial types
                 if (first) {
+                    List<String> row = parseLine(line);
                     first = false;
                     for (int i = names.size(); i < row.size(); i++) {
                         names.add("V" + (i + 1));
@@ -211,15 +212,15 @@ public class Csv {
                                 }
                             }
                             if (found) {
-                                varSlots.add(new VarSlot(this, template.var(colName)));
+                                varSlots.add(new VarSlot(this, template.var(colName), 0));
                                 continue;
                             }
                         }
                         if (typeFieldHints.containsKey(colName)) {
-                            varSlots.add(new VarSlot(this, typeFieldHints.get(colName)));
+                            varSlots.add(new VarSlot(this, typeFieldHints.get(colName), 0));
                         } else {
                             // default type
-                            varSlots.add(new VarSlot(this));
+                            varSlots.add(new VarSlot(this, 0));
                         }
                     }
                 }
@@ -229,12 +230,14 @@ public class Csv {
                     continue;
                 }
                 if (rows == endRow) break;
+                List<String> row = parseLine(line);
                 rows++;
                 int len = Math.max(row.size(), names.size());
                 for (int i = 0; i < len; i++) {
                     // we have a value in row for which we did not defined a var slot
                     if (i >= varSlots.size()) {
-                        varSlots.add(new VarSlot(this));
+                        names.add("V" + (i+1));
+                        varSlots.add(new VarSlot(this, varSlots.get(0).var.rowCount()));
                         continue;
                     }
                     // we have missing values at the end of the row
@@ -249,7 +252,8 @@ public class Csv {
         }
         List<Var> variables = new ArrayList<>();
         for (int i = 0; i < varSlots.size(); i++) {
-            variables.add(varSlots.get(i).var().withName(names.get(i)));
+            String name = names.size() > i ? names.get(i) : "V" + (i + 1);
+            variables.add(varSlots.get(i).var().withName(name));
         }
         return SolidFrame.wrapOf(rows - startRow, variables);
     }
@@ -412,24 +416,24 @@ public class Csv {
         /**
          * Constructor for slot which does not have a predefined type, it tries the best by using default types
          */
-        public VarSlot(Csv parent) {
+        public VarSlot(Csv parent, int rows) {
             this.parent = parent;
             this.type = null;
-            this.var = parent.defaultTypes[0].newInstance();
+            this.var = parent.defaultTypes[0].newInstance(rows);
             this.text = Text.empty();
         }
 
-        public VarSlot(Csv parent, VarType varType) {
+        public VarSlot(Csv parent, VarType varType, int rows) {
             this.parent = parent;
             this.type = varType;
-            this.var = varType.newInstance();
+            this.var = varType.newInstance(rows);
             this.text = null;
         }
 
-        public VarSlot(Csv parent, Var template) {
+        public VarSlot(Csv parent, Var template, int rows) {
             this.parent = parent;
             this.type = template.type();
-            this.var = template.newInstance();
+            this.var = template.newInstance(rows);
             this.text = null;
         }
 

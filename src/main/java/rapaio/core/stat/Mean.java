@@ -25,6 +25,7 @@ package rapaio.core.stat;
 
 import rapaio.data.Var;
 import rapaio.printer.Printable;
+import rapaio.sys.WS;
 
 import static rapaio.sys.WS.formatFlex;
 
@@ -39,8 +40,8 @@ public final class Mean implements Printable {
 
     private final String varName;
     private final double value;
-    private int missingCount = 0;
-    private int completeCount = 0;
+    private double missingCount = 0;
+    private double completeCount = 0;
 
     public Mean(Var var) {
         this.varName = var.name();
@@ -53,8 +54,13 @@ public final class Mean implements Printable {
                 sum += var.value(i);
             }
         }
-        final double mean = sum / (1.0 * completeCount);
-        this.value = mean + var.stream().complete().mapToDouble(s -> s.value() - mean).sum() / (1.0 * completeCount);
+        if (completeCount == 0) {
+            this.value = Double.NaN;
+            return;
+        }
+        final double mean = sum / completeCount;
+        final double mean2 = var.stream().complete().mapToDouble(s -> s.value() - mean).sum();
+        this.value = mean + mean2 / completeCount;
     }
 
     /**
@@ -70,7 +76,9 @@ public final class Mean implements Printable {
     public String summary() {
         return "\n" +
                 "> mean[" + varName + "]\n" +
-                "total rows: " + (completeCount + missingCount) + " (complete: " + completeCount + ", missing: " + missingCount + ")\n" +
+                "total rows: " + formatFlex(completeCount + missingCount) +
+                " (complete: " + formatFlex(completeCount) +
+                ", missing: " + formatFlex(missingCount) + ")\n" +
                 "mean: " + formatFlex(value) + "\n";
     }
 }

@@ -98,6 +98,7 @@ public class CorrGram extends PlotComponent {
         }
 
         ColorGradient gradient = ColorGradient.newHueGradient(DoubleStream.iterate(0, x -> x + 0.01).limit(101).toArray());
+//        ColorGradient gradient = ColorGradient.newBiColorGradient(Color.RED, Color.BLUE, DoubleStream.iterate(0, x -> x + 0.01).limit(101).toArray());
         for (int i = dist.rowCount()-1; i >=0 ; i--) {
             for (int j = 0; j < dist.colCount(); j++) {
                 g2d.setColor(gradient.getColor(colors[i][j]));
