@@ -61,7 +61,7 @@ public class FFilterNominalToDoubleTest {
     @Test
     public void testNullVector() {
         try {
-            new FFRefSort(null).filter(null);
+            new FFRefSort(null).fitApply(null);
         } catch (Exception ex) {
             assertTrue(true);
         }

@@ -30,7 +30,7 @@ import rapaio.data.Var;
  * Filter to create monotonic power transformations
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.
  */
-public class VFTransformPower extends VFAbstract {
+public class VFTransformPower extends AbstractVF {
 
     private static final long serialVersionUID = -4496756339460112649L;
     private final double lambda;

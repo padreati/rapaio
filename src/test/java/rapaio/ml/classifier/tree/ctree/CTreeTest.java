@@ -73,7 +73,7 @@ public class CTreeTest {
     public void testBuilderID3() throws IOException, URISyntaxException {
         Frame df = Datasets.loadMushrooms();
         Summary.printNames(df);
-        df = new FFRetainTypes(VarType.NOMINAL).filter(df);
+        df = new FFRetainTypes(VarType.NOMINAL).fitApply(df);
 
         Summary.printSummary(df);
     }

@@ -32,7 +32,7 @@ import rapaio.data.Var;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFJitter extends VFAbstract {
+public class VFJitter extends AbstractVF {
 
     private static final long serialVersionUID = -8411939170432884225L;
     private final Distribution d;

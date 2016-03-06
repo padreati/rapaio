@@ -31,13 +31,17 @@ import java.util.function.Consumer;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFUpdate extends VFAbstract {
+public class VFUpdate extends AbstractVF {
 
     private static final long serialVersionUID = 3929781693784001199L;
 
+    public static VFUpdate with(Consumer<VSpot> c) {
+        return new VFUpdate(c);
+    }
+
     private final Consumer<VSpot> f;
 
-    public VFUpdate(Consumer<VSpot> f) {
+    private VFUpdate(Consumer<VSpot> f) {
         this.f = f;
     }
 

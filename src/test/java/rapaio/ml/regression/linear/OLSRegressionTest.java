@@ -62,7 +62,7 @@ public class OLSRegressionTest {
 
     @Test
     public void testWork() throws IOException {
-        Frame df = new FFAddIntercept().filter(Datasets.loadISLAdvertising().mapVars("TV", "Radio", "Newspaper", "Sales"));
+        Frame df = new FFAddIntercept().fitApply(Datasets.loadISLAdvertising().mapVars("TV", "Radio", "Newspaper", "Sales"));
 //        Frame df = Datasets.loadISLAdvertising().mapVars("TV", "Radio", "Newspaper", "Sales");
         String[] targetNames = new String[]{"Sales"};
         String[] inputNames = new String[]{"(Intercept)", "TV", "Radio", "Newspaper"};

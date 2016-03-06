@@ -28,7 +28,7 @@ import rapaio.data.Var;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.
  */
-public class VFCumulativeSum extends VFAbstract {
+public class VFCumulativeSum extends AbstractVF {
 
     private static final long serialVersionUID = -4903712768679690937L;
 

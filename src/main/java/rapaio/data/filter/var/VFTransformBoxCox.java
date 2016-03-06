@@ -28,7 +28,7 @@ import rapaio.data.Var;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/11/14.
  */
-public class VFTransformBoxCox extends VFAbstract {
+public class VFTransformBoxCox extends AbstractVF {
 
     private static final long serialVersionUID = 1914770412929840529L;
     private final double lambda;

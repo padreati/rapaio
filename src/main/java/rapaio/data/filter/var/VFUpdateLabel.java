@@ -30,13 +30,17 @@ import java.util.function.Function;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFUpdateLabel extends VFAbstract {
+public class VFUpdateLabel extends AbstractVF {
 
     private static final long serialVersionUID = -8804231452563671594L;
 
+    public static VFUpdateLabel with(Function<String, String> f) {
+        return new VFUpdateLabel(f);
+    }
+
     private final Function<String, String> f;
 
-    public VFUpdateLabel(Function<String, String> f) {
+    private VFUpdateLabel(Function<String, String> f) {
         this.f = f;
     }
 

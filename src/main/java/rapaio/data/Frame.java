@@ -510,7 +510,7 @@ public interface Frame extends Serializable, Printable {
     default Frame applyFilters(FFilter... inputFilters) {
         Frame df = this;
         for (FFilter filter : inputFilters) {
-            df = filter.filter(df);
+            df = filter.fitApply(df);
         }
         return df;
     }

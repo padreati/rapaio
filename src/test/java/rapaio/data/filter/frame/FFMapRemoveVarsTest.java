@@ -54,7 +54,7 @@ public class FFMapRemoveVarsTest {
     }
 
     private boolean assertMapEquals(VRange vRange) {
-        return df.mapVars(vRange).deepEquals(new FFMapVars(vRange).filter(df));
+        return df.mapVars(vRange).deepEquals(new FFMapVars(vRange).fitApply(df));
     }
 
     @Test
@@ -65,14 +65,14 @@ public class FFMapRemoveVarsTest {
     }
 
     private boolean assertRemoveVars(VRange vRange) {
-        return df.removeVars(vRange).deepEquals(new FFRemoveVars(vRange).filter(df));
+        return df.removeVars(vRange).deepEquals(new FFRemoveVars(vRange).fitApply(df));
     }
 
     @Test
     public void testBoth() {
 
         Frame df1 = df.mapVars(VRange.onlyTypes(VarType.NUMERIC)).removeVars(VRange.of(1));
-        Frame df2 = new FFRemoveVars(VRange.of(1)).filter(new FFMapVars(VRange.onlyTypes(VarType.NUMERIC)).filter(df));
+        Frame df2 = new FFRemoveVars(VRange.of(1)).fitApply(new FFMapVars(VRange.onlyTypes(VarType.NUMERIC)).fitApply(df));
 
         Assert.assertTrue(df1.deepEquals(df2));
     }

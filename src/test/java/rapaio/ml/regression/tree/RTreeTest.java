@@ -50,7 +50,7 @@ public class RTreeTest {
         df.printSummary();
 
         String v = "TV";
-        Frame t = new FFRefSort(df.var(v).refComparator()).filter(df);
+        Frame t = new FFRefSort(df.var(v).refComparator()).fitApply(df);
 
 //        WS.setPrinter(new IdeaPrinter());
 

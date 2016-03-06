@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFShuffle extends VFAbstract {
+public class VFShuffle extends AbstractVF {
 
     private static final long serialVersionUID = -5571537968976749556L;
 

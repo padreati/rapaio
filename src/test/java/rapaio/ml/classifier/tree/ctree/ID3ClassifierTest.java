@@ -46,7 +46,7 @@ public class ID3ClassifierTest {
     public void testBasicID3Entropy() throws IOException {
         Frame df = Datasets.loadPlay();
         df.printSummary();
-        df = new FFRetainTypes(VarType.NOMINAL).filter(df);
+        df = new FFRetainTypes(VarType.NOMINAL).fitApply(df);
         final String className = "class";
 
         CTree id3 = CTree.newID3();
@@ -64,7 +64,7 @@ public class ID3ClassifierTest {
 
     @Test
     public void testBasicID3InfoGain() throws IOException {
-        Frame df = new FFRetainTypes(VarType.NOMINAL).filter(Datasets.loadPlay());
+        Frame df = new FFRetainTypes(VarType.NOMINAL).fitApply(Datasets.loadPlay());
         final String className = "class";
 
         df.printSummary();

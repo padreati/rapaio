@@ -23,6 +23,8 @@
 
 package rapaio.data;
 
+import rapaio.data.filter.FFilter;
+import rapaio.data.filter.VFilter;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
 import rapaio.printer.Printable;
@@ -349,6 +351,15 @@ public interface Var extends Serializable, Printable {
     default List<VSpot> spotList() {
         return IntStream.range(0, rowCount()).mapToObj(row -> new VSpot(row, this)).collect(Collectors.toList());
     }
+
+    default Var applyFilters(VFilter... inputFilters) {
+        Var var = this;
+        for (VFilter filter : inputFilters) {
+            var = filter.fitApply(var);
+        }
+        return var;
+    }
+
 
     default Comparator<Integer> refComparator() {
         return refComparator(true);

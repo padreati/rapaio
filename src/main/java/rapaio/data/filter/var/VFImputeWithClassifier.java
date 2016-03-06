@@ -32,7 +32,7 @@ import rapaio.ml.classifier.Classifier;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/18/16.
  */
-public class VFImputeWithClassifier extends VFAbstract {
+public class VFImputeWithClassifier extends AbstractVF {
 
     private static final long serialVersionUID = -2841651242636043825L;
 

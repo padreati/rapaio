@@ -45,7 +45,7 @@ public class C45ClassifierTest {
     @Test
     public void testNominalInfoGain() throws IOException {
         Frame df = Datasets.loadPlay();
-        df = new FFRetainTypes(VarType.NOMINAL).filter(df);
+        df = new FFRetainTypes(VarType.NOMINAL).fitApply(df);
         final String className = "class";
 
         CTree classifier = CTree.newC45();

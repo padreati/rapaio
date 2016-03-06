@@ -43,7 +43,7 @@ public class FFJitterTest {
                 Nominal.from(100, r -> String.valueOf(r % 10)).withName("nom")
         );
 
-        Frame df1 = new FFJitter(VRange.onlyTypes(VarType.NUMERIC)).filter(a.solidCopy());
+        Frame df1 = new FFJitter(VRange.onlyTypes(VarType.NUMERIC)).fitApply(a.solidCopy());
 
         Assert.assertTrue(a.removeVars("0~1").deepEquals(df1.removeVars("0~1")));
         Assert.assertFalse(a.mapVars("0~1").deepEquals(df1.mapVars("0~1")));

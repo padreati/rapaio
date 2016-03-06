@@ -144,16 +144,28 @@ public class Csv {
         return this;
     }
 
-    public Frame read(File file) throws IOException {
-        return read(new FileInputStream(file));
+    public Frame read(File file) {
+        try {
+            return read(new FileInputStream(file));
+        } catch (IOException e) {
+            throw new RuntimeException("error at reading file", e);
+        }
     }
 
-    public Frame readGz(File file) throws IOException {
-        return read(new GZIPInputStream(new FileInputStream(file)));
+    public Frame readGz(File file) {
+        try {
+            return read(new GZIPInputStream(new FileInputStream(file)));
+        } catch (IOException e) {
+            throw new RuntimeException("error at reading file", e);
+        }
     }
 
-    public Frame read(String fileName) throws IOException {
-        return read(new FileInputStream(fileName));
+    public Frame read(String fileName) {
+        try {
+            return read(new FileInputStream(fileName));
+        } catch (IOException e) {
+            throw new RuntimeException("error at reading file", e);
+        }
     }
 
     public Frame read(Class<?> clazz, String resource) throws IOException {
@@ -236,7 +248,7 @@ public class Csv {
                 for (int i = 0; i < len; i++) {
                     // we have a value in row for which we did not defined a var slot
                     if (i >= varSlots.size()) {
-                        names.add("V" + (i+1));
+                        names.add("V" + (i + 1));
                         varSlots.add(new VarSlot(this, varSlots.get(0).var.rowCount()));
                         continue;
                     }
@@ -349,9 +361,13 @@ public class Csv {
         }
     }
 
-    public void write(Frame df, String fileName) throws IOException {
-        try (OutputStream os = new FileOutputStream(fileName)) {
-            write(df, os);
+    public void write(Frame df, String fileName) {
+        try {
+            try (OutputStream os = new FileOutputStream(fileName)) {
+                write(df, os);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("error at writing file", e);
         }
     }
 

@@ -24,7 +24,6 @@
 package rapaio.math.linear;
 
 import junit.framework.Assert;
-import org.junit.Test;
 import rapaio.core.CoreTools;
 import rapaio.data.Numeric;
 import rapaio.data.Var;

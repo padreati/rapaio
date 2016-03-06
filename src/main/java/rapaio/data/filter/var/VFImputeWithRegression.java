@@ -32,7 +32,7 @@ import rapaio.ml.regression.Regression;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/18/16.
  */
-public class VFImputeWithRegression extends VFAbstract {
+public class VFImputeWithRegression extends AbstractVF {
 
     private static final long serialVersionUID = -2841651242636043825L;
 

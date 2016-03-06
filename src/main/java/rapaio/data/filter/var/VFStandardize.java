@@ -30,7 +30,7 @@ import rapaio.data.Var;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
-public class VFStandardize extends VFAbstract {
+public class VFStandardize extends AbstractVF {
 
     private static final long serialVersionUID = -2817341319523250499L;
 

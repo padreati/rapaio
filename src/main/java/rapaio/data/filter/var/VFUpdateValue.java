@@ -30,13 +30,17 @@ import java.util.function.Function;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFUpdateValue extends VFAbstract {
+public class VFUpdateValue extends AbstractVF {
 
     private static final long serialVersionUID = 3929781693784001199L;
 
+    public static VFUpdateValue with(Function<Double, Double> f) {
+        return new VFUpdateValue(f);
+    }
+
     private final Function<Double, Double> f;
 
-    public VFUpdateValue(Function<Double, Double> f) {
+    private VFUpdateValue(Function<Double, Double> f) {
         this.f = f;
     }
 

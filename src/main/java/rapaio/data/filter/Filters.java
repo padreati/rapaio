@@ -62,7 +62,7 @@ public class Filters {
     }
 
     public static Frame refSort(Frame df, Comparator<Integer> comp) {
-        return new FFRefSort(comp).filter(df);
+        return new FFRefSort(comp).fitApply(df);
     }
 
     /**
@@ -95,7 +95,7 @@ public class Filters {
     }
 
     public static Frame refSort(Frame df, Comparator<Integer>... comp) {
-        return new FFRefSort(comp).filter(df);
+        return new FFRefSort(comp).fitApply(df);
     }
 
     public static Var shuffle(Var x) {
@@ -103,7 +103,7 @@ public class Filters {
     }
 
     public static Frame shuffle(Frame x) {
-        return new FFShuffle().filter(x);
+        return new FFShuffle().fitApply(x);
     }
 
     public static Var transformPower(Var x, double lambda) {
@@ -119,10 +119,10 @@ public class Filters {
     }
 
     public static Var updateValue(Function<Double, Double> f, Var x) {
-        return new VFUpdateValue(f).fitApply(x);
+        return VFUpdateValue.with(f).fitApply(x);
     }
 
     public static Var update(Consumer<VSpot> c, Var v) {
-        return new VFUpdate(c).fitApply(v);
+        return VFUpdate.with(c).fitApply(v);
     }
 }

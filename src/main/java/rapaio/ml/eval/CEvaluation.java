@@ -120,7 +120,7 @@ public class CEvaluation {
 
     public static void multiCv(Frame df, String classColName, List<Classifier> classifiers, int folds) {
         print("CrossValidation with " + folds + " folds\n");
-        df = new FFShuffle().filter(df);
+        df = new FFShuffle().fitApply(df);
         double[] tacc = new double[classifiers.size()];
 
         for (int i = 0; i < folds; i++) {

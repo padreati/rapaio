@@ -32,7 +32,7 @@ import rapaio.data.filter.VFilter;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public abstract class VFAbstract implements VFilter {
+public abstract class AbstractVF implements VFilter {
 
     private static final long serialVersionUID = 5025493880643939145L;
 

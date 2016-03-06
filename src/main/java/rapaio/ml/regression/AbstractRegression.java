@@ -113,7 +113,7 @@ public abstract class AbstractRegression implements Regression {
     protected TrainSetup prepareTraining(Frame dfOld, Var weights, String... targetVarNames) {
         Frame df = dfOld;
         for (FFilter filter : inputFilters) {
-            df = filter.filter(df);
+            df = filter.fitApply(df);
         }
 
         Frame result = df;

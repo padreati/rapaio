@@ -39,7 +39,7 @@ import java.util.Map;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/18/16.
  */
-public class VFQuantileDiscrete extends VFAbstract {
+public class VFQuantileDiscrete extends AbstractVF {
 
     private static final long serialVersionUID = -6702714518094848749L;
 

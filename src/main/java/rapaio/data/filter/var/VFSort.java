@@ -28,7 +28,7 @@ import rapaio.data.Var;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public class VFSort extends VFAbstract {
+public class VFSort extends AbstractVF {
 
     private static final long serialVersionUID = -6260151471065618233L;
     private boolean asc;

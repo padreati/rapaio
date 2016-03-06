@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/3/14.
  */
-public class VFRefSort extends VFAbstract {
+public class VFRefSort extends AbstractVF {
 
     private static final long serialVersionUID = -1075060445963356550L;
     private final Comparator<Integer> aggregateComparator;

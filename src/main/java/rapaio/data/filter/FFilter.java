@@ -73,7 +73,7 @@ public interface FFilter extends Serializable {
      * @param df given data frame
      * @return transformed data frame
      */
-    default Frame filter(Frame df) {
+    default Frame fitApply(Frame df) {
         train(df);
         return apply(df);
     }
