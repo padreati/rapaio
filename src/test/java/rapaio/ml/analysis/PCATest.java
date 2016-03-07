@@ -34,7 +34,7 @@ import rapaio.io.Csv;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.ml.classifier.ensemble.CForest;
-import rapaio.ml.eval.CEvaluation;
+import rapaio.experiment.ml.eval.CEvaluation;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

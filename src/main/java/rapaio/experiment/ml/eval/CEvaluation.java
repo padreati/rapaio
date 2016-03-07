@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.eval;
+package rapaio.experiment.ml.eval;
 
 import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
@@ -30,6 +30,8 @@ import rapaio.data.*;
 import rapaio.data.filter.frame.FFShuffle;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
+import rapaio.ml.eval.Confusion;
+import rapaio.ml.eval.ROC;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 import rapaio.util.Pin;

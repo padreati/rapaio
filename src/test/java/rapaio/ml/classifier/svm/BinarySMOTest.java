@@ -29,7 +29,7 @@ import rapaio.data.*;
 import rapaio.data.filter.frame.FFStandardize;
 import rapaio.datasets.Datasets;
 import rapaio.ml.classifier.svm.kernel.*;
-import rapaio.ml.eval.CEvaluation;
+import rapaio.experiment.ml.eval.CEvaluation;
 import rapaio.sys.WS;
 
 import java.io.IOException;

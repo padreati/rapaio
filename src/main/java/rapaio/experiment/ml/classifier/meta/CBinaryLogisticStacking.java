@@ -21,13 +21,13 @@
  *
  */
 
-package rapaio.ml.classifier.meta;
+package rapaio.experiment.ml.classifier.meta;
 
 import rapaio.data.*;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
-import rapaio.ml.classifier.linear.BinaryLogistic;
+import rapaio.experiment.ml.classifier.linear.BinaryLogistic;
 import rapaio.ml.common.Capabilities;
 
 import java.util.ArrayList;

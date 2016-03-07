@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.classifier.linear;
+package rapaio.experiment.ml.classifier.linear;
 
 import rapaio.data.Frame;
 import rapaio.data.Numeric;

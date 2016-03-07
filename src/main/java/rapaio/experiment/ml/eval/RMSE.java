@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.eval;
+package rapaio.experiment.ml.eval;
 
 import rapaio.data.VRange;
 import rapaio.printer.Printable;

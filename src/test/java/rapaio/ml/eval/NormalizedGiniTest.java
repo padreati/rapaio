@@ -25,6 +25,7 @@ package rapaio.ml.eval;
 
 import org.junit.Test;
 import rapaio.data.Numeric;
+import rapaio.experiment.ml.eval.NormalizedGini;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/17/15.

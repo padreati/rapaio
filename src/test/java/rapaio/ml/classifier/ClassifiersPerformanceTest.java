@@ -31,7 +31,7 @@ import rapaio.ml.classifier.boost.AdaBoostSAMME;
 import rapaio.ml.classifier.boost.GBTClassifier;
 import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.classifier.tree.CTree;
-import rapaio.ml.eval.CEvaluation;
+import rapaio.experiment.ml.eval.CEvaluation;
 import rapaio.experiment.ml.regression.tree.RTree;
 import rapaio.experiment.ml.regression.tree.RTreeTestFunction;
 

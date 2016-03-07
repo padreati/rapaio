@@ -28,7 +28,7 @@ import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.GridLayer;
 import rapaio.ml.classifier.ensemble.CForest;
-import rapaio.ml.eval.CEvaluation;
+import rapaio.experiment.ml.eval.CEvaluation;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 

@@ -25,6 +25,7 @@ package rapaio.core.stat;
 
 import org.junit.Assert;
 import org.junit.Test;
+import rapaio.core.CoreTools;
 import rapaio.data.*;
 import rapaio.io.Csv;
 
@@ -123,5 +124,23 @@ public class CoreToolsTest {
 
         Assert.assertFalse(Double.NaN == new GeometricMean(Numeric.copy(1, -1)).value());
         new GeometricMean(Numeric.wrap(1, -1)).printSummary();
+    }
+
+    @Test
+    public void testToolsOnNonNumeric() {
+        Var idx1 = Index.wrap(1, 2, Integer.MIN_VALUE, 3, Integer.MIN_VALUE, 4, 5, 6, Integer.MIN_VALUE, 7);
+        Var idx2 = Index.wrap(1, 2, 3, 4, 5, 6, 7);
+
+        Assert.assertEquals(4, CoreTools.mean(idx1).value(), 1e-20);
+        Assert.assertEquals(CoreTools.var(idx2).value(), CoreTools.var(idx1).value(), 1e-20);
+
+        Assert.assertEquals(7, CoreTools.var(idx1).completeCount());
+        Assert.assertEquals(3, CoreTools.var(idx1).missingCount());
+
+
+        Var bin1 = Binary.copy(1, 0, 1, -1, 1, -1, 0);
+        Var bin2 = Binary.copy(true, false, true, true, false);
+        Assert.assertEquals(0.6, CoreTools.mean(bin1).value(), 1e-20);
+        Assert.assertEquals(CoreTools.var(bin2).value(), CoreTools.var(bin1).value(), 1e-20);
     }
 }

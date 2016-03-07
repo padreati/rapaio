@@ -24,7 +24,6 @@
 package rapaio.experiment.mc;
 
 import rapaio.core.RandomSource;
-import rapaio.datasets.text.TextCorpus;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.SolidRM;
@@ -32,9 +31,6 @@ import rapaio.math.linear.dense.SolidRV;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -79,40 +75,6 @@ public class MarkovChain implements Printable {
         text = text.replace('?', '.');
 
         return text.toLowerCase().trim() + ".";
-    }
-
-    public static void main(String[] args) throws IOException {
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(TextCorpus.class.getResourceAsStream("darwin.txt")));
-        int lines = 4_000;
-
-        StringBuffer sb = new StringBuffer();
-        while (lines-- > 0) {
-            String line = reader.readLine();
-            if (line == null)
-                break;
-            sb.append(line).append(" ");
-        }
-
-        List<String> chains = new ArrayList<>();
-        StringTokenizer tokenizer = new StringTokenizer(sb.toString(), ".");
-        while (tokenizer.hasMoreTokens()) {
-            String line = clean(tokenizer.nextToken());
-            chains.add(line);
-        }
-
-        MarkovChain mc = new MarkovChain()
-//                .withAdapter(new NGram(7))
-//                .withAdapter(new WordChainAdapter())
-                .withAdapter(new TokenizerChainAdapter(1));
-        mc.train(chains);
-
-//        mc.printSummary();
-
-        for (int i = 0; i < 5; i++) {
-            String prop = mc.generateSentence(list -> list.get(list.size() - 1).endsWith(".") || list.size() > 100);
-            System.out.println(prop);
-        }
     }
 
     public MarkovChain withAdapter(ChainAdapter adapter) {

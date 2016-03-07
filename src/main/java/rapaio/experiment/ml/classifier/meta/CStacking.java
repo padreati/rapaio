@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.classifier.meta;
+package rapaio.experiment.ml.classifier.meta;
 
 import rapaio.data.*;
 import rapaio.ml.classifier.AbstractClassifier;

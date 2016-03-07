@@ -21,8 +21,9 @@
  *
  */
 
-package rapaio.core.tools;
+package rapaio.experiment;
 
+import rapaio.core.tools.DVector;
 import rapaio.data.*;
 import rapaio.data.stream.VSpot;
 import rapaio.io.Csv;

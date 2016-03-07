@@ -21,9 +21,11 @@
  *
  */
 
-package rapaio.printer;
+package rapaio.experiment.printer;
 
 import rapaio.graphics.base.Figure;
+import rapaio.printer.AbstractPrinter;
+import rapaio.printer.Printer;
 import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;

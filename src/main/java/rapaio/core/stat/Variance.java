@@ -82,7 +82,8 @@ public class Variance implements Printable {
     public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("\n> variance[%s]\n", varName));
-        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n", completeCount + missingCount, completeCount, missingCount));
+        sb.append(String.format("total rows: %d (complete: %d, missing: %d)\n",
+                completeCount() + missingCount(), completeCount(), missingCount()));
         sb.append(String.format("variance: %s\n", formatFlex(value)));
         sb.append(String.format("sd: %s\n", formatFlex(sdValue())));
         return sb.toString();
