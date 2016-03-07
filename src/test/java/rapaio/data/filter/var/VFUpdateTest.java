@@ -46,7 +46,7 @@ public class VFUpdateTest {
 
         Var x = Numeric.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
 
-        Var y = x.solidCopy().applyFilters(vf);
+        Var y = x.solidCopy().fitApply(vf);
         Assert.assertEquals(0, y.value(0), 1e-20);
         Assert.assertEquals(0, y.value(1), 1e-20);
         Assert.assertEquals(1, y.value(2), 1e-20);
@@ -55,7 +55,7 @@ public class VFUpdateTest {
         Assert.assertEquals(3.1 * 3.1, y.value(5), 1e-20);
 
         Var l1 = Nominal.copy("ana", "?", "are", "?", "mere");
-        Var l2 = l1.applyFilters(VFUpdate.with(s -> {
+        Var l2 = l1.fitApply(VFUpdate.with(s -> {
             if (s.missing()) {
                 s.setLabel("missing");
                 return;
@@ -88,7 +88,7 @@ public class VFUpdateTest {
 
         Var x = Numeric.wrap(0, Double.NaN, 1, Double.NaN, -12, 3.1);
 
-        Var y = x.solidCopy().applyFilters(vf);
+        Var y = x.solidCopy().fitApply(vf);
         Assert.assertEquals(0, y.value(0), 1e-20);
         Assert.assertEquals(0, y.value(1), 1e-20);
         Assert.assertEquals(1, y.value(2), 1e-20);
@@ -108,7 +108,7 @@ public class VFUpdateTest {
 
         Var x = Numeric.wrap(0, Double.NaN, 1, Double.NaN, -12, 3);
 
-        Var y = x.solidCopy().applyFilters(vf);
+        Var y = x.solidCopy().fitApply(vf);
         Assert.assertEquals(0, y.value(0), 1e-20);
         Assert.assertEquals(0, y.value(1), 1e-20);
         Assert.assertEquals(1, y.value(2), 1e-20);
@@ -121,7 +121,7 @@ public class VFUpdateTest {
     public void testUpdateLabel() {
 
         Var l1 = Nominal.copy("ana", "?", "are", "?", "mere");
-        Var l2 = l1.applyFilters(VFUpdateLabel.with(l -> {
+        Var l2 = l1.fitApply(VFUpdateLabel.with(l -> {
             if (l.equals("?")) {
                 return "missing";
             }

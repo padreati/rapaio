@@ -507,7 +507,7 @@ public interface Frame extends Serializable, Printable {
         return varStream().collect(toList());
     }
 
-    default Frame applyFilters(FFilter... inputFilters) {
+    default Frame fitApply(FFilter... inputFilters) {
         Frame df = this;
         for (FFilter filter : inputFilters) {
             df = filter.fitApply(df);

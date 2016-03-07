@@ -26,6 +26,9 @@ package rapaio.data.filter.var;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.VarType;
+import rapaio.data.stream.VSpot;
+
+import java.util.function.Function;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
@@ -33,6 +36,68 @@ import rapaio.data.VarType;
 public class VFToNumeric extends AbstractVF {
 
     private static final long serialVersionUID = -6471901421507667237L;
+
+    public static VFToNumeric byDefault() {
+        return new VFToNumeric(
+                s -> {
+                    if (s.missing()) {
+                        return Double.NaN;
+                    } else {
+                        switch (s.var().type()) {
+                            case TEXT:
+                            case NOMINAL:
+                                try {
+                                    return Double.parseDouble(s.label());
+                                } catch (NumberFormatException nfe) {
+                                    return Double.NaN;
+                                }
+                            case ORDINAL:
+                            case INDEX:
+                            case BINARY:
+                                return Integer.valueOf(s.index()).doubleValue();
+                            case STAMP:
+                                return Long.valueOf(s.stamp()).doubleValue();
+                            default:
+                                return s.value();
+                        }
+                    }
+                },
+                null,
+                null,
+                null
+        );
+    }
+
+    public static VFToNumeric bySpot(Function<VSpot, Double> fSpot) {
+        return new VFToNumeric(fSpot, null, null, null);
+    }
+
+    public static VFToNumeric byValue(Function<Double, Double> fValue) {
+        return new VFToNumeric(null, fValue, null, null);
+    }
+
+    public static VFToNumeric byIndex(Function<Integer, Double> fIndex) {
+        return new VFToNumeric(null, null, fIndex, null);
+    }
+
+    public static VFToNumeric byLabel(Function<String, Double> fLabel) {
+        return new VFToNumeric(null, null, null, fLabel);
+    }
+
+    private final Function<VSpot, Double> fSpot;
+    private final Function<Double, Double> fValue;
+    private final Function<Integer, Double> fIndex;
+    private final Function<String, Double> fLabel;
+
+    private VFToNumeric(Function<VSpot, Double> fSpot,
+                        Function<Double, Double> fValue,
+                        Function<Integer, Double> fIndex,
+                        Function<String, Double> fLabel) {
+        this.fSpot = fSpot;
+        this.fValue = fValue;
+        this.fIndex = fIndex;
+        this.fLabel = fLabel;
+    }
 
     @Override
     public void fit(Var... vars) {
@@ -43,31 +108,22 @@ public class VFToNumeric extends AbstractVF {
     public Var apply(Var... vars) {
         checkSingleVar(vars);
         Var v = vars[0];
-        if (v.type().equals(VarType.NUMERIC)) {
-            return v;
+
+        if (fSpot != null) {
+            return v.stream().map(fSpot).collect(Numeric.collector()).withName(v.name());
         }
-        final Numeric result = Numeric.empty().withName(v.name());
-        v.stream().forEach(s -> {
-            if (s.missing()) {
-                result.addMissing();
-            } else {
-                switch (v.type()) {
-                    case NOMINAL:
-                        try {
-                            double value = Double.parseDouble(s.label());
-                            result.addValue(value);
-                        } catch (NumberFormatException nfe) {
-                            result.addMissing();
-                        }
-                        break;
-                    case ORDINAL:
-                    case INDEX:
-                    case BINARY:
-                        result.addValue(s.index());
-                        break;
-                }
-            }
-        });
-        return result;
+        if (fValue != null) {
+            return v.stream().mapToDouble().boxed()
+                    .map(fValue).collect(Numeric.collector()).withName(v.name());
+        }
+        if (fIndex != null) {
+            return v.stream().mapToInt().boxed()
+                    .map(fIndex).collect(Numeric.collector()).withName(v.name());
+        }
+        if (fLabel != null) {
+            return v.stream().mapToString()
+                    .map(fLabel).collect(Numeric.collector()).withName(v.name());
+        }
+        throw new RuntimeException("no transform function available");
     }
 }

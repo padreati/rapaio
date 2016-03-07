@@ -352,7 +352,7 @@ public interface Var extends Serializable, Printable {
         return IntStream.range(0, rowCount()).mapToObj(row -> new VSpot(row, this)).collect(Collectors.toList());
     }
 
-    default Var applyFilters(VFilter... inputFilters) {
+    default Var fitApply(VFilter... inputFilters) {
         Var var = this;
         for (VFilter filter : inputFilters) {
             var = filter.fitApply(var);

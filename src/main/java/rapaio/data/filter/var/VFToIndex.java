@@ -24,8 +24,12 @@
 package rapaio.data.filter.var;
 
 import rapaio.data.Index;
+import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.data.VarType;
+import rapaio.data.stream.VSpot;
+
+import java.util.function.Function;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
@@ -33,6 +37,68 @@ import rapaio.data.VarType;
 public class VFToIndex extends AbstractVF {
 
     private static final long serialVersionUID = -699221182441440988L;
+
+    public static VFToIndex byDefault() {
+        return new VFToIndex(
+                s -> {
+                    if (s.missing()) {
+                        return Integer.MIN_VALUE;
+                    } else {
+                        switch (s.var().type()) {
+                            case TEXT:
+                            case NOMINAL:
+                                try {
+                                    return Integer.parseInt(s.label());
+                                } catch (NumberFormatException nfe) {
+                                    return Integer.MIN_VALUE;
+                                }
+                            case ORDINAL:
+                            case INDEX:
+                            case BINARY:
+                                return s.index();
+                            case STAMP:
+                                return Long.valueOf(s.stamp()).intValue();
+                            default:
+                                return (int) Math.rint(s.value());
+                        }
+                    }
+                },
+                null,
+                null,
+                null
+        );
+    }
+
+    public static VFToIndex bySpot(Function<VSpot, Integer> fSpot) {
+        return new VFToIndex(fSpot, null, null, null);
+    }
+
+    public static VFToIndex byValue(Function<Double, Integer> fValue) {
+        return new VFToIndex(null, fValue, null, null);
+    }
+
+    public static VFToIndex byIndex(Function<Integer, Integer> fIndex) {
+        return new VFToIndex(null, null, fIndex, null);
+    }
+
+    public static VFToIndex byLabel(Function<String, Integer> fLabel) {
+        return new VFToIndex(null, null, null, fLabel);
+    }
+
+    private final Function<VSpot, Integer> fSpot;
+    private final Function<Double, Integer> fValue;
+    private final Function<Integer, Integer> fIndex;
+    private final Function<String, Integer> fLabel;
+
+    private VFToIndex(Function<VSpot, Integer> fSpot,
+                        Function<Double, Integer> fValue,
+                        Function<Integer, Integer> fIndex,
+                        Function<String, Integer> fLabel) {
+        this.fSpot = fSpot;
+        this.fValue = fValue;
+        this.fIndex = fIndex;
+        this.fLabel = fLabel;
+    }
 
     @Override
     public void fit(Var... vars) {
@@ -43,25 +109,22 @@ public class VFToIndex extends AbstractVF {
     public Var apply(Var... vars) {
         checkSingleVar(vars);
         Var v = vars[0];
-        if (v.type().equals(VarType.INDEX)) {
-            return v;
+
+        if (fSpot != null) {
+            return v.stream().map(fSpot).collect(Index.collector()).withName(v.name());
         }
-        final Index result = Index.empty();
-        v.stream().forEach(s -> {
-            if (s.missing()) {
-                result.addMissing();
-            } else {
-                switch (v.type()) {
-                    case NUMERIC:
-                        result.addIndex((int) Math.rint(s.value()));
-                        break;
-                    case NOMINAL:
-                        int value = Integer.parseInt(s.label());
-                        result.addIndex(value);
-                        break;
-                }
-            }
-        });
-        return result;
+        if (fValue != null) {
+            return v.stream().mapToDouble().boxed()
+                    .map(fValue).collect(Index.collector()).withName(v.name());
+        }
+        if (fIndex != null) {
+            return v.stream().mapToInt().boxed()
+                    .map(fIndex).collect(Index.collector()).withName(v.name());
+        }
+        if (fLabel != null) {
+            return v.stream().mapToString()
+                    .map(fLabel).collect(Index.collector()).withName(v.name());
+        }
+        throw new RuntimeException("no transform function available");
     }
 }

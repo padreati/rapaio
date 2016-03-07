@@ -67,7 +67,7 @@ public class FFToNumeric extends FFDefault {
             if (!nameSet.contains(df.var(i).name())) {
                 vars[i] = df.var(i);
             } else {
-                vars[i] = new VFToNumeric().fitApply(df.var(i));
+                vars[i] = VFToNumeric.byDefault().fitApply(df.var(i));
             }
         }
         return SolidFrame.wrapOf(df.rowCount(), vars);

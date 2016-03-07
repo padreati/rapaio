@@ -109,7 +109,7 @@ public class BinarySMOTest {
     public void testLinear() throws IOException, URISyntaxException {
 
         Frame df = Datasets.loadSonar();
-        df.solidCopy().applyFilters(new FFStandardize(VRange.all())).printSummary();
+        df.solidCopy().fitApply(new FFStandardize(VRange.all())).printSummary();
 
         String target = "Class";
 

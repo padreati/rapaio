@@ -51,7 +51,7 @@ public class FFilterNominalToDoubleTest {
             String value = String.valueOf(Math.pow(i, 1.5));
             v.setLabel(i, value);
         }
-        Var filtered = new VFToNumeric().fitApply(v);
+        Var filtered = VFToNumeric.byDefault().fitApply(v);
         for (int i = 0; i < v.rowCount(); i++) {
             double value = Math.pow(i, 1.5);
             assertEquals(value, filtered.value(i), 1e-10);
@@ -71,7 +71,7 @@ public class FFilterNominalToDoubleTest {
     public void testNFE() {
         Var filtered = Nominal.empty(1, "abc");
         filtered.setLabel(0, "abc");
-        Var numeric = new VFToNumeric().fitApply(filtered);
+        Var numeric = VFToNumeric.byDefault().fitApply(filtered);
         assertEquals(numeric.value(0), numeric.value(0), 1e-10);
         assertTrue(numeric.missing(0));
     }
