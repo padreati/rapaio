@@ -26,12 +26,14 @@ package rapaio.ml.regression;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
+import rapaio.ml.eval.Confusion;
 import rapaio.printer.Printable;
+import rapaio.printer.format.TextTable;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.Collections.nCopies;
 
 /**
  * Result of a regression fit.
@@ -157,20 +159,86 @@ public class RFit implements Printable {
 
     @Override
     public String summary() {
+        StringBuilder sb = new StringBuilder();
 
-        return "\n" +
-                "> Regression Fit Summary\n" +
-                "=========================\n" +
-                "\n" +
-                "Model type: " + model.name() + "\n" +
-                "Model instance: " + model.fullName() + "\n" +
-                "\n" +
-                "Predicted frame summary:\n" +
-                "- rows: " + df.rowCount() + "\n" +
-                "- vars: " + df.varCount() + "\n" +
-                "- targets: " + Arrays.deepToString(model.targetNames()) + "\n" +
-                "\n" +
-                "Regression results:" + "\n" +
-                "TO BE DONE" + "\n";
+        sb.append("Regression Fit Summary").append("\n");
+        sb.append("=======================\n");
+        sb.append("\n");
+
+        sb.append("Model type: ").append(model.name()).append("\n");
+        sb.append("Model instance: ").append(model.fullName()).append("\n");
+
+        sb.append("Predicted frame summary:\n");
+        sb.append("> rows: ").append(df.rowCount()).append("\n");
+        sb.append("> vars: ").append(df.varCount()).append("\n");
+        sb.append("\n");
+
+        // inputs
+
+        sb.append("> input variables: \n");
+
+        TextTable tt = TextTable.newEmpty(model.inputNames().length + 2, 3);
+        tt.set(0, 0, "no", 1);
+        tt.set(1, 0, "--", 1);
+        tt.set(0, 1, "name", -1);
+        tt.set(1, 1, "----", -1);
+        tt.set(0, 2, "type", 1);
+        tt.set(1, 2, "----", 1);
+
+        for (int i = 0; i < model.inputNames().length; i++) {
+            tt.set(i + 2, 0, String.valueOf(i + 1), 1);
+            tt.set(i + 2, 1, model.inputName(i), -1);
+            tt.set(i + 2, 2, model.inputType(i).code(), -1);
+        }
+
+        tt.withHeaderRows(2);
+        tt.withMerge();
+
+        sb.append(tt.summary()).append("\n");
+
+        // targets
+
+        sb.append("> target variables: \n");
+
+        tt = TextTable.newEmpty(model.inputNames().length + 2, 3);
+        tt.set(0, 0, "no", 1);
+        tt.set(1, 0, "--", 1);
+        tt.set(0, 1, "name", -1);
+        tt.set(1, 1, "----", -1);
+        tt.set(0, 2, "type", 1);
+        tt.set(1, 2, "----", 1);
+
+        for (int i = 0; i < model.targetNames().length; i++) {
+            tt.set(i + 2, 0, String.valueOf(i + 1), 1);
+            tt.set(i + 2, 1, model.targetName(i), -1);
+            tt.set(i + 2, 2, model.targetType(i).code(), -1);
+        }
+
+        tt.withHeaderRows(2);
+        tt.withMerge();
+
+        sb.append(tt.summary()).append("\n");
+
+        sb.append("\n");
+
+
+        for (String target : model.targetNames()) {
+            sb.append("Fit and residuals for ").append(target).append("\n");
+            sb.append("======================")
+                    .append(String.join("", nCopies(target.length(), "="))).append("\n");
+
+            String fullSummary = SolidFrame.wrapOf(fit(target), residual(target)).summary();
+            List<String> list = Arrays.stream(fullSummary.split("\n")).skip(8).collect(Collectors.toList());
+            int pos = 0;
+            for (String line : list) {
+                pos++;
+                if (line.trim().isEmpty()) {
+                    break;
+                }
+            }
+            sb.append(list.stream().collect(Collectors.joining("\n", "", "\n"))).append("\n");
+        }
+
+        return sb.toString();
     }
 }

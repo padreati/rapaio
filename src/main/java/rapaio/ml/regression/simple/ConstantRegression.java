@@ -36,17 +36,23 @@ import static rapaio.sys.WS.formatFlex;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public class ConstantRegression extends AbstractRegression {
 
     private static final long serialVersionUID = -2537862585258148528L;
 
-    double constant = Double.NaN;
+    double constant;
+
+    public static ConstantRegression with(double constant) {
+        return new ConstantRegression().withConstant(constant);
+    }
+
+    private ConstantRegression() {
+        this.constant = 0;
+    }
 
     @Override
-    public Regression newInstance() {
-        return new ConstantRegression()
-                .withConstant(constant);
+    public ConstantRegression newInstance() {
+        return new ConstantRegression().withConstant(constant);
     }
 
     @Override
@@ -56,9 +62,9 @@ public class ConstantRegression extends AbstractRegression {
 
     @Override
     public String fullName() {
-        return String.format("ConstantRegression {\n" +
-                "   constant=%s\n" +
-                "}\n", formatFlex(constant));
+        return "ConstantRegression {\n" +
+                "\tconstant=" + formatFlex(constantValue()) + "\n" +
+                "}\n";
     }
 
     @Override
@@ -89,6 +95,7 @@ public class ConstantRegression extends AbstractRegression {
     @Override
     protected RFit coreFit(final Frame df, final boolean withResiduals) {
         RFit fit = RFit.build(this, df, withResiduals);
+        fit.firstFit().stream().forEach(s -> s.setValue(constantValue()));
         fit.buildComplete();
         return fit;
     }

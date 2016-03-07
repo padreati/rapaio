@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.experiment.ml.regression.tree;
+package rapaio.ml.regression.tree;
 
 /**
  * Class used to pass information computed by

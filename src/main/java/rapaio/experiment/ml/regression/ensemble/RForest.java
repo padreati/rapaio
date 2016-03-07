@@ -32,7 +32,7 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RFit;
 import rapaio.ml.regression.Regression;
-import rapaio.experiment.ml.regression.tree.RTree;
+import rapaio.ml.regression.tree.RTree;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -32,7 +32,7 @@ import rapaio.ml.regression.Regression;
 import rapaio.experiment.ml.regression.boost.gbt.BTRegression;
 import rapaio.experiment.ml.regression.boost.gbt.GBTLossFunction;
 import rapaio.ml.regression.simple.L2Regression;
-import rapaio.experiment.ml.regression.tree.RTree;
+import rapaio.ml.regression.tree.RTree;
 import rapaio.printer.Printable;
 
 import java.util.ArrayList;

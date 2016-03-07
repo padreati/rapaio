@@ -15,9 +15,8 @@ Using the previous link you can select the format of manual. To read it directly
 
 Implemented Features
 ====================
-For each feature there are some
-notes regarding the development stage. If there are no notes it means the feature
-is considered to be fully implemented and well tested.
+For each feature there are some notes regarding the development stage. 
+If there are no notes it means the feature is considered to be fully implemented and well tested.
 
 **Core Statistics**
 
@@ -73,6 +72,10 @@ is considered to be fully implemented and well tested.
 * Boosting: AdaBoost.SAMME
 * SVM: BinarySMO (Platt)
 
+**Regression**
+
+* Simple: ConstantRegressor
+
 **Clusterization**
 
 * KMeans clustering
@@ -81,7 +84,14 @@ is considered to be fully implemented and well tested.
 
 * QQ Plot
 * Box Plot
+* Histogram
 * 2d Histogram
+* Plot function line
+* Plot vertical/horizontal/ab line
+* Plot lines
+* Plot points
+* Density line KDE
+* ROC Curve
 
 
 Experminental Stage Features
@@ -109,7 +119,6 @@ Experminental Stage Features
 * Simple: L1Regressor
 * Simple: L2Regressor
 * Simple: RandomValueRegressor
-* Simple: ConstantRegressor
 * Tree: CART (no pruning)
 * Tree: C45 (no pruning)
 * Tree: DecisionStump
@@ -127,12 +136,5 @@ Experminental Stage Features
 All the graphics components are in usable state. However the graphics customization needs
 further improvements in order to make the utilization easier.
 
-* Plot histogram
-* Plot density line
-* Plot points
-* Plot lines
-* Plot function
-* Plot vertical/horizontal/ab line
 * Plot legend
-* Plot ROC Curve
 * BarChart
