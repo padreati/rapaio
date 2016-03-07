@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.regression.boost;
+package rapaio.experiment.ml.regression.boost;
 
 import rapaio.data.*;
 import rapaio.data.sample.RowSampler;
@@ -29,10 +29,10 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RFit;
 import rapaio.ml.regression.Regression;
-import rapaio.ml.regression.boost.gbt.BTRegression;
-import rapaio.ml.regression.boost.gbt.GBTLossFunction;
+import rapaio.experiment.ml.regression.boost.gbt.BTRegression;
+import rapaio.experiment.ml.regression.boost.gbt.GBTLossFunction;
 import rapaio.ml.regression.simple.L2Regression;
-import rapaio.ml.regression.tree.RTree;
+import rapaio.experiment.ml.regression.tree.RTree;
 import rapaio.printer.Printable;
 
 import java.util.ArrayList;

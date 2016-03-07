@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.regression.ensemble;
+package rapaio.experiment.ml.regression.ensemble;
 
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
@@ -32,7 +32,7 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RFit;
 import rapaio.ml.regression.Regression;
-import rapaio.ml.regression.tree.RTree;
+import rapaio.experiment.ml.regression.tree.RTree;
 
 import java.util.ArrayList;
 import java.util.List;

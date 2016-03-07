@@ -28,6 +28,8 @@ import rapaio.core.distributions.StudentT;
 import rapaio.data.*;
 import rapaio.data.filter.frame.FFAddIntercept;
 import rapaio.datasets.Datasets;
+import rapaio.experiment.ml.regression.linear.OLSRFit;
+import rapaio.experiment.ml.regression.linear.OLSRegression;
 import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;

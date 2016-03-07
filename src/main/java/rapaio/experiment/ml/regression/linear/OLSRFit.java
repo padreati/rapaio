@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.regression.linear;
+package rapaio.experiment.ml.regression.linear;
 
 import rapaio.data.Frame;
 import rapaio.ml.regression.RFit;

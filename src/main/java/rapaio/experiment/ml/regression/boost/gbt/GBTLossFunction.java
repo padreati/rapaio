@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.regression.boost.gbt;
+package rapaio.experiment.ml.regression.boost.gbt;
 
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Quantiles;

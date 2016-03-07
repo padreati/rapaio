@@ -21,12 +21,11 @@
  *
  */
 
-package rapaio.ml.regression.linear;
+package rapaio.experiment.ml.regression.linear;
 
 import rapaio.data.Frame;
 import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.math.linear.Linear;
 import rapaio.math.linear.RV;
 import rapaio.math.linear.dense.QR;
 import rapaio.math.linear.RM;

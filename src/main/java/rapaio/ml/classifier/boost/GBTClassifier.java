@@ -30,9 +30,9 @@ import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.Classifier;
 import rapaio.ml.common.Capabilities;
 import rapaio.ml.regression.RFit;
-import rapaio.ml.regression.boost.gbt.BTRegression;
-import rapaio.ml.regression.boost.gbt.GBTLossFunction;
-import rapaio.ml.regression.tree.RTree;
+import rapaio.experiment.ml.regression.boost.gbt.BTRegression;
+import rapaio.experiment.ml.regression.boost.gbt.GBTLossFunction;
+import rapaio.experiment.ml.regression.tree.RTree;
 import rapaio.sys.WS;
 
 import java.util.ArrayList;

@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.regression.nnet;
+package rapaio.experiment.ml.regression.nnet;
 
 import rapaio.core.RandomSource;
 

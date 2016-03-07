@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.regression.tree;
+package rapaio.experiment.ml.regression.tree;
 
 import rapaio.core.stat.Sum;
 import rapaio.core.stat.WeightedMean;

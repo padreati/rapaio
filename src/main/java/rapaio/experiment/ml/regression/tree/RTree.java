@@ -21,7 +21,7 @@
  *
  */
 
-package rapaio.ml.regression.tree;
+package rapaio.experiment.ml.regression.tree;
 
 import rapaio.core.stat.WeightedMean;
 import rapaio.data.Frame;
@@ -33,9 +33,8 @@ import rapaio.ml.common.Capabilities;
 import rapaio.ml.common.VarSelector;
 import rapaio.ml.regression.AbstractRegression;
 import rapaio.ml.regression.RFit;
-import rapaio.ml.regression.boost.gbt.BTRegression;
-import rapaio.ml.regression.boost.gbt.GBTLossFunction;
-import rapaio.sys.WS;
+import rapaio.experiment.ml.regression.boost.gbt.BTRegression;
+import rapaio.experiment.ml.regression.boost.gbt.GBTLossFunction;
 import rapaio.util.Pair;
 import rapaio.util.func.SPredicate;
 

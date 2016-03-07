@@ -32,8 +32,8 @@ import rapaio.ml.classifier.boost.GBTClassifier;
 import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.ml.classifier.tree.CTree;
 import rapaio.ml.eval.CEvaluation;
-import rapaio.ml.regression.tree.RTree;
-import rapaio.ml.regression.tree.RTreeTestFunction;
+import rapaio.experiment.ml.regression.tree.RTree;
+import rapaio.experiment.ml.regression.tree.RTreeTestFunction;
 
 import java.util.ArrayList;
 import java.util.List;
