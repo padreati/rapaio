@@ -38,18 +38,26 @@ import rapaio.ml.regression.Regression;
  * This simple regression is used alone for simple prediction or as a
  * starting point for other more complex regression algorithms.
  * <p>
- * Tis regression implements the regression by a constant paradigm using
+ * This regression implements the regression by a constant paradigm using
  * sum of absolute deviations loss function: L1(y - y_hat) = \sum(|y - y_hat|).
  * <p>
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public class L1Regression extends AbstractRegression {
+
+    private static final long serialVersionUID = 6125284399953219419L;
+
+    public static L1Regression create() {
+        return new L1Regression();
+    }
 
     private double[] medians;
 
+    private L1Regression() {
+    }
+
     @Override
-    public Regression newInstance() {
+    public L1Regression newInstance() {
         return new L1Regression();
     }
 
@@ -67,7 +75,7 @@ public class L1Regression extends AbstractRegression {
     public Capabilities capabilities() {
         return new Capabilities()
                 .withInputCount(0, 1_000_000)
-                .withTargetCount(1, 1)
+                .withTargetCount(1, 1_000_000)
                 .withInputTypes(VarType.NUMERIC, VarType.ORDINAL, VarType.BINARY, VarType.INDEX, VarType.NOMINAL, VarType.STAMP, VarType.TEXT)
                 .withTargetTypes(VarType.NUMERIC)
                 .withAllowMissingInputValues(true)
@@ -79,7 +87,7 @@ public class L1Regression extends AbstractRegression {
         medians = new double[targetNames().length];
         for (int i = 0; i < targetNames().length; i++) {
             String target = targetName(i);
-            medians[i] = new Quantiles(df.var(target), new double[]{0.5}).values()[0];
+            medians[i] = new Quantiles(df.var(target), 0.5).values()[0];
         }
         return true;
     }
@@ -98,6 +106,11 @@ public class L1Regression extends AbstractRegression {
 
     @Override
     public String summary() {
-        throw new IllegalArgumentException("not implemented");
+        StringBuilder sb = new StringBuilder();
+        sb.append(name()).append(" Summary\n");
+        sb.append("=========================\n");
+
+        sb.append("TODO: complete\n");
+        return sb.toString();
     }
 }

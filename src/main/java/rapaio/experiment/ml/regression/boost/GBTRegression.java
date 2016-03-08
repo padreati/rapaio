@@ -53,7 +53,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
     // parameters
     GBTLossFunction lossFunction = new GBTLossFunction.Huber();
 
-    Regression initRegression = new L2Regression();
+    Regression initRegression = L2Regression.create();
     BTRegression regressor = RTree.buildCART().withMaxDepth(4).withMinCount(10);
     double shrinkage = 1.0;
 

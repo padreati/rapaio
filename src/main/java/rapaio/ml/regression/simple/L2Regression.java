@@ -35,13 +35,21 @@ import rapaio.ml.regression.Regression;
 /**
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public class L2Regression extends AbstractRegression {
+
+    private static final long serialVersionUID = -8666168876139028337L;
+
+    public static L2Regression create() {
+        return new L2Regression();
+    }
 
     private double[] means;
 
+    private L2Regression() {
+    }
+
     @Override
-    public Regression newInstance() {
+    public L2Regression newInstance() {
         return new L2Regression();
     }
 
@@ -89,6 +97,11 @@ public class L2Regression extends AbstractRegression {
 
     @Override
     public String summary() {
-        throw new IllegalArgumentException("not implemented");
+        StringBuilder sb = new StringBuilder();
+        sb.append(name()).append(" Summary\n");
+        sb.append("=========================\n");
+
+        sb.append("TODO: complete\n");
+        return sb.toString();
     }
 }

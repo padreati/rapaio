@@ -23,15 +23,18 @@
 
 package rapaio.ml.regression;
 
+import rapaio.core.CoreTools;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
 import rapaio.ml.eval.Confusion;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
+import rapaio.sys.WS;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 import static java.util.Collections.nCopies;
 
@@ -46,6 +49,10 @@ public class RFit implements Printable {
     private final boolean withResiduals;
     private final Map<String, Numeric> fit;
     private final Map<String, Numeric> residuals;
+    private final Map<String, Double> tss;
+    private final Map<String, Double> ess;
+    private final Map<String, Double> rss;
+    private final Map<String, Double> rsquare;
 
     // static builder
 
@@ -56,9 +63,17 @@ public class RFit implements Printable {
 
         this.fit = new HashMap<>();
         this.residuals = new HashMap<>();
+        this.tss = new HashMap<>();
+        this.ess = new HashMap<>();
+        this.rss = new HashMap<>();
+        this.rsquare = new HashMap<>();
         for (String targetName : model.targetNames()) {
             fit.put(targetName, Numeric.empty(df.rowCount()).withName(targetName));
             residuals.put(targetName, Numeric.empty(df.rowCount()).withName(targetName + "-residual"));
+            tss.put(targetName, Double.NaN);
+            ess.put(targetName, Double.NaN);
+            rss.put(targetName, Double.NaN);
+            rsquare.put(targetName, Double.NaN);
         }
     }
 
@@ -149,10 +164,26 @@ public class RFit implements Printable {
 
     public void buildComplete() {
         if (withResiduals) {
-            for (String targetVar : targetNames()) {
+            for (String target : targetNames()) {
                 for (int i = 0; i < df.rowCount(); i++) {
-                    residuals.get(targetVar).setValue(i, df.var(targetVar).value(i) - fit(targetVar).value(i));
+                    residuals.get(target).setValue(i, df.var(target).value(i) - fit(target).value(i));
                 }
+
+                double mu = CoreTools.mean(df.var(target)).value();
+                double tssValue = 0;
+                double essValue = 0;
+                double rssValue = 0;
+
+                for (int i = 0; i < df.rowCount(); i++) {
+                    tssValue += Math.pow(df.var(target).value(i) - mu, 2);
+                    essValue += Math.pow(fit(target).value(i) - mu, 2);
+                    rssValue += Math.pow(df.var(target).value(i) - fit(target).value(i), 2);
+                }
+
+                tss.put(target, tssValue);
+                ess.put(target, essValue);
+                rss.put(target, rssValue);
+                rsquare.put(target, 1 - rssValue / tssValue);
             }
         }
     }
@@ -236,7 +267,20 @@ public class RFit implements Printable {
                     break;
                 }
             }
-            sb.append(list.stream().collect(Collectors.joining("\n", "", "\n"))).append("\n");
+            sb.append(list.stream().collect(Collectors.joining("\n", "", "\n")));
+
+            double max = Math.max(Math.max(tss.get(target), ess.get(target)), rss.get(target));
+            int dec = 1 + 3;
+            while (max > 1) {
+                dec++;
+                max /= 10;
+            }
+
+            sb.append(String.format("Total sum of squares     (TSS) : %" + dec + ".3f\n", tss.get(target)));
+            sb.append(String.format("Explained sum of squares (ESS) : %" + dec + ".3f\n", ess.get(target)));
+            sb.append(String.format("Residual sum of squares  (RSS) : %" + dec + ".3f\n", rss.get(target)));
+            sb.append("\n");
+            sb.append(String.format("Coeff. of determination  (R^2) : %" + dec + ".3f\n", 1 - rss.get(target) / tss.get(target)));
         }
 
         return sb.toString();

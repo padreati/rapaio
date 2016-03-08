@@ -74,7 +74,9 @@ If there are no notes it means the feature is considered to be fully implemented
 
 **Regression**
 
-* Simple: ConstantRegressor
+* Simple: ConstantRegression
+* Simple: L1Regression
+* Simple: L2Regression
 
 **Clusterization**
 
@@ -116,8 +118,6 @@ Experminental Stage Features
 
 **Regression**
 
-* Simple: L1Regressor
-* Simple: L2Regressor
 * Simple: RandomValueRegressor
 * Tree: CART (no pruning)
 * Tree: C45 (no pruning)
