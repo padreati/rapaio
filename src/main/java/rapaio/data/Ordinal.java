@@ -124,11 +124,6 @@ public final class Ordinal extends FactorBase {
     }
 
     @Override
-    public Comparator<Integer> refComparator() {
-        return (o1, o2) -> Integer.compare(index(o1), index(o2));
-    }
-
-    @Override
     public Ordinal solidCopy() {
         return (Ordinal) super.solidCopy();
     }

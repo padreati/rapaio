@@ -157,11 +157,6 @@ public final class Nominal extends FactorBase {
     }
 
     @Override
-    public Comparator<Integer> refComparator() {
-        return (o1, o2) -> label(o1).compareTo(label(o2));
-    }
-
-    @Override
     public Nominal withName(String name) {
         return (Nominal) super.withName(name);
     }
