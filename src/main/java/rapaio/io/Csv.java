@@ -267,7 +267,7 @@ public class Csv {
             String name = names.size() > i ? names.get(i) : "V" + (i + 1);
             variables.add(varSlots.get(i).var().withName(name));
         }
-        return SolidFrame.wrapOf(rows - startRow, variables);
+        return SolidFrame.newByVars(rows - startRow, variables);
     }
 
     List<String> parseLine(String line) {

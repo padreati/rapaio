@@ -148,8 +148,8 @@ public class PCA implements Printable {
         RM result = x.dot(eigenVectors.mapCols(dim));
         Frame rest = df.removeVars(inputNames);
         return rest.varCount() == 0 ?
-                SolidFrame.matrix(result, names) :
-                SolidFrame.matrix(result, names).bindVars(rest);
+                SolidFrame.newMatrix(result, names) :
+                SolidFrame.newMatrix(result, names).bindVars(rest);
     }
 
     private void validate(Frame df) {

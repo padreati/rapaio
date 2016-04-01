@@ -82,12 +82,12 @@ public class PCATest {
 
     @Test
     public void testColinear() {
-        Var x = Numeric.copy(1, 2, 3, 4).withName("x");
-        Var y = Numeric.copy(2, 3, 4, 5).withName("y");
-        Var z = Numeric.copy(4, 2, 6, 9).withName("z");
+        Var x = Numeric.newCopy(1, 2, 3, 4).withName("x");
+        Var y = Numeric.newCopy(2, 3, 4, 5).withName("y");
+        Var z = Numeric.newCopy(4, 2, 6, 9).withName("z");
 
         PCA pca = new PCA();
-        pca.train(SolidFrame.wrapOf(x, y, z));
+        pca.train(SolidFrame.newByVars(x, y, z));
         pca.printSummary();
     }
 }

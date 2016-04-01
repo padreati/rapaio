@@ -215,7 +215,7 @@ public class Stamp extends AbstractVar {
 
     @Override
     public Var mapRows(Mapping mapping) {
-        return MappedVar.byRows(this, mapping);
+        return MappedVar.newByRows(this, mapping);
     }
 
     @Override

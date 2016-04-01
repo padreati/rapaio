@@ -33,7 +33,7 @@ public class ChiSquareTestTest {
     @Test
     public void testBasicGoodness() {
 
-        Nominal x1 = Nominal.empty();
+        Nominal x1 = Nominal.newEmpty();
         for (int i = 0; i < 11; i++) {
             x1.addLabel("Heavy");
         }
@@ -54,14 +54,14 @@ public class ChiSquareTestTest {
         Assert.assertEquals(0.10744287054977643, test1.chiValue(), 1e-20);
         Assert.assertEquals(0.9909295319532134, test1.pValue(), 1e-20);
 
-        test1 = ChiSquareTest.goodnessOfFit(Numeric.copy(11, 189, 19, 17), 0.045, 0.795, 0.085, 0.075);
+        test1 = ChiSquareTest.goodnessOfFit(Numeric.newCopy(11, 189, 19, 17), 0.045, 0.795, 0.085, 0.075);
         test1.printSummary();
 
         Assert.assertEquals(3.0, test1.df(), 1e-20);
         Assert.assertEquals(0.10744287054977643, test1.chiValue(), 1e-20);
         Assert.assertEquals(0.9909295319532134, test1.pValue(), 1e-20);
 
-        Nominal x2 = Nominal.empty();
+        Nominal x2 = Nominal.newEmpty();
         for (int i = 0; i < 54; i++) {
             x2.addLabel("Male");
         }

@@ -60,7 +60,7 @@ public class FFAddIntercept extends FFDefault {
         if (names.contains(INTERCEPT)) {
             return df;
         }
-        Numeric intercept = Numeric.fill(df.rowCount(), 1.0).withName(INTERCEPT);
-        return SolidFrame.wrapOf(intercept).bindVars(df);
+        Numeric intercept = Numeric.newFill(df.rowCount(), 1.0).withName(INTERCEPT);
+        return SolidFrame.newByVars(intercept).bindVars(df);
     }
 }

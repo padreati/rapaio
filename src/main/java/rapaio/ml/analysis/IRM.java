@@ -27,7 +27,6 @@ import rapaio.core.distributions.Uniform;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
-import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.ml.common.distance.Distance;
@@ -72,8 +71,8 @@ public class IRM {
         len = df.rowCount();
 
         Uniform uniform = new Uniform(0, 1);
-        x = Numeric.from(len, uniform::sampleNext).withName("x");
-        y = Numeric.from(len, uniform::sampleNext).withName("y");
+        x = Numeric.newFrom(len, uniform::sampleNext).withName("x");
+        y = Numeric.newFrom(len, uniform::sampleNext).withName("y");
 
         d = SolidRM.fill(len, len, 0);
         for (int i = 0; i < len; i++) {
@@ -110,6 +109,6 @@ public class IRM {
     }
 
     public Frame getMap() {
-        return SolidFrame.wrapOf(x, y);
+        return SolidFrame.newByVars(x, y);
     }
 }

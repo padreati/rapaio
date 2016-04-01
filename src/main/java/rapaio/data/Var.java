@@ -23,7 +23,6 @@
 
 package rapaio.data;
 
-import rapaio.data.filter.FFilter;
 import rapaio.data.filter.VFilter;
 import rapaio.data.stream.VSpot;
 import rapaio.data.stream.VSpots;
@@ -87,7 +86,7 @@ public interface Var extends Serializable, Printable {
      * @return new frame with selected rows
      */
     default Var mapRows(Mapping mapping) {
-        return MappedVar.byRows(this, mapping);
+        return MappedVar.newByRows(this, mapping);
     }
 
     /**

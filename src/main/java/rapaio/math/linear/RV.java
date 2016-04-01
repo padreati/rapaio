@@ -26,14 +26,11 @@ package rapaio.math.linear;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Numeric;
-import rapaio.data.Var;
-import rapaio.math.linear.dense.SVDecomposition;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.stream.DoubleStream;
 
 /**
@@ -107,7 +104,7 @@ public interface RV extends Serializable, Printable {
     }
 
     default Mean mean() {
-        Numeric values = Numeric.empty();
+        Numeric values = Numeric.newEmpty();
         for (int i = 0; i < count(); i++) {
             values.addValue(get(i));
         }
@@ -115,7 +112,7 @@ public interface RV extends Serializable, Printable {
     }
 
     default Variance var() {
-        Numeric values = Numeric.empty();
+        Numeric values = Numeric.newEmpty();
         for (int i = 0; i < count(); i++) {
             values.addValue(get(i));
         }

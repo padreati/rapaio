@@ -38,7 +38,7 @@ public class BoundVarTest {
 
     @Test
     public void testBuildWrong() {
-        Numeric a = Numeric.copy(1, 2);
+        Numeric a = Numeric.newCopy(1, 2);
         Binary b = Binary.copy(true, false);
 
         try {
@@ -75,11 +75,11 @@ public class BoundVarTest {
 
     @Test
     public void testBind() {
-        Numeric a = Numeric.wrap(1, 2, 3);
-        Numeric b = Numeric.wrap(4, 5);
-        Numeric c = Numeric.wrap(6, 7, 8, 9);
-        Numeric d = Numeric.empty(1);
-        Numeric e = Numeric.wrap(Math.PI, Math.E);
+        Numeric a = Numeric.newWrap(1, 2, 3);
+        Numeric b = Numeric.newWrap(4, 5);
+        Numeric c = Numeric.newWrap(6, 7, 8, 9);
+        Numeric d = Numeric.newEmpty(1);
+        Numeric e = Numeric.newWrap(Math.PI, Math.E);
 
         Var x = BoundVar.newFrom(a, b);
         Var y = BoundVar.newFrom(c, d);
@@ -133,8 +133,8 @@ public class BoundVarTest {
 
     @Test
     public void testValueBound() {
-        Var a = Numeric.wrap(1, 2);
-        Var b = Numeric.wrap(3, 4);
+        Var a = Numeric.newWrap(1, 2);
+        Var b = Numeric.newWrap(3, 4);
 
         Var x = a.bindRows(b);
         x.setValue(0, 100);
@@ -199,8 +199,8 @@ public class BoundVarTest {
 
     @Test
     public void testNominalBound() {
-        Var a = Nominal.copy("a", "b", "a");
-        Var b = Nominal.copy("b", "a", "b");
+        Var a = Nominal.newCopy("a", "b", "a");
+        Var b = Nominal.newCopy("b", "a", "b");
 
         Var x = a.bindRows(b);
         x.setLabel(0, "b");
@@ -223,7 +223,7 @@ public class BoundVarTest {
         }
 
         try {
-            Nominal.copy("x").bindRows(Nominal.copy("b"));
+            Nominal.newCopy("x").bindRows(Nominal.newCopy("b"));
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }
@@ -231,7 +231,7 @@ public class BoundVarTest {
 
     @Test
     public void testRemove() {
-        Var x = Numeric.copy(1, 2, 3).bindRows(Numeric.copy(4, 5, 6));
+        Var x = Numeric.newCopy(1, 2, 3).bindRows(Numeric.newCopy(4, 5, 6));
 
         try {
             x.remove(1);

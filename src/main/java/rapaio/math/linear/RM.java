@@ -177,7 +177,7 @@ public interface RM extends Serializable, Printable {
     }
 
     default Mean mean() {
-        Numeric values = Numeric.empty();
+        Numeric values = Numeric.newEmpty();
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 values.addValue(get(i, j));
@@ -187,7 +187,7 @@ public interface RM extends Serializable, Printable {
     }
 
     default Variance var() {
-        Numeric values = Numeric.empty();
+        Numeric values = Numeric.newEmpty();
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 values.addValue(get(i, j));

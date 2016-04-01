@@ -61,7 +61,7 @@ public class MappedVar extends AbstractVar {
      * @param mapping mapping of indexed values
      * @return mapped variable
      */
-    public static MappedVar byRows(Var source, Mapping mapping) {
+    public static MappedVar newByRows(Var source, Mapping mapping) {
         return new MappedVar(source, mapping);
     }
 
@@ -72,7 +72,7 @@ public class MappedVar extends AbstractVar {
      * @param rows   variable array of indexed values
      * @return mapped variable
      */
-    public static MappedVar byRows(Var source, int... rows) {
+    public static MappedVar newByRows(Var source, int... rows) {
         return new MappedVar(source, Mapping.copy(rows));
     }
 

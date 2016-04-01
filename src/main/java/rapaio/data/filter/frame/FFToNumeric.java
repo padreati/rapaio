@@ -70,6 +70,6 @@ public class FFToNumeric extends FFDefault {
                 vars[i] = VFToNumeric.byDefault().fitApply(df.var(i));
             }
         }
-        return SolidFrame.wrapOf(df.rowCount(), vars);
+        return SolidFrame.newByVars(df.rowCount(), vars);
     }
 }

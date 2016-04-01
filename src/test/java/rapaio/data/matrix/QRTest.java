@@ -46,8 +46,8 @@ public class QRTest {
         });
 
         RM y = SolidRM.copyOf(
-                Numeric.copy(2.8, 3.2, 7.1, 6.8, 8.8).withName("1"),
-                Numeric.copy(2.8, 3.2, 7.1, 6.8, 8.9).withName("2")
+                Numeric.newCopy(2.8, 3.2, 7.1, 6.8, 8.8).withName("1"),
+                Numeric.newCopy(2.8, 3.2, 7.1, 6.8, 8.9).withName("2")
         );
 
         QR qr = new QR(x);

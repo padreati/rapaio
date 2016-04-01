@@ -47,9 +47,9 @@ public class ClassifierSerializationTest {
     @Test
     public void testOneRuleIris() throws IOException, URISyntaxException, ClassNotFoundException {
 
-        Var varModel = Nominal.empty();
-        Var varData = Nominal.empty();
-        Var varAcc = Numeric.empty();
+        Var varModel = Nominal.newEmpty();
+        Var varData = Nominal.newEmpty();
+        Var varAcc = Numeric.newEmpty();
 
         Frame iris = Datasets.loadIrisDataset();
         testModel(new OneRule(), iris, "class", "iris", varModel, varData, varAcc);
@@ -64,7 +64,7 @@ public class ClassifierSerializationTest {
         testModel(CTree.newC45(), mushrooms, "classes", "mushrooms", varModel, varData, varAcc);
         testModel(CTree.newCART(), mushrooms, "classes", "mushrooms", varModel, varData, varAcc);
 
-        SolidFrame.wrapOf(varData, varModel, varAcc).printLines();
+        SolidFrame.newByVars(varData, varModel, varAcc).printLines();
     }
 
     private <T extends Classifier> void testModel(T model, Frame df, String target, String dataName, Var varModel, Var varData, Var varAcc) throws IOException, ClassNotFoundException {

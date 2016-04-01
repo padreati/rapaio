@@ -61,8 +61,8 @@ public interface RTreePredictor extends Serializable {
 
             // so is a missing value for the current test feature
 
-            Numeric values = Numeric.empty();
-            Numeric weights = Numeric.empty();
+            Numeric values = Numeric.newEmpty();
+            Numeric weights = Numeric.newEmpty();
             for (RTree.RTreeNode child : node.getChildren()) {
                 Pair<Double, Double> prediction = predict(tree, spot, child);
                 prediction = predict(tree, spot, child);

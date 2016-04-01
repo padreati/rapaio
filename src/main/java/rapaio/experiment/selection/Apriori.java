@@ -56,7 +56,7 @@ public class Apriori implements Printable {
                 .filter(var -> var.type().equals(VarType.NOMINAL))
                 .filter(var -> !var.name().equals(target))
                 .collect(Collectors.toList());
-        this.inputDf = SolidFrame.wrapOf(inputVars);
+        this.inputDf = SolidFrame.newByVars(inputVars);
         this.targetVar = df.var(target);
         this.filter = filter;
 
@@ -202,7 +202,7 @@ public class Apriori implements Printable {
     }
 
     public Frame buildFeatures(Frame df) {
-        List<Var> vars = rules.stream().map(r -> Nominal.empty(df.rowCount(), "?", "1", "0")).collect(Collectors.toList());
+        List<Var> vars = rules.stream().map(r -> Nominal.newEmpty(df.rowCount(), "?", "1", "0")).collect(Collectors.toList());
         for (int i = 0; i < vars.size(); i++) {
             vars.get(i).withName("Apriori_" + (i + 1));
         }
@@ -211,7 +211,7 @@ public class Apriori implements Printable {
                 vars.get(j).setIndex(i, rules.get(j).matchRow(df, i) ? 1 : 2);
             }
         }
-        return SolidFrame.wrapOf(vars);
+        return SolidFrame.newByVars(vars);
     }
 }
 

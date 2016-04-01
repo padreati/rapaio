@@ -38,7 +38,7 @@ public class ParallelTesting {
 
         RandomSource.setSeed(1);
 
-        Numeric x = Numeric.from(10_000, row -> row * 1.0);
+        Numeric x = Numeric.newFrom(10_000, row -> row * 1.0);
         Index index = Index.from(10_000, row -> row);
 
         index.stream()

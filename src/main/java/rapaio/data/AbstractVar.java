@@ -54,7 +54,7 @@ public abstract class AbstractVar implements Var {
 
         switch (type()) {
             case NOMINAL:
-                Nominal nom = Nominal.empty(rowCount(), levels()).withName(name());
+                Nominal nom = Nominal.newEmpty(rowCount(), levels()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
                     nom.setLabel(i, label(i));
                 }
@@ -78,13 +78,13 @@ public abstract class AbstractVar implements Var {
                 }
                 return stamp;
             case NUMERIC:
-                Numeric num = Numeric.empty(rowCount());
+                Numeric num = Numeric.newEmpty(rowCount());
                 for (int i = 0; i < rowCount(); i++) {
                     num.setValue(i, value(i));
                 }
                 return num;
             case BINARY:
-                Binary bin = Binary.empty(rowCount()).withName(name());
+                Binary bin = Binary.newEmpty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
                     bin.setIndex(i, index(i));
                 }

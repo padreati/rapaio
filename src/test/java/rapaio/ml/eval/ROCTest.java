@@ -27,18 +27,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import rapaio.core.CoreTools;
 import rapaio.data.Frame;
-import rapaio.data.Index;
 import rapaio.data.Nominal;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.Plotter;
-import rapaio.printer.IdeaPrinter;
-import rapaio.sys.WS;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-
-import static rapaio.graphics.Plotter.rocCurve;
 
 /**
  * Test for roc utility.
@@ -83,7 +77,7 @@ public class ROCTest {
         Assert.assertEquals(0.3, roc.data().value(midRow, ROC.fpr), 1e-20);
         Assert.assertEquals(0.94, roc.data().value(midRow, ROC.tpr), 1e-20);
 
-        Nominal pred = Nominal.from(df.rowCount(), row -> row % 2 == 0 ? "virginica" : "setosa");
+        Nominal pred = Nominal.newFrom(df.rowCount(), row -> row % 2 == 0 ? "virginica" : "setosa");
         Assert.assertEquals("> ROC printSummary\n" +
                         "\n" +
                         "threshold , fpr       , tpr       , acc       \n" +

@@ -85,7 +85,7 @@ public class FFRandomProjection extends FFDefault {
         RM p = X.dot(rp);
 
         Frame non = df.removeVars(varNames);
-        Frame trans = SolidFrame.matrix(p, IntStream.range(1, k + 1).boxed().map(i -> "RP_" + i).toArray(String[]::new));
+        Frame trans = SolidFrame.newMatrix(p, IntStream.range(1, k + 1).boxed().map(i -> "RP_" + i).toArray(String[]::new));
         return non.bindVars(trans);
     }
 

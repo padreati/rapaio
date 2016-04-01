@@ -76,12 +76,12 @@ public class OLSRegressionTest {
         QR qr1 = new QR(X);
         RM beta = qr1.solve(Y);
 
-        Var betaTerm = Nominal.empty().withName("Term");
-        Var betaEstimate = Numeric.empty().withName("Estimate");
-        Var betaStdError = Numeric.empty().withName("Std. Error");
-        Var betaTValue = Numeric.empty().withName("t value");
-        Var betaPValue = Nominal.empty().withName("Pr(>|t|)");
-        Var betaSignificance = Nominal.empty().withName("");
+        Var betaTerm = Nominal.newEmpty().withName("Term");
+        Var betaEstimate = Numeric.newEmpty().withName("Estimate");
+        Var betaStdError = Numeric.newEmpty().withName("Std. Error");
+        Var betaTValue = Numeric.newEmpty().withName("t value");
+        Var betaPValue = Nominal.newEmpty().withName("Pr(>|t|)");
+        Var betaSignificance = Nominal.newEmpty().withName("");
 
         RM c = Linear.chol2inv(qr1.getR());
 
@@ -115,7 +115,7 @@ public class OLSRegressionTest {
                 signif = "***";
             betaSignificance.addLabel(signif);
         }
-        Frame coefficients = SolidFrame.wrapOf(inputNames.length,
+        Frame coefficients = SolidFrame.newByVars(inputNames.length,
                 betaTerm, betaEstimate, betaStdError, betaTValue, betaPValue, betaSignificance);
 
         Summary.lines(false, coefficients);

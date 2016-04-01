@@ -83,6 +83,10 @@ public class Plot extends HostFigure {
         return range;
     }
 
+    public List<PlotComponent> getComponents() {
+        return components;
+    }
+
     @Override
     public void paint(Graphics2D g2d, Rectangle rect) {
         buildRange();

@@ -60,7 +60,7 @@ public class BoxPlot extends HostFigure {
 
         Map<String, List<Double>> map = x.stream().collect(groupingBy(s -> factor.label(s.row()), mapping(VSpot::value, toList())));
         names = factor.streamLevels().filter(map::containsKey).toArray(String[]::new);
-        vars = Arrays.stream(names).map(map::get).map(Numeric::copy).toArray(Var[]::new);
+        vars = Arrays.stream(names).map(map::get).map(Numeric::newCopy).toArray(Var[]::new);
 
         this.options.apply(opts);
         initialize();

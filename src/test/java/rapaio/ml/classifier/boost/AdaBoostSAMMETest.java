@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static rapaio.graphics.Plotter.color;
-import static rapaio.graphics.Plotter.plot;
 
 public class AdaBoostSAMMETest {
 
@@ -57,9 +56,9 @@ public class AdaBoostSAMMETest {
 
         String target = "spam";
 
-        Numeric runs = Numeric.empty().withName("runs");
-        Numeric errTr = Numeric.empty().withName("tr");
-        Numeric errTe = Numeric.empty().withName("te");
+        Numeric runs = Numeric.newEmpty().withName("runs");
+        Numeric errTr = Numeric.newEmpty().withName("tr");
+        Numeric errTe = Numeric.newEmpty().withName("te");
 
         ab.withRunningHook((c, run) -> {
             runs.addValue(run);

@@ -42,13 +42,13 @@ public class MeshGridFactory {
         double x2min = CoreTools.min(df.var(x2Name)).value();
         double x2max = CoreTools.max(df.var(x2Name)).value();
 
-        Numeric x1 = Numeric.seq(x1min, x1max, (x1max - x1min) / steps).withName(x1Name);
-        Numeric x2 = Numeric.seq(x2min, x2max, (x2max - x2min) / steps).withName(x2Name);
+        Numeric x1 = Numeric.newSeq(x1min, x1max, (x1max - x1min) / steps).withName(x1Name);
+        Numeric x2 = Numeric.newSeq(x2min, x2max, (x2max - x2min) / steps).withName(x2Name);
 
         MeshGrid1D mg = new MeshGrid1D(x1, x2);
 
-        Numeric f1 = Numeric.empty().withName(x1Name);
-        Numeric f2 = Numeric.empty().withName(x2Name);
+        Numeric f1 = Numeric.newEmpty().withName(x1Name);
+        Numeric f2 = Numeric.newEmpty().withName(x2Name);
 
         for (int i = 0; i < x1.rowCount(); i++) {
             for (int j = 0; j < x2.rowCount(); j++) {
@@ -56,7 +56,7 @@ public class MeshGridFactory {
                 f2.addValue(x2.value(j));
             }
         }
-        CFit fit = c.fit(SolidFrame.wrapOf(f1, f2));
+        CFit fit = c.fit(SolidFrame.newByVars(f1, f2));
         int pos = 0;
         for (int i = 0; i < x1.rowCount(); i++) {
             for (int j = 0; j < x2.rowCount(); j++) {

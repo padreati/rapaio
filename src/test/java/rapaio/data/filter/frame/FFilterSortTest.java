@@ -40,7 +40,7 @@ public class FFilterSortTest {
 
     @Test
     public void testValueVector() {
-        Var unsorted = Numeric.copy(0., 1., 2., 3., 4., 5., 6.);
+        Var unsorted = Numeric.newCopy(0., 1., 2., 3., 4., 5., 6.);
         Var sorted = new VFSort().fitApply(unsorted);
         for (int i = 1; i < sorted.rowCount(); i++) {
             assertTrue(sorted.value(i - 1) <= sorted.value(i));
@@ -49,7 +49,7 @@ public class FFilterSortTest {
 
     @Test
     public void testValueVectorWithNA() {
-        Var unsorted = Numeric.copy(Double.NaN, 0., Double.NaN, 1., Double.NaN, 2.);
+        Var unsorted = Numeric.newCopy(Double.NaN, 0., Double.NaN, 1., Double.NaN, 2.);
         Var sorted = new VFSort().fitApply(unsorted);
         for (int i = 0; i < 3; i++) {
             assert (sorted.missing(i));
@@ -58,7 +58,7 @@ public class FFilterSortTest {
 
     @Test
     public void testNominalVector() {
-        Var unsorted = Nominal.empty(3, "ana", "vasile", "ion");
+        Var unsorted = Nominal.newEmpty(3, "ana", "vasile", "ion");
         unsorted.setLabel(0, "ana");
         unsorted.setLabel(1, "vasile");
         unsorted.setLabel(2, "ion");
@@ -84,7 +84,7 @@ public class FFilterSortTest {
 
     @Test
     public void testNominalVectorWithNA() {
-        Var unsorted = Nominal.empty(3, "ana", "vasile", "ion");
+        Var unsorted = Nominal.newEmpty(3, "ana", "vasile", "ion");
         unsorted.setLabel(0, "ana");
         unsorted.setLabel(1, "vasile");
         unsorted.setLabel(2, "?");

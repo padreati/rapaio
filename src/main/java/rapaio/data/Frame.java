@@ -153,7 +153,7 @@ public interface Frame extends Serializable, Printable {
         if(remove.isEmpty())
             return this;
         if(remove.size() == this.varCount())
-            return SolidFrame.wrapOf();
+            return SolidFrame.newByVars();
         int[] retain = new int[varNames().length - remove.size()];
         int pos = 0;
         for (String varName : varNames()) {
@@ -474,7 +474,7 @@ public interface Frame extends Serializable, Printable {
         for (int i = 0; i < names.length; i++) {
             vars[i] = var(names[i]).solidCopy().withName(names[i]);
         }
-        return SolidFrame.wrapOf(vars);
+        return SolidFrame.newByVars(vars);
     }
 
     /**

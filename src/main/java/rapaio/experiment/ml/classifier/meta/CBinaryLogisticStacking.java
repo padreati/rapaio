@@ -118,7 +118,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
         List<String> targets = VRange.of(targetVars).parseVarNames(df);
         vars.add(df.var(targets.get(0)).solidCopy());
 
-        return BaseTrainSetup.valueOf(SolidFrame.wrapOf(vars), weights, targetVars);
+        return BaseTrainSetup.valueOf(SolidFrame.newByVars(vars), weights, targetVars);
     }
 
     @Override
@@ -146,7 +146,7 @@ public class CBinaryLogisticStacking extends AbstractClassifier {
                 .map(v -> v.solidCopy().stream().transValue(x -> x * x).toMappedVar().withName(v.name() + "^2").solidCopy())
                 .collect(toList());
         vars.addAll(quadratic);
-        return BaseFitSetup.valueOf(SolidFrame.wrapOf(vars), withClasses, withDistributions);
+        return BaseFitSetup.valueOf(SolidFrame.newByVars(vars), withClasses, withDistributions);
     }
 
     @Override

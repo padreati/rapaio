@@ -24,6 +24,11 @@
 package rapaio.data;
 
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
@@ -231,7 +236,7 @@ public class BoundFrame extends AbstractFrame {
 
     @Override
     public Frame addRows(int rowCount) {
-        return BoundFrame.newByRows(this, SolidFrame.emptyFrom(this, rowCount));
+        return BoundFrame.newByRows(this, SolidFrame.newEmptyFrom(this, rowCount));
     }
 
     @Override
@@ -242,5 +247,38 @@ public class BoundFrame extends AbstractFrame {
     @Override
     public Frame mapRows(Mapping mapping) {
         return MappedFrame.newByRow(this, mapping);
+    }
+
+    public static Collector<Var, List<Var>, Frame> collector() {
+
+        return new Collector<Var, List<Var>, Frame>() {
+            @Override
+            public Supplier<List<Var>> supplier() {
+                return LinkedList::new;
+            }
+
+            @Override
+            public BiConsumer<List<Var>, Var> accumulator() {
+                return List::add;
+            }
+
+            @Override
+            public BinaryOperator<List<Var>> combiner() {
+                return (list1, list2) -> {
+                    list1.addAll(list2);
+                    return list1;
+                };
+            }
+
+            @Override
+            public Function<List<Var>, Frame> finisher() {
+                return BoundFrame::newByVars;
+            }
+
+            @Override
+            public Set<Characteristics> characteristics() {
+                return new HashSet<>();
+            }
+        };
     }
 }

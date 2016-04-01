@@ -27,7 +27,6 @@ import rapaio.data.*;
 import rapaio.data.stream.FSpot;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.CholeskyDecomposition;
 import rapaio.math.linear.EigenPair;
 import rapaio.math.linear.Linear;
 import rapaio.math.linear.dense.QR;
@@ -200,8 +199,8 @@ public class LDA implements Printable {
         RM result = x.dot(eigenVectors.mapCols(dim));
         Frame rest = df.removeVars(inputNames);
         return rest.varCount() == 0 ?
-                SolidFrame.matrix(result, names) :
-                SolidFrame.matrix(result, names).bindVars(df.removeVars(inputNames));
+                SolidFrame.newMatrix(result, names) :
+                SolidFrame.newMatrix(result, names).bindVars(df.removeVars(inputNames));
     }
 
     private void validate(Frame df, String... targetVars) {
@@ -231,9 +230,9 @@ public class LDA implements Printable {
     public String summary() {
         StringBuilder sb = new StringBuilder();
 
-        Frame eval = SolidFrame.wrapOf(
-                Numeric.empty(eigenValues.count()).withName("values"),
-                Numeric.empty(eigenValues.count()).withName("percent")
+        Frame eval = SolidFrame.newByVars(
+                Numeric.newEmpty(eigenValues.count()).withName("values"),
+                Numeric.newEmpty(eigenValues.count()).withName("percent")
         );
         double total = 0.0;
         for (int i = 0; i < eigenValues.count(); i++) {

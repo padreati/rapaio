@@ -477,7 +477,7 @@ public class EigenvalueDecomposition implements Serializable {
     }
 
 
-    // Complex scalar division.
+    // Complex newScalar division.
 
     private transient double cdivr, cdivi;
 

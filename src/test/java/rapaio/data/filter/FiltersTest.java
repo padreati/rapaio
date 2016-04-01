@@ -45,7 +45,7 @@ public class FiltersTest {
     @Test
     public void testJitterStandard() {
         RandomSource.setSeed(1);
-        Var a = jitter(Numeric.fill(100_000, 1));
+        Var a = jitter(Numeric.newFill(100_000, 1));
         Mean mean = mean(a);
         Variance var = var(a);
         mean.printSummary();
@@ -60,7 +60,7 @@ public class FiltersTest {
     @Test
     public void testJitterStandardSd() {
         RandomSource.setSeed(1);
-        Var a = jitter(Numeric.fill(100_000, 1), 2);
+        Var a = jitter(Numeric.newFill(100_000, 1), 2);
         Mean mean = mean(a);
         Variance var = var(a);
         mean.printSummary();
@@ -75,7 +75,7 @@ public class FiltersTest {
     @Test
     public void testJitterDistributed() {
         RandomSource.setSeed(1);
-        Var a = jitter(Numeric.fill(100_000, 1), new ChiSquare(5));
+        Var a = jitter(Numeric.newFill(100_000, 1), new ChiSquare(5));
         Mean mean = mean(a);
         Variance var = var(a);
         mean.printSummary();
@@ -90,7 +90,7 @@ public class FiltersTest {
     @Test
     public void testSortNominal() {
         RandomSource.setSeed(1);
-        Var x1 = Nominal.copy("z", "q", "a", "b", "d", "c");
+        Var x1 = Nominal.newCopy("z", "q", "a", "b", "d", "c");
         Var x2 = sort(x1);
         for (int i = 0; i < x2.rowCount() - 1; i++) {
             assertTrue(x2.label(i).compareTo(x2.label(i + 1)) <= 0);
@@ -104,7 +104,7 @@ public class FiltersTest {
     @Test
     public void testSortNumeric() {
         RandomSource.setSeed(1);
-        Var x1 = Numeric.copy(7, 5, 1, 2, 5, 4);
+        Var x1 = Numeric.newCopy(7, 5, 1, 2, 5, 4);
         Var x2 = sort(x1);
         for (int i = 0; i < x2.rowCount() - 1; i++) {
             assertTrue(Double.compare(x2.value(i), x2.value(i + 1)) <= 0);
@@ -118,8 +118,8 @@ public class FiltersTest {
     @Test
     public void testSortRef() {
         RandomSource.setSeed(1);
-        Var x1 = Nominal.copy("z", "q", "a", "b", "d", "c");
-        Var x2 = Numeric.copy(7, 6, 1, 2, 5, 4);
+        Var x1 = Nominal.newCopy("z", "q", "a", "b", "d", "c");
+        Var x2 = Numeric.newCopy(7, 6, 1, 2, 5, 4);
         Var x3 = refSort(x2, x1);
         Var x4 = refSort(x1, x2);
         for (int i = 0; i < x3.rowCount() - 1; i++) {
@@ -134,8 +134,8 @@ public class FiltersTest {
     public void testShuffle() {
         RandomSource.setSeed(1);
         double N = 1000.0;
-        Var x = Numeric.seq(0, N, 1);
-        Var first = Numeric.empty();
+        Var x = Numeric.newSeq(0, N, 1);
+        Var first = Numeric.newEmpty();
         for (int i = 0; i < 100; i++) {
             Var y = shuffle(x);
             double t = y.stream().mapToDouble().sum();

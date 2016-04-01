@@ -41,8 +41,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class CorrSpearmanTest {
 
-    private final Var iq = Numeric.copy(106, 86, 100, 101, 99, 103, 97, 113, 112, 110);
-    private final Var tvHours = Numeric.copy(7, 0, 27, 50, 28, 29, 20, 12, 6, 17);
+    private final Var iq = Numeric.newCopy(106, 86, 100, 101, 99, 103, 97, 113, 112, 110);
+    private final Var tvHours = Numeric.newCopy(7, 0, 27, 50, 28, 29, 20, 12, 6, 17);
 
     @Test
     public void testFromWikipedia() {
@@ -62,7 +62,7 @@ public class CorrSpearmanTest {
 
     @Test
     public void maxCorrTest() {
-        Numeric x = Numeric.from(1_000, Math::sqrt).withName("x");
+        Numeric x = Numeric.newFrom(1_000, Math::sqrt).withName("x");
         CorrSpearman cp = CoreTools.corrSpearman(x, x);
         cp.printSummary();
         Assert.assertEquals(1, cp.singleValue(), 1e-12);
@@ -81,8 +81,8 @@ public class CorrSpearmanTest {
     public void randomTest() {
         RandomSource.setSeed(123);
         Normal norm = new Normal(0, 12);
-        Numeric x = Numeric.from(10_000, row -> norm.sampleNext()).withName("x");
-        Numeric y = Numeric.from(10_000, row -> norm.sampleNext()).withName("y");
+        Numeric x = Numeric.newFrom(10_000, row -> norm.sampleNext()).withName("x");
+        Numeric y = Numeric.newFrom(10_000, row -> norm.sampleNext()).withName("y");
 
         CorrSpearman cp = CoreTools.corrSpearman(x, y);
         cp.printSummary();
@@ -93,8 +93,8 @@ public class CorrSpearmanTest {
     public void testNonLinearCorr() {
         RandomSource.setSeed(123);
         Normal norm = new Normal(0, 12);
-        Numeric x = Numeric.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
-        Numeric y = Numeric.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
+        Numeric x = Numeric.newFrom(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
+        Numeric y = Numeric.newFrom(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
 
         CorrSpearman cp = CoreTools.corrSpearman(x, y);
         cp.printSummary();
@@ -106,9 +106,9 @@ public class CorrSpearmanTest {
 
         RandomSource.setSeed(123);
         Normal norm = new Normal(0, 12);
-        Numeric x = Numeric.from(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
-        Numeric y = Numeric.from(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
-        Numeric z = Numeric.from(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).withName("z");
+        Numeric x = Numeric.newFrom(10_000, row -> Math.sqrt(row) + norm.sampleNext()).withName("x");
+        Numeric y = Numeric.newFrom(10_000, row -> Math.pow(row, 1.5) + norm.sampleNext()).withName("y");
+        Numeric z = Numeric.newFrom(10_000, row -> Math.pow(row, 2) + norm.sampleNext()).withName("z");
 
 
         RM exp = SolidRM.copyOf(3, 3,
@@ -128,7 +128,7 @@ public class CorrSpearmanTest {
             }
         }
 
-        cp = CoreTools.corrSpearman(SolidFrame.wrapOf(x, y, x));
+        cp = CoreTools.corrSpearman(SolidFrame.newByVars(x, y, x));
         cp.printSummary();
 
         for (int i = 0; i < 3; i++) {
@@ -141,8 +141,8 @@ public class CorrSpearmanTest {
 
     @Test
     public void testMissingValues() {
-        Numeric x = Numeric.copy(1, 2, Double.NaN, Double.NaN, 5, 6, 7).withName("x");
-        Numeric y = Numeric.copy(1, 2, 3, Double.NaN, Double.NaN, 6, 7).withName("y");
+        Numeric x = Numeric.newCopy(1, 2, Double.NaN, Double.NaN, 5, 6, 7).withName("x");
+        Numeric y = Numeric.newCopy(1, 2, 3, Double.NaN, Double.NaN, 6, 7).withName("y");
 
         CorrSpearman cp = CoreTools.corrSpearman(x, y);
         cp.printSummary();

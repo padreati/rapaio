@@ -67,7 +67,7 @@ public final class Nominal extends FactorBase {
      *
      * @return new variable instance of nominal type
      */
-    public static Nominal empty() {
+    public static Nominal newEmpty() {
         return new Nominal();
     }
 
@@ -78,8 +78,8 @@ public final class Nominal extends FactorBase {
      * @param dict term levels
      * @return new variable instance of nominal type
      */
-    public static Nominal empty(int rows, String... dict) {
-        return Nominal.empty(rows, Arrays.asList(dict));
+    public static Nominal newEmpty(int rows, String... dict) {
+        return Nominal.newEmpty(rows, Arrays.asList(dict));
     }
 
     /**
@@ -89,7 +89,7 @@ public final class Nominal extends FactorBase {
      * @param dict term levels
      * @return new variable instance of nominal type
      */
-    public static Nominal empty(int rows, List<String> dict) {
+    public static Nominal newEmpty(int rows, List<String> dict) {
         Nominal nominal = new Nominal();
         HashSet<String> used = new HashSet<>();
         used.add("?");
@@ -104,22 +104,22 @@ public final class Nominal extends FactorBase {
         return nominal;
     }
 
-    public static Nominal copy(String... values) {
-        Nominal nominal = Nominal.empty();
+    public static Nominal newCopy(String... values) {
+        Nominal nominal = Nominal.newEmpty();
         for (String value : values)
             nominal.addLabel(value);
         return nominal;
     }
 
-    public static Nominal copy(List<String> values) {
-        Nominal nominal = Nominal.empty();
+    public static Nominal newCopy(List<String> values) {
+        Nominal nominal = Nominal.newEmpty();
         for (String value : values)
             nominal.addLabel(value);
         return nominal;
     }
 
-    public static Nominal from(int rows, Function<Integer, String> func, String... dict) {
-        Nominal nominal = Nominal.empty(rows, dict);
+    public static Nominal newFrom(int rows, Function<Integer, String> func, String... dict) {
+        Nominal nominal = Nominal.newEmpty(rows, dict);
         for (int i = 0; i < rows; i++) {
             nominal.setLabel(i, func.apply(i));
         }
@@ -131,7 +131,7 @@ public final class Nominal extends FactorBase {
         return new Collector<String, Nominal, Nominal>() {
             @Override
             public Supplier<Nominal> supplier() {
-                return Nominal::empty;
+                return Nominal::newEmpty;
             }
 
             @Override
@@ -157,6 +157,11 @@ public final class Nominal extends FactorBase {
     }
 
     @Override
+    public Comparator<Integer> refComparator() {
+        return (o1, o2) -> label(o1).compareTo(label(o2));
+    }
+
+    @Override
     public Nominal withName(String name) {
         return (Nominal) super.withName(name);
     }
@@ -177,7 +182,7 @@ public final class Nominal extends FactorBase {
 
     @Override
     public Var newInstance(int rows) {
-        return Nominal.empty(rows, levels());
+        return Nominal.newEmpty(rows, levels());
     }
 
     @Override

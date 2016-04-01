@@ -371,6 +371,6 @@ public class VSpots implements Stream<VSpot>, Serializable {
      * @return new mapped variable
      */
     public MappedVar toMappedVar() {
-        return MappedVar.byRows(source, Mapping.wrap(stream.map(VSpot::row).collect(Collectors.toList())));
+        return MappedVar.newByRows(source, Mapping.wrap(stream.map(VSpot::row).collect(Collectors.toList())));
     }
 }

@@ -27,14 +27,11 @@ import rapaio.core.CoreTools;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
-import rapaio.ml.eval.Confusion;
 import rapaio.printer.Printable;
 import rapaio.printer.format.TextTable;
-import rapaio.sys.WS;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 
 import static java.util.Collections.nCopies;
 
@@ -68,8 +65,8 @@ public class RFit implements Printable {
         this.rss = new HashMap<>();
         this.rsquare = new HashMap<>();
         for (String targetName : model.targetNames()) {
-            fit.put(targetName, Numeric.empty(df.rowCount()).withName(targetName));
-            residuals.put(targetName, Numeric.empty(df.rowCount()).withName(targetName + "-residual"));
+            fit.put(targetName, Numeric.newEmpty(df.rowCount()).withName(targetName));
+            residuals.put(targetName, Numeric.newEmpty(df.rowCount()).withName(targetName + "-residual"));
             tss.put(targetName, Double.NaN);
             ess.put(targetName, Double.NaN);
             rss.put(targetName, Double.NaN);
@@ -124,7 +121,7 @@ public class RFit implements Printable {
      * @return frame with fitted variables as columns
      */
     public Frame fitFrame() {
-        return SolidFrame.wrapOf(Arrays.stream(targetNames()).map(fit::get).collect(Collectors.toList()));
+        return SolidFrame.newByVars(Arrays.stream(targetNames()).map(fit::get).collect(Collectors.toList()));
     }
 
     /**
@@ -151,7 +148,7 @@ public class RFit implements Printable {
     }
 
     public Frame residualsFrame() {
-        return SolidFrame.wrapOf(Arrays.stream(targetNames()).map(residuals::get).collect(Collectors.toList()));
+        return SolidFrame.newByVars(Arrays.stream(targetNames()).map(residuals::get).collect(Collectors.toList()));
     }
 
     public Numeric firstResidual() {
@@ -258,7 +255,7 @@ public class RFit implements Printable {
             sb.append("======================")
                     .append(String.join("", nCopies(target.length(), "="))).append("\n");
 
-            String fullSummary = SolidFrame.wrapOf(fit(target), residual(target)).summary();
+            String fullSummary = SolidFrame.newByVars(fit(target), residual(target)).summary();
             List<String> list = Arrays.stream(fullSummary.split("\n")).skip(8).collect(Collectors.toList());
             int pos = 0;
             for (String line : list) {

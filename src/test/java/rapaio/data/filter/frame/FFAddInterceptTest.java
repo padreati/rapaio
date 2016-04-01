@@ -36,7 +36,7 @@ public class FFAddInterceptTest {
 
     @Test
     public void testInterceptValues() {
-        Frame before = SolidFrame.wrapOf(Numeric.fill(100, 1).withName("a"));
+        Frame before = SolidFrame.newByVars(Numeric.newFill(100, 1).withName("a"));
         Frame after = new FFAddIntercept().newInstance().fitApply(before);
 
         Assert.assertTrue(after.varCount()==2);

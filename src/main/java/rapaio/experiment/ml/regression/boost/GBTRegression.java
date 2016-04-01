@@ -141,7 +141,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
         RFit initPred = initRegression.fit(df, false);
         trees = new ArrayList<>();
 
-        fitLearn = Numeric.fill(df.rowCount());
+        fitLearn = Numeric.newFill(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
             fitLearn.setValue(i, initPred.firstFit().value(i));
         }
@@ -166,8 +166,8 @@ public class GBTRegression extends AbstractRegression implements Printable {
 
             tree.boostFit(
                     xLearn,
-                    MappedVar.byRows(y, samplerMapping),
-                    MappedVar.byRows(fitLearn, samplerMapping),
+                    MappedVar.newByRows(y, samplerMapping),
+                    MappedVar.newByRows(fitLearn, samplerMapping),
                     lossFunction);
 
             // add next prediction to the fit values
@@ -182,7 +182,7 @@ public class GBTRegression extends AbstractRegression implements Printable {
             trees.add(tree);
         }
 
-        fitValues = Numeric.empty();
+        fitValues = Numeric.newEmpty();
         for (int i = 0; i < fitLearn.rowCount(); i++) {
             fitValues.addValue(fitLearn.value(i));
         }

@@ -117,7 +117,7 @@ public class BinaryLogistic extends AbstractClassifier {
     private double regress(Frame df, int row) {
         if (coef == null)
             throw new IllegalArgumentException("Model has not been trained");
-        Numeric inst = Numeric.empty();
+        Numeric inst = Numeric.newEmpty();
         for (int i = 0; i < inputNames().length; i++) {
             inst.addValue(df.value(row, inputName(i)));
         }
@@ -128,14 +128,14 @@ public class BinaryLogistic extends AbstractClassifier {
     protected boolean coreTrain(Frame df, Var weights) {
         List<Var> inputs = new ArrayList<>(df.rowCount());
         for (int i = 0; i < df.rowCount(); i++) {
-            Numeric line = Numeric.empty();
+            Numeric line = Numeric.newEmpty();
             for (String inputName : inputNames())
                 line.addValue(df.value(i, inputName));
             inputs.add(line);
         }
 
-        coef = Numeric.fill(inputNames().length + 1, 0);
-        Numeric targetValues = Numeric.empty();
+        coef = Numeric.newFill(inputNames().length + 1, 0);
+        Numeric targetValues = Numeric.newEmpty();
         df.var(firstTargetName()).stream().forEach(s -> targetValues.addValue(s.index() == 1 ? 0 : 1));
         IRLSOptimizer optimizer = new IRLSOptimizer();
 

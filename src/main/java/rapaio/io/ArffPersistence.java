@@ -104,7 +104,7 @@ public class ArffPersistence {
 
                         String[] tmp = line.split("\\s+", 2);
                         if (tmp[1].trim().equalsIgnoreCase("real") || tmp[1].trim().equals("isNumeric") || tmp[1].trim().startsWith("integer")) {
-                            vars.add(Numeric.empty());
+                            vars.add(Numeric.newEmpty());
                         } else//Not correct, but we aren't supporting anything other than real and categorical right now
                         {
                             String cats = tmp[1].replace("{", "").replace("}", "").trim();
@@ -117,7 +117,7 @@ public class ArffPersistence {
                                 tempMap.add(fullTrim(catVal));
                             }
                             nomValueMap.put(variableName, tempMap);
-                            vars.add(Nominal.empty(0, tempMap));
+                            vars.add(Nominal.newEmpty(0, tempMap));
                         }
                         continue;
                     }
@@ -128,16 +128,16 @@ public class ArffPersistence {
             List<Var> newvectors = new ArrayList<>();
             for (int i = 0; i < vars.size(); i++) {
                 if (vars.get(i) instanceof Numeric) {
-                    newvectors.add(Numeric.empty(data.size()));
+                    newvectors.add(Numeric.newEmpty(data.size()));
                 }
                 if (vars.get(i) instanceof Nominal) {
-                    newvectors.add(Nominal.empty(data.size(), nomValueMap.get(names.get(i))));
+                    newvectors.add(Nominal.newEmpty(data.size(), nomValueMap.get(names.get(i))));
                 }
             }
             for (int i = 0; i < newvectors.size(); i++) {
                 newvectors.get(i).withName(names.get(i));
             }
-            Frame df = SolidFrame.wrapOf(data.size(), newvectors);
+            Frame df = SolidFrame.newByVars(data.size(), newvectors);
 
             // process data
             for (int i = 0; i < data.size(); i++) {

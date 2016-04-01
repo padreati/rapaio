@@ -36,11 +36,11 @@ public class FFJitterTest {
     @Test
     public void testSmoke() {
 
-        Frame a = SolidFrame.wrapOf(
-                Numeric.fill(100, 0).withName("num1"),
-                Numeric.fill(100, 0).withName("num2"),
-                Binary.fill(100, true).withName("bin"),
-                Nominal.from(100, r -> String.valueOf(r % 10)).withName("nom")
+        Frame a = SolidFrame.newByVars(
+                Numeric.newFill(100, 0).withName("num1"),
+                Numeric.newFill(100, 0).withName("num2"),
+                Binary.newFill(100, true).withName("bin"),
+                Nominal.newFrom(100, r -> String.valueOf(r % 10)).withName("nom")
         );
 
         Frame df1 = new FFJitter(VRange.onlyTypes(VarType.NUMERIC)).fitApply(a.solidCopy());

@@ -37,8 +37,6 @@ import rapaio.graphics.base.ImageUtility;
 import rapaio.graphics.plot.BoxPlot;
 import rapaio.graphics.plot.Plot;
 import rapaio.ml.eval.ROC;
-import rapaio.printer.IdeaPrinter;
-import rapaio.sys.WS;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -105,7 +103,7 @@ public class ImageGraphicsTest {
         RandomSource.setSeed(1);
         final int N = 100;
         Distribution normal = CoreTools.distNormal();
-        Numeric x = Numeric.from(N, row -> normal.sampleNext());
+        Numeric x = Numeric.newFrom(N, row -> normal.sampleNext());
         Plot plot = qqplot(x, normal, pch(2), color(3))
                 .vLine(0, color(Color.GRAY))
                 .hLine(0, color(Color.GRAY));

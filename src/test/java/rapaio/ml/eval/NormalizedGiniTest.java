@@ -35,8 +35,8 @@ public class NormalizedGiniTest {
     @Test
     public void testSmoke() {
 
-        Numeric x = Numeric.copy(1, 2, 3, 4, 5, 6, 7, 8, 9);
-        Numeric y = Numeric.copy(1, 4, 7, 2, 9, 3, 8, 5, 6);
+        Numeric x = Numeric.newCopy(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        Numeric y = Numeric.newCopy(1, 4, 7, 2, 9, 3, 8, 5, 6);
 
         double eval = new NormalizedGini(x, y).value();
         System.out.println(eval);

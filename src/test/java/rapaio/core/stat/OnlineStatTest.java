@@ -50,9 +50,9 @@ public class OnlineStatTest {
         OnlineStat onlineStat = new OnlineStat();
 
         Var index = Index.seq(LEN);
-        Var varLeft = Numeric.fill(LEN);
-        Var varRight = Numeric.fill(LEN);
-        Var varSum = Numeric.fill(LEN);
+        Var varLeft = Numeric.newFill(LEN);
+        Var varRight = Numeric.newFill(LEN);
+        Var varSum = Numeric.newFill(LEN);
 
         for (int i = 0; i < LEN; i++) {
             onlineStat.update(v.value(i));
@@ -74,8 +74,8 @@ public class OnlineStatTest {
 
     @Test
     public void testParallelStat() {
-        Var a = Numeric.wrap(1, 2, 3, 13, 17, 30);
-        Var b = Numeric.wrap(44, 5, 234, 12, 33, 1);
+        Var a = Numeric.newWrap(1, 2, 3, 13, 17, 30);
+        Var b = Numeric.newWrap(44, 5, 234, 12, 33, 1);
         Var ab = a.bindRows(b);
         OnlineStat soA = new OnlineStat();
         OnlineStat soB = new OnlineStat();
@@ -98,7 +98,7 @@ public class OnlineStatTest {
     @Test
     public void testWeightedStat() {
 
-        Var a = Numeric.wrap(1, 1, 2, 2, 2, 3, 3, 3, 3, 4);
+        Var a = Numeric.newWrap(1, 1, 2, 2, 2, 3, 3, 3, 3, 4);
         OnlineStat so1 = new OnlineStat();
 
         a.stream().forEach(s -> so1.update(s.value()));

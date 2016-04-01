@@ -189,11 +189,19 @@ public class WS {
         return ImageUtility.buildImage(figure, width, height);
     }
 
-    public static void saveImage(Figure figure, int width, int height, String fileName) throws IOException {
-        ImageUtility.saveImage(figure, width, height, fileName);
+    public static void saveImage(Figure figure, int width, int height, String fileName) {
+        try {
+            ImageUtility.saveImage(figure, width, height, fileName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static void saveImage(Figure figure, int width, int height, OutputStream os) throws IOException {
-        ImageUtility.saveImage(figure, width, height, os);
+    public static void saveImage(Figure figure, int width, int height, OutputStream os) {
+        try {
+            ImageUtility.saveImage(figure, width, height, os);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -41,8 +41,8 @@ public class VarTest {
 
     @Test
     public void testDictionary() {
-        Var x = Nominal.copy("x", "y", "x", "z");
-        Var y = Nominal.copy("x", "y", "x", "z");
+        Var x = Nominal.newCopy("x", "y", "x", "z");
+        Var y = Nominal.newCopy("x", "y", "x", "z");
 
         x.setLevels("a", "b", "c");
         List<String> dict = new ArrayList<>();
@@ -62,7 +62,7 @@ public class VarTest {
     @Test
     public void testNumericCollector() {
         double[] src = IntStream.range(0, 100_000).mapToDouble(x -> x).toArray();
-        Var x = Numeric.wrap(src);
+        Var x = Numeric.newWrap(src);
         Var y = Arrays.stream(src).boxed().parallel().collect(Numeric.collector());
         y = new VFSort().fitApply(y);
 

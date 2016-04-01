@@ -83,7 +83,7 @@ public class StampTest {
 
     @Test
     public void testFillVector() {
-        Var stamp = Numeric.fill(10, -1);
+        Var stamp = Numeric.newFill(10, -1);
         assertEquals(10, stamp.rowCount());
         for (int i = 0; i < stamp.rowCount(); i++) {
             assertEquals(-1, stamp.stamp(i));
@@ -268,7 +268,7 @@ public class StampTest {
     public void testSolidCopy() {
 
         Stamp x1 = Stamp.copy(1, 2, 3, 4, 5);
-        Var x2 = MappedVar.byRows(x1, 0, 1, 2);
+        Var x2 = MappedVar.newByRows(x1, 0, 1, 2);
         Var x3 = x2.solidCopy();
         Var x4 = x3.solidCopy();
         x4.addValue(8);

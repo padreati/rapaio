@@ -92,7 +92,7 @@ public class SamplingToolsTest {
         double[] freq = new double[10];
         final int TRIALS = 100_000;
         final int SAMPLES = 3;
-        Numeric v = Numeric.empty();
+        Numeric v = Numeric.newEmpty();
         for (int i = 0; i < TRIALS; i++) {
             for (int next : SamplingTools.sampleWOR(10, SAMPLES)) {
                 freq[next]++;

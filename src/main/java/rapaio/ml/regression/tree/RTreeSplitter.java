@@ -53,7 +53,7 @@ public interface RTreeSplitter extends Serializable {
             List<Var> weightsList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                 mappings.add(Mapping.empty());
-                weightsList.add(Numeric.empty());
+                weightsList.add(Numeric.newEmpty());
             }
 
             df.stream().forEach(s -> {
@@ -86,7 +86,7 @@ public interface RTreeSplitter extends Serializable {
             List<Var> weightsList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                 mappings.add(Mapping.empty());
-                weightsList.add(Numeric.empty());
+                weightsList.add(Numeric.newEmpty());
             }
 
             List<FSpot> missingSpots = new LinkedList<>();
@@ -135,7 +135,7 @@ public interface RTreeSplitter extends Serializable {
             List<Var> weightsList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                 mappings.add(Mapping.empty());
-                weightsList.add(Numeric.empty());
+                weightsList.add(Numeric.newEmpty());
             }
 
             final Set<Integer> missingSpots = new HashSet<>();

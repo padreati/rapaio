@@ -50,8 +50,8 @@ public class CTreeMissingHandlerTest {
 
     @Before
     public void setUp() throws Exception {
-        Numeric values = Numeric.wrap(1, 2, 3, 4, Double.NaN, Double.NaN, Double.NaN, -3, -2, -1);
-        df = SolidFrame.wrapOf(values.solidCopy().withName("x"));
+        Numeric values = Numeric.newWrap(1, 2, 3, 4, Double.NaN, Double.NaN, Double.NaN, -3, -2, -1);
+        df = SolidFrame.newByVars(values.solidCopy().withName("x"));
         w = values.solidCopy().stream().transValue(x -> Double.isNaN(x) ? x : Math.abs(x)).toMappedVar().withName("w");
         c = new CTreeCandidate(1, "test");
         c.addGroup("> 0", s -> s.value("x") > 0);

@@ -49,7 +49,7 @@ public class RowSamplerTest {
     @Before
     public void setUp() throws Exception {
         df = Datasets.loadIrisDataset();
-        w = Numeric.from(df.rowCount(), row -> (double) df.index(row, "class")).withName("w");
+        w = Numeric.newFrom(df.rowCount(), row -> (double) df.index(row, "class")).withName("w");
         Assert.assertEquals(w.stream().mapToDouble().sum(), 50 * (1 + 2 + 3), 1e-20);
     }
 
@@ -65,7 +65,7 @@ public class RowSamplerTest {
         RandomSource.setSeed(123);
 
         int N = 1_000;
-        Numeric count = Numeric.empty().withName("bcount");
+        Numeric count = Numeric.newEmpty().withName("bcount");
         for (int i = 0; i < N; i++) {
             Sample s = RowSampler.bootstrap(1.0).nextSample(df, w);
             count.addValue(1.0 * s.mapping.rowStream().distinct().count() / df.rowCount());
@@ -80,7 +80,7 @@ public class RowSamplerTest {
         RandomSource.setSeed(123);
 
         int N = 1_000;
-        Numeric count = Numeric.fill(df.rowCount(), 0.0).withName("sscount");
+        Numeric count = Numeric.newFill(df.rowCount(), 0.0).withName("sscount");
         for (int i = 0; i < N; i++) {
             Sample s = RowSampler.subsampler(0.5).nextSample(df, w);
             s.mapping.rowStream().forEach(r -> count.setValue(r, count.value(r) + 1));

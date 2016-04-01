@@ -23,10 +23,7 @@
 
 package rapaio.data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Ordinal variables contains values for categorical observations where order of labels is important.
@@ -124,6 +121,11 @@ public final class Ordinal extends FactorBase {
     @Override
     public Var newInstance(int rows) {
         return Ordinal.empty(rows, levels());
+    }
+
+    @Override
+    public Comparator<Integer> refComparator() {
+        return (o1, o2) -> Integer.compare(index(o1), index(o2));
     }
 
     @Override

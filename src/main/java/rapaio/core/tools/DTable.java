@@ -78,7 +78,7 @@ public final class DTable implements Printable, Serializable {
      * @param useFirst true if using the first row and col, false otherwise
      */
     public static DTable fromCounts(Var rowVar, Var colVar, boolean useFirst) {
-        return new DTable(rowVar, colVar, Numeric.fill(rowVar.rowCount(), 1), useFirst);
+        return new DTable(rowVar, colVar, Numeric.newFill(rowVar.rowCount(), 1), useFirst);
     }
 
     /**

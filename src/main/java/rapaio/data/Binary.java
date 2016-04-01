@@ -64,7 +64,7 @@ public final class Binary extends AbstractVar {
      *
      * @return new instance of binary var
      */
-    public static Binary empty() {
+    public static Binary newEmpty() {
         return new Binary(0, false, false);
     }
 
@@ -74,7 +74,7 @@ public final class Binary extends AbstractVar {
      * @param rows size of variable
      * @return new instance of binary var
      */
-    public static Binary empty(int rows) {
+    public static Binary newEmpty(int rows) {
         return new Binary(rows, true, false);
     }
 
@@ -85,7 +85,7 @@ public final class Binary extends AbstractVar {
      * @param fillValue fill value
      * @return new instance of binary var
      */
-    public static Binary fill(int rows, boolean fillValue) {
+    public static Binary newFill(int rows, boolean fillValue) {
         return new Binary(rows, false, fillValue);
     }
 
@@ -405,7 +405,7 @@ public final class Binary extends AbstractVar {
 
     @Override
     public Var newInstance(int rows) {
-        return Binary.empty(rows).withName(name());
+        return Binary.newEmpty(rows).withName(name());
     }
 
     @Override
