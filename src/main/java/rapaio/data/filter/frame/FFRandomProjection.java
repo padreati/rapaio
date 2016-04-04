@@ -48,11 +48,19 @@ public class FFRandomProjection extends FFDefault {
     private final Method method;
     private RM rp;
 
-    public FFRandomProjection(int k, Method method, String... varNames) {
-        this(k, method, VRange.of(varNames));
+    public static FFRandomProjection newGaussianSd(int k, VRange vRange) {
+        return new FFRandomProjection(k, gaussian(k), vRange);
     }
 
-    public FFRandomProjection(int k, Method method, VRange vRange) {
+    public static FFRandomProjection newAchlioptas(int k, VRange vRange) {
+        return new FFRandomProjection(k, achlioptas(3), vRange);
+    }
+
+    public static FFRandomProjection newAchlioptas(int k, double s, VRange vRange) {
+        return new FFRandomProjection(k, achlioptas(s), vRange);
+    }
+
+    private FFRandomProjection(int k, Method method, VRange vRange) {
         super(vRange);
         this.k = k;
         this.method = method;
@@ -93,18 +101,19 @@ public class FFRandomProjection extends FFDefault {
         RV projection(int rowCount);
     }
 
-    public static Method normal(int k) {
+    private static Method gaussian(int k) {
         return rowCount -> {
             Normal norm = new Normal(0, 1);
             RV v = SolidRV.empty(rowCount);
             for (int i = 0; i < v.count(); i++) {
                 v.set(i, norm.sampleNext() / Math.sqrt(k));
             }
+            v.normalize(2);
             return v;
         };
     }
 
-    public static Method achlioptas(double s) {
+    private static Method achlioptas(double s) {
         double[] p = new double[3];
         p[0] = 1 / (2 * s);
         p[1] = 1 - 1 / s;
@@ -126,7 +135,7 @@ public class FFRandomProjection extends FFDefault {
                 }
                 v.set(i, sqrt);
             }
-            return v;
+            return v.normalize(2);
         };
     }
 }

@@ -257,7 +257,7 @@ public class Csv {
                         varSlots.get(i).addValue("?");
                         continue;
                     }
-                    // normal behavior
+                    // gaussian behavior
                     varSlots.get(i).addValue(row.get(i));
                 }
             }

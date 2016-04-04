@@ -112,6 +112,7 @@ public class Summary {
                 second[k][0] = String.valueOf(zeros);
                 second[k][1] = String.valueOf(ones);
                 second[k][2] = String.valueOf(missing);
+                continue;
             }
 
             if (v.type() == VarType.INDEX || v.type() == VarType.NUMERIC) {

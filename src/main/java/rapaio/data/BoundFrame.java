@@ -60,7 +60,7 @@ public class BoundFrame extends AbstractFrame {
         if (dfs.length == 0) {
             return new BoundFrame(0, new ArrayList<>(), new String[]{}, new HashMap<>());
         }
-        int _rowCount = 0;
+        Integer _rowCount = null;
         List<Var> _vars = new ArrayList<>();
         List<String> _names = new ArrayList<>();
         Map<String, Integer> _indexes = new HashMap<>();
@@ -68,8 +68,8 @@ public class BoundFrame extends AbstractFrame {
 
         int pos = 0;
         for (int i = 0; i < dfs.length; i++) {
-            if (i == 0) {
-                _rowCount = dfs[i].rowCount();
+            if (_rowCount == null) {
+                _rowCount = dfs[i].varCount() > 0 ? dfs[i].rowCount() : null;
             } else {
                 _rowCount = Math.min(_rowCount, dfs[i].rowCount());
             }
@@ -83,7 +83,7 @@ public class BoundFrame extends AbstractFrame {
                 _indexes.put(dfs[i].var(j).name(), pos++);
             }
         }
-        return new BoundFrame(_rowCount, _vars, _names.toArray(new String[_names.size()]), _indexes);
+        return new BoundFrame(_rowCount == null ? 0 : _rowCount, _vars, _names.toArray(new String[_names.size()]), _indexes);
     }
 
     public static BoundFrame newByVars(Collection<Var> varList) {

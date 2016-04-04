@@ -440,7 +440,7 @@ public class MathTools {
      * <p>
      * erf(x) = 2 * cdf(x sqrt(2)) -1
      * <p>
-     * where cdf is the cdf of the normal densities
+     * where cdf is the cdf of the gaussian densities
      * <p>
      * http://en.wikipedia.org/wiki/Error_function
      *
@@ -456,7 +456,7 @@ public class MathTools {
      * <p>
      * inverf(x) = invcdf(x/2+1/2)/sqrt(2)
      * <p>
-     * where invcdf is the inverse cdf of the normal densities
+     * where invcdf is the inverse cdf of the gaussian densities
      * <p>
      * http://en.wikipedia.org/wiki/Error_function
      *
@@ -486,7 +486,7 @@ public class MathTools {
      * <p>
      * inverfc(x) = invcdf(x/2)/-sqrt(2)
      * <p>
-     * where invcdf is the inverse cdf of the normal densities
+     * where invcdf is the inverse cdf of the gaussian densities
      * <p>
      * http://en.wikipedia.org/wiki/Error_function
      *

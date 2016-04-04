@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Numeric probability estimator, using pdf of normal distribution.
+ * Numeric probability estimator, using pdf of gaussian distribution.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/18/15.
  */

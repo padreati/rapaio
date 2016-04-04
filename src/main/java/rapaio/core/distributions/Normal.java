@@ -147,7 +147,7 @@ public class Normal implements Distribution {
     private static double cdfMarsaglia(double x) {
         /*
          * Journal of Statistical Software (July 2004, Volume 11, Issue 5),
-         * George Marsaglia Algorithum to compute the cdf of the normal
+         * George Marsaglia Algorithum to compute the cdf of the gaussian
          * densities for some z score
          */
         double s = x, t = 0, b = x, q = x * x, i = 1;

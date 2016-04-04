@@ -27,7 +27,6 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.data.filter.frame.FFRandomProjection;
 import rapaio.datasets.Datasets;
-import rapaio.graphics.Plotter;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 
@@ -47,7 +46,7 @@ public class Sandbox {
 
             Frame df = Datasets.loadIrisDataset();
 
-            Frame rp = new FFRandomProjection(2, FFRandomProjection.normal(2), VRange.all()).fitApply(df.mapVars("0~3"));
+            Frame rp = FFRandomProjection.newGaussianSd(2, VRange.all()).fitApply(df.mapVars("0~3"));
 
             WS.setPrinter(new IdeaPrinter());
             WS.draw(points(rp.var(0), rp.var(1), color(df.var("class"))));

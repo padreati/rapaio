@@ -88,7 +88,7 @@ public class KDE implements Serializable {
      * Computes the approximation for bandwidth provided by Silverman,
      * known also as Silverman's rule of thumb.
      * <p>
-     * Is used when the approximated is normal for approximating
+     * Is used when the approximated is gaussian for approximating
      * univariate data.
      * <p>
      * For further reference check:
