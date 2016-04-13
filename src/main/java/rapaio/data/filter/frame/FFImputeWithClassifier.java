@@ -37,7 +37,7 @@ import java.util.Map;
  *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/30/15.
  */
-public class FFImputeWithClassifier extends FFDefault {
+public class FFImputeWithClassifier extends AbstractFF {
 
     private static final long serialVersionUID = -2447577449010618416L;
 

@@ -30,17 +30,17 @@ import rapaio.data.filter.FFilter;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/4/14.
  */
-public abstract class FFDefault implements FFilter {
+public abstract class AbstractFF implements FFilter {
 
     private static final long serialVersionUID = 5619103016781092137L;
     protected final VRange vRange;
     protected String[] varNames;
 
-    public FFDefault(String... varNames) {
+    public AbstractFF(String... varNames) {
         this(VRange.of(varNames));
     }
 
-    public FFDefault(VRange vRange) {
+    public AbstractFF(VRange vRange) {
         this.vRange = vRange;
     }
 

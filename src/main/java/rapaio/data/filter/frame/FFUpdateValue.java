@@ -32,7 +32,7 @@ import java.util.function.Function;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
  */
-public class FFUpdateValue extends FFDefault {
+public class FFUpdateValue extends AbstractFF {
 
     private static final long serialVersionUID = 3982915877968295381L;
 

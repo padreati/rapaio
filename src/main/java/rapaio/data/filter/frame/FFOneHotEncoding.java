@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class FFOneHotEncoding extends FFDefault {
+public class FFOneHotEncoding extends AbstractFF {
 
     private static final long serialVersionUID = 4893532203594639069L;
 

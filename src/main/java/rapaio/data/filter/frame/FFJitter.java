@@ -31,7 +31,7 @@ import rapaio.data.VRange;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/10/14.
  */
-public class FFJitter extends FFDefault {
+public class FFJitter extends AbstractFF {
 
     private static final long serialVersionUID = 33367007274996702L;
 

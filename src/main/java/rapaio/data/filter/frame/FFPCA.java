@@ -27,12 +27,11 @@ import rapaio.data.Frame;
 import rapaio.data.VRange;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.RV;
-import rapaio.ml.analysis.LDA;
 import rapaio.ml.analysis.PCA;
 
 import java.util.function.BiFunction;
 
-public class FFPCA extends FFDefault {
+public class FFPCA extends AbstractFF {
 
     private static final long serialVersionUID = 2797285371357486124L;
 

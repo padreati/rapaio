@@ -31,7 +31,7 @@ import rapaio.ml.analysis.LDA;
 
 import java.util.function.BiFunction;
 
-public class FFLDA extends FFDefault {
+public class FFLDA extends AbstractFF {
 
     private static final long serialVersionUID = 2797285371357486124L;
 

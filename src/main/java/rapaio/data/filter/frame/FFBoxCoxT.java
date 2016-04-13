@@ -30,7 +30,7 @@ import rapaio.data.filter.var.VFTransformBoxCox;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/15/14.
  */
-public class FFBoxCoxT extends FFDefault {
+public class FFBoxCoxT extends AbstractFF {
 
     private static final long serialVersionUID = 1804199711139024129L;
 

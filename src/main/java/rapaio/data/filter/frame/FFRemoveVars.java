@@ -29,7 +29,7 @@ import rapaio.data.VRange;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-public class FFRemoveVars extends FFDefault {
+public class FFRemoveVars extends AbstractFF {
 
     private static final long serialVersionUID = -932131127278719356L;
 

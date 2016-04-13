@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-public class FFRefSort extends FFDefault {
+public class FFRefSort extends AbstractFF {
 
     private static final long serialVersionUID = 3579078253849199109L;
 

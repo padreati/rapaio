@@ -248,37 +248,4 @@ public class BoundFrame extends AbstractFrame {
     public Frame mapRows(Mapping mapping) {
         return MappedFrame.newByRow(this, mapping);
     }
-
-    public static Collector<Var, List<Var>, Frame> collector() {
-
-        return new Collector<Var, List<Var>, Frame>() {
-            @Override
-            public Supplier<List<Var>> supplier() {
-                return LinkedList::new;
-            }
-
-            @Override
-            public BiConsumer<List<Var>, Var> accumulator() {
-                return List::add;
-            }
-
-            @Override
-            public BinaryOperator<List<Var>> combiner() {
-                return (list1, list2) -> {
-                    list1.addAll(list2);
-                    return list1;
-                };
-            }
-
-            @Override
-            public Function<List<Var>, Frame> finisher() {
-                return BoundFrame::newByVars;
-            }
-
-            @Override
-            public Set<Characteristics> characteristics() {
-                return new HashSet<>();
-            }
-        };
-    }
 }

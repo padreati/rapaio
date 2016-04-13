@@ -36,7 +36,7 @@ import java.util.List;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-public class FFRetainTypes extends FFDefault {
+public class FFRetainTypes extends AbstractFF {
 
     private static final long serialVersionUID = -5152761273156719785L;
 

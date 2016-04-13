@@ -36,13 +36,17 @@ import java.util.stream.Collectors;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public class FFAddIntercept extends FFDefault {
+public class FFAddIntercept extends AbstractFF {
 
     private static final long serialVersionUID = -7268280264499694765L;
 
     public static String INTERCEPT = "(Intercept)";
 
-    public FFAddIntercept() {
+    public static FFAddIntercept newFilter() {
+        return new FFAddIntercept();
+    }
+
+    private FFAddIntercept() {
         super(VRange.all());
     }
 

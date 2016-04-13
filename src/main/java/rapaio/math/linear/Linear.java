@@ -23,7 +23,6 @@
 
 package rapaio.math.linear;
 
-import org.ejml.alg.dense.decomposition.eig.EigenvalueExtractor;
 import org.ejml.alg.dense.decomposition.eig.SwitchingEigenDecomposition;
 import org.ejml.data.DenseMatrix64F;
 import rapaio.math.linear.dense.EigenvalueDecomposition;

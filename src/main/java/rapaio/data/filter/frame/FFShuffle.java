@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 12/5/14.
  */
-public class FFShuffle extends FFDefault {
+public class FFShuffle extends AbstractFF {
 
     private static final long serialVersionUID = 3868876807602578584L;
 

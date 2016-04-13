@@ -31,10 +31,12 @@ import rapaio.sys.WS;
 import rapaio.printer.Summary;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -514,6 +516,40 @@ public interface Frame extends Serializable, Printable {
         }
         return df;
     }
+
+    static Collector<Var, List<Var>, Frame> collector() {
+
+        return new Collector<Var, List<Var>, Frame>() {
+            @Override
+            public Supplier<List<Var>> supplier() {
+                return LinkedList::new;
+            }
+
+            @Override
+            public BiConsumer<List<Var>, Var> accumulator() {
+                return List::add;
+            }
+
+            @Override
+            public BinaryOperator<List<Var>> combiner() {
+                return (list1, list2) -> {
+                    list1.addAll(list2);
+                    return list1;
+                };
+            }
+
+            @Override
+            public Function<List<Var>, Frame> finisher() {
+                return BoundFrame::newByVars;
+            }
+
+            @Override
+            public Set<Characteristics> characteristics() {
+                return new HashSet<>();
+            }
+        };
+    }
+
 
     @Override
     default String summary() {

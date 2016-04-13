@@ -40,7 +40,7 @@ import java.util.stream.IntStream;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/28/16.
  */
-public class FFRandomProjection extends FFDefault {
+public class FFRandomProjection extends AbstractFF {
 
     private static final long serialVersionUID = -2790372378136065870L;
 

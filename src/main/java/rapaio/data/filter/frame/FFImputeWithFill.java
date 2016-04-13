@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/22/16.
  */
-public class FFImputeWithFill extends FFDefault {
+public class FFImputeWithFill extends AbstractFF {
 
     private static final long serialVersionUID = 281130325474491898L;
     private final double fill;

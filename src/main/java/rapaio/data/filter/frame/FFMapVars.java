@@ -31,7 +31,7 @@ import rapaio.data.VRange;
  * <p>
  * Created by padreati on 1/15/16.
  */
-public class FFMapVars extends FFDefault {
+public class FFMapVars extends AbstractFF {
 
     private static final long serialVersionUID = 5540246008233767364L;
 

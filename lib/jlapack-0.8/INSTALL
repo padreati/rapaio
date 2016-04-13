@@ -1,0 +1,54 @@
+
+JLAPACK 0.8 Installation
+
+All you need to do to get started with JLAPACK is set your CLASSPATH.
+
+The following directions are for Solaris (using csh).  Other UNIX platforms 
+should be very similar.  MS-DOS and Windows users should consult their JDK
+documentation to find out how to set the CLASSPATH.
+
+If your CLASSPATH environment variable is already set, append the following
+files to it:
+
+  $JLAPACK_HOME/f2jutil.jar
+  $JLAPACK_HOME/blas.jar
+  $JLAPACK_HOME/lapack.jar
+  $JLAPACK_HOME/xerbla.jar
+
+where JLAPACK_HOME represents the full path of the directory where you have
+JLAPACK installed.
+
+You may omit lapack.jar if you only plan to call BLAS routines, however
+the others should always be used.
+
+If you plan to use the simplified interfaces, you will need to add the
+corresponding jar files to your CLASSPATH:
+
+  $JLAPACK_HOME/blas_simple.jar -- for the simplified BLAS interface
+  $JLAPACK_HOME/lapack_simple.jar -- for the simplified LAPACK interface
+
+ For example, if your jlapack directory is /users/bob/jlapack/ the following
+command would append the appropriate files to your CLASSPATH:
+  
+  % setenv CLASSPATH $CLASSPATH":/users/bob/jlapack/f2jutil.jar:/users/bob/jlapack/blas.jar:/users/bob/jlapack/lapack.jar:/users/bob/jlapack/xerbla.jar"
+
+If your CLASSPATH has not been set, you should set it to include the 
+current directory as well as the jar files previously mentioned.
+For example:
+
+  % setenv CLASSPATH .:/users/bob/jlapack/f2jutil.jar:/users/bob/jlapack/blas.jar:/users/bob/jlapack/lapack.jar:/users/bob/jlapack/xerbla.jar
+
+There are several basic test files in the $JLAPACK_HOME/examples subdirectory.
+To verify that your CLASSPATH is properly set, attempt to build one of them
+without using the Makefile.  For example:
+
+  % javac DdotTest.java
+
+If it compiles without any errors, try running it:
+
+  % java DdotTest
+  Answer = 36.3
+
+If DdotTest.java will not compile, double-check the CLASSPATH setting
+and the location of the class files.  Take a look at the Makefile for
+an example of setting up the CLASSPATH.
