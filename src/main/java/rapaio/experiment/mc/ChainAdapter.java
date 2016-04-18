@@ -6,6 +6,7 @@
  *    Copyright 2013 Aurelian Tutuianu
  *    Copyright 2014 Aurelian Tutuianu
  *    Copyright 2015 Aurelian Tutuianu
+ *    Copyright 2016 Aurelian Tutuianu
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -26,7 +27,7 @@ package rapaio.experiment.mc;
 import java.util.List;
 
 /**
- * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 12/2/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 12/2/15.
  */
 public interface ChainAdapter {
 
