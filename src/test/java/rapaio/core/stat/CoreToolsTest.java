@@ -29,6 +29,7 @@ import org.junit.Test;
 import rapaio.core.CoreTools;
 import rapaio.data.*;
 import rapaio.io.Csv;
+import rapaio.sys.WS;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -86,8 +87,42 @@ public class CoreToolsTest {
     @Test
     public void testQuantiles() {
         Numeric v = Numeric.newSeq(0, 1, 0.001);
-        Quantiles quantiles = quantiles(v, Numeric.newSeq(0, 1, 0.001));
-        assertTrue(v.deepEquals(Numeric.newWrap(quantiles.values())));
+        Quantiles q1 = quantiles(v, Numeric.newSeq(0, 1, 0.001));
+        assertTrue(v.deepEquals(Numeric.newWrap(q1.values())));
+
+
+        Numeric vEmpty = Numeric.newEmpty(10);
+        Numeric vOne = vEmpty.solidCopy();
+        vOne.setValue(3, 10);
+
+        Quantiles q2 = quantiles(vEmpty, Numeric.newSeq(0, 1, 0.1));
+        Assert.assertEquals(11, q2.values().length);
+        for (int i = 0; i < q2.values().length; i++) {
+            Assert.assertTrue(Double.isNaN(q2.values()[i]));
+        }
+
+        Quantiles q3 = quantiles(vOne, Numeric.newSeq(0, 1, 0.1));
+        Assert.assertEquals(11, q3.values().length);
+        for (int i = 0; i < q3.values().length; i++) {
+            Assert.assertEquals(10, q3.values()[i], 1e-20);
+        }
+
+        Quantiles q4 = quantiles(v, Quantiles.Type.R8, Numeric.newSeq(0, 1, 0.1));
+
+        Arrays.stream(q4.values()).forEach(val -> WS.println(WS.formatLong(val)));
+        Numeric v4 = Numeric.newCopy(0,
+                0.09946666666666674,
+                0.19960000000000017,
+                0.2997333333333336,
+                0.399866666666667,
+                0.5000000000000003,
+                0.6001333333333337,
+                0.7002666666666671,
+                0.8004000000000006,
+                0.900533333333334,
+                1.0000000000000007);
+        q4.printSummary();
+        assertTrue(v4.deepEquals(Numeric.newWrap(q4.values())));
     }
 
     @Test

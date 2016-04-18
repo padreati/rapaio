@@ -82,6 +82,10 @@ public final class CoreTools {
         return new Quantiles(var, p.stream().mapToDouble().toArray());
     }
 
+    public static Quantiles quantiles(Var var, Quantiles.Type type, Numeric p) {
+        return new Quantiles(var, type, p.stream().mapToDouble().toArray());
+    }
+
     public static Modes modes(Var var) {
         return new Modes(var, false);
     }
