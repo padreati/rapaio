@@ -38,7 +38,7 @@ public class QRTest {
 
     @Test
     public void testQR() {
-        RM x = SolidRM.copyOf(new double[][]{
+        RM x = SolidRM.copy(new double[][]{
                 {1, 1, 1},
                 {1, 2, 4},
                 {1, 3, 9},
@@ -46,9 +46,9 @@ public class QRTest {
                 {1, 5, 25}
         });
 
-        RM y = SolidRM.copyOf(
-                Numeric.newCopy(2.8, 3.2, 7.1, 6.8, 8.8).withName("1"),
-                Numeric.newCopy(2.8, 3.2, 7.1, 6.8, 8.9).withName("2")
+        RM y = SolidRM.copy(
+                Numeric.copy(2.8, 3.2, 7.1, 6.8, 8.8).withName("1"),
+                Numeric.copy(2.8, 3.2, 7.1, 6.8, 8.9).withName("2")
         );
 
         QR qr = new QR(x);

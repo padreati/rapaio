@@ -74,7 +74,7 @@ public interface RTreeNumericMethod extends Serializable {
             double[] rightWeight = new double[test.rowCount()];
             double[] rightVar = new double[test.rowCount()];
 
-            OnlineStat so = new OnlineStat();
+            OnlineStat so = OnlineStat.empty();
 
             double w = 0.0;
             for (int i = 0; i < test.rowCount(); i++) {

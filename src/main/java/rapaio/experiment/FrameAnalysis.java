@@ -46,15 +46,15 @@ public class FrameAnalysis {
         csv.withEndRow(Integer.MAX_VALUE);
         int start = 0;
 
-        Nominal name = Nominal.newEmpty().withName("name");
-        Nominal type = Nominal.newEmpty().withName("type");
+        Nominal name = Nominal.empty().withName("name");
+        Nominal type = Nominal.empty().withName("type");
         Index count = Index.empty().withName("count");
         Index missing = Index.empty().withName("missing");
         List<Var> h1 = new ArrayList<>();
         List<Var> h2 = new ArrayList<>();
         for (int i = 0; i < bins; i++) {
-            h1.add(Numeric.newEmpty().withName("h1_" + i));
-            h2.add(Numeric.newEmpty().withName("h2_" + i));
+            h1.add(Numeric.empty().withName("h1_" + i));
+            h2.add(Numeric.empty().withName("h2_" + i));
         }
 
         Var target = csv.withSkipCols(n -> n != targetIndex).read(file).var(0);
@@ -189,7 +189,7 @@ public class FrameAnalysis {
         vars.add(missing);
         vars.addAll(h1);
         vars.addAll(h2);
-        return SolidFrame.newByVars(vars);
+        return SolidFrame.byVars(vars);
     }
 
 }

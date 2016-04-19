@@ -58,11 +58,11 @@ public interface GBTLossFunction extends Serializable {
 
         @Override
         public double findMinimum(Var y, Var fx) {
-            Numeric values = Numeric.newEmpty();
+            Numeric values = Numeric.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 values.addValue(y.value(i) - fx.value(i));
             }
-            double result = new Quantiles(values, new double[]{0.5}).values()[0];
+            double result = Quantiles.from(values, new double[]{0.5}).values()[0];
             if (Double.isNaN(result)) {
                 WS.println();
             }
@@ -71,7 +71,7 @@ public interface GBTLossFunction extends Serializable {
 
         @Override
         public Numeric gradient(Var y, Var fx) {
-            Numeric gradient = Numeric.newEmpty();
+            Numeric gradient = Numeric.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 gradient.addValue(y.value(i) - fx.value(i) < 0 ? -1. : 1.);
             }
@@ -88,12 +88,12 @@ public interface GBTLossFunction extends Serializable {
 
         @Override
         public double findMinimum(Var y, Var fx) {
-            return new Mean(gradient(y, fx)).value();
+            return Mean.from(gradient(y, fx)).value();
         }
 
         @Override
         public Numeric gradient(Var y, Var fx) {
-            Numeric delta = Numeric.newEmpty();
+            Numeric delta = Numeric.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 delta.addValue(y.value(i) - fx.value(i));
             }
@@ -127,25 +127,25 @@ public interface GBTLossFunction extends Serializable {
 
             // compute residuals
 
-            Numeric residual = Numeric.newEmpty();
+            Numeric residual = Numeric.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 residual.addValue(y.value(i) - fx.value(i));
             }
 
             // compute median of residuals
 
-            double r_bar = new Quantiles(residual, new double[]{0.5}).values()[0];
+            double r_bar = Quantiles.from(residual, new double[]{0.5}).values()[0];
 
             // compute absolute residuals
 
-            Numeric absResidual = Numeric.newEmpty();
+            Numeric absResidual = Numeric.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 absResidual.addValue(Math.abs(y.value(i) - fx.value(i)));
             }
 
             // compute rho as an alpha-quantile of absolute residuals
 
-            double rho = new Quantiles(absResidual, new double[]{alpha}).values()[0];
+            double rho = Quantiles.from(absResidual, new double[]{alpha}).values()[0];
 
             // compute one-iteration approximation
 
@@ -164,18 +164,18 @@ public interface GBTLossFunction extends Serializable {
 
             // compute absolute residuals
 
-            Numeric absResidual = Numeric.newEmpty();
+            Numeric absResidual = Numeric.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 absResidual.addValue(Math.abs(y.value(i) - fx.value(i)));
             }
 
             // compute rho as an alpha-quantile of absolute residuals
 
-            double rho = new Quantiles(absResidual, new double[]{alpha}).values()[0];
+            double rho = Quantiles.from(absResidual, new double[]{alpha}).values()[0];
 
             // now compute gradient
 
-            Numeric gradient = Numeric.newEmpty();
+            Numeric gradient = Numeric.empty();
             for (int i = 0; i < y.rowCount(); i++) {
                 if (absResidual.value(i) <= rho) {
                     gradient.addValue(y.value(i) - fx.value(i));

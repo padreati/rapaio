@@ -48,7 +48,7 @@ public class GOpts implements Serializable {
         DEFAULTS.palette = gOpts -> ColorPalette.STANDARD;
         DEFAULTS.color = gOpts -> new Color[]{Color.black};
         DEFAULTS.lwd = gOpts -> 1.0f;
-        DEFAULTS.sz = gOpts -> Numeric.newScalar(3);
+        DEFAULTS.sz = gOpts -> Numeric.scalar(3);
         DEFAULTS.pch = gOpts -> Index.scalar(0);
         DEFAULTS.alpha = gOpts -> 1.0f;
         DEFAULTS.bins = gOpts -> -1;

@@ -48,19 +48,6 @@ import java.util.*;
  */
 public final class Ordinal extends FactorBase {
 
-    private static final long serialVersionUID = 5438713835700406847L;
-
-    private Ordinal() {
-        super();
-        // set the missing value
-        this.reverse = new HashMap<>();
-        this.reverse.put("?", 0);
-        this.dict = new ArrayList<>();
-        this.dict.add("?");
-        data = new int[0];
-        rows = 0;
-    }
-
     /**
      * Builds a new empty ordinal variable.
      *
@@ -98,6 +85,19 @@ public final class Ordinal extends FactorBase {
         nominal.data = new int[rows];
         nominal.rows = rows;
         return nominal;
+    }
+
+    private static final long serialVersionUID = 5438713835700406847L;
+
+    private Ordinal() {
+        super();
+        // set the missing value
+        this.reverse = new HashMap<>();
+        this.reverse.put("?", 0);
+        this.dict = new ArrayList<>();
+        this.dict.add("?");
+        data = new int[0];
+        rows = 0;
     }
 
     @Override

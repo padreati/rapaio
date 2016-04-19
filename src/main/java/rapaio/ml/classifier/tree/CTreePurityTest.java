@@ -71,7 +71,7 @@ public interface CTreePurityTest extends Tagged, Serializable {
             Var test = df.var(testName);
             Var target = df.var(targetName);
 
-            DTable dt = DTable.newEmpty(DTable.NUMERIC_DEFAULT_LABELS, target.levels(), false);
+            DTable dt = DTable.empty(DTable.NUMERIC_DEFAULT_LABELS, target.levels(), false);
             int misCount = 0;
             for (int i = 0; i < df.rowCount(); i++) {
                 int row = (test.missing(i)) ? 0 : 2;
@@ -205,7 +205,7 @@ public interface CTreePurityTest extends Tagged, Serializable {
 
                 String testLabel = df.var(testName).levels()[i];
 
-                DTable dt = DTable.newBinaryFromWeights(test, target, weights, testLabel, false);
+                DTable dt = DTable.binaryFromWeights(test, target, weights, testLabel, false);
                 double currentScore = function.compute(dt);
                 if (best != null) {
                     int comp = Double.compare(bestScore, currentScore);

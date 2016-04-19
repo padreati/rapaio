@@ -31,7 +31,7 @@ import java.io.ObjectOutputStream;
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public abstract class AbstractVar implements Var {
+abstract class AbstractVar implements Var {
 
     private static final long serialVersionUID = 2607349261526552662L;
     private String name = "?";
@@ -40,7 +40,7 @@ public abstract class AbstractVar implements Var {
         return name;
     }
 
-    public AbstractVar withName(String name) {
+    public Var withName(String name) {
         if (name == null)
             throw new IllegalArgumentException("variable name cannot be null");
         this.name = name;
@@ -55,7 +55,7 @@ public abstract class AbstractVar implements Var {
 
         switch (type()) {
             case NOMINAL:
-                Nominal nom = Nominal.newEmpty(rowCount(), levels()).withName(name());
+                Nominal nom = Nominal.empty(rowCount(), levels()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
                     nom.setLabel(i, label(i));
                 }
@@ -79,13 +79,13 @@ public abstract class AbstractVar implements Var {
                 }
                 return stamp;
             case NUMERIC:
-                Numeric num = Numeric.newEmpty(rowCount());
+                Numeric num = Numeric.empty(rowCount());
                 for (int i = 0; i < rowCount(); i++) {
                     num.setValue(i, value(i));
                 }
                 return num;
             case BINARY:
-                Binary bin = Binary.newEmpty(rowCount()).withName(name());
+                Binary bin = Binary.empty(rowCount()).withName(name());
                 for (int i = 0; i < rowCount(); i++) {
                     bin.setIndex(i, index(i));
                 }

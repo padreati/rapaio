@@ -54,7 +54,7 @@ public interface RTreeSplitter extends Serializable {
             List<Var> weightsList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                 mappings.add(Mapping.empty());
-                weightsList.add(Numeric.newEmpty());
+                weightsList.add(Numeric.empty());
             }
 
             df.stream().forEach(s -> {
@@ -87,7 +87,7 @@ public interface RTreeSplitter extends Serializable {
             List<Var> weightsList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                 mappings.add(Mapping.empty());
-                weightsList.add(Numeric.newEmpty());
+                weightsList.add(Numeric.empty());
             }
 
             List<FSpot> missingSpots = new LinkedList<>();
@@ -117,7 +117,7 @@ public interface RTreeSplitter extends Serializable {
                 weightsList.get(index).addValue(weights.value(spot.row()));
             });
             List<Frame> frames = new ArrayList<>();
-            mappings.stream().forEach(mapping -> frames.add(MappedFrame.newByRow(df, mapping)));
+            mappings.stream().forEach(mapping -> frames.add(MappedFrame.byRow(df, mapping)));
             return Pair.from(frames, weightsList);
         }
     };
@@ -136,7 +136,7 @@ public interface RTreeSplitter extends Serializable {
             List<Var> weightsList = new ArrayList<>();
             for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
                 mappings.add(Mapping.empty());
-                weightsList.add(Numeric.newEmpty());
+                weightsList.add(Numeric.empty());
             }
 
             final Set<Integer> missingSpots = new HashSet<>();
@@ -169,7 +169,7 @@ public interface RTreeSplitter extends Serializable {
             }
             List<Frame> frames = new ArrayList<>();
             for (Mapping mapping : mappings) {
-                frames.add(MappedFrame.newByRow(df, mapping));
+                frames.add(MappedFrame.byRow(df, mapping));
             }
             return Pair.from(frames, weightsList);
         }

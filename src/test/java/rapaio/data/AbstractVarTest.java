@@ -37,7 +37,7 @@ public class AbstractVarTest {
     @Test
     public void solidNumericCopyTest() {
 
-        Var main = Numeric.newCopy(1, 3, 5, 8, 9);
+        Var main = Numeric.copy(1, 3, 5, 8, 9);
         Var copy = main.mapRows(Mapping.range(0, main.rowCount())).solidCopy();
 
         assertEquals(main.rowCount(), copy.rowCount());
@@ -50,7 +50,7 @@ public class AbstractVarTest {
 
     @Test
     public void solidNominalCopyTest() {
-        Var main = Nominal.newEmpty();
+        Var main = Nominal.empty();
         main.addLabel("x");
         main.addLabel("y");
         main.addLabel("x");
@@ -111,16 +111,16 @@ public class AbstractVarTest {
 
     @Test
     public void testBoundVar() {
-        Numeric a = Numeric.newWrap(1, 2, 3);
-        Numeric b = Numeric.newWrap(4, 5, 6);
-        Numeric c = Numeric.newWrap(7, 8, 9, 10);
+        Numeric a = Numeric.wrap(1, 2, 3);
+        Numeric b = Numeric.wrap(4, 5, 6);
+        Numeric c = Numeric.wrap(7, 8, 9, 10);
 
         Var d = a.bindRows(b);
         d = d.bindRows(c);
 
         assertEquals(10, d.rowCount());
 
-        double mean = new Mean(d).value();
+        double mean = Mean.from(d).value();
         assertEquals(5.5, mean, 10e-12);
 
         for (int i = 0; i < 10; i++) {

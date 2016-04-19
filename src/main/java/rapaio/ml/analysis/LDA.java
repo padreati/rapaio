@@ -90,7 +90,7 @@ public class LDA implements Printable {
         validate(df, targetVars);
 
         logger.fine("start lda train");
-        RM xx = SolidRM.copyOf(df.removeVars(targetName));
+        RM xx = SolidRM.copy(df.removeVars(targetName));
 
         // compute mean and sd
 
@@ -179,7 +179,7 @@ public class LDA implements Printable {
 
 
     public Frame fit(Frame df, BiFunction<RV, RM, Integer> kFunction) {
-        RM x = SolidRM.copyOf(df.mapVars(inputNames));
+        RM x = SolidRM.copy(df.mapVars(inputNames));
 
         if (scaling) {
             for (int i = 0; i < x.rowCount(); i++) {
@@ -200,8 +200,8 @@ public class LDA implements Printable {
         RM result = x.dot(eigenVectors.mapCols(dim));
         Frame rest = df.removeVars(inputNames);
         return rest.varCount() == 0 ?
-                SolidFrame.newMatrix(result, names) :
-                SolidFrame.newMatrix(result, names).bindVars(df.removeVars(inputNames));
+                SolidFrame.matrix(result, names) :
+                SolidFrame.matrix(result, names).bindVars(df.removeVars(inputNames));
     }
 
     private void validate(Frame df, String... targetVars) {
@@ -231,9 +231,9 @@ public class LDA implements Printable {
     public String summary() {
         StringBuilder sb = new StringBuilder();
 
-        Frame eval = SolidFrame.newByVars(
-                Numeric.newEmpty(eigenValues.count()).withName("values"),
-                Numeric.newEmpty(eigenValues.count()).withName("percent")
+        Frame eval = SolidFrame.byVars(
+                Numeric.empty(eigenValues.count()).withName("values"),
+                Numeric.empty(eigenValues.count()).withName("percent")
         );
         double total = 0.0;
         for (int i = 0; i < eigenValues.count(); i++) {

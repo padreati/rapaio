@@ -185,7 +185,7 @@ public final class Plotter {
     }
 
     public static GOpt sz(double size) {
-        return opt -> opt.setSz(gOpts -> Numeric.newScalar(size));
+        return opt -> opt.setSz(gOpts -> Numeric.scalar(size));
     }
 
     public static GOpt pch(Var pchIndex, int... mapping) {

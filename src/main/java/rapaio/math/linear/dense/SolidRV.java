@@ -81,7 +81,7 @@ public class SolidRV implements RV {
         return rdv;
     }
 
-    public static SolidRV copyOf(RV source) {
+    public static SolidRV copy(RV source) {
         SolidRV v = empty(source.count());
         if(source instanceof SolidRV) {
             System.arraycopy(((SolidRV)source).values, 0, v.values, 0, source.count());

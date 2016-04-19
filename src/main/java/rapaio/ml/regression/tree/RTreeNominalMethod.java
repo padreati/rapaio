@@ -77,7 +77,7 @@ public interface RTreeNominalMethod extends Serializable {
             Var targetVar = df.var(targetColName);
             Var weights = weightsOld.mapRows(cleanMapping);
 
-            DVector dvWeights = DVector.newFromWeights(false, testVar, weights);
+            DVector dvWeights = DVector.fromWeights(false, testVar, weights);
             DVector dvCount = DVector.fromCount(false, testVar);
 
             // check to see if we have enough instances in at least 2 child nodes
@@ -121,13 +121,13 @@ public interface RTreeNominalMethod extends Serializable {
             Var targetVar = df.var(targetColName);
             Var weights = weightsOld.mapRows(cleanMapping);
 
-            DVector dvWeights = DVector.newFromWeights(false, testVar, weights);
+            DVector dvWeights = DVector.fromWeights(false, testVar, weights);
             DVector dvCount = DVector.fromCount(false, testVar);
 
             // compute online statistics for all level slices
             OnlineStat[] os = new OnlineStat[testVar.levels().length - 1];
             for (int i = 0; i < testVar.levels().length - 1; i++) {
-                os[i] = new OnlineStat();
+                os[i] = OnlineStat.empty();
             }
             for (int i = 0; i < testVar.rowCount(); i++) {
                 int index = testVar.index(i);
@@ -150,7 +150,7 @@ public interface RTreeNominalMethod extends Serializable {
                     continue;
 
                 OnlineStat osSelect = os[i - 1];
-                OnlineStat osOther = new OnlineStat();
+                OnlineStat osOther = OnlineStat.empty();
 
                 for (int j = 1; j < testVar.levels().length; j++) {
                     if (i == j)

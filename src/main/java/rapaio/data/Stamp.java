@@ -39,24 +39,6 @@ import java.util.function.Supplier;
  */
 public class Stamp extends AbstractVar {
 
-    public static final long MISSING_VALUE = Long.MIN_VALUE;
-    private static final long serialVersionUID = -6387573611986137666L;
-    private long[] data;
-    private int rows;
-
-    // static builders
-
-    private Stamp(int rows, int capacity, long fill) {
-        super();
-        if (rows < 0) {
-            throw new IllegalArgumentException("Illegal row count: " + rows);
-        }
-        this.data = new long[capacity];
-        this.rows = rows;
-        if (fill != 0)
-            Arrays.fill(data, 0, rows, fill);
-    }
-
     /**
      * Builds an empty stamp var of size 0
      *
@@ -163,6 +145,24 @@ public class Stamp extends AbstractVar {
         return stamp;
     }
 
+    public static final long MISSING_VALUE = Long.MIN_VALUE;
+    private static final long serialVersionUID = -6387573611986137666L;
+    private long[] data;
+    private int rows;
+
+    // static builders
+
+    private Stamp(int rows, int capacity, long fill) {
+        super();
+        if (rows < 0) {
+            throw new IllegalArgumentException("Illegal row count: " + rows);
+        }
+        this.data = new long[capacity];
+        this.rows = rows;
+        if (fill != 0)
+            Arrays.fill(data, 0, rows, fill);
+    }
+
     // private constructor, only public static builders available
 
     public static Stamp from(int rows, Supplier<Long> supplier) {
@@ -211,12 +211,12 @@ public class Stamp extends AbstractVar {
 
     @Override
     public Var bindRows(Var var) {
-        return BoundVar.newFrom(this, var);
+        return BoundVar.from(this, var);
     }
 
     @Override
     public Var mapRows(Mapping mapping) {
-        return MappedVar.newByRows(this, mapping);
+        return MappedVar.byRows(this, mapping);
     }
 
     @Override

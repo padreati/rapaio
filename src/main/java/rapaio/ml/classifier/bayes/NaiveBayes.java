@@ -31,7 +31,6 @@ import rapaio.data.VarType;
 import rapaio.data.filter.FFilter;
 import rapaio.ml.classifier.AbstractClassifier;
 import rapaio.ml.classifier.CFit;
-import rapaio.ml.classifier.Classifier;
 import rapaio.ml.classifier.bayes.estimator.*;
 import rapaio.ml.common.Capabilities;
 import rapaio.sys.WS;
@@ -60,7 +59,7 @@ public class NaiveBayes extends AbstractClassifier {
     // algorithm parameters
     public static Tag<PriorSupplier> PRIORS_MLE = Tag.valueOf("PRIORS_MLE", (df, weights, nb) -> {
         Map<String, Double> priors = new HashMap<>();
-        DVector dv = DVector.newFromWeights(false, df.var(nb.firstTargetName()), weights, nb.firstTargetLevels());
+        DVector dv = DVector.fromWeights(false, df.var(nb.firstTargetName()), weights, nb.firstTargetLevels());
         dv.normalize();
         for (int i = 1; i < nb.firstTargetLevels().length; i++) {
             priors.put(nb.firstTargetLevels()[i], dv.get(i));
@@ -196,7 +195,7 @@ public class NaiveBayes extends AbstractClassifier {
         CFit pred = CFit.build(this, df, withClasses, withDensities);
         IntStream.range(0, df.rowCount()).parallel().forEach(
                 i -> {
-                    DVector dv = DVector.newEmpty(false, firstTargetLevels());
+                    DVector dv = DVector.empty(false, firstTargetLevels());
                     for (int j = 1; j < firstTargetLevels().length; j++) {
                         double sumLog = Math.log(priors.get(firstTargetLevel(j)));
                         for (String testCol : numMap.keySet()) {

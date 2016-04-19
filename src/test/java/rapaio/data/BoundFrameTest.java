@@ -35,37 +35,37 @@ import static org.junit.Assert.assertTrue;
 public class BoundFrameTest {
 
     // frame with first rows
-    private Frame df1 = SolidFrame.newByVars(
-            Numeric.newWrap(1, 2, 3, 4).withName("x"),
-            Numeric.newWrap(1 / 1., 1 / 2., 1 / 3., 1 / 4.).withName("1/x")
+    private Frame df1 = SolidFrame.byVars(
+            Numeric.wrap(1, 2, 3, 4).withName("x"),
+            Numeric.wrap(1 / 1., 1 / 2., 1 / 3., 1 / 4.).withName("1/x")
     );
 
     // frame with second set of rows
-    private Frame df2 = SolidFrame.newByVars(
-            Numeric.newWrap(5, 6).withName("x"),
-            Numeric.newWrap(1 / 5., 1 / 6.).withName("1/x")
+    private Frame df2 = SolidFrame.byVars(
+            Numeric.wrap(5, 6).withName("x"),
+            Numeric.wrap(1 / 5., 1 / 6.).withName("1/x")
     );
 
     // empty frame
-    private Frame df3 = SolidFrame.newByVars();
+    private Frame df3 = SolidFrame.byVars();
 
     // frame with different column names
-    private Frame df4 = SolidFrame.newByVars(
-            Numeric.newWrap(7).withName("a"),
-            Numeric.newWrap(1 / 7.).withName("b")
+    private Frame df4 = SolidFrame.byVars(
+            Numeric.wrap(7).withName("a"),
+            Numeric.wrap(1 / 7.).withName("b")
     );
 
     // frame with different column types
-    private Frame df5 = SolidFrame.newByVars(
+    private Frame df5 = SolidFrame.byVars(
             Index.wrap(7).withName("x"),
-            Numeric.newWrap(1 / 7.).withName("1/x")
+            Numeric.wrap(1 / 7.).withName("1/x")
     );
 
     @Test
     public void testBuildersByVar() {
-        Frame df = BoundFrame.newByVars(
-                Numeric.newWrap(1, 2).withName("x"),
-                Numeric.newWrap(1 / 1., 1 / 2.).withName("y"));
+        Frame df = BoundFrame.byVars(
+                Numeric.wrap(1, 2).withName("x"),
+                Numeric.wrap(1 / 1., 1 / 2.).withName("y"));
 
         assertEquals(2, df.varCount());
         assertEquals(2, df.rowCount());
@@ -73,21 +73,21 @@ public class BoundFrameTest {
         assertEquals(1 / 2., df.value(1, 1), 1e-12);
 
         try {
-            BoundFrame.newByVars(
-                    Numeric.newWrap(1.).withName("x"),
-                    Numeric.newWrap(2.).withName("x"));
+            BoundFrame.byVars(
+                    Numeric.wrap(1.).withName("x"),
+                    Numeric.wrap(2.).withName("x"));
             assertTrue("should raise an exception", false);
         } catch (IllegalArgumentException ignored) {
         }
 
-        df = BoundFrame.newByVars(new Var[]{});
+        df = BoundFrame.byVars(new Var[]{});
 
         assertEquals(0, df.varCount());
         assertEquals(0, df.rowCount());
 
-        df = BoundFrame.newByVars(
-                SolidFrame.newByVars(Numeric.newWrap(1, 2).withName("x")),
-                SolidFrame.newByVars(Numeric.newWrap(1 / 1., 1 / 2.).withName("y"))
+        df = BoundFrame.byVars(
+                SolidFrame.byVars(Numeric.wrap(1, 2).withName("x")),
+                SolidFrame.byVars(Numeric.wrap(1 / 1., 1 / 2.).withName("y"))
         );
 
         assertEquals(2, df.varCount());
@@ -96,14 +96,14 @@ public class BoundFrameTest {
         assertEquals(1 / 2., df.value(1, 1), 1e-12);
 
         try {
-            BoundFrame.newByVars(
-                    SolidFrame.newByVars(Numeric.newWrap(1.).withName("x")),
-                    SolidFrame.newByVars(Numeric.newWrap(2.).withName("x")));
+            BoundFrame.byVars(
+                    SolidFrame.byVars(Numeric.wrap(1.).withName("x")),
+                    SolidFrame.byVars(Numeric.wrap(2.).withName("x")));
             assertTrue("should raise an exception", false);
         } catch (IllegalArgumentException ignored) {
         }
 
-        df = BoundFrame.newByVars(new Frame[]{});
+        df = BoundFrame.byVars(new Frame[]{});
 
         assertEquals(0, df.varCount());
         assertEquals(0, df.rowCount());
@@ -115,7 +115,7 @@ public class BoundFrameTest {
 
 
         // test simple bind of rows
-        BoundFrame df = BoundFrame.newByRows(df1, df2);
+        BoundFrame df = BoundFrame.byRows(df1, df2);
         assertEquals(2, df.varCount());
         assertEquals(6, df.rowCount());
         for (int i = 0; i < 6; i++) {
@@ -125,31 +125,31 @@ public class BoundFrameTest {
 
         // test bind of rows plus an empty frame (different var count)
         try {
-            df = BoundFrame.newByRows(df1, df2, df3);
+            df = BoundFrame.byRows(df1, df2, df3);
             assertTrue("should raise an exception", false);
         } catch (IllegalArgumentException ignored) {
         }
 
         // test build from an empty frame
-        df = BoundFrame.newByRows(df3);
+        df = BoundFrame.byRows(df3);
         assertEquals(0, df.rowCount());
         assertEquals(0, df.varCount());
 
         // test to build from nothing
-        df = BoundFrame.newByRows();
+        df = BoundFrame.byRows();
         assertEquals(0, df.rowCount());
         assertEquals(0, df.varCount());
 
         // test to build from frames with different names
         try {
-            df = BoundFrame.newByRows(df1, df2, df4);
+            df = BoundFrame.byRows(df1, df2, df4);
             assertTrue("should raise an exception", false);
         } catch (IllegalArgumentException ignored) {
         }
 
         // test to build from frames with different types
         try {
-            df = BoundFrame.newByRows(df1, df2, df5);
+            df = BoundFrame.byRows(df1, df2, df5);
             assertTrue("should raise an exception", false);
         } catch (IllegalArgumentException ignored) {
         }
@@ -157,7 +157,7 @@ public class BoundFrameTest {
 
     @Test
     public void testVars() {
-        Frame df = BoundFrame.newByRows(df1, df2);
+        Frame df = BoundFrame.byRows(df1, df2);
 
         // check var names after binding
         assertEquals(2, df.varNames().length);
@@ -176,8 +176,8 @@ public class BoundFrameTest {
 
     @Test
     public void testBindMapVars() {
-        Frame df = BoundFrame.newByVars(df1);
-        df = df.bindVars(Numeric.newWrap(-1, -2, -3, -4).withName("y"));
+        Frame df = BoundFrame.byVars(df1);
+        df = df.bindVars(Numeric.wrap(-1, -2, -3, -4).withName("y"));
 
         assertEquals(3, df.varCount());
         assertEquals(4, df.rowCount());
@@ -185,9 +185,9 @@ public class BoundFrameTest {
         assertEquals(1.0, df.value(0, "x"), 1e-12);
         assertEquals(-4.0, df.value(3, "y"), 1e-12);
 
-        df = BoundFrame.newByVars(df1);
-        df = df.bindVars(SolidFrame.newByVars(
-                Numeric.newWrap(-1, -2, -3, -4).withName("y")
+        df = BoundFrame.byVars(df1);
+        df = df.bindVars(SolidFrame.byVars(
+                Numeric.wrap(-1, -2, -3, -4).withName("y")
         ));
         assertEquals(3, df.varCount());
         assertEquals(4, df.rowCount());
@@ -205,7 +205,7 @@ public class BoundFrameTest {
 
     @Test
     public void testBindMapRows() {
-        Frame df = BoundFrame.newByVars(df1);
+        Frame df = BoundFrame.byVars(df1);
         df = df.bindRows(df2);
 
         assertEquals(2, df.varCount());
@@ -215,7 +215,7 @@ public class BoundFrameTest {
             assertEquals(1 / (i + 1.), df.value(i, 1), 1e-12);
         }
 
-        df = df.bindRows(SolidFrame.newByVars(Numeric.newEmpty().withName("x"), Numeric.newEmpty().withName("1/x")));
+        df = df.bindRows(SolidFrame.byVars(Numeric.empty().withName("x"), Numeric.empty().withName("1/x")));
         assertEquals(2, df.varCount());
         assertEquals(6, df.rowCount());
         for (int i = 0; i < 6; i++) {

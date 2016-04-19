@@ -38,30 +38,30 @@ public class WeightedMeanTest {
     @Test
     public void testBasic() {
 
-        Numeric values = Numeric.newCopy(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        Numeric values = Numeric.copy(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
-        Numeric weights = Numeric.newFill(10, 1);
-        assertEquals(5.5, new WeightedMean(values, weights).value(), 10e-12);
+        Numeric weights = Numeric.fill(10, 1);
+        assertEquals(5.5, WeightedMean.from(values, weights).value(), 10e-12);
 
-        weights = Numeric.newCopy(1, 2, 1, 2, 1, 2, 1, 2, 1, 2);
-        assertEquals(5.666666666666667, new WeightedMean(values, weights).value(), 10e-12);
+        weights = Numeric.copy(1, 2, 1, 2, 1, 2, 1, 2, 1, 2);
+        assertEquals(5.666666666666667, WeightedMean.from(values, weights).value(), 10e-12);
     }
 
     @Test
     public void testMissing() {
 
-        Numeric values = Numeric.newCopy(Double.NaN, Double.NaN);
-        Numeric weights = Numeric.newCopy(1, 1);
+        Numeric values = Numeric.copy(Double.NaN, Double.NaN);
+        Numeric weights = Numeric.copy(1, 1);
 
-        assertTrue(Double.isNaN(new WeightedMean(values, weights).value()));
+        assertTrue(Double.isNaN(WeightedMean.from(values, weights).value()));
 
-        values = Numeric.newCopy(1, 2);
-        weights = Numeric.newCopy(Double.NaN, Double.NaN);
-        assertTrue(Double.isNaN(new WeightedMean(values, weights).value()));
+        values = Numeric.copy(1, 2);
+        weights = Numeric.copy(Double.NaN, Double.NaN);
+        assertTrue(Double.isNaN(WeightedMean.from(values, weights).value()));
 
-        values = Numeric.newCopy(Double.NaN, 1, 2);
-        weights = Numeric.newCopy(1, 2, Double.NaN);
-        assertEquals(1.0, new WeightedMean(values, weights).value(), 10e-12);
+        values = Numeric.copy(Double.NaN, 1, 2);
+        weights = Numeric.copy(1, 2, Double.NaN);
+        assertEquals(1.0, WeightedMean.from(values, weights).value(), 10e-12);
     }
 
 }

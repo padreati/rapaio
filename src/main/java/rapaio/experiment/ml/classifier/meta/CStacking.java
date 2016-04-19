@@ -119,7 +119,7 @@ public class CStacking extends AbstractClassifier {
         List<String> targets = VRange.of(targetVars).parseVarNames(df);
         vars.add(df.var(targets.get(0)).solidCopy());
 
-        return BaseTrainSetup.valueOf(SolidFrame.newByVars(vars), w, targetVars);
+        return BaseTrainSetup.valueOf(SolidFrame.byVars(vars), w, targetVars);
     }
 
     @Override
@@ -145,7 +145,7 @@ public class CStacking extends AbstractClassifier {
                             .solidCopy()
                             .withName("V" + i);
                 }).collect(toList());
-        return BaseFitSetup.valueOf(SolidFrame.newByVars(vars), withClasses, withDistributions);
+        return BaseFitSetup.valueOf(SolidFrame.byVars(vars), withClasses, withDistributions);
     }
 
     @Override

@@ -104,7 +104,7 @@ public class ImageGraphicsTest {
         RandomSource.setSeed(1);
         final int N = 100;
         Distribution normal = CoreTools.distNormal();
-        Numeric x = Numeric.newFrom(N, row -> normal.sampleNext());
+        Numeric x = Numeric.from(N, row -> normal.sampleNext());
         Plot plot = qqplot(x, normal, pch(2), color(3))
                 .vLine(0, color(Color.GRAY))
                 .hLine(0, color(Color.GRAY));

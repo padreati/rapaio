@@ -37,7 +37,7 @@ public class BinaryTest {
 
     @Test
     public void testEmpty() {
-        Binary b = Binary.newEmpty();
+        Binary b = Binary.empty();
         b.addBinary(true);
         b.addBinary(true);
         b.addBinary(false);
@@ -49,19 +49,19 @@ public class BinaryTest {
         assertEquals(3, b.stream().complete().filter(VSpot::binary).count());
         assertEquals(2, b.stream().incomplete().count());
 
-        assertEquals(10, Binary.newEmpty(10).stream().incomplete().count());
-        assertEquals(0, Binary.newEmpty().stream().incomplete().count());
+        assertEquals(10, Binary.empty(10).stream().incomplete().count());
+        assertEquals(0, Binary.empty().stream().incomplete().count());
     }
 
     @Test
     public void testFill() {
-        Binary b = Binary.newFill(10, false);
+        Binary b = Binary.fill(10, false);
 
         assertEquals(0, b.stream().incomplete().count());
         assertEquals(10, b.stream().complete().filter(s -> !s.binary()).count());
         assertEquals(0, b.stream().complete().filter(VSpot::binary).count());
 
-        b = Binary.newFill(10, true);
+        b = Binary.fill(10, true);
 
         assertEquals(0, b.stream().incomplete().count());
         assertEquals(0, b.stream().complete().filter(s -> !s.binary()).count());
@@ -72,7 +72,7 @@ public class BinaryTest {
     public void testNumericStats() {
         Binary b = Binary.copy(1, 1, 0, 0, 1, 0, 1, 1);
         b.printSummary();
-        assertEquals(0.625, new Mean(b).value(), 10e-10);
+        assertEquals(0.625, Mean.from(b).value(), 10e-10);
     }
 
     @Test
@@ -82,7 +82,7 @@ public class BinaryTest {
         assertEquals(true, bin.missing(4));
         assertEquals(false, bin.missing(7));
 
-        bin = Binary.newEmpty();
+        bin = Binary.empty();
         bin.addMissing();
         bin.addBinary(true);
         bin.setMissing(1);
@@ -104,7 +104,7 @@ public class BinaryTest {
 
     @Test
     public void testOther() {
-        Binary bin = Binary.newEmpty();
+        Binary bin = Binary.empty();
         bin.addValue(1);
         bin.setValue(0, 0);
         bin.addIndex(1);
@@ -134,7 +134,7 @@ public class BinaryTest {
     @Test
     public void testValueManipulation() {
 
-        Binary bin = Binary.newEmpty();
+        Binary bin = Binary.empty();
         bin.addValue(1);
         bin.addValue(0);
         bin.addValue(-1);
@@ -168,7 +168,7 @@ public class BinaryTest {
     @Test
     public void testIndexManipulation() {
 
-        Binary bin = Binary.newEmpty();
+        Binary bin = Binary.empty();
         bin.addIndex(1);
         bin.addIndex(0);
         bin.addIndex(-1);
@@ -202,7 +202,7 @@ public class BinaryTest {
     @Test
     public void testStampManipulation() {
 
-        Binary bin = Binary.newEmpty();
+        Binary bin = Binary.empty();
         bin.addStamp(1);
         bin.addStamp(0);
         bin.addStamp(-1);

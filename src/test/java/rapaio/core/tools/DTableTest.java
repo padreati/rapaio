@@ -80,7 +80,7 @@ public class DTableTest {
 
     @Test
     public void testEntropy() {
-        DTable dt1 = DTable.newEmpty(new String[]{"?", "a", "b"}, new String[]{"?", "x", "y", "z"}, false);
+        DTable dt1 = DTable.empty(new String[]{"?", "a", "b"}, new String[]{"?", "x", "y", "z"}, false);
 
         dt1.update(0, 0, 1);
         dt1.update(1, 0, 1);
@@ -100,7 +100,7 @@ public class DTableTest {
 
         dt1.printSummary();
 
-        DTable dt2 = DTable.newEmpty(new String[]{"a", "b"}, new String[]{"x", "y", "z"}, true);
+        DTable dt2 = DTable.empty(new String[]{"a", "b"}, new String[]{"x", "y", "z"}, true);
 
         dt2.update(0, 0, 10);
         dt2.update(0, 1, 7);
@@ -148,7 +148,7 @@ public class DTableTest {
 
     @Test
     public void testNormalization() {
-        DTable dt2 = DTable.newEmpty(new String[]{"a", "b"}, new String[]{"x", "y", "z"}, true);
+        DTable dt2 = DTable.empty(new String[]{"a", "b"}, new String[]{"x", "y", "z"}, true);
 
         dt2.update(0, 0, 10);
         dt2.update(0, 1, 7);

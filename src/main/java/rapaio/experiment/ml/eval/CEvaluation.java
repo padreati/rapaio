@@ -61,7 +61,7 @@ public class CEvaluation {
         List<List<Integer>> strata = buildStrata(df, folds, classColName);
 
 
-        Numeric acc = Numeric.newEmpty();
+        Numeric acc = Numeric.empty();
 
         for (int i = 0; i < folds; i++) {
             Mapping trainMapping = Mapping.empty();
@@ -73,8 +73,8 @@ public class CEvaluation {
                     trainMapping.addAll(strata.get(j));
                 }
             }
-            Frame train = MappedFrame.newByRow(df, trainMapping);
-            Frame test = MappedFrame.newByRow(df, testMapping);
+            Frame train = MappedFrame.byRow(df, trainMapping);
+            Frame test = MappedFrame.byRow(df, testMapping);
 
             Classifier cc = c.newInstance();
             cc.train(train, classColName);
@@ -146,8 +146,8 @@ public class CEvaluation {
                     }
                 }
             }
-            Frame train = MappedFrame.newByRow(df, trainMapping);
-            Frame test = MappedFrame.newByRow(df, testMapping);
+            Frame train = MappedFrame.byRow(df, trainMapping);
+            Frame test = MappedFrame.byRow(df, testMapping);
 
             for (int k = 0; k < classifiers.size(); k++) {
                 Classifier c = classifiers.get(k).newInstance();
@@ -170,7 +170,7 @@ public class CEvaluation {
     }
 
     public static void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps) {
-        Var weights = Numeric.newFill(df.rowCount(), 1.0);
+        Var weights = Numeric.fill(df.rowCount(), 1.0);
         bootstrapValidation(df, weights, classColName, c, bootstraps, 1.0);
     }
 
@@ -179,7 +179,7 @@ public class CEvaluation {
     }
 
     public static void bootstrapValidation(Frame df, String classColName, Classifier c, int bootstraps, double p) {
-        Var weights = Numeric.newFill(df.rowCount(), 1.0d);
+        Var weights = Numeric.fill(df.rowCount(), 1.0d);
         bootstrapValidation(df, weights, classColName, c, bootstraps, p);
     }
 
@@ -215,8 +215,8 @@ public class CEvaluation {
 
         BiConsumer<Classifier, Integer> oldHook = c.runningHook();
         Index r = Index.empty().withName("runs");
-        Numeric testAcc = Numeric.newEmpty().withName("test");
-        Numeric trainAcc = Numeric.newEmpty().withName("train");
+        Numeric testAcc = Numeric.empty().withName("test");
+        Numeric trainAcc = Numeric.empty().withName("train");
         c.withRunningHook((cs, run) -> {
 
             if (run % step != 0) {
@@ -259,8 +259,8 @@ public class CEvaluation {
         Classifier c = alterClassifier ? cc : cc.newInstance();
         BiConsumer<Classifier, Integer> oldHook = c.runningHook();
         Index r = Index.empty().withName("runs");
-        Numeric testAuc = Numeric.newEmpty().withName("test");
-        Numeric trainAuc = Numeric.newEmpty().withName("train");
+        Numeric testAuc = Numeric.empty().withName("test");
+        Numeric trainAuc = Numeric.empty().withName("train");
         Pin<Double> prevAuc = new Pin<>(0.0);
         c.withRunningHook((cs, run) -> {
 

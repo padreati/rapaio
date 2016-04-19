@@ -57,7 +57,7 @@ public class Apriori implements Printable {
                 .filter(var -> var.type().equals(VarType.NOMINAL))
                 .filter(var -> !var.name().equals(target))
                 .collect(Collectors.toList());
-        this.inputDf = SolidFrame.newByVars(inputVars);
+        this.inputDf = SolidFrame.byVars(inputVars);
         this.targetVar = df.var(target);
         this.filter = filter;
 
@@ -77,7 +77,7 @@ public class Apriori implements Printable {
         }
 
         List<Pair<AprioriRule, DVector>> counts = C.stream().map(rule -> Pair.from(rule,
-                DVector.newEmpty(false, targetVar.levels())))
+                DVector.empty(false, targetVar.levels())))
                 .collect(Collectors.toList());
 
         for (int i = 0; i < df.rowCount(); i++) {
@@ -115,7 +115,7 @@ public class Apriori implements Printable {
                             continue;
                         AprioriRule next = tPrev._1.extend(b);
                         if (!cnts.containsKey(next.toString())) {
-                            cnts.put(next.toString(), Pair.from(next, DVector.newEmpty(false, targetVar.levels())));
+                            cnts.put(next.toString(), Pair.from(next, DVector.empty(false, targetVar.levels())));
                         }
                         cnts.get(next.toString())._2.increment(targetVar.index(i), 1);
                     }
@@ -203,7 +203,7 @@ public class Apriori implements Printable {
     }
 
     public Frame buildFeatures(Frame df) {
-        List<Var> vars = rules.stream().map(r -> Nominal.newEmpty(df.rowCount(), "?", "1", "0")).collect(Collectors.toList());
+        List<Var> vars = rules.stream().map(r -> Nominal.empty(df.rowCount(), "?", "1", "0")).collect(Collectors.toList());
         for (int i = 0; i < vars.size(); i++) {
             vars.get(i).withName("Apriori_" + (i + 1));
         }
@@ -212,7 +212,7 @@ public class Apriori implements Printable {
                 vars.get(j).setIndex(i, rules.get(j).matchRow(df, i) ? 1 : 2);
             }
         }
-        return SolidFrame.newByVars(vars);
+        return SolidFrame.byVars(vars);
     }
 }
 

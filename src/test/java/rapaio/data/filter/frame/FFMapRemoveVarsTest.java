@@ -39,11 +39,11 @@ public class FFMapRemoveVarsTest {
 
     @Before
     public void setUp() throws Exception {
-        df = SolidFrame.newByVars(
-                Numeric.newFill(10, 1).withName("a"),
-                Numeric.newFill(10, 2).withName("b"),
-                Numeric.newFill(10, 3).withName("c"),
-                Nominal.newFrom(10, r -> String.valueOf(r%3)).withName("d")
+        df = SolidFrame.byVars(
+                Numeric.fill(10, 1).withName("a"),
+                Numeric.fill(10, 2).withName("b"),
+                Numeric.fill(10, 3).withName("c"),
+                Nominal.from(10, r -> String.valueOf(r%3)).withName("d")
         );
     }
 

@@ -99,7 +99,7 @@ public class KDE implements Serializable {
      * @return teh value of the approximation for bandwidth
      */
     public static double getSilvermanBandwidth(Var vector) {
-        Variance var = new Variance(vector);
+        Variance var = Variance.from(vector);
         double sd = Math.sqrt(var.value());
         if (sd == 0) {
             sd = 1;

@@ -64,7 +64,7 @@ public final class DTable implements Printable, Serializable {
      * @param colLevels labels for columns
      * @param useFirst  true if using the first row and col, false otherwise
      */
-    public static DTable newEmpty(String[] rowLevels, String[] colLevels, boolean useFirst) {
+    public static DTable empty(String[] rowLevels, String[] colLevels, boolean useFirst) {
         return new DTable(rowLevels, colLevels, useFirst);
     }
 
@@ -79,7 +79,7 @@ public final class DTable implements Printable, Serializable {
      * @param useFirst true if using the first row and col, false otherwise
      */
     public static DTable fromCounts(Var rowVar, Var colVar, boolean useFirst) {
-        return new DTable(rowVar, colVar, Numeric.newFill(rowVar.rowCount(), 1), useFirst);
+        return new DTable(rowVar, colVar, Numeric.fill(rowVar.rowCount(), 1), useFirst);
     }
 
     /**
@@ -106,7 +106,7 @@ public final class DTable implements Printable, Serializable {
      * @param rowLevel row label used for binary split
      * @param useFirst true if using the first row and col, false otherwise
      */
-    public static DTable newBinaryFromWeights(Var rowVar, Var colVar, Var weights, String rowLevel, boolean useFirst) {
+    public static DTable binaryFromWeights(Var rowVar, Var colVar, Var weights, String rowLevel, boolean useFirst) {
         return new DTable(rowVar, colVar, weights, rowLevel, useFirst);
     }
 
@@ -445,7 +445,7 @@ public final class DTable implements Printable, Serializable {
     }
 
     public DTable normalizeOverall() {
-        DTable norm = DTable.newEmpty(rowLevels, colLevels, start == 0).withTotalSummary(totalSummary);
+        DTable norm = DTable.empty(rowLevels, colLevels, start == 0).withTotalSummary(totalSummary);
         double total = 0;
         for (int i = start; i < rowLevels.length; i++) {
             for (int j = start; j < colLevels.length; j++) {
@@ -464,7 +464,7 @@ public final class DTable implements Printable, Serializable {
     }
 
     public DTable normalizeOnRows() {
-        DTable norm = DTable.newEmpty(rowLevels, colLevels, start == 0).withTotalSummary(totalSummary);
+        DTable norm = DTable.empty(rowLevels, colLevels, start == 0).withTotalSummary(totalSummary);
         double[] rowTotals = new double[rowLevels.length];
         for (int i = start; i < rowLevels.length; i++) {
             for (int j = start; j < colLevels.length; j++) {
@@ -482,7 +482,7 @@ public final class DTable implements Printable, Serializable {
     }
 
     public DTable normalizeOnCols() {
-        DTable norm = DTable.newEmpty(rowLevels, colLevels, start == 0).withTotalSummary(totalSummary);
+        DTable norm = DTable.empty(rowLevels, colLevels, start == 0).withTotalSummary(totalSummary);
         double[] colTotals = new double[colLevels.length];
         for (int i = start; i < rowLevels.length; i++) {
             for (int j = start; j < colLevels.length; j++) {

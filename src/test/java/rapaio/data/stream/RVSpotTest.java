@@ -39,13 +39,13 @@ public class RVSpotTest {
 
     @Test
     public void testNumericStream() {
-        Var x = Numeric.newWrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        Var x = Numeric.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         Var y = x.solidCopy().stream().transValue(Math::sqrt).toMappedVar();
 
         double v = 0;
         for (int i = 0; i < 10; i++) {
             v += Math.sqrt(x.value(i));
         }
-        assertEquals(v, new Sum(y).value(), 1e-12);
+        assertEquals(v, Sum.from(y).value(), 1e-12);
     }
 }

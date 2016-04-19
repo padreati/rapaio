@@ -50,6 +50,14 @@ import static rapaio.sys.WS.formatFlex;
  */
 public class Quantiles implements Printable {
 
+    public static Quantiles from(Var var, double...percentiles) {
+        return new Quantiles(var, Type.R7, percentiles);
+    }
+
+    public static Quantiles from(Var var, Quantiles.Type type, double...percentiles) {
+        return new Quantiles(var, type, percentiles);
+    }
+
     private final String varName;
     private final double[] percentiles;
     private final double[] quantiles;
@@ -57,11 +65,7 @@ public class Quantiles implements Printable {
     private int missingCount;
     private final Type type;
 
-    public Quantiles(Var var, double... percentiles) {
-        this(var, Type.R7, percentiles);
-    }
-
-    public Quantiles(Var var, Type type, double... percentiles) {
+    private Quantiles(Var var, Type type, double... percentiles) {
         this.varName = var.name();
         this.percentiles = percentiles;
         this.type = type;

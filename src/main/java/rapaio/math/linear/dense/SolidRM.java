@@ -74,13 +74,13 @@ public class SolidRM implements RM {
         return ret;
     }
 
-    public static SolidRM copyOf(int rows, int cols, double... source) {
+    public static SolidRM copy(int rows, int cols, double... source) {
         SolidRM m = empty(rows, cols);
         System.arraycopy(source, 0, m.values, 0, rows * cols);
         return m;
     }
 
-    public static SolidRM copyOf(double[][] source) {
+    public static SolidRM copy(double[][] source) {
         int colCount = source[0].length;
         int rowCount = source.length;
         SolidRM m = empty(rowCount, colCount);
@@ -90,7 +90,7 @@ public class SolidRM implements RM {
         return m;
     }
 
-    public static RM copyOf(double[][] source, int mFirst, int mLast, int nFirst, int nLast) {
+    public static RM copy(double[][] source, int mFirst, int mLast, int nFirst, int nLast) {
         RM mm = new SolidRM(mLast - mFirst, nLast - nFirst);
         for (int i = mFirst; i < mLast; i++) {
             for (int j = nFirst; j < nLast; j++) {
@@ -100,7 +100,7 @@ public class SolidRM implements RM {
         return mm;
     }
 
-    public static SolidRM copyOf(Frame df) {
+    public static SolidRM copy(Frame df) {
         SolidRM m = empty(df.rowCount(), df.varCount());
         for (int j = 0; j < df.varCount(); j++) {
             for (int i = 0; i < df.rowCount(); i++) {
@@ -110,8 +110,8 @@ public class SolidRM implements RM {
         return m;
     }
 
-    public static SolidRM copyOf(Var... vars) {
-        Frame df = BoundFrame.newByVars(vars);
+    public static SolidRM copy(Var... vars) {
+        Frame df = BoundFrame.byVars(vars);
         SolidRM m = empty(df.rowCount(), df.varCount());
         for (int j = 0; j < df.varCount(); j++) {
             for (int i = 0; i < df.rowCount(); i++) {

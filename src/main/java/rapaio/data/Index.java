@@ -49,24 +49,6 @@ import java.util.stream.Collector;
  */
 public final class Index extends AbstractVar {
 
-    private static final long serialVersionUID = -2809318697565282310L;
-
-    private static final int MISSING_VALUE = Integer.MIN_VALUE;
-    private int[] data;
-    private int rows;
-
-    // static builders
-
-    private Index(int rows, int capacity, int fill) {
-        if (rows < 0) {
-            throw new IllegalArgumentException("Illegal row count: " + rows);
-        }
-        this.data = new int[capacity];
-        this.rows = rows;
-        if (fill != 0)
-            Arrays.fill(data, 0, rows, fill);
-    }
-
     /**
      * Builds an empty index var of size 0
      *
@@ -180,6 +162,24 @@ public final class Index extends AbstractVar {
             index.data[i] = supplier.apply(i);
         }
         return index;
+    }
+
+    private static final long serialVersionUID = -2809318697565282310L;
+
+    private static final int MISSING_VALUE = Integer.MIN_VALUE;
+    private int[] data;
+    private int rows;
+
+    // static builders
+
+    private Index(int rows, int capacity, int fill) {
+        if (rows < 0) {
+            throw new IllegalArgumentException("Illegal row count: " + rows);
+        }
+        this.data = new int[capacity];
+        this.rows = rows;
+        if (fill != 0)
+            Arrays.fill(data, 0, rows, fill);
     }
 
     public static Collector<? super Integer, Index, Index> collector() {

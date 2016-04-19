@@ -51,24 +51,12 @@ import java.util.stream.Collector;
  */
 public final class Nominal extends FactorBase {
 
-    private static final long serialVersionUID = 1645571732133272467L;
-
-    private Nominal() {
-        // set the missing value
-        this.reverse = new HashMap<>();
-        this.reverse.put("?", 0);
-        this.dict = new ArrayList<>();
-        this.dict.add("?");
-        data = new int[0];
-        rows = 0;
-    }
-
     /**
      * Builds a new empty nominal variable
      *
      * @return new variable instance of nominal type
      */
-    public static Nominal newEmpty() {
+    public static Nominal empty() {
         return new Nominal();
     }
 
@@ -79,8 +67,8 @@ public final class Nominal extends FactorBase {
      * @param dict term levels
      * @return new variable instance of nominal type
      */
-    public static Nominal newEmpty(int rows, String... dict) {
-        return Nominal.newEmpty(rows, Arrays.asList(dict));
+    public static Nominal empty(int rows, String... dict) {
+        return Nominal.empty(rows, Arrays.asList(dict));
     }
 
     /**
@@ -90,7 +78,7 @@ public final class Nominal extends FactorBase {
      * @param dict term levels
      * @return new variable instance of nominal type
      */
-    public static Nominal newEmpty(int rows, List<String> dict) {
+    public static Nominal empty(int rows, List<String> dict) {
         Nominal nominal = new Nominal();
         HashSet<String> used = new HashSet<>();
         used.add("?");
@@ -105,26 +93,38 @@ public final class Nominal extends FactorBase {
         return nominal;
     }
 
-    public static Nominal newCopy(String... values) {
-        Nominal nominal = Nominal.newEmpty();
+    public static Nominal copy(String... values) {
+        Nominal nominal = Nominal.empty();
         for (String value : values)
             nominal.addLabel(value);
         return nominal;
     }
 
-    public static Nominal newCopy(List<String> values) {
-        Nominal nominal = Nominal.newEmpty();
+    public static Nominal copy(List<String> values) {
+        Nominal nominal = Nominal.empty();
         for (String value : values)
             nominal.addLabel(value);
         return nominal;
     }
 
-    public static Nominal newFrom(int rows, Function<Integer, String> func, String... dict) {
-        Nominal nominal = Nominal.newEmpty(rows, dict);
+    public static Nominal from(int rows, Function<Integer, String> func, String... dict) {
+        Nominal nominal = Nominal.empty(rows, dict);
         for (int i = 0; i < rows; i++) {
             nominal.setLabel(i, func.apply(i));
         }
         return nominal;
+    }
+
+    private static final long serialVersionUID = 1645571732133272467L;
+
+    private Nominal() {
+        // set the missing value
+        this.reverse = new HashMap<>();
+        this.reverse.put("?", 0);
+        this.dict = new ArrayList<>();
+        this.dict.add("?");
+        data = new int[0];
+        rows = 0;
     }
 
     public static Collector<String, Nominal, Nominal> collector() {
@@ -132,7 +132,7 @@ public final class Nominal extends FactorBase {
         return new Collector<String, Nominal, Nominal>() {
             @Override
             public Supplier<Nominal> supplier() {
-                return Nominal::newEmpty;
+                return Nominal::empty;
             }
 
             @Override
@@ -178,7 +178,7 @@ public final class Nominal extends FactorBase {
 
     @Override
     public Var newInstance(int rows) {
-        return Nominal.newEmpty(rows, levels());
+        return Nominal.empty(rows, levels());
     }
 
     @Override

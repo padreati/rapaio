@@ -71,6 +71,6 @@ public class FFToNumeric extends AbstractFF {
                 vars[i] = VFToNumeric.byDefault().fitApply(df.var(i));
             }
         }
-        return SolidFrame.newByVars(df.rowCount(), vars);
+        return SolidFrame.byVars(df.rowCount(), vars);
     }
 }

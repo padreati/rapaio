@@ -162,15 +162,15 @@ final class ListMapping implements Mapping {
     private static final long serialVersionUID = 5485844129188037454L;
     private final List<Integer> mapping;
 
-    public ListMapping() {
+    ListMapping() {
         this.mapping = new ArrayList<>();
     }
 
-    public ListMapping(int[] rows) {
+    ListMapping(int[] rows) {
         mapping = IntStream.of(rows).boxed().collect(Collectors.toList());
     }
 
-    public ListMapping(List<Integer> mapping, boolean copy) {
+    ListMapping(List<Integer> mapping, boolean copy) {
         this.mapping = copy ? mapping.subList(0, mapping.size()) : mapping;
     }
 
@@ -216,10 +216,10 @@ final class IntervalMapping implements Mapping {
 
     private static final long serialVersionUID = -7421133121383028265L;
 
-    final int start;
-    final int end;
-    boolean onList = false;
-    ListMapping listMapping;
+    private final int start;
+    private final int end;
+    private boolean onList = false;
+    private ListMapping listMapping;
 
     IntervalMapping(int start, int end) {
         this.start = start;

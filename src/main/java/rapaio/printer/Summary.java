@@ -118,8 +118,8 @@ public class Summary {
 
             if (v.type() == VarType.INDEX || v.type() == VarType.NUMERIC) {
                 double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
-                double[] perc = new Quantiles(v, p).values();
-                double mean = new Mean(v).value();
+                double[] perc = Quantiles.from(v, p).values();
+                double mean = Mean.from(v).value();
 
                 int nas = 0;
                 for (int j = 0; j < df.rowCount(); j++) {
@@ -325,8 +325,8 @@ public class Summary {
 
         if (v.type() == VarType.INDEX || v.type() == VarType.NUMERIC) {
             double[] p = new double[]{0., 0.25, 0.50, 0.75, 1.00};
-            double[] perc = new Quantiles(v, p).values();
-            double mean = new Mean(v).value();
+            double[] perc = Quantiles.from(v, p).values();
+            double mean = Mean.from(v).value();
 
             int nas = 0;
             for (int j = 0; j < v.rowCount(); j++) {

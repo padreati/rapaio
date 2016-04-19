@@ -39,12 +39,16 @@ import static rapaio.sys.WS.formatFlex;
  */
 public class Sum implements Printable {
 
+    public static Sum from(Var var) {
+        return new Sum(var);
+    }
+
     private final String varName;
     private final double value;
     private int completeCount;
     private int missingCount;
 
-    public Sum(Var var) {
+    private Sum(Var var) {
         this.varName = var.name();
         this.value = compute(var);
     }

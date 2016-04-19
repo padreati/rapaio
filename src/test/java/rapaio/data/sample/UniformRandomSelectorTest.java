@@ -40,7 +40,7 @@ public class UniformRandomSelectorTest {
 
     @Test
     public void testNaive() {
-        Frame df = SolidFrame.newByVars(
+        Frame df = SolidFrame.byVars(
                 0,
                 Index.scalar(1).withName("a"),
                 Index.scalar(1).withName("b"),

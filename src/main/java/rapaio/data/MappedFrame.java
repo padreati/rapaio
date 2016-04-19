@@ -42,6 +42,22 @@ import java.util.stream.IntStream;
  */
 public class MappedFrame extends AbstractFrame {
 
+    public static MappedFrame byRow(Frame df, int... mapping) {
+        return new MappedFrame(df, Mapping.copy(mapping));
+    }
+
+    public static MappedFrame byRow(Frame df, Mapping mapping) {
+        return new MappedFrame(df, mapping);
+    }
+
+    public static MappedFrame byRow(Frame df, Mapping mapping, String varRange) {
+        return MappedFrame.byRow(df, mapping, VRange.of(varRange));
+    }
+
+    public static MappedFrame byRow(Frame df, Mapping mapping, VRange vRange) {
+        return new MappedFrame(df, mapping, vRange.parseVarNames(df));
+    }
+
     private static final long serialVersionUID = 1368765233851124235L;
     private final Mapping mapping;
     private final Frame source;
@@ -73,24 +89,8 @@ public class MappedFrame extends AbstractFrame {
         this.vars = new Var[names.length];
         IntStream.range(0, names.length).forEach(i -> {
             colIndex.put(names[i], i);
-            vars[i] = MappedVar.newByRows(this.source.var(names[i]), this.mapping).withName(names[i]);
+            vars[i] = MappedVar.byRows(this.source.var(names[i]), this.mapping).withName(names[i]);
         });
-    }
-
-    public static MappedFrame newByRow(Frame df, int... mapping) {
-        return new MappedFrame(df, Mapping.copy(mapping));
-    }
-
-    public static MappedFrame newByRow(Frame df, Mapping mapping) {
-        return new MappedFrame(df, mapping);
-    }
-
-    public static MappedFrame newByRow(Frame df, Mapping mapping, String varRange) {
-        return MappedFrame.newByRow(df, mapping, VRange.of(varRange));
-    }
-
-    public static MappedFrame newByRow(Frame df, Mapping mapping, VRange vRange) {
-        return new MappedFrame(df, mapping, vRange.parseVarNames(df));
     }
 
     @Override
@@ -136,31 +136,31 @@ public class MappedFrame extends AbstractFrame {
 
     @Override
     public Frame bindVars(Var... vars) {
-        return BoundFrame.newByVars(this, BoundFrame.newByVars(vars));
+        return BoundFrame.byVars(this, BoundFrame.byVars(vars));
     }
 
     @Override
     public Frame bindVars(Frame df) {
-        return BoundFrame.newByVars(this, df);
+        return BoundFrame.byVars(this, df);
     }
 
     @Override
     public Frame mapVars(VRange range) {
-        return MappedFrame.newByRow(this, Mapping.range(0, this.rowCount()), range);
+        return MappedFrame.byRow(this, Mapping.range(0, this.rowCount()), range);
     }
 
     @Override
     public Frame addRows(int rowCount) {
-        return BoundFrame.newByRows(this, SolidFrame.newEmptyFrom(this, rowCount));
+        return BoundFrame.byRows(this, SolidFrame.emptyFrom(this, rowCount));
     }
 
     @Override
     public Frame bindRows(Frame df) {
-        return BoundFrame.newByRows(this, df);
+        return BoundFrame.byRows(this, df);
     }
 
     @Override
     public Frame mapRows(Mapping mapping) {
-        return MappedFrame.newByRow(this, mapping);
+        return MappedFrame.byRow(this, mapping);
     }
 }

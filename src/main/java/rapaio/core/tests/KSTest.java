@@ -58,7 +58,7 @@ public class KSTest implements Printable {
      *
      * @param cdf the densities to compare against
      */
-    public static KSTest newOneSampleTest(Var sample, Distribution cdf) {
+    public static KSTest oneSampleTest(Var sample, Distribution cdf) {
         return new KSTest(sample, cdf);
     }
 
@@ -122,7 +122,7 @@ public class KSTest implements Printable {
         pValue = probks((n + 0.12 + 0.11 / n) * D);
     }
 
-    public double probks(double x) {
+    private double probks(double x) {
         final double EPS1 = 0.001;
         final double EPS2 = 1.0e-10;
 

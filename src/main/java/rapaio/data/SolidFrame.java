@@ -39,6 +39,83 @@ import java.util.stream.Collectors;
  */
 public class SolidFrame extends AbstractFrame {
 
+    public static SolidFrame byVars(List<Var> vars) {
+        int rows = vars.stream().mapToInt(Var::rowCount).min().orElse(0);
+        return byVars(rows, vars);
+    }
+
+    public static SolidFrame byVars(Var... vars) {
+        int rows = Integer.MAX_VALUE;
+        for (Var var : vars) {
+            rows = Math.min(rows, var.rowCount());
+        }
+        if (rows == Integer.MAX_VALUE) rows = 0;
+        return new SolidFrame(rows, Arrays.asList(vars));
+    }
+
+    public static SolidFrame byVars(int rows, Var... vars) {
+        return byVars(rows, Arrays.asList(vars));
+    }
+
+    public static SolidFrame byVars(int rows, List<Var> vars) {
+        for (Var var : vars) {
+            rows = Math.min(rows, var.rowCount());
+        }
+        return new SolidFrame(rows, vars);
+    }
+
+    /**
+     * Builds a new frame with missing values, having the same variables
+     * as in the source frame and having given row count.
+     *
+     * @param rowCount row count
+     * @param src      source frame
+     * @return new instance of solid frame built according with the source frame variables
+     */
+    public static SolidFrame emptyFrom(Frame src, int rowCount) {
+        Var[] vars = new Var[src.varCount()];
+        for (int i = 0; i < vars.length; i++) {
+            vars[i] = src.var(i).type().newInstance(rowCount);
+        }
+        return SolidFrame.byVars(vars);
+    }
+
+    /**
+     * Build a frame which has only numeric columns and values are filled with 0
+     * (no missing values).
+     *
+     * @param rows     number of getRowCount
+     * @param colNames column names
+     * @return the new built frame
+     */
+    public static Frame matrix(int rows, String... colNames) {
+        return matrix(rows, Arrays.asList(colNames));
+    }
+
+    /**
+     * Build a frame which has only numeric columns and values are filled with 0
+     * (no missing values).
+     *
+     * @param rows     number of getRowCount
+     * @param colNames column names
+     * @return the new built frame
+     */
+    public static Frame matrix(int rows, List<String> colNames) {
+        List<Var> vars = new ArrayList<>();
+        colNames.stream().forEach(n -> vars.add(Numeric.fill(rows, 0).withName(n)));
+        return SolidFrame.byVars(rows, vars);
+    }
+
+    public static Frame matrix(RM rm, String... varNames) {
+        Frame df = matrix(rm.rowCount(), varNames);
+        for (int i = 0; i < rm.rowCount(); i++) {
+            for (int j = 0; j < rm.colCount(); j++) {
+                df.setValue(i, j, rm.get(i, j));
+            }
+        }
+        return df;
+    }
+
     private static final long serialVersionUID = 4963238370571140813L;
     private final Var[] vars;
     private final HashMap<String, Integer> colIndex;
@@ -66,87 +143,10 @@ public class SolidFrame extends AbstractFrame {
         }
     }
 
-    public static SolidFrame newByVars(List<Var> vars) {
-        int rows = vars.stream().mapToInt(Var::rowCount).min().orElse(0);
-        return newByVars(rows, vars);
-    }
-
-    public static SolidFrame newByVars(Var... vars) {
-        int rows = Integer.MAX_VALUE;
-        for (Var var : vars) {
-            rows = Math.min(rows, var.rowCount());
-        }
-        if (rows == Integer.MAX_VALUE) rows = 0;
-        return new SolidFrame(rows, Arrays.asList(vars));
-    }
-
-    public static SolidFrame newByVars(int rows, Var... vars) {
-        return newByVars(rows, Arrays.asList(vars));
-    }
-
-    public static SolidFrame newByVars(int rows, List<Var> vars) {
-        for (Var var : vars) {
-            rows = Math.min(rows, var.rowCount());
-        }
-        return new SolidFrame(rows, vars);
-    }
-
-    /**
-     * Builds a new frame with missing values, having the same variables
-     * as in the source frame and having given row count.
-     *
-     * @param rowCount row count
-     * @param src      source frame
-     * @return new instance of solid frame built according with the source frame variables
-     */
-    public static SolidFrame newEmptyFrom(Frame src, int rowCount) {
-        Var[] vars = new Var[src.varCount()];
-        for (int i = 0; i < vars.length; i++) {
-            vars[i] = src.var(i).type().newInstance(rowCount);
-        }
-        return SolidFrame.newByVars(vars);
-    }
-
-    /**
-     * Build a frame which has only numeric columns and values are filled with 0
-     * (no missing values).
-     *
-     * @param rows     number of getRowCount
-     * @param colNames column names
-     * @return the new built frame
-     */
-    public static Frame newMatrix(int rows, String... colNames) {
-        return newMatrix(rows, Arrays.asList(colNames));
-    }
-
-    /**
-     * Build a frame which has only numeric columns and values are filled with 0
-     * (no missing values).
-     *
-     * @param rows     number of getRowCount
-     * @param colNames column names
-     * @return the new built frame
-     */
-    public static Frame newMatrix(int rows, List<String> colNames) {
-        List<Var> vars = new ArrayList<>();
-        colNames.stream().forEach(n -> vars.add(Numeric.newFill(rows, 0).withName(n)));
-        return SolidFrame.newByVars(rows, vars);
-    }
-
-    public static Frame newMatrix(RM rm, String... varNames) {
-        Frame df = newMatrix(rm.rowCount(), varNames);
-        for (int i = 0; i < rm.rowCount(); i++) {
-            for (int j = 0; j < rm.colCount(); j++) {
-                df.setValue(i, j, rm.get(i, j));
-            }
-        }
-        return df;
-    }
-
     // private constructor
 
-    public static Frame newMatrix(RM rm, List<String> varNames) {
-        Frame df = newMatrix(rm.rowCount(), varNames);
+    public static Frame matrix(RM rm, List<String> varNames) {
+        Frame df = matrix(rm.rowCount(), varNames);
         for (int i = 0; i < rm.rowCount(); i++) {
             for (int j = 0; j < rm.colCount(); j++) {
                 df.setValue(i, j, rm.get(i, j));
@@ -193,19 +193,19 @@ public class SolidFrame extends AbstractFrame {
 
     @Override
     public Frame bindVars(Var... vars) {
-        return BoundFrame.newByVars(this, BoundFrame.newByVars(vars));
+        return BoundFrame.byVars(this, BoundFrame.byVars(vars));
     }
 
     @Override
     public Frame bindVars(Frame df) {
-        return BoundFrame.newByVars(this, df);
+        return BoundFrame.byVars(this, df);
     }
 
     @Override
     public Frame mapVars(VRange range) {
         List<String> varNames = range.parseVarNames(this);
         List<Var> vars = varNames.stream().map(this::var).collect(Collectors.toList());
-        return SolidFrame.newByVars(rowCount(), vars);
+        return SolidFrame.byVars(rowCount(), vars);
     }
 
     @Override
@@ -217,11 +217,11 @@ public class SolidFrame extends AbstractFrame {
 
     @Override
     public Frame bindRows(Frame df) {
-        return BoundFrame.newByRows(this, df);
+        return BoundFrame.byRows(this, df);
     }
 
     @Override
     public Frame mapRows(Mapping mapping) {
-        return MappedFrame.newByRow(this, mapping);
+        return MappedFrame.byRow(this, mapping);
     }
 }

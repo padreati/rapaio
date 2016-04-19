@@ -44,7 +44,7 @@ public class SamplingToolsTest {
         RandomSource.setSeed(123);
 
         double[] w = new double[]{0.4, 0.3, 0.2, 0.06, 0.03, 0.01};
-        DVector freq = DVector.newEmpty(true, w.length);
+        DVector freq = DVector.empty(true, w.length);
 
         final int TRIALS = 10_000;
         for (int i = 0; i < TRIALS; i++) {
@@ -57,13 +57,13 @@ public class SamplingToolsTest {
             Assert.assertEquals(1.0 / 6, freq.get(i), 1e-20);
         }
 
-        freq = DVector.newEmpty(true, w.length);
+        freq = DVector.empty(true, w.length);
         for (int i = 0; i < TRIALS; i++) {
             for (int next : SamplingTools.sampleWeightedWOR(1, w)) {
                 freq.increment(next, 1);
             }
         }
-        ChiSquareTest test = ChiSquareTest.goodnessOfFit(freq, w);
+        ChiSquareTest test = ChiSquareTest.goodnessOfFitTest(freq, w);
         Assert.assertTrue(test.pValue() > 0.05);
         test.printSummary();
     }
@@ -74,7 +74,7 @@ public class SamplingToolsTest {
         RandomSource.setSeed(123);
 
         double[] w = new double[]{0.001, 0.009, 0.09, 0.9};
-        DVector freq = DVector.newEmpty(true, w.length);
+        DVector freq = DVector.empty(true, w.length);
         final int TRIALS = 10_000;
         final int SAMPLES = 100;
         for (int i = 0; i < TRIALS; i++) {
@@ -82,7 +82,7 @@ public class SamplingToolsTest {
                 freq.increment(next, 1);
             }
         }
-        ChiSquareTest test = ChiSquareTest.goodnessOfFit(freq, w);
+        ChiSquareTest test = ChiSquareTest.goodnessOfFitTest(freq, w);
         Assert.assertTrue(test.pValue() > 0.05);
         test.printSummary();
     }
@@ -93,7 +93,7 @@ public class SamplingToolsTest {
         double[] freq = new double[10];
         final int TRIALS = 100_000;
         final int SAMPLES = 3;
-        Numeric v = Numeric.newEmpty();
+        Numeric v = Numeric.empty();
         for (int i = 0; i < TRIALS; i++) {
             for (int next : SamplingTools.sampleWOR(10, SAMPLES)) {
                 freq[next]++;
@@ -103,7 +103,7 @@ public class SamplingToolsTest {
         for (double f : freq) {
             System.out.print(String.format("%.6f, ", f / (1. * TRIALS * SAMPLES)));
         }
-        KSTest.newOneSampleTest(v, distDUnif(0, 9)).printSummary();
+        KSTest.oneSampleTest(v, distDUnif(0, 9)).printSummary();
         System.out.println();
     }
 }

@@ -48,10 +48,18 @@ import static rapaio.sys.WS.*;
  */
 public class CorrPearson implements Printable {
 
+    public static CorrPearson from(Frame df) {
+        return new CorrPearson(df);
+    }
+
+    public static CorrPearson from(Var... vars) {
+        return new CorrPearson(vars);
+    }
+
     private final String[] names;
     private final double[][] pearson;
 
-    public CorrPearson(Frame df) {
+    private CorrPearson(Frame df) {
         List<Var> varList = df.varList();
         this.names = df.varNames();
         this.pearson = new double[varList.size()][varList.size()];
@@ -64,7 +72,7 @@ public class CorrPearson implements Printable {
         }
     }
 
-    public CorrPearson(Var... vars) {
+    private CorrPearson(Var... vars) {
         List<Var> varList = Arrays.asList(vars);
         this.names = new String[vars.length];
         for (int i = 0; i < names.length; i++) {
@@ -90,11 +98,11 @@ public class CorrPearson implements Printable {
         Mapping map = Mapping.copy(IntStream.range(0, len)
                 .filter(i -> !(x.missing(i) || y.missing(i)))
                 .toArray());
-        double xMean = new Mean(x.mapRows(map)).value();
-        double yMean = new Mean(y.mapRows(map)).value();
+        double xMean = Mean.from(x.mapRows(map)).value();
+        double yMean = Mean.from(y.mapRows(map)).value();
 
-        double sdp = Math.sqrt(new Variance(x.mapRows(map)).value())
-                * Math.sqrt(new Variance(y.mapRows(map)).value());
+        double sdp = Math.sqrt(Variance.from(x.mapRows(map)).value())
+                * Math.sqrt(Variance.from(y.mapRows(map)).value());
         for (int i = 0; i < map.size(); i++) {
             int pos = map.get(i);
             sum += ((x.value(pos) - xMean) * (y.value(pos) - yMean));

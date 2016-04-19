@@ -94,7 +94,7 @@ public class VFQuantileDiscrete extends AbstractVF {
 
         Var original = vars[0];
 
-        Nominal result = Nominal.newEmpty(0, dict).withName(original.name());
+        Nominal result = Nominal.empty(0, dict).withName(original.name());
         for (int i = 0; i < original.rowCount(); i++) {
             if (original.missing(i))
                 result.addMissing();

@@ -87,7 +87,7 @@ public class PCA implements Printable {
         validate(df);
 
         logger.fine("start pca train");
-        RM x = SolidRM.copyOf(df);
+        RM x = SolidRM.copy(df);
         if (scaling) {
             logger.fine("compute mean, sd and do scaling");
             mean = SolidRV.empty(x.colCount());
@@ -129,7 +129,7 @@ public class PCA implements Printable {
     public Frame fit(Frame df, int k) {
         // TODO check if we have all the initial columns
 
-        RM x = SolidRM.copyOf(df.mapVars(inputNames));
+        RM x = SolidRM.copy(df.mapVars(inputNames));
 
         if (scaling) {
             for (int i = 0; i < x.rowCount(); i++) {
@@ -149,8 +149,8 @@ public class PCA implements Printable {
         RM result = x.dot(eigenVectors.mapCols(dim));
         Frame rest = df.removeVars(inputNames);
         return rest.varCount() == 0 ?
-                SolidFrame.newMatrix(result, names) :
-                SolidFrame.newMatrix(result, names).bindVars(rest);
+                SolidFrame.matrix(result, names) :
+                SolidFrame.matrix(result, names).bindVars(rest);
     }
 
     private void validate(Frame df) {

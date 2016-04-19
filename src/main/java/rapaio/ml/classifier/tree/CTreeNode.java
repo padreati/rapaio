@@ -120,7 +120,7 @@ public class CTreeNode implements Serializable {
     }
 
     public void learn(CTree tree, Frame df, Var weights, int depth) {
-        density = DVector.newFromWeights(false, df.var(tree.firstTargetName()), weights);
+        density = DVector.fromWeights(false, df.var(tree.firstTargetName()), weights);
         counter = DVector.fromCount(false, df.var(tree.firstTargetName()));
         bestIndex = density.findBestIndex();
 

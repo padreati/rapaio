@@ -40,15 +40,6 @@ public class Text extends AbstractVar {
     private static final long serialVersionUID = -7130782019269889796L;
     private List<String> values = new ArrayList<>();
 
-    //
-    // Public static builders
-    //
-
-    private Text(int rows) {
-        values = new ArrayList<>(rows);
-        IntStream.range(0, rows).forEach(i -> values.add(null));
-    }
-
     public static Text empty() {
         return new Text(0);
     }
@@ -74,6 +65,16 @@ public class Text extends AbstractVar {
         text.values = values;
         return text;
     }
+
+    //
+    // Public static builders
+    //
+
+    private Text(int rows) {
+        values = new ArrayList<>(rows);
+        IntStream.range(0, rows).forEach(i -> values.add(null));
+    }
+
     //
     // private constructor
     //

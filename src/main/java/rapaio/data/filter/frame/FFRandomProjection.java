@@ -90,11 +90,11 @@ public class FFRandomProjection extends AbstractFF {
     @Override
     public Frame apply(Frame df) {
 
-        RM X = SolidRM.copyOf(df.mapVars(varNames));
+        RM X = SolidRM.copy(df.mapVars(varNames));
         RM p = X.dot(rp);
 
         Frame non = df.removeVars(varNames);
-        Frame trans = SolidFrame.newMatrix(p, IntStream.range(1, k + 1).boxed().map(i -> "RP_" + i).toArray(String[]::new));
+        Frame trans = SolidFrame.matrix(p, IntStream.range(1, k + 1).boxed().map(i -> "RP_" + i).toArray(String[]::new));
         return non.bindVars(trans);
     }
 

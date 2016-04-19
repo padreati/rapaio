@@ -41,13 +41,17 @@ import static rapaio.sys.WS.formatFlex;
  */
 public class Covariance implements Printable {
 
+    public static Covariance from(Var var1, Var var2) {
+        return new Covariance(var1, var2);
+    }
+
     private final String varName1;
     private final String varName2;
     private final double value;
     private int completeCount;
     private int missingCount;
 
-    public Covariance(Var var1, Var var2) {
+    private Covariance(Var var1, Var var2) {
         this.varName1 = var1.name();
         this.varName2 = var2.name();
         this.value = compute(var1, var2);

@@ -151,8 +151,8 @@ public class BinarySMOTest {
         kernels.add(new PowerKernel(2));
         kernels.add(new RationalQuadraticKernel(1));
 
-        Nominal name = Nominal.newEmpty().withName("kernel");
-        Numeric score = Numeric.newEmpty().withName("score");
+        Nominal name = Nominal.empty().withName("kernel");
+        Numeric score = Numeric.empty().withName("score");
 
         for (Kernel k : kernels) {
 
@@ -167,7 +167,7 @@ public class BinarySMOTest {
         }
 
         WS.println("\nSummary of the scores for various kernels:\n=====================\n");
-        String out = SolidFrame.newByVars(name, score).lines(name.rowCount());
+        String out = SolidFrame.byVars(name, score).lines(name.rowCount());
 
         assertEquals("" +
                 "                  kernel                     score                                 kernel                             score      \n" +

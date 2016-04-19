@@ -45,13 +45,17 @@ import static rapaio.sys.WS.formatFlex;
  */
 public class GeometricMean implements Printable {
 
+    public static GeometricMean from(Var var) {
+        return new GeometricMean(var);
+    }
+
     private final String varName;
     private final double value;
     private int missingCount = 0;
     private int completeCount = 0;
     private int negativeCount = 0;
 
-    public GeometricMean(Var var) {
+    private GeometricMean(Var var) {
         this.varName = var.name();
         double sum = 0.0;
         for (int i = 0; i < var.rowCount(); i++) {

@@ -41,12 +41,16 @@ import static rapaio.core.CoreTools.mean;
  */
 public class Variance implements Printable {
 
+    public static Variance from(Var var) {
+        return new Variance(var);
+    }
+
     private final String varName;
     private final double value;
     private int completeCount;
     private int missingCount;
 
-    public Variance(Var var) {
+    private Variance(Var var) {
         this.varName = var.name();
         this.value = compute(var);
     }

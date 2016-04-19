@@ -25,7 +25,6 @@
 package rapaio.math.linear.dense;
 
 
-import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
 
 import java.io.Serializable;
@@ -170,7 +169,7 @@ public class CholeskyDecomposition implements Serializable {
      */
 
     public RM getL() {
-        return SolidRM.copyOf(L);
+        return SolidRM.copy(L);
     }
 
     /**

@@ -49,7 +49,7 @@ public enum BaggingMode implements Serializable {
                 }
             });
             for (int i = 0; i < classes.rowCount(); i++) {
-                DVector dv = DVector.newEmpty(false, dictionary);
+                DVector dv = DVector.empty(false, dictionary);
                 for (int j = 1; j < dictionary.length; j++) {
                     dv.increment(j, densities.value(i, j));
                 }
@@ -91,7 +91,7 @@ public enum BaggingMode implements Serializable {
                 }
             });
             for (int i = 0; i < classes.rowCount(); i++) {
-                DVector dv = DVector.newEmpty(false, dictionary);
+                DVector dv = DVector.empty(false, dictionary);
                 for (int j = 0; j < dictionary.length; j++) {
                     dv.increment(j, densities.value(i, j));
                 }

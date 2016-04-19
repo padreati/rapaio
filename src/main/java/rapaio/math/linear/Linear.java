@@ -95,7 +95,7 @@ public final class Linear {
             if (inTolerance(s, tol))
                 break;
         }
-        return EigenPair.newFrom(s.diag(), ev.solidCopy());
+        return EigenPair.from(s.diag(), ev.solidCopy());
     }*/
 
     public static EigenPair eigenDecomp(RM s, int maxRuns, double tol) {

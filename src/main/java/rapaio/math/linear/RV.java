@@ -105,19 +105,19 @@ public interface RV extends Serializable, Printable {
     }
 
     default Mean mean() {
-        Numeric values = Numeric.newEmpty();
+        Numeric values = Numeric.empty();
         for (int i = 0; i < count(); i++) {
             values.addValue(get(i));
         }
-        return new Mean(values);
+        return Mean.from(values);
     }
 
     default Variance var() {
-        Numeric values = Numeric.newEmpty();
+        Numeric values = Numeric.empty();
         for (int i = 0; i < count(); i++) {
             values.addValue(get(i));
         }
-        return new Variance(values);
+        return Variance.from(values);
     }
 
 

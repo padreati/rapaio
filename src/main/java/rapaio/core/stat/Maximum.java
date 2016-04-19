@@ -38,12 +38,16 @@ import static rapaio.sys.WS.formatFlex;
  */
 public class Maximum implements Printable {
 
+    public static Maximum from(Var var) {
+        return new Maximum(var);
+    }
+
     private final String varName;
     private final double value;
     private int completeCount;
     private int missingCount;
 
-    public Maximum(Var var) {
+    private Maximum(Var var) {
         this.varName = var.name();
         for (int i = 0; i < var.rowCount(); i++) {
             if (var.missing(i)) {

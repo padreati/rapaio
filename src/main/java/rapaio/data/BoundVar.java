@@ -38,6 +38,23 @@ import java.util.stream.Collectors;
  */
 public class BoundVar extends AbstractVar {
 
+    public static BoundVar from(List<Integer> counts, List<Var> vars) {
+        return new BoundVar(counts, vars);
+    }
+
+    public static BoundVar from(List<Var> vars) {
+        return new BoundVar(vars.stream().map(Var::rowCount).collect(Collectors.toList()), vars);
+    }
+
+    // private constructor
+
+    public static BoundVar from(Var... vars) {
+        return new BoundVar(
+                Arrays.stream(vars).map(Var::rowCount).collect(Collectors.toList()),
+                Arrays.stream(vars).collect(Collectors.toList())
+        );
+    }
+
     private static final long serialVersionUID = 5449912906816640189L;
     private final int rowCount;
     private final VarType varType;
@@ -81,23 +98,6 @@ public class BoundVar extends AbstractVar {
         this.withName(vars.get(0).name());
     }
 
-    public static BoundVar newFrom(List<Integer> counts, List<Var> vars) {
-        return new BoundVar(counts, vars);
-    }
-
-    public static BoundVar newFrom(List<Var> vars) {
-        return new BoundVar(vars.stream().map(Var::rowCount).collect(Collectors.toList()), vars);
-    }
-
-    // private constructor
-
-    public static BoundVar newFrom(Var... vars) {
-        return new BoundVar(
-                Arrays.stream(vars).map(Var::rowCount).collect(Collectors.toList()),
-                Arrays.stream(vars).collect(Collectors.toList())
-        );
-    }
-
     private int findIndex(int row) {
         if (row >= rowCount || row < 0)
             throw new IllegalArgumentException("Row index is not valid: " + row);
@@ -137,9 +137,9 @@ public class BoundVar extends AbstractVar {
                 newVars.add(boundVar.vars.get(i));
                 last = boundVar.counts.get(i);
             }
-            return BoundVar.newFrom(newCounts, newVars);
+            return BoundVar.from(newCounts, newVars);
         } else {
-            return BoundVar.newFrom(this, var);
+            return BoundVar.from(this, var);
         }
     }
 

@@ -39,12 +39,16 @@ import static rapaio.sys.WS.formatFlex;
  */
 public final class Mean implements Printable {
 
+    public static Mean from(Var var) {
+        return new Mean(var);
+    }
+
     private final String varName;
     private final double value;
     private double missingCount = 0;
     private double completeCount = 0;
 
-    public Mean(Var var) {
+    private Mean(Var var) {
         this.varName = var.name();
         double sum = 0.0;
         for (int i = 0; i < var.rowCount(); i++) {

@@ -67,12 +67,12 @@ public class SimpleRegressionTest {
         RFit fit2 = r2.fit(df);
         fit2.printSummary();
 
-        Assert.assertTrue(Numeric.newFill(df.rowCount(), 66).withName("Father")
+        Assert.assertTrue(Numeric.fill(df.rowCount(), 66).withName("Father")
                 .deepEquals(fit1.firstFit()));
         Assert.assertTrue(df.var(father).solidCopy().fitApply(VFToNumeric.byValue(x -> x - 66)).withName("Father-residual")
                 .deepEquals(fit1.firstResidual()));
 
-        Assert.assertTrue(Numeric.newFill(df.rowCount(), 1).withName("Father")
+        Assert.assertTrue(Numeric.fill(df.rowCount(), 1).withName("Father")
                 .deepEquals(fit2.firstFit()));
         Assert.assertTrue(df.var(father).solidCopy().fitApply(VFToNumeric.byValue(x -> x - 1)).withName("Father-residual")
                 .deepEquals(fit2.firstResidual()));
@@ -90,7 +90,7 @@ public class SimpleRegressionTest {
         fit1.printSummary();
 
         double median = CoreTools.quantiles(df.var(father), 0.5).values()[0];
-        Assert.assertTrue(Numeric.newFill(df.rowCount(), median).withName(father)
+        Assert.assertTrue(Numeric.fill(df.rowCount(), median).withName(father)
                 .deepEquals(fit1.firstFit()));
     }
 

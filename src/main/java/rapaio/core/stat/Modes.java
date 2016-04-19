@@ -34,13 +34,17 @@ import java.util.Arrays;
  */
 public class Modes implements Printable {
 
+    public static Modes from(Var var, boolean includeMissing) {
+        return new Modes(var, includeMissing);
+    }
+
     private final String varName;
     private final boolean includeMissing;
     private final String[] modes;
     private int completeCount;
     private int missingCount;
 
-    public Modes(Var var, boolean includeMissing) {
+    private Modes(Var var, boolean includeMissing) {
         this.varName = var.name();
         this.includeMissing = includeMissing;
         this.modes = compute(var);

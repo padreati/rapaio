@@ -81,13 +81,13 @@ public final class ExperimentalTools implements Serializable {
                 if (!v.type().isNominal()) {
                     vars[i] = v;
                 } else {
-                    vars[i] = Nominal.newEmpty(v.rowCount(), dicts.get(colName)).withName(colName);
+                    vars[i] = Nominal.empty(v.rowCount(), dicts.get(colName)).withName(colName);
                     for (int k = 0; k < vars[i].rowCount(); k++) {
                         vars[i].setLabel(k, v.label(k));
                     }
                 }
             }
-            dest.add(SolidFrame.newByVars(frame.rowCount(), vars));
+            dest.add(SolidFrame.byVars(frame.rowCount(), vars));
         }
 
         return dest;

@@ -35,10 +35,10 @@ public class FrameTest {
 
     @Test
     public void testRemove() {
-        SolidFrame df = SolidFrame.newByVars(
-                Nominal.newCopy("a", "b").withName("x"),
-                Nominal.newCopy("x", "y").withName("y"),
-                Numeric.newWrap(1, 2).withName("z")
+        SolidFrame df = SolidFrame.byVars(
+                Nominal.copy("a", "b").withName("x"),
+                Nominal.copy("x", "y").withName("y"),
+                Numeric.wrap(1, 2).withName("z")
         );
         Frame df1 = df.removeVars("x,z");
 
@@ -58,10 +58,10 @@ public class FrameTest {
 
     @Test
     public void testSetters() {
-        SolidFrame df = SolidFrame.newByVars(
-                Nominal.newCopy("a", "b").withName("x"),
-                Nominal.newCopy("x", "y").withName("y"),
-                Numeric.newWrap(1, 2).withName("z")
+        SolidFrame df = SolidFrame.byVars(
+                Nominal.copy("a", "b").withName("x"),
+                Nominal.copy("x", "y").withName("y"),
+                Numeric.wrap(1, 2).withName("z")
         );
 
         df.setValue(1, "z", 100);
@@ -76,10 +76,10 @@ public class FrameTest {
 
     @Test
     public void testMissing() {
-        SolidFrame df = SolidFrame.newByVars(
-                Nominal.newCopy("a", "b").withName("x"),
-                Nominal.newCopy("x", "y").withName("y"),
-                Numeric.newWrap(1, 2).withName("z")
+        SolidFrame df = SolidFrame.byVars(
+                Nominal.copy("a", "b").withName("x"),
+                Nominal.copy("x", "y").withName("y"),
+                Numeric.wrap(1, 2).withName("z")
         );
 
         assertEquals(false, df.missing(0));

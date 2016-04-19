@@ -47,55 +47,55 @@ public final class CoreTools {
     //
 
     public static OnlineStat newOnlineStat() {
-        return new OnlineStat();
+        return OnlineStat.empty();
     }
 
     public static Mean mean(Var var) {
-        return new Mean(var);
+        return Mean.from(var);
     }
 
     public static GeometricMean geometricMean(Var var) {
-        return new GeometricMean(var);
+        return GeometricMean.from(var);
     }
 
     public static Variance var(Var var) {
-        return new Variance(var);
+        return Variance.from(var);
     }
 
     public static Maximum max(Var var) {
-        return new Maximum(var);
+        return Maximum.from(var);
     }
 
     public static Minimum min(Var var) {
-        return new Minimum(var);
+        return Minimum.from(var);
     }
 
     public static Sum sum(Var var) {
-        return new Sum(var);
+        return Sum.from(var);
     }
 
     public static Quantiles quantiles(Var var, double... p) {
-        return new Quantiles(var, p);
+        return Quantiles.from(var, p);
     }
 
     public static Quantiles quantiles(Var var, Numeric p) {
-        return new Quantiles(var, p.stream().mapToDouble().toArray());
+        return Quantiles.from(var, p.stream().mapToDouble().toArray());
     }
 
     public static Quantiles quantiles(Var var, Quantiles.Type type, Numeric p) {
-        return new Quantiles(var, type, p.stream().mapToDouble().toArray());
+        return Quantiles.from(var, type, p.stream().mapToDouble().toArray());
     }
 
     public static Modes modes(Var var) {
-        return new Modes(var, false);
+        return Modes.from(var, false);
     }
 
     public static Modes modes(Var var, boolean missing) {
-        return new Modes(var, missing);
+        return Modes.from(var, missing);
     }
 
     public static Covariance cov(Var x, Var y) {
-        return new Covariance(x, y);
+        return Covariance.from(x, y);
     }
 
     //
@@ -103,19 +103,19 @@ public final class CoreTools {
     //
 
     public static CorrPearson corrPearson(Frame df) {
-        return new CorrPearson(df);
+        return CorrPearson.from(df);
     }
 
     public static CorrPearson corrPearson(Var... vars) {
-        return new CorrPearson(vars);
+        return CorrPearson.from(vars);
     }
 
     public static CorrSpearman corrSpearman(Frame df) {
-        return new CorrSpearman(df);
+        return CorrSpearman.from(df);
     }
 
     public static CorrSpearman corrSpearman(Var... vars) {
-        return new CorrSpearman(vars);
+        return CorrSpearman.from(vars);
     }
 
     ///

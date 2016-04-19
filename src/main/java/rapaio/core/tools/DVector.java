@@ -48,6 +48,74 @@ import java.util.stream.DoubleStream;
  */
 public class DVector implements Printable, Serializable {
 
+    /**
+     * Builds a distribution vector with given levels
+     *
+     * @param labels used to name values
+     * @return new empty distribution vector
+     */
+    public static DVector empty(boolean useFirst, String... labels) {
+        return new DVector(useFirst, labels);
+    }
+
+    /**
+     * Builds a distribution vector with given dimestion. Names are generated automatically.
+     *
+     * @param rows size of the distribution vector
+     * @return new empty distribution vector
+     */
+    public static DVector empty(boolean useFirst, int rows) {
+        String[] labels = new String[rows];
+        for (int i = 0; i < labels.length; i++) {
+            if (i == 0) {
+                labels[i] = useFirst ? "v0" : "?";
+            } else {
+                labels[i] = "v" + i;
+            }
+        }
+        return new DVector(useFirst, labels);
+    }
+
+    /**
+     * Builds a distribution vector as a frequency table from a
+     * given nominal variable. For each cell value it will hold
+     * the number of appearances and will have the cell names
+     * from the levels of the nominal value given as input.
+     *
+     * @param var given nominal value
+     * @return new distribution vector filled with counts
+     */
+    public static DVector fromCount(boolean useFirst, Var var) {
+        Var weights = Numeric.fill(var.rowCount(), 1);
+        return new DVector(useFirst, var.levels(), var, weights);
+    }
+
+    /**
+     * Builds a distribution vector as a table with one cell for each
+     * value in the nominal variable and as value the sum of it's
+     * corresponding weights.
+     *
+     * @param var     given nominal variable
+     * @param weights given numeric weights
+     * @return new distribution variable
+     */
+    public static DVector fromWeights(boolean useFirst, Var var, Var weights) {
+        return new DVector(useFirst, var.levels(), var, weights);
+    }
+
+    /**
+     * Builds a new distribution vector, with given names, grouped by
+     * the nominal variable and with values as sums on numeric weights
+     *
+     * @param labels  levels used for names
+     * @param var     defines nominal grouping
+     * @param weights weights used to compute sums for each cell
+     * @return new distribution vector
+     */
+    public static DVector fromWeights(boolean useFirst, Var var, Var weights, String... labels) {
+        return new DVector(useFirst, labels, var, weights);
+    }
+
     private static final long serialVersionUID = -546802690694348698L;
     private final String[] levels;
     private final Map<String, Integer> reverse = new HashMap<>();
@@ -72,74 +140,6 @@ public class DVector implements Printable, Serializable {
         int off = var.type().equals(VarType.BINARY) ? 1 : 0;
         var.stream().forEach(s -> values[s.index() + off] += weights.value(s.row()));
         total = Arrays.stream(values).sum();
-    }
-
-    /**
-     * Builds a distribution vector with given levels
-     *
-     * @param labels used to name values
-     * @return new empty distribution vector
-     */
-    public static DVector newEmpty(boolean useFirst, String... labels) {
-        return new DVector(useFirst, labels);
-    }
-
-    /**
-     * Builds a distribution vector with given dimestion. Names are generated automatically.
-     *
-     * @param rows size of the distribution vector
-     * @return new empty distribution vector
-     */
-    public static DVector newEmpty(boolean useFirst, int rows) {
-        String[] labels = new String[rows];
-        for (int i = 0; i < labels.length; i++) {
-            if (i == 0) {
-                labels[i] = useFirst ? "v0" : "?";
-            } else {
-                labels[i] = "v" + i;
-            }
-        }
-        return new DVector(useFirst, labels);
-    }
-
-    /**
-     * Builds a distribution vector as a frequency table from a
-     * given nominal variable. For each cell value it will hold
-     * the number of appearances and will have the cell names
-     * from the levels of the nominal value given as input.
-     *
-     * @param var given nominal value
-     * @return new distribution vector filled with counts
-     */
-    public static DVector fromCount(boolean useFirst, Var var) {
-        Var weights = Numeric.newFill(var.rowCount(), 1);
-        return new DVector(useFirst, var.levels(), var, weights);
-    }
-
-    /**
-     * Builds a distribution vector as a table with one cell for each
-     * value in the nominal variable and as value the sum of it's
-     * corresponding weights.
-     *
-     * @param var     given nominal variable
-     * @param weights given numeric weights
-     * @return new distribution variable
-     */
-    public static DVector newFromWeights(boolean useFirst, Var var, Var weights) {
-        return new DVector(useFirst, var.levels(), var, weights);
-    }
-
-    /**
-     * Builds a new distribution vector, with given names, grouped by
-     * the nominal variable and with values as sums on numeric weights
-     *
-     * @param labels  levels used for names
-     * @param var     defines nominal grouping
-     * @param weights weights used to compute sums for each cell
-     * @return new distribution vector
-     */
-    public static DVector newFromWeights(boolean useFirst, Var var, Var weights, String... labels) {
-        return new DVector(useFirst, labels, var, weights);
     }
 
     public boolean first() {

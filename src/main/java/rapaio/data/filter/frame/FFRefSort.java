@@ -43,7 +43,7 @@ public class FFRefSort extends AbstractFF {
     @SafeVarargs
     public FFRefSort(Comparator<Integer>... comparators) {
         super(VRange.of("all"));
-        this.aggregateComparator = RowComparators.aggregate(comparators);
+        this.aggregateComparator = RowComparators.from(comparators);
     }
 
     @Override
@@ -62,6 +62,6 @@ public class FFRefSort extends AbstractFF {
             rows.add(i);
         }
         Collections.sort(rows, aggregateComparator);
-        return MappedFrame.newByRow(df, Mapping.wrap(rows));
+        return MappedFrame.byRow(df, Mapping.wrap(rows));
     }
 }

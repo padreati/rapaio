@@ -36,12 +36,16 @@ import static rapaio.sys.WS.formatFlex;
  */
 public final class WeightedMean implements Printable {
 
+    public static WeightedMean from(Var var, Var weights) {
+        return new WeightedMean(var, weights);
+    }
+
     private final String varName;
     private final double mean;
     private int missingCount;
     private int completeCount;
 
-    public WeightedMean(final Var var, final Var weights) {
+    private WeightedMean(final Var var, final Var weights) {
         this.varName = var.name();
         this.mean = compute(var, weights);
     }

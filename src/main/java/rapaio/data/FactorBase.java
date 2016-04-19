@@ -38,7 +38,7 @@ import java.util.*;
  *
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
  */
-public abstract class FactorBase extends AbstractVar {
+abstract class FactorBase extends AbstractVar {
 
     private static final long serialVersionUID = -7541719735879481349L;
 

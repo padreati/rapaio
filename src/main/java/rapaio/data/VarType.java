@@ -78,12 +78,12 @@ public enum VarType {
 
         @Override
         public Var newInstance() {
-            return Binary.newEmpty();
+            return Binary.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Binary.newEmpty(rows);
+            return Binary.empty(rows);
         }
     },
     /**
@@ -137,12 +137,12 @@ public enum VarType {
 
         @Override
         public Var newInstance() {
-            return Nominal.newEmpty();
+            return Nominal.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Nominal.newEmpty(rows);
+            return Nominal.empty(rows);
         }
     },
     /**
@@ -166,12 +166,12 @@ public enum VarType {
 
         @Override
         public Var newInstance() {
-            return Numeric.newEmpty();
+            return Numeric.empty();
         }
 
         @Override
         public Var newInstance(int rows) {
-            return Numeric.newEmpty(rows);
+            return Numeric.empty(rows);
         }
     },
     /**

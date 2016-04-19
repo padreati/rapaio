@@ -40,12 +40,16 @@ import static rapaio.sys.WS.formatFlex;
  */
 public class Minimum implements Printable {
 
+    public static Minimum from(Var var) {
+        return new Minimum(var);
+    }
+
     private final String varName;
     private final double value;
     private int completeCount;
     private int missingCount;
 
-    public Minimum(Var var) {
+    private Minimum(Var var) {
         this.varName = var.name();
         for (int i = 0; i < var.rowCount(); i++) {
             if (var.missing(i)) {

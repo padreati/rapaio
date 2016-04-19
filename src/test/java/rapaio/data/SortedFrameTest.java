@@ -61,12 +61,12 @@ public class SortedFrameTest {
         RandomSource.setSeed(1);
         Var[] vars = new Var[1_000];
         for (int i = 0; i < 1_000; i++) {
-            vars[i] = Numeric.newFill(1_000).withName("v" + i);
+            vars[i] = Numeric.fill(1_000).withName("v" + i);
             for (int j = 0; j < 1_000; j++) {
                 vars[i].setValue(j, RandomSource.nextDouble());
             }
         }
-        Frame sorted = SolidFrame.newByVars(1_000, vars);
+        Frame sorted = SolidFrame.byVars(1_000, vars);
 
         for (int i = 0; i < 100; i++) {
             int col = RandomSource.nextInt(sorted.varCount());

@@ -41,13 +41,13 @@ import java.util.Arrays;
  */
 public abstract class ChiSquareTest implements Printable {
 
-    public static ChiSquareTest goodnessOfFit(Var x, double... p) {
+    public static ChiSquareTest goodnessOfFitTest(Var x, double... p) {
         DVector dv = buildDv(x);
         Numeric expected = Arrays.stream(p).map(pi -> pi * dv.sum()).boxed().collect(Numeric.collector());
         return new GoodnessOfFit(dv, expected);
     }
 
-    public static ChiSquareTest goodnessOfFit(DVector dv, double... p) {
+    public static ChiSquareTest goodnessOfFitTest(DVector dv, double... p) {
         Numeric expected = Arrays.stream(p).map(pi -> pi * dv.sum()).boxed().collect(Numeric.collector());
         return new GoodnessOfFit(dv, expected);
     }
@@ -59,11 +59,11 @@ public abstract class ChiSquareTest implements Printable {
      * @param y second random variable
      * @return result object
      */
-    public static ChiSquareTest independence(Var x, Var y) {
+    public static ChiSquareTest independenceTest(Var x, Var y) {
         return new Independence(DTable.fromCounts(x, y, false));
     }
 
-    public static ChiSquareTest independence(DTable dt) {
+    public static ChiSquareTest independenceTest(DTable dt) {
         return new Independence(dt);
     }
 
@@ -81,7 +81,7 @@ public abstract class ChiSquareTest implements Printable {
                 return DVector.fromCount(false, x);
             case NUMERIC:
             case INDEX:
-                DVector dv = DVector.newEmpty(true, x.rowCount());
+                DVector dv = DVector.empty(true, x.rowCount());
                 for (int i = 0; i < x.rowCount(); i++) {
                     dv.set(i, x.value(i));
                 }

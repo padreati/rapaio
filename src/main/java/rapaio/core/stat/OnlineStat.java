@@ -46,6 +46,10 @@ package rapaio.core.stat;
  */
 public class OnlineStat {
 
+    public static OnlineStat empty() {
+        return new OnlineStat();
+    }
+
     double n; // number of elements
     double m1;
     double m2;
@@ -54,7 +58,7 @@ public class OnlineStat {
     double min = 0;
     double max = 0;
 
-    public OnlineStat() {
+    private OnlineStat() {
         clean();
     }
 

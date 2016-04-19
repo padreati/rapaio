@@ -57,9 +57,9 @@ public class AdaBoostSAMMETest {
 
         String target = "spam";
 
-        Numeric runs = Numeric.newEmpty().withName("runs");
-        Numeric errTr = Numeric.newEmpty().withName("tr");
-        Numeric errTe = Numeric.newEmpty().withName("te");
+        Numeric runs = Numeric.empty().withName("runs");
+        Numeric errTr = Numeric.empty().withName("tr");
+        Numeric errTe = Numeric.empty().withName("te");
 
         ab.withRunningHook((c, run) -> {
             runs.addValue(run);

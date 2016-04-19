@@ -25,29 +25,11 @@
 package rapaio.data;
 
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a>
  */
 public class BoundFrame extends AbstractFrame {
-
-    private static final long serialVersionUID = -445349340356580788L;
-    private final int rowCount;
-    private final List<Var> vars;
-    private final String[] names;
-    private final Map<String, Integer> indexes;
-
-    private BoundFrame(int rowCount, List<Var> vars, String[] names, Map<String, Integer> indexes) {
-        this.rowCount = rowCount;
-        this.vars = vars;
-        this.names = names;
-        this.indexes = indexes;
-    }
 
     /**
      * Builds a new bound frame by binding variables of multiple given frames.
@@ -57,7 +39,7 @@ public class BoundFrame extends AbstractFrame {
      * @param dfs given data frames
      * @return new frame bound frame by binding variables
      */
-    public static BoundFrame newByVars(Frame... dfs) {
+    public static BoundFrame byVars(Frame... dfs) {
         if (dfs.length == 0) {
             return new BoundFrame(0, new ArrayList<>(), new String[]{}, new HashMap<>());
         }
@@ -68,27 +50,27 @@ public class BoundFrame extends AbstractFrame {
         Set<String> _namesSet = new HashSet<>();
 
         int pos = 0;
-        for (int i = 0; i < dfs.length; i++) {
+        for (Frame df : dfs) {
             if (_rowCount == null) {
-                _rowCount = dfs[i].varCount() > 0 ? dfs[i].rowCount() : null;
+                _rowCount = df.varCount() > 0 ? df.rowCount() : null;
             } else {
-                _rowCount = Math.min(_rowCount, dfs[i].rowCount());
+                _rowCount = Math.min(_rowCount, df.rowCount());
             }
-            for (int j = 0; j < dfs[i].varCount(); j++) {
-                if (_namesSet.contains(dfs[i].var(j).name())) {
+            for (int j = 0; j < df.varCount(); j++) {
+                if (_namesSet.contains(df.var(j).name())) {
                     throw new IllegalArgumentException("bound frame does not allow variables with the same name");
                 }
-                _vars.add(dfs[i].var(j));
-                _names.add(dfs[i].var(j).name());
-                _namesSet.add(dfs[i].var(j).name());
-                _indexes.put(dfs[i].var(j).name(), pos++);
+                _vars.add(df.var(j));
+                _names.add(df.var(j).name());
+                _namesSet.add(df.var(j).name());
+                _indexes.put(df.var(j).name(), pos++);
             }
         }
         return new BoundFrame(_rowCount == null ? 0 : _rowCount, _vars, _names.toArray(new String[_names.size()]), _indexes);
     }
 
-    public static BoundFrame newByVars(Collection<Var> varList) {
-        return newByVars(varList.stream().toArray(Var[]::new));
+    public static BoundFrame byVars(Collection<Var> varList) {
+        return byVars(varList.stream().toArray(Var[]::new));
     }
 
     /**
@@ -99,7 +81,7 @@ public class BoundFrame extends AbstractFrame {
      * @param varList given data variables
      * @return new frame bound frame by binding variables
      */
-    public static BoundFrame newByVars(Var... varList) {
+    public static BoundFrame byVars(Var... varList) {
         if (varList.length == 0) {
             return new BoundFrame(0, new ArrayList<>(), new String[]{}, new HashMap<>());
         }
@@ -127,7 +109,7 @@ public class BoundFrame extends AbstractFrame {
         return new BoundFrame(_rowCount, _vars, _names.toArray(new String[_names.size()]), _indexes);
     }
 
-    public static BoundFrame newByRows(Frame... dfs) {
+    public static BoundFrame byRows(Frame... dfs) {
         if (dfs.length == 0) {
             return new BoundFrame(0, new ArrayList<>(), new String[]{}, new HashMap<>());
         }
@@ -171,7 +153,7 @@ public class BoundFrame extends AbstractFrame {
                 boundVars.add(df.var(_names[i]));
             }
 
-            Var boundedVar = BoundVar.newFrom(counts, boundVars).withName(_names[i]);
+            Var boundedVar = BoundVar.from(counts, boundVars).withName(_names[i]);
             _vars.add(boundedVar);
             _indexes.put(_names[i], i);
         }
@@ -179,6 +161,19 @@ public class BoundFrame extends AbstractFrame {
         int _rowCount = Arrays.stream(dfs).mapToInt(Frame::rowCount).sum();
 
         return new BoundFrame(_rowCount, _vars, _names, _indexes);
+    }
+
+    private static final long serialVersionUID = -445349340356580788L;
+    private final int rowCount;
+    private final List<Var> vars;
+    private final String[] names;
+    private final Map<String, Integer> indexes;
+
+    private BoundFrame(int rowCount, List<Var> vars, String[] names, Map<String, Integer> indexes) {
+        this.rowCount = rowCount;
+        this.vars = vars;
+        this.names = names;
+        this.indexes = indexes;
     }
 
     @Override
@@ -213,12 +208,12 @@ public class BoundFrame extends AbstractFrame {
 
     @Override
     public Frame bindVars(Var... vars) {
-        return BoundFrame.newByVars(this, BoundFrame.newByVars(vars));
+        return BoundFrame.byVars(this, BoundFrame.byVars(vars));
     }
 
     @Override
     public Frame bindVars(Frame df) {
-        return BoundFrame.newByVars(this, df);
+        return BoundFrame.byVars(this, df);
     }
 
     @Override
@@ -237,16 +232,16 @@ public class BoundFrame extends AbstractFrame {
 
     @Override
     public Frame addRows(int rowCount) {
-        return BoundFrame.newByRows(this, SolidFrame.newEmptyFrom(this, rowCount));
+        return BoundFrame.byRows(this, SolidFrame.emptyFrom(this, rowCount));
     }
 
     @Override
     public Frame bindRows(Frame df) {
-        return BoundFrame.newByRows(this, df);
+        return BoundFrame.byRows(this, df);
     }
 
     @Override
     public Frame mapRows(Mapping mapping) {
-        return MappedFrame.newByRow(this, mapping);
+        return MappedFrame.byRow(this, mapping);
     }
 }

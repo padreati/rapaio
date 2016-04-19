@@ -36,8 +36,8 @@ public class ConfusionTest {
 
     @Test
     public void hello() {
-        Var actual = Nominal.newEmpty(11, "cat", "dog", "mouse");
-        Var predict = Nominal.newEmpty(11, "cat", "dog", "mouse");
+        Var actual = Nominal.empty(11, "cat", "dog", "mouse");
+        Var predict = Nominal.empty(11, "cat", "dog", "mouse");
 
         actual.setLabel(0, "cat");
         predict.setLabel(0, "cat");

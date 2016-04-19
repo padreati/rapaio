@@ -70,13 +70,13 @@ public class BarChart extends HostFigure {
             throw new IllegalArgumentException("categories are nominal only");
         }
         if (condition == null) {
-            condition = Nominal.newEmpty(category.rowCount(), new ArrayList<>());
+            condition = Nominal.empty(category.rowCount(), new ArrayList<>());
         }
         if (!condition.type().isNominal()) {
             throw new IllegalArgumentException("conditions are nominal only");
         }
         if (numeric == null) {
-            numeric = Numeric.newFill(category.rowCount(), 1);
+            numeric = Numeric.fill(category.rowCount(), 1);
         }
         if (!numeric.type().isNumeric()) {
             throw new IllegalArgumentException("Numeric var must be .. isNumeric");

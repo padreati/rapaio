@@ -61,8 +61,8 @@ public class LinearSanboxTest {
 //        ep2.values().printSummary();
 //        ep2.vectors().printSummary();
 
-            Var x1 = Numeric.newWrap(ep.values().valueStream().toArray());
-            Var x2 = Numeric.newWrap(ep2.values().valueStream().toArray());
+            Var x1 = Numeric.wrap(ep.values().valueStream().toArray());
+            Var x2 = Numeric.wrap(ep2.values().valueStream().toArray());
 
             x1 = new VFRefSort(x1.refComparator()).fitApply(x1);
             x2 = new VFRefSort(x2.refComparator()).fitApply(x2);

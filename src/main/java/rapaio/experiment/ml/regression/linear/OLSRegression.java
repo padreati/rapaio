@@ -84,8 +84,8 @@ public class OLSRegression extends AbstractRegression {
         if (targetNames().length == 0) {
             throw new IllegalArgumentException("OLS must specify at least one target variable name");
         }
-        RM X = SolidRM.copyOf(df.mapVars(inputNames()));
-        RM Y = SolidRM.copyOf(df.mapVars(targetNames()));
+        RM X = SolidRM.copy(df.mapVars(inputNames()));
+        RM Y = SolidRM.copy(df.mapVars(targetNames()));
         beta = new QR(X).solve(Y);
         return true;
     }

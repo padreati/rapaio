@@ -142,7 +142,7 @@ public class ROC implements Printable, Serializable {
                 len++;
             }
         }
-        data = SolidFrame.newMatrix(len, threshold, fpr, tpr, acc);
+        data = SolidFrame.matrix(len, threshold, fpr, tpr, acc);
         prev = Double.POSITIVE_INFINITY;
         int pos = 0;
 

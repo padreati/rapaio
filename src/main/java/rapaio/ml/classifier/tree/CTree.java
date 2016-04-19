@@ -344,7 +344,7 @@ public class CTree extends AbstractClassifier {
         }
 
         String[] dict = tree.firstTargetLevels();
-        DVector dv = DVector.newEmpty(false, dict);
+        DVector dv = DVector.empty(false, dict);
         double w = 0.0;
         for (CTreeNode child : node.getChildren()) {
             DVector d = this.fitPoint(tree, spot, child)._2;

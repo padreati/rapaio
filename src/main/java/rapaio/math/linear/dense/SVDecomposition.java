@@ -24,7 +24,6 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
 
 import static java.lang.StrictMath.hypot;
@@ -459,7 +458,7 @@ public class SVDecomposition implements java.io.Serializable {
     }
 
     public RM getU() {
-        return SolidRM.copyOf(U, 0, m, 0, Math.min(m + 1, n));
+        return SolidRM.copy(U, 0, m, 0, Math.min(m + 1, n));
     }
 
     /**
@@ -468,7 +467,7 @@ public class SVDecomposition implements java.io.Serializable {
      * @return RV
      */
     public RM getV() {
-        return SolidRM.copyOf(V);
+        return SolidRM.copy(V);
     }
 
     /**

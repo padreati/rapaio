@@ -311,7 +311,7 @@ public class RTree extends AbstractRegression implements BTRegression {
         }
 
         public void learn(RTree tree, Frame df, Var weights, int depth) {
-            value = new WeightedMean(df.var(tree.firstTargetName()), weights).value();
+            value = WeightedMean.from(df.var(tree.firstTargetName()), weights).value();
             weight = weights.stream().complete().mapToDouble().sum();
             if (weight == 0) {
 //                WS.println("ERROR");

@@ -51,13 +51,13 @@ public class VFImputeWithRegression extends AbstractVF {
     public void fit(Var... vars) {
         if (model.hasLearned())
             return;
-        Frame all = BoundFrame.newByVars(vars).mapVars(inputRange);
+        Frame all = BoundFrame.byVars(vars).mapVars(inputRange);
         Frame complete = all.stream().filter(s -> !s.missing(target)).toMappedFrame();
         model = model.newInstance().train(complete, target);
     }
 
     @Override
     public Var apply(Var... vars) {
-        return model.fit(BoundFrame.newByVars(vars).mapVars(inputRange)).firstFit().withName(target);
+        return model.fit(BoundFrame.byVars(vars).mapVars(inputRange)).firstFit().withName(target);
     }
 }

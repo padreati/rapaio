@@ -292,6 +292,6 @@ public class FSpots implements Stream<FSpot>, Serializable {
      * @return mapped frame with spots from the stream
      */
     public Frame toMappedFrame() {
-        return MappedFrame.newByRow(source, collectMapping());
+        return MappedFrame.byRow(source, collectMapping());
     }
 }

@@ -372,6 +372,6 @@ public final class SamplingTools {
     }
 
     public static Frame randomBootstrap(Frame frame, double percent) {
-        return MappedFrame.newByRow(frame, Mapping.copy(SamplingTools.sampleWR(frame.rowCount(), (int) (percent * frame.rowCount()))));
+        return MappedFrame.byRow(frame, Mapping.copy(SamplingTools.sampleWR(frame.rowCount(), (int) (percent * frame.rowCount()))));
     }
 }

@@ -43,7 +43,7 @@ public class FFAddIntercept extends AbstractFF {
 
     public static String INTERCEPT = "(Intercept)";
 
-    public static FFAddIntercept newFilter() {
+    public static FFAddIntercept filter() {
         return new FFAddIntercept();
     }
 
@@ -65,7 +65,7 @@ public class FFAddIntercept extends AbstractFF {
         if (names.contains(INTERCEPT)) {
             return df;
         }
-        Numeric intercept = Numeric.newFill(df.rowCount(), 1.0).withName(INTERCEPT);
-        return SolidFrame.newByVars(intercept).bindVars(df);
+        Numeric intercept = Numeric.fill(df.rowCount(), 1.0).withName(INTERCEPT);
+        return SolidFrame.byVars(intercept).bindVars(df);
     }
 }

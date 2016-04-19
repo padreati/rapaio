@@ -133,7 +133,7 @@ public interface CTreePurityFunction extends Tagged, Serializable {
 
         @Override
         public double compute(DTable dt) {
-            return 1 - ChiSquareTest.independence(dt).pValue();
+            return 1 - ChiSquareTest.independenceTest(dt).pValue();
         }
 
         @Override

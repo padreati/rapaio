@@ -49,6 +49,152 @@ import java.util.stream.Collector;
  */
 public final class Numeric extends AbstractVar {
 
+    /**
+     * @return new empty numeric variable of size 0
+     */
+    public static Numeric empty() {
+        return new Numeric(0, 0, Double.NaN);
+    }
+
+    /**
+     * Builds an empty numeric var wil all values set missing
+     *
+     * @param rows size of the variable
+     * @return new instance of numeric var
+     */
+    public static Numeric empty(int rows) {
+        return new Numeric(rows, rows, Double.NaN);
+    }
+
+    /**
+     * Builds a numeric variable with values copied from given collection
+     *
+     * @param values given values
+     * @return new instance of numeric variable
+     */
+    public static Numeric copy(Collection<? extends Number> values) {
+        final Numeric numeric = new Numeric(0, 0, Double.NaN);
+        values.forEach(n -> numeric.addValue(n.doubleValue()));
+        return numeric;
+    }
+
+    /**
+     * Builds a numeric variable with values copied from given array of integer values
+     *
+     * @param values given numeric values
+     * @return new instance of numeric variable
+     */
+    public static Numeric copy(int... values) {
+        Numeric numeric = new Numeric(0, 0, 0);
+        numeric.data = new double[values.length];
+        for (int i = 0; i < values.length; i++) {
+            numeric.data[i] = values[i];
+        }
+        numeric.rows = values.length;
+        return numeric;
+    }
+
+    /**
+     * Builds new instance of numeric var with values copied from given array of doubles
+     *
+     * @param values given numeric values
+     * @return new instance of numeric variable
+     */
+    public static Numeric copy(double... values) {
+        Numeric numeric = new Numeric(values.length, values.length, 0);
+        numeric.data = Arrays.copyOf(values, values.length);
+        return numeric;
+    }
+
+    /**
+     * Builds new numeric variable with values copied from another numeric variable
+     *
+     * @param source source numeric var
+     * @return new instance of numeric variable
+     */
+    public static Numeric copy(Var source) {
+        Numeric numeric = new Numeric(source.rowCount(), source.rowCount(), 0).withName(source.name());
+        if (!(source instanceof Numeric)) {
+            for (int i = 0; i < source.rowCount(); i++) {
+                numeric.setValue(i, source.value(i));
+            }
+        } else {
+            numeric.data = Arrays.copyOf(((Numeric) source).data, source.rowCount());
+        }
+        return numeric;
+    }
+
+    /**
+     * Builds new numeric variable as a wrapper around an array of doubles
+     *
+     * @param values wrapped array of doubles
+     * @return new instance of numeric variable
+     */
+    public static Numeric wrap(double... values) {
+        Numeric numeric = new Numeric(0, 0, 0);
+        numeric.data = values;
+        numeric.rows = values.length;
+        return numeric;
+    }
+
+    /**
+     * Builds new numeric variable filled with 0
+     *
+     * @param rows size of the variable
+     * @return new instance of numeric variable of given size and filled with 0
+     */
+    public static Numeric fill(int rows) {
+        return new Numeric(rows, rows, 0);
+    }
+
+    /**
+     * Builds new numeric variable filled with given fill value
+     *
+     * @param rows size of the variable
+     * @param fill fill value used to set all the values
+     * @return new instance of numeric variable of given size and filled with given value
+     */
+    public static Numeric fill(int rows, double fill) {
+        return new Numeric(rows, rows, fill);
+    }
+
+    /**
+     * Builds a numeric variable of size 1 filled with given value
+     *
+     * @param value fill value
+     * @return new instance of numeric variable of size 1 and filled with given fill value
+     */
+    public static Numeric scalar(double value) {
+        return new Numeric(1, 1, value);
+    }
+
+    public static Numeric seq(double end) {
+        return seq(0, end);
+    }
+
+    public static Numeric seq(double start, double end) {
+        return seq(start, end, 1.0);
+    }
+
+    public static Numeric seq(double start, double end, double step) {
+        Numeric num = Numeric.empty();
+        while (start <= end || Math.abs(end - start) < 1e-10) {
+            num.addValue(start);
+            start += step;
+        }
+        return num;
+    }
+
+    public static Numeric from(int rows, Supplier<Double> supplier) {
+        Numeric numeric = new Numeric(0, 0, 0);
+        numeric.data = new double[rows];
+        numeric.rows = rows;
+        for (int i = 0; i < rows; i++) {
+            numeric.data[i] = supplier.get();
+        }
+        return numeric;
+    }
+
     private static final long serialVersionUID = -3167416341273129670L;
 
     private static final double missingValue = Double.NaN;
@@ -67,155 +213,10 @@ public final class Numeric extends AbstractVar {
             Arrays.fill(data, 0, rows, fill);
     }
 
-    /**
-     * @return new empty numeric variable of size 0
-     */
-    public static Numeric newEmpty() {
-        return new Numeric(0, 0, Double.NaN);
-    }
-
-    /**
-     * Builds an empty numeric var wil all values set missing
-     *
-     * @param rows size of the variable
-     * @return new instance of numeric var
-     */
-    public static Numeric newEmpty(int rows) {
-        return new Numeric(rows, rows, Double.NaN);
-    }
-
-    /**
-     * Builds a numeric variable with values copied from given collection
-     *
-     * @param values given values
-     * @return new instance of numeric variable
-     */
-    public static Numeric newCopy(Collection<? extends Number> values) {
-        final Numeric numeric = new Numeric(0, 0, Double.NaN);
-        values.forEach(n -> numeric.addValue(n.doubleValue()));
-        return numeric;
-    }
-
-    /**
-     * Builds a numeric variable with values copied from given array of integer values
-     *
-     * @param values given numeric values
-     * @return new instance of numeric variable
-     */
-    public static Numeric newCopy(int... values) {
-        Numeric numeric = new Numeric(0, 0, 0);
-        numeric.data = new double[values.length];
-        for (int i = 0; i < values.length; i++) {
-            numeric.data[i] = values[i];
-        }
-        numeric.rows = values.length;
-        return numeric;
-    }
-
-    /**
-     * Builds new instance of numeric var with values copied from given array of doubles
-     *
-     * @param values given numeric values
-     * @return new instance of numeric variable
-     */
-    public static Numeric newCopy(double... values) {
-        Numeric numeric = new Numeric(values.length, values.length, 0);
-        numeric.data = Arrays.copyOf(values, values.length);
-        return numeric;
-    }
-
-    /**
-     * Builds new numeric variable with values copied from another numeric variable
-     *
-     * @param source source numeric var
-     * @return new instance of numeric variable
-     */
-    public static Numeric newCopy(Var source) {
-        Numeric numeric = new Numeric(source.rowCount(), source.rowCount(), 0).withName(source.name());
-        if (!(source instanceof Numeric)) {
-            for (int i = 0; i < source.rowCount(); i++) {
-                numeric.setValue(i, source.value(i));
-            }
-        } else {
-            numeric.data = Arrays.copyOf(((Numeric) source).data, source.rowCount());
-        }
-        return numeric;
-    }
-
-    /**
-     * Builds new numeric variable as a wrapper around an array of doubles
-     *
-     * @param values wrapped array of doubles
-     * @return new instance of numeric variable
-     */
-    public static Numeric newWrap(double... values) {
-        Numeric numeric = new Numeric(0, 0, 0);
-        numeric.data = values;
-        numeric.rows = values.length;
-        return numeric;
-    }
-
-    /**
-     * Builds new numeric variable filled with 0
-     *
-     * @param rows size of the variable
-     * @return new instance of numeric variable of given size and filled with 0
-     */
-    public static Numeric newFill(int rows) {
-        return new Numeric(rows, rows, 0);
-    }
-
-    /**
-     * Builds new numeric variable filled with given fill value
-     *
-     * @param rows size of the variable
-     * @param fill fill value used to set all the values
-     * @return new instance of numeric variable of given size and filled with given value
-     */
-    public static Numeric newFill(int rows, double fill) {
-        return new Numeric(rows, rows, fill);
-    }
-
-    /**
-     * Builds a numeric variable of size 1 filled with given value
-     *
-     * @param value fill value
-     * @return new instance of numeric variable of size 1 and filled with given fill value
-     */
-    public static Numeric newScalar(double value) {
-        return new Numeric(1, 1, value);
-    }
-
-    public static Numeric newSeq(double end) {
-        return newSeq(0, end);
-    }
-
-    public static Numeric newSeq(double start, double end) {
-        return newSeq(start, end, 1.0);
-    }
-
-    public static Numeric newSeq(double start, double end, double step) {
-        Numeric num = Numeric.newEmpty();
-        while (start <= end || Math.abs(end - start) < 1e-10) {
-            num.addValue(start);
-            start += step;
-        }
-        return num;
-    }
-
-    public static Numeric newFrom(int rows, Supplier<Double> supplier) {
-        Numeric numeric = new Numeric(0, 0, 0);
-        numeric.data = new double[rows];
-        numeric.rows = rows;
-        for (int i = 0; i < rows; i++) {
-            numeric.data[i] = supplier.get();
-        }
-        return numeric;
-    }
 
     // stream collectors
 
-    public static Numeric newFrom(int rows, Function<Integer, Double> supplierFromRow) {
+    public static Numeric from(int rows, Function<Integer, Double> supplierFromRow) {
         Numeric numeric = new Numeric(0, 0, 0);
         numeric.data = new double[rows];
         numeric.rows = rows;
@@ -232,7 +233,7 @@ public final class Numeric extends AbstractVar {
         return new Collector<Double, Numeric, Numeric>() {
             @Override
             public Supplier<Numeric> supplier() {
-                return Numeric::newEmpty;
+                return Numeric::empty;
             }
 
             @Override
@@ -425,7 +426,7 @@ public final class Numeric extends AbstractVar {
 
     @Override
     public Var newInstance(int rows) {
-        return Numeric.newEmpty(rows);
+        return Numeric.empty(rows);
     }
 
     @Override

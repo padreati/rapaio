@@ -77,6 +77,6 @@ public class FFQuantileDiscrete extends AbstractFF {
                 vars[pos++] = df.var(varName);
             }
         }
-        return BoundFrame.newByVars(vars);
+        return BoundFrame.byVars(vars);
     }
 }

@@ -40,6 +40,28 @@ import java.util.stream.Collectors;
  */
 public class MappedVar extends AbstractVar {
 
+    /**
+     * Builds a mapped variable specifying selected positions through a mapping
+     *
+     * @param source  wrapped variable
+     * @param mapping mapping of indexed values
+     * @return mapped variable
+     */
+    public static MappedVar byRows(Var source, Mapping mapping) {
+        return new MappedVar(source, mapping);
+    }
+
+    /**
+     * Build a mapped variable specifying the selected positions through a variable array
+     *
+     * @param source wrapped variable
+     * @param rows   variable array of indexed values
+     * @return mapped variable
+     */
+    public static MappedVar byRows(Var source, int... rows) {
+        return new MappedVar(source, Mapping.copy(rows));
+    }
+
     private static final long serialVersionUID = -2293127457462742840L;
     private final Var source;
     private final Mapping mapping;
@@ -53,28 +75,6 @@ public class MappedVar extends AbstractVar {
             this.mapping = mapping;
             this.source = var;
         }
-    }
-
-    /**
-     * Builds a mapped variable specifying selected positions through a mapping
-     *
-     * @param source  wrapped variable
-     * @param mapping mapping of indexed values
-     * @return mapped variable
-     */
-    public static MappedVar newByRows(Var source, Mapping mapping) {
-        return new MappedVar(source, mapping);
-    }
-
-    /**
-     * Build a mapped variable specifying the selected positions through a variable array
-     *
-     * @param source wrapped variable
-     * @param rows   variable array of indexed values
-     * @return mapped variable
-     */
-    public static MappedVar newByRows(Var source, int... rows) {
-        return new MappedVar(source, Mapping.copy(rows));
     }
 
     @Override

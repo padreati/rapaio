@@ -66,8 +66,8 @@ public class RFit implements Printable {
         this.rss = new HashMap<>();
         this.rsquare = new HashMap<>();
         for (String targetName : model.targetNames()) {
-            fit.put(targetName, Numeric.newEmpty(df.rowCount()).withName(targetName));
-            residuals.put(targetName, Numeric.newEmpty(df.rowCount()).withName(targetName + "-residual"));
+            fit.put(targetName, Numeric.empty(df.rowCount()).withName(targetName));
+            residuals.put(targetName, Numeric.empty(df.rowCount()).withName(targetName + "-residual"));
             tss.put(targetName, Double.NaN);
             ess.put(targetName, Double.NaN);
             rss.put(targetName, Double.NaN);
@@ -122,7 +122,7 @@ public class RFit implements Printable {
      * @return frame with fitted variables as columns
      */
     public Frame fitFrame() {
-        return SolidFrame.newByVars(Arrays.stream(targetNames()).map(fit::get).collect(Collectors.toList()));
+        return SolidFrame.byVars(Arrays.stream(targetNames()).map(fit::get).collect(Collectors.toList()));
     }
 
     /**
@@ -149,7 +149,7 @@ public class RFit implements Printable {
     }
 
     public Frame residualsFrame() {
-        return SolidFrame.newByVars(Arrays.stream(targetNames()).map(residuals::get).collect(Collectors.toList()));
+        return SolidFrame.byVars(Arrays.stream(targetNames()).map(residuals::get).collect(Collectors.toList()));
     }
 
     public Numeric firstResidual() {
@@ -256,7 +256,7 @@ public class RFit implements Printable {
             sb.append("======================")
                     .append(String.join("", nCopies(target.length(), "="))).append("\n");
 
-            String fullSummary = SolidFrame.newByVars(fit(target), residual(target)).summary();
+            String fullSummary = SolidFrame.byVars(fit(target), residual(target)).summary();
             List<String> list = Arrays.stream(fullSummary.split("\n")).skip(8).collect(Collectors.toList());
             int pos = 0;
             for (String line : list) {

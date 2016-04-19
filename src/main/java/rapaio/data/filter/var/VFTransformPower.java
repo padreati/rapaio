@@ -44,7 +44,7 @@ public class VFTransformPower extends AbstractVF {
     @Override
     public void fit(Var... vars) {
         checkSingleVar(vars);
-        GeometricMean mygm = new GeometricMean(vars[0]);
+        GeometricMean mygm = GeometricMean.from(vars[0]);
         if (mygm.isDefined()) {
             gm = mygm.value();
         } else {

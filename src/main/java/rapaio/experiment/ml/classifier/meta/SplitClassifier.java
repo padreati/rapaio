@@ -129,7 +129,7 @@ public class SplitClassifier extends AbstractClassifier implements Printable {
             for (Split split : splits) {
                 if (split.predicate.test(spot)) {
 
-                    Frame f = MappedFrame.newByRow(df, spot.row());
+                    Frame f = MappedFrame.byRow(df, spot.row());
                     CFit p = split.classifier.fit(f, withClasses, withDensities);
 
                     if (withClasses) {

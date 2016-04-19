@@ -38,13 +38,13 @@ public class MatrixMultiplicationTest {
     @Test
     public void basicTestMM() {
 
-        RM A = SolidRM.copyOf(3, 4,
+        RM A = SolidRM.copy(3, 4,
                 2.3, 1.2, 1, 7,
                 19, 0, -1, 2,
                 2, 3, 4, 5
         );
 
-        RM B = SolidRM.copyOf(4, 5,
+        RM B = SolidRM.copy(4, 5,
                 1, 2, 3, 4, 5,
                 1.1, 12, 23, 4, 15,
                 1.2, 2.2, 23, 4, 5,

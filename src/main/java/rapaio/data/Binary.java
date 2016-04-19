@@ -38,34 +38,12 @@ import java.util.function.Function;
  */
 public final class Binary extends AbstractVar {
 
-    private static final long serialVersionUID = -4977697633437126744L;
-    private int rows;
-    private BitSet missing;
-    private BitSet values;
-
-    /**
-     * Private constructor to avoid instantiation from outside, other than statical builders.
-     */
-    private Binary(final int rows, final boolean fillMissing, final boolean fillValue) {
-        this.rows = rows;
-        this.missing = new BitSet(rows);
-        this.values = new BitSet(rows);
-        if (fillMissing)
-            this.missing.flip(0, rows);
-        else if (fillValue)
-            this.values.flip(0, rows);
-    }
-
-    /**
-     * Static builders
-     */
-
     /**
      * Builds an empty binary var
      *
      * @return new instance of binary var
      */
-    public static Binary newEmpty() {
+    public static Binary empty() {
         return new Binary(0, false, false);
     }
 
@@ -75,7 +53,7 @@ public final class Binary extends AbstractVar {
      * @param rows size of variable
      * @return new instance of binary var
      */
-    public static Binary newEmpty(int rows) {
+    public static Binary empty(int rows) {
         return new Binary(rows, true, false);
     }
 
@@ -86,7 +64,7 @@ public final class Binary extends AbstractVar {
      * @param fillValue fill value
      * @return new instance of binary var
      */
-    public static Binary newFill(int rows, boolean fillValue) {
+    public static Binary fill(int rows, boolean fillValue) {
         return new Binary(rows, false, fillValue);
     }
 
@@ -139,6 +117,25 @@ public final class Binary extends AbstractVar {
             data[i] = supplier.apply(i);
         }
         return Binary.copy(data);
+    }
+
+
+    private static final long serialVersionUID = -4977697633437126744L;
+    private int rows;
+    private BitSet missing;
+    private BitSet values;
+
+    /**
+     * Private constructor to avoid instantiation from outside, other than statical builders.
+     */
+    private Binary(final int rows, final boolean fillMissing, final boolean fillValue) {
+        this.rows = rows;
+        this.missing = new BitSet(rows);
+        this.values = new BitSet(rows);
+        if (fillMissing)
+            this.missing.flip(0, rows);
+        else if (fillValue)
+            this.values.flip(0, rows);
     }
 
     @Override
@@ -406,7 +403,7 @@ public final class Binary extends AbstractVar {
 
     @Override
     public Var newInstance(int rows) {
-        return Binary.newEmpty(rows).withName(name());
+        return Binary.empty(rows).withName(name());
     }
 
     @Override

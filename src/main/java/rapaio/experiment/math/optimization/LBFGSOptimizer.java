@@ -330,7 +330,7 @@ class LBFGS {
         if (iflag[0] == 0) {
             // Initialize.
 
-            solution_cache = SolidRV.copyOf(x);
+            solution_cache = SolidRV.copy(x);
 
             iter = 0;
 

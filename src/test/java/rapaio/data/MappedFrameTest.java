@@ -50,32 +50,32 @@ public class MappedFrameTest {
 
     @Test
     public void testBuilders() {
-        Frame df = SolidFrame.newByVars(
-                Numeric.newWrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x"),
+        Frame df = SolidFrame.byVars(
+                Numeric.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x"),
                 Index.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("y")
         );
 
-        Frame mapped = MappedFrame.newByRow(df, 0, 2, 4, 6, 8);
+        Frame mapped = MappedFrame.byRow(df, 0, 2, 4, 6, 8);
         assertEquals(5, mapped.rowCount());
         assertEquals(2, mapped.varCount());
         assertEquals(1, mapped.value(0, "x"), 1e-12);
         assertEquals(9, mapped.value(4, "x"), 1e-12);
 
-        mapped = MappedFrame.newByRow(df, Mapping.range(0, 10), "x,y");
+        mapped = MappedFrame.byRow(df, Mapping.range(0, 10), "x,y");
         assertEquals(2, mapped.varCount());
         assertEquals(10, mapped.rowCount());
 
-        mapped = MappedFrame.newByRow(df, Mapping.range(0, 10), "x");
+        mapped = MappedFrame.byRow(df, Mapping.range(0, 10), "x");
         assertEquals(1, mapped.varCount());
         assertEquals(10, mapped.rowCount());
     }
 
     @Test
     public void testMapAndBound() {
-        Var x = Numeric.newWrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x");
+        Var x = Numeric.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("x");
         Var y = Index.wrap(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).withName("y");
-        Var z = Numeric.newWrap(1 / 1., 1 / 2., 1 / 3., 1 / 4., 1 / 5., 1 / 6., 1 / 7., 1 / 8., 1 / 9., 1 / 10.).withName("z");
-        Frame df1 = SolidFrame.newByVars(x, y, z);
+        Var z = Numeric.wrap(1 / 1., 1 / 2., 1 / 3., 1 / 4., 1 / 5., 1 / 6., 1 / 7., 1 / 8., 1 / 9., 1 / 10.).withName("z");
+        Frame df1 = SolidFrame.byVars(x, y, z);
 
         Frame a = df1
                 .mapRows(Mapping.range(0, 10))
@@ -118,7 +118,7 @@ public class MappedFrameTest {
             }
         }
 
-        df2 = MappedFrame.newByRow(df1, Mapping.range(0, 10)).mapVars("x");
+        df2 = MappedFrame.byRow(df1, Mapping.range(0, 10)).mapVars("x");
         df2 = df2.bindVars(y, z);
 
         assertEquals(df1.rowCount(), df2.rowCount());

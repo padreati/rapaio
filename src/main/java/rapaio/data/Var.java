@@ -77,7 +77,7 @@ public interface Var extends Serializable, Printable {
      * @return new var with all union of rows
      */
     default Var bindRows(Var var) {
-        return BoundVar.newFrom(this, var);
+        return BoundVar.from(this, var);
     }
 
     /**
@@ -87,7 +87,7 @@ public interface Var extends Serializable, Printable {
      * @return new frame with selected rows
      */
     default Var mapRows(Mapping mapping) {
-        return MappedVar.newByRows(this, mapping);
+        return MappedVar.byRows(this, mapping);
     }
 
     /**

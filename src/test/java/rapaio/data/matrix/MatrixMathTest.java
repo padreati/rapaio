@@ -26,7 +26,6 @@ package rapaio.data.matrix;
 
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.math.linear.Linear;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.LUDecomposition;
 import rapaio.math.linear.dense.QR;
@@ -44,22 +43,22 @@ public class MatrixMathTest {
 
     @Before
     public void setUp() throws Exception {
-        A = SolidRM.copyOf(2, 3,
+        A = SolidRM.copy(2, 3,
                 1, 3, 1,
                 1, 0, 0);
-        B = SolidRM.copyOf(2, 3,
+        B = SolidRM.copy(2, 3,
                 0, 0, 5,
                 7, 5, 0);
 
-        At = SolidRM.copyOf(3, 2,
+        At = SolidRM.copy(3, 2,
                 1, 1,
                 3, 0,
                 1, 0);
-        Bt = SolidRM.copyOf(3, 2,
+        Bt = SolidRM.copy(3, 2,
                 0, 7,
                 0, 5,
                 5, 0);
-        C = SolidRM.copyOf(3, 3,
+        C = SolidRM.copy(3, 3,
                 1, 2, 3,
                 4, 3, 0,
                 5, 2, 9);

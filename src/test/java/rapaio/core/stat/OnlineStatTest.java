@@ -48,12 +48,12 @@ public class OnlineStatTest {
         int LEN = 1_000;
         Var v = new Normal(0, 1).sample(LEN);
 
-        OnlineStat onlineStat = new OnlineStat();
+        OnlineStat onlineStat = OnlineStat.empty();
 
         Var index = Index.seq(LEN);
-        Var varLeft = Numeric.newFill(LEN);
-        Var varRight = Numeric.newFill(LEN);
-        Var varSum = Numeric.newFill(LEN);
+        Var varLeft = Numeric.fill(LEN);
+        Var varRight = Numeric.fill(LEN);
+        Var varSum = Numeric.fill(LEN);
 
         for (int i = 0; i < LEN; i++) {
             onlineStat.update(v.value(i));
@@ -75,15 +75,15 @@ public class OnlineStatTest {
 
     @Test
     public void testParallelStat() {
-        Var a = Numeric.newWrap(1, 2, 3, 13, 17, 30);
-        Var b = Numeric.newWrap(44, 5, 234, 12, 33, 1);
+        Var a = Numeric.wrap(1, 2, 3, 13, 17, 30);
+        Var b = Numeric.wrap(44, 5, 234, 12, 33, 1);
         Var ab = a.bindRows(b);
-        OnlineStat soA = new OnlineStat();
-        OnlineStat soB = new OnlineStat();
+        OnlineStat soA = OnlineStat.empty();
+        OnlineStat soB = OnlineStat.empty();
         a.stream().forEach(s -> soA.update(s.value()));
         b.stream().forEach(s -> soB.update(s.value()));
 
-        OnlineStat soAll = new OnlineStat();
+        OnlineStat soAll = OnlineStat.empty();
         soAll.update(soA);
         soAll.update(soB);
 
@@ -94,28 +94,5 @@ public class OnlineStatTest {
 
         Assert.assertEquals(soA.variance(), soAll.variance(), 1e-12);
         Assert.assertEquals(soA.mean(), soAll.mean(), 1e-30);
-    }
-
-    @Test
-    public void testWeightedStat() {
-
-        Var a = Numeric.newWrap(1, 1, 2, 2, 2, 3, 3, 3, 3, 4);
-        OnlineStat so1 = new OnlineStat();
-
-        a.stream().forEach(s -> so1.update(s.value()));
-
-        assertEquals(2.4, so1.mean(), 10e-12);
-        assertEquals(0.9333333333333331, so1.variance(), 10e-12);
-
-        WeightedOnlineStat so2 = new WeightedOnlineStat();
-        so2.update(1, 1.5);
-        so2.update(2, 3);
-        so2.update(3, 4);
-        so2.update(4, 0.88);
-        so2.update(1, 0.5);
-        so2.update(4, 0.12);
-
-        assertEquals("mean", 2.4, so2.mean(), 10e-12);
-
     }
 }

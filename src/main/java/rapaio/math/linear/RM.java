@@ -178,23 +178,23 @@ public interface RM extends Serializable, Printable {
     }
 
     default Mean mean() {
-        Numeric values = Numeric.newEmpty();
+        Numeric values = Numeric.empty();
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 values.addValue(get(i, j));
             }
         }
-        return new Mean(values);
+        return Mean.from(values);
     }
 
     default Variance var() {
-        Numeric values = Numeric.newEmpty();
+        Numeric values = Numeric.empty();
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
                 values.addValue(get(i, j));
             }
         }
-        return new Variance(values);
+        return Variance.from(values);
     }
 
     /**

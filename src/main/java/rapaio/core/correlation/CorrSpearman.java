@@ -31,8 +31,7 @@ import rapaio.printer.Printable;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
-import static rapaio.sys.WS.formatFlex;
-import static rapaio.sys.WS.getPrinter;
+import static rapaio.sys.WS.*;
 
 /**
  * Spearman's rank correlation coefficient.
@@ -45,21 +44,29 @@ import static rapaio.sys.WS.getPrinter;
  */
 public class CorrSpearman implements Printable {
 
+    public static CorrSpearman from(Frame df) {
+        return new CorrSpearman(df);
+    }
+
+    public static CorrSpearman from(Var... vars) {
+        return new CorrSpearman(vars);
+    }
+
     private final String[] names;
     private final Var[] vars;
     private final double[][] rho;
 
-    public CorrSpearman(Var... vars) {
+    private CorrSpearman(Var... vars) {
 
         int rowCount = Integer.MAX_VALUE;
-        for (int i = 0; i < vars.length; i++) {
-            rowCount = Math.min(vars[i].rowCount(), rowCount);
+        for (Var var : vars) {
+            rowCount = Math.min(var.rowCount(), rowCount);
         }
 
         Mapping map = Mapping.copy(IntStream.range(0, rowCount)
                 .filter(row -> {
-                    for (int i = 0; i < vars.length; i++) {
-                        if (vars[i].missing(row))
+                    for (Var var : vars) {
+                        if (var.missing(row))
                             return false;
                     }
                     return true;
@@ -77,7 +84,7 @@ public class CorrSpearman implements Printable {
         this.rho = compute();
     }
 
-    public CorrSpearman(Frame df) {
+    private CorrSpearman(Frame df) {
 
         Mapping map = Mapping.copy(IntStream.range(0, df.rowCount())
                 .filter(row -> !df.missing(row))
@@ -100,7 +107,7 @@ public class CorrSpearman implements Printable {
                 index.addIndex(j);
             }
             sorted[i] = new VFRefSort(RowComparators.numeric(vars[i], true)).fitApply(index);
-            ranks[i] = Numeric.newFill(vars[i].rowCount());
+            ranks[i] = Numeric.fill(vars[i].rowCount());
         }
 
         // compute ranks
@@ -120,7 +127,7 @@ public class CorrSpearman implements Printable {
         }
 
         // compute Pearson on ranks
-        return new CorrPearson(ranks).values();
+        return CorrPearson.from(ranks).values();
     }
 
     public double[][] values() {
@@ -201,7 +208,7 @@ public class CorrSpearman implements Printable {
     }
 
     public double singleValue() {
-        if(names.length==1)
+        if (names.length == 1)
             return 1;
         return rho[0][1];
     }

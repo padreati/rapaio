@@ -56,10 +56,10 @@ public class VFStandardize extends AbstractVF {
         checkSingleVar(vars);
 
         if (Double.isNaN(mean)) {
-            mean = new Mean(vars[0]).value();
+            mean = Mean.from(vars[0]).value();
         }
         if (Double.isNaN(sd)) {
-            sd = new Variance(vars[0]).sdValue();
+            sd = Variance.from(vars[0]).sdValue();
         }
     }
 

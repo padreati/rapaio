@@ -259,7 +259,7 @@ public class IndexTest {
     public void testSolidCopy() {
 
         Index x1 = Index.copy(1, 2, 3, 4, 5);
-        Var x2 = MappedVar.newByRows(x1, 0, 1, 2);
+        Var x2 = MappedVar.byRows(x1, 0, 1, 2);
         Var x3 = x2.solidCopy();
         Var x4 = x3.solidCopy();
         x4.addValue(8);

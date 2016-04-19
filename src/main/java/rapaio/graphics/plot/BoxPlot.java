@@ -61,7 +61,7 @@ public class BoxPlot extends HostFigure {
 
         Map<String, List<Double>> map = x.stream().collect(groupingBy(s -> factor.label(s.row()), mapping(VSpot::value, toList())));
         names = factor.streamLevels().filter(map::containsKey).toArray(String[]::new);
-        vars = Arrays.stream(names).map(map::get).map(Numeric::newCopy).toArray(Var[]::new);
+        vars = Arrays.stream(names).map(map::get).map(Numeric::copy).toArray(Var[]::new);
 
         this.options.apply(opts);
         initialize();
@@ -139,7 +139,7 @@ public class BoxPlot extends HostFigure {
                 continue;
             }
             double[] p = new double[]{0.25, 0.5, 0.75};
-            double[] q = new Quantiles(v, p).values();
+            double[] q = Quantiles.from(v, p).values();
             double iqr = q[2] - q[0];
             double innerFence = 1.5 * iqr;
             double outerFence = 3 * iqr;

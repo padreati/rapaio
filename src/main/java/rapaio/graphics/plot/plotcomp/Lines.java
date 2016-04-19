@@ -44,7 +44,7 @@ public class Lines extends PlotComponent {
     private final Var y;
 
     public Lines(Var y, GOpt... opts) {
-        this(Numeric.newSeq(0, y.rowCount() - 1), y, opts);
+        this(Numeric.seq(0, y.rowCount() - 1), y, opts);
     }
 
     public Lines(Var x, Var y, GOpt... opts) {

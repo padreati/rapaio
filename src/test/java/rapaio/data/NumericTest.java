@@ -38,7 +38,7 @@ public class NumericTest {
 
     @Test
     public void smokeTest() {
-        Var v = Numeric.newEmpty();
+        Var v = Numeric.empty();
         boolean flag = v.type().isNumeric();
         assertEquals(true, flag);
         assertEquals(false, v.type().isNominal());
@@ -46,17 +46,17 @@ public class NumericTest {
         assertEquals(0, v.rowCount());
 
         try {
-            Numeric.newEmpty(-1);
+            Numeric.empty(-1);
             assertTrue("should raise an exception", false);
         } catch (Throwable ignored) {
         }
 
-        assertEquals("Numeric[name:?, rowCount:1]", Numeric.newEmpty(1).toString());
+        assertEquals("Numeric[name:?, rowCount:1]", Numeric.empty(1).toString());
     }
 
     @Test
     public void testGetterSetter() {
-        Var v = Numeric.newEmpty(10);
+        Var v = Numeric.empty(10);
         for (int i = 0; i < 10; i++) {
             v.setValue(i, Math.log(10 + i));
         }
@@ -105,22 +105,22 @@ public class NumericTest {
 
     @Test
     public void testOneNumeric() {
-        Var one = Numeric.newScalar(Math.PI);
+        Var one = Numeric.scalar(Math.PI);
 
         assertEquals(1, one.rowCount());
         assertEquals(Math.PI, one.value(0), 1e-10);
 
-        one = Numeric.newScalar(Math.E);
+        one = Numeric.scalar(Math.E);
         assertEquals(1, one.rowCount());
         assertEquals(Math.E, one.value(0), 1e-10);
     }
 
     @Test
     public void testWithName() {
-        Numeric x = Numeric.newCopy(1, 2, 3, 5).withName("X");
+        Numeric x = Numeric.copy(1, 2, 3, 5).withName("X");
         assertEquals("X", x.name());
 
-        Var y = MappedVar.newByRows(x, 1, 2);
+        Var y = MappedVar.byRows(x, 1, 2);
         assertEquals("X", y.name());
         y.withName("y");
         assertEquals("y", y.name());
@@ -138,10 +138,10 @@ public class NumericTest {
             doubleList.add(i + 1.0);
         }
 
-        Numeric x1 = Numeric.newCopy(1, 2, 3);
-        Numeric x2 = Numeric.newCopy(1.0, 2.0, 3.0);
-        Numeric x3 = Numeric.newCopy(intList);
-        Numeric x4 = Numeric.newCopy(doubleList);
+        Numeric x1 = Numeric.copy(1, 2, 3);
+        Numeric x2 = Numeric.copy(1.0, 2.0, 3.0);
+        Numeric x3 = Numeric.copy(intList);
+        Numeric x4 = Numeric.copy(doubleList);
 
         for (int i = 0; i < 3; i++) {
             assertEquals(x1.value(i), x2.value(i), 10e-10);
@@ -153,28 +153,28 @@ public class NumericTest {
         y1v[0] = 10;
         y1v[1] = 20;
         y1v[2] = 30;
-        Numeric y1 = Numeric.newWrap(y1v);
+        Numeric y1 = Numeric.wrap(y1v);
         y1v[1] = Double.NaN;
         y1v[2] = 100;
         for (int i = 0; i < 3; i++) {
             assertEquals(y1v[i], y1.value(i), 10e-10);
         }
 
-        Numeric y2 = Numeric.newCopy(x2);
+        Numeric y2 = Numeric.copy(x2);
         for (int i = 0; i < 3; i++) {
             assertEquals(x1.value(i), y2.value(i), 10e-10);
         }
 
-        Numeric y3 = Numeric.newCopy(1, 2, 3, 4, 5);
-        Var y4 = MappedVar.newByRows(y3, 3, 1, 2);
-        Var y5 = Numeric.newCopy(y4);
+        Numeric y3 = Numeric.copy(1, 2, 3, 4, 5);
+        Var y4 = MappedVar.byRows(y3, 3, 1, 2);
+        Var y5 = Numeric.copy(y4);
 
         for (int i = 0; i < 3; i++) {
             assertEquals(y4.value(i), y5.value(i), 10e-10);
         }
 
-        Numeric z1 = Numeric.newFill(10);
-        Numeric z2 = Numeric.newFill(10, Math.PI);
+        Numeric z1 = Numeric.fill(10);
+        Numeric z2 = Numeric.fill(10, Math.PI);
 
         for (int i = 0; i < 10; i++) {
             assertEquals(0, z1.value(i), 10e-10);
@@ -184,12 +184,12 @@ public class NumericTest {
 
     @Test
     public void testOtherValues() {
-        Numeric x = Numeric.newCopy(1, 2, 3, 4).withName("x");
+        Numeric x = Numeric.copy(1, 2, 3, 4).withName("x");
 
         x.addIndex(10);
         assertEquals(10, x.value(x.rowCount() - 1), 10e-10);
 
-        Numeric b = Numeric.newEmpty();
+        Numeric b = Numeric.empty();
         b.addBinary(true);
         b.addBinary(false);
 
@@ -203,7 +203,7 @@ public class NumericTest {
         assertEquals(1, b.value(1), 10e-10);
         assertEquals(true, b.binary(1));
 
-        Numeric s = Numeric.newEmpty();
+        Numeric s = Numeric.empty();
         s.addStamp(1);
         s.addStamp(-100000000000L);
         assertEquals(1L, s.stamp(0));
@@ -213,7 +213,7 @@ public class NumericTest {
         assertEquals(15, s.stamp(1));
 
 
-        Numeric mis = Numeric.newEmpty();
+        Numeric mis = Numeric.empty();
         mis.addMissing();
         mis.addValue(1);
         mis.addMissing();
@@ -228,7 +228,7 @@ public class NumericTest {
 
     @Test
     public void testClearRemove() {
-        Numeric x = Numeric.newCopy(1, 2, 3);
+        Numeric x = Numeric.copy(1, 2, 3);
         x.remove(1);
 
         assertEquals(1, x.index(0));

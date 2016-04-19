@@ -46,7 +46,7 @@ public class OneRuleTest {
     private final Var heightVar;
 
     public OneRuleTest() {
-        classVar = Nominal.newEmpty(SIZE, "False", "True").withName("class");
+        classVar = Nominal.empty(SIZE, "False", "True").withName("class");
         classVar.setLabel(0, "True");
         classVar.setLabel(1, "True");
         classVar.setLabel(2, "True");
@@ -54,12 +54,12 @@ public class OneRuleTest {
         classVar.setLabel(4, "False");
         classVar.setLabel(5, "False");
 
-        heightVar = Numeric.newCopy(0.1, 0.3, 0.5, 10, 10.3, 10.5).withName("height");
+        heightVar = Numeric.copy(0.1, 0.3, 0.5, 10, 10.3, 10.5).withName("height");
     }
 
     @Test
     public void testSimpleNumeric() {
-        Frame df = SolidFrame.newByVars(SIZE, heightVar, classVar);
+        Frame df = SolidFrame.byVars(SIZE, heightVar, classVar);
 
         String[] labels;
         OneRule oneRule = new OneRule();

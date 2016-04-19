@@ -39,7 +39,7 @@ public class BoundVarTest {
 
     @Test
     public void testBuildWrong() {
-        Numeric a = Numeric.newCopy(1, 2);
+        Numeric a = Numeric.copy(1, 2);
         Binary b = Binary.copy(true, false);
 
         try {
@@ -49,7 +49,7 @@ public class BoundVarTest {
         }
 
         try {
-            BoundVar.newFrom(new ArrayList<>(), new ArrayList<>());
+            BoundVar.from(new ArrayList<>(), new ArrayList<>());
             assertTrue("This should raise an exception", false);
         } catch (Throwable ignored) {
         }
@@ -57,7 +57,7 @@ public class BoundVarTest {
         try {
             List<Var> vars = new ArrayList<>();
             vars.add(a);
-            BoundVar.newFrom(new ArrayList<>(), vars);
+            BoundVar.from(new ArrayList<>(), vars);
             assertTrue("This should raise an exception", false);
         } catch (Throwable ignored) {
         }
@@ -68,7 +68,7 @@ public class BoundVarTest {
             List<Integer> counts = new ArrayList<>();
             counts.add(10);
             counts.add(1);
-            BoundVar.newFrom(counts, vars);
+            BoundVar.from(counts, vars);
             assertTrue("This should raise an exception", false);
         } catch (Throwable ignored) {
         }
@@ -76,14 +76,14 @@ public class BoundVarTest {
 
     @Test
     public void testBind() {
-        Numeric a = Numeric.newWrap(1, 2, 3);
-        Numeric b = Numeric.newWrap(4, 5);
-        Numeric c = Numeric.newWrap(6, 7, 8, 9);
-        Numeric d = Numeric.newEmpty(1);
-        Numeric e = Numeric.newWrap(Math.PI, Math.E);
+        Numeric a = Numeric.wrap(1, 2, 3);
+        Numeric b = Numeric.wrap(4, 5);
+        Numeric c = Numeric.wrap(6, 7, 8, 9);
+        Numeric d = Numeric.empty(1);
+        Numeric e = Numeric.wrap(Math.PI, Math.E);
 
-        Var x = BoundVar.newFrom(a, b);
-        Var y = BoundVar.newFrom(c, d);
+        Var x = BoundVar.from(a, b);
+        Var y = BoundVar.from(c, d);
         x = x.bindRows(y).bindRows(e);
 
         assertEquals(12, x.rowCount());
@@ -105,7 +105,7 @@ public class BoundVarTest {
         vars.add(c);
         vars.add(d);
         vars.add(e);
-        Var z = BoundVar.newFrom(vars);
+        Var z = BoundVar.from(vars);
 
         assertEquals(x.rowCount(), z.rowCount());
         for (int i = 0; i < x.rowCount(); i++) {
@@ -134,8 +134,8 @@ public class BoundVarTest {
 
     @Test
     public void testValueBound() {
-        Var a = Numeric.newWrap(1, 2);
-        Var b = Numeric.newWrap(3, 4);
+        Var a = Numeric.wrap(1, 2);
+        Var b = Numeric.wrap(3, 4);
 
         Var x = a.bindRows(b);
         x.setValue(0, 100);
@@ -200,8 +200,8 @@ public class BoundVarTest {
 
     @Test
     public void testNominalBound() {
-        Var a = Nominal.newCopy("a", "b", "a");
-        Var b = Nominal.newCopy("b", "a", "b");
+        Var a = Nominal.copy("a", "b", "a");
+        Var b = Nominal.copy("b", "a", "b");
 
         Var x = a.bindRows(b);
         x.setLabel(0, "b");
@@ -224,7 +224,7 @@ public class BoundVarTest {
         }
 
         try {
-            Nominal.newCopy("x").bindRows(Nominal.newCopy("b"));
+            Nominal.copy("x").bindRows(Nominal.copy("b"));
             assertTrue("should raise an exception", false);
         } catch (Throwable ignore) {
         }
@@ -232,7 +232,7 @@ public class BoundVarTest {
 
     @Test
     public void testRemove() {
-        Var x = Numeric.newCopy(1, 2, 3).bindRows(Numeric.newCopy(4, 5, 6));
+        Var x = Numeric.copy(1, 2, 3).bindRows(Numeric.copy(4, 5, 6));
 
         try {
             x.remove(1);
