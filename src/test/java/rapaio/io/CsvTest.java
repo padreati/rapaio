@@ -25,13 +25,17 @@
 package rapaio.io;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import rapaio.data.Frame;
-import rapaio.data.VarType;
+import rapaio.data.*;
+import rapaio.datasets.Datasets;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
@@ -176,26 +180,85 @@ public class CsvTest {
     }
 
     @Test
-    public void testSkip() throws IOException {
+    public void testSkipRows() throws IOException {
 
-        Frame full = new Csv().withTrimSpaces(true).withEscapeChar('\"').read(CsvTest.class, "csv-test.csv");
+        List<String> allVarNames = new ArrayList<>();
+        allVarNames.add("sepal-length");
+        allVarNames.add("sepal-width");
+        allVarNames.add("petal-length");
+        allVarNames.add("petal-width");
+        allVarNames.add("class");
 
-        Frame df1 = new Csv().withTrimSpaces(true).withEscapeChar('\"').withSkipCols(row -> row % 2 == 0).read(CsvTest.class, "csv-test.csv");
-        assertTrue(full.mapVars("Make", "Description").deepEquals(df1));
+        // test no skip
+        Frame full = new Csv().read(Datasets.class, "iris-r.csv");
+        Assert.assertEquals(5, full.varCount());
+        Assert.assertArrayEquals(allVarNames.toArray(), full.varNames());
 
-        Frame df2 = new Csv().withTrimSpaces(true).withEscapeChar('\"').withSkipCols(row -> row == 0 || row == 4).read(CsvTest.class, "csv-test.csv");
-        assertTrue(full.mapVars("Make", "Model", "Description").deepEquals(df2));
+        // test skip first 10 rows
 
-        Frame df3 = new Csv().withTrimSpaces(true).withEscapeChar('\"').withSkipRows(row -> row == 0).read(CsvTest.class, "csv-test.csv");
-        assertTrue(full.removeRows(0).deepEquals(df3));
+        Frame r1 = new Csv().withSkipRows(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).read(Datasets.class, "iris-r.csv");
+        Frame r2 = new Csv().withSkipRows(row -> row < 10).read(Datasets.class, "iris-r.csv");
+        Frame r3 = new Csv().withRows(IntStream.range(10, 150).toArray()).read(Datasets.class, "iris-r.csv");
+        Frame r4 = new Csv().withRows(row -> row >= 10).read(Datasets.class, "iris-r.csv");
 
-        Frame df4 = new Csv().withTrimSpaces(true).withEscapeChar('\"').withSkipRows(row -> row == 3).read(CsvTest.class, "csv-test.csv");
-        assertTrue(full.removeRows(3).deepEquals(df4));
+        Assert.assertTrue(r1.deepEquals(r2));
+        Assert.assertTrue(r1.deepEquals(r3));
+        Assert.assertTrue(r1.deepEquals(r4));
 
-        Frame df5 = new Csv().withTrimSpaces(true).withEscapeChar('\"').withSkipCols(1, 4).withSkipRows(1, 4).read(CsvTest.class, "csv-test.csv");
-        assertTrue(full.removeRows(1, 4).removeVars(1, 4).deepEquals(df5));
+        // test skip row % 2 == 0 and between 50 and 100
 
-        Frame df6 = new Csv().withTrimSpaces(true).withEscapeChar('\"').withSkipCols(col -> col == 1 || col == 4).withSkipRows(row -> row == 1 || row == 4).read(CsvTest.class, "csv-test.csv");
-        assertTrue(full.removeRows(1, 4).removeVars(1, 4).deepEquals(df5));
+        Frame r5 = new Csv().withStartRow(50).withEndRow(100).withSkipRows(row -> row % 2 == 0).read(Datasets.class, "iris-r.csv");
+        Assert.assertEquals(25, r5.rowCount());
+        Assert.assertArrayEquals(new String[]{"?", "virginica"}, r5.var("class").levels());
+
+        // test skip vars 0 and 2
+
+        Frame v1 = new Csv().withSkipCols(0, 2).read(Datasets.class, "iris-r.csv");
+        Frame v2 = new Csv().withSkipCols(row -> row == 0 || row == 2).read(Datasets.class, "iris-r.csv");
+        Frame v3 = new Csv().withCols(1, 3, 4).read(Datasets.class, "iris-r.csv");
+        Frame v4 = new Csv().withCols(row -> (row != 0) && (row != 2)).read(Datasets.class, "iris-r.csv");
+
+        Assert.assertEquals(3, v1.varCount());
+        Assert.assertTrue(v1.deepEquals(v2));
+        Assert.assertTrue(v1.deepEquals(v3));
+        Assert.assertTrue(v1.deepEquals(v4));
+
+        // test mixed
+
+        Frame m1 = new Csv().withRows(row -> row >= 20 && row < 30).withCols(col -> col >= 2).read(Datasets.class, "iris-r.csv");
+        Assert.assertEquals(10, m1.rowCount());
+        Assert.assertEquals(3, m1.varCount());
+    }
+
+    @Test
+    public void testTypes() throws IOException {
+        Frame t1 = new Csv()
+                .withTypes(VarType.NUMERIC, "sepal-length")
+                .withTypes(VarType.NOMINAL, "petal-width", "sepal-length")
+                .read(Datasets.class, "iris-r.csv");
+        t1.printSummary();
+
+        VarType[] types = new VarType[]{VarType.NOMINAL, VarType.NUMERIC, VarType.NUMERIC, VarType.NOMINAL, VarType.NOMINAL};
+        Assert.assertArrayEquals(types, t1.varStream().map(Var::type).toArray());
+
+        Frame t2 = new Csv().withTemplate(t1).read(Datasets.class, "iris-r.csv");
+        Assert.assertTrue(t1.deepEquals(t2));
+    }
+
+    @Test
+    public void testNAValues() throws IOException {
+        // no NA values
+        Frame na1 = new Csv().read(Datasets.class, "iris-r.csv");
+        Assert.assertEquals(150, na1.stream().complete().count());
+
+        // non existent NA values
+        Frame na2 = new Csv().withNAValues("", "xxxx").read(Datasets.class, "iris-r.csv");
+        Assert.assertEquals(150, na2.stream().complete().count());
+
+        Frame na3 = new Csv().withNAValues("virginica").withTypes(VarType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
+        Assert.assertEquals(100, na3.stream().complete().count());
+
+        Frame na4 = new Csv().withNAValues("virginica", "5").withTypes(VarType.NOMINAL, "sepal-length").read(Datasets.class, "iris-r.csv");
+        Assert.assertEquals(89, na4.stream().complete().count());
     }
 }

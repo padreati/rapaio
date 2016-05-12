@@ -95,15 +95,20 @@ public class Csv {
         return this;
     }
 
-    public Csv withSkipRows(int... rows) {
-        final Set<Integer> skip = Arrays.stream(rows).boxed().collect(toSet());
-        skipRows = skip::contains;
-        return this;
-    }
-
     public Csv withRows(int... rows) {
         final Set<Integer> skip = Arrays.stream(rows).boxed().collect(toSet());
         skipRows = row -> !skip.contains(row);
+        return this;
+    }
+
+    public Csv withRows(Predicate<Integer> p) {
+        skipRows = p.negate();
+        return this;
+    }
+
+    public Csv withSkipRows(int... rows) {
+        final Set<Integer> skip = Arrays.stream(rows).boxed().collect(toSet());
+        skipRows = skip::contains;
         return this;
     }
 
@@ -112,10 +117,20 @@ public class Csv {
         return this;
     }
 
-    public Csv withSkipCols(int... cols) {
+    public Csv withCols(int... cols) {
         final Set<Integer> skip = Arrays.stream(cols).boxed().collect(toSet());
-        Predicate<Integer> old = skipCols;
-        skipCols = row -> old.test(row) || skip.contains(row);
+        skipCols = row -> !skip.contains(row);
+        return this;
+    }
+
+    public Csv withCols(Predicate<Integer> p) {
+        skipCols = p.negate();
+        return this;
+    }
+
+    public Csv withSkipCols(int... cols) {
+        Set<Integer> skip = Arrays.stream(cols).boxed().collect(toSet());
+        skipCols = skip::contains;
         return this;
     }
 
@@ -149,7 +164,7 @@ public class Csv {
         try {
             return read(new FileInputStream(file));
         } catch (IOException e) {
-            throw new RuntimeException("error at reading file", e);
+            throw new RuntimeException("error at reading file: " + file.getAbsolutePath(), e);
         }
     }
 
@@ -170,7 +185,11 @@ public class Csv {
     }
 
     public Frame read(Class<?> clazz, String resource) throws IOException {
-        return read(clazz.getResourceAsStream(resource));
+        InputStream is = clazz.getResourceAsStream(resource);
+        if (is == null) {
+            throw new IOException("resource: " + resource + " not found in the path of given class: " + clazz.getCanonicalName());
+        }
+        return read(is);
     }
 
     public Frame read(InputStream inputStream) throws IOException {
