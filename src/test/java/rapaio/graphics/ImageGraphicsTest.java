@@ -29,9 +29,10 @@ import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.CoreTools;
 import rapaio.core.RandomSource;
+import rapaio.core.SamplingTools;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
+import rapaio.data.Mapping;
 import rapaio.data.Var;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.base.Figure;
@@ -39,6 +40,8 @@ import rapaio.graphics.base.ImageUtility;
 import rapaio.graphics.plot.BoxPlot;
 import rapaio.graphics.plot.Plot;
 import rapaio.ml.eval.ROC;
+import rapaio.printer.IdeaPrinter;
+import rapaio.sys.WS;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -64,21 +67,29 @@ import static rapaio.graphics.Plotter.*;
 public class ImageGraphicsTest {
 
     private static final boolean regenerate = false;
+    private static final boolean show = false;
     private static String root = "/home/ati/work/rapaio/src/test/resources";
+
+    private Frame df;
 
     @Before
     public void setUp() throws Exception {
         RandomSource.setSeed(1234);
+        WS.setPrinter(new IdeaPrinter());
+        df = Datasets.loadLifeScience();
     }
 
     @Test
     public void testBoxPlot() throws IOException, URISyntaxException {
 
-        Frame df = Datasets.loadIrisDataset();
-        Var x = df.var(0);
+        Var x = df.var(1);
         Var factor = df.var("class");
 
         BoxPlot plot = boxPlot(x, factor, color(10, 50, 100));
+
+        if (show) {
+            WS.draw(plot);
+        }
         if (regenerate) {
             ImageUtility.saveImage(plot, 500, 400, root + "/rapaio/graphics/boxplot-test.png");
         }
@@ -88,11 +99,11 @@ public class ImageGraphicsTest {
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
-//    @Test
+    @Test
     public void testFunLine() throws IOException, URISyntaxException {
 
         Plot plot = funLine(x -> x * x, color(1))
-                .funLine(x -> Math.log1p(x), color(2))
+                .funLine(Math::log1p, color(2))
                 .funLine(x -> Math.sin(Math.pow(x, 3)) + 5, color(3), points(10_000))
                 .hLine(5, color(Color.LIGHT_GRAY))
                 .xLim(0, 10)
@@ -105,17 +116,19 @@ public class ImageGraphicsTest {
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
-//    @Test
+    @Test
     public void testQQPlot() throws IOException {
 
-        RandomSource.setSeed(1);
         final int N = 100;
-        Distribution normal = CoreTools.distNormal();
-        Numeric x = Numeric.from(N, row -> normal.sampleNext());
+        Var x = df.var(2);
+        Distribution normal = CoreTools.distNormal(CoreTools.mean(x).value(), CoreTools.var(x).sdValue());
         Plot plot = qqplot(x, normal, pch(2), color(3))
                 .vLine(0, color(Color.GRAY))
                 .hLine(0, color(Color.GRAY));
 
+        if (show) {
+            WS.draw(plot);
+        }
         if (regenerate)
             ImageUtility.saveImage(plot, 500, 400,
                     root + "/rapaio/graphics/qqplot-test.png");
@@ -124,16 +137,17 @@ public class ImageGraphicsTest {
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
-//    @Test
+    @Test
     public void testHistogram2D() throws IOException, URISyntaxException {
 
-        RandomSource.setSeed(0);
-        Frame df = Datasets.loadIrisDataset();
+        df = df.mapRows(Mapping.copy(SamplingTools.sampleWOR(df.rowCount(), df.rowCount() / 5)));
 
-        Var x = jitter(df.var(0).solidCopy(), 0.01).withName("x");
-        Var y = jitter(df.var(1).solidCopy(), 0.01).withName("y");
+        Var x = df.var(0).solidCopy().withName("x");
+        Var y = df.var(1).solidCopy().withName("y");
 
-        Plot plot = hist2d(x, y, color(2), bins(10)).points(x, y);
+        Plot plot = hist2d(x, y, color(2), bins(20)).points(x, y, alpha(0.3f));
+        if (show)
+            WS.draw(plot);
         if (regenerate)
             ImageUtility.saveImage(plot, 500, 400, root + "/rapaio/graphics/hist2d-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
@@ -141,16 +155,13 @@ public class ImageGraphicsTest {
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
-//    @Test
+    @Test
     public void testHistogram() throws IOException, URISyntaxException {
 
-        RandomSource.setSeed(0);
-        Frame df = Datasets.loadIrisDataset();
-
-        Var x = jitter(df.var(0).solidCopy(), 0.01).withName("x");
-        Var y = jitter(df.var(1).solidCopy(), 0.01).withName("y");
-
-        Plot plot = hist(x, bins(20));
+        Var x = df.var(0).withName("x");
+        Plot plot = hist(x, bins(30));
+        if (show)
+            WS.draw(plot);
         if (regenerate)
             ImageUtility.saveImage(plot, 500, 400, root + "/rapaio/graphics/hist-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(plot, 500, 400);
@@ -158,14 +169,11 @@ public class ImageGraphicsTest {
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
-//    @Test
+    @Test
     public void testGridLayer() throws IOException, URISyntaxException {
 
-        RandomSource.setSeed(0);
-        Frame df = Datasets.loadIrisDataset();
-
-        Var x = jitter(df.var(0).solidCopy(), 0.01).withName("x");
-        Var y = jitter(df.var(1).solidCopy(), 0.01).withName("y");
+        Var x = df.var(0).withName("x");
+        Var y = df.var(1).withName("y");
 
         Figure fig = gridLayer(3, 3)
                 .add(1, 1, 2, 2, points(x, y, sz(2)))
@@ -174,6 +182,8 @@ public class ImageGraphicsTest {
                 .add(hist(x, bins(20)))
                 .add(hist(y, bins(20)));
 
+        if (show)
+            WS.draw(fig);
         if (regenerate)
             ImageUtility.saveImage(fig, 400, 400, root + "/rapaio/graphics/grid-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(fig, 400, 400);
@@ -181,18 +191,19 @@ public class ImageGraphicsTest {
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
-//    @Test
+    @Test
     public void testLines() throws IOException, URISyntaxException {
 
-        RandomSource.setSeed(0);
-        Frame df = Datasets.loadIrisDataset();
+        Var x = updateValue(Math::log1p, df.var(0)).withName("x").stream().complete().toMappedVar();
 
-        Var x = updateValue(Math::log1p, jitter(df.var(0).solidCopy(), 0.01)).withName("x");
-
+        double min = CoreTools.min(x).value();
+        double max = CoreTools.max(x).value();
         Figure fig = gridLayer(1, 2)
                 .add(lines(x))
-                .add(lines(x).yLim(1.5, 1.95));
+                .add(lines(x).yLim(-2, -1));
 
+        if (show)
+            WS.draw(fig);
         if (regenerate)
             ImageUtility.saveImage(fig, 300, 200, root + "/rapaio/graphics/lines-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(fig, 300, 200);
@@ -200,19 +211,18 @@ public class ImageGraphicsTest {
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
-//    @Test
+    @Test
     public void tesPoints() throws IOException, URISyntaxException {
 
-        RandomSource.setSeed(0);
-        Frame df = Datasets.loadIrisDataset();
-
-        Var x = updateValue(Math::log1p, jitter(df.var(0).solidCopy(), 0.01)).withName("x");
-        Var y = updateValue(Math::log1p, jitter(df.var(1).solidCopy(), 0.01)).withName("y");
+        Var x = updateValue(Math::log1p, df.var(0)).withName("x");
+        Var y = updateValue(Math::log1p, df.var(1)).withName("y");
 
         Figure fig = gridLayer(1, 2)
                 .add(points(x))
-                .add(points(x, y).yLim(1.5, 1.95));
+                .add(points(x, y).xLim(-3, -1));
 
+        if (show)
+            WS.draw(fig);
         if (regenerate)
             ImageUtility.saveImage(fig, 500, 400, root + "/rapaio/graphics/points-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(fig, 500, 400);
@@ -220,14 +230,10 @@ public class ImageGraphicsTest {
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
-//    @Test
+    @Test
     public void tesDensity() throws IOException, URISyntaxException {
 
-        RandomSource.setSeed(0);
-        Frame df = Datasets.loadIrisDataset();
-
-
-        Var x = jitter(df.var(0).solidCopy(), 0.01);
+        Var x = df.var(0).mapRows(Mapping.copy(SamplingTools.sampleWOR(df.rowCount(), df.rowCount() / 50)));
 
         Plot fig = plot();
         for (int i = 10; i < 150; i += 5) {
@@ -235,6 +241,8 @@ public class ImageGraphicsTest {
         }
         fig.densityLine(x, lwd(2), color(1));
 
+        if (show)
+            WS.draw(fig);
         if (regenerate)
             ImageUtility.saveImage(fig, 500, 400, root + "/rapaio/graphics/density-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(fig, 500, 400);
@@ -242,17 +250,16 @@ public class ImageGraphicsTest {
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
-//    @Test
+    @Test
     public void testRocCurve() throws IOException, URISyntaxException {
 
-        RandomSource.setSeed(0);
-        Frame df = Datasets.loadIrisDataset();
-
-        ROC roc = ROC.from(df.var(0), df.var("class"), 3);
+        ROC roc = ROC.from(df.var(0), df.var("class"), 2);
         roc.printSummary();
 
         Figure fig = rocCurve(roc);
 
+        if(show)
+            WS.draw(fig);
         if (regenerate)
             ImageUtility.saveImage(fig, 500, 400, root + "/rapaio/graphics/roc-test.png");
         BufferedImage bi1 = ImageUtility.buildImage(fig, 500, 400);
