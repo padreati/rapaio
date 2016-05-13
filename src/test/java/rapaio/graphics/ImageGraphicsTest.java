@@ -76,7 +76,7 @@ public class ImageGraphicsTest {
     public void setUp() throws Exception {
         RandomSource.setSeed(1234);
         WS.setPrinter(new IdeaPrinter());
-        df = Datasets.loadLifeScience();
+        df = Datasets.loadLifeScience().mapRows(Mapping.range(2000));
     }
 
     @Test
@@ -108,6 +108,8 @@ public class ImageGraphicsTest {
                 .hLine(5, color(Color.LIGHT_GRAY))
                 .xLim(0, 10)
                 .yLim(0, 10);
+        if(show)
+            WS.draw(plot);
         if (regenerate)
             ImageUtility.saveImage(plot, 500, 400, root + "/rapaio/graphics/funLine-test.png");
 
@@ -139,8 +141,6 @@ public class ImageGraphicsTest {
 
     @Test
     public void testHistogram2D() throws IOException, URISyntaxException {
-
-        df = df.mapRows(Mapping.copy(SamplingTools.sampleWOR(df.rowCount(), df.rowCount() / 5)));
 
         Var x = df.var(0).solidCopy().withName("x");
         Var y = df.var(1).solidCopy().withName("y");
@@ -233,7 +233,7 @@ public class ImageGraphicsTest {
     @Test
     public void tesDensity() throws IOException, URISyntaxException {
 
-        Var x = df.var(0).mapRows(Mapping.copy(SamplingTools.sampleWOR(df.rowCount(), df.rowCount() / 50)));
+        Var x = df.var(0);
 
         Plot fig = plot();
         for (int i = 10; i < 150; i += 5) {
