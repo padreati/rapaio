@@ -118,7 +118,7 @@ public class ImageGraphicsTest {
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
-    @Test
+//    @Test
     public void testQQPlot() throws IOException {
 
         final int N = 100;
@@ -139,7 +139,7 @@ public class ImageGraphicsTest {
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
-    @Test
+//    @Test
     public void testHistogram2D() throws IOException, URISyntaxException {
 
         Var x = df.var(0).solidCopy().withName("x");
@@ -155,7 +155,7 @@ public class ImageGraphicsTest {
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
-    @Test
+//    @Test
     public void testHistogram() throws IOException, URISyntaxException {
 
         Var x = df.var(0).withName("x");
@@ -169,7 +169,7 @@ public class ImageGraphicsTest {
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
-    @Test
+//    @Test
     public void testGridLayer() throws IOException, URISyntaxException {
 
         Var x = df.var(0).withName("x");
@@ -191,7 +191,7 @@ public class ImageGraphicsTest {
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
-    @Test
+//    @Test
     public void testLines() throws IOException, URISyntaxException {
 
         Var x = updateValue(Math::log1p, df.var(0)).withName("x").stream().complete().toMappedVar();
@@ -211,7 +211,7 @@ public class ImageGraphicsTest {
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
-    @Test
+//    @Test
     public void tesPoints() throws IOException, URISyntaxException {
 
         Var x = updateValue(Math::log1p, df.var(0)).withName("x");
@@ -230,7 +230,7 @@ public class ImageGraphicsTest {
         Assert.assertTrue(bufferedImagesEqual(bi1, bi2));
     }
 
-    @Test
+//    @Test
     public void tesDensity() throws IOException, URISyntaxException {
 
         Var x = df.var(0);
