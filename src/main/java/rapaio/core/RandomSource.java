@@ -45,7 +45,8 @@ import java.util.Random;
 public final class RandomSource implements Serializable {
 
     private static final long serialVersionUID = -1201316989986445607L;
-    private static final MersenneTwisterFast rand = new MersenneTwisterFast();
+//    private static final MersenneTwisterFast rand = new MersenneTwisterFast();
+    private static final Random rand = new Random();
 
     public static void setSeed(long seed) {
         rand.setSeed(seed);
