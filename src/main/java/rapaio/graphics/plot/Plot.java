@@ -37,6 +37,7 @@ import rapaio.util.func.SFunction;
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * @author tutuianu

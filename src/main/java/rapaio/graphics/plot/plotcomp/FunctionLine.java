@@ -33,6 +33,7 @@ import rapaio.util.func.SFunction;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.util.function.Function;
 
 import static rapaio.graphics.Plotter.points;
 

@@ -155,6 +155,12 @@ public class Normal implements Distribution {
         while (s != t) {
             s = (t = s) + (b *= q / (i += 2));
         }
+        if (s == Double.NEGATIVE_INFINITY) {
+            return 0;
+        }
+        if (s == Double.POSITIVE_INFINITY) {
+            return 1;
+        }
         return 0.5 + s * Math.exp(-.5 * q - 0.91893853320467274178);
     }
 

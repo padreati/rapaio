@@ -39,6 +39,7 @@ import rapaio.graphics.base.Figure;
 import rapaio.graphics.base.ImageUtility;
 import rapaio.graphics.plot.BoxPlot;
 import rapaio.graphics.plot.Plot;
+import rapaio.io.JavaIO;
 import rapaio.ml.eval.ROC;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
@@ -108,6 +109,16 @@ public class ImageGraphicsTest {
                 .hLine(5, color(Color.LIGHT_GRAY))
                 .xLim(0, 10)
                 .yLim(0, 10);
+
+        JavaIO.storeToFile(plot, "/tmp/tmp.ser");
+
+        try {
+            Plot p = (Plot) JavaIO.restoreFromFile("/tmp/tmp.ser");
+            WS.draw(p);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
         if(show)
             WS.draw(plot);
         if (regenerate)

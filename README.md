@@ -31,14 +31,7 @@ If there are no notes it means the feature is considered to be fully implemented
 
 **Distributions**
 
-* Continuous/Discrete Uniform
-* Bernoulli
-* Binomial
 * Normal/Gaussian
-* StudentT
-* ChiSquare
-* Gamma
-* Empirical KDE (gaussian, epanechnikov, cosine, tricube, biweight, triweight, triangular, uniform)
 
 **Sampling**
 
@@ -132,6 +125,16 @@ Experminental Stage Features
 * Receiver Operator Characteristic - ROC curves and ROC Area
 * Confusion Matrix
 
+
+**Distributions**
+
+* Continuous/Discrete Uniform
+* Bernoulli
+* Binomial
+* StudentT
+* ChiSquare
+* Gamma
+* Empirical KDE (gaussian, epanechnikov, cosine, tricube, biweight, triweight, triangular, uniform)
 
 **Classification**
 
