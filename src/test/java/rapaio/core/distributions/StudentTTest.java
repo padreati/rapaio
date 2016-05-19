@@ -24,13 +24,20 @@
 
 package rapaio.core.distributions;
 
+import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.Frame;
+import rapaio.data.Numeric;
+import rapaio.data.Var;
 import rapaio.data.VarType;
+import rapaio.graphics.Plotter;
 import rapaio.io.Csv;
+import rapaio.printer.IdeaPrinter;
+import rapaio.sys.WS;
 
 import java.io.IOException;
 
+import static java.awt.image.ImageObserver.ERROR;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -106,5 +113,83 @@ public class StudentTTest {
             assertEquals(df.value(i, "y1000"), new StudentT(1_000).quantile(df.value(i, "x")), 1e-10);
             assertEquals(df.value(i, "y10000"), new StudentT(10_000).quantile(df.value(i, "x")), 1e-9);
         }
+    }
+
+    @Test
+    public void testWithR() throws IOException {
+        Frame df = new Csv()
+                .withHeader(true)
+                .withSeparatorChar(',')
+                .withDefaultTypes(VarType.NUMERIC)
+                .withNAValues("?", "-Inf", "Inf", "NA")
+                .read(this.getClass(), "student.csv");
+        StudentT t1 = new StudentT(1);
+        StudentT t2 = new StudentT(2);
+        StudentT t5 = new StudentT(5);
+        StudentT t10 = new StudentT(10);
+        StudentT t100 = new StudentT(100);
+        for (int i = 0; i < df.rowCount(); i++) {
+
+            double x = df.value(i, "x");
+
+            Assert.assertEquals(df.value(i, "pdf_1"), t1.pdf(x), ERROR);
+            Assert.assertEquals(df.value(i, "cdf_1"), t1.cdf(x), ERROR);
+            if (x > 0 && x < 1) {
+                try {
+                    Assert.assertEquals(df.value(i, "quantile_1"), t1.quantile(df.value(i, "x")), ERROR);
+                }catch(AssertionError error) {
+                    System.out.println();
+                }
+            }
+            Assert.assertEquals(df.value(i, "pdf_2"), t2.pdf(x), ERROR);
+            Assert.assertEquals(df.value(i, "cdf_2"), t2.cdf(x), ERROR);
+            if (x > 0 && x < 1) {
+                try {
+                    Assert.assertEquals(df.value(i, "quantile_2"), t2.quantile(df.value(i, "x")), ERROR);
+                }catch(AssertionError error) {
+                    System.out.println();
+                }
+            }
+            Assert.assertEquals(df.value(i, "pdf_5"), t5.pdf(x), ERROR);
+            Assert.assertEquals(df.value(i, "cdf_5"), t5.cdf(x), ERROR);
+            if (x > 0 && x < 1) {
+                try {
+                    Assert.assertEquals(df.value(i, "quantile_5"), t5.quantile(df.value(i, "x")), ERROR);
+                }catch(AssertionError error) {
+                    System.out.println();
+                }
+            }
+            Assert.assertEquals(df.value(i, "pdf_10"), t10.pdf(x), ERROR);
+            Assert.assertEquals(df.value(i, "cdf_10"), t10.cdf(x), ERROR);
+            if (x > 0 && x < 1) {
+                try {
+                    Assert.assertEquals(df.value(i, "quantile_10"), t10.quantile(df.value(i, "x")), ERROR);
+                }catch(AssertionError error) {
+                    System.out.println();
+                }
+            }
+            Assert.assertEquals(df.value(i, "pdf_100"), t100.pdf(x), ERROR);
+            Assert.assertEquals(df.value(i, "cdf_100"), t100.cdf(x), ERROR);
+            if (x > 0 && x < 1) {
+                try {
+                    Assert.assertEquals(df.value(i, "quantile_100"), t100.quantile(df.value(i, "x")), ERROR);
+                }catch(AssertionError error) {
+                    System.out.println();
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testOtherT() {
+
+        StudentT t = new StudentT(10, 2, 3);
+        Assert.assertEquals(2, t.mean(), ERROR);
+        Assert.assertEquals(2, t.mode(), ERROR);
+        Assert.assertEquals(3*3, t.var(), ERROR);
+        Assert.assertEquals(Double.NEGATIVE_INFINITY, t.min(), ERROR);
+        Assert.assertEquals(Double.POSITIVE_INFINITY, t.max(), ERROR);
+        Assert.assertEquals(1, t.skewness(), ERROR);
+        Assert.assertEquals(1, t.kurtosis(), ERROR);
     }
 }

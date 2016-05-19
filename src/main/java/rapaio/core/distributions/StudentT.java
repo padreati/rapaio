@@ -24,6 +24,8 @@
 
 package rapaio.core.distributions;
 
+import rapaio.sys.WS;
+
 import static rapaio.core.MathTools.*;
 
 /**
@@ -53,7 +55,9 @@ public class StudentT implements Distribution {
 
     @Override
     public String name() {
-        return "StudentT(df=" + df + ", mu=" + mu + ", sigma=" + sigma + ")";
+        return "StudentT(df=" + WS.formatFlex(df) +
+                ", mu=" + WS.formatFlex(mu) +
+                ", sigma=" + WS.formatFlex(sigma) + ")";
     }
 
     @Override

@@ -46,16 +46,17 @@ public class Variance implements Printable {
     }
 
     private final String varName;
-    private final double value;
+    private double value;
+    private double biasedValue;
     private int completeCount;
     private int missingCount;
 
     private Variance(Var var) {
         this.varName = var.name();
-        this.value = compute(var);
+        compute(var);
     }
 
-    private double compute(final Var var) {
+    private final void compute(final Var var) {
         double mean = mean(var).value();
         for (int i = 0; i < var.rowCount(); i++) {
             if (var.missing(i)) {
@@ -65,7 +66,8 @@ public class Variance implements Printable {
             }
         }
         if (completeCount == 0) {
-            return Double.NaN;
+            value = Double.NaN;
+            biasedValue = Double.NaN;
         }
         double sum2 = 0;
         double sum3 = 0;
@@ -76,11 +78,16 @@ public class Variance implements Printable {
             sum2 += Math.pow(var.value(i) - mean, 2);
             sum3 += var.value(i) - mean;
         }
-        return (sum2 - Math.pow(sum3, 2) / (1.0 * completeCount)) / (completeCount - 1.0);
+        value = (sum2 - Math.pow(sum3, 2) / (1.0 * completeCount)) / (completeCount - 1.0);
+        biasedValue = (sum2 - Math.pow(sum3, 2) / (1.0 * completeCount)) / (1.0 * completeCount);
     }
 
     public double value() {
         return value;
+    }
+
+    public double biasedValue() {
+        return biasedValue;
     }
 
     @Override
@@ -96,6 +103,10 @@ public class Variance implements Printable {
 
     public double sdValue() {
         return Math.sqrt(value);
+    }
+
+    public double biasedSdValue() {
+        return Math.sqrt(biasedValue);
     }
 
     public int completeCount() {

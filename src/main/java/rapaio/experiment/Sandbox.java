@@ -24,18 +24,10 @@
 
 package rapaio.experiment;
 
-import rapaio.data.Frame;
-import rapaio.data.VRange;
-import rapaio.data.filter.frame.FFRandomProjection;
-import rapaio.datasets.Datasets;
-import rapaio.printer.IdeaPrinter;
-import rapaio.sys.WS;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
-
-import static rapaio.graphics.Plotter.color;
-import static rapaio.graphics.Plotter.points;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/26/15.
@@ -43,22 +35,11 @@ import static rapaio.graphics.Plotter.points;
 public class Sandbox {
     public static void main(String[] args) throws IOException, URISyntaxException {
 
+        int[] arr = new int[100];
         for (int i = 0; i < 100; i++) {
-
-            Frame df = Datasets.loadIrisDataset();
-
-            Frame rp = FFRandomProjection.newGaussianSd(2, VRange.all()).fitApply(df.mapVars("0~3"));
-
-            WS.setPrinter(new IdeaPrinter());
-            WS.draw(points(rp.var(0), rp.var(1), color(df.var("class"))));
-            df.printSummary();
-
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            arr[i] = i + 5;
         }
-
+        String s = IntStream.iterate(99, operand -> operand - 1).limit(100).boxed().map(i -> String.valueOf(arr[i])).collect(Collectors.joining(" "));
+        System.out.println(s);
     }
 }

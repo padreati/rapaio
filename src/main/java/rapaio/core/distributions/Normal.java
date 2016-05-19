@@ -56,14 +56,6 @@ public class Normal implements Distribution {
         this.var = sd * sd;
     }
 
-    public double getMu() {
-        return mu;
-    }
-
-    public double getVar() {
-        return var;
-    }
-
     @Override
     public double pdf(double x) {
         return 1 / Math.sqrt(2 * Math.PI * var) * Math.exp(-Math.pow(x - mu, 2) / (2 * var));

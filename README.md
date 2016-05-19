@@ -32,6 +32,7 @@ If there are no notes it means the feature is considered to be fully implemented
 **Distributions**
 
 * Normal/Gaussian
+* Student t
 
 **Sampling**
 
@@ -131,7 +132,6 @@ Experminental Stage Features
 * Continuous/Discrete Uniform
 * Bernoulli
 * Binomial
-* StudentT
 * ChiSquare
 * Gamma
 * Empirical KDE (gaussian, epanechnikov, cosine, tricube, biweight, triweight, triangular, uniform)
