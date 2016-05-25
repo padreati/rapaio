@@ -54,7 +54,7 @@ public class KSTest implements Printable {
      * pValue is the computed p-value for the KS test against the given densities
      * <p>
      * The null hypothesis of this test is that the given data set belongs to the given densities.
-     * The alternative hypothesis is that the data set does not belong to the given densities.
+     * The altString hypothesis is that the data set does not belong to the given densities.
      *
      * @param cdf the densities to compare against
      */
@@ -68,7 +68,7 @@ public class KSTest implements Printable {
      * D is the maximum distance between ECDF(v1) and ECDF(v2)
      * pValue is the p-value for the 2 sample KS test
      * The null hypothesis of this test is that both data sets comes from the same densities,
-     * The alternative hypothesis is that the two samples comes from different densities.
+     * The altString hypothesis is that the two samples comes from different densities.
      *
      * @param sample1 first sample
      * @param sample2 second sample
