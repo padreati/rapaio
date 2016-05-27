@@ -26,6 +26,7 @@ package rapaio.core.tests;
 
 import rapaio.core.HTTools;
 import rapaio.core.distributions.Normal;
+import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
@@ -33,19 +34,15 @@ import static rapaio.core.CoreTools.mean;
 import static rapaio.sys.WS.formatFlex;
 
 /**
- * Two sample z test: tests the difference between two sample means
- * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/27/16.
  */
-public class ZTestTwoSample implements Printable {
-
+public class ZTestTwoPaired implements Printable {
     // parameters
 
     public final Var x;
     public final Var y;
     public final double mu;
-    public final double xSd;
-    public final double ySd;
+    public final double sd;
     public final double sl;
     public final HTTools.Alternative alt;
 
@@ -55,19 +52,16 @@ public class ZTestTwoSample implements Printable {
     public final Var yComplete;
 
     public final double sampleMean;
-    public final double xSampleMean;
-    public final double ySampleMean;
     public final double zScore;
     public final double pValue;
     public final double ciLow;
     public final double ciHigh;
 
-    public ZTestTwoSample(Var x, Var y, double mu, double xSd, double ySd, double sl, HTTools.Alternative alt) {
+    public ZTestTwoPaired(Var x, Var y, double mu, double sd, double sl, HTTools.Alternative alt) {
         this.x = x;
         this.y = y;
         this.mu = mu;
-        this.xSd = xSd;
-        this.ySd = ySd;
+        this.sd = sd;
         this.sl = sl;
         this.alt = alt;
 
@@ -76,8 +70,6 @@ public class ZTestTwoSample implements Printable {
 
         if (xComplete.rowCount() < 1 || yComplete.rowCount() < 1) {
             // nothing to do
-            xSampleMean = Double.NaN;
-            ySampleMean = Double.NaN;
             sampleMean = Double.NaN;
 
             zScore = Double.NaN;
@@ -88,14 +80,14 @@ public class ZTestTwoSample implements Printable {
             return;
         }
 
-        xSampleMean = mean(xComplete).value();
-        ySampleMean = mean(yComplete).value();
-        sampleMean = xSampleMean - ySampleMean;
+        Var complete = Numeric.empty();
+        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
+            if (!(x.missing(i) || y.missing(i)))
+                complete.addValue(x.value(i) - y.value(i));
+        }
+        sampleMean = mean(complete).value();
 
-        double xv = xSd * xSd / xComplete.rowCount();
-        double yv = ySd * ySd / yComplete.rowCount();
-
-        double sv = Math.sqrt(xv + yv);
+        double sv = sd / Math.sqrt(complete.rowCount());
 
         zScore = (sampleMean - mu) / sv;
 
@@ -119,20 +111,17 @@ public class ZTestTwoSample implements Printable {
     public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
-        sb.append("> HTTools.zTestTwoSamples\n");
+        sb.append("> HTTools.zTestTwoPaired\n");
         sb.append("\n");
-        sb.append(" Two Samples z-test\n");
+        sb.append(" Two Paired z-test\n");
         sb.append("\n");
         sb.append("x complete rows: ").append(xComplete.rowCount()).append("/").append(x.rowCount()).append("\n");
         sb.append("y complete rows: ").append(yComplete.rowCount()).append("/").append(y.rowCount()).append("\n");
         sb.append("mean: ").append(formatFlex(mu)).append("\n");
-        sb.append("x sd: ").append(formatFlex(xSd)).append("\n");
-        sb.append("y sd: ").append(formatFlex(ySd)).append("\n");
+        sb.append("x sd: ").append(formatFlex(sd)).append("\n");
         sb.append("significance level: ").append(formatFlex(sl)).append("\n");
         sb.append("alternative hypothesis: ").append(alt == HTTools.Alternative.TWO_TAILS ? "two tails " : "one tail ").append(alt.pCondition()).append("\n");
         sb.append("\n");
-        sb.append("x sample mean: ").append(formatFlex(xSampleMean)).append("\n");
-        sb.append("y sample mean: ").append(formatFlex(ySampleMean)).append("\n");
         sb.append("sample mean: ").append(formatFlex(sampleMean)).append("\n");
         sb.append("z score: ").append(formatFlex(zScore)).append("\n");
         sb.append("p-value: ").append(pValue).append("\n");
@@ -141,4 +130,5 @@ public class ZTestTwoSample implements Printable {
 
         return sb.toString();
     }
+
 }

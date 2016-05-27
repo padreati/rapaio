@@ -25,7 +25,8 @@
 package rapaio.core;
 
 import rapaio.core.tests.ZTestOneSample;
-import rapaio.core.tests.ZTestTwoSample;
+import rapaio.core.tests.ZTestTwoPaired;
+import rapaio.core.tests.ZTestTwoSamples;
 import rapaio.data.Var;
 
 /**
@@ -82,30 +83,59 @@ public class HTTools {
      * Two unpaired samples z test for difference of the means with default values
      * for significance level (0.05) and alternative (two tails)
      *
-     * @param x first given sample
-     * @param y second given sample
+     * @param x    first given sample
+     * @param y    second given sample
      * @param mean null hypothesis mean
-     * @param xSd standard deviation of the first sample
-     * @param ySd standard deviation of the second sample
+     * @param xSd  standard deviation of the first sample
+     * @param ySd  standard deviation of the second sample
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestTwoSample zTestTwoSample(Var x, Var y, double mean, double xSd, double ySd) {
-        return new ZTestTwoSample(x, y, mean, xSd, ySd, 0.05, Alternative.TWO_TAILS);
+    public static ZTestTwoSamples zTestTwoSample(Var x, Var y, double mean, double xSd, double ySd) {
+        return new ZTestTwoSamples(x, y, mean, xSd, ySd, 0.05, Alternative.TWO_TAILS);
     }
 
     /**
      * Two unpaired samples z test for difference of the means
      *
-     * @param x first given sample
-     * @param y second given sample
+     * @param x    first given sample
+     * @param y    second given sample
      * @param mean null hypothesis mean
-     * @param xSd standard deviation of the first sample
-     * @param ySd standard deviation of the second sample
-     * @param sl significance level (usual value 0.05)
-     * @param alt alternative hypothesis (usual value two tails)
+     * @param xSd  standard deviation of the first sample
+     * @param ySd  standard deviation of the second sample
+     * @param sl   significance level (usual value 0.05)
+     * @param alt  alternative hypothesis (usual value two tails)
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestTwoSample zTestTwoSample(Var x, Var y, double mean, double xSd, double ySd, double sl, HTTools.Alternative alt) {
-        return new ZTestTwoSample(x, y, mean, xSd, ySd, sl, alt);
+    public static ZTestTwoSamples zTestTwoSample(Var x, Var y, double mean, double xSd, double ySd, double sl, HTTools.Alternative alt) {
+        return new ZTestTwoSamples(x, y, mean, xSd, ySd, sl, alt);
+    }
+
+    /**
+     * Two paired samples z test for mean of the difference with default values
+     * for significance level (0.05) and alternative (two tails)
+     *
+     * @param x    first given sample
+     * @param y    second given sample
+     * @param mean null hypothesis mean
+     * @param sd   standard deviation of the first sample
+     * @return an object containing hypothesis testing analysis
+     */
+    public static ZTestTwoPaired zTestTwoPaired(Var x, Var y, double mean, double sd) {
+        return new ZTestTwoPaired(x, y, mean, sd, 0.05, Alternative.TWO_TAILS);
+    }
+
+    /**
+     * Two paired samples z test for mean of the differences
+     *
+     * @param x    first given sample
+     * @param y    second given sample
+     * @param mean null hypothesis mean
+     * @param sd   standard deviation of the first sample
+     * @param sl   significance level (usual value 0.05)
+     * @param alt  alternative hypothesis (usual value two tails)
+     * @return an object containing hypothesis testing analysis
+     */
+    public static ZTestTwoPaired zTestTwoPaired(Var x, Var y, double mean, double sd, double sl, HTTools.Alternative alt) {
+        return new ZTestTwoPaired(x, y, mean, sd, sl, alt);
     }
 }
