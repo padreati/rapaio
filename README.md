@@ -43,8 +43,9 @@ If there are no notes it means the feature is considered to be fully implemented
 
 **Hypothesis Testing**
 
-* Kolmogorov Smirnoff one/two sample test
-* Pearson Chi-Square goodness of fit / independence test
+* z test
+    * one sample test for testing the sample mean
+    * two unpaired samples test for testing difference of the sample means
 
 **Frame Filters**
 
@@ -126,6 +127,10 @@ Experminental Stage Features
 * Receiver Operator Characteristic - ROC curves and ROC Area
 * Confusion Matrix
 
+**Hypothesis testing**
+
+* Kolmogorov Smirnoff one/two sample test
+* Pearson Chi-Square goodness of fit / independence test
 
 **Distributions**
 
