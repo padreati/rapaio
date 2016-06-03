@@ -39,29 +39,28 @@ import static rapaio.sys.WS.formatFlex;
  */
 public class ZTestOneSample implements Printable {
 
-    public final Var sample;
     public final double mu;
     public final double sd;
     public final double sl;
     public final HTTools.Alternative alt;
 
     // computed
-    public final Var clean;
+    public final int sampleSize;
     public final double sampleMean;
-    public final double zScore;
-    public final double pValue;
-    public final double ciLow;
-    public final double ciHigh;
+    public double zScore;
+    public double pValue;
+    public double ciLow;
+    public double ciHigh;
 
     public ZTestOneSample(Var sample, double mu, double sd, double sl, HTTools.Alternative alt) {
-        this.sample = sample;
         this.mu = mu;
         this.sd = sd;
         this.sl = sl;
         this.alt = alt;
 
-        clean = sample.stream().complete().toMappedVar();
-        if (clean.rowCount() < 1) {
+        Var clean = sample.stream().complete().toMappedVar();
+        sampleSize = clean.rowCount();
+        if (sampleSize < 1) {
             sampleMean = Double.NaN;
             zScore = Double.NaN;
             pValue = Double.NaN;
@@ -69,9 +68,22 @@ public class ZTestOneSample implements Printable {
             ciHigh = Double.NaN;
             return;
         }
-
         sampleMean = CoreTools.mean(clean).value();
-        zScore = (sampleMean - mu) * Math.sqrt(clean.rowCount()) / sd;
+        compute();
+    }
+
+    public ZTestOneSample(double sampleMean, int sampleSize, double mu, double sd, double sl, HTTools.Alternative alt) {
+        this.mu = mu;
+        this.sd = sd;
+        this.sl = sl;
+        this.alt = alt;
+        this.sampleSize = sampleSize;
+        this.sampleMean = sampleMean;
+        compute();
+    }
+
+    private void compute() {
+        zScore = (sampleMean - mu) * Math.sqrt(sampleSize) / sd;
 
         Normal normal = new Normal(0, 1);
 
@@ -86,8 +98,8 @@ public class ZTestOneSample implements Printable {
                 pValue = normal.cdf(-Math.abs(zScore)) * 2;
         }
 
-        ciLow = new Normal(sampleMean, sd / Math.sqrt(clean.rowCount())).quantile(sl / 2);
-        ciHigh = new Normal(sampleMean, sd / Math.sqrt(clean.rowCount())).quantile(1 - sl / 2);
+        ciLow = new Normal(sampleMean, sd / Math.sqrt(sampleSize)).quantile(sl / 2);
+        ciHigh = new Normal(sampleMean, sd / Math.sqrt(sampleSize)).quantile(1 - sl / 2);
     }
 
     @Override
@@ -98,12 +110,12 @@ public class ZTestOneSample implements Printable {
         sb.append("\n");
         sb.append(" One Sample z-test\n");
         sb.append("\n");
-        sb.append("complete rows: ").append(clean.rowCount()).append("/").append(sample.rowCount()).append("\n");
         sb.append("mean: ").append(formatFlex(mu)).append("\n");
         sb.append("sd: ").append(formatFlex(sd)).append("\n");
         sb.append("significance level: ").append(formatFlex(sl)).append("\n");
         sb.append("alternative hypothesis: ").append(alt == HTTools.Alternative.TWO_TAILS ? "two tails " : "one tail ").append(alt.pCondition()).append("\n");
         sb.append("\n");
+        sb.append("sample size: ").append(sampleSize).append("\n");
         sb.append("sample mean: ").append(formatFlex(sampleMean)).append("\n");
         sb.append("z score: ").append(formatFlex(zScore)).append("\n");
         sb.append("p-value: ").append(pValue).append("\n");

@@ -41,44 +41,42 @@ public class ZTestTwoSamples implements Printable {
 
     // parameters
 
-    public final Var x;
-    public final Var y;
+    public final double sampleMean;
+    public final double xSampleMean;
+    public final int xSampleSize;
+    public final double ySampleMean;
+    public final int ySampleSize;
     public final double mu;
     public final double xSd;
     public final double ySd;
     public final double sl;
     public final HTTools.Alternative alt;
 
+
     // computed
 
-    public final Var xComplete;
-    public final Var yComplete;
-
-    public final double sampleMean;
-    public final double xSampleMean;
-    public final double ySampleMean;
-    public final double zScore;
-    public final double pValue;
-    public final double ciLow;
-    public final double ciHigh;
+    public double zScore;
+    public double pValue;
+    public double ciLow;
+    public double ciHigh;
 
     public ZTestTwoSamples(Var x, Var y, double mu, double xSd, double ySd, double sl, HTTools.Alternative alt) {
-        this.x = x;
-        this.y = y;
         this.mu = mu;
         this.xSd = xSd;
         this.ySd = ySd;
         this.sl = sl;
         this.alt = alt;
 
-        xComplete = x.stream().complete().toMappedVar();
-        yComplete = y.stream().complete().toMappedVar();
+        Var xComplete = x.stream().complete().toMappedVar();
+        Var yComplete = y.stream().complete().toMappedVar();
 
         if (xComplete.rowCount() < 1 || yComplete.rowCount() < 1) {
             // nothing to do
+            sampleMean = Double.NaN;
             xSampleMean = Double.NaN;
             ySampleMean = Double.NaN;
-            sampleMean = Double.NaN;
+            xSampleSize = -1;
+            ySampleSize = -1;
 
             zScore = Double.NaN;
             pValue = Double.NaN;
@@ -89,15 +87,46 @@ public class ZTestTwoSamples implements Printable {
         }
 
         xSampleMean = mean(xComplete).value();
+        xSampleSize = xComplete.rowCount();
         ySampleMean = mean(yComplete).value();
+        ySampleSize = yComplete.rowCount();
         sampleMean = xSampleMean - ySampleMean;
 
-        double xv = xSd * xSd / xComplete.rowCount();
-        double yv = ySd * ySd / yComplete.rowCount();
+        compute();
+    }
+
+    public ZTestTwoSamples(double xSampleMean, int xSampleSize, double ySampleMean, int ySampleSize, double mu, double xSd, double ySd, double sl, HTTools.Alternative alt) {
+        this.xSampleMean = xSampleMean;
+        this.xSampleSize = xSampleSize;
+        this.ySampleMean = ySampleMean;
+        this.ySampleSize = ySampleSize;
+        this.sampleMean = xSampleMean - ySampleMean;
+
+        this.mu = mu;
+        this.xSd = xSd;
+        this.ySd = ySd;
+        this.sl = sl;
+        this.alt = alt;
+
+        if (xSampleSize < 1 || ySampleSize < 1) {
+            // nothing to do
+            zScore = Double.NaN;
+            pValue = Double.NaN;
+            ciLow = Double.NaN;
+            ciHigh = Double.NaN;
+            return;
+        }
+
+        compute();
+    }
+
+    private void compute() {
+        double xv = xSd * xSd / xSampleSize;
+        double yv = ySd * ySd / ySampleSize;
 
         double sv = Math.sqrt(xv + yv);
 
-        zScore = (sampleMean - mu) / sv;
+        zScore = (xSampleMean - ySampleMean - mu) / sv;
 
         Normal normal = new Normal(0, 1);
         switch (alt) {
@@ -111,8 +140,8 @@ public class ZTestTwoSamples implements Printable {
                 pValue = normal.cdf(-Math.abs(zScore)) * 2;
         }
 
-        ciLow = new Normal(sampleMean, sv).quantile(sl / 2);
-        ciHigh = new Normal(sampleMean, sv).quantile(1 - sl / 2);
+        ciLow = new Normal(xSampleMean - ySampleMean, sv).quantile(sl / 2);
+        ciHigh = new Normal(xSampleMean - ySampleMean, sv).quantile(1 - sl / 2);
     }
 
     @Override
@@ -123,16 +152,16 @@ public class ZTestTwoSamples implements Printable {
         sb.append("\n");
         sb.append(" Two Samples z-test\n");
         sb.append("\n");
-        sb.append("x complete rows: ").append(xComplete.rowCount()).append("/").append(x.rowCount()).append("\n");
-        sb.append("y complete rows: ").append(yComplete.rowCount()).append("/").append(y.rowCount()).append("\n");
+        sb.append("x sample mean: ").append(formatFlex(xSampleMean)).append("\n");
+        sb.append("x sample size: ").append(xSampleSize).append("\n");
+        sb.append("y sample mean: ").append(formatFlex(ySampleMean)).append("\n");
+        sb.append("y sample size: ").append(ySampleSize).append("\n");
         sb.append("mean: ").append(formatFlex(mu)).append("\n");
         sb.append("x sd: ").append(formatFlex(xSd)).append("\n");
         sb.append("y sd: ").append(formatFlex(ySd)).append("\n");
         sb.append("significance level: ").append(formatFlex(sl)).append("\n");
         sb.append("alternative hypothesis: ").append(alt == HTTools.Alternative.TWO_TAILS ? "two tails " : "one tail ").append(alt.pCondition()).append("\n");
         sb.append("\n");
-        sb.append("x sample mean: ").append(formatFlex(xSampleMean)).append("\n");
-        sb.append("y sample mean: ").append(formatFlex(ySampleMean)).append("\n");
         sb.append("sample mean: ").append(formatFlex(sampleMean)).append("\n");
         sb.append("z score: ").append(formatFlex(zScore)).append("\n");
         sb.append("p-value: ").append(pValue).append("\n");

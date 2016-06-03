@@ -54,6 +54,19 @@ public class HTTools {
     }
 
     /**
+     * One sample z test with default significance level 0.05 and to tails alternative
+     *
+     * @param sampleMean given sample mean
+     * @param sampleSize given sample size
+     * @param mean       mean of X
+     * @param sd         standard deviation of X
+     * @return an object containing hypothesis testing analysis
+     */
+    public static ZTestOneSample zTestOneSample(double sampleMean, int sampleSize, double mean, double sd) {
+        return new ZTestOneSample(sampleMean, sampleSize, mean, sd, 0.05, Alternative.TWO_TAILS);
+    }
+
+    /**
      * One sample z test with default significance level of 0.05 and two tails alternative
      *
      * @param x    given sample
@@ -63,6 +76,22 @@ public class HTTools {
      */
     public static ZTestOneSample zTestOneSample(Var x, double mean, double sd) {
         return new ZTestOneSample(x, mean, sd, 0.05, HTTools.Alternative.TWO_TAILS);
+    }
+
+
+    /**
+     * One sample z test
+     *
+     * @param sampleMean given sample mean
+     * @param sampleSize given sample size
+     * @param mean       mean of X
+     * @param sd         standard deviation of X
+     * @param sl         significance level, usual values are 0.1, 0.05, 0.01, 0.001
+     * @param alt        alternative hypothesis alternative
+     * @return an object containing hypothesis testing analysis
+     */
+    public static ZTestOneSample zTestOneSample(double sampleMean, int sampleSize, double mean, double sd, double sl, HTTools.Alternative alt) {
+        return new ZTestOneSample(sampleMean, sampleSize, mean, sd, sl, alt);
     }
 
     /**
@@ -83,6 +112,41 @@ public class HTTools {
      * Two unpaired samples z test for difference of the means with default values
      * for significance level (0.05) and alternative (two tails)
      *
+     * @param xSampleMean sample mean for the first sample
+     * @param xSampleSize sample size for the first sample
+     * @param ySampleMean sample mean for the second sample
+     * @param ySampleSize sample size for the second sample
+     * @param mean        null hypothesis mean
+     * @param xSd         standard deviation of the first sample
+     * @param ySd         standard deviation of the second sample
+     * @return an object containing hypothesis testing analysis
+     */
+    public static ZTestTwoSamples zTestTwoSamples(double xSampleMean, int xSampleSize, double ySampleMean, int ySampleSize, double mean, double xSd, double ySd) {
+        return new ZTestTwoSamples(xSampleMean, xSampleSize, ySampleMean, ySampleSize, mean, xSd, ySd, 0.05, Alternative.TWO_TAILS);
+    }
+
+    /**
+     * Two unpaired samples z test for difference of the means
+     *
+     * @param xSampleMean sample mean for the first sample
+     * @param xSampleSize sample size for the first sample
+     * @param ySampleMean sample mean for the second sample
+     * @param ySampleSize sample size for the second sample
+     * @param mean        null hypothesis mean
+     * @param xSd         standard deviation of the first sample
+     * @param ySd         standard deviation of the second sample
+     * @param sl          significance level (usual value 0.05)
+     * @param alt         alternative hypothesis (usual value two tails)
+     * @return an object containing hypothesis testing analysis
+     */
+    public static ZTestTwoSamples zTestTwoSamples(double xSampleMean, int xSampleSize, double ySampleMean, int ySampleSize, double mean, double xSd, double ySd, double sl, HTTools.Alternative alt) {
+        return new ZTestTwoSamples(xSampleMean, xSampleSize, ySampleMean, ySampleSize, mean, xSd, ySd, sl, alt);
+    }
+
+    /**
+     * Two unpaired samples z test for difference of the means with default values
+     * for significance level (0.05) and alternative (two tails)
+     *
      * @param x    first given sample
      * @param y    second given sample
      * @param mean null hypothesis mean
@@ -90,7 +154,7 @@ public class HTTools {
      * @param ySd  standard deviation of the second sample
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestTwoSamples zTestTwoSample(Var x, Var y, double mean, double xSd, double ySd) {
+    public static ZTestTwoSamples zTestTwoSamples(Var x, Var y, double mean, double xSd, double ySd) {
         return new ZTestTwoSamples(x, y, mean, xSd, ySd, 0.05, Alternative.TWO_TAILS);
     }
 
@@ -106,7 +170,7 @@ public class HTTools {
      * @param alt  alternative hypothesis (usual value two tails)
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestTwoSamples zTestTwoSample(Var x, Var y, double mean, double xSd, double ySd, double sl, HTTools.Alternative alt) {
+    public static ZTestTwoSamples zTestTwoSamples(Var x, Var y, double mean, double xSd, double ySd, double sl, HTTools.Alternative alt) {
         return new ZTestTwoSamples(x, y, mean, xSd, ySd, sl, alt);
     }
 

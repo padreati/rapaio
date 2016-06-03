@@ -34,6 +34,8 @@ import static rapaio.core.CoreTools.mean;
 import static rapaio.sys.WS.formatFlex;
 
 /**
+ * Two paired sample z test for testing mean of differences
+ *
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/27/16.
  */
 public class ZTestTwoPaired implements Printable {

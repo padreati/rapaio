@@ -32,6 +32,7 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 
 import static org.junit.Assert.assertEquals;
+import static rapaio.core.CoreTools.mean;
 
 public class HTToolsTest {
 
@@ -53,6 +54,16 @@ public class HTToolsTest {
         assertEquals(60.0436894185179, z1.ciLow, TOL);
         assertEquals(82.3563105814821, z1.ciHigh, TOL);
         assertEquals(0.05, z1.sl, TOL);
+
+        z1 = HTTools.zTestOneSample(71.2, x.rowCount(), mu, sd);
+        z1.printSummary();
+        assertEquals(71.2, z1.sampleMean, TOL);
+        assertEquals(-0.6675919504799908, z1.zScore, TOL);
+        assertEquals(0.5043940973335608, z1.pValue, TOL);
+        assertEquals(60.0436894185179, z1.ciLow, TOL);
+        assertEquals(82.3563105814821, z1.ciHigh, TOL);
+        assertEquals(0.05, z1.sl, TOL);
+
 
         ZTestOneSample z2 = HTTools.zTestOneSample(x, mu, sd, 0.05, HTTools.Alternative.LESS_THAN);
         z2.printSummary();
@@ -90,7 +101,7 @@ public class HTToolsTest {
         Var x = Numeric.copy(7.8, 6.6, 6.5, 7.4, 7.3, 7.0, 6.4, 7.1, 6.7, 7.6, 6.8);
         Var y = Numeric.copy(4.5, 5.4, 6.1, 6.1, 5.4, 5., 4.1, 5.5);
 
-        ZTestTwoSamples z1 = HTTools.zTestTwoSample(x, y, 2, 0.5, 0.5, 0.05, HTTools.Alternative.TWO_TAILS);
+        ZTestTwoSamples z1 = HTTools.zTestTwoSamples(x, y, 2, 0.5, 0.5, 0.05, HTTools.Alternative.TWO_TAILS);
         z1.printSummary();
         assertEquals(1.7556818181818183, z1.sampleMean, TOL);
         assertEquals(7.0181818181818185, z1.xSampleMean, TOL);
@@ -102,7 +113,18 @@ public class HTToolsTest {
         assertEquals(2.211040435576059, z1.ciHigh, TOL);
 
 
-        ZTestTwoSamples z2 = HTTools.zTestTwoSample(x, y, 0, 0.5, 0.6, 0.10, HTTools.Alternative.TWO_TAILS);
+        z1 = HTTools.zTestTwoSamples(mean(x).value(), x.rowCount(), mean(y).value(), y.rowCount(), 2, 0.5, 0.5, 0.05, HTTools.Alternative.TWO_TAILS);
+        z1.printSummary();
+        assertEquals(1.7556818181818183, z1.sampleMean, TOL);
+        assertEquals(7.0181818181818185, z1.xSampleMean, TOL);
+        assertEquals(5.2625, z1.ySampleMean, TOL);
+
+        assertEquals(-1.051599374295714, z1.zScore, TOL);
+        assertEquals(0.2929833949856928, z1.pValue, TOL);
+        assertEquals(1.3003232007875778, z1.ciLow, TOL);
+        assertEquals(2.211040435576059, z1.ciHigh, TOL);
+
+        ZTestTwoSamples z2 = HTTools.zTestTwoSamples(x, y, 0, 0.5, 0.6, 0.10, HTTools.Alternative.TWO_TAILS);
         z2.printSummary();
 
         assertEquals(6.7462746482071205, z2.zScore, TOL);
@@ -110,7 +132,7 @@ public class HTToolsTest {
         assertEquals(1.3276174779349252, z2.ciLow, TOL);
         assertEquals(2.1837461584287112, z2.ciHigh, TOL);
 
-        ZTestTwoSamples z3 = HTTools.zTestTwoSample(x, Numeric.empty(), 0, 0.5, 0.5);
+        ZTestTwoSamples z3 = HTTools.zTestTwoSamples(x, Numeric.empty(), 0, 0.5, 0.5);
         z3.printSummary();
 
         assertEquals(Double.NaN, z3.zScore, TOL);
@@ -118,7 +140,7 @@ public class HTToolsTest {
         assertEquals(Double.NaN, z3.ciLow, TOL);
         assertEquals(Double.NaN, z3.ciHigh, TOL);
 
-        ZTestTwoSamples z4 = HTTools.zTestTwoSample(x, y, 2, 0.5, 0.5, 0.05, HTTools.Alternative.GREATER_THAN);
+        ZTestTwoSamples z4 = HTTools.zTestTwoSamples(x, y, 2, 0.5, 0.5, 0.05, HTTools.Alternative.GREATER_THAN);
         z2.printSummary();
         assertEquals(-1.051599374295714, z4.zScore, TOL);
         assertEquals(0.8535083025071536, z4.pValue, TOL);
@@ -126,7 +148,7 @@ public class HTToolsTest {
         assertEquals(2.211040435576059, z4.ciHigh, TOL);
 
 
-        ZTestTwoSamples z5 = HTTools.zTestTwoSample(x, y, 2, 0.5, 0.5, 0.05, HTTools.Alternative.LESS_THAN);
+        ZTestTwoSamples z5 = HTTools.zTestTwoSamples(x, y, 2, 0.5, 0.5, 0.05, HTTools.Alternative.LESS_THAN);
         z1.printSummary();
         assertEquals(-1.051599374295714, z5.zScore, TOL);
         assertEquals(0.1464916974928464, z5.pValue, TOL);
