@@ -201,5 +201,13 @@ public class HTToolsTest {
         assertEquals(0.05, z4.sl, TOL);
     }
 
+    @Test
+    public void tTestOneSample() {
+        Numeric x = Numeric.copy(5, 5.5, 4.5, 5, 5, 6, 5, 5, 4.5, 5, 5, 4.5, 4.5, 5.5, 4, 5, 5, 5.5, 4.5, 5.5, 5, 5.5);
+        CoreTools.mean(x).printSummary();
+        CoreTools.var(x).printSummary();
+
+        HTTools.tTestOneSample(x, 4.7).printSummary();
+    }
 
 }

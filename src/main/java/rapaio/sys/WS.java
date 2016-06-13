@@ -136,6 +136,10 @@ public class WS {
         printer.println();
     }
 
+    public static void println(double value) {
+        println(formatFlex(value));
+    }
+
     public static void println(Boolean b) {
         println(String.valueOf(b));
     }

@@ -24,6 +24,7 @@
 
 package rapaio.core;
 
+import rapaio.core.tests.TTestOneSample;
 import rapaio.core.tests.ZTestOneSample;
 import rapaio.core.tests.ZTestTwoPaired;
 import rapaio.core.tests.ZTestTwoSamples;
@@ -201,5 +202,59 @@ public class HTTools {
      */
     public static ZTestTwoPaired zTestTwoPaired(Var x, Var y, double mean, double sd, double sl, HTTools.Alternative alt) {
         return new ZTestTwoPaired(x, y, mean, sd, sl, alt);
+    }
+
+
+    /**
+     * One sample t test with default significance level 0.05 and two tails alternative
+     *
+     * @param sampleMean given sample mean
+     * @param sampleSize given sample size
+     * @param sampleSd   sample standard deviation of X
+     * @param mean       mean of X
+     * @return an object containing hypothesis testing analysis
+     */
+    public static TTestOneSample tTestOneSample(double sampleMean, int sampleSize, double sampleSd, double mean) {
+        return new TTestOneSample(sampleMean, sampleSize, sampleSd, mean, 0.05, Alternative.TWO_TAILS);
+    }
+
+    /**
+     * One sample t test with default significance level of 0.05 and two tails alternative
+     *
+     * @param x    given sample
+     * @param mean mean of X
+     * @return an object containing hypothesis testing analysis
+     */
+    public static TTestOneSample tTestOneSample(Var x, double mean) {
+        return new TTestOneSample(x, mean, 0.05, HTTools.Alternative.TWO_TAILS);
+    }
+
+
+    /**
+     * One sample t test
+     *
+     * @param sampleMean given sample mean
+     * @param sampleSize given sample size
+     * @param sampleSd   sample standard deviation
+     * @param mean       mean of X
+     * @param sl         significance level, usual values are 0.1, 0.05, 0.01, 0.001
+     * @param alt        alternative hypothesis alternative
+     * @return an object containing hypothesis testing analysis
+     */
+    public static TTestOneSample tTestOneSample(double sampleMean, int sampleSize, double sampleSd, double mean, double sl, HTTools.Alternative alt) {
+        return new TTestOneSample(sampleMean, sampleSize, sampleSd, mean, sl, alt);
+    }
+
+    /**
+     * One sample t test
+     *
+     * @param x    given sample
+     * @param mean mean of X
+     * @param sl   significance level, usual values are 0.1, 0.05, 0.01, 0.001
+     * @param alt  alternative hypothesis alternative
+     * @return an object containing hypothesis testing analysis
+     */
+    public static TTestOneSample tTestOneSample(Var x, double mean, double sl, HTTools.Alternative alt) {
+        return new TTestOneSample(x, mean, sl, alt);
     }
 }
