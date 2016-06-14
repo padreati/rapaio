@@ -24,7 +24,6 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.HTTools;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
@@ -35,31 +34,62 @@ import static rapaio.sys.WS.formatFlex;
 
 /**
  * Two paired sample z test for testing mean of differences
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/27/16.
  */
 public class ZTestTwoPaired implements Printable {
+
+    /**
+     * Two paired samples z test for mean of the difference with default values
+     * for significance level (0.05) and alternative (two tails)
+     *
+     * @param x    first given sample
+     * @param y    second given sample
+     * @param mean null hypothesis mean
+     * @param sd   standard deviation of the first sample
+     * @return an object containing hypothesis testing analysis
+     */
+    public static ZTestTwoPaired from(Var x, Var y, double mean, double sd) {
+        return new ZTestTwoPaired(x, y, mean, sd, 0.05, HTest.Alternative.TWO_TAILS);
+    }
+
+    /**
+     * Two paired samples z test for mean of the differences
+     *
+     * @param x    first given sample
+     * @param y    second given sample
+     * @param mean null hypothesis mean
+     * @param sd   standard deviation of the first sample
+     * @param sl   significance level (usual value 0.05)
+     * @param alt  alternative hypothesis (usual value two tails)
+     * @return an object containing hypothesis testing analysis
+     */
+    public static ZTestTwoPaired from(Var x, Var y, double mean, double sd, double sl, HTest.Alternative alt) {
+        return new ZTestTwoPaired(x, y, mean, sd, sl, alt);
+    }
+
+
     // parameters
 
-    public final Var x;
-    public final Var y;
-    public final double mu;
-    public final double sd;
-    public final double sl;
-    public final HTTools.Alternative alt;
+    private final Var x;
+    private final Var y;
+    private final double mu;
+    private final double sd;
+    private final double sl;
+    private final HTest.Alternative alt;
 
     // computed
 
-    public final Var xComplete;
-    public final Var yComplete;
+    private final Var xComplete;
+    private final Var yComplete;
 
-    public final double sampleMean;
-    public final double zScore;
-    public final double pValue;
-    public final double ciLow;
-    public final double ciHigh;
+    private final double sampleMean;
+    private final double zScore;
+    private final double pValue;
+    private final double ciLow;
+    private final double ciHigh;
 
-    public ZTestTwoPaired(Var x, Var y, double mu, double sd, double sl, HTTools.Alternative alt) {
+    private ZTestTwoPaired(Var x, Var y, double mu, double sd, double sl, HTest.Alternative alt) {
         this.x = x;
         this.y = y;
         this.mu = mu;
@@ -109,6 +139,42 @@ public class ZTestTwoPaired implements Printable {
         ciHigh = new Normal(sampleMean, sv).quantile(1 - sl / 2);
     }
 
+    public double mu() {
+        return mu;
+    }
+
+    public double sd() {
+        return sd;
+    }
+
+    public double sl() {
+        return sl;
+    }
+
+    public HTest.Alternative alt() {
+        return alt;
+    }
+
+    public double sampleMean() {
+        return sampleMean;
+    }
+
+    public double zScore() {
+        return zScore;
+    }
+
+    public double pValue() {
+        return pValue;
+    }
+
+    public double ciLow() {
+        return ciLow;
+    }
+
+    public double ciHigh() {
+        return ciHigh;
+    }
+
     @Override
     public String summary() {
         StringBuilder sb = new StringBuilder();
@@ -122,7 +188,7 @@ public class ZTestTwoPaired implements Printable {
         sb.append("mean: ").append(formatFlex(mu)).append("\n");
         sb.append("x sd: ").append(formatFlex(sd)).append("\n");
         sb.append("significance level: ").append(formatFlex(sl)).append("\n");
-        sb.append("alternative hypothesis: ").append(alt == HTTools.Alternative.TWO_TAILS ? "two tails " : "one tail ").append(alt.pCondition()).append("\n");
+        sb.append("alternative hypothesis: ").append(alt == HTest.Alternative.TWO_TAILS ? "two tails " : "one tail ").append(alt.pCondition()).append("\n");
         sb.append("\n");
         sb.append("sample mean: ").append(formatFlex(sampleMean)).append("\n");
         sb.append("z score: ").append(formatFlex(zScore)).append("\n");

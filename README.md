@@ -47,6 +47,8 @@ If there are no notes it means the feature is considered to be fully implemented
     * one sample test for testing the sample mean
     * two unpaired samples test for testing difference of the sample means
     * two paired samples test for testing sample mean of the differences
+* t test
+    * one sample test for testing the sample mean
 
 **Frame Filters**
 

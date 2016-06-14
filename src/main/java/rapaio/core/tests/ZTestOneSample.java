@@ -25,7 +25,6 @@
 package rapaio.core.tests;
 
 import rapaio.core.CoreTools;
-import rapaio.core.HTTools;
 import rapaio.core.distributions.Normal;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
@@ -39,20 +38,78 @@ import static rapaio.sys.WS.formatFlex;
  */
 public class ZTestOneSample implements Printable {
 
-    public final double mu;
-    public final double sd;
-    public final double sl;
-    public final HTTools.Alternative alt;
+    /**
+     * One sample z test with default significance level 0.05 and to tails alternative
+     *
+     * @param sampleMean given sample mean
+     * @param sampleSize given sample size
+     * @param mean       mean of X
+     * @param sd         standard deviation of X
+     * @return an object containing hypothesis testing analysis
+     */
+    public static ZTestOneSample from(double sampleMean, int sampleSize, double mean, double sd) {
+        return new ZTestOneSample(sampleMean, sampleSize, mean, sd, 0.05, HTest.Alternative.TWO_TAILS);
+    }
+
+    /**
+     * One sample z test with default significance level of 0.05 and two tails alternative
+     *
+     * @param x    given sample
+     * @param mean mean of X
+     * @param sd   standard deviation of X
+     * @return an object containing hypothesis testing analysis
+     */
+    public static ZTestOneSample from(Var x, double mean, double sd) {
+        return new ZTestOneSample(x, mean, sd, 0.05, HTest.Alternative.TWO_TAILS);
+    }
+
+
+    /**
+     * One sample z test
+     *
+     * @param sampleMean given sample mean
+     * @param sampleSize given sample size
+     * @param mean       mean of X
+     * @param sd         standard deviation of X
+     * @param sl         significance level, usual values are 0.1, 0.05, 0.01, 0.001
+     * @param alt        alternative hypothesis alternative
+     * @return an object containing hypothesis testing analysis
+     */
+    public static ZTestOneSample from(double sampleMean, int sampleSize, double mean, double sd, double sl, HTest.Alternative alt) {
+        return new ZTestOneSample(sampleMean, sampleSize, mean, sd, sl, alt);
+    }
+
+    /**
+     * One sample z test
+     *
+     * @param x    given sample
+     * @param mean mean of X
+     * @param sd   standard deviation of X
+     * @param sl   significance level, usual values are 0.1, 0.05, 0.01, 0.001
+     * @param alt  alternative hypothesis alternative
+     * @return an object containing hypothesis testing analysis
+     */
+    public static ZTestOneSample from(Var x, double mean, double sd, double sl, HTest.Alternative alt) {
+        return new ZTestOneSample(x, mean, sd, sl, alt);
+    }
+
+    // INTERNALS
+
+
+    private final double mu;
+    private final double sd;
+    private final double sl;
+    private final HTest.Alternative alt;
 
     // computed
-    public final int sampleSize;
-    public final double sampleMean;
-    public double zScore;
-    public double pValue;
-    public double ciLow;
-    public double ciHigh;
+    private final int sampleSize;
+    private final double sampleMean;
+    private double zScore;
+    private double pValue;
+    private double ciLow;
+    private double ciHigh;
 
-    public ZTestOneSample(Var sample, double mu, double sd, double sl, HTTools.Alternative alt) {
+    private ZTestOneSample(Var sample, double mu, double sd, double sl, HTest.Alternative alt) {
         this.mu = mu;
         this.sd = sd;
         this.sl = sl;
@@ -72,7 +129,7 @@ public class ZTestOneSample implements Printable {
         compute();
     }
 
-    public ZTestOneSample(double sampleMean, int sampleSize, double mu, double sd, double sl, HTTools.Alternative alt) {
+    private ZTestOneSample(double sampleMean, int sampleSize, double mu, double sd, double sl, HTest.Alternative alt) {
         this.mu = mu;
         this.sd = sd;
         this.sl = sl;
@@ -80,6 +137,46 @@ public class ZTestOneSample implements Printable {
         this.sampleSize = sampleSize;
         this.sampleMean = sampleMean;
         compute();
+    }
+
+    public double mu() {
+        return mu;
+    }
+
+    public double sd() {
+        return sd;
+    }
+
+    public double sl() {
+        return sl;
+    }
+
+    public HTest.Alternative alt() {
+        return alt;
+    }
+
+    public int sampleSize() {
+        return sampleSize;
+    }
+
+    public double sampleMean() {
+        return sampleMean;
+    }
+
+    public double zScore() {
+        return zScore;
+    }
+
+    public double pValue() {
+        return pValue;
+    }
+
+    public double ciLow() {
+        return ciLow;
+    }
+
+    public double ciHigh() {
+        return ciHigh;
     }
 
     private void compute() {
@@ -113,7 +210,7 @@ public class ZTestOneSample implements Printable {
         sb.append("mean: ").append(formatFlex(mu)).append("\n");
         sb.append("sd: ").append(formatFlex(sd)).append("\n");
         sb.append("significance level: ").append(formatFlex(sl)).append("\n");
-        sb.append("alternative hypothesis: ").append(alt == HTTools.Alternative.TWO_TAILS ? "two tails " : "one tail ").append(alt.pCondition()).append("\n");
+        sb.append("alternative hypothesis: ").append(alt == HTest.Alternative.TWO_TAILS ? "two tails " : "one tail ").append(alt.pCondition()).append("\n");
         sb.append("\n");
         sb.append("sample size: ").append(sampleSize).append("\n");
         sb.append("sample mean: ").append(formatFlex(sampleMean)).append("\n");

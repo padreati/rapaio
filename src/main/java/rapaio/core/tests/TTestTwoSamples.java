@@ -32,14 +32,14 @@ import static rapaio.core.CoreTools.mean;
 import static rapaio.sys.WS.formatFlex;
 
 /**
- * Two sample z test: tests the difference between two sample means
- * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/27/16.
+ * t test for checking if two samples have the same mean
+ *
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/14/16.
  */
-public class ZTestTwoSamples implements Printable {
+public class TTestTwoSamples implements HTest, Printable {
 
     /**
-     * Two unpaired samples z test for difference of the means with default values
+     * Two unpaired samples t test for difference of the means with default values
      * for significance level (0.05) and alternative (two tails)
      *
      * @param xSampleMean sample mean for the first sample
@@ -51,12 +51,12 @@ public class ZTestTwoSamples implements Printable {
      * @param ySd         standard deviation of the second sample
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestTwoSamples from(double xSampleMean, int xSampleSize, double ySampleMean, int ySampleSize, double mean, double xSd, double ySd) {
-        return new ZTestTwoSamples(xSampleMean, xSampleSize, ySampleMean, ySampleSize, mean, xSd, ySd, 0.05, HTest.Alternative.TWO_TAILS);
+    public static TTestTwoSamples from(double xSampleMean, int xSampleSize, double ySampleMean, int ySampleSize, double mean, double xSd, double ySd) {
+        return new TTestTwoSamples(xSampleMean, xSampleSize, ySampleMean, ySampleSize, mean, xSd, ySd, 0.05, HTest.Alternative.TWO_TAILS);
     }
 
     /**
-     * Two unpaired samples z test for difference of the means
+     * Two unpaired samples t test for difference of the means
      *
      * @param xSampleMean sample mean for the first sample
      * @param xSampleSize sample size for the first sample
@@ -69,12 +69,12 @@ public class ZTestTwoSamples implements Printable {
      * @param alt         alternative hypothesis (usual value two tails)
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestTwoSamples from(double xSampleMean, int xSampleSize, double ySampleMean, int ySampleSize, double mean, double xSd, double ySd, double sl, HTest.Alternative alt) {
-        return new ZTestTwoSamples(xSampleMean, xSampleSize, ySampleMean, ySampleSize, mean, xSd, ySd, sl, alt);
+    public static TTestTwoSamples from(double xSampleMean, int xSampleSize, double ySampleMean, int ySampleSize, double mean, double xSd, double ySd, double sl, HTest.Alternative alt) {
+        return new TTestTwoSamples(xSampleMean, xSampleSize, ySampleMean, ySampleSize, mean, xSd, ySd, sl, alt);
     }
 
     /**
-     * Two unpaired samples z test for difference of the means with default values
+     * Two unpaired samples t test for difference of the means with default values
      * for significance level (0.05) and alternative (two tails)
      *
      * @param x    first given sample
@@ -84,12 +84,12 @@ public class ZTestTwoSamples implements Printable {
      * @param ySd  standard deviation of the second sample
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestTwoSamples from(Var x, Var y, double mean, double xSd, double ySd) {
-        return new ZTestTwoSamples(x, y, mean, xSd, ySd, 0.05, HTest.Alternative.TWO_TAILS);
+    public static TTestTwoSamples from(Var x, Var y, double mean, double xSd, double ySd) {
+        return new TTestTwoSamples(x, y, mean, xSd, ySd, 0.05, HTest.Alternative.TWO_TAILS);
     }
 
     /**
-     * Two unpaired samples z test for difference of the means
+     * Two unpaired samples t test for difference of the means
      *
      * @param x    first given sample
      * @param y    second given sample
@@ -100,8 +100,8 @@ public class ZTestTwoSamples implements Printable {
      * @param alt  alternative hypothesis (usual value two tails)
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestTwoSamples from(Var x, Var y, double mean, double xSd, double ySd, double sl, HTest.Alternative alt) {
-        return new ZTestTwoSamples(x, y, mean, xSd, ySd, sl, alt);
+    public static TTestTwoSamples from(Var x, Var y, double mean, double xSd, double ySd, double sl, HTest.Alternative alt) {
+        return new TTestTwoSamples(x, y, mean, xSd, ySd, sl, alt);
     }
 
     // parameters
@@ -125,7 +125,7 @@ public class ZTestTwoSamples implements Printable {
     private double ciLow;
     private double ciHigh;
 
-    private ZTestTwoSamples(Var x, Var y, double mu, double xSd, double ySd, double sl, HTest.Alternative alt) {
+    private TTestTwoSamples(Var x, Var y, double mu, double xSd, double ySd, double sl, HTest.Alternative alt) {
         this.mu = mu;
         this.xSd = xSd;
         this.ySd = ySd;
@@ -160,7 +160,7 @@ public class ZTestTwoSamples implements Printable {
         compute();
     }
 
-    private ZTestTwoSamples(double xSampleMean, int xSampleSize, double ySampleMean, int ySampleSize, double mu, double xSd, double ySd, double sl, HTest.Alternative alt) {
+    private TTestTwoSamples(double xSampleMean, int xSampleSize, double ySampleMean, int ySampleSize, double mu, double xSd, double ySd, double sl, HTest.Alternative alt) {
         this.xSampleMean = xSampleMean;
         this.xSampleSize = xSampleSize;
         this.ySampleMean = ySampleMean;
@@ -291,4 +291,6 @@ public class ZTestTwoSamples implements Printable {
 
         return sb.toString();
     }
+
+
 }
