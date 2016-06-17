@@ -1,0 +1,7 @@
+comment:
+  layout: header, changes, diff
+coverage:
+  ignore:
+  - src/main/java/rapaio/experiment/*
+  status:
+    patch: false
