@@ -45,7 +45,7 @@ public class ZTestTwoPairedTest {
         Var x = Numeric.copy(7.8, 6.6, 6.5, 7.4, 7.3, 7.0, 6.4, 7.1, 6.7, 7.6, 6.8);
         Var y = Numeric.copy(4.5, 5.4, 6.1, 6.1, 5.4, 5., 4.1, 5.5);
 
-        ZTestTwoPaired z1 = ZTestTwoPaired.from(x, y, 2, 0.5);
+        ZTestTwoPaired z1 = ZTestTwoPaired.test(x, y, 2, 0.5);
 
         assertEquals(2, z1.mu(), TOL);
         assertEquals(0.5, z1.sd(), TOL);
@@ -60,7 +60,7 @@ public class ZTestTwoPairedTest {
         assertEquals(2.0964759560874193, z1.ciHigh(), TOL);
         assertEquals(0.05, z1.sl(), TOL);
 
-        ZTestTwoPaired z2 = ZTestTwoPaired.from(x, Numeric.copy(Double.NaN, Double.NaN), 2, 0.5, 0.05, HTest.Alternative.LESS_THAN);
+        ZTestTwoPaired z2 = ZTestTwoPaired.test(x, Numeric.copy(Double.NaN, Double.NaN), 2, 0.5, 0.05, HTest.Alternative.LESS_THAN);
         z2.printSummary();
 
         assertEquals(Double.NaN, z2.sampleMean(), TOL);
@@ -70,7 +70,7 @@ public class ZTestTwoPairedTest {
         assertEquals(Double.NaN, z2.ciHigh(), TOL);
         assertEquals(0.05, z2.sl(), TOL);
 
-        ZTestTwoPaired z3 = ZTestTwoPaired.from(x, y, 2, 0.5, 0.05, HTest.Alternative.GREATER_THAN);
+        ZTestTwoPaired z3 = ZTestTwoPaired.test(x, y, 2, 0.5, 0.05, HTest.Alternative.GREATER_THAN);
         z3.printSummary();
         assertEquals(1.75, z3.sampleMean(), TOL);
         assertEquals(-1.4142135623730951, z3.zScore(), TOL);
@@ -79,7 +79,7 @@ public class ZTestTwoPairedTest {
         assertEquals(2.0964759560874193, z3.ciHigh(), TOL);
         assertEquals(0.05, z3.sl(), TOL);
 
-        ZTestTwoPaired z4 = ZTestTwoPaired.from(x, y, 2, 0.5, 0.05, HTest.Alternative.LESS_THAN);
+        ZTestTwoPaired z4 = ZTestTwoPaired.test(x, y, 2, 0.5, 0.05, HTest.Alternative.LESS_THAN);
         z4.printSummary();
         assertEquals(1.75, z4.sampleMean(), TOL);
         assertEquals(-1.4142135623730951, z4.zScore(), TOL);

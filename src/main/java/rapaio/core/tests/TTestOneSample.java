@@ -49,7 +49,7 @@ public class TTestOneSample implements HTest, Printable {
      * @param alt        alternative hypothesis alternative
      * @return an object containing hypothesis testing analysis
      */
-    public static TTestOneSample from(double sampleMean, int sampleSize, double sampleSd, double mean, double sl, HTest.Alternative alt) {
+    public static TTestOneSample test(double sampleMean, int sampleSize, double sampleSd, double mean, double sl, HTest.Alternative alt) {
         return new TTestOneSample(sampleMean, sampleSize, sampleSd, mean, sl, alt);
     }
 
@@ -62,7 +62,7 @@ public class TTestOneSample implements HTest, Printable {
      * @param alt  alternative hypothesis alternative
      * @return an object containing hypothesis testing analysis
      */
-    public static TTestOneSample from(Var x, double mean, double sl, HTest.Alternative alt) {
+    public static TTestOneSample test(Var x, double mean, double sl, HTest.Alternative alt) {
         return new TTestOneSample(x, mean, sl, alt);
     }
 
@@ -76,7 +76,7 @@ public class TTestOneSample implements HTest, Printable {
      * @param mean       mean of X
      * @return an object containing hypothesis testing analysis
      */
-    public static TTestOneSample from(double sampleMean, int sampleSize, double sampleSd, double mean) {
+    public static TTestOneSample test(double sampleMean, int sampleSize, double sampleSd, double mean) {
         return new TTestOneSample(sampleMean, sampleSize, sampleSd, mean, 0.05, HTest.Alternative.TWO_TAILS);
     }
 
@@ -87,7 +87,7 @@ public class TTestOneSample implements HTest, Printable {
      * @param mean mean of X
      * @return an object containing hypothesis testing analysis
      */
-    public static TTestOneSample from(Var x, double mean) {
+    public static TTestOneSample test(Var x, double mean) {
         return new TTestOneSample(x, mean, 0.05, HTest.Alternative.TWO_TAILS);
     }
 

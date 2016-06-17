@@ -24,84 +24,72 @@
 
 package rapaio.core.tests;
 
-import rapaio.core.distributions.Normal;
+import rapaio.core.distributions.StudentT;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
-import static rapaio.core.CoreTools.mean;
+import static rapaio.core.CoreTools.*;
 import static rapaio.sys.WS.formatFlex;
 
 /**
  * t test for checking if two samples have the same mean
- *
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/14/16.
  */
 public class TTestTwoSamples implements HTest, Printable {
 
     /**
-     * Two unpaired samples t test for difference of the means with default values
-     * for significance level (0.05) and alternative (two tails)
-     *
-     * @param xSampleMean sample mean for the first sample
-     * @param xSampleSize sample size for the first sample
-     * @param ySampleMean sample mean for the second sample
-     * @param ySampleSize sample size for the second sample
-     * @param mean        null hypothesis mean
-     * @param xSd         standard deviation of the first sample
-     * @param ySd         standard deviation of the second sample
-     * @return an object containing hypothesis testing analysis
-     */
-    public static TTestTwoSamples from(double xSampleMean, int xSampleSize, double ySampleMean, int ySampleSize, double mean, double xSd, double ySd) {
-        return new TTestTwoSamples(xSampleMean, xSampleSize, ySampleMean, ySampleSize, mean, xSd, ySd, 0.05, HTest.Alternative.TWO_TAILS);
-    }
-
-    /**
-     * Two unpaired samples t test for difference of the means
-     *
-     * @param xSampleMean sample mean for the first sample
-     * @param xSampleSize sample size for the first sample
-     * @param ySampleMean sample mean for the second sample
-     * @param ySampleSize sample size for the second sample
-     * @param mean        null hypothesis mean
-     * @param xSd         standard deviation of the first sample
-     * @param ySd         standard deviation of the second sample
-     * @param sl          significance level (usual value 0.05)
-     * @param alt         alternative hypothesis (usual value two tails)
-     * @return an object containing hypothesis testing analysis
-     */
-    public static TTestTwoSamples from(double xSampleMean, int xSampleSize, double ySampleMean, int ySampleSize, double mean, double xSd, double ySd, double sl, HTest.Alternative alt) {
-        return new TTestTwoSamples(xSampleMean, xSampleSize, ySampleMean, ySampleSize, mean, xSd, ySd, sl, alt);
-    }
-
-    /**
-     * Two unpaired samples t test for difference of the means with default values
+     * Two unpaired samples with equal variances t test for difference of the means with default values
      * for significance level (0.05) and alternative (two tails)
      *
      * @param x    first given sample
      * @param y    second given sample
      * @param mean null hypothesis mean
-     * @param xSd  standard deviation of the first sample
-     * @param ySd  standard deviation of the second sample
      * @return an object containing hypothesis testing analysis
      */
-    public static TTestTwoSamples from(Var x, Var y, double mean, double xSd, double ySd) {
-        return new TTestTwoSamples(x, y, mean, xSd, ySd, 0.05, HTest.Alternative.TWO_TAILS);
+    public static TTestTwoSamples test(Var x, Var y, double mean) {
+        return new TTestTwoSamples(x, y, mean, true, 0.05, HTest.Alternative.TWO_TAILS);
     }
 
     /**
-     * Two unpaired samples t test for difference of the means
+     * Two unpaired samples with equal variances t test for difference of the means
      *
      * @param x    first given sample
      * @param y    second given sample
      * @param mean null hypothesis mean
-     * @param xSd  standard deviation of the first sample
-     * @param ySd  standard deviation of the second sample
      * @param sl   significance level (usual value 0.05)
      * @param alt  alternative hypothesis (usual value two tails)
      * @return an object containing hypothesis testing analysis
      */
-    public static TTestTwoSamples from(Var x, Var y, double mean, double xSd, double ySd, double sl, HTest.Alternative alt) {
-        return new TTestTwoSamples(x, y, mean, xSd, ySd, sl, alt);
+    public static TTestTwoSamples test(Var x, Var y, double mean, double sl, HTest.Alternative alt) {
+        return new TTestTwoSamples(x, y, mean, true, sl, alt);
+    }
+
+    /**
+     * Two unpaired samples with unequal variances Welch t test for difference of the means with default values
+     * for significance level (0.05) and alternative (two tails)
+     *
+     * @param x    first given sample
+     * @param y    second given sample
+     * @param mean null hypothesis mean
+     * @return an object containing hypothesis testing analysis
+     */
+    public static TTestTwoSamples welchTest(Var x, Var y, double mean) {
+        return new TTestTwoSamples(x, y, mean, false, 0.05, HTest.Alternative.TWO_TAILS);
+    }
+
+    /**
+     * Two unpaired samples with unequal variances Welch t test for difference of the means
+     *
+     * @param x    first given sample
+     * @param y    second given sample
+     * @param mean null hypothesis mean
+     * @param sl   significance level (usual value 0.05)
+     * @param alt  alternative hypothesis (usual value two tails)
+     * @return an object containing hypothesis testing analysis
+     */
+    public static TTestTwoSamples welchTest(Var x, Var y, double mean, double sl, HTest.Alternative alt) {
+        return new TTestTwoSamples(x, y, mean, false, sl, alt);
     }
 
     // parameters
@@ -109,28 +97,29 @@ public class TTestTwoSamples implements HTest, Printable {
     private final double sampleMean;
     private final double xSampleMean;
     private final int xSampleSize;
+    private final double xSampleSd;
     private final double ySampleMean;
     private final int ySampleSize;
+    private final double ySampleSd;
+    private final boolean equalVars;
+    private double df;
     private final double mu;
-    private final double xSd;
-    private final double ySd;
     private final double sl;
     private final HTest.Alternative alt;
 
 
     // computed
 
-    private double zScore;
+    private double t;
     private double pValue;
     private double ciLow;
     private double ciHigh;
 
-    private TTestTwoSamples(Var x, Var y, double mu, double xSd, double ySd, double sl, HTest.Alternative alt) {
+    private TTestTwoSamples(Var x, Var y, double mu, boolean equalVars, double sl, HTest.Alternative alt) {
         this.mu = mu;
-        this.xSd = xSd;
-        this.ySd = ySd;
         this.sl = sl;
         this.alt = alt;
+        this.equalVars = equalVars;
 
         Var xComplete = x.stream().complete().toMappedVar();
         Var yComplete = y.stream().complete().toMappedVar();
@@ -142,8 +131,11 @@ public class TTestTwoSamples implements HTest, Printable {
             ySampleMean = Double.NaN;
             xSampleSize = -1;
             ySampleSize = -1;
+            xSampleSd = Double.NaN;
+            ySampleSd = Double.NaN;
+            df = -1;
 
-            zScore = Double.NaN;
+            t = Double.NaN;
             pValue = Double.NaN;
             ciLow = Double.NaN;
             ciHigh = Double.NaN;
@@ -153,36 +145,18 @@ public class TTestTwoSamples implements HTest, Printable {
 
         xSampleMean = mean(xComplete).value();
         xSampleSize = xComplete.rowCount();
+        xSampleSd = var(xComplete).sdValue();
         ySampleMean = mean(yComplete).value();
         ySampleSize = yComplete.rowCount();
+        ySampleSd = var(yComplete).sdValue();
+
         sampleMean = xSampleMean - ySampleMean;
 
         compute();
     }
 
-    private TTestTwoSamples(double xSampleMean, int xSampleSize, double ySampleMean, int ySampleSize, double mu, double xSd, double ySd, double sl, HTest.Alternative alt) {
-        this.xSampleMean = xSampleMean;
-        this.xSampleSize = xSampleSize;
-        this.ySampleMean = ySampleMean;
-        this.ySampleSize = ySampleSize;
-        this.sampleMean = xSampleMean - ySampleMean;
-
-        this.mu = mu;
-        this.xSd = xSd;
-        this.ySd = ySd;
-        this.sl = sl;
-        this.alt = alt;
-
-        if (xSampleSize < 1 || ySampleSize < 1) {
-            // nothing to do
-            zScore = Double.NaN;
-            pValue = Double.NaN;
-            ciLow = Double.NaN;
-            ciHigh = Double.NaN;
-            return;
-        }
-
-        compute();
+    public boolean equalVars() {
+        return equalVars;
     }
 
     public double sampleMean() {
@@ -205,16 +179,16 @@ public class TTestTwoSamples implements HTest, Printable {
         return ySampleSize;
     }
 
+    public double xSampleSd() {
+        return xSampleSd;
+    }
+
+    public double ySampleSd() {
+        return ySampleSd;
+    }
+
     public double mu() {
         return mu;
-    }
-
-    public double xSd() {
-        return xSd;
-    }
-
-    public double ySd() {
-        return ySd;
     }
 
     public double sl() {
@@ -225,8 +199,12 @@ public class TTestTwoSamples implements HTest, Printable {
         return alt;
     }
 
-    public double zScore() {
-        return zScore;
+    public double t() {
+        return t;
+    }
+
+    public double df() {
+        return df;
     }
 
     public double pValue() {
@@ -242,49 +220,69 @@ public class TTestTwoSamples implements HTest, Printable {
     }
 
     private void compute() {
-        double xv = xSd * xSd / xSampleSize;
-        double yv = ySd * ySd / ySampleSize;
 
-        double sv = Math.sqrt(xv + yv);
+        double pv;
 
-        zScore = (xSampleMean - ySampleMean - mu) / sv;
-
-        Normal normal = new Normal(0, 1);
-        switch (alt) {
-            case GREATER_THAN:
-                pValue = 1 - normal.cdf(zScore);
-                break;
-            case LESS_THAN:
-                pValue = normal.cdf(zScore);
-                break;
-            default:
-                pValue = normal.cdf(-Math.abs(zScore)) * 2;
+        if (equalVars) {
+            df = xSampleSize + ySampleSize - 2;
+            double xv = xSampleSd * xSampleSd * (xSampleSize - 1);
+            double yv = ySampleSd * ySampleSd * (ySampleSize - 1);
+            pv = Math.sqrt((xv + yv) / df) * Math.sqrt(1.0 / xSampleSize + 1.0 / ySampleSize);
+            t = (xSampleMean - ySampleMean - mu) / pv;
+        } else {
+            double xv = xSampleSd * xSampleSd / xSampleSize;
+            double yv = ySampleSd * ySampleSd / ySampleSize;
+            t = (xSampleMean - ySampleMean - mu) / Math.sqrt(xv + yv);
+            df = Math.pow(xv + yv, 2) / (xv * xv / (xSampleSize - 1) + yv * yv / (ySampleSize - 1));
+            pv = Math.sqrt(xv + yv);
         }
 
-        ciLow = new Normal(xSampleMean - ySampleMean, sv).quantile(sl / 2);
-        ciHigh = new Normal(xSampleMean - ySampleMean, sv).quantile(1 - sl / 2);
+        StudentT st = new StudentT(df);
+        switch (alt) {
+            case GREATER_THAN:
+                pValue = 1 - st.cdf(t);
+                break;
+            case LESS_THAN:
+                pValue = st.cdf(t);
+                break;
+            default:
+                pValue = st.cdf(-Math.abs(t)) * 2;
+        }
+
+        ciLow = new StudentT(df, xSampleMean - ySampleMean, pv).quantile(sl / 2);
+        ciHigh = new StudentT(df, xSampleMean - ySampleMean, pv).quantile(1 - sl / 2);
     }
 
     @Override
     public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
-        sb.append("> HTTools.zTestTwoSamples\n");
+        sb.append("> HTTools.tTestTwoSamples\n");
         sb.append("\n");
-        sb.append(" Two Samples z-test\n");
-        sb.append("\n");
-        sb.append("x sample mean: ").append(formatFlex(xSampleMean)).append("\n");
-        sb.append("x sample size: ").append(xSampleSize).append("\n");
-        sb.append("y sample mean: ").append(formatFlex(ySampleMean)).append("\n");
-        sb.append("y sample size: ").append(ySampleSize).append("\n");
+        if (equalVars) {
+            sb.append(" Two Samples t-test\n");
+            sb.append(" (equal variances)\n");
+            sb.append("\n");
+        } else {
+            sb.append(" Welch's Two Samples t-test\n");
+            sb.append(" (unequal variances)\n");
+            sb.append("\n");
+        }
         sb.append("mean: ").append(formatFlex(mu)).append("\n");
-        sb.append("x sd: ").append(formatFlex(xSd)).append("\n");
-        sb.append("y sd: ").append(formatFlex(ySd)).append("\n");
+
+        sb.append("\nsample estimates:\n");
+        sb.append("x mean: ").append(formatFlex(xSampleMean)).append("\n");
+        sb.append("x size: ").append(xSampleSize).append("\n");
+        sb.append("x sd: ").append(formatFlex(xSampleSd)).append("\n");
+        sb.append("y mean: ").append(formatFlex(ySampleMean)).append("\n");
+        sb.append("y size: ").append(ySampleSize).append("\n");
+        sb.append("y sd: ").append(formatFlex(ySampleSd)).append("\n");
+
+        sb.append("\ntest results:\n");
+        sb.append("df: ").append(df).append("\n");
         sb.append("significance level: ").append(formatFlex(sl)).append("\n");
         sb.append("alternative hypothesis: ").append(alt == HTest.Alternative.TWO_TAILS ? "two tails " : "one tail ").append(alt.pCondition()).append("\n");
-        sb.append("\n");
-        sb.append("sample mean: ").append(formatFlex(sampleMean)).append("\n");
-        sb.append("z score: ").append(formatFlex(zScore)).append("\n");
+        sb.append("t: ").append(formatFlex(t)).append("\n");
         sb.append("p-value: ").append(pValue).append("\n");
 
         sb.append("conf int: [").append(formatFlex(ciLow)).append(",").append(formatFlex(ciHigh)).append("]\n");

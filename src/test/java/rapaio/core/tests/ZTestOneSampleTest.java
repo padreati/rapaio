@@ -45,7 +45,7 @@ public class ZTestOneSampleTest {
         double sd = 18;
         Var x = Numeric.copy(65, 78, 88, 55, 48, 95, 66, 57, 79, 81);
 
-        ZTestOneSample z1 = ZTestOneSample.from(x, mu, sd);
+        ZTestOneSample z1 = ZTestOneSample.test(x, mu, sd);
         z1.printSummary();
 
         assertEquals(x.rowCount(), z1.sampleSize());
@@ -60,7 +60,7 @@ public class ZTestOneSampleTest {
         assertEquals(82.3563105814821, z1.ciHigh(), TOL);
         assertEquals(0.05, z1.sl(), TOL);
 
-        z1 = ZTestOneSample.from(71.2, x.rowCount(), mu, sd);
+        z1 = ZTestOneSample.test(71.2, x.rowCount(), mu, sd);
         z1.printSummary();
         assertEquals(71.2, z1.sampleMean(), TOL);
         assertEquals(-0.6675919504799908, z1.zScore(), TOL);
@@ -70,7 +70,7 @@ public class ZTestOneSampleTest {
         assertEquals(0.05, z1.sl(), TOL);
 
 
-        z1 = ZTestOneSample.from(71.2, x.rowCount(), mu, sd, 0.05, HTest.Alternative.TWO_TAILS);
+        z1 = ZTestOneSample.test(71.2, x.rowCount(), mu, sd, 0.05, HTest.Alternative.TWO_TAILS);
         z1.printSummary();
         assertEquals(71.2, z1.sampleMean(), TOL);
         assertEquals(-0.6675919504799908, z1.zScore(), TOL);
@@ -80,7 +80,7 @@ public class ZTestOneSampleTest {
         assertEquals(0.05, z1.sl(), TOL);
 
 
-        ZTestOneSample z2 = ZTestOneSample.from(x, mu, sd, 0.05, HTest.Alternative.LESS_THAN);
+        ZTestOneSample z2 = ZTestOneSample.test(x, mu, sd, 0.05, HTest.Alternative.LESS_THAN);
         z2.printSummary();
         assertEquals(71.2, z2.sampleMean(), TOL);
         assertEquals(-0.6675919504799908, z2.zScore(), TOL);
@@ -90,7 +90,7 @@ public class ZTestOneSampleTest {
         assertEquals(0.05, z2.sl(), TOL);
 
 
-        ZTestOneSample z3 = ZTestOneSample.from(x, mu, sd, 0.01, HTest.Alternative.GREATER_THAN);
+        ZTestOneSample z3 = ZTestOneSample.test(x, mu, sd, 0.01, HTest.Alternative.GREATER_THAN);
         z3.printSummary();
         assertEquals(71.2, z3.sampleMean(), TOL);
         assertEquals(-0.6675919504799908, z3.zScore(), TOL);
@@ -99,7 +99,7 @@ public class ZTestOneSampleTest {
         assertEquals(85.86187743343541, z3.ciHigh(), TOL);
         assertEquals(0.01, z3.sl(), TOL);
 
-        ZTestOneSample z4 = ZTestOneSample.from(Numeric.copy(Double.NaN, Double.NaN), 0, 1);
+        ZTestOneSample z4 = ZTestOneSample.test(Numeric.copy(Double.NaN, Double.NaN), 0, 1);
         z4.printSummary();
 
         assertEquals(Double.NaN, z4.sampleMean(), TOL);

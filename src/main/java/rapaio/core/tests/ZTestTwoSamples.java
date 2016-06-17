@@ -51,7 +51,7 @@ public class ZTestTwoSamples implements Printable {
      * @param ySd         standard deviation of the second sample
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestTwoSamples from(double xSampleMean, int xSampleSize, double ySampleMean, int ySampleSize, double mean, double xSd, double ySd) {
+    public static ZTestTwoSamples test(double xSampleMean, int xSampleSize, double ySampleMean, int ySampleSize, double mean, double xSd, double ySd) {
         return new ZTestTwoSamples(xSampleMean, xSampleSize, ySampleMean, ySampleSize, mean, xSd, ySd, 0.05, HTest.Alternative.TWO_TAILS);
     }
 
@@ -69,7 +69,7 @@ public class ZTestTwoSamples implements Printable {
      * @param alt         alternative hypothesis (usual value two tails)
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestTwoSamples from(double xSampleMean, int xSampleSize, double ySampleMean, int ySampleSize, double mean, double xSd, double ySd, double sl, HTest.Alternative alt) {
+    public static ZTestTwoSamples test(double xSampleMean, int xSampleSize, double ySampleMean, int ySampleSize, double mean, double xSd, double ySd, double sl, HTest.Alternative alt) {
         return new ZTestTwoSamples(xSampleMean, xSampleSize, ySampleMean, ySampleSize, mean, xSd, ySd, sl, alt);
     }
 
@@ -84,7 +84,7 @@ public class ZTestTwoSamples implements Printable {
      * @param ySd  standard deviation of the second sample
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestTwoSamples from(Var x, Var y, double mean, double xSd, double ySd) {
+    public static ZTestTwoSamples test(Var x, Var y, double mean, double xSd, double ySd) {
         return new ZTestTwoSamples(x, y, mean, xSd, ySd, 0.05, HTest.Alternative.TWO_TAILS);
     }
 
@@ -100,7 +100,7 @@ public class ZTestTwoSamples implements Printable {
      * @param alt  alternative hypothesis (usual value two tails)
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestTwoSamples from(Var x, Var y, double mean, double xSd, double ySd, double sl, HTest.Alternative alt) {
+    public static ZTestTwoSamples test(Var x, Var y, double mean, double xSd, double ySd, double sl, HTest.Alternative alt) {
         return new ZTestTwoSamples(x, y, mean, xSd, ySd, sl, alt);
     }
 

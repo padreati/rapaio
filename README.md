@@ -49,6 +49,8 @@ If there are no notes it means the feature is considered to be fully implemented
     * two paired samples test for testing sample mean of the differences
 * t test
     * one sample test for testing the sample mean
+    * two unpaired samples t test with same variance
+    * two unpaired samples Welch t test with different variances
 
 **Frame Filters**
 

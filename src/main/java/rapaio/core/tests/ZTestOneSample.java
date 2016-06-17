@@ -47,7 +47,7 @@ public class ZTestOneSample implements Printable {
      * @param sd         standard deviation of X
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestOneSample from(double sampleMean, int sampleSize, double mean, double sd) {
+    public static ZTestOneSample test(double sampleMean, int sampleSize, double mean, double sd) {
         return new ZTestOneSample(sampleMean, sampleSize, mean, sd, 0.05, HTest.Alternative.TWO_TAILS);
     }
 
@@ -59,7 +59,7 @@ public class ZTestOneSample implements Printable {
      * @param sd   standard deviation of X
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestOneSample from(Var x, double mean, double sd) {
+    public static ZTestOneSample test(Var x, double mean, double sd) {
         return new ZTestOneSample(x, mean, sd, 0.05, HTest.Alternative.TWO_TAILS);
     }
 
@@ -75,7 +75,7 @@ public class ZTestOneSample implements Printable {
      * @param alt        alternative hypothesis alternative
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestOneSample from(double sampleMean, int sampleSize, double mean, double sd, double sl, HTest.Alternative alt) {
+    public static ZTestOneSample test(double sampleMean, int sampleSize, double mean, double sd, double sl, HTest.Alternative alt) {
         return new ZTestOneSample(sampleMean, sampleSize, mean, sd, sl, alt);
     }
 
@@ -89,7 +89,7 @@ public class ZTestOneSample implements Printable {
      * @param alt  alternative hypothesis alternative
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestOneSample from(Var x, double mean, double sd, double sl, HTest.Alternative alt) {
+    public static ZTestOneSample test(Var x, double mean, double sd, double sl, HTest.Alternative alt) {
         return new ZTestOneSample(x, mean, sd, sl, alt);
     }
 

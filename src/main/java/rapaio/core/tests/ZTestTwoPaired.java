@@ -49,7 +49,7 @@ public class ZTestTwoPaired implements Printable {
      * @param sd   standard deviation of the first sample
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestTwoPaired from(Var x, Var y, double mean, double sd) {
+    public static ZTestTwoPaired test(Var x, Var y, double mean, double sd) {
         return new ZTestTwoPaired(x, y, mean, sd, 0.05, HTest.Alternative.TWO_TAILS);
     }
 
@@ -64,7 +64,7 @@ public class ZTestTwoPaired implements Printable {
      * @param alt  alternative hypothesis (usual value two tails)
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestTwoPaired from(Var x, Var y, double mean, double sd, double sl, HTest.Alternative alt) {
+    public static ZTestTwoPaired test(Var x, Var y, double mean, double sd, double sl, HTest.Alternative alt) {
         return new ZTestTwoPaired(x, y, mean, sd, sl, alt);
     }
 

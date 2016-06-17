@@ -41,7 +41,7 @@ public class TTestOneSampleTest {
         CoreTools.mean(x).printSummary();
         CoreTools.var(x).printSummary();
 
-        TTestOneSample t1 = TTestOneSample.from(x, 4.7);
+        TTestOneSample t1 = TTestOneSample.test(x, 4.7);
         t1.printSummary();
 
         assertEquals(4.7, t1.mu(), TOL);
@@ -59,7 +59,7 @@ public class TTestOneSampleTest {
         assertEquals(5.205242818100057, t1.ciHigh(), TOL);
 
 
-        TTestOneSample t2 = TTestOneSample.from(CoreTools.mean(x).value(), x.rowCount(), CoreTools.var(x).sdValue(), 4.7);
+        TTestOneSample t2 = TTestOneSample.test(CoreTools.mean(x).value(), x.rowCount(), CoreTools.var(x).sdValue(), 4.7);
         assertEquals(4.7, t2.mu(), TOL);
         assertEquals(0.05, t2.sl(), TOL);
         assertEquals(HTest.Alternative.TWO_TAILS, t1.alt());
@@ -74,7 +74,7 @@ public class TTestOneSampleTest {
         assertEquals(4.794757181899943, t2.ciLow(), TOL);
         assertEquals(5.205242818100057, t2.ciHigh(), TOL);
 
-        TTestOneSample t3 = TTestOneSample.from(CoreTools.mean(x).value(), x.rowCount(), CoreTools.var(x).sdValue(), 4.7, 0.1, HTest.Alternative.GREATER_THAN);
+        TTestOneSample t3 = TTestOneSample.test(CoreTools.mean(x).value(), x.rowCount(), CoreTools.var(x).sdValue(), 4.7, 0.1, HTest.Alternative.GREATER_THAN);
         assertEquals(4.7, t3.mu(), TOL);
         assertEquals(0.1, t3.sl(), TOL);
         assertEquals(HTest.Alternative.GREATER_THAN, t3.alt());
@@ -89,7 +89,7 @@ public class TTestOneSampleTest {
         assertEquals(4.830175143575739, t3.ciLow(), TOL);
         assertEquals(5.169824856424261, t3.ciHigh(), TOL);
 
-        TTestOneSample t4 = TTestOneSample.from(CoreTools.mean(x).value(), x.rowCount(), CoreTools.var(x).sdValue(), 4.7, 0.1, HTest.Alternative.LESS_THAN);
+        TTestOneSample t4 = TTestOneSample.test(CoreTools.mean(x).value(), x.rowCount(), CoreTools.var(x).sdValue(), 4.7, 0.1, HTest.Alternative.LESS_THAN);
         assertEquals(4.7, t4.mu(), TOL);
         assertEquals(0.1, t4.sl(), TOL);
         assertEquals(HTest.Alternative.LESS_THAN, t4.alt());
@@ -105,7 +105,7 @@ public class TTestOneSampleTest {
         assertEquals(5.169824856424261, t4.ciHigh(), TOL);
 
 
-        TTestOneSample t5 = TTestOneSample.from(Numeric.empty(), 4.7, 0.05, HTest.Alternative.TWO_TAILS);
+        TTestOneSample t5 = TTestOneSample.test(Numeric.empty(), 4.7, 0.05, HTest.Alternative.TWO_TAILS);
         assertEquals(4.7, t5.mu(), TOL);
         assertEquals(0.05, t5.sl(), TOL);
         assertEquals(HTest.Alternative.TWO_TAILS, t5.alt());
