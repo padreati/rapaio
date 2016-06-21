@@ -24,6 +24,8 @@
 
 package rapaio.core.distributions;
 
+import rapaio.core.RandomSource;
+
 /**
  * Bernoulli distribution
  *
@@ -33,10 +35,12 @@ public class Bernoulli implements Distribution {
 
     private static final long serialVersionUID = -180129876504915848L;
 
-    private final double p;
+    private final double prob;
 
     public Bernoulli(double p) {
-        this.p = p;
+        if (p < 0 || p > 1)
+            throw new IllegalArgumentException("Probability parameter must be in closed interval [0,1]");
+        this.prob = p;
     }
 
     @Override
@@ -46,12 +50,16 @@ public class Bernoulli implements Distribution {
 
     @Override
     public String name() {
-        return "Bernoulli(p=" + p + ")";
+        return "Ber(p=" + prob + ")";
     }
 
     @Override
     public double pdf(double x) {
-        return x < 1 ? 1 - p : p;
+        if (x == 0)
+            return 1 - prob;
+        if (x == 1)
+            return prob;
+        return 0;
     }
 
     @Override
@@ -59,13 +67,13 @@ public class Bernoulli implements Distribution {
         if (x < 0)
             return 0;
         if (x < 1)
-            return 1 - p;
+            return 1 - prob;
         return 1;
     }
 
     @Override
     public double quantile(double p) {
-        return (p <= 1 - p) ? 0 : 1;
+        return (p <= 1 - this.prob) ? 0 : 1;
     }
 
     @Override
@@ -80,36 +88,37 @@ public class Bernoulli implements Distribution {
 
     @Override
     public double mean() {
-        return p;
+        return prob;
     }
 
     @Override
     public double mode() {
-        if ((1 - p) > p)
-            return 0;
-        if ((1 - p) < p)
-            return 1;
-        return 0.5; // this is possible?
+        return (prob < 0.5) ? 0 : 1;
     }
 
     @Override
     public double var() {
-        return p * (1 - p);
+        return prob * (1 - prob);
     }
 
     @Override
     public double skewness() {
-        return 1 / Math.sqrt((1 - p) * p);
+        return 1 / Math.sqrt((1 - prob) * prob);
     }
 
     @Override
     public double kurtosis() {
-        double prod = (1 - p) * p;
+        double prod = (1 - prob) * prob;
         return (1 - 6 * prod) / prod;
     }
 
     @Override
     public double entropy() {
-        return -p * Math.log(p) - (1 - p) * Math.log(1 - p);
+        return -prob * Math.log(prob) - (1 - prob) * Math.log(1 - prob);
+    }
+
+    @Override
+    public double sampleNext() {
+        return RandomSource.nextDouble() <= prob ? 1 : 0;
     }
 }
