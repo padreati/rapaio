@@ -26,6 +26,7 @@ package rapaio.core.distributions;
 
 import rapaio.core.MathTools;
 import rapaio.core.RandomSource;
+import rapaio.sys.WS;
 
 /**
  * ChiSquare distribution.
@@ -53,7 +54,7 @@ public class ChiSquare implements Distribution {
 
     @Override
     public String name() {
-        return "ChiSquare(" + df + ")";
+        return "ChiSq(df=" + WS.formatFlex(df) + ")";
     }
 
     @Override
@@ -63,7 +64,7 @@ public class ChiSquare implements Distribution {
 
     @Override
     public double pdf(double x) {
-        if (x <= 0.0)
+        if (x < 0.0)
             return 0;
         double logGamma = MathTools.lnGamma(df / 2.0);
         return Math.exp((df / 2.0 - 1.0) * Math.log(x / 2.0) - x / 2.0 - logGamma) / 2.0;
@@ -89,12 +90,13 @@ public class ChiSquare implements Distribution {
 
         while (true) {
             double mid = (low + high) / 2.0;
-            if (cdf(mid) < p) {
+            double v = cdf(mid);
+            if (v < p) {
                 low = mid;
             } else {
                 high = mid;
             }
-            if (Math.abs(p - cdf(low)) < 1e-10) {
+            if (Math.abs(p - v) < 1e-12) {
                 break;
             }
         }
@@ -138,7 +140,6 @@ public class ChiSquare implements Distribution {
 
     @Override
     public double entropy() {
-//        return 0;
         throw new IllegalArgumentException("not implemented");
     }
 

@@ -37,7 +37,6 @@ import rapaio.sys.WS;
 
 import java.io.IOException;
 
-import static java.awt.image.ImageObserver.ERROR;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -45,6 +44,8 @@ import static org.junit.Assert.assertEquals;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/28/15.
  */
 public class StudentTTest {
+
+    private static final double ERROR = 1e-12;
 
     @Test
     public void densityTest() throws IOException {
@@ -128,6 +129,10 @@ public class StudentTTest {
         StudentT t5 = new StudentT(5);
         StudentT t10 = new StudentT(10);
         StudentT t100 = new StudentT(100);
+
+        Assert.assertEquals("StudentT(df=1, mu=0, sigma=1)", t1.name());
+        Assert.assertEquals(false, t1.discrete());
+
         for (int i = 0; i < df.rowCount(); i++) {
 
             double x = df.value(i, "x");
@@ -186,10 +191,10 @@ public class StudentTTest {
         StudentT t = new StudentT(10, 2, 3);
         Assert.assertEquals(2, t.mean(), ERROR);
         Assert.assertEquals(2, t.mode(), ERROR);
-        Assert.assertEquals(3*3, t.var(), ERROR);
+        Assert.assertEquals(11.25, t.var(), ERROR);
         Assert.assertEquals(Double.NEGATIVE_INFINITY, t.min(), ERROR);
         Assert.assertEquals(Double.POSITIVE_INFINITY, t.max(), ERROR);
-        Assert.assertEquals(1, t.skewness(), ERROR);
+        Assert.assertEquals(0, t.skewness(), ERROR);
         Assert.assertEquals(1, t.kurtosis(), ERROR);
     }
 }
