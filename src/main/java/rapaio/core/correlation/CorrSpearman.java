@@ -102,10 +102,7 @@ public class CorrSpearman implements Printable {
         Var[] sorted = new Var[vars.length];
         Var[] ranks = new Var[vars.length];
         for (int i = 0; i < sorted.length; i++) {
-            Index index = Index.empty();
-            for (int j = 0; j < vars[i].rowCount(); j++) {
-                index.addIndex(j);
-            }
+            Index index = Index.seq(vars[i].rowCount());
             sorted[i] = new VFRefSort(RowComparators.numeric(vars[i], true)).fitApply(index);
             ranks[i] = Numeric.fill(vars[i].rowCount());
         }

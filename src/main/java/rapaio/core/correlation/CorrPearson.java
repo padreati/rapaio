@@ -101,8 +101,7 @@ public class CorrPearson implements Printable {
         double xMean = Mean.from(x.mapRows(map)).value();
         double yMean = Mean.from(y.mapRows(map)).value();
 
-        double sdp = Math.sqrt(Variance.from(x.mapRows(map)).value())
-                * Math.sqrt(Variance.from(y.mapRows(map)).value());
+        double sdp = Variance.from(x.mapRows(map)).sdValue() * Variance.from(y.mapRows(map)).sdValue();
         for (int i = 0; i < map.size(); i++) {
             int pos = map.get(i);
             sum += ((x.value(pos) - xMean) * (y.value(pos) - yMean));

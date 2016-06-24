@@ -13,6 +13,13 @@ Using the previous link you can select the format of manual. To read it directly
 
 **NEW**: The manual contains a [Tutorial on Kaggle's Titanic Competition](https://aureliantutuianu.gitbooks.io/rapaio-manual/content/kaggle-titanic.html)!
 
+Acknowledgements
+================
+
+Many thanks to ej-technologies GmbH for providing an open source license for their [Java Profiler](http://www.ej-technologies.com/products/jprofiler/overview.html)
+and to JetBrains for providing an open source license for their [Java IDE](https://www.jetbrains.com/idea/).
+
+
 Implemented Features
 ====================
 For each feature there are some notes regarding the development stage. 
