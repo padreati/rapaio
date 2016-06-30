@@ -25,7 +25,7 @@
 package rapaio.graphics.plot.plotcomp;
 
 import rapaio.core.CoreTools;
-import rapaio.core.MathTools;
+import rapaio.math.MathTools;
 import rapaio.core.correlation.CorrPearson;
 import rapaio.data.Frame;
 import rapaio.graphics.base.Range;

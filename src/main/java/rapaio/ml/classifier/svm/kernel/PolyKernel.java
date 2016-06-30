@@ -24,7 +24,7 @@
 
 package rapaio.ml.classifier.svm.kernel;
 
-import rapaio.core.MathTools;
+import rapaio.math.MathTools;
 import rapaio.data.Frame;
 
 import static rapaio.sys.WS.formatFlex;

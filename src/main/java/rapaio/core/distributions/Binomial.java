@@ -24,7 +24,7 @@
 
 package rapaio.core.distributions;
 
-import static rapaio.core.MathTools.*;
+import static rapaio.math.MathTools.*;
 
 /**
  * Binomial distribution.

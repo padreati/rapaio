@@ -28,7 +28,7 @@ package rapaio.ml.classifier.svm;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
 
-import rapaio.core.MathTools;
+import rapaio.math.MathTools;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;

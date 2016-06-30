@@ -22,10 +22,11 @@
  *
  */
 
-package rapaio.core;
+package rapaio.math;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 
 import static rapaio.core.CoreTools.distNormal;
 
@@ -911,25 +912,6 @@ public class MathTools {
         return (a - b > SMALL_ERR);
     }
 
-    public static String doubleToString(double value, int width, int decimals) {
-        char[] fmt = new char[decimals + 2];
-        for (int i = 0; i < fmt.length; i++) {
-            fmt[i] = '#';
-        }
-        fmt[1] = '.';
-        NumberFormat nf = new DecimalFormat(String.valueOf(fmt));
-        String result = nf.format(value);
-        if (result.length() < width) {
-            char[] prefix = new char[width - result.length()];
-            for (int i = 0; i < prefix.length; i++) {
-                prefix[i] = ' ';
-            }
-            return String.valueOf(prefix) + result;
-        }
-        return result;
-    }
-
-
     public static long combinations(int n, int k) {
         long result = 1;
         if (k > n / 2) {
@@ -944,5 +926,44 @@ public class MathTools {
             }
         }
         return result;
+    }
+
+    public static int[] computePrimes(int max) {
+        boolean[] flag = new boolean[max + 1];
+        int[] primes = new int[max + 1];
+        int plen = 0;
+        primes[plen++] = 1;
+        for (int i = 2; i <= max; i++) {
+            if (!flag[i]) {
+                primes[plen++] = i;
+                for (int j = i; j <= max; j += i) {
+                    flag[j] = true;
+                }
+            }
+        }
+        int[] p = new int[plen];
+        System.arraycopy(primes, 0, p, 0, plen);
+        return p;
+    }
+
+    public static int[] factors(int n, int[] primes) {
+        ArrayList<Integer> factors = new ArrayList<>();
+        for (int i = 1; i < primes.length; i++) {
+            if (n == 1)
+                break;
+            while (n % primes[i] == 0) {
+                n = n / primes[i];
+                factors.add(primes[i]);
+            }
+        }
+        return factors.stream().mapToInt(i -> i).toArray();
+    }
+
+    public static double log1pExp(double x) {
+        if (x > 0) {
+            return x + Math.log1p(Math.exp(-x));
+        } else {
+            return Math.log1p(Math.exp(x));
+        }
     }
 }

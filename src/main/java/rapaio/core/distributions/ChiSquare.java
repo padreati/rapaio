@@ -24,7 +24,7 @@
 
 package rapaio.core.distributions;
 
-import rapaio.core.MathTools;
+import rapaio.math.MathTools;
 import rapaio.core.RandomSource;
 import rapaio.sys.WS;
 

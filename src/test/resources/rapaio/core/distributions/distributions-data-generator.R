@@ -56,3 +56,33 @@ for(i in 1:nrow(df)) {
 }
 
 write.table(format(df, digits = 15), file = "student.csv", col.names = TRUE, row.names = FALSE, sep = ",", quote = FALSE)
+
+
+# chi square
+
+df <- data.frame(x = seq(0, 100, 0.01))
+
+for(i in 1:nrow(df)) {
+  df$pdf_1[i] <- dchisq(df$x[i], df = 1)
+  df$cdf_1[i] <- pchisq(df$x[i], df = 1)
+  df$quantile_1[i] <- qchisq(df$x[i], df = 1)
+  
+  df$pdf_2[i] <- dchisq(df$x[i], df = 2)
+  df$cdf_2[i] <- pchisq(df$x[i], df = 2)
+  df$quantile_2[i] <- qchisq(df$x[i], df = 2)
+  
+  df$pdf_5[i] <- dchisq(df$x[i], df = 5)
+  df$cdf_5[i] <- pchisq(df$x[i], df = 5)
+  df$quantile_5[i] <- qchisq(df$x[i], df = 5)
+  
+  df$pdf_10[i] <- dchisq(df$x[i], df = 10)
+  df$cdf_10[i] <- pchisq(df$x[i], df = 10)
+  df$quantile_10[i] <- qchisq(df$x[i], df = 10)
+  
+  df$pdf_100[i] <- dchisq(df$x[i], df = 100)
+  df$cdf_100[i] <- pchisq(df$x[i], df = 100)
+  df$quantile_100[i] <- qchisq(df$x[i], df = 100)
+}
+
+write.table(format(df, digits=15), file = "chisq.csv", col.names = TRUE, row.names = FALSE, sep = ",", quote = FALSE)
+

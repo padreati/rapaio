@@ -34,7 +34,7 @@ import rapaio.sys.WS;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import static rapaio.core.MathTools.log2;
+import static rapaio.math.MathTools.log2;
 
 /**
  * Distribution table.

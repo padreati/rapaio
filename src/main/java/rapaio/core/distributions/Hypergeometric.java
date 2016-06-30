@@ -24,7 +24,7 @@
 
 package rapaio.core.distributions;
 
-import static rapaio.core.MathTools.combinations;
+import static rapaio.math.MathTools.combinations;
 
 /**
  * Created by andrei on 13.11.2015.

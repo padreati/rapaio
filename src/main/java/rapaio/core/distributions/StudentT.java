@@ -26,7 +26,7 @@ package rapaio.core.distributions;
 
 import rapaio.sys.WS;
 
-import static rapaio.core.MathTools.*;
+import static rapaio.math.MathTools.*;
 
 /**
  * Student's T distribution, or T distribution.
