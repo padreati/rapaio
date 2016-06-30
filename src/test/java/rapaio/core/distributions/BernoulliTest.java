@@ -37,7 +37,7 @@ import rapaio.sys.WS;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by <a href="mailto:tutuianu@amazon.com">Aurelian Tutuianu</a> on 6/17/16.
+ * Created by <a href="mailto:tutuianu@yahoo.com">Aurelian Tutuianu</a> on 6/17/16.
  */
 public class BernoulliTest {
 

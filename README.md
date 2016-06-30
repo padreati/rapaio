@@ -87,6 +87,7 @@ If there are no notes it means the feature is considered to be fully implemented
 
 **Analysis**
 
+* Fast Fourier Transform
 * Principal Components Analysis
 * Fischer Linear Discriminant Analysis
 
