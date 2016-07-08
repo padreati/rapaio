@@ -25,86 +25,86 @@
 package rapaio.core.tests;
 
 import rapaio.core.distributions.Normal;
+import rapaio.core.distributions.StudentT;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.printer.Printable;
 
 import static rapaio.core.CoreTools.mean;
+import static rapaio.core.CoreTools.var;
 import static rapaio.sys.WS.formatFlex;
 
 /**
- * Two paired sample z test for testing mean of differences
+ * t test two paired samples for mean of differences
  * <p>
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/27/16.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/8/16.
  */
-public class ZTestTwoPaired implements Printable {
-
+public class TTestTwoPaired implements Printable {
     /**
-     * Two paired samples z test for mean of the difference with default values
+     * Two paired samples t test for mean of the difference with default values
      * for significance level (0.05) and alternative (two tails)
      *
      * @param x    first given sample
      * @param y    second given sample
      * @param mean null hypothesis mean
-     * @param sd   standard deviation of the first sample
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestTwoPaired test(Var x, Var y, double mean, double sd) {
-        return new ZTestTwoPaired(x, y, mean, sd, 0.05, HTest.Alternative.TWO_TAILS);
+    public static TTestTwoPaired test(Var x, Var y, double mean) {
+        return new TTestTwoPaired(x, y, mean, 0.05, HTest.Alternative.TWO_TAILS);
     }
 
     /**
-     * Two paired samples z test for mean of the differences
+     * Two paired samples t test for mean of the differences
      *
      * @param x    first given sample
      * @param y    second given sample
      * @param mean null hypothesis mean
-     * @param sd   standard deviation of the first sample
      * @param sl   significance level (usual value 0.05)
      * @param alt  alternative hypothesis (usual value two tails)
      * @return an object containing hypothesis testing analysis
      */
-    public static ZTestTwoPaired test(Var x, Var y, double mean, double sd, double sl, HTest.Alternative alt) {
-        return new ZTestTwoPaired(x, y, mean, sd, sl, alt);
+    public static TTestTwoPaired test(Var x, Var y, double mean, double sl, HTest.Alternative alt) {
+        return new TTestTwoPaired(x, y, mean, sl, alt);
     }
 
 
     // parameters
 
-    private final Var x;
-    private final Var y;
     private final double mu;
-    private final double sd;
     private final double sl;
     private final HTest.Alternative alt;
 
     // computed
 
-    private final Var xComplete;
-    private final Var yComplete;
-
+    private final double sd;
+    private final Var complete;
     private final double sampleMean;
-    private final double zScore;
+    private final double df;
+    private final double t;
     private final double pValue;
     private final double ciLow;
     private final double ciHigh;
 
-    private ZTestTwoPaired(Var x, Var y, double mu, double sd, double sl, HTest.Alternative alt) {
-        this.x = x;
-        this.y = y;
+    private TTestTwoPaired(Var x, Var y, double mu, double sl, HTest.Alternative alt) {
         this.mu = mu;
-        this.sd = sd;
         this.sl = sl;
         this.alt = alt;
 
-        xComplete = x.stream().complete().toMappedVar();
-        yComplete = y.stream().complete().toMappedVar();
+        complete = Numeric.empty();
 
-        if (xComplete.rowCount() < 1 || yComplete.rowCount() < 1) {
+        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
+            if (x.missing(i) || y.missing(i))
+                continue;
+            complete.addValue(x.value(i) - y.value(i));
+        }
+
+        df = complete.rowCount()-1;
+
+        if (complete.rowCount() < 1) {
             // nothing to do
             sampleMean = Double.NaN;
-
-            zScore = Double.NaN;
+            sd = Double.NaN;
+            t = Double.NaN;
             pValue = Double.NaN;
             ciLow = Double.NaN;
             ciHigh = Double.NaN;
@@ -112,31 +112,27 @@ public class ZTestTwoPaired implements Printable {
             return;
         }
 
-        Var complete = Numeric.empty();
-        for (int i = 0; i < Math.min(x.rowCount(), y.rowCount()); i++) {
-            if (!(x.missing(i) || y.missing(i)))
-                complete.addValue(x.value(i) - y.value(i));
-        }
         sampleMean = mean(complete).value();
+        sd = var(complete).sdValue();
 
         double sv = sd / Math.sqrt(complete.rowCount());
 
-        zScore = (sampleMean - mu) / sv;
+        t = (sampleMean - mu) / sv;
 
-        Normal normal = new Normal(0, 1);
+        StudentT st = new StudentT(df);
         switch (alt) {
             case GREATER_THAN:
-                pValue = 1 - normal.cdf(zScore);
+                pValue = 1 - st.cdf(t);
                 break;
             case LESS_THAN:
-                pValue = normal.cdf(zScore);
+                pValue = st.cdf(t);
                 break;
             default:
-                pValue = normal.cdf(-Math.abs(zScore)) * 2;
+                pValue = st.cdf(-Math.abs(t)) * 2;
         }
 
-        ciLow = new Normal(sampleMean, sv).quantile(sl / 2);
-        ciHigh = new Normal(sampleMean, sv).quantile(1 - sl / 2);
+        ciLow = new StudentT(df, sampleMean, sv).quantile(sl / 2);
+        ciHigh = new StudentT(df, sampleMean, sv).quantile(1 - sl / 2);
     }
 
     public double mu() {
@@ -145,6 +141,10 @@ public class ZTestTwoPaired implements Printable {
 
     public double sd() {
         return sd;
+    }
+
+    public double df() {
+        return df;
     }
 
     public double sl() {
@@ -159,8 +159,8 @@ public class ZTestTwoPaired implements Printable {
         return sampleMean;
     }
 
-    public double zScore() {
-        return zScore;
+    public double t() {
+        return t;
     }
 
     public double pValue() {
@@ -179,24 +179,23 @@ public class ZTestTwoPaired implements Printable {
     public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
-        sb.append("> ZTestTwoPaired\n");
+        sb.append("> TTestTwoPaired\n");
         sb.append("\n");
         sb.append(" Two Paired z-test\n");
         sb.append("\n");
-        sb.append("x complete rows: ").append(xComplete.rowCount()).append("/").append(x.rowCount()).append("\n");
-        sb.append("y complete rows: ").append(yComplete.rowCount()).append("/").append(y.rowCount()).append("\n");
+        sb.append("complete rows: ").append(complete.rowCount()).append("\n");
         sb.append("mean: ").append(formatFlex(mu)).append("\n");
-        sb.append("x sd: ").append(formatFlex(sd)).append("\n");
         sb.append("significance level: ").append(formatFlex(sl)).append("\n");
         sb.append("alternative hypothesis: ").append(alt == HTest.Alternative.TWO_TAILS ? "two tails " : "one tail ").append(alt.pCondition()).append("\n");
         sb.append("\n");
         sb.append("sample mean: ").append(formatFlex(sampleMean)).append("\n");
-        sb.append("z score: ").append(formatFlex(zScore)).append("\n");
+        sb.append("sample sd: ").append(formatFlex(sd)).append("\n");
+        sb.append("df: ").append(df).append("\n");
+        sb.append("t: ").append(formatFlex(t)).append("\n");
         sb.append("p-value: ").append(pValue).append("\n");
 
         sb.append("conf int: [").append(formatFlex(ciLow)).append(",").append(formatFlex(ciHigh)).append("]\n");
 
         return sb.toString();
     }
-
 }
