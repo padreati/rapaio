@@ -24,8 +24,6 @@
 
 package rapaio.math.linear;
 
-import org.ejml.alg.dense.decomposition.eig.SwitchingEigenDecomposition;
-import org.ejml.data.DenseMatrix64F;
 import rapaio.math.linear.dense.EigenvalueDecomposition;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.math.linear.dense.SolidRV;
@@ -119,35 +117,6 @@ public final class Linear {
         }
         return EigenPair.from(values, vectors);
     }
-
-    public static EigenPair eigenDecompEjml(RM s, int maxRuns, double tol) {
-        DenseMatrix64F _s = new DenseMatrix64F(s.rowCount(), s.colCount());
-        for (int i = 0; i < s.rowCount(); i++) {
-            for (int j = 0; j < s.colCount(); j++) {
-                _s.set(i, j, s.get(i, j));
-            }
-        }
-
-        SwitchingEigenDecomposition sed = new SwitchingEigenDecomposition(s.rowCount());
-        sed.decompose(_s);
-
-        sed.getNumberOfEigenvalues();
-
-        RV values = SolidRV.empty(sed.getNumberOfEigenvalues());
-        RM vectors = SolidRM.empty(sed.getNumberOfEigenvalues(), sed.getNumberOfEigenvalues());
-
-        for (int i = 0; i < sed.getNumberOfEigenvalues(); i++) {
-            values.set(values.count() - i - 1, sed.getEigenvalue(i).getReal());
-        }
-        for (int i = 0; i < vectors.rowCount(); i++) {
-            for (int j = 0; j < sed.getNumberOfEigenvalues(); j++) {
-                if(sed.getEigenVector(j)!=null)
-                vectors.set(i, vectors.colCount() - j - 1, sed.getEigenVector(j).get(i, 0));
-            }
-        }
-        return EigenPair.from(values, vectors);
-    }
-
 
     public static RM pdPower(RM s, double power, int maxRuns, double tol) {
         EigenPair p = eigenDecomp(s, maxRuns, tol);
