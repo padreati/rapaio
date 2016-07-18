@@ -46,11 +46,11 @@ public class DUniform implements Distribution {
         return true;
     }
 
-    public int getA() {
+    public int a() {
         return (int) a;
     }
 
-    public int getB() {
+    public int b() {
         return (int) b;
     }
 
@@ -85,7 +85,7 @@ public class DUniform implements Distribution {
     @Override
     public double quantile(double p) {
         if (p < 0 || p > 1) {
-            throw new ArithmeticException("Probability must be interface the range [0,1], not " + p);
+            throw new IllegalArgumentException("Probability must be interface the range [0,1], not " + p);
         }
         if (a == b) {
             return a;

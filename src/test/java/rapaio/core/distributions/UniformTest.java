@@ -24,6 +24,7 @@
 
 package rapaio.core.distributions;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -34,45 +35,68 @@ import static org.junit.Assert.assertTrue;
  */
 public class UniformTest {
 
+    private final double TOL = 1e-12;
+
+    @Test
+    public void testVariousFeatures() {
+        Uniform u = new Uniform(0, 10);
+
+        assertEquals(false, u.discrete());
+        assertEquals(0, u.min(), TOL);
+        assertEquals(10, u.max(), TOL);
+        assertEquals(5, u.mean(), TOL);
+        assertEquals(5, u.mode(), TOL);
+        assertEquals(8.333333333333334, u.var(), TOL);
+        assertEquals(0, u.skewness(), TOL);
+        assertEquals(-1.2, u.kurtosis(), TOL);
+        assertEquals(2.302585092994046, u.entropy(), TOL);
+
+        assertEquals(1, new Uniform(9, 9).pdf(9), TOL);
+    }
+
     @Test
     public void testUniformPdf() {
         Distribution u = new Uniform(0, 2);
 
         assertEquals("Uniform(a=0,b=2)", u.name());
 
-        assertEquals(0, u.pdf(-1), 1e-12);
-        assertEquals(0.5, u.pdf(0), 1e-12);
-        assertEquals(0.5, u.pdf(1), 1e-12);
-        assertEquals(0.5, u.pdf(2), 1e-12);
-        assertEquals(0, u.pdf(3), 1e-12);
+        assertEquals(0, u.pdf(-1), TOL);
+        assertEquals(0.5, u.pdf(0), TOL);
+        assertEquals(0.5, u.pdf(1), TOL);
+        assertEquals(0.5, u.pdf(2), TOL);
+        assertEquals(0, u.pdf(3), TOL);
     }
 
     @Test
     public void testUniformCdf() {
         Distribution u = new Uniform(0, 2);
 
-        assertEquals(0, u.cdf(-1), 1e-12);
-        assertEquals(0.0, u.cdf(0), 1e-12);
-        assertEquals(0.25, u.cdf(0.5), 1e-12);
-        assertEquals(0.5, u.cdf(1), 1e-12);
-        assertEquals(1.0, u.cdf(2), 1e-12);
-        assertEquals(1.0, u.cdf(3), 1e-12);
+        assertEquals(0, u.cdf(-1), TOL);
+        assertEquals(0.0, u.cdf(0), TOL);
+        assertEquals(0.25, u.cdf(0.5), TOL);
+        assertEquals(0.5, u.cdf(1), TOL);
+        assertEquals(1.0, u.cdf(2), TOL);
+        assertEquals(1.0, u.cdf(3), TOL);
     }
 
     @Test
     public void testUniformQuantile() {
         Distribution u = new Uniform(0, 2);
 
-        assertEquals(0, u.quantile(0), 1e-12);
-        assertEquals(0.5, u.quantile(0.25), 1e-12);
-        assertEquals(1, u.quantile(0.5), 1e-12);
-        assertEquals(1.5, u.quantile(0.75), 1e-12);
-        assertEquals(2.0, u.quantile(1), 1e-12);
+        assertEquals(0, u.quantile(0), TOL);
+        assertEquals(0.5, u.quantile(0.25), TOL);
+        assertEquals(1, u.quantile(0.5), TOL);
+        assertEquals(1.5, u.quantile(0.75), TOL);
+        assertEquals(2.0, u.quantile(1), TOL);
+    }
 
-        try {
-            u.quantile(-1);
-            assertTrue("this should not happen", true);
-        } catch (IllegalArgumentException ignored) {
-        }
+    @Test(expected = IllegalArgumentException.class)
+    public void testLoqQuantile() {
+        new Uniform(0, 10).quantile(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testHighQuantile() {
+        new Uniform(0, 10).quantile(1.1);
     }
 }

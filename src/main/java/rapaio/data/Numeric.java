@@ -178,9 +178,10 @@ public final class Numeric extends AbstractVar {
 
     public static Numeric seq(double start, double end, double step) {
         Numeric num = Numeric.empty();
-        while (start <= end || Math.abs(end - start) < 1e-10) {
-            num.addValue(start);
-            start += step;
+        int i = 0;
+        while (start+i*step <= end) {
+            num.addValue(start+i*step);
+            i++;
         }
         return num;
     }

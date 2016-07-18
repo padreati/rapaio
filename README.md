@@ -20,7 +20,7 @@ Many thanks to ej-technologies GmbH for providing an open source license for the
 and to JetBrains for providing an open source license for their [Java IDE](https://www.jetbrains.com/idea/).
 
 
-Implemented Features
+Stable Features
 ====================
 For each feature there are some notes regarding the development stage. 
 If there are no notes it means the feature is considered to be fully implemented and well tested.
@@ -38,9 +38,13 @@ If there are no notes it means the feature is considered to be fully implemented
 
 **Distributions**
 
+* Bernoulli
+* Binomial
 * Normal/Gaussian
 * Student t
-* Bernoulli
+* ChiSquare
+* Discrete Uniform
+* Continuous Uniform
 
 **Sampling**
 
@@ -149,9 +153,6 @@ Experminental Stage Features
 
 **Distributions**
 
-* Continuous/Discrete Uniform
-* Binomial
-* ChiSquare
 * Gamma
 * Empirical KDE (gaussian, epanechnikov, cosine, tricube, biweight, triweight, triangular, uniform)
 

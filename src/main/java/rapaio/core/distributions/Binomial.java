@@ -24,6 +24,9 @@
 
 package rapaio.core.distributions;
 
+import rapaio.math.MathTools;
+import rapaio.sys.WS;
+
 import static rapaio.math.MathTools.*;
 
 /**
@@ -52,18 +55,22 @@ public class Binomial implements Distribution {
 
     @Override
     public String name() {
-        return "Binomial(p=" + ((int) p) + ",n=" + ((int) n) + ")";
+        return "Binomial(p=" + WS.formatFlex(p) + ",n=" + ((int) n) + ")";
     }
 
     @Override
     public double pdf(double x) {
         if (x < min() || x > max()) return 0;
-        return Math.exp(logBinomial(x, n, p));
+        if (Math.abs(Math.rint(x) - x) < 1e-12)
+            return Math.exp(logBinomial(x, n, p));
+        return 0.0;
     }
 
     @Override
     public double cdf(double x) {
-        if (x == n) return 1.0;
+        if (x >= n)
+            return 1.0;
+        x = MathTools.floor(x);
         return betaIncReg(1 - p, n - x, x + 1);
     }
 

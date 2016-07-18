@@ -42,17 +42,17 @@ public class Uniform implements Distribution {
         this.b = b;
     }
 
-    public double getA() {
+    public double a() {
         return a;
     }
 
-    public double getB() {
+    public double b() {
         return b;
     }
 
     @Override
     public String name() {
-        return "Uniform(a=" + formatFlex(getA()) + ",b=" + formatFlex(getB()) + ")";
+        return "Uniform(a=" + formatFlex(a) + ",b=" + formatFlex(b) + ")";
     }
 
     @Override

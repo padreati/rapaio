@@ -86,3 +86,25 @@ for(i in 1:nrow(df)) {
 
 write.table(format(df, digits=15), file = "chisq.csv", col.names = TRUE, row.names = FALSE, sep = ",", quote = FALSE)
 
+# binoial
+
+df <- data.frame(x = seq(0, 200, 0.01))
+
+df$pdf_10_0.1 <- dbinom(df$x, size = 10, prob = 0.1)
+df$cdf_10_0.1 <- pbinom(df$x, size = 10, prob = 0.1)
+df$q_10_0.1 <- qbinom(df$x, size = 10, prob = 0.1)
+
+df$pdf_100_0.1 <- dbinom(df$x, size = 100, prob = 0.1)
+df$cdf_100_0.1 <- pbinom(df$x, size = 100, prob = 0.1)
+df$q_100_0.1 <- qbinom(df$x, size = 100, prob = 0.1)
+
+df$pdf_100_0.9 <- dbinom(df$x, size = 100, prob = 0.9)
+df$cdf_100_0.9 <- pbinom(df$x, size = 100, prob = 0.9)
+df$q_100_0.9 <- qbinom(df$x, size = 100, prob = 0.9)
+
+df$pdf_2000_0.9 <- dbinom(df$x, size = 2000, prob = 0.9)
+df$cdf_2000_0.9 <- pbinom(df$x, size = 2000, prob = 0.9)
+df$q_2000_0.9 <- qbinom(df$x, size = 2000, prob = 0.9)
+
+write.table(format(df, digits=20), file = "binom.csv", col.names = TRUE, row.names = FALSE, sep = ",", quote = FALSE)
+
