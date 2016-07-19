@@ -54,18 +54,18 @@ public class ClassifiersPerformanceTest {
         List<Classifier> classifiers = new ArrayList<>();
         classifiers.add(
                 CForest.newRF()
-                        .withRuns(10)
+                        .withRuns(5)
                         .withSampler(RowSampler.bootstrap(0.5))
         );
         classifiers.add(
                 new AdaBoostSAMME()
                         .withClassifier(CTree.newCART().withMaxDepth(4))
-                        .withRuns(10)
+                        .withRuns(5)
                         .withSampler(RowSampler.bootstrap(0.5))
         );
         classifiers.add(new GBTClassifier()
-                .withTree(RTree.buildCART().withMaxDepth(4).withFunction(RTreeTestFunction.WeightedSdGain))
-                .withRuns(2));
+                .withTree(RTree.buildCART().withMaxDepth(3).withFunction(RTreeTestFunction.WeightedSdGain))
+                .withRuns(5));
 
         CEvaluation.multiCv(df, "classes", classifiers, 3);
     }
