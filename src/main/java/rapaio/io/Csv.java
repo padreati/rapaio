@@ -49,7 +49,7 @@ public class Csv {
     private char escapeChar = '\"';
     private HashMap<String, VarType> typeFieldHints = new HashMap<>();
     private HashSet<String> naValues = new HashSet<>();
-    private VarType[] defaultTypes = new VarType[]{VarType.BINARY, VarType.INDEX, VarType.NUMERIC, VarType.NOMINAL};
+    private VarType[] defaultTypes = new VarType[]{VarType.BINARY, VarType.NUMERIC, VarType.NOMINAL};
     private int startRow = 0;
     private int endRow = Integer.MAX_VALUE;
     private Predicate<Integer> skipRows = row -> false;

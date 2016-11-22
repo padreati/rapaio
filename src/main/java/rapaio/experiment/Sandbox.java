@@ -24,22 +24,17 @@
 
 package rapaio.experiment;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/26/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/18/16.
  */
 public class Sandbox {
-    public static void main(String[] args) throws IOException, URISyntaxException {
 
-        int[] arr = new int[100];
-        for (int i = 0; i < 100; i++) {
-            arr[i] = i + 5;
-        }
-        String s = IntStream.iterate(99, operand -> operand - 1).limit(100).boxed().map(i -> String.valueOf(arr[i])).collect(Collectors.joining(" "));
-        System.out.println(s);
+    public static void main(String[] args) {
+
+        System.out.println(39*719);
+        System.out.println(39*743);
+        System.out.println(39*746);
+        System.out.println(39*756);
+        System.out.println(39*766);
     }
 }
