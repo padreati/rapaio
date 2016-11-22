@@ -269,6 +269,8 @@ public final class Index extends AbstractVar {
 
     @Override
     public double value(int row) {
+        if(missing(row))
+            return Double.NaN;
         return index(row);
     }
 
