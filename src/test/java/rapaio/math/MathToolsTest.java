@@ -25,6 +25,7 @@
 package rapaio.math;
 
 import org.junit.Test;
+import rapaio.sys.WS;
 
 import static org.junit.Assert.assertEquals;
 import static rapaio.math.MathTools.*;
@@ -57,4 +58,16 @@ public class MathToolsTest {
         assertEquals(-1.537159819202354, logBinomial(3, 10, 0.4), tol);
         assertEquals(0.5, beta(1, 2), tol);
     }
+
+
+
+    @Test
+    public void combinationsTest() {
+
+        double x = MathTools.combinations(10, 5);
+        WS.printf("%f", x);
+
+
+    }
+
 }

@@ -86,7 +86,7 @@ for(i in 1:nrow(df)) {
 
 write.table(format(df, digits=15), file = "chisq.csv", col.names = TRUE, row.names = FALSE, sep = ",", quote = FALSE)
 
-# binoial
+# binomial
 
 df <- data.frame(x = seq(0, 200, 0.01))
 
@@ -108,3 +108,16 @@ df$q_2000_0.9 <- qbinom(df$x, size = 2000, prob = 0.9)
 
 write.table(format(df, digits=20), file = "binom.csv", col.names = TRUE, row.names = FALSE, sep = ",", quote = FALSE)
 
+# hypergeometric
+
+df <- data.frame(x = seq(0, 200, 0.01))
+
+df$pdf_20_20_30 <- dhyper(df$x, 20, 20, 30)
+df$cdf_20_20_30 <- phyper(df$x, 20, 20, 30)
+df$q_20_20_30 <- qhyper(df$x, 20, 20, 30)
+
+df$pdf_70_70_150 <- dhyper(df$x, 70, 70, 150)
+df$cdf_70_70_150 <- phyper(df$x, 70, 70, 150)
+df$q_70_70_150 <- qhyper(df$x, 70, 70, 150)
+
+write.table(format(df, digits=20), file = "hyper.csv", col.names = TRUE, row.names = FALSE, sep = ",", quote = FALSE)

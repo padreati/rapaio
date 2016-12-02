@@ -179,8 +179,8 @@ public final class Numeric extends AbstractVar {
     public static Numeric seq(double start, double end, double step) {
         Numeric num = Numeric.empty();
         int i = 0;
-        while (start+i*step <= end) {
-            num.addValue(start+i*step);
+        while (start + i * step <= end) {
+            num.addValue(start + i * step);
             i++;
         }
         return num;
@@ -202,7 +202,8 @@ public final class Numeric extends AbstractVar {
     private double[] data;
     private int rows;
 
-    // public static builders
+
+    // private constructor
 
     private Numeric(int rows, int capacity, double fill) {
         if (rows < 0) {
@@ -214,21 +215,40 @@ public final class Numeric extends AbstractVar {
             Arrays.fill(data, 0, rows, fill);
     }
 
+    // public static builders
 
-    // stream collectors
-
-    public static Numeric from(int rows, Function<Integer, Double> supplierFromRow) {
+    /**
+     * Builds a new numeric variable of a given size and values produced by a function
+     * which transforms a row number into a value by a given transformation function.
+     *
+     * @param rows           number of rows
+     * @param transformation transformation function
+     * @return new numeric variable which contains the computed values
+     */
+    public static Numeric from(int rows, Function<Integer, Double> transformation) {
         Numeric numeric = new Numeric(0, 0, 0);
         numeric.data = new double[rows];
         numeric.rows = rows;
         for (int i = 0; i < rows; i++) {
-            numeric.data[i] = supplierFromRow.apply(i);
+            numeric.data[i] = transformation.apply(i);
         }
         return numeric;
     }
 
-    // private constructor
+    /**
+     * Builds a numeric variable as a transformation of another variable.
+     * Each value from the source variable is transformed into a value of a destination variable.
+     *
+     * @param reference source variable which provides data
+     * @param transform transformation applied to source variable
+     * @return new numeric variable which contains transformed variables
+     */
+    public static Numeric from(Var reference, Function<Double, Double> transform) {
+        return Numeric.from(reference.rowCount(), i -> transform.apply(reference.value(i)));
+    }
 
+
+    // stream collectors
     public static Collector<Double, Numeric, Numeric> collector() {
 
         return new Collector<Double, Numeric, Numeric>() {

@@ -36,6 +36,17 @@ public class Normal implements Distribution {
     private final double sd;
     private final double var;
 
+    /**
+     * Instantiates a normal distribution
+     * @param mu mean
+     * @param sd standard deviation
+     */
+    public Normal(double mu, double sd) {
+        this.mu = mu;
+        this.sd = sd;
+        this.var = sd * sd;
+    }
+
     @Override
     public String name() {
         return "Normal(mu=" + formatFlex(mu) + ", sd=" + formatFlex(sd) + ")";
@@ -48,12 +59,6 @@ public class Normal implements Distribution {
 
     public Normal() {
         this(0, 1);
-    }
-
-    public Normal(double mu, double sd) {
-        this.mu = mu;
-        this.sd = sd;
-        this.var = sd * sd;
     }
 
     @Override
