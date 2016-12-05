@@ -32,7 +32,7 @@ import rapaio.io.Csv;
 
 import java.io.IOException;
 
-public class HypergeometricDistributionTest {
+public class HypergeometricTest {
 
     private static final double TOL = 1e-15;
 
@@ -44,7 +44,7 @@ public class HypergeometricDistributionTest {
     public void setUp() throws Exception {
         df = new Csv()
                 .withNAValues("NaN")
-                .read(HypergeometricDistributionTest.class, "hyper.csv");
+                .read(HypergeometricTest.class, "hyper.csv");
 
         hg1 = new Hypergeometric(20, 20, 30);
         hg2 = new Hypergeometric(70, 70, 100);

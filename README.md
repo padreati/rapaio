@@ -40,6 +40,7 @@ If there are no notes it means the feature is considered to be fully implemented
 
 * Bernoulli
 * Binomial
+* Poisson
 * Normal/Gaussian
 * Student t
 * ChiSquare

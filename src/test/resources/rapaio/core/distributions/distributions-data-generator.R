@@ -116,8 +116,31 @@ df$pdf_20_20_30 <- dhyper(df$x, 20, 20, 30)
 df$cdf_20_20_30 <- phyper(df$x, 20, 20, 30)
 df$q_20_20_30 <- qhyper(df$x, 20, 20, 30)
 
-df$pdf_70_70_150 <- dhyper(df$x, 70, 70, 150)
-df$cdf_70_70_150 <- phyper(df$x, 70, 70, 150)
-df$q_70_70_150 <- qhyper(df$x, 70, 70, 150)
+df$pdf_70_70_100 <- dhyper(df$x, 70, 70, 100)
+df$cdf_70_70_100 <- phyper(df$x, 70, 70, 100)
+df$q_70_70_100 <- qhyper(df$x, 70, 70, 100)
 
 write.table(format(df, digits=20), file = "hyper.csv", col.names = TRUE, row.names = FALSE, sep = ",", quote = FALSE)
+
+# poisson
+
+df <- data.frame(x = seq(0, 100, 0.01))
+
+df$pdf_1 <- dpois(df$x, 1)
+df$cdf_1 <- ppois(df$x, 1)
+df$q_1 <- qpois(df$x, 1)
+
+df$pdf_5 <- dpois(df$x, 5)
+df$cdf_5 <- ppois(df$x, 5)
+df$q_5 <- qpois(df$x, 5)
+
+df$pdf_10 <- dpois(df$x, 10)
+df$cdf_10 <- ppois(df$x, 10)
+df$q_10 <- qpois(df$x, 10)
+
+df$pdf_100 <- dpois(df$x, 100)
+df$cdf_100 <- ppois(df$x, 100)
+df$q_100 <- qpois(df$x, 100)
+
+write.table(format(df, digits=20), file = "pois.csv", col.names = TRUE, row.names = FALSE, sep = ",", quote = FALSE)
+
