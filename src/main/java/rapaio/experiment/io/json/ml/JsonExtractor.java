@@ -22,21 +22,42 @@
  *
  */
 
-package rapaio.util.stream;
+package rapaio.experiment.io.json.ml;
 
+import rapaio.data.Frame;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
+import rapaio.experiment.io.json.tree.JsonValue;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
+/**
+ * Utility class used to extract features from a JsonValue steam.
+ * <p>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/10/15.
+ */
 @Deprecated
-public class StreamUtil {
+public class JsonExtractor {
 
-    public static <E> Stream<List<E>> partition(Stream<E> in, int size) {
-        return StreamSupport.stream(new PartitioningSpliterator<>(in.spliterator(), size), false);
+    private final List<JsonFeature> features = new ArrayList<>();
+
+    public void add(JsonFeature feat) {
+        features.add(feat);
     }
 
-    public static <E> Stream<List<E>> partition(Stream<E> in, int size, int batchSize) {
-        return StreamSupport.stream(
-                new FixedBatchSpliterator<>(new PartitioningSpliterator<>(in.spliterator(), size), batchSize), false);
+    public Frame extract(Stream<JsonValue> stream) {
+        stream.sequential().forEach(js -> {
+            for (JsonFeature feat : features) {
+                feat.apply(js);
+            }
+        });
+        List<Var> vars = new ArrayList<>();
+        for (JsonFeature feat : features) {
+            vars.add(feat.getResult());
+        }
+        return SolidFrame.byVars(vars);
     }
 }
+

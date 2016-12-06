@@ -22,26 +22,19 @@
  *
  */
 
-package rapaio.io.json.tree;
+package rapaio.experiment.io.json.tree;
 
 import java.util.Optional;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 2/26/15.
  */
-public final class JsonBool extends JsonValue {
+public class JsonNumber extends JsonValue {
 
-    private final Boolean value;
     private final String original;
 
-    public JsonBool(String original) {
+    public JsonNumber(String original) {
         this.original = original;
-        if ("true".equals(original))
-            this.value = true;
-        else if ("false".equals(original)) {
-            this.value = false;
-        } else
-            this.value = null;
     }
 
     @Override
@@ -66,7 +59,7 @@ public final class JsonBool extends JsonValue {
 
     @Override
     public Optional<Double> asDouble() {
-        return asBool().flatMap(value -> value ? Optional.of(1d) : Optional.of(0d));
+        return Optional.ofNullable(Double.parseDouble(original));
     }
 
     @Override
@@ -74,8 +67,9 @@ public final class JsonBool extends JsonValue {
         return Optional.empty();
     }
 
+    @Override
     public Optional<Boolean> asBool() {
-        return Optional.of(value);
+        return Optional.empty();
     }
 
     @Override
@@ -87,17 +81,17 @@ public final class JsonBool extends JsonValue {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        JsonBool jsonBool = (JsonBool) o;
-        return value == jsonBool.value;
+        JsonNumber that = (JsonNumber) o;
+        return !(original != null ? !original.equals(that.original) : that.original != null);
     }
 
     @Override
     public int hashCode() {
-        return (value ? 1 : 0);
+        return original != null ? original.hashCode() : 0;
     }
 
     @Override
     public String toString() {
-        return String.valueOf(value);
+        return original;
     }
 }

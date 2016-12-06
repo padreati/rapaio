@@ -22,10 +22,10 @@
  *
  */
 
-package rapaio.io.json;
+package rapaio.experiment.io.json;
 
-import rapaio.io.json.stream.JsonSpliterator;
-import rapaio.io.json.tree.JsonValue;
+import rapaio.experiment.io.json.stream.JsonSpliterator;
+import rapaio.experiment.io.json.tree.JsonValue;
 
 import java.io.*;
 import java.util.*;

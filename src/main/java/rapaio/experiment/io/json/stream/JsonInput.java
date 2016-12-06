@@ -22,32 +22,18 @@
  *
  */
 
-package rapaio.io.json.ml;
+package rapaio.experiment.io.json.stream;
 
-import rapaio.data.Var;
-import rapaio.io.json.tree.JsonValue;
+import rapaio.experiment.io.json.tree.JsonValue;
 
-import java.util.function.BiConsumer;
+import java.io.Closeable;
+import java.io.IOException;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 4/10/15.
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 3/12/15.
  */
 @Deprecated
-public class JsonFeature {
+public interface JsonInput extends Closeable {
 
-    private final Var collector;
-    private final BiConsumer<JsonValue, Var> consumer;
-
-    public JsonFeature(Var collector, BiConsumer<JsonValue, Var> consumer) {
-        this.collector = collector;
-        this.consumer = consumer;
-    }
-
-    public void apply(JsonValue js) {
-        consumer.accept(js, collector);
-    }
-
-    public Var getResult() {
-        return collector;
-    }
+    JsonValue read() throws IOException;
 }

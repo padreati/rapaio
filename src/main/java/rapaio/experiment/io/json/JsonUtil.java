@@ -22,12 +22,12 @@
  *
  */
 
-package rapaio.io.json;
+package rapaio.experiment.io.json;
 
-import rapaio.io.json.stream.JsonInputFlat;
-import rapaio.io.json.stream.LzJsonOutput;
-import rapaio.io.json.tree.JsonValue;
-import rapaio.util.stream.StreamUtil;
+import rapaio.experiment.io.json.stream.JsonInputFlat;
+import rapaio.experiment.io.json.stream.LzJsonOutput;
+import rapaio.experiment.io.json.tree.JsonValue;
+import rapaio.experiment.util.stream.StreamUtil;
 import rapaio.util.Pin;
 
 import java.io.*;

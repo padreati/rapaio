@@ -22,9 +22,9 @@
  *
  */
 
-package rapaio.io.json.stream;
+package rapaio.experiment.io.json.stream;
 
-import rapaio.io.json.tree.*;
+import rapaio.experiment.io.json.tree.*;
 import rapaio.util.Pair;
 
 import java.io.Closeable;

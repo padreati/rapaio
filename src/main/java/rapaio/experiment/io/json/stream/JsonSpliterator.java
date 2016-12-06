@@ -22,9 +22,9 @@
  *
  */
 
-package rapaio.io.json.stream;
+package rapaio.experiment.io.json.stream;
 
-import rapaio.io.json.tree.JsonValue;
+import rapaio.experiment.io.json.tree.JsonValue;
 
 import java.io.BufferedInputStream;
 import java.io.File;

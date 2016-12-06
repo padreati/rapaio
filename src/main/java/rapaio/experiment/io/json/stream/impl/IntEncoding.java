@@ -22,7 +22,7 @@
  *
  */
 
-package rapaio.io.json.stream.impl;
+package rapaio.experiment.io.json.stream.impl;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

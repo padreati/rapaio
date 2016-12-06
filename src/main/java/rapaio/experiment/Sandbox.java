@@ -24,6 +24,17 @@
 
 package rapaio.experiment;
 
+import rapaio.core.distributions.Binomial;
+import rapaio.core.distributions.Normal;
+import rapaio.core.distributions.Poisson;
+import rapaio.data.Numeric;
+import rapaio.graphics.Plotter;
+import rapaio.printer.IdeaPrinter;
+import rapaio.sys.WS;
+
+import static rapaio.graphics.Plotter.color;
+import static rapaio.graphics.Plotter.plot;
+
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/18/16.
  */
@@ -31,10 +42,22 @@ public class Sandbox {
 
     public static void main(String[] args) {
 
-        System.out.println(39*719);
-        System.out.println(39*743);
-        System.out.println(39*746);
-        System.out.println(39*756);
-        System.out.println(39*766);
+        double lambda = 150;
+        Normal normal = new Normal(lambda, Math.sqrt(0.5*(1-0.5)*300));
+        Poisson poisson = new Poisson(lambda);
+        Binomial binomial = new Binomial(0.5, 300);
+
+        Numeric x = Numeric.seq(0, 300, 0.001);
+        Numeric n = Numeric.from(x, normal::pdf);
+        Numeric p = Numeric.from(x, poisson::pdf);
+        Numeric b = Numeric.from(x, binomial::pdf);
+
+        WS.setPrinter(new IdeaPrinter());
+        WS.draw(plot()
+                .lines(x, n, color(1))
+                .lines(x, p, color(2))
+                .lines(x, b, color(3))
+                .xLim(80, 220)
+        );
     }
 }

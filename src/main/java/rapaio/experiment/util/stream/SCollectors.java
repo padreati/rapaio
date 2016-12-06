@@ -22,7 +22,7 @@
  *
  */
 
-package rapaio.util.stream;
+package rapaio.experiment.util.stream;
 
 import java.util.*;
 import java.util.function.BiConsumer;

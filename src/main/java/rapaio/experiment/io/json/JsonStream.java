@@ -22,9 +22,9 @@
  *
  */
 
-package rapaio.io.json;
+package rapaio.experiment.io.json;
 
-import rapaio.io.json.tree.JsonValue;
+import rapaio.experiment.io.json.tree.JsonValue;
 
 import java.util.*;
 import java.util.function.*;

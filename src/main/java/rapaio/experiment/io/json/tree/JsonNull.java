@@ -22,7 +22,7 @@
  *
  */
 
-package rapaio.io.json.tree;
+package rapaio.experiment.io.json.tree;
 
 import java.util.Optional;
 
