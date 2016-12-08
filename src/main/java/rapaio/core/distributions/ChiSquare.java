@@ -96,7 +96,7 @@ public class ChiSquare implements Distribution {
             } else {
                 high = mid;
             }
-            if (Math.abs(p - v) < 1e-12) {
+            if (Math.abs(p - v) < 1e-14) {
                 break;
             }
         }

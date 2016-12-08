@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ChiSquareTest {
 
-    private static final double ERROR = 1e-7;
+    private static final double ERROR = 1e-9;
 
     @Test
     public void testWithR() throws IOException {
