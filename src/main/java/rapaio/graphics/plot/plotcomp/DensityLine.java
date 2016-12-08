@@ -104,7 +104,7 @@ public class DensityLine extends PlotComponent {
         double xstep = (range.x2() - range.x1()) / options.getPoints();
         for (int i = 0; i < x.rowCount(); i++) {
             x.setValue(i, range.x1() + i * xstep);
-            y.setValue(i, ((Function<Double, Double>) kde::pdf).apply(x.value(i)));
+            y.setValue(i, kde.pdf(x.value(i)));
         }
 
         for (int i = 1; i < x.rowCount(); i++) {

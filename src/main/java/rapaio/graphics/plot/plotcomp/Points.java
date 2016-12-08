@@ -78,9 +78,7 @@ public class Points extends PlotComponent {
     public void paint(Graphics2D g2d) {
 
         int len = Math.min(x.rowCount(), y.rowCount());
-        int[] pos = SamplingTools.sampleWOR(len, len);
-        for (int j = 0; j < len; j++) {
-            int i = pos[j];
+        for (int i = 0; i < len; i++) {
             if (x.missing(i) || y.missing(i)) {
                 continue;
             }
