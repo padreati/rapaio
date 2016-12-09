@@ -165,7 +165,7 @@ public class BinarySMOTest {
             BinarySMO smo = new BinarySMO();
             smo.withInputFilters(new FFStandardize(VRange.all()));
             double s = CEvaluation.cv(df, "Class", smo, 3);
-            Assert.assertTrue(s > 0);
+            Assert.assertTrue(s > 0.7);
 
             name.addLabel(k.name());
             score.addValue(s);
