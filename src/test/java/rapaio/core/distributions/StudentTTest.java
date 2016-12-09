@@ -27,13 +27,8 @@ package rapaio.core.distributions;
 import org.junit.Assert;
 import org.junit.Test;
 import rapaio.data.Frame;
-import rapaio.data.Numeric;
-import rapaio.data.Var;
 import rapaio.data.VarType;
-import rapaio.graphics.Plotter;
 import rapaio.io.Csv;
-import rapaio.printer.IdeaPrinter;
-import rapaio.sys.WS;
 
 import java.io.IOException;
 
@@ -140,47 +135,32 @@ public class StudentTTest {
             Assert.assertEquals(df.value(i, "pdf_1"), t1.pdf(x), ERROR);
             Assert.assertEquals(df.value(i, "cdf_1"), t1.cdf(x), ERROR);
             if (x > 0 && x < 1) {
-                try {
+                if (!Double.isNaN(df.value(i, "quantile_1")))
                     Assert.assertEquals(df.value(i, "quantile_1"), t1.quantile(df.value(i, "x")), ERROR);
-                }catch(AssertionError error) {
-                    System.out.println();
-                }
             }
             Assert.assertEquals(df.value(i, "pdf_2"), t2.pdf(x), ERROR);
             Assert.assertEquals(df.value(i, "cdf_2"), t2.cdf(x), ERROR);
-            if (x > 0 && x < 1) {
-                try {
+            if (x > 0 && x < 1 && !Double.isNaN(x)) {
+                if (!Double.isNaN(df.value(i, "quantile_2")))
                     Assert.assertEquals(df.value(i, "quantile_2"), t2.quantile(df.value(i, "x")), ERROR);
-                }catch(AssertionError error) {
-                    System.out.println();
-                }
             }
             Assert.assertEquals(df.value(i, "pdf_5"), t5.pdf(x), ERROR);
             Assert.assertEquals(df.value(i, "cdf_5"), t5.cdf(x), ERROR);
-            if (x > 0 && x < 1) {
-                try {
+            if (x > 0 && x < 1 && !Double.isNaN(x)) {
+                if (!Double.isNaN(df.value(i, "quantile_5")))
                     Assert.assertEquals(df.value(i, "quantile_5"), t5.quantile(df.value(i, "x")), ERROR);
-                }catch(AssertionError error) {
-                    System.out.println();
-                }
             }
             Assert.assertEquals(df.value(i, "pdf_10"), t10.pdf(x), ERROR);
             Assert.assertEquals(df.value(i, "cdf_10"), t10.cdf(x), ERROR);
-            if (x > 0 && x < 1) {
-                try {
+            if (x > 0 && x < 1 && !Double.isNaN(x)) {
+                if (!Double.isNaN(df.value(i, "quantile_10")))
                     Assert.assertEquals(df.value(i, "quantile_10"), t10.quantile(df.value(i, "x")), ERROR);
-                }catch(AssertionError error) {
-                    System.out.println();
-                }
             }
             Assert.assertEquals(df.value(i, "pdf_100"), t100.pdf(x), ERROR);
             Assert.assertEquals(df.value(i, "cdf_100"), t100.cdf(x), ERROR);
-            if (x > 0 && x < 1) {
-                try {
+            if (x > 0 && x < 1 && !Double.isNaN(x)) {
+                if (!Double.isNaN(df.value(i, "quantile_100")))
                     Assert.assertEquals(df.value(i, "quantile_100"), t100.quantile(df.value(i, "x")), ERROR);
-                }catch(AssertionError error) {
-                    System.out.println();
-                }
             }
         }
     }

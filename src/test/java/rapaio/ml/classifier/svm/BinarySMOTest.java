@@ -24,6 +24,7 @@
 
 package rapaio.ml.classifier.svm;
 
+import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.data.*;
@@ -47,6 +48,11 @@ import static org.junit.Assert.assertTrue;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/20/16.
  */
 public class BinarySMOTest {
+
+    @Before
+    public void setUp() throws Exception {
+        RandomSource.setSeed(123);
+    }
 
     @Test
     public void testDescription() {
