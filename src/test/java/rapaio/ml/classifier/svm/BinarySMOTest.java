@@ -24,6 +24,7 @@
 
 package rapaio.ml.classifier.svm;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.core.RandomSource;
@@ -48,11 +49,6 @@ import static org.junit.Assert.assertTrue;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/20/16.
  */
 public class BinarySMOTest {
-
-    @Before
-    public void setUp() throws Exception {
-        RandomSource.setSeed(123);
-    }
 
     @Test
     public void testDescription() {
@@ -169,6 +165,7 @@ public class BinarySMOTest {
             BinarySMO smo = new BinarySMO();
             smo.withInputFilters(new FFStandardize(VRange.all()));
             double s = CEvaluation.cv(df, "Class", smo, 3);
+            Assert.assertTrue(s > 0);
 
             name.addLabel(k.name());
             score.addValue(s);
@@ -176,18 +173,5 @@ public class BinarySMOTest {
 
         WS.println("\nSummary of the scores for various kernels:\n=====================\n");
         String out = SolidFrame.byVars(name, score).lines(name.rowCount());
-
-        assertEquals("                  kernel                     score                                 kernel                             score      \n" +
-                        " [0] PolyKernel(exp=1,bias=1,slope=1) 0.7356797791580401 [10] Wavelet(invariant=true,dilation=1,translation=0)  0.754727398205659\n" +
-                        " [1] PolyKernel(exp=2,bias=1,slope=1) 0.7356107660455486 [11]            Exponential(sigma=7,factor=0.0102041) 0.7691511387163561\n" +
-                        " [2] PolyKernel(exp=3,bias=1,slope=1) 0.7546583850931677 [12]                  GeneralizedMean(alpha=1,beta=1) 0.7498274672187716\n" +
-                        " [3]                     RBF(sigma=1) 0.7498274672187716 [13]                     GeneralizedStudent(degree=1)  0.749896480331263\n" +
-                        " [4]                    Log(degree=1) 0.7546583850931677 [14]                       InverseMultiQuadratic(c=1)  0.749896480331263\n" +
-                        " [5]                           Spline 0.7355417529330572 [15]                               Spherical(sigma=1) 0.7643202208419599\n" +
-                        " [6]                              Min 0.7356797791580401 [16]                             Sigmoid(alpha=1,c=1) 0.7643202208419599\n" +
-                        " [7]                        ChiSquare 0.7643202208419599 [17]                              MultiQuadratic(c=1) 0.7259489302967563\n" +
-                        " [8]                        Cauchy(1) 0.7546583850931677 [18]                                  Power(degree=2)  0.749896480331263\n" +
-                        " [9]                    Wave(theta=1) 0.7452035886818495 [19]                           RationalQuadratic(c=1) 0.7546583850931677\n",
-                out);
     }
 }
