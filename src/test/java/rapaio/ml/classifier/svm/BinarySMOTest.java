@@ -166,7 +166,7 @@ public class BinarySMOTest {
 
             RandomSource.setSeed(1);
 
-            BinarySMO smo = new BinarySMO().withMaxRuns(200);
+            BinarySMO smo = new BinarySMO();
             smo.withInputFilters(new FFStandardize(VRange.all()));
             double s = CEvaluation.cv(df, "Class", smo, 3);
 
