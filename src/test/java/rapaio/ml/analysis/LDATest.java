@@ -51,26 +51,14 @@ public class LDATest {
         final Frame df = Datasets.loadIrisDataset();
         final String targetName = "class";
 
-        LDA lda = new LDA().withMaxRuns(10_000).withTol(1e-30);
+        LDA lda = new LDA().withMaxRuns(1_000).withTol(1e-30);
         lda.learn(df, "class");
         lda.printSummary();
 
-
         Frame fit = lda.fit(df, (rv, rm) -> 4);
 
-        WS.setPrinter(new IdeaPrinter());
-
-        GridLayer gl = new GridLayer(2, 2);
-        gl.add(1, 1, points(df.var(0), df.var(1), color(df.var("class")), pch(1)));
-        gl.add(1, 2, points(fit.var(0), fit.var(1), color(df.var("class")), pch(1)));
-
-        gl.add(2, 1, points(fit.var(1), fit.var(2), color(df.var("class")), pch(1)));
-        gl.add(2, 2, points(fit.var(2), fit.var(3), color(df.var("class")), pch(1)));
-//
-        WS.draw(gl);
-
-        CEvaluation.cv(df, "class", CForest.newRF().withRuns(100), 10);
-        CEvaluation.cv(fit.mapVars("0~1,4"), "class", CForest.newRF().withRuns(100), 10);
+        CEvaluation.cv(df, "class", CForest.newRF().withRuns(100), 3);
+        CEvaluation.cv(fit.mapVars("0~1,4"), "class", CForest.newRF().withRuns(100), 3);
     }
 
 }

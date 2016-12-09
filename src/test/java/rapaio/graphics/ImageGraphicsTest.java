@@ -244,7 +244,8 @@ public class ImageGraphicsTest {
     @Test
     public void testDensity() throws IOException, URISyntaxException {
 
-        Var x = df.var(0);
+        Var x = df.var(0).mapRows(Mapping.range(200));
+        x.printSummary();
 
         Plot fig = plot();
         for (int i = 10; i < 150; i += 5) {

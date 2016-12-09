@@ -43,9 +43,6 @@ public class SerializationTest {
     public void testFrames() throws IOException, ClassNotFoundException, URISyntaxException {
         testFrame(Datasets.loadIrisDataset(), "iris", 7243);
         testFrame(Datasets.loadCarMpgDataset(), "car", 48884);
-        testFrame(Datasets.loadMushrooms(), "mushrooms", 1121870);
-        testFrame(Datasets.loadSpamBase(), "spam", 2874777);
-        testFrame(Datasets.loadLifeScience(), "life", 2640020);
         testFrame(Datasets.loadRandom(), "random", 311112);
     }
 
