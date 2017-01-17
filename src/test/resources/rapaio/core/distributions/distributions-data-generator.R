@@ -144,3 +144,44 @@ df$q_100 <- qpois(df$x, 100)
 
 write.table(format(df, digits=20), file = "pois.csv", col.names = TRUE, row.names = FALSE, sep = ",", quote = FALSE)
 
+# gamma
+
+df <- data.frame(x = seq(0, 100, 0.01))
+
+df$pdf_1 <- dgamma(df$x, shape = 0.5, scale = 0.5)
+df$cdf_1 <- pgamma(df$x, shape = 0.5, scale = 0.5)
+df$q_1 <- qgamma(df$x, shape = 0.5, scale = 0.5)
+
+df$pdf_2 <- dgamma(df$x, shape = 1, scale = 0.5)
+df$cdf_2 <- pgamma(df$x, shape = 1, scale = 0.5)
+df$q_2 <- qgamma(df$x, shape = 1, scale = 0.5)
+
+df$pdf_3 <- dgamma(df$x, shape = 5, scale = 0.5)
+df$cdf_3 <- pgamma(df$x, shape = 5, scale = 0.5)
+df$q_3 <- qgamma(df$x, shape = 5, scale = 0.5)
+
+df$pdf_4 <- dgamma(df$x, shape = 0.5, scale = 1)
+df$cdf_4 <- pgamma(df$x, shape = 0.5, scale = 1)
+df$q_4 <- qgamma(df$x, shape = 0.5, scale = 1)
+
+df$pdf_5 <- dgamma(df$x, shape = 1, scale = 1)
+df$cdf_5 <- pgamma(df$x, shape = 1, scale = 1)
+df$q_5 <- qgamma(df$x, shape = 1, scale = 1)
+
+df$pdf_6 <- dgamma(df$x, shape = 5, scale = 1)
+df$cdf_6 <- pgamma(df$x, shape = 5, scale = 1)
+df$q_6 <- qgamma(df$x, shape = 5, scale = 1)
+
+df$pdf_7 <- dgamma(df$x, shape = 0.5, scale = 5)
+df$cdf_7 <- pgamma(df$x, shape = 0.5, scale = 5)
+df$q_7 <- qgamma(df$x, shape = 0.5, scale = 5)
+
+df$pdf_8 <- dgamma(df$x, shape = 1, scale = 5)
+df$cdf_8 <- pgamma(df$x, shape = 1, scale = 5)
+df$q_8 <- qgamma(df$x, shape = 1, scale = 5)
+
+df$pdf_9 <- dgamma(df$x, shape = 5, scale = 5)
+df$cdf_9 <- pgamma(df$x, shape = 5, scale = 5)
+df$q_9 <- qgamma(df$x, shape = 5, scale = 5)
+
+write.table(format(df, digits=20), file = "gamma.csv", col.names = TRUE, row.names = FALSE, sep = ",", quote = FALSE)

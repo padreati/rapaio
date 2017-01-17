@@ -24,7 +24,7 @@
 
 package rapaio.core.distributions;
 
-import rapaio.math.MathTools;
+import rapaio.math.MTools;
 import rapaio.sys.WS;
 
 /**
@@ -62,14 +62,14 @@ public class Poisson implements Distribution {
         double xx = Math.rint(x);
         if (xx != x)
             return 0;
-        return MathTools.pdfPois(x, lambda);
+        return MTools.pdfPois(x, lambda);
     }
 
     @Override
     public double cdf(double x) {
         if (x < 0)
             return 0.0;
-        return MathTools.incompleteGammaComplement(Math.floor(x + 1), lambda);
+        return MTools.incompleteGammaComplement(Math.floor(x + 1), lambda);
     }
 
     @Override

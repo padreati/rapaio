@@ -24,7 +24,7 @@
 
 package rapaio.math.linear;
 
-import rapaio.math.MathTools;
+import rapaio.math.MTools;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Numeric;
@@ -246,7 +246,7 @@ public interface RM extends Serializable, Printable {
             return false;
         for (int i = 0; i < rowCount(); i++) {
             for (int j = 0; j < colCount(); j++) {
-                if (!MathTools.eq(get(i, j), RM.get(i, j), tol))
+                if (!MTools.eq(get(i, j), RM.get(i, j), tol))
                     return false;
             }
         }

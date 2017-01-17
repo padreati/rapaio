@@ -25,7 +25,7 @@
 package rapaio.graphics.plot.plotcomp;
 
 import rapaio.core.CoreTools;
-import rapaio.math.MathTools;
+import rapaio.math.MTools;
 import rapaio.core.correlation.CorrPearson;
 import rapaio.data.Frame;
 import rapaio.graphics.base.Range;
@@ -70,7 +70,7 @@ public class CorrGram extends PlotComponent {
                 if (x < -1)
                     x = -1;
 
-                int c = (int) MathTools.floor((1 + x) * 50);
+                int c = (int) MTools.floor((1 + x) * 50);
                 colors[i][j] = c;
             }
         }

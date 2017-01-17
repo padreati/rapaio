@@ -32,8 +32,7 @@ import rapaio.graphics.Plotter;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 
-import static rapaio.graphics.Plotter.color;
-import static rapaio.graphics.Plotter.plot;
+import static rapaio.graphics.Plotter.*;
 
 /**
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 11/18/16.
@@ -42,22 +41,16 @@ public class Sandbox {
 
     public static void main(String[] args) {
 
-        double lambda = 150;
-        Normal normal = new Normal(lambda, Math.sqrt(0.5*(1-0.5)*300));
-        Poisson poisson = new Poisson(lambda);
-        Binomial binomial = new Binomial(0.5, 300);
-
-        Numeric x = Numeric.seq(0, 300, 0.001);
-        Numeric n = Numeric.from(x, normal::pdf);
-        Numeric p = Numeric.from(x, poisson::pdf);
-        Numeric b = Numeric.from(x, binomial::pdf);
+        Numeric x = Numeric.seq(0, 24*5, 0.01);
+        Numeric y = logistic(x, 24*2, 24*3, 0.975);
 
         WS.setPrinter(new IdeaPrinter());
-        WS.draw(plot()
-                .lines(x, n, color(1))
-                .lines(x, p, color(2))
-                .lines(x, b, color(3))
-                .xLim(80, 220)
-        );
+        WS.draw(lines(x, y).vLine(24*2).vLine(24*3).vLine(24*4));
+    }
+
+    static Numeric logistic(Numeric x, double safe, double full, double p) {
+        double mid = (safe+full)/2;
+        double steep = Math.log(p/(1-p))/(mid-safe);
+        return Numeric.from(x, v -> 1 - 1/(1+Math.exp(-steep*(v-mid))));
     }
 }

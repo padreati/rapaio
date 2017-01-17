@@ -24,10 +24,10 @@
 
 package rapaio.core.distributions;
 
-import rapaio.math.MathTools;
+import rapaio.math.MTools;
 import rapaio.sys.WS;
 
-import static rapaio.math.MathTools.*;
+import static rapaio.math.MTools.*;
 
 /**
  * Binomial distribution.
@@ -70,7 +70,7 @@ public class Binomial implements Distribution {
     public double cdf(double x) {
         if (x >= n)
             return 1.0;
-        x = MathTools.floor(x);
+        x = MTools.floor(x);
         return betaIncReg(1 - p, n - x, x + 1);
     }
 

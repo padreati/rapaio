@@ -89,7 +89,6 @@ public interface Distribution extends Serializable {
      * @return quantile value
      */
     double quantile(double p);
-
     /**
      * Minimum value for which this pdf is defined
      *

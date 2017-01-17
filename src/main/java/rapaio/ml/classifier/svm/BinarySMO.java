@@ -28,7 +28,7 @@ package rapaio.ml.classifier.svm;
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> at 1/16/15.
  */
 
-import rapaio.math.MathTools;
+import rapaio.math.MTools;
 import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Mapping;
@@ -614,7 +614,7 @@ public class BinarySMO extends AbstractClassifier implements Serializable {
             H = Math.min(C2, alph1 + alph2);
         }
 
-        if (MathTools.eq(L, H, 1e-10)) { // old condition was >=
+        if (MTools.eq(L, H, 1e-10)) { // old condition was >=
             return false;
         }
 

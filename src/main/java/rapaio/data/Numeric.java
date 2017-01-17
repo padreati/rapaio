@@ -364,6 +364,14 @@ public final class Numeric extends AbstractVar {
             setMissing(row);
             return;
         }
+        if ("Inf".equals(value)) {
+            setValue(row, Double.POSITIVE_INFINITY);
+            return;
+        }
+        if ("-Inf".equals(value)) {
+            setValue(row, Double.NEGATIVE_INFINITY);
+            return;
+        }
         setValue(row, Double.parseDouble(value));
     }
 
@@ -371,6 +379,14 @@ public final class Numeric extends AbstractVar {
     public void addLabel(String value) {
         if ("?".equals(value)) {
             addMissing();
+            return;
+        }
+        if ("Inf".equals(value)) {
+            addValue(Double.POSITIVE_INFINITY);
+            return;
+        }
+        if ("-Inf".equals(value)) {
+            addValue(Double.NEGATIVE_INFINITY);
             return;
         }
         addValue(Double.parseDouble(value));

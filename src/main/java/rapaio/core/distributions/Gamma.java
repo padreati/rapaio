@@ -24,8 +24,8 @@
 
 package rapaio.core.distributions;
 
-import rapaio.math.MathTools;
 import rapaio.core.RandomSource;
+import rapaio.math.MTools;
 
 import static rapaio.sys.WS.formatFlex;
 
@@ -84,9 +84,9 @@ public class Gamma implements Distribution {
     private final double beta;
 
     /**
-     * Constructs a Gamma distribution. Example: alpha=1.0, lambda=1.0.
+     * Constructs a Gamma distribution. Example: alpha=1.0, beta=1.0.
      *
-     * @throws IllegalArgumentException if <tt>alpha <= 0.0 || lambda <= 0.0</tt>.
+     * @throws IllegalArgumentException if <tt>alpha <= 0.0 || beta <= 0.0</tt>.
      */
     public Gamma(double alpha, double beta) {
         if (alpha <= 0 || beta <= 0)
@@ -114,13 +114,14 @@ public class Gamma implements Distribution {
         if (x == 0) {
             if (alpha == 1.0)
                 return 1.0 / beta;
-            else
-                return 0.0;
+            if (alpha < 1.0) {
+                return Double.POSITIVE_INFINITY;
+            }
+            return 0.0;
         }
         if (alpha == 1.0)
             return Math.exp(-x / beta) / beta;
-
-        return Math.exp((alpha - 1.0) * Math.log(x / beta) - x / beta - MathTools.lnGamma(alpha)) / beta;
+        return Math.exp((alpha - 1.0) * Math.log(x / beta) - x / beta - MTools.lnGamma(alpha)) / beta;
     }
 
     /**
@@ -129,11 +130,44 @@ public class Gamma implements Distribution {
     public double cdf(double x) {
         if (x < 0.0)
             return 0.0;
-        return MathTools.incompleteGamma(beta, alpha * x);
+        return MTools.incompleteGamma(alpha, x / beta);
     }
 
     @Override
     public double quantile(double p) {
+        if (p == 1)
+            return Double.POSITIVE_INFINITY;
+
+        double cdf0 = cdf(0);
+        if (p <= cdf0)
+            return 0;
+
+        // unbounded binary search
+        double low = 0;
+        double up = 1;
+
+        // double up until we found a bound
+        double cdf_up = cdf(up);
+        while (cdf_up <= p) {
+            up *= 2;
+            cdf_up = cdf(up);
+        }
+        while (low < up) {
+            double mid = (low + up) / 2;
+            double cdf_mid = cdf(mid);
+            double err = Math.abs(cdf_mid - cdf_up);
+            if (err <= 1e-15)
+                return up;
+            if (cdf_mid < p) {
+                if (low >= mid)
+                    return up;
+                low = mid;
+            } else {
+                if (up <= mid)
+                    return up;
+                up = mid;
+            }
+        }
         return 0;
     }
 
@@ -144,7 +178,7 @@ public class Gamma implements Distribution {
 
     @Override
     public double max() {
-        return 0;
+        return Double.POSITIVE_INFINITY;
     }
 
     @Override
@@ -316,7 +350,7 @@ public class Gamma implements Distribution {
 
     @Override
     public double mode() {
-        return 0;
+        return Double.NaN;
     }
 
     @Override
@@ -337,6 +371,6 @@ public class Gamma implements Distribution {
     @Override
     public double entropy() {
         throw new IllegalArgumentException("Not implemented");
-//        return alpha - Math.log(beta) + Math.log(Math.floor(Math.exp(MathTools.lnGamma(alpha)))) + (1.0-alpha)*\phi(alpha);
+//        return alpha - Math.log(beta) + Math.log(Math.floor(Math.exp(MTools.lnGamma(alpha)))) + (1.0-alpha)*\phi(alpha);
     }
 }
