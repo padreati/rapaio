@@ -27,8 +27,14 @@ package rapaio.core.distributions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import rapaio.core.RandomSource;
+import rapaio.core.distributions.empirical.KDE;
+import rapaio.core.stat.Maximum;
+import rapaio.core.stat.Minimum;
+import rapaio.core.tests.KSTest;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
+import rapaio.data.Var;
 import rapaio.io.Csv;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
@@ -127,4 +133,14 @@ public class GammaTest {
         }
     }
 
+    @Test
+    public void testSampling() {
+        RandomSource.setSeed(1234);
+        Gamma g = new Gamma(10, 10);
+        Var sample = g.sample(100);
+
+        KSTest test = KSTest.oneSampleTest(sample, g);
+        test.printSummary();
+        Assert.assertTrue(test.pValue()>0.05);
+    }
 }

@@ -77,7 +77,7 @@ import static rapaio.sys.WS.formatFlex;
  * @author wolfgang.hoschek@cern.ch
  * @version 1.0, 09/24/99
  */
-public class Gamma implements Distribution {
+public class Gamma extends AbstractDistribution {
 
     private static final long serialVersionUID = -7748384822665249829L;
     private final double alpha;
@@ -134,44 +134,6 @@ public class Gamma implements Distribution {
     }
 
     @Override
-    public double quantile(double p) {
-        if (p == 1)
-            return Double.POSITIVE_INFINITY;
-
-        double cdf0 = cdf(0);
-        if (p <= cdf0)
-            return 0;
-
-        // unbounded binary search
-        double low = 0;
-        double up = 1;
-
-        // double up until we found a bound
-        double cdf_up = cdf(up);
-        while (cdf_up <= p) {
-            up *= 2;
-            cdf_up = cdf(up);
-        }
-        while (low < up) {
-            double mid = (low + up) / 2;
-            double cdf_mid = cdf(mid);
-            double err = Math.abs(cdf_mid - cdf_up);
-            if (err <= 1e-15)
-                return up;
-            if (cdf_mid < p) {
-                if (low >= mid)
-                    return up;
-                low = mid;
-            } else {
-                if (up <= mid)
-                    return up;
-                up = mid;
-            }
-        }
-        return 0;
-    }
-
-    @Override
     public double min() {
         return 0;
     }
@@ -199,6 +161,7 @@ public class Gamma implements Distribution {
          * N(0,1). * *
          **********************************************************************/
         double a = alpha;
+        double beta1 = 1/beta;
         double aa = -1.0, aaa = -1.0, b = 0.0, c = 0.0, d = 0.0, e, r, s = 0.0, si = 0.0, ss = 0.0;
         double q0 = 0.0;
         double q1 = 0.0416666664;
@@ -242,11 +205,11 @@ public class Gamma implements Distribution {
                 if (p <= 1.0) { // Step 2. Case gds <= 1
                     gds = Math.exp(Math.log(p) / a);
                     if (Math.log(RandomSource.nextDouble()) <= -gds)
-                        return (gds / beta);
+                        return (gds / beta1);
                 } else { // Step 3. Case gds > 1
                     gds = -Math.log((b - p) / a);
                     if (Math.log(RandomSource.nextDouble()) <= ((a - 1.0) * Math.log(gds)))
-                        return (gds / beta);
+                        return (gds / beta1);
                 }
             }
         } else { // CASE B: Acceptance complement algorithm gd (gaussian
@@ -267,11 +230,11 @@ public class Gamma implements Distribution {
             x = s + 0.5 * t;
             gds = x * x;
             if (t >= 0.0)
-                return (gds / beta); // Immediate acceptance
+                return (gds / beta1); // Immediate acceptance
 
             u = RandomSource.nextDouble(); // Step 3. Uniform random number
             if (d * u <= t * t * t)
-                return (gds / beta); // Squeeze acceptance
+                return (gds / beta1); // Squeeze acceptance
 
             if (a != aaa) { // Step 4. Set-up for hat case
                 aaa = a;
@@ -306,7 +269,7 @@ public class Gamma implements Distribution {
                             * v;
                 } // Step 7. Quotient acceptance
                 if (Math.log(1.0 - u) <= q)
-                    return (gds / beta);
+                    return (gds / beta1);
             }
 
             for (; ; ) { // Step 8. Double exponential deviate t
@@ -337,7 +300,7 @@ public class Gamma implements Distribution {
                 } // Step 12. Hat acceptance
                 if (c * u * sign_u <= w * Math.exp(e - 0.5 * t * t)) {
                     x = s + 0.5 * t;
-                    return (x * x / beta);
+                    return (x * x / beta1);
                 }
             }
         }

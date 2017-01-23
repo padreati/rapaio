@@ -32,6 +32,11 @@ import rapaio.graphics.Plotter;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import static rapaio.graphics.Plotter.*;
 
 /**
@@ -46,6 +51,7 @@ public class Sandbox {
 
         WS.setPrinter(new IdeaPrinter());
         WS.draw(lines(x, y).vLine(24*2).vLine(24*3).vLine(24*4));
+
     }
 
     static Numeric logistic(Numeric x, double safe, double full, double p) {
