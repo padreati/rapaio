@@ -40,9 +40,6 @@ import java.net.URISyntaxException;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 9/15/15.
- */
 public class ClassifierSerializationTest {
 
     @Test
@@ -57,13 +54,6 @@ public class ClassifierSerializationTest {
         testModel(new NaiveBayes().withNumEstimator(new KernelPdf()), iris, "class", "iris", varModel, varData, varAcc);
         testModel(CTree.newC45(), iris, "class", "iris", varModel, varData, varAcc);
         testModel(CTree.newCART(), iris, "class", "iris", varModel, varData, varAcc);
-
-        Frame mushrooms = Datasets.loadMushrooms();
-
-        testModel(new OneRule(), mushrooms, "classes", "mushrooms", varModel, varData, varAcc);
-        testModel(new NaiveBayes().withNumEstimator(new KernelPdf()), mushrooms, "classes", "mushrooms", varModel, varData, varAcc);
-        testModel(CTree.newC45(), mushrooms, "classes", "mushrooms", varModel, varData, varAcc);
-        testModel(CTree.newCART(), mushrooms, "classes", "mushrooms", varModel, varData, varAcc);
 
         SolidFrame.byVars(varData, varModel, varAcc).printLines();
     }

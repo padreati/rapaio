@@ -24,6 +24,7 @@
 
 package rapaio.ml.analysis;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import rapaio.data.Frame;
@@ -34,8 +35,11 @@ import rapaio.datasets.Datasets;
 import rapaio.io.Csv;
 import rapaio.math.linear.RM;
 import rapaio.math.linear.dense.SolidRM;
+import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.experiment.ml.eval.CEvaluation;
+import rapaio.ml.eval.Confusion;
+import rapaio.sys.WS;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -75,10 +79,24 @@ public class PCATest {
 
         pca.printSummary();
 
-        Frame trans = pca.fit(x, 4).bindVars(iris.var("class"));
+        Frame fit = pca.fit(x, 4).bindVars(iris.var("class"));
 
-        CEvaluation.cv(iris, "class", CForest.newRF().withRuns(100), 5);
-        CEvaluation.cv(trans, "class", CForest.newRF().withRuns(100), 5);
+        CForest rf1 = CForest.newRF().withRunPoolSize(0).withRuns(10);
+        CForest rf2 = CForest.newRF().withRunPoolSize(0).withRuns(10);
+
+        rf1.train(iris, "class");
+        CFit fit1 = rf1.fit(iris);
+
+        rf2.train(fit.mapVars("0,1,class"), "class");
+        CFit fit2 = rf2.fit(fit.mapVars("0~1,class"));
+
+        double acc1 = new Confusion(iris.var("class"), fit1.firstClasses()).accuracy();
+        double acc2 = new Confusion(iris.var("class"), fit2.firstClasses()).accuracy();
+
+        WS.println(acc1);
+        WS.println(acc2);
+
+        Assert.assertTrue(acc1<acc2);
     }
 
     @Test

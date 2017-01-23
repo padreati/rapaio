@@ -24,12 +24,16 @@
 
 package rapaio.ml.analysis;
 
+import org.junit.Assert;
 import org.junit.Test;
+import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.datasets.Datasets;
 import rapaio.graphics.plot.GridLayer;
+import rapaio.ml.classifier.CFit;
 import rapaio.ml.classifier.ensemble.CForest;
 import rapaio.experiment.ml.eval.CEvaluation;
+import rapaio.ml.eval.Confusion;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
 
@@ -39,26 +43,38 @@ import java.util.logging.Logger;
 
 import static rapaio.graphics.Plotter.*;
 
-/**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 10/6/15.
- */
 public class LDATest {
 
     private static final Logger logger = Logger.getLogger(LDATest.class.getName());
 
     @Test
     public void irisDraft() throws IOException, URISyntaxException {
+        RandomSource.setSeed(123);
         final Frame df = Datasets.loadIrisDataset();
         final String targetName = "class";
 
-        LDA lda = new LDA().withMaxRuns(1_000).withTol(1e-30);
+        LDA lda = new LDA().withMaxRuns(1_000).withTol(1e-20);
         lda.learn(df, "class");
         lda.printSummary();
 
         Frame fit = lda.fit(df, (rv, rm) -> 4);
 
-        CEvaluation.cv(df, "class", CForest.newRF().withRuns(100), 3);
-        CEvaluation.cv(fit.mapVars("0~1,4"), "class", CForest.newRF().withRuns(100), 3);
+        CForest rf1 = CForest.newRF().withRunPoolSize(0).withRuns(10);
+        CForest rf2 = CForest.newRF().withRunPoolSize(0).withRuns(10);
+
+        rf1.train(df, "class");
+        CFit fit1 = rf1.fit(df);
+
+        rf2.train(fit.mapVars("0,1,class"), "class");
+        CFit fit2 = rf2.fit(fit.mapVars("0~1,class"));
+
+        double acc1 = new Confusion(df.var("class"), fit1.firstClasses()).accuracy();
+        double acc2 = new Confusion(df.var("class"), fit2.firstClasses()).accuracy();
+
+        WS.println(acc1);
+        WS.println(acc2);
+
+        Assert.assertTrue(acc1<acc2);
     }
 
 }
