@@ -43,13 +43,13 @@ public class KFuncGaussian implements KFunc {
     }
 
     @Override
-    public double minValue(double x0, double bandwidth) {
-        return x0 - 4 * bandwidth;
+    public double minValue(double x, double bandwidth) {
+        return x - 4 * bandwidth;
     }
 
     @Override
-    public double getMaxValue(double x0, double bandwidth) {
-        return x0 + 4 * bandwidth;
+    public double getMaxValue(double x, double bandwidth) {
+        return x + 4 * bandwidth;
     }
 
     @Override

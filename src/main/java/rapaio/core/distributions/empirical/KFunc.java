@@ -48,17 +48,17 @@ public interface KFunc extends Printable, Serializable {
     /**
      * Computes smallest x coordinate value for which the kernel function has an influence
      *
-     * @param x0        center point of the kernel
+     * @param x        center point of the kernel
      * @param bandwidth bandwidth of the kernel
      * @return minimum value where is an influence
      */
-    double minValue(double x0, double bandwidth);
+    double minValue(double x, double bandwidth);
 
     /**
      * Computes largest x coordinate value for which the kernel function has an influence
-     * @param x0 center point of the kernel
+     * @param x center point of the kernel
      * @param bandwidth bandwidth of the kernel
      * @return maximum value where is an influence
      */
-    double getMaxValue(double x0, double bandwidth);
+    double getMaxValue(double x, double bandwidth);
 }

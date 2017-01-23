@@ -39,13 +39,13 @@ public class KFuncUniform implements KFunc {
     }
 
     @Override
-    public double minValue(double x0, double bandwidth) {
-        return x0 - bandwidth;
+    public double minValue(double x, double bandwidth) {
+        return x - bandwidth;
     }
 
     @Override
-    public double getMaxValue(double x0, double bandwidth) {
-        return x0 + bandwidth;
+    public double getMaxValue(double x, double bandwidth) {
+        return x + bandwidth;
     }
 
     @Override
