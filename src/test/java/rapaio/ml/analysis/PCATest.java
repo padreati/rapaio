@@ -27,6 +27,7 @@ package rapaio.ml.analysis;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import rapaio.core.RandomSource;
 import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.SolidFrame;
@@ -71,6 +72,7 @@ public class PCATest {
 
     @Test
     public void irisPca() throws IOException, URISyntaxException {
+        RandomSource.setSeed(123);
         Frame iris = Datasets.loadIrisDataset();
         Frame x = iris.removeVars("class");
 
