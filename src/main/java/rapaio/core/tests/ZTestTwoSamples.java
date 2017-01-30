@@ -36,7 +36,7 @@ import static rapaio.sys.WS.formatFlex;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/27/16.
  */
-public class ZTestTwoSamples implements Printable {
+public class ZTestTwoSamples implements HTest {
 
     /**
      * Two unpaired samples z test for difference of the means with default values

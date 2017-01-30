@@ -47,6 +47,8 @@ If there are no notes it means the feature is considered to be fully implemented
 * Discrete Uniform
 * Continuous Uniform
 * Hypergeometric
+* Gamma
+* Empirical KDE (gaussian, epanechnikov, cosine, tricube, biweight, triweight, triangular, uniform)
 
 **Sampling**
 
@@ -152,11 +154,6 @@ Experminental Stage Features
 
 * Kolmogorov Smirnoff one/two sample test
 * Pearson Chi-Square goodness of fit / independence test
-
-**Distributions**
-
-* Gamma
-* Empirical KDE (gaussian, epanechnikov, cosine, tricube, biweight, triweight, triangular, uniform)
 
 **Classification**
 

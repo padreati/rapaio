@@ -47,7 +47,7 @@ public class KSTestTest {
     public void testPearson() throws IOException, URISyntaxException {
         RandomSource.setSeed(1);
         Frame df = Datasets.loadPearsonHeightDataset();
-        KSTest test = KSTest.twoSamplesTest(df.var("Son"), df.var("Father"));
+        KSTestTwoSamples test = KSTestTwoSamples.from(df.var("Son"), df.var("Father"));
         test.printSummary();
 
         Assert.assertEquals(0.150278, test.d(), 10e-5);
@@ -59,7 +59,7 @@ public class KSTestTest {
         RandomSource.setSeed(1);
         Normal d = distNormal();
         Numeric sample = d.sample(1000);
-        KSTest test = KSTest.oneSampleTest(sample, d);
+        KSTestOneSample test = KSTestOneSample.from(sample, d);
         test.printSummary();
         Assert.assertTrue(test.d() < 0.4);
         Assert.assertTrue(test.pValue() > 0.08);
@@ -69,7 +69,7 @@ public class KSTestTest {
     public void testUniform() {
         RandomSource.setSeed(1);
         Numeric sample = new Uniform(0, 1).sample(1_000);
-        KSTest test = KSTest.oneSampleTest(sample, distNormal());
+        KSTestOneSample test = KSTestOneSample.from(sample, distNormal());
         test.printSummary();
         Assert.assertTrue(test.d() > 0.4);
         Assert.assertTrue(test.pValue() < 0.001);
@@ -80,7 +80,7 @@ public class KSTestTest {
         RandomSource.setSeed(1);
         StudentT d = new StudentT(3, 0, 1);
         Numeric sample = d.sample(1000);
-        KSTest test = KSTest.oneSampleTest(sample, distNormal());
+        KSTestOneSample test = KSTestOneSample.from(sample, distNormal());
         test.printSummary();
         Assert.assertTrue(test.d() > 0.04);
         Assert.assertTrue(test.pValue() < 0.05);

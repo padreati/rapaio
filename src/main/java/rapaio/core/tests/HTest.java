@@ -24,12 +24,14 @@
 
 package rapaio.core.tests;
 
+import rapaio.printer.Printable;
+
 /**
  * Interface for a hypothesis test
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/14/16.
  */
-public interface HTest {
+public interface HTest extends Printable {
 
     public enum Alternative {
         TWO_TAILS("P > |z|"),

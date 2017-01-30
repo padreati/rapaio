@@ -39,7 +39,7 @@ import static rapaio.sys.WS.formatFlex;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 7/8/16.
  */
-public class TTestTwoPaired implements Printable {
+public class TTestTwoPaired implements HTest {
     /**
      * Two paired samples t test for mean of the difference with default values
      * for significance level (0.05) and alternative (two tails)

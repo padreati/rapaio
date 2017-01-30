@@ -35,22 +35,57 @@ import java.io.Serializable;
 import java.util.stream.DoubleStream;
 
 /**
- * Double vector
+ * Vector of values in double floating precision.
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
 public interface RV extends Serializable, Printable {
 
+    /**
+     * Gets value from zero-based position index
+     * @param i given position
+     * @return value stored at the given position
+     */
     double get(int i);
 
+    /**
+     * Sets a value to the given position
+     *
+     * @param i zero based index
+     * @param value value to be stored
+     */
     void set(int i, double value);
 
+    /**
+     * Increment with the given value the value from the given position.
+     *
+     * @param i zero-based index position
+     * @param value value used for increment
+     */
     void increment(int i, double value);
 
+    /**
+     * @return length of vector
+     */
     int count();
 
+    /**
+     * Scalar multiplication. All the values from vector
+     * will be multiplied with the given scalar
+     *
+     * @param scalar scaar value
+     * @return the same object
+     */
     RV dot(double scalar);
 
+    /**
+     * Adds to all elements the value of x, it is
+     * similar wtth calling increment with x for all positions
+     * of the vector
+     *
+     * @param x value to be incremented with
+     * @return same object
+     */
     default RV plus(double x) {
         for (int i = 0; i < count(); i++) {
             increment(i, x);
@@ -58,6 +93,18 @@ public interface RV extends Serializable, Printable {
         return this;
     }
 
+    /**
+     * Adds to to all positions values from the
+     * corresponding positions of the vector B.
+     * The resulted vectors will have values:
+     * this[i] <- this[i] + B[i].
+     *
+     * Vectors must be conformant for addition, which means
+     * that they have to have the same size.
+     *
+     * @param B vector which contains values used for increment operation
+     * @return same object
+     */
     default RV plus(RV B) {
         if (count() != B.count())
             throw new IllegalArgumentException(String.format(
@@ -68,10 +115,30 @@ public interface RV extends Serializable, Printable {
         return this;
     }
 
+    /**
+     * Substract from all elements the value of x, it is
+     * similar wtth calling increment with -x for all positions
+     * of the vector
+     *
+     * @param x value to be decremented with
+     * @return same object
+     */
     default RV minus(double x) {
         return plus(-x);
     }
 
+    /**
+     * Substract from all positions values from the
+     * corresponding positions of the vector B.
+     * The resulted vectors will have values:
+     * this[i] <- this[i] + B[i].
+     *
+     * Vectors must be conformant for addition, which means
+     * that they have to have the same size.
+     *
+     * @param B vector which contains values used for increment operation
+     * @return same object
+     */
     default RV minus(RV B) {
         if (count() != B.count())
             throw new IllegalArgumentException(String.format(
@@ -82,8 +149,32 @@ public interface RV extends Serializable, Printable {
         return this;
     }
 
+    /**
+     * Computes the p norm of the vector.
+     * <ul>
+     *     <li>if <b>p == 1</b> it returns the absolute value norm (L1 norm)</li>
+     *     <li>if <b>p == 2</b> it returns the euclidean norm (L2 norm)</li>
+     *     <li>if <b>p == Inf</b> it returns the value of the biggest element</li>
+     *     <li>in general it returns p-norm
+     * </ul>
+     *
+     * @param p the order of the norm
+     * @return computed p norm value
+     */
     double norm(double p);
 
+    /**
+     * Divides all the values by the given p norm. Thus, after normalization
+     * the specific p norm is equal with 1.
+     *
+     * An example of usage is to make a unit vector from a given vector.
+     * Thus the normalized vector keeps the same direction with a different size.
+     *
+     * If the p-norm equals 0, than the vector is kept the same.
+     *
+     * @param p order of the p norm used at normalization.
+     * @return normalized vector
+     */
     RV normalize(double p);
 
     /**
@@ -92,8 +183,8 @@ public interface RV extends Serializable, Printable {
      * <p>
      * sum_{i=1}^{n}a_i*b_i
      *
-     * @param b
-     * @return
+     * @param b the vector used to compute dot product
+     * @return same vector object
      */
     default double dotProd(RV b) {
         int max = Math.max(count(), b.count());
@@ -104,6 +195,12 @@ public interface RV extends Serializable, Printable {
         return s;
     }
 
+    /**
+     * Computes a sample mean object where the sample values
+     * consists of the elements of the vector.
+     *
+     * @return sample mean object
+     */
     default Mean mean() {
         Numeric values = Numeric.empty();
         for (int i = 0; i < count(); i++) {
@@ -112,6 +209,12 @@ public interface RV extends Serializable, Printable {
         return Mean.from(values);
     }
 
+    /**
+     * Computes a sample variance object where the
+     * sample values consists of the elements of the vector.
+     *
+     * @return the sample variance object
+     */
     default Variance var() {
         Numeric values = Numeric.empty();
         for (int i = 0; i < count(); i++) {
@@ -120,9 +223,30 @@ public interface RV extends Serializable, Printable {
         return Variance.from(values);
     }
 
-
+    /**
+     * Creates a new solid copy of the vector.
+     * There are two common reasons why we would need such an operations:
+     *
+     * <ul>
+     *     <li>the current vector could be the result of multiple
+     *     mapping or binding operations and we would like to have a solid
+     *     copy of all those values</li>
+     *     <li>most of the operations work on the current instance, if we want
+     *     to avoid altering this instance than we need a new copy</li>
+     * </ul>
+     *
+     * @return a new solid copy of the vector
+     */
     RV solidCopy();
 
+    /**
+     * A vector is also a matrix, but for implementation
+     * reasons the objects are not the same. This method
+     * creates a new copy of the vector in the form of a matrix
+     * with n rows and 1 column.
+     *
+     * @return a matrix corresponding with the current vector
+     */
     default RM asMatrix() {
         SolidRM res = SolidRM.empty(count(), 1);
         for (int i = 0; i < count(); i++) {
@@ -131,6 +255,14 @@ public interface RV extends Serializable, Printable {
         return res;
     }
 
+    /**
+     * A vector is also a matrix, but for implementation
+     * reasons the objects are not the same. This method
+     * creates a new copy of the vector in the form of a transposed matrix
+     * with 1 rows and n columns.
+     *
+     * @return a matrix corresponding with the current transposed vector
+     */
     default RM asMatrixT() {
         SolidRM res = SolidRM.empty(1, count());
         for (int i = 0; i < count(); i++) {
@@ -139,11 +271,12 @@ public interface RV extends Serializable, Printable {
         return res;
     }
 
+    /**
+     * Creates a stream of values to visit all the elements of the vector
+     *
+     * @return a stream of values
+     */
     DoubleStream valueStream();
-
-    //////////////////
-    // printSummary
-    //////////////////
 
     default String summary() {
 

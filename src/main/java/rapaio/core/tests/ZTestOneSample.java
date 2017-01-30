@@ -36,7 +36,7 @@ import static rapaio.sys.WS.formatFlex;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/24/16.
  */
-public class ZTestOneSample implements Printable {
+public class ZTestOneSample implements HTest {
 
     /**
      * One sample z test with default significance level 0.05 and to tails alternative

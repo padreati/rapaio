@@ -24,17 +24,12 @@
 
 package rapaio.math.linear.dense;
 
-import rapaio.data.SolidFrame;
 import rapaio.data.Var;
 import rapaio.math.linear.RV;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.stream.DoubleStream;
 
-/**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
- */
 public class SolidRV implements RV {
 
     private static final long serialVersionUID = 5763094452899116225L;
@@ -66,8 +61,8 @@ public class SolidRV implements RV {
     }
 
     /**
-     * Builds a new real dense vector of size equal with row count,
-     * filled with fill value given as parameter.
+     * Builds a new real dense vector of <i>len</i> size,
+     * filled with <i>fill</i> value given as parameter.
      *
      * @param len  size of the vector
      * @param fill fill value
@@ -81,14 +76,26 @@ public class SolidRV implements RV {
         return rdv;
     }
 
+    /**
+     * Builds a new real dense vector which is a solid copy
+     * of the given source vector.
+     *
+     * @param source source vector
+     * @return new real dense vector which is a copy of the source vector
+     */
     public static SolidRV copy(RV source) {
         SolidRV v = empty(source.count());
-        if(source instanceof SolidRV) {
-            System.arraycopy(((SolidRV)source).values, 0, v.values, 0, source.count());
+        if (source instanceof SolidRV) {
+            System.arraycopy(((SolidRV) source).values, 0, v.values, 0, source.count());
+        } else {
+            for (int i = 0; i < v.values.length; i++) {
+                v.values[i] = source.get(i);
+            }
         }
         return v;
     }
 
+    // internals
 
     private final double[] values;
 
@@ -117,16 +124,30 @@ public class SolidRV implements RV {
     }
 
     public RV dot(double scalar) {
-        for (int i = 0; i < values.length; i++) {
-            values[i] *= scalar;
-        }
+        for (int i = 0; i < values.length; i++) values[i] *= scalar;
         return this;
     }
 
     public double norm(double p) {
+        if (p <= 0) {
+            return count();
+        }
+        if (p == Double.POSITIVE_INFINITY) {
+            double max = Double.NaN;
+            for (int i = 0; i < values.length; i++) {
+                if (Double.isNaN(values[i]))
+                    continue;
+                if (Double.isNaN(max)) {
+                    max = values[i];
+                    continue;
+                }
+                max = Math.max(max, values[i]);
+            }
+            return max;
+        }
         double s = 0.0;
         for (int i = 0; i < count(); i++) {
-            s += Math.pow(values[i], p);
+            s += Math.pow(Math.abs(values[i]), p);
         }
         return Math.pow(s, 1 / p);
     }

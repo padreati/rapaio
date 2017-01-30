@@ -45,6 +45,7 @@ import java.util.stream.DoubleStream;
  */
 public interface RM extends Serializable, Printable {
 
+
     int rowCount();
 
     int colCount();

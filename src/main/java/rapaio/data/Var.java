@@ -39,7 +39,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
- * Random access list of observed values (observations) for a specific variable.
+ * Random access list of observed values (observations) of a random variable (a vector with sample values).
  *
  * @author Aurelian Tutuianu
  */

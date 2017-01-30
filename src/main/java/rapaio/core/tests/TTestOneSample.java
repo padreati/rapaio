@@ -36,7 +36,7 @@ import static rapaio.sys.WS.formatFlex;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 5/24/16.
  */
-public class TTestOneSample implements HTest, Printable {
+public class TTestOneSample implements HTest {
 
     /**
      * One sample t test
@@ -203,7 +203,7 @@ public class TTestOneSample implements HTest, Printable {
     public String summary() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
-        sb.append("> HTTools.tTestOneSample\n");
+        sb.append("> TTestOneSample\n");
         sb.append("\n");
         sb.append(" One Sample t-test\n");
         sb.append("\n");

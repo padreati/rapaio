@@ -36,7 +36,7 @@ import static rapaio.sys.WS.formatFlex;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 6/14/16.
  */
-public class TTestTwoSamples implements HTest, Printable {
+public class TTestTwoSamples implements HTest {
 
     /**
      * Two unpaired samples with equal variances t test for difference of the means with default values

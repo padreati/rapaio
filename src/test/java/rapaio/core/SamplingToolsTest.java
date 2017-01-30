@@ -27,7 +27,7 @@ package rapaio.core;
 import junit.framework.Assert;
 import org.junit.Test;
 import rapaio.core.tests.ChiSquareTest;
-import rapaio.core.tests.KSTest;
+import rapaio.core.tests.KSTestOneSample;
 import rapaio.core.tools.DVector;
 import rapaio.data.Numeric;
 
@@ -103,7 +103,7 @@ public class SamplingToolsTest {
         for (double f : freq) {
             System.out.print(String.format("%.6f, ", f / (1. * TRIALS * SAMPLES)));
         }
-        KSTest.oneSampleTest(v, distDUnif(0, 9)).printSummary();
+        KSTestOneSample.from(v, distDUnif(0, 9)).printSummary();
         System.out.println();
     }
 }

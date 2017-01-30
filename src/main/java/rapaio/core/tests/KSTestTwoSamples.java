@@ -24,84 +24,36 @@
 
 package rapaio.core.tests;
 
-import rapaio.data.filter.var.VFSort;
-import rapaio.printer.Printable;
 import rapaio.core.distributions.Distribution;
 import rapaio.data.Var;
+import rapaio.data.filter.var.VFSort;
 
 import static rapaio.sys.WS.formatFlex;
 
 /**
- * Creates a new statistical Kolmogorov-Smirnoff test. The 1 sample test, with <tt>v</tt>
- * being the 1 sample. The 1 sample test compare the data to a given densities,
- * and see if it does not belong to the given densities. The 2 sample test is
- * designed to tell if the data is not from the same population.
+ * Two-samples K-S test
+ * <p>
+ * D is the maximum distance between ECDF(v1) and ECDF(v2)
+ * pValue is the p-value for the 2 sample KS test
+ * The null hypothesis of this test is that both data sets comes from the same densities,
+ * The altString hypothesis is that the two samples comes from different densities.
  *
- * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
+ * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 1/29/17.
  */
-public class KSTest implements Printable {
+public class KSTestTwoSamples implements HTest {
 
-    private final Distribution cdf;
     private final Var v1;
     private final Var v2;
     private double D; // maximum distance between ECDF1 and F, or ECDF1 and ECFD2
     private final double pValue;
 
-    /**
-     * One-sample K-S test.
-     * <p>
-     * D is the maximum distance between ECDF(v) and given cdf.
-     * pValue is the computed p-value for the KS test against the given densities
-     * <p>
-     * The null hypothesis of this test is that the given data set belongs to the given densities.
-     * The altString hypothesis is that the data set does not belong to the given densities.
-     *
-     * @param cdf the densities to compare against
-     */
-    public static KSTest oneSampleTest(Var sample, Distribution cdf) {
-        return new KSTest(sample, cdf);
+    public static KSTestTwoSamples from(Var sample1, Var sample2) {
+        return new KSTestTwoSamples(sample1, sample2);
     }
 
-    /**
-     * Two-samples K-S test
-     * <p>
-     * D is the maximum distance between ECDF(v1) and ECDF(v2)
-     * pValue is the p-value for the 2 sample KS test
-     * The null hypothesis of this test is that both data sets comes from the same densities,
-     * The altString hypothesis is that the two samples comes from different densities.
-     *
-     * @param sample1 first sample
-     * @param sample2 second sample
-     */
-    public static KSTest twoSamplesTest(Var sample1, Var sample2) {
-        return new KSTest(sample1, sample2);
-    }
-
-    private KSTest(Var sample, Distribution cdf) {
-        this.v1 = new VFSort().fitApply(sample);
-        this.cdf = cdf;
-        this.v2 = null;
-
-        D = 0;
-        double n = v1.rowCount();
-        double fo = 0.0;
-
-        for (int i = 0; i < v1.rowCount(); i++) {
-            //ECDF(x) - F(x)
-            double ff = cdf.cdf(v1.value(i));
-            double fn = (i + 1) / n;
-            D = Math.max(D, Math.abs(fo - ff));
-            D = Math.max(D, Math.abs(fn - ff));
-            fo = fn;
-        }
-        n = Math.sqrt(n);
-        pValue = probks((n + 0.12 + 0.11 / n) * D);
-    }
-
-    private KSTest(Var sample1, Var sample2) {
+    private KSTestTwoSamples(Var sample1, Var sample2) {
         this.v1 = new VFSort().fitApply(sample1);
         this.v2 = new VFSort().fitApply(sample2);
-        this.cdf = null;
 
         D = 0;
         double fn1 = 0.0;
@@ -149,23 +101,6 @@ public class KSTest implements Printable {
         return D;
     }
 
-    /**
-     * Gets p-value for the given test
-     *
-     * @return p-value
-     */
-    public double pValue() {
-        return pValue;
-    }
-
-    @Override
-    public String summary() {
-        StringBuilder sb = new StringBuilder();
-        if (cdf != null) oneSampleSummary(sb);
-        else twoSamplesSummary(sb);
-        return sb.toString();
-    }
-
     protected String getPValueStars() {
         if (pValue > 0.1) return "";
         if (pValue > 0.05) return ".";
@@ -174,22 +109,24 @@ public class KSTest implements Printable {
         return "***";
     }
 
-    private void oneSampleSummary(StringBuilder sb) {
-        sb.append("\n > Kolmogorov-Smirnoff 1-sample test\n");
-
-        int ties = (int) (v1.rowCount() - v1.stream().mapToDouble().distinct().count());
-        sb.append(String.format("sample size: %d, ties: %d\n",
-                v1.rowCount(), ties));
-        if (ties > 0)
-            sb.append(" (warning: p-values will not be exact because of ties)\n");
-
-        sb.append(String.format("densities: %s\n", cdf.name()));
-        sb.append("D statistic: ").append(formatFlex(D)).append("\n");
-        sb.append("p-value: ").append(formatFlex(pValue)).append(" ").append(getPValueStars()).append("\n");
-        sb.append("\n");
+    @Override
+    public double pValue() {
+        return pValue;
     }
 
-    private void twoSamplesSummary(StringBuilder sb) {
+    @Override
+    public double ciHigh() {
+        return 0;
+    }
+
+    @Override
+    public double ciLow() {
+        return 0;
+    }
+
+    @Override
+    public String summary() {
+        StringBuilder sb = new StringBuilder();
         sb.append("\n > Kolmogorov-Smirnoff 2-sample test\n");
 
         int ties1 = (int) (v1.rowCount() - v1.stream().mapToDouble().distinct().count());
@@ -204,5 +141,6 @@ public class KSTest implements Printable {
         sb.append(String.format("D statistic: %.6f\n", D));
         sb.append(String.format("p-value: %.16f %s\n", pValue, getPValueStars()));
         sb.append("\n");
+        return sb.toString();
     }
 }

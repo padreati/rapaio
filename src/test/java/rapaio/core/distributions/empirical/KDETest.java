@@ -29,7 +29,6 @@ import org.junit.Test;
 import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
 import rapaio.core.stat.Mean;
-import rapaio.core.tests.KSTest;
 import rapaio.data.Numeric;
 import rapaio.data.Var;
 
