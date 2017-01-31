@@ -54,11 +54,11 @@ public class Range implements Serializable {
     }
 
     public void union(double x, double y) {
-        if(!Double.isNaN(x) && !Double.isInfinite(x)) {
+        if(!Double.isNaN(x) && Double.isFinite(x)) {
             x1 = Math.min(x1 != x1 ? x : x1, x);
             x2 = Math.max(x2 != x2 ? x : x2, x);
         }
-        if (!Double.isNaN(x) && Double.isFinite(x)) {
+        if (!Double.isNaN(y) && Double.isFinite(y)) {
             y1 = Math.min(y1 != y1 ? y : y1, y);
             y2 = Math.max(y2 != y2 ? y : y2, y);
         }
