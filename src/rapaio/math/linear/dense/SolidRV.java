@@ -28,6 +28,7 @@ import rapaio.data.Var;
 import rapaio.math.linear.RV;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.DoubleStream;
 
 public class SolidRV implements RV {
@@ -95,12 +96,21 @@ public class SolidRV implements RV {
         return v;
     }
 
+    public static SolidRV wrap(double...values) {
+        Objects.requireNonNull(values);
+        return new SolidRV(values);
+    }
+
     // internals
 
     private final double[] values;
 
     private SolidRV(int n) {
         values = new double[n];
+    }
+
+    private SolidRV(double[] values){
+        this.values = values;
     }
 
     @Override

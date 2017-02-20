@@ -34,6 +34,8 @@ import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.math.linear.dense.SolidRV;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.*;
 
 public class SolidRVTest {
@@ -87,6 +89,12 @@ public class SolidRVTest {
         for (int i = 0; i < N; i++) {
             assertEquals(1, x.get(i), TOL);
             assertEquals(i, x.get(i + N), TOL);
+        }
+
+        x = SolidRV.wrap(0, 1, 2, 3, 4, 5);
+        assertNotNull(x);
+        for (int i = 0; i < 6; i++) {
+            assertEquals(i, x.get(i), TOL);
         }
     }
 
@@ -201,7 +209,21 @@ public class SolidRVTest {
         RV y = x.solidCopy().normalize(1.5);
         double norm = x.norm(1.5);
         for (int i = 0; i < y.count(); i++) {
-            assertEquals(x.get(i)/norm, y.get(i), TOL);
+            assertEquals(x.get(i) / norm, y.get(i), TOL);
         }
+    }
+
+    @Test
+    public void testStream() {
+        double[] x = new double[100];
+        for (int i = 0; i < x.length; i++) {
+            x[i] = i;
+        }
+        RV y = SolidRV.wrap(x);
+
+        double xsum = Arrays.stream(x).sum();
+        double ysum = y.valueStream().sum();
+
+        assertEquals(xsum, ysum, TOL);
     }
 }
