@@ -27,6 +27,7 @@ package rapaio.math.linear;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Numeric;
+import rapaio.data.Var;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
@@ -277,64 +278,4 @@ public interface RV extends Serializable, Printable {
      * @return a stream of values
      */
     DoubleStream valueStream();
-
-    default String summary() {
-
-        StringBuilder sb = new StringBuilder();
-
-        String[][] m = new String[count()][1];
-        int max = 1;
-        for (int i = 0; i < count(); i++) {
-            m[i][0] = WS.formatShort(get(i));
-            max = Math.max(max, m[i][0].length() + 1);
-        }
-        max = Math.max(max, String.format("[,%d]", count()).length());
-        max = Math.max(max, String.format("[%d,]", 1).length());
-
-        int hCount = (int) Math.floor(WS.getPrinter().textWidth() / (double) max);
-        int vCount = Math.min(count() + 1, 101);
-        int hLast = 0;
-        while (true) {
-
-            // take vertical stripes
-            if (hLast >= 1)
-                break;
-
-            int hStart = hLast;
-            int hEnd = Math.min(hLast + hCount, 1);
-            int vLast = 0;
-
-            while (true) {
-
-                // print rows
-                if (vLast >= count())
-                    break;
-
-                int vStart = vLast;
-                int vEnd = Math.min(vLast + vCount, count());
-
-                for (int i = vStart; i <= vEnd; i++) {
-                    for (int j = hStart; j <= hEnd; j++) {
-                        if (i == vStart && j == hStart) {
-                            sb.append(String.format("%" + (max) + "s| ", ""));
-                            continue;
-                        }
-                        if (i == vStart) {
-                            sb.append(String.format("%" + Math.max(1, max - 1) + "d|", j - 1));
-                            continue;
-                        }
-                        if (j == hStart) {
-                            sb.append(String.format("%" + Math.max(1, max - 1) + "d |", i - 1));
-                            continue;
-                        }
-                        sb.append(String.format("%" + max + "s", m[i - 1][j - 1]));
-                    }
-                    sb.append("\n");
-                }
-                vLast = vEnd;
-            }
-            hLast = hEnd;
-        }
-        return sb.toString();
-    }
 }

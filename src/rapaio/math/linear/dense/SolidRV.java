@@ -24,11 +24,16 @@
 
 package rapaio.math.linear.dense;
 
+import rapaio.data.Numeric;
 import rapaio.data.Var;
 import rapaio.math.linear.RV;
+import rapaio.printer.Summary;
+import rapaio.util.func.SFunction;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.DoubleStream;
 
 public class SolidRV implements RV {
@@ -96,9 +101,23 @@ public class SolidRV implements RV {
         return v;
     }
 
+    /**
+     * Builds a new random vector which wraps a double array.
+     * It uses the same reference.
+     * @param values referenced array of values
+     * @return new real dense vector
+     */
     public static SolidRV wrap(double...values) {
         Objects.requireNonNull(values);
         return new SolidRV(values);
+    }
+
+    public static SolidRV from(int len, Function<Integer, Double> fun) {
+        SolidRV v = empty(len);
+        for (int i = 0; i < len; i++) {
+            v.set(i, fun.apply(i));
+        }
+        return v;
     }
 
     // internals
@@ -179,4 +198,9 @@ public class SolidRV implements RV {
     public DoubleStream valueStream() {
         return Arrays.stream(values);
     }
+
+    public String summary() {
+        return Summary.headString(true, values.length, new Var[]{Numeric.wrap(values)}, new String[]{""});
+    }
+
 }

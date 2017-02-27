@@ -39,20 +39,43 @@ import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
 /**
- * Real matrix
+ * Dense matrix with double precision floating point values
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
  */
 public interface RM extends Serializable, Printable {
 
+    /**
+     * @return number of rows
+     */
     int rowCount();
 
+    /**
+     * @return number of columns
+     */
     int colCount();
 
+    /**
+     * @param i row index
+     * @param j column index
+     * @return value at given row index and column index
+     */
     double get(int i, int j);
 
+    /**
+     * Sets value at the given row and column indexes
+     * @param i row index
+     * @param j column index
+     * @param value value to be set
+     */
     void set(int i, int j, double value);
 
+    /**
+     * Increment value at the given row and column indexes
+     * @param i row index
+     * @param j column index
+     * @param value increment value
+     */
     void increment(int i, int j, double value);
 
     RV mapCol(int i);

@@ -25,9 +25,11 @@
 package rapaio.graphics.base;
 
 import rapaio.graphics.opt.ColorPalette;
+import rapaio.sys.WS;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * @author <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>
@@ -39,7 +41,7 @@ public abstract class HostFigure extends BaseFigure {
     protected static final Font TITLE_FONT = new Font("Verdana", Font.BOLD, 18);
     protected static final Font MARKERS_FONT = new Font("Verdana", Font.PLAIN, 13);
     protected static final Font LABELS_FONT = new Font("Verdana", Font.BOLD, 16);
-    protected static final double DEFAULT_THICKER_MIN_SPACE = 110.;
+    protected static final double DEFAULT_THICKER_MIN_SPACE = 130.;
     protected static final int THICKER_PAD = 7;
     protected static final int MARKER_PAD = 15;
     protected static final int LABEL_PAD = 30;
@@ -237,12 +239,11 @@ public abstract class HostFigure extends BaseFigure {
             if (leftThicker) {
                 g2d.drawLine(
                         viewport.x - 2 * THICKER_PAD,
-                        (int) (viewport.y + leftMarkersPos.get(i)),
+                        (int) (viewport.y + viewport.height - leftMarkersPos.get(i)),
                         viewport.x - THICKER_PAD,
-                        (int) (viewport.y + leftMarkersPos.get(i)));
+                        (int) (viewport.y +viewport.height - leftMarkersPos.get(i)));
             }
             if (leftMarkers) {
-
                 int xx = viewport.x - 3 * THICKER_PAD;
                 int yy = (int) (viewport.y + viewport.height - leftMarkersPos.get(i)
                         + g2d.getFontMetrics().getStringBounds(leftMarkersMsg.get(i), g2d).getWidth() / 2);
@@ -306,14 +307,16 @@ public abstract class HostFigure extends BaseFigure {
         bottomMarkersMsg.clear();
 
         int xspots = (int) Math.floor(viewport.width / thickerMinSpace);
-        if (xspots < 1) {
-            xspots = 1;
+        if (xspots < 2) {
+            return;
         }
-        double xspotwidth = viewport.width / xspots;
+        Range range = getRange();
+        XWilkinson.Label xlabels = XWilkinson.base10().searchBounded(
+                range.x1(), range.x2(), xspots);
 
-        for (int i = 0; i <= xspots; i++) {
-            bottomMarkersPos.add(i * xspotwidth);
-            bottomMarkersMsg.add(String.format("%." + getRange().getProperDecimalsX() + "f", getRange().x1() + getRange().width() * i / xspots));
+        for (double label : xlabels.getList()) {
+            bottomMarkersPos.add((label - range.x1()) * viewport.width / range.width());
+            bottomMarkersMsg.add(String.valueOf(label));
         }
     }
 
@@ -322,14 +325,16 @@ public abstract class HostFigure extends BaseFigure {
         leftMarkersMsg.clear();
 
         int yspots = (int) Math.floor(viewport.height / thickerMinSpace);
-        if (yspots < 1) {
-            yspots = 1;
+        if (yspots < 2) {
+            return;
         }
-        double yspotwidth = viewport.height / yspots;
+        Range range = getRange();
+        XWilkinson.Label ylabels = XWilkinson.base10().searchBounded(
+                range.y1(), range.y2(), yspots);
 
-        for (int i = 0; i <= yspots; i++) {
-            leftMarkersPos.add(i * yspotwidth);
-            leftMarkersMsg.add(String.format("%." + getRange().getProperDecimalsY() + "f", getRange().y1() + getRange().height() * i / yspots));
+        for (double label : ylabels.getList()) {
+            leftMarkersPos.add((label - range.y1()) * viewport.height / range.height());
+            leftMarkersMsg.add(String.valueOf(label));
         }
     }
 
