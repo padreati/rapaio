@@ -35,13 +35,22 @@ import rapaio.ml.regression.RFit;
 import rapaio.ml.regression.Regression;
 
 /**
+ * A trivial regression which predicts using random
+ * values provided by a distribution.
+ *
  * User: Aurelian Tutuianu <padreati@yahoo.com>
  */
-@Deprecated
 public class RandomValueRegression extends AbstractRegression {
 
     private static final long serialVersionUID = 819192240406617594L;
     private Distribution distribution = new Uniform(0, 1);
+
+    public static RandomValueRegression create() {
+        return new RandomValueRegression();
+    }
+
+    private RandomValueRegression() {
+    }
 
     @Override
     public Regression newInstance() {
@@ -95,6 +104,11 @@ public class RandomValueRegression extends AbstractRegression {
 
     @Override
     public String summary() {
-        throw new IllegalArgumentException("not implemented");
+        StringBuilder sb = new StringBuilder();
+        sb.append(name()).append(" Summary\n");
+        sb.append("=========================\n");
+
+        sb.append("TODO: complete\n");
+        return sb.toString();
     }
 }

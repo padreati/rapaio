@@ -32,7 +32,12 @@ import rapaio.data.Frame;
 import rapaio.data.Numeric;
 import rapaio.data.filter.var.VFToNumeric;
 import rapaio.datasets.Datasets;
+import rapaio.graphics.Plotter;
 import rapaio.ml.regression.RFit;
+import rapaio.printer.IdeaPrinter;
+import rapaio.sys.WS;
+
+import static rapaio.graphics.Plotter.points;
 
 /**
  * Test for simple regression algorithms
@@ -104,5 +109,16 @@ public class SimpleRegressionTest {
         RFit fit1 = r1.fit(df);
         fit1.printSummary();
 
+        WS.setPrinter(new IdeaPrinter());
+        WS.draw(points(df.var(father), fit1.firstFit()));
+
+    }
+
+    @Test
+    public void testRandomValueRegression() {
+        RandomValueRegression r1 = RandomValueRegression.create();
+        r1.train(df, father);
+        RFit fit1 = r1.fit(df);
+        fit1.printSummary();
     }
 }

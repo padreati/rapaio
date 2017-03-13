@@ -75,7 +75,7 @@ public interface Regression extends Printable, Serializable {
     /**
      * Specifies the sampler to be used at learning time.
      * The sampler is responsible for selecting the instances to be learned.
-     * The default implementation is {@link RowSampler.Identity}
+     * The default implementation is {@link rapaio.data.sample.Identity}
      * which gives all the original training instances.
      *
      * @param sampler instance to be used as sampling device

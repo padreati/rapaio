@@ -61,7 +61,7 @@ public abstract class AbstractRegression implements Regression {
 
     @Override
     public Regression withInputFilters(FFilter... filters) {
-        inputFilters = new ArrayList<>();
+        inputFilters = Arrays.stream(filters).collect(Collectors.toList());
         for (FFilter filter : inputFilters)
             inputFilters.add(filter.newInstance());
         return this;
@@ -105,20 +105,19 @@ public abstract class AbstractRegression implements Regression {
 
     @Override
     public final Regression train(Frame df, Var weights, String... targetVarNames) {
-        TrainSetup setup = baseTrain(df, weights, targetVarNames);
-        setup = prepareTraining(setup.df, setup.w, setup.targetVars);
+        TrainSetup setup = setupTrain(df, weights, targetVarNames);
+        setup = prepareTraining(setup);
         hasLearned = coreTrain(setup.df, setup.w);
         return this;
     }
 
-    protected TrainSetup prepareTraining(Frame dfOld, Var weights, String... targetVarNames) {
-        Frame df = dfOld;
+    protected TrainSetup prepareTraining(TrainSetup trainSetup) {
+        Frame df = trainSetup.df;
         for (FFilter filter : inputFilters) {
             df = filter.fitApply(df);
         }
-
         Frame result = df;
-        List<String> targets = VRange.of(targetVarNames).parseVarNames(result);
+        List<String> targets = VRange.of(trainSetup.targetVars).parseVarNames(result);
         this.targetNames = targets.stream().toArray(String[]::new);
         this.targetTypes = targets.stream().map(name -> result.var(name).type()).toArray(VarType[]::new);
 
@@ -127,11 +126,11 @@ public abstract class AbstractRegression implements Regression {
         this.inputNames = inputs.stream().toArray(String[]::new);
         this.inputTypes = inputs.stream().map(name -> result.var(name).type()).toArray(VarType[]::new);
 
-        capabilities().checkAtLearnPhase(result, weights, targetVarNames);
-        return TrainSetup.valueOf(df, weights);
+        capabilities().checkAtLearnPhase(result, trainSetup.w, trainSetup.targetVars);
+        return TrainSetup.valueOf(df, trainSetup.w);
     }
 
-    protected TrainSetup baseTrain(Frame df, Var weights, String... targetVarNames) {
+    protected TrainSetup setupTrain(Frame df, Var weights, String... targetVarNames) {
         return TrainSetup.valueOf(df, weights, targetVarNames);
     }
 
@@ -146,7 +145,7 @@ public abstract class AbstractRegression implements Regression {
     @Override
     public RFit fit(Frame df, boolean withResiduals) {
         FitSetup setup = baseFit(df, withResiduals);
-        setup = prepareFit(setup.df, withResiduals);
+        setup = prepareFit(setup);
         return coreFit(setup.df, setup.withResiduals);
     }
 
@@ -155,12 +154,12 @@ public abstract class AbstractRegression implements Regression {
         return FitSetup.valueOf(df, withResiduals);
     }
 
-    protected FitSetup prepareFit(Frame df, boolean withResiduals) {
-        Frame result = df;
+    protected FitSetup prepareFit(FitSetup fitSetup) {
+        Frame result = fitSetup.df;
         for (FFilter filter : inputFilters) {
             result = filter.apply(result);
         }
-        return FitSetup.valueOf(result, withResiduals);
+        return FitSetup.valueOf(result, fitSetup.withResiduals);
     }
 
     protected abstract RFit coreFit(Frame df, boolean withResiduals);

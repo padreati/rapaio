@@ -81,8 +81,7 @@ public class RTree extends AbstractRegression implements BTRegression {
                 .withMaxDepth(2)
                 .withNominalMethod(RTreeNominalMethod.BINARY)
                 .withNumericMethod(RTreeNumericMethod.BINARY)
-                .withSplitter(RTreeSplitter.REMAINS_TO_MAJORITY)
-                ;
+                .withSplitter(RTreeSplitter.REMAINS_TO_MAJORITY);
     }
 
     public static RTree buildC45() {
