@@ -39,6 +39,8 @@ import static org.junit.Assert.assertEquals;
 
 public class RTreeSplitterTest {
 
+    private static final double TOL = 1e-20;
+
     private Frame df;
     private Var w;
     private RTree.RTreeCandidate candidate;
@@ -68,7 +70,7 @@ public class RTreeSplitterTest {
         Numeric sample = u.sample(count);
         for (int i = 0; i < sample.rowCount(); i++) {
             df.addRows(1);
-            df.var("x").setValue(df.rowCount()-1, sample.value(i));
+            df.var("x").setValue(df.rowCount() - 1, sample.value(i));
             w.addValue(weight);
         }
     }
@@ -78,8 +80,8 @@ public class RTreeSplitterTest {
 
         RTreeSplitter splitter = RTreeSplitter.REMAINS_IGNORED;
         populate(0, 2, 1);
-        populate(1, 2, 1);
-        populate(2, 2, 1);
+        populate(1, 2, 2);
+        populate(2, 2, 3);
         assertEquals("REMAINS_IGNORED", splitter.name());
 
         Pair<List<Frame>, List<Var>> result = splitter.performSplit(df, w, candidate);
@@ -91,5 +93,85 @@ public class RTreeSplitterTest {
 
         assertEquals(2, result._1.get(1).rowCount());
         assertEquals(2, result._2.get(1).rowCount());
+
+        assertEquals(2, result._2.get(0).stream().mapToDouble().sum(), TOL);
+        assertEquals(4, result._2.get(1).stream().mapToDouble().sum(), TOL);
+    }
+
+    @Test
+    public void testRemainsWithMajority() {
+
+        RTreeSplitter splitter = RTreeSplitter.REMAINS_TO_MAJORITY;
+        populate(0, 10, 1);
+        populate(1, 7, 2);
+        populate(2, 2, 3);
+        assertEquals("REMAINS_TO_MAJORITY", splitter.name());
+
+        Pair<List<Frame>, List<Var>> result = splitter.performSplit(df, w, candidate);
+
+        // groups
+        assertEquals(2, result._1.size());
+        assertEquals(2, result._2.size());
+
+        // group 1
+        assertEquals(12, result._1.get(0).rowCount());
+        assertEquals(12, result._2.get(0).rowCount());
+        assertEquals(16, result._2.get(0).stream().mapToDouble().sum(), TOL);
+
+        // group 2
+        assertEquals(7, result._2.get(1).rowCount());
+        assertEquals(7, result._2.get(1).rowCount());
+        assertEquals(14, result._2.get(1).stream().mapToDouble().sum(), TOL);
+    }
+
+    @Test
+    public void testRemainsToAllWeighted() {
+        RTreeSplitter splitter = RTreeSplitter.REMAINS_TO_ALL_WEIGHTED;
+        populate(0, 10, 1);
+        populate(1, 7, 2);
+        populate(2, 2, 3);
+        assertEquals("REMAINS_TO_ALL_WEIGHTED", splitter.name());
+
+        Pair<List<Frame>, List<Var>> result = splitter.performSplit(df, w, candidate);
+
+        // groups
+        assertEquals(2, result._1.size());
+        assertEquals(2, result._2.size());
+
+        // group 1
+        assertEquals(12, result._1.get(0).rowCount());
+        assertEquals(12, result._2.get(0).rowCount());
+        assertEquals(10 + 6 * 10 / 24., result._2.get(0).stream().mapToDouble().sum(), TOL);
+
+        // group 2
+        assertEquals(9, result._2.get(1).rowCount());
+        assertEquals(9, result._2.get(1).rowCount());
+        assertEquals(14 + 6 * 14 / 24., result._2.get(1).stream().mapToDouble().sum(), TOL);
+    }
+
+    @Test
+    public void testRemainsToAllRandom() {
+        RTreeSplitter splitter = RTreeSplitter.REMAINS_TO_RANDOM;
+        populate(0, 10, 1);
+        populate(1, 7, 2);
+        populate(2, 20, 3);
+        assertEquals("REMAINS_TO_RANDOM", splitter.name());
+
+        Pair<List<Frame>, List<Var>> result = splitter.performSplit(df, w, candidate);
+
+        // groups
+        assertEquals(2, result._1.size());
+        assertEquals(2, result._2.size());
+
+        int g1count = result._1.get(0).rowCount();
+        int g2count = result._1.get(1).rowCount();
+
+        // group 1
+        assertEquals(g1count, result._2.get(0).rowCount());
+        assertEquals(10 + 3 * (g1count-10), result._2.get(0).stream().mapToDouble().sum(), TOL);
+
+        // group 2
+        assertEquals(g2count, result._2.get(1).rowCount());
+        assertEquals(14 + 3 * (g2count-7) , result._2.get(1).stream().mapToDouble().sum(), TOL);
     }
 }
