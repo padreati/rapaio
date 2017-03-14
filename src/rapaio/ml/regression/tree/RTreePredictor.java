@@ -46,7 +46,7 @@ public interface RTreePredictor extends Serializable {
         }
 
         @Override
-        public Pair<Double, Double> predict(RTree tree, FSpot spot, RTree.RTreeNode node) {
+        public Pair<Double, Double> predict(RTree tree, FSpot spot, RTree.Node node) {
 
             // if we are at a leaf node we simply return what we found there
             if (node.isLeaf())
@@ -54,7 +54,7 @@ public interface RTreePredictor extends Serializable {
 
             // if is an interior node, we check to see if there is a child
             // which can handle the instance
-            for (RTree.RTreeNode child : node.getChildren()) {
+            for (RTree.Node child : node.getChildren()) {
                 if (child.getPredicate().test(spot)) {
                     return predict(tree, spot, child);
                 }
@@ -64,7 +64,7 @@ public interface RTreePredictor extends Serializable {
 
             Numeric values = Numeric.empty();
             Numeric weights = Numeric.empty();
-            for (RTree.RTreeNode child : node.getChildren()) {
+            for (RTree.Node child : node.getChildren()) {
                 Pair<Double, Double> prediction = predict(tree, spot, child);
                 prediction = predict(tree, spot, child);
                 values.addValue(prediction._1);
@@ -76,5 +76,5 @@ public interface RTreePredictor extends Serializable {
 
     String name();
 
-    Pair<Double, Double> predict(RTree tree, FSpot spot, RTree.RTreeNode root);
+    Pair<Double, Double> predict(RTree tree, FSpot spot, RTree.Node root);
 }

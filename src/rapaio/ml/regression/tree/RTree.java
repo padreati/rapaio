@@ -64,13 +64,13 @@ public class RTree extends AbstractRegression implements BTRegression {
 
     RTreeNominalMethod nominalMethod = RTreeNominalMethod.BINARY;
     RTreeNumericMethod numericMethod = RTreeNumericMethod.BINARY;
-    RTreeTestFunction function = RTreeTestFunction.WeightedVarGain;
+    RTreeTestFunction function = RTreeTestFunction.WEIGHTED_VAR_GAIN;
     RTreeSplitter splitter = RTreeSplitter.REMAINS_IGNORED;
     RTreePredictor predictor = RTreePredictor.STANDARD;
     VarSelector varSelector = VarSelector.ALL;
 
     // tree root node
-    private RTreeNode root;
+    private Node root;
     private int rows;
 
     private RTree() {
@@ -100,7 +100,7 @@ public class RTree extends AbstractRegression implements BTRegression {
                 .withNominalMethod(RTreeNominalMethod.BINARY)
                 .withNumericMethod(RTreeNumericMethod.BINARY)
                 .withSplitter(RTreeSplitter.REMAINS_TO_RANDOM)
-                .withFunction(RTreeTestFunction.WeightedSdGain)
+                .withFunction(RTreeTestFunction.WEIGHTED_SD_GAIN)
                 .withMinCount(1);
     }
 
@@ -200,7 +200,7 @@ public class RTree extends AbstractRegression implements BTRegression {
 
         rows = df.rowCount();
 
-        root = new RTreeNode(null, "root", spot -> true);
+        root = new Node(null, "root", spot -> true);
         this.varSelector.withVarNames(inputNames());
         root.learn(this, df, weights, maxDepth < 0 ? Integer.MAX_VALUE : maxDepth);
         return true;
@@ -233,7 +233,7 @@ public class RTree extends AbstractRegression implements BTRegression {
         return sb.toString();
     }
 
-    private void buildSummary(StringBuilder sb, RTreeNode node, int level) {
+    private void buildSummary(StringBuilder sb, Node node, int level) {
         sb.append("|");
         for (int i = 0; i < level; i++) {
             sb.append("   |");
@@ -256,28 +256,28 @@ public class RTree extends AbstractRegression implements BTRegression {
      * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
      */
     @Deprecated
-    public static class RTreeNode implements Serializable {
+    public static class Node implements Serializable {
 
         private static final long serialVersionUID = 385363626560575837L;
-        private final RTreeNode parent;
+        private final Node parent;
         private final String groupName;
         private final SPredicate<FSpot> predicate;
 
         private boolean leaf = true;
         private double value;
         private double weight;
-        private List<RTreeNode> children;
-        private RTreeCandidate bestCandidate;
+        private List<Node> children;
+        private Candidate bestCandidate;
 
-        public RTreeNode(final RTreeNode parent,
-                         final String groupName,
-                         final SPredicate<FSpot> predicate) {
+        public Node(final Node parent,
+                    final String groupName,
+                    final SPredicate<FSpot> predicate) {
             this.parent = parent;
             this.groupName = groupName;
             this.predicate = predicate;
         }
 
-        public RTreeNode getParent() {
+        public Node getParent() {
             return parent;
         }
 
@@ -293,11 +293,11 @@ public class RTree extends AbstractRegression implements BTRegression {
             return leaf;
         }
 
-        public List<RTreeNode> getChildren() {
+        public List<Node> getChildren() {
             return children;
         }
 
-        public RTreeCandidate getBestCandidate() {
+        public Candidate getBestCandidate() {
             return bestCandidate;
         }
 
@@ -321,9 +321,9 @@ public class RTree extends AbstractRegression implements BTRegression {
                 return;
             }
 
-            List<RTreeCandidate> candidateList = new ArrayList<>();
+            List<Candidate> candidateList = new ArrayList<>();
 
-            ConcurrentLinkedQueue<RTreeCandidate> candidates = new ConcurrentLinkedQueue<>();
+            ConcurrentLinkedQueue<Candidate> candidates = new ConcurrentLinkedQueue<>();
             Arrays.stream(tree.varSelector.nextVarNames()).parallel().forEach(testCol -> {
                 if (testCol.equals(tree.firstTargetName())) return;
 
@@ -356,7 +356,7 @@ public class RTree extends AbstractRegression implements BTRegression {
             Pair<List<Frame>, List<Var>> frames = tree.splitter.performSplit(df, weights, bestCandidate);
             children = new ArrayList<>(frames._1.size());
             for (int i = 0; i < frames._1.size(); i++) {
-                RTreeNode child = new RTreeNode(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
+                Node child = new Node(this, bestCandidate.getGroupNames().get(i), bestCandidate.getGroupPredicates().get(i));
                 children.add(child);
                 child.learn(tree, frames._1.get(i), frames._2.get(i), depth - 1);
             }
@@ -373,7 +373,7 @@ public class RTree extends AbstractRegression implements BTRegression {
                     .map(i -> Mapping.empty()).toArray(Mapping[]::new);
             x.stream().forEach(spot -> {
                 for (int i = 0; i < children.size(); i++) {
-                    RTreeNode child = children.get(i);
+                    Node child = children.get(i);
                     if (child.predicate.test(spot)) {
                         mapping[i].add(spot.row());
                         return;
@@ -392,7 +392,7 @@ public class RTree extends AbstractRegression implements BTRegression {
      * <p>
      * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
      */
-    public static class RTreeCandidate implements Comparable<RTreeCandidate>, Serializable {
+    public static class Candidate implements Comparable<Candidate>, Serializable {
 
         private static final long serialVersionUID = 6698766675237089849L;
         private final double score;
@@ -400,7 +400,7 @@ public class RTree extends AbstractRegression implements BTRegression {
         private final List<String> groupNames = new ArrayList<>();
         private final List<SPredicate<FSpot>> groupPredicates = new ArrayList<>();
 
-        public RTreeCandidate(double score, String testName) {
+        public Candidate(double score, String testName) {
             this.score = score;
             this.testName = testName;
         }
@@ -430,7 +430,7 @@ public class RTree extends AbstractRegression implements BTRegression {
         }
 
         @Override
-        public int compareTo(RTreeCandidate o) {
+        public int compareTo(Candidate o) {
             if (o == null) return 1;
             return -Double.compare(score, o.score);
         }

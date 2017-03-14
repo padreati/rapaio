@@ -57,7 +57,7 @@ public interface RTreeSplitter extends Serializable {
      * Split the instances and produces two lists, one with the frames which
      * maps selected instances to predicates, and one which contains weights
      * corresponding to the same predicates. The predicates are identified
-     * by position is {@link RTree.RTreeCandidate#groupPredicates}
+     * by position is {@link RTree.Candidate#groupPredicates}
      *
      * @param df        initial set of instances
      * @param weights   weights corresponding to each instance
@@ -66,7 +66,7 @@ public interface RTreeSplitter extends Serializable {
      * one with corresponding weights
      */
     Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights,
-                                              RTree.RTreeCandidate candidate);
+                                              RTree.Candidate candidate);
 
     /**
      * Do the regular split of instances and simply ingores the ones which do not
@@ -81,7 +81,7 @@ public interface RTreeSplitter extends Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.RTreeCandidate candidate) {
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.Candidate candidate) {
             RegularSplitting s = new RegularSplitting(df, weights, candidate);
             List<Frame> frames = new ArrayList<>();
             s.mappings.forEach(mapping -> frames.add(df.mapRows(mapping)));
@@ -103,7 +103,7 @@ public interface RTreeSplitter extends Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.RTreeCandidate candidate) {
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.Candidate candidate) {
             RegularSplitting s = new RegularSplitting(df, weights, candidate);
             int majorityGroup = 0;
             int majoritySize = 0;
@@ -139,7 +139,7 @@ public interface RTreeSplitter extends Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.RTreeCandidate candidate) {
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.Candidate candidate) {
             RegularSplitting s = new RegularSplitting(df, weights, candidate);
 
             final double[] p = new double[s.mappings.size()];
@@ -178,7 +178,7 @@ public interface RTreeSplitter extends Serializable {
         }
 
         @Override
-        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.RTreeCandidate candidate) {
+        public Pair<List<Frame>, List<Var>> performSplit(Frame df, Var weights, RTree.Candidate candidate) {
             RegularSplitting s = new RegularSplitting(df, weights, candidate);
             for (FSpot spot : s.missingSpots) {
                 int next = RandomSource.nextInt(s.mappings.size());
@@ -198,7 +198,7 @@ class RegularSplitting {
     final public List<Var> weightsList = new ArrayList<>();
     final public List<FSpot> missingSpots = new ArrayList<>();
 
-    public RegularSplitting(Frame df, Var weights, RTree.RTreeCandidate candidate) {
+    public RegularSplitting(Frame df, Var weights, RTree.Candidate candidate) {
         // initialize the lists with one element in each list for each candidate's rule
         for (int i = 0; i < candidate.getGroupPredicates().size(); i++) {
             mappings.add(Mapping.empty());

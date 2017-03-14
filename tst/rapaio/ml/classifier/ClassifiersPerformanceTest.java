@@ -64,7 +64,7 @@ public class ClassifiersPerformanceTest {
                         .withSampler(RowSampler.bootstrap(0.5))
         );
         classifiers.add(new GBTClassifier()
-                .withTree(RTree.buildCART().withMaxDepth(3).withFunction(RTreeTestFunction.WeightedSdGain))
+                .withTree(RTree.buildCART().withMaxDepth(3).withFunction(RTreeTestFunction.WEIGHTED_SD_GAIN))
                 .withRuns(2));
 
         CEvaluation.multiCv(df, "classes", classifiers, 3);

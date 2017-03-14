@@ -50,7 +50,7 @@ public interface RTreeNumericMethod extends Serializable {
         }
 
         @Override
-        public List<RTree.RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
+        public List<RTree.Candidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
             return new ArrayList<>();
         }
     };
@@ -61,7 +61,7 @@ public interface RTreeNumericMethod extends Serializable {
         }
 
         @Override
-        public List<RTree.RTreeCandidate> computeCandidates(RTree c, Frame dfOld, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
+        public List<RTree.Candidate> computeCandidates(RTree c, Frame dfOld, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
 
             Frame df = Filters.refSort(dfOld, dfOld.var(testVarName).refComparator());
             Mapping cleanMapping = Mapping.wrap(df.var(testVarName).stream().complete().map(VSpot::row).collect(Collectors.toList()));
@@ -91,7 +91,7 @@ public interface RTreeNumericMethod extends Serializable {
                 rightVar[i] += so.variance();
             }
 
-            RTree.RTreeCandidate best = null;
+            RTree.Candidate best = null;
             double bestScore = 0.0;
 
             RTreeTestPayload p = new RTreeTestPayload(2);
@@ -107,7 +107,7 @@ public interface RTreeNumericMethod extends Serializable {
                 double value = c.function.computeTestValue(p);
                 if (value > bestScore) {
                     bestScore = value;
-                    best = new RTree.RTreeCandidate(value, testVarName);
+                    best = new RTree.Candidate(value, testVarName);
 
                     double testValue = test.value(i);
                     best.addGroup(
@@ -124,5 +124,5 @@ public interface RTreeNumericMethod extends Serializable {
 
     String name();
 
-    List<RTree.RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function);
+    List<RTree.Candidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function);
 }

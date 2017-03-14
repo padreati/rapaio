@@ -51,7 +51,7 @@ public interface RTreeNominalMethod extends Serializable {
         }
 
         @Override
-        public List<RTree.RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testColName, String targetColName, RTreeTestFunction function) {
+        public List<RTree.Candidate> computeCandidates(RTree c, Frame df, Var weights, String testColName, String targetColName, RTreeTestFunction function) {
             return Collections.EMPTY_LIST;
         }
     };
@@ -66,10 +66,10 @@ public interface RTreeNominalMethod extends Serializable {
 
 
         @Override
-        public List<RTree.RTreeCandidate> computeCandidates(RTree c, Frame dfOld, Var weightsOld, String testColName, String targetColName, RTreeTestFunction function) {
+        public List<RTree.Candidate> computeCandidates(RTree c, Frame dfOld, Var weightsOld, String testColName, String targetColName, RTreeTestFunction function) {
 
-            List<RTree.RTreeCandidate> result = new ArrayList<>();
-            RTree.RTreeCandidate best = null;
+            List<RTree.Candidate> result = new ArrayList<>();
+            RTree.Candidate best = null;
 
             Mapping cleanMapping = dfOld.stream().filter(s -> !s.missing(testColName)).collectMapping();
             Frame df = dfOld.mapRows(cleanMapping);
@@ -94,7 +94,7 @@ public interface RTreeNominalMethod extends Serializable {
                 p.splitVar[i - 1] = CoreTools.var(df.stream().filter(s -> s.label(testColName).equals(label)).toMappedFrame().var(targetColName)).value();
             }
             double value = c.function.computeTestValue(p);
-            RTree.RTreeCandidate candidate = new RTree.RTreeCandidate(value, testColName);
+            RTree.Candidate candidate = new RTree.Candidate(value, testColName);
             for (int i = 1; i < testVar.levels().length; i++) {
                 String label = testVar.levels()[i];
                 candidate.addGroup(testColName + " == " + label, spot -> spot.label(testColName).equals(label));
@@ -113,7 +113,7 @@ public interface RTreeNominalMethod extends Serializable {
 
 
         @Override
-        public List<RTree.RTreeCandidate> computeCandidates(RTree c, Frame dfOld, Var weightsOld, String testColName, String targetColName, RTreeTestFunction function) {
+        public List<RTree.Candidate> computeCandidates(RTree c, Frame dfOld, Var weightsOld, String testColName, String targetColName, RTreeTestFunction function) {
 
             Mapping cleanMapping = dfOld.stream().filter(s -> !s.missing(testColName)).collectMapping();
             Frame df = dfOld.mapRows(cleanMapping);
@@ -138,7 +138,7 @@ public interface RTreeNominalMethod extends Serializable {
 
             double totalVar = CoreTools.var(targetVar).value();
 
-            RTree.RTreeCandidate best = null;
+            RTree.Candidate best = null;
             double bestScore = Double.MIN_VALUE;
 
             for (int i = 1; i < testVar.levels().length; i++) {
@@ -174,7 +174,7 @@ public interface RTreeNominalMethod extends Serializable {
                 double value = c.function.computeTestValue(p);
                 if (value > bestScore) {
                     bestScore = value;
-                    best = new RTree.RTreeCandidate(value, testColName);
+                    best = new RTree.Candidate(value, testColName);
                     best.addGroup(testColName + " == " + testLabel,
                             spot -> !spot.missing(testColName) && spot.label(testColName).equals(testLabel));
                     best.addGroup(testColName + " != " + testLabel,
@@ -187,5 +187,5 @@ public interface RTreeNominalMethod extends Serializable {
 
     String name();
 
-    List<RTree.RTreeCandidate> computeCandidates(RTree c, Frame df, Var weights, String testColName, String targetColName, RTreeTestFunction function);
+    List<RTree.Candidate> computeCandidates(RTree c, Frame df, Var weights, String testColName, String targetColName, RTreeTestFunction function);
 }

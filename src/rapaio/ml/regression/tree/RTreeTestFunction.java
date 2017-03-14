@@ -27,17 +27,25 @@ package rapaio.ml.regression.tree;
 import java.io.Serializable;
 
 /**
+ * Function which is used to compute a score for a test candidate.
+ * The score is computed based on variance. The total initial variance is
+ * given in payload, and also variances and weights for each split.
+ *
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
 public interface RTreeTestFunction extends Serializable {
 
-    RTreeTestFunction WeightedVarGain = new RTreeTestFunction() {
+    String name();
+
+    double computeTestValue(RTreeTestPayload payload);
+
+    RTreeTestFunction WEIGHTED_VAR_GAIN = new RTreeTestFunction() {
 
         private static final long serialVersionUID = 5119966657929147020L;
 
         @Override
         public String name() {
-            return "WeightedVarGain";
+            return "WEIGHTED_VAR_GAIN";
         }
 
         @Override
@@ -51,13 +59,13 @@ public interface RTreeTestFunction extends Serializable {
             return (down == 0) ? 0.0 : p.totalVar - up / down;
         }
     };
-    RTreeTestFunction WeightedSdGain = new RTreeTestFunction() {
+    RTreeTestFunction WEIGHTED_SD_GAIN = new RTreeTestFunction() {
 
         private static final long serialVersionUID = 5119966657929147020L;
 
         @Override
         public String name() {
-            return "WeightedSdGain";
+            return "WEIGHTED_SD_GAIN";
         }
 
         @Override
@@ -72,12 +80,5 @@ public interface RTreeTestFunction extends Serializable {
             return (down == 0) ? Double.MIN_VALUE : result;
         }
     };
-
-    ////////////////////
-    // implementations
-
-    String name();
-
-    double computeTestValue(RTreeTestPayload payload);
 
 }

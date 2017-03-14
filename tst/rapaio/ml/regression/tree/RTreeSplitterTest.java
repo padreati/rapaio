@@ -43,14 +43,14 @@ public class RTreeSplitterTest {
 
     private Frame df;
     private Var w;
-    private RTree.RTreeCandidate candidate;
+    private RTree.Candidate candidate;
 
     @Before
     public void setUp() throws Exception {
         w = Numeric.empty();
         df = SolidFrame.byVars(Numeric.empty().withName("x"));
 
-        candidate = new RTree.RTreeCandidate(0, "");
+        candidate = new RTree.Candidate(0, "");
         candidate.addGroup("x < 10", s -> s.value("x") < 10);
         candidate.addGroup("x > 20", s -> s.value("x") > 20);
     }

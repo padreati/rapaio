@@ -55,7 +55,7 @@ public class RTreeTest {
 
 //        WS.setPrinter(new IdeaPrinter());
 
-        RTree tree = RTree.buildCART().withMaxDepth(10).withMinCount(1).withFunction(RTreeTestFunction.WeightedSdGain);
+        RTree tree = RTree.buildCART().withMaxDepth(10).withMinCount(1).withFunction(RTreeTestFunction.WEIGHTED_SD_GAIN);
         Regression model = RForest.newRF()
                 .withRegression(tree)
                 .withRunningHook((r, run) -> {
