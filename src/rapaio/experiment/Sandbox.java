@@ -24,36 +24,26 @@
 
 package rapaio.experiment;
 
-import rapaio.core.RandomSource;
-import rapaio.core.distributions.Normal;
-import rapaio.core.stat.Maximum;
-import rapaio.core.stat.Minimum;
-import rapaio.data.Numeric;
-import rapaio.data.Var;
-import rapaio.graphics.plot.Plot;
-import rapaio.math.linear.RV;
-import rapaio.math.linear.dense.SolidRV;
 import rapaio.printer.IdeaPrinter;
 import rapaio.sys.WS;
-
-import static rapaio.graphics.Plotter.points;
 
 public class Sandbox {
 
     public static void main(String[] args) {
-//        WS.setPrinter(new IdeaPrinter());
+        WS.setPrinter(new IdeaPrinter());
 
-        Normal normal = new Normal();
-        RV x = SolidRV.from(100, i -> normal.sampleNext());
-        Var xv = Numeric.empty(100);
-        for (int i = 0; i < xv.rowCount(); i++) {
-            xv.setValue(i, x.get(i));
+        double eps = 1 / 16.;
+        for (int i = 1; i < 1000; i++) {
+            double delta = Math.abs(f(i) - 3.);
+            WS.printf("%d : delta: %.6f\n", i, delta);
+            if (delta < eps) {
+                break;
+            }
         }
 
+    }
 
-        x.printSummary();
-        xv.printLines();
-
-        WS.draw(points(xv));
+    static double f(double n) {
+        return (6 * n + 11) / (2 * n + 6.0);
     }
 }

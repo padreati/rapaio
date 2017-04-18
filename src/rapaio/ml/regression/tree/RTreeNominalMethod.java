@@ -35,12 +35,41 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
+ * Method which computes the best node candidate for a given nominal
+ * variable. A candidate describes how a the current node can be split.
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
 public interface RTreeNominalMethod extends Serializable {
 
+    /**
+     * @return name of the nominal method
+     */
+    String name();
+
+    /**
+     * Computes a lis of candidates for the given test function,
+     * dataset and weights, and test variable.
+     *
+     * @param tree          the original decision tree model
+     * @param df            instances from the current node
+     * @param w             weights of the instances from the current node
+     * @param testVarName   test variable name
+     * @param targetVarName target variable name
+     * @param testFunction  test function used to compute the score
+     * @return the best candidate
+     */
+    Optional<RTree.Candidate> computeCandidate(RTree tree,
+                                               Frame df, Var w,
+                                               String testVarName, String targetVarName,
+                                               RTreeTestFunction testFunction);
+
+    /**
+     * Ignore nominal variables
+     */
     RTreeNominalMethod IGNORE = new RTreeNominalMethod() {
 
         private static final long serialVersionUID = 7275580448899976553L;
@@ -51,10 +80,17 @@ public interface RTreeNominalMethod extends Serializable {
         }
 
         @Override
-        public List<RTree.Candidate> computeCandidates(RTree c, Frame df, Var weights, String testColName, String targetColName, RTreeTestFunction function) {
-            return Collections.EMPTY_LIST;
+        public Optional<RTree.Candidate> computeCandidate(
+                RTree tree, Frame df, Var w,
+                String testVarName, String targetVarName, RTreeTestFunction testFunction) {
+            return Optional.empty();
         }
     };
+
+    /**
+     * Builds one node for each label of the test variable, if at least
+     * two of them have enough instances, empty list otherwise.
+     */
     RTreeNominalMethod FULL = new RTreeNominalMethod() {
 
         private static final long serialVersionUID = 2733570883914611103L;
@@ -64,25 +100,22 @@ public interface RTreeNominalMethod extends Serializable {
             return "FULL";
         }
 
-
         @Override
-        public List<RTree.Candidate> computeCandidates(RTree c, Frame dfOld, Var weightsOld, String testColName, String targetColName, RTreeTestFunction function) {
+        public Optional<RTree.Candidate> computeCandidate(RTree tree, Frame dfOld, Var weightsOld, String testVarName, String targetVarName, RTreeTestFunction testFunction) {
 
             List<RTree.Candidate> result = new ArrayList<>();
-            RTree.Candidate best = null;
-
-            Mapping cleanMapping = dfOld.stream().filter(s -> !s.missing(testColName)).collectMapping();
+            Mapping cleanMapping = dfOld.stream().filter(s -> !s.missing(testVarName)).collectMapping();
             Frame df = dfOld.mapRows(cleanMapping);
-            Var testVar = df.var(testColName);
-            Var targetVar = df.var(targetColName);
+            Var testVar = df.var(testVarName);
+            Var targetVar = df.var(targetVarName);
             Var weights = weightsOld.mapRows(cleanMapping);
 
             DVector dvWeights = DVector.fromWeights(false, testVar, weights);
             DVector dvCount = DVector.fromCount(false, testVar);
 
             // check to see if we have enough instances in at least 2 child nodes
-            if (dvCount.countValues(x -> x >= c.minCount) <= 1)
-                return Collections.EMPTY_LIST;
+            if (dvCount.countValues(x -> x >= tree.minCount) <= 1)
+                return Optional.empty();
 
             // make the payload
             RTreeTestPayload p = new RTreeTestPayload(testVar.levels().length - 1);
@@ -91,17 +124,23 @@ public interface RTreeNominalMethod extends Serializable {
             for (int i = 1; i < testVar.levels().length; i++) {
                 p.splitWeight[i - 1] = dvWeights.get(i - 1);
                 String label = testVar.levels()[i];
-                p.splitVar[i - 1] = CoreTools.var(df.stream().filter(s -> s.label(testColName).equals(label)).toMappedFrame().var(targetColName)).value();
+                p.splitVar[i - 1] = CoreTools.var(df.stream().filter(s -> s.label(testVarName).equals(label)).toMappedFrame().var(targetVarName)).value();
             }
-            double value = c.function.computeTestValue(p);
-            RTree.Candidate candidate = new RTree.Candidate(value, testColName);
+            double value = tree.function.computeTestValue(p);
+            RTree.Candidate candidate = new RTree.Candidate(value, testVarName);
             for (int i = 1; i < testVar.levels().length; i++) {
                 String label = testVar.levels()[i];
-                candidate.addGroup(testColName + " == " + label, spot -> spot.label(testColName).equals(label));
+                candidate.addGroup(testVarName + " == " + label, spot -> spot.label(testVarName).equals(label));
             }
-            return Collections.singletonList(candidate);
+            return Optional.of(candidate);
         }
     };
+
+    /**
+     * Builds one candidate for each label of the test nominal
+     * variable against all other labels, in the case when
+     * for selected labels there are instances
+     */
     RTreeNominalMethod BINARY = new RTreeNominalMethod() {
 
         private static final long serialVersionUID = -4703727362952157041L;
@@ -111,14 +150,13 @@ public interface RTreeNominalMethod extends Serializable {
             return "BINARY";
         }
 
-
         @Override
-        public List<RTree.Candidate> computeCandidates(RTree c, Frame dfOld, Var weightsOld, String testColName, String targetColName, RTreeTestFunction function) {
+        public Optional<RTree.Candidate> computeCandidate(RTree tree, Frame dfOld, Var weightsOld, String testVarName, String targetVarName, RTreeTestFunction testFunction) {
 
-            Mapping cleanMapping = dfOld.stream().filter(s -> !s.missing(testColName)).collectMapping();
+            Mapping cleanMapping = dfOld.stream().filter(s -> !s.missing(testVarName)).collectMapping();
             Frame df = dfOld.mapRows(cleanMapping);
-            Var testVar = df.var(testColName);
-            Var targetVar = df.var(targetColName);
+            Var testVar = df.var(testVarName);
+            Var targetVar = df.var(targetVarName);
             Var weights = weightsOld.mapRows(cleanMapping);
 
             DVector dvWeights = DVector.fromWeights(false, testVar, weights);
@@ -139,14 +177,14 @@ public interface RTreeNominalMethod extends Serializable {
             double totalVar = CoreTools.var(targetVar).value();
 
             RTree.Candidate best = null;
-            double bestScore = Double.MIN_VALUE;
+            double bestScore = Double.NaN;
 
             for (int i = 1; i < testVar.levels().length; i++) {
                 String testLabel = testVar.levels()[i];
 
                 // check to see if we have enough values
 
-                if (dvCount.get(i) < c.minCount || df.rowCount() - dvCount.get(i) < c.minCount)
+                if (dvCount.get(i) < tree.minCount || df.rowCount() - dvCount.get(i) < tree.minCount)
                     continue;
 
                 OnlineStat osSelect = os[i - 1];
@@ -171,21 +209,17 @@ public interface RTreeNominalMethod extends Serializable {
                 p.splitWeight[1] = dvWeights.sum() - dvWeights.get(i);
                 p.splitVar[1] = osOther.variance();
 
-                double value = c.function.computeTestValue(p);
-                if (value > bestScore) {
+                double value = tree.function.computeTestValue(p);
+                if (Double.isNaN(bestScore) || value > bestScore) {
                     bestScore = value;
-                    best = new RTree.Candidate(value, testColName);
-                    best.addGroup(testColName + " == " + testLabel,
-                            spot -> !spot.missing(testColName) && spot.label(testColName).equals(testLabel));
-                    best.addGroup(testColName + " != " + testLabel,
-                            spot -> !spot.missing(testColName) && !spot.label(testColName).equals(testLabel));
+                    best = new RTree.Candidate(value, testVarName);
+                    best.addGroup(testVarName + " == " + testLabel,
+                            spot -> !spot.missing(testVarName) && spot.label(testVarName).equals(testLabel));
+                    best.addGroup(testVarName + " != " + testLabel,
+                            spot -> !spot.missing(testVarName) && !spot.label(testVarName).equals(testLabel));
                 }
             }
-            return (best == null) ? Collections.EMPTY_LIST : Collections.singletonList(best);
+            return (best == null) ? Optional.empty() : Optional.of(best);
         }
     };
-
-    String name();
-
-    List<RTree.Candidate> computeCandidates(RTree c, Frame df, Var weights, String testColName, String targetColName, RTreeTestFunction function);
 }

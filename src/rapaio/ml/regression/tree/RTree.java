@@ -54,7 +54,6 @@ import static rapaio.sys.WS.formatFlex;
  * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
  */
-@Deprecated
 public class RTree extends AbstractRegression implements BTRegression {
 
     private static final long serialVersionUID = -2748764643670512376L;
@@ -188,6 +187,10 @@ public class RTree extends AbstractRegression implements BTRegression {
         return this;
     }
 
+    public RTree.Node getRoot() {
+        return root;
+    }
+
     @Override
     protected boolean coreTrain(Frame df, Var weights) {
 
@@ -211,7 +214,7 @@ public class RTree extends AbstractRegression implements BTRegression {
         RFit pred = RFit.build(this, df, withResiduals);
 
         df.stream().forEach(spot -> {
-            Pair<Double, Double> result = predictor.predict(this, spot, root);
+            Pair<Double, Double> result = predictor.predict(spot, root);
             pred.fit(firstTargetName()).setValue(spot.row(), result._1);
         });
         pred.buildComplete();
@@ -248,14 +251,13 @@ public class RTree extends AbstractRegression implements BTRegression {
 //        children
 
         if (!node.isLeaf()) {
-            node.getChildren().stream().forEach(child -> buildSummary(sb, child, level + 1));
+            node.getChildren().forEach(child -> buildSummary(sb, child, level + 1));
         }
     }
 
     /**
-     * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
+     * RTree node which describes in a recursive manner a regression tree
      */
-    @Deprecated
     public static class Node implements Serializable {
 
         private static final long serialVersionUID = 385363626560575837L;
@@ -266,7 +268,7 @@ public class RTree extends AbstractRegression implements BTRegression {
         private boolean leaf = true;
         private double value;
         private double weight;
-        private List<Node> children;
+        private List<Node> children = new ArrayList<>();
         private Candidate bestCandidate;
 
         public Node(final Node parent,
@@ -293,6 +295,10 @@ public class RTree extends AbstractRegression implements BTRegression {
             return leaf;
         }
 
+        public void setLeaf(boolean leaf) {
+            this.leaf = leaf;
+        }
+
         public List<Node> getChildren() {
             return children;
         }
@@ -305,8 +311,16 @@ public class RTree extends AbstractRegression implements BTRegression {
             return value;
         }
 
+        public void setValue(double value) {
+            this.value = value;
+        }
+
         public double getWeight() {
             return weight;
+        }
+
+        public void setWeight(double weight) {
+            this.weight = weight;
         }
 
         public void learn(RTree tree, Frame df, Var weights, int depth) {
@@ -328,13 +342,13 @@ public class RTree extends AbstractRegression implements BTRegression {
                 if (testCol.equals(tree.firstTargetName())) return;
 
                 if (df.var(testCol).type().isNumeric()) {
-                    tree.numericMethod.computeCandidates(
+                    tree.numericMethod.computeCandidate(
                             tree, df, weights, testCol, tree.firstTargetName(), tree.function)
-                            .forEach(candidates::add);
+                            .ifPresent(candidates::add);
                 } else {
-                    tree.nominalMethod.computeCandidates(
+                    tree.nominalMethod.computeCandidate(
                             tree, df, weights, testCol, tree.firstTargetName(), tree.function)
-                            .forEach(candidates::add);
+                            .ifPresent(candidates::add);
                 }
             });
             candidateList.addAll(candidates);
@@ -433,6 +447,15 @@ public class RTree extends AbstractRegression implements BTRegression {
         public int compareTo(Candidate o) {
             if (o == null) return 1;
             return -Double.compare(score, o.score);
+        }
+
+        @Override
+        public String toString() {
+            return "Candidate{" +
+                    "score=" + score +
+                    ", testName='" + testName + '\'' +
+                    ", groupNames=" + groupNames +
+                    '}';
         }
     }
 }

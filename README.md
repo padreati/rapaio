@@ -121,6 +121,10 @@ If there are no notes it means the feature is considered to be fully implemented
 * Simple: ConstantRegression
 * Simple: L1Regression
 * Simple: L2Regression
+* Simple: RandomValueRegressor
+* Tree: CART (no pruning)
+* Tree: C45 (no pruning)
+* Tree: DecisionStump
 
 **Clusterization**
 
@@ -162,10 +166,6 @@ Experminental Stage Features
 
 **Regression**
 
-* Simple: RandomValueRegressor
-* Tree: CART (no pruning)
-* Tree: C45 (no pruning)
-* Tree: DecisionStump
 * Boost: GBT (Gradient Boosting Tree) Regressor
 * NNet: MultiLayer Perceptron Regressor
 * Function: OLSRegressor (one target, only numerical attributes, no summary)

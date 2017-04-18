@@ -24,6 +24,7 @@
 
 package rapaio.ml.regression.tree;
 
+import rapaio.core.stat.Mean;
 import rapaio.core.stat.Sum;
 import rapaio.core.stat.WeightedMean;
 import rapaio.data.Numeric;
@@ -33,20 +34,38 @@ import rapaio.util.Pair;
 import java.io.Serializable;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a> on 11/24/14.
+ * Component which fits an FSpot o the tree using tree information and a starting node.
  */
-@Deprecated
 public interface RTreePredictor extends Serializable {
 
+    /**
+     * @return name of the tree predictor
+     */
+    String name();
+
+    /**
+     * Fits a given instance to the regression tree, by following nodes
+     * and predicates until a fitting decision is found.
+     *
+     * @param spot frame spot which contains the values to be fitted
+     * @param root tree node where the fitting starts from, recursively
+     * @return a pair of values: first is the regression fit, second is the weight
+     * of the result
+     */
+    Pair<Double, Double> predict(FSpot spot, RTree.Node root);
+
+    /**
+     * Standard tree predictor.
+     */
     RTreePredictor STANDARD = new RTreePredictor() {
 
         @Override
         public String name() {
-            return "standard";
+            return "STANDARD";
         }
 
         @Override
-        public Pair<Double, Double> predict(RTree tree, FSpot spot, RTree.Node node) {
+        public Pair<Double, Double> predict(FSpot spot, RTree.Node node) {
 
             // if we are at a leaf node we simply return what we found there
             if (node.isLeaf())
@@ -54,27 +73,21 @@ public interface RTreePredictor extends Serializable {
 
             // if is an interior node, we check to see if there is a child
             // which can handle the instance
-            for (RTree.Node child : node.getChildren()) {
+            for (RTree.Node child : node.getChildren())
                 if (child.getPredicate().test(spot)) {
-                    return predict(tree, spot, child);
+                    return predict(spot, child);
                 }
-            }
 
             // so is a missing value for the current test feature
 
             Numeric values = Numeric.empty();
             Numeric weights = Numeric.empty();
             for (RTree.Node child : node.getChildren()) {
-                Pair<Double, Double> prediction = predict(tree, spot, child);
-                prediction = predict(tree, spot, child);
+                Pair<Double, Double> prediction = predict(spot, child);
                 values.addValue(prediction._1);
                 weights.addValue(prediction._2);
             }
-            return Pair.from(WeightedMean.from(values, weights).value(), Sum.from(weights).value());
+            return Pair.from(WeightedMean.from(values, weights).value(), Mean.from(weights).value());
         }
     };
-
-    String name();
-
-    Pair<Double, Double> predict(RTree tree, FSpot spot, RTree.Node root);
 }

@@ -36,24 +36,55 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
+ * Method which computes the best node candidate for a given numeric
+ * variable. A candidate describes how a the current node can be split.
+ * <p>
  * Created by <a href="mailto:padreati@yahoo.com>Aurelian Tutuianu</a>.
  */
 public interface RTreeNumericMethod extends Serializable {
 
+    /**
+     * @return name of the numeric method
+     */
+    String name();
+
+    /**
+     * Computes a lis of candidates for the given test function,
+     * dataset and weights, and test variable.
+     *
+     * @param tree          the original decision tree model
+     * @param df            instances from the current node
+     * @param w             weights of the instances from the current node
+     * @param testVarName   test variable name
+     * @param targetVarName target variable name
+     * @param testFunction  test function used to compute the score
+     * @return a list of candidates in the descending order of score
+     */
+    Optional<RTree.Candidate> computeCandidate(RTree tree, Frame df, Var w,
+                                               String testVarName, String targetVarName,
+                                               RTreeTestFunction testFunction);
+
+    /**
+     * Ignore all numeric variables and produces no candidates.
+     */
     RTreeNumericMethod IGNORE = new RTreeNumericMethod() {
+        private static final long serialVersionUID = -5982576265221513285L;
+
         @Override
         public String name() {
             return "IGNORE";
         }
 
         @Override
-        public List<RTree.Candidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
-            return new ArrayList<>();
+        public Optional<RTree.Candidate> computeCandidate(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
+            return Optional.empty();
         }
     };
+
     RTreeNumericMethod BINARY = new RTreeNumericMethod() {
         @Override
         public String name() {
@@ -61,7 +92,7 @@ public interface RTreeNumericMethod extends Serializable {
         }
 
         @Override
-        public List<RTree.Candidate> computeCandidates(RTree c, Frame dfOld, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
+        public Optional<RTree.Candidate> computeCandidate(RTree c, Frame dfOld, Var weights, String testVarName, String targetVarName, RTreeTestFunction function) {
 
             Frame df = Filters.refSort(dfOld, dfOld.var(testVarName).refComparator());
             Mapping cleanMapping = Mapping.wrap(df.var(testVarName).stream().complete().map(VSpot::row).collect(Collectors.toList()));
@@ -118,11 +149,7 @@ public interface RTreeNumericMethod extends Serializable {
                             spot -> !spot.missing(testVarName) && spot.value(testVarName) > testValue);
                 }
             }
-            return (best != null) ? Collections.singletonList(best) : Collections.EMPTY_LIST;
+            return (best != null) ? Optional.of(best) : Optional.empty();
         }
     };
-
-    String name();
-
-    List<RTree.Candidate> computeCandidates(RTree c, Frame df, Var weights, String testVarName, String targetVarName, RTreeTestFunction function);
 }
