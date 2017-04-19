@@ -96,6 +96,12 @@ public class SolidRVTest {
         for (int i = 0; i < 6; i++) {
             assertEquals(i, x.get(i), TOL);
         }
+
+        x = SolidRV.from(10, Math::sqrt);
+        assertNotNull(x);
+        for (int i = 0; i < 10; i++) {
+            assertEquals(Math.sqrt(i), x.get(i), TOL);
+        }
     }
 
     @Test

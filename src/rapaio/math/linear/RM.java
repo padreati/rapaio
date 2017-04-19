@@ -56,27 +56,27 @@ public interface RM extends Serializable, Printable {
     int colCount();
 
     /**
-     * @param i row index
-     * @param j column index
+     * @param row row index
+     * @param col column index
      * @return value at given row index and column index
      */
-    double get(int i, int j);
+    double get(int row, int col);
 
     /**
      * Sets value at the given row and column indexes
-     * @param i row index
-     * @param j column index
+     * @param row row index
+     * @param col column index
      * @param value value to be set
      */
-    void set(int i, int j, double value);
+    void set(int row, int col, double value);
 
     /**
      * Increment value at the given row and column indexes
-     * @param i row index
-     * @param j column index
+     * @param row row index
+     * @param col column index
      * @param value increment value
      */
-    void increment(int i, int j, double value);
+    void increment(int row, int col, double value);
 
     RV mapCol(int i);
 

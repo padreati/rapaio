@@ -35,7 +35,7 @@ import java.util.function.BiFunction;
 import java.util.stream.DoubleStream;
 
 /**
- * Created by <a href="mailto:padreati@yahoo.com">Aurelian Tutuianu</a> on 2/3/16.
+ * Dense 2 dimensional matrix with values in double floating point precision
  */
 public class SolidRM implements RM {
 
@@ -45,10 +45,24 @@ public class SolidRM implements RM {
     private final int colCount;
     private final double[] values;
 
-    public static SolidRM empty(int n, int m) {
-        return new SolidRM(n, m);
+    /**
+     * Builds a zero filled matrix with n rows and m columns
+     * @param rowCount number of rows
+     * @param colCount number of columns
+     * @return a new instance of the matrix object
+     */
+    public static SolidRM empty(int rowCount, int colCount) {
+        return new SolidRM(rowCount, colCount);
     }
 
+    /**
+     * Builds an identity matrix with n rows and n columns.
+     * An identity matrix is a matrix with 1 on the main diagonal
+     * and 0 otherwise.
+     *
+     * @param n number of rows and also number of columns
+     * @return a new instance of identity matrix of order n
+     */
     public static SolidRM identity(int n) {
         SolidRM m = new SolidRM(n, n);
         for (int i = 0; i < n; i++) {
@@ -57,44 +71,69 @@ public class SolidRM implements RM {
         return m;
     }
 
-    public static SolidRM fill(int n, int m, double fill) {
-        SolidRM ret = new SolidRM(n, m);
+    /**
+     * Builds a new matrix filled with a given value.
+     * @param rowCount number of rows
+     * @param colCount number of columns
+     * @param fill value which fills all cells of the matrix
+     * @return new matrix filled with value
+     */
+    public static SolidRM fill(int rowCount, int colCount, double fill) {
+        SolidRM ret = new SolidRM(rowCount, colCount);
         if (fill != 0.0)
             Arrays.fill(ret.values, fill);
         return ret;
     }
 
-    public static SolidRM fill(int n, int m, BiFunction<Integer, Integer, Double> bf) {
-        SolidRM ret = new SolidRM(n, m);
+    /**
+     * Builds a new matrix filled with a given value
+     * @param rowCount number of rows
+     * @param colCount number of columns
+     * @param fun lambda function which computes a value given row and column positions
+     * @return new matrix filled with value
+     */
+    public static SolidRM fill(int rowCount, int colCount, BiFunction<Integer, Integer, Double> fun) {
+        SolidRM ret = new SolidRM(rowCount, colCount);
         for (int i = 0; i < ret.rowCount(); i++) {
             for (int j = 0; j < ret.colCount(); j++) {
-                ret.set(i, j, bf.apply(i, j));
+                ret.set(i, j, fun.apply(i, j));
             }
         }
         return ret;
     }
 
+    /**
+     * Builds a new matrix from a linearized array of values.
+     * The array contains the values by row, aka first cols elements
+     * is the first row, second cols elements is the second row,
+     * and so on.
+     * @param rows number of rows
+     * @param cols number of columns
+     * @param source value array
+     * @return new matrix which contains a copy of the source
+     */
     public static SolidRM copy(int rows, int cols, double... source) {
         SolidRM m = empty(rows, cols);
         System.arraycopy(source, 0, m.values, 0, rows * cols);
         return m;
     }
 
+
     public static SolidRM copy(double[][] source) {
         int colCount = source[0].length;
         int rowCount = source.length;
         SolidRM m = empty(rowCount, colCount);
-        for (int i = 0; i < colCount; i++) {
-            System.arraycopy(source[i], 0, m.values, i * rowCount, colCount);
+        for (int i = 0; i < rowCount; i++) {
+            System.arraycopy(source[i], 0, m.values, i * colCount, colCount);
         }
         return m;
     }
 
-    public static RM copy(double[][] source, int mFirst, int mLast, int nFirst, int nLast) {
-        RM mm = new SolidRM(mLast - mFirst, nLast - nFirst);
-        for (int i = mFirst; i < mLast; i++) {
-            for (int j = nFirst; j < nLast; j++) {
-                mm.set(i, j, source[i][j]);
+    public static RM copy(double[][] source, int rowStart, int rowEnd, int colStart, int colEnd) {
+        RM mm = new SolidRM(rowEnd - rowStart, colEnd - colStart);
+        for (int i = rowStart; i < rowEnd; i++) {
+            for (int j = colStart; j < colEnd; j++) {
+                mm.set(i-rowStart, j-colStart, source[i][j]);
             }
         }
         return mm;
@@ -127,18 +166,7 @@ public class SolidRM implements RM {
 
         this.rowCount = rowCount;
         this.colCount = colCount;
-        this.values = new double[rowCount * colCount];
-    }
-
-    private SolidRM(int rowCount, int colCount, double[] values) {
-        if (((long) rowCount) * ((long) colCount) >= (long) Integer.MAX_VALUE)
-            throw new IllegalArgumentException("Array is too large to allocate with integer indexes");
-        if (rowCount * colCount != values.length) {
-            throw new IllegalArgumentException("rows*cols does not match the number of given values");
-        }
-        this.rowCount = rowCount;
-        this.colCount = colCount;
-        this.values = values;
+        this.values = new double[rowCount*colCount];
     }
 
     @Override
