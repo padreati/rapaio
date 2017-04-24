@@ -24,6 +24,7 @@
 
 package rapaio.math.linear.dense;
 
+import rapaio.core.distributions.Normal;
 import rapaio.data.BoundFrame;
 import rapaio.data.Frame;
 import rapaio.data.Var;
@@ -43,10 +44,11 @@ public class SolidRM implements RM {
 
     private final int rowCount;
     private final int colCount;
-    private final double[] values;
+    private final double[][] values;
 
     /**
      * Builds a zero filled matrix with n rows and m columns
+     *
      * @param rowCount number of rows
      * @param colCount number of columns
      * @return a new instance of the matrix object
@@ -72,24 +74,47 @@ public class SolidRM implements RM {
     }
 
     /**
+     * Centering matrix, see definition here: https://en.wikipedia.org/wiki/Centering_matrix
+     *
+     * @param n number of rows and columns
+     * @return new instance of centering matrix
+     */
+    public static SolidRM centering(int n) {
+        if (n <= 0)
+            throw new IllegalArgumentException("Dimension of the centering matrix should be at least 1");
+        return fill(n, n, (r, c) -> (r == c) ? (1.0 - 1.0 / n) : -1.0 / n);
+    }
+
+    public static SolidRM random(int rowCount, int colCount) {
+        Normal normal = new Normal();
+        return SolidRM.fill(rowCount, colCount, (r, c) -> normal.sampleNext());
+    }
+
+    /**
      * Builds a new matrix filled with a given value.
+     *
      * @param rowCount number of rows
      * @param colCount number of columns
-     * @param fill value which fills all cells of the matrix
+     * @param fill     value which fills all cells of the matrix
      * @return new matrix filled with value
      */
     public static SolidRM fill(int rowCount, int colCount, double fill) {
         SolidRM ret = new SolidRM(rowCount, colCount);
-        if (fill != 0.0)
-            Arrays.fill(ret.values, fill);
+        if (fill != 0.0) {
+            for (int i = 0; i < rowCount; i++) {
+                Arrays.fill(ret.values[i], fill);
+            }
+        }
+
         return ret;
     }
 
     /**
      * Builds a new matrix filled with a given value
+     *
      * @param rowCount number of rows
      * @param colCount number of columns
-     * @param fun lambda function which computes a value given row and column positions
+     * @param fun      lambda function which computes a value given row and column positions
      * @return new matrix filled with value
      */
     public static SolidRM fill(int rowCount, int colCount, BiFunction<Integer, Integer, Double> fun) {
@@ -107,24 +132,32 @@ public class SolidRM implements RM {
      * The array contains the values by row, aka first cols elements
      * is the first row, second cols elements is the second row,
      * and so on.
-     * @param rows number of rows
-     * @param cols number of columns
-     * @param source value array
+     *
+     * @param rowCount number of rows
+     * @param colCount number of columns
+     * @param source   value array
      * @return new matrix which contains a copy of the source
      */
-    public static SolidRM copy(int rows, int cols, double... source) {
-        SolidRM m = empty(rows, cols);
-        System.arraycopy(source, 0, m.values, 0, rows * cols);
+    public static SolidRM copy(int rowCount, int colCount, double... source) {
+        SolidRM m = empty(rowCount, colCount);
+        for (int i = 0; i < rowCount; i++) {
+            System.arraycopy(source, i * colCount, m.values[i], 0, colCount);
+        }
         return m;
     }
 
+    public static SolidRM wrap(double[][] source) {
+        int colCount = source[0].length;
+        int rowCount = source.length;
+        return new SolidRM(rowCount, colCount, source);
+    }
 
     public static SolidRM copy(double[][] source) {
         int colCount = source[0].length;
         int rowCount = source.length;
         SolidRM m = empty(rowCount, colCount);
         for (int i = 0; i < rowCount; i++) {
-            System.arraycopy(source[i], 0, m.values, i * colCount, colCount);
+            System.arraycopy(source[i], 0, m.values[i], 0, colCount);
         }
         return m;
     }
@@ -133,7 +166,7 @@ public class SolidRM implements RM {
         RM mm = new SolidRM(rowEnd - rowStart, colEnd - colStart);
         for (int i = rowStart; i < rowEnd; i++) {
             for (int j = colStart; j < colEnd; j++) {
-                mm.set(i-rowStart, j-colStart, source[i][j]);
+                mm.set(i - rowStart, j - colStart, source[i][j]);
             }
         }
         return mm;
@@ -161,12 +194,15 @@ public class SolidRM implements RM {
     }
 
     private SolidRM(int rowCount, int colCount) {
-        if (((long) rowCount) * ((long) colCount) >= (long) Integer.MAX_VALUE)
-            throw new IllegalArgumentException("Array is too large to allocate with integer indexes");
-
         this.rowCount = rowCount;
         this.colCount = colCount;
-        this.values = new double[rowCount*colCount];
+        this.values = new double[rowCount][colCount];
+    }
+
+    private SolidRM(int rowCount, int colCount, double[][] values) {
+        this.rowCount = rowCount;
+        this.colCount = colCount;
+        this.values = values;
     }
 
     @Override
@@ -180,18 +216,18 @@ public class SolidRM implements RM {
     }
 
     @Override
-    public double get(int i, int j) {
-        return values[i * colCount + j];
+    public double get(int row, int col) {
+        return values[row][col];
     }
 
     @Override
-    public void set(int i, int j, double value) {
-        values[i * colCount + j] = value;
+    public void set(int row, int col, double value) {
+        values[row][col] = value;
     }
 
     @Override
-    public void increment(int i, int j, double value) {
-        values[i * colCount + j] += value;
+    public void increment(int row, int col, double value) {
+        values[row][col] += value;
     }
 
     @Override
@@ -225,7 +261,7 @@ public class SolidRM implements RM {
 
     @Override
     public DoubleStream valueStream() {
-        return Arrays.stream(values);
+        return Arrays.stream(values).flatMapToDouble(Arrays::stream);
     }
 
     @Override

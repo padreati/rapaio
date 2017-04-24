@@ -49,6 +49,7 @@ import java.util.function.BiConsumer;
 public class LUDecomposition implements Serializable, Printable {
 
     private static final long serialVersionUID = -4226024886673558685L;
+
     private RM LU; // internal storage of decomposition.
     private int m; // row dimension
     private int n; // col dimension
@@ -217,7 +218,7 @@ public class LUDecomposition implements Serializable, Printable {
     public String summary() {
 
         StringBuilder sb = new StringBuilder();
-        sb.append("LU decomposition printSummary\n");
+        sb.append("LU decomposition summary\n");
         sb.append("========================\n");
 
         sb.append("\n" +

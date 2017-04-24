@@ -34,7 +34,26 @@ import java.util.stream.IntStream;
  * @author Martin Thoma
  */
 public class MatrixMultiplication {
-    static int LEAF_SIZE = 256;
+    public static RM jama(RM A, RM B) {
+        if (B.rowCount() != A.colCount()) {
+            throw new IllegalArgumentException("Matrix inner dimensions must agree.");
+        }
+        RM X = SolidRM.empty(A.rowCount(), B.colCount());
+        double[] Bcolj = new double[A.colCount()];
+        for (int j = 0; j < B.colCount(); j++) {
+            for (int k = 0; k < A.colCount(); k++) {
+                Bcolj[k] = B.get(k, j);
+            }
+            for (int i = 0; i < A.rowCount(); i++) {
+                double s = 0;
+                for (int k = 0; k < A.colCount(); k++) {
+                    s += A.get(i, k) * Bcolj[k];
+                }
+                X.set(i, j, s);
+            }
+        }
+        return X;
+    }
 
     public static RM ijkAlgorithm(RM A, RM B) {
         // initialise C
@@ -78,7 +97,6 @@ public class MatrixMultiplication {
     }
 
     public static RM ikjParallel(RM A, RM B) {
-        // initialise C
         RM C = SolidRM.empty(A.rowCount(), B.colCount());
         IntStream.range(0, A.rowCount()).parallel().forEach(i -> {
             for (int k = 0; k < A.colCount(); k++) {
@@ -96,7 +114,9 @@ public class MatrixMultiplication {
         RM C = SolidRM.empty(A.rowCount(), B.colCount());
 
 //        Pick a tile size T = Θ(√M)
-        int T = 256;
+        int T = 1;
+        while (T < Math.sqrt(A.colCount()))
+            T *= 2;
 
 //        For I from 1 to n in steps of T:
         for (int I = 0; I < A.rowCount(); I += T) {
@@ -126,8 +146,6 @@ public class MatrixMultiplication {
             }
         }
         return C;
-
-
     }
 
     private static RM add(RM A, RM B) {
@@ -156,116 +174,96 @@ public class MatrixMultiplication {
         return (int) Math.pow(2, log2);
     }
 
-    /*
-    public static RM strassen(RM A, RM B) {
+    public static RM strassen(RM A, RM B, int leafSize) {
         // Make the matrices bigger so that you can apply the strassen
         // algorithm recursively without having to deal with odd
         // matrix sizes
-
-        int n = Math.max(A.rowCount(), Math.max(A.colCount(), B.colCount()));
+        int n = A.colCount();
         int m = nextPowerOfTwo(n);
         RM APrep = SolidRM.empty(m, m);
         RM BPrep = SolidRM.empty(m, m);
-        for (int i = 0; i < A.rowCount(); i++) {
-            for (int j = 0; j < A.colCount(); j++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
                 APrep.set(i, j, A.get(i, j));
-            }
-        }
-        for (int i = 0; i < B.rowCount(); i++) {
-            for (int j = 0; j < B.colCount(); j++) {
                 BPrep.set(i, j, B.get(i, j));
             }
         }
 
-        RM CPrep = strassenR(APrep, BPrep);
-        RM C = SolidRM.empty(A.rowCount(), B.colCount());
-        for (int i = 0; i < A.rowCount(); i++) {
-            for (int j = 0; j < B.colCount(); j++) {
+        RM CPrep = strassenR(APrep, BPrep, leafSize);
+        RM C = SolidRM.empty(n, n);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
                 C.set(i, j, CPrep.get(i, j));
             }
         }
         return C;
     }
 
-    private static RM strassenR(RM A, RM B) {
-        int n = A.rowCount();
+    private static RM strassenR(RM A, RM B, int leafSize) {
+        int n = A.colCount();
 
-        if (n <= LEAF_SIZE) {
+        if (n <= leafSize) {
             return ikjAlgorithm(A, B);
         } else {
             // initializing the new sub-matrices
             int newSize = n / 2;
+            RM a11 = SolidRM.empty(newSize, newSize);
+            RM a12 = SolidRM.empty(newSize, newSize);
+            RM a21 = SolidRM.empty(newSize, newSize);
+            RM a22 = SolidRM.empty(newSize, newSize);
 
-//            RM a11 = Linear.newRMEmpty(newSize, newSize);
-//            RM a12 = Linear.newRMEmpty(newSize, newSize);
-//            RM a21 = Linear.newRMEmpty(newSize, newSize);
-//            RM a22 = Linear.newRMEmpty(newSize, newSize);
-//
-//            RM b11 = Linear.newRMEmpty(newSize, newSize);
-//            RM b12 = Linear.newRMEmpty(newSize, newSize);
-//            RM b21 = Linear.newRMEmpty(newSize, newSize);
-//            RM b22 = Linear.newRMEmpty(newSize, newSize);
-//
-//            RM aResult;
-//            RM bResult;
+            RM b11 = SolidRM.empty(newSize, newSize);
+            RM b12 = SolidRM.empty(newSize, newSize);
+            RM b21 = SolidRM.empty(newSize, newSize);
+            RM b22 = SolidRM.empty(newSize, newSize);
+
+            RM aResult = SolidRM.empty(newSize, newSize);
+            RM bResult = SolidRM.empty(newSize, newSize);
 
             // dividing the matrices in 4 sub-matrices:
-//            for (int i = 0; i < newSize; i++) {
-//                for (int j = 0; j < newSize; j++) {
-//                    a11.set(i, j, A.get(i, j)); // top left
-//                    a12.set(i, j, A.get(i, j + newSize)); // top right
-//                    a21.set(i, j, A.get(i + newSize, j)); // bottom left
-//                    a22.set(i, j, A.get(i + newSize, j + newSize)); // bottom right
-//
-//                    b11.set(i, j, B.get(i, j)); // top left
-//                    b12.set(i, j, B.get(i, j + newSize)); // top right
-//                    b21.set(i, j, B.get(i + newSize, j)); // bottom left
-//                    b22.set(i, j, B.get(i + newSize, j + newSize)); // bottom right
-//                }
-//            }
+            for (int i = 0; i < newSize; i++) {
+                for (int j = 0; j < newSize; j++) {
+                    a11.set(i, j, A.get(i, j)); // top left
+                    a12.set(i, j, A.get(i, j + newSize)); // top right
+                    a21.set(i, j, A.get(i + newSize, j)); // bottom left
+                    a22.set(i, j, A.get(i + newSize, j + newSize)); // bottom right
 
-            RM a11 = A.rangeRows(0, newSize).rangeCols(0, newSize);
-            RM a12 = A.rangeRows(0, newSize).rangeCols(newSize, 2 * newSize);
-            RM a21 = A.rangeRows(newSize, 2 * newSize).rangeCols(0, newSize);
-            RM a22 = A.rangeRows(newSize, 2 * newSize).rangeCols(newSize, 2 * newSize);
-
-            RM b11 = B.rangeRows(0, newSize).rangeCols(0, newSize);
-            RM b12 = B.rangeRows(0, newSize).rangeCols(newSize, 2 * newSize);
-            RM b21 = B.rangeRows(newSize, 2 * newSize).rangeCols(0, newSize);
-            RM b22 = B.rangeRows(newSize, 2 * newSize).rangeCols(newSize, 2 * newSize);
-
-            RM aResult;
-            RM bResult;
+                    b11.set(i, j, B.get(i, j)); // top left
+                    b12.set(i, j, B.get(i, j + newSize)); // top right
+                    b21.set(i, j, B.get(i + newSize, j)); // bottom left
+                    b22.set(i, j, B.get(i + newSize, j + newSize)); // bottom right
+                }
+            }
 
             // Calculating p1 to p7:
             aResult = add(a11, a22);
             bResult = add(b11, b22);
-            RM p1 = strassenR(aResult, bResult);
+            RM p1 = strassenR(aResult, bResult, leafSize);
             // p1 = (a11+a22) * (b11+b22)
 
             aResult = add(a21, a22); // a21 + a22
-            RM p2 = strassenR(aResult, b11); // p2 = (a21+a22) * (b11)
+            RM p2 = strassenR(aResult, b11, leafSize); // p2 = (a21+a22) * (b11)
 
             bResult = subtract(b12, b22); // b12 - b22
-            RM p3 = strassenR(a11, bResult);
+            RM p3 = strassenR(a11, bResult, leafSize);
             // p3 = (a11) * (b12 - b22)
 
             bResult = subtract(b21, b11); // b21 - b11
-            RM p4 = strassenR(a22, bResult);
+            RM p4 = strassenR(a22, bResult, leafSize);
             // p4 = (a22) * (b21 - b11)
 
             aResult = add(a11, a12); // a11 + a12
-            RM p5 = strassenR(aResult, b22);
+            RM p5 = strassenR(aResult, b22, leafSize);
             // p5 = (a11+a12) * (b22)
 
             aResult = subtract(a21, a11); // a21 - a11
             bResult = add(b11, b12); // b11 + b12
-            RM p6 = strassenR(aResult, bResult);
+            RM p6 = strassenR(aResult, bResult, leafSize);
             // p6 = (a21-a11) * (b11+b12)
 
             aResult = subtract(a12, a22); // a12 - a22
             bResult = add(b21, b22); // b21 + b22
-            RM p7 = strassenR(aResult, bResult);
+            RM p7 = strassenR(aResult, bResult, leafSize);
             // p7 = (a12-a22) * (b21+b22)
 
             // calculating c21, c21, c11 e c22:
@@ -283,7 +281,7 @@ public class MatrixMultiplication {
             // c22 = p1 + p3 - p2 + p6
 
             // Grouping the results obtained in a single matrix:
-            RM C = RM.empty(n, n);
+            RM C = SolidRM.empty(n, n);
             for (int i = 0; i < newSize; i++) {
                 for (int j = 0; j < newSize; j++) {
                     C.set(i, j, c11.get(i, j));
@@ -295,5 +293,4 @@ public class MatrixMultiplication {
             return C;
         }
     }
-    */
 }

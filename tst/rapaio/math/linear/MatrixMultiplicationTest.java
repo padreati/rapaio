@@ -24,72 +24,110 @@
 
 package rapaio.math.linear;
 
+import org.junit.Assert;
 import org.junit.Test;
+import rapaio.core.RandomSource;
 import rapaio.core.distributions.Normal;
-import rapaio.core.distributions.Uniform;
+import rapaio.core.stat.Mean;
+import rapaio.data.Nominal;
+import rapaio.data.Numeric;
+import rapaio.data.SolidFrame;
+import rapaio.data.Var;
 import rapaio.math.linear.dense.MatrixMultiplication;
 import rapaio.math.linear.dense.SolidRM;
 import rapaio.util.Util;
 
-import java.util.stream.IntStream;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertTrue;
 
 public class MatrixMultiplicationTest {
+
+    private static double TOL = 1e-12;
 
     @Test
     public void basicTestMM() {
 
-        RM A = SolidRM.copy(3, 4,
-                2.3, 1.2, 1, 7,
-                19, 0, -1, 2,
-                2, 3, 4, 5
-        );
+        Normal normal = new Normal();
+        RM A = SolidRM.fill(100, 100, (r, c) -> normal.sampleNext());
+        RM B = SolidRM.fill(100, 100, (r, c) -> normal.sampleNext());
 
-        RM B = SolidRM.copy(4, 5,
-                1, 2, 3, 4, 5,
-                1.1, 12, 23, 4, 15,
-                1.2, 2.2, 23, 4, 5,
-                1.3, 2.3, 3, 14, 25
-        );
+        RM c1 = A.dot(B);
+        RM c2 = MatrixMultiplication.ikjAlgorithm(A, B);
 
-//        A.printSummary();
-//        B.printSummary();
+        assertTrue(c1.isEqual(c2));
+        assertTrue(!c1.isEqual(c2.t()));
+    }
 
-        A.dot(B).printSummary();
+    @Test
+    public void testDifferentMethods() {
 
-//        MatrixMultiplication.strassen(A, B).printSummary();
+        RandomSource.setSeed(1234);
+
+        Normal normal = new Normal();
+        RM A = SolidRM.fill(100, 100, (r, c) -> normal.sampleNext());
+        RM B = SolidRM.fill(100, 100, (r, c) -> normal.sampleNext());
+
+        RM c = A.dot(B);
+
+        assertTrue(c.isEqual(MatrixMultiplication.ijkAlgorithm(A, B), TOL));
+        assertTrue(c.isEqual(MatrixMultiplication.ijkParallel(A, B), TOL));
+        assertTrue(c.isEqual(MatrixMultiplication.ikjAlgorithm(A, B), TOL));
+        assertTrue(c.isEqual(MatrixMultiplication.ikjParallel(A, B), TOL));
+        assertTrue(c.isEqual(MatrixMultiplication.tiledAlgorithm(A, B), TOL));
+        assertTrue(c.isEqual(MatrixMultiplication.jama(A, B), TOL));
+        assertTrue(c.isEqual(MatrixMultiplication.strassen(A, B, 8), TOL));
     }
 
     @Test
     public void largeMatrices() {
-        int N = 1_000;
-        double p = 0.7;
-        RM A = SolidRM.empty(N, N);
-        RM B = SolidRM.empty(N, N);
 
+        RandomSource.setSeed(1234);
+
+        int N = 100;
         Normal norm = new Normal(1, 12);
-        Uniform unif = new Uniform(0, 1);
-        for (int i = 0; i < A.rowCount(); i++) {
-            for (int j = 0; j < A.colCount(); j++) {
-                if (unif.sampleNext() > p)
-                    A.set(i, j, norm.sampleNext());
-            }
+
+        System.out.println("create matrix A");
+        RM A = Util.measure(() -> SolidRM.fill(N, N, (r, c) -> norm.sampleNext()))._1;
+
+        System.out.println("create matrix B");
+        RM B = Util.measure(() -> SolidRM.fill(N, N, (r, c) -> norm.sampleNext()))._1;
+
+        System.out.println("...");
+
+        Map<String, Numeric> times = new LinkedHashMap<>();
+        for (int i = 0; i < 10; i++) {
+
+            System.out.println("=========================");
+            System.out.println("Iteration " + (i + 1));
+            System.out.println("=========================");
+
+            System.out.println("jama");
+            put(times, "jama", Util.measure(() -> MatrixMultiplication.jama(A, B))._2);
+            System.out.println("ijkAlgorithm");
+            put(times, "ijkAlgorithm", Util.measure(() -> MatrixMultiplication.ijkAlgorithm(A, B))._2);
+            System.out.println("ikjAlgorithm");
+            put(times, "ikjAlgorithm", Util.measure(() -> MatrixMultiplication.ikjAlgorithm(A, B))._2);
+            System.out.println("tiledAlgorithm");
+            put(times, "tiledAlgorithm", Util.measure(() -> MatrixMultiplication.tiledAlgorithm(A, B))._2);
+            System.out.println("ijkParallel");
+            put(times, "ijkParallel", Util.measure(() -> MatrixMultiplication.ijkParallel(A, B))._2);
+            System.out.println("ikjParallel");
+            put(times, "ikjParallel", Util.measure(() -> MatrixMultiplication.ikjParallel(A, B))._2);
+            System.out.println("strassen");
+            put(times, "strassen", Util.measure(() -> MatrixMultiplication.strassen(A, B, 1024))._2);
         }
 
-        for (int i = 0; i < B.rowCount(); i++) {
-            for (int j = 0; j < B.colCount(); j++) {
-                if (unif.sampleNext() > p)
-                    B.set(i, j, norm.sampleNext());
-            }
+        SolidFrame.byVars(new ArrayList<>(times.values())).printSummary();
+    }
+
+    private void put(Map<String, Numeric> map, String key, Long value) {
+        if (!map.containsKey(key)) {
+            map.put(key, Numeric.empty().withName(key));
         }
-
-        int[] range = IntStream.range(N - 100, N).toArray();
-
-//        Util.measure(() -> MatrixMultiplication.ijkAlgorithm(A,B).mapRows(range).mapCols(range).printSummary());
-//        Util.measure(() -> MatrixMultiplication.ikjAlgorithm(A, B).mapRows(range).mapCols(range).printSummary());
-//        Util.measure(() -> MatrixMultiplication.tiledAlgorithm(A, B).mapRows(range).mapCols(range).printSummary());
-//        RM C1 = Util.measure(() -> MatrixMultiplication.ijkParallel(A, B).mapRows(range).mapCols(range));
-        RM C2 = Util.measure(() -> MatrixMultiplication.ikjParallel(A, B).mapRows(range).mapCols(range));
-
-//        Assert.assertTrue(C1.isEqual(C2));
+        map.get(key).addValue(value);
     }
 }

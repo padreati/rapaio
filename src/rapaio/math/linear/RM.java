@@ -24,10 +24,10 @@
 
 package rapaio.math.linear;
 
-import rapaio.math.MTools;
 import rapaio.core.stat.Mean;
 import rapaio.core.stat.Variance;
 import rapaio.data.Numeric;
+import rapaio.math.MTools;
 import rapaio.math.linear.dense.*;
 import rapaio.printer.Printable;
 import rapaio.sys.WS;
@@ -64,16 +64,18 @@ public interface RM extends Serializable, Printable {
 
     /**
      * Sets value at the given row and column indexes
-     * @param row row index
-     * @param col column index
+     *
+     * @param row   row index
+     * @param col   column index
      * @param value value to be set
      */
     void set(int row, int col, double value);
 
     /**
      * Increment value at the given row and column indexes
-     * @param row row index
-     * @param col column index
+     *
+     * @param row   row index
+     * @param col   column index
      * @param value increment value
      */
     void increment(int row, int col, double value);
@@ -142,7 +144,7 @@ public interface RM extends Serializable, Printable {
     RM t();
 
     default RM dot(RM B) {
-        return MatrixMultiplication.ikjAlgorithm(this, B);
+        return MatrixMultiplication.ikjParallel(this, B);
     }
 
     default RM dot(double x) {
@@ -233,16 +235,19 @@ public interface RM extends Serializable, Printable {
 
     default RM scatter() {
         RM scatter = SolidRM.empty(colCount(), colCount());
-        RV mean = SolidRV.empty(colCount());
+        double[] mean = new double[colCount()];
         for (int i = 0; i < colCount(); i++) {
-            mean.set(i, mapCol(i).mean().value());
+            mean[i] = mapCol(i).mean().value();
         }
-        for (int i = 0; i < rowCount(); i++) {
-
-            RM row = mapRow(i).asMatrix();
-            row.minus(mean.asMatrix());
-
-            scatter.plus(row.dot(row.t()));
+        for (int k = 0; k < rowCount(); k++) {
+            double[] row = new double[colCount()];
+            for (int i = 0; i < colCount(); i++)
+                row[i] = get(k, i) - mean[i];
+            for (int i = 0; i < row.length; i++) {
+                for (int j = 0; j < row.length; j++) {
+                    scatter.increment(i, j, row[i] * row[j]);
+                }
+            }
         }
         return scatter;
     }
@@ -259,7 +264,7 @@ public interface RM extends Serializable, Printable {
      * @return true if dimension and elements are equal
      */
     default boolean isEqual(RM RM) {
-        return isEqual(RM, 1e-12);
+        return isEqual(RM, 1e-20);
     }
 
     default boolean isEqual(RM RM, double tol) {

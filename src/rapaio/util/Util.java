@@ -42,13 +42,13 @@ public class Util {
                 ((stop - start) % 1000) + " millis");
     }
 
-    public static <T> T measure(Supplier<T> task) {
+    public static <T> Pair<T, Long> measure(Supplier<T> task) {
         long start = System.currentTimeMillis();
         T t = task.get();
         long stop = System.currentTimeMillis();
         System.out.println((stop - start) / 60000 + " mins, " + (((stop - start) % 60000) / 1000) + " secs, " +
                 ((stop - start) % 1000) + " millis");
-        return t;
+        return Pair.from(t, stop - start);
     }
 
     public static IntStream rangeStream(int n, boolean parallel) {
